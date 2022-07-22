@@ -133,7 +133,7 @@ abstract class OfferViewModel : ViewModel() {
       }
 
       fun createDocumentItems() = if (bundleVariant.bundle.quotes.size == 1) {
-        listOf(DocumentItems.Header(R.string.OFFER_DOCUMENTS_SECTION_TITLE)) +
+        listOf(DocumentItems.Header(hedvig.resources.R.string.OFFER_DOCUMENTS_SECTION_TITLE)) +
           bundleVariant.bundle.quotes.first().insuranceTerms
       } else {
         emptyList()

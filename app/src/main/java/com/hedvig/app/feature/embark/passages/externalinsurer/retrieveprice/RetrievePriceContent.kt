@@ -77,7 +77,7 @@ fun RetrievePriceContent(
     )
     LargeContainedTextButton(
       modifier = Modifier.padding(top = baseMarginQuadruple),
-      text = stringResource(R.string.insurely_ssn_continue_button_text),
+      text = stringResource(hedvig.resources.R.string.insurely_ssn_continue_button_text),
       onClick = onRetrievePriceInfo,
     )
   }

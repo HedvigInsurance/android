@@ -35,15 +35,15 @@ class ChangeAddressNotEligibleTest : TestCase() {
 
     ChangeAddressScreen {
       title {
-        hasText(R.string.moving_intro_title)
+        hasText(hedvig.resources.R.string.moving_intro_title)
       }
 
       subtitle {
-        hasText(R.string.moving_intro_manual_handling_description)
+        hasText(hedvig.resources.R.string.moving_intro_manual_handling_description)
       }
 
       continueButton {
-        hasText(R.string.moving_intro_manual_handling_button_text)
+        hasText(hedvig.resources.R.string.moving_intro_manual_handling_button_text)
       }
     }
   }

@@ -59,8 +59,8 @@ class InsurableLimitsAdapter(
         }
         binding.root.setText(
           when (data) {
-            InsurableLimitItem.Header.Details -> R.string.moving_summary_scroll_Details
-            InsurableLimitItem.Header.MoreInfo -> R.string.CONTRACT_COVERAGE_MORE_INFO
+            InsurableLimitItem.Header.Details -> hedvig.resources.R.string.moving_summary_scroll_Details
+            InsurableLimitItem.Header.MoreInfo -> hedvig.resources.R.string.CONTRACT_COVERAGE_MORE_INFO
           },
         )
       }

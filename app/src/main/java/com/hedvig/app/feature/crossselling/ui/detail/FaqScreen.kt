@@ -42,7 +42,7 @@ fun FaqScreen(
     ) {
       TopAppBarWithBack(
         onClick = onUpClick,
-        title = stringResource(R.string.cross_sell_info_common_questions_title),
+        title = stringResource(hedvig.resources.R.string.cross_sell_info_common_questions_title),
       )
       Column(
         modifier = Modifier
@@ -56,7 +56,7 @@ fun FaqScreen(
         )
         Spacer(Modifier.height(40.dp))
         Text(
-          text = stringResource(R.string.cross_sell_info_faq_chat_headline),
+          text = stringResource(hedvig.resources.R.string.cross_sell_info_faq_chat_headline),
           style = MaterialTheme.typography.subtitle2,
           modifier = Modifier.align(Alignment.CenterHorizontally),
         )
@@ -68,7 +68,7 @@ fun FaqScreen(
           )
           Spacer(Modifier.width(8.dp))
           Text(
-            text = stringResource(R.string.cross_sell_info_faq_chat_button),
+            text = stringResource(hedvig.resources.R.string.cross_sell_info_faq_chat_button),
           )
         }
         Spacer(Modifier.height(104.dp))

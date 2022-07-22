@@ -49,7 +49,7 @@ class CodeTooShortErrorTest : TestCase() {
       save { click() }
       editLayout {
         isErrorEnabled()
-        hasError(R.string.referrals_change_code_sheet_general_error)
+        hasError(hedvig.resources.R.string.referrals_change_code_sheet_general_error)
       }
     }
   }

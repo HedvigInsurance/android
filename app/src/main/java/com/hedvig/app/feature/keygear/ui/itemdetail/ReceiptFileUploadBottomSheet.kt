@@ -10,7 +10,7 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 class ReceiptFileUploadBottomSheet : FileUploadBottomSheet() {
   private val model: KeyGearItemDetailViewModel by sharedViewModel()
 
-  override val title = R.string.KEY_GEAR_RECEIPT_UPLOAD_SHEET_TITLE
+  override val title = hedvig.resources.R.string.KEY_GEAR_RECEIPT_UPLOAD_SHEET_TITLE
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)

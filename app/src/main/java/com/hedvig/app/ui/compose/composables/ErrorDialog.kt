@@ -19,7 +19,7 @@ fun ErrorDialog(
       Text(title)
     },
     text = {
-      Text(message ?: stringResource(id = R.string.general_unknown_error))
+      Text(message ?: stringResource(id = hedvig.resources.R.string.general_unknown_error))
     },
     confirmButton = {
       TextButton(onClick = onDismiss) {

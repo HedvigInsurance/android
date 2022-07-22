@@ -77,12 +77,12 @@ fun OtpInputScreen(
     ) {
       Spacer(Modifier.height(60.dp))
       Text(
-        text = stringResource(R.string.login_title_check_your_email),
+        text = stringResource(hedvig.resources.R.string.login_title_check_your_email),
         style = MaterialTheme.typography.h4,
       )
       Spacer(Modifier.height(16.dp))
       Text(
-        text = stringResource(R.string.login_subtitle_verification_code_email, credential),
+        text = stringResource(hedvig.resources.R.string.login_subtitle_verification_code_email, credential),
         style = MaterialTheme.typography.body1,
       )
 
@@ -156,12 +156,12 @@ fun OtpInputScreen(
           Icon(
             modifier = if (loadingResend) Modifier.rotate(angle) else Modifier,
             painter = painterResource(id = R.drawable.ic_refresh),
-            contentDescription = stringResource(R.string.login_smedium_button_active_resend_code),
+            contentDescription = stringResource(hedvig.resources.R.string.login_smedium_button_active_resend_code),
           )
           Spacer(modifier = Modifier.width(8.dp))
           Text(
             modifier = Modifier.align(Alignment.CenterVertically),
-            text = stringResource(R.string.login_smedium_button_active_resend_code),
+            text = stringResource(hedvig.resources.R.string.login_smedium_button_active_resend_code),
             style = MaterialTheme.typography.caption,
             textAlign = TextAlign.Center,
           )
@@ -175,7 +175,7 @@ fun OtpInputScreen(
         .align(Alignment.BottomCenter)
         .padding(bottom = 16.dp),
     ) {
-      Text(text = stringResource(R.string.login_open_email_app_button))
+      Text(text = stringResource(hedvig.resources.R.string.login_open_email_app_button))
     }
   }
 

@@ -57,7 +57,7 @@ fun AudioPlayBackItem(
     AnimatedVisibility(visible = audioPlayerState !is AudioPlayerState.Failed) {
       CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
         Text(
-          text = stringResource(R.string.claim_status_files_claim_audio_footer),
+          text = stringResource(hedvig.resources.R.string.claim_status_files_claim_audio_footer),
           style = MaterialTheme.typography.caption,
         )
       }

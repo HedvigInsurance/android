@@ -33,26 +33,26 @@ fun IntroContent(
     Column(verticalArrangement = Arrangement.spacedBy(baseMarginDouble)) {
       Text(
         modifier = Modifier.padding(top = baseMargin),
-        text = stringResource(R.string.insurely_intro_title, selectedInsurance),
+        text = stringResource(hedvig.resources.R.string.insurely_intro_title, selectedInsurance),
         style = MaterialTheme.typography.h6,
         color = MaterialTheme.colors.primary,
       )
       Text(
-        text = stringResource(R.string.insurely_intro_description),
+        text = stringResource(hedvig.resources.R.string.insurely_intro_description),
         style = MaterialTheme.typography.body1,
       )
     }
     Column(verticalArrangement = Arrangement.spacedBy(baseMarginDouble)) {
       LargeContainedTextButton(
-        text = stringResource(R.string.insurely_intro_continue_button_text),
+        text = stringResource(hedvig.resources.R.string.insurely_intro_continue_button_text),
         onClick = onNavigateToRetrievePriceInfo,
       )
       LargeOutlinedTextButton(
-        text = stringResource(R.string.insurely_intro_skip_button_text),
+        text = stringResource(hedvig.resources.R.string.insurely_intro_skip_button_text),
         onClick = onSkipRetrievePriceInfo,
       )
       Text(
-        text = stringResource(R.string.insurely_intro_footer, selectedInsurance),
+        text = stringResource(hedvig.resources.R.string.insurely_intro_footer, selectedInsurance),
         style = MaterialTheme.typography.caption,
         textAlign = TextAlign.Center,
       )

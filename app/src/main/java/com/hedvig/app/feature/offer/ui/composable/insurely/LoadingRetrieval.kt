@@ -34,7 +34,10 @@ fun LoadingRetrieval(locale: Locale) {
     val resources = LocalContext.current.resources
     CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
       Text(
-        text = resources.getQuantityString(R.plurals.offer_switcher_title, 2).uppercase(locale),
+        text = resources.getQuantityString(
+          hedvig.resources.R.plurals.offer_switcher_title,
+          2,
+        ).uppercase(locale),
         style = MaterialTheme.typography.caption,
       )
     }
@@ -43,7 +46,7 @@ fun LoadingRetrieval(locale: Locale) {
     Spacer(Modifier.height(16.dp))
     CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
       Text(
-        text = stringResource(R.string.offer_screen_insurely_card_loading_support_text),
+        text = stringResource(hedvig.resources.R.string.offer_screen_insurely_card_loading_support_text),
         style = MaterialTheme.typography.body2,
       )
     }

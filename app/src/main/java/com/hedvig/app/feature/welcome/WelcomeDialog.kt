@@ -7,8 +7,8 @@ import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 
 class WelcomeDialog : DismissiblePager() {
 
-  override val proceedLabel = R.string.NEWS_PROCEED
-  override val lastButtonText = R.string.NEWS_DISMISS
+  override val proceedLabel = hedvig.resources.R.string.NEWS_PROCEED
+  override val lastButtonText = hedvig.resources.R.string.NEWS_DISMISS
   override val animationStyle = R.style.WelcomeDialogAnimation
   override val titleLabel: Nothing? = null
   override val shouldShowLogo = true

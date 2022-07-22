@@ -14,7 +14,7 @@ class ReceiptBinder(
 ) {
   fun bind(data: KeyGearItemQuery.KeyGearItem) {
     data.fragments.keyGearItemFragment.receipts.getOrNull(0)?.let { receipt ->
-      binding.addOrViewReceipt.setText(R.string.KEY_GEAR_ITEM_VIEW_RECEIPT_SHOW)
+      binding.addOrViewReceipt.setText(hedvig.resources.R.string.KEY_GEAR_ITEM_VIEW_RECEIPT_SHOW)
       binding.addOrViewReceipt.setHapticClickListener {
         binding.root.context.startActivity(
           ReceiptActivity.newInstance(
@@ -24,7 +24,7 @@ class ReceiptBinder(
         )
       }
     } ?: run {
-      binding.addOrViewReceipt.setText(R.string.KEY_GEAR_ITEM_VIEW_RECEIPT_CELL_ADD_BUTTON)
+      binding.addOrViewReceipt.setText(hedvig.resources.R.string.KEY_GEAR_ITEM_VIEW_RECEIPT_CELL_ADD_BUTTON)
       binding.addOrViewReceipt.setHapticClickListener {
         ReceiptFileUploadBottomSheet
           .newInstance()

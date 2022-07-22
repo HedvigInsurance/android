@@ -13,7 +13,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.hedvig.android.designsystem.theme.HedvigTheme
 import com.hedvig.app.BaseActivity
-import com.hedvig.app.R
 import com.hedvig.app.feature.genericauth.otpinput.OtpInputActivity
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -54,10 +53,11 @@ class GenericAuthActivity : BaseActivity() {
   private fun errorMessage(error: GenericAuthViewModel.ViewState.TextFieldError) = stringResource(
     when (error) {
       GenericAuthViewModel.ViewState.TextFieldError.EMPTY ->
-        R.string.login_text_input_email_error_enter_email
+        hedvig.resources.R.string.login_text_input_email_error_enter_email
       GenericAuthViewModel.ViewState.TextFieldError.INVALID_EMAIL ->
-        R.string.login_text_input_email_error_not_valid
-      GenericAuthViewModel.ViewState.TextFieldError.NETWORK_ERROR -> R.string.NETWORK_ERROR_ALERT_MESSAGE
+        hedvig.resources.R.string.login_text_input_email_error_not_valid
+      GenericAuthViewModel.ViewState.TextFieldError.NETWORK_ERROR ->
+        hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE
     },
   )
 

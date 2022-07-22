@@ -38,10 +38,10 @@ class GifPickerBottomSheet : BottomSheetDialogFragment() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     binding.apply {
-      val emptyText = "\uD83D\uDC4B\n${getString(R.string.LABEL_SEARCH_GIF)}"
+      val emptyText = "\uD83D\uDC4B\n${getString(hedvig.resources.R.string.LABEL_SEARCH_GIF)}"
       emptyGifLabel.text = emptyText
       val noGifsText =
-        "\uD83D\uDE45\u200D♀\n${getString(R.string.CHAT_GIPHY_PICKER_NO_SEARCH_TEXT)}"
+        "\uD83D\uDE45\u200D♀\n${getString(hedvig.resources.R.string.CHAT_GIPHY_PICKER_NO_SEARCH_TEXT)}"
 
       disposables += Observable.create<String> { emitter ->
         gifSearchField.onChange { emitter.onNext(it) }

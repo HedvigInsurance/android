@@ -50,7 +50,7 @@ class ReferralsReceiverActivity : BaseActivity(R.layout.referrals_receiver_activ
         return
       }
       referralsReceiverTitle.text =
-        getString(R.string.REFERRAL_STARTSCREEN_HEADLINE, incentive)
+        getString(hedvig.resources.R.string.REFERRAL_STARTSCREEN_HEADLINE, incentive)
     }
   }
 

@@ -91,18 +91,18 @@ private fun BottomSection(
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
       CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
         Text(
-          text = stringResource(R.string.claim_status_contact_generic_subtitle),
+          text = stringResource(hedvig.resources.R.string.claim_status_contact_generic_subtitle),
           style = MaterialTheme.typography.caption,
         )
       }
       Text(
-        text = stringResource(R.string.claim_status_contact_generic_title),
+        text = stringResource(hedvig.resources.R.string.claim_status_contact_generic_title),
         style = MaterialTheme.typography.body1,
       )
     }
     ChatIcon(
       onClick = onChatClick,
-      contentDescription = stringResource(R.string.claim_status_detail_chat_button_description),
+      contentDescription = stringResource(hedvig.resources.R.string.claim_status_detail_chat_button_description),
     )
   }
 }

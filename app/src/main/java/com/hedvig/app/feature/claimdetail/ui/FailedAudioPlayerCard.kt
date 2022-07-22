@@ -47,12 +47,12 @@ fun FailedAudioPlayerCard(
       )
       Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text(
-          text = stringResource(R.string.claim_status_detail_info_error_title),
+          text = stringResource(hedvig.resources.R.string.claim_status_detail_info_error_title),
           style = MaterialTheme.typography.body1,
         )
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
           Text(
-            text = stringResource(R.string.claim_status_detail_info_error_body),
+            text = stringResource(hedvig.resources.R.string.claim_status_detail_info_error_body),
             style = MaterialTheme.typography.body2,
           )
         }
@@ -68,7 +68,7 @@ fun FailedAudioPlayerCard(
       colors = ButtonDefaults.textButtonColors(contentColor = LocalContentColor.current),
     ) {
       Text(
-        text = stringResource(R.string.claim_status_detail_info_error_button),
+        text = stringResource(hedvig.resources.R.string.claim_status_detail_info_error_button),
         style = MaterialTheme.typography.body2,
       )
     }

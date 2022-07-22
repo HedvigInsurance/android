@@ -35,7 +35,7 @@ fun ClaimDetailScreen(
     topBar = {
       TopAppBarWithBack(
         onClick = onUpClick,
-        title = stringResource(R.string.claim_status_title),
+        title = stringResource(hedvig.resources.R.string.claim_status_title),
       )
     },
   ) { paddingValues ->

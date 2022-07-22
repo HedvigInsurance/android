@@ -204,7 +204,7 @@ class InsuranceAdapter(
         }
         composeView.setContent {
           HedvigTheme {
-            Subheading(stringResource(R.string.insurances_tab_more_title))
+            Subheading(stringResource(hedvig.resources.R.string.insurances_tab_more_title))
           }
         }
       }
@@ -220,7 +220,7 @@ class InsuranceAdapter(
           val data = data ?: return@setContent
           HedvigTheme {
             NotificationSubheading(
-              text = stringResource(R.string.insurance_tab_cross_sells_title),
+              text = stringResource(hedvig.resources.R.string.insurance_tab_cross_sells_title),
               showNotification = data.showNotificationBadge,
             )
           }
@@ -252,7 +252,7 @@ class InsuranceAdapter(
         }
 
         caption.text = caption.resources.getQuantityString(
-          R.plurals.insurances_tab_terminated_insurance_subtitile,
+          hedvig.resources.R.plurals.insurances_tab_terminated_insurance_subtitile,
           data.quantity,
           data.quantity,
         )

@@ -53,7 +53,7 @@ class OtpInputActivity : BaseActivity() {
               is OtpInputViewModel.Event.Success -> startLoggedIn()
               OtpInputViewModel.Event.CodeResent -> {
                 delay(1.seconds)
-                val message = getString(R.string.login_snackbar_code_resent)
+                val message = getString(hedvig.resources.R.string.login_snackbar_code_resent)
                 scaffoldState.snackbarHostState.showSnackbar(message)
               }
             }
@@ -64,7 +64,7 @@ class OtpInputActivity : BaseActivity() {
           topBar = {
             TopAppBarWithBack(
               onClick = ::onBackPressed,
-              title = stringResource(R.string.login_navigation_bar_center_element_title),
+              title = stringResource(hedvig.resources.R.string.login_navigation_bar_center_element_title),
             )
           },
           scaffoldState = scaffoldState,
@@ -74,7 +74,7 @@ class OtpInputActivity : BaseActivity() {
 
           OtpInputScreen(
             onInputChanged = model::setInput,
-            onOpenExternalApp = { openEmail(getString(R.string.login_bottom_sheet_view_code)) },
+            onOpenExternalApp = { openEmail(getString(hedvig.resources.R.string.login_bottom_sheet_view_code)) },
             onSubmitCode = model::submitCode,
             onResendCode = model::resendCode,
             onDismissError = model::dismissError,
@@ -91,11 +91,13 @@ class OtpInputActivity : BaseActivity() {
   }
 
   private fun OtpResult.Error.OtpError.toStringRes() = when (this) {
-    OtpResult.Error.OtpError.AlreadyCompleted -> R.string.login_code_input_error_msg_code_already_used
-    OtpResult.Error.OtpError.Expired -> R.string.login_code_input_error_msg_expired
-    OtpResult.Error.OtpError.TooManyAttempts -> R.string.login_code_input_error_msg_too_many_wrong_attempts
-    OtpResult.Error.OtpError.Unknown -> R.string.general_unknown_error
-    OtpResult.Error.OtpError.WrongOtp -> R.string.login_code_input_error_msg_code_not_valid
+    OtpResult.Error.OtpError.AlreadyCompleted -> hedvig.resources.R.string.login_code_input_error_msg_code_already_used
+    OtpResult.Error.OtpError.Expired -> hedvig.resources.R.string.login_code_input_error_msg_expired
+    OtpResult.Error.OtpError.TooManyAttempts -> {
+      hedvig.resources.R.string.login_code_input_error_msg_too_many_wrong_attempts
+    }
+    OtpResult.Error.OtpError.Unknown -> hedvig.resources.R.string.general_unknown_error
+    OtpResult.Error.OtpError.WrongOtp -> hedvig.resources.R.string.login_code_input_error_msg_code_not_valid
   }
 
   private fun startLoggedIn() {

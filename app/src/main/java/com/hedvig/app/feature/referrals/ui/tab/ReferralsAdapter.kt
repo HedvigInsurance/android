@@ -125,7 +125,7 @@ class ReferralsAdapter(
                 ?.toMonetaryAmount()
                 ?.let { incentiveAmount ->
                   emptyBody.text = emptyBody.context.getString(
-                    R.string.referrals_empty_body,
+                    hedvig.resources.R.string.referrals_empty_body,
                     incentiveAmount.format(emptyBody.context, marketManager.market),
                     Money.of(0, incentiveAmount.currency.currencyCode)
                       .format(emptyBody.context, marketManager.market),
@@ -322,7 +322,7 @@ class ReferralsAdapter(
                 Snackbar
                   .make(
                     code,
-                    R.string.referrals_active__toast_text,
+                    hedvig.resources.R.string.referrals_active__toast_text,
                     Snackbar.LENGTH_SHORT,
                   )
                   .setAnchorView(R.id.bottomNavigation)
@@ -341,7 +341,7 @@ class ReferralsAdapter(
                 ?.toMonetaryAmount()
                 ?.let { incentiveAmount ->
                   codeFootnote.text = codeFootnote.resources.getString(
-                    R.string.referrals_empty_code_footer,
+                    hedvig.resources.R.string.referrals_empty_code_footer,
                     incentiveAmount.format(codeFootnote.context, marketManager.market),
                   )
                 }
@@ -425,13 +425,13 @@ class ReferralsAdapter(
             icon.setImageResource(R.drawable.ic_clock_colorless)
             status.background = null
             status.text =
-              status.context.getString(R.string.referalls_invitee_states_awaiting___)
+              status.context.getString(hedvig.resources.R.string.referalls_invitee_states_awaiting___)
           }
           data.asTerminatedReferral?.let {
             icon.setImageResource(R.drawable.ic_x_in_circle)
             status.background = null
             status.text =
-              status.context.getString(R.string.referalls_invitee_states_terminated)
+              status.context.getString(hedvig.resources.R.string.referalls_invitee_states_terminated)
           }
         }
       }

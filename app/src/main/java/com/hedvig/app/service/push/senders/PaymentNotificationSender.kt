@@ -28,8 +28,8 @@ class PaymentNotificationSender(
     setupNotificationChannel(
       context,
       PAYMENTS_CHANNEL_ID,
-      context.resources.getString(R.string.NOTIFICATION_CHANNEL_PAYMENT_TITLE),
-      context.resources.getString(R.string.NOTIFICATION_CHANNEL_PAYMENT_DESCRIPTION),
+      context.resources.getString(hedvig.resources.R.string.NOTIFICATION_CHANNEL_PAYMENT_TITLE),
+      context.resources.getString(hedvig.resources.R.string.NOTIFICATION_CHANNEL_PAYMENT_DESCRIPTION),
     )
   }
 
@@ -72,8 +72,8 @@ class PaymentNotificationSender(
           PAYMENTS_CHANNEL_ID,
         )
         .setSmallIcon(R.drawable.ic_hedvig_h)
-        .setContentTitle(context.getString(R.string.NOTIFICATION_CONNECT_DD_TITLE))
-        .setContentText(context.getString(R.string.NOTIFICATION_CONNECT_DD_BODY))
+        .setContentTitle(context.getString(hedvig.resources.R.string.NOTIFICATION_CONNECT_DD_TITLE))
+        .setContentText(context.getString(hedvig.resources.R.string.NOTIFICATION_CONNECT_DD_BODY))
         .setPriority(NotificationCompat.PRIORITY_MAX)
         .setAutoCancel(true)
         .setChannelId(PAYMENTS_CHANNEL_ID)
@@ -114,8 +114,8 @@ class PaymentNotificationSender(
         PAYMENTS_CHANNEL_ID,
       )
       .setSmallIcon(R.drawable.ic_hedvig_h)
-      .setContentTitle(context.getString(R.string.NOTIFICATION_PAYMENT_FAILED_TITLE))
-      .setContentText(context.getString(R.string.NOTIFICATION_PAYMENT_FAILED_BODY))
+      .setContentTitle(context.getString(hedvig.resources.R.string.NOTIFICATION_PAYMENT_FAILED_TITLE))
+      .setContentText(context.getString(hedvig.resources.R.string.NOTIFICATION_PAYMENT_FAILED_BODY))
       .setPriority(NotificationCompat.PRIORITY_MAX)
       .setAutoCancel(true)
       .setChannelId(PAYMENTS_CHANNEL_ID)

@@ -14,14 +14,14 @@ data class Category(
 val KeyGearItemCategory.label: Int
   get() =
     when (this) {
-      KeyGearItemCategory.COMPUTER -> R.string.ITEM_TYPE_COMPUTER
-      KeyGearItemCategory.PHONE -> R.string.ITEM_TYPE_PHONE
-      KeyGearItemCategory.TV -> R.string.ITEM_TYPE_TV
-      KeyGearItemCategory.JEWELRY -> R.string.ITEM_TYPE_JEWELRY
-      KeyGearItemCategory.WATCH -> R.string.ITEM_TYPE_WATCH
-      KeyGearItemCategory.BIKE -> R.string.ITEM_TYPE_BIKE
-      KeyGearItemCategory.SMART_WATCH -> R.string.ITEM_TYPE_SMART_WATCH
-      KeyGearItemCategory.TABLET -> R.string.ITEM_TYPE_TABLET
+      KeyGearItemCategory.COMPUTER -> hedvig.resources.R.string.ITEM_TYPE_COMPUTER
+      KeyGearItemCategory.PHONE -> hedvig.resources.R.string.ITEM_TYPE_PHONE
+      KeyGearItemCategory.TV -> hedvig.resources.R.string.ITEM_TYPE_TV
+      KeyGearItemCategory.JEWELRY -> hedvig.resources.R.string.ITEM_TYPE_JEWELRY
+      KeyGearItemCategory.WATCH -> hedvig.resources.R.string.ITEM_TYPE_WATCH
+      KeyGearItemCategory.BIKE -> hedvig.resources.R.string.ITEM_TYPE_BIKE
+      KeyGearItemCategory.SMART_WATCH -> hedvig.resources.R.string.ITEM_TYPE_SMART_WATCH
+      KeyGearItemCategory.TABLET -> hedvig.resources.R.string.ITEM_TYPE_TABLET
       else -> 0 // Null string resource - causes a crash, use with caution
     }
 

@@ -42,7 +42,7 @@ class HowClaimsWorkTest : TestCase() {
       recycler {
         childAt<HomeTabScreen.HowClaimsWork>(2) {
           button {
-            hasText(R.string.home_tab_claim_explainer_button)
+            hasText(hedvig.resources.R.string.home_tab_claim_explainer_button)
             click()
           }
         }
@@ -50,10 +50,10 @@ class HowClaimsWorkTest : TestCase() {
     }
     onScreen<HowClaimsWorkScreen> {
       button {
-        hasText(R.string.claims_explainer_button_next)
+        hasText(hedvig.resources.R.string.claims_explainer_button_next)
         click()
         click()
-        hasText(R.string.general_close_button)
+        hasText(hedvig.resources.R.string.general_close_button)
       }
     }
   }

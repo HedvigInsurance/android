@@ -47,7 +47,7 @@ class CharityAdapter(
         cashbackOptionParagraph.text = charityOption.description
 
         cashbackSelect.text = cashbackSelect.resources.getString(
-          R.string.PROFILE_CHARITY_SELECT_BUTTON,
+          hedvig.resources.R.string.PROFILE_CHARITY_SELECT_BUTTON,
           charityOption.name,
         )
         cashbackSelect.setHapticClickListener {

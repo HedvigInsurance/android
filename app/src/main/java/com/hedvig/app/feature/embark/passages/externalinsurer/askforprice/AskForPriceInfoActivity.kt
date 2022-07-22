@@ -48,7 +48,7 @@ class AskForPriceInfoActivity : BaseActivity() {
           topBar = {
             TopAppBarWithBack(
               onClick = { onBackPressed() },
-              title = stringResource(R.string.insurely_title),
+              title = stringResource(hedvig.resources.R.string.insurely_title),
             )
           },
         ) {

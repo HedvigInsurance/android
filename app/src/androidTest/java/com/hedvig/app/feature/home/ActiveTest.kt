@@ -50,7 +50,7 @@ class ActiveTest : TestCase() {
     onScreen<HomeTabScreen> {
       recycler {
         childAt<HomeTabScreen.BigTextItem>(0) {
-          text { hasText(R.string.home_tab_welcome_title, "Test") }
+          text { hasText(hedvig.resources.R.string.home_tab_welcome_title, "Test") }
         }
         childAt<HomeTabScreen.CommonClaimTitleItem>(3) {
           isVisible()

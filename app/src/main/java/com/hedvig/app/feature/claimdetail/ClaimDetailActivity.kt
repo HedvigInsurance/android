@@ -40,7 +40,7 @@ class ClaimDetailActivity : BaseActivity() {
         when (event) {
           ClaimDetailViewModel.Event.StartChat -> startChat()
           ClaimDetailViewModel.Event.Error -> showErrorDialog(
-            getString(R.string.NETWORK_ERROR_ALERT_MESSAGE),
+            getString(hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE),
           ) {}
         }
       }

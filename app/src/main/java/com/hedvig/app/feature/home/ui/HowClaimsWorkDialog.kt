@@ -6,8 +6,8 @@ import com.hedvig.app.feature.dismissiblepager.DismissiblePager
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 
 class HowClaimsWorkDialog : DismissiblePager() {
-  override val proceedLabel = R.string.claims_explainer_button_next
-  override val lastButtonText = R.string.general_close_button
+  override val proceedLabel = hedvig.resources.R.string.claims_explainer_button_next
+  override val lastButtonText = hedvig.resources.R.string.general_close_button
   override val animationStyle = R.style.DialogSlideInSlideOut
   override val titleLabel: Nothing? = null
   override val shouldShowLogo = false

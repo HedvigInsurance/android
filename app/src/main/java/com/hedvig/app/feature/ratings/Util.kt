@@ -12,7 +12,7 @@ fun Context.tryOpenPlayStore() {
   if (canOpenPlayStore()) {
     openPlayStore()
   } else {
-    makeToast(R.string.TOAST_PLAY_STORE_MISSING_ON_DEVICE)
+    makeToast(hedvig.resources.R.string.TOAST_PLAY_STORE_MISSING_ON_DEVICE)
   }
 }
 

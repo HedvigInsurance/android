@@ -104,7 +104,7 @@ fun NotRecording(startRecording: () -> Unit) {
     horizontalAlignment = Alignment.CenterHorizontally,
     modifier = Modifier.fillMaxWidth(),
   ) {
-    val label = stringResource(R.string.EMBARK_START_RECORDING)
+    val label = stringResource(hedvig.resources.R.string.EMBARK_START_RECORDING)
     IconButton(
       onClick = startRecording,
       modifier = Modifier
@@ -154,7 +154,7 @@ fun Recording(
           painter = painterResource(
             R.drawable.ic_record_stop,
           ),
-          contentDescription = stringResource(R.string.EMBARK_STOP_RECORDING),
+          contentDescription = stringResource(hedvig.resources.R.string.EMBARK_STOP_RECORDING),
         )
       }
     }
@@ -200,13 +200,13 @@ fun Playback(
       onClick = submit,
       modifier = Modifier.padding(top = 16.dp),
     ) {
-      Text(stringResource(R.string.EMBARK_SUBMIT_CLAIM))
+      Text(stringResource(hedvig.resources.R.string.EMBARK_SUBMIT_CLAIM))
     }
     LargeTextButton(
       onClick = redo,
       modifier = Modifier.padding(top = 8.dp),
     ) {
-      Text(stringResource(R.string.EMBARK_RECORD_AGAIN))
+      Text(stringResource(hedvig.resources.R.string.EMBARK_RECORD_AGAIN))
     }
   }
 }

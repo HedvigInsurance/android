@@ -24,7 +24,7 @@ class GenericNotificationSender(
     setupNotificationChannel(
       context,
       GENERIC_CHANNEL_ID,
-      context.resources.getString(R.string.NOTIFICATION_CHANNEL_GENERIC_TITLE),
+      context.resources.getString(hedvig.resources.R.string.NOTIFICATION_CHANNEL_GENERIC_TITLE),
     )
   }
 

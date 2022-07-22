@@ -81,31 +81,31 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
         binding.contentScrollView.remove()
       }
       is SelfChangeAddress -> setContent(
-        titleText = getString(R.string.moving_intro_title),
-        subtitleText = getString(R.string.moving_intro_description),
-        buttonText = getString(R.string.moving_intro_open_flow_button_text),
+        titleText = getString(hedvig.resources.R.string.moving_intro_title),
+        subtitleText = getString(hedvig.resources.R.string.moving_intro_description),
+        buttonText = getString(hedvig.resources.R.string.moving_intro_open_flow_button_text),
         buttonIcon = null,
         onContinue = {
           startActivity(
             EmbarkActivity.newInstance(
               context = this,
               storyName = viewState.embarkStoryId,
-              storyTitle = getString(R.string.moving_embark_title),
+              storyTitle = getString(hedvig.resources.R.string.moving_embark_title),
             ),
           )
         },
       )
       ManualChangeAddress -> setContent(
-        titleText = getString(R.string.moving_intro_title),
-        subtitleText = getString(R.string.moving_intro_manual_handling_description),
-        buttonText = getString(R.string.moving_intro_manual_handling_button_text),
+        titleText = getString(hedvig.resources.R.string.moving_intro_title),
+        subtitleText = getString(hedvig.resources.R.string.moving_intro_manual_handling_description),
+        buttonText = getString(hedvig.resources.R.string.moving_intro_manual_handling_button_text),
         buttonIcon = R.drawable.ic_chat_white,
         onContinue = { startChat() },
       )
       is ChangeAddressInProgress -> setUpcomingChangeContent(
-        titleText = getString(R.string.moving_intro_existing_move_title),
-        subtitleText = getString(R.string.moving_intro_existing_move_description),
-        buttonText = getString(R.string.moving_intro_manual_handling_button_text),
+        titleText = getString(hedvig.resources.R.string.moving_intro_existing_move_title),
+        subtitleText = getString(hedvig.resources.R.string.moving_intro_existing_move_description),
+        buttonText = getString(hedvig.resources.R.string.moving_intro_manual_handling_button_text),
         buttonIcon = R.drawable.ic_chat_white,
         onContinue = {
           lifecycleScope.launch {

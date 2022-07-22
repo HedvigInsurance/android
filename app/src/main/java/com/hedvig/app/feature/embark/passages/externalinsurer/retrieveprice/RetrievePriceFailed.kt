@@ -39,17 +39,17 @@ fun RetrievePriceFailed(
     )
     Spacer(modifier = Modifier.height(16.dp))
     Text(
-      text = stringResource(R.string.insurely_failure_title),
+      text = stringResource(hedvig.resources.R.string.insurely_failure_title),
       style = MaterialTheme.typography.h6,
     )
     Spacer(modifier = Modifier.height(16.dp))
     Text(
-      text = stringResource(R.string.insurely_failure_description, insurerName),
+      text = stringResource(hedvig.resources.R.string.insurely_failure_description, insurerName),
     )
     Spacer(modifier = Modifier.height(40.dp))
-    LargeContainedTextButton(text = stringResource(R.string.insurely_failure_retry_button_text), onClick = onRetry)
+    LargeContainedTextButton(text = stringResource(hedvig.resources.R.string.insurely_failure_retry_button_text), onClick = onRetry)
     Spacer(modifier = Modifier.height(16.dp))
-    LargeOutlinedTextButton(text = stringResource(R.string.insurely_failure_skip_button_text), onClick = onSkip)
+    LargeOutlinedTextButton(text = stringResource(hedvig.resources.R.string.insurely_failure_skip_button_text), onClick = onSkip)
   }
 }
 

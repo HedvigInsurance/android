@@ -307,7 +307,7 @@ class ChatAdapter(
 
       binding.apply {
         fileUploadLabel.text =
-          fileUploadLabel.resources.getString(R.string.CHAT_FILE_UPLOADED, extension)
+          fileUploadLabel.resources.getString(hedvig.resources.R.string.CHAT_FILE_UPLOADED, extension)
         fileUploadLabel.setHapticClickListener {
           fileUploadLabel.context.openUri(Uri.parse(url))
         }

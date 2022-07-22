@@ -66,7 +66,7 @@ class PerilsAdapter(
           text = when (data) {
             is PerilItem.Header.CoversSuffix -> {
               context.getString(
-                R.string.CONTRACT_COVERAGE_CONTRACT_TYPE,
+                hedvig.resources.R.string.CONTRACT_COVERAGE_CONTRACT_TYPE,
                 data.displayName,
               )
             }

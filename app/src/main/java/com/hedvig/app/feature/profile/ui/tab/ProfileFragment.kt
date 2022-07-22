@@ -90,7 +90,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
       add(ProfileModel.Title)
       add(
         ProfileModel.Row(
-          title = getString(R.string.PROFILE_MY_INFO_ROW_TITLE),
+          title = getString(hedvig.resources.R.string.PROFILE_MY_INFO_ROW_TITLE),
           caption = profileUiState.contactInfoName,
           icon = R.drawable.ic_contact_information,
           onClick = {
@@ -107,7 +107,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
         is PaymentState.Show -> {
           add(
             ProfileModel.Row(
-              title = getString(R.string.PROFILE_ROW_PAYMENT_TITLE),
+              title = getString(hedvig.resources.R.string.PROFILE_ROW_PAYMENT_TITLE),
               caption = getPriceCaption(paymentState),
               icon = R.drawable.ic_payment,
               onClick = {
@@ -121,8 +121,8 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
       add(ProfileModel.Subtitle)
       add(
         ProfileModel.Row(
-          title = getString(R.string.profile_appSettingsSection_row_headline),
-          caption = getString(R.string.profile_appSettingsSection_row_subheadline),
+          title = getString(hedvig.resources.R.string.profile_appSettingsSection_row_headline),
+          caption = getString(hedvig.resources.R.string.profile_appSettingsSection_row_subheadline),
           icon = R.drawable.ic_profile_settings,
           onClick = {
             startActivity(SettingsActivity.newInstance(requireContext()))
@@ -131,8 +131,8 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
       )
       add(
         ProfileModel.Row(
-          title = getString(R.string.PROFILE_ABOUT_ROW),
-          caption = getString(R.string.profile_tab_about_row_subtitle),
+          title = getString(hedvig.resources.R.string.PROFILE_ABOUT_ROW),
+          caption = getString(hedvig.resources.R.string.profile_tab_about_row_subtitle),
           icon = R.drawable.ic_info_toolbar,
           onClick = {
             startActivity(Intent(requireContext(), AboutAppActivity::class.java))
@@ -145,7 +145,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
 
   private fun buildCharityRowItem(charityName: String? = null): ProfileModel.Row {
     return ProfileModel.Row(
-      title = getString(R.string.PROFILE_MY_CHARITY_ROW_TITLE),
+      title = getString(hedvig.resources.R.string.PROFILE_MY_CHARITY_ROW_TITLE),
       caption = charityName,
       icon = R.drawable.ic_profile_charity,
       onClick = {

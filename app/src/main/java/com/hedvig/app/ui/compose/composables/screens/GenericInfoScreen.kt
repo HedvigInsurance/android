@@ -33,7 +33,7 @@ fun GenericInfoScreen(
   @DrawableRes icon: Int,
   primaryButtonText: String = stringResource(com.adyen.checkout.dropin.R.string.continue_button),
   onPrimaryButtonClicked: (() -> Unit)?,
-  secondaryButtonText: String = stringResource(R.string.home_tab_error_button_text),
+  secondaryButtonText: String = stringResource(hedvig.resources.R.string.home_tab_error_button_text),
   onSecondaryButtonClicked: (() -> Unit)?,
 ) {
   Surface(

@@ -37,11 +37,11 @@ fun ClaimResultSection(
   Box(modifier) {
     when (claimDetailResult) {
       ClaimDetailResult.Closed.NotCompensated -> Pill(
-        stringResource(R.string.claim_decision_not_compensated).uppercase(locale),
+        stringResource(hedvig.resources.R.string.claim_decision_not_compensated).uppercase(locale),
         backgroundColor = MaterialTheme.colors.primary,
       )
       ClaimDetailResult.Closed.NotCovered -> Pill(
-        stringResource(R.string.claim_decision_not_covered).uppercase(locale),
+        stringResource(hedvig.resources.R.string.claim_decision_not_covered).uppercase(locale),
         backgroundColor = MaterialTheme.colors.primary,
       )
       is ClaimDetailResult.Closed.Paid -> {
@@ -49,7 +49,7 @@ fun ClaimResultSection(
           verticalAlignment = Alignment.CenterVertically,
         ) {
           Pill(
-            stringResource(R.string.claim_decision_paid).uppercase(locale),
+            stringResource(hedvig.resources.R.string.claim_decision_paid).uppercase(locale),
             backgroundColor = ClaimStatusColors.Pill.paid,
           )
           if (claimDetailResult.monetaryAmount != null) {

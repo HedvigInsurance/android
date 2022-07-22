@@ -118,7 +118,7 @@ private fun TopAppBar(
   ) {
     Column {
       CenterAlignedTopAppBar(
-        title = stringResource(R.string.EMBARK_ADDRESS_AUTOCOMPLETE_ADDRESS),
+        title = stringResource(hedvig.resources.R.string.EMBARK_ADDRESS_AUTOCOMPLETE_ADDRESS),
         onClick = { cancelAutoCompletion() },
         backgroundColor = MaterialTheme.colors.background,
         contentPadding = rememberInsetsPaddingValues(
@@ -243,7 +243,7 @@ private fun SuggestionsList(
         ListItem(
           text = {
             Text(
-              stringResource(R.string.EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS),
+              stringResource(hedvig.resources.R.string.EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS),
               color = MaterialTheme.colors.error,
             )
           },

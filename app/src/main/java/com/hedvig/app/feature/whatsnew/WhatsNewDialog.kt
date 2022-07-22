@@ -10,10 +10,10 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class WhatsNewDialog : DismissiblePager() {
   private val whatsNewViewModel: WhatsNewViewModel by viewModel()
 
-  override val proceedLabel = R.string.NEWS_PROCEED
-  override val lastButtonText = R.string.NEWS_DISMISS
+  override val proceedLabel = hedvig.resources.R.string.NEWS_PROCEED
+  override val lastButtonText = hedvig.resources.R.string.NEWS_DISMISS
   override val animationStyle = R.style.DialogSlideInSlideOut
-  override val titleLabel = R.string.NEWS_TITLE
+  override val titleLabel = hedvig.resources.R.string.NEWS_TITLE
   override val shouldShowLogo = true
 
   override val items: List<DismissiblePagerModel>

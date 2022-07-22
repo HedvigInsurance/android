@@ -59,7 +59,7 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
             requireContext().showAlert(
               title = getString(com.adyen.checkout.dropin.R.string.error_dialog_title),
               message = viewState.message ?: getString(com.adyen.checkout.dropin.R.string.component_error),
-              positiveLabel = R.string.insurances_tab_error_button_text,
+              positiveLabel = hedvig.resources.R.string.insurances_tab_error_button_text,
               positiveAction = { changeDateBottomSheetViewModel.setNewDateAndDismiss() },
             )
           }

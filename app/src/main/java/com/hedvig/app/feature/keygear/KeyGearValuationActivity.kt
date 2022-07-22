@@ -82,9 +82,9 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
           maxInsurableAmount = amount.toBigDecimal().toInt()
           val category =
             resources.getString(d.fragments.keyGearItemFragment.category.label).lowercase()
-          noCoverage.text = getString(R.string.KEY_GEAR_NOT_COVERED, category)
+          noCoverage.text = getString(hedvig.resources.R.string.KEY_GEAR_NOT_COVERED, category)
           body.text =
-            getString(R.string.KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_BODY, category)
+            getString(hedvig.resources.R.string.KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_BODY, category)
         }
       }
       model.loadItem(id)

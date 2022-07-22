@@ -35,8 +35,8 @@ class GenericErrorScreenView @JvmOverloads constructor(
 @Composable
 fun GenericErrorScreen(
   modifier: Modifier = Modifier,
-  title: String = stringResource(id = R.string.home_tab_error_title),
-  description: String = stringResource(id = R.string.home_tab_error_body),
+  title: String = stringResource(id = hedvig.resources.R.string.home_tab_error_title),
+  description: String = stringResource(id = hedvig.resources.R.string.home_tab_error_body),
   onRetryButtonClicked: () -> Unit,
 ) {
   GenericInfoScreen(
@@ -44,7 +44,7 @@ fun GenericErrorScreen(
     title = title,
     description = description,
     icon = R.drawable.ic_warning_triangle,
-    primaryButtonText = stringResource(id = R.string.home_tab_error_button_text),
+    primaryButtonText = stringResource(id = hedvig.resources.R.string.home_tab_error_button_text),
     onPrimaryButtonClicked = onRetryButtonClicked,
     onSecondaryButtonClicked = null,
   )

@@ -131,11 +131,11 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
               } else {
                 val code = viewState.data.referralInformation.campaign.code
                 share.setHapticClickListener {
-                  requireContext().showShareSheet(R.string.REFERRALS_SHARE_SHEET_TITLE) { intent ->
+                  requireContext().showShareSheet(hedvig.resources.R.string.REFERRALS_SHARE_SHEET_TITLE) { intent ->
                     intent.putExtra(
                       Intent.EXTRA_TEXT,
                       requireContext().getString(
-                        R.string.REFERRAL_SMS_MESSAGE,
+                        hedvig.resources.R.string.REFERRAL_SMS_MESSAGE,
                         incentive.format(requireContext(), marketManager.market),
                         "${
                         requireContext().getString(R.string.WEB_BASE_URL)

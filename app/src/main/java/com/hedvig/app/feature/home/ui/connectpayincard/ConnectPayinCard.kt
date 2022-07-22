@@ -57,12 +57,12 @@ fun ConnectPayinCard(
         Spacer(Modifier.width(16.dp))
         Column {
           Text(
-            text = stringResource(R.string.info_card_missing_payment_title),
+            text = stringResource(hedvig.resources.R.string.info_card_missing_payment_title),
             style = MaterialTheme.typography.subtitle1,
           )
           Spacer(Modifier.height(8.dp))
           Text(
-            text = stringResource(R.string.info_card_missing_payment_body),
+            text = stringResource(hedvig.resources.R.string.info_card_missing_payment_body),
             style = MaterialTheme.typography.body2,
           )
         }
@@ -80,7 +80,7 @@ fun ConnectPayinCard(
         ),
       ) {
         Text(
-          text = stringResource(R.string.info_card_missing_payment_button_text),
+          text = stringResource(hedvig.resources.R.string.info_card_missing_payment_button_text),
         )
       }
     }

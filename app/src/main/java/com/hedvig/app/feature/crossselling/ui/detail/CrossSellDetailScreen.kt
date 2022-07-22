@@ -149,7 +149,7 @@ private fun ScrollableContent(
         Spacer(Modifier.height(24.dp))
       }
       SectionTitle(
-        text = stringResource(R.string.cross_sell_info_about_title),
+        text = stringResource(hedvig.resources.R.string.cross_sell_info_about_title),
       )
       Spacer(Modifier.height(8.dp))
       Text(
@@ -158,18 +158,18 @@ private fun ScrollableContent(
       )
       Spacer(Modifier.height(24.dp))
       SectionTitle(
-        text = stringResource(R.string.cross_sell_info_learn_more_title),
+        text = stringResource(hedvig.resources.R.string.cross_sell_info_learn_more_title),
       )
     }
     ClickableListItem(
       onClick = onCoverageClick,
       icon = R.drawable.ic_insurance,
-      text = stringResource(R.string.cross_sell_info_full_coverage_row),
+      text = stringResource(hedvig.resources.R.string.cross_sell_info_full_coverage_row),
     )
     ClickableListItem(
       onClick = onFaqClick,
       icon = R.drawable.ic_info_toolbar,
-      text = stringResource(R.string.cross_sell_info_common_questions_row),
+      text = stringResource(hedvig.resources.R.string.cross_sell_info_common_questions_row),
     )
     val bottomSystemBarInset = with(LocalDensity.current) {
       LocalWindowInsets.current.systemBars.bottom.toDp()

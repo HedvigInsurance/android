@@ -1,2 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.hedvig.android.core.resources" />
+<!--
+Using `hedvig.resources` for easier use of R across the entire app with non-transitive resources.
+`hedvig.resources.R.string…`
+instead of
+`com.hedvig.android.core.resources.R.string…`
+-->
+<manifest package="hedvig.resources" />

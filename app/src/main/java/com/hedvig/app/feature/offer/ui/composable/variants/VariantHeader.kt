@@ -16,7 +16,7 @@ import com.hedvig.app.R
 @Composable
 fun VariantHeader() {
   Text(
-    text = stringResource(id = R.string.offer_screen_varianted_offers_header),
+    text = stringResource(id = hedvig.resources.R.string.offer_screen_varianted_offers_header),
     style = MaterialTheme.typography.h6,
     modifier = Modifier
       .padding(horizontal = 16.dp)

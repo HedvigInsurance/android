@@ -54,7 +54,7 @@ fun MarketPickedScreen(
     }
     Image(
       painter = painterResource(R.drawable.ic_wordmark_h),
-      contentDescription = stringResource(R.string.HEDVIG_LOGO_ACCESSIBILITY),
+      contentDescription = stringResource(hedvig.resources.R.string.HEDVIG_LOGO_ACCESSIBILITY),
       modifier = Modifier.align(Alignment.Center),
       colorFilter = ColorFilter.tint(hedvigOffWhite),
     )
@@ -70,12 +70,12 @@ fun MarketPickedScreen(
         ),
       ) {
         Text(
-          text = stringResource(R.string.MARKETING_GET_HEDVIG),
+          text = stringResource(hedvig.resources.R.string.MARKETING_GET_HEDVIG),
         )
       }
       Spacer(Modifier.height(8.dp))
       LargeOutlinedButton(onClick = onClickLogIn) {
-        Text(text = stringResource(R.string.MARKETING_SCREEN_LOGIN))
+        Text(text = stringResource(hedvig.resources.R.string.MARKETING_SCREEN_LOGIN))
       }
       Spacer(Modifier.height(8.dp + navigationBarHeight))
     }

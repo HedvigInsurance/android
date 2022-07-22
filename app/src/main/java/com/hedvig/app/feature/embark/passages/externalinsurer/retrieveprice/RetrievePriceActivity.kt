@@ -74,7 +74,7 @@ class RetrievePriceInfoActivity : BaseActivity() {
           topBar = {
             TopAppBarWithBack(
               onClick = ::onBackPressed,
-              title = stringResource(R.string.insurely_title),
+              title = stringResource(hedvig.resources.R.string.insurely_title),
             )
           },
         ) { paddingValues ->
@@ -151,24 +151,24 @@ fun RetrievePriceScreen(
 }
 
 private fun Market.titleRes() = when (this) {
-  Market.SE -> R.string.insurely_se_ssn_title
-  Market.NO -> R.string.insurely_no_ssn_title
+  Market.SE -> hedvig.resources.R.string.insurely_se_ssn_title
+  Market.NO -> hedvig.resources.R.string.insurely_no_ssn_title
   Market.FR,
   Market.DK,
   -> throw IllegalArgumentException("No string resource for $this")
 }
 
 private fun Market.placeHolderRes() = when (this) {
-  Market.SE -> R.string.insurely_se_ssn_assistive_text
-  Market.NO -> R.string.insurely_no_ssn_assistive_text
+  Market.SE -> hedvig.resources.R.string.insurely_se_ssn_assistive_text
+  Market.NO -> hedvig.resources.R.string.insurely_no_ssn_assistive_text
   Market.FR,
   Market.DK,
   -> throw IllegalArgumentException("No string resource for $this")
 }
 
 private fun Market.labelRes() = when (this) {
-  Market.SE -> R.string.insurely_se_ssn_input_label
-  Market.NO -> R.string.insurely_no_ssn_input_label
+  Market.SE -> hedvig.resources.R.string.insurely_se_ssn_input_label
+  Market.NO -> hedvig.resources.R.string.insurely_no_ssn_input_label
   Market.FR,
   Market.DK,
   -> throw IllegalArgumentException("No string resource for $this")

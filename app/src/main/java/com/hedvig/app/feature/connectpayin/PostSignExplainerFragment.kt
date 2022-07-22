@@ -41,12 +41,12 @@ class PostSignExplainerFragment : Fragment(R.layout.connect_payment_explainer_fr
     binding.apply {
       when (paymentType) {
         ConnectPayinType.TRUSTLY -> {
-          explainerTitle.setText(R.string.pay_in_explainer_direct_debit_headline)
-          explainerButton.setText(R.string.pay_in_explainer_direct_debit_button_text)
+          explainerTitle.setText(hedvig.resources.R.string.pay_in_explainer_direct_debit_headline)
+          explainerButton.setText(hedvig.resources.R.string.pay_in_explainer_direct_debit_button_text)
         }
         ConnectPayinType.ADYEN -> {
-          explainerTitle.setText(R.string.pay_in_explainer_headline)
-          explainerButton.setText(R.string.pay_in_explainer_button_text)
+          explainerTitle.setText(hedvig.resources.R.string.pay_in_explainer_headline)
+          explainerButton.setText(hedvig.resources.R.string.pay_in_explainer_button_text)
         }
       }
       explainerButton.setHapticClickListener {

@@ -45,7 +45,7 @@ class MyInfoActivity : BaseActivity(R.layout.activity_my_info) {
       setupToolbar(R.id.toolbar, R.drawable.ic_back, true) {
         onBackPressed()
       }
-      toolbar.title = getString(R.string.PROFILE_MY_INFO_TITLE)
+      toolbar.title = getString(hedvig.resources.R.string.PROFILE_MY_INFO_TITLE)
     }
     loadData()
   }
@@ -76,9 +76,9 @@ class MyInfoActivity : BaseActivity(R.layout.activity_my_info) {
       if (prevEmail != newEmail && !validateEmail(newEmail).isSuccessful) {
         provideValidationNegativeHapticFeedback()
         ValidationDialog.newInstance(
-          R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_TITLE,
-          R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_EMAIL,
-          R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DISMISS,
+          hedvig.resources.R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_TITLE,
+          hedvig.resources.R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_EMAIL,
+          hedvig.resources.R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DISMISS,
         ).show(supportFragmentManager, ValidationDialog.TAG)
         return true
       }
@@ -86,9 +86,9 @@ class MyInfoActivity : BaseActivity(R.layout.activity_my_info) {
       if (prevPhoneNumber != newPhoneNumber && !validatePhoneNumber(newPhoneNumber).isSuccessful) {
         provideValidationNegativeHapticFeedback()
         ValidationDialog.newInstance(
-          R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_TITLE,
-          R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_PHONE_NUMBER,
-          R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DISMISS,
+          hedvig.resources.R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_TITLE,
+          hedvig.resources.R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_PHONE_NUMBER,
+          hedvig.resources.R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DISMISS,
         ).show(supportFragmentManager, ValidationDialog.TAG)
         return true
       }

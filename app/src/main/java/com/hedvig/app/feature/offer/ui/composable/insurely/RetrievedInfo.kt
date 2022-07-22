@@ -53,16 +53,16 @@ fun RetrievedInfo(
       Text(
         text = when {
           data.currentInsurances.size > 1 -> {
-            resources.getQuantityString(R.plurals.offer_switcher_title, data.currentInsurances.size)
+            resources.getQuantityString(hedvig.resources.R.plurals.offer_switcher_title, data.currentInsurances.size)
           }
           data.insuranceProviderDisplayName != null -> {
             stringResource(
-              R.string.offer_screen_insurely_card_your_insurance_with,
+              hedvig.resources.R.string.offer_screen_insurely_card_your_insurance_with,
               data.insuranceProviderDisplayName,
             )
           }
           else -> {
-            resources.getQuantityString(R.plurals.offer_switcher_title, 1)
+            resources.getQuantityString(hedvig.resources.R.plurals.offer_switcher_title, 1)
           }
         }.uppercase(locale),
         style = MaterialTheme.typography.caption,
@@ -75,7 +75,7 @@ fun RetrievedInfo(
     )
     CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
       Text(
-        text = stringResource(R.string.OFFER_PRICE_PER_MONTH),
+        text = stringResource(hedvig.resources.R.string.OFFER_PRICE_PER_MONTH),
         style = MaterialTheme.typography.body2,
       )
     }
@@ -97,7 +97,7 @@ private fun SavedWithHedvigChip(savedWithHedvig: MonetaryAmount) {
     backgroundColor = MaterialTheme.colors.secondary,
   ) {
     Text(
-      text = stringResource(R.string.offer_screen_insurely_card_cost_difference_info, savedWithHedvig.number),
+      text = stringResource(hedvig.resources.R.string.offer_screen_insurely_card_cost_difference_info, savedWithHedvig.number),
       style = MaterialTheme.typography.overline,
       modifier = Modifier.padding(vertical = 4.dp, horizontal = 6.dp),
     )

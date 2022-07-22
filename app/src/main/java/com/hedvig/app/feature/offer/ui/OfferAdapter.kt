@@ -144,10 +144,10 @@ class OfferAdapter(
           return invalid(data)
         }
         binding.apply {
-          title.text = data.title ?: itemView.context.getString(R.string.OFFER_INSURANCE_BUNDLE_TITLE)
+          title.text = data.title ?: itemView.context.getString(hedvig.resources.R.string.OFFER_INSURANCE_BUNDLE_TITLE)
 
           premium.text = data.premium.format(locale)
-          premiumPeriod.text = premiumPeriod.context.getString(R.string.OFFER_PRICE_PER_MONTH)
+          premiumPeriod.text = premiumPeriod.context.getString(hedvig.resources.R.string.OFFER_PRICE_PER_MONTH)
 
           originalPremium.isVisible = data.hasDiscountedPrice
           if (data.hasDiscountedPrice) {
@@ -170,15 +170,15 @@ class OfferAdapter(
           discountButton.isVisible = data.showCampaignManagement
           if (data.hasCampaigns) {
             discountButton.apply {
-              setText(R.string.OFFER_REMOVE_DISCOUNT_BUTTON)
+              setText(hedvig.resources.R.string.OFFER_REMOVE_DISCOUNT_BUTTON)
               setTextColor(context.colorAttr(androidx.appcompat.R.attr.colorError))
               icon = null
               setHapticClickListener {
                 discountButton.context.showAlert(
-                  R.string.OFFER_REMOVE_DISCOUNT_ALERT_TITLE,
-                  R.string.OFFER_REMOVE_DISCOUNT_ALERT_DESCRIPTION,
-                  R.string.OFFER_REMOVE_DISCOUNT_ALERT_REMOVE,
-                  R.string.OFFER_REMOVE_DISCOUNT_ALERT_CANCEL,
+                  hedvig.resources.R.string.OFFER_REMOVE_DISCOUNT_ALERT_TITLE,
+                  hedvig.resources.R.string.OFFER_REMOVE_DISCOUNT_ALERT_DESCRIPTION,
+                  hedvig.resources.R.string.OFFER_REMOVE_DISCOUNT_ALERT_REMOVE,
+                  hedvig.resources.R.string.OFFER_REMOVE_DISCOUNT_ALERT_CANCEL,
                   {
                     onRemoveDiscount()
                   },
@@ -187,7 +187,7 @@ class OfferAdapter(
             }
           } else {
             discountButton.apply {
-              setText(R.string.OFFER_ADD_DISCOUNT_BUTTON)
+              setText(hedvig.resources.R.string.OFFER_ADD_DISCOUNT_BUTTON)
               setTextColor(context.getColor(R.color.textColorSecondary))
               icon = context.compatDrawable(R.drawable.ic_add_circle)
               setHapticClickListener {
@@ -303,9 +303,9 @@ class OfferAdapter(
         }
         val checkoutString = data.checkoutLabel.toString(itemView.context)
         val link = itemView.context.getString(
-          R.string.OFFER_FOOTER_GDPR_INFO,
+          hedvig.resources.R.string.OFFER_FOOTER_GDPR_INFO,
           checkoutString,
-          itemView.context.getString(R.string.PRIVACY_POLICY_URL),
+          itemView.context.getString(hedvig.resources.R.string.PRIVACY_POLICY_URL),
         )
         binding.text.setMarkdownText(link)
       }
@@ -329,12 +329,12 @@ class OfferAdapter(
 
         when (data) {
           OfferItems.Subheading.Coverage -> {
-            setText(R.string.offer_screen_coverage_title)
+            setText(hedvig.resources.R.string.offer_screen_coverage_title)
             updateMargin(bottom = BASE_MARGIN)
           }
           is OfferItems.Subheading.Switcher -> {
             text = context.resources.getQuantityString(
-              R.plurals.offer_switcher_title,
+              hedvig.resources.R.plurals.offer_switcher_title,
               data.amountOfCurrentInsurers,
             )
             updateMargin(bottom = BASE_MARGIN_DOUBLE)
@@ -387,7 +387,7 @@ class OfferAdapter(
           return invalid(data)
         }
 
-        setText(R.string.offer_screen_MULTIPLE_INSURANCES_coverage_paragraph)
+        setText(hedvig.resources.R.string.offer_screen_MULTIPLE_INSURANCES_coverage_paragraph)
       }
     }
 
@@ -403,7 +403,7 @@ class OfferAdapter(
         composeView.setContent {
           HedvigTheme {
             Text(
-              text = stringResource(R.string.OFFER_PRICE_COMPARISION_HEADER),
+              text = stringResource(hedvig.resources.R.string.OFFER_PRICE_COMPARISION_HEADER),
               style = MaterialTheme.typography.h5,
               modifier = Modifier
                 .padding(horizontal = 16.dp)
@@ -508,8 +508,8 @@ class OfferAdapter(
           return invalid(data)
         }
 
-        title.setText(R.string.offer_switch_info_card_title)
-        body.setText(R.string.offer_switch_info_card_body)
+        title.setText(hedvig.resources.R.string.offer_switch_info_card_title)
+        body.setText(hedvig.resources.R.string.offer_switch_info_card_body)
       }
     }
 
@@ -521,8 +521,8 @@ class OfferAdapter(
           return invalid(data)
         }
 
-        title.setText(R.string.offer_manual_switch_card_title)
-        body.setText(R.string.offer_manual_switch_card_body)
+        title.setText(hedvig.resources.R.string.offer_manual_switch_card_title)
+        body.setText(hedvig.resources.R.string.offer_manual_switch_card_body)
       }
     }
 

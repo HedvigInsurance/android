@@ -111,7 +111,7 @@ fun PickMarketScreen(
   ) {
     Box(modifier = Modifier.fillMaxSize()) {
       Text(
-        text = stringResource(R.string.market_language_screen_title),
+        text = stringResource(hedvig.resources.R.string.market_language_screen_title),
         style = MaterialTheme.typography.h4,
         textAlign = TextAlign.Center,
         modifier = Modifier.align(Alignment.Center),
@@ -132,7 +132,7 @@ fun PickMarketScreen(
               )
             }
           },
-          header = stringResource(R.string.market_language_screen_market_label),
+          header = stringResource(hedvig.resources.R.string.market_language_screen_market_label),
           label = selectedMarket?.label?.let { stringResource(it) },
           enabled = true,
         )
@@ -144,7 +144,7 @@ fun PickMarketScreen(
           icon = {
             LanguageFlag()
           },
-          header = stringResource(R.string.market_language_screen_language_label),
+          header = stringResource(hedvig.resources.R.string.market_language_screen_language_label),
           label = selectedLanguage?.getLabel()?.let { stringResource(it) },
           enabled = selectedMarket?.let { Language.getAvailableLanguages(it).isNotEmpty() } ?: false,
         )
@@ -154,7 +154,7 @@ fun PickMarketScreen(
           modifier = Modifier.padding(horizontal = 16.dp),
           enabled = enabled,
         ) {
-          Text(stringResource(R.string.market_language_screen_continue_button_text))
+          Text(stringResource(hedvig.resources.R.string.market_language_screen_continue_button_text))
         }
         Spacer(Modifier.height(24.dp + navigationBarHeight))
       }
@@ -191,7 +191,7 @@ fun PickMarketSheetContent(
 ) {
   Spacer(Modifier.height(24.dp))
   Text(
-    text = stringResource(R.string.market_picker_modal_title),
+    text = stringResource(hedvig.resources.R.string.market_picker_modal_title),
     modifier = Modifier.padding(horizontal = 16.dp),
     style = MaterialTheme.typography.h5,
   )
@@ -216,13 +216,13 @@ fun PickLanguageSheetContent(
   }
   Spacer(Modifier.height(24.dp))
   Text(
-    text = stringResource(R.string.language_picker_modal_title),
+    text = stringResource(hedvig.resources.R.string.language_picker_modal_title),
     modifier = Modifier.padding(horizontal = 16.dp),
     style = MaterialTheme.typography.h5,
   )
   Spacer(Modifier.height(16.dp))
   Text(
-    text = stringResource(R.string.language_picker_modal_text),
+    text = stringResource(hedvig.resources.R.string.language_picker_modal_text),
     modifier = Modifier.padding(horizontal = 16.dp),
     style = MaterialTheme.typography.body1,
   )

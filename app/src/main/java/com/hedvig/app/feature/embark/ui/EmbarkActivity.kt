@@ -130,7 +130,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
               fullScreenLoadingSpinnerLayout.hide()
               AlertDialog.Builder(this@EmbarkActivity)
                 .setTitle(com.adyen.checkout.dropin.R.string.error_dialog_title)
-                .setMessage(event.message ?: getString(R.string.NETWORK_ERROR_ALERT_MESSAGE))
+                .setMessage(event.message ?: getString(hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE))
                 .setPositiveButton(com.adyen.checkout.dropin.R.string.error_dialog_button) { _, _ ->
                   this@EmbarkActivity.finish()
                 }
@@ -174,9 +174,9 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
 
   private fun showExitDialog() {
     MaterialAlertDialogBuilder(this)
-      .setMessage(R.string.EMBARK_EXIT_DIALOG_MESSAGE)
-      .setPositiveButton(R.string.EMBARK_EXIT_DIALOG_POSITIVE_BUTTON) { _, _ -> finish() }
-      .setNegativeButton(R.string.EMBARK_EXIT_DIALOG_NEGATIVE_BUTTON) { dialog, _ -> dialog.dismiss() }
+      .setMessage(hedvig.resources.R.string.EMBARK_EXIT_DIALOG_MESSAGE)
+      .setPositiveButton(hedvig.resources.R.string.EMBARK_EXIT_DIALOG_POSITIVE_BUTTON) { _, _ -> finish() }
+      .setNegativeButton(hedvig.resources.R.string.EMBARK_EXIT_DIALOG_NEGATIVE_BUTTON) { dialog, _ -> dialog.dismiss() }
       .show()
   }
 

@@ -85,20 +85,20 @@ fun Activity.showPermissionExplanationDialog(permission: String) {
     android.Manifest.permission.READ_EXTERNAL_STORAGE,
     ->
       showAlert(
-        title = R.string.PERMISSION_DIALOG_TITLE,
-        message = R.string.PERMISSION_DIALOG_EXTERNAL_STORAGE_MESSAGE,
+        title = hedvig.resources.R.string.PERMISSION_DIALOG_TITLE,
+        message = hedvig.resources.R.string.PERMISSION_DIALOG_EXTERNAL_STORAGE_MESSAGE,
         positiveAction = { openAppSettings() },
       )
     android.Manifest.permission.RECORD_AUDIO ->
       showAlert(
-        title = R.string.PERMISSION_DIALOG_TITLE,
-        message = R.string.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE,
+        title = hedvig.resources.R.string.PERMISSION_DIALOG_TITLE,
+        message = hedvig.resources.R.string.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE,
         positiveAction = { openAppSettings() },
       )
     android.Manifest.permission.CAMERA ->
       showAlert(
-        title = R.string.PERMISSION_DIALOG_TITLE,
-        message = R.string.PERMISSION_DIALOG_CAMERA_MESSAGE,
+        title = hedvig.resources.R.string.PERMISSION_DIALOG_TITLE,
+        message = hedvig.resources.R.string.PERMISSION_DIALOG_CAMERA_MESSAGE,
         positiveAction = { openAppSettings() },
       )
     else -> {
@@ -152,7 +152,7 @@ fun AppCompatActivity.handleSingleSelectLink(
     e { "Can't handle going to the offer page without a QuoteCartId from link: `$value`" }
     AlertDialog.Builder(this)
       .setTitle(com.adyen.checkout.dropin.R.string.error_dialog_title)
-      .setMessage(getString(R.string.NETWORK_ERROR_ALERT_MESSAGE))
+      .setMessage(getString(hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE))
       .setPositiveButton(com.adyen.checkout.dropin.R.string.error_dialog_button) { _, _ ->
         // no-op. Action handled by `setOnDismissListener`
       }

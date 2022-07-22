@@ -56,12 +56,12 @@ fun UpgradeApp(
       .padding(16.dp),
   ) {
     Text(
-      text = stringResource(R.string.EMBARK_UPDATE_APP_TITLE),
+      text = stringResource(hedvig.resources.R.string.EMBARK_UPDATE_APP_TITLE),
       style = MaterialTheme.typography.h4,
     )
     Spacer(Modifier.height(16.dp))
     Text(
-      text = stringResource(R.string.EMBARK_UPDATE_APP_BODY),
+      text = stringResource(hedvig.resources.R.string.EMBARK_UPDATE_APP_BODY),
       textAlign = TextAlign.Center,
       style = MaterialTheme.typography.body1,
     )
@@ -70,7 +70,7 @@ fun UpgradeApp(
       onClick = goToPlayStore,
     ) {
       Text(
-        text = stringResource(R.string.EMBARK_UPDATE_APP_BUTTON),
+        text = stringResource(hedvig.resources.R.string.EMBARK_UPDATE_APP_BUTTON),
       )
     }
   }

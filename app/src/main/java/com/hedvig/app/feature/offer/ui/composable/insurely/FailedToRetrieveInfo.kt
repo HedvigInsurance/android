@@ -41,18 +41,18 @@ fun FailedToRetrieveInfo(insuranceProviderDisplayName: String?) {
     ) {
       Text(
         text = if (insuranceProviderDisplayName != null) {
-          stringResource(R.string.offer_screen_insurely_error_title, insuranceProviderDisplayName)
+          stringResource(hedvig.resources.R.string.offer_screen_insurely_error_title, insuranceProviderDisplayName)
         } else {
-          stringResource(R.string.offer_screen_insurely_multiple_error_title)
+          stringResource(hedvig.resources.R.string.offer_screen_insurely_multiple_error_title)
         },
         style = MaterialTheme.typography.subtitle1,
       )
       CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
         Text(
           text = if (insuranceProviderDisplayName != null) {
-            stringResource(R.string.offer_screen_insurely_error_description, insuranceProviderDisplayName)
+            stringResource(hedvig.resources.R.string.offer_screen_insurely_error_description, insuranceProviderDisplayName)
           } else {
-            stringResource(R.string.offer_screen_insurely_multiple_error_description)
+            stringResource(hedvig.resources.R.string.offer_screen_insurely_multiple_error_description)
           },
           style = MaterialTheme.typography.body2,
         )

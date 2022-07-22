@@ -59,7 +59,7 @@ class ReferralsActivatedActivity : BaseActivity(R.layout.activity_referrals_acti
             body.show()
             body.text =
               getString(
-                R.string.referrals_intro_screen_body,
+                hedvig.resources.R.string.referrals_intro_screen_body,
                 incentive.format(this@ReferralsActivatedActivity, marketManager.market),
               )
             body

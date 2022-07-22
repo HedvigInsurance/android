@@ -80,28 +80,28 @@ private fun InformationSection(
     CrossSellingResult.Error -> painterResource(R.drawable.ic_x_in_circle)
   }
   val titleText = when (crossSellingResult) {
-    CrossSellingResult.Error -> stringResource(R.string.purchase_confirmation_error_title)
+    CrossSellingResult.Error -> stringResource(hedvig.resources.R.string.purchase_confirmation_error_title)
     is CrossSellingResult.Success -> {
       stringResource(
-        R.string.purchase_confirmation_new_insurance_today_app_state_title,
+        hedvig.resources.R.string.purchase_confirmation_new_insurance_today_app_state_title,
         crossSellingResult.insuranceType,
       )
     }
   }
   val subtitleText = when (crossSellingResult) {
-    CrossSellingResult.Error -> stringResource(R.string.purchase_confirmation_error_subtitle)
+    CrossSellingResult.Error -> stringResource(hedvig.resources.R.string.purchase_confirmation_error_subtitle)
     is CrossSellingResult.Success -> {
       when {
         crossSellingResult.startingDate <= LocalDate.now(clock) -> {
           stringResource(
-            R.string.purchase_confirmation_new_insurance_today_app_state_description,
+            hedvig.resources.R.string.purchase_confirmation_new_insurance_today_app_state_description,
             crossSellingResult.insuranceType,
           )
         }
         else -> {
           val activationDate = crossSellingResult.startingDate.format(dateFormatter)
           stringResource(
-            R.string.purchase_confirmation_new_insurance_active_in_future_app_state_description,
+            hedvig.resources.R.string.purchase_confirmation_new_insurance_active_in_future_app_state_description,
             crossSellingResult.insuranceType,
             activationDate,
           )
@@ -161,17 +161,17 @@ private fun ButtonsSection(
             contentDescription = null,
           )
           Spacer(Modifier.width(8.dp))
-          Text(stringResource(R.string.purchase_confirmation_error_open_chat_button))
+          Text(stringResource(hedvig.resources.R.string.purchase_confirmation_error_open_chat_button))
         }
         LargeOutlinedTextButton(
           onClick = closeResultScreen,
-          text = stringResource(R.string.purchase_confirmation_error_close_button),
+          text = stringResource(hedvig.resources.R.string.purchase_confirmation_error_close_button),
         )
       }
       is CrossSellingResult.Success -> {
         LargeContainedTextButton(
           onClick = closeResultScreen,
-          text = stringResource(R.string.purchase_confirmation_accident_insurance_done_button),
+          text = stringResource(hedvig.resources.R.string.purchase_confirmation_accident_insurance_done_button),
         )
       }
     }

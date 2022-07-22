@@ -45,11 +45,11 @@ class AdyenPayoutPendingTest : TestCase() {
       recycler {
         childAt<PaymentScreen.AdyenPayoutDetails>(4) {
           status {
-            hasText(R.string.payment_screen_bank_account_processing)
+            hasText(hedvig.resources.R.string.payment_screen_bank_account_processing)
           }
         }
         childAt<PaymentScreen.AdyenPayoutParagraph>(5) {
-          text { hasText(R.string.payment_screen_pay_out_footer_pending) }
+          text { hasText(hedvig.resources.R.string.payment_screen_pay_out_footer_pending) }
         }
         childAt<PaymentScreen.Link>(6) {
           click()

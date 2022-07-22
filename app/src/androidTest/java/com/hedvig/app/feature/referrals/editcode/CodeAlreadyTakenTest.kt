@@ -48,7 +48,7 @@ class CodeAlreadyTakenTest : TestCase() {
       save { click() }
       editLayout {
         isErrorEnabled()
-        hasError(R.string.referrals_change_code_sheet_error_claimed_code)
+        hasError(hedvig.resources.R.string.referrals_change_code_sheet_error_claimed_code)
       }
     }
   }

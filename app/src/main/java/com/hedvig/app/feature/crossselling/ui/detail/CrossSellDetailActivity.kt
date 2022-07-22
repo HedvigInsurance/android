@@ -65,7 +65,7 @@ class CrossSellDetailActivity : BaseActivity() {
     startActivity(
       QuoteDetailActivity.newInstance(
         context = this,
-        title = getString(R.string.cross_sell_info_full_coverage_row),
+        title = getString(hedvig.resources.R.string.cross_sell_info_full_coverage_row),
         perils = perils,
         insurableLimits = crossSell.insurableLimits,
         documents = crossSell.terms,

@@ -145,21 +145,21 @@ class HomeAdapter(
 
         val textRes = when (data) {
           is HomeModel.BigText.Pending -> root.resources.getString(
-            R.string.home_tab_pending_unknown_title,
+            hedvig.resources.R.string.home_tab_pending_unknown_title,
             data.name,
           )
           is HomeModel.BigText.ActiveInFuture -> root.resources.getString(
-            R.string.home_tab_active_in_future_welcome_title,
+            hedvig.resources.R.string.home_tab_active_in_future_welcome_title,
             data.name,
             formatter.format(data.inception),
           )
-          is HomeModel.BigText.Active -> root.resources.getString(R.string.home_tab_welcome_title, data.name)
+          is HomeModel.BigText.Active -> root.resources.getString(hedvig.resources.R.string.home_tab_welcome_title, data.name)
           is HomeModel.BigText.Terminated -> root.resources.getString(
-            R.string.home_tab_terminated_welcome_title,
+            hedvig.resources.R.string.home_tab_terminated_welcome_title,
             data.name,
           )
           is HomeModel.BigText.Switching -> root.resources.getString(
-            R.string.home_tab_pending_switchable_welcome_title,
+            hedvig.resources.R.string.home_tab_pending_switchable_welcome_title,
             data.name,
           )
         }
@@ -180,10 +180,10 @@ class HomeAdapter(
         }
 
         val textRes = when (data) {
-          HomeModel.BodyText.Pending -> R.string.home_tab_pending_unknown_body
-          HomeModel.BodyText.ActiveInFuture -> R.string.home_tab_active_in_future_body
-          HomeModel.BodyText.Terminated -> R.string.home_tab_terminated_body
-          HomeModel.BodyText.Switching -> R.string.home_tab_pending_switchable_body
+          HomeModel.BodyText.Pending -> hedvig.resources.R.string.home_tab_pending_unknown_body
+          HomeModel.BodyText.ActiveInFuture -> hedvig.resources.R.string.home_tab_active_in_future_body
+          HomeModel.BodyText.Terminated -> hedvig.resources.R.string.home_tab_terminated_body
+          HomeModel.BodyText.Switching -> hedvig.resources.R.string.home_tab_pending_switchable_body
         }
         root.setText(textRes)
       }
@@ -304,11 +304,11 @@ class HomeAdapter(
         }
         val upcomingRenewal = data.upcomingRenewal
         title.text = title.context.getString(
-          R.string.DASHBOARD_RENEWAL_PROMPTER_TITLE,
+          hedvig.resources.R.string.DASHBOARD_RENEWAL_PROMPTER_TITLE,
           data.contractDisplayName,
         )
         body.text = body.context.getString(
-          R.string.DASHBOARD_RENEWAL_PROMPTER_BODY,
+          hedvig.resources.R.string.DASHBOARD_RENEWAL_PROMPTER_BODY,
           daysLeft(upcomingRenewal.renewalDate),
         )
 
@@ -436,9 +436,9 @@ class HomeAdapter(
             page.body,
             button.context.getString(
               if (index == data.pages.size - 1) {
-                R.string.claims_explainer_button_start_claim
+                hedvig.resources.R.string.claims_explainer_button_start_claim
               } else {
-                R.string.claims_explainer_button_next
+                hedvig.resources.R.string.claims_explainer_button_next
               },
             ),
           )
@@ -501,8 +501,8 @@ class HomeAdapter(
           return invalid(data)
         }
 
-        paragraph.text = root.context.getString(R.string.home_tab_moving_info_card_description, data.address)
-        continueButton.text = root.context.getString(R.string.home_tab_moving_info_card_button_text)
+        paragraph.text = root.context.getString(hedvig.resources.R.string.home_tab_moving_info_card_description, data.address)
+        continueButton.text = root.context.getString(hedvig.resources.R.string.home_tab_moving_info_card_button_text)
         continueButton.setHapticClickListener {
           root.context.startActivity(ChangeAddressActivity.newInstance(binding.root.context))
         }

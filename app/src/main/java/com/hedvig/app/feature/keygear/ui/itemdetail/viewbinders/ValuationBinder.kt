@@ -51,7 +51,7 @@ class ValuationBinder(
         }
       }
       append(" ")
-      append(binding.root.resources.getString(R.string.KEY_GEAR_ITEM_VIEW_DEDUCTIBLE_CURRENCY))
+      append(binding.root.resources.getString(hedvig.resources.R.string.KEY_GEAR_ITEM_VIEW_DEDUCTIBLE_CURRENCY))
       append("\n")
     }
   }
@@ -137,7 +137,7 @@ class ValuationBinder(
         }
       }
       append("\n")
-      append(binding.root.resources.getString(R.string.KEY_GEAR_ITEM_VIEW_VALUATION_PERCENTAGE_LABEL))
+      append(binding.root.resources.getString(hedvig.resources.R.string.KEY_GEAR_ITEM_VIEW_VALUATION_PERCENTAGE_LABEL))
     }
   }
 }

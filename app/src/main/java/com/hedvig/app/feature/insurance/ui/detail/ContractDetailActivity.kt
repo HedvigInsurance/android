@@ -64,13 +64,13 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
       TabLayoutMediator(tabContainer, tabContent) { tab, position ->
         when (position) {
           0 -> {
-            tab.setText(R.string.insurance_details_view_tab_1_title)
+            tab.setText(hedvig.resources.R.string.insurance_details_view_tab_1_title)
           }
           1 -> {
-            tab.setText(R.string.insurance_details_view_tab_2_title)
+            tab.setText(hedvig.resources.R.string.insurance_details_view_tab_2_title)
           }
           2 -> {
-            tab.setText(R.string.insurance_details_view_tab_3_title)
+            tab.setText(hedvig.resources.R.string.insurance_details_view_tab_3_title)
           }
           else -> {
             e { "Invalid tab index: $position" }

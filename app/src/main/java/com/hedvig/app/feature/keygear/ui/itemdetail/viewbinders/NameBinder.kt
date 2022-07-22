@@ -20,19 +20,19 @@ class NameBinder(
     binding.addName.setHapticClickListener {
       if (isEditState) {
         hideEditName()
-        binding.addName.setText(R.string.KEY_GEAR_ITEM_VIEW_ITEM_NAME_EDIT_BUTTON)
+        binding.addName.setText(hedvig.resources.R.string.KEY_GEAR_ITEM_VIEW_ITEM_NAME_EDIT_BUTTON)
         updateName()
         isEditState = false
       } else {
         focusEditName()
-        binding.addName.setText(R.string.KEY_GEAR_ITEM_VIEW_ITEM_NAME_SAVE_BUTTON)
+        binding.addName.setText(hedvig.resources.R.string.KEY_GEAR_ITEM_VIEW_ITEM_NAME_SAVE_BUTTON)
         isEditState = true
       }
     }
 
     binding.nameEditText.setOnEditorActionListener { _, _, _ ->
       hideEditName()
-      binding.addName.setText(R.string.KEY_GEAR_ITEM_VIEW_ITEM_NAME_EDIT_BUTTON)
+      binding.addName.setText(hedvig.resources.R.string.KEY_GEAR_ITEM_VIEW_ITEM_NAME_EDIT_BUTTON)
       updateName()
       isEditState = false
       true
