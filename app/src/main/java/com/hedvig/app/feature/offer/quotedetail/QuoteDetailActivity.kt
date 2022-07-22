@@ -64,6 +64,7 @@ class QuoteDetailActivity : BaseActivity(R.layout.quote_detail_activity) {
         it.submitList(
           listOf(
             PerilItem.Header.Simple(getString(R.string.cross_sell_info_coverage_title)),
+            PerilItem.Header.Simple(getString(R.string.cross_sell_info_coverage_title)),
           ) + perils,
         )
       }

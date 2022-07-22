@@ -65,8 +65,8 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
               requireActivity().triggerRestartActivity(MarketingActivity::class.java)
             }
             is UserViewModel.Event.Error -> requireContext().showAlert(
-              title = R.string.error_dialog_title,
-              message = R.string.component_error,
+              title = com.adyen.checkout.dropin.R.string.error_dialog_title,
+              message = com.adyen.checkout.dropin.R.string.component_error,
               positiveAction = {},
             )
           }

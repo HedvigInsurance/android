@@ -112,7 +112,7 @@ class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
   ) {
     when (state) {
       is CheckoutViewModel.InputViewState.InputState.Invalid -> {
-        textInputLayout.error = getString(state.stringRes ?: R.string.component_error)
+        textInputLayout.error = getString(state.stringRes ?: com.adyen.checkout.dropin.R.string.component_error)
       }
       CheckoutViewModel.InputViewState.InputState.NoInput,
       is CheckoutViewModel.InputViewState.InputState.Valid,

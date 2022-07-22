@@ -66,7 +66,7 @@ class CrossSellFaqActivity : BaseActivity() {
 
   private fun handleViewState(viewState: CrossSellFaqViewModel.ViewState) = with(viewState) {
     errorMessage?.let {
-      showErrorDialog(getString(R.string.component_error)) {
+      showErrorDialog(getString(com.adyen.checkout.dropin.R.string.component_error)) {
         model.dismissError()
       }
     }

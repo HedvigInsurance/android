@@ -76,8 +76,8 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
         when (event) {
           ProfileViewModel.Event.Logout -> requireContext().triggerRestartActivity()
           is ProfileViewModel.Event.Error -> requireContext().showAlert(
-            title = R.string.error_dialog_title,
-            message = R.string.component_error,
+            title = com.adyen.checkout.dropin.R.string.error_dialog_title,
+            message = com.adyen.checkout.dropin.R.string.component_error,
             positiveAction = {},
           )
         }

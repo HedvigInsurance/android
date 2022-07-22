@@ -129,9 +129,9 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             is EmbarkViewModel.Event.Error -> {
               fullScreenLoadingSpinnerLayout.hide()
               AlertDialog.Builder(this@EmbarkActivity)
-                .setTitle(R.string.error_dialog_title)
+                .setTitle(com.adyen.checkout.dropin.R.string.error_dialog_title)
                 .setMessage(event.message ?: getString(R.string.NETWORK_ERROR_ALERT_MESSAGE))
-                .setPositiveButton(R.string.error_dialog_button) { _, _ ->
+                .setPositiveButton(com.adyen.checkout.dropin.R.string.error_dialog_button) { _, _ ->
                   this@EmbarkActivity.finish()
                 }
                 .create()
@@ -326,7 +326,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
       val params = MultiActionParams(
         key = multiAction.multiActionData.key ?: "",
         link = multiAction.multiActionData.link.fragments.embarkLinkFragment.name,
-        addLabel = multiAction.multiActionData.addLabel ?: getString(R.string.continue_button),
+        addLabel = multiAction.multiActionData.addLabel ?: getString(com.adyen.checkout.dropin.R.string.continue_button),
         maxAmount = multiAction.multiActionData.maxAmount.toInt(),
         messages = passage.messages.map { it.fragments.messageFragment.text },
         passageName = passage.name,

@@ -48,7 +48,7 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
       .flowWithLifecycle(lifecycle)
       .onEach { event ->
         when (event) {
-          Event.Error -> showErrorDialog(getString(R.string.component_error)) {}
+          Event.Error -> showErrorDialog(getString(com.adyen.checkout.dropin.R.string.component_error)) {}
           Event.StartChat -> startChat()
         }
       }
@@ -115,7 +115,7 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
         viewState.upcomingAgreementResult,
       )
       is UpcomingAgreementError -> setContent(
-        titleText = getString(R.string.error_dialog_title),
+        titleText = getString(com.adyen.checkout.dropin.R.string.error_dialog_title),
         subtitleText = when (viewState.error) {
           NoContractsError -> "You do not have any contracts eligible for address change"
           is GeneralError -> viewState.error.message ?: "Could not continue, please try again later"
@@ -125,7 +125,7 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
         onContinue = { model.reload() },
       )
       is SelfChangeError -> setContent(
-        titleText = getString(R.string.error_dialog_title),
+        titleText = getString(com.adyen.checkout.dropin.R.string.error_dialog_title),
         subtitleText = viewState.error.message ?: "Could not continue, please try again later",
         buttonText = "Try again",
         buttonIcon = null,

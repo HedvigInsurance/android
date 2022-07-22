@@ -101,7 +101,7 @@ class TooltipBottomSheet : BottomSheetDialogFragment() {
                   when (newState) {
                     BottomSheetBehavior.STATE_EXPANDED -> {
                       dialog?.window?.statusBarColor =
-                        requireContext().colorAttr(R.attr.colorSurface)
+                        requireContext().colorAttr(com.google.android.material.R.attr.colorSurface)
                       if (!requireContext().isDarkThemeActive) {
                         dialog?.window?.decorView?.let {
                           val insetsController =

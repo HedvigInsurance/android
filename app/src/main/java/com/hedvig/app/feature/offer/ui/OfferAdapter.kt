@@ -171,7 +171,7 @@ class OfferAdapter(
           if (data.hasCampaigns) {
             discountButton.apply {
               setText(R.string.OFFER_REMOVE_DISCOUNT_BUTTON)
-              setTextColor(context.colorAttr(R.attr.colorError))
+              setTextColor(context.colorAttr(androidx.appcompat.R.attr.colorError))
               icon = null
               setHapticClickListener {
                 discountButton.context.showAlert(

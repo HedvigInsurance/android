@@ -242,7 +242,7 @@ class ReferralsAdapter(
                 PieChartSegment(
                   CURRENT_DISCOUNT_SLICE,
                   cdaAsPercentage,
-                  piechart.context.colorAttr(R.attr.colorSurface),
+                  piechart.context.colorAttr(com.google.android.material.R.attr.colorSurface),
                 )
               } else {
                 null
@@ -414,7 +414,7 @@ class ReferralsAdapter(
             status.background =
               status.context.compatDrawable(R.drawable.background_slightly_rounded_corners)
                 ?.apply {
-                  mutate().compatSetTint(status.context.colorAttr(R.attr.colorSurface))
+                  mutate().compatSetTint(status.context.colorAttr(com.google.android.material.R.attr.colorSurface))
                 }
             val discountAsNegative =
               activeReferral.discount.fragments.monetaryAmountFragment.toMonetaryAmount()

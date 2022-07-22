@@ -151,9 +151,9 @@ fun AppCompatActivity.handleSingleSelectLink(
   "message.forslag.dashboard" -> {
     e { "Can't handle going to the offer page without a QuoteCartId from link: `$value`" }
     AlertDialog.Builder(this)
-      .setTitle(R.string.error_dialog_title)
+      .setTitle(com.adyen.checkout.dropin.R.string.error_dialog_title)
       .setMessage(getString(R.string.NETWORK_ERROR_ALERT_MESSAGE))
-      .setPositiveButton(R.string.error_dialog_button) { _, _ ->
+      .setPositiveButton(com.adyen.checkout.dropin.R.string.error_dialog_button) { _, _ ->
         // no-op. Action handled by `setOnDismissListener`
       }
       .setOnDismissListener {

@@ -94,8 +94,8 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             triggerRestartActivity(ChatActivity::class.java)
           }
           is ChatViewModel.Event.Error -> showAlert(
-            title = R.string.error_dialog_title,
-            message = R.string.component_error,
+            title = com.adyen.checkout.dropin.R.string.error_dialog_title,
+            message = com.adyen.checkout.dropin.R.string.component_error,
             positiveAction = {},
             negativeLabel = null,
           )

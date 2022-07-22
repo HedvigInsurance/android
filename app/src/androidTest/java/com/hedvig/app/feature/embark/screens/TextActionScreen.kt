@@ -13,7 +13,7 @@ object TextActionScreen : KScreen<TextActionScreen>() {
 
   val input = KTextInputLayout { withId(R.id.textField) }
   val submitButton = KButton { withId(R.id.textActionSubmit) }
-  val loginButton = KView { withText(R.string.common_signin_button_text) }
+  val loginButton = KView { withText(com.google.android.gms.base.R.string.common_signin_button_text) }
   val appInfoButton = KView { withText(R.string.onboarding_contextual_menu_app_info_label) }
   val settingsButton = KView { withText(R.string.profile_appSettingsSection_title) }
   val restartButton = KView { withText(R.string.EMBARK_RESTART_BUTTON) }

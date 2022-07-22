@@ -9,9 +9,9 @@ import com.hedvig.app.R
 
 @Composable
 fun ErrorDialog(
-  onDismiss: () -> Unit,
-  title: String = stringResource(R.string.error_dialog_title),
-  message: String?,
+    onDismiss: () -> Unit,
+    title: String = stringResource(com.adyen.checkout.dropin.R.string.error_dialog_title),
+    message: String?,
 ) {
   AlertDialog(
     onDismissRequest = onDismiss,
@@ -23,7 +23,7 @@ fun ErrorDialog(
     },
     confirmButton = {
       TextButton(onClick = onDismiss) {
-        Text(stringResource(R.string.error_dialog_button))
+        Text(stringResource(com.adyen.checkout.dropin.R.string.error_dialog_button))
       }
     },
   )

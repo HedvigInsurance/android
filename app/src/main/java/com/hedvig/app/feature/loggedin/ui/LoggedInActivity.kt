@@ -114,7 +114,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         .flowWithLifecycle(lifecycle)
         .onEach { event ->
           when (event) {
-            ClaimsViewModel.Event.Error -> showErrorDialog(getString(R.string.component_error)) {}
+            ClaimsViewModel.Event.Error -> showErrorDialog(getString(com.adyen.checkout.dropin.R.string.component_error)) {}
             ClaimsViewModel.Event.StartChat -> startChat()
           }
         }
@@ -254,7 +254,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
               )
               .position(ViewTooltip.Position.BOTTOM)
               .color(compatColor(R.color.colorTooltip))
-              .textColor(colorAttr(R.attr.colorPrimary))
+              .textColor(colorAttr(androidx.appcompat.R.attr.colorPrimary))
               .text(R.string.home_tab_chat_hint_text)
               .withShadow(false)
               .onDisplay {
