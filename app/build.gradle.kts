@@ -11,7 +11,6 @@ plugins {
   alias(libs.plugins.crashlytics)
   id("kotlin-parcelize")
   id("kotlin-kapt")
-  alias(libs.plugins.lokalise)
   alias(libs.plugins.license)
   alias(libs.plugins.serialization)
 }
@@ -287,14 +286,4 @@ dependencies {
   kaptDebug(libs.showkase.processor)
   "kaptStaging"(libs.showkase.processor)
   "kaptPullrequest"(libs.showkase.processor)
-}
-
-val lokaliseProperties = Properties()
-lokaliseProperties.load(FileInputStream(rootProject.file("lokalise.properties")))
-
-lokalise {
-  id = lokaliseProperties.getProperty("id")
-  token = lokaliseProperties.getProperty("token")
-
-  downloadConfig = com.likandr.gradle.config.DownloadConfig()
 }

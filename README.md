@@ -16,7 +16,7 @@ $ ./gradlew :apollo:downloadGiraffeApolloSchemaFromIntrospection
 ```
 6. Download lokalise translations (required to consume latest translations as well):
 ```bash
-$ ./gradlew app:downloadStrings
+$ ./gradlew core-resources/downloadStrings
 ```
 7. Build and install via Android Studio
 

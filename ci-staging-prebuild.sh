@@ -23,7 +23,7 @@ cat <<EOT > app/src/staging/res/values/shake.xml
 </resources>
 EOT
 
-./gradlew :apollo:downloadGiraffeApolloSchemaFromIntrospection app:downloadStrings licenseReleaseReport
+./gradlew :apollo:downloadGiraffeApolloSchemaFromIntrospection :core-resources/downloadStrings licenseReleaseReport
 
 cp app/src/staging/res/values/adyen.xml app/src/pullrequest/res/values/adyen.xml
 cp app/src/staging/res/values/shake.xml app/src/pullrequest/res/values/shake.xml
