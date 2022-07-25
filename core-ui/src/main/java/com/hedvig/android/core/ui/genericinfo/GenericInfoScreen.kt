@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.Surface
@@ -76,9 +77,7 @@ fun GenericInfoScreen(
   onSecondaryButtonClick: (() -> Unit)?,
   modifier: Modifier = Modifier,
 ) {
-  Column(
-    modifier = modifier.fillMaxSize(),
-  ) {
+  Column(modifier) {
     AppStateInformation(
       type = informationType,
       title = title,
@@ -86,7 +85,7 @@ fun GenericInfoScreen(
     )
     Spacer(Modifier.height(40.dp))
     Column(
-      modifier = Modifier.weight(1f),
+      modifier = Modifier.fillMaxHeight(),
       verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Bottom),
     ) {
       LargeContainedButton(onClick = onPrimaryButtonClick) {
