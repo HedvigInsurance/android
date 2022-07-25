@@ -25,7 +25,7 @@ fun GenericErrorScreen(
   GenericInfoScreen(
     title = title,
     description = description,
-    informationType = AppStateInformationType.Success,
+    informationType = AppStateInformationType.Failure,
     primaryButtonText = stringResource(R.string.home_tab_error_button_text),
     onPrimaryButtonClick = onRetryButtonClick,
     secondaryButtonText = null,
