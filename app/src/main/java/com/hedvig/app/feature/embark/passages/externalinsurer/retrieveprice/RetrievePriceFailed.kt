@@ -26,7 +26,7 @@ fun RetrievePriceFailed(
     onSecondaryButtonClick = { onSkip() },
     modifier = Modifier
       .padding(16.dp)
-      .padding(top = 32.dp),
+      .padding(top = (48 - 16).dp),
   )
 }
 
