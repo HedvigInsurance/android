@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
-import com.hedvig.android.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.BASE_MARGIN_TRIPLE
@@ -46,7 +46,7 @@ import com.hedvig.app.feature.offer.ui.composable.insurely.InsurelyCard
 import com.hedvig.app.feature.offer.ui.composable.variants.VariantButton
 import com.hedvig.app.feature.offer.ui.composable.variants.VariantHeader
 import com.hedvig.app.feature.table.generateTable
-import com.hedvig.app.ui.compose.composables.screens.GenericErrorScreen
+import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatDrawable
@@ -541,7 +541,7 @@ class OfferAdapter(
         }
         composeView.setContent {
           HedvigTheme {
-            GenericErrorScreen(onRetryButtonClicked = { reload() })
+            GenericErrorScreen(onRetryButtonClick = { reload() })
           }
         }
       }

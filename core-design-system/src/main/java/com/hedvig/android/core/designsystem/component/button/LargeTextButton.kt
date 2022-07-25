@@ -1,4 +1,4 @@
-package com.hedvig.android.designsystem.component.button
+package com.hedvig.android.core.designsystem.component.button
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope

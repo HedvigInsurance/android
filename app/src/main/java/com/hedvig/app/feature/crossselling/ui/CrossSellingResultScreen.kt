@@ -23,10 +23,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.designsystem.component.button.LargeContainedButton
-import com.hedvig.android.designsystem.component.button.LargeContainedTextButton
-import com.hedvig.android.designsystem.component.button.LargeOutlinedTextButton
-import com.hedvig.android.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
+import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
+import com.hedvig.android.core.designsystem.component.button.LargeOutlinedTextButton
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 import java.time.Clock
 import java.time.LocalDate
@@ -76,7 +76,9 @@ private fun InformationSection(
   modifier: Modifier,
 ) {
   val icon: Painter = when (crossSellingResult) {
-    is CrossSellingResult.Success -> painterResource(R.drawable.ic_checkmark_in_circle)
+    is CrossSellingResult.Success -> painterResource(
+      com.hedvig.android.core.designsystem.R.drawable.ic_checkmark_in_circle,
+    )
     CrossSellingResult.Error -> painterResource(R.drawable.ic_x_in_circle)
   }
   val titleText = when (crossSellingResult) {

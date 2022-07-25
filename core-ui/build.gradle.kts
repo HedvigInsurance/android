@@ -5,6 +5,7 @@ plugins {
 }
 
 dependencies {
+  implementation(projects.coreResources)
   implementation(projects.coreDesignSystem)
 
   api(libs.androidx.compose.foundation)

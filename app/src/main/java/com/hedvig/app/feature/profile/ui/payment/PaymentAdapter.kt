@@ -398,7 +398,7 @@ class PaymentAdapter(
           PayoutMethodStatus.ACTIVE -> {
             root.setText(hedvig.resources.R.string.payment_screen_pay_connected_label)
             root.putCompoundDrawablesRelativeWithIntrinsicBounds(
-              start = R.drawable.ic_checkmark_in_circle,
+              start = com.hedvig.android.core.designsystem.R.drawable.ic_checkmark_in_circle,
             )
           }
           PayoutMethodStatus.PENDING -> {

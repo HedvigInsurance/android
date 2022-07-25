@@ -6,9 +6,9 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import com.google.android.material.transition.MaterialSharedAxis
-import com.hedvig.android.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
-import com.hedvig.app.ui.compose.composables.screens.GenericErrorScreen
+import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class ErrorFragment : Fragment() {
@@ -25,7 +25,7 @@ class ErrorFragment : Fragment() {
     ComposeView(requireContext()).apply {
       setContent {
         HedvigTheme {
-          GenericErrorScreen(onRetryButtonClicked = { model.cancelSignIn() })
+          GenericErrorScreen(onRetryButtonClick = { model.cancelSignIn() })
         }
       }
     }

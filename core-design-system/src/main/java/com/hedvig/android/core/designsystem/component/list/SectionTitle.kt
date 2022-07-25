@@ -1,4 +1,4 @@
-package com.hedvig.android.designsystem.component.list
+package com.hedvig.android.core.designsystem.component.list
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Canvas
@@ -15,7 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 
 /**
  * Matches the specification of the Section Title-component from the List-components section of the design system
