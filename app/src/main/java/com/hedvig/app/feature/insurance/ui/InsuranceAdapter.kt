@@ -2,13 +2,16 @@ package com.hedvig.app.feature.insurance.ui
 
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityOptionsCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -182,7 +185,12 @@ class InsuranceAdapter(
       ) {
         composeView.setContent {
           HedvigTheme {
-            GenericErrorScreen(onRetryButtonClick = { retry() })
+            GenericErrorScreen(
+              onRetryButtonClick = { retry() },
+              Modifier
+                .padding(16.dp)
+                .padding(top = (40 - 16).dp),
+            )
           }
         }
       }

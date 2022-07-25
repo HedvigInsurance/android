@@ -6,9 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -16,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import coil.load
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressPendingChangeCardBinding
 import com.hedvig.app.databinding.HeaderItemLayoutBinding
@@ -38,7 +41,6 @@ import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.feature.home.ui.claimstatus.composables.ClaimStatusCards
 import com.hedvig.app.feature.home.ui.connectpayincard.ConnectPayinCard
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.inflate
@@ -469,7 +471,12 @@ class HomeAdapter(
       ) {
         composeView.setContent {
           HedvigTheme {
-            GenericErrorScreen(onRetryButtonClick = { retry() })
+            GenericErrorScreen(
+              onRetryButtonClick = { retry() },
+              Modifier
+                .padding(16.dp)
+                .padding(top = (80 - 16).dp),
+            )
           }
         }
       }

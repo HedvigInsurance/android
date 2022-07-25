@@ -32,7 +32,7 @@ class ErrorFragment : Fragment() {
             onRetryButtonClick = { model.cancelSignIn() },
             modifier = Modifier
               .padding(16.dp)
-              .padding(top = 32.dp),
+              .padding(top = (80 - 16).dp),
           )
         }
       }

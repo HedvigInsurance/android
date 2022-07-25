@@ -4,7 +4,10 @@ import android.animation.ValueAnimator
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.unit.dp
 import androidx.core.view.doOnDetach
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ListAdapter
@@ -456,7 +459,12 @@ class ReferralsAdapter(
       ) {
         composeView.setContent {
           HedvigTheme {
-            GenericErrorScreen(onRetryButtonClick = { reload() })
+            GenericErrorScreen(
+              onRetryButtonClick = { reload() },
+              Modifier
+                .padding(16.dp)
+                .padding(top = (64 - 16).dp),
+            )
           }
         }
       }

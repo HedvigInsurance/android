@@ -38,6 +38,7 @@ fun ClaimDetailScreen(
       )
     },
   ) { paddingValues ->
+    val viewState: ClaimDetailViewState = ClaimDetailViewState.Error
     when (viewState) {
       is ClaimDetailViewState.Content -> ClaimDetailScreen(
         uiState = viewState.uiState,
@@ -48,7 +49,10 @@ fun ClaimDetailScreen(
       )
       ClaimDetailViewState.Error -> GenericErrorScreen(
         onRetryButtonClick = retry,
-        modifier = Modifier.padding(paddingValues).padding(16.dp),
+        modifier = Modifier
+          .padding(paddingValues)
+          .padding(16.dp)
+          .padding(top = 40.dp),
       )
       ClaimDetailViewState.Loading -> CenteredProgressIndicator()
     }

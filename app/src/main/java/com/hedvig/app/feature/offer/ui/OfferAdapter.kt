@@ -541,7 +541,12 @@ class OfferAdapter(
         }
         composeView.setContent {
           HedvigTheme {
-            GenericErrorScreen(onRetryButtonClick = { reload() })
+            GenericErrorScreen(
+              onRetryButtonClick = { reload() },
+              Modifier
+                .padding(16.dp)
+                .padding(top = (80 - 16).dp),
+            )
           }
         }
       }

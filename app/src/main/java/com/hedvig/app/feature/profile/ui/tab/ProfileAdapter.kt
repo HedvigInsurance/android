@@ -2,16 +2,19 @@ package com.hedvig.app.feature.profile.ui.tab
 
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.unit.dp
 import androidx.core.view.isGone
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ProfileLogoutBinding
 import com.hedvig.app.databinding.ProfileRowBinding
-import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -95,7 +98,12 @@ class ProfileAdapter(
       override fun bind(data: ProfileModel, lifecycleOwner: LifecycleOwner) {
         composeView.setContent {
           HedvigTheme {
-            GenericErrorScreen(onRetryButtonClick = { retry() })
+            GenericErrorScreen(
+              onRetryButtonClick = { retry() },
+              Modifier
+                .padding(16.dp)
+                .padding(top = (110 - 16).dp),
+            )
           }
         }
       }
