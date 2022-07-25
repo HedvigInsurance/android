@@ -3,12 +3,15 @@ package com.hedvig.app.feature.zignsec.ui
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import com.google.android.material.transition.MaterialSharedAxis
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
+import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class ErrorFragment : Fragment() {
@@ -25,7 +28,12 @@ class ErrorFragment : Fragment() {
     ComposeView(requireContext()).apply {
       setContent {
         HedvigTheme {
-          GenericErrorScreen(onRetryButtonClick = { model.cancelSignIn() })
+          GenericErrorScreen(
+            onRetryButtonClick = { model.cancelSignIn() },
+            modifier = Modifier
+              .padding(16.dp)
+              .padding(top = 32.dp),
+          )
         }
       }
     }
