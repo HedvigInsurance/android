@@ -2,7 +2,7 @@
 plugins {
   alias(libs.plugins.buildTimeTracker)
   alias(libs.plugins.cacheFix) apply false
-//  alias(libs.plugins.doctor)
+  alias(libs.plugins.doctor)
 }
 
 subprojects {
