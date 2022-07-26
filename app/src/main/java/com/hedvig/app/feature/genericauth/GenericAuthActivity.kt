@@ -11,7 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
-import com.hedvig.android.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.feature.genericauth.otpinput.OtpInputActivity
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows

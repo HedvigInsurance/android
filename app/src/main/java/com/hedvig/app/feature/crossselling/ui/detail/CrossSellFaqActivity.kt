@@ -9,7 +9,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
-import com.hedvig.android.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.data.ChatRepository

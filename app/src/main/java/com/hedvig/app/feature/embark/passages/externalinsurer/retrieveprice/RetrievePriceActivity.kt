@@ -14,7 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.hedvig.android.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog

@@ -10,6 +10,8 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import okio.FileSystem
+import okio.Path.Companion.toPath
 import okio.buffer
 import okio.sink
 import okio.source
@@ -65,6 +67,42 @@ abstract class DownloadStringsTask : DefaultTask() {
     unzipReceivedZipFile(zipPath, dirRes)
     logger.debug("$tag dirRes:${dirRes.asFileTree.map { it.absolutePath }}")
     localBuildDir.delete()
+    fixFrenchTranslationLintErrors(dirRes)
+  }
+
+  /**
+   * French plural translations lint fails when specifying "other" but not "many". This changes all "other" entries
+   * into "many".
+   * Plural strings also need when there is "one" specified for there to be a placeholder which changes depending on
+   * when it's one or many. Some of our strings do not do that purposefully, so we can just ignore that.
+   */
+  private fun fixFrenchTranslationLintErrors(res: ConfigurableFileCollection) {
+    val frenchStringsXmlPath: okio.Path = res.asFileTree
+      .firstOrNull { stringXmlFile ->
+        stringXmlFile.parentFile.name.contains("-fr")
+      }
+      ?.path
+      ?.toPath() ?: return
+    val fileSystem = FileSystem.SYSTEM
+    val frenchStringsXmlContent = fileSystem.read(frenchStringsXmlPath) {
+      readUtf8()
+    }
+    val updatedContent = frenchStringsXmlContent
+      .replace(
+        oldValue = """<item quantity="other">""",
+        newValue = """<item quantity="many">""",
+      )
+      .replace(
+        oldValue = """<item quantity="one">""",
+        newValue = """<item quantity="one" tools:ignore="ImpliedQuantity">""",
+      )
+      .replace( // This is needed on the top of the xml file for `tools:ignore` to work.
+        oldValue = """<resources>""",
+        newValue = """<resources xmlns:tools="http://schemas.android.com/tools">""",
+      )
+    fileSystem.write(frenchStringsXmlPath) {
+      writeUtf8(updatedContent)
+    }
   }
 
   private fun fetchBucketUrl(): String {

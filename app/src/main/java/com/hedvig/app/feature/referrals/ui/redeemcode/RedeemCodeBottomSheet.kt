@@ -84,7 +84,8 @@ abstract class RedeemCodeBottomSheet : BottomSheetDialogFragment() {
   }
 
   private fun wrongPromotionCode(errorMessage: String) {
-    binding.textField.errorIconDrawable = requireContext().compatDrawable(R.drawable.ic_warning_triangle)
+    binding.textField.errorIconDrawable =
+      requireContext().compatDrawable(com.hedvig.android.core.designsystem.R.drawable.ic_warning_triangle)
     binding.textField.error = errorMessage
   }
 }

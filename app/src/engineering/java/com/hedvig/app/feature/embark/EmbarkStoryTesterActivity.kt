@@ -34,7 +34,7 @@ import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.apollographql.apollo3.ApolloClient
 import com.google.accompanist.insets.systemBarsPadding
-import com.hedvig.android.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.owldroid.graphql.ExchangeTokenMutation
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase

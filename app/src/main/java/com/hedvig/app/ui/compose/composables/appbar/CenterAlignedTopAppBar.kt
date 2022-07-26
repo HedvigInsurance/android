@@ -29,7 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 
 /**
  * Center aligned title implementation of [androidx.compose.material.TopAppBar] while also allowing for contentPadding

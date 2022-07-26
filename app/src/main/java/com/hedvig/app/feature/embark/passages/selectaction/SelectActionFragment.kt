@@ -8,7 +8,7 @@ import androidx.core.os.bundleOf
 import androidx.core.view.doOnNextLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import com.hedvig.android.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 import com.hedvig.app.databinding.EmbarkResponseBinding
 import com.hedvig.app.databinding.FragmentEmbarkSelectActionBinding
