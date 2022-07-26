@@ -40,7 +40,7 @@ class FailedPaymentsTest : TestCase() {
         childAt<PaymentScreen.FailedPayments>(1) {
           paragraph {
             hasText(
-              R.string.PAYMENTS_LATE_PAYMENTS_MESSAGE,
+              hedvig.resources.R.string.PAYMENTS_LATE_PAYMENTS_MESSAGE,
               PAYMENT_DATA_FAILED_PAYMENTS.balance.failedCharges!!,
               PAYMENT_DATA_FAILED_PAYMENTS.nextChargeDate!!,
             )

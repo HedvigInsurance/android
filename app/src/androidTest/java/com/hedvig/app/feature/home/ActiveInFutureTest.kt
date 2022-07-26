@@ -48,7 +48,7 @@ class ActiveInFutureTest : TestCase() {
         childAt<HomeTabScreen.BigTextItem>(0) {
           text {
             hasText(
-              R.string.home_tab_active_in_future_welcome_title,
+              hedvig.resources.R.string.home_tab_active_in_future_welcome_title,
               "Test",
               formatter.format(LocalDate.of(2025, 1, 1)),
             )
