@@ -38,7 +38,6 @@ fun ClaimDetailScreen(
       )
     },
   ) { paddingValues ->
-    val viewState: ClaimDetailViewState = ClaimDetailViewState.Error
     when (viewState) {
       is ClaimDetailViewState.Content -> ClaimDetailScreen(
         uiState = viewState.uiState,
