@@ -83,7 +83,6 @@ abstract class DownloadStringsTask : DefaultTask() {
       }
       ?.path
       ?.toPath() ?: return
-    println("Stelios path:$frenchStringsXmlPath")
     val fileSystem = FileSystem.SYSTEM
     val frenchStringsXmlContent = fileSystem.read(frenchStringsXmlPath) {
       readUtf8()
