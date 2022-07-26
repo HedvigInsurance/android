@@ -2,6 +2,7 @@
 
 package com.hedvig.android.lokalise
 
+import com.hedvig.android.lokalise.extension.LokalisePluginExtension
 import com.hedvig.android.lokalise.task.DownloadStringsTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project

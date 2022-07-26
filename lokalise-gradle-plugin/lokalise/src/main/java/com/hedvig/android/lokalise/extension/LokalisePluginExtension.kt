@@ -1,6 +1,6 @@
 @file:Suppress("MISSING_DEPENDENCY_CLASS")
 
-package com.hedvig.android.lokalise
+package com.hedvig.android.lokalise.extension
 
 import com.hedvig.android.lokalise.config.DownloadConfig
 import org.gradle.api.file.RegularFileProperty
