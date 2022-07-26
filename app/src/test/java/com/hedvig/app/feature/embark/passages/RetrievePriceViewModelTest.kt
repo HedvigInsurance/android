@@ -58,7 +58,7 @@ class RetrievePriceViewModelTest {
     viewModel.onIdentityInput("Invalid input")
     assertThat(viewModel.viewState.value.input).isEqualTo("Invalid input")
     assertThat(viewModel.viewState.value.inputError).isEqualTo(
-      RetrievePriceViewModel.ViewState.InputError(R.string.INVALID_NATIONAL_IDENTITY_NUMBER),
+      RetrievePriceViewModel.ViewState.InputError(hedvig.resources.R.string.INVALID_NATIONAL_IDENTITY_NUMBER),
     )
 
     viewModel.onIdentityInput("1")

@@ -14,3 +14,7 @@ disabled_rules = experimental:enum-entry-name-case, filename
 indent_size = 2
 end_of_line = lf
 insert_final_newline = true
+
+[*.md]
+indent_size = 2
+

@@ -30,7 +30,7 @@ class CrossSellNotificationSender(
     setupNotificationChannel(
       context,
       CROSS_SELL_CHANNEL_ID,
-      context.resources.getString(R.string.NOTIFICATION_CHANNEL_CROSS_SELL_TITLE),
+      context.resources.getString(hedvig.resources.R.string.NOTIFICATION_CHANNEL_CROSS_SELL_TITLE),
     )
   }
 

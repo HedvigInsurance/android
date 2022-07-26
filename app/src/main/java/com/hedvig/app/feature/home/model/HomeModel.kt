@@ -59,12 +59,12 @@ sealed class HomeModel {
 
     object FirstClaim : StartClaimOutlined() {
       override val textId: Int
-        get() = R.string.home_tab_claim_button_text
+        get() = hedvig.resources.R.string.home_tab_claim_button_text
     }
 
     object NewClaim : StartClaimOutlined() {
       override val textId: Int
-        get() = R.string.home_open_claim_start_new_claim_button
+        get() = hedvig.resources.R.string.home_open_claim_start_new_claim_button
     }
   }
 
@@ -74,12 +74,12 @@ sealed class HomeModel {
 
     object FirstClaim : StartClaimContained() {
       override val textId: Int
-        get() = R.string.home_tab_claim_button_text
+        get() = hedvig.resources.R.string.home_tab_claim_button_text
     }
 
     object NewClaim : StartClaimContained() {
       override val textId: Int
-        get() = R.string.home_open_claim_start_new_claim_button
+        get() = hedvig.resources.R.string.home_open_claim_start_new_claim_button
     }
   }
 

@@ -38,16 +38,16 @@ class IdentityInputFragment : Fragment(R.layout.identity_input_fragment) {
     with(binding) {
       when (data?.market) {
         Market.NO -> {
-          input.setHint(R.string.simple_sign_login_text_field_label)
-          input.setHelperText(R.string.simple_sign_login_text_field_helper_text)
+          input.setHint(hedvig.resources.R.string.simple_sign_login_text_field_label)
+          input.setHelperText(hedvig.resources.R.string.simple_sign_login_text_field_helper_text)
           inputText.setMaxLength(11)
-          signIn.setText(R.string.simple_sign_sign_in)
+          signIn.setText(hedvig.resources.R.string.simple_sign_sign_in)
         }
         Market.DK -> {
-          input.setHint(R.string.simple_sign_login_text_field_label_dk)
-          input.setHelperText(R.string.simple_sign_login_text_field_helper_text_dk)
+          input.setHint(hedvig.resources.R.string.simple_sign_login_text_field_label_dk)
+          input.setHelperText(hedvig.resources.R.string.simple_sign_login_text_field_helper_text_dk)
           inputText.setMaxLength(10)
-          signIn.setText(R.string.simple_sign_sign_in_dk)
+          signIn.setText(hedvig.resources.R.string.simple_sign_sign_in_dk)
         }
         else -> {
           model.invalidMarket()

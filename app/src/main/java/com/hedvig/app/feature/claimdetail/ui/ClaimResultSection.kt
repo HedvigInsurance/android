@@ -19,7 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailResult
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusColors
@@ -37,11 +37,11 @@ fun ClaimResultSection(
   Box(modifier) {
     when (claimDetailResult) {
       ClaimDetailResult.Closed.NotCompensated -> Pill(
-        stringResource(R.string.claim_decision_not_compensated).uppercase(locale),
+        stringResource(hedvig.resources.R.string.claim_decision_not_compensated).uppercase(locale),
         backgroundColor = MaterialTheme.colors.primary,
       )
       ClaimDetailResult.Closed.NotCovered -> Pill(
-        stringResource(R.string.claim_decision_not_covered).uppercase(locale),
+        stringResource(hedvig.resources.R.string.claim_decision_not_covered).uppercase(locale),
         backgroundColor = MaterialTheme.colors.primary,
       )
       is ClaimDetailResult.Closed.Paid -> {
@@ -49,7 +49,7 @@ fun ClaimResultSection(
           verticalAlignment = Alignment.CenterVertically,
         ) {
           Pill(
-            stringResource(R.string.claim_decision_paid).uppercase(locale),
+            stringResource(hedvig.resources.R.string.claim_decision_paid).uppercase(locale),
             backgroundColor = ClaimStatusColors.Pill.paid,
           )
           if (claimDetailResult.monetaryAmount != null) {

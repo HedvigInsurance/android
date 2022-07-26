@@ -10,7 +10,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.hedvig.android.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceInfoActivity
@@ -48,7 +48,7 @@ class AskForPriceInfoActivity : BaseActivity() {
           topBar = {
             TopAppBarWithBack(
               onClick = { onBackPressed() },
-              title = stringResource(R.string.insurely_title),
+              title = stringResource(hedvig.resources.R.string.insurely_title),
             )
           },
         ) {

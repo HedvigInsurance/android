@@ -42,7 +42,7 @@ class ChangeDateView @JvmOverloads constructor(
     if (switchable) {
       binding.autoSetDateSwitch.isChecked = startDate == null
       binding.autoSetDateSwitch.text =
-        context.getString(R.string.OFFER_PLAN_EXIRES_TEXT, currentInsurerDisplayName)
+        context.getString(hedvig.resources.R.string.OFFER_PLAN_EXIRES_TEXT, currentInsurerDisplayName)
       binding.autoSetDateSwitch.setOnCheckedChangeListener { _, isChecked ->
         switchListener(isChecked)
         setCheckedState(isChecked, startDate)
@@ -70,7 +70,7 @@ class ChangeDateView @JvmOverloads constructor(
   private fun formatStartDate(startDate: LocalDate?): String {
     return when {
       startDate == null -> ""
-      startDate.isToday() -> context.getString(R.string.START_DATE_TODAY)
+      startDate.isToday() -> context.getString(hedvig.resources.R.string.START_DATE_TODAY)
       else -> startDate.format(dateFormat)
     }
   }

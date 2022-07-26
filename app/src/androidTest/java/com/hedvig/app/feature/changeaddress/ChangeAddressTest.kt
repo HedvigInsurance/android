@@ -45,15 +45,15 @@ class ChangeAddressTest : TestCase() {
 
     ChangeAddressScreen {
       title {
-        hasText(R.string.moving_intro_title)
+        hasText(hedvig.resources.R.string.moving_intro_title)
       }
 
       subtitle {
-        hasText(R.string.moving_intro_description)
+        hasText(hedvig.resources.R.string.moving_intro_description)
       }
 
       continueButton {
-        hasText(R.string.moving_intro_open_flow_button_text)
+        hasText(hedvig.resources.R.string.moving_intro_open_flow_button_text)
       }
     }
   }

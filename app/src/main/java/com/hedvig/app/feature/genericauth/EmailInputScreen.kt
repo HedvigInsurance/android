@@ -33,8 +33,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.google.accompanist.insets.systemBarsPadding
-import com.hedvig.android.designsystem.component.button.LargeContainedButton
-import com.hedvig.android.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 import com.hedvig.app.util.compose.submitOnEnter
 
@@ -52,7 +52,7 @@ fun EmailInputScreen(
     modifier = Modifier.fillMaxSize(),
   ) {
     TopAppBar(
-      title = { Text(text = stringResource(R.string.login_navigation_bar_center_element_title)) },
+      title = { Text(text = stringResource(hedvig.resources.R.string.login_navigation_bar_center_element_title)) },
       navigationIcon = {
         IconButton(onClick = onUpClick) {
           Icon(
@@ -77,7 +77,7 @@ fun EmailInputScreen(
       ) {
         Spacer(Modifier.height(60.dp))
         Text(
-          text = stringResource(R.string.login_enter_your_email_address),
+          text = stringResource(hedvig.resources.R.string.login_enter_your_email_address),
           style = MaterialTheme.typography.h4,
         )
         Spacer(Modifier.height(40.dp))
@@ -92,7 +92,7 @@ fun EmailInputScreen(
               }
             }
             .submitOnEnter(onSubmitEmail),
-          label = { Text(stringResource(R.string.login_text_input_email_address)) },
+          label = { Text(stringResource(hedvig.resources.R.string.login_text_input_email_address)) },
           trailingIcon = {
             if (error != null) {
               Image(
@@ -105,7 +105,7 @@ fun EmailInputScreen(
                 Image(
                   imageVector = Icons.Filled.Clear,
                   contentDescription = stringResource(
-                    R.string.login_text_input_email_address_icon_description_clear_all,
+                    hedvig.resources.R.string.login_text_input_email_address_icon_description_clear_all,
                   ),
                 )
               }
@@ -134,7 +134,7 @@ fun EmailInputScreen(
           .padding(bottom = 16.dp)
           .navigationBarsWithImePadding(),
       ) {
-        Text(text = stringResource(R.string.login_continue_button))
+        Text(text = stringResource(hedvig.resources.R.string.login_continue_button))
       }
     }
   }

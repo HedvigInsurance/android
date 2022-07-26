@@ -10,7 +10,7 @@ import com.hedvig.app.R
 fun Dialog.makeKeyboardAware() {
   window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
   setOnShowListener {
-    (this as? BottomSheetDialog)?.findViewById<FrameLayout>(R.id.design_bottom_sheet)?.let {
+    (this as? BottomSheetDialog)?.findViewById<FrameLayout>(com.google.android.material.R.id.design_bottom_sheet)?.let {
       BottomSheetBehavior.from(it).state = BottomSheetBehavior.STATE_EXPANDED
     }
   }

@@ -56,9 +56,9 @@ class AboutAppActivity : BaseActivity(R.layout.activity_about_app) {
                 page.paragraph,
                 getString(
                   if (index == data.news.size - 1) {
-                    R.string.NEWS_DISMISS
+                    hedvig.resources.R.string.NEWS_DISMISS
                   } else {
-                    R.string.NEWS_PROCEED
+                    hedvig.resources.R.string.NEWS_PROCEED
                   },
                 ),
               )
@@ -69,7 +69,7 @@ class AboutAppActivity : BaseActivity(R.layout.activity_about_app) {
       }
 
       versionNumber.text = buildString {
-        append(resources.getString(R.string.PROFILE_ABOUT_APP_VERSION, BuildConfig.VERSION_NAME))
+        append(resources.getString(hedvig.resources.R.string.PROFILE_ABOUT_APP_VERSION, BuildConfig.VERSION_NAME))
         if (isDebug()) {
           append(" (")
           append(BuildConfig.VERSION_CODE)
@@ -84,7 +84,7 @@ class AboutAppActivity : BaseActivity(R.layout.activity_about_app) {
           when (state) {
             is MemberIdViewModel.State.Success ->
               memberId.text =
-                getString(R.string.PROFILE_ABOUT_APP_MEMBER_ID, state.id)
+                getString(hedvig.resources.R.string.PROFILE_ABOUT_APP_MEMBER_ID, state.id)
             else -> {
             }
           }

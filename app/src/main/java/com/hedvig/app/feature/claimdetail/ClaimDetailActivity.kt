@@ -8,7 +8,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.hedvig.android.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.claimdetail.ui.ClaimDetailScreen
@@ -40,7 +40,7 @@ class ClaimDetailActivity : BaseActivity() {
         when (event) {
           ClaimDetailViewModel.Event.StartChat -> startChat()
           ClaimDetailViewModel.Event.Error -> showErrorDialog(
-            getString(R.string.NETWORK_ERROR_ALERT_MESSAGE),
+            getString(hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE),
           ) {}
         }
       }

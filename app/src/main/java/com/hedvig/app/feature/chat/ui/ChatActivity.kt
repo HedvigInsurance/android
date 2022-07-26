@@ -94,8 +94,8 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             triggerRestartActivity(ChatActivity::class.java)
           }
           is ChatViewModel.Event.Error -> showAlert(
-            title = R.string.error_dialog_title,
-            message = R.string.component_error,
+            title = com.adyen.checkout.dropin.R.string.error_dialog_title,
+            message = com.adyen.checkout.dropin.R.string.component_error,
             positiveAction = {},
             negativeLabel = null,
           )
@@ -182,9 +182,9 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
       this,
       onPressEdit = {
         showAlert(
-          R.string.CHAT_EDIT_MESSAGE_TITLE,
-          positiveLabel = R.string.CHAT_EDIT_MESSAGE_SUBMIT,
-          negativeLabel = R.string.CHAT_EDIT_MESSAGE_CANCEL,
+          hedvig.resources.R.string.CHAT_EDIT_MESSAGE_TITLE,
+          positiveLabel = hedvig.resources.R.string.CHAT_EDIT_MESSAGE_SUBMIT,
+          negativeLabel = hedvig.resources.R.string.CHAT_EDIT_MESSAGE_CANCEL,
           positiveAction = {
             chatViewModel.editLastResponse()
           },
@@ -204,7 +204,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
       binding.close.setOnClickListener {
         onBackPressed()
       }
-      binding.close.contentDescription = getString(R.string.CHAT_CLOSE_DESCRIPTION)
+      binding.close.contentDescription = getString(hedvig.resources.R.string.CHAT_CLOSE_DESCRIPTION)
       binding.close.show()
     }
   }
@@ -242,10 +242,10 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
     chatViewModel.networkError.observe(this) { networkError ->
       if (networkError == true) {
         showAlert(
-          R.string.NETWORK_ERROR_ALERT_TITLE,
-          R.string.NETWORK_ERROR_ALERT_MESSAGE,
-          R.string.NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION,
-          R.string.NETWORK_ERROR_ALERT_CANCEL_ACTION,
+          hedvig.resources.R.string.NETWORK_ERROR_ALERT_TITLE,
+          hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE,
+          hedvig.resources.R.string.NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION,
+          hedvig.resources.R.string.NETWORK_ERROR_ALERT_CANCEL_ACTION,
           positiveAction = {
             chatViewModel.load()
           },

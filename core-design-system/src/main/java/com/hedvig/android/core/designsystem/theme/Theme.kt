@@ -1,4 +1,4 @@
-package com.hedvig.android.designsystem.theme
+package com.hedvig.android.core.designsystem.theme
 
 import android.content.res.Resources
 import androidx.compose.material.Colors

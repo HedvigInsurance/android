@@ -78,7 +78,7 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
           ValidationResult.TOO_LONG -> {
             toolbar.menu.findItem(R.id.save).isEnabled = false
             codeContainer.error =
-              getString(R.string.referrals_change_code_sheet_error_max_length)
+              getString(hedvig.resources.R.string.referrals_change_code_sheet_error_max_length)
           }
         }
       }
@@ -114,7 +114,7 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
         .flowWithLifecycle(lifecycle)
         .onEach { viewState ->
           codeContainer.error = if (viewState is ReferralsEditCodeViewModel.ViewState.Error) {
-            getString(R.string.referrals_change_code_sheet_general_error)
+            getString(hedvig.resources.R.string.referrals_change_code_sheet_general_error)
           } else {
             null
           }
@@ -130,30 +130,30 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
               }
               urcc.asCodeAlreadyTaken?.let {
                 codeContainer.error =
-                  getString(R.string.referrals_change_code_sheet_error_claimed_code)
+                  getString(hedvig.resources.R.string.referrals_change_code_sheet_error_claimed_code)
                 return@onEach
               }
               urcc.asCodeTooShort?.let {
                 codeContainer.error =
-                  getString(R.string.referrals_change_code_sheet_general_error)
+                  getString(hedvig.resources.R.string.referrals_change_code_sheet_general_error)
                 return@onEach
               }
               urcc.asCodeTooLong?.let {
                 codeContainer.error =
-                  getString(R.string.referrals_change_code_sheet_error_max_length)
+                  getString(hedvig.resources.R.string.referrals_change_code_sheet_error_max_length)
                 return@onEach
               }
               urcc.asExceededMaximumUpdates?.maximumNumberOfUpdates?.let { maximumNumberOfUpdates ->
                 codeContainer.error =
                   getString(
-                    R.string.referrals_change_code_sheet_error_change_limit_reached,
+                    hedvig.resources.R.string.referrals_change_code_sheet_error_change_limit_reached,
                     maximumNumberOfUpdates,
                   )
                 return@onEach
               }
 
               codeContainer.error =
-                getString(R.string.referrals_change_code_sheet_general_error)
+                getString(hedvig.resources.R.string.referrals_change_code_sheet_general_error)
             }
             else -> {
             }
@@ -169,10 +169,10 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
     }
     if (dirty) {
       showAlert(
-        R.string.referrals_edit_code_confirm_dismiss_title,
-        R.string.referrals_edit_code_confirm_dismiss_body,
-        R.string.referrals_edit_code_confirm_dismiss_continue,
-        R.string.referrals_edit_code_confirm_dismiss_cancel,
+        hedvig.resources.R.string.referrals_edit_code_confirm_dismiss_title,
+        hedvig.resources.R.string.referrals_edit_code_confirm_dismiss_body,
+        hedvig.resources.R.string.referrals_edit_code_confirm_dismiss_continue,
+        hedvig.resources.R.string.referrals_edit_code_confirm_dismiss_cancel,
         positiveAction = {
           super.onBackPressed()
         },

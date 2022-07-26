@@ -5,11 +5,11 @@ import androidx.annotation.StringRes
 import com.hedvig.app.R
 
 enum class CheckoutLabel(@StringRes val resId: Int) {
-  SIGN_UP(R.string.OFFER_SIGN_BUTTON),
-  CONTINUE(R.string.OFFER_CHECKOUT_BUTTON),
-  APPROVE(R.string.OFFER_APPROVE_CHANGES),
-  CONFIRM(R.string.OFFER_CONFIRM_PURCHASE),
-  UNKNOWN(R.string.dummy_string);
+  SIGN_UP(hedvig.resources.R.string.OFFER_SIGN_BUTTON),
+  CONTINUE(hedvig.resources.R.string.OFFER_CHECKOUT_BUTTON),
+  APPROVE(hedvig.resources.R.string.OFFER_APPROVE_CHANGES),
+  CONFIRM(hedvig.resources.R.string.OFFER_CONFIRM_PURCHASE),
+  UNKNOWN(hedvig.resources.R.string.dummy_string);
 
   fun toString(context: Context) = context.getString(resId)
 

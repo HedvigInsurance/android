@@ -54,7 +54,7 @@ class ReferralsInformationActivity : BaseActivity(R.layout.activity_referrals_in
 
       val incentive = Money.of(incentiveAmount, incentiveCurrency)
       body.text = getString(
-        R.string.referrals_info_sheet_body,
+        hedvig.resources.R.string.referrals_info_sheet_body,
         incentive.format(this@ReferralsInformationActivity, marketManager.market),
       )
 

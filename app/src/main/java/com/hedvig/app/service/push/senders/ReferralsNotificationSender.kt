@@ -22,8 +22,8 @@ class ReferralsNotificationSender(
     setupNotificationChannel(
       context,
       REFERRAL_CHANNEL_ID,
-      context.resources.getString(R.string.NOTIFICATION_REFERRAL_CHANNEL_NAME),
-      context.resources.getString(R.string.NOTIFICATION_REFERRAL_CHANNEL_DESCRIPTION),
+      context.resources.getString(hedvig.resources.R.string.NOTIFICATION_REFERRAL_CHANNEL_NAME),
+      context.resources.getString(hedvig.resources.R.string.NOTIFICATION_REFERRAL_CHANNEL_DESCRIPTION),
     )
   }
 
@@ -54,14 +54,14 @@ class ReferralsNotificationSender(
 
     val contentText = referralName?.let {
       context.resources.getString(
-        R.string.NOTIFICATION_REFERRAL_COMPLETED_CONTENT_WITH_NAME,
+        hedvig.resources.R.string.NOTIFICATION_REFERRAL_COMPLETED_CONTENT_WITH_NAME,
         it,
       )
-    } ?: context.resources.getString(R.string.NOTIFICATION_REFERRAL_COMPLETED_CONTENT)
+    } ?: context.resources.getString(hedvig.resources.R.string.NOTIFICATION_REFERRAL_COMPLETED_CONTENT)
 
     val notificationBuilder = createNotificationBuilder(
       context = context,
-      title = context.resources.getString(R.string.NOTIFICATION_REFERRAL_COMPLETED_TITLE),
+      title = context.resources.getString(hedvig.resources.R.string.NOTIFICATION_REFERRAL_COMPLETED_TITLE),
       body = contentText,
       pendingIntent = pendingIntent,
     )
@@ -119,7 +119,7 @@ class ReferralsNotificationSender(
     .setSmallIcon(R.drawable.ic_hedvig_h)
     .setContentText(title)
     .setContentText(body)
-    .setContentTitle(context.resources.getString(R.string.NOTIFICATION_REFERRAL_COMPLETED_TITLE))
+    .setContentTitle(context.resources.getString(hedvig.resources.R.string.NOTIFICATION_REFERRAL_COMPLETED_TITLE))
     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
     .setAutoCancel(true)
     .setChannelId(REFERRAL_CHANNEL_ID)

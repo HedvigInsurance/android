@@ -39,10 +39,10 @@ enum class Market {
 
   val label: Int
     get() = when (this) {
-      SE -> R.string.market_sweden
-      NO -> R.string.market_norway
-      DK -> R.string.market_denmark
-      FR -> R.string.market_france
+      SE -> hedvig.resources.R.string.market_sweden
+      NO -> hedvig.resources.R.string.market_norway
+      DK -> hedvig.resources.R.string.market_denmark
+      FR -> hedvig.resources.R.string.market_france
     }
 
   fun openAuth(context: Context, fragmentManager: FragmentManager) {
@@ -72,24 +72,24 @@ enum class Market {
     activePaymentMethodsFragment: ActivePaymentMethodsFragment?,
   ): Int = when (this) {
     SE -> when (directDebitStatus) {
-      DirectDebitStatus.ACTIVE -> R.string.Direct_Debit_Connected
+      DirectDebitStatus.ACTIVE -> hedvig.resources.R.string.Direct_Debit_Connected
       DirectDebitStatus.NEEDS_SETUP,
       DirectDebitStatus.PENDING,
       DirectDebitStatus.UNKNOWN__,
       null,
-      -> R.string.Direct_Debit_Not_Connected
+      -> hedvig.resources.R.string.Direct_Debit_Not_Connected
     }
     DK,
     NO,
     -> when {
       activePaymentMethodsFragment?.asStoredCardDetails != null -> {
-        R.string.Card_Connected
+        hedvig.resources.R.string.Card_Connected
       }
       activePaymentMethodsFragment?.asStoredThirdPartyDetails != null -> {
-        R.string.Third_Party_Connected
+        hedvig.resources.R.string.Third_Party_Connected
       }
-      activePaymentMethodsFragment == null -> R.string.Card_Not_Connected
-      else -> R.string.Card_Not_Connected
+      activePaymentMethodsFragment == null -> hedvig.resources.R.string.Card_Not_Connected
+      else -> hedvig.resources.R.string.Card_Not_Connected
     }
     FR -> TODO()
   }

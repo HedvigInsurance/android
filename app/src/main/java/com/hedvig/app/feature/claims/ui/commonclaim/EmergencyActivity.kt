@@ -50,7 +50,9 @@ class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
       .flowWithLifecycle(lifecycle)
       .onEach { event ->
         when (event) {
-          ClaimsViewModel.Event.Error -> showErrorDialog(getString(R.string.component_error)) {}
+          ClaimsViewModel.Event.Error -> {
+            showErrorDialog(getString(com.adyen.checkout.dropin.R.string.component_error)) {}
+          }
           ClaimsViewModel.Event.StartChat -> startChat()
         }
       }
@@ -71,7 +73,7 @@ class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
       firstMessage.commonClaimFirstMessageIcon.load(url, imageLoader)
 
       firstMessage.commonClaimFirstMessage.text =
-        getString(R.string.COMMON_CLAIM_EMERGENCY_LAYOUT_TITLE)
+        getString(hedvig.resources.R.string.COMMON_CLAIM_EMERGENCY_LAYOUT_TITLE)
       firstMessage.commonClaimCreateClaimButton.remove()
 
       if (data.eligibleToClaim) {

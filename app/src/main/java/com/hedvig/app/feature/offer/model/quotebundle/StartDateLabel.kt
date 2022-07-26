@@ -12,9 +12,9 @@ enum class StartDateLabel {
 }
 
 fun StartDateLabel.toString(context: Context) = when (this) {
-  StartDateLabel.SINGLE_START_DATE -> context.getString(R.string.OFFER_START_DATE)
-  StartDateLabel.MULTIPLE_START_DATES -> context.getString(R.string.OFFER_START_DATE_PLURAL)
-  StartDateLabel.ACCESS_DATE -> context.getString(R.string.OFFER_ACCESS_DATE)
+  StartDateLabel.SINGLE_START_DATE -> context.getString(hedvig.resources.R.string.OFFER_START_DATE)
+  StartDateLabel.MULTIPLE_START_DATES -> context.getString(hedvig.resources.R.string.OFFER_START_DATE_PLURAL)
+  StartDateLabel.ACCESS_DATE -> context.getString(hedvig.resources.R.string.OFFER_ACCESS_DATE)
 }
 
 fun QuoteBundleFragment.Inception1.getStartDateLabel(

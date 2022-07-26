@@ -12,13 +12,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.ui.Scaffold
-import com.hedvig.android.designsystem.theme.HedvigTheme
-import com.hedvig.app.R
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailResult
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailUiState
 import com.hedvig.app.ui.compose.composables.CenteredProgressIndicator
 import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithBack
-import com.hedvig.app.ui.compose.composables.screens.GenericErrorScreen
 import com.hedvig.app.util.compose.preview.previewData
 import java.util.Locale
 
@@ -35,10 +34,11 @@ fun ClaimDetailScreen(
     topBar = {
       TopAppBarWithBack(
         onClick = onUpClick,
-        title = stringResource(R.string.claim_status_title),
+        title = stringResource(hedvig.resources.R.string.claim_status_title),
       )
     },
   ) { paddingValues ->
+    val viewState: ClaimDetailViewState = ClaimDetailViewState.Error
     when (viewState) {
       is ClaimDetailViewState.Content -> ClaimDetailScreen(
         uiState = viewState.uiState,
@@ -48,8 +48,11 @@ fun ClaimDetailScreen(
         modifier = Modifier.padding(paddingValues),
       )
       ClaimDetailViewState.Error -> GenericErrorScreen(
-        onRetryButtonClicked = retry,
-        modifier = Modifier.padding(paddingValues),
+        onRetryButtonClick = retry,
+        modifier = Modifier
+          .padding(paddingValues)
+          .padding(16.dp)
+          .padding(top = 40.dp),
       )
       ClaimDetailViewState.Loading -> CenteredProgressIndicator()
     }

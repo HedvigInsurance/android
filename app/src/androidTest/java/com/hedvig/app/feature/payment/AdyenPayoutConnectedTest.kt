@@ -45,11 +45,11 @@ class AdyenPayoutConnectedTest : TestCase() {
       recycler {
         childAt<PaymentScreen.AdyenPayoutDetails>(4) {
           status {
-            hasText(R.string.payment_screen_pay_connected_label)
+            hasText(hedvig.resources.R.string.payment_screen_pay_connected_label)
           }
         }
         childAt<PaymentScreen.AdyenPayoutParagraph>(5) {
-          text { hasText(R.string.payment_screen_pay_out_connected_payout_footer_connected) }
+          text { hasText(hedvig.resources.R.string.payment_screen_pay_out_connected_payout_footer_connected) }
         }
         childAt<PaymentScreen.Link>(6) {
           click()

@@ -29,8 +29,8 @@ class ChatNotificationSender(
     setupNotificationChannel(
       context,
       CHAT_CHANNEL_ID,
-      context.resources.getString(R.string.NOTIFICATION_CHAT_CHANNEL_NAME),
-      context.resources.getString(R.string.NOTIFICATION_CHAT_CHANNEL_DESCRIPTION),
+      context.resources.getString(hedvig.resources.R.string.NOTIFICATION_CHAT_CHANNEL_NAME),
+      context.resources.getString(hedvig.resources.R.string.NOTIFICATION_CHAT_CHANNEL_DESCRIPTION),
     )
   }
 
@@ -96,7 +96,7 @@ class ChatNotificationSender(
         getPendingIntent(0, flags)
       }
     val replyRemoteInput = RemoteInput.Builder(CHAT_REPLY_KEY)
-      .setLabel(context.getString(R.string.notifications_chat_reply_action))
+      .setLabel(context.getString(hedvig.resources.R.string.notifications_chat_reply_action))
       .build()
 
     val replyPendingIntent = PendingIntent.getBroadcast(
@@ -113,7 +113,7 @@ class ChatNotificationSender(
 
     val replyAction = NotificationCompat.Action.Builder(
       android.R.drawable.ic_menu_send,
-      context.getString(R.string.notifications_chat_reply_action),
+      context.getString(hedvig.resources.R.string.notifications_chat_reply_action),
       replyPendingIntent,
     )
       .addRemoteInput(replyRemoteInput)
@@ -167,14 +167,14 @@ class ChatNotificationSender(
   }
 
   private fun hedvigPerson() = Person.Builder()
-    .setName(context.getString(R.string.NOTIFICATION_CHAT_TITLE))
+    .setName(context.getString(hedvig.resources.R.string.NOTIFICATION_CHAT_TITLE))
     .setImportant(true)
     .setKey(HEDVIG_PERSON_KEY)
     .setIcon(IconCompat.createWithResource(context, R.drawable.ic_hedvig_h))
     .build()
 
   private fun youPerson() = Person.Builder()
-    .setName(context.getString(R.string.notifications_chat_you))
+    .setName(context.getString(hedvig.resources.R.string.notifications_chat_you))
     .setImportant(true)
     .setKey(YOU_PERSON_KEY)
     .build()

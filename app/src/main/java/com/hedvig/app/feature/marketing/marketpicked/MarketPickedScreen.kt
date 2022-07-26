@@ -22,9 +22,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.LocalWindowInsets
-import com.hedvig.android.designsystem.component.button.LargeContainedButton
-import com.hedvig.android.designsystem.component.button.LargeOutlinedButton
-import com.hedvig.android.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
+import com.hedvig.android.core.designsystem.component.button.LargeOutlinedButton
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 import com.hedvig.app.ui.compose.theme.hedvigOffWhite
 
@@ -54,7 +54,7 @@ fun MarketPickedScreen(
     }
     Image(
       painter = painterResource(R.drawable.ic_wordmark_h),
-      contentDescription = stringResource(R.string.HEDVIG_LOGO_ACCESSIBILITY),
+      contentDescription = stringResource(hedvig.resources.R.string.HEDVIG_LOGO_ACCESSIBILITY),
       modifier = Modifier.align(Alignment.Center),
       colorFilter = ColorFilter.tint(hedvigOffWhite),
     )
@@ -70,12 +70,12 @@ fun MarketPickedScreen(
         ),
       ) {
         Text(
-          text = stringResource(R.string.MARKETING_GET_HEDVIG),
+          text = stringResource(hedvig.resources.R.string.MARKETING_GET_HEDVIG),
         )
       }
       Spacer(Modifier.height(8.dp))
       LargeOutlinedButton(onClick = onClickLogIn) {
-        Text(text = stringResource(R.string.MARKETING_SCREEN_LOGIN))
+        Text(text = stringResource(hedvig.resources.R.string.MARKETING_SCREEN_LOGIN))
       }
       Spacer(Modifier.height(8.dp + navigationBarHeight))
     }

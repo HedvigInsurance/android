@@ -19,9 +19,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.designsystem.component.button.LargeContainedButton
-import com.hedvig.android.designsystem.component.button.LargeOutlinedButton
-import com.hedvig.android.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
+import com.hedvig.android.core.designsystem.component.button.LargeOutlinedButton
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 import com.hedvig.app.feature.faq.FAQCard
 import com.hedvig.app.feature.faq.FAQItem
@@ -42,7 +42,7 @@ fun FaqScreen(
     ) {
       TopAppBarWithBack(
         onClick = onUpClick,
-        title = stringResource(R.string.cross_sell_info_common_questions_title),
+        title = stringResource(hedvig.resources.R.string.cross_sell_info_common_questions_title),
       )
       Column(
         modifier = Modifier
@@ -56,7 +56,7 @@ fun FaqScreen(
         )
         Spacer(Modifier.height(40.dp))
         Text(
-          text = stringResource(R.string.cross_sell_info_faq_chat_headline),
+          text = stringResource(hedvig.resources.R.string.cross_sell_info_faq_chat_headline),
           style = MaterialTheme.typography.subtitle2,
           modifier = Modifier.align(Alignment.CenterHorizontally),
         )
@@ -68,7 +68,7 @@ fun FaqScreen(
           )
           Spacer(Modifier.width(8.dp))
           Text(
-            text = stringResource(R.string.cross_sell_info_faq_chat_button),
+            text = stringResource(hedvig.resources.R.string.cross_sell_info_faq_chat_button),
           )
         }
         Spacer(Modifier.height(104.dp))

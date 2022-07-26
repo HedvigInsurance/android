@@ -38,17 +38,17 @@ class ChangeAddressResultActivity : BaseActivity(R.layout.change_address_result_
         is Result.Success -> {
           toolbar.isVisible = false
           image.setImageResource(R.drawable.illustration_move_success)
-          title.setText(R.string.moving_confirmation_success_title)
+          title.setText(hedvig.resources.R.string.moving_confirmation_success_title)
           subtitle.text = if (result.date == null) {
-            getString(R.string.moving_confirmation_success_no_date_paragraph_copy)
+            getString(hedvig.resources.R.string.moving_confirmation_success_no_date_paragraph_copy)
           } else {
             getString(
-              R.string.moving_confirmation_success_paragraph,
+              hedvig.resources.R.string.moving_confirmation_success_paragraph,
               DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(result.date),
             )
           }
 
-          continueButton.setText(R.string.moving_confirmation_success_button_text)
+          continueButton.setText(hedvig.resources.R.string.moving_confirmation_success_button_text)
           continueButton.setHapticClickListener {
             startLoggedIn()
           }
@@ -56,9 +56,9 @@ class ChangeAddressResultActivity : BaseActivity(R.layout.change_address_result_
         Result.Error -> {
           toolbar.isVisible = true
           image.setImageResource(R.drawable.illustration_helicopter)
-          title.setText(R.string.moving_uw_failure_title)
-          subtitle.setText(R.string.moving_uw_failure_paragraph)
-          continueButton.setText(R.string.moving_uw_failure_button_text)
+          title.setText(hedvig.resources.R.string.moving_uw_failure_title)
+          subtitle.setText(hedvig.resources.R.string.moving_uw_failure_paragraph)
+          continueButton.setText(hedvig.resources.R.string.moving_uw_failure_button_text)
           continueButton.setIconResource(R.drawable.ic_chat_white)
           continueButton.setHapticClickListener {
             startChat()

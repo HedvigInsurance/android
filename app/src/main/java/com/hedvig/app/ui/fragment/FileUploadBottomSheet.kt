@@ -45,7 +45,7 @@ abstract class FileUploadBottomSheet : BottomSheetDialogFragment() {
 
   protected fun uploadStarted() {
     binding.apply {
-      header.text = resources.getString(R.string.FILE_UPLOAD_IS_UPLOADING)
+      header.text = resources.getString(hedvig.resources.R.string.FILE_UPLOAD_IS_UPLOADING)
       loadingSpinner.show()
       uploadImageOrVideo.remove()
       uploadFile.remove()

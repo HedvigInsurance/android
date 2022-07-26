@@ -26,10 +26,10 @@ class PreviousInsurerAdapter(
   init {
     submitList(
       listOf(PreviousInsurerItem.Header) + previousInsurers.map { it.toListItem() } + PreviousInsurerItem.Insurer(
-        name = context.getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION),
+        name = context.getString(hedvig.resources.R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION),
         icon = null,
-        id = context.getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION),
-        collectionId = context.getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION),
+        id = context.getString(hedvig.resources.R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION),
+        collectionId = context.getString(hedvig.resources.R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION),
       ),
     )
   }
@@ -88,7 +88,7 @@ class PreviousInsurerAdapter(
       private val binding by viewBinding(ExpandableBottomSheetTitleBinding::bind)
 
       init {
-        binding.title.setText(R.string.onboarding_norway_current_insurer_bottom_sheet_title)
+        binding.title.setText(hedvig.resources.R.string.onboarding_norway_current_insurer_bottom_sheet_title)
       }
 
       override fun bind(item: PreviousInsurerItem) = Unit

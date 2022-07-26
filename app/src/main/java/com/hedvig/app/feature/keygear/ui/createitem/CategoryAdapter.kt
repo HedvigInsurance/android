@@ -35,7 +35,7 @@ class CategoryAdapter(
       binding.apply {
         text.text = text.resources.getString(data.category.label)
         if (data.selected) {
-          text.setTextColor(text.context.colorAttr(R.attr.colorSecondary))
+          text.setTextColor(text.context.colorAttr(com.google.android.material.R.attr.colorSecondary))
           text.isActivated = true
         } else {
           text.setTextColor(text.context.colorAttr(android.R.attr.textColorPrimary))

@@ -216,9 +216,9 @@ fun Context.showAlert(
 
 fun Context.showErrorDialog(message: String, positiveAction: () -> Unit) {
   MaterialAlertDialogBuilder(this)
-    .setTitle(R.string.error_dialog_title)
+    .setTitle(com.adyen.checkout.dropin.R.string.error_dialog_title)
     .setMessage(message)
-    .setPositiveButton(R.string.ALERT_OK) { _, _ -> positiveAction() }
+    .setPositiveButton(hedvig.resources.R.string.ALERT_OK) { _, _ -> positiveAction() }
     .show()
 }
 
@@ -273,8 +273,8 @@ tailrec fun Context?.getActivity(): Activity? = when (this) {
 fun Context.tryOpenUri(uri: Uri) {
   fun showError() {
     showAlert(
-      title = R.string.error_dialog_title,
-      message = R.string.component_error,
+      title = com.adyen.checkout.dropin.R.string.error_dialog_title,
+      message = com.adyen.checkout.dropin.R.string.component_error,
       positiveAction = {},
     )
   }

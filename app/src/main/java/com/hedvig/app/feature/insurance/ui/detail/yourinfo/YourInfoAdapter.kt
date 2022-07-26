@@ -66,7 +66,7 @@ class YourInfoAdapter(
         if (data !is YourInfoModel.PendingAddressChange) {
           return invalid(data)
         }
-        continueButton.text = root.context.getString(R.string.insurance_details_address_update_button)
+        continueButton.text = root.context.getString(hedvig.resources.R.string.insurance_details_address_update_button)
         continueButton.setHapticClickListener {
           data.upcomingAgreement.table?.let {
             UpcomingChangeBottomSheet.newInstance(it).show(
@@ -76,7 +76,7 @@ class YourInfoAdapter(
           }
         }
         paragraph.text = root.context.getString(
-          R.string.insurance_details_adress_update_body_no_address,
+          hedvig.resources.R.string.insurance_details_adress_update_body_no_address,
           data.upcomingAgreement.activeFrom,
         )
       }

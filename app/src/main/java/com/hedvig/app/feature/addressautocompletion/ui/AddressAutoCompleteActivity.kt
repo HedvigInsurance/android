@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import com.hedvig.android.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.feature.addressautocompletion.activityresult.FetchDanishAddressContract
 import com.hedvig.app.feature.addressautocompletion.activityresult.FetchDanishAddressContractResult
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddress

@@ -28,7 +28,7 @@ class EmbarkActivityTest : TestCase() {
       ),
     )
     onScreen<EmbarkScreen> {
-      errorDialog { title { hasText(R.string.error_dialog_title) } }
+      errorDialog { title { hasText(com.adyen.checkout.dropin.R.string.error_dialog_title) } }
     }
   }
 }

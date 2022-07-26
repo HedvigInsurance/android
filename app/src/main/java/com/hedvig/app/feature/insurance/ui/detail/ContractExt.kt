@@ -68,14 +68,14 @@ fun InsuranceQuery.Contract.toDocumentsViewState() = ContractDetailViewState.Doc
   documents = listOfNotNull(
     currentAgreement?.asAgreementCore?.certificateUrl?.let {
       DocumentItems.Document(
-        titleRes = R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE,
-        subTitleRes = R.string.insurance_details_view_documents_full_terms_subtitle,
+        titleRes = hedvig.resources.R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE,
+        subTitleRes = hedvig.resources.R.string.insurance_details_view_documents_full_terms_subtitle,
         uri = Uri.parse(it),
       )
     },
     DocumentItems.Document(
-      titleRes = R.string.MY_DOCUMENTS_INSURANCE_TERMS,
-      subTitleRes = R.string.insurance_details_view_documents_insurance_letter_subtitle,
+      titleRes = hedvig.resources.R.string.MY_DOCUMENTS_INSURANCE_TERMS,
+      subTitleRes = hedvig.resources.R.string.insurance_details_view_documents_insurance_letter_subtitle,
       uri = Uri.parse(termsAndConditions.url),
       type = DocumentItems.Document.Type.TERMS_AND_CONDITIONS,
     ),

@@ -9,7 +9,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
-import com.hedvig.android.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.data.ChatRepository
@@ -66,7 +66,7 @@ class CrossSellFaqActivity : BaseActivity() {
 
   private fun handleViewState(viewState: CrossSellFaqViewModel.ViewState) = with(viewState) {
     errorMessage?.let {
-      showErrorDialog(getString(R.string.component_error)) {
+      showErrorDialog(getString(com.adyen.checkout.dropin.R.string.component_error)) {
         model.dismissError()
       }
     }

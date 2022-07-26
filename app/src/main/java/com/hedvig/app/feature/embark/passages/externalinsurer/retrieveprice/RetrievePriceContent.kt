@@ -16,7 +16,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import com.hedvig.android.designsystem.component.button.LargeContainedTextButton
+import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.app.R
 import com.hedvig.app.ui.compose.composables.ErrorDialog
 import com.hedvig.app.ui.compose.textutil.SwedishSSNVisualTransformation
@@ -77,7 +77,7 @@ fun RetrievePriceContent(
     )
     LargeContainedTextButton(
       modifier = Modifier.padding(top = baseMarginQuadruple),
-      text = stringResource(R.string.insurely_ssn_continue_button_text),
+      text = stringResource(hedvig.resources.R.string.insurely_ssn_continue_button_text),
       onClick = onRetrievePriceInfo,
     )
   }

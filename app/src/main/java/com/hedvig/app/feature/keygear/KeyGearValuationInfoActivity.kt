@@ -28,7 +28,7 @@ class KeyGearValuationInfoActivity : BaseActivity(R.layout.activity_key_gear_val
       if (vd.valuationType == ValuationType.FIXED) {
         binding.body.setMarkdownText(
           getString(
-            R.string.KEY_GEAR_ITEM_VIEW_VALUATION_BODY,
+            hedvig.resources.R.string.KEY_GEAR_ITEM_VIEW_VALUATION_BODY,
             getString(c.label).lowercase(Locale.getDefault()),
             vd.ratio,
             vd.purchasePrice.toBigDecimal().toInt(),
@@ -38,7 +38,7 @@ class KeyGearValuationInfoActivity : BaseActivity(R.layout.activity_key_gear_val
       } else if (vd.valuationType == ValuationType.MARKET_PRICE) {
         binding.body.setMarkdownText(
           getString(
-            R.string.KEY_GEAR_ITEM_VIEW_VALUATION_MARKET_BODY,
+            hedvig.resources.R.string.KEY_GEAR_ITEM_VIEW_VALUATION_MARKET_BODY,
             getString(c.label),
             vd.ratio,
           ),

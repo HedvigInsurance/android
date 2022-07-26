@@ -10,21 +10,21 @@ object Regexes {
 
 fun validateEmail(email: CharSequence): ValidationResult =
   if (!Regexes.emailRegex.matches(email)) {
-    ValidationResult(false, R.string.PROFILE_MY_INFO_INVALID_EMAIL)
+    ValidationResult(false, hedvig.resources.R.string.PROFILE_MY_INFO_INVALID_EMAIL)
   } else {
     ValidationResult(true, null)
   }
 
 fun validatePhoneNumber(phoneNumber: CharSequence): ValidationResult =
   if (!Regexes.phoneNumberRegex.matches(phoneNumber)) {
-    ValidationResult(false, R.string.PROFILE_MY_INFO_INVALID_PHONE_NUMBER)
+    ValidationResult(false, hedvig.resources.R.string.PROFILE_MY_INFO_INVALID_PHONE_NUMBER)
   } else {
     ValidationResult(true, null)
   }
 
 fun validateNationalIdentityNumber(nationalIdentityNumber: String): ValidationResult =
   if (nationalIdentityNumber.length > 11) {
-    ValidationResult(false, R.string.INVALID_NATIONAL_IDENTITY_NUMBER)
+    ValidationResult(false, hedvig.resources.R.string.INVALID_NATIONAL_IDENTITY_NUMBER)
   } else {
     ValidationResult(true, null)
   }

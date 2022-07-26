@@ -2,20 +2,24 @@ package com.hedvig.app.feature.insurance.ui
 
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityOptionsCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import com.google.android.material.transition.platform.MaterialSharedAxis
-import com.hedvig.android.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.app.R
 import com.hedvig.app.databinding.InsuranceContractCardBinding
 import com.hedvig.app.databinding.InsuranceTerminatedContractsBinding
@@ -25,7 +29,6 @@ import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.ui.compose.composables.screens.GenericErrorScreen
 import com.hedvig.app.util.extensions.getActivity
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
@@ -182,7 +185,12 @@ class InsuranceAdapter(
       ) {
         composeView.setContent {
           HedvigTheme {
-            GenericErrorScreen(onRetryButtonClicked = { retry() })
+            GenericErrorScreen(
+              onRetryButtonClick = { retry() },
+              Modifier
+                .padding(16.dp)
+                .padding(top = (40 - 16).dp),
+            )
           }
         }
       }
@@ -204,7 +212,7 @@ class InsuranceAdapter(
         }
         composeView.setContent {
           HedvigTheme {
-            Subheading(stringResource(R.string.insurances_tab_more_title))
+            Subheading(stringResource(hedvig.resources.R.string.insurances_tab_more_title))
           }
         }
       }
@@ -220,7 +228,7 @@ class InsuranceAdapter(
           val data = data ?: return@setContent
           HedvigTheme {
             NotificationSubheading(
-              text = stringResource(R.string.insurance_tab_cross_sells_title),
+              text = stringResource(hedvig.resources.R.string.insurance_tab_cross_sells_title),
               showNotification = data.showNotificationBadge,
             )
           }
@@ -252,7 +260,7 @@ class InsuranceAdapter(
         }
 
         caption.text = caption.resources.getQuantityString(
-          R.plurals.insurances_tab_terminated_insurance_subtitile,
+          hedvig.resources.R.plurals.insurances_tab_terminated_insurance_subtitile,
           data.quantity,
           data.quantity,
         )

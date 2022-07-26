@@ -113,11 +113,11 @@ class PaymentAdapter(
         }
 
         title.text = title.resources.getQuantityText(
-          R.plurals.payments_screen_late_payments_title,
+          hedvig.resources.R.plurals.payments_screen_late_payments_title,
           data.failedCharges,
         )
         paragraph.text = paragraph.context.getString(
-          R.string.PAYMENTS_LATE_PAYMENTS_MESSAGE,
+          hedvig.resources.R.string.PAYMENTS_LATE_PAYMENTS_MESSAGE,
           data.failedCharges,
           data.nextChargeDate,
         )
@@ -167,7 +167,7 @@ class PaymentAdapter(
         } else if (isPending(data.inner.contracts)) {
           date.background.compatSetTint(date.context.colorAttr(R.attr.colorWarning))
           date.setTextColor(date.context.compatColor(R.color.off_black))
-          date.setText(R.string.PAYMENTS_CARD_NO_STARTDATE)
+          date.setText(hedvig.resources.R.string.PAYMENTS_CARD_NO_STARTDATE)
         }
 
         val incentive =
@@ -177,7 +177,7 @@ class PaymentAdapter(
         incentive?.asFreeMonths?.let { freeMonthsIncentive ->
           freeMonthsIncentive.quantity?.let { quantity ->
             discount.text = discount.resources.getQuantityString(
-              R.plurals.payment_screen_free_month_discount_label,
+              hedvig.resources.R.plurals.payment_screen_free_month_discount_label,
               quantity,
               quantity,
             )
@@ -185,7 +185,7 @@ class PaymentAdapter(
         }
         incentive?.asPercentageDiscountMonths?.let { percentageDiscountMonthsIncentive ->
           discount.text = discount.resources.getQuantityString(
-            R.plurals.payment_screen_percentage_discount_label,
+            hedvig.resources.R.plurals.payment_screen_percentage_discount_label,
             percentageDiscountMonthsIncentive.pdmQuantity,
             percentageDiscountMonthsIncentive.percentageDiscount.toInt(),
             percentageDiscountMonthsIncentive.pdmQuantity,
@@ -234,8 +234,8 @@ class PaymentAdapter(
         val incentive =
           data.inner.redeemedCampaigns.getOrNull(0)?.fragments?.incentiveFragment?.incentive
         incentive?.asFreeMonths?.let {
-          campaignInformationTitle.setText(R.string.PAYMENTS_SUBTITLE_CAMPAIGN)
-          campaignInformationLabelOne.setText(R.string.PAYMENTS_CAMPAIGN_OWNER)
+          campaignInformationTitle.setText(hedvig.resources.R.string.PAYMENTS_SUBTITLE_CAMPAIGN)
+          campaignInformationLabelOne.setText(hedvig.resources.R.string.PAYMENTS_CAMPAIGN_OWNER)
           data.inner.redeemedCampaigns.getOrNull(0)?.owner?.displayName?.let { displayName ->
             campaignInformationFieldOne.text = displayName
           }
@@ -257,14 +257,14 @@ class PaymentAdapter(
           }
         }
         incentive?.asMonthlyCostDeduction?.let { monthlyCostDeductionIncentive ->
-          campaignInformationTitle.setText(R.string.PAYMENTS_SUBTITLE_DISCOUNT)
-          campaignInformationLabelOne.setText(R.string.PAYMENTS_DISCOUNT_ZERO)
+          campaignInformationTitle.setText(hedvig.resources.R.string.PAYMENTS_SUBTITLE_DISCOUNT)
+          campaignInformationLabelOne.setText(hedvig.resources.R.string.PAYMENTS_DISCOUNT_ZERO)
           monthlyCostDeductionIncentive.amount?.amount?.toBigDecimal()?.toInt()
             ?.toString()
             ?.let { amount ->
               campaignInformationFieldOne.text =
                 campaignInformationFieldOne.context.getString(
-                  R.string.PAYMENTS_DISCOUNT_AMOUNT,
+                  hedvig.resources.R.string.PAYMENTS_DISCOUNT_AMOUNT,
                   amount,
                 )
             }
@@ -334,8 +334,8 @@ class PaymentAdapter(
           PayinMethodStatus.ACTIVE ->
             bank.text =
               data.bankAccount.fragments.bankAccountFragment.bankName
-          PayinMethodStatus.PENDING -> bank.setText(R.string.PAYMENTS_DIRECT_DEBIT_PENDING)
-          PayinMethodStatus.NEEDS_SETUP -> bank.setText(R.string.PAYMENTS_DIRECT_DEBIT_NEEDS_SETUP)
+          PayinMethodStatus.PENDING -> bank.setText(hedvig.resources.R.string.PAYMENTS_DIRECT_DEBIT_PENDING)
+          PayinMethodStatus.NEEDS_SETUP -> bank.setText(hedvig.resources.R.string.PAYMENTS_DIRECT_DEBIT_NEEDS_SETUP)
           else -> {
           }
         }
@@ -361,7 +361,7 @@ class PaymentAdapter(
           data.inner.fragments.activePaymentMethodsFragment.asStoredCardDetails?.let {
             cardType.text = it.brand
             maskedCardNumber.text = maskedCardNumber.context.getString(
-              R.string.payment_screen_credit_card_masking,
+              hedvig.resources.R.string.payment_screen_credit_card_masking,
               it.lastFourDigits,
             )
             maskedCardNumber.show()
@@ -396,13 +396,13 @@ class PaymentAdapter(
 
         when (data.status) {
           PayoutMethodStatus.ACTIVE -> {
-            root.setText(R.string.payment_screen_pay_connected_label)
+            root.setText(hedvig.resources.R.string.payment_screen_pay_connected_label)
             root.putCompoundDrawablesRelativeWithIntrinsicBounds(
-              start = R.drawable.ic_checkmark_in_circle,
+              start = com.hedvig.android.core.designsystem.R.drawable.ic_checkmark_in_circle,
             )
           }
           PayoutMethodStatus.PENDING -> {
-            root.setText(R.string.payment_screen_bank_account_processing)
+            root.setText(hedvig.resources.R.string.payment_screen_bank_account_processing)
             root.putCompoundDrawablesRelativeWithIntrinsicBounds()
           }
           else -> {
@@ -426,10 +426,12 @@ class PaymentAdapter(
 
         when (data.status) {
           PayoutMethodStatus.ACTIVE -> root.setText(
-            R.string.payment_screen_pay_out_connected_payout_footer_connected,
+            hedvig.resources.R.string.payment_screen_pay_out_connected_payout_footer_connected,
           )
-          PayoutMethodStatus.NEEDS_SETUP -> root.setText(R.string.payment_screen_pay_out_footer_not_connected)
-          PayoutMethodStatus.PENDING -> root.setText(R.string.payment_screen_pay_out_footer_pending)
+          PayoutMethodStatus.NEEDS_SETUP -> {
+            root.setText(hedvig.resources.R.string.payment_screen_pay_out_footer_not_connected)
+          }
+          PayoutMethodStatus.PENDING -> root.setText(hedvig.resources.R.string.payment_screen_pay_out_footer_pending)
           else -> {
             root.text = ""
           }
@@ -450,12 +452,12 @@ class PaymentAdapter(
 
         root.setText(
           when (data) {
-            PaymentModel.Link.RedeemDiscountCode -> R.string.REFERRAL_ADDCOUPON_HEADLINE
-            is PaymentModel.Link.TrustlyChangePayin -> R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT
-            is PaymentModel.Link.AdyenChangePayin -> R.string.MY_PAYMENT_CHANGE_CREDIT_CARD_BUTTON
+            PaymentModel.Link.RedeemDiscountCode -> hedvig.resources.R.string.REFERRAL_ADDCOUPON_HEADLINE
+            is PaymentModel.Link.TrustlyChangePayin -> hedvig.resources.R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT
+            is PaymentModel.Link.AdyenChangePayin -> hedvig.resources.R.string.MY_PAYMENT_CHANGE_CREDIT_CARD_BUTTON
             is PaymentModel.Link.AdyenAddPayout ->
-              R.string.payment_screen_connect_pay_out_connect_payout_button
-            PaymentModel.Link.AdyenChangePayout -> R.string.payment_screen_pay_out_change_payout_button
+              hedvig.resources.R.string.payment_screen_connect_pay_out_connect_payout_button
+            PaymentModel.Link.AdyenChangePayout -> hedvig.resources.R.string.payment_screen_pay_out_change_payout_button
           },
         )
 

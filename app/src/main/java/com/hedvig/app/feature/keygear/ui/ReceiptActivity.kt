@@ -155,7 +155,7 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
     val uri = Uri.parse(fileUrl)
     val filename = fileService.getFileName(uri)
     val request = DownloadManager.Request(uri).apply {
-      setDescription(getString(R.string.KEY_GEAR_ITEM_VIEW_RECEIPT_CELL_TITLE))
+      setDescription(getString(hedvig.resources.R.string.KEY_GEAR_ITEM_VIEW_RECEIPT_CELL_TITLE))
       setTitle(fileService.getFileName(uri))
       setDestinationInExternalPublicDir(
         Environment.DIRECTORY_DOWNLOADS,
@@ -170,8 +170,8 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
       .make(
         binding.root,
         getString(
-          R.string.KEY_GEAR_RECEIPT_DOWNLOAD_SNACKBAR,
-          filename ?: getString(R.string.KEY_GEAR_ITEM_VIEW_RECEIPT_CELL_TITLE),
+          hedvig.resources.R.string.KEY_GEAR_RECEIPT_DOWNLOAD_SNACKBAR,
+          filename ?: getString(hedvig.resources.R.string.KEY_GEAR_ITEM_VIEW_RECEIPT_CELL_TITLE),
         ),
         Snackbar.LENGTH_LONG,
       )

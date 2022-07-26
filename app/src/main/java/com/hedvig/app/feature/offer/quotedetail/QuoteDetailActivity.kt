@@ -63,7 +63,8 @@ class QuoteDetailActivity : BaseActivity(R.layout.quote_detail_activity) {
       ).also {
         it.submitList(
           listOf(
-            PerilItem.Header.Simple(getString(R.string.cross_sell_info_coverage_title)),
+            PerilItem.Header.Simple(getString(hedvig.resources.R.string.cross_sell_info_coverage_title)),
+            PerilItem.Header.Simple(getString(hedvig.resources.R.string.cross_sell_info_coverage_title)),
           ) + perils,
         )
       }
@@ -76,7 +77,7 @@ class QuoteDetailActivity : BaseActivity(R.layout.quote_detail_activity) {
         .also {
           it.submitList(
             listOf(
-              DocumentItems.Header(R.string.OFFER_DOCUMENTS_SECTION_TITLE),
+              DocumentItems.Header(hedvig.resources.R.string.OFFER_DOCUMENTS_SECTION_TITLE),
             ) + documents,
           )
         }

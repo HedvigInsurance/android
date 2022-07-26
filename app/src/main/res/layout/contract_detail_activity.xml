@@ -12,7 +12,7 @@
         android:background="?colorSurface"
         app:navigationIcon="@drawable/ic_back" />
 
-    <com.hedvig.app.ui.compose.composables.screens.GenericErrorScreenView
+    <com.hedvig.android.core.ui.genericinfo.GenericErrorScreenView
         android:id="@+id/error"
         android:visibility="gone"
         android:layout_width="match_parent"

@@ -4,13 +4,17 @@ import android.animation.ValueAnimator
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.unit.dp
 import androidx.core.view.doOnDetach
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-import com.hedvig.android.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.android.owldroid.graphql.fragment.ReferralFragment
 import com.hedvig.app.R
@@ -20,7 +24,6 @@ import com.hedvig.app.databinding.ReferralsRowBinding
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeActivity
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.ui.compose.composables.screens.GenericErrorScreen
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
@@ -125,7 +128,7 @@ class ReferralsAdapter(
                 ?.toMonetaryAmount()
                 ?.let { incentiveAmount ->
                   emptyBody.text = emptyBody.context.getString(
-                    R.string.referrals_empty_body,
+                    hedvig.resources.R.string.referrals_empty_body,
                     incentiveAmount.format(emptyBody.context, marketManager.market),
                     Money.of(0, incentiveAmount.currency.currencyCode)
                       .format(emptyBody.context, marketManager.market),
@@ -242,7 +245,7 @@ class ReferralsAdapter(
                 PieChartSegment(
                   CURRENT_DISCOUNT_SLICE,
                   cdaAsPercentage,
-                  piechart.context.colorAttr(R.attr.colorSurface),
+                  piechart.context.colorAttr(com.google.android.material.R.attr.colorSurface),
                 )
               } else {
                 null
@@ -322,7 +325,7 @@ class ReferralsAdapter(
                 Snackbar
                   .make(
                     code,
-                    R.string.referrals_active__toast_text,
+                    hedvig.resources.R.string.referrals_active__toast_text,
                     Snackbar.LENGTH_SHORT,
                   )
                   .setAnchorView(R.id.bottomNavigation)
@@ -341,7 +344,7 @@ class ReferralsAdapter(
                 ?.toMonetaryAmount()
                 ?.let { incentiveAmount ->
                   codeFootnote.text = codeFootnote.resources.getString(
-                    R.string.referrals_empty_code_footer,
+                    hedvig.resources.R.string.referrals_empty_code_footer,
                     incentiveAmount.format(codeFootnote.context, marketManager.market),
                   )
                 }
@@ -414,7 +417,7 @@ class ReferralsAdapter(
             status.background =
               status.context.compatDrawable(R.drawable.background_slightly_rounded_corners)
                 ?.apply {
-                  mutate().compatSetTint(status.context.colorAttr(R.attr.colorSurface))
+                  mutate().compatSetTint(status.context.colorAttr(com.google.android.material.R.attr.colorSurface))
                 }
             val discountAsNegative =
               activeReferral.discount.fragments.monetaryAmountFragment.toMonetaryAmount()
@@ -425,13 +428,13 @@ class ReferralsAdapter(
             icon.setImageResource(R.drawable.ic_clock_colorless)
             status.background = null
             status.text =
-              status.context.getString(R.string.referalls_invitee_states_awaiting___)
+              status.context.getString(hedvig.resources.R.string.referalls_invitee_states_awaiting___)
           }
           data.asTerminatedReferral?.let {
             icon.setImageResource(R.drawable.ic_x_in_circle)
             status.background = null
             status.text =
-              status.context.getString(R.string.referalls_invitee_states_terminated)
+              status.context.getString(hedvig.resources.R.string.referalls_invitee_states_terminated)
           }
         }
       }
@@ -456,7 +459,12 @@ class ReferralsAdapter(
       ) {
         composeView.setContent {
           HedvigTheme {
-            GenericErrorScreen(onRetryButtonClicked = { reload() })
+            GenericErrorScreen(
+              onRetryButtonClick = { reload() },
+              Modifier
+                .padding(16.dp)
+                .padding(top = (64 - 16).dp),
+            )
           }
         }
       }

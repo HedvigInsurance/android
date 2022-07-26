@@ -37,7 +37,7 @@ class InactiveTest : TestCase() {
     onScreen<PaymentScreen> {
       recycler {
         childAt<PaymentScreen.NextPayment>(1) {
-          paymentDate { hasText(R.string.PAYMENTS_CARD_NO_STARTDATE) }
+          paymentDate { hasText(hedvig.resources.R.string.PAYMENTS_CARD_NO_STARTDATE) }
         }
       }
     }

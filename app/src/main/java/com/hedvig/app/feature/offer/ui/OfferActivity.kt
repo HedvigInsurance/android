@@ -179,7 +179,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         when (viewState) {
           is OfferViewModel.ViewState.Loading -> {}
           is OfferViewModel.ViewState.Error -> showErrorDialog(
-            viewState.message ?: getString(R.string.NETWORK_ERROR_ALERT_MESSAGE),
+            viewState.message ?: getString(hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE),
           ) {}
           is OfferViewModel.ViewState.Content -> {
             topOfferAdapter.submitList(viewState.createTopOfferItems())
@@ -410,10 +410,10 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     }
     R.id.discard_offer -> {
       showAlert(
-        title = R.string.OFFER_QUIT_TITLE,
-        message = R.string.OFFER_QUIT_MESSAGE,
-        positiveLabel = R.string.general_back_button,
-        negativeLabel = R.string.general_discard_button,
+        title = hedvig.resources.R.string.OFFER_QUIT_TITLE,
+        message = hedvig.resources.R.string.OFFER_QUIT_MESSAGE,
+        positiveLabel = hedvig.resources.R.string.general_back_button,
+        negativeLabel = hedvig.resources.R.string.general_discard_button,
         positiveAction = {},
         negativeAction = { model.onDiscardOffer() },
       )

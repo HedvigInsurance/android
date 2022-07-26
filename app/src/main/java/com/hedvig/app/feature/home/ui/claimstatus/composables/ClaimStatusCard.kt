@@ -12,7 +12,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusCardUiState
 import com.hedvig.app.feature.home.ui.claimstatus.data.PillUiState
 import com.hedvig.app.ui.compose.composables.claimprogress.ClaimProgressRow

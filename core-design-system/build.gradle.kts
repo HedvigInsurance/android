@@ -4,6 +4,12 @@ plugins {
   id("hedvig.android.ktlint")
 }
 
+android {
+  defaultConfig {
+    vectorDrawables.useSupportLibrary = true
+  }
+}
+
 dependencies {
   api(libs.androidx.compose.foundation)
   api(libs.androidx.compose.material)

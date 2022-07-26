@@ -56,7 +56,9 @@ abstract class ExpandableBottomSheet : BottomSheetDialogFragment() {
                     return
                   }
 
-                  dialog?.window?.statusBarColor = requireContext().colorAttr(R.attr.colorSurface)
+                  dialog?.window?.statusBarColor = requireContext().colorAttr(
+                    com.google.android.material.R.attr.colorSurface,
+                  )
                   if (!requireContext().isDarkThemeActive) {
                     dialog?.window?.decorView?.let {
                       it.systemUiVisibility =

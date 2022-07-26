@@ -49,7 +49,7 @@ class MaxChangesErrorTest : TestCase() {
       save { click() }
       editLayout {
         isErrorEnabled()
-        hasError(R.string.referrals_change_code_sheet_error_change_limit_reached, 3)
+        hasError(hedvig.resources.R.string.referrals_change_code_sheet_error_change_limit_reached, 3)
       }
     }
   }

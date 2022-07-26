@@ -75,9 +75,9 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
               }
               ExternalInsurerViewModel.Event.CantAutomaticallyMoveInsurance -> {
                 MaterialAlertDialogBuilder(requireContext())
-                  .setTitle(getString(R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_TITLE))
-                  .setMessage(getString(R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_MESSAGE))
-                  .setPositiveButton(getString(R.string.ALERT_OK)) { _, _ -> continueEmbark() }
+                  .setTitle(getString(hedvig.resources.R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_TITLE))
+                  .setMessage(getString(hedvig.resources.R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_MESSAGE))
+                  .setPositiveButton(getString(hedvig.resources.R.string.ALERT_OK)) { _, _ -> continueEmbark() }
                   .show()
               }
               ExternalInsurerViewModel.Event.SkipDataCollection -> continueEmbark()
@@ -167,7 +167,7 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
   }
 
   private fun InsuranceProvidersResult.Error.getStringRes() = when (this) {
-    InsuranceProvidersResult.Error.NetworkError -> R.string.NETWORK_ERROR_ALERT_MESSAGE
+    InsuranceProvidersResult.Error.NetworkError -> hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE
   }
 
   companion object {

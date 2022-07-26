@@ -48,7 +48,7 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
       .flowWithLifecycle(lifecycle)
       .onEach { event ->
         when (event) {
-          Event.Error -> showErrorDialog(getString(R.string.component_error)) {}
+          Event.Error -> showErrorDialog(getString(com.adyen.checkout.dropin.R.string.component_error)) {}
           Event.StartChat -> startChat()
         }
       }
@@ -81,31 +81,31 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
         binding.contentScrollView.remove()
       }
       is SelfChangeAddress -> setContent(
-        titleText = getString(R.string.moving_intro_title),
-        subtitleText = getString(R.string.moving_intro_description),
-        buttonText = getString(R.string.moving_intro_open_flow_button_text),
+        titleText = getString(hedvig.resources.R.string.moving_intro_title),
+        subtitleText = getString(hedvig.resources.R.string.moving_intro_description),
+        buttonText = getString(hedvig.resources.R.string.moving_intro_open_flow_button_text),
         buttonIcon = null,
         onContinue = {
           startActivity(
             EmbarkActivity.newInstance(
               context = this,
               storyName = viewState.embarkStoryId,
-              storyTitle = getString(R.string.moving_embark_title),
+              storyTitle = getString(hedvig.resources.R.string.moving_embark_title),
             ),
           )
         },
       )
       ManualChangeAddress -> setContent(
-        titleText = getString(R.string.moving_intro_title),
-        subtitleText = getString(R.string.moving_intro_manual_handling_description),
-        buttonText = getString(R.string.moving_intro_manual_handling_button_text),
+        titleText = getString(hedvig.resources.R.string.moving_intro_title),
+        subtitleText = getString(hedvig.resources.R.string.moving_intro_manual_handling_description),
+        buttonText = getString(hedvig.resources.R.string.moving_intro_manual_handling_button_text),
         buttonIcon = R.drawable.ic_chat_white,
         onContinue = { startChat() },
       )
       is ChangeAddressInProgress -> setUpcomingChangeContent(
-        titleText = getString(R.string.moving_intro_existing_move_title),
-        subtitleText = getString(R.string.moving_intro_existing_move_description),
-        buttonText = getString(R.string.moving_intro_manual_handling_button_text),
+        titleText = getString(hedvig.resources.R.string.moving_intro_existing_move_title),
+        subtitleText = getString(hedvig.resources.R.string.moving_intro_existing_move_description),
+        buttonText = getString(hedvig.resources.R.string.moving_intro_manual_handling_button_text),
         buttonIcon = R.drawable.ic_chat_white,
         onContinue = {
           lifecycleScope.launch {
@@ -115,7 +115,7 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
         viewState.upcomingAgreementResult,
       )
       is UpcomingAgreementError -> setContent(
-        titleText = getString(R.string.error_dialog_title),
+        titleText = getString(com.adyen.checkout.dropin.R.string.error_dialog_title),
         subtitleText = when (viewState.error) {
           NoContractsError -> "You do not have any contracts eligible for address change"
           is GeneralError -> viewState.error.message ?: "Could not continue, please try again later"
@@ -125,7 +125,7 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
         onContinue = { model.reload() },
       )
       is SelfChangeError -> setContent(
-        titleText = getString(R.string.error_dialog_title),
+        titleText = getString(com.adyen.checkout.dropin.R.string.error_dialog_title),
         subtitleText = viewState.error.message ?: "Could not continue, please try again later",
         buttonText = "Try again",
         buttonIcon = null,

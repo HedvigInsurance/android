@@ -200,7 +200,7 @@ class CrossSellingResultScreenTest {
 
 private sealed class TextAlternative(@StringRes protected val stringRes: Int) {
 
-  object Failed : TextAlternative(R.string.purchase_confirmation_error_subtitle) {
+  object Failed : TextAlternative(hedvig.resources.R.string.purchase_confirmation_error_subtitle) {
     fun getString(context: Context): String = context.getString(stringRes)
   }
 

@@ -7,7 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import com.hedvig.android.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
@@ -65,7 +65,7 @@ class CrossSellDetailActivity : BaseActivity() {
     startActivity(
       QuoteDetailActivity.newInstance(
         context = this,
-        title = getString(R.string.cross_sell_info_full_coverage_row),
+        title = getString(hedvig.resources.R.string.cross_sell_info_full_coverage_row),
         perils = perils,
         insurableLimits = crossSell.insurableLimits,
         documents = crossSell.terms,

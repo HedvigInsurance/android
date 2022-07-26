@@ -1,6 +1,3 @@
-import java.io.FileInputStream
-import java.util.Properties
-
 // TODO: Remove once https://youtrack.jetbrains.com/issue/KTIJ-19369 is fixed
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
@@ -11,7 +8,6 @@ plugins {
   alias(libs.plugins.crashlytics)
   id("kotlin-parcelize")
   id("kotlin-kapt")
-  alias(libs.plugins.lokalise)
   alias(libs.plugins.license)
   alias(libs.plugins.serialization)
 }
@@ -139,6 +135,7 @@ dependencies {
   implementation(projects.apollo)
   implementation(projects.coreCommon)
   implementation(projects.coreDesignSystem)
+  implementation(projects.coreResources)
   implementation(projects.coreUi)
 
   androidTestImplementation(projects.testdata)
@@ -287,14 +284,4 @@ dependencies {
   kaptDebug(libs.showkase.processor)
   "kaptStaging"(libs.showkase.processor)
   "kaptPullrequest"(libs.showkase.processor)
-}
-
-val lokaliseProperties = Properties()
-lokaliseProperties.load(FileInputStream(rootProject.file("lokalise.properties")))
-
-lokalise {
-  id = lokaliseProperties.getProperty("id")
-  token = lokaliseProperties.getProperty("token")
-
-  downloadConfig = com.likandr.gradle.config.DownloadConfig()
 }

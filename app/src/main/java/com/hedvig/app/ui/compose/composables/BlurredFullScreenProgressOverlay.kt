@@ -25,7 +25,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.hedvig.app.ui.compose.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.ui.compose.theme.HedvigTypography
 import com.hedvig.app.ui.compose.theme.progressBlue
 import com.hedvig.app.ui.compose.theme.progressYellow

@@ -45,7 +45,7 @@ class HomeItemsBuilder(
       add(HomeModel.ConnectPayin(featureManager.getPaymentType()))
     }
     if (featureManager.isFeatureEnabled(Feature.COMMON_CLAIMS)) {
-      add(HomeModel.Header(R.string.home_tab_common_claims_title))
+      add(HomeModel.Header(hedvig.resources.R.string.home_tab_common_claims_title))
       addAll(
         listOfNotNull(
           *commonClaimsItems(
@@ -56,7 +56,7 @@ class HomeItemsBuilder(
       )
     }
 
-    add(HomeModel.Header(R.string.home_tab_editing_section_title))
+    add(HomeModel.Header(hedvig.resources.R.string.home_tab_editing_section_title))
     add(HomeModel.ChangeAddress)
   }
 

@@ -10,7 +10,7 @@ import com.hedvig.app.R
 @Composable
 fun ErrorDialog(
   onDismiss: () -> Unit,
-  title: String = stringResource(R.string.error_dialog_title),
+  title: String = stringResource(com.adyen.checkout.dropin.R.string.error_dialog_title),
   message: String?,
 ) {
   AlertDialog(
@@ -19,11 +19,11 @@ fun ErrorDialog(
       Text(title)
     },
     text = {
-      Text(message ?: stringResource(id = R.string.general_unknown_error))
+      Text(message ?: stringResource(id = hedvig.resources.R.string.general_unknown_error))
     },
     confirmButton = {
       TextButton(onClick = onDismiss) {
-        Text(stringResource(R.string.error_dialog_button))
+        Text(stringResource(com.adyen.checkout.dropin.R.string.error_dialog_button))
       }
     },
   )

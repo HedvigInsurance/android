@@ -44,9 +44,11 @@ class UpcomingRenewalTest : TestCase() {
     Screen.onScreen<HomeTabScreen> {
       recycler {
         childAt<HomeTabScreen.UpcomingRenewal>(3) {
-          title { hasText(R.string.DASHBOARD_RENEWAL_PROMPTER_TITLE, HomeDataBuilder.CONTRACT_DISPLAY_NAME) }
+          title {
+            hasText(hedvig.resources.R.string.DASHBOARD_RENEWAL_PROMPTER_TITLE, HomeDataBuilder.CONTRACT_DISPLAY_NAME)
+          }
           button {
-            hasText(R.string.DASHBOARD_RENEWAL_PROMPTER_CTA)
+            hasText(hedvig.resources.R.string.DASHBOARD_RENEWAL_PROMPTER_CTA)
             click()
           }
           link { intended() }

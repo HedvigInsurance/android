@@ -11,8 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import com.hedvig.android.designsystem.component.button.LargeContainedTextButton
-import com.hedvig.android.designsystem.component.button.LargeOutlinedTextButton
+import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
+import com.hedvig.android.core.designsystem.component.button.LargeOutlinedTextButton
 import com.hedvig.app.R
 
 @Composable
@@ -33,26 +33,26 @@ fun IntroContent(
     Column(verticalArrangement = Arrangement.spacedBy(baseMarginDouble)) {
       Text(
         modifier = Modifier.padding(top = baseMargin),
-        text = stringResource(R.string.insurely_intro_title, selectedInsurance),
+        text = stringResource(hedvig.resources.R.string.insurely_intro_title, selectedInsurance),
         style = MaterialTheme.typography.h6,
         color = MaterialTheme.colors.primary,
       )
       Text(
-        text = stringResource(R.string.insurely_intro_description),
+        text = stringResource(hedvig.resources.R.string.insurely_intro_description),
         style = MaterialTheme.typography.body1,
       )
     }
     Column(verticalArrangement = Arrangement.spacedBy(baseMarginDouble)) {
       LargeContainedTextButton(
-        text = stringResource(R.string.insurely_intro_continue_button_text),
+        text = stringResource(hedvig.resources.R.string.insurely_intro_continue_button_text),
         onClick = onNavigateToRetrievePriceInfo,
       )
       LargeOutlinedTextButton(
-        text = stringResource(R.string.insurely_intro_skip_button_text),
+        text = stringResource(hedvig.resources.R.string.insurely_intro_skip_button_text),
         onClick = onSkipRetrievePriceInfo,
       )
       Text(
-        text = stringResource(R.string.insurely_intro_footer, selectedInsurance),
+        text = stringResource(hedvig.resources.R.string.insurely_intro_footer, selectedInsurance),
         style = MaterialTheme.typography.caption,
         textAlign = TextAlign.Center,
       )

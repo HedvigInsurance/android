@@ -24,8 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.designsystem.theme.HedvigTheme
-import com.hedvig.app.R
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.ui.compose.theme.onWarning
 import com.hedvig.app.ui.compose.theme.warning
 
@@ -42,17 +41,17 @@ fun FailedAudioPlayerCard(
       modifier = Modifier.padding(horizontal = 16.dp),
     ) {
       Icon(
-        painter = painterResource(R.drawable.ic_warning_triangle),
+        painter = painterResource(com.hedvig.android.core.designsystem.R.drawable.ic_warning_triangle),
         contentDescription = null,
       )
       Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text(
-          text = stringResource(R.string.claim_status_detail_info_error_title),
+          text = stringResource(hedvig.resources.R.string.claim_status_detail_info_error_title),
           style = MaterialTheme.typography.body1,
         )
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
           Text(
-            text = stringResource(R.string.claim_status_detail_info_error_body),
+            text = stringResource(hedvig.resources.R.string.claim_status_detail_info_error_body),
             style = MaterialTheme.typography.body2,
           )
         }
@@ -68,7 +67,7 @@ fun FailedAudioPlayerCard(
       colors = ButtonDefaults.textButtonColors(contentColor = LocalContentColor.current),
     ) {
       Text(
-        text = stringResource(R.string.claim_status_detail_info_error_button),
+        text = stringResource(hedvig.resources.R.string.claim_status_detail_info_error_button),
         style = MaterialTheme.typography.body2,
       )
     }

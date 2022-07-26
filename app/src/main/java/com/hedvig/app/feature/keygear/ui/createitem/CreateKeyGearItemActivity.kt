@@ -185,7 +185,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
 
           createdLabel.show()
           createdLabel.text =
-            getString(R.string.KEY_GEAR_ADD_ITEM_SUCCESS, getString(category.label))
+            getString(hedvig.resources.R.string.KEY_GEAR_ADD_ITEM_SUCCESS, getString(category.label))
 
           createdIllustration.show()
           createdIllustration.setImageResource(category.illustration)
@@ -300,10 +300,10 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
     }
     if (dirty) {
       showAlert(
-        R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_TITLE,
-        R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_BODY,
-        R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_CONTINUE_BUTTON,
-        R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_DISMISS_BUTTON,
+        hedvig.resources.R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_TITLE,
+        hedvig.resources.R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_BODY,
+        hedvig.resources.R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_CONTINUE_BUTTON,
+        hedvig.resources.R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_DISMISS_BUTTON,
         positiveAction = {
           super.onBackPressed()
         },

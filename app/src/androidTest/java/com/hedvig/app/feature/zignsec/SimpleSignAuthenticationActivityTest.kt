@@ -27,10 +27,10 @@ class SimpleSignAuthenticationActivityTest : TestCase() {
     SimpleSignAuthenticationScreen {
       signIn {
         isDisabled()
-        hasText(R.string.simple_sign_sign_in_dk)
+        hasText(hedvig.resources.R.string.simple_sign_sign_in_dk)
       }
       input {
-        hasHint(R.string.simple_sign_login_text_field_label_dk)
+        hasHint(hedvig.resources.R.string.simple_sign_login_text_field_label_dk)
         edit { typeText("1212121212") }
       }
       signIn { isEnabled() }
@@ -44,11 +44,11 @@ class SimpleSignAuthenticationActivityTest : TestCase() {
     SimpleSignAuthenticationScreen {
       signIn {
         isDisabled()
-        hasText(R.string.simple_sign_sign_in)
+        hasText(hedvig.resources.R.string.simple_sign_sign_in)
       }
       input {
-        hasHint(R.string.simple_sign_login_text_field_label)
-        hasHelperText(R.string.simple_sign_login_text_field_helper_text)
+        hasHint(hedvig.resources.R.string.simple_sign_login_text_field_label)
+        hasHelperText(hedvig.resources.R.string.simple_sign_login_text_field_helper_text)
         edit { typeText("12121212121") }
       }
       signIn { isEnabled() }

@@ -15,12 +15,12 @@ sealed class OfferStartDate {
 
 fun OfferStartDate.getString(context: Context): String? = when (this) {
   is OfferStartDate.AtDate -> if (date.isToday()) {
-    context.getString(R.string.START_DATE_TODAY)
+    context.getString(hedvig.resources.R.string.START_DATE_TODAY)
   } else {
     date.format(ISO_8601_DATE)
   }
-  OfferStartDate.Multiple -> context.getString(R.string.OFFER_START_DATE_MULTIPLE)
-  OfferStartDate.WhenCurrentPlanExpires -> context.getString(R.string.START_DATE_EXPIRES)
+  OfferStartDate.Multiple -> context.getString(hedvig.resources.R.string.OFFER_START_DATE_MULTIPLE)
+  OfferStartDate.WhenCurrentPlanExpires -> context.getString(hedvig.resources.R.string.START_DATE_EXPIRES)
 }
 
 fun QuoteBundleFragment.Inception1.getStartDate() = when {

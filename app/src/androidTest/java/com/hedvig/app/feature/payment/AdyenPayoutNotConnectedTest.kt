@@ -49,7 +49,7 @@ class AdyenPayoutNotConnectedTest : TestCase() {
           click()
         }
         childAt<PaymentScreen.AdyenPayoutParagraph>(5) {
-          text { hasText(R.string.payment_screen_pay_out_footer_not_connected) }
+          text { hasText(hedvig.resources.R.string.payment_screen_pay_out_footer_not_connected) }
         }
       }
       adyenConnectPayout { intended() }

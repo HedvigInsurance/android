@@ -47,7 +47,7 @@ class ExternalInsurerViewModel(
   fun continueWithProvider(provider: InsuranceProvider, resources: Resources) {
     viewModelScope.launch {
       if (provider.collectionId == null ||
-        provider.collectionId == resources.getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION)
+        provider.collectionId == resources.getString(hedvig.resources.R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION)
       ) {
         _events.trySend(Event.CantAutomaticallyMoveInsurance)
         return@launch

@@ -85,8 +85,8 @@ class CharityActivity : BaseActivity(R.layout.activity_charity) {
       selectedCharityCardParagraph.text = cashback.description
       charitySelectedHowDoesItWorkButton.setHapticClickListener {
         ExplanationBottomSheet.newInstance(
-          title = getString(R.string.CHARITY_INFO_DIALOG_TITLE),
-          markDownText = getString(R.string.PROFILE_MY_CHARITY_INFO_BODY),
+          title = getString(hedvig.resources.R.string.CHARITY_INFO_DIALOG_TITLE),
+          markDownText = getString(hedvig.resources.R.string.PROFILE_MY_CHARITY_INFO_BODY),
         )
           .show(supportFragmentManager, ExplanationBottomSheet.TAG)
       }
@@ -104,8 +104,8 @@ class CharityActivity : BaseActivity(R.layout.activity_charity) {
       }
       selectCharityHowDoesItWorkButton.setHapticClickListener {
         ExplanationBottomSheet.newInstance(
-          title = getString(R.string.CHARITY_INFO_DIALOG_TITLE),
-          markDownText = getString(R.string.PROFILE_MY_CHARITY_INFO_BODY),
+          title = getString(hedvig.resources.R.string.CHARITY_INFO_DIALOG_TITLE),
+          markDownText = getString(hedvig.resources.R.string.PROFILE_MY_CHARITY_INFO_BODY),
         )
           .show(supportFragmentManager, ExplanationBottomSheet.TAG)
       }

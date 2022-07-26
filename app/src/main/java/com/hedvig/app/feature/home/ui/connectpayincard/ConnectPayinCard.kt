@@ -22,7 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 import com.hedvig.app.ui.compose.theme.hedvigContentColorFor
 import com.hedvig.app.ui.compose.theme.warning
@@ -51,18 +51,18 @@ fun ConnectPayinCard(
         modifier = Modifier.padding(horizontal = 16.dp),
       ) {
         Icon(
-          painter = painterResource(R.drawable.ic_warning_triangle),
+          painter = painterResource(com.hedvig.android.core.designsystem.R.drawable.ic_warning_triangle),
           contentDescription = null,
         )
         Spacer(Modifier.width(16.dp))
         Column {
           Text(
-            text = stringResource(R.string.info_card_missing_payment_title),
+            text = stringResource(hedvig.resources.R.string.info_card_missing_payment_title),
             style = MaterialTheme.typography.subtitle1,
           )
           Spacer(Modifier.height(8.dp))
           Text(
-            text = stringResource(R.string.info_card_missing_payment_body),
+            text = stringResource(hedvig.resources.R.string.info_card_missing_payment_body),
             style = MaterialTheme.typography.body2,
           )
         }
@@ -80,7 +80,7 @@ fun ConnectPayinCard(
         ),
       ) {
         Text(
-          text = stringResource(R.string.info_card_missing_payment_button_text),
+          text = stringResource(hedvig.resources.R.string.info_card_missing_payment_button_text),
         )
       }
     }

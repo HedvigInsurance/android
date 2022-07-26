@@ -58,7 +58,7 @@ class ActiveInFutureAndTerminatedInFutureTest : TestCase() {
             }
           }
           childAt<HomeTabScreen.BodyTextItem>(1) {
-            text { hasText(R.string.home_tab_active_in_future_body) }
+            text { hasText(hedvig.resources.R.string.home_tab_active_in_future_body) }
           }
         }
       }

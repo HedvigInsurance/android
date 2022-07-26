@@ -69,7 +69,7 @@ class TrustlyConnectedTest : TestCase() {
         }
         childAt<PaymentScreen.Link>(4) {
           button {
-            hasText(R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT)
+            hasText(hedvig.resources.R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT)
             click()
           }
         }

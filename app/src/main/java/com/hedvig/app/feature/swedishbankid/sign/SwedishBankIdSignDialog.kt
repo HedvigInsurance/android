@@ -30,7 +30,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
-import com.hedvig.android.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.payment.connectPayinIntent
@@ -107,16 +107,16 @@ class SwedishBankIdSignDialog : DialogFragment() {
   @Composable
   private fun textFromViewState(viewState: BankIdSignViewState): String {
     return when (viewState) {
-      is BankIdSignViewState.StartBankId -> stringResource(R.string.SIGN_START_BANKID)
-      BankIdSignViewState.Cancelled -> stringResource(R.string.SIGN_CANCELED)
-      BankIdSignViewState.SignInProgress -> stringResource(R.string.SIGN_IN_PROGRESS)
+      is BankIdSignViewState.StartBankId -> stringResource(hedvig.resources.R.string.SIGN_START_BANKID)
+      BankIdSignViewState.Cancelled -> stringResource(hedvig.resources.R.string.SIGN_CANCELED)
+      BankIdSignViewState.SignInProgress -> stringResource(hedvig.resources.R.string.SIGN_IN_PROGRESS)
       is BankIdSignViewState.Error -> {
         if (viewState.message != null) return viewState.message
-        stringResource(R.string.SIGN_FAILED_REASON_UNKNOWN)
+        stringResource(hedvig.resources.R.string.SIGN_FAILED_REASON_UNKNOWN)
       }
-      BankIdSignViewState.BankIdSuccess -> stringResource(R.string.SIGN_IN_PROGRESS)
-      is BankIdSignViewState.StartDirectDebit -> stringResource(R.string.SIGN_IN_PROGRESS)
-      BankIdSignViewState.Success -> stringResource(R.string.SIGN_SUCCESSFUL)
+      BankIdSignViewState.BankIdSuccess -> stringResource(hedvig.resources.R.string.SIGN_IN_PROGRESS)
+      is BankIdSignViewState.StartDirectDebit -> stringResource(hedvig.resources.R.string.SIGN_IN_PROGRESS)
+      BankIdSignViewState.Success -> stringResource(hedvig.resources.R.string.SIGN_SUCCESSFUL)
     }
   }
 
@@ -165,6 +165,6 @@ fun SwedishBankIdSignDialog(text: String) {
 )
 fun Preview() {
   HedvigTheme {
-    SwedishBankIdSignDialog(text = stringResource(id = R.string.SIGN_IN_PROGRESS))
+    SwedishBankIdSignDialog(text = stringResource(id = hedvig.resources.R.string.SIGN_IN_PROGRESS))
   }
 }

@@ -44,7 +44,7 @@ class InsurelyDialog : AuthenticateDialog() {
         when (viewState) {
           is InsurelyAuthViewModel.ViewState.Error -> {
             binding.progress.hide()
-            context?.showErrorDialog(getString(R.string.OFFER_COMPARISION_ERROR)) {
+            context?.showErrorDialog(getString(hedvig.resources.R.string.OFFER_COMPARISION_ERROR)) {
               setResult(success = false)
             }
           }
@@ -60,7 +60,7 @@ class InsurelyDialog : AuthenticateDialog() {
 
   private fun bindNewStatus(state: DataCollectionResult.Success.CollectionStatus): Any? = when (state) {
     DataCollectionResult.Success.CollectionStatus.LOGIN -> {
-      binding.authTitle.setText(R.string.BANK_ID_AUTH_TITLE_INITIATED)
+      binding.authTitle.setText(hedvig.resources.R.string.BANK_ID_AUTH_TITLE_INITIATED)
     }
     DataCollectionResult.Success.CollectionStatus.COMPLETED,
     DataCollectionResult.Success.CollectionStatus.COLLECTING,
@@ -68,7 +68,7 @@ class InsurelyDialog : AuthenticateDialog() {
     DataCollectionResult.Success.CollectionStatus.UNKNOWN,
     DataCollectionResult.Success.CollectionStatus.FAILED,
     -> {
-      binding.authTitle.setText(R.string.OFFER_COMPARISION_ERROR)
+      binding.authTitle.setText(hedvig.resources.R.string.OFFER_COMPARISION_ERROR)
       dialog?.setCanceledOnTouchOutside(true)
     }
     DataCollectionResult.Success.CollectionStatus.NONE -> {

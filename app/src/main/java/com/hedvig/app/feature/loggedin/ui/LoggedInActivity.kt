@@ -114,7 +114,9 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         .flowWithLifecycle(lifecycle)
         .onEach { event ->
           when (event) {
-            ClaimsViewModel.Event.Error -> showErrorDialog(getString(R.string.component_error)) {}
+            ClaimsViewModel.Event.Error -> {
+              showErrorDialog(getString(com.adyen.checkout.dropin.R.string.component_error)) {}
+            }
             ClaimsViewModel.Event.StartChat -> startChat()
           }
         }
@@ -172,9 +174,9 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             page.paragraph,
             getString(
               if (index == data.welcome.size - 1) {
-                R.string.NEWS_DISMISS
+                hedvig.resources.R.string.NEWS_DISMISS
               } else {
-                R.string.NEWS_PROCEED
+                hedvig.resources.R.string.NEWS_PROCEED
               },
             ),
           )
@@ -254,8 +256,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
               )
               .position(ViewTooltip.Position.BOTTOM)
               .color(compatColor(R.color.colorTooltip))
-              .textColor(colorAttr(R.attr.colorPrimary))
-              .text(R.string.home_tab_chat_hint_text)
+              .textColor(colorAttr(androidx.appcompat.R.attr.colorPrimary))
+              .text(hedvig.resources.R.string.home_tab_chat_hint_text)
               .withShadow(false)
               .onDisplay {
                 setLastOpen(currentEpochDay)
@@ -307,9 +309,9 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
               page.paragraph,
               getString(
                 if (index == data.news.size - 1) {
-                  R.string.NEWS_DISMISS
+                  hedvig.resources.R.string.NEWS_DISMISS
                 } else {
-                  R.string.NEWS_PROCEED
+                  hedvig.resources.R.string.NEWS_PROCEED
                 },
               ),
             )

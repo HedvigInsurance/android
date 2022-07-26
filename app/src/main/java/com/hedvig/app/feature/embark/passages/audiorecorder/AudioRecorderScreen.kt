@@ -24,9 +24,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.LocalWindowInsets
-import com.hedvig.android.designsystem.component.button.LargeContainedButton
-import com.hedvig.android.designsystem.component.button.LargeTextButton
-import com.hedvig.android.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
+import com.hedvig.android.core.designsystem.component.button.LargeTextButton
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 import com.hedvig.app.util.compose.ScreenOnFlag
 import java.time.Clock
@@ -104,7 +104,7 @@ fun NotRecording(startRecording: () -> Unit) {
     horizontalAlignment = Alignment.CenterHorizontally,
     modifier = Modifier.fillMaxWidth(),
   ) {
-    val label = stringResource(R.string.EMBARK_START_RECORDING)
+    val label = stringResource(hedvig.resources.R.string.EMBARK_START_RECORDING)
     IconButton(
       onClick = startRecording,
       modifier = Modifier
@@ -154,7 +154,7 @@ fun Recording(
           painter = painterResource(
             R.drawable.ic_record_stop,
           ),
-          contentDescription = stringResource(R.string.EMBARK_STOP_RECORDING),
+          contentDescription = stringResource(hedvig.resources.R.string.EMBARK_STOP_RECORDING),
         )
       }
     }
@@ -200,13 +200,13 @@ fun Playback(
       onClick = submit,
       modifier = Modifier.padding(top = 16.dp),
     ) {
-      Text(stringResource(R.string.EMBARK_SUBMIT_CLAIM))
+      Text(stringResource(hedvig.resources.R.string.EMBARK_SUBMIT_CLAIM))
     }
     LargeTextButton(
       onClick = redo,
       modifier = Modifier.padding(top = 8.dp),
     ) {
-      Text(stringResource(R.string.EMBARK_RECORD_AGAIN))
+      Text(stringResource(hedvig.resources.R.string.EMBARK_RECORD_AGAIN))
     }
   }
 }

@@ -43,10 +43,10 @@ class TerminatedTest : TestCase() {
     onScreen<HomeTabScreen> {
       recycler {
         childAt<HomeTabScreen.BigTextItem>(0) {
-          text { hasText(R.string.home_tab_terminated_welcome_title, "Test") }
+          text { hasText(hedvig.resources.R.string.home_tab_terminated_welcome_title, "Test") }
         }
         childAt<HomeTabScreen.BodyTextItem>(1) {
-          text { hasText(R.string.home_tab_terminated_body) }
+          text { hasText(hedvig.resources.R.string.home_tab_terminated_body) }
         }
         childAt<HomeTabScreen.StartClaimItem>(2) {
           button { click() }

@@ -65,7 +65,7 @@ class PerilAdapter(
         binding.apply {
           when (item) {
             is PerilModel.PerilList.Covered -> {
-              icon.setImageResource(R.drawable.ic_checkmark_in_circle)
+              icon.setImageResource(com.hedvig.android.core.designsystem.R.drawable.ic_checkmark_in_circle)
               text.text = item.text
             }
             is PerilModel.PerilList.Exception -> {
@@ -89,13 +89,13 @@ class PerilAdapter(
           setText(
             when (item) {
               PerilModel.Header.CoveredHeader -> {
-                R.string.PERIL_MODAL_COVERAGE_TITLE
+                hedvig.resources.R.string.PERIL_MODAL_COVERAGE_TITLE
               }
               PerilModel.Header.ExceptionHeader -> {
-                R.string.PERIL_MODAL_EXCEPTIONS_TITLE
+                hedvig.resources.R.string.PERIL_MODAL_EXCEPTIONS_TITLE
               }
               PerilModel.Header.InfoHeader -> {
-                R.string.PERIL_MODAL_INFO_TITLE
+                hedvig.resources.R.string.PERIL_MODAL_INFO_TITLE
               }
             },
           )

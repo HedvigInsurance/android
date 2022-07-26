@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 import com.hedvig.app.util.HedvigDateUtils
 import com.hedvig.app.util.compose.currentTimeAsState
@@ -48,12 +48,12 @@ fun SubmittedAndClosedColumns(
   }
   Row {
     SubmittedAndClosedColumn(
-      topText = stringResource(R.string.claim_status_detail_submitted).uppercase(locale),
+      topText = stringResource(hedvig.resources.R.string.claim_status_detail_submitted).uppercase(locale),
       bottomText = submittedText,
       modifier = Modifier.weight(0.5f),
     )
     SubmittedAndClosedColumn(
-      topText = stringResource(R.string.claim_status_detail_closed).uppercase(locale),
+      topText = stringResource(hedvig.resources.R.string.claim_status_detail_closed).uppercase(locale),
       bottomText = closedText,
       modifier = Modifier.weight(0.5f),
     )

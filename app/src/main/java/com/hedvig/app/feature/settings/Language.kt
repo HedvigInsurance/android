@@ -72,14 +72,14 @@ enum class Language {
   }
 
   fun getLabel() = when (this) {
-    SV_SE -> R.string.swedish
-    EN_SE -> R.string.english_swedish
-    NB_NO -> R.string.norwegian
-    EN_NO -> R.string.english_norwegian
-    DA_DK -> R.string.danish
-    EN_DK -> R.string.english_danish
-    FR_FR -> R.string.french
-    EN_FR -> R.string.english_french
+    SV_SE -> hedvig.resources.R.string.swedish
+    EN_SE -> hedvig.resources.R.string.english_swedish
+    NB_NO -> hedvig.resources.R.string.norwegian
+    EN_NO -> hedvig.resources.R.string.english_norwegian
+    DA_DK -> hedvig.resources.R.string.danish
+    EN_DK -> hedvig.resources.R.string.english_danish
+    FR_FR -> hedvig.resources.R.string.french
+    EN_FR -> hedvig.resources.R.string.english_french
   }
 
   override fun toString() = when (this) {

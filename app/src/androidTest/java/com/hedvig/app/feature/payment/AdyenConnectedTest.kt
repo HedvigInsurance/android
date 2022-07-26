@@ -70,7 +70,7 @@ class AdyenConnectedTest : TestCase() {
         }
         childAt<PaymentScreen.Link>(4) {
           button {
-            hasText(R.string.MY_PAYMENT_CHANGE_CREDIT_CARD_BUTTON)
+            hasText(hedvig.resources.R.string.MY_PAYMENT_CHANGE_CREDIT_CARD_BUTTON)
             click()
           }
         }

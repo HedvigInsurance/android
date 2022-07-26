@@ -48,7 +48,7 @@ class CodeTooLongErrorTest : TestCase() {
       save { click() }
       editLayout {
         isErrorEnabled()
-        hasError(R.string.referrals_change_code_sheet_error_max_length)
+        hasError(hedvig.resources.R.string.referrals_change_code_sheet_error_max_length)
       }
     }
   }

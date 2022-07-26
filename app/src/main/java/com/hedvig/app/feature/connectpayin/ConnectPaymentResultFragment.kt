@@ -37,25 +37,25 @@ class ConnectPaymentResultFragment : Fragment(R.layout.connect_payment_result_fr
 
       if (success) {
         connectPaymentViewModel.onPaymentSuccess()
-        icon.setImageResource(R.drawable.ic_checkmark_in_circle)
+        icon.setImageResource(com.hedvig.android.core.designsystem.R.drawable.ic_checkmark_in_circle)
         title.setText(
           when (payinType) {
-            ConnectPayinType.ADYEN -> R.string.pay_in_confirmation_headline
-            ConnectPayinType.TRUSTLY -> R.string.pay_in_confirmation_direct_debit_headline
+            ConnectPayinType.ADYEN -> hedvig.resources.R.string.pay_in_confirmation_headline
+            ConnectPayinType.TRUSTLY -> hedvig.resources.R.string.pay_in_confirmation_direct_debit_headline
           },
         )
         doItLater.isVisible = false
-        close.setText(R.string.pay_in_confirmation_continue_button)
+        close.setText(hedvig.resources.R.string.pay_in_confirmation_continue_button)
         close.setHapticClickListener {
           connectPaymentViewModel.close()
         }
       } else {
-        icon.setImageResource(R.drawable.ic_warning_triangle)
-        title.setText(R.string.pay_in_error_headline)
+        icon.setImageResource(com.hedvig.android.core.designsystem.R.drawable.ic_warning_triangle)
+        title.setText(hedvig.resources.R.string.pay_in_error_headline)
         body.setText(
           when (payinType) {
-            ConnectPayinType.TRUSTLY -> R.string.pay_in_error_direct_debit_body
-            ConnectPayinType.ADYEN -> R.string.pay_in_error_body
+            ConnectPayinType.TRUSTLY -> hedvig.resources.R.string.pay_in_error_direct_debit_body
+            ConnectPayinType.ADYEN -> hedvig.resources.R.string.pay_in_error_body
           },
         )
         body.isVisible = true
@@ -63,7 +63,7 @@ class ConnectPaymentResultFragment : Fragment(R.layout.connect_payment_result_fr
         doItLater.setHapticClickListener {
           connectPaymentViewModel.close()
         }
-        close.setText(R.string.pay_in_error_retry_button)
+        close.setText(hedvig.resources.R.string.pay_in_error_retry_button)
         close.setHapticClickListener {
           connectPaymentViewModel.navigateTo(
             ConnectPaymentScreenState.Connect(

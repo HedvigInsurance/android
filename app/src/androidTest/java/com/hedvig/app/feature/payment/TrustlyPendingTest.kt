@@ -51,7 +51,7 @@ class TrustlyPendingTest : TestCase() {
       trustlyConnectPayin { stub() }
       recycler {
         childAt<PaymentScreen.TrustlyPayinDetails>(3) {
-          bank { hasText(R.string.PAYMENTS_DIRECT_DEBIT_PENDING) }
+          bank { hasText(hedvig.resources.R.string.PAYMENTS_DIRECT_DEBIT_PENDING) }
           accountNumber {
             containsText(
               PAYMENT_DATA_TRUSTLY_CONNECTED.bankAccount!!.fragments.bankAccountFragment.descriptor,
@@ -61,7 +61,7 @@ class TrustlyPendingTest : TestCase() {
         }
         childAt<PaymentScreen.Link>(4) {
           button {
-            hasText(R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT)
+            hasText(hedvig.resources.R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT)
             click()
           }
         }

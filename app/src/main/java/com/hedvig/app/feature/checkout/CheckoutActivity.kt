@@ -44,9 +44,9 @@ class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
     binding.apply {
       toolbar.setNavigationOnClickListener { onBackPressed() }
       val link = getString(
-        R.string.OFFER_FOOTER_GDPR_INFO,
-        getString(R.string.CHECKOUT_BUTTON),
-        getString(R.string.PRIVACY_POLICY_URL),
+        hedvig.resources.R.string.OFFER_FOOTER_GDPR_INFO,
+        getString(hedvig.resources.R.string.CHECKOUT_BUTTON),
+        getString(hedvig.resources.R.string.PRIVACY_POLICY_URL),
       )
       text.setMarkdownText(link)
 
@@ -112,7 +112,7 @@ class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
   ) {
     when (state) {
       is CheckoutViewModel.InputViewState.InputState.Invalid -> {
-        textInputLayout.error = getString(state.stringRes ?: R.string.component_error)
+        textInputLayout.error = getString(state.stringRes ?: com.adyen.checkout.dropin.R.string.component_error)
       }
       CheckoutViewModel.InputViewState.InputState.NoInput,
       is CheckoutViewModel.InputViewState.InputState.Valid,
@@ -131,7 +131,7 @@ class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
         binding.emailEditText.setText(titleState.email)
         binding.title.text = titleState.bundleName
         val netAmount = titleState.netAmount.format(this, titleState.market)
-        val netString = getString(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, netAmount)
+        val netString = getString(hedvig.resources.R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, netAmount)
         binding.cost.text = netString
         binding.originalCost.text = titleState.grossAmount.format(this, titleState.market)
         binding.originalCost.setStrikethrough(true)
@@ -145,7 +145,7 @@ class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
     when (event) {
       is CheckoutViewModel.Event.Error -> {
         progressDialog.dismiss()
-        showErrorDialog(event.message ?: getString(R.string.home_tab_error_body)) { }
+        showErrorDialog(event.message ?: getString(hedvig.resources.R.string.home_tab_error_body)) { }
       }
       CheckoutViewModel.Event.CheckoutSuccess -> startActivity(
         LoggedInActivity.newInstance(

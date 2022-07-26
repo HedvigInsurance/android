@@ -65,8 +65,8 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
               requireActivity().triggerRestartActivity(MarketingActivity::class.java)
             }
             is UserViewModel.Event.Error -> requireContext().showAlert(
-              title = R.string.error_dialog_title,
-              message = R.string.component_error,
+              title = com.adyen.checkout.dropin.R.string.error_dialog_title,
+              message = com.adyen.checkout.dropin.R.string.component_error,
               positiveAction = {},
             )
           }
@@ -99,10 +99,10 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
         mp.summary = market?.label?.let { getString(it) }
         mp.setOnPreferenceClickListener {
           requireContext().showAlert(
-            R.string.SETTINGS_ALERT_CHANGE_MARKET_TITLE,
-            R.string.SETTINGS_ALERT_CHANGE_MARKET_TEXT,
-            positiveLabel = R.string.ALERT_OK,
-            negativeLabel = R.string.SETTINGS_ALERT_CHANGE_MARKET_CANCEL,
+            hedvig.resources.R.string.SETTINGS_ALERT_CHANGE_MARKET_TITLE,
+            hedvig.resources.R.string.SETTINGS_ALERT_CHANGE_MARKET_TEXT,
+            positiveLabel = hedvig.resources.R.string.ALERT_OK,
+            negativeLabel = hedvig.resources.R.string.SETTINGS_ALERT_CHANGE_MARKET_CANCEL,
             positiveAction = { userViewModel.logout() },
           )
           true

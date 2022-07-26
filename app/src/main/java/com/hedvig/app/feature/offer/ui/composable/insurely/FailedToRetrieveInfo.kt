@@ -19,7 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 
 @Composable
@@ -34,25 +34,28 @@ fun FailedToRetrieveInfo(insuranceProviderDisplayName: String?) {
       bottom = 16.dp,
     ),
   ) {
-    Icon(painterResource(R.drawable.ic_warning_triangle), null)
+    Icon(painterResource(com.hedvig.android.core.designsystem.R.drawable.ic_warning_triangle), null)
     Column(
       verticalArrangement = Arrangement.spacedBy(4.dp),
       modifier = Modifier.fillMaxWidth(),
     ) {
       Text(
         text = if (insuranceProviderDisplayName != null) {
-          stringResource(R.string.offer_screen_insurely_error_title, insuranceProviderDisplayName)
+          stringResource(hedvig.resources.R.string.offer_screen_insurely_error_title, insuranceProviderDisplayName)
         } else {
-          stringResource(R.string.offer_screen_insurely_multiple_error_title)
+          stringResource(hedvig.resources.R.string.offer_screen_insurely_multiple_error_title)
         },
         style = MaterialTheme.typography.subtitle1,
       )
       CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
         Text(
           text = if (insuranceProviderDisplayName != null) {
-            stringResource(R.string.offer_screen_insurely_error_description, insuranceProviderDisplayName)
+            stringResource(
+              hedvig.resources.R.string.offer_screen_insurely_error_description,
+              insuranceProviderDisplayName,
+            )
           } else {
-            stringResource(R.string.offer_screen_insurely_multiple_error_description)
+            stringResource(hedvig.resources.R.string.offer_screen_insurely_multiple_error_description)
           },
           style = MaterialTheme.typography.body2,
         )

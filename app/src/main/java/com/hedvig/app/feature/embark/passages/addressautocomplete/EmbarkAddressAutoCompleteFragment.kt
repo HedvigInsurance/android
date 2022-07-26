@@ -5,7 +5,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.hedvig.android.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentEmbarkAddressAutoCompleteActionBinding
 import com.hedvig.app.feature.addressautocompletion.activityresult.FetchDanishAddressContract
@@ -119,7 +119,7 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
       Response.SingleResponse(
         address?.toPresentableTextPair()?.toList()?.filterNotNull()
           ?.joinToString(separator = System.lineSeparator())
-          ?: getString(R.string.EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS),
+          ?: getString(hedvig.resources.R.string.EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS),
       ),
     )
     delay(EmbarkActivity.PASSAGE_ANIMATION_DELAY_DURATION)
