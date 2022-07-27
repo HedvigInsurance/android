@@ -2,7 +2,7 @@ package com.hedvig.app.feature.genericauth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.app.util.EMAIL_REGEX
+import com.hedvig.app.util.isValidEmail
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -43,14 +43,12 @@ class GenericAuthViewModel(
 
   fun submitEmail() {
     with(_viewState) {
-      if (!isValid(value.input)) {
-        update { it.copy(error = validate(value.input)) }
-      } else {
+      if (value.input.isValidEmail()) {
         viewModelScope.launch {
-          update { it.copy(loading = true) }
-          handleOtpAttempt(value.input)
-          update { it.copy(loading = false) }
+          createStateFromOtpAttempt(value.input)
         }
+      } else {
+        update { it.copy(error = validate(value.input)) }
       }
     }
   }
@@ -59,11 +57,20 @@ class GenericAuthViewModel(
     _viewState.update { it.copy(otpId = null) }
   }
 
-  private suspend fun handleOtpAttempt(email: String) {
-    when (val result = createOtpAttemptUseCase.invoke(email)) {
-      is CreateOtpResult.Success -> _viewState.update { it.copy(otpId = result.id, error = null) }
-      CreateOtpResult.Error -> _viewState.update { it.copy(error = ViewState.TextFieldError.NETWORK_ERROR) }
+  private suspend fun createStateFromOtpAttempt(email: String) {
+    _viewState.update { it.copy(loading = true) }
+    val newState = when (val result = createOtpAttemptUseCase.invoke(email)) {
+      is CreateOtpResult.Success -> _viewState.value.copy(
+        otpId = result.id,
+        error = null,
+        loading = false,
+      )
+      CreateOtpResult.Error -> _viewState.value.copy(
+        error = ViewState.TextFieldError.NETWORK_ERROR,
+        loading = false,
+      )
     }
+    _viewState.value = newState
   }
 
   private fun validate(email: String): ViewState.TextFieldError? {
@@ -71,11 +78,9 @@ class GenericAuthViewModel(
       return ViewState.TextFieldError.EMPTY
     }
 
-    if (!EMAIL_REGEX.matcher(email).find()) {
+    if (!email.isValidEmail()) {
       return ViewState.TextFieldError.INVALID_EMAIL
     }
     return null
   }
-
-  private fun isValid(email: String) = validate(email) == null
 }

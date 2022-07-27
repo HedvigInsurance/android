@@ -52,10 +52,10 @@ class GenericAuthViewModelTest {
 
   @Test
   fun `clear should remove input and error state`() = runTest {
-    viewModel.setInput("invalid email..")
+    viewModel.setInput("invalid email.. ")
     viewModel.submitEmail()
     advanceUntilIdle()
-    assertThat(viewModel.viewState.value.input).isEqualTo("invalid email..")
+    assertThat(viewModel.viewState.value.input).isEqualTo("invalid email.. ")
     assertThat(viewModel.viewState.value.error).isEqualTo(GenericAuthViewModel.ViewState.TextFieldError.INVALID_EMAIL)
 
     viewModel.clear()
