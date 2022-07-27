@@ -41,7 +41,6 @@ class GenericAuthActivity : BaseActivity() {
           onInputChanged = model::setInput,
           onSubmitEmail = model::submitEmail,
           onClear = model::clear,
-          onBlur = model::blur,
           inputValue = viewState.input,
           error = viewState.error?.let { errorMessage(it) },
         )

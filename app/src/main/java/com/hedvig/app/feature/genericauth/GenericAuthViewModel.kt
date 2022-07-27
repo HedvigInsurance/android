@@ -20,21 +20,12 @@ class GenericAuthViewModel(
     data class SubmitEmailSuccess(val id: String, val credential: String) : Event()
   }
 
-  private val _viewState = MutableStateFlow(
-    ViewState(
-      input = "",
-      error = ViewState.TextFieldError.EMPTY,
-      dirty = false,
-      touched = false,
-    ),
-  )
+  private val _viewState = MutableStateFlow(ViewState())
   val viewState = _viewState.asStateFlow()
 
   data class ViewState(
-    val input: String,
-    val error: TextFieldError?,
-    val dirty: Boolean,
-    val touched: Boolean,
+    val input: String = "",
+    val error: TextFieldError? = TextFieldError.EMPTY,
   ) {
     enum class TextFieldError {
       EMPTY,
@@ -44,49 +35,32 @@ class GenericAuthViewModel(
   }
 
   fun setInput(value: String) {
-    _viewState.update { previousState ->
-      previousState.copy(
-        input = value,
-        dirty = true,
-        error = computeError(previousState, value),
-      )
-    }
+    _viewState.update { it.copy(input = value) }
   }
 
   fun clear() {
-    _viewState.update { it.copy(input = "", error = null, dirty = false, touched = false) }
-  }
-
-  fun blur() {
-    _viewState.update { previousState ->
-      val newState = previousState.copy(touched = previousState.dirty)
-      val error = computeError(newState, newState.input)
-      newState.copy(error = error)
-    }
+    _viewState.update { ViewState() }
   }
 
   fun submitEmail() {
     viewModelScope.launch {
       // TODO: Set Loading-state, once one exists
       val email = viewState.value.input
+      val error = validate(email)
+      _viewState.update {
+        it.copy(error = error)
+      }
       when (val result = createOtpAttemptUseCase.invoke(email)) {
-        is CreateOtpAttemptUseCase.Result.Success -> {
+        is CreateOtpResult.Success -> {
           eventChannel.trySend(Event.SubmitEmailSuccess(result.id, email))
         }
-        CreateOtpAttemptUseCase.Result.Error -> {
+        CreateOtpResult.Error -> {
           _viewState.update { it.copy(error = ViewState.TextFieldError.NETWORK_ERROR) }
         }
       }
       // TODO: Remove Loading-state, once one exists
     }
   }
-
-  private fun computeError(state: ViewState, value: String) =
-    if (state.touched && state.dirty) {
-      validate(value)
-    } else {
-      null
-    }
 
   private fun validate(value: String): ViewState.TextFieldError? {
     if (value.isBlank()) {
