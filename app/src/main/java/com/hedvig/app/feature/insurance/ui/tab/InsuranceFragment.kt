@@ -75,7 +75,7 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
             ?.also { insuranceViewModel.crossSellActionOpened() }
 
           errorMessage?.let {
-            adapter?.submitList(listOf(InsuranceModel.Header, InsuranceModel.Error))
+            adapter?.submitList(listOf(InsuranceModel.Header, InsuranceModel.Error(it)))
           }
 
           items?.let {

@@ -57,8 +57,8 @@ class TerminatedContractsActivity : BaseActivity(R.layout.terminated_contracts_a
         .flowWithLifecycle(lifecycle)
         .onEach { viewState ->
           when (viewState) {
-            TerminatedContractsViewModel.ViewState.Error -> {
-              adapter.submitList(listOf(InsuranceModel.Error))
+            is TerminatedContractsViewModel.ViewState.Error -> {
+              adapter.submitList(listOf(InsuranceModel.Error(viewState.message)))
             }
             is TerminatedContractsViewModel.ViewState.Success -> {
               adapter.submitList(
@@ -87,7 +87,7 @@ class TerminatedContractsViewModel(
     ) : ViewState()
 
     object Loading : ViewState()
-    object Error : ViewState()
+    data class Error(val message: String?) : ViewState()
   }
 
   private val _viewState = MutableStateFlow<ViewState>(ViewState.Loading)
@@ -97,7 +97,7 @@ class TerminatedContractsViewModel(
     viewModelScope.launch {
       _viewState.value = getContractsUseCase.invoke()
         .fold(
-          ifLeft = { ViewState.Error },
+          ifLeft = { ViewState.Error(it.message) },
           ifRight = { insuranceQueryData -> ViewState.Success(items(insuranceQueryData)) },
         )
     }
