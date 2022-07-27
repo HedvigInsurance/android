@@ -25,7 +25,10 @@ class GenericAuthViewModel(
 
   data class ViewState(
     val input: String = "",
-    val error: TextFieldError? = TextFieldError.EMPTY,
+    val error: TextFieldError? = null,
+    val otpId: String? = null,
+    val submitEnabled: Boolean = false,
+    val loading: Boolean = false,
   ) {
     enum class TextFieldError {
       EMPTY,
@@ -35,7 +38,12 @@ class GenericAuthViewModel(
   }
 
   fun setInput(value: String) {
-    _viewState.update { it.copy(input = value) }
+    _viewState.update {
+      it.copy(
+        input = value,
+        submitEnabled = isValid(value),
+      )
+    }
   }
 
   fun clear() {
@@ -43,33 +51,36 @@ class GenericAuthViewModel(
   }
 
   fun submitEmail() {
-    viewModelScope.launch {
-      // TODO: Set Loading-state, once one exists
-      val email = viewState.value.input
-      val error = validate(email)
-      _viewState.update {
-        it.copy(error = error)
-      }
-      when (val result = createOtpAttemptUseCase.invoke(email)) {
-        is CreateOtpResult.Success -> {
-          eventChannel.trySend(Event.SubmitEmailSuccess(result.id, email))
-        }
-        CreateOtpResult.Error -> {
-          _viewState.update { it.copy(error = ViewState.TextFieldError.NETWORK_ERROR) }
+    with(_viewState) {
+      if (!value.submitEnabled) {
+        update { it.copy(error = ViewState.TextFieldError.INVALID_EMAIL) }
+      } else {
+        viewModelScope.launch {
+          update { it.copy(loading = true) }
+          handleOtpAttempt(value.input)
+          update { it.copy(loading = false) }
         }
       }
-      // TODO: Remove Loading-state, once one exists
     }
   }
 
-  private fun validate(value: String): ViewState.TextFieldError? {
-    if (value.isBlank()) {
+  private suspend fun handleOtpAttempt(email: String) {
+    when (val result = createOtpAttemptUseCase.invoke(email)) {
+      is CreateOtpResult.Success -> _viewState.update { it.copy(otpId = result.id, error = null) }
+      CreateOtpResult.Error -> _viewState.update { it.copy(error = ViewState.TextFieldError.NETWORK_ERROR) }
+    }
+  }
+
+  private fun validate(email: String): ViewState.TextFieldError? {
+    if (email.isBlank()) {
       return ViewState.TextFieldError.EMPTY
     }
 
-    if (!EMAIL_REGEX.matcher(value).find()) {
+    if (!EMAIL_REGEX.matcher(email).find()) {
       return ViewState.TextFieldError.INVALID_EMAIL
     }
     return null
   }
+
+  private fun isValid(email: String) = validate(email) == null
 }

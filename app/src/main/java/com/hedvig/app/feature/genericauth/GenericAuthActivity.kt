@@ -43,6 +43,7 @@ class GenericAuthActivity : BaseActivity() {
           onClear = model::clear,
           inputValue = viewState.input,
           error = viewState.error?.let { errorMessage(it) },
+          loading = viewState.loading,
         )
       }
     }

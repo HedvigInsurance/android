@@ -8,10 +8,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -45,6 +47,7 @@ fun EmailInputScreen(
   onClear: () -> Unit,
   inputValue: String,
   error: String?,
+  loading: Boolean,
 ) {
   Column(
     modifier = Modifier.fillMaxSize(),
@@ -93,6 +96,8 @@ fun EmailInputScreen(
                 contentDescription = null,
                 colorFilter = ColorFilter.tint(color = MaterialTheme.colors.error),
               )
+            } else if (loading) {
+              CircularProgressIndicator(modifier = Modifier.size(24.dp))
             } else {
               IconButton(onClick = onClear) {
                 Image(
@@ -144,6 +149,7 @@ fun EmailInputScreenValidPreview() {
       onClear = {},
       inputValue = "example@example.com",
       error = null,
+      loading = true
     )
   }
 }
@@ -159,6 +165,7 @@ fun EmailInputScreenInvalidPreview() {
       onClear = {},
       inputValue = "example.com",
       error = "Invalid email",
+      loading = true
     )
   }
 }
