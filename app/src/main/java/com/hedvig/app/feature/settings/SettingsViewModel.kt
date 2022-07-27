@@ -13,6 +13,7 @@ class SettingsViewModel(
   private val repository: LanguageRepository,
   private val localeBroadcastManager: LocaleBroadcastManager,
   hAnalytics: HAnalytics,
+  val clearCache: () -> Unit,
 ) : ViewModel() {
   init {
     hAnalytics.screenView(AppScreen.APP_SETTINGS)
@@ -22,6 +23,7 @@ class SettingsViewModel(
     viewModelScope.launch {
       repository.uploadLanguage(acceptLanguage, locale)
     }
+    clearCache()
     localeBroadcastManager.sendBroadcast(recreate = true)
   }
 }

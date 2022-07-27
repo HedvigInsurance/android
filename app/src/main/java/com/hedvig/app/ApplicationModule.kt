@@ -17,6 +17,7 @@ import coil.decode.SvgDecoder
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.cache.normalized.api.MemoryCacheFactory
 import com.apollographql.apollo3.cache.normalized.api.NormalizedCacheFactory
+import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.apollographql.apollo3.cache.normalized.normalizedCache
 import com.apollographql.apollo3.interceptor.ApolloInterceptor
 import com.apollographql.apollo3.network.okHttpClient
@@ -374,7 +375,14 @@ val viewModelModule = module {
   viewModel { (quoteCartId: QuoteCartId?) -> RedeemCodeViewModel(quoteCartId, get(), get()) }
   viewModel { UserViewModel(get(), get(), get(), get(), get(), get()) }
   viewModel { WelcomeViewModel(get()) }
-  viewModel { SettingsViewModel(get(), get(), get()) }
+  viewModel {
+    SettingsViewModel(
+      repository = get(),
+      localeBroadcastManager = get(),
+      hAnalytics = get(),
+      clearCache = { get<ApolloClient>().apolloStore.clearAll() },
+    )
+  }
   viewModel { DatePickerViewModel() }
   viewModel { params -> SimpleSignAuthenticationViewModel(params.get(), get(), get(), get(), get(), get(), get()) }
   viewModel { (data: MultiActionParams) -> MultiActionViewModel(data) }
