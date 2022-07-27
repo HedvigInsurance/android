@@ -3,22 +3,14 @@ package com.hedvig.app.feature.genericauth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.app.util.EMAIL_REGEX
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class GenericAuthViewModel(
   private val createOtpAttemptUseCase: CreateOtpAttemptUseCase,
 ) : ViewModel() {
-  private val eventChannel = Channel<Event>(Channel.UNLIMITED)
-  val eventsFlow = eventChannel.receiveAsFlow()
-
-  sealed class Event {
-    data class SubmitEmailSuccess(val id: String, val credential: String) : Event()
-  }
 
   private val _viewState = MutableStateFlow(ViewState())
   val viewState = _viewState.asStateFlow()
@@ -27,7 +19,6 @@ class GenericAuthViewModel(
     val input: String = "",
     val error: TextFieldError? = null,
     val otpId: String? = null,
-    val submitEnabled: Boolean = false,
     val loading: Boolean = false,
   ) {
     enum class TextFieldError {
@@ -41,7 +32,7 @@ class GenericAuthViewModel(
     _viewState.update {
       it.copy(
         input = value,
-        submitEnabled = isValid(value),
+        error = null,
       )
     }
   }
@@ -52,8 +43,8 @@ class GenericAuthViewModel(
 
   fun submitEmail() {
     with(_viewState) {
-      if (!value.submitEnabled) {
-        update { it.copy(error = ViewState.TextFieldError.INVALID_EMAIL) }
+      if (!isValid(value.input)) {
+        update { it.copy(error = validate(value.input)) }
       } else {
         viewModelScope.launch {
           update { it.copy(loading = true) }
@@ -62,6 +53,10 @@ class GenericAuthViewModel(
         }
       }
     }
+  }
+
+  fun onStartOtpInput() {
+    _viewState.update { it.copy(otpId = null) }
   }
 
   private suspend fun handleOtpAttempt(email: String) {

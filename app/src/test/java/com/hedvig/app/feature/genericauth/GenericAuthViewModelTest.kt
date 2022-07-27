@@ -34,14 +34,13 @@ class GenericAuthViewModelTest {
   }
 
   @Test
-  fun `submit button should be disabled until valid email is entered`() = runTest {
+  fun `otp id should be present when successfully submitting valid email`() = runTest {
     viewModel.setInput("invalid email..")
     viewModel.submitEmail()
     advanceUntilIdle()
     assertThat(viewModel.viewState.value.input).isEqualTo("invalid email..")
     assertThat(viewModel.viewState.value.error).isEqualTo(GenericAuthViewModel.ViewState.TextFieldError.INVALID_EMAIL)
     assertThat(viewModel.viewState.value.otpId).isEqualTo(null)
-    assertThat(viewModel.viewState.value.submitEnabled).isEqualTo(false)
 
     viewModel.setInput("valid@email.com")
     viewModel.submitEmail()
@@ -49,7 +48,6 @@ class GenericAuthViewModelTest {
     assertThat(viewModel.viewState.value.input).isEqualTo("valid@email.com")
     assertThat(viewModel.viewState.value.error).isEqualTo(null)
     assertThat(viewModel.viewState.value.otpId).isEqualTo((otpResult as CreateOtpResult.Success).id)
-    assertThat(viewModel.viewState.value.submitEnabled).isEqualTo(true)
   }
 
   @Test

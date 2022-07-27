@@ -47,7 +47,7 @@ fun EmailInputScreen(
   onClear: () -> Unit,
   inputValue: String,
   error: String?,
-  loading: Boolean,
+  loading: Boolean
 ) {
   Column(
     modifier = Modifier.fillMaxSize(),
@@ -98,7 +98,7 @@ fun EmailInputScreen(
               )
             } else if (loading) {
               CircularProgressIndicator(modifier = Modifier.size(24.dp))
-            } else {
+            } else if (inputValue.isNotBlank()) {
               IconButton(onClick = onClear) {
                 Image(
                   imageVector = Icons.Filled.Clear,
@@ -149,7 +149,7 @@ fun EmailInputScreenValidPreview() {
       onClear = {},
       inputValue = "example@example.com",
       error = null,
-      loading = true
+      loading = false,
     )
   }
 }
@@ -165,7 +165,7 @@ fun EmailInputScreenInvalidPreview() {
       onClear = {},
       inputValue = "example.com",
       error = "Invalid email",
-      loading = true
+      loading = false,
     )
   }
 }
