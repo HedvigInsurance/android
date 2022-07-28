@@ -17,6 +17,7 @@ import com.hedvig.app.service.push.getImmutablePendingIntentFlags
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class PaymentNotificationSender(
   private val context: Context,
@@ -51,14 +52,23 @@ class PaymentNotificationSender(
               LoggedInActivity::class.java,
             ),
           )
-          addNextIntentWithParentStack(
-            connectPayinIntent(
-              context,
-              featureManager.getPaymentType(),
-              market,
-              false,
-            ),
-          )
+          try {
+            addNextIntentWithParentStack(
+              connectPayinIntent(
+                context,
+                featureManager.getPaymentType(),
+                market,
+                false,
+              ),
+            )
+          } catch (error: IllegalArgumentException) {
+            Timber.e(
+              error,
+              "Illegal market and payment type, could not create payin intent. " +
+                "Market: $market, PaymentType: ${featureManager.getPaymentType()}",
+            )
+          }
+
           addNextIntentWithParentStack(
             NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT),
           )
