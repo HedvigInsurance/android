@@ -12,21 +12,21 @@ import kotlin.time.Duration.Companion.seconds
 
 class MockChangeAddressViewModel : ChangeAddressViewModel(MockHAnalytics()) {
 
-    override val viewState: LiveData<ViewState>
-        get() = mockedState
+  override val viewState: LiveData<ViewState>
+    get() = mockedState
 
-    override fun reload() {
-        viewModelScope.launch {
-            val tempValue = mockedState.value
-            mockedState.value = ViewState.Loading
-            delay(2.seconds)
-            mockedState.value = tempValue
-        }
+  override fun reload() {
+    viewModelScope.launch {
+      val tempValue = mockedState.value
+      mockedState.value = ViewState.Loading
+      delay(2.seconds)
+      mockedState.value = tempValue!!
     }
+  }
 
-    override suspend fun triggerFreeTextChat() = Unit
+  override suspend fun triggerFreeTextChat() = Unit
 
-    companion object {
-        var mockedState: MutableLiveData<ViewState> = MutableLiveData()
-    }
+  companion object {
+    var mockedState: MutableLiveData<ViewState> = MutableLiveData()
+  }
 }

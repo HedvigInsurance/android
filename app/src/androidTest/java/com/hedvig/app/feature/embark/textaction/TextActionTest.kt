@@ -17,71 +17,71 @@ import org.junit.Rule
 import org.junit.Test
 
 class TextActionTest : TestCase() {
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
 
-    @get:Rule
-    val apolloMockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.QUERY_DOCUMENT to apolloResponse { success(STORY_WITH_TEXT_ACTION) }
+  @get:Rule
+  val apolloMockServerRule = ApolloMockServerRule(
+    EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STORY_WITH_TEXT_ACTION) },
+  )
+
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
+
+  @Test
+  fun shouldRenderTextAction() = run {
+    activityRule.launch(
+      EmbarkActivity.newInstance(
+        context(),
+        this.javaClass.name,
+        "",
+      ),
     )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
-
-    @Test
-    fun shouldRenderTextAction() = run {
-        activityRule.launch(
-            EmbarkActivity.newInstance(
-                context(),
-                this.javaClass.name,
-                "",
-            )
-        )
-
-        TextActionScreen {
-            onScreen<EmbarkScreen> {
-                messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("test message") } } }
-            }
-            input { hasPlaceholderText("Test hint") }
-            submitButton {
-                hasText("Another test passage")
-                isDisabled()
-            }
-            input { edit { typeText("Test entry") } }
-            submitButton { click() }
-            onScreen<EmbarkScreen> {
-                messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("Test entry was entered") } } }
-            }
-        }
+    TextActionScreen {
+      onScreen<EmbarkScreen> {
+        messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("test message") } } }
+      }
+      input { hasPlaceholderText("Test hint") }
+      submitButton {
+        hasText("Another test passage")
+        isDisabled()
+      }
+      input { edit { typeText("Test entry") } }
+      submitButton { click() }
+      onScreen<EmbarkScreen> {
+        messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("Test entry was entered") } } }
+      }
     }
+  }
 
-    @Test
-    fun shouldPrefillTextActionWhenUserReturnsToPassage() = run {
-        activityRule.launch(
-            EmbarkActivity.newInstance(
-                context(),
-                this.javaClass.name,
-                "",
-            )
-        )
+  @Test
+  fun shouldPrefillTextActionWhenUserReturnsToPassage() = run {
+    activityRule.launch(
+      EmbarkActivity.newInstance(
+        context(),
+        this.javaClass.name,
+        "",
+      ),
+    )
 
-        TextActionScreen {
-            step("Fill out passage and submit") {
-                input { edit { typeText("Foo") } }
-                submitButton { click() }
-            }
-            step("Verify that the previous passage no longer is shown") {
-                onScreen<EmbarkScreen> {
-                    messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("Foo was entered") } } }
-                }
-            }
-            step("Go back and verify that previous answer is prefilled") {
-                pressBack()
-                input { edit { hasText("Foo") } }
-            }
-            step("Check that validation passes on prefilled input") {
-                submitButton { isEnabled() }
-            }
+    TextActionScreen {
+      step("Fill out passage and submit") {
+        input { edit { typeText("Foo") } }
+        submitButton { click() }
+      }
+      step("Verify that the previous passage no longer is shown") {
+        onScreen<EmbarkScreen> {
+          messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("Foo was entered") } } }
         }
+      }
+      step("Go back and verify that previous answer is prefilled") {
+        pressBack()
+        input { edit { hasText("Foo") } }
+      }
+      step("Check that validation passes on prefilled input") {
+        submitButton { isEnabled() }
+      }
     }
+  }
 }

@@ -9,20 +9,20 @@ import e
 import kotlinx.coroutines.launch
 
 class WelcomeViewModel(
-    private val welcomeRepository: WelcomeRepository
+  private val welcomeRepository: WelcomeRepository,
 ) : ViewModel() {
 
-    private val _data = MutableLiveData<WelcomeQuery.Data>()
-    val data: LiveData<WelcomeQuery.Data> = _data
+  private val _data = MutableLiveData<WelcomeQuery.Data>()
+  val data: LiveData<WelcomeQuery.Data> = _data
 
-    fun fetch() {
-        viewModelScope.launch {
-            val response = runCatching { welcomeRepository.fetchWelcomeScreens() }
-            if (response.isFailure) {
-                response.exceptionOrNull()?.let { e(it) }
-                return@launch
-            }
-            response.getOrNull()?.data?.let { _data.postValue(it) }
-        }
+  fun fetch() {
+    viewModelScope.launch {
+      val response = runCatching { welcomeRepository.fetchWelcomeScreens() }
+      if (response.isFailure) {
+        response.exceptionOrNull()?.let { e(it) }
+        return@launch
+      }
+      response.getOrNull()?.data?.let { _data.postValue(it) }
     }
+  }
 }

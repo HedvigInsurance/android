@@ -7,10 +7,10 @@ import io.github.kakaocup.kakao.screen.Screen
 import io.github.kakaocup.kakao.text.KButton
 
 class HonestyPledgeSheetScreen : Screen<HonestyPledgeSheetScreen>() {
-    val claim =
-        KButton { withId(R.id.bottomSheetHonestyPledgeButton) }
+  val claim =
+    KButton { withId(R.id.bottomSheetHonestyPledgeButton) }
 
-    val embark = KIntent {
-        hasComponent(EmbarkActivity::class.java.name)
-    }
+  val embark = KIntent {
+    hasComponent(EmbarkActivity::class.java.name)
+  }
 }

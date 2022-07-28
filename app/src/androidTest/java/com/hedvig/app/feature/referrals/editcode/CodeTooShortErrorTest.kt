@@ -16,41 +16,41 @@ import org.junit.Test
 
 class CodeTooShortErrorTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(ReferralsEditCodeActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(ReferralsEditCodeActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        UpdateReferralCampaignCodeMutation.QUERY_DOCUMENT to apolloResponse {
-            success(
-                EDIT_CODE_DATA_TOO_SHORT
-            )
-        }
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    UpdateReferralCampaignCodeMutation.OPERATION_DOCUMENT to apolloResponse {
+      success(
+        EDIT_CODE_DATA_TOO_SHORT,
+      )
+    },
+  )
+
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
+
+  @Test
+  fun shouldShowGenericErrorWhenCodeIsTooShort() = run {
+    activityRule.launch(
+      ReferralsEditCodeActivity.newInstance(
+        context(),
+        "TEST123",
+      ),
     )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
-
-    @Test
-    fun shouldShowGenericErrorWhenCodeIsTooShort() = run {
-        activityRule.launch(
-            ReferralsEditCodeActivity.newInstance(
-                context(),
-                "TEST123"
-            )
-        )
-
-        onScreen<ReferralsEditCodeScreen> {
-            editLayout {
-                edit {
-                    replaceText("EDITEDCODE123")
-                }
-            }
-            save { click() }
-            editLayout {
-                isErrorEnabled()
-                hasError(R.string.referrals_change_code_sheet_general_error)
-            }
+    onScreen<ReferralsEditCodeScreen> {
+      editLayout {
+        edit {
+          replaceText("EDITEDCODE123")
         }
+      }
+      save { click() }
+      editLayout {
+        isErrorEnabled()
+        hasError(hedvig.resources.R.string.referrals_change_code_sheet_general_error)
+      }
     }
+  }
 }

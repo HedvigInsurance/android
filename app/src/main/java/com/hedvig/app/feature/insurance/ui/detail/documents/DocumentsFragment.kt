@@ -16,24 +16,24 @@ import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class DocumentsFragment : Fragment(R.layout.contract_detail_documents_fragment) {
-    private val binding by viewBinding(ContractDetailDocumentsFragmentBinding::bind)
-    private val model: ContractDetailViewModel by sharedViewModel()
+  private val binding by viewBinding(ContractDetailDocumentsFragmentBinding::bind)
+  private val model: ContractDetailViewModel by sharedViewModel()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.root.apply {
-            applyNavigationBarInsets()
-            val documentsAdapter = DocumentAdapter()
-            adapter = documentsAdapter
-            model.viewState
-                .flowWithLifecycle(lifecycle)
-                .onEach { viewState ->
-                    val listItems = when (viewState) {
-                        ContractDetailViewModel.ViewState.Error -> emptyList()
-                        ContractDetailViewModel.ViewState.Loading -> emptyList()
-                        is ContractDetailViewModel.ViewState.Success -> viewState.state.documentsViewState.documents
-                    }
-                    documentsAdapter.submitList(listItems)
-                }.launchIn(viewLifecycleScope)
-        }
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    binding.root.apply {
+      applyNavigationBarInsets()
+      val documentsAdapter = DocumentAdapter()
+      adapter = documentsAdapter
+      model.viewState
+        .flowWithLifecycle(lifecycle)
+        .onEach { viewState ->
+          val listItems = when (viewState) {
+            ContractDetailViewModel.ViewState.Error -> emptyList()
+            ContractDetailViewModel.ViewState.Loading -> emptyList()
+            is ContractDetailViewModel.ViewState.Success -> viewState.state.documentsViewState.documents
+          }
+          documentsAdapter.submitList(listItems)
+        }.launchIn(viewLifecycleScope)
     }
+  }
 }

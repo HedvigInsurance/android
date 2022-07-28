@@ -8,13 +8,13 @@ import io.github.kakaocup.kakao.edit.KTextInputLayout
 import io.github.kakaocup.kakao.text.KButton
 
 object TextActionSetScreen : KScreen<TextActionSetScreen>() {
-    override val layoutId = R.layout.fragment_text_action_set
-    override val viewClass = TextActionFragment::class.java
+  override val layoutId = R.layout.fragment_text_action_set
+  override val viewClass = TextActionFragment::class.java
 
-    fun input(index: Int, function: KTextInputLayout.() -> Unit) = KTextInputLayout {
-        withParent { withId(R.id.input_container) }
-        withParentIndex(index)
-    }.invoke(function)
+  fun input(index: Int, function: KTextInputLayout.() -> Unit) = KTextInputLayout {
+    withParent { withId(R.id.input_container) }
+    withParentIndex(index)
+  }.invoke(function)
 
-    val submit = KButton { withId(R.id.textActionSubmit) }
+  val submit = KButton { withId(R.id.textActionSubmit) }
 }

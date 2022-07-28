@@ -4,10 +4,10 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.app.util.extensions.await
 
 class PushTokenManager(
-    private val firebaseMessaging: FirebaseMessaging,
+  private val firebaseMessaging: FirebaseMessaging,
 ) {
-    suspend fun refreshToken() {
-        firebaseMessaging.deleteToken().await()
-        firebaseMessaging.token.await()
-    }
+  suspend fun refreshToken() {
+    firebaseMessaging.deleteToken().await()
+    firebaseMessaging.token.await()
+  }
 }

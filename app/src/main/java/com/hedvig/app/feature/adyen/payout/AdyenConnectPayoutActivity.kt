@@ -19,77 +19,77 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AdyenConnectPayoutActivity : BaseActivity(R.layout.fragment_container_activity) {
-    private val model: AdyenConnectPayoutViewModel by viewModel()
-    private val marketManager: MarketManager by inject()
+  private val model: AdyenConnectPayoutViewModel by viewModel()
+  private val marketManager: MarketManager by inject()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        val adyenCurrency = intent.getSerializableExtra(CURRENCY) as? AdyenCurrency
+    val adyenCurrency = intent.getSerializableExtra(CURRENCY) as? AdyenCurrency
 
-        if (adyenCurrency == null) {
-            e { "Programmer error: CURRENCY not provided to ${this.javaClass.name}" }
-            finish()
-            return
-        }
-
-        model.payoutMethods.observe(this) { response ->
-            val dropInConfiguration = DropInConfiguration
-                .Builder(
-                    this,
-                    AdyenPayoutDropInService::class.java,
-                    getString(R.string.ADYEN_CLIENT_KEY),
-                )
-                .setShopperLocale(getLocale(this, marketManager.market))
-                .setEnvironment(
-                    if (isDebug()) {
-                        Environment.TEST
-                    } else {
-                        Environment.EUROPE
-                    }
-                )
-                .setAmount(
-                    Amount().apply {
-                        currency = adyenCurrency.toString()
-                        value = 0
-                    }
-                )
-                .build()
-
-            DropIn.startPayment(this, response, dropInConfiguration)
-        }
-
-        model.shouldClose.observe(this) { shouldClose ->
-            if (shouldClose) {
-                finish()
-            }
-        }
+    if (adyenCurrency == null) {
+      e { "Programmer error: CURRENCY not provided to ${this.javaClass.name}" }
+      finish()
+      return
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        // Replace with new result API when adyens handleActivityResult is updated
-        super.onActivityResult(requestCode, resultCode, data)
+    model.payoutMethods.observe(this) { response ->
+      val dropInConfiguration = DropInConfiguration
+        .Builder(
+          this,
+          AdyenPayoutDropInService::class.java,
+          getString(R.string.ADYEN_CLIENT_KEY),
+        )
+        .setShopperLocale(getLocale(this, marketManager.market))
+        .setEnvironment(
+          if (isDebug()) {
+            Environment.TEST
+          } else {
+            Environment.EUROPE
+          },
+        )
+        .setAmount(
+          Amount().apply {
+            currency = adyenCurrency.toString()
+            value = 0
+          },
+        )
+        .build()
 
-        when (DropIn.handleActivityResult(requestCode, resultCode, data)) {
-            is DropInResult.CancelledByUser -> finish()
-            is DropInResult.Finished -> {
-                supportFragmentManager
-                    .beginTransaction()
-                    .replace(R.id.container, ConnectPayoutResultFragment.newInstance())
-                    .commitAllowingStateLoss()
-            }
-            is DropInResult.Error,
-            null,
-            -> {
-            }
-        }
+      DropIn.startPayment(this, response, dropInConfiguration)
     }
 
-    companion object {
-        private const val CURRENCY = "CURRENCY"
-        fun newInstance(context: Context, currency: AdyenCurrency) =
-            Intent(context, AdyenConnectPayoutActivity::class.java).apply {
-                putExtra(CURRENCY, currency)
-            }
+    model.shouldClose.observe(this) { shouldClose ->
+      if (shouldClose) {
+        finish()
+      }
     }
+  }
+
+  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    // Replace with new result API when adyens handleActivityResult is updated
+    super.onActivityResult(requestCode, resultCode, data)
+
+    when (DropIn.handleActivityResult(requestCode, resultCode, data)) {
+      is DropInResult.CancelledByUser -> finish()
+      is DropInResult.Finished -> {
+        supportFragmentManager
+          .beginTransaction()
+          .replace(R.id.container, ConnectPayoutResultFragment.newInstance())
+          .commitAllowingStateLoss()
+      }
+      is DropInResult.Error,
+      null,
+      -> {
+      }
+    }
+  }
+
+  companion object {
+    private const val CURRENCY = "CURRENCY"
+    fun newInstance(context: Context, currency: AdyenCurrency) =
+      Intent(context, AdyenConnectPayoutActivity::class.java).apply {
+        putExtra(CURRENCY, currency)
+      }
+  }
 }

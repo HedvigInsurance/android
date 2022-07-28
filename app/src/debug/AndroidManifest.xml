@@ -7,6 +7,7 @@
 
     <application
         android:usesCleartextTraffic="true"
+        android:networkSecurityConfig="@xml/network_security_config"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning,MissingApplicationIcon"
         tools:targetApi="28">
 
@@ -36,7 +37,6 @@
             android:label="Referrals Mock Screen"
             android:theme="@style/Hedvig.Theme" />
 
-        <activity android:name=".feature.onboarding.OnboardingMockActivity" />
         <activity android:name=".feature.genericauth.GenericAuthMockActivity" />
 
         <activity
@@ -52,27 +52,7 @@
         <activity android:name=".feature.embark.RecorderScaffoldActivity" />
 
         <activity
-            android:name=".feature.offer.OfferMockActivity"
-            android:label="Offer Mock Screen"
-            android:theme="@style/Hedvig.Theme" />
-
-        <activity
             android:name=".feature.home.HomeMockActivity"
-            android:label="Home Mock Screen"
-            android:theme="@style/Hedvig.Theme" />
-
-        <activity
-            android:name=".feature.insurance.InsuranceMockActivity"
-            android:label="Insurance Mock Screen"
-            android:theme="@style/Hedvig.Theme" />
-
-        <activity
-            android:name=".feature.profile.ProfileMockActivity"
-            android:label="Home Mock Screen"
-            android:theme="@style/Hedvig.Theme" />
-
-        <activity
-            android:name=".feature.marketpicker.MarketPickerMockActivity"
             android:label="Home Mock Screen"
             android:theme="@style/Hedvig.Theme" />
 
@@ -90,12 +70,6 @@
             android:name=".feature.trustly.TrustlyMockActivity"
             android:label="Trustly Mock Screen"
             android:theme="@style/Hedvig.Theme" />
-
-        <activity
-            android:name=".feature.checkout.CheckoutMockActivity"
-            android:label="Checkout Mock Screen" />
-
-        <activity android:name=".feature.payment.PaymentMockActivity" />
 
         <activity android:name=".feature.changeaddress.ChangeAddressMockActivity" />
 
@@ -118,7 +92,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".featureflags.FeatureFlagActivity" />
+        <activity android:name=".feature.embark.EmbarkStoryTesterActivity" />
 
         <meta-data
             android:name="com.mixpanel.android.MPConfig.DisableEmulatorBindingUI"

@@ -8,14 +8,14 @@ import io.github.kakaocup.kakao.edit.KTextInputLayout
 import io.github.kakaocup.kakao.text.KButton
 
 object NumberActionScreen : KScreen<NumberActionScreen>() {
-    override val layoutId = R.layout.number_action_set_fragment
-    override val viewClass = NumberActionFragment::class.java
+  override val layoutId = R.layout.number_action_set_fragment
+  override val viewClass = NumberActionFragment::class.java
 
-    fun input(index: Int, function: KTextInputLayout.() -> Unit) = KTextInputLayout {
-        withParent { withId(R.id.input_container) }
-        withParentIndex(index)
-    }.invoke(function)
+  fun input(index: Int, function: KTextInputLayout.() -> Unit) = KTextInputLayout {
+    withParent { withId(R.id.input_container) }
+    withParentIndex(index)
+  }.invoke(function)
 
-    val input = KTextInputLayout { withId(R.id.textField) }
-    val submit = KButton { withId(R.id.submit) }
+  val input = KTextInputLayout { withId(R.id.textField) }
+  val submit = KButton { withId(R.id.submit) }
 }

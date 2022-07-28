@@ -1,40 +1,37 @@
 package com.hedvig.app.testdata.feature.referrals.builders
 
-import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
-import com.hedvig.android.owldroid.type.Feature
+import com.hedvig.android.owldroid.graphql.fragment.MonetaryAmountFragment
+import com.hedvig.android.owldroid.graphql.type.MonthlyCostDeduction
 
 data class LoggedInDataBuilder(
-    val features: List<Feature> = listOf(
-        Feature.KEYGEAR
-    ),
-    val referralTermsUrl: String = "https://www.example.com",
-    val campaignIncentiveAmount: String = "10.00",
-    val campaignIncentiveCurrency: String = "SEK"
+  val referralTermsUrl: String = "https://www.example.com",
+  val campaignIncentiveAmount: String = "10.00",
+  val campaignIncentiveCurrency: String = "SEK",
 
 ) {
-    fun build() = LoggedInQuery.Data(
-        member = LoggedInQuery.Member(
-            features = features
+  fun build() = LoggedInQuery.Data(
+    referralTerms = LoggedInQuery.ReferralTerms(
+      url = referralTermsUrl,
+    ),
+    referralInformation = LoggedInQuery.ReferralInformation(
+      campaign = LoggedInQuery.Campaign(
+        incentive = LoggedInQuery.Incentive(
+          __typename = MonthlyCostDeduction.type.name,
+          asMonthlyCostDeduction = LoggedInQuery.AsMonthlyCostDeduction(
+            __typename = MonthlyCostDeduction.type.name,
+            amount = LoggedInQuery.Amount(
+              __typename = "",
+              fragments = LoggedInQuery.Amount.Fragments(
+                MonetaryAmountFragment(
+                  amount = campaignIncentiveAmount,
+                  currency = campaignIncentiveCurrency,
+                ),
+              ),
+            ),
+          ),
         ),
-        referralTerms = LoggedInQuery.ReferralTerms(
-            url = referralTermsUrl
-        ),
-        referralInformation = LoggedInQuery.ReferralInformation(
-            campaign = LoggedInQuery.Campaign(
-                incentive = LoggedInQuery.Incentive(
-                    asMonthlyCostDeduction = LoggedInQuery.AsMonthlyCostDeduction(
-                        amount = LoggedInQuery.Amount(
-                            fragments = LoggedInQuery.Amount.Fragments(
-                                MonetaryAmountFragment(
-                                    amount = campaignIncentiveAmount,
-                                    currency = campaignIncentiveCurrency
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-        )
-    )
+      ),
+    ),
+  )
 }

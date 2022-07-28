@@ -9,12 +9,13 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class LaunchTrackingInitializer : Initializer<Unit>, KoinComponent {
-    private val hAnalytics: HAnalytics by inject()
-    override fun create(context: Context) {
-        hAnalytics.notificationPermission(
-            NotificationManagerCompat.from(context).areNotificationsEnabled()
-        )
-    }
+  private val hAnalytics: HAnalytics by inject()
+  override fun create(context: Context) {
+    hAnalytics.identify()
+    hAnalytics.notificationPermission(
+      NotificationManagerCompat.from(context).areNotificationsEnabled(),
+    )
+  }
 
-    override fun dependencies() = listOf(KoinInitializer::class.java)
+  override fun dependencies() = listOf(KoinInitializer::class.java)
 }

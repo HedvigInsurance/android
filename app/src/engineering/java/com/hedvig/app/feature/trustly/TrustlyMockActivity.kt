@@ -9,21 +9,21 @@ import com.hedvig.app.mocks.MockMarketManager
 import org.koin.dsl.module
 
 class TrustlyMockActivity : MockActivity() {
-    private val marketManager = MockMarketManager()
-    override val original = listOf(marketManagerModule)
-    override val mocks = listOf(module { single<MarketManager> { marketManager } })
+  private val marketManager = MockMarketManager()
+  override val original = listOf(marketManagerModule)
+  override val mocks = listOf(module { single<MarketManager> { marketManager } })
 
-    init {
-        MockMarketManager.mockedMarket = Market.SE
-    }
+  init {
+    MockMarketManager.mockedMarket = Market.SE
+  }
 
-    override fun adapter() = genericDevelopmentAdapter {
-        header("Trustly Connect Payment Screen")
-        clickableItem("Not Post-Sign") {
-            startActivity(TrustlyConnectPayinActivity.newInstance(this@TrustlyMockActivity))
-        }
-        clickableItem("Post-Sign") {
-            startActivity(TrustlyConnectPayinActivity.newInstance(this@TrustlyMockActivity, true))
-        }
+  override fun adapter() = genericDevelopmentAdapter {
+    header("Trustly Connect Payment Screen")
+    clickableItem("Not Post-Sign") {
+      startActivity(TrustlyConnectPayinActivity.newInstance(this@TrustlyMockActivity))
     }
+    clickableItem("Post-Sign") {
+      startActivity(TrustlyConnectPayinActivity.newInstance(this@TrustlyMockActivity, true))
+    }
+  }
 }

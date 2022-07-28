@@ -12,41 +12,41 @@ import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import e
 
 class FAQBottomSheet : BottomSheetDialogFragment() {
-    private val binding by viewBinding(FaqBottomSheetBinding::bind)
+  private val binding by viewBinding(FaqBottomSheetBinding::bind)
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View =
-        inflater.inflate(R.layout.faq_bottom_sheet, container, false)
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?,
+  ): View =
+    inflater.inflate(R.layout.faq_bottom_sheet, container, false)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val title = requireArguments().getString(TITLE)
-        val body = requireArguments().getString(BODY)
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    val title = requireArguments().getString(TITLE)
+    val body = requireArguments().getString(BODY)
 
-        if (title == null || body == null) {
-            e { "Programmer error: TITLE or BODY not supplied to ${this.javaClass.name}" }
-            return
-        }
-
-        binding.title.text = title
-        binding.body.text = body
+    if (title == null || body == null) {
+      e { "Programmer error: TITLE or BODY not supplied to ${this.javaClass.name}" }
+      return
     }
 
-    companion object {
-        private const val TITLE = "TITLE"
-        private const val BODY = "BODY"
+    binding.title.text = title
+    binding.body.text = body
+  }
 
-        fun newInstance(
-            item: FAQItem
-        ) = FAQBottomSheet().apply {
-            arguments = bundleOf(
-                TITLE to item.headline,
-                BODY to item.body,
-            )
-        }
+  companion object {
+    private const val TITLE = "TITLE"
+    private const val BODY = "BODY"
 
-        const val TAG = "FAQBottomSheet"
+    fun newInstance(
+      item: FAQItem,
+    ) = FAQBottomSheet().apply {
+      arguments = bundleOf(
+        TITLE to item.headline,
+        BODY to item.body,
+      )
     }
+
+    const val TAG = "FAQBottomSheet"
+  }
 }

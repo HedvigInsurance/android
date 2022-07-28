@@ -5,8 +5,8 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class EmbarkAddressAutoCompleteParams(
-    val messages: List<String>,
-    val key: String,
-    val placeholder: String,
-    val link: String
+  val messages: List<String>,
+  val key: String,
+  val placeholder: String,
+  val link: String,
 ) : Parcelable

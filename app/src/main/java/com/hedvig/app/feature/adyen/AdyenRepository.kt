@@ -3,46 +3,39 @@ package com.hedvig.app.feature.adyen
 import android.content.Context
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.adyen.checkout.redirect.RedirectComponent
-import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.coroutines.await
+import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.api.ApolloResponse
 import com.hedvig.android.owldroid.graphql.AdyenPaymentMethodsQuery
 import com.hedvig.android.owldroid.graphql.AdyenPayoutMethodsQuery
 import com.hedvig.android.owldroid.graphql.TokenizePayoutDetailsMutation
-import com.hedvig.app.util.featureflags.Feature
-import com.hedvig.app.util.featureflags.FeatureManager
 import org.json.JSONObject
 
 class AdyenRepository(
-    private val apolloClient: ApolloClient,
-    private val context: Context,
-    private val featureManager: FeatureManager,
+  private val apolloClient: ApolloClient,
+  private val context: Context,
 ) {
 
-    suspend fun paymentMethods() = apolloClient
-        .query(AdyenPaymentMethodsQuery())
-        .await()
+  suspend fun paymentMethods(): ApolloResponse<AdyenPaymentMethodsQuery.Data> = apolloClient
+    .query(AdyenPaymentMethodsQuery())
+    .execute()
 
-    suspend fun payoutMethods() = apolloClient
-        .query(AdyenPayoutMethodsQuery())
-        .await()
+  suspend fun payoutMethods(): ApolloResponse<AdyenPayoutMethodsQuery.Data> = apolloClient
+    .query(AdyenPayoutMethodsQuery())
+    .execute()
 
-    suspend fun tokenizePayoutDetails(data: JSONObject) = apolloClient
-        .mutate(
-            TokenizePayoutDetailsMutation(
-                data.getJSONObject("paymentMethod").toString(),
-                RedirectComponent.getReturnUrl(context)
-            )
-        )
-        .await()
+  suspend fun tokenizePayoutDetails(data: JSONObject) = apolloClient
+    .mutation(
+      TokenizePayoutDetailsMutation(
+        data.getJSONObject("paymentMethod").toString(),
+        RedirectComponent.getReturnUrl(context),
+      ),
+    )
+    .execute()
 
-    suspend fun paymentMethodsResponse(): PaymentMethodsApiResponse? {
-        return if (featureManager.isFeatureEnabled(Feature.CONNECT_PAYMENT_AT_SIGN)) {
-            paymentMethods()
-                .data
-                ?.availablePaymentMethods
-                ?.paymentMethodsResponse
-        } else {
-            null
-        }
-    }
+  suspend fun paymentMethodsResponse(): PaymentMethodsApiResponse? {
+    return paymentMethods()
+      .data
+      ?.availablePaymentMethods
+      ?.paymentMethodsResponse
+  }
 }

@@ -12,33 +12,33 @@ import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import e
 
 class NoActionFragment : Fragment(R.layout.fragment_embark_no_action) {
-    private val binding by viewBinding(FragmentEmbarkNoActionBinding::bind)
+  private val binding by viewBinding(FragmentEmbarkNoActionBinding::bind)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        postponeEnterTransition()
-        val data = requireArguments().getParcelable<NoActionParameter>(DATA)
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
+    postponeEnterTransition()
+    val data = requireArguments().getParcelable<NoActionParameter>(DATA)
 
-        if (data == null) {
-            e { "Programmer error: No DATA provided to ${this.javaClass.name}" }
-            return
-        }
-
-        binding.apply {
-            messages.adapter = MessageAdapter(data.messages)
-            messages.doOnNextLayout {
-                startPostponedEnterTransition()
-            }
-        }
+    if (data == null) {
+      e { "Programmer error: No DATA provided to ${this.javaClass.name}" }
+      return
     }
 
-    companion object {
-        private const val DATA = "DATA"
-        fun newInstance(data: NoActionParameter) =
-            NoActionFragment().apply {
-                arguments = bundleOf(
-                    DATA to data
-                )
-            }
+    binding.apply {
+      messages.adapter = MessageAdapter(data.messages)
+      messages.doOnNextLayout {
+        startPostponedEnterTransition()
+      }
     }
+  }
+
+  companion object {
+    private const val DATA = "DATA"
+    fun newInstance(data: NoActionParameter) =
+      NoActionFragment().apply {
+        arguments = bundleOf(
+          DATA to data,
+        )
+      }
+  }
 }

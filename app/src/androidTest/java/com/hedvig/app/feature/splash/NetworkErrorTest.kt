@@ -14,22 +14,22 @@ import org.junit.Rule
 import org.junit.Test
 
 class NetworkErrorTest : TestCase() {
-    @get:Rule
-    val activityRule = LazyIntentsActivityScenarioRule(SplashActivity::class.java)
+  @get:Rule
+  val activityRule = LazyIntentsActivityScenarioRule(SplashActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        ContractStatusQuery.QUERY_DOCUMENT to apolloResponse { internalServerError() }
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    ContractStatusQuery.OPERATION_DOCUMENT to apolloResponse { internalServerError() },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    private val loginStatusService = mockk<LoginStatusService>(relaxed = true)
+  private val loginStatusService = mockk<LoginStatusService>(relaxed = true)
 
-    @Test
-    fun shouldNotCrashOnNetworkError() = run {
-        every { loginStatusService.isLoggedIn }.returns(true)
-        activityRule.launch()
-    }
+  @Test
+  fun shouldNotCrashOnNetworkError() = run {
+    every { loginStatusService.isLoggedIn }.returns(true)
+    activityRule.launch()
+  }
 }

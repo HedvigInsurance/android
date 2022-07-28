@@ -18,8 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
-import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.HedvigDateUtils
 import com.hedvig.app.util.compose.currentTimeAsState
 import java.time.Duration
@@ -29,58 +29,58 @@ import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun SubmittedAndClosedColumns(
-    submittedAt: Instant,
-    closedAt: Instant?,
-    locale: Locale,
+  submittedAt: Instant,
+  closedAt: Instant?,
+  locale: Locale,
 ) {
-    val now by currentTimeAsState(updateInterval = 1.seconds)
-    val submittedText by remember(submittedAt) {
-        derivedStateOf { HedvigDateUtils.getRelativeTimeSpanString(submittedAt, now) }
+  val now by currentTimeAsState(updateInterval = 1.seconds)
+  val submittedText by remember(submittedAt) {
+    derivedStateOf { HedvigDateUtils.getRelativeTimeSpanString(submittedAt, now) }
+  }
+  val closedText by remember(closedAt) {
+    derivedStateOf {
+      if (closedAt == null) {
+        "—"
+      } else {
+        HedvigDateUtils.getRelativeTimeSpanString(closedAt, now)
+      }
     }
-    val closedText by remember(closedAt) {
-        derivedStateOf {
-            if (closedAt == null) {
-                "—"
-            } else {
-                HedvigDateUtils.getRelativeTimeSpanString(closedAt, now)
-            }
-        }
-    }
-    Row {
-        SubmittedAndClosedColumn(
-            topText = stringResource(R.string.claim_status_detail_submitted).uppercase(locale),
-            bottomText = submittedText,
-            modifier = Modifier.weight(0.5f)
-        )
-        SubmittedAndClosedColumn(
-            topText = stringResource(R.string.claim_status_detail_closed).uppercase(locale),
-            bottomText = closedText,
-            modifier = Modifier.weight(0.5f)
-        )
-    }
+  }
+  Row {
+    SubmittedAndClosedColumn(
+      topText = stringResource(hedvig.resources.R.string.claim_status_detail_submitted).uppercase(locale),
+      bottomText = submittedText,
+      modifier = Modifier.weight(0.5f),
+    )
+    SubmittedAndClosedColumn(
+      topText = stringResource(hedvig.resources.R.string.claim_status_detail_closed).uppercase(locale),
+      bottomText = closedText,
+      modifier = Modifier.weight(0.5f),
+    )
+  }
 }
 
 @Composable
 private fun SubmittedAndClosedColumn(
-    topText: String,
-    bottomText: String,
-    modifier: Modifier = Modifier,
+  topText: String,
+  bottomText: String,
+  modifier: Modifier = Modifier,
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = modifier,
-    ) {
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-            Text(
-                text = topText,
-                style = MaterialTheme.typography.overline,
-            )
-        }
-        Text(
-            text = bottomText,
-            style = MaterialTheme.typography.body2,
-        )
+  Column(
+    verticalArrangement = Arrangement.spacedBy(4.dp),
+    modifier = modifier,
+  ) {
+    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+      Text(
+        text = topText,
+        style = MaterialTheme.typography.overline,
+      )
     }
+    Text(
+      text = bottomText,
+      style = MaterialTheme.typography.body2,
+    )
+  }
 }
 
 @Preview
@@ -92,15 +92,15 @@ private fun SubmittedAndClosedColumn(
 @Preview(locale = "el")
 @Composable
 fun SubmittedAndClosedInformationPreview() {
-    HedvigTheme {
-        Surface(
-            color = MaterialTheme.colors.background,
-        ) {
-            SubmittedAndClosedColumns(
-                submittedAt = Instant.now().minus(Duration.ofDays(10)),
-                closedAt = Instant.now().minus(Duration.ofSeconds(30)),
-                Locale.ENGLISH,
-            )
-        }
+  HedvigTheme {
+    Surface(
+      color = MaterialTheme.colors.background,
+    ) {
+      SubmittedAndClosedColumns(
+        submittedAt = Instant.now().minus(Duration.ofDays(10)),
+        closedAt = Instant.now().minus(Duration.ofSeconds(30)),
+        Locale.ENGLISH,
+      )
     }
+  }
 }

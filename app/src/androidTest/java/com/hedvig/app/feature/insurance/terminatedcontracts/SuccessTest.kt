@@ -17,29 +17,29 @@ import org.junit.Test
 
 class SuccessTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(TerminatedContractsActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(TerminatedContractsActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        InsuranceQuery.QUERY_DOCUMENT to apolloResponse {
-            success(INSURANCE_DATA_ONE_ACTIVE_ONE_TERMINATED)
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    InsuranceQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(INSURANCE_DATA_ONE_ACTIVE_ONE_TERMINATED)
+    },
+  )
+
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
+
+  @Test
+  fun shouldShowOneTerminatedContractWhenUserHasOneTerminatedContract() = run {
+    activityRule.launch(TerminatedContractsActivity.newInstance(context()))
+
+    onScreen<TerminatedContractsScreen> {
+      recycler {
+        childAt<InsuranceScreen.ContractCard>(0) {
+          contractName { isVisible() }
         }
-    )
-
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
-
-    @Test
-    fun shouldShowOneTerminatedContractWhenUserHasOneTerminatedContract() = run {
-        activityRule.launch(TerminatedContractsActivity.newInstance(context()))
-
-        onScreen<TerminatedContractsScreen> {
-            recycler {
-                childAt<InsuranceScreen.ContractCard>(0) {
-                    contractName { isVisible() }
-                }
-            }
-        }
+      }
     }
+  }
 }

@@ -10,8 +10,6 @@ import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddressInput
 import com.hedvig.app.util.coroutines.ItemWithHistory
 import com.hedvig.app.util.coroutines.withHistoryOfLastValue
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -28,109 +26,108 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.time.Duration.Companion.seconds
 
-@OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 class AddressAutoCompleteViewModel(
-    initialAddress: DanishAddress?,
-    getDanishAddressAutoCompletionUseCase: GetDanishAddressAutoCompletionUseCase,
-    getFinalDanishAddressSelectionUseCase: GetFinalDanishAddressSelectionUseCase,
+  initialAddress: DanishAddress?,
+  getDanishAddressAutoCompletionUseCase: GetDanishAddressAutoCompletionUseCase,
+  getFinalDanishAddressSelectionUseCase: GetFinalDanishAddressSelectionUseCase,
 ) : ViewModel() {
 
-    private val currentInput: MutableStateFlow<DanishAddressInput> = MutableStateFlow(
-        DanishAddressInput.fromDanishAddress(initialAddress)
-    )
-    private val inputResult: Flow<InputResult> = currentInput
-        .withHistoryOfLastValue()
-        .mapLatest { selectedAddressHistory: ItemWithHistory<DanishAddressInput> ->
-            val newInput = selectedAddressHistory.current
-            val oldInput = selectedAddressHistory.old
-            coroutineScope {
-                val finalAddress = async {
-                    if (shouldCheckForFinalSelection(newInput.selectedAddress, oldInput)) {
-                        val finalAddressResult: FinalAddressResult = getFinalDanishAddressSelectionUseCase.invoke(
-                            selectedAddress = newInput.selectedAddress,
-                            lastSelection = oldInput.selectedAddress,
-                        )
-                        if (finalAddressResult is FinalAddressResult.Found) {
-                            return@async InputResult(finalAddress = finalAddressResult.address)
-                        }
-                    }
-                    return@async null
-                }
-                val normalResult = async {
-                    getDanishAddressAutoCompletionUseCase
-                        .invoke(newInput)
-                        .fold(
-                            { emptyList() },
-                            AddressAutoCompleteResults::resultList
-                        )
-                        .let(::InputResult)
-                }
-                return@coroutineScope finalAddress.await() ?: normalResult.await()
+  private val currentInput: MutableStateFlow<DanishAddressInput> = MutableStateFlow(
+    DanishAddressInput.fromDanishAddress(initialAddress),
+  )
+  private val inputResult: Flow<InputResult> = currentInput
+    .withHistoryOfLastValue()
+    .mapLatest { selectedAddressHistory: ItemWithHistory<DanishAddressInput> ->
+      val newInput = selectedAddressHistory.current
+      val oldInput = selectedAddressHistory.old
+      coroutineScope {
+        val finalAddress = async {
+          if (shouldCheckForFinalSelection(newInput.selectedAddress, oldInput)) {
+            val finalAddressResult: FinalAddressResult = getFinalDanishAddressSelectionUseCase.invoke(
+              selectedAddress = newInput.selectedAddress,
+              lastSelection = oldInput.selectedAddress,
+            )
+            if (finalAddressResult is FinalAddressResult.Found) {
+              return@async InputResult(finalAddress = finalAddressResult.address)
             }
+          }
+          return@async null
         }
-        .withHistoryOfLastValue()
-        .map { inputResultHistory: ItemWithHistory<InputResult> ->
-            val oldResult = inputResultHistory.old
-            val newResult = inputResultHistory.current
-            if (oldResult != null && newResult.finalAddress != null) {
-                // Retain old list of data so that the list doesn't act weird while the screen animates out
-                return@map oldResult.copy(finalAddress = newResult.finalAddress)
-            }
-            newResult
+        val normalResult = async {
+          getDanishAddressAutoCompletionUseCase
+            .invoke(newInput)
+            .fold(
+              { emptyList() },
+              AddressAutoCompleteResults::resultList,
+            )
+            .let(::InputResult)
         }
+        return@coroutineScope finalAddress.await() ?: normalResult.await()
+      }
+    }
+    .withHistoryOfLastValue()
+    .map { inputResultHistory: ItemWithHistory<InputResult> ->
+      val oldResult = inputResultHistory.old
+      val newResult = inputResultHistory.current
+      if (oldResult != null && newResult.finalAddress != null) {
+        // Retain old list of data so that the list doesn't act weird while the screen animates out
+        return@map oldResult.copy(finalAddress = newResult.finalAddress)
+      }
+      newResult
+    }
 
-    val viewState: StateFlow<AddressAutoCompleteViewState> = combine(
-        currentInput,
-        inputResult,
-    ) { input, inputResult ->
-        AddressAutoCompleteViewState(
-            input = input,
-            results = inputResult.addressList,
-            selectedFinalAddress = inputResult.finalAddress,
-        )
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5.seconds),
-        AddressAutoCompleteViewState(currentInput.value),
+  val viewState: StateFlow<AddressAutoCompleteViewState> = combine(
+    currentInput,
+    inputResult,
+  ) { input, inputResult ->
+    AddressAutoCompleteViewState(
+      input = input,
+      results = inputResult.addressList,
+      selectedFinalAddress = inputResult.finalAddress,
     )
+  }.stateIn(
+    viewModelScope,
+    SharingStarted.WhileSubscribed(5.seconds),
+    AddressAutoCompleteViewState(currentInput.value),
+  )
 
-    fun setNewTextInput(inputText: String) {
-        currentInput.update { danishAddressInput ->
-            danishAddressInput.withNewText(inputText)
-        }
+  fun setNewTextInput(inputText: String) {
+    currentInput.update { danishAddressInput ->
+      danishAddressInput.withNewText(inputText)
     }
+  }
 
-    fun selectAddress(address: DanishAddress) {
-        currentInput.update { danishAddressInput ->
-            danishAddressInput.withSelectedAddress(address)
-        }
+  fun selectAddress(address: DanishAddress) {
+    currentInput.update { danishAddressInput ->
+      danishAddressInput.withSelectedAddress(address)
     }
+  }
 
-    @OptIn(ExperimentalContracts::class)
-    private fun shouldCheckForFinalSelection(
-        selectedAddress: DanishAddress?,
-        oldInput: DanishAddressInput?,
-    ): Boolean {
-        contract {
-            returns(true) implies (selectedAddress != null)
-            returns(true) implies (oldInput != null)
-        }
-        // Avoids auto-selecting the same address when opening the screen with an existing address selected
-        if (oldInput == null) return false
-        return selectedAddress != null
+  @OptIn(ExperimentalContracts::class)
+  private fun shouldCheckForFinalSelection(
+    selectedAddress: DanishAddress?,
+    oldInput: DanishAddressInput?,
+  ): Boolean {
+    contract {
+      returns(true) implies (selectedAddress != null)
+      returns(true) implies (oldInput != null)
     }
+    // Avoids auto-selecting the same address when opening the screen with an existing address selected
+    if (oldInput == null) return false
+    return selectedAddress != null
+  }
 }
 
 data class InputResult(
-    val addressList: List<DanishAddress> = emptyList(),
-    val finalAddress: DanishAddress? = null,
+  val addressList: List<DanishAddress> = emptyList(),
+  val finalAddress: DanishAddress? = null,
 )
 
 data class AddressAutoCompleteViewState(
-    val input: DanishAddressInput,
-    val results: List<DanishAddress> = emptyList(),
-    val selectedFinalAddress: DanishAddress? = null,
+  val input: DanishAddressInput,
+  val results: List<DanishAddress> = emptyList(),
+  val selectedFinalAddress: DanishAddress? = null,
 ) {
-    val showCantFindAddressItem: Boolean
-        get() = input.isEmptyInput.not()
+  val showCantFindAddressItem: Boolean
+    get() = input.isEmptyInput.not()
 }

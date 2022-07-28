@@ -20,38 +20,38 @@ import org.junit.Test
 
 class NoCampaignTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(PaymentActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(PaymentActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        PaymentQuery.QUERY_DOCUMENT to apolloResponse { success(PAYMENT_DATA_NOT_CONNECTED) },
-        PayinStatusQuery.QUERY_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) }
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    PaymentQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYMENT_DATA_NOT_CONNECTED) },
+    PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @get:Rule
-    val marketRule = MarketRule(Market.SE)
+  @get:Rule
+  val marketRule = MarketRule(Market.SE)
 
-    @Test
-    fun shouldShowRedeemCodeWhenUserHasNoActiveCampaign() = run {
-        activityRule.launch(PaymentActivity.newInstance(context()))
+  @Test
+  fun shouldShowRedeemCodeWhenUserHasNoActiveCampaign() = run {
+    activityRule.launch(PaymentActivity.newInstance(context()))
 
-        onScreen<PaymentScreen> {
-            recycler {
-                childAt<PaymentScreen.Link>(2) {
-                    button { hasText(R.string.REFERRAL_ADDCOUPON_HEADLINE) }
-                    click()
-                }
-            }
+    onScreen<PaymentScreen> {
+      recycler {
+        childAt<PaymentScreen.Link>(2) {
+          button { hasText(hedvig.resources.R.string.REFERRAL_ADDCOUPON_HEADLINE) }
+          click()
         }
-
-        RedeemCode {
-            redeem {
-                isVisible()
-            }
-        }
+      }
     }
+
+    RedeemCode {
+      redeem {
+        isVisible()
+      }
+    }
+  }
 }

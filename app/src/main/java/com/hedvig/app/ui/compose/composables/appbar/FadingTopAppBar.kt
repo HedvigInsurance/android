@@ -10,19 +10,19 @@ import com.google.accompanist.insets.ui.TopAppBar
 
 @Composable
 fun FadingTopAppBar(
-    backgroundAlpha: Float,
-    modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(),
-    title: @Composable () -> Unit = {},
-    navigationIcon: @Composable () -> Unit,
-    backgroundColor: Color = MaterialTheme.colors.surface,
+  backgroundAlpha: Float,
+  modifier: Modifier = Modifier,
+  contentPadding: PaddingValues = PaddingValues(),
+  title: @Composable () -> Unit = {},
+  navigationIcon: @Composable () -> Unit,
+  backgroundColor: Color = MaterialTheme.colors.surface,
 ) {
-    TopAppBar(
-        title = title,
-        modifier = modifier,
-        contentPadding = contentPadding,
-        navigationIcon = navigationIcon,
-        backgroundColor = backgroundColor.copy(alpha = backgroundAlpha),
-        elevation = 0.dp
-    )
+  TopAppBar(
+    title = title,
+    modifier = modifier,
+    contentPadding = contentPadding,
+    navigationIcon = navigationIcon,
+    backgroundColor = backgroundColor.copy(alpha = backgroundAlpha),
+    elevation = 0.dp,
+  )
 }

@@ -7,10 +7,10 @@ import io.github.kakaocup.kakao.text.KButton
 import io.github.kakaocup.kakao.text.KTextView
 
 object ChangeAddressScreen : KScreen<ChangeAddressScreen>() {
-    override val layoutId = R.layout.change_address_activity
-    override val viewClass = ChangeAddressActivity::class.java
+  override val layoutId = R.layout.change_address_activity
+  override val viewClass = ChangeAddressActivity::class.java
 
-    val title = KTextView { withId(R.id.title) }
-    val subtitle = KTextView { withId(R.id.subtitle) }
-    val continueButton = KButton { withId(R.id.continueButton) }
+  val title = KTextView { withId(R.id.title) }
+  val subtitle = KTextView { withId(R.id.subtitle) }
+  val continueButton = KButton { withId(R.id.continueButton) }
 }

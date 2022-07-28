@@ -14,35 +14,35 @@ import e
 import org.koin.android.ext.android.inject
 
 class DismissiblePageTitleFragment : Fragment(R.layout.dismissible_page_title_fragment) {
-    private val imageLoader: ImageLoader by inject()
-    private val binding by viewBinding(DismissiblePageTitleFragmentBinding::bind)
+  private val imageLoader: ImageLoader by inject()
+  private val binding by viewBinding(DismissiblePageTitleFragmentBinding::bind)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
 
-        val model = requireArguments().getParcelable<DismissiblePagerModel.TitlePage>("model")
+    val model = requireArguments().getParcelable<DismissiblePagerModel.TitlePage>("model")
 
-        if (model == null) {
-            e { "Programmer error: incorrect arguments passed to ${this.javaClass.name}" }
-            return
-        }
-
-        binding.apply {
-            val url =
-                Uri.parse(requireContext().getString(R.string.BASE_URL) + model.imageUrls.iconByTheme(requireContext()))
-            illustration.load(url, imageLoader)
-            title.text = model.title
-            paragraph.text = model.paragraph
-        }
+    if (model == null) {
+      e { "Programmer error: incorrect arguments passed to ${this.javaClass.name}" }
+      return
     }
 
-    companion object {
-        fun newInstance(
-            model: DismissiblePagerModel.TitlePage,
-        ) = DismissiblePageTitleFragment().also {
-            it.arguments = bundleOf(
-                "model" to model
-            )
-        }
+    binding.apply {
+      val url =
+        Uri.parse(requireContext().getString(R.string.BASE_URL) + model.imageUrls.iconByTheme(requireContext()))
+      illustration.load(url, imageLoader)
+      title.text = model.title
+      paragraph.text = model.paragraph
     }
+  }
+
+  companion object {
+    fun newInstance(
+      model: DismissiblePagerModel.TitlePage,
+    ) = DismissiblePageTitleFragment().also {
+      it.arguments = bundleOf(
+        "model" to model,
+      )
+    }
+  }
 }

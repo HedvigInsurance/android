@@ -28,136 +28,137 @@ import org.koin.core.parameter.parametersOf
 
 class AddComponentBottomSheet : BottomSheetDialogFragment() {
 
-    private val componentState: MultiActionItem.Component? by lazy {
-        requireArguments().getParcelable(COMPONENT_STATE)
+  private val componentState: MultiActionItem.Component? by lazy {
+    requireArguments().getParcelable(COMPONENT_STATE)
+  }
+
+  private val multiActionParams: MultiActionParams by lazy {
+    requireArguments().getParcelable<MultiActionParams>(MULTI_ACTION_PARAMS)
+      ?: throw Error("Programmer error: No multi action params provided to ${this.javaClass.name}")
+  }
+
+  private val viewModel: AddComponentViewModel by viewModel { parametersOf(componentState, multiActionParams) }
+  private val binding by viewBinding(AddComponentBottomSheetBinding::bind)
+
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?,
+  ): View? = inflater.inflate(R.layout.add_component_bottom_sheet, container, false)
+
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
+
+    multiActionParams.components.map { component ->
+      val componentView = when (component) {
+        is MultiActionComponent.Dropdown -> createDropDownComponent(component)
+        is MultiActionComponent.Number -> createNumberComponent(component)
+        is MultiActionComponent.Switch -> createSwitchComponent(component)
+      }
+
+      binding.componentContainer.addView(componentView)
     }
 
-    private val multiActionParams: MultiActionParams by lazy {
-        requireArguments().getParcelable<MultiActionParams>(MULTI_ACTION_PARAMS)
-            ?: throw Error("Programmer error: No multi action params provided to ${this.javaClass.name}")
+    viewModel.viewState.observe(viewLifecycleOwner) {
+      binding.continueButton.isEnabled = it is AddComponentViewModel.ViewState.Valid
     }
 
-    private val viewModel: AddComponentViewModel by viewModel { parametersOf(componentState, multiActionParams) }
-    private val binding by viewBinding(AddComponentBottomSheetBinding::bind)
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.add_component_bottom_sheet, container, false)
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        multiActionParams.components.map { component ->
-            val componentView = when (component) {
-                is MultiActionComponent.Dropdown -> createDropDownComponent(component)
-                is MultiActionComponent.Number -> createNumberComponent(component)
-                is MultiActionComponent.Switch -> createSwitchComponent(component)
-            }
-
-            binding.componentContainer.addView(componentView)
-        }
-
-        viewModel.viewState.observe(viewLifecycleOwner) {
-            binding.continueButton.isEnabled = it is AddComponentViewModel.ViewState.Valid
-        }
-
-        binding.continueButton.isEnabled = componentState != null
-        binding.continueButton.setOnClickListener {
-            viewModel.onContinue()
-        }
-
-        viewModel.componentResultEvent.observe(viewLifecycleOwner) {
-            setFragmentResult(ADD_COMPONENT_REQUEST_KEY, bundleOf(RESULT to it))
-            dismiss()
-        }
+    binding.continueButton.isEnabled = componentState != null
+    binding.continueButton.setOnClickListener {
+      viewModel.onContinue()
     }
 
-    private fun createDropDownComponent(dropdown: MultiActionComponent.Dropdown): TextInputLayout {
-        return LayoutComponentDropdownBinding.inflate(
-            LayoutInflater.from(requireContext()),
-            binding.componentContainer,
-            false
-        ).apply {
-            val dropDownText = dropdown.options.map { it.text }
-            val dropdownValues = dropdown.options.map { it.value }
-            val adapter = ArrayAdapter(
-                requireContext(),
-                R.layout.dropdown_menu_popup_item,
-                R.id.dropdown_popup, dropDownText
-            )
-
-            dropdownLayout.hint = dropdown.label
-            dropdownInput.setAdapter(adapter)
-            dropdownInput.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                viewModel.onDropDownChanged(dropdown.key, dropDownText[position], dropdownValues[position])
-            }
-
-            componentState?.selectedDropDowns?.firstOrNull { it.key == dropdown.key }?.let {
-                dropdownInput.setText(it.text, false)
-                viewModel.onDropDownChanged(dropdown.key, it.text, it.value)
-            }
-        }.root
+    viewModel.componentResultEvent.observe(viewLifecycleOwner) {
+      setFragmentResult(ADD_COMPONENT_REQUEST_KEY, bundleOf(RESULT to it))
+      dismiss()
     }
+  }
 
-    private fun createNumberComponent(number: MultiActionComponent.Number): TextInputLayout {
-        return LayoutComponentNumberBinding.inflate(
-            LayoutInflater.from(requireContext()),
-            binding.componentContainer,
-            false
-        ).apply {
-            numberLayout.hint = number.unit
-            numberLayout.placeholderText = number.placeholder
+  private fun createDropDownComponent(dropdown: MultiActionComponent.Dropdown): TextInputLayout {
+    return LayoutComponentDropdownBinding.inflate(
+      LayoutInflater.from(requireContext()),
+      binding.componentContainer,
+      false,
+    ).apply {
+      val dropDownText = dropdown.options.map { it.text }
+      val dropdownValues = dropdown.options.map { it.value }
+      val adapter = ArrayAdapter(
+        requireContext(),
+        R.layout.dropdown_menu_popup_item,
+        R.id.dropdown_popup,
+        dropDownText,
+      )
 
-            numberInput.onImeAction {
-                requireContext().hideKeyboard(numberInput)
-            }
+      dropdownLayout.hint = dropdown.label
+      dropdownInput.setAdapter(adapter)
+      dropdownInput.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+        viewModel.onDropDownChanged(dropdown.key, dropDownText[position], dropdownValues[position])
+      }
 
-            numberInput.doOnTextChanged { text, _, _, _ ->
-                viewModel.onNumberChanged(number.key, text.toString(), number.unit)
-            }
+      componentState?.selectedDropDowns?.firstOrNull { it.key == dropdown.key }?.let {
+        dropdownInput.setText(it.text, false)
+        viewModel.onDropDownChanged(dropdown.key, it.text, it.value)
+      }
+    }.root
+  }
 
-            componentState?.inputs?.firstOrNull { it.key == number.key }?.let {
-                numberInput.setText(it.value)
-            }
-        }.root
+  private fun createNumberComponent(number: MultiActionComponent.Number): TextInputLayout {
+    return LayoutComponentNumberBinding.inflate(
+      LayoutInflater.from(requireContext()),
+      binding.componentContainer,
+      false,
+    ).apply {
+      numberLayout.hint = number.unit
+      numberLayout.placeholderText = number.placeholder
+
+      numberInput.onImeAction {
+        requireContext().hideKeyboard(numberInput)
+      }
+
+      numberInput.doOnTextChanged { text, _, _, _ ->
+        viewModel.onNumberChanged(number.key, text.toString(), number.unit)
+      }
+
+      componentState?.inputs?.firstOrNull { it.key == number.key }?.let {
+        numberInput.setText(it.value)
+      }
+    }.root
+  }
+
+  private fun createSwitchComponent(switch: MultiActionComponent.Switch): SwitchCompat {
+    return LayoutComponentSwitchBinding.inflate(
+      LayoutInflater.from(requireContext()),
+      binding.componentContainer,
+      false,
+    ).apply {
+      componentSwitch.text = switch.label
+      componentSwitch.isChecked = switch.defaultValue
+      componentSwitch.setOnCheckedChangeListener { _, isChecked ->
+        viewModel.onSwitchChanged(switch.key, isChecked, switch.label)
+      }
+
+      componentState?.switches?.firstOrNull { it.key == switch.key }?.let {
+        componentSwitch.isChecked = it.value
+      }
+    }.root
+  }
+
+  companion object {
+    private const val COMPONENT_STATE = "COMPONENT_STATE"
+    private const val MULTI_ACTION_PARAMS = "MULTI_ACTION_PARAMS"
+    const val RESULT = "RESULT"
+
+    const val ADD_COMPONENT_REQUEST_KEY = "ADD_COMPONENT"
+    const val TAG = "changeDateBottomSheet"
+
+    fun newInstance(
+      component: MultiActionItem.Component?,
+      multiActionParams: MultiActionParams,
+    ) = AddComponentBottomSheet().apply {
+      arguments = bundleOf(
+        COMPONENT_STATE to component,
+        MULTI_ACTION_PARAMS to multiActionParams,
+      )
     }
-
-    private fun createSwitchComponent(switch: MultiActionComponent.Switch): SwitchCompat {
-        return LayoutComponentSwitchBinding.inflate(
-            LayoutInflater.from(requireContext()),
-            binding.componentContainer,
-            false
-        ).apply {
-            componentSwitch.text = switch.label
-            componentSwitch.isChecked = switch.defaultValue
-            componentSwitch.setOnCheckedChangeListener { _, isChecked ->
-                viewModel.onSwitchChanged(switch.key, isChecked, switch.label)
-            }
-
-            componentState?.switches?.firstOrNull { it.key == switch.key }?.let {
-                componentSwitch.isChecked = it.value
-            }
-        }.root
-    }
-
-    companion object {
-        private const val COMPONENT_STATE = "COMPONENT_STATE"
-        private const val MULTI_ACTION_PARAMS = "MULTI_ACTION_PARAMS"
-        const val RESULT = "RESULT"
-
-        const val ADD_COMPONENT_REQUEST_KEY = "ADD_COMPONENT"
-        const val TAG = "changeDateBottomSheet"
-
-        fun newInstance(
-            component: MultiActionItem.Component?,
-            multiActionParams: MultiActionParams
-        ) = AddComponentBottomSheet().apply {
-            arguments = bundleOf(
-                COMPONENT_STATE to component,
-                MULTI_ACTION_PARAMS to multiActionParams
-            )
-        }
-    }
+  }
 }

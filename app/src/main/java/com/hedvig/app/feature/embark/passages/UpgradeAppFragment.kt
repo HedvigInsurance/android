@@ -10,16 +10,16 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 
 class UpgradeAppFragment : Fragment(R.layout.fragment_embark_upgrade_app) {
-    private val binding by viewBinding(FragmentEmbarkUpgradeAppBinding::bind)
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+  private val binding by viewBinding(FragmentEmbarkUpgradeAppBinding::bind)
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
 
-        binding.upgradeApp.setHapticClickListener {
-            requireContext().tryOpenPlayStore()
-        }
+    binding.upgradeApp.setHapticClickListener {
+      requireContext().tryOpenPlayStore()
     }
+  }
 
-    companion object {
-        fun newInstance() = UpgradeAppFragment()
-    }
+  companion object {
+    fun newInstance() = UpgradeAppFragment()
+  }
 }

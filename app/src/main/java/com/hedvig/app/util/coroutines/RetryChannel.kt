@@ -1,6 +1,5 @@
 package com.hedvig.app.util.coroutines
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
@@ -33,75 +32,75 @@ import kotlin.experimental.ExperimentalTypeInference
  * ```
  *
  */
-@OptIn(ExperimentalTypeInference::class, ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalTypeInference::class)
 class RetryChannel {
 
-    /**
-     * For a retry, we only care for latest values we wouldn't want to keep track of how many retries we need
-     * to do, therefore a conflated Channel is what we need. This creates a
-     * [kotlinx.coroutines.channels.ConflatedChannel] which also comes with the benefit of [Channel.send] never
-     * suspending and [Channel.trySend] always succeeding.
-     */
-    private val channel: Channel<Unit> = Channel(Channel.CONFLATED)
+  /**
+   * For a retry, we only care for latest values we wouldn't want to keep track of how many retries we need
+   * to do, therefore a conflated Channel is what we need. This creates a
+   * [kotlinx.coroutines.channels.ConflatedChannel] which also comes with the benefit of [Channel.send] never
+   * suspending and [Channel.trySend] always succeeding.
+   */
+  private val channel: Channel<Unit> = Channel(Channel.CONFLATED)
 
-    /**
-     * From the [ConflatedChannel][kotlinx.coroutines.channels.ConflatedChannel] documentation:
-     *
-     * Sender to this channel never suspends and [Channel.trySend] always succeeds
-     */
-    fun retry() {
-        channel.trySend(Unit)
-    }
+  /**
+   * From the [ConflatedChannel][kotlinx.coroutines.channels.ConflatedChannel] documentation:
+   *
+   * Sender to this channel never suspends and [Channel.trySend] always succeeds
+   */
+  fun retry() {
+    channel.trySend(Unit)
+  }
 
-    /**
-     * Converts the channel into a flow with an initial value in it to trigger the first operation automatically.
-     * [transformLatest documentation provided here][Flow.transformLatest]
-     *
-     * Example usage
-     * ```
-     * retryChannel.transformLatest {
-     *   suspendingUseCase.invoke().fold(
-     *     ifFailure = { emit(ViewState.Error) },
-     *     ifSuccess = { emit(ViewState.Content(it)) },
-     *   )
-     * }
-     * ```
-     */
-    fun <R> transformLatest(@BuilderInference transform: suspend FlowCollector<R>.(value: Unit) -> Unit): Flow<R> {
-        return channel
-            .receiveAsFlow()
-            .onStart { emit(Unit) }
-            .transformLatest(transform)
-    }
+  /**
+   * Converts the channel into a flow with an initial value in it to trigger the first operation automatically.
+   * [transformLatest documentation provided here][Flow.transformLatest]
+   *
+   * Example usage
+   * ```
+   * retryChannel.transformLatest {
+   *   suspendingUseCase.invoke().fold(
+   *     ifFailure = { emit(ViewState.Error) },
+   *     ifSuccess = { emit(ViewState.Content(it)) },
+   *   )
+   * }
+   * ```
+   */
+  fun <R> transformLatest(@BuilderInference transform: suspend FlowCollector<R>.(value: Unit) -> Unit): Flow<R> {
+    return channel
+      .receiveAsFlow()
+      .onStart { emit(Unit) }
+      .transformLatest(transform)
+  }
 
-    /**
-     * Converts the channel into a flow with an initial value in it to trigger the first operation automatically.
-     * [flatMapLatest documentation provided here][Flow.flatMapLatest]
-     *
-     * Example usage 1:
-     * ```
-     * retryChannel.flatMapLatest {
-     *   useCaseReturningFlow.invoke()
-     * }.map { it: UseCaseFlowItem -> ... }
-     * ```
-     *
-     * Example usage 2:
-     * ```
-     * retryChannel.flatMapLatest {
-     *   flow {
-     *     emit(ViewState.Loading)
-     *     suspendingUseCase.invoke().fold(
-     *       ifFailure = { emit(ViewState.Error) },
-     *       ifSuccess = { emit(ViewState.Content(it)) },
-     *     )
-     *   }
-     * }
-     * ```
-     */
-    fun <R> flatMapLatest(@BuilderInference transform: suspend (value: Unit) -> Flow<R>): Flow<R> {
-        return channel
-            .receiveAsFlow()
-            .onStart { emit(Unit) }
-            .flatMapLatest(transform)
-    }
+  /**
+   * Converts the channel into a flow with an initial value in it to trigger the first operation automatically.
+   * [flatMapLatest documentation provided here][Flow.flatMapLatest]
+   *
+   * Example usage 1:
+   * ```
+   * retryChannel.flatMapLatest {
+   *   useCaseReturningFlow.invoke()
+   * }.map { it: UseCaseFlowItem -> ... }
+   * ```
+   *
+   * Example usage 2:
+   * ```
+   * retryChannel.flatMapLatest {
+   *   flow {
+   *     emit(ViewState.Loading)
+   *     suspendingUseCase.invoke().fold(
+   *       ifFailure = { emit(ViewState.Error) },
+   *       ifSuccess = { emit(ViewState.Content(it)) },
+   *     )
+   *   }
+   * }
+   * ```
+   */
+  fun <R> flatMapLatest(@BuilderInference transform: suspend (value: Unit) -> Flow<R>): Flow<R> {
+    return channel
+      .receiveAsFlow()
+      .onStart { emit(Unit) }
+      .flatMapLatest(transform)
+  }
 }

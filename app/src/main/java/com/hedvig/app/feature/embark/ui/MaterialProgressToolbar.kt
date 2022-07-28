@@ -11,28 +11,28 @@ import com.hedvig.app.databinding.ViewMaterialProgressToolbarBinding
 import com.hedvig.app.util.ProgressPercentage
 
 class MaterialProgressToolbar @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+  context: Context,
+  attrs: AttributeSet? = null,
+  defStyleAttr: Int = 0,
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
-    private var binding: ViewMaterialProgressToolbarBinding =
-        ViewMaterialProgressToolbarBinding.inflate(LayoutInflater.from(context), this)
+  private var binding: ViewMaterialProgressToolbarBinding =
+    ViewMaterialProgressToolbarBinding.inflate(LayoutInflater.from(context), this)
 
-    val toolbar: MaterialToolbar
-        get() = binding.toolbar
+  val toolbar: MaterialToolbar
+    get() = binding.toolbar
 
-    init {
-        orientation = VERTICAL
+  init {
+    orientation = VERTICAL
+  }
+
+  fun setProgress(progressPercentage: ProgressPercentage) {
+    binding.progress.post {
+      TransitionManager.beginDelayedTransition(this)
+      binding.progress.layoutParams = FrameLayout.LayoutParams(
+        (this.width * progressPercentage.value).toInt(),
+        binding.progress.layoutParams.height,
+      )
     }
-
-    fun setProgress(progressPercentage: ProgressPercentage) {
-        binding.progress.post {
-            TransitionManager.beginDelayedTransition(this)
-            binding.progress.layoutParams = FrameLayout.LayoutParams(
-                (this.width * progressPercentage.value).toInt(),
-                binding.progress.layoutParams.height
-            )
-        }
-    }
+  }
 }

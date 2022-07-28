@@ -24,9 +24,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 import com.hedvig.app.feature.offer.ui.OfferItems
-import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.compose.preview.previewData
 import java.util.Locale
@@ -34,115 +34,118 @@ import javax.money.MonetaryAmount
 
 @Composable
 fun RetrievedInfo(
-    data: OfferItems.InsurelyCard.Retrieved,
-    locale: Locale,
+  data: OfferItems.InsurelyCard.Retrieved,
+  locale: Locale,
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        if (data.savedWithHedvig != null) {
-            SavedWithHedvigChip(data.savedWithHedvig)
-            Spacer(Modifier.height(6.dp))
-        }
-        Spacer(Modifier.height(8.dp))
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-            val resources = LocalContext.current.resources
-            Text(
-                text = when {
-                    data.currentInsurances.size > 1 -> {
-                        resources.getQuantityString(R.plurals.offer_switcher_title, data.currentInsurances.size)
-                    }
-                    data.insuranceProviderDisplayName != null -> {
-                        stringResource(
-                            R.string.offer_screen_insurely_card_your_insurance_with,
-                            data.insuranceProviderDisplayName
-                        )
-                    }
-                    else -> {
-                        resources.getQuantityString(R.plurals.offer_switcher_title, 1)
-                    }
-                }.uppercase(locale),
-                style = MaterialTheme.typography.caption
-            )
-        }
-        Spacer(Modifier.height(24.dp))
-        Text(
-            text = data.totalNetPremium?.format(locale) ?: "",
-            style = MaterialTheme.typography.h4,
-        )
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-            Text(
-                text = stringResource(R.string.OFFER_PRICE_PER_MONTH),
-                style = MaterialTheme.typography.body2
-            )
-        }
-        if (data.currentInsurances.size <= 1) {
-            Spacer(Modifier.height(8.dp))
-        } else {
-            Spacer(Modifier.height(16.dp))
-            Divider()
-            Spacer(Modifier.height(16.dp))
-            CurrentInsurancesList(data, locale)
-        }
+  Column(
+    horizontalAlignment = Alignment.CenterHorizontally,
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(16.dp),
+  ) {
+    if (data.savedWithHedvig != null) {
+      SavedWithHedvigChip(data.savedWithHedvig)
+      Spacer(Modifier.height(6.dp))
     }
+    Spacer(Modifier.height(8.dp))
+    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+      val resources = LocalContext.current.resources
+      Text(
+        text = when {
+          data.currentInsurances.size > 1 -> {
+            resources.getQuantityString(hedvig.resources.R.plurals.offer_switcher_title, data.currentInsurances.size)
+          }
+          data.insuranceProviderDisplayName != null -> {
+            stringResource(
+              hedvig.resources.R.string.offer_screen_insurely_card_your_insurance_with,
+              data.insuranceProviderDisplayName,
+            )
+          }
+          else -> {
+            resources.getQuantityString(hedvig.resources.R.plurals.offer_switcher_title, 1)
+          }
+        }.uppercase(locale),
+        style = MaterialTheme.typography.caption,
+      )
+    }
+    Spacer(Modifier.height(24.dp))
+    Text(
+      text = data.totalNetPremium?.format(locale) ?: "",
+      style = MaterialTheme.typography.h4,
+    )
+    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+      Text(
+        text = stringResource(hedvig.resources.R.string.OFFER_PRICE_PER_MONTH),
+        style = MaterialTheme.typography.body2,
+      )
+    }
+    if (data.currentInsurances.size <= 1) {
+      Spacer(Modifier.height(8.dp))
+    } else {
+      Spacer(Modifier.height(16.dp))
+      Divider()
+      Spacer(Modifier.height(16.dp))
+      CurrentInsurancesList(data, locale)
+    }
+  }
 }
 
 @Composable
 private fun SavedWithHedvigChip(savedWithHedvig: MonetaryAmount) {
-    Card(
-        shape = RoundedCornerShape(4.dp),
-        backgroundColor = MaterialTheme.colors.secondary,
-    ) {
-        Text(
-            text = stringResource(R.string.offer_screen_insurely_card_cost_difference_info, savedWithHedvig.number),
-            style = MaterialTheme.typography.overline,
-            modifier = Modifier.padding(vertical = 4.dp, horizontal = 6.dp)
-        )
-    }
+  Card(
+    shape = RoundedCornerShape(4.dp),
+    backgroundColor = MaterialTheme.colors.secondary,
+  ) {
+    Text(
+      text = stringResource(
+        hedvig.resources.R.string.offer_screen_insurely_card_cost_difference_info,
+        savedWithHedvig.number,
+      ),
+      style = MaterialTheme.typography.overline,
+      modifier = Modifier.padding(vertical = 4.dp, horizontal = 6.dp),
+    )
+  }
 }
 
 @Composable
 private fun CurrentInsurancesList(
-    data: OfferItems.InsurelyCard.Retrieved,
-    locale: Locale,
+  data: OfferItems.InsurelyCard.Retrieved,
+  locale: Locale,
 ) {
-    data.currentInsurances.forEach { insurance ->
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .height(48.dp)
-                .fillMaxWidth(),
-        ) {
-            Text(
-                text = insurance.name,
-                style = MaterialTheme.typography.subtitle1,
-                overflow = TextOverflow.Ellipsis
-            )
-            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                Text(
-                    text = insurance.amount.format(locale),
-                    style = MaterialTheme.typography.body1
-                )
-            }
-        }
+  data.currentInsurances.forEach { insurance ->
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.SpaceBetween,
+      modifier = Modifier
+        .height(48.dp)
+        .fillMaxWidth(),
+    ) {
+      Text(
+        text = insurance.name,
+        style = MaterialTheme.typography.subtitle1,
+        overflow = TextOverflow.Ellipsis,
+      )
+      CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+        Text(
+          text = insurance.amount.format(locale),
+          style = MaterialTheme.typography.body1,
+        )
+      }
     }
+  }
 }
 
 @Preview
 @Composable
 fun RetrievedInfoPreview() {
-    HedvigTheme {
-        Surface(
-            color = MaterialTheme.colors.background,
-        ) {
-            RetrievedInfo(
-                OfferItems.InsurelyCard.Retrieved.previewData(),
-                Locale.ENGLISH
-            )
-        }
+  HedvigTheme {
+    Surface(
+      color = MaterialTheme.colors.background,
+    ) {
+      RetrievedInfo(
+        OfferItems.InsurelyCard.Retrieved.previewData(),
+        Locale.ENGLISH,
+      )
     }
+  }
 }

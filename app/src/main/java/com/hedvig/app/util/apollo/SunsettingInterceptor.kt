@@ -1,94 +1,40 @@
 package com.hedvig.app.util.apollo
 
 import android.content.Context
-import com.apollographql.apollo.api.Error
-import com.apollographql.apollo.api.Operation
-import com.apollographql.apollo.api.internal.ApolloLogger
-import com.apollographql.apollo.exception.ApolloException
-import com.apollographql.apollo.interceptor.ApolloInterceptor
-import com.apollographql.apollo.interceptor.ApolloInterceptorChain
-import com.apollographql.apollo.interceptor.ApolloInterceptorFactory
+import com.apollographql.apollo3.api.ApolloRequest
+import com.apollographql.apollo3.api.ApolloResponse
+import com.apollographql.apollo3.api.Error
+import com.apollographql.apollo3.api.Operation
+import com.apollographql.apollo3.interceptor.ApolloInterceptor
+import com.apollographql.apollo3.interceptor.ApolloInterceptorChain
 import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
-import java.util.concurrent.Executor
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class SunsettingInterceptor(
-    private val context: Context,
+  private val context: Context,
 ) : ApolloInterceptor {
-    @Volatile
-    var disposed: Boolean = false
+  override fun <D : Operation.Data> intercept(
+    request: ApolloRequest<D>,
+    chain: ApolloInterceptorChain,
+  ): Flow<ApolloResponse<D>> {
+    return chain.proceed(request)
+      .map { response ->
+        val hasBeenSunset = response.errors?.any(Error::isSunsetError)
+        if (hasBeenSunset == true) {
+          context.startActivity(ForceUpgradeActivity.newInstance(context))
+          // Consider maybe returning an error instead? It now just replicates the old behavior.
+          // Something like: `return response.newBuilder().removeDataAndAddErrorInstead()`
+        }
+        response
+      }
+  }
 
-    override fun interceptAsync(
-        request: ApolloInterceptor.InterceptorRequest,
-        chain: ApolloInterceptorChain,
-        dispatcher: Executor,
-        callBack: ApolloInterceptor.CallBack,
-    ) {
-        chain.proceedAsync(
-            request, dispatcher,
-            object : ApolloInterceptor.CallBack {
-                override fun onResponse(response: ApolloInterceptor.InterceptorResponse) {
-                    if (disposed) {
-                        return
-                    }
-                    val parsedResponse = response.parsedResponse.orNull()
-
-                    if (parsedResponse == null) {
-                        callBack.onResponse(response)
-                        return
-                    }
-
-                    val errors = parsedResponse.errors
-
-                    if (errors == null) {
-                        callBack.onResponse(response)
-                        return
-                    }
-
-                    val hasBeenSunset = errors.any(::isSunsetError)
-
-                    if (hasBeenSunset) {
-                        context.startActivity(ForceUpgradeActivity.newInstance(context))
-                    }
-
-                    callBack.onResponse(response)
-                }
-
-                override fun onFetch(sourceType: ApolloInterceptor.FetchSourceType?) {
-                    callBack.onFetch(sourceType)
-                }
-
-                override fun onFailure(e: ApolloException) {
-                    if (disposed) {
-                        return
-                    }
-
-                    callBack.onFailure(e)
-                }
-
-                override fun onCompleted() {
-                    callBack.onCompleted()
-                }
-            }
-        )
-    }
-
-    override fun dispose() {
-        disposed = true
-    }
-
-    class Factory(
-        private val context: Context,
-    ) : ApolloInterceptorFactory {
-        override fun newInterceptor(logger: ApolloLogger, operation: Operation<*, *, *>) =
-            SunsettingInterceptor(context)
-    }
+  companion object {
+    const val SUNSETTING_ERROR_CODE = "invalid_version"
+  }
 }
 
-private fun isSunsetError(error: Any?): Boolean {
-    if (error !is Error) {
-        return false
-    }
-    val errorCode = error.customAttributes["errorCode"]
-
-    return errorCode == "invalid_version"
+private fun Error.isSunsetError(): Boolean {
+  return nonStandardFields?.get("errorCode") == SunsettingInterceptor.SUNSETTING_ERROR_CODE
 }

@@ -1,0 +1,51 @@
+name: Integration Tests
+
+on: pull_request
+jobs:
+  integration_test:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Copy CI gradle.properties
+        run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
+      - name: Setup JDK 11
+        uses: actions/setup-java@v3.4.0
+        with:
+          java-version: '11'
+          distribution: 'zulu'
+          cache: 'gradle'
+      - uses: actions/cache@v3
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+      - uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+      - name: Prebuild
+        run: ./ci-prebuild.sh
+        env:
+          LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
+          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+          ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
+          SHAKE_CLIENT_ID: ${{ secrets.SHAKE_CLIENT_ID }}
+          SHAKE_CLIENT_SECRET: ${{ secrets.SHAKE_CLIENT_SECRET }}
+      - name: Instrumentation tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 28
+          arch: x86_64
+          target: google_apis
+          profile: pixel_3a
+          script: ./gradlew connectedDebugAndroidTest
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-reports
+          path: app/build/reports
+      - uses: test-summary/action@v1
+        with: 
+          paths: "app/build/outputs/androidTest-results/**/TEST-*.xml"
+        if: always()

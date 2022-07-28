@@ -46,4 +46,10 @@
         android:contentDescription="@null"
         app:srcCompat="@drawable/ic_bank_id" />
 
+    <Button
+        android:id="@+id/login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/bankid_missing_login.email_button" />
+
 </LinearLayout>

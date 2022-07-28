@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.claimdetail.ui
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -25,44 +24,43 @@ import com.hedvig.app.service.audioplayer.AudioPlayer
 import com.hedvig.app.service.audioplayer.AudioPlayerImpl
 import com.hedvig.app.service.audioplayer.AudioPlayerState
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AudioPlayBackItem(
-    onPlayClick: () -> Unit,
-    signedAudioUrl: SignedAudioUrl,
-    modifier: Modifier = Modifier,
+  onPlayClick: () -> Unit,
+  signedAudioUrl: SignedAudioUrl,
+  modifier: Modifier = Modifier,
 ) {
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val audioPlayer: AudioPlayer = remember(signedAudioUrl, lifecycleOwner) {
-        AudioPlayerImpl(signedAudioUrl, lifecycleOwner)
+  val lifecycleOwner = LocalLifecycleOwner.current
+  val audioPlayer: AudioPlayer = remember(signedAudioUrl, lifecycleOwner) {
+    AudioPlayerImpl(signedAudioUrl, lifecycleOwner)
+  }
+  DisposableEffect(audioPlayer) {
+    audioPlayer.initialize()
+    onDispose {
+      audioPlayer.close()
     }
-    DisposableEffect(audioPlayer) {
-        audioPlayer.initialize()
-        onDispose {
-            audioPlayer.close()
-        }
-    }
+  }
 
-    Column(modifier) {
-        val audioPlayerState by audioPlayer.audioPlayerState.collectAsState()
-        FakeWaveAudioPlayerCard(
-            audioPlayerState = audioPlayerState,
-            startPlaying = {
-                onPlayClick()
-                audioPlayer.startPlayer()
-            },
-            pause = audioPlayer::pausePlayer,
-            retryLoadingAudio = audioPlayer::retryLoadingAudio,
-            waveInteraction = audioPlayer::seekTo,
+  Column(modifier) {
+    val audioPlayerState by audioPlayer.audioPlayerState.collectAsState()
+    FakeWaveAudioPlayerCard(
+      audioPlayerState = audioPlayerState,
+      startPlaying = {
+        onPlayClick()
+        audioPlayer.startPlayer()
+      },
+      pause = audioPlayer::pausePlayer,
+      retryLoadingAudio = audioPlayer::retryLoadingAudio,
+      waveInteraction = audioPlayer::seekTo,
+    )
+    Spacer(Modifier.height(8.dp))
+    AnimatedVisibility(visible = audioPlayerState !is AudioPlayerState.Failed) {
+      CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+        Text(
+          text = stringResource(hedvig.resources.R.string.claim_status_files_claim_audio_footer),
+          style = MaterialTheme.typography.caption,
         )
-        Spacer(Modifier.height(8.dp))
-        AnimatedVisibility(visible = audioPlayerState !is AudioPlayerState.Failed) {
-            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                Text(
-                    text = stringResource(R.string.claim_status_files_claim_audio_footer),
-                    style = MaterialTheme.typography.caption,
-                )
-            }
-        }
+      }
     }
+  }
 }

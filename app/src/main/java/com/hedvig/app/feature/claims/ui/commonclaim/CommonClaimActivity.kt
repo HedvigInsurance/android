@@ -21,61 +21,60 @@ import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.getViewModel
-import org.koin.core.parameter.parametersOf
 
 class CommonClaimActivity : BaseActivity(R.layout.activity_common_claim) {
 
-    private val imageLoader: ImageLoader by inject()
-    private val binding by viewBinding(ActivityCommonClaimBinding::bind)
+  private val imageLoader: ImageLoader by inject()
+  private val binding by viewBinding(ActivityCommonClaimBinding::bind)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        val data = intent.getParcelableExtra<CommonClaimsData>(CLAIMS_DATA) ?: return
-        getViewModel<CommonClaimViewModel> { parametersOf(data.id) }
+    val data = intent.getParcelableExtra<CommonClaimsData>(CLAIMS_DATA) ?: return
+    getViewModel<CommonClaimViewModel>()
 
-        binding.apply {
-            window.compatSetDecorFitsSystemWindows(false)
-            root.applyNavigationBarInsets()
-            toolbar.applyStatusBarInsets()
+    binding.apply {
+      window.compatSetDecorFitsSystemWindows(false)
+      root.applyNavigationBarInsets()
+      toolbar.applyStatusBarInsets()
 
-            toolbar.setNavigationOnClickListener {
-                onBackPressed()
-            }
-            root.setupToolbarScrollListener(toolbar = toolbar)
-            toolbar.title = data.title
+      toolbar.setNavigationOnClickListener {
+        onBackPressed()
+      }
+      root.setupToolbarScrollListener(toolbar = toolbar)
+      toolbar.title = data.title
 
-            bulletPointsRecyclerView.adapter =
-                BulletPointsAdapter(imageLoader).also {
-                    it.submitList(data.bulletPoints)
-                }
-        }
-
-        binding.apply {
-            val url = Uri.parse(data.iconUrls.iconByTheme(this@CommonClaimActivity))
-            firstMessage.commonClaimFirstMessageIcon.load(url, imageLoader)
-
-            firstMessage.commonClaimFirstMessage.text = data.layoutTitle
-            firstMessage.commonClaimCreateClaimButton.text = data.buttonText
-            if (data.eligibleToClaim) {
-                firstMessage.commonClaimCreateClaimButton.enable()
-                firstMessage.commonClaimCreateClaimButton.setHapticClickListener {
-                    HonestyPledgeBottomSheet
-                        .newInstance()
-                        .show(supportFragmentManager, HonestyPledgeBottomSheet.TAG)
-                }
-            } else {
-                firstMessage.commonClaimCreateClaimButton.disable()
-            }
+      bulletPointsRecyclerView.adapter =
+        BulletPointsAdapter(imageLoader).also {
+          it.submitList(data.bulletPoints)
         }
     }
 
-    companion object {
-        private const val CLAIMS_DATA = "claims_data"
+    binding.apply {
+      val url = Uri.parse(data.iconUrls.iconByTheme(this@CommonClaimActivity))
+      firstMessage.commonClaimFirstMessageIcon.load(url, imageLoader)
 
-        fun newInstance(context: Context, data: CommonClaimsData) =
-            Intent(context, CommonClaimActivity::class.java).apply {
-                putExtra(CLAIMS_DATA, data)
-            }
+      firstMessage.commonClaimFirstMessage.text = data.layoutTitle
+      firstMessage.commonClaimCreateClaimButton.text = data.buttonText
+      if (data.eligibleToClaim) {
+        firstMessage.commonClaimCreateClaimButton.enable()
+        firstMessage.commonClaimCreateClaimButton.setHapticClickListener {
+          HonestyPledgeBottomSheet
+            .newInstance()
+            .show(supportFragmentManager, HonestyPledgeBottomSheet.TAG)
+        }
+      } else {
+        firstMessage.commonClaimCreateClaimButton.disable()
+      }
     }
+  }
+
+  companion object {
+    private const val CLAIMS_DATA = "claims_data"
+
+    fun newInstance(context: Context, data: CommonClaimsData) =
+      Intent(context, CommonClaimActivity::class.java).apply {
+        putExtra(CLAIMS_DATA, data)
+      }
+  }
 }

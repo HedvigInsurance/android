@@ -4,33 +4,27 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.core.Either
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
 import e
 import kotlinx.coroutines.launch
 
 abstract class ReferralsActivatedViewModel : ViewModel() {
-    abstract val data: LiveData<LoggedInQuery.Data>
+  abstract val data: LiveData<LoggedInQuery.Data>
 }
 
 class ReferralsActivatedViewModelImpl(
-    private val loggedInRepository: LoggedInRepository
+  private val loggedInRepository: LoggedInRepository,
 ) : ReferralsActivatedViewModel() {
-    override val data = MutableLiveData<LoggedInQuery.Data>()
+  override val data = MutableLiveData<LoggedInQuery.Data>()
 
-    init {
-        viewModelScope.launch {
-            val response = runCatching {
-                loggedInRepository
-                    .loggedInData()
-            }
-
-            if (response.isFailure) {
-                response.exceptionOrNull()?.let { e(it) }
-                return@launch
-            }
-
-            data.postValue(response.getOrNull()?.data)
-        }
+  init {
+    viewModelScope.launch {
+      when (val loggedInData = loggedInRepository.loggedInData()) {
+        is Either.Left -> e { "loggedInData failed to fetch: ${loggedInData.value.message}" }
+        is Either.Right -> loggedInData.value.let { data.postValue(it) }
+      }
     }
+  }
 }

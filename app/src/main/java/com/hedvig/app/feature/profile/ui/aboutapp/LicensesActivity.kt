@@ -11,22 +11,22 @@ import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.viewBinding
 
 class LicensesActivity : BaseActivity(R.layout.activity_licenses) {
-    private val binding by viewBinding(ActivityLicensesBinding::bind)
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  private val binding by viewBinding(ActivityLicensesBinding::bind)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        binding.apply {
-            window.compatSetDecorFitsSystemWindows(false)
+    binding.apply {
+      window.compatSetDecorFitsSystemWindows(false)
 
-            root.applyNavigationBarInsets()
-            toolbar.applyStatusBarInsets()
+      root.applyNavigationBarInsets()
+      toolbar.applyStatusBarInsets()
 
-            toolbar.setNavigationOnClickListener {
-                onBackPressed()
-            }
-            root.setupToolbarScrollListener(toolbar)
+      toolbar.setNavigationOnClickListener {
+        onBackPressed()
+      }
+      root.setupToolbarScrollListener(toolbar)
 
-            webView.loadUrl("file:///android_asset/open_source_licenses.html")
-        }
+      webView.loadUrl("file:///android_asset/open_source_licenses.html")
     }
+  }
 }

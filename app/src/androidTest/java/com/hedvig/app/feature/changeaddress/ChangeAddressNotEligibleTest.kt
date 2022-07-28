@@ -17,34 +17,34 @@ import org.junit.Test
 
 class ChangeAddressNotEligibleTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(ChangeAddressActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(ChangeAddressActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        UpcomingAgreementQuery.QUERY_DOCUMENT to apolloResponse { success(UPCOMING_AGREEMENT_NONE) },
-        ActiveContractBundlesQuery.QUERY_DOCUMENT to apolloResponse { success(BLOCKED_SELF_CHANGE_ELIGIBILITY) }
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    UpcomingAgreementQuery.OPERATION_DOCUMENT to apolloResponse { success(UPCOMING_AGREEMENT_NONE) },
+    ActiveContractBundlesQuery.OPERATION_DOCUMENT to apolloResponse { success(BLOCKED_SELF_CHANGE_ELIGIBILITY) },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @Test
-    fun shouldShowManualChangeAddressWhenEligibilityIsBlocked() = run {
-        activityRule.launch(ChangeAddressActivity.newInstance(context()))
+  @Test
+  fun shouldShowManualChangeAddressWhenEligibilityIsBlocked() = run {
+    activityRule.launch(ChangeAddressActivity.newInstance(context()))
 
-        ChangeAddressScreen {
-            title {
-                hasText(R.string.moving_intro_title)
-            }
+    ChangeAddressScreen {
+      title {
+        hasText(hedvig.resources.R.string.moving_intro_title)
+      }
 
-            subtitle {
-                hasText(R.string.moving_intro_manual_handling_description)
-            }
+      subtitle {
+        hasText(hedvig.resources.R.string.moving_intro_manual_handling_description)
+      }
 
-            continueButton {
-                hasText(R.string.moving_intro_manual_handling_button_text)
-            }
-        }
+      continueButton {
+        hasText(hedvig.resources.R.string.moving_intro_manual_handling_button_text)
+      }
     }
+  }
 }

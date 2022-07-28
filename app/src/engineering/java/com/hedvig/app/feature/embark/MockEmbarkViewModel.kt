@@ -7,33 +7,33 @@ import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.hanalytics.HAnalytics
 
 class MockEmbarkViewModel(
-    graphQLQueryUseCase: GraphQLQueryUseCase,
-    chatRepository: ChatRepository,
-    hAnalytics: HAnalytics,
-    loginStatusService: LoginStatusService,
-    featureManager: FeatureManager,
+  graphQLQueryUseCase: GraphQLQueryUseCase,
+  chatRepository: ChatRepository,
+  hAnalytics: HAnalytics,
+  loginStatusService: LoginStatusService,
+  featureManager: FeatureManager,
 ) : EmbarkViewModel(
-    ValueStoreImpl(),
-    graphQLQueryUseCase,
-    chatRepository,
-    hAnalytics,
-    "",
-    loginStatusService,
+  ValueStoreImpl(),
+  graphQLQueryUseCase,
+  chatRepository,
+  hAnalytics,
+  "",
+  loginStatusService,
 ) {
-    init {
-        fetchStory("")
-    }
+  init {
+    fetchStory("")
+  }
 
-    override fun fetchStory(name: String) {
-        if (!shouldLoad) {
-            return
-        }
-        storyData = mockedData
-        setInitialState()
+  override fun fetchStory(name: String) {
+    if (!shouldLoad) {
+      return
     }
+    storyData = mockedData
+    setInitialState()
+  }
 
-    companion object {
-        var shouldLoad = true
-        var mockedData = STANDARD_STORY
-    }
+  companion object {
+    var shouldLoad = true
+    var mockedData = STANDARD_STORY
+  }
 }

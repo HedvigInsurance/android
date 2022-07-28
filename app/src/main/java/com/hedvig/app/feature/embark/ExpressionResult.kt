@@ -1,9 +1,9 @@
 package com.hedvig.app.feature.embark
 
 sealed class ExpressionResult {
-    data class True(
-        val resultValue: String?,
-    ) : ExpressionResult()
+  data class True(
+    val resultValue: String?,
+  ) : ExpressionResult()
 
-    object False : ExpressionResult()
+  object False : ExpressionResult()
 }

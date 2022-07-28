@@ -22,78 +22,78 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
-import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.ui.compose.theme.hedvigContentColorFor
 import com.hedvig.app.ui.compose.theme.warning
 
 @Composable
 fun ConnectPayinCard(
-    onActionClick: () -> Unit,
-    onShown: () -> Unit,
-    modifier: Modifier = Modifier,
+  onActionClick: () -> Unit,
+  onShown: () -> Unit,
+  modifier: Modifier = Modifier,
 ) {
-    LaunchedEffect(Unit) {
-        onShown()
-    }
+  LaunchedEffect(Unit) {
+    onShown()
+  }
 
-    val colorWarning = MaterialTheme.colors.warning
-    Card(
-        modifier = modifier
-            .padding(16.dp)
-            .fillMaxWidth(),
-        backgroundColor = colorWarning,
-        contentColor = hedvigContentColorFor(colorWarning),
-    ) {
+  val colorWarning = MaterialTheme.colors.warning
+  Card(
+    modifier = modifier
+      .padding(16.dp)
+      .fillMaxWidth(),
+    backgroundColor = colorWarning,
+    contentColor = hedvigContentColorFor(colorWarning),
+  ) {
+    Column {
+      Spacer(Modifier.height(16.dp))
+      Row(
+        modifier = Modifier.padding(horizontal = 16.dp),
+      ) {
+        Icon(
+          painter = painterResource(com.hedvig.android.core.designsystem.R.drawable.ic_warning_triangle),
+          contentDescription = null,
+        )
+        Spacer(Modifier.width(16.dp))
         Column {
-            Spacer(Modifier.height(16.dp))
-            Row(
-                modifier = Modifier.padding(horizontal = 16.dp)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_warning_triangle),
-                    contentDescription = null,
-                )
-                Spacer(Modifier.width(16.dp))
-                Column {
-                    Text(
-                        text = stringResource(R.string.info_card_missing_payment_title),
-                        style = MaterialTheme.typography.subtitle1,
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    Text(
-                        text = stringResource(R.string.info_card_missing_payment_body),
-                        style = MaterialTheme.typography.body2,
-                    )
-                }
-            }
-            Spacer(Modifier.height(16.dp))
-            Divider()
-            TextButton(
-                onClick = onActionClick,
-                modifier = Modifier
-                    .padding(vertical = 4.dp)
-                    .padding(end = 8.dp)
-                    .align(Alignment.End),
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = hedvigContentColorFor(colorWarning),
-                )
-            ) {
-                Text(
-                    text = stringResource(R.string.info_card_missing_payment_button_text)
-                )
-            }
+          Text(
+            text = stringResource(hedvig.resources.R.string.info_card_missing_payment_title),
+            style = MaterialTheme.typography.subtitle1,
+          )
+          Spacer(Modifier.height(8.dp))
+          Text(
+            text = stringResource(hedvig.resources.R.string.info_card_missing_payment_body),
+            style = MaterialTheme.typography.body2,
+          )
         }
+      }
+      Spacer(Modifier.height(16.dp))
+      Divider()
+      TextButton(
+        onClick = onActionClick,
+        modifier = Modifier
+          .padding(vertical = 4.dp)
+          .padding(end = 8.dp)
+          .align(Alignment.End),
+        colors = ButtonDefaults.textButtonColors(
+          contentColor = hedvigContentColorFor(colorWarning),
+        ),
+      ) {
+        Text(
+          text = stringResource(hedvig.resources.R.string.info_card_missing_payment_button_text),
+        )
+      }
     }
+  }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun ConnectPayinCardPreview() {
-    HedvigTheme {
-        ConnectPayinCard(
-            onShown = {},
-            onActionClick = {},
-        )
-    }
+  HedvigTheme {
+    ConnectPayinCard(
+      onShown = {},
+      onActionClick = {},
+    )
+  }
 }

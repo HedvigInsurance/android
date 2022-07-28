@@ -7,6 +7,7 @@ fragment QuoteBundleFragment on QuoteBundle {
     email
     id
     typeOfContract
+    insuranceType
     currentInsurer {
       id
       displayName
@@ -18,10 +19,6 @@ fragment QuoteBundleFragment on QuoteBundle {
 
     contractPerils(locale: $locale) {
       ...PerilFragment
-    }
-    termsAndConditions(locale: $locale) {
-      displayName
-      url
     }
     insurableLimits(locale: $locale) {
       ...InsurableLimitsFragment

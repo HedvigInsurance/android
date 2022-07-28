@@ -6,8 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.feature.referrals.data.ReferralsRepository
-import com.hedvig.app.util.featureflags.Feature
-import com.hedvig.app.util.featureflags.FeatureManager
 import e
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,67 +15,64 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 abstract class ReferralsViewModel : ViewModel() {
-    sealed class ViewState {
-        data class Success(
-            val showCampaignBar: Boolean,
-            val data: ReferralsQuery.Data,
-        ) : ViewState()
+  sealed class ViewState {
+    data class Success(
+      val data: ReferralsQuery.Data,
+    ) : ViewState()
 
-        object Loading : ViewState()
-        object Error : ViewState()
-    }
+    object Loading : ViewState()
+    object Error : ViewState()
+  }
 
-    protected val _data = MutableStateFlow<ViewState>(ViewState.Loading)
-    val data = _data.asStateFlow()
+  protected val _data = MutableStateFlow<ViewState>(ViewState.Loading)
+  val data = _data.asStateFlow()
 
-    protected val _isRefreshing = MutableLiveData<Boolean>()
+  protected val _isRefreshing = MutableLiveData<Boolean>()
 
-    val isRefreshing: LiveData<Boolean> = _isRefreshing
+  val isRefreshing: LiveData<Boolean> = _isRefreshing
 
-    fun setRefreshing(refreshing: Boolean) {
-        _isRefreshing.postValue(refreshing)
-    }
+  fun setRefreshing(refreshing: Boolean) {
+    _isRefreshing.postValue(refreshing)
+  }
 
-    abstract fun load()
+  abstract fun load()
 
-    fun retry() {
-        load()
-    }
+  fun retry() {
+    load()
+  }
 }
 
 class ReferralsViewModelImpl(
-    private val referralsRepository: ReferralsRepository,
-    private val featureManager: FeatureManager
+  private val referralsRepository: ReferralsRepository,
 ) : ReferralsViewModel() {
-    init {
-        viewModelScope.launch {
+  init {
+    viewModelScope.launch {
 
-            referralsRepository
-                .referrals()
-                .onEach { response ->
-                    if (response.errors?.isNotEmpty() == true) {
-                        _data.value = ViewState.Error
-                        return@onEach
-                    }
-                    response.data?.let {
-                        _data.value = ViewState.Success(
-                            data = it,
-                            showCampaignBar = featureManager.isFeatureEnabled(Feature.REFERRAL_CAMPAIGN)
-                        )
-                    }
-                }
-                .catch { e ->
-                    e(e)
-                    _data.value = ViewState.Error
-                }
-                .launchIn(this)
+      referralsRepository
+        .referrals()
+        .onEach { response ->
+          if (response.errors?.isNotEmpty() == true) {
+            _data.value = ViewState.Error
+            return@onEach
+          }
+          response.data?.let {
+            _data.value = ViewState.Success(
+              data = it,
+            )
+          }
         }
+        .catch { e ->
+          e(e)
+          _data.value = ViewState.Error
+        }
+        .launchIn(this)
     }
+  }
 
-    override fun load() {
-        viewModelScope.launch {
-            runCatching { referralsRepository.reloadReferrals() }
-            _isRefreshing.postValue(false)
-        }
+  override fun load() {
+    viewModelScope.launch {
+      runCatching { referralsRepository.reloadReferrals() }
+      _isRefreshing.postValue(false)
     }
+  }
 }

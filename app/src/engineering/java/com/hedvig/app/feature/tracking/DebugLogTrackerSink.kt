@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.tracking
 
-import com.hedvig.app.util.toJsonObject
+import com.hedvig.android.core.toJsonObject
+import com.hedvig.app.feature.hanalytics.HAnalyticsSink
 import com.hedvig.hanalytics.HAnalyticsEvent
 import d
 
@@ -9,7 +10,11 @@ import d
  * Use by opening AS Logcat on "Debug" mode with the filter "DebugLogTrackerSink"
  */
 class DebugLogTrackerSink : HAnalyticsSink {
-    override fun send(event: HAnalyticsEvent) {
-        d { "Track ${event.name}, properties: ${event.properties.toJsonObject().toString(2)}" }
-    }
+  override fun send(event: HAnalyticsEvent) {
+    d { "Track ${event.name}, properties: ${event.properties.toJsonObject().toString(2)}" }
+  }
+
+  override fun identify() {
+    d { "Identify" }
+  }
 }

@@ -14,50 +14,50 @@ import kotlinx.serialization.json.put
 import org.json.JSONObject
 
 class ConnectPaymentUseCase(
-    private val context: Context,
-    private val marketManager: MarketManager,
-    private val graphQLQueryHandler: GraphQLQueryHandler,
+  private val context: Context,
+  private val marketManager: MarketManager,
+  private val graphQLQueryHandler: GraphQLQueryHandler,
 ) {
 
-    sealed interface Error {
-        data class CheckoutPaymentAction(val action: String) : Error
-        data class ErrorMessage(val message: String?) : Error
+  sealed interface Error {
+    data class CheckoutPaymentAction(val action: String) : Error
+    data class ErrorMessage(val message: String?) : Error
+  }
+
+  suspend fun getPaymentTokenId(data: JSONObject): Either<Error, PaymentTokenId> {
+    return connectPayment(data)
+  }
+
+  private suspend fun connectPayment(data: JSONObject): Either<Error, PaymentTokenId> = graphQLQueryHandler
+    .graphQLQuery(
+      query = ConnectPaymentMutation.OPERATION_DOCUMENT,
+      variables = createConnectPaymentVariables(data),
+      files = emptyList(),
+    )
+    .toEither()
+    .mapLeft { Error.ErrorMessage(null) }
+    .flatMap { jsonResponse ->
+      val id = jsonResponse
+        .getJSONObject("data")
+        .getJSONObject("paymentConnection_connectPayment")
+        .getString("paymentTokenId")
+      PaymentTokenId(id).right()
     }
 
-    suspend fun getPaymentTokenId(data: JSONObject): Either<Error, PaymentTokenId> {
-        return connectPayment(data)
+  private fun createConnectPaymentVariables(data: JSONObject): JSONObject? {
+    val market = when (marketManager.market) {
+      Market.SE -> com.hedvig.android.owldroid.graphql.type.Market.SWEDEN
+      Market.NO -> com.hedvig.android.owldroid.graphql.type.Market.NORWAY
+      Market.DK -> com.hedvig.android.owldroid.graphql.type.Market.DENMARK
+      Market.FR -> com.hedvig.android.owldroid.graphql.type.Market.UNKNOWN__
+      null -> com.hedvig.android.owldroid.graphql.type.Market.UNKNOWN__
+    }.toString()
+
+    return buildJsonObject {
+      put("market", market)
+      put("returnUrl", RedirectComponent.getReturnUrl(context))
     }
-
-    private suspend fun connectPayment(data: JSONObject): Either<Error, PaymentTokenId> = graphQLQueryHandler
-        .graphQLQuery(
-            query = ConnectPaymentMutation.QUERY_DOCUMENT,
-            variables = createConnectPaymentVariables(data),
-            files = emptyList()
-        )
-        .toEither()
-        .mapLeft { Error.ErrorMessage(null) }
-        .flatMap { jsonResponse ->
-            val id = jsonResponse
-                .getJSONObject("data")
-                .getJSONObject("paymentConnection_connectPayment")
-                .getString("paymentTokenId")
-            PaymentTokenId(id).right()
-        }
-
-    private fun createConnectPaymentVariables(data: JSONObject): JSONObject? {
-        val market = when (marketManager.market) {
-            Market.SE -> com.hedvig.android.owldroid.type.Market.SWEDEN
-            Market.NO -> com.hedvig.android.owldroid.type.Market.NORWAY
-            Market.DK -> com.hedvig.android.owldroid.type.Market.DENMARK
-            Market.FR -> com.hedvig.android.owldroid.type.Market.UNKNOWN__
-            null -> com.hedvig.android.owldroid.type.Market.UNKNOWN__
-        }.toString()
-
-        return buildJsonObject {
-            put("market", market)
-            put("returnUrl", RedirectComponent.getReturnUrl(context))
-        }
-            .toString()
-            .let { JSONObject(it) }.put("paymentMethodDetails", data.getJSONObject("paymentMethod"))
-    }
+      .toString()
+      .let { JSONObject(it) }.put("paymentMethodDetails", data.getJSONObject("paymentMethod"))
+  }
 }

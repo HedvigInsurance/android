@@ -7,37 +7,35 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 
 class TabNotificationService(
-    private val crossSellNotificationBadgeService: CrossSellNotificationBadgeService,
-    private val referralsNotificationBadgeService: ReferralsNotificationBadgeService,
+  private val crossSellNotificationBadgeService: CrossSellNotificationBadgeService,
+  private val referralsNotificationBadgeService: ReferralsNotificationBadgeService,
 ) {
 
-    fun unseenTabNotifications(): Flow<Set<LoggedInTabs>> {
-        return combine(
-            crossSellNotificationBadgeService.shouldShowTabNotification(),
-            referralsNotificationBadgeService.shouldShowNotification()
-        ) { shouldShowCrossSellNotification: Boolean,
-            shouldShowReferralNotification: Boolean ->
-
-            buildSet {
-                if (shouldShowCrossSellNotification) add(LoggedInTabs.INSURANCE)
-                if (shouldShowReferralNotification) add(LoggedInTabs.REFERRALS)
-            }
-        }
+  fun unseenTabNotifications(): Flow<Set<LoggedInTabs>> {
+    return combine(
+      crossSellNotificationBadgeService.shouldShowTabNotification(),
+      referralsNotificationBadgeService.shouldShowNotification(),
+    ) { shouldShowCrossSellNotification: Boolean, shouldShowReferralNotification: Boolean ->
+      buildSet {
+        if (shouldShowCrossSellNotification) add(LoggedInTabs.INSURANCE)
+        if (shouldShowReferralNotification) add(LoggedInTabs.REFERRALS)
+      }
     }
+  }
 
-    suspend fun visitTab(tab: LoggedInTabs) {
-        when (tab) {
-            LoggedInTabs.INSURANCE -> {
-                crossSellNotificationBadgeService.markCurrentCrossSellsAsSeen(
-                    CrossSellNotificationBadgeService.CrossSellBadgeType.BottomNav
-                )
-            }
-            LoggedInTabs.REFERRALS -> {
-                referralsNotificationBadgeService.markAsSeen()
-            }
-            LoggedInTabs.KEY_GEAR -> {}
-            LoggedInTabs.HOME -> {}
-            LoggedInTabs.PROFILE -> {}
-        }
+  suspend fun visitTab(tab: LoggedInTabs) {
+    when (tab) {
+      LoggedInTabs.INSURANCE -> {
+        crossSellNotificationBadgeService.markCurrentCrossSellsAsSeen(
+          CrossSellNotificationBadgeService.CrossSellBadgeType.BottomNav,
+        )
+      }
+      LoggedInTabs.REFERRALS -> {
+        referralsNotificationBadgeService.markAsSeen()
+      }
+      LoggedInTabs.KEY_GEAR -> {}
+      LoggedInTabs.HOME -> {}
+      LoggedInTabs.PROFILE -> {}
     }
+  }
 }

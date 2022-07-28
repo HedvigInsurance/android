@@ -25,7 +25,6 @@ import com.hedvig.app.feature.embark.passages.previousinsurer.InsurerProviderBot
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerParameter
 import com.hedvig.app.util.extensions.showErrorDialog
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
-import com.hedvig.app.util.extensions.viewLifecycle
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.hedvig.app.util.whenApiVersion
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
@@ -34,154 +33,151 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_fragment) {
 
-    private val binding by viewBinding(PreviousOrExternalInsurerFragmentBinding::bind)
+  private val binding by viewBinding(PreviousOrExternalInsurerFragmentBinding::bind)
 
-    private val embarkViewModel: EmbarkViewModel by sharedViewModel()
-    private val viewModel: ExternalInsurerViewModel by sharedViewModel()
+  private val embarkViewModel: EmbarkViewModel by sharedViewModel()
+  private val viewModel: ExternalInsurerViewModel by sharedViewModel()
 
-    private val askForPriceActivityResultLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            if (result.resultCode == RESULT_CONTINUE) {
-                result.data?.getStringExtra(REFERENCE_RESULT)?.let {
-                    embarkViewModel.putInStore("dataCollectionId", it)
-                }
-                result.data?.getStringExtra(SSN_RESULT)?.let {
-                    embarkViewModel.putInStore("personalNumber", it)
-                }
-                continueEmbark()
-            }
+  private val askForPriceActivityResultLauncher =
+    registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+      if (result.resultCode == RESULT_CONTINUE) {
+        result.data?.getStringExtra(REFERENCE_RESULT)?.let {
+          embarkViewModel.putInStore("dataCollectionId", it)
         }
-
-    private val insurerData by lazy {
-        requireArguments()
-            .getParcelable<ExternalInsurerParameter>(DATA)
-            ?: throw IllegalArgumentException("No argument passed to ${this.javaClass.name}")
+        result.data?.getStringExtra(SSN_RESULT)?.let {
+          embarkViewModel.putInStore("personalNumber", it)
+        }
+        continueEmbark()
+      }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        postponeEnterTransition()
+  private val insurerData by lazy {
+    requireArguments()
+      .getParcelable<ExternalInsurerParameter>(DATA)
+      ?: throw IllegalArgumentException("No argument passed to ${this.javaClass.name}")
+  }
 
-        viewLifecycleScope.launch {
-            viewLifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.events.collect { event ->
-                        when (event) {
-                            is ExternalInsurerViewModel.Event.Error -> context?.showErrorDialog(
-                                message = getString(event.errorResult.getStringRes()),
-                                positiveAction = {}
-                            )
-                        }
-                    }
-                }
-                viewModel.viewState.collect { viewState ->
-                    binding.progress.isVisible = viewState.isLoading
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
+    postponeEnterTransition()
 
-                    viewState.selectedProvider?.let {
-                        binding.currentInsurerLabel.text = it.name
-                    }
-
-                    binding.currentInsurerContainer.setOnClickListener {
-                        viewState.insuranceProviders?.let(::showInsurers)
-                    }
-
-                    binding.continueButton.isEnabled = viewState.canContinue()
-                    binding.continueButton.setOnClickListener {
-                        viewState.selectedProvider?.let {
-                            continueWithProvider(it)
-                        }
-                    }
-                }
+    viewLifecycleScope.launch {
+      viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+        launch {
+          viewModel.events.collect { event ->
+            when (event) {
+              is ExternalInsurerViewModel.Event.Error -> context?.showErrorDialog(
+                message = getString(event.errorResult.getStringRes()),
+                positiveAction = {},
+              )
+              is ExternalInsurerViewModel.Event.AskForPrice -> {
+                startAskForPrice(event.collectionId, event.providerName)
+              }
+              ExternalInsurerViewModel.Event.CantAutomaticallyMoveInsurance -> {
+                MaterialAlertDialogBuilder(requireContext())
+                  .setTitle(getString(hedvig.resources.R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_TITLE))
+                  .setMessage(getString(hedvig.resources.R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_MESSAGE))
+                  .setPositiveButton(getString(hedvig.resources.R.string.ALERT_OK)) { _, _ -> continueEmbark() }
+                  .show()
+              }
+              ExternalInsurerViewModel.Event.SkipDataCollection -> continueEmbark()
             }
+          }
         }
+        viewModel.viewState.collect { viewState ->
+          binding.progress.isVisible = viewState.isLoading
 
-        with(binding) {
-            whenApiVersion(Build.VERSION_CODES.R) {
-                currentInsurerContainer.setupInsetsForIme(
-                    root = root,
-                    currentInsurerContainer,
-                )
-            }
+          viewState.selectedProvider?.let {
+            binding.currentInsurerLabel.text = it.name
+          }
 
-            messages.adapter = MessageAdapter(insurerData.messages)
-            messages.doOnNextLayout {
-                startPostponedEnterTransition()
+          binding.currentInsurerContainer.setOnClickListener {
+            viewState.insuranceProviders?.let(::showInsurers)
+          }
+
+          binding.continueButton.isEnabled = viewState.canContinue()
+          binding.continueButton.setOnClickListener {
+            viewState.selectedProvider?.let { selectedInsuranceProvider ->
+              viewModel.continueWithProvider(selectedInsuranceProvider, resources)
             }
+          }
         }
-        setFragmentResultListener(InsurerProviderBottomSheet.REQUEST_KEY) { _: String, bundle: Bundle ->
-            handleInsurerProviderBottomSheetResult(bundle)
-        }
+      }
     }
 
-    private fun handleInsurerProviderBottomSheetResult(bundle: Bundle) {
-        val id = bundle.getString(InsurerProviderBottomSheet.INSURER_ID_KEY)
-            ?: throw IllegalArgumentException("Id not found in bundle from InsurerProviderBottomSheet")
-        val collectionId = bundle.getString(InsurerProviderBottomSheet.INSURER_COLLECTION_ID_KEY)
-            ?: throw IllegalArgumentException("Collection Id not found in bundle from InsurerProviderBottomSheet")
-        val name = bundle.getString(InsurerProviderBottomSheet.INSURER_NAME_KEY)
-            ?: throw IllegalArgumentException("Name not found in bundle from InsurerProviderBottomSheet")
-        embarkViewModel.putInStore(insurerData.storeKey, id)
-        viewModel.selectInsuranceProvider(
-            InsuranceProvider(
-                id = id,
-                collectionId = collectionId,
-                name = name
-            )
+    with(binding) {
+      whenApiVersion(Build.VERSION_CODES.R) {
+        currentInsurerContainer.setupInsetsForIme(
+          root = root,
+          currentInsurerContainer,
         )
-    }
+      }
 
-    private fun startAskForPrice(collectionId: String, name: String) {
-        val intent = AskForPriceInfoActivity.createIntent(
-            requireContext(),
-            InsuranceProviderParameter(collectionId, name)
+      messages.adapter = MessageAdapter(insurerData.messages)
+      messages.doOnNextLayout {
+        startPostponedEnterTransition()
+      }
+    }
+    setFragmentResultListener(InsurerProviderBottomSheet.REQUEST_KEY) { _: String, bundle: Bundle ->
+      handleInsurerProviderBottomSheetResult(bundle)
+    }
+  }
+
+  private fun handleInsurerProviderBottomSheetResult(bundle: Bundle) {
+    val id = bundle.getString(InsurerProviderBottomSheet.INSURER_ID_KEY)
+      ?: throw IllegalArgumentException("Id not found in bundle from InsurerProviderBottomSheet")
+    val collectionId = bundle.getString(InsurerProviderBottomSheet.INSURER_COLLECTION_ID_KEY)
+      ?: throw IllegalArgumentException("Collection Id not found in bundle from InsurerProviderBottomSheet")
+    val name = bundle.getString(InsurerProviderBottomSheet.INSURER_NAME_KEY)
+      ?: throw IllegalArgumentException("Name not found in bundle from InsurerProviderBottomSheet")
+    embarkViewModel.putInStore(insurerData.storeKey, id)
+    viewModel.selectInsuranceProvider(
+      InsuranceProvider(
+        id = id,
+        collectionId = collectionId,
+        name = name,
+      ),
+    )
+  }
+
+  private fun startAskForPrice(collectionId: String, name: String) {
+    val intent = AskForPriceInfoActivity.createIntent(
+      requireContext(),
+      InsuranceProviderParameter(collectionId, name),
+    )
+    askForPriceActivityResultLauncher.launch(intent)
+  }
+
+  private fun showInsurers(insuranceProviders: List<InsuranceProvider>) {
+    val fragment = InsurerProviderBottomSheet.newInstance(
+      insuranceProviders.map {
+        PreviousInsurerParameter.PreviousInsurer(
+          name = it.name,
+          icon = "",
+          id = it.id,
+          collectionId = it.collectionId,
         )
-        askForPriceActivityResultLauncher.launch(intent)
-    }
+      },
+    )
+    fragment.show(parentFragmentManager, InsurerProviderBottomSheet.TAG)
+  }
 
-    private fun showInsurers(insuranceProviders: List<InsuranceProvider>) {
-        val fragment = InsurerProviderBottomSheet.newInstance(
-            insuranceProviders.map {
-                PreviousInsurerParameter.PreviousInsurer(
-                    name = it.name,
-                    icon = "",
-                    id = it.id,
-                    collectionId = it.collectionId,
-                )
-            }
-        )
-        fragment.show(parentFragmentManager, InsurerProviderBottomSheet.TAG)
-    }
+  private fun continueEmbark() {
+    embarkViewModel.submitAction(insurerData.next)
+  }
 
-    private fun continueWithProvider(provider: InsuranceProvider) {
-        if (provider.collectionId == getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION) ||
-            provider.collectionId == null
-        ) {
-            MaterialAlertDialogBuilder(requireContext())
-                .setTitle(getString(R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_TITLE))
-                .setMessage(getString(R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_MESSAGE))
-                .setPositiveButton(getString(R.string.ALERT_OK)) { _, _ -> continueEmbark() }
-                .show()
-        } else {
-            startAskForPrice(provider.collectionId, provider.name)
+  private fun InsuranceProvidersResult.Error.getStringRes() = when (this) {
+    InsuranceProvidersResult.Error.NetworkError -> hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE
+  }
+
+  companion object {
+    private const val DATA = "DATA"
+
+    fun newInstance(previousInsurerData: ExternalInsurerParameter) =
+      ExternalInsurerFragment().apply {
+        arguments = Bundle().apply {
+          putParcelable(DATA, previousInsurerData)
         }
-    }
-
-    private fun continueEmbark() {
-        embarkViewModel.submitAction(insurerData.next)
-    }
-
-    private fun InsuranceProvidersResult.Error.getStringRes() = when (this) {
-        InsuranceProvidersResult.Error.NetworkError -> R.string.NETWORK_ERROR_ALERT_MESSAGE
-    }
-
-    companion object {
-        private const val DATA = "DATA"
-
-        fun newInstance(previousInsurerData: ExternalInsurerParameter) =
-            ExternalInsurerFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable(DATA, previousInsurerData)
-                }
-            }
-    }
+      }
+  }
 }

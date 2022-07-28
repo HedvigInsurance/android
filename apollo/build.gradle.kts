@@ -1,62 +1,74 @@
+import com.apollographql.apollo3.compiler.MODELS_COMPAT
+
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id("com.android.library")
-    id("kotlin-android")
-    id("com.apollographql.apollo")
+  id("hedvig.android.library")
+  id("hedvig.android.ktlint")
+  alias(libs.plugins.apollo)
 }
 
 apollo {
+  service("giraffe") {
+    introspection {
+      endpointUrl.set("https://graphql.dev.hedvigit.com/graphql")
+      schemaFile.set(file("src/main/graphql/com/hedvig/android/owldroid/schema.graphqls"))
+    }
+    schemaFile.set(file("src/main/graphql/com/hedvig/android/owldroid/schema.graphqls"))
+    srcDir(file("src/main/graphql/com/hedvig/android/owldroid/graphql"))
+
+    packageName.set("com.hedvig.android.owldroid.graphql")
+    codegenModels.set(MODELS_COMPAT)
+
+    // Test builders setup
     generateKotlinModels.set(true)
-    customTypeMapping.set(
-        mapOf(
-            "URL" to "kotlin.String",
-            "LocalDate" to "java.time.LocalDate",
-            "Upload" to "com.apollographql.apollo.api.FileUpload",
-            "PaymentMethodsResponse" to "com.adyen.checkout.components.model.PaymentMethodsApiResponse",
-            "CheckoutPaymentsAction" to "kotlin.String",
-            "CheckoutPaymentAction" to "kotlin.String",
-            "JSONString" to "org.json.JSONObject",
-            "Instant" to "java.time.Instant",
-        )
+    generateTestBuilders.set(true)
+    testDirConnection {
+      // Make test builders available to main (not just test or androidTest) to be used by our mock data
+      connectToAndroidSourceSet("main")
+    }
+
+    // https://www.apollographql.com/docs/android/advanced/operation-variables/#make-nullable-variables-non-optional
+    generateOptionalOperationVariables.set(false)
+
+    mapScalarToKotlinString("URL")
+    mapScalarToKotlinString("CheckoutPaymentsAction")
+    mapScalarToKotlinString("CheckoutPaymentAction")
+    mapScalarToUpload("Upload")
+    mapScalar("Instant", "java.time.Instant", "com.apollographql.apollo3.adapter.JavaInstantAdapter")
+
+    mapScalar("JSONString", "org.json.JSONObject", "com.hedvig.android.typeadapter.JSONStringAdapter")
+    mapScalar("LocalDate", "java.time.LocalDate", "com.hedvig.android.typeadapter.PromiscuousLocalDateAdapter")
+    mapScalar(
+      "PaymentMethodsResponse",
+      "com.adyen.checkout.components.model.PaymentMethodsApiResponse",
+      "com.hedvig.android.typeadapter.PaymentMethodsApiResponseAdapter",
     )
     sealedClassesForEnumsMatching.set(
-        listOf(
-            "TypeOfContract",
-            "CrossSellType",
-            "ClaimStatus",
-            "EmbarkExternalRedirectLocation",
-        )
+      listOf(
+        "AuthState",
+        "ClaimStatus",
+        "CrossSellType",
+        "EmbarkExternalRedirectLocation",
+        "TypeOfContract",
+      ),
     )
-}
-
-android {
-    commonConfig(
-        AndroidVersions(
-            libs.versions.compileSdkVersion.get().toInt(),
-            libs.versions.minSdkVersion.get().toInt(),
-            libs.versions.targetSdkVersion.get().toInt(),
-        )
-    )
-
-    buildFeatures {
-        buildConfig = false
-        viewBinding = false
-        dataBinding = false
-        aidl = false
-        renderScript = false
-        resValues = false
-        shaders = false
-    }
+  }
 }
 
 dependencies {
-    implementation(libs.kotlin.stdlib)
-    coreLibraryDesugaring(libs.coreLibraryDesugaring)
+  implementation(projects.coreCommon)
 
-    implementation(libs.androidx.other.constraintLayout)
+  api(libs.apollo.runtime)
+  implementation(libs.apollo.adapters)
 
-    api(libs.apollo.runtime)
-    api(libs.apollo.android)
-    api(libs.apollo.coroutines)
+  implementation(libs.adyen)
+}
 
-    implementation(libs.adyen)
+tasks.withType<com.apollographql.apollo3.gradle.internal.ApolloDownloadSchemaTask> {
+  doLast {
+    val schemaPath = schema.get()
+    val schemaFile = file(schemaPath)
+    val textWithoutDoubleLineBreaks = schemaFile.readText().replace("\n\n", "\n")
+    schemaFile.writeText(textWithoutDoubleLineBreaks)
+  }
 }

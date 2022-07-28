@@ -10,23 +10,23 @@ import org.koin.android.ext.android.inject
 import org.koin.core.module.Module
 
 class ChatMockActivity : MockActivity() {
-    override val original = emptyList<Module>()
-    override val mocks = emptyList<Module>()
+  override val original = emptyList<Module>()
+  override val mocks = emptyList<Module>()
 
-    private val chatNotificationSender: ChatNotificationSender by inject()
+  private val chatNotificationSender: ChatNotificationSender by inject()
 
-    override fun adapter() = genericDevelopmentAdapter {
-        header("Notifications")
-        clickableItem("Send chat message received-notification") {
-            chatNotificationSender
-                .sendNotification(
-                    type = "",
-                    RemoteMessage(
-                        bundleOf(
-                            DATA_NEW_MESSAGE_BODY to "Hello, world!"
-                        )
-                    )
-                )
-        }
+  override fun adapter() = genericDevelopmentAdapter {
+    header("Notifications")
+    clickableItem("Send chat message received-notification") {
+      chatNotificationSender
+        .sendNotification(
+          type = "",
+          RemoteMessage(
+            bundleOf(
+              DATA_NEW_MESSAGE_BODY to "Hello, world!",
+            ),
+          ),
+        )
     }
+  }
 }

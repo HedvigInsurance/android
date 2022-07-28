@@ -1,34 +1,44 @@
 package com.hedvig.app.feature.zignsec.ui
 
 import android.os.Bundle
-import android.view.View
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import com.google.android.material.transition.MaterialSharedAxis
-import com.hedvig.app.R
-import com.hedvig.app.databinding.GenericErrorBinding
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
-import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
-class ErrorFragment : Fragment(R.layout.generic_error) {
-    private val binding by viewBinding(GenericErrorBinding::bind)
-    private val model: SimpleSignAuthenticationViewModel by sharedViewModel()
+class ErrorFragment : Fragment() {
+  private val model: SimpleSignAuthenticationViewModel by sharedViewModel()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
-        returnTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
-    }
+    enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
+    returnTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
+  }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.retry.setHapticClickListener {
-            model.restart()
+  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
+    ComposeView(requireContext()).apply {
+      setContent {
+        HedvigTheme {
+          GenericErrorScreen(
+            onRetryButtonClick = { model.cancelSignIn() },
+            modifier = Modifier
+              .padding(16.dp)
+              .padding(top = (80 - 16).dp),
+          )
         }
+      }
     }
 
-    companion object {
-        fun newInstance() = ErrorFragment()
-    }
+  companion object {
+    fun newInstance() = ErrorFragment()
+  }
 }

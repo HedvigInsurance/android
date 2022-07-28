@@ -9,31 +9,31 @@ import com.hedvig.app.ui.fragment.FileUploadBottomSheet
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class ChatFileUploadBottomSheet : FileUploadBottomSheet() {
-    override val title = R.string.FILE_UPLOAD_OVERLAY_TITLE
-    private val chatViewModel: ChatViewModel by sharedViewModel()
+  override val title = hedvig.resources.R.string.FILE_UPLOAD_OVERLAY_TITLE
+  private val chatViewModel: ChatViewModel by sharedViewModel()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
 
-        chatViewModel.isUploading.observe(viewLifecycleOwner) { isUploading ->
-            if (isUploading) {
-                uploadStarted()
-            }
-        }
-
-        chatViewModel.uploadBottomSheetResponse.observe(viewLifecycleOwner) {
-            isCancelable = true
-            dismiss()
-        }
+    chatViewModel.isUploading.observe(viewLifecycleOwner) { isUploading ->
+      if (isUploading) {
+        uploadStarted()
+      }
     }
 
-    override fun onFileChosen(uri: Uri) {
-        chatViewModel.uploadFileFromProvider(uri)
+    chatViewModel.uploadBottomSheetResponse.observe(viewLifecycleOwner) {
+      isCancelable = true
+      dismiss()
     }
+  }
 
-    companion object {
-        const val TAG = "ChatFileUploadBottomSheet"
+  override fun onFileChosen(uri: Uri) {
+    chatViewModel.uploadFileFromProvider(uri)
+  }
 
-        fun newInstance() = ChatFileUploadBottomSheet()
-    }
+  companion object {
+    const val TAG = "ChatFileUploadBottomSheet"
+
+    fun newInstance() = ChatFileUploadBottomSheet()
+  }
 }

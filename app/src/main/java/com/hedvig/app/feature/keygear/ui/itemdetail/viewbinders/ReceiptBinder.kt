@@ -9,27 +9,27 @@ import com.hedvig.app.feature.keygear.ui.itemdetail.ReceiptFileUploadBottomSheet
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 
 class ReceiptBinder(
-    private val binding: KeyGearItemDetailReceiptSectionBinding,
-    private val supportFragmentManager: FragmentManager,
+  private val binding: KeyGearItemDetailReceiptSectionBinding,
+  private val supportFragmentManager: FragmentManager,
 ) {
-    fun bind(data: KeyGearItemQuery.KeyGearItem) {
-        data.fragments.keyGearItemFragment.receipts.getOrNull(0)?.let { receipt ->
-            binding.addOrViewReceipt.setText(R.string.KEY_GEAR_ITEM_VIEW_RECEIPT_SHOW)
-            binding.addOrViewReceipt.setHapticClickListener {
-                binding.root.context.startActivity(
-                    ReceiptActivity.newInstance(
-                        binding.root.context,
-                        receipt.file.preSignedUrl
-                    )
-                )
-            }
-        } ?: run {
-            binding.addOrViewReceipt.setText(R.string.KEY_GEAR_ITEM_VIEW_RECEIPT_CELL_ADD_BUTTON)
-            binding.addOrViewReceipt.setHapticClickListener {
-                ReceiptFileUploadBottomSheet
-                    .newInstance()
-                    .show(supportFragmentManager, ReceiptFileUploadBottomSheet.TAG)
-            }
-        }
+  fun bind(data: KeyGearItemQuery.KeyGearItem) {
+    data.fragments.keyGearItemFragment.receipts.getOrNull(0)?.let { receipt ->
+      binding.addOrViewReceipt.setText(hedvig.resources.R.string.KEY_GEAR_ITEM_VIEW_RECEIPT_SHOW)
+      binding.addOrViewReceipt.setHapticClickListener {
+        binding.root.context.startActivity(
+          ReceiptActivity.newInstance(
+            binding.root.context,
+            receipt.file.preSignedUrl,
+          ),
+        )
+      }
+    } ?: run {
+      binding.addOrViewReceipt.setText(hedvig.resources.R.string.KEY_GEAR_ITEM_VIEW_RECEIPT_CELL_ADD_BUTTON)
+      binding.addOrViewReceipt.setHapticClickListener {
+        ReceiptFileUploadBottomSheet
+          .newInstance()
+          .show(supportFragmentManager, ReceiptFileUploadBottomSheet.TAG)
+      }
     }
+  }
 }

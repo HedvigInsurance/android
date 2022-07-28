@@ -14,46 +14,46 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.app.ui.compose.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.ui.compose.theme.hedvigContentColorFor
 
 @Composable
 fun Pill(
-    text: String,
-    backgroundColor: Color,
+  text: String,
+  backgroundColor: Color,
 ) {
-    Surface(
-        shape = MaterialTheme.shapes.small,
-        color = backgroundColor,
-        contentColor = hedvigContentColorFor(backgroundColor),
-        modifier = Modifier.heightIn(min = 24.dp)
+  Surface(
+    shape = MaterialTheme.shapes.small,
+    color = backgroundColor,
+    contentColor = hedvigContentColorFor(backgroundColor),
+    modifier = Modifier.heightIn(min = 24.dp),
+  ) {
+    Row(
+      Modifier.padding(
+        horizontal = 8.dp,
+        vertical = 5.dp,
+      ),
+      horizontalArrangement = Arrangement.Center,
+      verticalAlignment = Alignment.CenterVertically,
     ) {
-        Row(
-            Modifier.padding(
-                horizontal = 8.dp,
-                vertical = 5.dp
-            ),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text,
-                style = MaterialTheme.typography.caption,
-                maxLines = 1
-            )
-        }
+      Text(
+        text,
+        style = MaterialTheme.typography.caption,
+        maxLines = 1,
+      )
     }
+  }
 }
 
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun PillPreview() {
-    HedvigTheme {
-        Surface(
-            color = MaterialTheme.colors.background,
-        ) {
-            Pill("PillText", MaterialTheme.colors.primary)
-        }
+  HedvigTheme {
+    Surface(
+      color = MaterialTheme.colors.background,
+    ) {
+      Pill("PillText", MaterialTheme.colors.primary)
     }
+  }
 }

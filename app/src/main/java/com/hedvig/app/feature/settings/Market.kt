@@ -1,123 +1,107 @@
 package com.hedvig.app.feature.settings
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.FragmentManager
-import com.hedvig.android.owldroid.graphql.ProfileQuery
-import com.hedvig.android.owldroid.type.DirectDebitStatus
+import com.hedvig.android.owldroid.graphql.fragment.ActivePaymentMethodsFragment
+import com.hedvig.android.owldroid.graphql.type.DirectDebitStatus
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.authenticate.LoginDialog
 import com.hedvig.app.feature.adyen.AdyenCurrency
-import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinActivity
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutActivity
-import com.hedvig.app.feature.onboarding.ui.ChoosePlanActivity
-import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
-import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationActivity
 
 enum class Market {
-    SE,
-    NO,
+  SE,
+  NO,
+  DK,
+  FR;
+
+  /**
+   * Hedvig paying to member
+   */
+  fun connectPayout(context: Context) = when (this) {
+    NO -> AdyenConnectPayoutActivity.newInstance(context, AdyenCurrency.fromMarket(this))
+    else -> null
+  }
+
+  val flag: Int
+    get() = when (this) {
+      SE -> R.drawable.ic_flag_se
+      NO -> R.drawable.ic_flag_no
+      DK -> R.drawable.ic_flag_dk
+      FR -> R.drawable.ic_flag_fr
+    }
+
+  val label: Int
+    get() = when (this) {
+      SE -> hedvig.resources.R.string.market_sweden
+      NO -> hedvig.resources.R.string.market_norway
+      DK -> hedvig.resources.R.string.market_denmark
+      FR -> hedvig.resources.R.string.market_france
+    }
+
+  fun openAuth(context: Context, fragmentManager: FragmentManager) {
+    when (this) {
+      SE -> {
+        LoginDialog().show(fragmentManager, AuthenticateDialog.TAG)
+      }
+      NO, DK -> {
+        context.startActivity(SimpleSignAuthenticationActivity.newInstance(context, this))
+      }
+      FR -> {
+        TODO("Open generic auth")
+      }
+    }
+  }
+
+  fun openOnboarding(context: Context) {
+    val webPath = Language.fromSettings(context, this).webPath()
+    val url = context.getString(R.string.WEB_BASE_URL) + "/" + webPath + "/new-member"
+    val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+    context.startActivity(browserIntent)
+  }
+
+  @StringRes
+  fun getPriceCaption(
+    directDebitStatus: DirectDebitStatus?,
+    activePaymentMethodsFragment: ActivePaymentMethodsFragment?,
+  ): Int = when (this) {
+    SE -> when (directDebitStatus) {
+      DirectDebitStatus.ACTIVE -> hedvig.resources.R.string.Direct_Debit_Connected
+      DirectDebitStatus.NEEDS_SETUP,
+      DirectDebitStatus.PENDING,
+      DirectDebitStatus.UNKNOWN__,
+      null,
+      -> hedvig.resources.R.string.Direct_Debit_Not_Connected
+    }
     DK,
-    FR;
-
-    /**
-     * Members paying to Hedvig
-     */
-    fun connectPayin(context: Context, isPostSign: Boolean = false) = when (this) {
-        SE -> TrustlyConnectPayinActivity.newInstance(
-            context,
-            isPostSign
-        )
-        NO, DK, FR -> AdyenConnectPayinActivity.newInstance(
-            context,
-            AdyenCurrency.fromMarket(this),
-            isPostSign
-        )
+    NO,
+    -> when {
+      activePaymentMethodsFragment?.asStoredCardDetails != null -> {
+        hedvig.resources.R.string.Card_Connected
+      }
+      activePaymentMethodsFragment?.asStoredThirdPartyDetails != null -> {
+        hedvig.resources.R.string.Third_Party_Connected
+      }
+      activePaymentMethodsFragment == null -> hedvig.resources.R.string.Card_Not_Connected
+      else -> hedvig.resources.R.string.Card_Not_Connected
     }
+    FR -> TODO()
+  }
 
-    /**
-     * Hedvig paying to member
-     */
-    fun connectPayout(context: Context) = when (this) {
-        NO -> AdyenConnectPayoutActivity.newInstance(context, AdyenCurrency.fromMarket(this))
-        else -> null
-    }
+  fun defaultLanguage() = when (this) {
+    SE -> Language.EN_SE
+    NO -> Language.EN_NO
+    DK -> Language.EN_DK
+    FR -> Language.EN_FR
+  }
 
-    val flag: Int
-        get() = when (this) {
-            SE -> R.drawable.ic_flag_se
-            NO -> R.drawable.ic_flag_no
-            DK -> R.drawable.ic_flag_dk
-            FR -> R.drawable.ic_flag_fr
-        }
-
-    val label: Int
-        get() = when (this) {
-            SE -> R.string.market_sweden
-            NO -> R.string.market_norway
-            DK -> R.string.market_denmark
-            FR -> R.string.market_france
-        }
-
-    fun openAuth(context: Context, fragmentManager: FragmentManager) {
-        when (this) {
-            SE -> {
-                LoginDialog().show(fragmentManager, AuthenticateDialog.TAG)
-            }
-            NO, DK -> {
-                context.startActivity(SimpleSignAuthenticationActivity.newInstance(context, this))
-            }
-            FR -> {
-                TODO("Open generic auth")
-            }
-        }
-    }
-
-    fun openOnboarding(context: Context, isNativeDkOnboardingEnabled: Boolean) = when (this) {
-        SE -> {
-            context.startActivity(ChoosePlanActivity.newInstance(context))
-        }
-        NO -> {
-            context.startActivity(ChoosePlanActivity.newInstance(context))
-        }
-        DK -> {
-            if (isNativeDkOnboardingEnabled) {
-                context.startActivity(ChoosePlanActivity.newInstance(context))
-            } else {
-                context.startActivity(WebOnboardingActivity.newInstance(context))
-            }
-        }
-        FR -> {
-            context.startActivity(WebOnboardingActivity.newInstance(context))
-        }
-    }
-
-    fun getPriceCaption(data: ProfileQuery.Data) = when (this) {
-        SE -> when (data.bankAccount?.directDebitStatus) {
-            DirectDebitStatus.ACTIVE -> R.string.Direct_Debit_Connected
-            DirectDebitStatus.NEEDS_SETUP,
-            DirectDebitStatus.PENDING,
-            DirectDebitStatus.UNKNOWN__,
-            null,
-            -> R.string.Direct_Debit_Not_Connected
-        }
-        DK,
-        NO,
-        -> when {
-            data.activePaymentMethodsV2?.fragments?.activePaymentMethodsFragment?.asStoredCardDetails != null -> {
-                R.string.Card_Connected
-            }
-            data.activePaymentMethodsV2?.fragments?.activePaymentMethodsFragment?.asStoredThirdPartyDetails != null -> {
-                R.string.Third_Party_Connected
-            }
-            data.activePaymentMethodsV2 == null -> R.string.Card_Not_Connected
-            else -> R.string.Card_Not_Connected
-        }
-        FR -> TODO()
-    }
-
-    companion object {
-        const val MARKET_SHARED_PREF = "MARKET_SHARED_PREF"
-    }
+  companion object {
+    const val MARKET_SHARED_PREF = "MARKET_SHARED_PREF"
+  }
 }

@@ -15,36 +15,36 @@ import org.junit.Test
 * */
 class ConfirmDismissDirtyTest : TestCase() {
 
-    @get:Rule
-    val activityRule = ActivityTestRule(ReferralsEditCodeActivity::class.java, false, false)
+  @get:Rule
+  val activityRule = ActivityTestRule(ReferralsEditCodeActivity::class.java, false, false)
 
-    @Test
-    fun shouldShowConfirmDismissWhenFormIsDirty() = run {
-        activityRule.launchActivity(
-            ReferralsEditCodeActivity.newInstance(
-                context(),
-                "TEST123"
-            )
-        )
+  @Test
+  fun shouldShowConfirmDismissWhenFormIsDirty() = run {
+    activityRule.launchActivity(
+      ReferralsEditCodeActivity.newInstance(
+        context(),
+        "TEST123",
+      ),
+    )
 
-        onScreen<ReferralsEditCodeScreen> {
-            editLayout {
-                edit {
-                    replaceText("EDITEDCODE123")
-                }
-            }
-            pressBack()
-            confirmDismiss {
-                isDisplayed()
-                negativeButton { click() }
-            }
-            up { click() }
-            confirmDismiss {
-                isDisplayed()
-                positiveButton { click() }
-            }
+    onScreen<ReferralsEditCodeScreen> {
+      editLayout {
+        edit {
+          replaceText("EDITEDCODE123")
         }
-
-        assertTrue(activityRule.activity.isFinishing)
+      }
+      pressBack()
+      confirmDismiss {
+        isDisplayed()
+        negativeButton { click() }
+      }
+      up { click() }
+      confirmDismiss {
+        isDisplayed()
+        positiveButton { click() }
+      }
     }
+
+    assertTrue(activityRule.activity.isFinishing)
+  }
 }

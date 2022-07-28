@@ -22,114 +22,114 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activity) {
 
-    override val screenName = "connect_payment_adyen"
+  override val screenName = "connect_payment_adyen"
 
-    private val connectPaymentViewModel: ConnectPaymentViewModel by viewModel()
-    private val adyenConnectPayinViewModel: AdyenConnectPayinViewModel by viewModel()
+  private val connectPaymentViewModel: ConnectPaymentViewModel by viewModel()
+  private val adyenConnectPayinViewModel: AdyenConnectPayinViewModel by viewModel()
 
-    private val marketManager: MarketManager by inject()
-    private lateinit var paymentMethods: PaymentMethodsApiResponse
-    private lateinit var currency: AdyenCurrency
+  private val marketManager: MarketManager by inject()
+  private lateinit var paymentMethods: PaymentMethodsApiResponse
+  private lateinit var currency: AdyenCurrency
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        val c = intent.getSerializableExtra(CURRENCY) as? AdyenCurrency
+    val c = intent.getSerializableExtra(CURRENCY) as? AdyenCurrency
 
-        if (c == null) {
-            e { "Programmer error: CURRENCY not provided to ${this.javaClass.name}" }
-            finish()
-            return
-        }
-
-        currency = c
-
-        if (isPostSign()) {
-            connectPaymentViewModel.setInitialNavigationDestination(ConnectPaymentScreenState.Explainer)
-        }
-
-        connectPaymentViewModel.navigationState.observe(this) { state ->
-            when (state) {
-                ConnectPaymentScreenState.Explainer ->
-                    supportFragmentManager
-                        .beginTransaction()
-                        .replace(
-                            R.id.container,
-                            PostSignExplainerFragment.newInstance(ConnectPayinType.ADYEN)
-                        )
-                        .commitAllowingStateLoss()
-                is ConnectPaymentScreenState.Connect -> startAdyenPayment(marketManager.market, paymentMethods)
-                is ConnectPaymentScreenState.Result ->
-                    supportFragmentManager
-                        .beginTransaction()
-                        .replace(
-                            R.id.container,
-                            ConnectPaymentResultFragment.newInstance(
-                                state.success,
-                                ConnectPayinType.ADYEN
-                            )
-                        )
-                        .commitAllowingStateLoss()
-            }
-        }
-
-        connectPaymentViewModel.shouldClose.observe(this) { shouldClose ->
-            if (shouldClose) {
-                if (isPostSign()) {
-                    startActivity(
-                        LoggedInActivity.newInstance(
-                            this,
-                            withoutHistory = true,
-                            isFromOnboarding = true
-                        )
-                    )
-                    return@observe
-                }
-                finish()
-            }
-        }
-
-        adyenConnectPayinViewModel.paymentMethods.observe(this) {
-            paymentMethods = it
-
-            if (isPostSign()) {
-                connectPaymentViewModel.isReadyToStart()
-            } else {
-                startAdyenPayment(marketManager.market, paymentMethods)
-            }
-        }
+    if (c == null) {
+      e { "Programmer error: CURRENCY not provided to ${this.javaClass.name}" }
+      finish()
+      return
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        // Replace with new result API when adyens handleActivityResult is updated
-        super.onActivityResult(requestCode, resultCode, data)
+    currency = c
 
-        when (DropIn.handleActivityResult(requestCode, resultCode, data)) {
-            is DropInResult.CancelledByUser -> finish()
-            is DropInResult.Finished -> {
-                connectPaymentViewModel.navigateTo(ConnectPaymentScreenState.Result(success = true))
-            }
-            is DropInResult.Error,
-            null,
-            -> connectPaymentViewModel.navigateTo(
-                ConnectPaymentScreenState.Result(success = false)
+    if (isPostSign()) {
+      connectPaymentViewModel.setInitialNavigationDestination(ConnectPaymentScreenState.Explainer)
+    }
+
+    connectPaymentViewModel.navigationState.observe(this) { state ->
+      when (state) {
+        ConnectPaymentScreenState.Explainer ->
+          supportFragmentManager
+            .beginTransaction()
+            .replace(
+              R.id.container,
+              PostSignExplainerFragment.newInstance(ConnectPayinType.ADYEN),
             )
+            .commitAllowingStateLoss()
+        is ConnectPaymentScreenState.Connect -> startAdyenPayment(marketManager.market, paymentMethods)
+        is ConnectPaymentScreenState.Result ->
+          supportFragmentManager
+            .beginTransaction()
+            .replace(
+              R.id.container,
+              ConnectPaymentResultFragment.newInstance(
+                state.success,
+                ConnectPayinType.ADYEN,
+              ),
+            )
+            .commitAllowingStateLoss()
+      }
+    }
+
+    connectPaymentViewModel.shouldClose.observe(this) { shouldClose ->
+      if (shouldClose) {
+        if (isPostSign()) {
+          startActivity(
+            LoggedInActivity.newInstance(
+              this,
+              withoutHistory = true,
+              isFromOnboarding = true,
+            ),
+          )
+          return@observe
         }
+        finish()
+      }
     }
 
-    private fun isPostSign() = intent.getBooleanExtra(IS_POST_SIGN, false)
+    adyenConnectPayinViewModel.paymentMethods.observe(this) {
+      paymentMethods = it
 
-    companion object {
-
-        const val GOOGLE_WALLET_ENVIRONMENT_PRODUCTION = 1
-        const val GOOGLE_WALLET_ENVIRONMENT_TEST = 3
-        fun newInstance(context: Context, currency: AdyenCurrency, isPostSign: Boolean = false) =
-            Intent(context, AdyenConnectPayinActivity::class.java).apply {
-                putExtra(IS_POST_SIGN, isPostSign)
-                putExtra(CURRENCY, currency)
-            }
-
-        private const val IS_POST_SIGN = "IS_POST_SIGN"
-        private const val CURRENCY = "CURRENCY"
+      if (isPostSign()) {
+        connectPaymentViewModel.isReadyToStart()
+      } else {
+        startAdyenPayment(marketManager.market, paymentMethods)
+      }
     }
+  }
+
+  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    // Replace with new result API when adyens handleActivityResult is updated
+    super.onActivityResult(requestCode, resultCode, data)
+
+    when (DropIn.handleActivityResult(requestCode, resultCode, data)) {
+      is DropInResult.CancelledByUser -> finish()
+      is DropInResult.Finished -> {
+        connectPaymentViewModel.navigateTo(ConnectPaymentScreenState.Result(success = true))
+      }
+      is DropInResult.Error,
+      null,
+      -> connectPaymentViewModel.navigateTo(
+        ConnectPaymentScreenState.Result(success = false),
+      )
+    }
+  }
+
+  private fun isPostSign() = intent.getBooleanExtra(IS_POST_SIGN, false)
+
+  companion object {
+
+    const val GOOGLE_WALLET_ENVIRONMENT_PRODUCTION = 1
+    const val GOOGLE_WALLET_ENVIRONMENT_TEST = 3
+    fun newInstance(context: Context, currency: AdyenCurrency, isPostSign: Boolean = false) =
+      Intent(context, AdyenConnectPayinActivity::class.java).apply {
+        putExtra(IS_POST_SIGN, isPostSign)
+        putExtra(CURRENCY, currency)
+      }
+
+    private const val IS_POST_SIGN = "IS_POST_SIGN"
+    private const val CURRENCY = "CURRENCY"
+  }
 }

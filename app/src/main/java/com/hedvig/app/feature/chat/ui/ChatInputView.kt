@@ -11,7 +11,7 @@ import android.widget.TextView
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.recyclerview.widget.RecyclerView
-import com.hedvig.android.owldroid.type.KeyboardType
+import com.hedvig.android.owldroid.graphql.type.KeyboardType
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChatInputViewBinding
 import com.hedvig.app.feature.chat.Audio
@@ -35,254 +35,233 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 
 class ChatInputView : FrameLayout {
-    private val binding by viewBinding(ChatInputViewBinding::bind)
+  private val binding by viewBinding(ChatInputViewBinding::bind)
 
-    constructor(context: Context) : super(context)
-    constructor(context: Context, attributeSet: AttributeSet) : super(context, attributeSet)
-    constructor(context: Context, attributeSet: AttributeSet, defStyle: Int) : super(
-        context,
-        attributeSet,
-        defStyle
-    )
+  constructor(context: Context) : super(context)
+  constructor(context: Context, attributeSet: AttributeSet) : super(context, attributeSet)
+  constructor(context: Context, attributeSet: AttributeSet, defStyle: Int) : super(
+    context,
+    attributeSet,
+    defStyle,
+  )
 
-    private lateinit var sendTextMessage: ((String) -> Unit)
-    private lateinit var sendSingleSelect: ((String) -> Unit)
-    private lateinit var singleSelectLink: ((String) -> Unit)
-    private lateinit var openAttachFile: (() -> Unit)
-    private lateinit var openSendGif: (() -> Unit)
-    private lateinit var chatRecyclerView: RecyclerView
+  private lateinit var sendTextMessage: ((String) -> Unit)
+  private lateinit var sendSingleSelect: ((String) -> Unit)
+  private lateinit var singleSelectLink: ((String) -> Unit)
+  private lateinit var openAttachFile: (() -> Unit)
+  private lateinit var openSendGif: (() -> Unit)
+  private lateinit var chatRecyclerView: RecyclerView
 
-    private var currentlyDisplaying: ChatInputType = NullInput
+  private var currentlyDisplaying: ChatInputType = NullInput
 
-    private val layoutInflater: LayoutInflater by lazy {
-        LayoutInflater.from(context)
+  private val layoutInflater: LayoutInflater by lazy {
+    LayoutInflater.from(context)
+  }
+
+  var message: ChatInputType? = null
+    set(value) {
+      field = value
+      value?.let { show(it) }
+      when (value) {
+        is TextInput -> bindTextInput(value)
+        is SingleSelect -> bindSingleSelect(value)
+        is ParagraphInput -> bindParagraphInput()
+        is Audio, NullInput, null -> {}
+      }
     }
 
-    var message: ChatInputType? = null
-        set(value) {
-            field = value
-            value?.let { show(it) }
-            when (value) {
-                is TextInput -> bindTextInput(value)
-                is SingleSelect -> bindSingleSelect(value)
-                is ParagraphInput -> bindParagraphInput()
-                is Audio -> bindAudio()
-                NullInput,
-                null,
-                -> {
-                }
-            }
+  init {
+    inflate(context, R.layout.chat_input_view, this)
+    binding.apply {
+      inputText.sendClickListener = {
+        performTextMessageSend()
+      }
+      inputText.setOnEditorActionListener { _, actionId, event ->
+        if (actionId == EditorInfo.IME_ACTION_SEND) {
+          performTextMessageSend()
+          return@setOnEditorActionListener true
         }
-
-    init {
-        inflate(context, R.layout.chat_input_view, this)
-        binding.apply {
-            inputText.sendClickListener = {
-                performTextMessageSend()
-            }
-            inputText.setOnEditorActionListener { _, actionId, event ->
-                if (actionId == EditorInfo.IME_ACTION_SEND) {
-                    performTextMessageSend()
-                    return@setOnEditorActionListener true
-                }
-                if (
-                    actionId == EditorInfo.IME_NULL &&
-                    event.action == KeyEvent.ACTION_UP &&
-                    event.keyCode == KeyEvent.KEYCODE_ENTER
-                ) {
-                    performTextMessageSend()
-                    return@setOnEditorActionListener true
-                }
-                true
-            }
-            attachFileBackground.setHapticClickListener {
-                inputText.clearFocus()
-                openAttachFile()
-            }
-            sendGif.setHapticClickListener {
-                inputText.clearFocus()
-                openSendGif()
-            }
-            paragraphView.avdSetLooping()
+        if (
+          actionId == EditorInfo.IME_NULL &&
+          event.action == KeyEvent.ACTION_UP &&
+          event.keyCode == KeyEvent.KEYCODE_ENTER
+        ) {
+          performTextMessageSend()
+          return@setOnEditorActionListener true
         }
-
-        hideAllViews()
+        true
+      }
+      attachFileBackground.setHapticClickListener {
+        inputText.clearFocus()
+        openAttachFile()
+      }
+      sendGif.setHapticClickListener {
+        inputText.clearFocus()
+        openSendGif()
+      }
+      paragraphView.avdSetLooping()
     }
 
-    private fun hideAllViews() {
-        binding.apply {
-            textInputContainer.remove()
-            singleSelectContainer.remove()
-            paragraphView.remove()
-            audioRecorder.remove()
+    hideAllViews()
+  }
+
+  private fun hideAllViews() {
+    binding.apply {
+      textInputContainer.remove()
+      singleSelectContainer.remove()
+      paragraphView.remove()
+    }
+  }
+
+  fun initialize(
+    sendTextMessage: (String) -> Unit,
+    sendSingleSelect: (String) -> Unit,
+    sendSingleSelectLink: (String) -> Unit,
+    openAttachFile: () -> Unit,
+    openSendGif: () -> Unit,
+    chatRecyclerView: RecyclerView,
+  ) {
+    this.sendTextMessage = sendTextMessage
+    this.sendSingleSelect = sendSingleSelect
+    this.singleSelectLink = sendSingleSelectLink
+    this.openAttachFile = openAttachFile
+    this.openSendGif = openSendGif
+    this.chatRecyclerView = chatRecyclerView
+  }
+
+  fun clearInput() {
+    binding.inputText.text?.clear()
+  }
+
+  private fun fadeOutCurrent(fadeIn: () -> Unit) {
+    binding.apply {
+      when (currentlyDisplaying) {
+        is TextInput -> textInputContainer.fadeOut(fadeIn)
+        is SingleSelect -> {
+          singleSelectContainer.fadeOut(fadeIn)
         }
-    }
-
-    fun initialize(
-        sendTextMessage: (String) -> Unit,
-        sendSingleSelect: (String) -> Unit,
-        sendSingleSelectLink: (String) -> Unit,
-        openAttachFile: () -> Unit,
-        requestAudioPermission: () -> Unit,
-        uploadRecording: (String) -> Unit,
-        openSendGif: () -> Unit,
-        chatRecyclerView: RecyclerView,
-    ) {
-        this.sendTextMessage = sendTextMessage
-        this.sendSingleSelect = sendSingleSelect
-        this.singleSelectLink = sendSingleSelectLink
-        this.openAttachFile = openAttachFile
-        binding.audioRecorder.initialize(requestAudioPermission, uploadRecording)
-        this.openSendGif = openSendGif
-        this.chatRecyclerView = chatRecyclerView
-    }
-
-    fun clearInput() {
-        binding.inputText.text?.clear()
-    }
-
-    fun audioRecorderPermissionGranted() = binding.audioRecorder.permissionGranted()
-
-    private fun fadeOutCurrent(fadeIn: () -> Unit) {
-        binding.apply {
-            when (currentlyDisplaying) {
-                is TextInput -> textInputContainer.fadeOut(fadeIn)
-                is SingleSelect -> {
-                    singleSelectContainer.fadeOut(fadeIn)
-                }
-                is ParagraphInput -> {
-                    paragraphView.fadeOut(
-                        endAction = {
-                            paragraphView.avdStop()
-                            fadeIn()
-                        }
-                    )
-                }
-                is Audio -> audioRecorder.fadeOut(fadeIn)
-                is NullInput -> fadeIn()
-            }
+        is ParagraphInput -> {
+          paragraphView.fadeOut(
+            endAction = {
+              paragraphView.avdStop()
+              fadeIn()
+            },
+          )
         }
+        is Audio, is NullInput -> fadeIn()
+      }
     }
+  }
 
-    private fun show(value: ChatInputType) {
-        binding.apply {
-            if (value::class != currentlyDisplaying::class) {
-                fadeOutCurrent {
-                    when (value) {
-                        is TextInput -> textInputContainer.fadeIn()
-                        is SingleSelect -> singleSelectContainer.fadeIn()
-                        is ParagraphInput -> paragraphView.fadeIn()
-                        is Audio -> audioRecorder.fadeIn()
-                        NullInput -> {}
-                    }
-                }
-                currentlyDisplaying = value
-            }
+  private fun show(value: ChatInputType) {
+    binding.apply {
+      if (value::class != currentlyDisplaying::class) {
+        fadeOutCurrent {
+          when (value) {
+            is TextInput -> textInputContainer.fadeIn()
+            is SingleSelect -> singleSelectContainer.fadeIn()
+            is ParagraphInput -> paragraphView.fadeIn()
+            is Audio, NullInput -> {}
+          }
         }
+        currentlyDisplaying = value
+      }
+    }
+  }
+
+  private fun bindTextInput(input: TextInput) {
+    binding.apply {
+      if (input.richTextSupport) {
+        attachFileBackground.show()
+        sendGif.show()
+      } else {
+        attachFileBackground.remove()
+        sendGif.remove()
+      }
+      inputText.hint = input.hint ?: ""
+      inputText.inputType = when (input.keyboardType) {
+        KeyboardType.DEFAULT -> InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+        KeyboardType.EMAIL -> InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+        KeyboardType.PHONE -> InputType.TYPE_CLASS_PHONE
+        KeyboardType.NUMBERPAD, KeyboardType.NUMERIC -> InputType.TYPE_CLASS_NUMBER
+        KeyboardType.DECIMALPAD -> InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+        else -> InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+      }
+      inputText.requestFocus()
+    }
+  }
+
+  private fun bindSingleSelect(input: SingleSelect) {
+    binding.singleSelectContainer.removeAllViews()
+    input.options.forEach { option ->
+      option.asMessageBodyChoicesSelection?.let { selection ->
+        inflateSingleSelectButton(
+          selection.text,
+          selection.value,
+          SingleSelectChoiceType.SELECTION,
+        )
+      }
+      option.asMessageBodyChoicesLink?.let { link ->
+        inflateSingleSelectButton(link.text, link.value, SingleSelectChoiceType.LINK)
+      }
+      option.asMessageBodyChoicesUndefined?.let { undefined ->
+        inflateSingleSelectButton(
+          undefined.text,
+          undefined.value,
+          SingleSelectChoiceType.UNDEFINED,
+        )
+      }
+    }
+  }
+
+  private fun inflateSingleSelectButton(
+    label: String,
+    value: String,
+    type: SingleSelectChoiceType,
+  ) {
+    val singleSelectButton =
+      layoutInflater.inflate(
+        R.layout.chat_single_select_button,
+        binding.singleSelectContainer,
+        false,
+      ) as TextView
+    singleSelectButton.text = label
+    singleSelectButton.setHapticClickListener {
+      singleSelectButton.isSelected = true
+      singleSelectButton.setTextColor(context.compatColor(R.color.white))
+      disableSingleButtons()
+      when (type) {
+        SingleSelectChoiceType.UNDEFINED, // TODO: Let's talk about this one
+        SingleSelectChoiceType.SELECTION,
+        -> sendSingleSelect(value)
+        SingleSelectChoiceType.LINK -> singleSelectLink(value)
+      }
     }
 
-    private fun bindTextInput(input: TextInput) {
-        binding.apply {
-            if (input.richTextSupport) {
-                attachFileBackground.show()
-                sendGif.show()
-            } else {
-                attachFileBackground.remove()
-                sendGif.remove()
-            }
-            inputText.hint = input.hint ?: ""
-            inputText.inputType = when (input.keyboardType) {
-                KeyboardType.DEFAULT -> InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
-                KeyboardType.EMAIL -> InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
-                KeyboardType.PHONE -> InputType.TYPE_CLASS_PHONE
-                KeyboardType.NUMBERPAD, KeyboardType.NUMERIC -> InputType.TYPE_CLASS_NUMBER
-                KeyboardType.DECIMALPAD -> InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
-                else -> InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
-            }
-            inputText.requestFocus()
-        }
-    }
+    binding.singleSelectContainer.addView(singleSelectButton)
+    binding.singleSelectContainer.measure(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+  }
 
-    private fun bindSingleSelect(input: SingleSelect) {
-        binding.singleSelectContainer.removeAllViews()
-        input.options.forEach { option ->
-            option.asMessageBodyChoicesSelection?.let { selection ->
-                inflateSingleSelectButton(
-                    selection.text,
-                    selection.value,
-                    SingleSelectChoiceType.SELECTION
-                )
-            }
-            option.asMessageBodyChoicesLink?.let { link ->
-                inflateSingleSelectButton(link.text, link.value, SingleSelectChoiceType.LINK)
-            }
-            option.asMessageBodyChoicesUndefined?.let { undefined ->
-                inflateSingleSelectButton(
-                    undefined.text,
-                    undefined.value,
-                    SingleSelectChoiceType.UNDEFINED
-                )
-            }
-        }
-    }
+  private fun disableSingleButtons() {
+    binding.singleSelectContainer.children.forEach { it.isEnabled = false }
+  }
 
-    private fun inflateSingleSelectButton(
-        label: String,
-        value: String,
-        type: SingleSelectChoiceType,
-    ) {
-        val singleSelectButton =
-            layoutInflater.inflate(
-                R.layout.chat_single_select_button,
-                binding.singleSelectContainer,
-                false
-            ) as TextView
-        singleSelectButton.text = label
-        singleSelectButton.setHapticClickListener {
-            singleSelectButton.isSelected = true
-            singleSelectButton.setTextColor(context.compatColor(R.color.white))
-            disableSingleButtons()
-            when (type) {
-                SingleSelectChoiceType.UNDEFINED, // TODO: Let's talk about this one
-                SingleSelectChoiceType.SELECTION,
-                -> sendSingleSelect(value)
-                SingleSelectChoiceType.LINK -> singleSelectLink(value)
-            }
-        }
+  private fun bindParagraphInput() {
+    binding.paragraphView.avdStart()
+  }
 
-        binding.singleSelectContainer.addView(singleSelectButton)
-        binding.singleSelectContainer.measure(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-    }
+  fun rotateFileUploadIcon(isOpening: Boolean) {
+    SpringAnimation(
+      binding.uploadFile,
+      DynamicAnimation.ROTATION,
+    ).animateToFinalPosition(if (isOpening) 135f else 0f)
+  }
 
-    private fun bindAudio() {
-        if (binding.audioRecorder.measuredHeight == 0) {
-            binding.audioRecorder.measure(
-                MeasureSpec.makeMeasureSpec(binding.root.width, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(binding.root.height, MeasureSpec.UNSPECIFIED),
-            )
-        }
+  private fun performTextMessageSend() {
+    if (binding.inputText.currentMessage.isBlank()) {
+      return
     }
-
-    private fun disableSingleButtons() {
-        binding.singleSelectContainer.children.forEach { it.isEnabled = false }
-    }
-
-    private fun bindParagraphInput() {
-        binding.paragraphView.avdStart()
-    }
-
-    fun rotateFileUploadIcon(isOpening: Boolean) {
-        SpringAnimation(
-            binding.uploadFile,
-            DynamicAnimation.ROTATION
-        ).animateToFinalPosition(if (isOpening) 135f else 0f)
-    }
-
-    private fun performTextMessageSend() {
-        if (binding.inputText.currentMessage.isBlank()) {
-            return
-        }
-        sendTextMessage(binding.inputText.currentMessage)
-        dismissKeyboard()
-    }
+    sendTextMessage(binding.inputText.currentMessage)
+    dismissKeyboard()
+  }
 }

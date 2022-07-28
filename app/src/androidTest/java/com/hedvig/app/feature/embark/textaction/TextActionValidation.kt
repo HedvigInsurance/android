@@ -15,32 +15,32 @@ import org.junit.Rule
 import org.junit.Test
 
 class TextActionValidation : TestCase() {
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.QUERY_DOCUMENT to apolloResponse {
-            success(
-                STORY_WITH_TEXT_ACTION_EMAIL_VALIDATION
-            )
-        }
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(
+        STORY_WITH_TEXT_ACTION_EMAIL_VALIDATION,
+      )
+    },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @Test
-    fun buttonShouldOnlyBeEnabledWhenValidEmailIsTyped() = run {
-        activityRule.launch(EmbarkActivity.newInstance(context(), "Story Name", ""))
+  @Test
+  fun buttonShouldOnlyBeEnabledWhenValidEmailIsTyped() = run {
+    activityRule.launch(EmbarkActivity.newInstance(context(), "Story Name", ""))
 
-        Screen.onScreen<EmbarkScreen> {
-            textActionSubmit { isDisabled() }
-            textActionSingleInput { typeText("email") }
-            textActionSubmit { isDisabled() }
-            textActionSingleInput { clearText() }
-            textActionSingleInput { typeText("email@hedvig.com") }
-            textActionSubmit { isEnabled() }
-        }
+    Screen.onScreen<EmbarkScreen> {
+      textActionSubmit { isDisabled() }
+      textActionSingleInput { typeText("email") }
+      textActionSubmit { isDisabled() }
+      textActionSingleInput { clearText() }
+      textActionSingleInput { typeText("email@hedvig.com") }
+      textActionSubmit { isEnabled() }
     }
+  }
 }

@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.insurance.ui
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,48 +16,47 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.app.ui.compose.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun NotificationSubheading(
-    text: String,
-    showNotification: Boolean
+  text: String,
+  showNotification: Boolean,
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                start = 16.dp,
-                top = 48.dp,
-                end = 16.dp,
-                bottom = 8.dp,
-            ),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        AnimatedVisibility(showNotification) {
-            Row {
-                Canvas(Modifier.size(8.dp)) {
-                    drawCircle(Color.Red)
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-            }
+  Row(
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(
+        start = 16.dp,
+        top = 48.dp,
+        end = 16.dp,
+        bottom = 8.dp,
+      ),
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    AnimatedVisibility(showNotification) {
+      Row {
+        Canvas(Modifier.size(8.dp)) {
+          drawCircle(Color.Red)
         }
-        Text(
-            text = text,
-            style = MaterialTheme.typography.h6,
-        )
+        Spacer(modifier = Modifier.width(8.dp))
+      }
     }
+    Text(
+      text = text,
+      style = MaterialTheme.typography.h6,
+    )
+  }
 }
 
 @Preview(
-    name = "Subheading with a notification Badge",
-    group = "Insurance Tab",
-    showBackground = true,
+  name = "Subheading with a notification Badge",
+  group = "Insurance Tab",
+  showBackground = true,
 )
 @Composable
 fun UnseenBadgeSubheadingPreview() {
-    HedvigTheme {
-        NotificationSubheading("Add more coverage", true)
-    }
+  HedvigTheme {
+    NotificationSubheading("Add more coverage", true)
+  }
 }

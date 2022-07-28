@@ -18,28 +18,28 @@ import org.junit.Test
 
 class InactiveTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(PaymentActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(PaymentActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        PaymentQuery.QUERY_DOCUMENT to apolloResponse { success(PAYMENT_DATA_INACTIVE) },
-        PayinStatusQuery.QUERY_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) }
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    PaymentQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYMENT_DATA_INACTIVE) },
+    PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @Test
-    fun shouldShowNoPaymentDate() = run {
-        activityRule.launch(PaymentActivity.newInstance(context()))
+  @Test
+  fun shouldShowNoPaymentDate() = run {
+    activityRule.launch(PaymentActivity.newInstance(context()))
 
-        onScreen<PaymentScreen> {
-            recycler {
-                childAt<PaymentScreen.NextPayment>(1) {
-                    paymentDate { hasText(R.string.PAYMENTS_CARD_NO_STARTDATE) }
-                }
-            }
+    onScreen<PaymentScreen> {
+      recycler {
+        childAt<PaymentScreen.NextPayment>(1) {
+          paymentDate { hasText(hedvig.resources.R.string.PAYMENTS_CARD_NO_STARTDATE) }
         }
+      }
     }
+  }
 }

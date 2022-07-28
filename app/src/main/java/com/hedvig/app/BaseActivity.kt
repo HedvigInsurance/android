@@ -8,52 +8,55 @@ import android.os.Bundle
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.hedvig.app.feature.marketpicker.LocaleBroadcastManager
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.MarketManager
 import org.koin.android.ext.android.inject
 
 abstract class BaseActivity : AppCompatActivity {
-    constructor() : super()
-    constructor(@LayoutRes layout: Int) : super(layout)
+  constructor() : super()
+  constructor(@LayoutRes layout: Int) : super(layout)
 
-    open val preventRecreation = false
-    open val screenName: String = javaClass.simpleName
+  open val preventRecreation = false
+  open val screenName: String = javaClass.simpleName
 
-    private val marketManager: MarketManager by inject()
+  private val marketManager: MarketManager by inject()
 
-    override fun onDestroy() {
-        LocalBroadcastManager
-            .getInstance(this)
-            .unregisterReceiver(localeListener)
-        super.onDestroy()
+  override fun onDestroy() {
+    LocalBroadcastManager
+      .getInstance(this)
+      .unregisterReceiver(localeListener)
+    super.onDestroy()
+  }
+
+  private var localeListener = LocaleListener()
+
+  override fun attachBaseContext(newBase: Context?) {
+    if (newBase != null) {
+      super.attachBaseContext(Language.fromSettings(newBase, marketManager.market).apply(newBase))
     }
+  }
 
-    private var localeListener = LocaleListener()
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    LocalBroadcastManager
+      .getInstance(this)
+      .registerReceiver(localeListener, IntentFilter().apply { addAction(LOCALE_BROADCAST) })
+    Language.fromSettings(this, marketManager.market).apply(this)
+  }
 
-    override fun attachBaseContext(newBase: Context?) {
-        if (newBase != null) {
-            super.attachBaseContext(Language.fromSettings(newBase, marketManager.market).apply(newBase))
+  companion object {
+    const val LOCALE_BROADCAST = "LOCALE_BROADCAST"
+  }
+
+  inner class LocaleListener : BroadcastReceiver() {
+    override fun onReceive(context: Context?, intent: Intent?) {
+      if (!preventRecreation) {
+        if (intent?.getBooleanExtra(LocaleBroadcastManager.RECREATE, false) == true) {
+          viewModelStore.clear()
         }
+        recreate()
+      }
     }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        LocalBroadcastManager
-            .getInstance(this)
-            .registerReceiver(localeListener, IntentFilter().apply { addAction(LOCALE_BROADCAST) })
-        Language.fromSettings(this, marketManager.market).apply(this)
-    }
-
-    companion object {
-        const val LOCALE_BROADCAST = "LOCALE_BROADCAST"
-    }
-
-    inner class LocaleListener : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            if (!preventRecreation) {
-                viewModelStore.clear()
-                recreate()
-            }
-        }
-    }
+  }
 }

@@ -8,12 +8,12 @@ import androidx.test.espresso.action.Swipe
 import androidx.test.espresso.action.ViewActions
 
 object CustomViewActions {
-    fun swipeDownInCenter(): ViewAction = ViewActions.actionWithAssertions(
-        GeneralSwipeAction(
-            Swipe.FAST,
-            GeneralLocation.CENTER,
-            GeneralLocation.BOTTOM_CENTER,
-            Press.FINGER
-        )
-    )
+  fun swipeDownInCenter(): ViewAction = ViewActions.actionWithAssertions(
+    GeneralSwipeAction(
+      Swipe.FAST,
+      GeneralLocation.CENTER,
+      GeneralLocation.BOTTOM_CENTER,
+      Press.FINGER,
+    ),
+  )
 }

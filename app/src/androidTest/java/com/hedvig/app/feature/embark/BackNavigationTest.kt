@@ -20,43 +20,43 @@ import org.junit.Rule
 import org.junit.Test
 
 class BackNavigationTest : TestCase() {
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
 
-    @get:Rule
-    val compose = createComposeRule()
+  @get:Rule
+  val compose = createComposeRule()
 
-    @get:Rule
-    val apolloMockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.QUERY_DOCUMENT to apolloResponse { success(STANDARD_STORY) }
+  @get:Rule
+  val apolloMockServerRule = ApolloMockServerRule(
+    EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STANDARD_STORY) },
+  )
+
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
+
+  @Test
+  fun shouldNavigateBackwardsWhenPressingBackButton() = run {
+    activityRule.launch(
+      EmbarkActivity.newInstance(
+        ApplicationProvider.getApplicationContext(),
+        this.javaClass.name,
+        "",
+      ),
     )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
-
-    @Test
-    fun shouldNavigateBackwardsWhenPressingBackButton() = run {
-        activityRule.launch(
-            EmbarkActivity.newInstance(
-                ApplicationProvider.getApplicationContext(),
-                this.javaClass.name,
-                "",
-            )
-        )
-
-        onScreen<EmbarkScreen> {
-            compose
-                .onNodeWithTag("SelectActionGrid")
-                .onChildren()
-                .onFirst()
-                .performClick()
-            messages {
-                firstChild<EmbarkScreen.MessageRow> { text { hasText("another test message") } }
-            }
-            pressBack()
-            messages {
-                firstChild<EmbarkScreen.MessageRow> { text { hasText("test message") } }
-            }
-        }
+    onScreen<EmbarkScreen> {
+      compose
+        .onNodeWithTag("SelectActionGrid")
+        .onChildren()
+        .onFirst()
+        .performClick()
+      messages {
+        firstChild<EmbarkScreen.MessageRow> { text { hasText("another test message") } }
+      }
+      pressBack()
+      messages {
+        firstChild<EmbarkScreen.MessageRow> { text { hasText("test message") } }
+      }
     }
+  }
 }

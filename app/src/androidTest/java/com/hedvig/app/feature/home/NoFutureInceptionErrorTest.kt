@@ -7,7 +7,7 @@ import com.hedvig.app.feature.home.screens.HomeTabScreen
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE_IN_FUTURE_NO_INCEPTION
 import com.hedvig.app.testdata.feature.home.HOME_DATA_PENDING
-import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_FEATURE_ENABLED
+import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
@@ -20,46 +20,44 @@ import org.junit.Rule
 import org.junit.Test
 
 class NoFutureInceptionErrorTest : TestCase() {
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
-    var shouldFail = true
+  var shouldFail = true
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
-            success(
-                LOGGED_IN_DATA_WITH_KEY_GEAR_FEATURE_ENABLED
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(LOGGED_IN_DATA)
+    },
+    HomeQuery.OPERATION_DOCUMENT to apolloResponse {
+      if (shouldFail) {
+        shouldFail = false
+        success(HOME_DATA_ACTIVE_IN_FUTURE_NO_INCEPTION)
+      } else {
+        success(HOME_DATA_PENDING)
+      }
+    },
+  )
+
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
+
+  @Test
+  fun shouldShowErrorWhenUserHasNoFutureInception() = run {
+    activityRule.launch(LoggedInActivity.newInstance(context()))
+
+    onScreen<HomeTabScreen> {
+      recycler {
+        childAt<HomeTabScreen.BodyTextItem>(0) {
+          text {
+            hasText(
+              hedvig.resources.R.string.home_tab_active_in_future_body,
+              "Test",
             )
-        },
-        HomeQuery.QUERY_DOCUMENT to apolloResponse {
-            if (shouldFail) {
-                shouldFail = false
-                success(HOME_DATA_ACTIVE_IN_FUTURE_NO_INCEPTION)
-            } else {
-                success(HOME_DATA_PENDING)
-            }
+          }
         }
-    )
-
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
-
-    @Test
-    fun shouldShowErrorWhenUserHasNoFutureInception() = run {
-        activityRule.launch(LoggedInActivity.newInstance(context()))
-
-        onScreen<HomeTabScreen> {
-            recycler {
-                childAt<HomeTabScreen.BodyTextItem>(0) {
-                    text {
-                        hasText(
-                            R.string.home_tab_active_in_future_body,
-                            "Test"
-                        )
-                    }
-                }
-            }
-        }
+      }
     }
+  }
 }

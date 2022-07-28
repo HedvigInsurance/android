@@ -10,48 +10,56 @@ import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 
 fun ImageView.avdSetLooping() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        (drawable as? AnimatedVectorDrawable)?.registerAnimationCallback(object :
-                Animatable2.AnimationCallback() {
-                override fun onAnimationEnd(drawable: Drawable?) {
-                    this@avdSetLooping.post {
-                        avdStart()
-                    }
-                }
-            })
-    } else {
-        (drawable as? AnimatedVectorDrawableCompat)?.registerAnimationCallback(object :
-                Animatable2Compat.AnimationCallback() {
-                override fun onAnimationEnd(drawable: Drawable?) {
-                    this@avdSetLooping.post {
-                        avdStart()
-                    }
-                }
-            })
-    }
+  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+    (drawable as? AnimatedVectorDrawable)?.registerAnimationCallback(
+      object :
+        Animatable2.AnimationCallback() {
+        override fun onAnimationEnd(drawable: Drawable?) {
+          this@avdSetLooping.post {
+            avdStart()
+          }
+        }
+      },
+    )
+  } else {
+    (drawable as? AnimatedVectorDrawableCompat)?.registerAnimationCallback(
+      object :
+        Animatable2Compat.AnimationCallback() {
+        override fun onAnimationEnd(drawable: Drawable?) {
+          this@avdSetLooping.post {
+            avdStart()
+          }
+        }
+      },
+    )
+  }
 }
 
 fun ImageView.avdStart() {
-    (drawable as? Animatable)?.start()
+  (drawable as? Animatable)?.start()
 }
 
 fun ImageView.avdStop() {
-    (drawable as? Animatable)?.stop()
+  (drawable as? Animatable)?.stop()
 }
 
 inline fun ImageView.avdDoOnEnd(crossinline action: () -> Unit) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        (drawable as? AnimatedVectorDrawable)?.registerAnimationCallback(object : Animatable2.AnimationCallback() {
-            override fun onAnimationEnd(drawable: Drawable?) {
-                action()
-            }
-        })
-    } else {
-        (drawable as? AnimatedVectorDrawableCompat)
-            ?.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
-                override fun onAnimationEnd(drawable: Drawable?) {
-                    action()
-                }
-            })
-    }
+  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+    (drawable as? AnimatedVectorDrawable)?.registerAnimationCallback(
+      object : Animatable2.AnimationCallback() {
+        override fun onAnimationEnd(drawable: Drawable?) {
+          action()
+        }
+      },
+    )
+  } else {
+    (drawable as? AnimatedVectorDrawableCompat)
+      ?.registerAnimationCallback(
+        object : Animatable2Compat.AnimationCallback() {
+          override fun onAnimationEnd(drawable: Drawable?) {
+            action()
+          }
+        },
+      )
+  }
 }

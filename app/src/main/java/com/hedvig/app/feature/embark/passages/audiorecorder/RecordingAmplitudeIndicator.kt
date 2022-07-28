@@ -12,19 +12,19 @@ import kotlin.math.sqrt
 
 @Composable
 fun RecordingAmplitudeIndicator(amplitude: Int) {
-    val color = MaterialTheme.colors.primary.copy(alpha = 0.12f)
+  val color = MaterialTheme.colors.primary.copy(alpha = 0.12f)
 
-    val animated by animateIntAsState(
-        targetValue = (sqrt(amplitude.toDouble()).toInt() * 10).coerceAtMost(1000),
-        animationSpec = spring(
-            stiffness = Spring.StiffnessLow,
-        )
+  val animated by animateIntAsState(
+    targetValue = (sqrt(amplitude.toDouble()).toInt() * 10).coerceAtMost(1000),
+    animationSpec = spring(
+      stiffness = Spring.StiffnessLow,
+    ),
+  )
+
+  Canvas(modifier = Modifier) {
+    drawCircle(
+      color = color,
+      radius = animated.toFloat(),
     )
-
-    Canvas(modifier = Modifier) {
-        drawCircle(
-            color = color,
-            radius = animated.toFloat(),
-        )
-    }
+  }
 }

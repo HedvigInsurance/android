@@ -3,9 +3,9 @@ package com.hedvig.app.feature.tracking
 import androidx.lifecycle.ViewModel
 
 class TrackingLogViewModel(
-    private val engineeringTracker: EngineeringTracker
+  private val engineeringTrackerSink: EngineeringTrackerSink,
 ) : ViewModel() {
-    val tracks = engineeringTracker.tracks
+  val tracks = engineeringTrackerSink.tracks
 
-    fun clear() = engineeringTracker.clear()
+  fun clear() = engineeringTrackerSink.clear()
 }

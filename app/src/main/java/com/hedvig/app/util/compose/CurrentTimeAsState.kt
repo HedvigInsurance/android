@@ -12,13 +12,13 @@ import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun currentTimeAsState(
-    updateInterval: Duration = 1.seconds,
-    clock: Clock = Clock.systemUTC(),
+  updateInterval: Duration = 1.seconds,
+  clock: Clock = Clock.systemUTC(),
 ): State<Instant> {
-    return produceState(initialValue = Instant.now(clock)) {
-        while (isActive) {
-            delay(updateInterval)
-            value = Instant.now(clock)
-        }
+  return produceState(initialValue = Instant.now(clock)) {
+    while (isActive) {
+      delay(updateInterval)
+      value = Instant.now(clock)
     }
+  }
 }

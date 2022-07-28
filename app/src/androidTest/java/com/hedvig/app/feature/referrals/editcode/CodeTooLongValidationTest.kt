@@ -11,31 +11,31 @@ import org.junit.Test
 
 class CodeTooLongValidationTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(ReferralsEditCodeActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(ReferralsEditCodeActivity::class.java)
 
-    @Test
-    fun shouldNotAllowSubmitWhenCodeIsTooLongAndShowAnError() = run {
-        activityRule.launch(
-            ReferralsEditCodeActivity.newInstance(
-                context(),
-                "TEST123"
-            )
-        )
+  @Test
+  fun shouldNotAllowSubmitWhenCodeIsTooLongAndShowAnError() = run {
+    activityRule.launch(
+      ReferralsEditCodeActivity.newInstance(
+        context(),
+        "TEST123",
+      ),
+    )
 
-        onScreen<ReferralsEditCodeScreen> {
-            editLayout {
-                edit {
-                    replaceText("ABCDEFGHIJKLMNOPQRSTUVUXYZ")
-                }
-            }
-            save { isDisabled() }
-            editLayout {
-                isErrorEnabled()
-                hasError(R.string.referrals_change_code_sheet_error_max_length)
-                edit { replaceText("ABCDEFGHIJKLMNOPQRSTUVU") }
-            }
-            save { isEnabled() }
+    onScreen<ReferralsEditCodeScreen> {
+      editLayout {
+        edit {
+          replaceText("ABCDEFGHIJKLMNOPQRSTUVUXYZ")
         }
+      }
+      save { isDisabled() }
+      editLayout {
+        isErrorEnabled()
+        hasError(hedvig.resources.R.string.referrals_change_code_sheet_error_max_length)
+        edit { replaceText("ABCDEFGHIJKLMNOPQRSTUVU") }
+      }
+      save { isEnabled() }
     }
+  }
 }

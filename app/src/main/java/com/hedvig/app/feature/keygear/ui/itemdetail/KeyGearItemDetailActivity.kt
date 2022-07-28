@@ -8,9 +8,9 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.core.widget.NestedScrollView
 import androidx.dynamicanimation.animation.SpringAnimation
-import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
-import com.hedvig.android.owldroid.type.KeyGearItemCategory
+import com.hedvig.android.owldroid.graphql.fragment.KeyGearItemFragment
+import com.hedvig.android.owldroid.graphql.type.KeyGearItemCategory
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityKeyGearItemDetailBinding
@@ -31,145 +31,145 @@ import com.hedvig.app.util.spring
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_detail) {
-    private val model: KeyGearItemDetailViewModel by viewModel()
-    private val binding by viewBinding(ActivityKeyGearItemDetailBinding::bind)
+  private val model: KeyGearItemDetailViewModel by viewModel()
+  private val binding by viewBinding(ActivityKeyGearItemDetailBinding::bind)
 
-    private lateinit var photosBinder: PhotosBinder
-    private lateinit var valuationBinder: ValuationBinder
-    private lateinit var receiptBinder: ReceiptBinder
-    private lateinit var nameBinder: NameBinder
+  private lateinit var photosBinder: PhotosBinder
+  private lateinit var valuationBinder: ValuationBinder
+  private lateinit var receiptBinder: ReceiptBinder
+  private lateinit var nameBinder: NameBinder
 
-    private var isFirstLoad = true
+  private var isFirstLoad = true
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        supportPostponeEnterTransition()
+    supportPostponeEnterTransition()
 
-        binding.apply {
-            window.compatSetDecorFitsSystemWindows(false)
-            scrollViewContent.applyNavigationBarInsets()
+    binding.apply {
+      window.compatSetDecorFitsSystemWindows(false)
+      scrollViewContent.applyNavigationBarInsets()
 
-            initializeToolbar()
+      initializeToolbar()
 
-            photosBinder = PhotosBinder(
-                photosSection,
-                intent.getStringExtra(FIRST_PHOTO_URL),
-                intent.getSerializableExtra(CATEGORY) as KeyGearItemCategory
-            ) { supportStartPostponedEnterTransition() }
-            valuationBinder = ValuationBinder(valuationSection)
-            nameBinder = NameBinder(nameSection, model)
-            receiptBinder =
-                ReceiptBinder(receiptSection, supportFragmentManager)
-        }
-
-        model.data.observe(this) { data ->
-            data?.let { bind(it) }
-        }
-
-        model.isDeleted.observe(this) { isDeleted ->
-            isDeleted?.let { isd ->
-                if (isd) {
-                    onBackPressed()
-                }
-            }
-        }
-        intent.getStringExtra(ID)?.let { id ->
-            model.loadItem(id)
-        }
+      photosBinder = PhotosBinder(
+        photosSection,
+        intent.getStringExtra(FIRST_PHOTO_URL),
+        intent.getSerializableExtra(CATEGORY) as KeyGearItemCategory,
+      ) { supportStartPostponedEnterTransition() }
+      valuationBinder = ValuationBinder(valuationSection)
+      nameBinder = NameBinder(nameSection, model)
+      receiptBinder =
+        ReceiptBinder(receiptSection, supportFragmentManager)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.key_gear_item_detail_menu, menu)
-        return super.onCreateOptionsMenu(menu)
+    model.data.observe(this) { data ->
+      data?.let { bind(it) }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.deleteItem -> {
-            model.deleteItem()
-            true
+    model.isDeleted.observe(this) { isDeleted ->
+      isDeleted?.let { isd ->
+        if (isd) {
+          onBackPressed()
         }
-        else -> super.onOptionsItemSelected(item)
+      }
     }
+    intent.getStringExtra(ID)?.let { id ->
+      model.loadItem(id)
+    }
+  }
 
-    private fun initializeToolbar() {
-        binding.apply {
-            toolbar.applyStatusBarInsets()
-            setSupportActionBar(toolbar)
-            supportActionBar?.setDisplayShowTitleEnabled(false)
-            val backDrawable = compatDrawable(R.drawable.ic_back)
-            backDrawable?.setTint(compatColor(R.color.white))
-            toolbar.navigationIcon = backDrawable
-            toolbar.setNavigationOnClickListener {
-                onBackPressed()
-            }
+  override fun onCreateOptionsMenu(menu: Menu): Boolean {
+    menuInflater.inflate(R.menu.key_gear_item_detail_menu, menu)
+    return super.onCreateOptionsMenu(menu)
+  }
 
-            scrollView.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, _: Int ->
-                val positionInSpan =
-                    scrollY - (photosSection.photos.height - (toolbar.height * 2.0f))
-                val percentage = positionInSpan / toolbar.height
+  override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+    R.id.deleteItem -> {
+      model.deleteItem()
+      true
+    }
+    else -> super.onOptionsItemSelected(item)
+  }
 
-                // Avoid some unnecessary background color updates
-                if (percentage < -1 || percentage > 2) {
-                    return@setOnScrollChangeListener
-                }
+  private fun initializeToolbar() {
+    binding.apply {
+      toolbar.applyStatusBarInsets()
+      setSupportActionBar(toolbar)
+      supportActionBar?.setDisplayShowTitleEnabled(false)
+      val backDrawable = compatDrawable(R.drawable.ic_back)
+      backDrawable?.setTint(compatColor(R.color.white))
+      toolbar.navigationIcon = backDrawable
+      toolbar.setNavigationOnClickListener {
+        onBackPressed()
+      }
 
-                toolbar.setBackgroundColor(
-                    boundedColorLerp(
-                        Color.TRANSPARENT,
-                        compatColor(R.color.translucent_tool_bar),
-                        percentage
-                    )
-                )
-            }
+      scrollView.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, _: Int ->
+        val positionInSpan =
+          scrollY - (photosSection.photos.height - (toolbar.height * 2.0f))
+        val percentage = positionInSpan / toolbar.height
+
+        // Avoid some unnecessary background color updates
+        if (percentage < -1 || percentage > 2) {
+          return@setOnScrollChangeListener
         }
+
+        toolbar.setBackgroundColor(
+          boundedColorLerp(
+            Color.TRANSPARENT,
+            compatColor(R.color.translucent_tool_bar),
+            percentage,
+          ),
+        )
+      }
     }
+  }
 
-    private fun bind(data: KeyGearItemQuery.KeyGearItem) {
-        photosBinder.bind(data)
-        valuationBinder.bind(data)
-        nameBinder.bind(data)
-        receiptBinder.bind(data)
+  private fun bind(data: KeyGearItemQuery.KeyGearItem) {
+    photosBinder.bind(data)
+    valuationBinder.bind(data)
+    nameBinder.bind(data)
+    receiptBinder.bind(data)
 
-        if (isFirstLoad) {
-            revealWithAnimation()
-            isFirstLoad = false
+    if (isFirstLoad) {
+      revealWithAnimation()
+      isFirstLoad = false
+    }
+  }
+
+  private fun revealWithAnimation() {
+    binding.apply {
+      postPhotosSections.show()
+      val initialTranslation = postPhotosSections.translationY
+
+      postPhotosSections
+        .spring(SpringAnimation.TRANSLATION_Y)
+        .addUpdateListener { _, value, _ ->
+          val progress = boundedProgress(initialTranslation, 0f, value)
+          postPhotosSections.alpha = progress
         }
+        .animateToFinalPosition(0f)
     }
+  }
 
-    private fun revealWithAnimation() {
-        binding.apply {
-            postPhotosSections.show()
-            val initialTranslation = postPhotosSections.translationY
+  companion object {
+    private const val FIRST_PHOTO_URL = "FIRST_PHOTO_URL"
+    private const val CATEGORY = "CATEGORY"
+    private const val ID = "ID"
 
-            postPhotosSections
-                .spring(SpringAnimation.TRANSLATION_Y)
-                .addUpdateListener { _, value, _ ->
-                    val progress = boundedProgress(initialTranslation, 0f, value)
-                    postPhotosSections.alpha = progress
-                }
-                .animateToFinalPosition(0f)
+    fun newInstance(
+      context: Context,
+      item: KeyGearItemFragment,
+    ) =
+      Intent(context, KeyGearItemDetailActivity::class.java).apply {
+        item.photos.getOrNull(0)?.file?.preSignedUrl?.let {
+          putExtra(
+            FIRST_PHOTO_URL,
+            it,
+          )
         }
-    }
-
-    companion object {
-        private const val FIRST_PHOTO_URL = "FIRST_PHOTO_URL"
-        private const val CATEGORY = "CATEGORY"
-        private const val ID = "ID"
-
-        fun newInstance(
-            context: Context,
-            item: KeyGearItemFragment
-        ) =
-            Intent(context, KeyGearItemDetailActivity::class.java).apply {
-                item.photos.getOrNull(0)?.file?.preSignedUrl?.let {
-                    putExtra(
-                        FIRST_PHOTO_URL,
-                        it
-                    )
-                }
-                putExtra(CATEGORY, item.category)
-                putExtra(ID, item.id)
-            }
-    }
+        putExtra(CATEGORY, item.category)
+        putExtra(ID, item.id)
+      }
+  }
 }

@@ -43,143 +43,143 @@ import kotlin.time.Duration.Companion.milliseconds
  * Used for Embark actions TextAction and TextActionSet
  */
 class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
-    private val data: TextActionParameter
-        get() = requireArguments().getParcelable(DATA)
-            ?: throw Error("Programmer error: DATA is null in ${this.javaClass.name}")
-    private val textActionViewModel: TextActionViewModel by viewModel { parametersOf(data) }
-    private val embarkViewModel: EmbarkViewModel by sharedViewModel()
-    private val binding by viewBinding(FragmentTextActionSetBinding::bind)
+  private val data: TextActionParameter
+    get() = requireArguments().getParcelable(DATA)
+      ?: throw Error("Programmer error: DATA is null in ${this.javaClass.name}")
+  private val textActionViewModel: TextActionViewModel by viewModel { parametersOf(data) }
+  private val embarkViewModel: EmbarkViewModel by sharedViewModel()
+  private val binding by viewBinding(FragmentTextActionSetBinding::bind)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        postponeEnterTransition()
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
+    postponeEnterTransition()
 
-        binding.apply {
-            whenApiVersion(Build.VERSION_CODES.R) {
-                inputContainer.setupInsetsForIme(
-                    root = root,
-                    textActionSubmit,
-                    inputLayout
-                )
-            }
-            val views = createInputViews()
-            views.firstOrNull()?.let {
-                val input = it.findViewById<TextInputEditText>(R.id.input)
-                viewLifecycleScope.launchWhenCreated {
-                    requireContext().showKeyboardWithDelay(input, 500.milliseconds)
-                }
-            }
-
-            inputContainer.addViews(views)
-
-            messages.adapter = MessageAdapter(data.messages)
-
-            textActionSubmit.text = data.submitLabel
-            textActionViewModel.isValid.observe(viewLifecycleOwner) { textActionSubmit.isEnabled = it }
-
-            textActionSubmit
-                .hapticClicks()
-                .mapLatest { saveAndAnimate(data) }
-                .onEach { embarkViewModel.submitAction(data.link) }
-                .launchIn(viewLifecycleScope)
-
-            // We need to wait for all input views to be laid out before starting enter transition.
-            // This could perhaps be handled with a callback from the inputContainer.
-            viewLifecycleScope.launchWhenCreated {
-                delay(50.milliseconds)
-                startPostponedEnterTransition()
-            }
-        }
-    }
-
-    private suspend fun saveAndAnimate(data: TextActionParameter) {
-        context?.hideKeyboardWithDelay(
-            inputView = binding.inputContainer,
-            delayDuration = KEYBOARD_HIDE_DELAY_DURATION
+    binding.apply {
+      whenApiVersion(Build.VERSION_CODES.R) {
+        inputContainer.setupInsetsForIme(
+          root = root,
+          textActionSubmit,
+          inputLayout,
         )
-
-        textActionViewModel.inputs.value?.let { inputs ->
-            data.keys.zip(inputs.values).forEachIndexed { index, (key, input) ->
-                key?.let {
-                    val mask = data.masks.getOrNull(index)
-                    val unmasked = mask?.unMask(input) ?: input
-                    embarkViewModel.putInStore(key, unmasked)
-                    mask?.derivedValues(unmasked, key, LocalDate.now())?.forEach { (key, value) ->
-                        embarkViewModel.putInStore(key, value)
-                    }
-                }
-            }
-            val allInput = inputs.values.joinToString(" ")
-            embarkViewModel.putInStore("${data.passageName}Result", allInput)
-            val response =
-                embarkViewModel.preProcessResponse(data.passageName) ?: Response.SingleResponse(allInput)
-            animateResponse(binding.responseContainer, response)
+      }
+      val views = createInputViews()
+      views.firstOrNull()?.let {
+        val input = it.findViewById<TextInputEditText>(R.id.input)
+        viewLifecycleScope.launchWhenCreated {
+          requireContext().showKeyboardWithDelay(input, 500.milliseconds)
         }
-        delay(PASSAGE_ANIMATION_DELAY_DURATION)
+      }
+
+      inputContainer.addViews(views)
+
+      messages.adapter = MessageAdapter(data.messages)
+
+      textActionSubmit.text = data.submitLabel
+      textActionViewModel.isValid.observe(viewLifecycleOwner) { textActionSubmit.isEnabled = it }
+
+      textActionSubmit
+        .hapticClicks()
+        .mapLatest { saveAndAnimate(data) }
+        .onEach { embarkViewModel.submitAction(data.link) }
+        .launchIn(viewLifecycleScope)
+
+      // We need to wait for all input views to be laid out before starting enter transition.
+      // This could perhaps be handled with a callback from the inputContainer.
+      viewLifecycleScope.launchWhenCreated {
+        delay(50.milliseconds)
+        startPostponedEnterTransition()
+      }
     }
+  }
 
-    private fun createInputViews(): List<View> = data.keys.mapIndexed { index, key ->
-        val inputView = EmbarkInputItemBinding.inflate(layoutInflater, binding.inputContainer, false)
+  private suspend fun saveAndAnimate(data: TextActionParameter) {
+    context?.hideKeyboardWithDelay(
+      inputView = binding.inputContainer,
+      delayDuration = KEYBOARD_HIDE_DELAY_DURATION,
+    )
 
-        inputView.textField.isExpandedHintEnabled = false
-        data.hints.getOrNull(index)?.let { inputView.textField.hint = it }
-        data.subtitles.getOrNull(index)?.let { inputView.textField.hint = it }
-        data.placeholders.getOrNull(index)?.let { inputView.textField.placeholderText = it }
-        val mask = data.masks.getOrNull(index)
-        mask?.let {
-            inputView.input.apply {
-                setInputType(it)
-                setValidationFormatter(it)
-            }
+    textActionViewModel.inputs.value?.let { inputs ->
+      data.keys.zip(inputs.values).forEachIndexed { index, (key, input) ->
+        key?.let {
+          val mask = data.masks.getOrNull(index)
+          val unmasked = mask?.unMask(input) ?: input
+          embarkViewModel.putInStore(key, unmasked)
+          mask?.derivedValues(unmasked, key, LocalDate.now())?.forEach { (key, value) ->
+            embarkViewModel.putInStore(key, value)
+          }
         }
-        inputView.input.onChange { text ->
-            if (mask == null) {
-                if (text.isBlank()) {
-                    textActionViewModel.updateIsValid(index, false)
-                } else {
-                    textActionViewModel.updateIsValid(index, true)
-                }
-            } else {
-                if (text.isNotBlank() && mask.isValid(text)) {
-                    textActionViewModel.updateIsValid(index, true)
-                } else {
-                    textActionViewModel.updateIsValid(index, false)
-                }
-            }
-            textActionViewModel.setInputValue(index, text)
-        }
+      }
+      val allInput = inputs.values.joinToString(" ")
+      embarkViewModel.putInStore("${data.passageName}Result", allInput)
+      val response =
+        embarkViewModel.preProcessResponse(data.passageName) ?: Response.SingleResponse(allInput)
+      animateResponse(binding.responseContainer, response)
+    }
+    delay(PASSAGE_ANIMATION_DELAY_DURATION)
+  }
 
-        val imeOptions = if (index < data.keys.size - 1) {
-            EditorInfo.IME_ACTION_NEXT
+  private fun createInputViews(): List<View> = data.keys.mapIndexed { index, key ->
+    val inputView = EmbarkInputItemBinding.inflate(layoutInflater, binding.inputContainer, false)
+
+    inputView.textField.isExpandedHintEnabled = false
+    data.hints.getOrNull(index)?.let { inputView.textField.hint = it }
+    data.subtitles.getOrNull(index)?.let { inputView.textField.hint = it }
+    data.placeholders.getOrNull(index)?.let { inputView.textField.placeholderText = it }
+    val mask = data.masks.getOrNull(index)
+    mask?.let {
+      inputView.input.apply {
+        setInputType(it)
+        setValidationFormatter(it)
+      }
+    }
+    inputView.input.onChange { text ->
+      if (mask == null) {
+        if (text.isBlank()) {
+          textActionViewModel.updateIsValid(index, false)
         } else {
-            EditorInfo.IME_ACTION_DONE
+          textActionViewModel.updateIsValid(index, true)
         }
-
-        inputView.input.imeOptions = imeOptions
-
-        if (imeOptions == EditorInfo.IME_ACTION_DONE) {
-            inputView.input.onImeAction(imeActionId = imeOptions) {
-                if (textActionViewModel.isValid.value == true) {
-                    viewLifecycleScope.launch {
-                        saveAndAnimate(data)
-                        embarkViewModel.submitAction(data.link)
-                    }
-                }
-            }
+      } else {
+        if (text.isNotBlank() && mask.isValid(text)) {
+          textActionViewModel.updateIsValid(index, true)
+        } else {
+          textActionViewModel.updateIsValid(index, false)
         }
-
-        key?.let(embarkViewModel::getPrefillFromStore)
-            ?.let { mask?.mask(it) ?: it }
-            ?.let(inputView.input::setText)
-        inputView.root
+      }
+      textActionViewModel.setInputValue(index, text)
     }
 
-    companion object {
-        private const val DATA = "DATA"
-        fun newInstance(data: TextActionParameter) = TextActionFragment().apply {
-            arguments = bundleOf(
-                DATA to data
-            )
-        }
+    val imeOptions = if (index < data.keys.size - 1) {
+      EditorInfo.IME_ACTION_NEXT
+    } else {
+      EditorInfo.IME_ACTION_DONE
     }
+
+    inputView.input.imeOptions = imeOptions
+
+    if (imeOptions == EditorInfo.IME_ACTION_DONE) {
+      inputView.input.onImeAction(imeActionId = imeOptions) {
+        if (textActionViewModel.isValid.value == true) {
+          viewLifecycleScope.launch {
+            saveAndAnimate(data)
+            embarkViewModel.submitAction(data.link)
+          }
+        }
+      }
+    }
+
+    key?.let(embarkViewModel::getPrefillFromStore)
+      ?.let { mask?.mask(it) ?: it }
+      ?.let(inputView.input::setText)
+    inputView.root
+  }
+
+  companion object {
+    private const val DATA = "DATA"
+    fun newInstance(data: TextActionParameter) = TextActionFragment().apply {
+      arguments = bundleOf(
+        DATA to data,
+      )
+    }
+  }
 }

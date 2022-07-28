@@ -21,41 +21,41 @@ import org.junit.Test
 
 class AdyenPayoutPendingTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyIntentsActivityScenarioRule(PaymentActivity::class.java)
+  @get:Rule
+  val activityRule = LazyIntentsActivityScenarioRule(PaymentActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        PaymentQuery.QUERY_DOCUMENT to apolloResponse { success(PAYMENT_DATA_PAYOUT_PENDING) },
-        PayinStatusQuery.QUERY_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) }
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    PaymentQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYMENT_DATA_PAYOUT_PENDING) },
+    PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @get:Rule
-    val marketRule = MarketRule(Market.NO)
+  @get:Rule
+  val marketRule = MarketRule(Market.NO)
 
-    @Test
-    fun shouldShowConnectPayoutWhenInNorwayAndPayoutIsPending() = run {
-        activityRule.launch(PaymentActivity.newInstance(context()))
+  @Test
+  fun shouldShowConnectPayoutWhenInNorwayAndPayoutIsPending() = run {
+    activityRule.launch(PaymentActivity.newInstance(context()))
 
-        onScreen<PaymentScreen> {
-            adyenConnectPayout { stub() }
-            recycler {
-                childAt<PaymentScreen.AdyenPayoutDetails>(4) {
-                    status {
-                        hasText(R.string.payment_screen_bank_account_processing)
-                    }
-                }
-                childAt<PaymentScreen.AdyenPayoutParagraph>(5) {
-                    text { hasText(R.string.payment_screen_pay_out_footer_pending) }
-                }
-                childAt<PaymentScreen.Link>(6) {
-                    click()
-                }
-            }
-            adyenConnectPayout { intended() }
+    onScreen<PaymentScreen> {
+      adyenConnectPayout { stub() }
+      recycler {
+        childAt<PaymentScreen.AdyenPayoutDetails>(4) {
+          status {
+            hasText(hedvig.resources.R.string.payment_screen_bank_account_processing)
+          }
         }
+        childAt<PaymentScreen.AdyenPayoutParagraph>(5) {
+          text { hasText(hedvig.resources.R.string.payment_screen_pay_out_footer_pending) }
+        }
+        childAt<PaymentScreen.Link>(6) {
+          click()
+        }
+      }
+      adyenConnectPayout { intended() }
     }
+  }
 }

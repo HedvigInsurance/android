@@ -1,77 +1,88 @@
 package com.hedvig.app.testdata.feature.embark.builders
 
-import com.hedvig.android.owldroid.fragment.GraphQLVariablesFragment
-import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLSingleVariableCasting
-import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLVariableGeneratedType
+import com.hedvig.android.owldroid.graphql.fragment.GraphQLVariablesFragment
+import com.hedvig.android.owldroid.graphql.type.EmbarkAPIGraphQLGeneratedVariable
+import com.hedvig.android.owldroid.graphql.type.EmbarkAPIGraphQLMultiActionVariable
+import com.hedvig.android.owldroid.graphql.type.EmbarkAPIGraphQLSingleVariable
+import com.hedvig.android.owldroid.graphql.type.EmbarkAPIGraphQLSingleVariableCasting
+import com.hedvig.android.owldroid.graphql.type.EmbarkAPIGraphQLVariableGeneratedType
 
 data class GraphQLVariableBuilder(
-    private val kind: VariableKind,
-    private val key: String,
-    private val from: String = "",
-    private val singleType: EmbarkAPIGraphQLSingleVariableCasting = EmbarkAPIGraphQLSingleVariableCasting.STRING,
-    private val storeAs: String = "",
-    private val generatedType: EmbarkAPIGraphQLVariableGeneratedType = EmbarkAPIGraphQLVariableGeneratedType.UUID
+  private val kind: VariableKind,
+  private val key: String,
+  private val from: String = "",
+  private val singleType: EmbarkAPIGraphQLSingleVariableCasting = EmbarkAPIGraphQLSingleVariableCasting.string,
+  private val storeAs: String = "",
+  private val generatedType: EmbarkAPIGraphQLVariableGeneratedType = EmbarkAPIGraphQLVariableGeneratedType.uuid,
 ) {
 
-    fun build() = GraphQLVariablesFragment(
-        asEmbarkAPIGraphQLSingleVariable = if (kind == VariableKind.SINGLE) {
-            GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable(
+  fun build() = GraphQLVariablesFragment(
+    __typename = kind.typename,
+    asEmbarkAPIGraphQLSingleVariable = if (kind == VariableKind.SINGLE) {
+      GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable(
+        __typename = kind.typename,
+        key = key,
+        from = from.ifEmpty {
+          throw Error("Programmer error: attempted to build SingleVariable without providing `from`")
+        },
+        `as` = singleType,
+      )
+    } else {
+      null
+    },
+    asEmbarkAPIGraphQLGeneratedVariable = if (kind == VariableKind.GENERATED) {
+      GraphQLVariablesFragment.AsEmbarkAPIGraphQLGeneratedVariable(
+        __typename = kind.typename,
+        key = key,
+        storeAs = storeAs.ifEmpty {
+          throw Error("Programmer error: attempted to build GeneratedVariable without providing `storeAs`")
+        },
+        type = generatedType,
+      )
+    } else {
+      null
+    },
+    asEmbarkAPIGraphQLMultiActionVariable = if (kind == VariableKind.MULTI_ACTION) {
+      GraphQLVariablesFragment.AsEmbarkAPIGraphQLMultiActionVariable(
+        __typename = kind.typename,
+        key = key,
+        from = from,
+        variables = listOf(
+          GraphQLVariablesFragment.Variable(
+            __typename = EmbarkAPIGraphQLGeneratedVariable.type.name,
+            asEmbarkAPIGraphQLGeneratedVariable1 = GraphQLVariablesFragment
+              .AsEmbarkAPIGraphQLGeneratedVariable1(
+                __typename = EmbarkAPIGraphQLGeneratedVariable.type.name,
                 key = key,
-                from = if (from.isEmpty()) {
-                    throw Error("Programmer error: attempted to build SingleVariable without providing `from`")
-                } else {
-                    from
+                storeAs = storeAs.ifEmpty {
+                  throw Error(
+                    "Programmer error: attempted to build" +
+                      " GeneratedVariable without providing `storeAs`",
+                  )
                 },
-                as_ = singleType
-            )
-        } else {
-            null
-        },
-        asEmbarkAPIGraphQLGeneratedVariable = if (kind == VariableKind.GENERATED) {
-            GraphQLVariablesFragment.AsEmbarkAPIGraphQLGeneratedVariable(
-                key = key,
-                storeAs = if (storeAs.isEmpty()) {
-                    throw Error("Programmer error: attempted to build GeneratedVariable without providing `storeAs`")
-                } else {
-                    storeAs
-                },
-                type = generatedType
-            )
-        } else {
-            null
-        },
-        asEmbarkAPIGraphQLMultiActionVariable = if (kind == VariableKind.MULTI_ACTION) {
-            GraphQLVariablesFragment.AsEmbarkAPIGraphQLMultiActionVariable(
-                key = key,
-                from = from,
-                variables = listOf(
-                    GraphQLVariablesFragment.Variable(
-                        asEmbarkAPIGraphQLGeneratedVariable1 = GraphQLVariablesFragment
-                            .AsEmbarkAPIGraphQLGeneratedVariable1(
-                                key = key,
-                                storeAs = if (storeAs.isEmpty()) {
-                                    throw Error(
-                                        "Programmer error: attempted to build" +
-                                            " GeneratedVariable without providing `storeAs`"
-                                    )
-                                } else {
-                                    storeAs
-                                },
-                                type = generatedType
-                            ),
-                        asEmbarkAPIGraphQLSingleVariable1 = null
-                    )
-                )
-            )
-        } else {
-            null
-        },
-        asEmbarkAPIGraphQLConstantVariable = null
-    )
+                type = generatedType,
+              ),
+            asEmbarkAPIGraphQLSingleVariable1 = null,
+          ),
+        ),
+      )
+    } else {
+      null
+    },
+    asEmbarkAPIGraphQLConstantVariable = null,
+  )
 
-    enum class VariableKind {
-        SINGLE,
-        GENERATED,
-        MULTI_ACTION
-    }
+  enum class VariableKind {
+    SINGLE,
+    GENERATED,
+    MULTI_ACTION,
+    ;
+
+    val typename: String
+      get() = when (this) {
+        SINGLE -> EmbarkAPIGraphQLSingleVariable.type.name
+        GENERATED -> EmbarkAPIGraphQLGeneratedVariable.type.name
+        MULTI_ACTION -> EmbarkAPIGraphQLMultiActionVariable.type.name
+      }
+  }
 }

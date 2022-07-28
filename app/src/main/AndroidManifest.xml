@@ -27,12 +27,6 @@
         android:theme="@style/Hedvig.Theme">
         <activity android:name=".feature.embark.ui.MoreOptionsActivity" />
         <activity
-            android:name=".feature.onboarding.ui.ChoosePlanActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:theme="@style/Hedvig.Theme"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name=".feature.keygear.KeyGearValuationInfoActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
@@ -76,9 +70,7 @@
 
                 <data android:scheme="@string/APP_SCHEME" />
             </intent-filter>
-            <intent-filter
-                android:autoVerify="true"
-                tools:targetApi="m">
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -88,9 +80,7 @@
                     android:host="hedvig.app.link"
                     android:scheme="https" />
             </intent-filter>
-            <intent-filter
-                android:autoVerify="true"
-                tools:targetApi="m">
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -100,9 +90,7 @@
                     android:host="app.hedvig.com"
                     android:scheme="https" />
             </intent-filter>
-            <intent-filter
-                android:autoVerify="true"
-                tools:targetApi="m">
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -179,8 +167,8 @@
         <activity
             android:name=".feature.offer.ui.OfferActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
             android:exported="true"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
@@ -232,13 +220,6 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.marketing.ui.MarketingActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme.Marketing"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature.referrals.ui.activated.ReferralsActivatedActivity"
@@ -324,6 +305,9 @@
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".feature.claimdetail.ClaimDetailActivity" />
         <activity android:name=".feature.tracking.NotificationOpenedTrackingActivity" />
+        <activity
+            android:name=".feature.marketing.MarketingActivity"
+            android:theme="@style/Hedvig.Theme.Marketing" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
@@ -336,10 +320,12 @@
             android:name="androidx.core.content.FileProvider"
             android:authorities="@string/file_provider_authority"
             android:exported="false"
-            android:grantUriPermissions="true">
+            android:grantUriPermissions="true"
+            tools:replace="android:authorities">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
+                android:resource="@xml/file_paths"
+                tools:replace="android:resource" />
         </provider>
 
         <service

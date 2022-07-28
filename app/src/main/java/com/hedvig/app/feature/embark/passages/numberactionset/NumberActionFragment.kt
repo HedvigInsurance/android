@@ -42,109 +42,109 @@ import kotlin.time.Duration.Companion.milliseconds
  * Used for Embark actions NumberAction and NumberActionSet
  */
 class NumberActionFragment : Fragment(R.layout.number_action_set_fragment) {
-    private val model: EmbarkViewModel by sharedViewModel()
-    private val binding by viewBinding(NumberActionSetFragmentBinding::bind)
-    private val data: NumberActionParams
-        get() = requireArguments().getParcelable(PARAMS)
-            ?: throw Error("Programmer error: No PARAMS provided to ${this.javaClass.name}")
-    private val numberActionViewModel: NumberActionViewModel by viewModel { parametersOf(data) }
+  private val model: EmbarkViewModel by sharedViewModel()
+  private val binding by viewBinding(NumberActionSetFragmentBinding::bind)
+  private val data: NumberActionParams
+    get() = requireArguments().getParcelable(PARAMS)
+      ?: throw Error("Programmer error: No PARAMS provided to ${this.javaClass.name}")
+  private val numberActionViewModel: NumberActionViewModel by viewModel { parametersOf(data) }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        postponeEnterTransition()
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    postponeEnterTransition()
 
-        with(binding) {
-            whenApiVersion(Build.VERSION_CODES.R) {
-                inputContainer.setupInsetsForIme(
-                    root = root,
-                    submit,
-                    inputLayout,
-                )
-            }
-
-            messages.adapter = MessageAdapter(data.messages)
-            val views = createInputViews()
-            views.firstOrNull()?.let {
-                val input = it.findViewById<TextInputEditText>(R.id.input)
-                viewLifecycleScope.launchWhenCreated {
-                    requireContext().showKeyboardWithDelay(input, 500.milliseconds)
-                }
-            }
-            inputContainer.addViews(views)
-
-            numberActionViewModel.valid.observe(viewLifecycleOwner) { submit.isEnabled = it }
-            submit.text = data.submitLabel
-            submit
-                .hapticClicks()
-                .mapLatest { saveAndAnimate() }
-                .onEach { model.submitAction(data.link) }
-                .launchIn(viewLifecycleScope)
-
-            messages.doOnNextLayout {
-                startPostponedEnterTransition()
-            }
-
-            numberActionViewModel.valid.observe(viewLifecycleOwner) {
-                submit.isEnabled = it
-            }
-        }
-    }
-
-    private fun createInputViews(): List<View> {
-        return data.numberActions.mapIndexed { index, numberAction ->
-            val binding = EmbarkInputItemBinding.inflate(layoutInflater, binding.inputContainer, false)
-
-            binding.textField.isExpandedHintEnabled = false
-            numberAction.title?.let { binding.textField.hint = it }
-            numberAction.unit?.let { binding.textField.helperText = it }
-
-            binding.textField.placeholderText = numberAction.placeholder
-            binding.input.doOnTextChanged { text, _, _, _ ->
-                numberActionViewModel.setInputValue(numberAction.key, text.toString())
-            }
-
-            binding.input.inputType = InputType.TYPE_CLASS_NUMBER
-            val imeOptions = if (index < data.numberActions.size - 1) {
-                EditorInfo.IME_ACTION_NEXT
-            } else {
-                EditorInfo.IME_ACTION_DONE
-            }
-            binding.input.imeOptions = imeOptions
-            if (imeOptions == EditorInfo.IME_ACTION_DONE) {
-                binding.input.onImeAction(imeActionId = imeOptions) {
-                    if (numberActionViewModel.valid.value == true) {
-                        viewLifecycleScope.launch {
-                            saveAndAnimate()
-                            model.submitAction(data.link)
-                        }
-                    }
-                }
-            }
-
-            model.getPrefillFromStore(numberAction.key)?.let { binding.input.setText(it) }
-            binding.root
-        }
-    }
-
-    private suspend fun saveAndAnimate() {
-        context?.hideKeyboardWithDelay(
-            inputView = binding.inputLayout,
-            delayDuration = KEYBOARD_HIDE_DELAY_DURATION
+    with(binding) {
+      whenApiVersion(Build.VERSION_CODES.R) {
+        inputContainer.setupInsetsForIme(
+          root = root,
+          submit,
+          inputLayout,
         )
-        numberActionViewModel.onContinue(model::putInStore)
-        val allInput = numberActionViewModel.getAllInput()
-        val response =
-            model.preProcessResponse(data.passageName)
-                ?: Response.SingleResponse(allInput ?: "")
-        animateResponse(binding.responseContainer, response)
-        delay(PASSAGE_ANIMATION_DELAY_DURATION)
-    }
+      }
 
-    companion object {
-        private const val PARAMS = "PARAMS"
-        fun newInstance(params: NumberActionParams) = NumberActionFragment().apply {
-            arguments = bundleOf(
-                PARAMS to params
-            )
+      messages.adapter = MessageAdapter(data.messages)
+      val views = createInputViews()
+      views.firstOrNull()?.let {
+        val input = it.findViewById<TextInputEditText>(R.id.input)
+        viewLifecycleScope.launchWhenCreated {
+          requireContext().showKeyboardWithDelay(input, 500.milliseconds)
         }
+      }
+      inputContainer.addViews(views)
+
+      numberActionViewModel.valid.observe(viewLifecycleOwner) { submit.isEnabled = it }
+      submit.text = data.submitLabel
+      submit
+        .hapticClicks()
+        .mapLatest { saveAndAnimate() }
+        .onEach { model.submitAction(data.link) }
+        .launchIn(viewLifecycleScope)
+
+      messages.doOnNextLayout {
+        startPostponedEnterTransition()
+      }
+
+      numberActionViewModel.valid.observe(viewLifecycleOwner) {
+        submit.isEnabled = it
+      }
     }
+  }
+
+  private fun createInputViews(): List<View> {
+    return data.numberActions.mapIndexed { index, numberAction ->
+      val binding = EmbarkInputItemBinding.inflate(layoutInflater, binding.inputContainer, false)
+
+      binding.textField.isExpandedHintEnabled = false
+      numberAction.title?.let { binding.textField.hint = it }
+      numberAction.unit?.let { binding.textField.helperText = it }
+
+      binding.textField.placeholderText = numberAction.placeholder
+      binding.input.doOnTextChanged { text, _, _, _ ->
+        numberActionViewModel.setInputValue(numberAction.key, text.toString())
+      }
+
+      binding.input.inputType = InputType.TYPE_CLASS_NUMBER
+      val imeOptions = if (index < data.numberActions.size - 1) {
+        EditorInfo.IME_ACTION_NEXT
+      } else {
+        EditorInfo.IME_ACTION_DONE
+      }
+      binding.input.imeOptions = imeOptions
+      if (imeOptions == EditorInfo.IME_ACTION_DONE) {
+        binding.input.onImeAction(imeActionId = imeOptions) {
+          if (numberActionViewModel.valid.value == true) {
+            viewLifecycleScope.launch {
+              saveAndAnimate()
+              model.submitAction(data.link)
+            }
+          }
+        }
+      }
+
+      model.getPrefillFromStore(numberAction.key)?.let { binding.input.setText(it) }
+      binding.root
+    }
+  }
+
+  private suspend fun saveAndAnimate() {
+    context?.hideKeyboardWithDelay(
+      inputView = binding.inputLayout,
+      delayDuration = KEYBOARD_HIDE_DELAY_DURATION,
+    )
+    numberActionViewModel.onContinue(model::putInStore)
+    val allInput = numberActionViewModel.getAllInput()
+    val response =
+      model.preProcessResponse(data.passageName)
+        ?: Response.SingleResponse(allInput ?: "")
+    animateResponse(binding.responseContainer, response)
+    delay(PASSAGE_ANIMATION_DELAY_DURATION)
+  }
+
+  companion object {
+    private const val PARAMS = "PARAMS"
+    fun newInstance(params: NumberActionParams) = NumberActionFragment().apply {
+      arguments = bundleOf(
+        PARAMS to params,
+      )
+    }
+  }
 }

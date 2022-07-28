@@ -18,56 +18,56 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
-import com.hedvig.app.ui.compose.theme.HedvigTheme
 
 @Composable
 fun ClaimType(
-    title: String,
-    subtitle: String,
-    modifier: Modifier = Modifier,
-    @DrawableRes drawableRes: Int = R.drawable.ic_claim,
+  title: String,
+  subtitle: String,
+  modifier: Modifier = Modifier,
+  @DrawableRes drawableRes: Int = R.drawable.ic_claim,
 ) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.Start),
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
+  Row(
+    horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.Start),
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = modifier,
+  ) {
+    Image(
+      painter = painterResource(drawableRes),
+      contentDescription = null,
+    )
+    Column(
+      verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
-        Image(
-            painter = painterResource(drawableRes),
-            contentDescription = null,
-        )
-        Column(
-            verticalArrangement = Arrangement.spacedBy(2.dp),
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.h6,
-            )
-            if (subtitle.isNotEmpty()) {
-                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                    Text(
-                        text = subtitle,
-                        style = MaterialTheme.typography.subtitle2,
-                    )
-                }
-            }
+      Text(
+        text = title,
+        style = MaterialTheme.typography.h6,
+      )
+      if (subtitle.isNotEmpty()) {
+        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+          Text(
+            text = subtitle,
+            style = MaterialTheme.typography.subtitle2,
+          )
         }
+      }
     }
+  }
 }
 
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun ClaimTypePreview() {
-    HedvigTheme {
-        Surface(
-            color = MaterialTheme.colors.background,
-        ) {
-            Column {
-                ClaimType(title = "title", subtitle = "subtitle")
-                ClaimType(title = "title", subtitle = "")
-            }
-        }
+  HedvigTheme {
+    Surface(
+      color = MaterialTheme.colors.background,
+    ) {
+      Column {
+        ClaimType(title = "title", subtitle = "subtitle")
+        ClaimType(title = "title", subtitle = "")
+      }
     }
+  }
 }

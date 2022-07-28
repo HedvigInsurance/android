@@ -8,45 +8,48 @@ import android.webkit.MimeTypeMap
 import java.util.Locale
 
 class FileService(
-    private val context: Context
+  private val context: Context,
 ) {
-    fun getFileName(uri: Uri): String? {
-        if (uri.scheme == ContentResolver.SCHEME_CONTENT) {
-            val cursor = context.contentResolver.query(uri, null, null, null, null)
-            cursor.use { c ->
-                if (c?.moveToFirst() == true) {
-                    return c.getString(c.getColumnIndex(OpenableColumns.DISPLAY_NAME))
-                }
-            }
+  fun getFileName(uri: Uri): String? {
+    if (uri.scheme == ContentResolver.SCHEME_CONTENT) {
+      val cursor = context.contentResolver.query(uri, null, null, null, null)
+      cursor.use { c ->
+        if (c?.moveToFirst() == true) {
+          val columnIndex = c.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+          if (columnIndex >= 0) {
+            return c.getString(columnIndex)
+          }
         }
-
-        val cut = uri.path?.lastIndexOf('/')
-
-        cut?.let { c ->
-            if (c != -1) {
-                return uri.path?.substring(c + 1)
-            }
-        }
-        return uri.path
+      }
     }
 
-    fun getMimeType(uri: Uri): String {
-        if (uri.scheme == ContentResolver.SCHEME_CONTENT) {
-            val resolvedMimeType = context.contentResolver.getType(uri)
-            if (resolvedMimeType != null) {
-                return resolvedMimeType
-            }
-        }
+    val cut = uri.path?.lastIndexOf('/')
 
-        return getMimeType(uri.toString())
+    cut?.let { c ->
+      if (c != -1) {
+        return uri.path?.substring(c + 1)
+      }
+    }
+    return uri.path
+  }
+
+  fun getMimeType(uri: Uri): String {
+    if (uri.scheme == ContentResolver.SCHEME_CONTENT) {
+      val resolvedMimeType = context.contentResolver.getType(uri)
+      if (resolvedMimeType != null) {
+        return resolvedMimeType
+      }
     }
 
-    fun getMimeType(path: String): String {
-        val fileExtension = getFileExtension(path)
-        return MimeTypeMap.getSingleton()
-            .getMimeTypeFromExtension(fileExtension.lowercase(Locale.getDefault()))
-            ?: ""
-    }
+    return getMimeType(uri.toString())
+  }
 
-    fun getFileExtension(path: String): String = MimeTypeMap.getFileExtensionFromUrl(path)
+  fun getMimeType(path: String): String {
+    val fileExtension = getFileExtension(path)
+    return MimeTypeMap.getSingleton()
+      .getMimeTypeFromExtension(fileExtension.lowercase(Locale.getDefault()))
+      ?: ""
+  }
+
+  fun getFileExtension(path: String): String = MimeTypeMap.getFileExtensionFromUrl(path)
 }

@@ -19,45 +19,48 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
-import com.hedvig.app.ui.compose.theme.HedvigTheme
 import java.util.Locale
 
 @Composable
 fun LoadingRetrieval(locale: Locale) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 24.dp),
-    ) {
-        val resources = LocalContext.current.resources
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-            Text(
-                text = resources.getQuantityString(R.plurals.offer_switcher_title, 2).uppercase(locale),
-                style = MaterialTheme.typography.caption,
-            )
-        }
-        Spacer(Modifier.height(24.dp))
-        CircularProgressIndicator()
-        Spacer(Modifier.height(16.dp))
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-            Text(
-                text = stringResource(R.string.offer_screen_insurely_card_loading_support_text),
-                style = MaterialTheme.typography.body2,
-            )
-        }
+  Column(
+    horizontalAlignment = Alignment.CenterHorizontally,
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp, vertical = 24.dp),
+  ) {
+    val resources = LocalContext.current.resources
+    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+      Text(
+        text = resources.getQuantityString(
+          hedvig.resources.R.plurals.offer_switcher_title,
+          2,
+        ).uppercase(locale),
+        style = MaterialTheme.typography.caption,
+      )
     }
+    Spacer(Modifier.height(24.dp))
+    CircularProgressIndicator()
+    Spacer(Modifier.height(16.dp))
+    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+      Text(
+        text = stringResource(hedvig.resources.R.string.offer_screen_insurely_card_loading_support_text),
+        style = MaterialTheme.typography.body2,
+      )
+    }
+  }
 }
 
 @Preview
 @Composable
 fun LoadingRetrievalPreview() {
-    HedvigTheme {
-        Surface(
-            color = MaterialTheme.colors.background,
-        ) {
-            LoadingRetrieval(Locale.ENGLISH)
-        }
+  HedvigTheme {
+    Surface(
+      color = MaterialTheme.colors.background,
+    ) {
+      LoadingRetrieval(Locale.ENGLISH)
     }
+  }
 }

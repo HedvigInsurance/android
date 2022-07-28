@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator
  * single [ComposeView][androidx.compose.ui.platform.ComposeView] item to handle its own animation.
  */
 class ViewHolderReusingDefaultItemAnimator : DefaultItemAnimator() {
-    init {
-        supportsChangeAnimations = false
-    }
+  init {
+    supportsChangeAnimations = false
+  }
 }

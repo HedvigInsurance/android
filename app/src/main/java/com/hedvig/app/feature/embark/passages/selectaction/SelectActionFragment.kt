@@ -8,6 +8,7 @@ import androidx.core.os.bundleOf
 import androidx.core.view.doOnNextLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 import com.hedvig.app.databinding.EmbarkResponseBinding
 import com.hedvig.app.databinding.FragmentEmbarkSelectActionBinding
@@ -17,7 +18,6 @@ import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.animateResponse
 import com.hedvig.app.feature.embark.passages.selectaction.ui.SelectActionView
 import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_DURATION
-import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.hedvig.app.util.extensions.viewLifecycleScope
@@ -34,97 +34,97 @@ import kotlinx.coroutines.yield
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
-    private val model: EmbarkViewModel by sharedViewModel()
-    private val binding by viewBinding(FragmentEmbarkSelectActionBinding::bind)
+  private val model: EmbarkViewModel by sharedViewModel()
+  private val binding by viewBinding(FragmentEmbarkSelectActionBinding::bind)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        postponeEnterTransition()
-        val data = requireArguments().getParcelable<SelectActionParameter>(DATA)
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
+    postponeEnterTransition()
+    val data = requireArguments().getParcelable<SelectActionParameter>(DATA)
 
-        if (data == null) {
-            e { "Programmer error: No DATA provided to ${this.javaClass.name}" }
-            return
-        }
-
-        binding.apply {
-            whenApiVersion(Build.VERSION_CODES.R) {
-                actionsComposeView.setupInsetsForIme(root, actionsComposeView)
-            }
-
-            if (data.actions.size == 1) {
-                bindSingleButton(data.actions.first(), data)
-            } else {
-                bindButtonGrid(data)
-            }
-
-            messages.adapter = MessageAdapter(data.messages)
-            messages.doOnNextLayout {
-                startPostponedEnterTransition()
-            }
-        }
+    if (data == null) {
+      e { "Programmer error: No DATA provided to ${this.javaClass.name}" }
+      return
     }
 
-    private fun FragmentEmbarkSelectActionBinding.bindSingleButton(
-        action: SelectActionParameter.SelectAction,
-        data: SelectActionParameter,
-    ) {
-        with(singleActionButton) {
-            isVisible = true
-            hapticClicks()
-                .mapLatest { onActionSelected(action, data, responseContainer) }
-                .onEach { model.submitAction(action.link, 0) }
-                .launchIn(viewLifecycleScope)
-            text = action.label
-        }
-    }
+    binding.apply {
+      whenApiVersion(Build.VERSION_CODES.R) {
+        actionsComposeView.setupInsetsForIme(root, actionsComposeView)
+      }
 
-    private fun FragmentEmbarkSelectActionBinding.bindButtonGrid(data: SelectActionParameter) {
-        with(actionsComposeView) {
-            isVisible = true
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            var actionJob: Job? = null
-            setContent {
-                isTransitionGroup = true // https://issuetracker.google.com/issues/206947893
-                HedvigTheme {
-                    SelectActionView(
-                        selectActions = data.actions,
-                        onActionClick = { selectAction: SelectActionParameter.SelectAction, position: Int ->
-                            actionJob?.cancel()
-                            actionJob = viewLifecycleScope.launch {
-                                onActionSelected(selectAction, data, responseContainer)
-                                yield()
-                                model.submitAction(selectAction.link, position)
-                            }
-                        }
-                    )
-                }
-            }
-        }
-    }
+      if (data.actions.size == 1) {
+        bindSingleButton(data.actions.first(), data)
+      } else {
+        bindButtonGrid(data)
+      }
 
-    private suspend fun onActionSelected(
-        selectAction: SelectActionParameter.SelectAction,
-        data: SelectActionParameter,
-        responseBinding: EmbarkResponseBinding,
-    ) {
-        (selectAction.keys zip selectAction.values).forEach { (key, value) ->
-            model.putInStore(key, value)
-        }
-        model.putInStore("${data.passageName}Result", selectAction.label)
-        val response = model.preProcessResponse(data.passageName)
-            ?: Response.SingleResponse(selectAction.label)
-        animateResponse(responseBinding, response)
-        delay(PASSAGE_ANIMATION_DELAY_DURATION)
+      messages.adapter = MessageAdapter(data.messages)
+      messages.doOnNextLayout {
+        startPostponedEnterTransition()
+      }
     }
+  }
 
-    companion object {
-        private const val DATA = "DATA"
-        fun newInstance(data: SelectActionParameter) =
-            SelectActionFragment().apply {
-                arguments = bundleOf(
-                    DATA to data
-                )
-            }
+  private fun FragmentEmbarkSelectActionBinding.bindSingleButton(
+    action: SelectActionParameter.SelectAction,
+    data: SelectActionParameter,
+  ) {
+    with(singleActionButton) {
+      isVisible = true
+      hapticClicks()
+        .mapLatest { onActionSelected(action, data, responseContainer) }
+        .onEach { model.submitAction(action.link, 0) }
+        .launchIn(viewLifecycleScope)
+      text = action.label
     }
+  }
+
+  private fun FragmentEmbarkSelectActionBinding.bindButtonGrid(data: SelectActionParameter) {
+    with(actionsComposeView) {
+      isVisible = true
+      setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+      var actionJob: Job? = null
+      setContent {
+        isTransitionGroup = true // https://issuetracker.google.com/issues/206947893
+        HedvigTheme {
+          SelectActionView(
+            selectActions = data.actions,
+            onActionClick = { selectAction: SelectActionParameter.SelectAction, position: Int ->
+              actionJob?.cancel()
+              actionJob = viewLifecycleScope.launch {
+                onActionSelected(selectAction, data, responseContainer)
+                yield()
+                model.submitAction(selectAction.link, position)
+              }
+            },
+          )
+        }
+      }
+    }
+  }
+
+  private suspend fun onActionSelected(
+    selectAction: SelectActionParameter.SelectAction,
+    data: SelectActionParameter,
+    responseBinding: EmbarkResponseBinding,
+  ) {
+    (selectAction.keys zip selectAction.values).forEach { (key, value) ->
+      model.putInStore(key, value)
+    }
+    model.putInStore("${data.passageName}Result", selectAction.label)
+    val response = model.preProcessResponse(data.passageName)
+      ?: Response.SingleResponse(selectAction.label)
+    animateResponse(responseBinding, response)
+    delay(PASSAGE_ANIMATION_DELAY_DURATION)
+  }
+
+  companion object {
+    private const val DATA = "DATA"
+    fun newInstance(data: SelectActionParameter) =
+      SelectActionFragment().apply {
+        arguments = bundleOf(
+          DATA to data,
+        )
+      }
+  }
 }

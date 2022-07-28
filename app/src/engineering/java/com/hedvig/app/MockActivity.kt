@@ -12,37 +12,37 @@ import org.koin.core.context.unloadKoinModules
 import org.koin.core.module.Module
 
 abstract class MockActivity : AppCompatActivity(R.layout.activity_generic_development) {
-    protected val binding by viewBinding(ActivityGenericDevelopmentBinding::bind)
+  protected val binding by viewBinding(ActivityGenericDevelopmentBinding::bind)
 
-    protected abstract val original: List<Module>
-    protected abstract val mocks: List<Module>
+  protected abstract val original: List<Module>
+  protected abstract val mocks: List<Module>
 
-    abstract fun adapter(): GenericDevelopmentAdapter
+  abstract fun adapter(): GenericDevelopmentAdapter
 
-    val context: Context
-        get() = this
+  val context: Context
+    get() = this
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        unloadKoinModules(original)
-        loadKoinModules(mocks)
+    unloadKoinModules(original)
+    loadKoinModules(mocks)
 
-        binding.root.apply {
-            window.compatSetDecorFitsSystemWindows(false)
-            applyInsetter {
-                type(navigationBars = true, statusBars = true) {
-                    padding()
-                }
-            }
-            adapter = adapter()
+    binding.root.apply {
+      window.compatSetDecorFitsSystemWindows(false)
+      applyInsetter {
+        type(navigationBars = true, statusBars = true) {
+          padding()
         }
+      }
+      adapter = adapter()
     }
+  }
 
-    override fun onDestroy() {
-        super.onDestroy()
+  override fun onDestroy() {
+    super.onDestroy()
 
-        unloadKoinModules(mocks)
-        loadKoinModules(original)
-    }
+    unloadKoinModules(mocks)
+    loadKoinModules(original)
+  }
 }

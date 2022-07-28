@@ -69,12 +69,13 @@
                     tools:visibility="visible" />
 
                 <ImageView
+                    android:id="@+id/logo"
                     android:layout_width="@dimen/contract_card_logo_size"
                     android:layout_height="@dimen/contract_card_logo_size"
                     android:contentDescription="@null"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_hedvig_h"
+                    tools:src="@drawable/ic_hedvig_h"
                     app:tint="?colorPrimary" />
 
                 <TextView

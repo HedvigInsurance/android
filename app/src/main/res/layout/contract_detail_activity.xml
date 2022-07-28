@@ -12,10 +12,12 @@
         android:background="?colorSurface"
         app:navigationIcon="@drawable/ic_back" />
 
-    <include
+    <com.hedvig.android.core.ui.genericinfo.GenericErrorScreenView
         android:id="@+id/error"
-        layout="@layout/generic_error"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/content"

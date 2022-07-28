@@ -8,31 +8,31 @@ import androidx.compose.ui.res.colorResource
 import com.hedvig.app.R
 
 object ClaimStatusColors {
-    object Pill {
-        val paid: Color
-            @Composable
-            get() = if (isSystemInDarkTheme()) {
-                colorResource(R.color.lavender_400)
-            } else {
-                colorResource(R.color.lavender_200)
-            }
+  object Pill {
+    val paid: Color
+      @Composable
+      get() = if (isSystemInDarkTheme()) {
+        colorResource(R.color.lavender_400)
+      } else {
+        colorResource(R.color.lavender_200)
+      }
 
-        val reopened: Color
-            @Composable
-            get() = if (isSystemInDarkTheme()) {
-                colorResource(R.color.forever_orange_500)
-            } else {
-                colorResource(R.color.forever_orange_300)
-            }
-    }
+    val reopened: Color
+      @Composable
+      get() = if (isSystemInDarkTheme()) {
+        colorResource(R.color.forever_orange_500)
+      } else {
+        colorResource(R.color.forever_orange_300)
+      }
+  }
 
-    object Progress {
-        val paid: Color
-            @Composable
-            get() = MaterialTheme.colors.secondary
+  object Progress {
+    val paid: Color
+      @Composable
+      get() = MaterialTheme.colors.secondary
 
-        val reopened: Color
-            @Composable
-            get() = colorResource(R.color.forever_orange_500)
-    }
+    val reopened: Color
+      @Composable
+      get() = colorResource(R.color.forever_orange_500)
+  }
 }

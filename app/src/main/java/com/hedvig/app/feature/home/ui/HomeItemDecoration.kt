@@ -16,74 +16,74 @@ import com.hedvig.app.feature.home.model.HomeModel
 import com.hedvig.app.util.extensions.children
 
 class HomeItemDecoration(context: Context) : RecyclerView.ItemDecoration() {
-    private val divider = ContextCompat.getDrawable(context, R.drawable.divider)
+  private val divider = ContextCompat.getDrawable(context, R.drawable.divider)
 
-    override fun getItemOffsets(
-        outRect: Rect,
-        view: View,
-        parent: RecyclerView,
-        state: RecyclerView.State
-    ) {
-        val position = parent.getChildAdapterPosition(view)
-        val item = (parent.adapter as? HomeAdapter)?.currentList?.getOrNull(position) ?: return
+  override fun getItemOffsets(
+    outRect: Rect,
+    view: View,
+    parent: RecyclerView,
+    state: RecyclerView.State,
+  ) {
+    val position = parent.getChildAdapterPosition(view)
+    val item = (parent.adapter as? HomeAdapter)?.currentList?.getOrNull(position) ?: return
 
-        if (item is HomeModel.CommonClaim) {
-            val spanIndex =
-                (view.layoutParams as? GridLayoutManager.LayoutParams)?.spanIndex ?: return
+    if (item is HomeModel.CommonClaim) {
+      val spanIndex =
+        (view.layoutParams as? GridLayoutManager.LayoutParams)?.spanIndex ?: return
 
-            when (spanIndex) {
-                SPAN_LEFT -> {
-                    outRect.left = BASE_MARGIN_DOUBLE
-                    outRect.right = BASE_MARGIN_HALF
-                }
-                SPAN_RIGHT -> {
-                    outRect.left = BASE_MARGIN_HALF
-                    outRect.right = BASE_MARGIN_DOUBLE
-                }
-            }
-            return
+      when (spanIndex) {
+        SPAN_LEFT -> {
+          outRect.left = BASE_MARGIN_DOUBLE
+          outRect.right = BASE_MARGIN_HALF
         }
-
-        if (item is HomeModel.ConnectPayin) {
-            val prev = (parent.adapter as? HomeAdapter)?.currentList?.getOrNull(position - 1) ?: return
-            if (prev is HomeModel.ConnectPayin) {
-                outRect.top = BASE_MARGIN
-            }
-
-            if (prev is HomeModel.StartClaimContained) {
-                outRect.top = BASE_MARGIN_SEPTUPLE
-            }
+        SPAN_RIGHT -> {
+          outRect.left = BASE_MARGIN_HALF
+          outRect.right = BASE_MARGIN_DOUBLE
         }
-
-        if (item is HomeModel.BigText) {
-            val prev = (parent.adapter as? HomeAdapter)?.currentList?.getOrNull(position - 1) ?: return
-            if (prev is HomeModel.PSA) {
-                outRect.top = BASE_MARGIN_DOUBLE
-            }
-        }
-
-        if (item is HomeModel.PSA) {
-            divider?.let { divider ->
-                outRect.bottom = divider.intrinsicHeight
-            }
-        }
+      }
+      return
     }
 
-    override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
-        val adapter = (parent.adapter as? HomeAdapter)
-        parent.children.forEach { view ->
-            val position = parent.getChildAdapterPosition(view)
-            val item = adapter?.currentList?.getOrNull(position) ?: return
+    if (item is HomeModel.ConnectPayin) {
+      val prev = (parent.adapter as? HomeAdapter)?.currentList?.getOrNull(position - 1) ?: return
+      if (prev is HomeModel.ConnectPayin) {
+        outRect.top = BASE_MARGIN
+      }
 
-            val prev = (parent.adapter as? HomeAdapter)?.currentList?.getOrNull(position - 1) ?: return
-            if (prev is HomeModel.PSA && item is HomeModel.PSA) {
-                divider?.draw(c)
-            }
-        }
+      if (prev is HomeModel.StartClaimContained) {
+        outRect.top = BASE_MARGIN_SEPTUPLE
+      }
     }
 
-    companion object {
-        private const val SPAN_LEFT = 0
-        private const val SPAN_RIGHT = 1
+    if (item is HomeModel.BigText) {
+      val prev = (parent.adapter as? HomeAdapter)?.currentList?.getOrNull(position - 1) ?: return
+      if (prev is HomeModel.PSA) {
+        outRect.top = BASE_MARGIN_DOUBLE
+      }
     }
+
+    if (item is HomeModel.PSA) {
+      divider?.let { divider ->
+        outRect.bottom = divider.intrinsicHeight
+      }
+    }
+  }
+
+  override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+    val adapter = (parent.adapter as? HomeAdapter)
+    parent.children.forEach { view ->
+      val position = parent.getChildAdapterPosition(view)
+      val item = adapter?.currentList?.getOrNull(position) ?: return
+
+      val prev = (parent.adapter as? HomeAdapter)?.currentList?.getOrNull(position - 1) ?: return
+      if (prev is HomeModel.PSA && item is HomeModel.PSA) {
+        divider?.draw(c)
+      }
+    }
+  }
+
+  companion object {
+    private const val SPAN_LEFT = 0
+    private const val SPAN_RIGHT = 1
+  }
 }

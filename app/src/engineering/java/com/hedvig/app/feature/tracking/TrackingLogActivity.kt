@@ -44,9 +44,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.edit
 import com.google.accompanist.insets.ui.TopAppBar
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 import com.hedvig.app.feature.tracking.TrackDetailFragment.Companion.show
-import com.hedvig.app.ui.compose.theme.HedvigTheme
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.getViewModel
@@ -54,151 +54,151 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class TrackingLogActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        val viewModel = getViewModel<TrackingLogViewModel>()
+    val viewModel = getViewModel<TrackingLogViewModel>()
 
-        setContent {
-            val tracks by viewModel.tracks.collectAsState()
-            HedvigTheme {
-                TrackingLogScreen(
-                    onNavigateUp = ::finish,
-                    onClickEvent = ::openEventDetail,
-                    onClickClearEvents = viewModel::clear,
-                    tracks = tracks,
-                )
-            }
-        }
+    setContent {
+      val tracks by viewModel.tracks.collectAsState()
+      HedvigTheme {
+        TrackingLogScreen(
+          onNavigateUp = ::finish,
+          onClickEvent = ::openEventDetail,
+          onClickClearEvents = viewModel::clear,
+          tracks = tracks,
+        )
+      }
     }
+  }
 
-    private fun openEventDetail(event: TrackEvent) {
-        TrackDetailFragment
-            .newInstance(event)
-            .show(supportFragmentManager)
-    }
+  private fun openEventDetail(event: TrackEvent) {
+    TrackDetailFragment
+      .newInstance(event)
+      .show(supportFragmentManager)
+  }
 
-    companion object {
-        fun newInstance(context: Context) = Intent(context, TrackingLogActivity::class.java)
-    }
+  companion object {
+    fun newInstance(context: Context) = Intent(context, TrackingLogActivity::class.java)
+  }
 }
 
 @Composable
 fun TrackingLogScreen(
-    onNavigateUp: () -> Unit,
-    onClickEvent: (TrackEvent) -> Unit,
-    onClickClearEvents: () -> Unit,
-    tracks: List<TrackEvent>,
+  onNavigateUp: () -> Unit,
+  onClickEvent: (TrackEvent) -> Unit,
+  onClickClearEvents: () -> Unit,
+  tracks: List<TrackEvent>,
 ) {
-    var showNotification by rememberSaveable { mutableStateOf(false) }
-    val coroutineScope = rememberCoroutineScope()
-    val context = LocalContext.current
-    LaunchedEffect(Unit) {
-        showNotification = context.trackingPreferences.data.first()[SHOULD_SHOW_NOTIFICATION] ?: false
-    }
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Recorded Tracks") },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateUp) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Go Back",
-                        )
-                    }
-                },
-                actions = {
-                    var dropdownOpen by rememberSaveable { mutableStateOf(false) }
-                    Box(
-                        modifier = Modifier
-                            .wrapContentSize(Alignment.TopEnd)
-                    ) {
-                        IconButton(onClick = { dropdownOpen = true }) {
-                            Icon(imageVector = Icons.Default.MoreVert, contentDescription = "More options")
-                        }
-                        DropdownMenu(expanded = dropdownOpen, onDismissRequest = { dropdownOpen = false }) {
-                            DropdownMenuItem(
-                                onClick = {
-                                    coroutineScope.launch {
-                                        context.trackingPreferences.edit { prefs ->
-                                            prefs[SHOULD_SHOW_NOTIFICATION] = !showNotification
-                                        }
-                                        context.startService(
-                                            TrackingShortcutService.newInstance(
-                                                context,
-                                                show = !showNotification
-                                            )
-                                        )
-                                        showNotification = !showNotification
-                                    }
-                                }
-                            ) {
-                                Checkbox(checked = showNotification, onCheckedChange = null)
-                                Spacer(Modifier.width(8.dp))
-                                Text(stringResource(R.string.tracking_show_notification))
-                            }
-                            Divider()
-                            DropdownMenuItem(
-                                onClick = onClickClearEvents,
-                            ) {
-                                Text("Clear events")
-                            }
-                        }
-                    }
-                },
-                backgroundColor = MaterialTheme.colors.surface,
+  var showNotification by rememberSaveable { mutableStateOf(false) }
+  val coroutineScope = rememberCoroutineScope()
+  val context = LocalContext.current
+  LaunchedEffect(Unit) {
+    showNotification = context.trackingPreferences.data.first()[SHOULD_SHOW_NOTIFICATION] ?: false
+  }
+  Scaffold(
+    topBar = {
+      TopAppBar(
+        title = { Text("Recorded Tracks") },
+        navigationIcon = {
+          IconButton(onClick = onNavigateUp) {
+            Icon(
+              imageVector = Icons.Default.ArrowBack,
+              contentDescription = "Go Back",
             )
-        }
-    ) { paddingValues ->
-        LazyColumn(
+          }
+        },
+        actions = {
+          var dropdownOpen by rememberSaveable { mutableStateOf(false) }
+          Box(
             modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxWidth()
-        ) {
-            items(tracks) { event ->
-                Column(
-                    modifier = Modifier
-                        .clickable { onClickEvent(event) }
-                        .padding(16.dp)
-                        .fillMaxWidth()
-                ) {
-                    Text(
-                        text = event.name,
-                        style = MaterialTheme.typography.subtitle1,
-                    )
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        text = stringResource(
-                            R.string.event_list_item_line_two,
-                            event.timestamp.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                            if (event.propertiesJsonString != "{}") {
-                                "Yes"
-                            } else {
-                                "No"
-                            },
-                        )
-                    )
-                }
+              .wrapContentSize(Alignment.TopEnd),
+          ) {
+            IconButton(onClick = { dropdownOpen = true }) {
+              Icon(imageVector = Icons.Default.MoreVert, contentDescription = "More options")
             }
+            DropdownMenu(expanded = dropdownOpen, onDismissRequest = { dropdownOpen = false }) {
+              DropdownMenuItem(
+                onClick = {
+                  coroutineScope.launch {
+                    context.trackingPreferences.edit { prefs ->
+                      prefs[SHOULD_SHOW_NOTIFICATION] = !showNotification
+                    }
+                    context.startService(
+                      TrackingShortcutService.newInstance(
+                        context,
+                        show = !showNotification,
+                      ),
+                    )
+                    showNotification = !showNotification
+                  }
+                },
+              ) {
+                Checkbox(checked = showNotification, onCheckedChange = null)
+                Spacer(Modifier.width(8.dp))
+                Text(stringResource(R.string.tracking_show_notification))
+              }
+              Divider()
+              DropdownMenuItem(
+                onClick = onClickClearEvents,
+              ) {
+                Text("Clear events")
+              }
+            }
+          }
+        },
+        backgroundColor = MaterialTheme.colors.surface,
+      )
+    },
+  ) { paddingValues ->
+    LazyColumn(
+      modifier = Modifier
+        .padding(paddingValues)
+        .fillMaxWidth(),
+    ) {
+      items(tracks) { event ->
+        Column(
+          modifier = Modifier
+            .clickable { onClickEvent(event) }
+            .padding(16.dp)
+            .fillMaxWidth(),
+        ) {
+          Text(
+            text = event.name,
+            style = MaterialTheme.typography.subtitle1,
+          )
+          Spacer(Modifier.height(4.dp))
+          Text(
+            text = stringResource(
+              R.string.event_list_item_line_two,
+              event.timestamp.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+              if (event.propertiesJsonString != "{}") {
+                "Yes"
+              } else {
+                "No"
+              },
+            ),
+          )
         }
+      }
     }
+  }
 }
 
 @Preview
 @Composable
 fun TrackingLogScreenPreview() {
-    HedvigTheme {
-        TrackingLogScreen(
-            onNavigateUp = {},
-            onClickEvent = {},
-            onClickClearEvents = {},
-            tracks = listOf(
-                TrackEvent("example_event", "{}", LocalDateTime.now()),
-                TrackEvent("example_event", "{}", LocalDateTime.now()),
-                TrackEvent("example_event", "{}", LocalDateTime.now()),
-                TrackEvent("example_event", "{}", LocalDateTime.now()),
-            )
-        )
-    }
+  HedvigTheme {
+    TrackingLogScreen(
+      onNavigateUp = {},
+      onClickEvent = {},
+      onClickClearEvents = {},
+      tracks = listOf(
+        TrackEvent("example_event", "{}", LocalDateTime.now()),
+        TrackEvent("example_event", "{}", LocalDateTime.now()),
+        TrackEvent("example_event", "{}", LocalDateTime.now()),
+        TrackEvent("example_event", "{}", LocalDateTime.now()),
+      ),
+    )
+  }
 }

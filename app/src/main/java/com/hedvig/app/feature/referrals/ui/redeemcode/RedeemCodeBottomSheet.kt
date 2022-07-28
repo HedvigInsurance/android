@@ -25,66 +25,67 @@ import org.koin.core.parameter.parametersOf
 
 abstract class RedeemCodeBottomSheet : BottomSheetDialogFragment() {
 
-    abstract val quoteCartId: QuoteCartId?
+  abstract val quoteCartId: QuoteCartId?
 
-    private val model: RedeemCodeViewModel by viewModel {
-        parametersOf(quoteCartId)
-    }
+  private val model: RedeemCodeViewModel by viewModel {
+    parametersOf(quoteCartId)
+  }
 
-    private val binding by viewBinding(PromotionCodeDialogBinding::bind)
+  private val binding by viewBinding(PromotionCodeDialogBinding::bind)
 
-    abstract fun onRedeemSuccess(data: RedeemReferralCodeMutation.Data)
+  abstract fun onRedeemSuccess(data: RedeemReferralCodeMutation.Data)
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View? = inflater.inflate(R.layout.promotion_code_dialog, container, false)
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?,
+  ): View? = inflater.inflate(R.layout.promotion_code_dialog, container, false)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.apply {
-            bottomSheetAddPromotionCodeButton.setHapticClickListener {
-                redeemPromotionCode(bottomSheetAddPromotionCodeEditText.text.toString().let { CampaignCode(it) })
-            }
-            bottomSheetPromotionCodeTermsAndConditionLink.setOnClickListener {
-                val intent =
-                    Intent(Intent.ACTION_VIEW, Uri.parse("https://www.hedvig.com/invite/terms"))
-                startActivity(intent)
-            }
-            bottomSheetAddPromotionCodeEditText.setOnEditorActionListener { v, actionId, _ ->
-                return@setOnEditorActionListener if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    redeemPromotionCode(bottomSheetAddPromotionCodeEditText.text.toString().let { CampaignCode(it) })
-                    view.context.hideKeyboard(v)
-                    true
-                } else {
-                    false
-                }
-            }
-
-            viewLifecycleScope.launchWhenStarted {
-                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    model.viewState.collect { state ->
-                        state.errorMessage?.let {
-                            wrongPromotionCode(it)
-                        }
-                        state.data?.let {
-                            onRedeemSuccess(it)
-                        }
-                        state.quoteCartId?.let {
-                            dismiss()
-                        }
-                    }
-                }
-            }
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    binding.apply {
+      bottomSheetAddPromotionCodeButton.setHapticClickListener {
+        redeemPromotionCode(bottomSheetAddPromotionCodeEditText.text.toString().let { CampaignCode(it) })
+      }
+      bottomSheetPromotionCodeTermsAndConditionLink.setOnClickListener {
+        val intent =
+          Intent(Intent.ACTION_VIEW, Uri.parse("https://www.hedvig.com/invite/terms"))
+        startActivity(intent)
+      }
+      bottomSheetAddPromotionCodeEditText.setOnEditorActionListener { v, actionId, _ ->
+        return@setOnEditorActionListener if (actionId == EditorInfo.IME_ACTION_DONE) {
+          redeemPromotionCode(bottomSheetAddPromotionCodeEditText.text.toString().let { CampaignCode(it) })
+          view.context.hideKeyboard(v)
+          true
+        } else {
+          false
         }
-    }
+      }
 
-    private fun redeemPromotionCode(code: CampaignCode) {
-        model.redeemReferralCode(code)
+      viewLifecycleScope.launchWhenStarted {
+        viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+          model.viewState.collect { state ->
+            state.errorMessage?.let {
+              wrongPromotionCode(it)
+            }
+            state.data?.let {
+              onRedeemSuccess(it)
+            }
+            state.quoteCartId?.let {
+              dismiss()
+            }
+          }
+        }
+      }
     }
+  }
 
-    private fun wrongPromotionCode(errorMessage: String) {
-        binding.textField.errorIconDrawable = requireContext().compatDrawable(R.drawable.ic_warning_triangle)
-        binding.textField.error = errorMessage
-    }
+  private fun redeemPromotionCode(code: CampaignCode) {
+    model.redeemReferralCode(code)
+  }
+
+  private fun wrongPromotionCode(errorMessage: String) {
+    binding.textField.errorIconDrawable =
+      requireContext().compatDrawable(com.hedvig.android.core.designsystem.R.drawable.ic_warning_triangle)
+    binding.textField.error = errorMessage
+  }
 }

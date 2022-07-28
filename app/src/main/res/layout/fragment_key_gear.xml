@@ -15,10 +15,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <include
-            android:id="@+id/errorContainer"
-            layout="@layout/generic_error"
-            android:visibility="gone" />
+        <com.hedvig.android.core.ui.genericinfo.GenericErrorScreenView
+            android:id="@+id/error"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/contentContainer"

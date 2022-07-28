@@ -15,25 +15,25 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun FAQCard(
-    openSheet: (FAQItem) -> Unit,
-    items: List<FAQItem>,
+  openSheet: (FAQItem) -> Unit,
+  items: List<FAQItem>,
 ) {
-    Card {
-        Column {
-            items.forEach { item ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .clickable(onClick = { openSheet(item) })
-                        .padding(16.dp)
-                        .fillMaxWidth()
-                ) {
-                    Text(
-                        text = item.headline,
-                        style = MaterialTheme.typography.subtitle1,
-                    )
-                }
-            }
+  Card {
+    Column {
+      items.forEach { item ->
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          modifier = Modifier
+            .clickable(onClick = { openSheet(item) })
+            .padding(16.dp)
+            .fillMaxWidth(),
+        ) {
+          Text(
+            text = item.headline,
+            style = MaterialTheme.typography.subtitle1,
+          )
         }
+      }
     }
+  }
 }

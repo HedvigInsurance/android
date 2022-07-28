@@ -12,100 +12,100 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 
 class NameBinder(
-    private val binding: KeyGearItemDetailNameSectionBinding,
-    private val model: KeyGearItemDetailViewModel,
+  private val binding: KeyGearItemDetailNameSectionBinding,
+  private val model: KeyGearItemDetailViewModel,
 ) {
-    init {
-        var isEditState = false
-        binding.addName.setHapticClickListener {
-            if (isEditState) {
-                hideEditName()
-                binding.addName.setText(R.string.KEY_GEAR_ITEM_VIEW_ITEM_NAME_EDIT_BUTTON)
-                updateName()
-                isEditState = false
-            } else {
-                focusEditName()
-                binding.addName.setText(R.string.KEY_GEAR_ITEM_VIEW_ITEM_NAME_SAVE_BUTTON)
-                isEditState = true
-            }
-        }
-
-        binding.nameEditText.setOnEditorActionListener { _, _, _ ->
-            hideEditName()
-            binding.addName.setText(R.string.KEY_GEAR_ITEM_VIEW_ITEM_NAME_EDIT_BUTTON)
-            updateName()
-            isEditState = false
-            true
-        }
+  init {
+    var isEditState = false
+    binding.addName.setHapticClickListener {
+      if (isEditState) {
+        hideEditName()
+        binding.addName.setText(hedvig.resources.R.string.KEY_GEAR_ITEM_VIEW_ITEM_NAME_EDIT_BUTTON)
+        updateName()
+        isEditState = false
+      } else {
+        focusEditName()
+        binding.addName.setText(hedvig.resources.R.string.KEY_GEAR_ITEM_VIEW_ITEM_NAME_SAVE_BUTTON)
+        isEditState = true
+      }
     }
 
-    fun bind(data: KeyGearItemQuery.KeyGearItem) {
-        val name = data.fragments.keyGearItemFragment.name
-        val category =
-            binding.root.context.getString(data.fragments.keyGearItemFragment.category.label)
+    binding.nameEditText.setOnEditorActionListener { _, _, _ ->
+      hideEditName()
+      binding.addName.setText(hedvig.resources.R.string.KEY_GEAR_ITEM_VIEW_ITEM_NAME_EDIT_BUTTON)
+      updateName()
+      isEditState = false
+      true
+    }
+  }
 
-        if (name.isNullOrBlank()) {
-            binding.nameEditText.setText("")
-            binding.name.text = category
-        } else {
-            binding.nameEditText.setText(name)
-            binding.nameEditText.setSelection(name.length)
-            binding.name.text = name
+  fun bind(data: KeyGearItemQuery.KeyGearItem) {
+    val name = data.fragments.keyGearItemFragment.name
+    val category =
+      binding.root.context.getString(data.fragments.keyGearItemFragment.category.label)
+
+    if (name.isNullOrBlank()) {
+      binding.nameEditText.setText("")
+      binding.name.text = category
+    } else {
+      binding.nameEditText.setText(name)
+      binding.nameEditText.setSelection(name.length)
+      binding.name.text = name
+    }
+  }
+
+  private fun updateName() {
+    val name = binding.nameEditText.text.toString()
+    model.updateItemName(name)
+  }
+
+  private fun focusEditName() {
+    binding.name
+      .animate()
+      .alpha(0.0f)
+      .withEndAction {
+        binding.name.remove()
+      }
+      .setDuration(ANIMATE_DURATION)
+      .start()
+
+    binding.nameEditTextContainer.apply {
+      alpha = 0.0f
+      show()
+      animate()
+        .alpha(1.0f)
+        .withEndAction {
+          binding.nameEditText.requestFocus()
+          binding.nameEditText.openKeyboard()
         }
+        .setDuration(ANIMATE_DURATION)
+        .start()
     }
+  }
 
-    private fun updateName() {
-        val name = binding.nameEditText.text.toString()
-        model.updateItemName(name)
-    }
-
-    private fun focusEditName() {
-        binding.name
-            .animate()
-            .alpha(0.0f)
-            .withEndAction {
-                binding.name.remove()
-            }
-            .setDuration(ANIMATE_DURATION)
-            .start()
-
-        binding.nameEditTextContainer.apply {
-            alpha = 0.0f
-            show()
-            animate()
-                .alpha(1.0f)
-                .withEndAction {
-                    binding.nameEditText.requestFocus()
-                    binding.nameEditText.openKeyboard()
-                }
-                .setDuration(ANIMATE_DURATION)
-                .start()
+  private fun hideEditName() {
+    binding.nameEditTextContainer.apply {
+      animate()
+        .alpha(0f)
+        .withEndAction {
+          binding.nameEditText.dismissKeyboard()
+          binding.nameEditTextContainer.remove()
         }
+        .setDuration(ANIMATE_DURATION)
+        .start()
     }
 
-    private fun hideEditName() {
-        binding.nameEditTextContainer.apply {
-            animate()
-                .alpha(0f)
-                .withEndAction {
-                    binding.nameEditText.dismissKeyboard()
-                    binding.nameEditTextContainer.remove()
-                }
-                .setDuration(ANIMATE_DURATION)
-                .start()
-        }
-
-        binding.name.apply {
-            alpha = 0.0f
-            show()
-            animate()
-                .alpha(1.0f)
-                .setDuration(ANIMATE_DURATION)
-                .start()
-        }
+    binding.name.apply {
+      alpha = 0.0f
+      show()
+      animate()
+        .alpha(1.0f)
+        .setDuration(ANIMATE_DURATION)
+        .start()
     }
+  }
 
-    companion object {
-        private const val ANIMATE_DURATION = 60L
-    }
+  companion object {
+    private const val ANIMATE_DURATION = 60L
+  }
 }

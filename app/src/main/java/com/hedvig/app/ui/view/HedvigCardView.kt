@@ -11,39 +11,39 @@ import com.hedvig.app.R
 import com.hedvig.app.util.extensions.compatDrawable
 
 open class HedvigCardView @JvmOverloads constructor(
-    context: Context,
-    attributeSet: AttributeSet? = null,
-    defStyle: Int = 0
+  context: Context,
+  attributeSet: AttributeSet? = null,
+  defStyle: Int = 0,
 ) : FrameLayout(context, attributeSet, defStyle) {
-    init {
-        background = context.compatDrawable(R.drawable.hedvig_card_view_ripple)
-        val attributes = context.obtainStyledAttributes(
-            attributeSet,
-            R.styleable.HedvigCardView,
-            defStyle,
-            0
-        )
-        if (!attributes.hasValue(R.styleable.HedvigCardView_android_elevation)) {
-            elevation = resources.getDimension(R.dimen.hedvig_card_view_elevation)
-        }
-
-        attributes.recycle()
-
-        outlineProvider = OutlineProvider()
+  init {
+    background = context.compatDrawable(R.drawable.hedvig_card_view_ripple)
+    val attributes = context.obtainStyledAttributes(
+      attributeSet,
+      R.styleable.HedvigCardView,
+      defStyle,
+      0,
+    )
+    if (!attributes.hasValue(R.styleable.HedvigCardView_android_elevation)) {
+      elevation = resources.getDimension(R.dimen.hedvig_card_view_elevation)
     }
 
-    inner class OutlineProvider : ViewOutlineProvider() {
-        private val inset: Rect = Rect()
+    attributes.recycle()
 
-        override fun getOutline(view: View?, outline: Outline?) {
-            view?.background?.copyBounds(inset)
+    outlineProvider = OutlineProvider()
+  }
 
-            inset.left += resources.getDimensionPixelSize(R.dimen.hedvig_card_view_inset_horizontal)
-            inset.right -= resources.getDimensionPixelSize(R.dimen.hedvig_card_view_inset_horizontal)
-            inset.top += resources.getDimensionPixelSize(R.dimen.hedvig_card_view_inset_top)
-            inset.bottom -= resources.getDimensionPixelSize(R.dimen.hedvig_card_view_inset_bottom)
+  inner class OutlineProvider : ViewOutlineProvider() {
+    private val inset: Rect = Rect()
 
-            outline?.setRoundRect(inset, resources.getDimension(R.dimen.hedvig_card_view_radius))
-        }
+    override fun getOutline(view: View?, outline: Outline?) {
+      view?.background?.copyBounds(inset)
+
+      inset.left += resources.getDimensionPixelSize(R.dimen.hedvig_card_view_inset_horizontal)
+      inset.right -= resources.getDimensionPixelSize(R.dimen.hedvig_card_view_inset_horizontal)
+      inset.top += resources.getDimensionPixelSize(R.dimen.hedvig_card_view_inset_top)
+      inset.bottom -= resources.getDimensionPixelSize(R.dimen.hedvig_card_view_inset_bottom)
+
+      outline?.setRoundRect(inset, resources.getDimension(R.dimen.hedvig_card_view_radius))
     }
+  }
 }

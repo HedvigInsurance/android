@@ -10,33 +10,33 @@ import org.junit.Test
 
 class CodeTooShortValidationTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(ReferralsEditCodeActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(ReferralsEditCodeActivity::class.java)
 
-    @Test
-    fun shouldNotAllowSubmitWhenCodeFieldIsBlank() = run {
-        activityRule.launch(
-            ReferralsEditCodeActivity.newInstance(
-                context(),
-                "TEST123"
-            )
-        )
+  @Test
+  fun shouldNotAllowSubmitWhenCodeFieldIsBlank() = run {
+    activityRule.launch(
+      ReferralsEditCodeActivity.newInstance(
+        context(),
+        "TEST123",
+      ),
+    )
 
-        onScreen<ReferralsEditCodeScreen> {
-            editLayout {
-                edit {
-                    replaceText("")
-                }
-            }
-            save { isDisabled() }
-            editLayout {
-                edit { replaceText("   ") }
-            }
-            save { isDisabled() }
-            editLayout {
-                edit { replaceText("EDITEDCODE123") }
-            }
-            save { isEnabled() }
+    onScreen<ReferralsEditCodeScreen> {
+      editLayout {
+        edit {
+          replaceText("")
         }
+      }
+      save { isDisabled() }
+      editLayout {
+        edit { replaceText("   ") }
+      }
+      save { isDisabled() }
+      editLayout {
+        edit { replaceText("EDITEDCODE123") }
+      }
+      save { isEnabled() }
     }
+  }
 }
