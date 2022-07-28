@@ -8,10 +8,10 @@ object Regexes {
   val phoneNumberRegex = Regex("([+]*[0-9]+[+. -]*)")
 }
 
-fun isValidEmail(email: String) = email.isBlank() && PatternsCompat.EMAIL_ADDRESS.matcher(email).matches()
+fun isValidEmail(email: String) = email.isNotBlank() && PatternsCompat.EMAIL_ADDRESS.matcher(email).matches()
 
 fun validateEmail(email: CharSequence): ValidationResult =
-  if (!PatternsCompat.EMAIL_ADDRESS.matcher(email).matches()) {
+  if (!isValidEmail(email.toString())) {
     ValidationResult(false, hedvig.resources.R.string.PROFILE_MY_INFO_INVALID_EMAIL)
   } else {
     ValidationResult(true, null)
