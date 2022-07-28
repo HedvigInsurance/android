@@ -6,13 +6,14 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.BaseActivity
-import com.hedvig.app.R
 import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceInfoActivity
 import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceInfoActivity.Companion.REFERENCE_RESULT
 import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceInfoActivity.Companion.SSN_RESULT
@@ -51,7 +52,7 @@ class AskForPriceInfoActivity : BaseActivity() {
               title = stringResource(hedvig.resources.R.string.insurely_title),
             )
           },
-        ) {
+        ) { paddingValues ->
           AskForPriceScreen(
             parameter.selectedInsuranceProviderName,
             onSkipRetrievePriceInfo = {
@@ -59,6 +60,7 @@ class AskForPriceInfoActivity : BaseActivity() {
               finishWithResult(null, null)
             },
             onNavigateToRetrievePrice = ::startRetrievePriceActivity,
+            modifier = Modifier.padding(paddingValues),
           )
         }
       }
@@ -95,11 +97,13 @@ fun AskForPriceScreen(
   selectedInsurance: String,
   onSkipRetrievePriceInfo: () -> Unit,
   onNavigateToRetrievePrice: () -> Unit,
+  modifier: Modifier = Modifier,
 ) {
   IntroContent(
     selectedInsurance = selectedInsurance,
     onNavigateToRetrievePriceInfo = { onNavigateToRetrievePrice() },
     onSkipRetrievePriceInfo = onSkipRetrievePriceInfo,
+    modifier = modifier,
   )
 }
 
