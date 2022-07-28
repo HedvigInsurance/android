@@ -1,12 +1,12 @@
 package com.hedvig.app.feature.embark.util
 
+import androidx.core.util.PatternsCompat
 import com.hedvig.app.feature.embark.masking.ISO_8601_DATE
 import com.hedvig.app.feature.embark.masking.REVERSE_DATE
 import com.hedvig.app.util.ANY_REGEX
 import com.hedvig.app.util.BIRTH_DATE_REGEX
 import com.hedvig.app.util.BIRTH_DATE_REVERSE_REGEX
 import com.hedvig.app.util.DANISH_PERSONAL_NUMBER_REGEX
-import com.hedvig.app.util.EMAIL_REGEX
 import com.hedvig.app.util.NORWEGIAN_PERSONAL_NUMBER_REGEX
 import com.hedvig.app.util.NORWEGIAN_POSTAL_CODE_REGEX
 import com.hedvig.app.util.SWEDISH_PERSONAL_NUMBER_REGEX
@@ -53,7 +53,7 @@ enum class MaskType {
   EMAIL {
     override fun mask(text: String) = text
     override fun unMask(text: String) = text
-    override fun isValid(text: String): Boolean = EMAIL_REGEX.matcher(text).find()
+    override fun isValid(text: String): Boolean = PatternsCompat.EMAIL_ADDRESS.matcher(text).matches()
     override fun derivedValues(text: String, key: String, currentDate: LocalDate): List<Pair<String, String>>? =
       null
   },

@@ -1,15 +1,17 @@
 package com.hedvig.app.util
 
 import androidx.annotation.StringRes
+import androidx.core.util.PatternsCompat
 import com.hedvig.app.R
 
 object Regexes {
-  val emailRegex = Regex("^\\S+@\\S+\$")
   val phoneNumberRegex = Regex("([+]*[0-9]+[+. -]*)")
 }
 
+fun isValidEmail(email: String) = email.isNotBlank() && PatternsCompat.EMAIL_ADDRESS.matcher(email).matches()
+
 fun validateEmail(email: CharSequence): ValidationResult =
-  if (!Regexes.emailRegex.matches(email)) {
+  if (!isValidEmail(email.toString())) {
     ValidationResult(false, hedvig.resources.R.string.PROFILE_MY_INFO_INVALID_EMAIL)
   } else {
     ValidationResult(true, null)

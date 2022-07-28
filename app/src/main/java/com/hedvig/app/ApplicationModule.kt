@@ -93,6 +93,7 @@ import com.hedvig.app.feature.embark.ui.MemberIdViewModel
 import com.hedvig.app.feature.embark.ui.MemberIdViewModelImpl
 import com.hedvig.app.feature.embark.ui.TooltipViewModel
 import com.hedvig.app.feature.genericauth.CreateOtpAttemptUseCase
+import com.hedvig.app.feature.genericauth.CreateOtpAttemptUseCaseImpl
 import com.hedvig.app.feature.genericauth.GenericAuthViewModel
 import com.hedvig.app.feature.genericauth.otpinput.OtpInputViewModel
 import com.hedvig.app.feature.genericauth.otpinput.ReSendOtpCodeUseCase
@@ -686,7 +687,7 @@ val useCaseModule = module {
   single { GetCrossSellsUseCase(get(), get()) }
   single { StartDataCollectionUseCase(get(), get()) }
   single { GetInsuranceProvidersUseCase(get(), get()) }
-  single { CreateOtpAttemptUseCase(get()) }
+  single<CreateOtpAttemptUseCase> { CreateOtpAttemptUseCaseImpl(get()) }
   single<SendOtpCodeUseCase> { SendOtpCodeUseCaseImpl(get()) }
   single<ReSendOtpCodeUseCase> { ReSendOtpCodeUseCaseImpl(get()) }
   single { GetDataCollectionUseCase(get(), get()) }
