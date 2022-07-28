@@ -213,9 +213,9 @@ import com.hedvig.app.service.push.senders.NotificationSender
 import com.hedvig.app.service.push.senders.PaymentNotificationSender
 import com.hedvig.app.service.push.senders.ReferralsNotificationSender
 import com.hedvig.app.util.LocaleManager
-import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
+import com.hedvig.app.util.apollo.NetworkCacheManager
 import com.hedvig.app.util.apollo.ReopenSubscriptionException
 import com.hedvig.app.util.apollo.SunsettingInterceptor
 import com.hedvig.app.util.featureflags.ClearHAnalyticsExperimentsCacheUseCase
@@ -374,7 +374,14 @@ val viewModelModule = module {
   viewModel { (quoteCartId: QuoteCartId?) -> RedeemCodeViewModel(quoteCartId, get(), get()) }
   viewModel { UserViewModel(get(), get(), get(), get(), get(), get()) }
   viewModel { WelcomeViewModel(get()) }
-  viewModel { SettingsViewModel(get(), get(), get()) }
+  viewModel {
+    SettingsViewModel(
+      repository = get(),
+      localeBroadcastManager = get(),
+      hAnalytics = get(),
+      cacheManager = get(),
+    )
+  }
   viewModel { DatePickerViewModel() }
   viewModel { params -> SimpleSignAuthenticationViewModel(params.get(), get(), get(), get(), get(), get(), get()) }
   viewModel { (data: MultiActionParams) -> MultiActionViewModel(data) }
@@ -705,7 +712,7 @@ val useCaseModule = module {
 }
 
 val cacheManagerModule = module {
-  single { CacheManager(get()) }
+  single { NetworkCacheManager(get()) }
 }
 
 val pushTokenManagerModule = module {
