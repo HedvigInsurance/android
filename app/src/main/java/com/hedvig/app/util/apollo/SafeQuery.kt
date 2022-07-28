@@ -67,8 +67,8 @@ private fun <D : Operation.Data> ApolloResponse<D>.toQueryResult(): QueryResult<
   return when {
     hasErrors() -> {
       val exception1 = errors?.first()?.extensions?.get("exception")
-      val body = (exception1 as? LinkedHashMap<*, *>)?.get("body")
-      val message = (body as? LinkedHashMap<*, *>)?.get("message") as? String
+      val body = (exception1 as? Map<*, *>)?.get("body")
+      val message = (body as? Map<*, *>)?.get("message") as? String
       QueryResult.Error.QueryError(message ?: errors?.first()?.message)
     }
     data != null -> QueryResult.Success(data)

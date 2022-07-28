@@ -7,13 +7,13 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.QuoteCartStartCheckoutMutation
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
-import com.hedvig.app.util.apollo.CacheManager
+import com.hedvig.app.util.apollo.NetworkCacheManager
 import com.hedvig.app.util.apollo.safeQuery
 import com.hedvig.hanalytics.HAnalytics
 
 class StartCheckoutUseCase(
   private val apolloClient: ApolloClient,
-  private val cacheManager: CacheManager,
+  private val cacheManager: NetworkCacheManager,
   private val hAnalytics: HAnalytics,
 ) {
   object Success

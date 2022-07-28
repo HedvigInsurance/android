@@ -17,7 +17,6 @@ import coil.decode.SvgDecoder
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.cache.normalized.api.MemoryCacheFactory
 import com.apollographql.apollo3.cache.normalized.api.NormalizedCacheFactory
-import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.apollographql.apollo3.cache.normalized.normalizedCache
 import com.apollographql.apollo3.interceptor.ApolloInterceptor
 import com.apollographql.apollo3.network.okHttpClient
@@ -214,9 +213,9 @@ import com.hedvig.app.service.push.senders.NotificationSender
 import com.hedvig.app.service.push.senders.PaymentNotificationSender
 import com.hedvig.app.service.push.senders.ReferralsNotificationSender
 import com.hedvig.app.util.LocaleManager
-import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
+import com.hedvig.app.util.apollo.NetworkCacheManager
 import com.hedvig.app.util.apollo.ReopenSubscriptionException
 import com.hedvig.app.util.apollo.SunsettingInterceptor
 import com.hedvig.app.util.featureflags.ClearHAnalyticsExperimentsCacheUseCase
@@ -380,7 +379,7 @@ val viewModelModule = module {
       repository = get(),
       localeBroadcastManager = get(),
       hAnalytics = get(),
-      clearCache = { get<ApolloClient>().apolloStore.clearAll() },
+      cacheManager = get(),
     )
   }
   viewModel { DatePickerViewModel() }
@@ -713,7 +712,7 @@ val useCaseModule = module {
 }
 
 val cacheManagerModule = module {
-  single { CacheManager(get()) }
+  single { NetworkCacheManager(get()) }
 }
 
 val pushTokenManagerModule = module {

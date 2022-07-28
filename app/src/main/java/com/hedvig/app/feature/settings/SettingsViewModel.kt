@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.type.Locale
 import com.hedvig.app.feature.marketpicker.LanguageRepository
 import com.hedvig.app.feature.marketpicker.LocaleBroadcastManager
+import com.hedvig.app.util.apollo.NetworkCacheManager
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.launch
@@ -13,7 +14,7 @@ class SettingsViewModel(
   private val repository: LanguageRepository,
   private val localeBroadcastManager: LocaleBroadcastManager,
   hAnalytics: HAnalytics,
-  val clearCache: () -> Unit,
+  private val cacheManager: NetworkCacheManager,
 ) : ViewModel() {
   init {
     hAnalytics.screenView(AppScreen.APP_SETTINGS)
@@ -23,7 +24,7 @@ class SettingsViewModel(
     viewModelScope.launch {
       repository.uploadLanguage(acceptLanguage, locale)
     }
-    clearCache()
+    cacheManager.clearCache()
     localeBroadcastManager.sendBroadcast(recreate = true)
   }
 }
