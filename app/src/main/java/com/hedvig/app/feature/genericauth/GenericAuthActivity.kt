@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
@@ -23,9 +24,11 @@ class GenericAuthActivity : BaseActivity() {
 
     setContent {
       val viewState by model.viewState.collectAsState()
-      viewState.otpId?.let {
+
+      LaunchedEffect(viewState.otpId) {
+        val otpId = viewState.otpId ?: return@LaunchedEffect
         model.onStartOtpInput()
-        startOtpInputActivity(otpId = it, email = viewState.input)
+        startOtpInputActivity(otpId = otpId, email = viewState.input)
       }
 
       HedvigTheme {

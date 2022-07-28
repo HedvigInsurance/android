@@ -47,7 +47,7 @@ fun EmailInputScreen(
   onClear: () -> Unit,
   inputValue: String,
   error: String?,
-  loading: Boolean
+  loading: Boolean,
 ) {
   Column(
     modifier = Modifier.fillMaxSize(),

@@ -8,7 +8,7 @@ object Regexes {
   val phoneNumberRegex = Regex("([+]*[0-9]+[+. -]*)")
 }
 
-fun String.isValidEmail() = isBlank() && PatternsCompat.EMAIL_ADDRESS.matcher(this).matches()
+fun isValidEmail(email: String) = email.isBlank() && PatternsCompat.EMAIL_ADDRESS.matcher(email).matches()
 
 fun validateEmail(email: CharSequence): ValidationResult =
   if (!PatternsCompat.EMAIL_ADDRESS.matcher(email).matches()) {

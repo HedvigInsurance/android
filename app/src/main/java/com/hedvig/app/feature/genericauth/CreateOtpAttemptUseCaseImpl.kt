@@ -27,7 +27,7 @@ class CreateOtpAttemptUseCaseImpl(
   }
 }
 
-sealed class CreateOtpResult {
-  data class Success(val id: String) : CreateOtpResult()
-  object Error : CreateOtpResult()
+sealed interface CreateOtpResult {
+  data class Success(val id: String) : CreateOtpResult
+  object Error : CreateOtpResult
 }

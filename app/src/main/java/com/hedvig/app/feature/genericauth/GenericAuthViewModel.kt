@@ -42,14 +42,12 @@ class GenericAuthViewModel(
   }
 
   fun submitEmail() {
-    with(_viewState) {
-      if (value.input.isValidEmail()) {
-        viewModelScope.launch {
-          createStateFromOtpAttempt(value.input)
-        }
-      } else {
-        update { it.copy(error = validate(value.input)) }
+    if (isValidEmail(_viewState.value.input)) {
+      viewModelScope.launch {
+        createStateFromOtpAttempt(_viewState.value.input)
       }
+    } else {
+      _viewState.update { it.copy(error = validate(_viewState.value.input)) }
     }
   }
 
@@ -78,7 +76,7 @@ class GenericAuthViewModel(
       return ViewState.TextFieldError.EMPTY
     }
 
-    if (!email.isValidEmail()) {
+    if (!isValidEmail(email)) {
       return ViewState.TextFieldError.INVALID_EMAIL
     }
     return null
