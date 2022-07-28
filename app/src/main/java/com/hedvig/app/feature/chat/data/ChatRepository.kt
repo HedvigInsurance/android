@@ -118,18 +118,18 @@ class ChatRepository(
     ) // I hate this but it seems there's no other way
     return withContext(Dispatchers.IO) {
       context.contentResolver.openInputStream(uri)?.into(file)
-      return@withContext uploadFile(file.path, mimeType)
+      return@withContext uploadFile(file, mimeType)
     }
   }
 
   suspend fun uploadFile(uri: Uri): ApolloResponse<UploadFileMutation.Data> =
-    uploadFile(uri.path!!, fileService.getMimeType(uri))
+    uploadFile(File(uri.path!!), fileService.getMimeType(uri))
 
   private suspend fun uploadFile(
-    path: String,
+    file: File,
     mimeType: String,
   ): ApolloResponse<UploadFileMutation.Data> {
-    return apolloClient.mutation(UploadFileMutation(File(path).toUpload(mimeType))).execute()
+    return apolloClient.mutation(UploadFileMutation(file.toUpload(mimeType))).execute()
   }
 
   suspend fun sendFileResponse(
