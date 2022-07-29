@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.annotation.StringRes
-import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.FragmentManager
 import com.hedvig.android.owldroid.graphql.fragment.ActivePaymentMethodsFragment
 import com.hedvig.android.owldroid.graphql.type.DirectDebitStatus
@@ -14,6 +13,8 @@ import com.hedvig.app.authenticate.LoginDialog
 import com.hedvig.app.feature.adyen.AdyenCurrency
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutActivity
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationActivity
+import com.hedvig.app.util.extensions.makeToast
+import e
 
 enum class Market {
   SE,
@@ -61,9 +62,14 @@ enum class Market {
 
   fun openOnboarding(context: Context) {
     val webPath = Language.fromSettings(context, this).webPath()
-    val url = context.getString(R.string.WEB_BASE_URL) + "/" + webPath + "/new-member"
-    val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-    context.startActivity(browserIntent)
+    val uri = Uri.parse("""${context.getString(R.string.WEB_BASE_URL)}/$webPath/new-member""")
+    val browserIntent = Intent(Intent.ACTION_VIEW, uri)
+    if (browserIntent.resolveActivity(context.packageManager) != null) {
+      context.startActivity(browserIntent)
+    } else {
+      e { "Tried to launch $uri but the phone has nothing to support such an intent." }
+      context.makeToast(hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE)
+    }
   }
 
   @StringRes
