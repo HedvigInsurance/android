@@ -1,4 +1,4 @@
-package com.hedvig.app.authenticate
+package com.hedvig.android.core.datastore
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -12,13 +12,13 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-interface DeviceIdStore {
+interface DeviceIdDataStore {
   fun observeDeviceId(): Flow<String>
 }
 
-class DeviceIdDataStore(
+internal class DeviceIdDataStoreImpl(
   private val dataStore: DataStore<Preferences>,
-) : DeviceIdStore {
+) : DeviceIdDataStore {
 
   private val key = stringPreferencesKey("hedvig-device-id")
 
