@@ -1,6 +1,7 @@
-package com.hedvig.app.util.featureflags
+package com.hedvig.android.hanalytics.test
 
-import com.hedvig.app.util.featureflags.flags.Feature
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.hanalytics.LoginMethod
 import com.hedvig.hanalytics.PaymentType
 
