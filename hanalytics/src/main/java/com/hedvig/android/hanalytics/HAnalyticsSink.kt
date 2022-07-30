@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.hanalytics
+package com.hedvig.android.hanalytics
 
 import com.hedvig.hanalytics.HAnalyticsEvent
 

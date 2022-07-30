@@ -1,4 +1,4 @@
-package com.hedvig.app.util.featureflags.paymenttype
+package com.hedvig.android.hanalytics.featureflags.paymenttype
 
 import com.hedvig.hanalytics.PaymentType
 

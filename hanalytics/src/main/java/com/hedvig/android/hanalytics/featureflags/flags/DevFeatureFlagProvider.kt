@@ -1,9 +1,9 @@
-package com.hedvig.app.util.featureflags.flags
+package com.hedvig.android.hanalytics.featureflags.flags
 
-import com.hedvig.app.feature.settings.Market
-import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.android.market.Market
+import com.hedvig.android.market.MarketManager
 
-class DevFeatureFlagProvider(
+internal class DevFeatureFlagProvider(
   private val marketManager: MarketManager,
 ) : FeatureFlagProvider {
 

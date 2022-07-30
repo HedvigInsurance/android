@@ -1,8 +1,8 @@
-package com.hedvig.app.util.featureflags.flags
+package com.hedvig.android.hanalytics.featureflags.flags
 
 import com.hedvig.hanalytics.HAnalytics
 
-class HAnalyticsFeatureFlagProvider(
+internal class HAnalyticsFeatureFlagProvider(
   private val hAnalytics: HAnalytics,
 ) : FeatureFlagProvider {
   // todo remember to reflect these options inside unleashed for the Android client

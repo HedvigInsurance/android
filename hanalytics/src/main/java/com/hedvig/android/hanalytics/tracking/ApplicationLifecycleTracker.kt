@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.tracking
+package com.hedvig.android.hanalytics.tracking
 
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner

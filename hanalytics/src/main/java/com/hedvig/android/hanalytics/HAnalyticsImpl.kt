@@ -1,11 +1,11 @@
-package com.hedvig.app.feature.hanalytics
+package com.hedvig.android.hanalytics
 
 import com.hedvig.hanalytics.HAnalytics
 import com.hedvig.hanalytics.HAnalyticsEvent
 import com.hedvig.hanalytics.HAnalyticsExperiment
 import i
 
-class HAnalyticsImpl(
+internal class HAnalyticsImpl(
   private val sendHAnalyticsEventUseCase: SendHAnalyticsEventUseCase,
   private val HAnalyticsExperimentManager: HAnalyticsExperimentManager,
 ) : HAnalytics() {

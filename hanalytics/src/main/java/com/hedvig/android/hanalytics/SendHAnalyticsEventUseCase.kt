@@ -1,13 +1,13 @@
-package com.hedvig.app.feature.hanalytics
+package com.hedvig.android.hanalytics
 
 import com.hedvig.hanalytics.HAnalyticsEvent
 
-interface SendHAnalyticsEventUseCase {
+internal interface SendHAnalyticsEventUseCase {
   fun send(event: HAnalyticsEvent)
   fun identify()
 }
 
-class SendHAnalyticsEventUseCaseImpl(
+internal class SendHAnalyticsEventUseCaseImpl(
   private val sinks: List<HAnalyticsSink>,
 ) : SendHAnalyticsEventUseCase {
   override fun send(event: HAnalyticsEvent) {

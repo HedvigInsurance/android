@@ -1,14 +1,10 @@
-package com.hedvig.app.util.featureflags
+package com.hedvig.android.hanalytics.featureflags
 
-import com.hedvig.app.util.featureflags.flags.FeatureFlagProvider
-import com.hedvig.app.util.featureflags.loginmethod.LoginMethodProvider
-import com.hedvig.app.util.featureflags.paymenttype.PaymentTypeProvider
+import com.hedvig.android.hanalytics.featureflags.flags.FeatureFlagProvider
+import com.hedvig.android.hanalytics.featureflags.loginmethod.LoginMethodProvider
+import com.hedvig.android.hanalytics.featureflags.paymenttype.PaymentTypeProvider
 
-interface FeatureManager : FeatureFlagProvider, LoginMethodProvider, PaymentTypeProvider {
-  suspend fun invalidateExperiments()
-}
-
-class FeatureManagerImpl(
+internal class FeatureManagerImpl(
   private val featureFlagProvider: FeatureFlagProvider,
   private val loginMethodProvider: LoginMethodProvider,
   private val paymentTypeProvider: PaymentTypeProvider,

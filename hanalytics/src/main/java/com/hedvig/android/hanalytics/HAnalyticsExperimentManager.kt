@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.hanalytics
+package com.hedvig.android.hanalytics
 
 import com.hedvig.hanalytics.HAnalyticsEvent
 import com.hedvig.hanalytics.HAnalyticsExperiment
@@ -6,12 +6,12 @@ import i
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-interface HAnalyticsExperimentManager {
+internal interface HAnalyticsExperimentManager {
   suspend fun getExperiment(name: String): HAnalyticsExperiment
   suspend fun invalidateExperiments()
 }
 
-class HAnalyticsExperimentManagerImpl(
+internal class HAnalyticsExperimentManagerImpl(
   private val sendHAnalyticsEventUseCase: SendHAnalyticsEventUseCase,
   private val hAnalyticsService: HAnalyticsService,
 ) : HAnalyticsExperimentManager {

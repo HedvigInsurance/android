@@ -1,12 +1,11 @@
-package com.hedvig.app.feature.hanalytics
+package com.hedvig.android.hanalytics
 
 import android.content.Context
 import android.os.Build
-import com.hedvig.android.core.jsonObjectOf
-import com.hedvig.android.core.plus
-import com.hedvig.app.BuildConfig
-import com.hedvig.app.authenticate.DeviceIdStore
-import com.hedvig.app.util.coroutines.await
+import com.hedvig.android.core.common.await
+import com.hedvig.android.core.common.jsonObjectOf
+import com.hedvig.android.core.common.plus
+import com.hedvig.android.core.datastore.DeviceIdDataStore
 import com.hedvig.hanalytics.HAnalytics
 import com.hedvig.hanalytics.HAnalyticsEvent
 import kotlinx.coroutines.Dispatchers
@@ -22,20 +21,24 @@ import java.util.Locale
 import java.util.TimeZone
 import java.util.UUID
 
-interface HAnalyticsService {
+internal interface HAnalyticsService {
   suspend fun sendEvent(event: HAnalyticsEvent)
   suspend fun getExperiments(): List<Experiment>?
   suspend fun identify()
 }
 
-class HAnalyticsServiceImpl(
+internal class HAnalyticsServiceImpl(
   private val context: Context,
   private val okHttpClient: OkHttpClient,
-  private val deviceIdStore: DeviceIdStore,
-  private val baseUrl: String,
+  private val deviceIdDataStore: DeviceIdDataStore,
+  private val hAnalyticsBaseUrl: String,
+  private val appVersionName: String,
+  private val appVersionCode: String,
+  private val appId: String,
 ) : HAnalyticsService {
 
-  @Suppress("BlockingMethodInNonBlockingContext")
+  private val sessionId = UUID.randomUUID()
+
   override suspend fun sendEvent(event: HAnalyticsEvent) {
     val requestJsonObject = contextProperties() + jsonObjectOf(
       "event" to event.name,
@@ -43,10 +46,11 @@ class HAnalyticsServiceImpl(
       "graphql" to event.graphql,
     )
     val eventRequest = Request.Builder()
-      .url("$baseUrl/event")
+      .url("$hAnalyticsBaseUrl/event")
       .header("Content-Type", "application/json")
       .post(requestJsonObject.toString().toRequestBody())
       .build()
+    @Suppress("BlockingMethodInNonBlockingContext")
     withContext(Dispatchers.IO) {
       try {
         okHttpClient.newCall(eventRequest).execute()
@@ -55,18 +59,18 @@ class HAnalyticsServiceImpl(
     }
   }
 
-  @Suppress("BlockingMethodInNonBlockingContext")
   override suspend fun getExperiments(): List<Experiment>? {
     val requestJsonObject = contextProperties() + jsonObjectOf(
       "appName" to "android",
-      "appVersion" to BuildConfig.VERSION_NAME,
+      "appVersion" to appVersionName,
       "filter" to HAnalytics.EXPERIMENTS,
     )
     val experimentRequest = Request.Builder()
-      .url("$baseUrl/experiments")
+      .url("$hAnalyticsBaseUrl/experiments")
       .header("Content-Type", "application/json")
       .post(requestJsonObject.toString().toRequestBody())
       .build()
+    @Suppress("BlockingMethodInNonBlockingContext")
     return withContext(Dispatchers.IO) {
       try {
         val response = okHttpClient.newCall(experimentRequest).await()
@@ -78,16 +82,16 @@ class HAnalyticsServiceImpl(
     }
   }
 
-  @Suppress("BlockingMethodInNonBlockingContext")
   override suspend fun identify() {
     val requestJsonObject = jsonObjectOf("trackingId" to deviceId())
 
     val request = Request.Builder()
-      .url("$baseUrl/identify")
+      .url("$hAnalyticsBaseUrl/identify")
       .header("Content-Type", "application/json")
       .post(requestJsonObject.toString().toRequestBody())
       .build()
 
+    @Suppress("BlockingMethodInNonBlockingContext")
     withContext(Dispatchers.IO) {
       try {
         okHttpClient.newCall(request).await()
@@ -96,15 +100,14 @@ class HAnalyticsServiceImpl(
     }
   }
 
-  private val sessionId = UUID.randomUUID()
-  private suspend fun deviceId() = deviceIdStore.observeDeviceId().firstOrNull() ?: ""
+  private suspend fun deviceId() = deviceIdDataStore.observeDeviceId().firstOrNull() ?: ""
 
   private suspend fun contextProperties() = jsonObjectOf(
     "app" to jsonObjectOf(
       "name" to context.applicationInfo.loadLabel(context.packageManager).toString(),
-      "version" to BuildConfig.VERSION_NAME,
-      "build" to BuildConfig.VERSION_CODE.toString(),
-      "namespace" to BuildConfig.APPLICATION_ID,
+      "version" to appVersionName,
+      "build" to appVersionCode,
+      "namespace" to appId,
     ),
     "device" to jsonObjectOf(
       "manufacturer" to Build.MANUFACTURER,

@@ -1,4 +1,4 @@
-package com.hedvig.app.util.featureflags.flags
+package com.hedvig.android.hanalytics.featureflags.flags
 
 enum class Feature(
   @Suppress("unused") val explanation: String, // Used to easier get a context of what it's for.

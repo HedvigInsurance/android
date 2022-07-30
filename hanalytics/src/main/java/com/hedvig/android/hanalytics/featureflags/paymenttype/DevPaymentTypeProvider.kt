@@ -1,10 +1,10 @@
-package com.hedvig.app.util.featureflags.paymenttype
+package com.hedvig.android.hanalytics.featureflags.paymenttype
 
-import com.hedvig.app.feature.settings.Market
-import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.android.market.Market
+import com.hedvig.android.market.MarketManager
 import com.hedvig.hanalytics.PaymentType
 
-class DevPaymentTypeProvider(
+internal class DevPaymentTypeProvider(
   private val marketManager: MarketManager,
 ) : PaymentTypeProvider {
   override suspend fun getPaymentType(): PaymentType {

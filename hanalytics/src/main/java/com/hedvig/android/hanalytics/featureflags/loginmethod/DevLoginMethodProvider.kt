@@ -1,10 +1,10 @@
-package com.hedvig.app.util.featureflags.loginmethod
+package com.hedvig.android.hanalytics.featureflags.loginmethod
 
-import com.hedvig.app.feature.settings.Market
-import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.android.market.Market
+import com.hedvig.android.market.MarketManager
 import com.hedvig.hanalytics.LoginMethod
 
-class DevLoginMethodProvider(
+internal class DevLoginMethodProvider(
   private val marketManager: MarketManager,
 ) : LoginMethodProvider {
   override suspend fun getLoginMethod(): LoginMethod {
