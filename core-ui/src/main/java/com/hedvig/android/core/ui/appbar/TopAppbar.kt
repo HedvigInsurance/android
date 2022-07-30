@@ -38,7 +38,7 @@ fun TopAppBarWithClose(
   title: String,
   modifier: Modifier = Modifier,
   backgroundColor: Color = MaterialTheme.colors.background,
-  contentPadding: PaddingValues,
+  contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
   TopAppBar(
     onClick,
