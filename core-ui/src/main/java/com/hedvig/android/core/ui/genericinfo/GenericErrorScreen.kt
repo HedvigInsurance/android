@@ -13,20 +13,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.information.AppStateInformationType
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import hedvig.resources.R
 
 @Composable
 fun GenericErrorScreen(
   onRetryButtonClick: () -> Unit,
   modifier: Modifier = Modifier,
-  title: String = stringResource(R.string.home_tab_error_title),
-  description: String = stringResource(R.string.home_tab_error_body),
+  title: String = stringResource(hedvig.resources.R.string.home_tab_error_title),
+  description: String = stringResource(hedvig.resources.R.string.home_tab_error_body),
 ) {
   GenericInfoScreen(
     title = title,
     description = description,
     informationType = AppStateInformationType.Failure,
-    primaryButtonText = stringResource(R.string.home_tab_error_button_text),
+    primaryButtonText = stringResource(hedvig.resources.R.string.home_tab_error_button_text),
     onPrimaryButtonClick = onRetryButtonClick,
     secondaryButtonText = null,
     onSecondaryButtonClick = null,
