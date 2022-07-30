@@ -1,4 +1,4 @@
-package com.hedvig.app.util.coroutines
+package com.hedvig.android.core.common
 
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Call

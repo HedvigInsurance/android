@@ -1,4 +1,4 @@
-package com.hedvig.app.util
+package com.hedvig.android.core.common.android
 
 import android.os.Build
 
