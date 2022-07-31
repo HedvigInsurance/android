@@ -1,12 +1,12 @@
-package com.hedvig.app.feature.tracking
+package com.hedvig.android.hanalytics.engineering.tracking
 
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
-import com.hedvig.app.R
-import com.hedvig.app.service.push.setupNotificationChannel
+import com.hedvig.android.core.common.notification.setupNotificationChannel
+import kotlinx.coroutines.flow.first
 
 class TrackingShortcutService : Service() {
 
@@ -31,7 +31,7 @@ class TrackingShortcutService : Service() {
           PendingIntent.FLAG_IMMUTABLE,
         ),
       )
-      .setSmallIcon(R.drawable.ic_hedvig_h)
+      .setSmallIcon(hedvig.resources.R.drawable.ic_hedvig_h)
       .setAutoCancel(false)
       .setContentTitle("Open Tracking Log")
       .setContentText("See all tracking events so far")
@@ -63,9 +63,18 @@ class TrackingShortcutService : Service() {
 
     private const val SHOW = "SHOW"
 
-    fun newInstance(context: Context, show: Boolean) =
-      Intent(context, TrackingShortcutService::class.java).apply {
+    suspend fun newInstance(context: Context): Intent {
+      val shouldShowNotification = context
+        .trackingPreferences
+        .data
+        .first()[SHOULD_SHOW_NOTIFICATION] ?: false
+      return newInstance(context, shouldShowNotification)
+    }
+
+    fun newInstance(context: Context, show: Boolean): Intent {
+      return Intent(context, TrackingShortcutService::class.java).apply {
         putExtra(SHOW, show)
       }
+    }
   }
 }

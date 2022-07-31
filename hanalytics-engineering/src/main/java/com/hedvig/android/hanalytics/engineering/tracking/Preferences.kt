@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.tracking
+package com.hedvig.android.hanalytics.engineering.tracking
 
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey

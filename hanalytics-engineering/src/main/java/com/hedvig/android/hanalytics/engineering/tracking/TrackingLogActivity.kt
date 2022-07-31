@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.tracking
+package com.hedvig.android.hanalytics.engineering.tracking
 
 import android.content.Context
 import android.content.Intent
@@ -45,8 +45,8 @@ import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.edit
 import com.google.accompanist.insets.ui.TopAppBar
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.app.R
-import com.hedvig.app.feature.tracking.TrackDetailFragment.Companion.show
+import com.hedvig.android.hanalytics.engineering.R
+import com.hedvig.android.hanalytics.engineering.tracking.TrackDetailDialogFragment.Companion.show
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.getViewModel
@@ -73,7 +73,7 @@ class TrackingLogActivity : AppCompatActivity() {
   }
 
   private fun openEventDetail(event: TrackEvent) {
-    TrackDetailFragment
+    TrackDetailDialogFragment
       .newInstance(event)
       .show(supportFragmentManager)
   }
@@ -84,7 +84,7 @@ class TrackingLogActivity : AppCompatActivity() {
 }
 
 @Composable
-fun TrackingLogScreen(
+private fun TrackingLogScreen(
   onNavigateUp: () -> Unit,
   onClickEvent: (TrackEvent) -> Unit,
   onClickClearEvents: () -> Unit,
