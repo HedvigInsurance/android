@@ -6,12 +6,12 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import com.google.firebase.messaging.RemoteMessage
+import com.hedvig.android.core.common.notification.setupNotificationChannel
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.DATA_MESSAGE_BODY
 import com.hedvig.app.service.push.DATA_MESSAGE_TITLE
 import com.hedvig.app.service.push.getImmutablePendingIntentFlags
-import com.hedvig.android.core.common.notification.setupNotificationChannel
 import java.util.concurrent.atomic.AtomicInteger
 
 class GenericNotificationSender(

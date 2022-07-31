@@ -8,6 +8,7 @@ import androidx.core.os.bundleOf
 import androidx.core.view.doOnNextLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import com.hedvig.android.core.common.android.whenApiVersion
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 import com.hedvig.app.databinding.EmbarkResponseBinding
@@ -21,7 +22,6 @@ import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATI
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.hedvig.app.util.extensions.viewLifecycleScope
-import com.hedvig.android.core.common.android.whenApiVersion
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import e
 import kotlinx.coroutines.Job

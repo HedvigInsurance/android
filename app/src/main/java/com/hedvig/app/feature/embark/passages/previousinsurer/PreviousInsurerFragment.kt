@@ -7,13 +7,13 @@ import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.hedvig.android.core.common.android.whenApiVersion
 import com.hedvig.app.R
 import com.hedvig.app.databinding.PreviousOrExternalInsurerFragmentBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
-import com.hedvig.android.core.common.android.whenApiVersion
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import d
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel

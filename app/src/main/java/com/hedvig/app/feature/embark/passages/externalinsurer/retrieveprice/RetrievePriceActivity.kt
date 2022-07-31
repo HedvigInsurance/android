@@ -15,6 +15,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.android.market.Market
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.authenticate.AuthenticateDialog
@@ -23,7 +24,6 @@ import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskFor
 import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.InsuranceProviderParameter
 import com.hedvig.app.ui.compose.composables.CenteredProgressIndicator
 import com.hedvig.app.ui.compose.composables.FadeWhen
-import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
