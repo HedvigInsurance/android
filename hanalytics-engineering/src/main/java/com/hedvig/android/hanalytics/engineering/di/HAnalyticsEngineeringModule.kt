@@ -9,6 +9,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
+@Suppress("unused") // Used on non-release builds
 class HAnalyticsEngineeringModuleImpl : HAnalyticsEngineeringModule {
   override fun getModule() = hAnalyticsEngineeringModule
 }
