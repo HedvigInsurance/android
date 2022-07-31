@@ -53,8 +53,8 @@ android {
     maybeCreate("staging")
     maybeCreate("pullrequest")
     named("release") {
+//      signingConfig = signingConfigs.getByName("debug") uncomment to run release build locally
       applicationIdSuffix = ".app"
-
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
 
       isMinifyEnabled = true
@@ -134,9 +134,19 @@ android {
 dependencies {
   implementation(projects.apollo)
   implementation(projects.coreCommon)
+  implementation(projects.coreDatastore)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
+  implementation(projects.hanalytics)
+  implementation(projects.hedvigMarket)
+
+  testImplementation(projects.hanalyticsTest)
+
+  releaseImplementation(projects.hanalyticsEngineeringNoop)
+  debugImplementation(projects.hanalyticsEngineering)
+  "stagingImplementation"(projects.hanalyticsEngineering)
+  "pullrequestImplementation"(projects.hanalyticsEngineering)
 
   androidTestImplementation(projects.testdata)
   testImplementation(projects.testdata)
@@ -214,8 +224,6 @@ dependencies {
   implementation(libs.firebase.dynamicLinks)
   implementation(libs.firebase.config)
   implementation(libs.firebase.messaging)
-
-  implementation(libs.hAnalytics)
 
   implementation(libs.koin.android)
   androidTestImplementation(libs.koin.test)
