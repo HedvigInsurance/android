@@ -1,9 +1,9 @@
 package com.hedvig.app.feature.embark
 
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
-import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.hanalytics.HAnalytics
 
 class MockEmbarkViewModel(
