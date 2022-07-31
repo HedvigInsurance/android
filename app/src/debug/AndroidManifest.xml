@@ -74,7 +74,7 @@
         <activity android:name=".feature.changeaddress.ChangeAddressMockActivity" />
 
         <activity
-            android:name=".feature.tracking.TrackingLogActivity"
+            android:name="com.hedvig.android.hanalytics.engineering.tracking.TrackingLogActivity"
             android:launchMode="singleTop" />
 
         <activity
@@ -113,7 +113,7 @@
                 android:value="androidx.startup" />
         </provider>
 
-        <service android:name=".feature.tracking.TrackingShortcutService" />
+        <service android:name="com.hedvig.android.hanalytics.engineering.tracking.TrackingShortcutService" />
 
     </application>
 
