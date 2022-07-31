@@ -3,11 +3,11 @@ package com.hedvig.app.feature.profile.ui.tab
 import assertk.assertThat
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotInstanceOf
-import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.hanalytics.featureflags.flags.Feature
+import com.hedvig.android.market.MarketManager
 import com.hedvig.app.testdata.feature.profile.PROFILE_DATA
 import com.hedvig.app.util.LocaleManager
-import com.hedvig.app.util.featureflags.FeatureManager
-import com.hedvig.app.util.featureflags.flags.Feature
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest

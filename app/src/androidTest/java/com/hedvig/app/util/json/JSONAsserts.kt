@@ -1,6 +1,6 @@
 package com.hedvig.app.util.json
 
-import com.hedvig.android.core.entries
+import com.hedvig.android.core.common.entries
 import io.mockk.Matcher
 import io.mockk.MockKMatcherScope
 import org.json.JSONException

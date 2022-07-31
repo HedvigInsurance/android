@@ -1,9 +1,9 @@
 package com.hedvig.app.feature.payment
 
+import com.hedvig.android.market.Market
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.PaymentQuery
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
-import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_NEEDS_SETUP
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_NOT_CONNECTED
 import com.hedvig.app.util.ApolloCacheClearRule

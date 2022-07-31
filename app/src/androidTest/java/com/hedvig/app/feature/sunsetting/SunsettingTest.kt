@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.sunsetting
 
-import com.hedvig.android.core.jsonObjectOf
+import com.hedvig.android.core.common.jsonObjectOf
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity

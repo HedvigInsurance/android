@@ -2,12 +2,12 @@ package com.hedvig.app.feature.embark.passages
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.app.feature.embark.passages.externalinsurer.ExternalInsurerViewModel
 import com.hedvig.app.feature.embark.passages.externalinsurer.GetInsuranceProvidersUseCase
 import com.hedvig.app.feature.embark.passages.externalinsurer.InsuranceProvider
 import com.hedvig.app.feature.embark.passages.externalinsurer.InsuranceProvidersResult
 import com.hedvig.app.util.coroutines.MainCoroutineRule
-import com.hedvig.app.util.featureflags.FeatureManager
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.delay

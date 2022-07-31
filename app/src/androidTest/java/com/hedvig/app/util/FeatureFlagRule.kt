@@ -1,8 +1,8 @@
 package com.hedvig.app.util
 
-import com.hedvig.app.featureManagerModule
-import com.hedvig.app.util.featureflags.FeatureManager
-import com.hedvig.app.util.featureflags.flags.Feature
+import com.hedvig.android.hanalytics.di.featureManagerModule
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.hanalytics.PaymentType
 import io.mockk.coEvery
 import io.mockk.mockk
