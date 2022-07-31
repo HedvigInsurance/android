@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.adyen
 
-import com.hedvig.app.feature.settings.Market
+import com.hedvig.android.market.Market
 
 enum class AdyenCurrency {
   NOK,

@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import coil.ImageLoader
 import com.google.android.material.tabs.TabLayoutMediator
+import com.hedvig.android.market.MarketManager
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ContractDetailActivityBinding
@@ -21,7 +22,6 @@ import com.hedvig.app.feature.insurance.ui.bindTo
 import com.hedvig.app.feature.insurance.ui.detail.coverage.CoverageFragment
 import com.hedvig.app.feature.insurance.ui.detail.documents.DocumentsFragment
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoFragment
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.remove

@@ -26,7 +26,7 @@ import com.hedvig.app.util.extensions.showKeyboardWithDelay
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.hedvig.app.util.extensions.viewLifecycleScope
-import com.hedvig.app.util.whenApiVersion
+import com.hedvig.android.core.common.android.whenApiVersion
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn

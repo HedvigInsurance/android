@@ -90,7 +90,7 @@ fun MarketPickedPreview() {
       onClickMarket = {},
       onClickSignUp = {},
       onClickLogIn = {},
-      flagRes = R.drawable.ic_flag_se,
+      flagRes = hedvig.resources.R.drawable.ic_flag_se,
     )
   }
 }

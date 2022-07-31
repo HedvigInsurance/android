@@ -42,9 +42,9 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.LocalWindowInsets
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.market.Language
+import com.hedvig.android.market.Market
 import com.hedvig.app.R
-import com.hedvig.app.feature.settings.Language
-import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.ui.compose.theme.separator
 import kotlinx.coroutines.launch
 

@@ -6,10 +6,6 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.os.Build
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.PreferenceDataStoreFactory
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStoreFile
 import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
@@ -22,9 +18,15 @@ import com.apollographql.apollo3.interceptor.ApolloInterceptor
 import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.google.firebase.messaging.FirebaseMessaging
+import com.hedvig.android.core.common.di.isDebugQualifier
+import com.hedvig.android.hanalytics.di.appIdQualifier
+import com.hedvig.android.hanalytics.di.appVersionCodeQualifier
+import com.hedvig.android.hanalytics.di.appVersionNameQualifier
+import com.hedvig.android.hanalytics.di.hAnalyticsUrlQualifier
+import com.hedvig.android.market.Language
+import com.hedvig.android.market.Market
+import com.hedvig.android.market.MarketManager
 import com.hedvig.app.authenticate.AuthenticationTokenService
-import com.hedvig.app.authenticate.DeviceIdDataStore
-import com.hedvig.app.authenticate.DeviceIdStore
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.authenticate.SharedPreferencesAuthenticationTokenService
@@ -99,15 +101,6 @@ import com.hedvig.app.feature.genericauth.otpinput.ReSendOtpCodeUseCase
 import com.hedvig.app.feature.genericauth.otpinput.ReSendOtpCodeUseCaseImpl
 import com.hedvig.app.feature.genericauth.otpinput.SendOtpCodeUseCase
 import com.hedvig.app.feature.genericauth.otpinput.SendOtpCodeUseCaseImpl
-import com.hedvig.app.feature.hanalytics.HAnalyticsExperimentManager
-import com.hedvig.app.feature.hanalytics.HAnalyticsExperimentManagerImpl
-import com.hedvig.app.feature.hanalytics.HAnalyticsImpl
-import com.hedvig.app.feature.hanalytics.HAnalyticsService
-import com.hedvig.app.feature.hanalytics.HAnalyticsServiceImpl
-import com.hedvig.app.feature.hanalytics.HAnalyticsSink
-import com.hedvig.app.feature.hanalytics.NetworkHAnalyticsSink
-import com.hedvig.app.feature.hanalytics.SendHAnalyticsEventUseCase
-import com.hedvig.app.feature.hanalytics.SendHAnalyticsEventUseCaseImpl
 import com.hedvig.app.feature.home.data.GetHomeUseCase
 import com.hedvig.app.feature.home.model.HomeItemsBuilder
 import com.hedvig.app.feature.home.ui.HomeViewModel
@@ -183,13 +176,8 @@ import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeViewModelIm
 import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeViewModel
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModel
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModelImpl
-import com.hedvig.app.feature.settings.Language
-import com.hedvig.app.feature.settings.Market
-import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.feature.settings.MarketManagerImpl
 import com.hedvig.app.feature.settings.SettingsViewModel
 import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignViewModel
-import com.hedvig.app.feature.tracking.ApplicationLifecycleTracker
 import com.hedvig.app.feature.trustly.TrustlyRepository
 import com.hedvig.app.feature.trustly.TrustlyViewModel
 import com.hedvig.app.feature.trustly.TrustlyViewModelImpl
@@ -218,16 +206,6 @@ import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.ReopenSubscriptionException
 import com.hedvig.app.util.apollo.SunsettingInterceptor
-import com.hedvig.app.util.featureflags.ClearHAnalyticsExperimentsCacheUseCase
-import com.hedvig.app.util.featureflags.FeatureManager
-import com.hedvig.app.util.featureflags.FeatureManagerImpl
-import com.hedvig.app.util.featureflags.flags.DevFeatureFlagProvider
-import com.hedvig.app.util.featureflags.flags.HAnalyticsFeatureFlagProvider
-import com.hedvig.app.util.featureflags.loginmethod.DevLoginMethodProvider
-import com.hedvig.app.util.featureflags.loginmethod.HAnalyticsLoginMethodProvider
-import com.hedvig.app.util.featureflags.paymenttype.DevPaymentTypeProvider
-import com.hedvig.app.util.featureflags.paymenttype.HAnalyticsPaymentTypeProvider
-import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -550,6 +528,14 @@ val changeDateBottomSheetModule = module {
   viewModel { (data: ChangeDateBottomSheetData) -> ChangeDateBottomSheetViewModel(get(), data, get()) }
 }
 
+val stringConstantsModule = module {
+  single<String>(hAnalyticsUrlQualifier) { get<Context>().getString(R.string.HANALYTICS_URL) }
+  single<String>(appVersionNameQualifier) { BuildConfig.VERSION_NAME }
+  single<String>(appVersionCodeQualifier) { BuildConfig.VERSION_CODE.toString() }
+  single<String>(appIdQualifier) { BuildConfig.APPLICATION_ID }
+  single<Boolean>(isDebugQualifier) { BuildConfig.DEBUG }
+}
+
 val checkoutModule = module {
   viewModel { (selectedVariantId: String, quoteCartId: QuoteCartId) ->
     CheckoutViewModel(
@@ -627,28 +613,8 @@ val repositoriesModule = module {
   single { PaymentRepository(get(), get()) }
 }
 
-val trackerModule = module {
-  single<HAnalytics> { HAnalyticsImpl(get(), get()) }
-  single<SendHAnalyticsEventUseCase> {
-    // Workaround for https://github.com/InsertKoinIO/koin/issues/1146
-    val allAnalyticsSinks = getAll<HAnalyticsSink>().distinct()
-    SendHAnalyticsEventUseCaseImpl(allAnalyticsSinks)
-  }
-  single<HAnalyticsExperimentManager> { HAnalyticsExperimentManagerImpl(get(), get()) }
-  single<NetworkHAnalyticsSink> { NetworkHAnalyticsSink(get()) } bind HAnalyticsSink::class
-  single<HAnalyticsService> {
-    HAnalyticsServiceImpl(get(), get(), get(), get<Context>().getString(R.string.HANALYTICS_URL))
-  }
-  single<ApplicationLifecycleTracker> { ApplicationLifecycleTracker(get()) }
-  single<ClearHAnalyticsExperimentsCacheUseCase> { ClearHAnalyticsExperimentsCacheUseCase(get()) }
-}
-
 val localeBroadcastManagerModule = module {
   single<LocaleBroadcastManager> { LocaleBroadcastManager(get()) }
-}
-
-val marketManagerModule = module {
-  single<MarketManager> { MarketManagerImpl(get()) }
 }
 
 val notificationModule = module {
@@ -721,26 +687,6 @@ val sharedPreferencesModule = module {
   }
 }
 
-val featureManagerModule = module {
-  single<FeatureManager> {
-    if (BuildConfig.DEBUG) {
-      FeatureManagerImpl(
-        DevFeatureFlagProvider(get()),
-        DevLoginMethodProvider(get()),
-        DevPaymentTypeProvider(get()),
-        get(),
-      )
-    } else {
-      FeatureManagerImpl(
-        HAnalyticsFeatureFlagProvider(get()),
-        HAnalyticsLoginMethodProvider(get()),
-        HAnalyticsPaymentTypeProvider(get()),
-        get(),
-      )
-    }
-  }
-}
-
 val coilModule = module {
   single {
     ImageLoader.Builder(get())
@@ -758,20 +704,6 @@ val coilModule = module {
 
 val chatEventModule = module {
   single<ChatEventStore> { ChatEventDataStore(get()) }
-}
-
-val dataStoreModule = module {
-  single<DataStore<Preferences>> {
-    PreferenceDataStoreFactory.create(
-      produceFile = {
-        get<Context>().preferencesDataStoreFile("hedvig_data_store_preferences")
-      },
-    )
-  }
-}
-
-val deviceIdStoreModule = module {
-  single<DeviceIdStore> { DeviceIdDataStore(get()) }
 }
 
 val graphQLQueryModule = module {

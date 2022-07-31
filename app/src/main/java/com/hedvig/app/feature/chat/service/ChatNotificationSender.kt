@@ -14,12 +14,11 @@ import androidx.core.app.TaskStackBuilder
 import androidx.core.content.getSystemService
 import androidx.core.graphics.drawable.IconCompat
 import com.google.firebase.messaging.RemoteMessage
-import com.hedvig.app.R
+import com.hedvig.android.core.common.notification.setupNotificationChannel
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.getMutablePendingIntentFlags
 import com.hedvig.app.service.push.senders.NotificationSender
-import com.hedvig.app.service.push.setupNotificationChannel
 import com.hedvig.app.util.extensions.getStoredBoolean
 
 class ChatNotificationSender(
@@ -124,7 +123,7 @@ class ChatNotificationSender(
         context,
         CHAT_CHANNEL_ID,
       )
-      .setSmallIcon(R.drawable.ic_hedvig_h)
+      .setSmallIcon(hedvig.resources.R.drawable.ic_hedvig_h)
       .setStyle(style)
       .addAction(replyAction)
       .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -170,7 +169,7 @@ class ChatNotificationSender(
     .setName(context.getString(hedvig.resources.R.string.NOTIFICATION_CHAT_TITLE))
     .setImportant(true)
     .setKey(HEDVIG_PERSON_KEY)
-    .setIcon(IconCompat.createWithResource(context, R.drawable.ic_hedvig_h))
+    .setIcon(IconCompat.createWithResource(context, hedvig.resources.R.drawable.ic_hedvig_h))
     .build()
 
   private fun youPerson() = Person.Builder()

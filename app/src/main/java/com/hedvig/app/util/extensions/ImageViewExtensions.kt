@@ -12,8 +12,7 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 fun ImageView.avdSetLooping() {
   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
     (drawable as? AnimatedVectorDrawable)?.registerAnimationCallback(
-      object :
-        Animatable2.AnimationCallback() {
+      object : Animatable2.AnimationCallback() {
         override fun onAnimationEnd(drawable: Drawable?) {
           this@avdSetLooping.post {
             avdStart()
@@ -23,8 +22,7 @@ fun ImageView.avdSetLooping() {
     )
   } else {
     (drawable as? AnimatedVectorDrawableCompat)?.registerAnimationCallback(
-      object :
-        Animatable2Compat.AnimationCallback() {
+      object : Animatable2Compat.AnimationCallback() {
         override fun onAnimationEnd(drawable: Drawable?) {
           this@avdSetLooping.post {
             avdStart()

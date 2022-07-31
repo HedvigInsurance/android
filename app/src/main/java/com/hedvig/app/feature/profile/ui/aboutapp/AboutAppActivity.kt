@@ -36,7 +36,7 @@ class AboutAppActivity : BaseActivity(R.layout.activity_about_app) {
     binding.apply {
       window.compatSetDecorFitsSystemWindows(false)
 
-      setupToolbar(R.id.toolbar, R.drawable.ic_back, true, root) {
+      setupToolbar(R.id.toolbar, hedvig.resources.R.drawable.ic_back, true, root) {
         onBackPressed()
       }
 

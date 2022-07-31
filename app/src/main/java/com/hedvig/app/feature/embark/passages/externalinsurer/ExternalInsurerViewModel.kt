@@ -3,9 +3,8 @@ package com.hedvig.app.feature.embark.passages.externalinsurer
 import android.content.res.Resources
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.app.R
-import com.hedvig.app.util.featureflags.FeatureManager
-import com.hedvig.app.util.featureflags.flags.Feature
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -10,13 +10,13 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import coil.ImageLoader
+import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
 import com.hedvig.app.databinding.HomeFragmentBinding
 import com.hedvig.app.feature.home.model.HomeModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.feature.payment.connectPayinIntent
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets

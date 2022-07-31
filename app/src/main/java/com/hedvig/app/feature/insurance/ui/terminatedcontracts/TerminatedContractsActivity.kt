@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import coil.ImageLoader
 import com.google.android.material.transition.platform.MaterialSharedAxis
+import com.hedvig.android.market.MarketManager
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -18,7 +19,6 @@ import com.hedvig.app.feature.insurance.data.GetContractsUseCase
 import com.hedvig.app.feature.insurance.ui.InsuranceAdapter
 import com.hedvig.app.feature.insurance.ui.InsuranceModel
 import com.hedvig.app.feature.insurance.ui.detail.toContractCardViewState
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets

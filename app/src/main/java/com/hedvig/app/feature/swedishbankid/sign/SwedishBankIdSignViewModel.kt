@@ -3,12 +3,12 @@ package com.hedvig.app.feature.swedishbankid.sign
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.offer.model.Checkout
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCase
 import com.hedvig.app.feature.offer.usecase.ObserveQuoteCartCheckoutUseCase
-import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.hanalytics.PaymentType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

@@ -11,7 +11,7 @@ import com.apollographql.apollo3.api.Query
 import com.apollographql.apollo3.api.Subscription
 import com.apollographql.apollo3.cache.normalized.watch
 import com.apollographql.apollo3.exception.ApolloException
-import com.hedvig.app.util.coroutines.await
+import com.hedvig.android.core.common.await
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

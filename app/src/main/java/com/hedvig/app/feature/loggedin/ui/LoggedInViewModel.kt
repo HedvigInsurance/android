@@ -4,11 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
-import com.hedvig.app.util.featureflags.FeatureManager
-import com.hedvig.app.util.featureflags.flags.Feature
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.BufferOverflow

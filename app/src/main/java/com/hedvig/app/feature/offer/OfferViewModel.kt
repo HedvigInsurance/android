@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import arrow.core.continuations.either
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.authenticate.LoginStatusService
@@ -31,7 +32,6 @@ import com.hedvig.app.feature.offer.usecase.OfferState
 import com.hedvig.app.feature.offer.usecase.StartCheckoutUseCase
 import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.util.ErrorMessage
-import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.hanalytics.PaymentType
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow

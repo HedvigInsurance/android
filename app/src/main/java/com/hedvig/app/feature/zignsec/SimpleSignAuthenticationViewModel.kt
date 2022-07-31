@@ -5,15 +5,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.market.Market
 import com.hedvig.app.authenticate.LoginStatusService
-import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.zignsec.usecase.AuthResult
 import com.hedvig.app.feature.zignsec.usecase.SimpleSignStartAuthResult
 import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthResultUseCase
 import com.hedvig.app.util.LiveEvent
-import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.onEach

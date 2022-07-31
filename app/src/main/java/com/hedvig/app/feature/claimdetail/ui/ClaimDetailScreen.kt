@@ -17,7 +17,7 @@ import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailResult
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailUiState
 import com.hedvig.app.ui.compose.composables.CenteredProgressIndicator
-import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithBack
+import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.app.util.compose.preview.previewData
 import java.util.Locale
 
@@ -38,7 +38,6 @@ fun ClaimDetailScreen(
       )
     },
   ) { paddingValues ->
-    val viewState: ClaimDetailViewState = ClaimDetailViewState.Error
     when (viewState) {
       is ClaimDetailViewState.Content -> ClaimDetailScreen(
         uiState = viewState.uiState,

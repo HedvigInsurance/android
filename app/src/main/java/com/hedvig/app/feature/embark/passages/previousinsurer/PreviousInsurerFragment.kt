@@ -13,7 +13,7 @@ import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
-import com.hedvig.app.util.whenApiVersion
+import com.hedvig.android.core.common.android.whenApiVersion
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import d
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel

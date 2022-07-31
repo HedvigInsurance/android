@@ -1,9 +1,9 @@
 package com.hedvig.app.util.apollo
 
 import android.content.Context
+import com.hedvig.android.market.Market
 import com.hedvig.android.owldroid.graphql.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.graphql.type.Locale
-import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.getLocale
 import org.javamoney.moneta.Money
 import java.math.BigDecimal

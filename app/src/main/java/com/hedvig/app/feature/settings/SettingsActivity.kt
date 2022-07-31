@@ -12,6 +12,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import com.hedvig.android.core.common.preferences.PreferenceKey
+import com.hedvig.android.market.Language
+import com.hedvig.android.market.Market
+import com.hedvig.android.market.MarketManager
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.UserViewModel
@@ -109,7 +113,7 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
         }
       }
 
-      val languagePreference = findPreference<ListPreference>(SETTING_LANGUAGE)
+      val languagePreference = findPreference<ListPreference>(PreferenceKey.SETTING_LANGUAGE)
       languagePreference?.let { lp ->
         when (market) {
           Market.SE -> {
@@ -167,10 +171,9 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
 
   companion object {
     const val SYSTEM_DEFAULT = "system_default"
-    const val SETTING_THEME = "theme"
-    const val SETTING_LANGUAGE = "language"
-    const val SETTING_NOTIFICATIONS = "notifications"
-    const val SETTINGS_MARKET = "market"
+    private const val SETTING_THEME = "theme"
+    private const val SETTING_NOTIFICATIONS = "notifications"
+    private const val SETTINGS_MARKET = "market"
     fun newInstance(context: Context) = Intent(context, SettingsActivity::class.java)
   }
 }

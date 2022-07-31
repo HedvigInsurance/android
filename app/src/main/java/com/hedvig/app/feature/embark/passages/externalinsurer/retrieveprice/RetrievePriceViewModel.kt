@@ -2,8 +2,8 @@ package com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.app.feature.settings.Market
-import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.android.market.Market
+import com.hedvig.android.market.MarketManager
 import com.hedvig.app.util.validateNationalIdentityNumber
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics

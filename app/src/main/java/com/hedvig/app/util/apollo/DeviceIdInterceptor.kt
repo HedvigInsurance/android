@@ -1,6 +1,6 @@
 package com.hedvig.app.util.apollo
 
-import com.hedvig.app.authenticate.DeviceIdStore
+import com.hedvig.android.core.datastore.DeviceIdDataStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -11,15 +11,15 @@ import okhttp3.Response
 private const val HEADER_NAME = "hedvig-device-id"
 
 class DeviceIdInterceptor(
-  private val deviceIdStore: DeviceIdStore,
+  private val deviceIdDataStore: DeviceIdDataStore,
 ) : Interceptor {
 
   private var deviceId: String? = null
 
   init {
     CoroutineScope(Dispatchers.IO).launch {
-      deviceIdStore.observeDeviceId().collect {
-        deviceId = it
+      deviceIdDataStore.observeDeviceId().collect { id ->
+        deviceId = id
       }
     }
   }

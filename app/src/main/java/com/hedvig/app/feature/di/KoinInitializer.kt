@@ -2,6 +2,13 @@ package com.hedvig.app.feature.di
 
 import android.content.Context
 import androidx.startup.Initializer
+import com.hedvig.android.core.datastore.di.dataStoreModule
+import com.hedvig.android.core.datastore.di.deviceIdDataStoreModule
+import com.hedvig.android.hanalytics.di.featureManagerModule
+import com.hedvig.android.hanalytics.di.hAnalyticsModule
+import com.hedvig.android.hanalytics.di.trackerModule
+import com.hedvig.android.hanalytics.engineering.di.hAnalyticsEngineeringModule
+import com.hedvig.android.market.di.marketManagerModule
 import com.hedvig.app.adyenModule
 import com.hedvig.app.apolloClientModule
 import com.hedvig.app.applicationModule
@@ -13,11 +20,8 @@ import com.hedvig.app.checkoutModule
 import com.hedvig.app.clockModule
 import com.hedvig.app.coilModule
 import com.hedvig.app.connectPaymentModule
-import com.hedvig.app.dataStoreModule
-import com.hedvig.app.deviceIdStoreModule
 import com.hedvig.app.embarkModule
 import com.hedvig.app.externalInsuranceModule
-import com.hedvig.app.featureManagerModule
 import com.hedvig.app.graphQLQueryModule
 import com.hedvig.app.homeModule
 import com.hedvig.app.insuranceModule
@@ -26,7 +30,6 @@ import com.hedvig.app.keyGearModule
 import com.hedvig.app.localeBroadcastManagerModule
 import com.hedvig.app.localeManagerModule
 import com.hedvig.app.loggedInModule
-import com.hedvig.app.marketManagerModule
 import com.hedvig.app.notificationModule
 import com.hedvig.app.numberActionSetModule
 import com.hedvig.app.offerModule
@@ -39,8 +42,8 @@ import com.hedvig.app.repositoriesModule
 import com.hedvig.app.retrievePriceModule
 import com.hedvig.app.serviceModule
 import com.hedvig.app.sharedPreferencesModule
+import com.hedvig.app.stringConstantsModule
 import com.hedvig.app.textActionSetModule
-import com.hedvig.app.trackerModule
 import com.hedvig.app.trustlyModule
 import com.hedvig.app.useCaseModule
 import com.hedvig.app.valueStoreModule
@@ -58,50 +61,53 @@ class KoinInitializer : Initializer<KoinApplication> {
     androidContext(context.applicationContext)
     modules(
       listOf(
-        applicationModule,
-        apolloClientModule,
-        viewModelModule,
-        loggedInModule,
-        insuranceModule,
-        offerModule,
-        profileModule,
-        paymentModule,
-        keyGearModule,
         adyenModule,
-        referralsModule,
-        homeModule,
-        serviceModule,
-        repositoriesModule,
-        localeBroadcastManagerModule,
-        trackerModule,
-        embarkModule,
-        whatsNewModule,
-        marketManagerModule,
-        connectPaymentModule,
-        trustlyModule,
-        notificationModule,
-        textActionSetModule,
-        numberActionSetModule,
-        clockModule,
-        localeManagerModule,
+        apolloClientModule,
+        applicationModule,
+        cacheManagerModule,
         changeAddressModule,
         changeDateBottomSheetModule,
+        chatEventModule,
+        checkoutModule,
+        clockModule,
+        coilModule,
+        connectPaymentModule,
+        dataStoreModule,
+        deviceIdDataStoreModule,
+        embarkModule,
+        externalInsuranceModule,
+        featureManagerModule,
+        graphQLQueryModule,
+        hAnalyticsEngineeringModule,
+        hAnalyticsModule,
+        homeModule,
+        insuranceModule,
+        insurelyAuthModule,
+        keyGearModule,
+        localeBroadcastManagerModule,
+        localeManagerModule,
+        loggedInModule,
+        marketManagerModule,
+        notificationModule,
+        numberActionSetModule,
+        offerModule,
+        onboardingModule,
+        paymentModule,
+        profileModule,
+        pushTokenManagerModule,
+        referralsModule,
+        repositoriesModule,
+        retrievePriceModule,
+        serviceModule,
+        sharedPreferencesModule,
+        stringConstantsModule,
+        textActionSetModule,
+        trackerModule,
+        trustlyModule,
         useCaseModule,
         valueStoreModule,
-        onboardingModule,
-        pushTokenManagerModule,
-        checkoutModule,
-        cacheManagerModule,
-        sharedPreferencesModule,
-        coilModule,
-        chatEventModule,
-        dataStoreModule,
-        featureManagerModule,
-        retrievePriceModule,
-        externalInsuranceModule,
-        insurelyAuthModule,
-        deviceIdStoreModule,
-        graphQLQueryModule,
+        viewModelModule,
+        whatsNewModule,
       ),
     )
   }

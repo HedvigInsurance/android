@@ -5,13 +5,13 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
 import coil.ImageLoader
+import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentInsuranceBinding
 import com.hedvig.app.feature.insurance.ui.InsuranceAdapter
 import com.hedvig.app.feature.insurance.ui.InsuranceModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.extensions.viewLifecycle
 import com.hedvig.app.util.extensions.viewLifecycleScope

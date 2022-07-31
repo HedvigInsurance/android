@@ -1,7 +1,7 @@
 package com.hedvig.app.util.apollo
 
 import com.apollographql.apollo3.api.json.BufferedSinkJsonWriter
-import com.hedvig.android.core.jsonObjectOfNotNull
+import com.hedvig.android.core.common.jsonObjectOfNotNull
 import com.hedvig.app.HedvigApplication
 import com.hedvig.app.service.FileService
 import okhttp3.MediaType.Companion.toMediaType

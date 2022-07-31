@@ -54,7 +54,7 @@ fun FullScreenProgressOverlay(show: Boolean) {
         )
 
         Icon(
-          painter = painterResource(id = R.drawable.ic_hedvig_h_progress),
+          painter = painterResource(R.drawable.ic_hedvig_h_progress),
           modifier = Modifier
             .rotate(angle)
             .animateEnterExit(

@@ -13,6 +13,8 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.TransitionManager
 import com.google.android.material.transition.MaterialFadeThrough
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.market.MarketManager
 import com.hedvig.android.owldroid.graphql.type.Locale
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -20,14 +22,12 @@ import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.databinding.ActivityWebOnboardingBinding
 import com.hedvig.app.feature.payment.connectPayinIntent
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.makeUserAgent
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
-import com.hedvig.app.util.featureflags.FeatureManager
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import java.net.URLEncoder

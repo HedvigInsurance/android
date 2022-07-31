@@ -8,9 +8,9 @@ import android.os.Bundle
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.hedvig.android.market.Language
+import com.hedvig.android.market.MarketManager
 import com.hedvig.app.feature.marketpicker.LocaleBroadcastManager
-import com.hedvig.app.feature.settings.Language
-import com.hedvig.app.feature.settings.MarketManager
 import org.koin.android.ext.android.inject
 
 abstract class BaseActivity : AppCompatActivity {

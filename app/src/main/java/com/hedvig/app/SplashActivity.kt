@@ -4,14 +4,16 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import androidx.lifecycle.lifecycleScope
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.hanalytics.featureflags.flags.Feature
+import com.hedvig.android.market.Market
+import com.hedvig.android.market.MarketManager
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.databinding.ActivitySplashBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.marketing.MarketingActivity
 import com.hedvig.app.feature.offer.ui.OfferActivity
-import com.hedvig.app.feature.settings.Market
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
 import com.hedvig.app.service.getDynamicLinkFromFirebase
 import com.hedvig.app.service.startActivity
@@ -19,8 +21,6 @@ import com.hedvig.app.util.extensions.avdDoOnEnd
 import com.hedvig.app.util.extensions.avdStart
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.viewBinding
-import com.hedvig.app.util.featureflags.FeatureManager
-import com.hedvig.app.util.featureflags.flags.Feature
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject

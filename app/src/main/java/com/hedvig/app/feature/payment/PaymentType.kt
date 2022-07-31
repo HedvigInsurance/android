@@ -1,9 +1,9 @@
 package com.hedvig.app.feature.payment
 
 import android.content.Context
+import com.hedvig.android.market.Market
 import com.hedvig.app.feature.adyen.AdyenCurrency
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinActivity
-import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
 import com.hedvig.hanalytics.PaymentType
 

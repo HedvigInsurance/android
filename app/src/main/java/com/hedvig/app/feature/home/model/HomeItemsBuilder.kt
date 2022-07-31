@@ -2,14 +2,14 @@ package com.hedvig.app.feature.home.model
 
 import androidx.compose.ui.unit.dp
 import arrow.core.NonEmptyList
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.type.PayinMethodStatus
 import com.hedvig.app.R
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusCardUiState
-import com.hedvig.app.util.featureflags.FeatureManager
-import com.hedvig.app.util.featureflags.flags.Feature
 
 class HomeItemsBuilder(
   private val featureManager: FeatureManager,

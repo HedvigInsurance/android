@@ -2,10 +2,10 @@ package com.hedvig.app.feature.embark.quotecart
 
 import arrow.core.Either
 import com.apollographql.apollo3.ApolloClient
+import com.hedvig.android.market.MarketManager
 import com.hedvig.android.owldroid.graphql.CreateOnboardingQuoteCartMutation
 import com.hedvig.android.owldroid.graphql.type.Market
 import com.hedvig.app.feature.offer.model.QuoteCartId
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.safeQuery
@@ -29,10 +29,10 @@ class CreateQuoteCartUseCase(
       .map { QuoteCartId(it.onboardingQuoteCart_create.id) }
   }
 
-  private fun com.hedvig.app.feature.settings.Market.toGraphQLMarket(): Market = when (this) {
-    com.hedvig.app.feature.settings.Market.SE -> Market.SWEDEN
-    com.hedvig.app.feature.settings.Market.NO -> Market.NORWAY
-    com.hedvig.app.feature.settings.Market.DK -> Market.DENMARK
-    com.hedvig.app.feature.settings.Market.FR -> Market.UNKNOWN__
+  private fun com.hedvig.android.market.Market.toGraphQLMarket(): Market = when (this) {
+    com.hedvig.android.market.Market.SE -> Market.SWEDEN
+    com.hedvig.android.market.Market.NO -> Market.NORWAY
+    com.hedvig.android.market.Market.DK -> Market.DENMARK
+    com.hedvig.android.market.Market.FR -> Market.UNKNOWN__
   }
 }

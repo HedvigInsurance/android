@@ -1,10 +1,10 @@
 package com.hedvig.app.feature.offer.model
 
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.owldroid.graphql.fragment.QuoteCartFragment
 import com.hedvig.app.common.Mapper
-import com.hedvig.app.util.featureflags.FeatureManager
-import com.hedvig.app.util.featureflags.flags.Feature
 
 class QuoteCartFragmentToOfferModelMapper(
   private val featureManager: FeatureManager,

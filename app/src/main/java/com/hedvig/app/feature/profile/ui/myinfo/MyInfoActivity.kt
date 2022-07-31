@@ -42,7 +42,7 @@ class MyInfoActivity : BaseActivity(R.layout.activity_my_info) {
     binding.apply {
       window.compatSetDecorFitsSystemWindows(false)
       scrollView.applyNavigationBarInsets()
-      setupToolbar(R.id.toolbar, R.drawable.ic_back, true) {
+      setupToolbar(R.id.toolbar, hedvig.resources.R.drawable.ic_back, true) {
         onBackPressed()
       }
       toolbar.title = getString(hedvig.resources.R.string.PROFILE_MY_INFO_TITLE)
