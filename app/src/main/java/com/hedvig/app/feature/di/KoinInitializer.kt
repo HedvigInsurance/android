@@ -7,7 +7,7 @@ import com.hedvig.android.core.datastore.di.deviceIdDataStoreModule
 import com.hedvig.android.hanalytics.di.featureManagerModule
 import com.hedvig.android.hanalytics.di.hAnalyticsModule
 import com.hedvig.android.hanalytics.di.trackerModule
-import com.hedvig.android.hanalytics.engineering.di.hAnalyticsEngineeringModule
+import com.hedvig.android.hanalytics.engineering.di.HAnalyticsEngineeringModuleImpl
 import com.hedvig.android.market.di.marketManagerModule
 import com.hedvig.app.adyenModule
 import com.hedvig.app.apolloClientModule
@@ -78,7 +78,7 @@ class KoinInitializer : Initializer<KoinApplication> {
         externalInsuranceModule,
         featureManagerModule,
         graphQLQueryModule,
-        hAnalyticsEngineeringModule,
+        HAnalyticsEngineeringModuleImpl().getModule(),
         hAnalyticsModule,
         homeModule,
         insuranceModule,

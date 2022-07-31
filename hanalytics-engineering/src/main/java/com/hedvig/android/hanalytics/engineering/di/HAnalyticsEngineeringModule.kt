@@ -9,8 +9,12 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
-@Suppress("RemoveExplicitTypeArguments", "unused") // Used when app is in anything but release mode
-val hAnalyticsEngineeringModule = module {
+class HAnalyticsEngineeringModuleImpl : HAnalyticsEngineeringModule {
+  override fun getModule() = hAnalyticsEngineeringModule
+}
+
+@Suppress("RemoveExplicitTypeArguments")
+private val hAnalyticsEngineeringModule = module {
   viewModel<TrackingLogViewModel> { TrackingLogViewModel(get()) }
   single<EngineeringTrackerSink> { EngineeringTrackerSink() } bind HAnalyticsSink::class
   single<DebugLogTrackerSink> { DebugLogTrackerSink() } bind HAnalyticsSink::class

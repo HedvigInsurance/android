@@ -12,6 +12,7 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.hanalytics)
+  implementation(projects.hanalyticsEngineeringApi)
 
   implementation(libs.androidx.other.activityCompose)
   implementation(libs.androidx.other.appCompat)

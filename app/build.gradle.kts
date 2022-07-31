@@ -143,6 +143,7 @@ dependencies {
 
   testImplementation(projects.hanalyticsTest)
 
+  implementation(projects.hanalyticsEngineeringApi)
   releaseImplementation(projects.hanalyticsEngineeringNoop)
   debugImplementation(projects.hanalyticsEngineering)
   "stagingImplementation"(projects.hanalyticsEngineering)
