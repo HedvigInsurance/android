@@ -142,6 +142,7 @@ dependencies {
   implementation(projects.hedvigMarket)
 
   testImplementation(projects.hanalyticsTest)
+  androidTestImplementation(projects.hanalyticsTest)
 
   implementation(projects.hanalyticsEngineeringApi)
   releaseImplementation(projects.hanalyticsEngineeringNoop)
