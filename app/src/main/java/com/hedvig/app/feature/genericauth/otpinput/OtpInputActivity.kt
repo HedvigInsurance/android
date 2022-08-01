@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.LaunchedEffect
@@ -69,7 +70,7 @@ class OtpInputActivity : BaseActivity() {
           },
           scaffoldState = scaffoldState,
           modifier = Modifier.systemBarsPadding(top = true),
-        ) {
+        ) { paddingValues ->
           val viewState by model.viewState.collectAsState()
 
           OtpInputScreen(
@@ -84,6 +85,7 @@ class OtpInputActivity : BaseActivity() {
             networkErrorMessage = viewState.networkErrorMessage,
             loadingResend = viewState.loadingResend,
             loadingCode = viewState.loadingCode,
+            modifier = Modifier.padding(paddingValues),
           )
         }
       }

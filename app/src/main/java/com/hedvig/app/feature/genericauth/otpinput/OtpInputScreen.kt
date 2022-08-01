@@ -63,11 +63,12 @@ fun OtpInputScreen(
   networkErrorMessage: String?,
   loadingResend: Boolean,
   loadingCode: Boolean,
+  modifier: Modifier = Modifier,
 ) {
   val keyboardController = LocalSoftwareKeyboardController.current
 
   Box(
-    modifier = Modifier
+    modifier = modifier
       .padding(horizontal = 16.dp)
       .fillMaxSize(),
   ) {
