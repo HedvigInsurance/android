@@ -53,7 +53,7 @@ android {
     maybeCreate("staging")
     maybeCreate("pullrequest")
     named("release") {
-//      signingConfig = signingConfigs.getByName("debug") uncomment to run release build locally
+//      signingConfig = signingConfigs.getByName("debug") // uncomment to run release build locally
       applicationIdSuffix = ".app"
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
 
