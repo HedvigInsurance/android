@@ -24,12 +24,4 @@ class FakeFeatureManager(
   override suspend fun getPaymentType(): PaymentType {
     return paymentType?.invoke() ?: error("Set the paymentType returned from FakeFeatureManager")
   }
-
-  companion object {
-    fun withSomePaymentType(): FakeFeatureManager {
-      return FakeFeatureManager(
-        paymentType = { PaymentType.ADYEN },
-      )
-    }
-  }
 }
