@@ -12,6 +12,7 @@ import com.hedvig.app.util.LocaleManager
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
+import kotlin.random.Random.Default.nextBoolean
 
 class ProfileQueryDataToProfileUiStateMapperTest {
   private fun sut(
@@ -27,7 +28,12 @@ class ProfileQueryDataToProfileUiStateMapperTest {
   @Test
   fun `when payment-feature is not activated, should not show payment-data`() = runTest {
     val featureManager = FakeFeatureManager(
-      featureMap = { mapOf(Feature.PAYMENT_SCREEN to false) },
+      featureMap = {
+        mapOf(
+          Feature.PAYMENT_SCREEN to false,
+          Feature.SHOW_CHARITY to nextBoolean(),
+        )
+      },
     )
     val mapper = sut(featureManager = featureManager)
 
@@ -39,7 +45,12 @@ class ProfileQueryDataToProfileUiStateMapperTest {
   @Test
   fun `when payment-feature is activated, should show payment-data`() = runTest {
     val featureManager = FakeFeatureManager(
-      featureMap = { mapOf(Feature.PAYMENT_SCREEN to true) },
+      featureMap = {
+        mapOf(
+          Feature.PAYMENT_SCREEN to true,
+          Feature.SHOW_CHARITY to nextBoolean(),
+        )
+      },
     )
     val mapper = sut(featureManager = featureManager)
 
@@ -51,7 +62,12 @@ class ProfileQueryDataToProfileUiStateMapperTest {
   @Test
   fun `when charity-feature is deactivated, should not show charity-data`() = runTest {
     val featureManager = FakeFeatureManager(
-      featureMap = { mapOf(Feature.SHOW_CHARITY to false) },
+      featureMap = {
+        mapOf(
+          Feature.SHOW_CHARITY to false,
+          Feature.PAYMENT_SCREEN to nextBoolean(),
+        )
+      },
     )
     val mapper = sut(featureManager = featureManager)
 
@@ -62,7 +78,14 @@ class ProfileQueryDataToProfileUiStateMapperTest {
 
   @Test
   fun `when charity-feature is activated, should show charity-data`() = runTest {
-    val featureManager = FakeFeatureManager(featureMap = { mapOf(Feature.SHOW_CHARITY to true) })
+    val featureManager = FakeFeatureManager(
+      featureMap = {
+        mapOf(
+          Feature.SHOW_CHARITY to true,
+          Feature.PAYMENT_SCREEN to nextBoolean(),
+        )
+      },
+    )
     val mapper = sut(featureManager = featureManager)
 
     val result = mapper.map(PROFILE_DATA)

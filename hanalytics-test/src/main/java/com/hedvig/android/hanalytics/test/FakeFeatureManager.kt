@@ -13,8 +13,8 @@ class FakeFeatureManager(
   override suspend fun invalidateExperiments() {}
 
   override suspend fun isFeatureEnabled(feature: Feature): Boolean {
-    return featureMap?.invoke()?.getOrDefault(feature, false)
-      ?: error("Set the featureMap returned from FakeFeatureManager")
+    val featureMap = featureMap?.invoke() ?: error("Set the featureMap returned from FakeFeatureManager")
+    return featureMap[feature] ?: error("Set a return value for feature:$feature on FakeFeatureManager")
   }
 
   override suspend fun getLoginMethod(): LoginMethod {

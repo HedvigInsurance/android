@@ -11,6 +11,7 @@ import com.hedvig.app.util.containsOfType
 import com.hedvig.hanalytics.PaymentType
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
+import kotlin.random.Random.Default.nextBoolean
 
 class HomeItemsBuilderTest {
 
@@ -18,7 +19,12 @@ class HomeItemsBuilderTest {
   fun `when connect payin card-feature is disabled and payin is not connected, should not show connect payin`() =
     runTest {
       val featureManager: FeatureManager = FakeFeatureManager(
-        featureMap = { mapOf(Feature.CONNECT_PAYIN_REMINDER to false) },
+        featureMap = {
+          mapOf(
+            Feature.CONNECT_PAYIN_REMINDER to false,
+            Feature.COMMON_CLAIMS to nextBoolean(),
+          )
+        },
       )
       val builder = HomeItemsBuilder(featureManager)
 
@@ -31,7 +37,12 @@ class HomeItemsBuilderTest {
   fun `when connect payin card-feature is enabled and payin is not connected, should show connect payin`() =
     runTest {
       val featureManager: FeatureManager = FakeFeatureManager(
-        featureMap = { mapOf(Feature.CONNECT_PAYIN_REMINDER to true) },
+        featureMap = {
+          mapOf(
+            Feature.CONNECT_PAYIN_REMINDER to true,
+            Feature.COMMON_CLAIMS to nextBoolean(),
+          )
+        },
         paymentType = { enumValues<PaymentType>().random() },
       )
       val builder = HomeItemsBuilder(featureManager)
