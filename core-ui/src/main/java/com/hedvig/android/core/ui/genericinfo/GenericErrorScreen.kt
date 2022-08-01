@@ -13,7 +13,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.information.AppStateInformationType
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import hedvig.resources.R
 
 @Composable
 fun GenericErrorScreen(

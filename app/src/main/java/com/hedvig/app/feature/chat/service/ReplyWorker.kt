@@ -4,8 +4,8 @@ import android.content.Context
 import android.os.Build
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.hedvig.android.core.common.android.whenApiVersion
 import com.hedvig.app.feature.chat.data.ChatRepository
-import com.hedvig.app.util.whenApiVersion
 import e
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject

@@ -6,15 +6,14 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import com.google.firebase.messaging.RemoteMessage
-import com.hedvig.app.R
+import com.hedvig.android.core.common.notification.setupNotificationChannel
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.market.MarketManager
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.getImmutablePendingIntentFlags
-import com.hedvig.app.service.push.setupNotificationChannel
-import com.hedvig.app.util.featureflags.FeatureManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -71,7 +70,7 @@ class PaymentNotificationSender(
           context,
           PAYMENTS_CHANNEL_ID,
         )
-        .setSmallIcon(R.drawable.ic_hedvig_h)
+        .setSmallIcon(hedvig.resources.R.drawable.ic_hedvig_h)
         .setContentTitle(context.getString(hedvig.resources.R.string.NOTIFICATION_CONNECT_DD_TITLE))
         .setContentText(context.getString(hedvig.resources.R.string.NOTIFICATION_CONNECT_DD_BODY))
         .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -113,7 +112,7 @@ class PaymentNotificationSender(
         context,
         PAYMENTS_CHANNEL_ID,
       )
-      .setSmallIcon(R.drawable.ic_hedvig_h)
+      .setSmallIcon(hedvig.resources.R.drawable.ic_hedvig_h)
       .setContentTitle(context.getString(hedvig.resources.R.string.NOTIFICATION_PAYMENT_FAILED_TITLE))
       .setContentText(context.getString(hedvig.resources.R.string.NOTIFICATION_PAYMENT_FAILED_BODY))
       .setPriority(NotificationCompat.PRIORITY_MAX)

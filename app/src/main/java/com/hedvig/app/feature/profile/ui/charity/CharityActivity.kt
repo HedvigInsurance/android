@@ -40,7 +40,7 @@ class CharityActivity : BaseActivity(R.layout.activity_charity) {
     getViewModel<CharityViewModel>()
     window.compatSetDecorFitsSystemWindows(false)
 
-    setupToolbar(R.id.toolbar, R.drawable.ic_back, true) {
+    setupToolbar(R.id.toolbar, hedvig.resources.R.drawable.ic_back, true) {
       onBackPressed()
     }
 

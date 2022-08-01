@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.embark.variables
 
-import com.hedvig.android.core.createAndAddWithLodashNotation
+import com.hedvig.android.core.common.createAndAddWithLodashNotation
 import com.hedvig.android.owldroid.graphql.fragment.GraphQLVariablesFragment
 import com.hedvig.android.owldroid.graphql.type.EmbarkAPIGraphQLSingleVariableCasting
 import com.hedvig.app.feature.embark.ValueStore

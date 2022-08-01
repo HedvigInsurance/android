@@ -4,10 +4,10 @@ import android.net.Uri
 import androidx.core.view.isVisible
 import coil.ImageLoader
 import coil.load
+import com.hedvig.android.market.MarketManager
 import com.hedvig.android.owldroid.graphql.type.TypeOfContractGradientOption
 import com.hedvig.app.R
 import com.hedvig.app.databinding.InsuranceContractCardBinding
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.compatColor
 
 fun ContractCardViewState.bindTo(
@@ -25,7 +25,7 @@ fun ContractCardViewState.bindTo(
       logoUrls?.iconByTheme(root.context)?.let { Uri.parse(it) },
       imageLoader,
     ) {
-      fallback(R.drawable.ic_hedvig_h)
+      fallback(hedvig.resources.R.drawable.ic_hedvig_h)
     }
 
     bindBackgroundColor(gradientOption)

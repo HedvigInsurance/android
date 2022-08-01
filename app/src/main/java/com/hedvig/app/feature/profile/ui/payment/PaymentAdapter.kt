@@ -6,6 +6,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.hedvig.android.market.MarketManager
 import com.hedvig.android.owldroid.graphql.PaymentQuery
 import com.hedvig.android.owldroid.graphql.type.PayinMethodStatus
 import com.hedvig.android.owldroid.graphql.type.PayoutMethodStatus
@@ -23,7 +24,6 @@ import com.hedvig.app.databinding.PayoutDetailsParagraphBinding
 import com.hedvig.app.databinding.TrustlyPayinDetailsBinding
 import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.referrals.ui.redeemcode.RefetchingRedeemCodeBottomSheet
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
@@ -38,13 +38,13 @@ import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
+import com.hedvig.app.util.navigation.getConnectPayoutActivity
 import e
 
 class PaymentAdapter(
   private val marketManager: MarketManager,
   private val fragmentManager: FragmentManager,
-) :
-  ListAdapter<PaymentModel, PaymentAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
+) : ListAdapter<PaymentModel, PaymentAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
   override fun getItemViewType(position: Int) = when (getItem(position)) {
     PaymentModel.Header -> R.layout.payment_header
@@ -496,8 +496,10 @@ class PaymentAdapter(
             is PaymentModel.Link.AdyenAddPayout,
             PaymentModel.Link.AdyenChangePayout,
             -> {
-              marketManager.market?.connectPayout(root.context)
-                ?.let { root.context.startActivity(it) }
+              val payoutActivity = marketManager.market.getConnectPayoutActivity(root.context)
+              if (payoutActivity != null) {
+                root.context.startActivity(payoutActivity)
+              }
             }
             else -> {}
           }
@@ -505,18 +507,16 @@ class PaymentAdapter(
       }
     }
   }
+}
 
-  companion object {
-    private fun isActive(contracts: List<PaymentQuery.Contract>) = contracts.any {
-      it.status.fragments.contractStatusFragment.asActiveStatus != null ||
-        it.status.fragments.contractStatusFragment.asTerminatedInFutureStatus != null ||
-        it.status.fragments.contractStatusFragment.asTerminatedTodayStatus != null
-    }
+private fun isActive(contracts: List<PaymentQuery.Contract>) = contracts.any {
+  it.status.fragments.contractStatusFragment.asActiveStatus != null ||
+    it.status.fragments.contractStatusFragment.asTerminatedInFutureStatus != null ||
+    it.status.fragments.contractStatusFragment.asTerminatedTodayStatus != null
+}
 
-    private fun isPending(contracts: List<PaymentQuery.Contract>) = contracts.all {
-      it.status.fragments.contractStatusFragment.asPendingStatus != null ||
-        it.status.fragments.contractStatusFragment.asActiveInFutureStatus != null ||
-        it.status.fragments.contractStatusFragment.asActiveInFutureAndTerminatedInFutureStatus != null
-    }
-  }
+private fun isPending(contracts: List<PaymentQuery.Contract>) = contracts.all {
+  it.status.fragments.contractStatusFragment.asPendingStatus != null ||
+    it.status.fragments.contractStatusFragment.asActiveInFutureStatus != null ||
+    it.status.fragments.contractStatusFragment.asActiveInFutureAndTerminatedInFutureStatus != null
 }

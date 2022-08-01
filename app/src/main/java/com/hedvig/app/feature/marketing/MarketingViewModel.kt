@@ -3,15 +3,15 @@ package com.hedvig.app.feature.marketing
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.hanalytics.featureflags.flags.Feature
+import com.hedvig.android.market.Language
+import com.hedvig.android.market.Market
 import com.hedvig.app.feature.marketing.data.GetInitialMarketPickerValuesUseCase
 import com.hedvig.app.feature.marketing.data.GetMarketingBackgroundUseCase
 import com.hedvig.app.feature.marketing.data.MarketingBackground
 import com.hedvig.app.feature.marketing.data.SubmitMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.feature.marketing.data.UpdateApplicationLanguageUseCase
-import com.hedvig.app.feature.settings.Language
-import com.hedvig.app.feature.settings.Market
-import com.hedvig.app.util.featureflags.FeatureManager
-import com.hedvig.app.util.featureflags.flags.Feature
 import com.hedvig.hanalytics.HAnalytics
 import com.hedvig.hanalytics.LoginMethod
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,23 +47,22 @@ class MarketingViewModel(
           isLoading = false,
         )
       }
-
+    }
+    viewModelScope.launch {
       getMarketingBackgroundUseCase.invoke().tap { bg ->
         _background.value = Background(data = bg)
       }
     }
   }
 
-  private suspend fun getAvailableMarkets() = listOfNotNull(
-    Market.SE,
-    Market.NO,
-    Market.DK,
+  private suspend fun getAvailableMarkets() = buildList {
+    add(Market.SE)
+    add(Market.NO)
+    add(Market.DK)
     if (featureManager.isFeatureEnabled(Feature.FRANCE_MARKET)) {
-      Market.FR
-    } else {
-      null
-    },
-  )
+      add(Market.FR)
+    }
+  }
 
   fun setMarket(market: Market) {
     updateApplicationLanguageUseCase.invoke(market, market.defaultLanguage())

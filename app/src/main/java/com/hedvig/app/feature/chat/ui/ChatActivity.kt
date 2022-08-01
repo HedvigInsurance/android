@@ -16,6 +16,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -24,7 +25,6 @@ import com.hedvig.app.databinding.ActivityChatBinding
 import com.hedvig.app.feature.chat.ChatInputType
 import com.hedvig.app.feature.chat.ParagraphInput
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
-import com.hedvig.app.feature.hanalytics.HAnalyticsExperimentManager
 import com.hedvig.app.feature.marketing.MarketingActivity
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.extensions.askForPermissions
@@ -57,7 +57,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
 
   private val imageLoader: ImageLoader by inject()
   private val authenticationTokenService: AuthenticationTokenService by inject()
-  private val experimentManager: HAnalyticsExperimentManager by inject()
+  private val featureManager: FeatureManager by inject()
 
   private var keyboardHeight = 0
   private var systemNavHeight = 0
@@ -150,7 +150,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
           onLinkHandleFailure = {
             authenticationTokenService.authenticationToken = null
             lifecycleScope.launch {
-              experimentManager.invalidateExperiments()
+              featureManager.invalidateExperiments()
             }
             startActivity(MarketingActivity.newInstance(this, true))
           },

@@ -1,8 +1,8 @@
 package com.hedvig.app.util
 
-import com.hedvig.app.feature.settings.Market
-import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.marketManagerModule
+import com.hedvig.android.market.Market
+import com.hedvig.android.market.MarketManager
+import com.hedvig.android.market.di.marketManagerModule
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.rules.ExternalResource

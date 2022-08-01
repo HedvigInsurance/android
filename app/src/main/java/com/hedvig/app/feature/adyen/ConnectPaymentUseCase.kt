@@ -5,9 +5,9 @@ import arrow.core.Either
 import arrow.core.flatMap
 import arrow.core.right
 import com.adyen.checkout.redirect.RedirectComponent
+import com.hedvig.android.market.Market
+import com.hedvig.android.market.MarketManager
 import com.hedvig.android.owldroid.graphql.ConnectPaymentMutation
-import com.hedvig.app.feature.settings.Market
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put

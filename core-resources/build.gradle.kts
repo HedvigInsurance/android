@@ -14,3 +14,13 @@ lokalise {
   lokaliseToken.set(lokaliseProperties.getProperty("token"))
   outputDirectory.set(file("src/main/res"))
 }
+
+android {
+  defaultConfig {
+    vectorDrawables.useSupportLibrary = true
+  }
+}
+
+dependencies {
+  implementation(libs.materialComponents)
+}

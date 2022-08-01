@@ -7,8 +7,8 @@ import com.adyen.checkout.core.api.Environment
 import com.adyen.checkout.dropin.DropIn
 import com.adyen.checkout.dropin.DropInConfiguration
 import com.adyen.checkout.googlepay.GooglePayConfiguration
+import com.hedvig.android.market.Market
 import com.hedvig.app.R
-import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.getLocale
 import com.hedvig.app.isDebug
 

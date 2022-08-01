@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.embark.api.graphqlmutation
 
-import com.hedvig.android.core.jsonObjectOf
+import com.hedvig.android.core.common.jsonObjectOf
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import com.hedvig.app.feature.embark.ui.EmbarkActivity

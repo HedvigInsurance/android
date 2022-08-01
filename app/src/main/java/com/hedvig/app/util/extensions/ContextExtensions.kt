@@ -31,11 +31,11 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.hedvig.android.core.common.preferences.PreferenceKey
+import com.hedvig.android.market.Language
 import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.feature.chat.ui.ChatActivity
-import com.hedvig.app.feature.settings.Language
-import com.hedvig.app.feature.settings.SettingsActivity
 import kotlinx.coroutines.delay
 import kotlin.system.exitProcess
 import kotlin.time.Duration
@@ -140,7 +140,7 @@ fun Context.getLastOpen() =
 
 fun Context.getLanguage(): Language? {
   val pref = PreferenceManager.getDefaultSharedPreferences(this)
-  val language = pref.getString(SettingsActivity.SETTING_LANGUAGE, null)
+  val language = pref.getString(PreferenceKey.SETTING_LANGUAGE, null)
   return language?.let { Language.from(it) }
 }
 

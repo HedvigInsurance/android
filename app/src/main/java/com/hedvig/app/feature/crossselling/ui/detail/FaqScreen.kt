@@ -22,10 +22,10 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.component.button.LargeOutlinedButton
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.app.R
 import com.hedvig.app.feature.faq.FAQCard
 import com.hedvig.app.feature.faq.FAQItem
-import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithBack
 
 @Composable
 fun FaqScreen(

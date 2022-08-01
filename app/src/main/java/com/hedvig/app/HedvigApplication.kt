@@ -5,13 +5,14 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.preference.PreferenceManager
 import com.apollographql.apollo3.ApolloClient
+import com.hedvig.android.core.common.preferences.PreferenceKey
+import com.hedvig.android.hanalytics.tracking.ApplicationLifecycleTracker
+import com.hedvig.android.market.Language
+import com.hedvig.android.market.MarketManager
 import com.hedvig.android.owldroid.graphql.NewSessionMutation
 import com.hedvig.app.authenticate.AuthenticationTokenService
-import com.hedvig.app.feature.settings.Language
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.settings.Theme
-import com.hedvig.app.feature.tracking.ApplicationLifecycleTracker
 import com.hedvig.app.feature.whatsnew.WhatsNewRepository
 import com.hedvig.app.util.FirebaseCrashlyticsLogExceptionTree
 import com.hedvig.app.util.apollo.reconnectSubscriptions
@@ -42,14 +43,14 @@ open class HedvigApplication : Application() {
 
     val previousLanguage = PreferenceManager
       .getDefaultSharedPreferences(this)
-      .getString(SettingsActivity.SETTING_LANGUAGE, null)
+      .getString(PreferenceKey.SETTING_LANGUAGE, null)
     if (previousLanguage == SettingsActivity.SYSTEM_DEFAULT) {
       val market = marketManager.market
       val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
       market?.let {
         sharedPreferences.edit()
           .putString(
-            SettingsActivity.SETTING_LANGUAGE,
+            PreferenceKey.SETTING_LANGUAGE,
             Language.getAvailableLanguages(market).first().toString(),
           ).commit()
       }

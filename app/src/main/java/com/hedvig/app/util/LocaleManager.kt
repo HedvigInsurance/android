@@ -1,9 +1,9 @@
 package com.hedvig.app.util
 
 import android.content.Context
+import com.hedvig.android.market.Language
+import com.hedvig.android.market.MarketManager
 import com.hedvig.android.owldroid.graphql.type.Locale
-import com.hedvig.app.feature.settings.Language
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.getLocale
 
 class LocaleManager(

@@ -7,8 +7,8 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import com.hedvig.app.feature.settings.Language
-import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.android.market.Language
+import com.hedvig.android.market.MarketManager
 import com.hedvig.app.service.push.senders.NotificationSender
 import com.hedvig.app.util.extensions.injectAll
 import org.koin.android.ext.android.inject

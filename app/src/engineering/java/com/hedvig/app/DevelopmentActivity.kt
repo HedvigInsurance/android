@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.airbnb.android.showkase.models.Showkase
+import com.hedvig.android.hanalytics.engineering.tracking.TrackingLogActivity
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.databinding.ActivityDevelopmentBinding
 import com.hedvig.app.feature.adyen.AdyenMockActivity
@@ -17,7 +18,6 @@ import com.hedvig.app.feature.loggedin.LoggedInMockActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.referrals.ReferralsMockActivity
 import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
-import com.hedvig.app.feature.tracking.TrackingLogActivity
 import com.hedvig.app.feature.trustly.TrustlyMockActivity
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.viewgallery.ViewGalleryActivity

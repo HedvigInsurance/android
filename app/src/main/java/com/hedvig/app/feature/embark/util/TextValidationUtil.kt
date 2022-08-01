@@ -7,7 +7,7 @@ import android.text.TextWatcher
 import android.text.method.DigitsKeyListener
 import android.view.View.AUTOFILL_HINT_EMAIL_ADDRESS
 import com.google.android.material.textfield.TextInputEditText
-import com.hedvig.app.util.whenApiVersion
+import com.hedvig.android.core.common.android.whenApiVersion
 
 fun TextInputEditText.setInputType(mask: MaskType) {
   if (mask == MaskType.EMAIL) {

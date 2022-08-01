@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.zignsec
 
 import android.os.Parcelable
-import com.hedvig.app.feature.settings.Market
+import com.hedvig.android.market.Market
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

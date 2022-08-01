@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.embark
 
 import com.adyen.checkout.core.model.getStringOrNull
-import com.hedvig.android.core.getWithDotNotation
-import com.hedvig.android.core.toStringArray
+import com.hedvig.android.core.common.getWithDotNotation
+import com.hedvig.android.core.common.toStringArray
 import com.hedvig.android.owldroid.graphql.fragment.ApiFragment
 import com.hedvig.app.util.apollo.FileVariable
 import com.hedvig.app.util.apollo.GraphQLQueryHandler

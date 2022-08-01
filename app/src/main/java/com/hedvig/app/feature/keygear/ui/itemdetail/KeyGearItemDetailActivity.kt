@@ -97,7 +97,7 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
       toolbar.applyStatusBarInsets()
       setSupportActionBar(toolbar)
       supportActionBar?.setDisplayShowTitleEnabled(false)
-      val backDrawable = compatDrawable(R.drawable.ic_back)
+      val backDrawable = compatDrawable(hedvig.resources.R.drawable.ic_back)
       backDrawable?.setTint(compatColor(R.color.white))
       toolbar.navigationIcon = backDrawable
       toolbar.setNavigationOnClickListener {

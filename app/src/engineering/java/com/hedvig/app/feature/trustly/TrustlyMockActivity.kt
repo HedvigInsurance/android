@@ -1,10 +1,10 @@
 package com.hedvig.app.feature.trustly
 
+import com.hedvig.android.market.Market
+import com.hedvig.android.market.MarketManager
+import com.hedvig.android.market.di.marketManagerModule
 import com.hedvig.app.MockActivity
-import com.hedvig.app.feature.settings.Market
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.genericDevelopmentAdapter
-import com.hedvig.app.marketManagerModule
 import com.hedvig.app.mocks.MockMarketManager
 import org.koin.dsl.module
 

@@ -6,14 +6,13 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import com.google.firebase.messaging.RemoteMessage
-import com.hedvig.app.R
+import com.hedvig.android.core.common.notification.setupNotificationChannel
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.DATA_MESSAGE_BODY
 import com.hedvig.app.service.push.DATA_MESSAGE_TITLE
 import com.hedvig.app.service.push.getImmutablePendingIntentFlags
-import com.hedvig.app.service.push.setupNotificationChannel
 
 class ReferralsNotificationSender(
   private val context: Context,
@@ -116,7 +115,7 @@ class ReferralsNotificationSender(
     pendingIntent: PendingIntent?,
   ) = NotificationCompat
     .Builder(context, REFERRAL_CHANNEL_ID)
-    .setSmallIcon(R.drawable.ic_hedvig_h)
+    .setSmallIcon(hedvig.resources.R.drawable.ic_hedvig_h)
     .setContentText(title)
     .setContentText(body)
     .setContentTitle(context.resources.getString(hedvig.resources.R.string.NOTIFICATION_REFERRAL_COMPLETED_TITLE))

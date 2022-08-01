@@ -4,6 +4,10 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFailure
 import assertk.assertions.isInstanceOf
+import com.hedvig.android.core.common.asMap
+import com.hedvig.android.core.common.jsonArrayOf
+import com.hedvig.android.core.common.jsonObjectOf
+import com.hedvig.android.core.common.toJsonObject
 import org.json.JSONObject
 import org.junit.Test
 

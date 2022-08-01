@@ -6,9 +6,9 @@ import androidx.core.os.bundleOf
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import com.google.android.material.transition.MaterialSharedAxis
+import com.hedvig.android.market.Market
 import com.hedvig.app.R
 import com.hedvig.app.databinding.IdentityInputFragmentBinding
-import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationData
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
 import com.hedvig.app.util.extensions.onImeAction

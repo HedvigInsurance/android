@@ -8,8 +8,8 @@ import com.apollographql.apollo3.api.CustomScalarAdapters
 import com.apollographql.apollo3.api.Operation
 import com.apollographql.apollo3.api.json.buildJsonString
 import com.apollographql.apollo3.api.toJson
-import com.hedvig.android.core.jsonObjectOf
-import com.hedvig.android.core.toJsonArray
+import com.hedvig.android.core.common.jsonObjectOf
+import com.hedvig.android.core.common.toJsonArray
 import com.hedvig.app.TestApplication
 import com.hedvig.app.apolloClientModule
 import okhttp3.WebSocket

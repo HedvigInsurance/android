@@ -7,11 +7,11 @@ import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.hedvig.android.market.Market
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.SimpleSignAuthenticationActivityBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.zignsec.ui.ErrorFragment
 import com.hedvig.app.feature.zignsec.ui.IdentityInputFragment
 import com.hedvig.app.feature.zignsec.ui.ZignSecWebViewFragment

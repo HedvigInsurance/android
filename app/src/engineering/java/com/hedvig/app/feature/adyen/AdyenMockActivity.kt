@@ -1,14 +1,14 @@
 package com.hedvig.app.feature.adyen
 
+import com.hedvig.android.market.MarketManager
+import com.hedvig.android.market.di.marketManagerModule
 import com.hedvig.app.MockActivity
 import com.hedvig.app.adyenModule
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinActivity
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModel
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutActivity
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutViewModel
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.genericDevelopmentAdapter
-import com.hedvig.app.marketManagerModule
 import com.hedvig.app.mocks.MockMarketManager
 import com.hedvig.app.util.extensions.makeToast
 import org.koin.androidx.viewmodel.dsl.viewModel

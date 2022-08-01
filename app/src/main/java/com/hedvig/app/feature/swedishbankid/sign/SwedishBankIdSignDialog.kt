@@ -31,10 +31,10 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.payment.connectPayinIntent
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import kotlinx.coroutines.launch

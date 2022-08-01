@@ -1,12 +1,12 @@
 package com.hedvig.app.feature.home.model
 
 import assertk.assertThat
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE
 import com.hedvig.app.testdata.feature.home.HOME_DATA_PAYIN_NEEDS_SETUP
 import com.hedvig.app.util.containsNoneOfType
 import com.hedvig.app.util.containsOfType
-import com.hedvig.app.util.featureflags.FeatureManager
-import com.hedvig.app.util.featureflags.flags.Feature
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest

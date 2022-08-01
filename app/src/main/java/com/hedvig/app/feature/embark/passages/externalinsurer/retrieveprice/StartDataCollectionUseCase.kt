@@ -1,10 +1,10 @@
 package com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice
 
 import com.apollographql.apollo3.ApolloClient
+import com.hedvig.android.market.Market
+import com.hedvig.android.market.MarketManager
 import com.hedvig.android.owldroid.graphql.InitiateDataCollectionNOMutation
 import com.hedvig.android.owldroid.graphql.InitiateDataCollectionSEMutation
-import com.hedvig.app.feature.settings.Market
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
 import java.util.UUID
@@ -26,7 +26,7 @@ class StartDataCollectionUseCase(
       insuranceProvider = insuranceProvider,
     )
 
-    return when (val result = apolloClient.mutate(mutation).safeQuery()) {
+    return when (val result = apolloClient.mutation(mutation).safeQuery()) {
       is QueryResult.Success -> DataCollectionResult.Success(reference)
       is QueryResult.Error -> DataCollectionResult.Error.NetworkError(result.message)
     }

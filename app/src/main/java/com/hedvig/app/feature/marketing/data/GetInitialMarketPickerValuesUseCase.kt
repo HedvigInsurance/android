@@ -3,13 +3,13 @@ package com.hedvig.app.feature.marketing.data
 import android.content.Context
 import arrow.core.identity
 import com.apollographql.apollo3.ApolloClient
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.hanalytics.featureflags.flags.Feature
+import com.hedvig.android.market.Language
+import com.hedvig.android.market.Market
+import com.hedvig.android.market.MarketManager
 import com.hedvig.android.owldroid.graphql.GeoQuery
-import com.hedvig.app.feature.settings.Language
-import com.hedvig.app.feature.settings.Market
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.apollo.safeQuery
-import com.hedvig.app.util.featureflags.FeatureManager
-import com.hedvig.app.util.featureflags.flags.Feature
 
 class GetInitialMarketPickerValuesUseCase(
   private val marketManager: MarketManager,

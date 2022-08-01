@@ -1,16 +1,16 @@
 package com.hedvig.app.feature.home
 
 import android.content.Context
+import com.hedvig.android.market.MarketManager
+import com.hedvig.android.market.di.marketManagerModule
 import com.hedvig.app.MockActivity
 import com.hedvig.app.feature.home.ui.HomeViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.referrals.MockLoggedInViewModel
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.homeModule
 import com.hedvig.app.loggedInModule
-import com.hedvig.app.marketManagerModule
 import com.hedvig.app.mocks.MockMarketManager
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE_IN_FUTURE
