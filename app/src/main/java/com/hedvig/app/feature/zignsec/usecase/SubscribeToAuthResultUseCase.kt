@@ -30,7 +30,7 @@ class SubscribeToAuthResultUseCase(
             when (response) {
               is Either.Left -> return@collect
               is Either.Right -> {
-                when (val status = response.value.authStatus?.status) {
+                when (response.value.authStatus?.status) {
                   is AuthState.SUCCESS -> emit(AuthResult.Success)
                   is AuthState.FAILED -> emit(AuthResult.Failed)
                   // INITIATED/IN_PROGRESS are not necessary to address, they are entirely captured by the WebView-flow

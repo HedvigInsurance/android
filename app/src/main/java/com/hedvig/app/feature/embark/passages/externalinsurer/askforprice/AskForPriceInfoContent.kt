@@ -20,12 +20,13 @@ fun IntroContent(
   selectedInsurance: String,
   onNavigateToRetrievePriceInfo: () -> Unit,
   onSkipRetrievePriceInfo: () -> Unit,
+  modifier: Modifier = Modifier,
 ) {
   val baseMargin = dimensionResource(R.dimen.base_margin)
   val baseMarginDouble = dimensionResource(R.dimen.base_margin_double)
 
   Column(
-    modifier = Modifier
+    modifier = modifier
       .padding(baseMarginDouble)
       .fillMaxSize(),
     verticalArrangement = Arrangement.SpaceBetween,

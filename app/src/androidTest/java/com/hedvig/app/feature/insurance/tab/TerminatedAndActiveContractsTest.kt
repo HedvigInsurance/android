@@ -54,7 +54,7 @@ class TerminatedAndActiveContractsTest : TestCase() {
         }
         childAt<InsuranceScreen.TerminatedContracts>(3) {
           caption {
-            hasPluralText(R.plurals.insurances_tab_terminated_insurance_subtitile, 1, 1)
+            hasPluralText(hedvig.resources.R.plurals.insurances_tab_terminated_insurance_subtitile, 1, 1)
           }
           click()
         }

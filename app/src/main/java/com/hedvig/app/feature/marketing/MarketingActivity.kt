@@ -14,6 +14,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.app.BaseActivity
+import com.hedvig.app.R
 import com.hedvig.app.authenticate.LoginDialog
 import com.hedvig.app.feature.marketing.marketpicked.MarketPickedScreen
 import com.hedvig.app.feature.marketing.pickmarket.PickMarketScreen
@@ -22,7 +23,9 @@ import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationActivity
 import com.hedvig.app.ui.compose.theme.hedvigBlack
 import com.hedvig.app.ui.compose.theme.hedvigOffWhite
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
+import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.hanalytics.LoginMethod
+import e
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class MarketingActivity : BaseActivity() {
@@ -83,9 +86,14 @@ class MarketingActivity : BaseActivity() {
 
   private fun openOnboarding(market: Market) {
     val webPath = Language.fromSettings(this, market).webPath()
-    val url = this.getString(com.hedvig.app.R.string.WEB_BASE_URL) + "/" + webPath + "/new-member"
-    val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-    this.startActivity(browserIntent)
+    val uri = Uri.parse("""${getString(R.string.WEB_BASE_URL)}/$webPath/new-member""")
+    val browserIntent = Intent(Intent.ACTION_VIEW, uri)
+    if (browserIntent.resolveActivity(packageManager) != null) {
+      startActivity(browserIntent)
+    } else {
+      e { "Tried to launch $uri but the phone has nothing to support such an intent." }
+      makeToast(hedvig.resources.R.string.general_unknown_error)
+    }
   }
 
   private fun onClickLogin(

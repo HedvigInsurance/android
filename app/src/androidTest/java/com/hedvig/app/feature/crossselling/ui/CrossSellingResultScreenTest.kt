@@ -205,7 +205,7 @@ private sealed class TextAlternative(@StringRes protected val stringRes: Int) {
   }
 
   object AlreadyActivated : TextAlternative(
-    R.string.purchase_confirmation_new_insurance_today_app_state_description,
+    hedvig.resources.R.string.purchase_confirmation_new_insurance_today_app_state_description,
   ) {
     fun getString(
       context: Context,
@@ -217,7 +217,7 @@ private sealed class TextAlternative(@StringRes protected val stringRes: Int) {
   }
 
   object WillActivate : TextAlternative(
-    R.string.purchase_confirmation_new_insurance_active_in_future_app_state_description,
+    hedvig.resources.R.string.purchase_confirmation_new_insurance_active_in_future_app_state_description,
   ) {
     fun getString(
       context: Context,

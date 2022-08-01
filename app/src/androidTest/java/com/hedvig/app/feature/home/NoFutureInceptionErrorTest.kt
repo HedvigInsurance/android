@@ -52,7 +52,7 @@ class NoFutureInceptionErrorTest : TestCase() {
         childAt<HomeTabScreen.BodyTextItem>(0) {
           text {
             hasText(
-              R.string.home_tab_active_in_future_body,
+              hedvig.resources.R.string.home_tab_active_in_future_body,
               "Test",
             )
           }

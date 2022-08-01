@@ -65,7 +65,12 @@ fun <D : Query.Data> ApolloCall<D>.safeWatch(): Flow<QueryResult<D>> {
 private fun <D : Operation.Data> ApolloResponse<D>.toQueryResult(): QueryResult<D> {
   val data = data
   return when {
-    hasErrors() -> QueryResult.Error.QueryError(errors?.first()?.message)
+    hasErrors() -> {
+      val exception1 = errors?.first()?.extensions?.get("exception")
+      val body = (exception1 as? Map<*, *>)?.get("body")
+      val message = (body as? Map<*, *>)?.get("message") as? String
+      QueryResult.Error.QueryError(message ?: errors?.first()?.message)
+    }
     data != null -> QueryResult.Success(data)
     else -> QueryResult.Error.NoDataError("No data")
   }

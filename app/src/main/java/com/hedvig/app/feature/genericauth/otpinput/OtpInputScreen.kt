@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
+import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
@@ -62,11 +63,12 @@ fun OtpInputScreen(
   networkErrorMessage: String?,
   loadingResend: Boolean,
   loadingCode: Boolean,
+  modifier: Modifier = Modifier,
 ) {
   val keyboardController = LocalSoftwareKeyboardController.current
 
   Box(
-    modifier = Modifier
+    modifier = modifier
       .padding(horizontal = 16.dp)
       .fillMaxSize(),
   ) {
@@ -173,7 +175,8 @@ fun OtpInputScreen(
       onClick = onOpenExternalApp,
       modifier = Modifier
         .align(Alignment.BottomCenter)
-        .padding(bottom = 16.dp),
+        .padding(bottom = 16.dp)
+        .navigationBarsWithImePadding(),
     ) {
       Text(text = stringResource(hedvig.resources.R.string.login_open_email_app_button))
     }

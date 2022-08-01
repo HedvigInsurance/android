@@ -6,8 +6,7 @@ import arrow.core.Either
 import arrow.core.flatMap
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
-import com.apollographql.apollo3.api.DefaultUpload
-import com.apollographql.apollo3.api.content
+import com.apollographql.apollo3.api.toUpload
 import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
@@ -119,25 +118,18 @@ class ChatRepository(
     ) // I hate this but it seems there's no other way
     return withContext(Dispatchers.IO) {
       context.contentResolver.openInputStream(uri)?.into(file)
-      return@withContext uploadFile(file.path, mimeType)
+      return@withContext uploadFile(file, mimeType)
     }
   }
 
   suspend fun uploadFile(uri: Uri): ApolloResponse<UploadFileMutation.Data> =
-    uploadFile(uri.path!!, fileService.getMimeType(uri))
+    uploadFile(File(uri.path!!), fileService.getMimeType(uri))
 
   private suspend fun uploadFile(
-    path: String,
+    file: File,
     mimeType: String,
   ): ApolloResponse<UploadFileMutation.Data> {
-    val uploadFileMutation = UploadFileMutation(
-      file = DefaultUpload.Builder()
-        .contentType(mimeType)
-        .content(File(path))
-        .build(),
-    )
-
-    return apolloClient.mutation(uploadFileMutation).execute()
+    return apolloClient.mutation(UploadFileMutation(file.toUpload(mimeType))).execute()
   }
 
   suspend fun sendFileResponse(

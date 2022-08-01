@@ -2,8 +2,6 @@ package com.hedvig.app.util
 
 import java.util.regex.Pattern
 
-val EMAIL_REGEX: Pattern = Pattern.compile("^.+@.+\\..+\$", Pattern.CASE_INSENSITIVE)
-
 val SWEDISH_PERSONAL_NUMBER_REGEX: Pattern = Pattern.compile("^\\d{6}-\\d{4}\$", Pattern.CASE_INSENSITIVE)
 val DANISH_PERSONAL_NUMBER_REGEX: Pattern = Pattern.compile("^\\d{6}-\\d{4}\$", Pattern.CASE_INSENSITIVE)
 val NORWEGIAN_PERSONAL_NUMBER_REGEX: Pattern = Pattern.compile("^\\d{6}-\\d{5}\$", Pattern.CASE_INSENSITIVE)

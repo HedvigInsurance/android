@@ -61,8 +61,6 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
       .viewState
       .flowWithLifecycle(viewLifecycle)
       .onEach { viewState ->
-        val adapter = binding.insuranceRecycler.adapter as? InsuranceAdapter
-
         with(viewState) {
           binding.swipeToRefresh.isRefreshing = viewState.loading
 
@@ -74,12 +72,16 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
             ?.navigate(requireContext())
             ?.also { insuranceViewModel.crossSellActionOpened() }
 
-          errorMessage?.let {
-            adapter?.submitList(listOf(InsuranceModel.Header, InsuranceModel.Error))
-          }
+          val adapter = binding.insuranceRecycler.adapter as? InsuranceAdapter
 
-          items?.let {
-            adapter?.submitList(it)
+          when {
+            errorMessage != null -> adapter?.submitList(
+              listOf(
+                InsuranceModel.Header,
+                InsuranceModel.Error(errorMessage),
+              ),
+            )
+            items != null -> adapter?.submitList(items)
           }
         }
       }

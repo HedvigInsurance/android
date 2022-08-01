@@ -5,7 +5,7 @@ import com.apollographql.apollo3.cache.normalized.apolloStore
 import d
 import e
 
-class CacheManager(
+class NetworkCacheManager(
   private val apolloClient: ApolloClient,
 ) {
   fun clearCache() {

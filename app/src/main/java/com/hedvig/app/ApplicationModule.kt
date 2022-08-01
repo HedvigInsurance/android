@@ -95,6 +95,7 @@ import com.hedvig.app.feature.embark.ui.MemberIdViewModel
 import com.hedvig.app.feature.embark.ui.MemberIdViewModelImpl
 import com.hedvig.app.feature.embark.ui.TooltipViewModel
 import com.hedvig.app.feature.genericauth.CreateOtpAttemptUseCase
+import com.hedvig.app.feature.genericauth.CreateOtpAttemptUseCaseImpl
 import com.hedvig.app.feature.genericauth.GenericAuthViewModel
 import com.hedvig.app.feature.genericauth.otpinput.OtpInputViewModel
 import com.hedvig.app.feature.genericauth.otpinput.ReSendOtpCodeUseCase
@@ -201,9 +202,9 @@ import com.hedvig.app.service.push.senders.NotificationSender
 import com.hedvig.app.service.push.senders.PaymentNotificationSender
 import com.hedvig.app.service.push.senders.ReferralsNotificationSender
 import com.hedvig.app.util.LocaleManager
-import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
+import com.hedvig.app.util.apollo.NetworkCacheManager
 import com.hedvig.app.util.apollo.ReopenSubscriptionException
 import com.hedvig.app.util.apollo.SunsettingInterceptor
 import kotlinx.coroutines.delay
@@ -352,7 +353,14 @@ val viewModelModule = module {
   viewModel { (quoteCartId: QuoteCartId?) -> RedeemCodeViewModel(quoteCartId, get(), get()) }
   viewModel { UserViewModel(get(), get(), get(), get(), get(), get()) }
   viewModel { WelcomeViewModel(get()) }
-  viewModel { SettingsViewModel(get(), get(), get()) }
+  viewModel {
+    SettingsViewModel(
+      repository = get(),
+      localeBroadcastManager = get(),
+      hAnalytics = get(),
+      cacheManager = get(),
+    )
+  }
   viewModel { DatePickerViewModel() }
   viewModel { params -> SimpleSignAuthenticationViewModel(params.get(), get(), get(), get(), get(), get(), get()) }
   viewModel { (data: MultiActionParams) -> MultiActionViewModel(data) }
@@ -645,7 +653,7 @@ val useCaseModule = module {
   single { GetCrossSellsUseCase(get(), get()) }
   single { StartDataCollectionUseCase(get(), get()) }
   single { GetInsuranceProvidersUseCase(get(), get()) }
-  single { CreateOtpAttemptUseCase(get()) }
+  single<CreateOtpAttemptUseCase> { CreateOtpAttemptUseCaseImpl(get()) }
   single<SendOtpCodeUseCase> { SendOtpCodeUseCaseImpl(get()) }
   single<ReSendOtpCodeUseCase> { ReSendOtpCodeUseCaseImpl(get()) }
   single { GetDataCollectionUseCase(get(), get()) }
@@ -671,7 +679,7 @@ val useCaseModule = module {
 }
 
 val cacheManagerModule = module {
-  single { CacheManager(get()) }
+  single { NetworkCacheManager(get()) }
 }
 
 val pushTokenManagerModule = module {

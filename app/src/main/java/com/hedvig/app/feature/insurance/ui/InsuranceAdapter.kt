@@ -67,7 +67,7 @@ class InsuranceAdapter(
     InsuranceModel.TerminatedContractsHeader -> SUBHEADING
     is InsuranceModel.CrossSellHeader -> NOTIFICATION_SUBHEADING
     is InsuranceModel.TerminatedContracts -> R.layout.insurance_terminated_contracts
-    InsuranceModel.Error -> ERROR
+    is InsuranceModel.Error -> ERROR
   }
 
   override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -183,11 +183,16 @@ class InsuranceAdapter(
         retry: () -> Unit,
         marketManager: MarketManager,
       ) {
+        if (data !is InsuranceModel.Error) {
+          return invalid(data)
+        }
         composeView.setContent {
           HedvigTheme {
             GenericErrorScreen(
+              description = data.message
+                ?: composeView.context.getString(hedvig.resources.R.string.home_tab_error_body),
               onRetryButtonClick = { retry() },
-              Modifier
+              modifier = Modifier
                 .padding(16.dp)
                 .padding(top = (40 - 16).dp),
             )
