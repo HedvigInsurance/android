@@ -68,7 +68,7 @@ enum class Market {
       context.startActivity(browserIntent)
     } else {
       e { "Tried to launch $uri but the phone has nothing to support such an intent." }
-      context.makeToast(hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE)
+      context.makeToast(hedvig.resources.R.string.general_unknown_error)
     }
   }
 
