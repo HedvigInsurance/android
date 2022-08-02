@@ -153,7 +153,7 @@ coreLibraryDesugaring = { module = "com.android.tools:desugar_jdk_libs", version
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
-firebase-bom = "com.google.firebase:firebase-bom:30.2.0"
+firebase-bom = "com.google.firebase:firebase-bom:30.3.1"
 firebase-config = { module = "com.google.firebase:firebase-config" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 firebase-dynamicLinks = { module = "com.google.firebase:firebase-dynamic-links" }
