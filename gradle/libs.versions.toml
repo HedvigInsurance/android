@@ -19,7 +19,7 @@ license = "0.9.0"
 
 # Other versions sorted alphabetically
 accompanistPager = "0.23.1" # Use 18 until https://github.com/google/accompanist/issues/847 is fixed
-accompanist = "0.23.1"
+accompanist = "0.25.0"
 androidx-arch-testing = "2.1.0"
 androidx-compose = "1.1.1"
 androidx-composeThemeAdapter = "1.1.14"
