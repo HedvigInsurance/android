@@ -124,9 +124,9 @@ android {
 
   configurations.all {
     resolutionStrategy.force(
-      "org.hamcrest:hamcrest-core:2.1",
-      "org.hamcrest:hamcrest-library:2.1",
-      "org.hamcrest:hamcrest:2.1",
+      "org.hamcrest:hamcrest-core:2.2",
+      "org.hamcrest:hamcrest-library:2.2",
+      "org.hamcrest:hamcrest:2.2",
     )
   }
 }
