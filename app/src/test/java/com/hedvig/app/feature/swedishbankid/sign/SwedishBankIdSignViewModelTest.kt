@@ -15,6 +15,7 @@ import com.hedvig.app.feature.offer.usecase.FakeCreateAccessTokenUseCase
 import com.hedvig.app.feature.offer.usecase.FakeObserveQuoteCartCheckoutUseCase
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.coroutines.MainCoroutineRule
+import com.hedvig.hanalytics.PaymentType
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
@@ -48,7 +49,7 @@ class SwedishBankIdSignViewModelTest {
         delay(10)
         CreateAccessTokenUseCase.Success.right()
       },
-      FakeFeatureManager(),
+      FakeFeatureManager(paymentType = { enumValues<PaymentType>().random() }),
     )
 
     var viewState: BankIdSignViewState = viewModel.viewState.value
@@ -105,7 +106,7 @@ class SwedishBankIdSignViewModelTest {
         delay(10)
         CreateAccessTokenUseCase.Success.right()
       },
-      FakeFeatureManager(),
+      FakeFeatureManager(paymentType = { enumValues<PaymentType>().random() }),
     )
 
     var viewState: BankIdSignViewState = viewModel.viewState.value
@@ -162,7 +163,7 @@ class SwedishBankIdSignViewModelTest {
         delay(10)
         CreateAccessTokenUseCase.Success.right()
       },
-      FakeFeatureManager(),
+      FakeFeatureManager(paymentType = { enumValues<PaymentType>().random() }),
     )
 
     var viewState: BankIdSignViewState = viewModel.viewState.value

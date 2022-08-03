@@ -2,7 +2,7 @@ package com.hedvig.app.feature.embark.passages
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.hanalytics.test.FakeFeatureManager
 import com.hedvig.app.feature.embark.passages.externalinsurer.ExternalInsurerViewModel
 import com.hedvig.app.feature.embark.passages.externalinsurer.GetInsuranceProvidersUseCase
 import com.hedvig.app.feature.embark.passages.externalinsurer.InsuranceProvider
@@ -30,7 +30,6 @@ class ExternalInsurerViewModelTest {
   val mainCoroutineRule = MainCoroutineRule()
 
   private val getInsuranceProvidersUseCase = mockk<GetInsuranceProvidersUseCase>()
-  private val fakeFeatureManager = mockk<FeatureManager>(relaxed = true)
 
   @Test
   fun testLoadingInsurers() = runTest {
@@ -39,7 +38,7 @@ class ExternalInsurerViewModelTest {
       InsuranceProvidersResult.Success(insuranceProviders)
     }
 
-    val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase, fakeFeatureManager)
+    val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase, FakeFeatureManager())
     assertThat(viewModel.viewState.value.isLoading).isEqualTo(true)
     advanceUntilIdle()
     assertThat(viewModel.viewState.value.isLoading).isEqualTo(false)
@@ -52,7 +51,7 @@ class ExternalInsurerViewModelTest {
       InsuranceProvidersResult.Error.NetworkError
     }
 
-    val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase, fakeFeatureManager)
+    val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase, FakeFeatureManager())
 
     val events = mutableListOf<ExternalInsurerViewModel.Event>()
     val eventCollectingJob = launch {
@@ -75,7 +74,7 @@ class ExternalInsurerViewModelTest {
       InsuranceProvidersResult.Success(insuranceProviders)
     }
 
-    val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase, fakeFeatureManager)
+    val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase, FakeFeatureManager())
 
     val events = mutableListOf<ExternalInsurerViewModel.Event>()
     val eventCollectingJob = launch {
@@ -94,7 +93,7 @@ class ExternalInsurerViewModelTest {
     coEvery {
       getInsuranceProvidersUseCase.getInsuranceProviders()
     } returns InsuranceProvidersResult.Success(insuranceProviders)
-    val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase, fakeFeatureManager)
+    val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase, FakeFeatureManager())
 
     viewModel.selectInsuranceProvider(InsuranceProvider("1", "Test1"))
 
@@ -107,7 +106,7 @@ class ExternalInsurerViewModelTest {
       getInsuranceProvidersUseCase.getInsuranceProviders()
     } returns InsuranceProvidersResult.Success(insuranceProviders)
 
-    val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase, fakeFeatureManager)
+    val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase, FakeFeatureManager())
     advanceUntilIdle()
 
     assertThat(viewModel.viewState.value.isLoading).isEqualTo(false)
@@ -120,7 +119,7 @@ class ExternalInsurerViewModelTest {
       getInsuranceProvidersUseCase.getInsuranceProviders()
     } returns InsuranceProvidersResult.Success(insuranceProviders)
 
-    val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase, fakeFeatureManager)
+    val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase, FakeFeatureManager())
     advanceUntilIdle()
 
     viewModel.selectInsuranceProvider(InsuranceProvider("1", "Test1"))

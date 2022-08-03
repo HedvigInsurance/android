@@ -53,7 +53,7 @@ android {
     maybeCreate("staging")
     maybeCreate("pullrequest")
     named("release") {
-//      signingConfig = signingConfigs.getByName("debug") uncomment to run release build locally
+//      signingConfig = signingConfigs.getByName("debug") // uncomment to run release build locally
       applicationIdSuffix = ".app"
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
 
@@ -142,6 +142,7 @@ dependencies {
   implementation(projects.hedvigMarket)
 
   testImplementation(projects.hanalyticsTest)
+  androidTestImplementation(projects.hanalyticsTest)
 
   implementation(projects.hanalyticsEngineeringApi)
   releaseImplementation(projects.hanalyticsEngineeringNoop)
