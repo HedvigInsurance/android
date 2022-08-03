@@ -12,7 +12,7 @@ import com.hedvig.app.util.LocaleManager
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
-import kotlin.random.Random.Default.nextBoolean
+import kotlin.random.Random
 
 class ProfileQueryDataToProfileUiStateMapperTest {
   private fun sut(
@@ -31,7 +31,7 @@ class ProfileQueryDataToProfileUiStateMapperTest {
       featureMap = {
         mapOf(
           Feature.PAYMENT_SCREEN to false,
-          Feature.SHOW_CHARITY to nextBoolean(),
+          Feature.SHOW_CHARITY to Random.nextBoolean(),
         )
       },
     )
@@ -48,7 +48,7 @@ class ProfileQueryDataToProfileUiStateMapperTest {
       featureMap = {
         mapOf(
           Feature.PAYMENT_SCREEN to true,
-          Feature.SHOW_CHARITY to nextBoolean(),
+          Feature.SHOW_CHARITY to Random.nextBoolean(),
         )
       },
     )
@@ -65,7 +65,7 @@ class ProfileQueryDataToProfileUiStateMapperTest {
       featureMap = {
         mapOf(
           Feature.SHOW_CHARITY to false,
-          Feature.PAYMENT_SCREEN to nextBoolean(),
+          Feature.PAYMENT_SCREEN to Random.nextBoolean(),
         )
       },
     )
@@ -82,7 +82,7 @@ class ProfileQueryDataToProfileUiStateMapperTest {
       featureMap = {
         mapOf(
           Feature.SHOW_CHARITY to true,
-          Feature.PAYMENT_SCREEN to nextBoolean(),
+          Feature.PAYMENT_SCREEN to Random.nextBoolean(),
         )
       },
     )

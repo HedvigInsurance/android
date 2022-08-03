@@ -11,7 +11,7 @@ import com.hedvig.app.util.containsOfType
 import com.hedvig.hanalytics.PaymentType
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
-import kotlin.random.Random.Default.nextBoolean
+import kotlin.random.Random
 
 class HomeItemsBuilderTest {
 
@@ -22,7 +22,7 @@ class HomeItemsBuilderTest {
         featureMap = {
           mapOf(
             Feature.CONNECT_PAYIN_REMINDER to false,
-            Feature.COMMON_CLAIMS to nextBoolean(),
+            Feature.COMMON_CLAIMS to Random.nextBoolean(),
           )
         },
       )
@@ -40,7 +40,7 @@ class HomeItemsBuilderTest {
         featureMap = {
           mapOf(
             Feature.CONNECT_PAYIN_REMINDER to true,
-            Feature.COMMON_CLAIMS to nextBoolean(),
+            Feature.COMMON_CLAIMS to Random.nextBoolean(),
           )
         },
         paymentType = { enumValues<PaymentType>().random() },
