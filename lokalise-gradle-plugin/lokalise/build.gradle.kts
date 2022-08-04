@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-  compileOnly("dev.gradleplugins:gradle-api:7.2")
+  compileOnly("dev.gradleplugins:gradle-api:7.5")
   compileOnly(libs.android.gradlePlugin)
   compileOnly(libs.kotlin.gradlePlugin)
   implementation(libs.okio)
