@@ -14,6 +14,7 @@ import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.getImmutablePendingIntentFlags
+import e
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -51,14 +52,22 @@ class PaymentNotificationSender(
               LoggedInActivity::class.java,
             ),
           )
-          addNextIntentWithParentStack(
-            connectPayinIntent(
-              context,
-              featureManager.getPaymentType(),
-              market,
-              false,
-            ),
-          )
+          try {
+            addNextIntentWithParentStack(
+              connectPayinIntent(
+                context,
+                featureManager.getPaymentType(),
+                market,
+                false,
+              ),
+            )
+          } catch (error: IllegalArgumentException) {
+            e {
+              "Illegal market and payment type, could not create payin intent. " +
+                "Market: $market, PaymentType: ${featureManager.getPaymentType()}"
+            }
+          }
+
           addNextIntentWithParentStack(
             NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT),
           )
