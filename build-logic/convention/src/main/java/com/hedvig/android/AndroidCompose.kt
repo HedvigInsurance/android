@@ -21,7 +21,7 @@ internal fun Project.configureAndroidCompose(
 
     @Suppress("UnstableApiUsage")
     composeOptions {
-      kotlinCompilerExtensionVersion = libs.composeVersion
+      kotlinCompilerExtensionVersion = libs.composeCompilerVersion
     }
   }
 }
