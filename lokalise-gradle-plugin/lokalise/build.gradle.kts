@@ -1,12 +1,9 @@
 plugins {
+  `embedded-kotlin`
   `java-gradle-plugin`
-  kotlin("jvm") version "1.7.10"
 }
 
 dependencies {
-  compileOnly("dev.gradleplugins:gradle-api:7.5")
-  compileOnly(libs.android.gradlePlugin)
-  compileOnly(libs.kotlin.gradlePlugin)
   implementation(libs.okio)
   implementation(libs.okhttp.core)
   implementation(libs.serialization)
