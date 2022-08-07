@@ -1,0 +1,57 @@
+public abstract interface class com/hedvig/android/hanalytics/HAnalyticsSink {
+	public abstract fun identify ()V
+	public abstract fun send (Lcom/hedvig/hanalytics/HAnalyticsEvent;)V
+}
+
+public final class com/hedvig/android/hanalytics/di/HanalyticsModuleKt {
+	public static final fun getAppIdQualifier ()Lorg/koin/core/qualifier/StringQualifier;
+	public static final fun getAppVersionCodeQualifier ()Lorg/koin/core/qualifier/StringQualifier;
+	public static final fun getAppVersionNameQualifier ()Lorg/koin/core/qualifier/StringQualifier;
+	public static final fun getFeatureManagerModule ()Lorg/koin/core/module/Module;
+	public static final fun getHAnalyticsModule ()Lorg/koin/core/module/Module;
+	public static final fun getHAnalyticsUrlQualifier ()Lorg/koin/core/qualifier/StringQualifier;
+	public static final fun getTrackerModule ()Lorg/koin/core/module/Module;
+}
+
+public abstract interface class com/hedvig/android/hanalytics/featureflags/FeatureManager : com/hedvig/android/hanalytics/featureflags/flags/FeatureFlagProvider, com/hedvig/android/hanalytics/featureflags/loginmethod/LoginMethodProvider, com/hedvig/android/hanalytics/featureflags/paymenttype/PaymentTypeProvider {
+	public abstract fun invalidateExperiments (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class com/hedvig/android/hanalytics/featureflags/flags/Feature : java/lang/Enum {
+	public static final field COMMON_CLAIMS Lcom/hedvig/android/hanalytics/featureflags/flags/Feature;
+	public static final field CONNECT_PAYIN_REMINDER Lcom/hedvig/android/hanalytics/featureflags/flags/Feature;
+	public static final field CONNECT_PAYMENT_POST_ONBOARDING Lcom/hedvig/android/hanalytics/featureflags/flags/Feature;
+	public static final field EXTERNAL_DATA_COLLECTION Lcom/hedvig/android/hanalytics/featureflags/flags/Feature;
+	public static final field FRANCE_MARKET Lcom/hedvig/android/hanalytics/featureflags/flags/Feature;
+	public static final field KEY_GEAR Lcom/hedvig/android/hanalytics/featureflags/flags/Feature;
+	public static final field MOVING_FLOW Lcom/hedvig/android/hanalytics/featureflags/flags/Feature;
+	public static final field PAYMENT_SCREEN Lcom/hedvig/android/hanalytics/featureflags/flags/Feature;
+	public static final field QUOTE_CART Lcom/hedvig/android/hanalytics/featureflags/flags/Feature;
+	public static final field REFERRALS Lcom/hedvig/android/hanalytics/featureflags/flags/Feature;
+	public static final field REFERRAL_CAMPAIGN Lcom/hedvig/android/hanalytics/featureflags/flags/Feature;
+	public static final field SHOW_CHARITY Lcom/hedvig/android/hanalytics/featureflags/flags/Feature;
+	public static final field UPDATE_NECESSARY Lcom/hedvig/android/hanalytics/featureflags/flags/Feature;
+	public final fun getExplanation ()Ljava/lang/String;
+	public static fun valueOf (Ljava/lang/String;)Lcom/hedvig/android/hanalytics/featureflags/flags/Feature;
+	public static fun values ()[Lcom/hedvig/android/hanalytics/featureflags/flags/Feature;
+}
+
+public abstract interface class com/hedvig/android/hanalytics/featureflags/flags/FeatureFlagProvider {
+	public abstract fun isFeatureEnabled (Lcom/hedvig/android/hanalytics/featureflags/flags/Feature;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class com/hedvig/android/hanalytics/featureflags/loginmethod/LoginMethodProvider {
+	public abstract fun getLoginMethod (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class com/hedvig/android/hanalytics/featureflags/paymenttype/PaymentTypeProvider {
+	public abstract fun getPaymentType (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class com/hedvig/android/hanalytics/tracking/ApplicationLifecycleTracker : androidx/lifecycle/DefaultLifecycleObserver {
+	public fun <init> (Lcom/hedvig/hanalytics/HAnalytics;)V
+	public fun onCreate (Landroidx/lifecycle/LifecycleOwner;)V
+	public fun onStart (Landroidx/lifecycle/LifecycleOwner;)V
+	public fun onStop (Landroidx/lifecycle/LifecycleOwner;)V
+}
+
