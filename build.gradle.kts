@@ -3,6 +3,7 @@ plugins {
   alias(libs.plugins.buildTimeTracker)
   alias(libs.plugins.cacheFix) apply false
   alias(libs.plugins.doctor)
+  alias(libs.plugins.binaryCompatibilityValidator)
 }
 
 subprojects {
@@ -36,6 +37,18 @@ buildtimetracker {
       options["csv"] = "build/times.csv"
     }
   }
+}
+
+apiValidation {
+  val allProjects = project
+    .subprojects
+    .map(Project::getName)
+  val projectsToRunApiValidationOn = setOf(
+    // Add projects here which we want to be part of API check.
+    projects.hanalytics.name,
+  )
+  val ignoredForApiValidation = allProjects.subtract(projectsToRunApiValidationOn)
+  ignoredProjects.addAll(ignoredForApiValidation)
 }
 
 apply {
