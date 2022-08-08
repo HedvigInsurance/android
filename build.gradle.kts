@@ -1,3 +1,5 @@
+import org.gradle.api.internal.catalog.DelegatingProjectDependency
+
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
   alias(libs.plugins.buildTimeTracker)
@@ -45,8 +47,10 @@ apiValidation {
     .map(Project::getName)
   val projectsToRunApiValidationOn = setOf(
     // Add projects here which we want to be part of API check.
-    projects.hanalytics.name,
+    projects.hanalytics,
   )
+    .map(DelegatingProjectDependency::getName)
+    .toSet()
   val ignoredForApiValidation = allProjects.subtract(projectsToRunApiValidationOn)
   ignoredProjects.addAll(ignoredForApiValidation)
 }
