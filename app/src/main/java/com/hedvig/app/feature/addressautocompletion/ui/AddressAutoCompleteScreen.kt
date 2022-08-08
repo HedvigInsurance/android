@@ -227,6 +227,7 @@ private fun SuggestionsList(
     items(
       items = viewState.results,
       key = { item -> item.id ?: item.address },
+      contentType = { "DanishAddressEntry" },
     ) { address: DanishAddress ->
       val (primaryText, secondaryText) = address.toPresentableTextPair()
       ListItem(
