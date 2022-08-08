@@ -3,7 +3,6 @@ package com.hedvig.app.feature.embark.screens
 import android.view.View
 import com.hedvig.app.R
 import com.hedvig.app.feature.offer.ui.OfferActivity
-import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import io.github.kakaocup.kakao.dialog.KAlertDialog
 import io.github.kakaocup.kakao.edit.KEditText
 import io.github.kakaocup.kakao.intent.KIntent
@@ -28,7 +27,6 @@ class EmbarkScreen : Screen<EmbarkScreen>() {
   val upgradeApp = KButton { withId(R.id.upgradeApp) }
 
   val offerActivityIntent = KIntent { hasComponent(OfferActivity::class.java.name) }
-  val webOfferIntent = KIntent { hasComponent(WebOnboardingActivity::class.java.name) }
 
   class MessageRow(parent: Matcher<View>) : KRecyclerItem<MessageRow>(parent) {
     val text = KTextView { withMatcher(parent) }

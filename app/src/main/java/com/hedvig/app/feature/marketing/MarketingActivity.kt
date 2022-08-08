@@ -2,7 +2,6 @@ package com.hedvig.app.feature.marketing
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.compose.material.CircularProgressIndicator
@@ -11,8 +10,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
+import com.hedvig.android.market.createOnboardingUri
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.LoginDialog
@@ -85,9 +84,10 @@ class MarketingActivity : BaseActivity() {
   }
 
   private fun openOnboarding(market: Market) {
-    val webPath = Language.fromSettings(this, market).webPath()
-    val uri = Uri.parse("""${getString(R.string.WEB_BASE_URL)}/$webPath/new-member""")
+    val baseUrl = getString(R.string.WEB_BASE_URL).substringAfter("//")
+    val uri = market.createOnboardingUri(this, baseUrl)
     val browserIntent = Intent(Intent.ACTION_VIEW, uri)
+
     if (browserIntent.resolveActivity(packageManager) != null) {
       startActivity(browserIntent)
     } else {

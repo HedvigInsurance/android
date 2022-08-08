@@ -215,13 +215,6 @@
             android:theme="@style/Hedvig.Theme.KeyGear"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".feature.webonboarding.WebOnboardingActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name=".feature.referrals.ui.activated.ReferralsActivatedActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
