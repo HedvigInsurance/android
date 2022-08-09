@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.Uri
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
-import com.apollographql.apollo3.api.DefaultUpload
+import com.apollographql.apollo3.api.toUpload
 import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.apollographql.apollo3.cache.normalized.watch
 import com.hedvig.android.owldroid.graphql.AddReceiptToKeyGearItemMutation
@@ -129,10 +129,7 @@ class KeyGearItemsRepository(
           ?: "${UUID.randomUUID()}.${fileService.getFileExtension(photo.toString())}",
       ) // I hate this but it seems there's no other way
       context.contentResolver.openInputStream(photo)?.into(file)
-      DefaultUpload.Builder()
-        .content(file.path)
-        .contentType(mimeType)
-        .build()
+      file.toUpload(mimeType)
     }
 
     return@withContext apolloClient.mutation(UploadFilesMutation(files))
@@ -203,12 +200,8 @@ class KeyGearItemsRepository(
     withContext(Dispatchers.IO) {
       context.contentResolver.openInputStream(uri)?.into(uploadFile)
     }
-    val file = DefaultUpload.Builder()
-      .contentType(mimeType)
-      .content(uploadFile.path)
-      .build()
     val uploadResult = apolloClient
-      .mutation(UploadFileMutation(file))
+      .mutation(UploadFileMutation(uploadFile.toUpload(mimeType)))
       .execute()
 
     val uploadData = uploadResult.data

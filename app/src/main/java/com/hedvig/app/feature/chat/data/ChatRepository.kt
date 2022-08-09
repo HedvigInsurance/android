@@ -6,8 +6,7 @@ import arrow.core.Either
 import arrow.core.flatMap
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
-import com.apollographql.apollo3.api.DefaultUpload
-import com.apollographql.apollo3.api.content
+import com.apollographql.apollo3.api.toUpload
 import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
@@ -130,14 +129,7 @@ class ChatRepository(
     path: String,
     mimeType: String,
   ): ApolloResponse<UploadFileMutation.Data> {
-    val uploadFileMutation = UploadFileMutation(
-      file = DefaultUpload.Builder()
-        .contentType(mimeType)
-        .content(File(path))
-        .build(),
-    )
-
-    return apolloClient.mutation(uploadFileMutation).execute()
+    return apolloClient.mutation(UploadFileMutation(File(path).toUpload(mimeType))).execute()
   }
 
   suspend fun sendFileResponse(
