@@ -1,5 +1,7 @@
 package com.hedvig.android.market
 
+import android.content.Context
+import android.net.Uri
 import androidx.annotation.StringRes
 import com.hedvig.android.owldroid.graphql.fragment.ActivePaymentMethodsFragment
 import com.hedvig.android.owldroid.graphql.type.DirectDebitStatus
@@ -64,4 +66,21 @@ enum class Market {
   companion object {
     const val MARKET_SHARED_PREF = "MARKET_SHARED_PREF"
   }
+}
+
+fun Market.createOnboardingUri(context: Context, baseUrl: String): Uri {
+  val webPath = Language.fromSettings(context, this).webPath()
+  val builder = Uri.Builder()
+    .scheme("https")
+    .authority(baseUrl)
+    .appendPath(webPath)
+    .appendPath("new-member")
+    .appendQueryParameter("utm_source", "android")
+    .appendQueryParameter("utm_medium", "hedvig-app")
+
+  if (this == Market.SE) {
+    builder.appendQueryParameter("utm_campaign", "se")
+  }
+
+  return builder.build()
 }
