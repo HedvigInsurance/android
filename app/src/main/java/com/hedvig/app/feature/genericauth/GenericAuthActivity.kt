@@ -13,31 +13,31 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.feature.genericauth.otpinput.OtpInputActivity
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class GenericAuthActivity : BaseActivity() {
-  val model: GenericAuthViewModel by viewModel()
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
     window.compatSetDecorFitsSystemWindows(false)
 
+    val viewModel: GenericAuthViewModel = getViewModel()
     setContent {
-      val viewState by model.viewState.collectAsState()
+      val viewState by viewModel.viewState.collectAsState()
 
       LaunchedEffect(viewState.otpId) {
         val otpId = viewState.otpId ?: return@LaunchedEffect
-        model.onStartOtpInput()
-        startOtpInputActivity(otpId = otpId, email = viewState.input)
+        viewModel.onStartOtpInput()
+        startOtpInputActivity(otpId = otpId, email = viewState.emailInput)
       }
 
       HedvigTheme {
         EmailInputScreen(
           onUpClick = ::finish,
-          onInputChanged = model::setInput,
-          onSubmitEmail = model::submitEmail,
-          onClear = model::clear,
-          inputValue = viewState.input,
+          onInputChanged = viewModel::setInput,
+          onSubmitEmail = viewModel::submitEmail,
+          onClear = viewModel::clear,
+          inputValue = viewState.emailInput,
           error = viewState.error?.let { errorMessage(it) },
           loading = viewState.loading,
         )
@@ -46,13 +46,13 @@ class GenericAuthActivity : BaseActivity() {
   }
 
   @Composable
-  private fun errorMessage(error: GenericAuthViewModel.ViewState.TextFieldError) = stringResource(
+  private fun errorMessage(error: GenericAuthViewState.TextFieldError) = stringResource(
     when (error) {
-      GenericAuthViewModel.ViewState.TextFieldError.EMPTY ->
+      GenericAuthViewState.TextFieldError.EMPTY ->
         hedvig.resources.R.string.login_text_input_email_error_enter_email
-      GenericAuthViewModel.ViewState.TextFieldError.INVALID_EMAIL ->
+      GenericAuthViewState.TextFieldError.INVALID_EMAIL ->
         hedvig.resources.R.string.login_text_input_email_error_not_valid
-      GenericAuthViewModel.ViewState.TextFieldError.NETWORK_ERROR ->
+      GenericAuthViewState.TextFieldError.NETWORK_ERROR ->
         hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE
     },
   )
