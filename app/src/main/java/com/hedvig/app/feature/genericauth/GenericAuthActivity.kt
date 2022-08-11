@@ -28,7 +28,7 @@ class GenericAuthActivity : BaseActivity() {
       LaunchedEffect(viewState.otpId) {
         val otpId = viewState.otpId ?: return@LaunchedEffect
         viewModel.onStartOtpInput()
-        startOtpInputActivity(otpId = otpId, email = viewState.emailInput)
+        startOtpInputActivity(otpId = otpId, email = viewState.emailInputWithoutWhitespaces.value)
       }
 
       HedvigTheme {

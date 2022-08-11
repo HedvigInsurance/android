@@ -29,7 +29,7 @@ class GenericAuthViewModel(
   }
 
   fun submitEmail() {
-    val emailInput = EmailAddressWithTrimmedWhitespaces(_viewState.value.emailInput)
+    val emailInput = _viewState.value.emailInputWithoutWhitespaces
     if (emailInput.isValid) {
       viewModelScope.launch {
         createStateFromOtpAttempt(emailInput)
@@ -77,6 +77,9 @@ data class GenericAuthViewState(
   val otpId: String? = null,
   val loading: Boolean = false,
 ) {
+  val emailInputWithoutWhitespaces: EmailAddressWithTrimmedWhitespaces
+    get() = EmailAddressWithTrimmedWhitespaces(emailInput)
+
   enum class TextFieldError {
     EMPTY,
     INVALID_EMAIL,
