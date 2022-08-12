@@ -10,8 +10,8 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 @OptIn(ExperimentalComposeUiApi::class)
 fun Modifier.submitOnEnter(action: () -> Unit) = composed {
   val keyboardController = LocalSoftwareKeyboardController.current
-  onKeyEvent {
-    if (it.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_ENTER) {
+  onKeyEvent { keyEvent ->
+    if (keyEvent.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_ENTER) {
       keyboardController?.hide()
       action()
       true

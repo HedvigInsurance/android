@@ -4,6 +4,9 @@ plugins {
 }
 
 dependencies {
+  implementation(projects.coreResources)
+
+  implementation(libs.androidx.other.core)
   implementation(libs.coroutines.core)
   implementation(libs.koin.android)
   implementation(libs.okhttp.core)
