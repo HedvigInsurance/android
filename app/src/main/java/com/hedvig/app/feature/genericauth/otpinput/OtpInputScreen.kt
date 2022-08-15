@@ -1,36 +1,46 @@
+@file:OptIn(ExperimentalComposeUiApi::class, ExperimentalUnitApi::class)
+
 package com.hedvig.app.feature.genericauth.otpinput
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContent
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.DrawerValue
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Scaffold
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
+import androidx.compose.material.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -42,14 +52,14 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
-import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.app.R
 import com.hedvig.app.ui.compose.composables.ErrorDialog
 import com.hedvig.app.ui.compose.composables.FullScreenProgressOverlay
+import kotlinx.coroutines.isActive
 
-@OptIn(ExperimentalUnitApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun OtpInputScreen(
   onInputChanged: (String) -> Unit,
@@ -57,136 +67,190 @@ fun OtpInputScreen(
   onSubmitCode: (String) -> Unit,
   onResendCode: () -> Unit,
   onDismissError: () -> Unit,
+  onBackPressed: () -> Unit,
   inputValue: String,
   credential: String,
   otpErrorMessage: String?,
   networkErrorMessage: String?,
   loadingResend: Boolean,
   loadingCode: Boolean,
+  snackbarHostState: SnackbarHostState,
+  modifier: Modifier = Modifier,
+) {
+  Box(modifier) {
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    Scaffold(
+      scaffoldState = remember { ScaffoldState(drawerState, snackbarHostState) },
+      topBar = {
+        TopAppBarWithBack(
+          onClick = onBackPressed,
+          title = stringResource(hedvig.resources.R.string.login_navigation_bar_center_element_title),
+        )
+      },
+      modifier = modifier
+        .fillMaxSize()
+        .windowInsetsPadding(WindowInsets.safeContent),
+    ) { paddingValues ->
+      OtpInputScreenContents(
+        credential,
+        inputValue,
+        onInputChanged,
+        onSubmitCode,
+        otpErrorMessage,
+        onResendCode,
+        loadingResend,
+        onOpenExternalApp,
+        Modifier.padding(paddingValues),
+      )
+    }
+    if (networkErrorMessage != null) {
+      ErrorDialog(message = networkErrorMessage, onDismiss = onDismissError)
+    }
+    FullScreenProgressOverlay(show = loadingCode)
+  }
+}
+
+@Composable
+private fun OtpInputScreenContents(
+  credential: String,
+  inputValue: String,
+  onInputChanged: (String) -> Unit,
+  onSubmitCode: (String) -> Unit,
+  otpErrorMessage: String?,
+  onResendCode: () -> Unit,
+  loadingResend: Boolean,
+  onOpenExternalApp: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val keyboardController = LocalSoftwareKeyboardController.current
-
-  Box(
-    modifier = modifier
+  Column(
+    modifier
+      .fillMaxSize()
       .padding(horizontal = 16.dp)
-      .fillMaxSize(),
+      .verticalScroll(rememberScrollState()),
   ) {
-    Column(
-      modifier = Modifier
-        .fillMaxSize()
-        .verticalScroll(rememberScrollState()),
-    ) {
-      Spacer(Modifier.height(60.dp))
-      Text(
-        text = stringResource(hedvig.resources.R.string.login_title_check_your_email),
-        style = MaterialTheme.typography.h4,
-      )
-      Spacer(Modifier.height(16.dp))
-      Text(
-        text = stringResource(hedvig.resources.R.string.login_subtitle_verification_code_email, credential),
-        style = MaterialTheme.typography.body1,
-      )
+    Spacer(Modifier.height(60.dp))
+    Text(
+      text = stringResource(hedvig.resources.R.string.login_title_check_your_email),
+      style = MaterialTheme.typography.h4,
+    )
+    Spacer(Modifier.height(16.dp))
+    Text(
+      text = stringResource(hedvig.resources.R.string.login_subtitle_verification_code_email, credential),
+      style = MaterialTheme.typography.body1,
+    )
+    Spacer(Modifier.height(40.dp))
+    SixDigitCodeInputField(inputValue, onInputChanged, keyboardController, onSubmitCode, otpErrorMessage)
+    Spacer(
+      Modifier.height((20 - 6).dp), // 20 from design, 6 to account for TextButton extra space taken
+    )
+    ResendCodeItem(onResendCode, keyboardController, loadingResend, Modifier.align(Alignment.CenterHorizontally))
+    Spacer(Modifier.weight(1f))
+    Spacer(Modifier.height(16.dp))
+    LargeContainedButton(onOpenExternalApp) {
+      Text(stringResource(hedvig.resources.R.string.login_open_email_app_button))
+    }
+    Spacer(Modifier.height(16.dp))
+  }
+}
 
-      Spacer(Modifier.height(40.dp))
-      Box(Modifier.fillMaxSize()) {
-        OutlinedTextField(
-          modifier = Modifier.fillMaxSize(),
-          value = inputValue,
-          onValueChange = {
-            if (it.length <= 6 && it.isDigitsOnly()) {
-              onInputChanged(it)
-            }
+@Composable
+private fun ColumnScope.SixDigitCodeInputField(
+  inputValue: String,
+  onInputChanged: (String) -> Unit,
+  keyboardController: SoftwareKeyboardController?,
+  onSubmitCode: (String) -> Unit,
+  otpErrorMessage: String?,
+) {
+  OutlinedTextField(
+    modifier = Modifier.fillMaxSize(),
+    value = inputValue,
+    onValueChange = { newValue ->
+      if (newValue.length <= 6 && newValue.isDigitsOnly()) {
+        onInputChanged(newValue)
+      }
 
-            if (it.length == 6) {
-              keyboardController?.hide()
-              onSubmitCode(it)
-            }
-          },
-          isError = otpErrorMessage != null,
-          shape = MaterialTheme.shapes.medium,
-          textStyle = LocalTextStyle.current.copy(
-            letterSpacing = TextUnit(20f, TextUnitType.Sp),
-            fontWeight = FontWeight(400),
-            fontSize = TextUnit(28f, TextUnitType.Sp),
-            textAlign = TextAlign.Center,
-          ),
-          keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Number,
-          ),
+      if (newValue.length == 6) {
+        keyboardController?.hide()
+        onSubmitCode(newValue)
+      }
+    },
+    isError = otpErrorMessage != null,
+    shape = MaterialTheme.shapes.medium,
+    textStyle = LocalTextStyle.current.copy(
+      letterSpacing = TextUnit(20f, TextUnitType.Sp),
+      fontWeight = FontWeight(400),
+      fontSize = TextUnit(28f, TextUnitType.Sp),
+      textAlign = TextAlign.Center,
+    ),
+    keyboardOptions = KeyboardOptions(
+      keyboardType = KeyboardType.Number,
+    ),
+  )
+  AnimatedVisibility(otpErrorMessage != null) {
+    Column {
+      Spacer(Modifier.height(8.dp))
+      Text(
+        text = otpErrorMessage ?: "",
+        style = MaterialTheme.typography.caption.copy(color = MaterialTheme.colors.error),
+        modifier = Modifier.fillMaxWidth(),
+        textAlign = TextAlign.Center,
+      )
+    }
+  }
+}
+
+@Composable
+private fun ResendCodeItem(
+  onResendCode: () -> Unit,
+  keyboardController: SoftwareKeyboardController?,
+  loadingResend: Boolean,
+  modifier: Modifier = Modifier,
+) {
+  TextButton(
+    onClick = {
+      onResendCode()
+      keyboardController?.hide()
+    },
+    enabled = !loadingResend,
+    modifier = modifier,
+  ) {
+    RotatingIcon(loadingResend)
+    Spacer(modifier = Modifier.width(8.dp))
+    Text(
+      modifier = Modifier.align(Alignment.CenterVertically),
+      text = stringResource(hedvig.resources.R.string.login_smedium_button_active_resend_code),
+      style = MaterialTheme.typography.caption,
+      textAlign = TextAlign.Center,
+    )
+  }
+}
+
+@Composable
+private fun RotatingIcon(isLoading: Boolean) {
+  val angle = remember { Animatable(0f) }
+  LaunchedEffect(angle, isLoading) {
+    if (isLoading) {
+      while (isActive) {
+        angle.animateTo(
+          360f,
+          spring(stiffness = Spring.StiffnessVeryLow / 2, visibilityThreshold = 0.1f),
         )
+        angle.snapTo(0f)
       }
-
-      Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-      ) {
-        Spacer(Modifier.height(8.dp))
-        AnimatedVisibility(visible = otpErrorMessage != null) {
-          Text(
-            text = otpErrorMessage ?: "",
-            style = MaterialTheme.typography.caption.copy(color = MaterialTheme.colors.error),
-            modifier = Modifier
-              .fillMaxSize()
-              .padding(horizontal = 16.dp),
-            textAlign = TextAlign.Center,
-          )
-        }
-
-        Spacer(Modifier.height(18.dp))
-        Row(
-          modifier = Modifier
-            .clickable(
-              onClick = {
-                onResendCode()
-                keyboardController?.hide()
-              },
-              enabled = !loadingResend,
-            )
-            .padding(8.dp),
-          horizontalArrangement = Arrangement.Center,
-        ) {
-          val infiniteTransition = rememberInfiniteTransition()
-          val angle by infiniteTransition.animateFloat(
-            initialValue = 0F,
-            targetValue = 360F,
-            animationSpec = infiniteRepeatable(
-              animation = tween(2000, easing = LinearEasing),
-            ),
-          )
-
-          Icon(
-            modifier = if (loadingResend) Modifier.rotate(angle) else Modifier,
-            painter = painterResource(id = R.drawable.ic_refresh),
-            contentDescription = stringResource(hedvig.resources.R.string.login_smedium_button_active_resend_code),
-          )
-          Spacer(modifier = Modifier.width(8.dp))
-          Text(
-            modifier = Modifier.align(Alignment.CenterVertically),
-            text = stringResource(hedvig.resources.R.string.login_smedium_button_active_resend_code),
-            style = MaterialTheme.typography.caption,
-            textAlign = TextAlign.Center,
-          )
-        }
-        Spacer(Modifier.height(144.dp))
+    } else {
+      if (angle.value != 0f) {
+        // Finish the rotation if it was already ongoing.
+        angle.animateTo(360f)
       }
-    }
-    LargeContainedButton(
-      onClick = onOpenExternalApp,
-      modifier = Modifier
-        .align(Alignment.BottomCenter)
-        .padding(bottom = 16.dp)
-        .navigationBarsWithImePadding(),
-    ) {
-      Text(text = stringResource(hedvig.resources.R.string.login_open_email_app_button))
+      angle.snapTo(0f)
     }
   }
-
-  if (networkErrorMessage != null) {
-    ErrorDialog(onDismiss = onDismissError, message = networkErrorMessage)
-  }
-
-  FullScreenProgressOverlay(show = loadingCode)
+  Icon(
+    modifier = Modifier.graphicsLayer { rotationZ = angle.value },
+    painter = painterResource(id = R.drawable.ic_refresh),
+    contentDescription = stringResource(hedvig.resources.R.string.login_smedium_button_active_resend_code),
+  )
 }
 
 @Preview(showBackground = true)
@@ -199,12 +263,14 @@ fun OtpInputScreenValidPreview() {
       onSubmitCode = {},
       onResendCode = {},
       onDismissError = {},
+      onBackPressed = {},
       inputValue = "0123456",
       credential = "john@doe.com",
       otpErrorMessage = null,
       networkErrorMessage = null,
       loadingResend = false,
       loadingCode = false,
+      snackbarHostState = SnackbarHostState(),
     )
   }
 }
@@ -219,12 +285,14 @@ fun OtpInputScreenInvalidPreview() {
       onSubmitCode = {},
       onResendCode = {},
       onDismissError = {},
+      onBackPressed = {},
       inputValue = "0123456",
       credential = "john@doe.com",
       otpErrorMessage = "Code has expired",
       networkErrorMessage = null,
       loadingResend = false,
       loadingCode = false,
+      snackbarHostState = SnackbarHostState(),
     )
   }
 }
