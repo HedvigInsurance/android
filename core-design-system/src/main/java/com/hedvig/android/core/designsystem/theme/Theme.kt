@@ -9,9 +9,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
-import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.ProvideWindowInsets
-import com.google.accompanist.insets.WindowInsets
 import com.google.android.material.composethemeadapter.createMdcTheme
 import java.lang.reflect.Method
 
@@ -20,17 +17,6 @@ fun HedvigTheme(
   colorOverrides: ((Colors) -> Colors)? = null,
   content: @Composable () -> Unit,
 ) {
-  if (LocalWindowInsets.current == WindowInsets.Empty) {
-    ProvideWindowInsets {
-      InnerTheme(colorOverrides, content)
-    }
-  } else {
-    InnerTheme(colorOverrides, content)
-  }
-}
-
-@Composable
-private fun InnerTheme(colorOverrides: ((Colors) -> Colors)? = null, content: @Composable () -> Unit) {
   val context = LocalContext.current
   val key = context.theme.key ?: context.theme
   val layoutDirection = LocalLayoutDirection.current
