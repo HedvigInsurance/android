@@ -2,6 +2,8 @@ package com.hedvig.app.feature.genericauth
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNotNull
+import assertk.assertions.isNull
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.feature.genericauth.otpinput.OtpInputViewModel
 import com.hedvig.app.feature.genericauth.otpinput.OtpResult
@@ -156,5 +158,22 @@ class OtpInputViewModelTest {
 
     viewModel.setInput("123")
     assertThat(viewModel.viewState.value.input).isEqualTo("123")
+  }
+
+  @Test
+  fun `updating the input after getting an error should clear the error`() = runTest {
+    otpResult = OtpResult.Error.OtpError.WrongOtp
+    viewModel.setInput("111111")
+    viewModel.submitCode("111111")
+    assertThat(viewModel.viewState.value.loadingCode).isEqualTo(true)
+    assertThat(viewModel.viewState.value.loadingResend).isEqualTo(false)
+    assertThat(viewModel.viewState.value.otpError).isNull()
+
+    advanceUntilIdle()
+    assertThat(viewModel.viewState.value.loadingCode).isEqualTo(false)
+    assertThat(viewModel.viewState.value.otpError).isNotNull()
+
+    viewModel.setInput("1")
+    assertThat(viewModel.viewState.value.otpError).isNull()
   }
 }

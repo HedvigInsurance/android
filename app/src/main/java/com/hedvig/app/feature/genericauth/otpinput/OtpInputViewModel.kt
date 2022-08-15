@@ -39,7 +39,7 @@ class OtpInputViewModel(
 
   fun setInput(value: String) {
     _viewState.update {
-      it.copy(input = value)
+      it.copy(input = value, otpError = null)
     }
   }
 
