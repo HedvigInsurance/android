@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -79,33 +80,39 @@ class MarketingActivity : BaseActivity() {
   ) {
     Box(Modifier.fillMaxSize()) {
       BackgroundImage(marketingBackground)
-      val selectedMarket = state.selectedMarket
-      if (selectedMarket == null) {
-        PickMarketScreen(
-          onSubmit = submitMarketAndLanguage,
-          onSelectMarket = setMarket,
-          onSelectLanguage = setLanguage,
-          selectedMarket = state.market,
-          selectedLanguage = state.language,
-          markets = state.availableMarkets,
-          enabled = state.canSetMarketAndLanguage(),
-        )
-      } else {
-        MarketPickedScreen(
-          onClickMarket = onFlagClick,
-          onClickSignUp = {
-            onClickSignUp()
-            openOnboarding(selectedMarket)
-          },
-          onClickLogIn = {
-            onClickLogIn()
-            onClickLogin(state, selectedMarket)
-          },
-          flagRes = selectedMarket.flag,
-        )
-      }
-      if (state.isLoading) {
-        CircularProgressIndicator(Modifier.align(Alignment.Center))
+      Box(
+        Modifier
+          .fillMaxSize()
+          .safeDrawingPadding(),
+      ) {
+        val selectedMarket = state.selectedMarket
+        if (selectedMarket == null) {
+          PickMarketScreen(
+            onSubmit = submitMarketAndLanguage,
+            onSelectMarket = setMarket,
+            onSelectLanguage = setLanguage,
+            selectedMarket = state.market,
+            selectedLanguage = state.language,
+            markets = state.availableMarkets,
+            enabled = state.canSetMarketAndLanguage(),
+          )
+        } else {
+          MarketPickedScreen(
+            onClickMarket = onFlagClick,
+            onClickSignUp = {
+              onClickSignUp()
+              openOnboarding(selectedMarket)
+            },
+            onClickLogIn = {
+              onClickLogIn()
+              onClickLogin(state, selectedMarket)
+            },
+            flagRes = selectedMarket.flag,
+          )
+        }
+        if (state.isLoading) {
+          CircularProgressIndicator(Modifier.align(Alignment.Center))
+        }
       }
     }
   }
