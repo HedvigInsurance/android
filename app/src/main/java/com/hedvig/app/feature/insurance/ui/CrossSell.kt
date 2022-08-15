@@ -22,7 +22,6 @@ import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -51,7 +50,6 @@ fun CrossSell(
   onCardClick: () -> Unit,
   onCtaClick: (label: String) -> Unit,
 ) {
-  val placeholder by rememberBlurHash(data.backgroundBlurHash, 64, 32)
   Card(
     border = BorderStroke(1.dp, hedvigBlack12percent),
     modifier = Modifier
@@ -69,7 +67,7 @@ fun CrossSell(
         data = data.backgroundUrl,
         builder = {
           transformations(CropTransformation())
-          placeholder(placeholder)
+          placeholder(rememberBlurHash(data.backgroundBlurHash, 64, 32))
           crossfade(true)
         },
       ),

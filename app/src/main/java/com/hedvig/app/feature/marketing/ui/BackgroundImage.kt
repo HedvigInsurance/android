@@ -27,12 +27,12 @@ fun BackgroundImage(background: Background, content: @Composable BoxScope.() -> 
           MarketingBackground.Theme.DARK -> true
         }
       }
-      val placeholder by rememberBlurHash(bg.blurHash, 32, 32)
+      rememberSystemUiController()
       Image(
         painter = rememberImagePainter(
           data = bg.url,
           builder = {
-            placeholder(placeholder)
+            placeholder(rememberBlurHash(marketingBackground.blurHash, 32, 32))
             crossfade(true)
             scale(Scale.FILL)
           },
