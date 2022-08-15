@@ -14,7 +14,11 @@ fun rememberBlurHash(
   height: Int,
   context: Context = LocalContext.current,
 ): BitmapDrawable? = remember(blurHash, width, height, context) {
-  BlurHashDecoder.decode(blurHash, width, height)?.let { decodedBitmap ->
+  blurHash(blurHash, width, height, context)
+}
+
+fun blurHash(blurHash: String, width: Int, height: Int, context: Context): BitmapDrawable? {
+  return BlurHashDecoder.decode(blurHash, width, height)?.let { decodedBitmap ->
     BitmapDrawable(
       context.resources,
       decodedBitmap,
