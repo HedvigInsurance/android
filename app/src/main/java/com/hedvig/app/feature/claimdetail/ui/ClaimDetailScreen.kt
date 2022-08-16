@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -77,9 +76,9 @@ private fun ClaimDetailScreen(
 ) {
   Column(
     modifier = modifier
-      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-      .padding(horizontal = 16.dp)
-      .verticalScroll(rememberScrollState()),
+      .verticalScroll(rememberScrollState())
+      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom))
+      .padding(horizontal = 16.dp),
   ) {
     Spacer(Modifier.height(24.dp))
     ClaimType(
@@ -107,7 +106,6 @@ private fun ClaimDetailScreen(
       )
     }
     Spacer(Modifier.height(16.dp))
-    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }
 
