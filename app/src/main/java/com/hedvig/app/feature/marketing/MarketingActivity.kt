@@ -4,17 +4,23 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.createOnboardingUri
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.LoginDialog
+import com.hedvig.app.feature.marketing.data.MarketingBackground
 import com.hedvig.app.feature.marketing.marketpicked.MarketPickedScreen
 import com.hedvig.app.feature.marketing.pickmarket.PickMarketScreen
 import com.hedvig.app.feature.marketing.ui.BackgroundImage
@@ -36,8 +42,8 @@ class MarketingActivity : BaseActivity() {
     val viewModel = getViewModel<MarketingViewModel>()
     setContent {
       HedvigTheme(
-        colorOverrides = {
-          it.copy(
+        colorOverrides = { colors ->
+          colors.copy(
             primary = hedvigOffWhite,
             onPrimary = hedvigBlack,
             secondary = hedvigOffWhite,
@@ -45,39 +51,67 @@ class MarketingActivity : BaseActivity() {
           )
         },
       ) {
-        val background by viewModel.background.collectAsState()
-        BackgroundImage(background) {
-          val state by viewModel.state.collectAsState()
+        val marketingBackground by viewModel.marketingBackground.collectAsState()
+        val state by viewModel.state.collectAsState()
+        MarketingScreen(
+          marketingBackground,
+          state,
+          viewModel::submitMarketAndLanguage,
+          viewModel::setMarket,
+          viewModel::setLanguage,
+          viewModel::onFlagClick,
+          viewModel::onClickSignUp,
+          viewModel::onClickLogIn,
+        )
+      }
+    }
+  }
 
-          if (state.isLoading) {
-            CircularProgressIndicator(Modifier.align(Alignment.Center))
-          }
-
-          val selectedMarket = state.selectedMarket
-          if (selectedMarket == null) {
-            PickMarketScreen(
-              onSubmit = viewModel::submitMarketAndLanguage,
-              onSelectMarket = viewModel::setMarket,
-              onSelectLanguage = viewModel::setLanguage,
-              selectedMarket = state.market,
-              selectedLanguage = state.language,
-              markets = state.availableMarkets,
-              enabled = state.canSetMarketAndLanguage(),
-            )
-          } else {
-            MarketPickedScreen(
-              onClickMarket = viewModel::onFlagClick,
-              onClickSignUp = {
-                viewModel.onClickSignUp()
-                openOnboarding(selectedMarket)
-              },
-              onClickLogIn = {
-                viewModel.onClickLogIn()
-                onClickLogin(state, selectedMarket)
-              },
-              flagRes = selectedMarket.flag,
-            )
-          }
+  @Composable
+  private fun MarketingScreen(
+    marketingBackground: MarketingBackground?,
+    state: MarketingViewState,
+    submitMarketAndLanguage: () -> Unit,
+    setMarket: (Market) -> Unit,
+    setLanguage: (Language) -> Unit,
+    onFlagClick: () -> Unit,
+    onClickSignUp: () -> Unit,
+    onClickLogIn: () -> Unit,
+  ) {
+    Box(Modifier.fillMaxSize()) {
+      BackgroundImage(marketingBackground)
+      Box(
+        Modifier
+          .fillMaxSize()
+          .safeDrawingPadding(),
+      ) {
+        val selectedMarket = state.selectedMarket
+        if (selectedMarket == null) {
+          PickMarketScreen(
+            onSubmit = submitMarketAndLanguage,
+            onSelectMarket = setMarket,
+            onSelectLanguage = setLanguage,
+            selectedMarket = state.market,
+            selectedLanguage = state.language,
+            markets = state.availableMarkets,
+            enabled = state.canSetMarketAndLanguage(),
+          )
+        } else {
+          MarketPickedScreen(
+            onClickMarket = onFlagClick,
+            onClickSignUp = {
+              onClickSignUp()
+              openOnboarding(selectedMarket)
+            },
+            onClickLogIn = {
+              onClickLogIn()
+              onClickLogin(state, selectedMarket)
+            },
+            flagRes = selectedMarket.flag,
+          )
+        }
+        if (state.isLoading) {
+          CircularProgressIndicator(Modifier.align(Alignment.Center))
         }
       }
     }

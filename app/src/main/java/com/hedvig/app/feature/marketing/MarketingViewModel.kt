@@ -32,8 +32,8 @@ class MarketingViewModel(
   private val _state = MutableStateFlow(MarketingViewState(selectedMarket = market))
   val state = _state.asStateFlow()
 
-  private val _background = MutableStateFlow(Background(data = null))
-  val background = _background.asStateFlow()
+  private val _marketingBackground = MutableStateFlow<MarketingBackground?>(null)
+  val marketingBackground = _marketingBackground.asStateFlow()
 
   init {
     viewModelScope.launch {
@@ -49,8 +49,8 @@ class MarketingViewModel(
       }
     }
     viewModelScope.launch {
-      getMarketingBackgroundUseCase.invoke().tap { bg ->
-        _background.value = Background(data = bg)
+      getMarketingBackgroundUseCase.invoke().tap { marketingBackground ->
+        _marketingBackground.value = marketingBackground
       }
     }
   }
