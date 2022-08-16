@@ -83,6 +83,6 @@ fun RetrievePriceContent(
   }
 
   if (errorMessage != null) {
-    ErrorDialog(onDismiss = onDismissError, message = errorMessage)
+    ErrorDialog(message = errorMessage, onDismiss = onDismissError)
   }
 }

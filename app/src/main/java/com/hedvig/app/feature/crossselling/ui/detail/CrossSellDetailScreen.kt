@@ -95,7 +95,7 @@ fun CrossSellDetailScreen(
   }
 
   if (errorMessage != null) {
-    ErrorDialog(onDismiss = onDismissError, message = errorMessage)
+    ErrorDialog(message = errorMessage, onDismiss = onDismissError)
   }
 }
 
@@ -108,11 +108,6 @@ private fun ScrollableContent(
   modifier: Modifier = Modifier,
   scrollState: ScrollState = rememberScrollState(),
 ) {
-  val placeholder by rememberBlurHash(
-    crossSellData.backgroundBlurHash,
-    64,
-    32,
-  )
   Column(
     modifier = modifier
       .fillMaxSize()
@@ -124,7 +119,7 @@ private fun ScrollableContent(
         builder = {
           scale(Scale.FILL)
           transformations(CropTransformation())
-          placeholder(placeholder)
+          placeholder(rememberBlurHash(crossSellData.backgroundBlurHash, 64, 32))
           crossfade(true)
         },
       ),
