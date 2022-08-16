@@ -296,7 +296,9 @@
             android:name=".feature.genericauth.otpinput.OtpInputActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".feature.claimdetail.ClaimDetailActivity" />
+        <activity
+            android:name=".feature.claimdetail.ClaimDetailActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".feature.tracking.NotificationOpenedTrackingActivity" />
         <activity
             android:name=".feature.marketing.MarketingActivity"
