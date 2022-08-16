@@ -9,7 +9,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.BaseActivity
-import com.hedvig.app.R
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.offer.quotedetail.QuoteDetailActivity
 import com.hedvig.app.feature.perils.PerilItem
@@ -52,7 +51,7 @@ class CrossSellDetailActivity : BaseActivity() {
           onUpClick = { finish() },
           onCoverageClick = { openCoverage(crossSell) },
           onFaqClick = { openFaq(crossSell) },
-          onDismissError = { viewModel.dismissError() },
+          onDismissError = viewModel::dismissError,
           data = crossSell,
           errorMessage = viewState.errorMessage,
         )

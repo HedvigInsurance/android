@@ -5,10 +5,16 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
@@ -20,9 +26,13 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,9 +41,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import coil.size.Scale
 import com.commit451.coiltransformations.CropTransformation
-import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.rememberInsetsPaddingValues
-import com.google.accompanist.insets.systemBarsPadding
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.component.list.SectionTitle
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -54,41 +61,47 @@ fun CrossSellDetailScreen(
   errorMessage: String?,
 ) {
   val scrollState = rememberScrollState()
-  val scrollFromTopInDp = with(LocalDensity.current) {
-    scrollState.value.toDp()
-  }
+  val localDensity = LocalDensity.current
   val imageHeight = 260.dp
-  val topAppBarBackgroundColorAlpha by derivedStateOf {
-    val percentageOfImageScrolledPast = scrollFromTopInDp.coerceAtMost(imageHeight) / imageHeight
-    percentageOfImageScrolledPast
+  val topAppBarBackgroundColorAlpha by remember {
+    derivedStateOf {
+      val scrollFromTopInDp = with(localDensity) { scrollState.value.toDp() }
+      val percentageOfImageScrolledPast = scrollFromTopInDp.coerceAtMost(imageHeight) / imageHeight
+      percentageOfImageScrolledPast
+    }
   }
-  Box(
-    modifier = Modifier.fillMaxSize(),
-  ) {
+  Box(Modifier.fillMaxSize()) {
+    var bottomAnchoredButtonHeight by remember { mutableStateOf(0.dp) }
     ScrollableContent(
       crossSellData = data,
       onCoverageClick = onCoverageClick,
       onFaqClick = onFaqClick,
       imageHeight = imageHeight,
+      bottomAnchoredButtonHeight = bottomAnchoredButtonHeight,
       scrollState = scrollState,
     )
     FadingTopAppBar(
       backgroundAlpha = topAppBarBackgroundColorAlpha,
-      contentPadding = rememberInsetsPaddingValues(
-        insets = LocalWindowInsets.current.statusBars,
-      ),
+      contentPadding = WindowInsets.safeDrawing
+        .only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
+        .asPaddingValues(),
       navigationIcon = {
         IconButton(onClick = onUpClick) {
           Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = null)
         }
       },
     )
+    val bottomAnchoredButtonPadding = 16.dp
     LargeContainedButton(
       onClick = onCtaClick,
       modifier = Modifier
         .align(Alignment.BottomCenter)
-        .systemBarsPadding(bottom = true)
-        .padding(16.dp),
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal))
+        .padding(bottomAnchoredButtonPadding)
+        .onPlaced {
+          val height = with(localDensity) { it.size.height.toDp() }
+          bottomAnchoredButtonHeight = height + (bottomAnchoredButtonPadding * 2)
+        },
     ) {
       Text(text = data.callToAction)
     }
@@ -105,13 +118,16 @@ private fun ScrollableContent(
   onCoverageClick: () -> Unit,
   onFaqClick: () -> Unit,
   imageHeight: Dp,
+  bottomAnchoredButtonHeight: Dp,
   modifier: Modifier = Modifier,
   scrollState: ScrollState = rememberScrollState(),
 ) {
   Column(
     modifier = modifier
       .fillMaxSize()
-      .verticalScroll(scrollState),
+      .verticalScroll(scrollState)
+      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom))
+      .padding(bottom = bottomAnchoredButtonHeight),
   ) {
     Image(
       painter = rememberImagePainter(
@@ -166,10 +182,6 @@ private fun ScrollableContent(
       icon = R.drawable.ic_info_toolbar,
       text = stringResource(hedvig.resources.R.string.cross_sell_info_common_questions_row),
     )
-    val bottomSystemBarInset = with(LocalDensity.current) {
-      LocalWindowInsets.current.systemBars.bottom.toDp()
-    }
-    Spacer(Modifier.height(104.dp + bottomSystemBarInset))
   }
 }
 
