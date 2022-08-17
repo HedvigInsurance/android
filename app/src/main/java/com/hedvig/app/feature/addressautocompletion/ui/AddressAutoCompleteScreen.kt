@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -87,8 +86,8 @@ fun AddressAutoCompleteScreen(
         setNewTextInput = setNewTextInput,
         focusRequester = focusRequester,
         closeKeyboard = closeKeyboard,
-        contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)
-          .union(WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
+        contentPadding = WindowInsets.safeDrawing
+          .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
           .asPaddingValues(),
       )
       SuggestionsList(
@@ -98,8 +97,8 @@ fun AddressAutoCompleteScreen(
           selectAddress(address)
         },
         cantFindAddress = cantFindAddress,
-        contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)
-          .union(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
+        contentPadding = WindowInsets.safeDrawing
+          .only(WindowInsetsSides.Horizontal.plus(WindowInsetsSides.Bottom))
           .asPaddingValues(),
         modifier = Modifier.weight(1f),
       )

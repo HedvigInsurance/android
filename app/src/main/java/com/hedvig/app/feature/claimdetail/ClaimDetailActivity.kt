@@ -14,6 +14,7 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.feature.claimdetail.ui.ClaimDetailScreen
 import com.hedvig.app.feature.claimdetail.ui.ClaimDetailViewModel
 import com.hedvig.app.getLocale
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.showErrorDialog
 import com.hedvig.app.util.extensions.startChat
 import kotlinx.coroutines.flow.launchIn
@@ -27,6 +28,8 @@ class ClaimDetailActivity : BaseActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+
+    window.compatSetDecorFitsSystemWindows(false)
 
     val claimId = intent.getStringExtra(CLAIM_ID)
       ?: throw IllegalArgumentException("Programmer error: Missing claimId in ${this.javaClass.name}")
