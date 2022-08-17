@@ -1,13 +1,15 @@
 package com.hedvig.app.feature.crossselling.ui.detail
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.consumedWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,30 +28,30 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberImagePainter
-import coil.size.Scale
-import com.commit451.coiltransformations.CropTransformation
+import coil.ImageLoader
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.google.accompanist.insets.ui.Scaffold
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.component.list.SectionTitle
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.app.R
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.ui.compose.composables.ErrorDialog
 import com.hedvig.app.ui.compose.composables.appbar.FadingTopAppBar
-import com.hedvig.app.util.compose.rememberBlurHash
+import com.hedvig.app.util.compose.rememberBlurHashPainter
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun CrossSellDetailScreen(
   onCtaClick: () -> Unit,
@@ -59,6 +61,7 @@ fun CrossSellDetailScreen(
   onDismissError: () -> Unit,
   data: CrossSellData,
   errorMessage: String?,
+  imageLoader: ImageLoader,
 ) {
   val scrollState = rememberScrollState()
   val localDensity = LocalDensity.current
@@ -70,40 +73,46 @@ fun CrossSellDetailScreen(
       percentageOfImageScrolledPast
     }
   }
-  Box(Modifier.fillMaxSize()) {
-    var bottomAnchoredButtonHeight by remember { mutableStateOf(0.dp) }
-    ScrollableContent(
-      crossSellData = data,
-      onCoverageClick = onCoverageClick,
-      onFaqClick = onFaqClick,
-      imageHeight = imageHeight,
-      bottomAnchoredButtonHeight = bottomAnchoredButtonHeight,
-      scrollState = scrollState,
-    )
-    FadingTopAppBar(
-      backgroundAlpha = topAppBarBackgroundColorAlpha,
-      contentPadding = WindowInsets.safeDrawing
-        .only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
-        .asPaddingValues(),
-      navigationIcon = {
-        IconButton(onClick = onUpClick) {
-          Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = null)
-        }
-      },
-    )
-    val bottomAnchoredButtonPadding = 16.dp
-    LargeContainedButton(
-      onClick = onCtaClick,
-      modifier = Modifier
-        .align(Alignment.BottomCenter)
-        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal))
-        .padding(bottomAnchoredButtonPadding)
-        .onPlaced {
-          val height = with(localDensity) { it.size.height.toDp() }
-          bottomAnchoredButtonHeight = height + (bottomAnchoredButtonPadding * 2)
-        },
+  Scaffold(
+    bottomBar = {
+      LargeContainedButton(
+        onClick = onCtaClick,
+        modifier = Modifier
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal))
+          .padding(16.dp),
+      ) {
+        Text(text = data.callToAction)
+      }
+    },
+  ) { paddingValues ->
+    Box(
+      Modifier
+        .fillMaxSize()
+        // Since we've applied the insets on the bottomBar itself and that stays at the bottom of the screen, and the
+        // height that it takes is passed down inside [paddingValues], we need to inform children that the bottom
+        // insets are already consumed.
+        .consumedWindowInsets(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)),
     ) {
-      Text(text = data.callToAction)
+      ScrollableContent(
+        crossSellData = data,
+        onCoverageClick = onCoverageClick,
+        onFaqClick = onFaqClick,
+        imageHeight = imageHeight,
+        imageLoader = imageLoader,
+        contentPadding = paddingValues,
+        scrollState = scrollState,
+      )
+      FadingTopAppBar(
+        backgroundAlpha = topAppBarBackgroundColorAlpha,
+        contentPadding = WindowInsets.safeDrawing
+          .only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
+          .asPaddingValues(),
+        navigationIcon = {
+          IconButton(onClick = onUpClick) {
+            Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = null)
+          }
+        },
+      )
     }
   }
 
@@ -118,8 +127,9 @@ private fun ScrollableContent(
   onCoverageClick: () -> Unit,
   onFaqClick: () -> Unit,
   imageHeight: Dp,
-  bottomAnchoredButtonHeight: Dp,
+  imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
+  contentPadding: PaddingValues = PaddingValues(),
   scrollState: ScrollState = rememberScrollState(),
 ) {
   Column(
@@ -127,23 +137,18 @@ private fun ScrollableContent(
       .fillMaxSize()
       .verticalScroll(scrollState)
       .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom))
-      .padding(bottom = bottomAnchoredButtonHeight),
+      .padding(contentPadding),
   ) {
-    Image(
-      painter = rememberImagePainter(
-        data = crossSellData.backgroundUrl,
-        builder = {
-          scale(Scale.FILL)
-          transformations(CropTransformation())
-          placeholder(rememberBlurHash(crossSellData.backgroundBlurHash, 64, 32))
-          crossfade(true)
-        },
-      ),
+    AsyncImage(
+      model = ImageRequest.Builder(LocalContext.current)
+        .data(crossSellData.backgroundUrl)
+        .crossfade(true)
+        .build(),
       contentDescription = null,
-      modifier = Modifier
-        .height(imageHeight)
-        .fillMaxWidth(),
+      imageLoader = imageLoader,
+      placeholder = rememberBlurHashPainter(crossSellData.backgroundBlurHash, 64, 32),
       contentScale = ContentScale.FillBounds,
+      modifier = Modifier.height(imageHeight).fillMaxWidth(),
     )
     Column(Modifier.padding(horizontal = 16.dp)) {
       Spacer(Modifier.height(24.dp))
@@ -230,6 +235,7 @@ fun CrossSellDetailScreenPreview() {
         insurableLimits = emptyList(),
       ),
       errorMessage = null,
+      imageLoader = rememberPreviewImageLoader(),
     )
   }
 }
