@@ -36,7 +36,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.apollographql.apollo3.ApolloClient
-import com.google.accompanist.insets.systemBarsPadding
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market

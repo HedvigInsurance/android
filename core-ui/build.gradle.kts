@@ -8,7 +8,6 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreDesignSystem)
 
-  api(libs.accompanist.insets)
   api(libs.accompanist.insetsUi)
   api(libs.androidx.compose.foundation)
   api(libs.androidx.compose.material)
