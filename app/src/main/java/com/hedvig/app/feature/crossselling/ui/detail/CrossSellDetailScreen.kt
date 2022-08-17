@@ -147,7 +147,7 @@ private fun ScrollableContent(
       contentDescription = null,
       imageLoader = imageLoader,
       placeholder = rememberBlurHashPainter(crossSellData.backgroundBlurHash, 64, 32),
-      contentScale = ContentScale.FillBounds,
+      contentScale = ContentScale.Crop,
       modifier = Modifier.height(imageHeight).fillMaxWidth(),
     )
     Column(Modifier.padding(horizontal = 16.dp)) {
