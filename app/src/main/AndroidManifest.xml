@@ -279,7 +279,9 @@
 
         <activity android:name=".feature.offer.quotedetail.QuoteDetailActivity" />
 
-        <activity android:name=".feature.crossselling.ui.detail.CrossSellDetailActivity" />
+        <activity
+            android:name=".feature.crossselling.ui.detail.CrossSellDetailActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".feature.crossselling.ui.detail.CrossSellFaqActivity" />
         <activity android:name=".feature.sunsetting.ForceUpgradeActivity" />
         <activity
