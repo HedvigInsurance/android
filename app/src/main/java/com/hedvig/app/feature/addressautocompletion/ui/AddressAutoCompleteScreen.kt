@@ -3,11 +3,18 @@ package com.hedvig.app.feature.addressautocompletion.ui
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -37,19 +44,13 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.derivedWindowInsetsTypeOf
-import com.google.accompanist.insets.rememberInsetsPaddingValues
-import com.google.accompanist.insets.ui.Scaffold
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.app.R
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddressInput
 import com.hedvig.app.ui.compose.composables.appbar.CenterAlignedTopAppBar
@@ -68,7 +69,7 @@ fun AddressAutoCompleteScreen(
   cantFindAddress: () -> Unit,
 ) {
   val focusRequester = remember { FocusRequester() }
-  val keyboardController: SoftwareKeyboardController? = LocalSoftwareKeyboardController.current
+  val keyboardController = LocalSoftwareKeyboardController.current
   LaunchedEffect(Unit) {
     delay(100.milliseconds) // A delay of 100 milliseconds ensures that the keyboard shows reliably.
     focusRequester.requestFocus()
@@ -78,30 +79,31 @@ fun AddressAutoCompleteScreen(
     keyboardController?.hide()
     focusRequester.freeFocus()
   }
-  Scaffold(
-    topBar = {
-      TopAppBar(viewState, cancelAutoCompletion, setNewTextInput, focusRequester, closeKeyboard)
-    },
-    backgroundColor = MaterialTheme.colors.surface,
-  ) { paddingValues ->
-    val ime = LocalWindowInsets.current.ime
-    val navBars = LocalWindowInsets.current.navigationBars
-    val imeAndNavBarInsets = remember(ime, navBars) { derivedWindowInsetsTypeOf(ime, navBars) }
-    SuggestionsList(
-      viewState = viewState,
-      selectAddress = { address ->
-        closeKeyboard()
-        selectAddress(address)
-      },
-      cantFindAddress = cantFindAddress,
-      contentPadding = rememberInsetsPaddingValues(
-        imeAndNavBarInsets,
-        applyStart = true,
-        applyEnd = true,
-        applyBottom = true,
-      ),
-      modifier = Modifier.padding(paddingValues),
-    )
+  Surface {
+    Column {
+      TopAppBar(
+        viewState = viewState,
+        cancelAutoCompletion = cancelAutoCompletion,
+        setNewTextInput = setNewTextInput,
+        focusRequester = focusRequester,
+        closeKeyboard = closeKeyboard,
+        contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)
+          .union(WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
+          .asPaddingValues(),
+      )
+      SuggestionsList(
+        viewState = viewState,
+        selectAddress = { address ->
+          closeKeyboard()
+          selectAddress(address)
+        },
+        cantFindAddress = cantFindAddress,
+        contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)
+          .union(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
+          .asPaddingValues(),
+        modifier = Modifier.weight(1f),
+      )
+    }
   }
 }
 
@@ -112,19 +114,14 @@ private fun TopAppBar(
   setNewTextInput: (String) -> Unit,
   focusRequester: FocusRequester,
   closeKeyboard: () -> Unit,
+  contentPadding: PaddingValues,
 ) {
-  Surface(
-    color = MaterialTheme.colors.background,
-  ) {
-    Column {
+  Surface(color = MaterialTheme.colors.background) {
+    Column(Modifier.padding(contentPadding)) {
       CenterAlignedTopAppBar(
         title = stringResource(hedvig.resources.R.string.EMBARK_ADDRESS_AUTOCOMPLETE_ADDRESS),
         onClick = { cancelAutoCompletion() },
         backgroundColor = MaterialTheme.colors.background,
-        contentPadding = rememberInsetsPaddingValues(
-          insets = LocalWindowInsets.current.statusBars,
-          applyBottom = false,
-        ),
       )
       AddressInput(
         viewState = viewState,
