@@ -80,39 +80,33 @@ class MarketingActivity : BaseActivity() {
   ) {
     Box(Modifier.fillMaxSize()) {
       BackgroundImage(marketingBackground)
-      Box(
-        Modifier
-          .fillMaxSize()
-          .safeDrawingPadding(),
-      ) {
-        val selectedMarket = state.selectedMarket
-        if (selectedMarket == null) {
-          PickMarketScreen(
-            onSubmit = submitMarketAndLanguage,
-            onSelectMarket = setMarket,
-            onSelectLanguage = setLanguage,
-            selectedMarket = state.market,
-            selectedLanguage = state.language,
-            markets = state.availableMarkets,
-            enabled = state.canSetMarketAndLanguage(),
-          )
-        } else {
-          MarketPickedScreen(
-            onClickMarket = onFlagClick,
-            onClickSignUp = {
-              onClickSignUp()
-              openOnboarding(selectedMarket)
-            },
-            onClickLogIn = {
-              onClickLogIn()
-              onClickLogin(state, selectedMarket)
-            },
-            flagRes = selectedMarket.flag,
-          )
-        }
-        if (state.isLoading) {
-          CircularProgressIndicator(Modifier.align(Alignment.Center))
-        }
+      val selectedMarket = state.selectedMarket
+      if (selectedMarket == null) {
+        PickMarketScreen(
+          onSubmit = submitMarketAndLanguage,
+          onSelectMarket = setMarket,
+          onSelectLanguage = setLanguage,
+          selectedMarket = state.market,
+          selectedLanguage = state.language,
+          markets = state.availableMarkets,
+          enabled = state.canSetMarketAndLanguage(),
+        )
+      } else {
+        MarketPickedScreen(
+          onClickMarket = onFlagClick,
+          onClickSignUp = {
+            onClickSignUp()
+            openOnboarding(selectedMarket)
+          },
+          onClickLogIn = {
+            onClickLogIn()
+            onClickLogin(state, selectedMarket)
+          },
+          flagRes = selectedMarket.flag,
+        )
+      }
+      if (state.isLoading) {
+        CircularProgressIndicator(Modifier.align(Alignment.Center))
       }
     }
   }
