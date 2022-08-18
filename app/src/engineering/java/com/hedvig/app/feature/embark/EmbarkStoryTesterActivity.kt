@@ -60,7 +60,6 @@ import org.koin.dsl.module
 
 class EmbarkStoryTesterActivity : AppCompatActivity() {
 
-
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     window.compatSetDecorFitsSystemWindows(false)
@@ -187,9 +186,9 @@ private fun MarketItem(market: Market, onClick: () -> Unit) {
             .padding(bottom = 8.dp),
         )
       }
-      }
     }
   }
+}
 
 val embarkStoryTesterModule = module {
   viewModel { EmbarkStoryTesterViewModel(get(), get(), get(), get(), get()) }
