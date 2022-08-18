@@ -171,7 +171,7 @@ private fun ScreenContent(
       ) {
         Text(stringResource(hedvig.resources.R.string.market_language_screen_continue_button_text))
       }
-      Spacer(Modifier.height(24.dp))
+      Spacer(Modifier.height(16.dp))
     }
   }
 }

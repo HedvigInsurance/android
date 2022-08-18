@@ -58,7 +58,6 @@ private fun ScaffoldLayout(
       bodyContentPlaceables.forEach {
         it.place(0, 0)
       }
-      // The bottom bar is always at the bottom of the layout
       bottomAnchoredPlaceables.forEach {
         it.place(0, layoutHeight - bottomBarHeight)
       }
