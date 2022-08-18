@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import coil.ImageLoader
 import coil.compose.AsyncImage
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.hedvig.android.core.designsystem.theme.hedvigBlack
@@ -19,7 +20,7 @@ import com.hedvig.app.util.compose.blurHash
 import com.hedvig.app.util.compose.toPainter
 
 @Composable
-fun BackgroundImage(background: MarketingBackground?) {
+fun BackgroundImage(background: MarketingBackground?, imageLoader: ImageLoader) {
   val backgroundImageState = rememberBackgroundImageState(background)
   val systemUiController = rememberSystemUiController()
   SideEffect {
@@ -36,6 +37,7 @@ fun BackgroundImage(background: MarketingBackground?) {
   AsyncImage(
     model = backgroundImageState.data,
     contentDescription = null,
+    imageLoader = imageLoader,
     contentScale = ContentScale.Crop,
     placeholder = backgroundImageState.fallbackPainter,
     error = backgroundImageState.fallbackPainter,

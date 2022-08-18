@@ -13,6 +13,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import coil.ImageLoader
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.hedvigBlack
 import com.hedvig.android.core.designsystem.theme.hedvigOffWhite
@@ -31,6 +32,7 @@ import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.hanalytics.LoginMethod
 import e
+import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class MarketingActivity : BaseActivity() {
@@ -40,6 +42,7 @@ class MarketingActivity : BaseActivity() {
 
     window.compatSetDecorFitsSystemWindows(false)
     val viewModel = getViewModel<MarketingViewModel>()
+    val imageLoader = get<ImageLoader>()
     setContent {
       HedvigTheme(
         colorOverrides = { colors ->
@@ -54,61 +57,22 @@ class MarketingActivity : BaseActivity() {
         val marketingBackground by viewModel.marketingBackground.collectAsState()
         val state by viewModel.state.collectAsState()
         MarketingScreen(
-          marketingBackground,
-          state,
-          viewModel::submitMarketAndLanguage,
-          viewModel::setMarket,
-          viewModel::setLanguage,
-          viewModel::onFlagClick,
-          viewModel::onClickSignUp,
-          viewModel::onClickLogIn,
+          marketingBackground = marketingBackground,
+          state = state,
+          imageLoader = imageLoader,
+          submitMarketAndLanguage = viewModel::submitMarketAndLanguage,
+          setMarket = viewModel::setMarket,
+          setLanguage = viewModel::setLanguage,
+          onFlagClick = viewModel::onFlagClick,
+          onClickSignUp = { market ->
+            viewModel.onClickSignUp()
+            openOnboarding(market)
+          },
+          onClickLogIn = { market ->
+            viewModel.onClickLogIn()
+            onClickLogin(state, market)
+          },
         )
-      }
-    }
-  }
-
-  @Composable
-  private fun MarketingScreen(
-    marketingBackground: MarketingBackground?,
-    state: MarketingViewState,
-    submitMarketAndLanguage: () -> Unit,
-    setMarket: (Market) -> Unit,
-    setLanguage: (Language) -> Unit,
-    onFlagClick: () -> Unit,
-    onClickSignUp: () -> Unit,
-    onClickLogIn: () -> Unit,
-  ) {
-    Box(Modifier.fillMaxSize()) {
-      BackgroundImage(marketingBackground)
-      val selectedMarket = state.selectedMarket
-      Crossfade(selectedMarket) { market ->
-        if (market == null) {
-          PickMarketScreen(
-            onSubmit = submitMarketAndLanguage,
-            onSelectMarket = setMarket,
-            onSelectLanguage = setLanguage,
-            selectedMarket = state.market,
-            selectedLanguage = state.language,
-            markets = state.availableMarkets,
-            enabled = state.canSetMarketAndLanguage(),
-          )
-        } else {
-          MarketPickedScreen(
-            onClickMarket = onFlagClick,
-            onClickSignUp = {
-              onClickSignUp()
-              openOnboarding(market)
-            },
-            onClickLogIn = {
-              onClickLogIn()
-              onClickLogin(state, market)
-            },
-            flagRes = market.flag,
-          )
-        }
-      }
-      if (state.isLoading) {
-        CircularProgressIndicator(Modifier.align(Alignment.Center))
       }
     }
   }
@@ -156,5 +120,46 @@ class MarketingActivity : BaseActivity() {
           addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
         }
       }
+  }
+}
+
+@Composable
+private fun MarketingScreen(
+  marketingBackground: MarketingBackground?,
+  state: MarketingViewState,
+  imageLoader: ImageLoader,
+  submitMarketAndLanguage: () -> Unit,
+  setMarket: (Market) -> Unit,
+  setLanguage: (Language) -> Unit,
+  onFlagClick: () -> Unit,
+  onClickSignUp: (market: Market) -> Unit,
+  onClickLogIn: (market: Market) -> Unit,
+) {
+  Box(Modifier.fillMaxSize()) {
+    BackgroundImage(marketingBackground, imageLoader)
+    val selectedMarket = state.selectedMarket
+    Crossfade(selectedMarket) { market ->
+      if (market == null) {
+        PickMarketScreen(
+          onSubmit = submitMarketAndLanguage,
+          onSelectMarket = setMarket,
+          onSelectLanguage = setLanguage,
+          selectedMarket = state.market,
+          selectedLanguage = state.language,
+          markets = state.availableMarkets,
+          enabled = state.canSetMarketAndLanguage(),
+        )
+      } else {
+        MarketPickedScreen(
+          onClickMarket = onFlagClick,
+          onClickSignUp = { onClickSignUp(market) },
+          onClickLogIn = { onClickLogIn(market) },
+          flagRes = market.flag,
+        )
+      }
+    }
+    if (state.isLoading) {
+      CircularProgressIndicator(Modifier.align(Alignment.Center))
+    }
   }
 }
