@@ -132,7 +132,9 @@ private fun ScreenContent(
       modifier = Modifier.align(Alignment.Center),
     )
     Column(
-      modifier = Modifier.align(Alignment.BottomCenter),
+      modifier = Modifier
+        .align(Alignment.BottomCenter)
+        .verticalScroll(rememberScrollState()),
     ) {
       PickerRow(
         onClick = {
