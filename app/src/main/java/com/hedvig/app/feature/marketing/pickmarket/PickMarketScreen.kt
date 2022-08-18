@@ -6,15 +6,22 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.isImeVisible
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -83,6 +90,9 @@ fun PickMarketScreen(
           markets = markets,
           onSelectLanguage = onSelectLanguage,
           selectedLanguage = selectedLanguage,
+          modifier = Modifier.windowInsetsPadding(
+            WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal),
+          ),
         )
       }
     },
@@ -95,6 +105,7 @@ fun PickMarketScreen(
       selectedLanguage = selectedLanguage,
       onSubmit = onSubmit,
       enabled = enabled,
+      modifier = Modifier.safeDrawingPadding(),
     )
   }
 }
@@ -109,8 +120,9 @@ private fun ScreenContent(
   selectedLanguage: Language?,
   onSubmit: () -> Unit,
   enabled: Boolean,
+  modifier: Modifier = Modifier,
 ) {
-  Box(modifier = Modifier.fillMaxSize()) {
+  Box(modifier.fillMaxSize()) {
     Text(
       text = stringResource(hedvig.resources.R.string.market_language_screen_title),
       style = MaterialTheme.typography.h4,
@@ -164,7 +176,7 @@ private fun ScreenContent(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun ColumnScope.BottomSheetContent(
+private fun BottomSheetContent(
   modalBottomSheetState: ModalBottomSheetState,
   coroutineScope: CoroutineScope,
   sheet: PickMarketSheet?,
@@ -173,6 +185,7 @@ private fun ColumnScope.BottomSheetContent(
   markets: List<Market>,
   onSelectLanguage: (Language) -> Unit,
   selectedLanguage: Language?,
+  modifier: Modifier = Modifier,
 ) {
   BackHandler(
     enabled = modalBottomSheetState.isVisible,
@@ -180,32 +193,34 @@ private fun ColumnScope.BottomSheetContent(
       coroutineScope.launch { modalBottomSheetState.hide() }
     },
   )
-  Spacer(Modifier.height(8.dp))
-  BottomSheetHandle(modifier = Modifier.align(Alignment.CenterHorizontally))
-  when (sheet) {
-    PickMarketSheet.MARKET -> PickMarketSheetContent(
-      onSelectMarket = { market ->
-        coroutineScope.launch {
-          modalBottomSheetState.hide()
-          onSelectMarket(market)
-        }
-      },
-      selectedMarket = selectedMarket,
-      markets = markets,
-    )
-    PickMarketSheet.COUNTRY -> PickLanguageSheetContent(
-      onSelectLanguage = { language ->
-        coroutineScope.launch {
-          modalBottomSheetState.hide()
-          onSelectLanguage(language)
-        }
-      },
-      selectedLanguage = selectedLanguage,
-      selectedMarket = selectedMarket,
-    )
-    null -> {}
+  Column(modifier) {
+    Spacer(Modifier.height(8.dp))
+    BottomSheetHandle(modifier = Modifier.align(Alignment.CenterHorizontally))
+    when (sheet) {
+      PickMarketSheet.MARKET -> PickMarketSheetContent(
+        onSelectMarket = { market ->
+          coroutineScope.launch {
+            modalBottomSheetState.hide()
+            onSelectMarket(market)
+          }
+        },
+        selectedMarket = selectedMarket,
+        markets = markets,
+      )
+      PickMarketSheet.COUNTRY -> PickLanguageSheetContent(
+        onSelectLanguage = { language ->
+          coroutineScope.launch {
+            modalBottomSheetState.hide()
+            onSelectLanguage(language)
+          }
+        },
+        selectedLanguage = selectedLanguage,
+        selectedMarket = selectedMarket,
+      )
+      null -> {}
+    }
+    Spacer(Modifier.height(24.dp))
   }
-  Spacer(Modifier.height(24.dp))
 }
 
 @Composable
