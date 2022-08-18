@@ -696,7 +696,7 @@ val sharedPreferencesModule = module {
 }
 
 val coilModule = module {
-  single {
+  single<ImageLoader> {
     ImageLoader.Builder(get())
       .components {
         add(SvgDecoder.Factory())

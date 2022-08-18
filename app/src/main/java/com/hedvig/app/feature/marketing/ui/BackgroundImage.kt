@@ -7,8 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
@@ -18,6 +16,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.hedvig.app.feature.marketing.data.MarketingBackground
 import com.hedvig.app.ui.compose.theme.hedvigBlack
 import com.hedvig.app.util.compose.blurHash
+import com.hedvig.app.util.compose.toPainter
 
 @Composable
 fun BackgroundImage(background: MarketingBackground?) {
@@ -65,11 +64,7 @@ private class BackgroundImageUiState private constructor(
       }
 
       val blurHashDrawable: BitmapDrawable? = blurHash(marketingBackground.blurHash, 32, 32, context)
-      val fallbackPainter = if (blurHashDrawable != null) {
-        BitmapPainter(blurHashDrawable.bitmap.asImageBitmap())
-      } else {
-        ColorPainter(hedvigBlack)
-      }
+      val fallbackPainter = blurHashDrawable?.toPainter() ?: ColorPainter(hedvigBlack)
       return BackgroundImageUiState(
         data = marketingBackground.url,
         fallbackPainter = fallbackPainter,
