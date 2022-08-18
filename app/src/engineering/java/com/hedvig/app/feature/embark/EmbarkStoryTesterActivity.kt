@@ -36,7 +36,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.apollographql.apollo3.ApolloClient
-import com.google.accompanist.insets.systemBarsPadding
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
@@ -60,7 +59,6 @@ import org.koin.core.context.unloadKoinModules
 import org.koin.dsl.module
 
 class EmbarkStoryTesterActivity : AppCompatActivity() {
-
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -188,9 +186,9 @@ private fun MarketItem(market: Market, onClick: () -> Unit) {
             .padding(bottom = 8.dp),
         )
       }
-      }
     }
   }
+}
 
 val embarkStoryTesterModule = module {
   viewModel { EmbarkStoryTesterViewModel(get(), get(), get(), get(), get()) }

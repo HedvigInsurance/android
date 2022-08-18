@@ -2,12 +2,12 @@ package com.hedvig.app.feature.marketing.marketpicked
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -16,17 +16,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.insets.LocalWindowInsets
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.component.button.LargeOutlinedButton
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.hedvigOffWhite
 import com.hedvig.app.R
-import com.hedvig.app.ui.compose.theme.hedvigOffWhite
 
 @Composable
 fun MarketPickedScreen(
@@ -35,17 +33,10 @@ fun MarketPickedScreen(
   onClickLogIn: () -> Unit,
   @DrawableRes flagRes: Int,
 ) {
-  val insets = LocalWindowInsets.current
-  val statusBarHeight = with(LocalDensity.current) { insets.statusBars.top.toDp() }
-  val navigationBarHeight = with(LocalDensity.current) { insets.navigationBars.bottom.toDp() }
-  Box(modifier = Modifier.fillMaxSize()) {
+  Box(modifier = Modifier.fillMaxSize().safeDrawingPadding()) {
     IconButton(
       onClick = onClickMarket,
-      modifier = Modifier
-        .padding(
-          start = 8.dp,
-          top = statusBarHeight,
-        ),
+      modifier = Modifier.padding(4.dp), // 4.dp from [androidx.compose.material.AppBar.AppBarHorizontalPadding].
     ) {
       Image(
         painter = painterResource(flagRes),
@@ -61,7 +52,8 @@ fun MarketPickedScreen(
     Column(
       modifier = Modifier
         .align(Alignment.BottomCenter)
-        .padding(horizontal = 16.dp),
+        .padding(16.dp),
+      verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
       LargeContainedButton(
         onClick = onClickSignUp,
@@ -73,11 +65,9 @@ fun MarketPickedScreen(
           text = stringResource(hedvig.resources.R.string.MARKETING_GET_HEDVIG),
         )
       }
-      Spacer(Modifier.height(8.dp))
       LargeOutlinedButton(onClick = onClickLogIn) {
         Text(text = stringResource(hedvig.resources.R.string.MARKETING_SCREEN_LOGIN))
       }
-      Spacer(Modifier.height(8.dp + navigationBarHeight))
     }
   }
 }

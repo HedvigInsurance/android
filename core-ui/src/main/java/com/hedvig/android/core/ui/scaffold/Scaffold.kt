@@ -34,8 +34,14 @@ fun Scaffold(
 @Composable
 @UiComposable
 private fun ScaffoldLayout(
-  content: @Composable @UiComposable (PaddingValues) -> Unit,
-  bottomAnchoredContent: @Composable @UiComposable () -> Unit,
+  content:
+    @Composable
+    @UiComposable
+    (PaddingValues) -> Unit,
+  bottomAnchoredContent:
+    @Composable
+    @UiComposable
+    () -> Unit,
 ) {
   SubcomposeLayout { constraints ->
     val layoutWidth = constraints.maxWidth
@@ -58,7 +64,6 @@ private fun ScaffoldLayout(
       bodyContentPlaceables.forEach {
         it.place(0, 0)
       }
-      // The bottom bar is always at the bottom of the layout
       bottomAnchoredPlaceables.forEach {
         it.place(0, layoutHeight - bottomBarHeight)
       }
