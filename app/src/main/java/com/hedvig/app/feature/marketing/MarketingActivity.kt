@@ -4,9 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -14,6 +14,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.hedvigBlack
+import com.hedvig.android.core.designsystem.theme.hedvigOffWhite
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.createOnboardingUri
@@ -25,8 +27,6 @@ import com.hedvig.app.feature.marketing.marketpicked.MarketPickedScreen
 import com.hedvig.app.feature.marketing.pickmarket.PickMarketScreen
 import com.hedvig.app.feature.marketing.ui.BackgroundImage
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationActivity
-import com.hedvig.android.core.designsystem.theme.hedvigBlack
-import com.hedvig.android.core.designsystem.theme.hedvigOffWhite
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.hanalytics.LoginMethod
@@ -81,29 +81,31 @@ class MarketingActivity : BaseActivity() {
     Box(Modifier.fillMaxSize()) {
       BackgroundImage(marketingBackground)
       val selectedMarket = state.selectedMarket
-      if (selectedMarket == null) {
-        PickMarketScreen(
-          onSubmit = submitMarketAndLanguage,
-          onSelectMarket = setMarket,
-          onSelectLanguage = setLanguage,
-          selectedMarket = state.market,
-          selectedLanguage = state.language,
-          markets = state.availableMarkets,
-          enabled = state.canSetMarketAndLanguage(),
-        )
-      } else {
-        MarketPickedScreen(
-          onClickMarket = onFlagClick,
-          onClickSignUp = {
-            onClickSignUp()
-            openOnboarding(selectedMarket)
-          },
-          onClickLogIn = {
-            onClickLogIn()
-            onClickLogin(state, selectedMarket)
-          },
-          flagRes = selectedMarket.flag,
-        )
+      Crossfade(selectedMarket) { market ->
+        if (market == null) {
+          PickMarketScreen(
+            onSubmit = submitMarketAndLanguage,
+            onSelectMarket = setMarket,
+            onSelectLanguage = setLanguage,
+            selectedMarket = state.market,
+            selectedLanguage = state.language,
+            markets = state.availableMarkets,
+            enabled = state.canSetMarketAndLanguage(),
+          )
+        } else {
+          MarketPickedScreen(
+            onClickMarket = onFlagClick,
+            onClickSignUp = {
+              onClickSignUp()
+              openOnboarding(market)
+            },
+            onClickLogIn = {
+              onClickLogIn()
+              onClickLogin(state, market)
+            },
+            flagRes = market.flag,
+          )
+        }
       }
       if (state.isLoading) {
         CircularProgressIndicator(Modifier.align(Alignment.Center))
