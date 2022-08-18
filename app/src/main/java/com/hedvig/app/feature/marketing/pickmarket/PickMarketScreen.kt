@@ -39,7 +39,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.insets.LocalWindowInsets
+import com.hedvig.android.core.designsystem.component.BottomSheetHandle
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.market.Language
@@ -168,18 +168,6 @@ private fun LanguageFlag() {
     painter = painterResource(R.drawable.ic_language),
     contentDescription = null,
     colorFilter = tint(LocalContentColor.current),
-  )
-}
-
-@Composable
-fun BottomSheetHandle(modifier: Modifier = Modifier) {
-  Box(
-    modifier = modifier
-      .size(width = 32.dp, height = 4.dp)
-      .background(
-        color = MaterialTheme.colors.separator,
-        shape = RoundedCornerShape(20.dp),
-      ),
   )
 }
 
