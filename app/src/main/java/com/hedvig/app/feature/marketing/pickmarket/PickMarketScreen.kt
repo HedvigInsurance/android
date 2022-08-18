@@ -22,6 +22,8 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -193,7 +195,7 @@ private fun BottomSheetContent(
       coroutineScope.launch { modalBottomSheetState.hide() }
     },
   )
-  Column(modifier) {
+  Column(modifier.verticalScroll(rememberScrollState())) {
     Spacer(Modifier.height(8.dp))
     BottomSheetHandle(modifier = Modifier.align(Alignment.CenterHorizontally))
     when (sheet) {
