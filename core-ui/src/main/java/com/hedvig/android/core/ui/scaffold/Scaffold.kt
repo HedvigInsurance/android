@@ -34,8 +34,14 @@ fun Scaffold(
 @Composable
 @UiComposable
 private fun ScaffoldLayout(
-  content: @Composable @UiComposable (PaddingValues) -> Unit,
-  bottomAnchoredContent: @Composable @UiComposable () -> Unit,
+  content:
+    @Composable
+    @UiComposable
+    (PaddingValues) -> Unit,
+  bottomAnchoredContent:
+    @Composable
+    @UiComposable
+    () -> Unit,
 ) {
   SubcomposeLayout { constraints ->
     val layoutWidth = constraints.maxWidth
