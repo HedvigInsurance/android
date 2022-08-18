@@ -23,7 +23,7 @@ import com.hedvig.android.core.designsystem.component.button.LargeContainedButto
 import com.hedvig.android.core.designsystem.component.button.LargeOutlinedButton
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
-import com.hedvig.app.ui.compose.theme.hedvigOffWhite
+import com.hedvig.android.core.designsystem.theme.hedvigOffWhite
 
 @Composable
 fun MarketPickedScreen(

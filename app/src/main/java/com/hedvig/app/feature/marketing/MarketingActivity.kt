@@ -25,8 +25,8 @@ import com.hedvig.app.feature.marketing.marketpicked.MarketPickedScreen
 import com.hedvig.app.feature.marketing.pickmarket.PickMarketScreen
 import com.hedvig.app.feature.marketing.ui.BackgroundImage
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationActivity
-import com.hedvig.app.ui.compose.theme.hedvigBlack
-import com.hedvig.app.ui.compose.theme.hedvigOffWhite
+import com.hedvig.android.core.designsystem.theme.hedvigBlack
+import com.hedvig.android.core.designsystem.theme.hedvigOffWhite
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.hanalytics.LoginMethod

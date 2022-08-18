@@ -25,7 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.app.ui.compose.theme.onWarning
+import com.hedvig.android.core.designsystem.theme.onWarning
 import com.hedvig.app.ui.compose.theme.warning
 
 @Composable

@@ -27,8 +27,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.ui.compose.theme.HedvigTypography
-import com.hedvig.app.ui.compose.theme.progressBlue
-import com.hedvig.app.ui.compose.theme.progressYellow
+import com.hedvig.android.core.designsystem.theme.progressBlue
+import com.hedvig.android.core.designsystem.theme.progressYellow
 import java.lang.Float.min
 
 @Composable

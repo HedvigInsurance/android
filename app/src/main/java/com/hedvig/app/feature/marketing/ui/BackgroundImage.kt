@@ -14,7 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.hedvig.app.feature.marketing.data.MarketingBackground
-import com.hedvig.app.ui.compose.theme.hedvigBlack
+import com.hedvig.android.core.designsystem.theme.hedvigBlack
 import com.hedvig.app.util.compose.blurHash
 import com.hedvig.app.util.compose.toPainter
 
