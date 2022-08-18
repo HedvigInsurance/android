@@ -65,7 +65,10 @@ fun PickMarketScreen(
 ) {
   var sheet by rememberSaveable { mutableStateOf<PickMarketSheet?>(null) }
   val coroutineScope = rememberCoroutineScope()
-  val modalBottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+  val modalBottomSheetState = rememberModalBottomSheetState(
+    initialValue = ModalBottomSheetValue.Hidden,
+    skipHalfExpanded = true,
+  )
 
   ModalBottomSheetLayout(
     sheetState = modalBottomSheetState,
