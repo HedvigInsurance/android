@@ -4,10 +4,15 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.CircularProgressIndicator
@@ -18,12 +23,10 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.insets.LocalWindowInsets
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.component.button.LargeTextButton
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -46,17 +49,12 @@ fun AudioRecorderScreen(
   play: () -> Unit,
   pause: () -> Unit,
 ) {
-  val insets = LocalWindowInsets.current
-  val systemTop = with(LocalDensity.current) { insets.systemBars.top.toDp() }
-  val systemBottom = with(LocalDensity.current) { insets.systemBars.bottom.toDp() }
   Column(
     verticalArrangement = Arrangement.SpaceBetween,
     modifier = Modifier
-      .padding(
-        top = 24.dp + systemTop,
-        bottom = systemBottom,
-      )
-      .fillMaxSize(),
+      .fillMaxSize()
+      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal))
+      .padding(top = 24.dp),
   ) {
     LazyColumn(
       verticalArrangement = Arrangement.spacedBy(4.dp),

@@ -92,7 +92,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".feature.embark.EmbarkStoryTesterActivity" />
+        <activity
+            android:name=".feature.embark.EmbarkStoryTesterActivity"
+            android:windowSoftInputMode="adjustResize" />
 
         <meta-data
             android:name="com.mixpanel.android.MPConfig.DisableEmulatorBindingUI"

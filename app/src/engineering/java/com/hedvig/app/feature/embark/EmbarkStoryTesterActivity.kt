@@ -11,8 +11,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -33,7 +36,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.apollographql.apollo3.ApolloClient
-import com.google.accompanist.insets.systemBarsPadding
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
@@ -45,30 +47,31 @@ import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.home.ui.changeaddress.appendQuoteCartId
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules
 import org.koin.dsl.module
 
 class EmbarkStoryTesterActivity : AppCompatActivity() {
 
-  val model: EmbarkStoryTesterViewModel by viewModel()
-
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    window.compatSetDecorFitsSystemWindows(false)
     loadKoinModules(embarkStoryTesterModule)
 
+    val viewModel: EmbarkStoryTesterViewModel = getViewModel()
     setContent {
-      val viewState by model.viewState.collectAsState()
+      val viewState by viewModel.viewState.collectAsState()
 
       LaunchedEffect(viewState.selectedStoryName) {
         val selectedStoryName = viewState.selectedStoryName ?: return@LaunchedEffect
-        model.onStorySelected(null)
+        viewModel.onStorySelected(null)
         startActivity(
           EmbarkActivity.newInstance(
             this@EmbarkStoryTesterActivity,
@@ -80,7 +83,7 @@ class EmbarkStoryTesterActivity : AppCompatActivity() {
 
       HedvigTheme {
         Column(
-          modifier = Modifier.fillMaxSize(),
+          modifier = Modifier.fillMaxSize().safeDrawingPadding(),
         ) {
           TopAppBar(
             title = { Text(text = "Embark tester") },
@@ -94,59 +97,62 @@ class EmbarkStoryTesterActivity : AppCompatActivity() {
             },
             backgroundColor = MaterialTheme.colors.background,
             elevation = 0.dp,
-            modifier = Modifier.systemBarsPadding(top = true),
           )
-          Text(text = "Optional auth token or payments url")
-          TextField(
-            value = viewState.authTokenInput ?: "",
-            onValueChange = {
-              model.onAuthToken(it)
-            },
-          )
-          Button(
-            onClick = {
-              viewState.authTokenInput?.let {
-                model.setAuthToken(it)
-              }
-            },
+          Column(
+            Modifier.verticalScroll(rememberScrollState()),
           ) {
-            Text("Set token")
-          }
-          Button(
-            onClick = {
-              viewState.authTokenInput?.let {
-                model.generateAuthTokenFromPaymentsLink(it)
-              }
-            },
-          ) {
-            Text("Generate and set token from payments url")
-          }
-          Text(text = "Custom Story")
-          TextField(
-            value = viewState.storyNameInput ?: "",
-            onValueChange = {
-              model.onStoryName(it)
-            },
-          )
-          Button(
-            onClick = {
-              viewState.storyNameInput?.let {
-                model.onStorySelected(it)
-              }
-            },
-          ) {
-            Text("Start story")
-          }
-          Text(text = "Markets")
-          LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier
-              .padding(horizontal = 8.dp)
-              .fillMaxWidth(),
-          ) {
-            items(viewState.availableMarkets) { market ->
-              MarketItem(market) {
-                model.onMarketClick(market)
+            Text(text = "Optional auth token or payments url")
+            TextField(
+              value = viewState.authTokenInput ?: "",
+              onValueChange = {
+                viewModel.onAuthToken(it)
+              },
+            )
+            Button(
+              onClick = {
+                viewState.authTokenInput?.let {
+                  viewModel.setAuthToken(it)
+                }
+              },
+            ) {
+              Text("Set token")
+            }
+            Button(
+              onClick = {
+                viewState.authTokenInput?.let {
+                  viewModel.generateAuthTokenFromPaymentsLink(it)
+                }
+              },
+            ) {
+              Text("Generate and set token from payments url")
+            }
+            Text(text = "Custom Story")
+            TextField(
+              value = viewState.storyNameInput ?: "",
+              onValueChange = {
+                viewModel.onStoryName(it)
+              },
+            )
+            Button(
+              onClick = {
+                viewState.storyNameInput?.let {
+                  viewModel.onStorySelected(it)
+                }
+              },
+            ) {
+              Text("Start story")
+            }
+            Text(text = "Markets")
+            LazyRow(
+              horizontalArrangement = Arrangement.spacedBy(4.dp),
+              modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .fillMaxWidth(),
+            ) {
+              items(viewState.availableMarkets) { market ->
+                MarketItem(market) {
+                  viewModel.onMarketClick(market)
+                }
               }
             }
           }
@@ -155,32 +161,32 @@ class EmbarkStoryTesterActivity : AppCompatActivity() {
     }
   }
 
-  @Composable
-  fun MarketItem(market: Market, onClick: () -> Unit) {
-    Surface(
-      shape = MaterialTheme.shapes.medium,
-      modifier = Modifier.clickable { onClick() },
-    ) {
-      Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
-          .padding(12.dp),
-      ) {
-        Column {
-          Text(
-            text = market.name,
-            style = MaterialTheme.typography.body1,
-            modifier = Modifier
-              .padding(bottom = 8.dp),
-          )
-        }
-      }
-    }
-  }
-
   override fun onDestroy() {
     super.onDestroy()
     unloadKoinModules(embarkStoryTesterModule)
+  }
+}
+
+@Composable
+private fun MarketItem(market: Market, onClick: () -> Unit) {
+  Surface(
+    shape = MaterialTheme.shapes.medium,
+    modifier = Modifier.clickable { onClick() },
+  ) {
+    Row(
+      horizontalArrangement = Arrangement.SpaceBetween,
+      modifier = Modifier
+        .padding(12.dp),
+    ) {
+      Column {
+        Text(
+          text = market.name,
+          style = MaterialTheme.typography.body1,
+          modifier = Modifier
+            .padding(bottom = 8.dp),
+        )
+      }
+    }
   }
 }
 

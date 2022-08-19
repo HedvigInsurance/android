@@ -7,13 +7,14 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import coil.ImageLoader
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.BaseActivity
-import com.hedvig.app.R
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.offer.quotedetail.QuoteDetailActivity
 import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
+import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -31,6 +32,7 @@ class CrossSellDetailActivity : BaseActivity() {
     val viewModel = getViewModel<CrossSellDetailViewModel> {
       parametersOf(crossSell)
     }
+    val imageLoader: ImageLoader = get()
 
     window.compatSetDecorFitsSystemWindows(false)
 
@@ -52,9 +54,10 @@ class CrossSellDetailActivity : BaseActivity() {
           onUpClick = { finish() },
           onCoverageClick = { openCoverage(crossSell) },
           onFaqClick = { openFaq(crossSell) },
-          onDismissError = { viewModel.dismissError() },
+          onDismissError = viewModel::dismissError,
           data = crossSell,
           errorMessage = viewState.errorMessage,
+          imageLoader = imageLoader,
         )
       }
     }

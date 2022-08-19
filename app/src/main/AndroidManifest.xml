@@ -279,7 +279,9 @@
 
         <activity android:name=".feature.offer.quotedetail.QuoteDetailActivity" />
 
-        <activity android:name=".feature.crossselling.ui.detail.CrossSellDetailActivity" />
+        <activity
+            android:name=".feature.crossselling.ui.detail.CrossSellDetailActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".feature.crossselling.ui.detail.CrossSellFaqActivity" />
         <activity android:name=".feature.sunsetting.ForceUpgradeActivity" />
         <activity
@@ -296,11 +298,14 @@
             android:name=".feature.genericauth.otpinput.OtpInputActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".feature.claimdetail.ClaimDetailActivity" />
+        <activity
+            android:name=".feature.claimdetail.ClaimDetailActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".feature.tracking.NotificationOpenedTrackingActivity" />
         <activity
             android:name=".feature.marketing.MarketingActivity"
-            android:theme="@style/Hedvig.Theme.Marketing" />
+            android:theme="@style/Hedvig.Theme.Marketing"
+            android:windowSoftInputMode="adjustResize" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"

@@ -2,8 +2,14 @@ package com.hedvig.app.feature.claimdetail.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -11,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.insets.ui.Scaffold
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
@@ -30,28 +35,31 @@ fun ClaimDetailScreen(
   onPlayClick: () -> Unit,
   locale: Locale,
 ) {
-  Scaffold(
-    topBar = {
-      TopAppBarWithBack(
-        onClick = onUpClick,
-        title = stringResource(hedvig.resources.R.string.claim_status_title),
-      )
-    },
-  ) { paddingValues ->
+  Column {
+    TopAppBarWithBack(
+      onClick = onUpClick,
+      title = stringResource(hedvig.resources.R.string.claim_status_title),
+      contentPadding = WindowInsets.safeDrawing
+        .only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
+        .asPaddingValues(),
+    )
     when (viewState) {
       is ClaimDetailViewState.Content -> ClaimDetailScreen(
         uiState = viewState.uiState,
         locale = locale,
         onChatClick = onChatClick,
         onPlayClick = onPlayClick,
-        modifier = Modifier.padding(paddingValues),
       )
       ClaimDetailViewState.Error -> GenericErrorScreen(
         onRetryButtonClick = retry,
         modifier = Modifier
-          .padding(paddingValues)
           .padding(16.dp)
-          .padding(top = 40.dp),
+          .padding(top = 40.dp)
+          .padding(
+            WindowInsets.safeDrawing
+              .only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal)
+              .asPaddingValues(),
+          ),
       )
       ClaimDetailViewState.Loading -> CenteredProgressIndicator()
     }
@@ -68,8 +76,9 @@ private fun ClaimDetailScreen(
 ) {
   Column(
     modifier = modifier
-      .padding(horizontal = 16.dp)
-      .verticalScroll(rememberScrollState()),
+      .verticalScroll(rememberScrollState())
+      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom))
+      .padding(horizontal = 16.dp),
   ) {
     Spacer(Modifier.height(24.dp))
     ClaimType(
@@ -89,15 +98,14 @@ private fun ClaimDetailScreen(
     SubmittedAndClosedColumns(uiState.submittedAt, uiState.closedAt, locale)
     Spacer(Modifier.height(24.dp))
     ClaimDetailCard(uiState.claimDetailCard, onChatClick)
-    Spacer(Modifier.height(56.dp))
     if (uiState.signedAudioURL != null) {
+      Spacer(Modifier.height(40.dp))
       AudioPlayBackItem(
         onPlayClick = onPlayClick,
         uiState.signedAudioURL,
       )
     }
-    // TODO claim detail screen v2.1, actually show files here
-    Spacer(Modifier.height(48.dp))
+    Spacer(Modifier.height(16.dp))
   }
 }
 

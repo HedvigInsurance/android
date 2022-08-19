@@ -1,14 +1,22 @@
 package com.hedvig.app.feature.crossselling.ui.detail
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.consumedWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
@@ -20,29 +28,30 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberImagePainter
-import coil.size.Scale
-import com.commit451.coiltransformations.CropTransformation
-import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.rememberInsetsPaddingValues
-import com.google.accompanist.insets.systemBarsPadding
+import coil.ImageLoader
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.component.list.SectionTitle
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
+import com.hedvig.android.core.ui.scaffold.Scaffold
 import com.hedvig.app.R
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.ui.compose.composables.ErrorDialog
 import com.hedvig.app.ui.compose.composables.appbar.FadingTopAppBar
-import com.hedvig.app.util.compose.rememberBlurHash
+import com.hedvig.app.util.compose.rememberBlurHashPainter
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun CrossSellDetailScreen(
   onCtaClick: () -> Unit,
@@ -52,50 +61,63 @@ fun CrossSellDetailScreen(
   onDismissError: () -> Unit,
   data: CrossSellData,
   errorMessage: String?,
+  imageLoader: ImageLoader,
 ) {
   val scrollState = rememberScrollState()
-  val scrollFromTopInDp = with(LocalDensity.current) {
-    scrollState.value.toDp()
-  }
+  val localDensity = LocalDensity.current
   val imageHeight = 260.dp
-  val topAppBarBackgroundColorAlpha by derivedStateOf {
-    val percentageOfImageScrolledPast = scrollFromTopInDp.coerceAtMost(imageHeight) / imageHeight
-    percentageOfImageScrolledPast
+  val topAppBarBackgroundColorAlpha by remember {
+    derivedStateOf {
+      val scrollFromTopInDp = with(localDensity) { scrollState.value.toDp() }
+      val percentageOfImageScrolledPast = scrollFromTopInDp.coerceAtMost(imageHeight) / imageHeight
+      percentageOfImageScrolledPast
+    }
   }
-  Box(
-    modifier = Modifier.fillMaxSize(),
-  ) {
-    ScrollableContent(
-      crossSellData = data,
-      onCoverageClick = onCoverageClick,
-      onFaqClick = onFaqClick,
-      imageHeight = imageHeight,
-      scrollState = scrollState,
-    )
-    FadingTopAppBar(
-      backgroundAlpha = topAppBarBackgroundColorAlpha,
-      contentPadding = rememberInsetsPaddingValues(
-        insets = LocalWindowInsets.current.statusBars,
-      ),
-      navigationIcon = {
-        IconButton(onClick = onUpClick) {
-          Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = null)
-        }
-      },
-    )
-    LargeContainedButton(
-      onClick = onCtaClick,
-      modifier = Modifier
-        .align(Alignment.BottomCenter)
-        .systemBarsPadding(bottom = true)
-        .padding(16.dp),
+  Scaffold(
+    bottomBar = {
+      LargeContainedButton(
+        onClick = onCtaClick,
+        modifier = Modifier
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal))
+          .padding(16.dp),
+      ) {
+        Text(text = data.callToAction)
+      }
+    },
+  ) { paddingValues ->
+    Box(
+      Modifier
+        .fillMaxSize()
+        // Since we've applied the insets on the bottomBar itself and that stays at the bottom of the screen, and the
+        // height that it takes is passed down inside [paddingValues], we need to inform children that the bottom
+        // insets are already consumed.
+        .consumedWindowInsets(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)),
     ) {
-      Text(text = data.callToAction)
+      ScrollableContent(
+        crossSellData = data,
+        onCoverageClick = onCoverageClick,
+        onFaqClick = onFaqClick,
+        imageHeight = imageHeight,
+        imageLoader = imageLoader,
+        contentPadding = paddingValues,
+        scrollState = scrollState,
+      )
+      FadingTopAppBar(
+        backgroundAlpha = topAppBarBackgroundColorAlpha,
+        contentPadding = WindowInsets.safeDrawing
+          .only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
+          .asPaddingValues(),
+        navigationIcon = {
+          IconButton(onClick = onUpClick) {
+            Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = null)
+          }
+        },
+      )
     }
   }
 
   if (errorMessage != null) {
-    ErrorDialog(onDismiss = onDismissError, message = errorMessage)
+    ErrorDialog(message = errorMessage, onDismiss = onDismissError)
   }
 }
 
@@ -105,34 +127,30 @@ private fun ScrollableContent(
   onCoverageClick: () -> Unit,
   onFaqClick: () -> Unit,
   imageHeight: Dp,
+  imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
+  contentPadding: PaddingValues = PaddingValues(),
   scrollState: ScrollState = rememberScrollState(),
 ) {
-  val placeholder by rememberBlurHash(
-    crossSellData.backgroundBlurHash,
-    64,
-    32,
-  )
   Column(
     modifier = modifier
       .fillMaxSize()
-      .verticalScroll(scrollState),
+      .verticalScroll(scrollState)
+      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom))
+      .padding(contentPadding),
   ) {
-    Image(
-      painter = rememberImagePainter(
-        data = crossSellData.backgroundUrl,
-        builder = {
-          scale(Scale.FILL)
-          transformations(CropTransformation())
-          placeholder(placeholder)
-          crossfade(true)
-        },
-      ),
+    AsyncImage(
+      model = ImageRequest.Builder(LocalContext.current)
+        .data(crossSellData.backgroundUrl)
+        .crossfade(true)
+        .build(),
       contentDescription = null,
+      imageLoader = imageLoader,
+      placeholder = rememberBlurHashPainter(crossSellData.backgroundBlurHash, 64, 32),
+      contentScale = ContentScale.Crop,
       modifier = Modifier
         .height(imageHeight)
         .fillMaxWidth(),
-      contentScale = ContentScale.FillBounds,
     )
     Column(Modifier.padding(horizontal = 16.dp)) {
       Spacer(Modifier.height(24.dp))
@@ -171,10 +189,6 @@ private fun ScrollableContent(
       icon = R.drawable.ic_info_toolbar,
       text = stringResource(hedvig.resources.R.string.cross_sell_info_common_questions_row),
     )
-    val bottomSystemBarInset = with(LocalDensity.current) {
-      LocalWindowInsets.current.systemBars.bottom.toDp()
-    }
-    Spacer(Modifier.height(104.dp + bottomSystemBarInset))
   }
 }
 
@@ -223,6 +237,7 @@ fun CrossSellDetailScreenPreview() {
         insurableLimits = emptyList(),
       ),
       errorMessage = null,
+      imageLoader = rememberPreviewImageLoader(),
     )
   }
 }

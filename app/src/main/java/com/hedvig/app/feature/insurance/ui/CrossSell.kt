@@ -22,7 +22,6 @@ import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -32,10 +31,10 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.commit451.coiltransformations.CropTransformation
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.hedvigBlack
+import com.hedvig.android.core.designsystem.theme.hedvigBlack12percent
+import com.hedvig.android.core.designsystem.theme.whiteHighEmphasis
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
-import com.hedvig.app.ui.compose.theme.hedvigBlack
-import com.hedvig.app.ui.compose.theme.hedvigBlack12percent
-import com.hedvig.app.ui.compose.theme.whiteHighEmphasis
 import com.hedvig.app.util.compose.rememberBlurHash
 
 /*
@@ -51,7 +50,6 @@ fun CrossSell(
   onCardClick: () -> Unit,
   onCtaClick: (label: String) -> Unit,
 ) {
-  val placeholder by rememberBlurHash(data.backgroundBlurHash, 64, 32)
   Card(
     border = BorderStroke(1.dp, hedvigBlack12percent),
     modifier = Modifier
@@ -69,7 +67,7 @@ fun CrossSell(
         data = data.backgroundUrl,
         builder = {
           transformations(CropTransformation())
-          placeholder(placeholder)
+          placeholder(rememberBlurHash(data.backgroundBlurHash, 64, 32))
           crossfade(true)
         },
       ),

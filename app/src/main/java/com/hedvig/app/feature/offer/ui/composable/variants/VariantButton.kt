@@ -24,8 +24,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.app.ui.compose.theme.hedvigBlack
-import com.hedvig.app.ui.compose.theme.hedvigBlack12percent
+import com.hedvig.android.core.designsystem.theme.hedvigBlack
+import com.hedvig.android.core.designsystem.theme.hedvigBlack12percent
 import com.hedvig.app.util.compose.HorizontalTextsWithMaximumSpaceTaken
 import com.hedvig.app.util.compose.RadioButton
 

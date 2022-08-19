@@ -382,7 +382,7 @@ val viewModelModule = module {
     CrossSellDetailViewModel(crossSell.action, get(), get())
   }
   viewModel { GenericAuthViewModel(get()) }
-  viewModel { (otpId: String, credential: String) ->
+  viewModel<OtpInputViewModel> { (otpId: String, credential: String) ->
     OtpInputViewModel(
       otpId,
       credential,
@@ -696,7 +696,7 @@ val sharedPreferencesModule = module {
 }
 
 val coilModule = module {
-  single {
+  single<ImageLoader> {
     ImageLoader.Builder(get())
       .components {
         add(SvgDecoder.Factory())
