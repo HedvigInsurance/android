@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.insurance.ui
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,16 +25,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberImagePainter
-import com.commit451.coiltransformations.CropTransformation
+import coil.ImageLoader
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.hedvigBlack
 import com.hedvig.android.core.designsystem.theme.hedvigBlack12percent
 import com.hedvig.android.core.designsystem.theme.whiteHighEmphasis
+import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
-import com.hedvig.app.util.compose.rememberBlurHash
+import com.hedvig.app.util.compose.rememberBlurHashPainter
 
 /*
  * Note: This Composable uses hardcoded colors due to difficulties with
@@ -47,6 +49,7 @@ import com.hedvig.app.util.compose.rememberBlurHash
 @Composable
 fun CrossSell(
   data: CrossSellData,
+  imageLoader: ImageLoader,
   onCardClick: () -> Unit,
   onCtaClick: (label: String) -> Unit,
 ) {
@@ -62,16 +65,14 @@ fun CrossSell(
         onClick = onCardClick,
       ),
   ) {
-    Image(
-      painter = rememberImagePainter(
-        data = data.backgroundUrl,
-        builder = {
-          transformations(CropTransformation())
-          placeholder(rememberBlurHash(data.backgroundBlurHash, 64, 32))
-          crossfade(true)
-        },
-      ),
+    AsyncImage(
+      model = ImageRequest.Builder(LocalContext.current)
+        .data(data.backgroundUrl)
+        .crossfade(true)
+        .build(),
       contentDescription = null,
+      imageLoader = imageLoader,
+      placeholder = rememberBlurHashPainter(data.backgroundBlurHash, 64, 32),
       contentScale = ContentScale.Crop,
       modifier = Modifier.fillMaxSize(),
     )
@@ -181,6 +182,7 @@ fun CrossSellPreview() {
   HedvigTheme {
     CrossSell(
       data = previewData,
+      imageLoader = rememberPreviewImageLoader(),
       onCardClick = {},
       onCtaClick = {},
     )

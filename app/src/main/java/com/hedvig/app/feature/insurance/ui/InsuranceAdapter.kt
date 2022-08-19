@@ -44,14 +44,15 @@ class InsuranceAdapter(
 ) : ListAdapter<InsuranceModel, InsuranceAdapter.ViewHolder>(InsuranceAdapterDiffUtilItemCallback) {
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
-    R.layout.insurance_contract_card -> ViewHolder.ContractViewHolder(parent, imageLoader)
+    R.layout.insurance_contract_card -> ViewHolder.ContractViewHolder(parent, marketManager, imageLoader)
     CROSS_SELL -> ViewHolder.CrossSellViewHolder(
       ComposeView(parent.context),
+      imageLoader,
       onClickCrossSellAction,
       onClickCrossSellCard,
     )
     R.layout.insurance_header -> ViewHolder.TitleViewHolder(parent)
-    ERROR -> ViewHolder.Error(ComposeView(parent.context))
+    ERROR -> ViewHolder.Error(ComposeView(parent.context), retry)
     SUBHEADING -> ViewHolder.SubheadingViewHolder(ComposeView(parent.context))
     NOTIFICATION_SUBHEADING -> ViewHolder.NotificationSubheadingViewHolder(ComposeView(parent.context))
     R.layout.insurance_terminated_contracts -> ViewHolder.TerminatedContracts(parent)
@@ -71,7 +72,7 @@ class InsuranceAdapter(
   }
 
   override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-    holder.bind(getItem(position), retry, marketManager)
+    holder.bind(getItem(position))
   }
 
   override fun onViewRecycled(holder: ViewHolder) {
@@ -82,14 +83,11 @@ class InsuranceAdapter(
   }
 
   sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-    abstract fun bind(
-      data: InsuranceModel,
-      retry: () -> Unit,
-      marketManager: MarketManager,
-    )
+    abstract fun bind(data: InsuranceModel)
 
     class CrossSellViewHolder(
       private val composeView: ComposeView,
+      private val imageLoader: ImageLoader,
       private val onClickCrossSellAction: (CrossSellData) -> Unit,
       private val onClickCrossSellCard: (CrossSellData) -> Unit,
     ) : ViewHolder(composeView) {
@@ -97,11 +95,7 @@ class InsuranceAdapter(
         composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
       }
 
-      override fun bind(
-        data: InsuranceModel,
-        retry: () -> Unit,
-        marketManager: MarketManager,
-      ) {
+      override fun bind(data: InsuranceModel) {
         if (data !is InsuranceModel.CrossSellCard) {
           return invalid(data)
         }
@@ -111,6 +105,7 @@ class InsuranceAdapter(
           HedvigTheme {
             CrossSell(
               data = data.inner,
+              imageLoader = imageLoader,
               onCardClick = {
                 onClickCrossSellCard(data.inner)
                 context.startActivity(CrossSellDetailActivity.newInstance(context, data.inner))
@@ -124,16 +119,16 @@ class InsuranceAdapter(
       }
     }
 
-    class ContractViewHolder(parent: ViewGroup, private val imageLoader: ImageLoader) : ViewHolder(
+    class ContractViewHolder(
+      parent: ViewGroup,
+      private val marketManager: MarketManager,
+      private val imageLoader: ImageLoader,
+    ) : ViewHolder(
       parent.inflate(R.layout.insurance_contract_card),
     ) {
       private val binding by viewBinding(InsuranceContractCardBinding::bind)
 
-      override fun bind(
-        data: InsuranceModel,
-        retry: () -> Unit,
-        marketManager: MarketManager,
-      ) = with(binding) {
+      override fun bind(data: InsuranceModel) = with(binding) {
         if (data !is InsuranceModel.Contract) {
           return invalid(data)
         }
@@ -161,28 +156,22 @@ class InsuranceAdapter(
       }
     }
 
-    class TitleViewHolder(parent: ViewGroup) :
-      ViewHolder(parent.inflate(R.layout.insurance_header)) {
-      override fun bind(
-        data: InsuranceModel,
-        retry: () -> Unit,
-        marketManager: MarketManager,
-      ) = Unit
+    class TitleViewHolder(
+      parent: ViewGroup,
+    ) : ViewHolder(parent.inflate(R.layout.insurance_header)) {
+      override fun bind(data: InsuranceModel) = Unit
     }
 
     class Error(
       val composeView: ComposeView,
+      private val retry: () -> Unit,
     ) : ViewHolder(composeView) {
 
       init {
         composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
       }
 
-      override fun bind(
-        data: InsuranceModel,
-        retry: () -> Unit,
-        marketManager: MarketManager,
-      ) {
+      override fun bind(data: InsuranceModel) {
         if (data !is InsuranceModel.Error) {
           return invalid(data)
         }
@@ -207,11 +196,7 @@ class InsuranceAdapter(
         composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
       }
 
-      override fun bind(
-        data: InsuranceModel,
-        retry: () -> Unit,
-        marketManager: MarketManager,
-      ) {
+      override fun bind(data: InsuranceModel) {
         if (data !is InsuranceModel.TerminatedContractsHeader) {
           return invalid(data)
         }
@@ -240,11 +225,7 @@ class InsuranceAdapter(
         }
       }
 
-      override fun bind(
-        data: InsuranceModel,
-        retry: () -> Unit,
-        marketManager: MarketManager,
-      ) {
+      override fun bind(data: InsuranceModel) {
         if (data !is InsuranceModel.CrossSellHeader) {
           return invalid(data)
         }
@@ -255,11 +236,7 @@ class InsuranceAdapter(
     class TerminatedContracts(parent: ViewGroup) :
       ViewHolder(parent.inflate(R.layout.insurance_terminated_contracts)) {
       private val binding by viewBinding(InsuranceTerminatedContractsBinding::bind)
-      override fun bind(
-        data: InsuranceModel,
-        retry: () -> Unit,
-        marketManager: MarketManager,
-      ) = with(binding) {
+      override fun bind(data: InsuranceModel) = with(binding) {
         if (data !is InsuranceModel.TerminatedContracts) {
           return invalid(data)
         }
@@ -271,10 +248,8 @@ class InsuranceAdapter(
         )
         root.setHapticClickListener {
           root.context.getActivity()?.let { activity ->
-            activity.window.exitTransition =
-              MaterialSharedAxis(MaterialSharedAxis.X, true)
-            activity.window.reenterTransition =
-              MaterialSharedAxis(MaterialSharedAxis.X, false)
+            activity.window.exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
+            activity.window.reenterTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
             root.context.startActivity(
               TerminatedContractsActivity.newInstance(root.context),
               ActivityOptionsCompat.makeSceneTransitionAnimation(activity).toBundle(),

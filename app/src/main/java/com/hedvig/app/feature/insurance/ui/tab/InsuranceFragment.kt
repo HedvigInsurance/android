@@ -32,6 +32,13 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
+    val insuranceAdapter = InsuranceAdapter(
+      marketManager,
+      insuranceViewModel::load,
+      insuranceViewModel::onClickCrossSellAction,
+      imageLoader,
+      insuranceViewModel::onClickCrossSellCard,
+    )
     binding.insuranceRecycler.apply {
       scroll = 0
       addOnScrollListener(
@@ -44,13 +51,7 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
         ),
       )
       itemAnimator = ViewHolderReusingDefaultItemAnimator()
-      adapter = InsuranceAdapter(
-        marketManager,
-        insuranceViewModel::load,
-        insuranceViewModel::onClickCrossSellAction,
-        imageLoader,
-        insuranceViewModel::onClickCrossSellCard,
-      )
+      adapter = insuranceAdapter
     }
 
     binding.swipeToRefresh.setOnRefreshListener {
@@ -72,16 +73,14 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
             ?.navigate(requireContext())
             ?.also { insuranceViewModel.crossSellActionOpened() }
 
-          val adapter = binding.insuranceRecycler.adapter as? InsuranceAdapter
-
           when {
-            errorMessage != null -> adapter?.submitList(
+            errorMessage != null -> insuranceAdapter.submitList(
               listOf(
                 InsuranceModel.Header,
                 InsuranceModel.Error(errorMessage),
               ),
             )
-            items != null -> adapter?.submitList(items)
+            items != null -> insuranceAdapter.submitList(items)
           }
         }
       }

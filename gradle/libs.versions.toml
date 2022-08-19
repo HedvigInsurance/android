@@ -50,7 +50,7 @@ androidx-test-junit = "1.1.3"
 arrowKt = "1.1.2"
 assertK = "0.25"
 adyen = "4.7.1"
-coil = "2.1.0"
+coil = "2.2.0"
 coilTransformations = "2.0.2"
 concatAdapterExtension = "1.2.1"
 coreLibraryDesugaring = "1.1.5"
@@ -147,10 +147,9 @@ apollo-testingSupport = { module = "com.apollographql.apollo3:apollo-testing-sup
 arrowKt-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrowKt" }
 assertK = { module = "com.willowtreeapps.assertk:assertk-jvm", version.ref = "assertK" }
 coil-coil = { module = "io.coil-kt:coil", version.ref = "coil" }
-coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
+coil-compose = { module = "io.coil-kt:coil-compose-base", version.ref = "coil" }
 coil-gif = { module = "io.coil-kt:coil-gif", version.ref = "coil" }
 coil-svg = { module = "io.coil-kt:coil-svg", version.ref = "coil" }
-coil-transformations = { module = "com.github.Commit451.coil-transformations:transformations", version.ref = "coilTransformations" }
 concatAdapterExtension = { module = "com.github.carousell:ConcatAdapterExtension", version.ref = "concatAdapterExtension" }
 coreLibraryDesugaring = { module = "com.android.tools:desugar_jdk_libs", version.ref = "coreLibraryDesugaring" }
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
