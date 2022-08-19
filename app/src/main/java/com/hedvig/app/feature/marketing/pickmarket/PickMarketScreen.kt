@@ -46,8 +46,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.BottomSheetHandle
-import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
+import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.debugBorder
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.app.R
@@ -59,9 +60,17 @@ enum class PickMarketSheet {
   COUNTRY,
 }
 
+data class CtaButtonParams(
+  val text: String,
+  val onClick: () -> Unit,
+  val modifier: Modifier = Modifier,
+  val enabled: Boolean = true,
+)
+
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun PickMarketScreen(
+  ctaButton: @Composable (CtaButtonParams) -> Unit,
   onSubmit: () -> Unit,
   onSelectMarket: (Market) -> Unit,
   onSelectLanguage: (Language) -> Unit,
@@ -77,35 +86,51 @@ fun PickMarketScreen(
     skipHalfExpanded = true,
   )
 
-  ModalBottomSheetLayout(
-    sheetState = modalBottomSheetState,
-    sheetContent = {
-      HedvigTheme { // Use standard theme again inside the sheet.
-        BottomSheetContent(
-          modalBottomSheetState = modalBottomSheetState,
-          coroutineScope = coroutineScope,
-          sheet = sheet,
-          onSelectMarket = onSelectMarket,
-          selectedMarket = selectedMarket,
-          markets = markets,
-          onSelectLanguage = onSelectLanguage,
-          selectedLanguage = selectedLanguage,
-          modifier = Modifier.windowInsetsPadding(
-            WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal),
-          ),
-        )
-      }
-    },
-  ) {
-    ScreenContent(
-      setSheet = { sheet = it },
-      coroutineScope = coroutineScope,
-      modalBottomSheetState = modalBottomSheetState,
-      selectedMarket = selectedMarket,
-      selectedLanguage = selectedLanguage,
-      onSubmit = onSubmit,
-      enabled = enabled,
-      modifier = Modifier.safeDrawingPadding(),
+  // future stelios
+  // todo remove this column, and simlpy use the thing inside the ScreenContent(ctaButton) once it works inside
+  //  subcomposition
+  Column {
+    ModalBottomSheetLayout(
+      sheetState = modalBottomSheetState,
+      sheetContent = {
+        HedvigTheme { // Use standard theme again inside the sheet.
+          BottomSheetContent(
+            modalBottomSheetState = modalBottomSheetState,
+            coroutineScope = coroutineScope,
+            sheet = sheet,
+            onSelectMarket = onSelectMarket,
+            selectedMarket = selectedMarket,
+            markets = markets,
+            onSelectLanguage = onSelectLanguage,
+            selectedLanguage = selectedLanguage,
+            modifier = Modifier.windowInsetsPadding(
+              WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal),
+            ),
+          )
+        }
+      },
+      modifier = Modifier.weight(1f).debugBorder(),
+    ) {
+      ScreenContent(
+        ctaButton = ctaButton,
+        setSheet = { sheet = it },
+        coroutineScope = coroutineScope,
+        modalBottomSheetState = modalBottomSheetState,
+        selectedMarket = selectedMarket,
+        selectedLanguage = selectedLanguage,
+        onSubmit = onSubmit,
+        enabled = enabled,
+        modifier = Modifier.safeDrawingPadding(),
+      )
+    }
+    ctaButton(
+      CtaButtonParams(
+        stringResource(hedvig.resources.R.string.market_language_screen_continue_button_text),
+        onSubmit,
+        Modifier.weight(1f).windowInsetsPadding(
+          WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+        ),
+      ),
     )
   }
 }
@@ -113,6 +138,7 @@ fun PickMarketScreen(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun ScreenContent(
+  ctaButton: @Composable (CtaButtonParams) -> Unit,
   setSheet: (PickMarketSheet?) -> Unit,
   coroutineScope: CoroutineScope,
   modalBottomSheetState: ModalBottomSheetState,
@@ -164,13 +190,14 @@ private fun ScreenContent(
         enabled = selectedMarket?.let { Language.getAvailableLanguages(it).isNotEmpty() } ?: false,
       )
       Spacer(Modifier.height(32.dp))
-      LargeContainedButton(
-        onClick = onSubmit,
-        modifier = Modifier.padding(horizontal = 16.dp),
-        enabled = enabled,
-      ) {
-        Text(stringResource(hedvig.resources.R.string.market_language_screen_continue_button_text))
-      }
+//      ctaButton(
+//        CtaButtonParams(
+//          text = stringResource(hedvig.resources.R.string.market_language_screen_continue_button_text),
+//          onClick = onSubmit,
+//          modifier = Modifier.padding(horizontal = 16.dp),
+//          enabled = enabled,
+//        ),
+//      )
       Spacer(Modifier.height(16.dp))
     }
   }
@@ -383,6 +410,14 @@ fun PickerRowPreview() {
 fun PickMarketPreview() {
   HedvigTheme {
     PickMarketScreen(
+      ctaButton = { ctaButtonParams ->
+        LargeContainedTextButton(
+          text = ctaButtonParams.text,
+          onClick = ctaButtonParams.onClick,
+          modifier = ctaButtonParams.modifier,
+          enabled = ctaButtonParams.enabled,
+        )
+      },
       onSubmit = {},
       onSelectMarket = {},
       onSelectLanguage = {},

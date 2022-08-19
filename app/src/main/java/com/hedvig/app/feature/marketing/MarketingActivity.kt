@@ -4,27 +4,53 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.compose.animation.Crossfade
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector2D
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VectorConverter
+import androidx.compose.animation.core.animateValue
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.movableContentOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
+import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.layout.positionInWindow
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.round
 import coil.ImageLoader
+import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.hedvigBlack
 import com.hedvig.android.core.designsystem.theme.hedvigOffWhite
+import com.hedvig.android.core.ui.debugBorder
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.createOnboardingUri
-import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.LoginDialog
 import com.hedvig.app.feature.marketing.data.MarketingBackground
 import com.hedvig.app.feature.marketing.marketpicked.MarketPickedScreen
+import com.hedvig.app.feature.marketing.pickmarket.CtaButtonParams
 import com.hedvig.app.feature.marketing.pickmarket.PickMarketScreen
 import com.hedvig.app.feature.marketing.ui.BackgroundImage
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationActivity
@@ -32,10 +58,11 @@ import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.hanalytics.LoginMethod
 import e
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
-class MarketingActivity : BaseActivity() {
+class MarketingActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -135,12 +162,24 @@ private fun MarketingScreen(
   onClickSignUp: (market: Market) -> Unit,
   onClickLogIn: (market: Market) -> Unit,
 ) {
+  val ctaButton = remember {
+    movableContentOf<CtaButtonParams> { ctaButtonParams ->
+      LargeContainedTextButton(
+        text = ctaButtonParams.text,
+        onClick = ctaButtonParams.onClick,
+        enabled = ctaButtonParams.enabled,
+        modifier = ctaButtonParams.modifier.animatePlacementInWindow().debugBorder(),
+      )
+    }
+  }
   Box(Modifier.fillMaxSize()) {
     BackgroundImage(marketingBackground, imageLoader)
     val selectedMarket = state.selectedMarket
-    Crossfade(selectedMarket) { market ->
+//    Crossfade(selectedMarket) { market ->
+    selectedMarket.let { market ->
       if (market == null) {
         PickMarketScreen(
+          ctaButton = ctaButton,
           onSubmit = submitMarketAndLanguage,
           onSelectMarket = setMarket,
           onSelectLanguage = setLanguage,
@@ -151,6 +190,7 @@ private fun MarketingScreen(
         )
       } else {
         MarketPickedScreen(
+          ctaButton = ctaButton,
           onClickMarket = onFlagClick,
           onClickSignUp = { onClickSignUp(market) },
           onClickLogIn = { onClickLogIn(market) },
@@ -162,4 +202,25 @@ private fun MarketingScreen(
       CircularProgressIndicator(Modifier.align(Alignment.Center))
     }
   }
+}
+
+fun Modifier.animatePlacementInWindow(): Modifier = composed {
+  val coroutineScope = rememberCoroutineScope()
+  var targetOffset by remember { mutableStateOf(IntOffset.Zero) }
+  var animatable by remember {
+    mutableStateOf<Animatable<IntOffset, AnimationVector2D>?>(null)
+  }
+  this
+    .onPlaced {
+      targetOffset = it.positionInWindow().round()
+    }
+    .offset {
+      val anim = animatable ?: Animatable(targetOffset, IntOffset.VectorConverter).also { animatable = it }
+      if (anim.targetValue != targetOffset) {
+        coroutineScope.launch {
+          anim.animateTo(targetOffset, spring(stiffness = Spring.StiffnessVeryLow))
+        }
+      }
+      animatable?.let { it.value - targetOffset } ?: IntOffset.Zero
+    }
 }

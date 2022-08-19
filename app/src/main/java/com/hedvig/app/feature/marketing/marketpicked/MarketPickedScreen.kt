@@ -8,9 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,14 +18,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.component.button.LargeOutlinedButton
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.hedvigOffWhite
 import com.hedvig.app.R
+import com.hedvig.app.feature.marketing.pickmarket.CtaButtonParams
 
 @Composable
 fun MarketPickedScreen(
+  ctaButton: @Composable (CtaButtonParams) -> Unit,
   onClickMarket: () -> Unit,
   onClickSignUp: () -> Unit,
   onClickLogIn: () -> Unit,
@@ -55,16 +54,12 @@ fun MarketPickedScreen(
         .padding(16.dp),
       verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-      LargeContainedButton(
-        onClick = onClickSignUp,
-        colors = ButtonDefaults.buttonColors(
-          backgroundColor = MaterialTheme.colors.primary,
-        ),
-      ) {
-        Text(
+      ctaButton(
+        CtaButtonParams(
           text = stringResource(hedvig.resources.R.string.MARKETING_GET_HEDVIG),
-        )
-      }
+          onClick = onClickSignUp,
+        ),
+      )
       LargeOutlinedButton(onClick = onClickLogIn) {
         Text(text = stringResource(hedvig.resources.R.string.MARKETING_SCREEN_LOGIN))
       }
@@ -77,6 +72,15 @@ fun MarketPickedScreen(
 fun MarketPickedPreview() {
   HedvigTheme {
     MarketPickedScreen(
+      ctaButton = { ctaButtonParams ->
+        Text(ctaButtonParams.toString())
+//        LargeContainedTextButton(
+//          text = ctaButtonParams.text,
+//          onClick = ctaButtonParams.onClick,
+//          modifier = ctaButtonParams.modifier,
+//          enabled = ctaButtonParams.enabled,
+//        )
+      },
       onClickMarket = {},
       onClickSignUp = {},
       onClickLogIn = {},
