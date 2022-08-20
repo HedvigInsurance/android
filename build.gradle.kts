@@ -1,15 +1,12 @@
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
+  alias(libs.plugins.androidApplication) apply false
+  alias(libs.plugins.androidLibrary) apply false
   alias(libs.plugins.buildTimeTracker)
   alias(libs.plugins.cacheFix) apply false
   alias(libs.plugins.doctor)
-}
-
-buildscript {
-  dependencies {
-    classpath(libs.android.gradlePlugin)
-    classpath(libs.kotlin.gradlePlugin)
-  }
+  alias(libs.plugins.kotlin) apply false
+  alias(libs.plugins.ktlint) apply false
 }
 
 buildtimetracker {

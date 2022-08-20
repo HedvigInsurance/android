@@ -11,9 +11,9 @@ class LibraryConventionPlugin : Plugin<Project> {
     with(target) {
       val libs = the<LibrariesForLibs>()
       with(pluginManager) {
-        apply("com.android.library")
-        apply("org.jetbrains.kotlin.android")
-        apply("org.gradle.android.cache-fix")
+        apply(libs.plugins.androidLibrary.get().pluginId)
+        apply(libs.plugins.kotlin.get().pluginId)
+        apply(libs.plugins.cacheFix.get().pluginId)
       }
 
       extensions.configure<LibraryExtension> {
