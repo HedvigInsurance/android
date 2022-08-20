@@ -10,11 +10,10 @@ import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 class KtlintConventionPlugin : Plugin<Project> {
   override fun apply(target: Project) {
     with(target) {
-      with(pluginManager) {
-        apply("org.jlleitschuh.gradle.ktlint")
-      }
-
       val libs = the<LibrariesForLibs>()
+      with(pluginManager) {
+        apply(libs.plugins.ktlint.get().pluginId)
+      }
 
       extensions.configure<KtlintExtension> {
         version.set(libs.versions.ktlint.get())
