@@ -1,9 +1,8 @@
-import com.hedvig.android.ktlintVersion
+import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.the
 import org.gradle.kotlin.dsl.withType
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
@@ -15,10 +14,10 @@ class KtlintConventionPlugin : Plugin<Project> {
         apply("org.jlleitschuh.gradle.ktlint")
       }
 
-      val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
+      val libs = the<LibrariesForLibs>()
 
       extensions.configure<KtlintExtension> {
-        version.set(libs.ktlintVersion)
+        version.set(libs.versions.ktlint.get())
         enableExperimentalRules.set(true)
         additionalEditorconfigFile.set(rootProject.file(".editorconfig"))
         outputToConsole.set(true)
