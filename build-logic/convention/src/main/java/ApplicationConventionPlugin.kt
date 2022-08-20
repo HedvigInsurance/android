@@ -13,6 +13,7 @@ class ApplicationConventionPlugin : Plugin<Project> {
       with(pluginManager) {
         apply("com.android.application")
         apply("org.jetbrains.kotlin.android")
+        apply("org.gradle.android.cache-fix")
       }
 
       val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
