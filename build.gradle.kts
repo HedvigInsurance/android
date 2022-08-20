@@ -5,12 +5,6 @@ plugins {
   alias(libs.plugins.doctor)
 }
 
-subprojects {
-  plugins.withType<com.android.build.gradle.BasePlugin> {
-    project.apply(plugin = "org.gradle.android.cache-fix")
-  }
-}
-
 buildscript {
   dependencies {
     classpath(libs.android.gradlePlugin)
