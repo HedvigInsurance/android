@@ -89,12 +89,7 @@ zXing = "3.5.0"
 datadog = "1.13.0"
 
 [libraries]
-# Plugins for build-logic's convention plugins to use to resolve the types/tasks coming fromthese plugins
-android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradlePlugin" }
-kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-ktlint-gradlePlugin = { module = "org.jlleitschuh.gradle:ktlint-gradle", version.ref = "ktlintGradlePlugin" }
 
-# Libraries listed alphabetically
 accompanist-insetsUi = { module = "com.google.accompanist:accompanist-insets-ui", version.ref = "accompanist" }
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanist" }
 accompanist-pagerIndicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanist" }
@@ -202,6 +197,11 @@ svg = { module = "com.caverock:androidsvg-aar", version.ref = "svg" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 tooltip = { module = "com.github.hansemannn:viewtooltip", version.ref = "tooltip" }
 zXing = { module = "com.google.zxing:core", version.ref = "zXing" }
+
+# Plugin libraries for build-logic's convention plugins to use to resolve the types/tasks coming from these plugins
+android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradlePlugin" }
+kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+ktlint-gradlePlugin = { module = "org.jlleitschuh.gradle:ktlint-gradle", version.ref = "ktlintGradlePlugin" }
 
 [bundles]
 
