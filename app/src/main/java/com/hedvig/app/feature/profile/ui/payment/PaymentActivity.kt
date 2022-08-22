@@ -28,7 +28,7 @@ import java.time.format.DateTimeFormatter
 
 class PaymentActivity : BaseActivity(R.layout.activity_payment) {
   private val binding by viewBinding(ActivityPaymentBinding::bind)
-  private val model: PaymentViewModel by viewModel()
+  private val viewModel: PaymentViewModel by viewModel()
 
   private val marketManager: MarketManager by inject()
 
@@ -43,7 +43,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
       recycler.applyNavigationBarInsets()
       recycler.adapter = PaymentAdapter(marketManager, supportFragmentManager)
 
-      model
+      viewModel
         .data
         .flowWithLifecycle(lifecycle)
         .onEach { data ->

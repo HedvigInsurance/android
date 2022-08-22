@@ -23,7 +23,7 @@ import java.time.Clock
 
 class AudioRecorderFragment : Fragment() {
   private val embarkViewModel: EmbarkViewModel by sharedViewModel()
-  private val model: AudioRecorderViewModel by viewModel()
+  private val viewModel: AudioRecorderViewModel by viewModel()
   private val clock: Clock by inject()
   private val hAnalytics: HAnalytics by inject()
 
@@ -33,7 +33,7 @@ class AudioRecorderFragment : Fragment() {
     ActivityResultContracts.RequestPermission(),
   ) { permissionGranted ->
     if (permissionGranted) {
-      model.startRecording()
+      viewModel.startRecording()
     } else {
       requireActivity().showPermissionExplanationDialog(permission)
     }
@@ -51,14 +51,14 @@ class AudioRecorderFragment : Fragment() {
 
     setContent {
       HedvigTheme {
-        val state by model.viewState.collectAsState()
+        val state by viewModel.viewState.collectAsState()
         AudioRecorderScreen(
           parameters = parameters,
           viewState = state,
           startRecording = ::askForPermission,
           clock = clock,
           stopRecording = {
-            model.stopRecording()
+            viewModel.stopRecording()
             logWithStoryAndStore(hAnalytics::embarkAudioRecordingStopped)
           },
           submit = {
@@ -66,15 +66,15 @@ class AudioRecorderFragment : Fragment() {
             logWithStoryAndStore(hAnalytics::embarkAudioRecordingSubmitted)
           },
           redo = {
-            model.redo()
+            viewModel.redo()
             logWithStoryAndStore(hAnalytics::embarkAudioRecordingRetry)
           },
           play = {
-            model.play()
+            viewModel.play()
             logWithStoryAndStore(hAnalytics::embarkAudioRecordingPlayback)
           },
           pause = {
-            model.pause()
+            viewModel.pause()
             logWithStoryAndStore(hAnalytics::embarkAudioRecordingStopped)
           },
         )
@@ -100,7 +100,7 @@ class AudioRecorderFragment : Fragment() {
 
   private fun askForPermission() {
     if (requireActivity().hasPermissions(permission)) {
-      model.startRecording()
+      viewModel.startRecording()
       logWithStoryAndStore(hAnalytics::embarkAudioRecordingBegin)
     } else {
       permissionResultLauncher.launch(permission)

@@ -27,7 +27,7 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class ProfileFragment : Fragment(R.layout.profile_fragment) {
   private val binding by viewBinding(ProfileFragmentBinding::bind)
-  private val model: ProfileViewModel by sharedViewModel()
+  private val viewModel: ProfileViewModel by sharedViewModel()
   private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
   private var scroll = 0
 
@@ -41,7 +41,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
 
     scroll = 0
 
-    val adapter = ProfileAdapter(viewLifecycleOwner, model::reload, model::onLogout)
+    val adapter = ProfileAdapter(viewLifecycleOwner, viewModel::reload, viewModel::onLogout)
     binding.recycler.apply {
       scroll = 0
       addOnScrollListener(
@@ -56,7 +56,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
       this.adapter = adapter
     }
 
-    model
+    viewModel
       .data
       .flowWithLifecycle(viewLifecycle)
       .onEach { viewState ->
@@ -70,7 +70,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
       }
       .launchIn(viewLifecycleScope)
 
-    model.events
+    viewModel.events
       .flowWithLifecycle(lifecycle)
       .onEach { event ->
         when (event) {

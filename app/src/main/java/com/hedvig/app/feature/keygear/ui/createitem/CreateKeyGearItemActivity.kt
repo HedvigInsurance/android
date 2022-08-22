@@ -51,7 +51,7 @@ import java.io.IOException
 import kotlin.math.max
 
 class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear_item) {
-  private val model: CreateKeyGearItemViewModel by viewModel()
+  private val viewModel: CreateKeyGearItemViewModel by viewModel()
   private val binding by viewBinding(ActivityCreateKeyGearItemBinding::bind)
 
   private lateinit var tempPhotoPath: String
@@ -83,7 +83,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
               PHOTO_PERMISSION_REQUEST_CODE,
             )
           },
-          model::deletePhoto,
+          viewModel::deletePhoto,
         )
       photos.addItemDecoration(CenterItemDecoration())
       photos.itemAnimator = SlideInItemAnimator(Gravity.START)
@@ -93,7 +93,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
       }
 
       categories.adapter = CategoryAdapter(
-        model::setActiveCategory,
+        viewModel::setActiveCategory,
       )
       categories.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN_HALF))
 
@@ -107,23 +107,23 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
         }
         isUploading = true
         transitionToUploading()
-        model.createItem()
+        viewModel.createItem()
       }
     }
 
-    model.photos.observe(this) { photos ->
+    viewModel.photos.observe(this) { photos ->
       photos?.let { bind(it) }
     }
 
-    model.categories.observe(this) { categories ->
+    viewModel.categories.observe(this) { categories ->
       categories?.let { bindCategories(it) }
     }
 
-    model.dirty.observe(this) { d ->
+    viewModel.dirty.observe(this) { d ->
       d?.let { dirty = it }
     }
 
-    model.createResult.observe(this) { cr ->
+    viewModel.createResult.observe(this) { cr ->
       cr?.let { showCreatedAnimation(it) }
     }
   }
@@ -270,7 +270,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
     super.onActivityResult(requestCode, resultCode, data)
     if (requestCode == PHOTO_REQUEST_CODE && resultCode == RESULT_OK) {
-      model.addPhotoUri(
+      viewModel.addPhotoUri(
         FileProvider.getUriForFile(
           this,
           getString(R.string.file_provider_authority),

@@ -17,14 +17,14 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class DocumentsFragment : Fragment(R.layout.contract_detail_documents_fragment) {
   private val binding by viewBinding(ContractDetailDocumentsFragmentBinding::bind)
-  private val model: ContractDetailViewModel by sharedViewModel()
+  private val viewModel: ContractDetailViewModel by sharedViewModel()
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     binding.root.apply {
       applyNavigationBarInsets()
       val documentsAdapter = DocumentAdapter()
       adapter = documentsAdapter
-      model.viewState
+      viewModel.viewState
         .flowWithLifecycle(lifecycle)
         .onEach { viewState ->
           val listItems = when (viewState) {

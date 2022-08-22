@@ -57,13 +57,13 @@ class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
     if (isPostSign) {
       requireActivity().onBackPressedDispatcher.addCallback(
         viewLifecycleOwner,
-        onBackPressedCallback({
+        onBackPressedCallback {
           showConfirmCloseDialog(
             requireContext(),
             ConnectPayinType.TRUSTLY,
             connectPaymentViewModel::close,
           )
-        },),
+        },
       )
     }
 

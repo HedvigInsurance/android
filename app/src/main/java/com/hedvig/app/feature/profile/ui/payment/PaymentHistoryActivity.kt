@@ -22,7 +22,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PaymentHistoryActivity : BaseActivity(R.layout.activity_payment_history) {
   private val binding by viewBinding(ActivityPaymentHistoryBinding::bind)
-  private val model: PaymentViewModel by viewModel()
+  private val viewModel: PaymentViewModel by viewModel()
   private val marketManager: MarketManager by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +39,7 @@ class PaymentHistoryActivity : BaseActivity(R.layout.activity_payment_history) {
 
       paymentHistory.adapter = PaymentHistoryAdapter(marketManager)
 
-      model
+      viewModel
         .data
         .flowWithLifecycle(lifecycle)
         .onEach { (data, _) ->

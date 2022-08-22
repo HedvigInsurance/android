@@ -83,7 +83,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
   private val shouldShowOnNextAppStart: Boolean
     get() = intent.getBooleanExtra(SHOULD_SHOW_ON_NEXT_APP_START, false)
 
-  private val model: OfferViewModel by viewModel {
+  private val viewModel: OfferViewModel by viewModel {
     parametersOf(quoteCartId, selectedContractTypes, shouldShowOnNextAppStart)
   }
   private val binding by viewBinding(ActivityOfferBinding::bind)
@@ -131,10 +131,10 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     val topOfferAdapter = OfferAdapter(
       fragmentManager = supportFragmentManager,
       locale = locale,
-      openQuoteDetails = model::onOpenQuoteDetails,
-      onRemoveDiscount = model::removeDiscount,
+      openQuoteDetails = viewModel::onOpenQuoteDetails,
+      onRemoveDiscount = viewModel::removeDiscount,
       onSign = ::onSign,
-      reload = model::reload,
+      reload = viewModel::reload,
       openChat = ::openChat,
     )
     val perilsAdapter = PerilsAdapter(
@@ -148,10 +148,10 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     val bottomOfferAdapter = OfferAdapter(
       fragmentManager = supportFragmentManager,
       locale = locale,
-      openQuoteDetails = model::onOpenQuoteDetails,
-      onRemoveDiscount = model::removeDiscount,
+      openQuoteDetails = viewModel::onOpenQuoteDetails,
+      onRemoveDiscount = viewModel::removeDiscount,
       onSign = ::onSign,
-      reload = model::reload,
+      reload = viewModel::reload,
       openChat = ::openChat,
     )
 
@@ -171,7 +171,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         ConcatSpanSizeLookup(gridLayoutManager.spanCount) { concatAdapter.adapters }
     }
 
-    model
+    viewModel
       .viewState
       .flowWithLifecycle(lifecycle)
       .onEach { viewState ->
@@ -206,7 +206,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
       }
       .launchIn(lifecycleScope)
 
-    model
+    viewModel
       .events
       .flowWithLifecycle(lifecycle)
       .onEach { event ->
@@ -333,7 +333,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
   private fun openChat() {
     lifecycleScope.launch {
-      model.triggerOpenChat()
+      viewModel.triggerOpenChat()
     }
   }
 
@@ -362,15 +362,15 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
   private fun onSign(checkoutMethod: CheckoutMethod, paymentMethods: PaymentMethodsApiResponse?) {
     when (checkoutMethod) {
-      CheckoutMethod.SWEDISH_BANK_ID -> model.onSwedishBankIdSign()
+      CheckoutMethod.SWEDISH_BANK_ID -> viewModel.onSwedishBankIdSign()
       CheckoutMethod.SIMPLE_SIGN -> {
         if (paymentMethods != null) {
           startAdyenPayment(marketManager.market, paymentMethods)
         } else {
-          model.onOpenCheckout()
+          viewModel.onOpenCheckout()
         }
       }
-      CheckoutMethod.APPROVE_ONLY -> model.approveOffer()
+      CheckoutMethod.APPROVE_ONLY -> viewModel.approveOffer()
       CheckoutMethod.NORWEGIAN_BANK_ID,
       CheckoutMethod.DANISH_BANK_ID,
       CheckoutMethod.UNKNOWN,
@@ -386,7 +386,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
       is DropInResult.CancelledByUser -> {}
       is DropInResult.Error -> showErrorDialog("Could not connect payment") {}
       is DropInResult.Finished -> {
-        model.onPaymentTokenIdReceived(PaymentTokenId(result.result))
+        viewModel.onPaymentTokenIdReceived(PaymentTokenId(result.result))
       }
       else -> {}
     }
@@ -416,7 +416,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         positiveLabel = hedvig.resources.R.string.general_back_button,
         negativeLabel = hedvig.resources.R.string.general_discard_button,
         positiveAction = {},
-        negativeAction = { model.onDiscardOffer() },
+        negativeAction = { viewModel.onDiscardOffer() },
       )
       true
     }

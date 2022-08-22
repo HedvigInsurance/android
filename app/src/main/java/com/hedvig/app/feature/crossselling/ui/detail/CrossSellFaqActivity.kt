@@ -11,7 +11,6 @@ import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.BaseActivity
-import com.hedvig.app.R
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.crossselling.model.NavigateChat
 import com.hedvig.app.feature.crossselling.model.NavigateEmbark
@@ -36,12 +35,12 @@ class CrossSellFaqActivity : BaseActivity() {
       ?: throw IllegalArgumentException("Programmer error: CROSS_SELL not passed to ${this.javaClass.name}")
   }
 
-  private val model: CrossSellFaqViewModel by viewModel { parametersOf(crossSell) }
+  private val viewModel: CrossSellFaqViewModel by viewModel { parametersOf(crossSell) }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    model.viewState
+    viewModel.viewState
       .flowWithLifecycle(lifecycle)
       .onEach(::handleViewState)
       .launchIn(lifecycleScope)
@@ -57,7 +56,7 @@ class CrossSellFaqActivity : BaseActivity() {
               .show(supportFragmentManager, FAQBottomSheet.TAG)
           },
           openChat = ::openChat,
-          onCtaClick = { model.onCtaClick() },
+          onCtaClick = { viewModel.onCtaClick() },
           items = crossSell.faq,
         )
       }
@@ -67,22 +66,22 @@ class CrossSellFaqActivity : BaseActivity() {
   private fun handleViewState(viewState: CrossSellFaqViewModel.ViewState) = with(viewState) {
     errorMessage?.let {
       showErrorDialog(getString(com.adyen.checkout.dropin.R.string.component_error)) {
-        model.dismissError()
+        viewModel.dismissError()
       }
     }
 
     navigateChat
       ?.navigate(this@CrossSellFaqActivity)
-      ?.also { model.actionOpened() }
+      ?.also { viewModel.actionOpened() }
 
     navigateEmbark
       ?.navigate(this@CrossSellFaqActivity)
-      ?.also { model.actionOpened() }
+      ?.also { viewModel.actionOpened() }
   }
 
   private fun openChat() {
     lifecycleScope.launch {
-      model.triggerOpenChat()
+      viewModel.triggerOpenChat()
     }
   }
 

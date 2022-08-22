@@ -3,26 +3,25 @@ package com.hedvig.app.authenticate
 import android.os.Bundle
 import android.view.View
 import com.hedvig.android.owldroid.graphql.type.AuthState
-import com.hedvig.app.R
 import com.hedvig.app.feature.genericauth.GenericAuthActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LoginDialog : AuthenticateDialog() {
-  private val model: UserViewModel by viewModel()
+  private val viewModel: UserViewModel by viewModel()
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
-    model.authStatus.observe(viewLifecycleOwner) { data ->
+    viewModel.authStatus.observe(viewLifecycleOwner) { data ->
       data.authStatus?.status?.let(::bindNewStatus)
     }
 
-    model.autoStartToken.observe(viewLifecycleOwner) { data ->
+    viewModel.autoStartToken.observe(viewLifecycleOwner) { data ->
       handleAutoStartToken(data.swedishBankIdAuth.autoStartToken)
     }
 
-    model.fetchBankIdStartToken()
+    viewModel.fetchBankIdStartToken()
 
     binding.login.setOnClickListener {
       requireActivity().startActivity(GenericAuthActivity.newInstance(requireActivity()))

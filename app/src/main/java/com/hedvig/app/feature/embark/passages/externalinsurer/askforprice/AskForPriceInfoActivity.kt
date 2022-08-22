@@ -27,7 +27,7 @@ class AskForPriceInfoActivity : BaseActivity() {
       ?: throw Error("Programmer error: DATA is null in ${this.javaClass.name}")
   }
 
-  private val model: AskForPriceInfoViewModel by viewModel {
+  private val viewModel: AskForPriceInfoViewModel by viewModel {
     parametersOf(parameter.selectedInsuranceProviderCollectionId)
   }
 
@@ -56,7 +56,7 @@ class AskForPriceInfoActivity : BaseActivity() {
           AskForPriceScreen(
             parameter.selectedInsuranceProviderName,
             onSkipRetrievePriceInfo = {
-              model.onSkipRetrievePriceInfo()
+              viewModel.onSkipRetrievePriceInfo()
               finishWithResult(null, null)
             },
             onNavigateToRetrievePrice = ::startRetrievePriceActivity,

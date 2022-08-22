@@ -40,7 +40,7 @@ import java.time.LocalDate
 import java.util.Calendar
 
 class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuation) {
-  private val model: KeyGearValuationViewModel by viewModel()
+  private val viewModel: KeyGearValuationViewModel by viewModel()
   private val binding by viewBinding(ActivityKeyGearValuationBinding::bind)
 
   private var isUploading = false
@@ -74,7 +74,7 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
         bottom = scrollView.paddingBottom + saveContainer.measuredHeight,
       )
 
-      model.data.observe(this@KeyGearValuationActivity) { data ->
+      viewModel.data.observe(this@KeyGearValuationActivity) { data ->
         safeLet(
           data,
           data?.fragments?.keyGearItemFragment?.maxInsurableAmount?.amount,
@@ -87,7 +87,7 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
             getString(hedvig.resources.R.string.KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_BODY, category)
         }
       }
-      model.loadItem(id)
+      viewModel.loadItem(id)
 
       dateInput.setHapticClickListener {
         val calendar = Calendar.getInstance()
@@ -126,7 +126,7 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
           val monetaryValue =
             MonetaryAmountV2Input(amount = price, currency = "SEK")
 
-          model.updatePurchaseDateAndPrice(id, date, monetaryValue)
+          viewModel.updatePurchaseDateAndPrice(id, date, monetaryValue)
         }
       }
 
@@ -149,7 +149,7 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
       }
     }
 
-    model.uploadResult.observe(this) { uploadResult ->
+    viewModel.uploadResult.observe(this) { uploadResult ->
       safeLet(
         uploadResult?.keyGearItem,
         uploadResult?.keyGearItem?.fragments?.keyGearItemFragment?.purchasePrice?.amount,

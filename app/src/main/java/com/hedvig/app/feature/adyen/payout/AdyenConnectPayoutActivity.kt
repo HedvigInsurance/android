@@ -22,7 +22,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
  * Hedvig paying to member
  */
 class AdyenConnectPayoutActivity : BaseActivity(R.layout.fragment_container_activity) {
-  private val model: AdyenConnectPayoutViewModel by viewModel()
+  private val viewModel: AdyenConnectPayoutViewModel by viewModel()
   private val marketManager: MarketManager by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +36,7 @@ class AdyenConnectPayoutActivity : BaseActivity(R.layout.fragment_container_acti
       return
     }
 
-    model.payoutMethods.observe(this) { response ->
+    viewModel.payoutMethods.observe(this) { response ->
       val dropInConfiguration = DropInConfiguration
         .Builder(
           this,
@@ -62,7 +62,7 @@ class AdyenConnectPayoutActivity : BaseActivity(R.layout.fragment_container_acti
       DropIn.startPayment(this, response, dropInConfiguration)
     }
 
-    model.shouldClose.observe(this) { shouldClose ->
+    viewModel.shouldClose.observe(this) { shouldClose ->
       if (shouldClose) {
         finish()
       }
