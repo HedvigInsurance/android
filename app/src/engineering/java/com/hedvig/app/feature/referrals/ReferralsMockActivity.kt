@@ -20,7 +20,6 @@ import com.hedvig.app.referralsModule
 import com.hedvig.app.service.push.senders.ReferralsNotificationSender
 import com.hedvig.app.service.push.senders.ReferralsNotificationSender.Companion.DATA_MESSAGE_REFERRED_SUCCESS_NAME
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES
-import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNTS
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_ONE_REFEREE
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_ONE_REFEREE_AND_OTHER_DISCOUNT
 import com.hedvig.app.testdata.feature.referrals.builders.EditCodeDataBuilder
@@ -59,7 +58,6 @@ class ReferralsMockActivity : MockActivity() {
         loadInitially = true
         shouldSucceed = true
         hasLoadedOnce = false
-        afterRefreshData = REFERRALS_DATA_WITH_NO_DISCOUNTS
       }
       startReferralsTab()
     }
@@ -69,7 +67,6 @@ class ReferralsMockActivity : MockActivity() {
         shouldSucceed = true
         hasLoadedOnce = false
         referralsData = REFERRALS_DATA_WITH_ONE_REFEREE
-        afterRefreshData = REFERRALS_DATA_WITH_ONE_REFEREE
       }
       startReferralsTab()
     }
@@ -79,8 +76,6 @@ class ReferralsMockActivity : MockActivity() {
         shouldSucceed = true
         hasLoadedOnce = false
         referralsData = REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES
-        afterRefreshData =
-          REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES
       }
       startReferralsTab()
     }
@@ -90,17 +85,6 @@ class ReferralsMockActivity : MockActivity() {
         shouldSucceed = true
         hasLoadedOnce = false
         referralsData = REFERRALS_DATA_WITH_ONE_REFEREE_AND_OTHER_DISCOUNT
-        afterRefreshData = REFERRALS_DATA_WITH_ONE_REFEREE_AND_OTHER_DISCOUNT
-      }
-      startReferralsTab()
-    }
-    clickableItem("Pull to Refresh, Empty then One Referee") {
-      MockReferralsViewModel.apply {
-        loadInitially = true
-        shouldSucceed = true
-        referralsData = REFERRALS_DATA_WITH_NO_DISCOUNTS
-        hasLoadedOnce = false
-        afterRefreshData = REFERRALS_DATA_WITH_ONE_REFEREE
       }
       startReferralsTab()
     }
