@@ -74,10 +74,10 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
             ?.also { insuranceViewModel.crossSellActionOpened() }
 
           when {
-            errorMessage != null -> insuranceAdapter.submitList(
+            hasError -> insuranceAdapter.submitList(
               listOf(
                 InsuranceModel.Header,
-                InsuranceModel.Error(errorMessage),
+                InsuranceModel.Error,
               ),
             )
             items != null -> insuranceAdapter.submitList(items)

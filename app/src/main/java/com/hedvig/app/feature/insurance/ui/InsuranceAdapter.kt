@@ -178,8 +178,7 @@ class InsuranceAdapter(
         composeView.setContent {
           HedvigTheme {
             GenericErrorScreen(
-              description = data.message
-                ?: composeView.context.getString(hedvig.resources.R.string.home_tab_error_body),
+              description = composeView.context.getString(hedvig.resources.R.string.home_tab_error_body),
               onRetryButtonClick = { retry() },
               modifier = Modifier
                 .padding(16.dp)

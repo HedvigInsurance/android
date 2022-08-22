@@ -58,7 +58,7 @@ class TerminatedContractsActivity : BaseActivity(R.layout.terminated_contracts_a
         .onEach { viewState ->
           when (viewState) {
             is TerminatedContractsViewModel.ViewState.Error -> {
-              adapter.submitList(listOf(InsuranceModel.Error(viewState.message)))
+              adapter.submitList(listOf(InsuranceModel.Error))
             }
             is TerminatedContractsViewModel.ViewState.Success -> {
               adapter.submitList(
