@@ -64,7 +64,7 @@ dependencies {
   implementation(libs.adyen)
 }
 
-tasks.withType<com.apollographql.apollo3.gradle.internal.ApolloDownloadSchemaTask> {
+tasks.withType<com.apollographql.apollo3.gradle.internal.ApolloDownloadSchemaTask>().configureEach {
   doLast {
     val schemaPath = schema.get()
     val schemaFile = file(schemaPath)
