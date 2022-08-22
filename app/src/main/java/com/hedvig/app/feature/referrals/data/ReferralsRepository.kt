@@ -2,9 +2,7 @@ package com.hedvig.app.feature.referrals.data
 
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
-import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.apolloStore
-import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.android.owldroid.graphql.UpdateReferralCampaignCodeMutation
 import com.hedvig.app.util.apollo.QueryResult
@@ -16,14 +14,9 @@ class ReferralsRepository(
 ) {
   private val referralsQuery = ReferralsQuery()
 
-  fun referrals(): Flow<QueryResult<ReferralsQuery.Data>> = apolloClient
+  fun watchReferralsQueryData(): Flow<QueryResult<ReferralsQuery.Data>> = apolloClient
     .query(referralsQuery)
     .safeWatch()
-
-  suspend fun reloadReferrals(): ApolloResponse<ReferralsQuery.Data> = apolloClient
-    .query(referralsQuery)
-    .fetchPolicy(FetchPolicy.NetworkOnly)
-    .execute()
 
   suspend fun updateCode(newCode: String): ApolloResponse<UpdateReferralCampaignCodeMutation.Data> {
     val response = apolloClient

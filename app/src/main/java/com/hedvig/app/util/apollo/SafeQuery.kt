@@ -43,6 +43,15 @@ fun <D : Subscription.Data> ApolloCall<D>.safeSubscription(): Flow<QueryResult<D
     }
 }
 
+/**
+ * First tries to fetch the data from the network, and from then on looks into changes of the cache.
+ * If the first query from the internet fails, an exception is thrown internally and ends this flow by sending a last
+ * value of QueryResult.Error for the consumers to react appropriately.
+ * To then retry watching the query, this needs to be started and collected again. This can be done using
+ * [com.hedvig.app.util.coroutines.RetryChannel] for example.
+ * If any subsequent cache reads fail simply nothing is emitted and the flow continues reading the cache. That is
+ * because at that point we do have data to work with so there's no need for the error to propagate.
+ */
 fun <D : Query.Data> ApolloCall<D>.safeWatch(): Flow<QueryResult<D>> {
   return watch(fetchThrows = true)
     .map(ApolloResponse<D>::toQueryResult)
@@ -59,8 +68,8 @@ private fun <D : Operation.Data> ApolloResponse<D>.toQueryResult(): QueryResult<
   val data = data
   return when {
     hasErrors() -> {
-      val exception1 = errors?.first()?.extensions?.get("exception")
-      val body = (exception1 as? Map<*, *>)?.get("body")
+      val exception = errors?.first()?.extensions?.get("exception")
+      val body = (exception as? Map<*, *>)?.get("body")
       val message = (body as? Map<*, *>)?.get("message") as? String
       QueryResult.Error.QueryError(message ?: errors?.first()?.message)
     }
