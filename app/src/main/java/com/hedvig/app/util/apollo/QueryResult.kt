@@ -6,15 +6,73 @@ import arrow.core.Option
 import arrow.core.Some
 
 sealed interface QueryResult<out T> {
+
   data class Success<T>(val data: T) : QueryResult<T>
-  sealed class Error : QueryResult<Nothing> {
 
-    abstract val message: String?
+  sealed interface Error : QueryResult<Nothing> {
 
-    data class NoDataError(override val message: String?) : Error()
-    data class GeneralError(override val message: String?) : Error()
-    data class QueryError(override val message: String?) : Error()
-    data class NetworkError(override val message: String?) : Error()
+    val throwable: Throwable?
+    val message: String?
+
+    data class NoDataError(
+      override val throwable: Throwable?,
+      override val message: String?,
+    ) : Error {
+      companion object {
+        operator fun invoke(message: String?): NoDataError {
+          return NoDataError(null, message)
+        }
+
+        operator fun invoke(throwable: Throwable?): NoDataError {
+          return NoDataError(throwable, throwable?.localizedMessage)
+        }
+      }
+    }
+
+    data class GeneralError(
+      override val throwable: Throwable?,
+      override val message: String?,
+    ) : Error {
+      companion object {
+        operator fun invoke(message: String?): GeneralError {
+          return GeneralError(null, message)
+        }
+
+        operator fun invoke(throwable: Throwable?): GeneralError {
+          return GeneralError(throwable, throwable?.localizedMessage)
+        }
+      }
+    }
+
+    data class QueryError(
+      override val throwable: Throwable?,
+      override val message: String?,
+    ) : Error {
+      companion object {
+        operator fun invoke(message: String?): QueryError {
+          return QueryError(null, message)
+        }
+
+        operator fun invoke(throwable: Throwable?): QueryError {
+          return QueryError(throwable, throwable?.localizedMessage)
+        }
+      }
+    }
+
+    data class NetworkError(
+      override val throwable: Throwable?,
+      override val message: String?,
+    ) : Error {
+      companion object {
+        operator fun invoke(message: String?): NetworkError {
+          return NetworkError(null, message)
+        }
+
+        operator fun invoke(throwable: Throwable?): NetworkError {
+          return NetworkError(throwable, throwable?.localizedMessage)
+        }
+      }
+    }
   }
 }
 

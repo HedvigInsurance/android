@@ -22,12 +22,12 @@ suspend fun <D : Operation.Data> ApolloCall<D>.safeQuery(): QueryResult<D> {
   return try {
     execute().toQueryResult()
   } catch (apolloException: ApolloException) {
-    QueryResult.Error.NetworkError(apolloException.localizedMessage)
+    QueryResult.Error.NetworkError(apolloException)
   } catch (throwable: Throwable) {
     if (throwable is CancellationException) {
       throw throwable
     }
-    QueryResult.Error.GeneralError(throwable.localizedMessage)
+    QueryResult.Error.GeneralError(throwable)
   }
 }
 
@@ -36,9 +36,9 @@ fun <D : Subscription.Data> ApolloCall<D>.safeSubscription(): Flow<QueryResult<D
     .map(ApolloResponse<D>::toQueryResult)
     .catch { exception ->
       if (exception is ApolloException) {
-        emit(QueryResult.Error.NetworkError(exception.localizedMessage))
+        emit(QueryResult.Error.NetworkError(exception))
       } else {
-        emit(QueryResult.Error.GeneralError(exception.localizedMessage))
+        emit(QueryResult.Error.GeneralError(exception))
       }
     }
 }
@@ -48,9 +48,9 @@ fun <D : Query.Data> ApolloCall<D>.safeWatch(): Flow<QueryResult<D>> {
     .map(ApolloResponse<D>::toQueryResult)
     .catch { exception ->
       if (exception is ApolloException) {
-        emit(QueryResult.Error.NetworkError(exception.localizedMessage))
+        emit(QueryResult.Error.NetworkError(exception))
       } else {
-        emit(QueryResult.Error.GeneralError(exception.localizedMessage))
+        emit(QueryResult.Error.GeneralError(exception))
       }
     }
 }
