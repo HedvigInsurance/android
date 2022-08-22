@@ -31,7 +31,7 @@ class KtlintConventionPlugin : Plugin<Project> {
         }
       }
 
-      tasks.withType<org.jlleitschuh.gradle.ktlint.tasks.GenerateReportsTask> {
+      tasks.withType<org.jlleitschuh.gradle.ktlint.tasks.GenerateReportsTask>().configureEach {
         reportsOutputDirectory.set(
           rootProject.layout.buildDirectory.dir("ktlint-report-in-checkstyle-format"),
         )
