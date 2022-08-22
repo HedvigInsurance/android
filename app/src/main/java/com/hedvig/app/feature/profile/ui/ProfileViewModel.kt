@@ -133,7 +133,7 @@ class ProfileViewModel(
 
   fun onLogout() {
     viewModelScope.launch {
-      when (val result = logoutUseCase.logout()) {
+      when (val result = logoutUseCase.invoke()) {
         is LogoutUseCase.LogoutResult.Error -> _events.trySend(Event.Error(result.message))
         LogoutUseCase.LogoutResult.Success -> _events.trySend(Event.Logout)
       }

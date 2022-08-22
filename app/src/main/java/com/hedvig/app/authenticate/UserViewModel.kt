@@ -67,7 +67,7 @@ class UserViewModel(
 
   fun logout() {
     viewModelScope.launch {
-      when (val result = logoutUserCase.logout()) {
+      when (val result = logoutUserCase.invoke()) {
         is LogoutUseCase.LogoutResult.Error -> {
           _events.trySend(Event.Error(result.message))
         }

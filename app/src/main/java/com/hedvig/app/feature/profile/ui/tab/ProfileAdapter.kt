@@ -24,14 +24,14 @@ import e
 class ProfileAdapter(
   private val lifecycleOwner: LifecycleOwner,
   private val retry: () -> Unit,
-  private val onLogoutListener: () -> Unit,
+  private val logout: () -> Unit,
 ) : ListAdapter<ProfileModel, ProfileAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
     R.layout.profile_title -> ViewHolder.Title(parent)
     R.layout.profile_row -> ViewHolder.Row(parent)
     R.layout.profile_subtitle -> ViewHolder.Subtitle(parent)
-    R.layout.profile_logout -> ViewHolder.Logout(parent, onLogoutListener)
+    R.layout.profile_logout -> ViewHolder.Logout(parent, logout)
     ERROR -> ViewHolder.Error(ComposeView(parent.context), retry)
     else -> throw Error("Invalid viewType")
   }
@@ -81,12 +81,12 @@ class ProfileAdapter(
 
     class Logout(
       parent: ViewGroup,
-      private val onLogoutListener: () -> Unit,
+      private val logout: () -> Unit,
     ) : ViewHolder(parent.inflate(R.layout.profile_logout)) {
       private val binding by viewBinding(ProfileLogoutBinding::bind)
       override fun bind(data: ProfileModel, lifecycleOwner: LifecycleOwner) = with(binding) {
         root.setHapticClickListener {
-          onLogoutListener()
+          logout()
         }
       }
     }
