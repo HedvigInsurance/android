@@ -5,6 +5,7 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.UpdateLanguageMutation
 import com.hedvig.android.owldroid.graphql.type.Locale
 import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.toEither
 import e
 import i
 

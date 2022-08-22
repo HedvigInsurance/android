@@ -9,6 +9,7 @@ import com.hedvig.android.owldroid.graphql.AddPaymentTokenIdMutation
 import com.hedvig.app.feature.adyen.PaymentTokenId
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.toEither
 
 class AddPaymentTokenUseCase(
   private val apolloClient: ApolloClient,
