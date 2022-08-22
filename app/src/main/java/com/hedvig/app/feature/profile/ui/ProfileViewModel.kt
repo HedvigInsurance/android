@@ -14,7 +14,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -59,10 +58,6 @@ class ProfileViewModel(
               ViewState.Success(profileUiStateResult.value)
             }
           }
-        }
-        .catch { exception ->
-          e(exception)
-          ViewState.Error
         }
     }
     .stateIn(
