@@ -26,7 +26,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_code) {
   private val binding by viewBinding(ActivityReferralsEditCodeBinding::bind)
-  private val model: ReferralsEditCodeViewModel by viewModel()
+  private val viewModel: ReferralsEditCodeViewModel by viewModel()
 
   private var isSubmitting = false
   private var dirty = false
@@ -65,7 +65,7 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
 
       code.setText(currentCode)
       code.onChange { newValue ->
-        model.setIsDirty()
+        viewModel.setIsDirty()
         when (validate(newValue)) {
           ValidationResult.VALID -> {
             toolbar.menu.findItem(R.id.save).isEnabled = true
@@ -91,7 +91,7 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
         false
       }
 
-      model.isSubmitting.observe(this@ReferralsEditCodeActivity) { iss ->
+      viewModel.isSubmitting.observe(this@ReferralsEditCodeActivity) { iss ->
         isSubmitting = iss
 
         toolbar.menu.findItem(R.id.save).let { save ->
@@ -107,9 +107,9 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
           }
         }
       }
-      model.dirty.observe(this@ReferralsEditCodeActivity) { dirty = it }
+      viewModel.dirty.observe(this@ReferralsEditCodeActivity) { dirty = it }
 
-      model
+      viewModel
         .data
         .flowWithLifecycle(lifecycle)
         .onEach { viewState ->
@@ -189,7 +189,7 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
     }
     val enteredCode = binding.code.text.toString()
     if (validate(enteredCode) == ValidationResult.VALID) {
-      model.changeCode(enteredCode)
+      viewModel.changeCode(enteredCode)
     }
   }
 

@@ -31,7 +31,7 @@ import com.hedvig.app.util.spring
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_detail) {
-  private val model: KeyGearItemDetailViewModel by viewModel()
+  private val viewModel: KeyGearItemDetailViewModel by viewModel()
   private val binding by viewBinding(ActivityKeyGearItemDetailBinding::bind)
 
   private lateinit var photosBinder: PhotosBinder
@@ -58,16 +58,16 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
         intent.getSerializableExtra(CATEGORY) as KeyGearItemCategory,
       ) { supportStartPostponedEnterTransition() }
       valuationBinder = ValuationBinder(valuationSection)
-      nameBinder = NameBinder(nameSection, model)
+      nameBinder = NameBinder(nameSection, viewModel)
       receiptBinder =
         ReceiptBinder(receiptSection, supportFragmentManager)
     }
 
-    model.data.observe(this) { data ->
+    viewModel.data.observe(this) { data ->
       data?.let { bind(it) }
     }
 
-    model.isDeleted.observe(this) { isDeleted ->
+    viewModel.isDeleted.observe(this) { isDeleted ->
       isDeleted?.let { isd ->
         if (isd) {
           onBackPressed()
@@ -75,7 +75,7 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
       }
     }
     intent.getStringExtra(ID)?.let { id ->
-      model.loadItem(id)
+      viewModel.loadItem(id)
     }
   }
 
@@ -86,7 +86,7 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
 
   override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
     R.id.deleteItem -> {
-      model.deleteItem()
+      viewModel.deleteItem()
       true
     }
     else -> super.onOptionsItemSelected(item)

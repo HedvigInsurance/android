@@ -24,7 +24,7 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class CoverageFragment : Fragment(R.layout.contract_detail_coverage_fragment) {
   private val binding by viewBinding(ContractDetailCoverageFragmentBinding::bind)
-  private val model: ContractDetailViewModel by sharedViewModel()
+  private val viewModel: ContractDetailViewModel by sharedViewModel()
   private val imageLoader: ImageLoader by inject()
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -41,7 +41,7 @@ class CoverageFragment : Fragment(R.layout.contract_detail_coverage_fragment) {
         lm.spanSizeLookup = ConcatSpanSizeLookup(lm.spanCount) { concatAdapter.adapters }
       }
       addItemDecoration(ConcatItemDecoration { concatAdapter.adapters })
-      model.viewState
+      viewModel.viewState
         .flowWithLifecycle(lifecycle)
         .onEach { viewState ->
           when (viewState) {

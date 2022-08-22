@@ -3,19 +3,18 @@ package com.hedvig.app.feature.keygear.ui.itemdetail
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import com.hedvig.app.R
 import com.hedvig.app.ui.fragment.FileUploadBottomSheet
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class ReceiptFileUploadBottomSheet : FileUploadBottomSheet() {
-  private val model: KeyGearItemDetailViewModel by sharedViewModel()
+  private val viewModel: KeyGearItemDetailViewModel by sharedViewModel()
 
   override val title = hedvig.resources.R.string.KEY_GEAR_RECEIPT_UPLOAD_SHEET_TITLE
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
-    model.isUploading.observe(viewLifecycleOwner) { isUploading ->
+    viewModel.isUploading.observe(viewLifecycleOwner) { isUploading ->
       if (isUploading) {
         uploadStarted()
       } else {
@@ -25,7 +24,7 @@ class ReceiptFileUploadBottomSheet : FileUploadBottomSheet() {
   }
 
   override fun onFileChosen(uri: Uri) {
-    model.uploadReceipt(uri)
+    viewModel.uploadReceipt(uri)
   }
 
   companion object {

@@ -9,10 +9,10 @@ class RefetchingRedeemCodeBottomSheet : RedeemCodeBottomSheet() {
   override val quoteCartId: QuoteCartId?
     get() = null
 
-  private val model: PaymentViewModel by sharedViewModel()
+  private val viewModel: PaymentViewModel by sharedViewModel()
 
   override fun onRedeemSuccess(data: RedeemReferralCodeMutation.Data) {
-    model.load()
+    viewModel.load()
     dismiss()
   }
 

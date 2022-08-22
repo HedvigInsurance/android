@@ -42,7 +42,7 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
   private val contractId: String
     get() = intent.getStringExtra(ID)
       ?: throw IllegalArgumentException("Programmer error: ID not provided to ${this.javaClass.name}")
-  private val model: ContractDetailViewModel by viewModel { parametersOf(contractId) }
+  private val viewModel: ContractDetailViewModel by viewModel { parametersOf(contractId) }
   private val marketManager: MarketManager by inject()
   private val imageLoader: ImageLoader by inject()
 
@@ -79,9 +79,9 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
       }.attach()
       cardContainer.arrow.isInvisible = true
       cardContainer.card.transitionName = "contract_card"
-      error.onClick = { model.loadContract(contractId) }
+      error.onClick = { viewModel.loadContract(contractId) }
 
-      model
+      viewModel
         .viewState
         .flowWithLifecycle(lifecycle)
         .onEach { viewState ->

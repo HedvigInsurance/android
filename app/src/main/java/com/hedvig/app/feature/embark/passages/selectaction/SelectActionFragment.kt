@@ -34,7 +34,7 @@ import kotlinx.coroutines.yield
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
-  private val model: EmbarkViewModel by sharedViewModel()
+  private val viewModel: EmbarkViewModel by sharedViewModel()
   private val binding by viewBinding(FragmentEmbarkSelectActionBinding::bind)
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -73,7 +73,7 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
       isVisible = true
       hapticClicks()
         .mapLatest { onActionSelected(action, data, responseContainer) }
-        .onEach { model.submitAction(action.link, 0) }
+        .onEach { viewModel.submitAction(action.link, 0) }
         .launchIn(viewLifecycleScope)
       text = action.label
     }
@@ -94,7 +94,7 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
               actionJob = viewLifecycleScope.launch {
                 onActionSelected(selectAction, data, responseContainer)
                 yield()
-                model.submitAction(selectAction.link, position)
+                viewModel.submitAction(selectAction.link, position)
               }
             },
           )
@@ -109,10 +109,10 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
     responseBinding: EmbarkResponseBinding,
   ) {
     (selectAction.keys zip selectAction.values).forEach { (key, value) ->
-      model.putInStore(key, value)
+      viewModel.putInStore(key, value)
     }
-    model.putInStore("${data.passageName}Result", selectAction.label)
-    val response = model.preProcessResponse(data.passageName)
+    viewModel.putInStore("${data.passageName}Result", selectAction.label)
+    val response = viewModel.preProcessResponse(data.passageName)
       ?: Response.SingleResponse(selectAction.label)
     animateResponse(responseBinding, response)
     delay(PASSAGE_ANIMATION_DELAY_DURATION)

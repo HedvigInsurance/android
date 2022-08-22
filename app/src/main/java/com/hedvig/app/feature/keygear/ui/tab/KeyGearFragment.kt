@@ -31,7 +31,7 @@ import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
-  private val model: KeyGearViewModel by sharedViewModel()
+  private val viewModel: KeyGearViewModel by sharedViewModel()
   private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
   private val binding by viewBinding(FragmentKeyGearBinding::bind)
   private var scroll = 0
@@ -55,7 +55,7 @@ class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
         }
       }
 
-      error.onClick = { model.load() }
+      error.onClick = { viewModel.load() }
 
       items.adapter =
         KeyGearItemsAdapter(
@@ -84,7 +84,7 @@ class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
       items.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN))
       items.itemAnimator = SlideInItemAnimator()
 
-      model
+      viewModel
         .data
         .flowWithLifecycle(viewLifecycle)
         .onEach { viewState ->
@@ -103,7 +103,7 @@ class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
           }
           if (!hasSentAutoAddedItems) {
             hasSentAutoAddedItems = true
-            model.sendAutoAddedItems(requireContext())
+            viewModel.sendAutoAddedItems(requireContext())
           }
         }
         .launchIn(viewLifecycleScope)

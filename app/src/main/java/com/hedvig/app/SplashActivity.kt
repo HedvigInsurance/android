@@ -31,7 +31,7 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
   private val marketManager: MarketManager by inject()
   private val featureManager: FeatureManager by inject()
   private val binding by viewBinding(ActivitySplashBinding::bind)
-  private val model: SplashViewModel by viewModel()
+  private val viewModel: SplashViewModel by viewModel()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -61,7 +61,7 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
         LoginStatus.LoggedIn,
         -> {
           val dynamicLink = getDynamicLinkFromFirebase(intent)
-          model.onDynamicLinkOpened(dynamicLink)
+          viewModel.onDynamicLinkOpened(dynamicLink)
           dynamicLink.startActivity(
             context = this@SplashActivity,
             marketManager = marketManager,

@@ -33,7 +33,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class TerminatedContractsActivity : BaseActivity(R.layout.terminated_contracts_activity) {
   private val binding by viewBinding(TerminatedContractsActivityBinding::bind)
-  private val model: TerminatedContractsViewModel by viewModel()
+  private val viewModel: TerminatedContractsViewModel by viewModel()
   private val marketManager: MarketManager by inject()
   private val imageLoader: ImageLoader by inject()
 
@@ -50,9 +50,9 @@ class TerminatedContractsActivity : BaseActivity(R.layout.terminated_contracts_a
       toolbar.applyStatusBarInsets()
       recycler.applyNavigationBarInsets()
       toolbar.setNavigationOnClickListener { onBackPressed() }
-      val adapter = InsuranceAdapter(marketManager, model::load, {}, imageLoader, {})
+      val adapter = InsuranceAdapter(marketManager, viewModel::load, {}, imageLoader, {})
       recycler.adapter = adapter
-      model
+      viewModel
         .viewState
         .flowWithLifecycle(lifecycle)
         .onEach { viewState ->

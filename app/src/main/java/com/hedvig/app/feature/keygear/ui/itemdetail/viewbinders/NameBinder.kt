@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders
 
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
-import com.hedvig.app.R
 import com.hedvig.app.databinding.KeyGearItemDetailNameSectionBinding
 import com.hedvig.app.feature.keygear.ui.createitem.label
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
@@ -13,7 +12,7 @@ import com.hedvig.app.util.extensions.view.show
 
 class NameBinder(
   private val binding: KeyGearItemDetailNameSectionBinding,
-  private val model: KeyGearItemDetailViewModel,
+  private val viewModel: KeyGearItemDetailViewModel,
 ) {
   init {
     var isEditState = false
@@ -56,7 +55,7 @@ class NameBinder(
 
   private fun updateName() {
     val name = binding.nameEditText.text.toString()
-    model.updateItemName(name)
+    viewModel.updateItemName(name)
   }
 
   private fun focusEditName() {

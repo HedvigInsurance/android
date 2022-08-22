@@ -24,7 +24,7 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import java.util.concurrent.TimeUnit
 
 class GifPickerBottomSheet : BottomSheetDialogFragment() {
-  private val model: ChatViewModel by sharedViewModel()
+  private val viewModel: ChatViewModel by sharedViewModel()
   private val binding by viewBinding(SendGifDialogBinding::bind)
   private val imageLoader: ImageLoader by inject()
 
@@ -52,17 +52,17 @@ class GifPickerBottomSheet : BottomSheetDialogFragment() {
             if (query.isBlank()) {
               return@subscribe
             }
-            model.searchGifs(query)
+            viewModel.searchGifs(query)
           },
           { e(it) },
         )
       val adapter = GifAdapter(imageLoader) { url ->
-        model.respondWithGif(url)
+        viewModel.respondWithGif(url)
         dismiss()
       }
       gifRecyclerView.adapter = adapter
 
-      model.gifs.observe(viewLifecycleOwner) { data ->
+      viewModel.gifs.observe(viewLifecycleOwner) { data ->
         data?.gifs?.let { gifs ->
           (gifRecyclerView.adapter as? GifAdapter)?.submitList(gifs.filterNotNull())
           if (gifs.isEmpty()) {

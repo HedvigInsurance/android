@@ -14,7 +14,7 @@ import e
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class PostSignExplainerFragment : Fragment(R.layout.connect_payment_explainer_fragment) {
-  private val model: ConnectPaymentViewModel by sharedViewModel()
+  private val viewModel: ConnectPaymentViewModel by sharedViewModel()
   private val binding by viewBinding(ConnectPaymentExplainerFragmentBinding::bind)
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,7 +34,7 @@ class PostSignExplainerFragment : Fragment(R.layout.connect_payment_explainer_fr
     requireActivity().onBackPressedDispatcher.addCallback(
       viewLifecycleOwner,
       onBackPressedCallback({
-        showConfirmCloseDialog(requireContext(), paymentType, model::close)
+        showConfirmCloseDialog(requireContext(), paymentType, viewModel::close)
       },),
     )
 
@@ -50,11 +50,11 @@ class PostSignExplainerFragment : Fragment(R.layout.connect_payment_explainer_fr
         }
       }
       explainerButton.setHapticClickListener {
-        model.navigateTo(ConnectPaymentScreenState.Connect(TransitionType.ENTER_LEFT_EXIT_RIGHT))
+        viewModel.navigateTo(ConnectPaymentScreenState.Connect(TransitionType.ENTER_LEFT_EXIT_RIGHT))
       }
     }
 
-    model.readyToStart.observe(viewLifecycleOwner) { binding.explainerButton.isEnabled = it }
+    viewModel.readyToStart.observe(viewLifecycleOwner) { binding.explainerButton.isEnabled = it }
   }
 
   companion object {

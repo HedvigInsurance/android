@@ -21,7 +21,7 @@ import org.koin.core.parameter.parametersOf
 
 class IdentityInputFragment : Fragment(R.layout.identity_input_fragment) {
   private val binding by viewBinding(IdentityInputFragmentBinding::bind)
-  private val model: SimpleSignAuthenticationViewModel by sharedViewModel { parametersOf(data) }
+  private val viewModel: SimpleSignAuthenticationViewModel by sharedViewModel { parametersOf(data) }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -50,22 +50,22 @@ class IdentityInputFragment : Fragment(R.layout.identity_input_fragment) {
           signIn.setText(hedvig.resources.R.string.simple_sign_sign_in_dk)
         }
         else -> {
-          model.invalidMarket()
+          viewModel.invalidMarket()
           return
         }
       }
 
       inputText.apply {
         requestFocus()
-        doOnTextChanged { text, _, _, _ -> model.setInput(text) }
+        doOnTextChanged { text, _, _, _ -> viewModel.setInput(text) }
         onImeAction { startZignSecIfValid() }
       }
-      model.isValid.observe(viewLifecycleOwner) { isValid ->
-        if (model.isSubmitting.value != true) {
+      viewModel.isValid.observe(viewLifecycleOwner) { isValid ->
+        if (viewModel.isSubmitting.value != true) {
           signIn.isEnabled = isValid
         }
       }
-      model.isSubmitting.observe(viewLifecycleOwner) { isSubmitting ->
+      viewModel.isSubmitting.observe(viewLifecycleOwner) { isSubmitting ->
         if (isSubmitting) {
           signIn.isEnabled = false
         }
@@ -78,8 +78,8 @@ class IdentityInputFragment : Fragment(R.layout.identity_input_fragment) {
   }
 
   private fun startZignSecIfValid() {
-    if (model.isValid.value == true) {
-      model.startZignSec()
+    if (viewModel.isValid.value == true) {
+      viewModel.startZignSec()
     }
   }
 

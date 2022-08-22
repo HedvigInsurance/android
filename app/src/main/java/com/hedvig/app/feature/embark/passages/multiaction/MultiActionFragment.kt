@@ -28,7 +28,7 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.core.parameter.parametersOf
 
 class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action) {
-  private val model: EmbarkViewModel by sharedViewModel()
+  private val viewModel: EmbarkViewModel by sharedViewModel()
 
   private val multiActionParams: MultiActionParams by lazy {
     requireArguments().getParcelable<MultiActionParams>(DATA)
@@ -83,15 +83,15 @@ class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action) {
       .hapticClicks()
       .mapLatest { saveAndAnimate() }
       .onEach {
-        model.submitAction(multiActionParams.link)
+        viewModel.submitAction(multiActionParams.link)
       }
       .launchIn(viewLifecycleScope)
   }
 
   private suspend fun saveAndAnimate() {
-    multiActionViewModel.onContinue(model::putInStore)
+    multiActionViewModel.onContinue(viewModel::putInStore)
     val response =
-      model.preProcessResponse(multiActionParams.passageName) ?: Response.SingleResponse("")
+      viewModel.preProcessResponse(multiActionParams.passageName) ?: Response.SingleResponse("")
     animateResponse(binding.responseContainer, response)
     delay(PASSAGE_ANIMATION_DELAY_DURATION)
   }
