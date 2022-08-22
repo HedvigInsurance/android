@@ -95,20 +95,14 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
       }
 
       swipeToRefresh.setOnRefreshListener {
-        referralsViewModel.setRefreshing(true)
-        referralsViewModel.load()
-      }
-
-      referralsViewModel.isRefreshing.observe(viewLifecycleOwner) { isRefreshing ->
-        swipeToRefresh.isRefreshing = isRefreshing
+        referralsViewModel.reload()
       }
 
       referralsViewModel
         .data
         .flowWithLifecycle(viewLifecycle)
-        .onEach { viewState ->
-          when (viewState) {
-            ReferralsViewModel.ViewState.Error -> {
+        .onEach { uiState ->
+          swipeToRefresh.isRefreshing = uiState.isLoading
               adapter.submitList(ERROR_STATE)
             }
             ReferralsViewModel.ViewState.Loading -> {
