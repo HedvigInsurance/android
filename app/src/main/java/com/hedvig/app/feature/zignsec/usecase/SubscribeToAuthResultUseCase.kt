@@ -6,6 +6,7 @@ import com.hedvig.android.owldroid.graphql.AuthStatusSubscription
 import com.hedvig.android.owldroid.graphql.type.AuthState
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeSubscription
+import com.hedvig.app.util.apollo.toEither
 import d
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
