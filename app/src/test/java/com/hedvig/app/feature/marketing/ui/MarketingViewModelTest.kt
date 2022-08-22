@@ -50,10 +50,10 @@ class MarketingViewModelTest {
 
   @Test
   fun `when no market is selected, should display the market picker`() = runTest {
-    val model = createMarketingViewModel()
+    val viewModel = createMarketingViewModel()
 
-    assertThat(model.state.value.selectedMarket).isEqualTo(null)
-    assertThat(model.state.value).prop(com.hedvig.app.feature.marketing.MarketingViewState::isLoading).isTrue()
+    assertThat(viewModel.state.value.selectedMarket).isEqualTo(null)
+    assertThat(viewModel.state.value).prop(com.hedvig.app.feature.marketing.MarketingViewState::isLoading).isTrue()
   }
 
   @Test
@@ -61,71 +61,71 @@ class MarketingViewModelTest {
     val initialValues = mockk<GetInitialMarketPickerValuesUseCase>()
     coEvery { initialValues.invoke() } returns Pair(Market.SE, Language.EN_SE)
 
-    val model = createMarketingViewModel(getInitialMarketPickerValuesUseCase = initialValues)
+    val viewModel = createMarketingViewModel(getInitialMarketPickerValuesUseCase = initialValues)
     advanceUntilIdle()
 
-    assertThat(model.state.value.isLoading).isFalse()
-    assertThat(model.state.value.market).isEqualTo(Market.SE)
+    assertThat(viewModel.state.value.isLoading).isFalse()
+    assertThat(viewModel.state.value.market).isEqualTo(Market.SE)
   }
 
   @Test
   fun `when selecting a market, should update with that market showing`() = runTest {
-    val model = createMarketingViewModel()
+    val viewModel = createMarketingViewModel()
     advanceUntilIdle()
-    model.setMarket(Market.SE)
+    viewModel.setMarket(Market.SE)
 
-    assertThat(model.state.value.market).isEqualTo(Market.SE)
+    assertThat(viewModel.state.value.market).isEqualTo(Market.SE)
   }
 
   @Test
   fun `when selecting a language, should update with that language showing`() = runTest {
-    val model = createMarketingViewModel()
+    val viewModel = createMarketingViewModel()
     advanceUntilIdle()
-    model.setLanguage(Language.EN_SE)
+    viewModel.setLanguage(Language.EN_SE)
 
-    assertThat(model.state.value.language).isEqualTo(Language.EN_SE)
+    assertThat(viewModel.state.value.language).isEqualTo(Language.EN_SE)
   }
 
   @Test
   fun `after setting both market and language, should be able to set`() = runTest {
-    val model = createMarketingViewModel()
+    val viewModel = createMarketingViewModel()
 
     advanceUntilIdle()
-    model.setMarket(Market.SE)
-    model.setLanguage(Language.EN_SE)
+    viewModel.setMarket(Market.SE)
+    viewModel.setLanguage(Language.EN_SE)
 
-    assertThat(model.state.value.canSetMarketAndLanguage()).isTrue()
+    assertThat(viewModel.state.value.canSetMarketAndLanguage()).isTrue()
   }
 
   @Test
   fun `when setting market but not language, should set a default language for that market`() = runTest {
-    val model = createMarketingViewModel()
+    val viewModel = createMarketingViewModel()
 
     advanceUntilIdle()
-    model.setMarket(Market.SE)
+    viewModel.setMarket(Market.SE)
 
-    assertThat(model.state.value.language).isNotNull()
+    assertThat(viewModel.state.value.language).isNotNull()
   }
 
   @Test
   fun `when switching market and old language is incompatible, should set default language for that market`() =
     runTest {
-      val model = createMarketingViewModel()
+      val viewModel = createMarketingViewModel()
 
       advanceUntilIdle()
-      model.setMarket(Market.SE)
-      model.setMarket(Market.NO)
+      viewModel.setMarket(Market.SE)
+      viewModel.setMarket(Market.NO)
 
-      assertThat(model.state.value.language).all {
+      assertThat(viewModel.state.value.language).all {
         isNotNull()
         isNotEqualTo(Language.EN_SE)
       }
     }
 
   @Test
-  fun `when a market is provided to view model, should have a selected market`() = runTest {
-    val model = createMarketingViewModel(market = Market.SE)
-    assertThat(model.state.value.selectedMarket).isEqualTo(Market.SE)
+  fun `when a market is provided to viewModel, should have a selected market`() = runTest {
+    val viewModel = createMarketingViewModel(market = Market.SE)
+    assertThat(viewModel.state.value.selectedMarket).isEqualTo(Market.SE)
   }
 
   @Test
@@ -133,15 +133,15 @@ class MarketingViewModelTest {
     val submitMarketAndLanguagePreferencesUseCase = mockk<SubmitMarketAndLanguagePreferencesUseCase>()
     coEvery { submitMarketAndLanguagePreferencesUseCase.invoke(any(), any()) } returns Either.Right(Unit)
 
-    val model = createMarketingViewModel(
+    val viewModel = createMarketingViewModel(
       market = null,
       submitMarketAndLanguagePreferencesUseCase = submitMarketAndLanguagePreferencesUseCase,
     )
     advanceUntilIdle()
-    model.setMarket(Market.SE)
-    model.submitMarketAndLanguage()
+    viewModel.setMarket(Market.SE)
+    viewModel.submitMarketAndLanguage()
     advanceUntilIdle()
 
-    assertThat(model.state.value.selectedMarket).isNotNull()
+    assertThat(viewModel.state.value.selectedMarket).isNotNull()
   }
 }
