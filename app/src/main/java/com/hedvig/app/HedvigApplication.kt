@@ -5,6 +5,14 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.preference.PreferenceManager
 import com.apollographql.apollo3.ApolloClient
+import com.datadog.android.Datadog
+import com.datadog.android.core.configuration.Configuration
+import com.datadog.android.core.configuration.Credentials
+import com.datadog.android.log.Logger
+import com.datadog.android.privacy.TrackingConsent
+import com.datadog.android.rum.GlobalRum
+import com.datadog.android.rum.RumMonitor
+import com.datadog.android.timber.DatadogTree
 import com.hedvig.android.core.common.preferences.PreferenceKey
 import com.hedvig.android.hanalytics.tracking.ApplicationLifecycleTracker
 import com.hedvig.android.market.Language
@@ -79,6 +87,40 @@ open class HedvigApplication : Application() {
     }
 
     AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
+
+    setupDatadog()
+  }
+
+  private fun setupDatadog() {
+    val configuration = Configuration.Builder(
+      logsEnabled = true,
+      tracesEnabled = true,
+      crashReportsEnabled = true,
+      rumEnabled = true,
+    )
+      .trackInteractions()
+      .build()
+
+    val credentials = Credentials(
+      clientToken = BuildConfig.DATADOG_CLIENT_TOKEN,
+      envName = if (BuildConfig.BUILD_TYPE == "debug" || BuildConfig.BUILD_TYPE == "staging") "dev" else "prod",
+      variant = "",
+      rumApplicationId = BuildConfig.DATADOG_APPLICATION_ID,
+    )
+    // TODO Ask for permission to track and set trackingConsent accordingly
+    Datadog.initialize(this, credentials, configuration, TrackingConsent.GRANTED)
+
+    val logger = Logger.Builder()
+      .setNetworkInfoEnabled(true)
+      .setLogcatLogsEnabled(true)
+      .setDatadogLogsEnabled(true)
+      .setBundleWithTraceEnabled(true)
+      .build()
+
+    Timber.plant(DatadogTree(logger))
+
+    val monitor = RumMonitor.Builder().build()
+    GlobalRum.registerIfAbsent(monitor)
   }
 
   private suspend fun acquireHedvigToken() {

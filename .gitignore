@@ -32,3 +32,6 @@ mixpanel.xml
 
 # shake credentials
 shake.xml
+
+# datadog credentials
+datadog.properties

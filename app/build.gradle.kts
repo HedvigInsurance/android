@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 // TODO: Remove once https://youtrack.jetbrains.com/issue/KTIJ-19369 is fixed
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
@@ -10,11 +13,15 @@ plugins {
   id("kotlin-kapt")
   alias(libs.plugins.license)
   alias(libs.plugins.serialization)
+  id("com.datadoghq.dd-sdk-android-gradle-plugin")
 }
 
 licenseReport {
   copyHtmlReportToAssets = true
 }
+
+val datadogProperties = Properties()
+datadogProperties.load(FileInputStream(rootProject.file("datadog.properties")))
 
 android {
   buildFeatures {
@@ -34,6 +41,9 @@ android {
     resourceConfigurations.addAll(listOf("en", "en-rNO", "en-rSE", "en-rDK", "nb-rNO", "sv-rSE", "da-rDK"))
 
     testInstrumentationRunner = "com.hedvig.app.TestRunner"
+
+    buildConfigField("String", "DATADOG_CLIENT_TOKEN", datadogProperties["token"] as String)
+    buildConfigField("String", "DATADOG_APPLICATION_ID", datadogProperties["id"] as String)
   }
 
   lint {
@@ -292,4 +302,7 @@ dependencies {
   kaptDebug(libs.showkase.processor)
   "kaptStaging"(libs.showkase.processor)
   "kaptPullrequest"(libs.showkase.processor)
+
+  implementation("com.datadoghq:dd-sdk-android:1.8.1")
+  implementation("com.datadoghq:dd-sdk-android-timber:1.8.1")
 }
