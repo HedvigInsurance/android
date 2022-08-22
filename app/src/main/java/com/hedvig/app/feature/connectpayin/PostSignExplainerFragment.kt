@@ -33,9 +33,9 @@ class PostSignExplainerFragment : Fragment(R.layout.connect_payment_explainer_fr
 
     requireActivity().onBackPressedDispatcher.addCallback(
       viewLifecycleOwner,
-      onBackPressedCallback({
+      onBackPressedCallback {
         showConfirmCloseDialog(requireContext(), paymentType, viewModel::close)
-      },),
+      },
     )
 
     binding.apply {
