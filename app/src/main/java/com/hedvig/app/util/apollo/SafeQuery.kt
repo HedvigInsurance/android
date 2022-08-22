@@ -16,7 +16,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import okhttp3.Call
@@ -37,16 +36,15 @@ suspend fun <D : Operation.Data> ApolloCall<D>.safeQuery(): QueryResult<D> {
 }
 
 fun <D : Subscription.Data> ApolloCall<D>.safeSubscription(): Flow<QueryResult<D>> {
-  return try {
-    toFlow().map(ApolloResponse<D>::toQueryResult)
-  } catch (apolloException: ApolloException) {
-    flowOf(QueryResult.Error.NetworkError(apolloException.localizedMessage))
-  } catch (throwable: Throwable) {
-    if (throwable is CancellationException) {
-      throw throwable
+  return toFlow()
+    .map(ApolloResponse<D>::toQueryResult)
+    .catch { exception ->
+      if (exception is ApolloException) {
+        emit(QueryResult.Error.NetworkError(exception.localizedMessage))
+      } else {
+        emit(QueryResult.Error.GeneralError(exception.localizedMessage))
+      }
     }
-    flowOf(QueryResult.Error.GeneralError(throwable.localizedMessage))
-  }
 }
 
 fun <D : Query.Data> ApolloCall<D>.safeWatch(): Flow<QueryResult<D>> {
