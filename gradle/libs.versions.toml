@@ -156,8 +156,8 @@ coreLibraryDesugaring = { module = "com.android.tools:desugar_jdk_libs", version
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
-datadog-dd-sdk = { module = "com.datadoghq:dd-sdk-android", version.ref = "datadog" }
-datadog-dd-sdk-timber = { module = "com.datadoghq:dd-sdk-android-timber", version.ref = "datadog" }
+datadog-sdk = { module = "com.datadoghq:dd-sdk-android", version.ref = "datadog" }
+datadog-timber = { module = "com.datadoghq:dd-sdk-android-timber", version.ref = "datadog" }
 firebase-bom = "com.google.firebase:firebase-bom:30.3.1"
 firebase-config = { module = "com.google.firebase:firebase-config" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }

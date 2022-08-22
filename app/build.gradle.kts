@@ -303,6 +303,6 @@ dependencies {
   "kaptStaging"(libs.showkase.processor)
   "kaptPullrequest"(libs.showkase.processor)
 
-  implementation("com.datadoghq:dd-sdk-android:1.8.1")
-  implementation("com.datadoghq:dd-sdk-android-timber:1.8.1")
+  implementation(libs.datadog.timber)
+  implementation(libs.datadog.sdk)
 }
