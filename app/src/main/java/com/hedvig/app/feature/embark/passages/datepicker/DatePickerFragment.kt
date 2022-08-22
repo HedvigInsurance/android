@@ -3,6 +3,8 @@ package com.hedvig.app.feature.embark.passages.datepicker
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentEmbarkDatePickerBinding
@@ -69,6 +71,9 @@ class DatePickerFragment : Fragment(R.layout.fragment_embark_date_picker) {
       MaterialDatePicker.Builder
         .datePicker()
         .setTitleText("")
+        .setCalendarConstraints(
+          CalendarConstraints.Builder().setValidator(DateValidatorPointForward.now()).build(),
+        )
         .apply { if (selectedDate != null) setSelection(selectedDate) }
         .build()
         .apply { addOnPositiveButtonClickListener { datePickerViewModel.onDateSelected(it) } }
