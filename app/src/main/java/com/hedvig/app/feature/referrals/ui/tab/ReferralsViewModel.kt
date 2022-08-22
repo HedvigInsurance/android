@@ -6,12 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.feature.referrals.data.ReferralsRepository
-import e
+import com.hedvig.app.util.apollo.QueryResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 abstract class ReferralsViewModel : ViewModel() {
@@ -47,25 +44,20 @@ class ReferralsViewModelImpl(
 ) : ReferralsViewModel() {
   init {
     viewModelScope.launch {
-
       referralsRepository
         .referrals()
-        .onEach { response ->
-          if (response.errors?.isNotEmpty() == true) {
-            _data.value = ViewState.Error
-            return@onEach
-          }
-          response.data?.let {
-            _data.value = ViewState.Success(
-              data = it,
-            )
+        .collect { response ->
+          when (response) {
+            is QueryResult.Error -> {
+              _data.value = ViewState.Error
+            }
+            is QueryResult.Success -> {
+              _data.value = ViewState.Success(
+                data = response.data,
+              )
+            }
           }
         }
-        .catch { e ->
-          e(e)
-          _data.value = ViewState.Error
-        }
-        .launchIn(this)
     }
   }
 
