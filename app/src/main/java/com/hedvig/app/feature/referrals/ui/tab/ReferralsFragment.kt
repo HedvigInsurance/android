@@ -80,7 +80,7 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
 
       invites.itemAnimator = ViewHolderReusingDefaultItemAnimator()
       val adapter = ReferralsAdapter(
-        referralsViewModel::load,
+        referralsViewModel::reload,
         marketManager,
       )
       invites.adapter = adapter
@@ -103,14 +103,16 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
         .flowWithLifecycle(viewLifecycle)
         .onEach { uiState ->
           swipeToRefresh.isRefreshing = uiState.isLoading
+          when (uiState) {
+            is ReferralsUiState.Error -> {
               adapter.submitList(ERROR_STATE)
             }
-            ReferralsViewModel.ViewState.Loading -> {
+            ReferralsUiState.Loading -> {
               adapter.submitList(LOADING_STATE)
             }
-            is ReferralsViewModel.ViewState.Success -> {
+            is ReferralsUiState.Success -> {
               val incentive =
-                viewState
+                uiState
                   .data
                   .referralInformation
                   .campaign
@@ -123,7 +125,7 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
               if (incentive == null) {
                 e { "Invariant detected: referralInformation.campaign.incentive is null" }
               } else {
-                val code = viewState.data.referralInformation.campaign.code
+                val code = uiState.data.referralInformation.campaign.code
                 share.setHapticClickListener {
                   requireContext().showShareSheet(hedvig.resources.R.string.REFERRALS_SHARE_SHEET_TITLE) { intent ->
                     intent.putExtra(
@@ -156,14 +158,14 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
               }
 
               if (
-                viewState.data.referralInformation.invitations.isEmpty() &&
-                viewState.data.referralInformation.referredBy == null
+                uiState.data.referralInformation.invitations.isEmpty() &&
+                uiState.data.referralInformation.referredBy == null
               ) {
                 (invites.adapter as? ReferralsAdapter)?.submitList(
                   listOfNotNull(
                     ReferralsModel.Title,
-                    ReferralsModel.Header.LoadedEmptyHeader(viewState.data),
-                    ReferralsModel.Code.LoadedCode(viewState.data),
+                    ReferralsModel.Header.LoadedEmptyHeader(uiState.data),
+                    ReferralsModel.Code.LoadedCode(uiState.data),
                   ),
                 )
                 return@onEach
@@ -171,12 +173,12 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
 
               val items = listOfNotNull(
                 ReferralsModel.Title,
-                ReferralsModel.Header.LoadedHeader(viewState.data),
-                ReferralsModel.Code.LoadedCode(viewState.data),
+                ReferralsModel.Header.LoadedHeader(uiState.data),
+                ReferralsModel.Code.LoadedCode(uiState.data),
                 ReferralsModel.InvitesHeader,
               ).toMutableList()
 
-              items += viewState.data.referralInformation.invitations
+              items += uiState.data.referralInformation.invitations
                 .filter {
                   it.fragments.referralFragment.asActiveReferral != null ||
                     it.fragments.referralFragment.asInProgressReferral != null ||
@@ -188,7 +190,7 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                   )
                 }
 
-              viewState.data.referralInformation.referredBy?.let {
+              uiState.data.referralInformation.referredBy?.let {
                 items.add(ReferralsModel.Referral.Referee(it.fragments.referralFragment))
               }
 
