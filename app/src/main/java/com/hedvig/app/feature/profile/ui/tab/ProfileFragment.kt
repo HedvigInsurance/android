@@ -100,8 +100,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
       )
       when (val charityState = profileUiState.charityState) {
         CharityState.DontShow -> {}
-        CharityState.NoneSelected -> add(buildCharityRowItem())
-        is CharityState.Selected -> add(buildCharityRowItem(charityState.charityName))
+        is CharityState.Show -> add(buildCharityRowItem(charityState.charityName))
       }
       when (val paymentState = profileUiState.paymentState) {
         is PaymentState.Show -> {

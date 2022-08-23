@@ -28,9 +28,8 @@ data class Member(
 }
 
 sealed interface CharityState {
-  data class Selected(val charityName: String) : CharityState
+  data class Show(val charityName: String?) : CharityState
   object DontShow : CharityState
-  object NoneSelected : CharityState
 }
 
 sealed interface PaymentState {

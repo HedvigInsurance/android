@@ -18,11 +18,10 @@ class ProfileQueryDataToProfileUiStateMapper(
 
   override suspend fun map(from: ProfileQuery.Data): ProfileUiState {
     val cashbackFragment = from.cashback?.fragments?.cashbackFragment
-    val charityState = run {
-      if (featureManager.isFeatureEnabled(Feature.SHOW_CHARITY).not()) return@run CharityState.DontShow
-      val charityName = cashbackFragment?.name
-      if (charityName != null) return@run CharityState.Selected(charityName)
-      CharityState.NoneSelected
+    val charityState = if (featureManager.isFeatureEnabled(Feature.SHOW_CHARITY).not()) {
+      CharityState.DontShow
+    } else {
+      CharityState.Show(cashbackFragment?.name)
     }
     val priceData = if (featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN)) {
       PaymentState.Show(
