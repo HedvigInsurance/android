@@ -15,7 +15,6 @@ buildscript {
   dependencies {
     classpath(libs.android.gradlePlugin)
     classpath(libs.kotlin.gradlePlugin)
-    classpath("com.datadoghq:dd-sdk-android-gradle-plugin:1.4.0")
   }
 }
 

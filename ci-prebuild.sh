@@ -6,12 +6,6 @@ id=${LOKALISE_ID}
 token=${LOKALISE_TOKEN}
 EOT
 
-cat <<EOT > datadog.properties
-id=${DATADOG_APPLICATION_ID}
-token=${DATADOG_CLIENT_TOKEN}
-EOT
-
-
 cat <<EOT > app/src/debug/res/values/adyen.xml
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
