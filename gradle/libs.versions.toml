@@ -21,7 +21,7 @@ datadogPlugin = "1.4.0"
 # Other versions sorted alphabetically
 accompanist = "0.25.0"
 androidx-arch-testing = "2.1.0"
-androidx-compose = "1.2.0"
+androidx-compose = "1.2.1"
 # Compiler now follows a different release cycle than the rest of the libraries
 # https://android-developers.googleblog.com/2022/06/independent-versioning-of-Jetpack-Compose-libraries.html
 # https://developer.android.com/jetpack/androidx/releases/compose-kotlin
