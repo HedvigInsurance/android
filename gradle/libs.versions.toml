@@ -16,6 +16,7 @@ kotlin = "1.7.0"
 ktlint = "0.45.2"
 ktlintGradlePlugin = "10.3.0"
 license = "0.9.0"
+datadogPlugin = "1.4.0"
 
 # Other versions sorted alphabetically
 accompanist = "0.25.0"
@@ -83,6 +84,7 @@ svg = "1.4"
 timber = "5.0.1"
 tooltip = "1.2.2"
 zXing = "3.5.0"
+datadog = "1.8.1"
 
 [libraries]
 # Plugins
@@ -155,6 +157,7 @@ coreLibraryDesugaring = { module = "com.android.tools:desugar_jdk_libs", version
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+datadog-sdk = { module = "com.datadoghq:dd-sdk-android", version.ref = "datadog" }
 firebase-bom = "com.google.firebase:firebase-bom:30.3.1"
 firebase-config = { module = "com.google.firebase:firebase-config" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
@@ -207,3 +210,4 @@ doctor = { id = "com.osacky.doctor", version.ref = "doctor" }
 googleServices = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 license = { id = "com.jaredsburrows.license", version.ref = "license" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+datadog = { id = "com.datadoghq.dd-sdk-android-gradle-plugin", version.ref = "datadogPlugin" }

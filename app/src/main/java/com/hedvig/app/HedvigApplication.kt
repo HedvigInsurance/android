@@ -5,6 +5,12 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.preference.PreferenceManager
 import com.apollographql.apollo3.ApolloClient
+import com.datadog.android.Datadog
+import com.datadog.android.core.configuration.Configuration
+import com.datadog.android.core.configuration.Credentials
+import com.datadog.android.privacy.TrackingConsent
+import com.datadog.android.rum.GlobalRum
+import com.datadog.android.rum.RumMonitor
 import com.hedvig.android.core.common.preferences.PreferenceKey
 import com.hedvig.android.hanalytics.tracking.ApplicationLifecycleTracker
 import com.hedvig.android.market.Language
@@ -79,6 +85,30 @@ open class HedvigApplication : Application() {
     }
 
     AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
+
+    setupDatadog()
+  }
+
+  private fun setupDatadog() {
+    val configuration = Configuration.Builder(
+      logsEnabled = true,
+      tracesEnabled = true,
+      crashReportsEnabled = true,
+      rumEnabled = true,
+    )
+      .trackInteractions()
+      .build()
+
+    val credentials = Credentials(
+      clientToken = "pub185bcba7ed324e83d068b80e25a81359",
+      envName = if (BuildConfig.BUILD_TYPE == "debug" || BuildConfig.BUILD_TYPE == "staging") "dev" else "prod",
+      variant = "",
+      rumApplicationId = "4d7b8355-396d-406e-b543-30a073050e8f",
+    )
+    Datadog.initialize(this, credentials, configuration, TrackingConsent.GRANTED)
+
+    val monitor = RumMonitor.Builder().build()
+    GlobalRum.registerIfAbsent(monitor)
   }
 
   private suspend fun acquireHedvigToken() {

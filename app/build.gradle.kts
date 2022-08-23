@@ -1,3 +1,5 @@
+
+
 // TODO: Remove once https://youtrack.jetbrains.com/issue/KTIJ-19369 is fixed
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
@@ -10,6 +12,7 @@ plugins {
   id("kotlin-kapt")
   alias(libs.plugins.license)
   alias(libs.plugins.serialization)
+  alias(libs.plugins.datadog)
 }
 
 licenseReport {
@@ -292,4 +295,6 @@ dependencies {
   kaptDebug(libs.showkase.processor)
   "kaptStaging"(libs.showkase.processor)
   "kaptPullrequest"(libs.showkase.processor)
+
+  implementation(libs.datadog.sdk)
 }
