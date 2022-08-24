@@ -2,10 +2,10 @@ package com.hedvig.app.feature.referrals.ui.tab
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.core.common.RetryChannel
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.feature.referrals.data.ReferralsRepository
 import com.hedvig.app.util.apollo.QueryResult
-import com.hedvig.app.util.coroutines.RetryChannel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -17,9 +17,7 @@ import kotlinx.coroutines.flow.update
 import kotlin.time.Duration.Companion.seconds
 
 abstract class ReferralsViewModel : ViewModel() {
-
   abstract val data: StateFlow<ReferralsUiState>
-
   abstract fun reload()
 }
 
@@ -28,7 +26,7 @@ class ReferralsViewModelImpl(
 ) : ReferralsViewModel() {
   private val retryChannel = RetryChannel()
 
-  private var isLoading = MutableStateFlow(false)
+  private val isLoading = MutableStateFlow(false)
 
   private val referralsResult = retryChannel.flatMapLatest {
     referralsRepository.watchReferralsQueryData().onEach {

@@ -17,6 +17,8 @@ val surfaceDark = Color(0xffBE9BF3)
 val progressBlue = Color(0xffC3CBD6)
 val progressYellow = Color(0xffEDCDAB)
 
+val lavender600 = Color(0xFF875EC5)
+
 @Suppress("unused")
 val Colors.onWarning: Color
   get() = hedvigBlack
@@ -26,4 +28,11 @@ val Colors.separator: Color
     hedvigBlack.copy(alpha = 0.12f)
   } else {
     hedvigOffWhite.copy(alpha = 0.12f)
+  }
+
+val Colors.textColorLink: Color
+  get() = if (isLight) {
+    lavender600
+  } else {
+    secondary
   }

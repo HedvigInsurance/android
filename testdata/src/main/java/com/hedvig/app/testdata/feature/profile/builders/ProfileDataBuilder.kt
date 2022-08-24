@@ -45,7 +45,6 @@ data class ProfileDataBuilder(
         ),
       ),
     ),
-    cashbackOptions = emptyList(),
     bankAccount = ProfileQuery.BankAccount(directDebitStatus = directDebitStatus),
     activePaymentMethodsV2 = if (adyenConnected) {
       ProfileQuery.ActivePaymentMethodsV2(

@@ -10,7 +10,6 @@ data class ProfileUiState(
   val charityState: CharityState,
   val paymentState: PaymentState,
   val cashbackUiState: CashbackUiState?,
-  val charityOptions: List<CharityOption>,
 )
 
 data class Member(
@@ -55,22 +54,6 @@ data class CashbackUiState(
         imageUrl = cashbackFragment.imageUrl,
         name = cashbackFragment.name,
         description = cashbackFragment.description,
-      )
-    }
-  }
-}
-
-data class CharityOption(
-  val id: String?,
-  val name: String?,
-  val description: String?,
-) {
-  companion object {
-    fun fromDto(dto: ProfileQuery.CashbackOption): CharityOption {
-      return CharityOption(
-        id = dto.id,
-        name = dto.name,
-        description = dto.description,
       )
     }
   }
