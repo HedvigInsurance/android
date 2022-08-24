@@ -163,7 +163,6 @@ import com.hedvig.app.feature.offer.usecase.providerstatus.GetProviderDisplayNam
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppViewModel
-import com.hedvig.app.feature.profile.ui.charity.CharityViewModel
 import com.hedvig.app.feature.profile.ui.myinfo.MyInfoViewModel
 import com.hedvig.app.feature.profile.ui.payment.PaymentRepository
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel
@@ -411,7 +410,6 @@ val viewModelModule = module {
   viewModel { SplashViewModel(get()) }
   viewModel { TooltipViewModel(get()) }
   viewModel { (collectionId: String) -> AskForPriceInfoViewModel(collectionId, get()) }
-  viewModel { CharityViewModel(get()) }
   viewModel { MyInfoViewModel(get()) }
   viewModel { AboutAppViewModel(get()) }
   viewModel { MarketingViewModel(get<MarketManager>().market, get(), get(), get(), get(), get(), get()) }
