@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.loggedin.ui
 
 import android.animation.ArgbEvaluator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -201,6 +202,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     return diff >= 30
   }
 
+  @SuppressLint("MissingSuperCall") // We *are* calling it, seems like a false positive
   override fun onSaveInstanceState(outState: Bundle) {
     outState.putSerializable(
       "tab",
@@ -217,19 +219,19 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
       LoggedInTabs.INSURANCE,
       -> {
         menuInflater.inflate(R.menu.base_tab_menu, menu)
-        menu.getItem(0).actionView.setOnClickListener {
+        menu.getItem(0).actionView?.setOnClickListener {
           onOptionsItemSelected(menu.getItem(0))
         }
       }
       LoggedInTabs.REFERRALS -> {
         menuInflater.inflate(R.menu.referral_more_info_menu, menu)
-        menu.getItem(0).actionView.setOnClickListener {
+        menu.getItem(0).actionView?.setOnClickListener {
           onOptionsItemSelected(menu.getItem(0))
         }
       }
       else -> {
         menuInflater.inflate(R.menu.base_tab_menu, menu)
-        menu.getItem(0).actionView.setOnClickListener {
+        menu.getItem(0).actionView?.setOnClickListener {
           onOptionsItemSelected(menu.getItem(0))
         }
       }

@@ -353,7 +353,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
       -> binding.offerToolbar.inflateMenu(R.menu.offer_menu)
       LoginStatus.LoggedIn -> {
         binding.offerToolbar.inflateMenu(R.menu.offer_menu_logged_in)
-        menu.getItem(0).actionView.setOnClickListener {
+        menu.getItem(0).actionView?.setOnClickListener {
           handleMenuItem(menu[0])
         }
       }
