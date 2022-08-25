@@ -27,7 +27,6 @@ import com.hedvig.app.graphQLQueryModule
 import com.hedvig.app.homeModule
 import com.hedvig.app.insuranceModule
 import com.hedvig.app.insurelyAuthModule
-import com.hedvig.app.keyGearModule
 import com.hedvig.app.localeBroadcastManagerModule
 import com.hedvig.app.localeManagerModule
 import com.hedvig.app.loggedInModule
@@ -85,7 +84,6 @@ class KoinInitializer : Initializer<KoinApplication> {
         homeModule,
         insuranceModule,
         insurelyAuthModule,
-        keyGearModule,
         localeBroadcastManagerModule,
         localeManagerModule,
         loggedInModule,

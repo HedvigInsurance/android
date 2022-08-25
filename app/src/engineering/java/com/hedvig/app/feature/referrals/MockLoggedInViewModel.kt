@@ -12,7 +12,6 @@ class MockLoggedInViewModel : LoggedInViewModel() {
   override val viewState: StateFlow<LoggedInViewState?> = MutableStateFlow(
     LoggedInViewState(
       loggedInQueryData = LoggedInDataBuilder().build(),
-      isKeyGearEnabled = true,
       isReferralsEnabled = true,
       unseenTabNotifications = emptySet(),
     ),
