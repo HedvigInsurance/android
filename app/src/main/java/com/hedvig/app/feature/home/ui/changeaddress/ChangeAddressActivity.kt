@@ -39,12 +39,12 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
 
   private val binding by viewBinding(ChangeAddressActivityBinding::bind)
-  private val model: ChangeAddressViewModel by viewModel()
+  private val viewModel: ChangeAddressViewModel by viewModel()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    model.events
+    viewModel.events
       .flowWithLifecycle(lifecycle)
       .onEach { event ->
         when (event) {
@@ -68,7 +68,7 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
   }
 
   private fun observeViewModel() {
-    model.viewState.observe(this) { viewState ->
+    viewModel.viewState.observe(this) { viewState ->
       TransitionManager.beginDelayedTransition(binding.root)
       setViewState(viewState)
     }
@@ -109,7 +109,7 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
         buttonIcon = R.drawable.ic_chat_white,
         onContinue = {
           lifecycleScope.launch {
-            model.triggerFreeTextChat()
+            viewModel.triggerFreeTextChat()
           }
         },
         viewState.upcomingAgreementResult,
@@ -122,14 +122,14 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
         },
         buttonText = "Try again",
         buttonIcon = null,
-        onContinue = { model.reload() },
+        onContinue = { viewModel.reload() },
       )
       is SelfChangeError -> setContent(
         titleText = getString(com.adyen.checkout.dropin.R.string.error_dialog_title),
         subtitleText = viewState.error.message ?: "Could not continue, please try again later",
         buttonText = "Try again",
         buttonIcon = null,
-        onContinue = { model.reload() },
+        onContinue = { viewModel.reload() },
       )
     }
   }

@@ -23,7 +23,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ReferralsActivatedActivity : BaseActivity(R.layout.activity_referrals_activated) {
   private val binding by viewBinding(ActivityReferralsActivatedBinding::bind)
-  private val model: ReferralsActivatedViewModel by viewModel()
+  private val viewModel: ReferralsActivatedViewModel by viewModel()
   private val marketManager: MarketManager by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,7 +45,7 @@ class ReferralsActivatedActivity : BaseActivity(R.layout.activity_referrals_acti
         finish()
       }
 
-      model.data.observe(this@ReferralsActivatedActivity) { data ->
+      viewModel.data.observe(this@ReferralsActivatedActivity) { data ->
         data
           .referralInformation
           .campaign

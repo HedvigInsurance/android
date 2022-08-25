@@ -13,11 +13,6 @@ query Profile {
   cashback {
     ...CashbackFragment
   }
-  cashbackOptions {
-    id
-    name
-    description
-  }
   bankAccount {
     directDebitStatus
   }

@@ -17,7 +17,7 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class ZignSecWebViewFragment : Fragment(R.layout.activity_zign_sec_authentication) {
   private val binding by viewBinding(ActivityZignSecAuthenticationBinding::bind)
-  private val model: SimpleSignAuthenticationViewModel by sharedViewModel()
+  private val viewModel: SimpleSignAuthenticationViewModel by sharedViewModel()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -45,7 +45,7 @@ class ZignSecWebViewFragment : Fragment(R.layout.activity_zign_sec_authenticatio
               return true
             }
             if (request?.url?.toString()?.contains("fail") == true) {
-              model.authFailed()
+              viewModel.authFailed()
               return true
             }
             request?.url?.toString()?.let { view?.loadUrl(it) }
@@ -62,7 +62,7 @@ class ZignSecWebViewFragment : Fragment(R.layout.activity_zign_sec_authenticatio
           }
         }
       }
-      model.zignSecUrl.observe(viewLifecycleOwner) { danishBankIdContainer.loadUrl(it) }
+      viewModel.zignSecUrl.observe(viewLifecycleOwner) { danishBankIdContainer.loadUrl(it) }
     }
   }
 

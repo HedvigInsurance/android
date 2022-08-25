@@ -1,0 +1,8 @@
+query CharityInformation {
+  cashback {
+    id
+    name
+    description
+    imageUrl
+  }
+}

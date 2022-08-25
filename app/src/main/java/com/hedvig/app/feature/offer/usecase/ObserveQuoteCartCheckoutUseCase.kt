@@ -23,10 +23,10 @@ class ObserveQuoteCartCheckoutUseCaseImpl(
   override fun invoke(quoteCartId: QuoteCartId): Flow<Either<QueryResult.Error, Checkout>> {
     return flow {
       while (currentCoroutineContext().isActive) {
-        val result = either<QueryResult.Error, Checkout> {
+        val result = either {
           val checkout = getQuoteCartCheckoutUseCase.invoke(quoteCartId).bind()
           ensureNotNull(checkout) {
-            QueryResult.Error.NoDataError(null)
+            QueryResult.Error.NoDataError("Checkout was null")
           }
           checkout
         }

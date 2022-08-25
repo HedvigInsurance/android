@@ -42,7 +42,7 @@ import kotlin.time.Duration.Companion.milliseconds
  * Used for Embark actions NumberAction and NumberActionSet
  */
 class NumberActionFragment : Fragment(R.layout.number_action_set_fragment) {
-  private val model: EmbarkViewModel by sharedViewModel()
+  private val viewModel: EmbarkViewModel by sharedViewModel()
   private val binding by viewBinding(NumberActionSetFragmentBinding::bind)
   private val data: NumberActionParams
     get() = requireArguments().getParcelable(PARAMS)
@@ -76,7 +76,7 @@ class NumberActionFragment : Fragment(R.layout.number_action_set_fragment) {
       submit
         .hapticClicks()
         .mapLatest { saveAndAnimate() }
-        .onEach { model.submitAction(data.link) }
+        .onEach { viewModel.submitAction(data.link) }
         .launchIn(viewLifecycleScope)
 
       messages.doOnNextLayout {
@@ -114,13 +114,13 @@ class NumberActionFragment : Fragment(R.layout.number_action_set_fragment) {
           if (numberActionViewModel.valid.value == true) {
             viewLifecycleScope.launch {
               saveAndAnimate()
-              model.submitAction(data.link)
+              viewModel.submitAction(data.link)
             }
           }
         }
       }
 
-      model.getPrefillFromStore(numberAction.key)?.let { binding.input.setText(it) }
+      viewModel.getPrefillFromStore(numberAction.key)?.let { binding.input.setText(it) }
       binding.root
     }
   }
@@ -130,10 +130,10 @@ class NumberActionFragment : Fragment(R.layout.number_action_set_fragment) {
       inputView = binding.inputLayout,
       delayDuration = KEYBOARD_HIDE_DELAY_DURATION,
     )
-    numberActionViewModel.onContinue(model::putInStore)
+    numberActionViewModel.onContinue(viewModel::putInStore)
     val allInput = numberActionViewModel.getAllInput()
     val response =
-      model.preProcessResponse(data.passageName)
+      viewModel.preProcessResponse(data.passageName)
         ?: Response.SingleResponse(allInput ?: "")
     animateResponse(binding.responseContainer, response)
     delay(PASSAGE_ANIMATION_DELAY_DURATION)

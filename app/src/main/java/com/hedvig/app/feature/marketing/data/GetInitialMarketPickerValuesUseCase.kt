@@ -10,6 +10,7 @@ import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.owldroid.graphql.GeoQuery
 import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.toEither
 
 class GetInitialMarketPickerValuesUseCase(
   private val marketManager: MarketManager,

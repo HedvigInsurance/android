@@ -19,7 +19,7 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
 
   private val binding by viewBinding(ContractDetailYourInfoFragmentBinding::bind)
-  private val model: ContractDetailViewModel by sharedViewModel()
+  private val viewModel: ContractDetailViewModel by sharedViewModel()
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     binding.root.applyNavigationBarInsets()
@@ -33,7 +33,7 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
       bottomYourInfoAdapter,
     )
 
-    model.viewState
+    viewModel.viewState
       .flowWithLifecycle(lifecycle)
       .onEach { viewState ->
         when (viewState) {

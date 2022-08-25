@@ -1,9 +1,5 @@
 package com.hedvig.app.util.apollo
 
-import arrow.core.Either
-import arrow.core.None
-import arrow.core.Option
-import arrow.core.Some
 import com.apollographql.apollo3.ApolloCall
 import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.api.Operation
@@ -15,7 +11,7 @@ import com.hedvig.android.core.common.await
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import okhttp3.Call
@@ -26,48 +22,54 @@ suspend fun <D : Operation.Data> ApolloCall<D>.safeQuery(): QueryResult<D> {
   return try {
     execute().toQueryResult()
   } catch (apolloException: ApolloException) {
-    QueryResult.Error.NetworkError(apolloException.localizedMessage)
+    QueryResult.Error.NetworkError(apolloException)
   } catch (throwable: Throwable) {
     if (throwable is CancellationException) {
       throw throwable
     }
-    QueryResult.Error.GeneralError(throwable.localizedMessage)
+    QueryResult.Error.GeneralError(throwable)
   }
 }
 
 fun <D : Subscription.Data> ApolloCall<D>.safeSubscription(): Flow<QueryResult<D>> {
-  return try {
-    toFlow().map(ApolloResponse<D>::toQueryResult)
-  } catch (apolloException: ApolloException) {
-    flowOf(QueryResult.Error.NetworkError(apolloException.localizedMessage))
-  } catch (throwable: Throwable) {
-    if (throwable is CancellationException) {
-      throw throwable
+  return toFlow()
+    .map(ApolloResponse<D>::toQueryResult)
+    .catch { exception ->
+      if (exception is ApolloException) {
+        emit(QueryResult.Error.NetworkError(exception))
+      } else {
+        emit(QueryResult.Error.GeneralError(exception))
+      }
     }
-    flowOf(QueryResult.Error.GeneralError(throwable.localizedMessage))
-  }
 }
 
+/**
+ * First tries to fetch the data from the network, and from then on looks into changes of the cache.
+ * If the first query from the internet fails, an exception is thrown internally and ends this flow by sending a last
+ * value of QueryResult.Error for the consumers to react appropriately.
+ * To then retry watching the query, this needs to be started and collected again. This can be done using
+ * [com.hedvig.app.util.coroutines.RetryChannel] for example.
+ * If any subsequent cache reads fail simply nothing is emitted and the flow continues reading the cache. That is
+ * because at that point we do have data to work with so there's no need for the error to propagate.
+ */
 fun <D : Query.Data> ApolloCall<D>.safeWatch(): Flow<QueryResult<D>> {
-  return try {
-    watch(null)
-    watch().map(ApolloResponse<D>::toQueryResult)
-  } catch (apolloException: ApolloException) {
-    flowOf(QueryResult.Error.NetworkError(apolloException.localizedMessage))
-  } catch (throwable: Throwable) {
-    if (throwable is CancellationException) {
-      throw throwable
+  return watch(fetchThrows = true)
+    .map(ApolloResponse<D>::toQueryResult)
+    .catch { exception ->
+      if (exception is ApolloException) {
+        emit(QueryResult.Error.NetworkError(exception))
+      } else {
+        emit(QueryResult.Error.GeneralError(exception))
+      }
     }
-    flowOf(QueryResult.Error.GeneralError(throwable.localizedMessage))
-  }
 }
 
 private fun <D : Operation.Data> ApolloResponse<D>.toQueryResult(): QueryResult<D> {
   val data = data
   return when {
     hasErrors() -> {
-      val exception1 = errors?.first()?.extensions?.get("exception")
-      val body = (exception1 as? Map<*, *>)?.get("body")
+      val exception = errors?.first()?.extensions?.get("exception")
+      val body = (exception as? Map<*, *>)?.get("body")
       val message = (body as? Map<*, *>)?.get("message") as? String
       QueryResult.Error.QueryError(message ?: errors?.first()?.message)
     }
@@ -99,33 +101,5 @@ suspend fun Call.safeGraphqlCall(): QueryResult<JSONObject> = withContext(Dispat
     QueryResult.Success(jsonObject)
   } catch (ioException: IOException) {
     QueryResult.Error.GeneralError(ioException.localizedMessage)
-  }
-}
-
-sealed class QueryResult<out T> {
-  data class Success<T>(val data: T) : QueryResult<T>()
-  sealed class Error : QueryResult<Nothing>() {
-
-    abstract val message: String?
-
-    data class NoDataError(override val message: String?) : Error()
-    data class GeneralError(override val message: String?) : Error()
-    data class QueryError(override val message: String?) : Error()
-    data class NetworkError(override val message: String?) : Error()
-  }
-
-  fun toOption(): Option<T> = when (this) {
-    is Error -> None
-    is Success -> Some(this.data)
-  }
-
-  fun toEither(): Either<Error, T> = when (this) {
-    is Error -> Either.Left(this)
-    is Success -> Either.Right(this.data)
-  }
-
-  inline fun <ErrorType> toEither(ifEmpty: (message: String?) -> ErrorType): Either<ErrorType, T> = when (this) {
-    is Error -> Either.Left(ifEmpty(message))
-    is Success -> Either.Right(this.data)
   }
 }

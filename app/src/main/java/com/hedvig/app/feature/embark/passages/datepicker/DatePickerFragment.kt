@@ -3,6 +3,8 @@ package com.hedvig.app.feature.embark.passages.datepicker
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentEmbarkDatePickerBinding
@@ -24,7 +26,7 @@ import java.lang.IllegalArgumentException
 import java.time.format.DateTimeFormatter
 
 class DatePickerFragment : Fragment(R.layout.fragment_embark_date_picker) {
-  private val model: EmbarkViewModel by sharedViewModel()
+  private val viewModel: EmbarkViewModel by sharedViewModel()
   private val datePickerViewModel: DatePickerViewModel by viewModel()
   private val binding by viewBinding(FragmentEmbarkDatePickerBinding::bind)
   private val data: DatePickerParams
@@ -46,7 +48,7 @@ class DatePickerFragment : Fragment(R.layout.fragment_embark_date_picker) {
       continueButton
         .hapticClicks()
         .mapLatest { saveAndAnimate() }
-        .onEach { model.submitAction(data.link) }
+        .onEach { viewModel.submitAction(data.link) }
         .launchIn(viewLifecycleScope)
     }
 
@@ -69,6 +71,9 @@ class DatePickerFragment : Fragment(R.layout.fragment_embark_date_picker) {
       MaterialDatePicker.Builder
         .datePicker()
         .setTitleText("")
+        .setCalendarConstraints(
+          CalendarConstraints.Builder().setValidator(DateValidatorPointForward.now()).build(),
+        )
         .apply { if (selectedDate != null) setSelection(selectedDate) }
         .build()
         .apply { addOnPositiveButtonClickListener { datePickerViewModel.onDateSelected(it) } }
@@ -80,9 +85,9 @@ class DatePickerFragment : Fragment(R.layout.fragment_embark_date_picker) {
     val date = datePickerViewModel.selectedDate.value?.format(DateTimeFormatter.ISO_DATE)
       ?: throw IllegalArgumentException("No date selected when trying to continue")
     val inputText = binding.dateLabel.text.toString()
-    model.putInStore("${data.passageName}Result", inputText)
-    model.putInStore(data.storeKey, date)
-    val response = model.preProcessResponse(data.passageName) ?: Response.SingleResponse(inputText)
+    viewModel.putInStore("${data.passageName}Result", inputText)
+    viewModel.putInStore(data.storeKey, date)
+    val response = viewModel.preProcessResponse(data.passageName) ?: Response.SingleResponse(inputText)
     animateResponse(binding.responseContainer, response)
   }
 

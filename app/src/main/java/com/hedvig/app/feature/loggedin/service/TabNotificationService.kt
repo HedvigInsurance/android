@@ -33,7 +33,6 @@ class TabNotificationService(
       LoggedInTabs.REFERRALS -> {
         referralsNotificationBadgeService.markAsSeen()
       }
-      LoggedInTabs.KEY_GEAR -> {}
       LoggedInTabs.HOME -> {}
       LoggedInTabs.PROFILE -> {}
     }

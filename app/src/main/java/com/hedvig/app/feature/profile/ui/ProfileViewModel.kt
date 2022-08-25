@@ -4,17 +4,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
+import com.hedvig.android.core.common.RetryChannel
 import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.feature.profile.ui.tab.ProfileQueryDataToProfileUiStateMapper
 import com.hedvig.app.feature.profile.ui.tab.ProfileUiState
-import com.hedvig.app.util.coroutines.RetryChannel
 import e
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -59,10 +58,6 @@ class ProfileViewModel(
               ViewState.Success(profileUiStateResult.value)
             }
           }
-        }
-        .catch { exception ->
-          e(exception)
-          ViewState.Error
         }
     }
     .stateIn(
@@ -127,18 +122,9 @@ class ProfileViewModel(
     }
   }
 
-  fun selectCashback(id: String) {
-    viewModelScope.launch {
-      val response = runCatching { profileRepository.selectCashback(id) }
-      response.getOrNull()?.data?.selectCashbackOption?.let { cashback ->
-        profileRepository.writeCashbackToCache(cashback)
-      }
-    }
-  }
-
   fun onLogout() {
     viewModelScope.launch {
-      when (val result = logoutUseCase.logout()) {
+      when (val result = logoutUseCase.invoke()) {
         is LogoutUseCase.LogoutResult.Error -> _events.trySend(Event.Error(result.message))
         LogoutUseCase.LogoutResult.Success -> _events.trySend(Event.Logout)
       }

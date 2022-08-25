@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.loggedin.ui
 
 import android.animation.ArgbEvaluator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -201,6 +202,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     return diff >= 30
   }
 
+  @SuppressLint("MissingSuperCall") // We *are* calling it, seems like a false positive
   override fun onSaveInstanceState(outState: Bundle) {
     outState.putSerializable(
       "tab",
@@ -212,24 +214,23 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
   override fun onCreateOptionsMenu(menu: Menu): Boolean {
     when (LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId)) {
       LoggedInTabs.HOME,
-      LoggedInTabs.KEY_GEAR,
       LoggedInTabs.PROFILE,
       LoggedInTabs.INSURANCE,
       -> {
         menuInflater.inflate(R.menu.base_tab_menu, menu)
-        menu.getItem(0).actionView.setOnClickListener {
+        menu.getItem(0).actionView?.setOnClickListener {
           onOptionsItemSelected(menu.getItem(0))
         }
       }
       LoggedInTabs.REFERRALS -> {
         menuInflater.inflate(R.menu.referral_more_info_menu, menu)
-        menu.getItem(0).actionView.setOnClickListener {
+        menu.getItem(0).actionView?.setOnClickListener {
           onOptionsItemSelected(menu.getItem(0))
         }
       }
       else -> {
         menuInflater.inflate(R.menu.base_tab_menu, menu)
-        menu.getItem(0).actionView.setOnClickListener {
+        menu.getItem(0).actionView?.setOnClickListener {
           onOptionsItemSelected(menu.getItem(0))
         }
       }
@@ -274,7 +275,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
   override fun onOptionsItemSelected(item: MenuItem): Boolean {
     when (LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId)) {
       LoggedInTabs.HOME,
-      LoggedInTabs.KEY_GEAR,
       LoggedInTabs.PROFILE,
       LoggedInTabs.INSURANCE,
       -> {
@@ -328,7 +328,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
           .collectLatest { viewState: LoggedInViewState ->
             val loggedInQueryData = viewState.loggedInQueryData
             setupBottomNav(
-              isKeyGearEnabled = viewState.isKeyGearEnabled,
               isReferralsEnabled = viewState.isReferralsEnabled,
               unseenTabNotifications = viewState.unseenTabNotifications,
             )
@@ -356,16 +355,13 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
   }
 
   private fun setupBottomNav(
-    isKeyGearEnabled: Boolean,
     isReferralsEnabled: Boolean,
     unseenTabNotifications: Set<LoggedInTabs>,
   ) {
-    val menuId = when {
-      isKeyGearEnabled && isReferralsEnabled -> R.menu.logged_in_menu_referrals_key_gear
-      !isKeyGearEnabled && !isReferralsEnabled -> R.menu.logged_in_menu_no_referrals_no_key_gear
-      isReferralsEnabled -> R.menu.logged_in_menu_referrals
-      isKeyGearEnabled -> R.menu.logged_in_menu_key_gear
-      else -> R.menu.logged_in_menu_referrals
+    val menuId = if (isReferralsEnabled) {
+      R.menu.logged_in_menu_referrals
+    } else {
+      R.menu.logged_in_menu_no_referrals
     }
     // `inflateMenu` on the bottom nav isn't idempotent therefore we need to guard against doing it many times
     if (lastMenuIdInflated != null && lastMenuIdInflated == menuId) return

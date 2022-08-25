@@ -17,7 +17,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
   private val binding by viewBinding(ActivityMoreOptionsBinding::bind)
-  private val model: MemberIdViewModel by viewModel()
+  private val viewModel: MemberIdViewModel by viewModel()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -31,10 +31,10 @@ class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
         onBackPressed()
       }
 
-      val adapter = MoreOptionsAdapter(model)
+      val adapter = MoreOptionsAdapter(viewModel)
       recycler.adapter = adapter
 
-      model
+      viewModel
         .state
         .flowWithLifecycle(lifecycle)
         .onEach { state ->

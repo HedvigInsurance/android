@@ -6,13 +6,13 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import com.hedvig.android.feature.charity.CharityActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ProfileFragmentBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
-import com.hedvig.app.feature.profile.ui.charity.CharityActivity
 import com.hedvig.app.feature.profile.ui.myinfo.MyInfoActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.feature.settings.SettingsActivity
@@ -27,7 +27,7 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class ProfileFragment : Fragment(R.layout.profile_fragment) {
   private val binding by viewBinding(ProfileFragmentBinding::bind)
-  private val model: ProfileViewModel by sharedViewModel()
+  private val viewModel: ProfileViewModel by sharedViewModel()
   private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
   private var scroll = 0
 
@@ -41,7 +41,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
 
     scroll = 0
 
-    val adapter = ProfileAdapter(viewLifecycleOwner, model::reload, model::onLogout)
+    val adapter = ProfileAdapter(viewLifecycleOwner, viewModel::reload, viewModel::onLogout)
     binding.recycler.apply {
       scroll = 0
       addOnScrollListener(
@@ -56,7 +56,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
       this.adapter = adapter
     }
 
-    model
+    viewModel
       .data
       .flowWithLifecycle(viewLifecycle)
       .onEach { viewState ->
@@ -70,7 +70,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
       }
       .launchIn(viewLifecycleScope)
 
-    model.events
+    viewModel.events
       .flowWithLifecycle(lifecycle)
       .onEach { event ->
         when (event) {
@@ -100,8 +100,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
       )
       when (val charityState = profileUiState.charityState) {
         CharityState.DontShow -> {}
-        CharityState.NoneSelected -> add(buildCharityRowItem())
-        is CharityState.Selected -> add(buildCharityRowItem(charityState.charityName))
+        is CharityState.Show -> add(buildCharityRowItem(charityState.charityName))
       }
       when (val paymentState = profileUiState.paymentState) {
         is PaymentState.Show -> {

@@ -21,7 +21,7 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 class PreviousInsurerFragment : Fragment(R.layout.previous_or_external_insurer_fragment) {
 
   private val binding by viewBinding(PreviousOrExternalInsurerFragmentBinding::bind)
-  private val model: EmbarkViewModel by sharedViewModel()
+  private val viewModel: EmbarkViewModel by sharedViewModel()
   private var insurerId: String? = null
 
   private val insurerData by lazy {
@@ -76,14 +76,14 @@ class PreviousInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
         .show()
     } else {
       insurerId?.let {
-        model.putInStore(insurerData.storeKey, it)
+        viewModel.putInStore(insurerData.storeKey, it)
         continueEmbark()
       } ?: d { "insurerId was null when continuing from PreviousInsurerFragment" }
     }
   }
 
   private fun continueEmbark() {
-    model.submitAction(insurerData.next)
+    viewModel.submitAction(insurerData.next)
   }
 
   private fun onShowInsurers() {

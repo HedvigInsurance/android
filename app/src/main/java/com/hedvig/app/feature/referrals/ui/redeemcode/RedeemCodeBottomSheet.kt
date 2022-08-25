@@ -27,7 +27,7 @@ abstract class RedeemCodeBottomSheet : BottomSheetDialogFragment() {
 
   abstract val quoteCartId: QuoteCartId?
 
-  private val model: RedeemCodeViewModel by viewModel {
+  private val viewModel: RedeemCodeViewModel by viewModel {
     parametersOf(quoteCartId)
   }
 
@@ -63,7 +63,7 @@ abstract class RedeemCodeBottomSheet : BottomSheetDialogFragment() {
 
       viewLifecycleScope.launchWhenStarted {
         viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-          model.viewState.collect { state ->
+          viewModel.viewState.collect { state ->
             state.errorMessage?.let {
               wrongPromotionCode(it)
             }
@@ -80,7 +80,7 @@ abstract class RedeemCodeBottomSheet : BottomSheetDialogFragment() {
   }
 
   private fun redeemPromotionCode(code: CampaignCode) {
-    model.redeemReferralCode(code)
+    viewModel.redeemReferralCode(code)
   }
 
   private fun wrongPromotionCode(errorMessage: String) {

@@ -29,7 +29,7 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class HomeFragment : Fragment(R.layout.home_fragment) {
-  private val model: HomeViewModel by viewModel()
+  private val viewModel: HomeViewModel by viewModel()
   private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
   private val binding by viewBinding(HomeFragmentBinding::bind)
   private var scroll = 0
@@ -38,7 +38,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
 
   private val registerForActivityResult: ActivityResultLauncher<Intent> =
     registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-      model.reload()
+      viewModel.reload()
     }
 
   override fun onResume() {
@@ -51,18 +51,18 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
 
     val homeAdapter = HomeAdapter(
       fragmentManager = parentFragmentManager,
-      retry = model::reload,
+      retry = viewModel::reload,
       startIntentForResult = ::startEmbarkForResult,
       imageLoader = imageLoader,
       marketManager = marketManager,
-      onClaimDetailCardClicked = model::onClaimDetailCardClicked,
-      onClaimDetailCardShown = model::onClaimDetailCardShown,
-      onPaymentCardShown = model::onPaymentCardShown,
+      onClaimDetailCardClicked = viewModel::onClaimDetailCardClicked,
+      onClaimDetailCardShown = viewModel::onClaimDetailCardShown,
+      onPaymentCardShown = viewModel::onPaymentCardShown,
       onPaymentCardClicked = ::onPaymentCardClicked,
     )
 
     binding.swipeToRefresh.setOnRefreshListener {
-      model.reload()
+      viewModel.reload()
     }
 
     binding.recycler.apply {
@@ -96,7 +96,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
       )
     }
 
-    model.viewState
+    viewModel.viewState
       .flowWithLifecycle(lifecycle)
       .onEach { viewState ->
         binding.swipeToRefresh.isRefreshing = viewState is HomeViewModel.ViewState.Loading
@@ -111,7 +111,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
   }
 
   private fun onPaymentCardClicked(paymentType: PaymentType) {
-    model.onPaymentCardClicked()
+    viewModel.onPaymentCardClicked()
     val market = marketManager.market ?: return
     startActivity(
       connectPayinIntent(

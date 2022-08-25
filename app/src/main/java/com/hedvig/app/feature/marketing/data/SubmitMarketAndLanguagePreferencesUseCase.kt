@@ -9,6 +9,7 @@ import com.hedvig.android.owldroid.graphql.UpdateLanguageMutation
 import com.hedvig.app.makeLocaleString
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.toEither
 
 class SubmitMarketAndLanguagePreferencesUseCase(
   private val apolloClient: ApolloClient,

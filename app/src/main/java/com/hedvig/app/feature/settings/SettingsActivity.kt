@@ -52,7 +52,7 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
   class PreferenceFragment : PreferenceFragmentCompat() {
     private val marketManager: MarketManager by inject()
     private val userViewModel: UserViewModel by sharedViewModel()
-    private val model: SettingsViewModel by sharedViewModel()
+    private val viewModel: SettingsViewModel by sharedViewModel()
     private val localeManager: LocaleManager by inject()
 
     @SuppressLint("ApplySharedPref")
@@ -138,7 +138,7 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
             Language
               .from(v)
               .apply(requireContext()).let { ctx ->
-                model.save(makeLocaleString(ctx, marketManager.market), localeManager.defaultLocale())
+                viewModel.save(makeLocaleString(ctx, marketManager.market), localeManager.defaultLocale())
               }
           }
           true

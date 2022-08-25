@@ -7,6 +7,7 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.toEither
 
 class GetContractDetailsUseCase(
   private val apolloClient: ApolloClient,

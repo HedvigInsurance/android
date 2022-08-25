@@ -17,7 +17,7 @@ sealed class InsuranceModel {
     val inner: CrossSellData,
   ) : InsuranceModel()
 
-  data class Error(val message: String?) : InsuranceModel()
+  object Error : InsuranceModel()
 
   object TerminatedContractsHeader : InsuranceModel()
   data class TerminatedContracts(val quantity: Int) : InsuranceModel()

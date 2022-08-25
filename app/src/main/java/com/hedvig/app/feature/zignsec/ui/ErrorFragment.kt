@@ -15,7 +15,7 @@ import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class ErrorFragment : Fragment() {
-  private val model: SimpleSignAuthenticationViewModel by sharedViewModel()
+  private val viewModel: SimpleSignAuthenticationViewModel by sharedViewModel()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -29,7 +29,7 @@ class ErrorFragment : Fragment() {
       setContent {
         HedvigTheme {
           GenericErrorScreen(
-            onRetryButtonClick = { model.cancelSignIn() },
+            onRetryButtonClick = { viewModel.cancelSignIn() },
             modifier = Modifier
               .padding(16.dp)
               .padding(top = (80 - 16).dp),

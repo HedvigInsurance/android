@@ -17,6 +17,7 @@ import com.apollographql.apollo3.cache.normalized.normalizedCache
 import com.apollographql.apollo3.interceptor.ApolloInterceptor
 import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
+import com.datadog.android.DatadogInterceptor
 import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.android.core.common.di.isDebugQualifier
 import com.hedvig.android.hanalytics.di.appIdQualifier
@@ -116,16 +117,6 @@ import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModelImpl
 import com.hedvig.app.feature.insurance.ui.detail.GetContractDetailsUseCase
 import com.hedvig.app.feature.insurance.ui.tab.InsuranceViewModel
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsViewModel
-import com.hedvig.app.feature.keygear.KeyGearValuationViewModel
-import com.hedvig.app.feature.keygear.KeyGearValuationViewModelImpl
-import com.hedvig.app.feature.keygear.data.DeviceInformationService
-import com.hedvig.app.feature.keygear.data.KeyGearItemsRepository
-import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemViewModel
-import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemViewModelImpl
-import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
-import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModelImpl
-import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
-import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModelImpl
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
@@ -162,7 +153,6 @@ import com.hedvig.app.feature.offer.usecase.providerstatus.GetProviderDisplayNam
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppViewModel
-import com.hedvig.app.feature.profile.ui.charity.CharityViewModel
 import com.hedvig.app.feature.profile.ui.myinfo.MyInfoViewModel
 import com.hedvig.app.feature.profile.ui.payment.PaymentRepository
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel
@@ -234,6 +224,7 @@ val applicationModule = module {
     val builder = OkHttpClient.Builder()
       // Temporary fix until back-end problems are handled
       .readTimeout(30, TimeUnit.SECONDS)
+      .addInterceptor(DatadogInterceptor())
       .addInterceptor { chain ->
         val original = chain.request()
         val builder = original
@@ -409,7 +400,6 @@ val viewModelModule = module {
   viewModel { SplashViewModel(get()) }
   viewModel { TooltipViewModel(get()) }
   viewModel { (collectionId: String) -> AskForPriceInfoViewModel(collectionId, get()) }
-  viewModel { CharityViewModel(get()) }
   viewModel { MyInfoViewModel(get()) }
   viewModel { AboutAppViewModel(get()) }
   viewModel { MarketingViewModel(get<MarketManager>().market, get(), get(), get(), get(), get(), get()) }
@@ -465,13 +455,6 @@ val profileModule = module {
   single<ProfileQueryDataToProfileUiStateMapper> { ProfileQueryDataToProfileUiStateMapper(get(), get(), get()) }
   single<ProfileRepository> { ProfileRepository(get()) }
   viewModel<ProfileViewModel> { ProfileViewModel(get(), get(), get()) }
-}
-
-val keyGearModule = module {
-  viewModel<KeyGearViewModel> { KeyGearViewModelImpl(get(), get()) }
-  viewModel<KeyGearItemDetailViewModel> { KeyGearItemDetailViewModelImpl(get()) }
-  viewModel<CreateKeyGearItemViewModel> { CreateKeyGearItemViewModelImpl(get()) }
-  viewModel<KeyGearValuationViewModel> { KeyGearValuationViewModelImpl(get()) }
 }
 
 val paymentModule = module {
@@ -596,8 +579,6 @@ val serviceModule = module {
   single { CrossSellNotificationBadgeService(get(), get()) }
   single { ReferralsNotificationBadgeService(get(), get()) }
   single { NotificationBadgeService(get()) }
-
-  single { DeviceInformationService(get()) }
 }
 
 val repositoriesModule = module {
@@ -609,7 +590,6 @@ val repositoriesModule = module {
   single { WhatsNewRepository(get(), get(), get()) }
   single { WelcomeRepository(get(), get()) }
   single { LanguageRepository(get()) }
-  single { KeyGearItemsRepository(get(), get(), get(), get()) }
   single { MarketingRepository(get(), get()) }
   single { AdyenRepository(get(), get()) }
   single { EmbarkRepository(get(), get()) }

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.startup.Initializer
 import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.core.datastore.di.deviceIdDataStoreModule
+import com.hedvig.android.feature.charity.di.charityModule
 import com.hedvig.android.hanalytics.di.featureManagerModule
 import com.hedvig.android.hanalytics.di.hAnalyticsModule
 import com.hedvig.android.hanalytics.di.trackerModule
@@ -26,7 +27,6 @@ import com.hedvig.app.graphQLQueryModule
 import com.hedvig.app.homeModule
 import com.hedvig.app.insuranceModule
 import com.hedvig.app.insurelyAuthModule
-import com.hedvig.app.keyGearModule
 import com.hedvig.app.localeBroadcastManagerModule
 import com.hedvig.app.localeManagerModule
 import com.hedvig.app.loggedInModule
@@ -67,6 +67,7 @@ class KoinInitializer : Initializer<KoinApplication> {
         cacheManagerModule,
         changeAddressModule,
         changeDateBottomSheetModule,
+        charityModule,
         chatEventModule,
         checkoutModule,
         clockModule,
@@ -83,7 +84,6 @@ class KoinInitializer : Initializer<KoinApplication> {
         homeModule,
         insuranceModule,
         insurelyAuthModule,
-        keyGearModule,
         localeBroadcastManagerModule,
         localeManagerModule,
         loggedInModule,

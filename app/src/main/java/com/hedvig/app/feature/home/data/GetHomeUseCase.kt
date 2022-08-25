@@ -8,6 +8,7 @@ import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.toEither
 
 class GetHomeUseCase(
   private val apolloClient: ApolloClient,

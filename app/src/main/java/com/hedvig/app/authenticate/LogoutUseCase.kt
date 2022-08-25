@@ -23,7 +23,7 @@ class LogoutUseCase(
     data class Error(val message: String?) : LogoutResult()
   }
 
-  suspend fun logout() = when (val result = userRepository.logout()) {
+  suspend fun invoke(): LogoutResult = when (val result = userRepository.logout()) {
     is QueryResult.Error -> LogoutResult.Error(result.message)
     is QueryResult.Success -> {
       clearLoginStatus()
