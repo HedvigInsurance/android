@@ -12,7 +12,6 @@ internal class HAnalyticsFeatureFlagProvider(
     Feature.CONNECT_PAYMENT_POST_ONBOARDING -> hAnalytics.postOnboardingShowPaymentStep()
     Feature.EXTERNAL_DATA_COLLECTION -> hAnalytics.allowExternalDataCollection()
     Feature.FRANCE_MARKET -> hAnalytics.frenchMarket()
-    Feature.KEY_GEAR -> hAnalytics.keyGear()
     Feature.MOVING_FLOW -> hAnalytics.movingFlow()
     Feature.QUOTE_CART -> hAnalytics.useQuoteCart()
     Feature.CONNECT_PAYIN_REMINDER -> hAnalytics.connectPaymentReminder()
