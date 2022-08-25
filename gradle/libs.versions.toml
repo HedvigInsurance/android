@@ -10,16 +10,17 @@ apollo = "3.5.0"
 buildTimeTracker = "0.11.0"
 cacheFix = "2.5.6"
 crashlytics = "2.9.1"
+datadogPlugin = "1.4.0"
 doctor = "0.8.1"
 googleServices = "4.3.13"
 kotlin = "1.7.10"
 ktlint = "0.45.2"
 ktlintGradlePlugin = "10.3.0"
 license = "0.9.0"
-datadogPlugin = "1.4.0"
 
 # Other versions sorted alphabetically
 accompanist = "0.25.1"
+adyen = "4.7.1"
 androidx-arch-testing = "2.1.0"
 androidx-compose = "1.2.1"
 # Compiler now follows a different release cycle than the rest of the libraries
@@ -52,12 +53,12 @@ androidx-test-core = "1.4.0"
 androidx-test-junit = "1.1.3"
 arrowKt = "1.1.2"
 assertK = "0.25"
-adyen = "4.7.1"
 coil = "2.2.0"
 coilTransformations = "2.0.2"
 concatAdapterExtension = "1.2.1"
 coreLibraryDesugaring = "1.1.5"
 coroutines = "1.6.4"
+datadog = "1.8.1"
 firebase = "28.4.2"
 flexbox = "3.0.0"
 fragmentViewBindingDelegate = "1.0.1"
@@ -72,8 +73,8 @@ materialComponents = "1.6.1"
 mixpanel = "5.9.4"
 mockk = "1.12.7"
 moneta = "1.4.2"
-okio = "3.2.0"
 okhttp = "4.10.0"
+okio = "3.2.0"
 playKtx = "1.8.1"
 reactiveX-Android = "2.1.1"
 reactiveX-Kotlin = "2.4.0"
@@ -213,10 +214,10 @@ apollo = { id = "com.apollographql.apollo3", version.ref = "apollo" }
 buildTimeTracker = { id = "net.rdrei.android.buildtimetracker", version.ref = "buildTimeTracker" }
 cacheFix = { id = "org.gradle.android.cache-fix", version.ref = "cacheFix" }
 crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
+datadog = { id = "com.datadoghq.dd-sdk-android-gradle-plugin", version.ref = "datadogPlugin" }
 doctor = { id = "com.osacky.doctor", version.ref = "doctor" }
 googleServices = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlintGradlePlugin" }
 license = { id = "com.jaredsburrows.license", version.ref = "license" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-datadog = { id = "com.datadoghq.dd-sdk-android-gradle-plugin", version.ref = "datadogPlugin" }
