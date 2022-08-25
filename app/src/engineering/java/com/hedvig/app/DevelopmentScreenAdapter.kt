@@ -111,7 +111,6 @@ class DevelopmentScreenAdapter(
             insuranceModule,
             offerModule,
             paymentModule,
-            keyGearModule,
             adyenModule,
           )
       }

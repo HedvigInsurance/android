@@ -117,16 +117,6 @@ import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModelImpl
 import com.hedvig.app.feature.insurance.ui.detail.GetContractDetailsUseCase
 import com.hedvig.app.feature.insurance.ui.tab.InsuranceViewModel
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsViewModel
-import com.hedvig.app.feature.keygear.KeyGearValuationViewModel
-import com.hedvig.app.feature.keygear.KeyGearValuationViewModelImpl
-import com.hedvig.app.feature.keygear.data.DeviceInformationService
-import com.hedvig.app.feature.keygear.data.KeyGearItemsRepository
-import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemViewModel
-import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemViewModelImpl
-import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
-import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModelImpl
-import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
-import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModelImpl
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
@@ -469,13 +459,6 @@ val profileModule = module {
   viewModel<ProfileViewModel> { ProfileViewModel(get(), get(), get()) }
 }
 
-val keyGearModule = module {
-  viewModel<KeyGearViewModel> { KeyGearViewModelImpl(get(), get()) }
-  viewModel<KeyGearItemDetailViewModel> { KeyGearItemDetailViewModelImpl(get()) }
-  viewModel<CreateKeyGearItemViewModel> { CreateKeyGearItemViewModelImpl(get()) }
-  viewModel<KeyGearValuationViewModel> { KeyGearValuationViewModelImpl(get()) }
-}
-
 val paymentModule = module {
   viewModel<PaymentViewModel> { PaymentViewModelImpl(get(), get(), get(), get()) }
 }
@@ -598,8 +581,6 @@ val serviceModule = module {
   single { CrossSellNotificationBadgeService(get(), get()) }
   single { ReferralsNotificationBadgeService(get(), get()) }
   single { NotificationBadgeService(get()) }
-
-  single { DeviceInformationService(get()) }
 }
 
 val repositoriesModule = module {
@@ -611,7 +592,6 @@ val repositoriesModule = module {
   single { WhatsNewRepository(get(), get(), get()) }
   single { WelcomeRepository(get(), get()) }
   single { LanguageRepository(get()) }
-  single { KeyGearItemsRepository(get(), get(), get(), get()) }
   single { MarketingRepository(get(), get()) }
   single { AdyenRepository(get(), get()) }
   single { EmbarkRepository(get(), get()) }

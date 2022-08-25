@@ -1,5 +1,0 @@
-mutation DeleteKeyGearItem($id: ID!) {
-  deleteKeyGearItem(id: $id) {
-    deleted
-  }
-}

@@ -28,7 +28,6 @@ import kotlin.time.Duration.Companion.seconds
 
 data class LoggedInViewState(
   val loggedInQueryData: LoggedInQuery.Data?,
-  val isKeyGearEnabled: Boolean,
   val isReferralsEnabled: Boolean,
   val unseenTabNotifications: Set<LoggedInTabs>,
 )
@@ -74,15 +73,13 @@ class LoggedInViewModelImpl(
     val loggedInQueryData = loggedInRepository.loggedInData().orNull()
     emit(loggedInQueryData)
   }
-  private val isKeyGearEnabled: Flow<Boolean> = flow { emit(featureManager.isFeatureEnabled(Feature.KEY_GEAR)) }
   private val isReferralsEnabled: Flow<Boolean> = flow { emit(featureManager.isFeatureEnabled(Feature.REFERRALS)) }
   override val viewState: StateFlow<LoggedInViewState?> = combine(
     loggedInQueryData,
-    isKeyGearEnabled,
     isReferralsEnabled,
     tabNotificationService.unseenTabNotifications(),
-  ) { loggedInQueryData, isKeyGearEnabled, isReferralsEnabled, unseenTabNotifications ->
-    LoggedInViewState(loggedInQueryData, isKeyGearEnabled, isReferralsEnabled, unseenTabNotifications)
+  ) { loggedInQueryData, isReferralsEnabled, unseenTabNotifications ->
+    LoggedInViewState(loggedInQueryData, isReferralsEnabled, unseenTabNotifications)
   }
     .stateIn(
       scope = viewModelScope,
@@ -100,7 +97,6 @@ class LoggedInViewModelImpl(
     when (tab) {
       LoggedInTabs.HOME -> hAnalytics.screenView(AppScreen.HOME)
       LoggedInTabs.INSURANCE -> hAnalytics.screenView(AppScreen.INSURANCES)
-      LoggedInTabs.KEY_GEAR -> {}
       LoggedInTabs.REFERRALS -> hAnalytics.screenView(AppScreen.FOREVER)
       LoggedInTabs.PROFILE -> hAnalytics.screenView(AppScreen.PROFILE)
     }
