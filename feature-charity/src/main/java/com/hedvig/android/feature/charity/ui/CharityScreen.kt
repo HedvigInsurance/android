@@ -1,7 +1,7 @@
 package com.hedvig.android.feature.charity.ui
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -30,25 +30,27 @@ import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
-import coil.compose.SubcomposeAsyncImage
-import coil.compose.SubcomposeAsyncImageContent
+import coil.compose.AsyncImagePainter
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
+import coil.size.Size
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.material.placeholder
-import com.google.accompanist.placeholder.placeholder
 import com.hedvig.android.core.designsystem.theme.textColorLink
 import com.hedvig.android.core.ui.FullScreenHedvigProgress
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
@@ -66,6 +68,7 @@ internal fun CharityScreen(
   retry: () -> Unit,
   goBack: () -> Unit,
   imageLoader: ImageLoader,
+  windowSizeClass: WindowSizeClass,
 ) {
   val coroutineScope = rememberCoroutineScope()
   val sheetState = rememberModalBottomSheetState(
@@ -82,42 +85,60 @@ internal fun CharityScreen(
     },
     modifier = Modifier.fillMaxSize(),
   ) {
-    Box(Modifier.fillMaxSize()) {
-      Column {
-        TopAppBarWithBack(
-          onClick = { goBack() },
-          title = "",
-          modifier = Modifier.windowInsetsPadding(
-            WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top),
+    ScreenContent(
+      uiState = uiState,
+      showSheet = { coroutineScope.launch { sheetState.show() } },
+      goBack = goBack,
+      retry = retry,
+      imageLoader = imageLoader,
+      windowSizeClass = windowSizeClass,
+    )
+  }
+}
+
+@Composable
+private fun ScreenContent(
+  uiState: CharityUiState,
+  showSheet: () -> Unit,
+  goBack: () -> Unit,
+  retry: () -> Unit,
+  imageLoader: ImageLoader,
+  windowSizeClass: WindowSizeClass,
+) {
+  Box(Modifier.fillMaxSize()) {
+    Column {
+      TopAppBarWithBack(
+        onClick = { goBack() },
+        title = "",
+        modifier = Modifier.windowInsetsPadding(
+          WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top),
+        ),
+      )
+      Column(
+        Modifier
+          .verticalScroll(rememberScrollState())
+          .padding(horizontal = 16.dp)
+          .windowInsetsPadding(
+            WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
           ),
-        )
-        Column(
-          Modifier
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp)
-            .windowInsetsPadding(
-              WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
-            ),
-        ) {
-          val charityInfo = uiState.charityInformation
-          if (charityInfo != null) {
-            CharityItems(
-              charityInfo = charityInfo,
-              openCharityInfo = {
-                coroutineScope.launch { sheetState.show() }
-              },
-              imageLoader = imageLoader,
-            )
-          } else if (uiState.isLoading.not()) {
-            GenericErrorScreen(
-              onRetryButtonClick = { retry() },
-              Modifier.padding(top = 110.dp),
-            )
-          }
+      ) {
+        val charityInfo = uiState.charityInformation
+        if (charityInfo != null) {
+          CharityItems(
+            charityInfo = charityInfo,
+            openCharityInfo = { showSheet() },
+            imageLoader = imageLoader,
+            windowSizeClass = windowSizeClass,
+          )
+        } else if (uiState.isLoading.not()) {
+          GenericErrorScreen(
+            onRetryButtonClick = { retry() },
+            Modifier.padding(top = 110.dp),
+          )
         }
       }
-      FullScreenHedvigProgress(uiState.isLoading)
     }
+    FullScreenHedvigProgress(uiState.isLoading)
   }
 }
 
@@ -126,15 +147,21 @@ private fun ColumnScope.CharityItems(
   charityInfo: CharityInformation,
   openCharityInfo: () -> Unit,
   imageLoader: ImageLoader,
+  windowSizeClass: WindowSizeClass,
 ) {
   Text(
     text = stringResource(R.string.PROFILE_CHARITY_TITLE),
     style = MaterialTheme.typography.h4,
   )
   if (charityInfo.imageUrl != null) {
-    CharityImage(charityInfo.imageUrl, imageLoader, Modifier.align(Alignment.CenterHorizontally))
+    CharityImage(
+      charityInfo.imageUrl,
+      imageLoader,
+      windowSizeClass,
+      Modifier.align(Alignment.CenterHorizontally),
+    )
   }
-  Spacer(Modifier.height(48.dp))
+  Spacer(Modifier.height(24.dp))
   Card(Modifier.fillMaxWidth()) {
     Column(Modifier.padding(16.dp)) {
       Text(
@@ -163,7 +190,7 @@ private fun ColumnScope.CharityItems(
   ) {
     Icon(
       imageVector = Icons.Outlined.Info,
-      contentDescription = Icons.Outlined.Info.name,
+      contentDescription = null,
       tint = MaterialTheme.colors.textColorLink,
     )
     Spacer(Modifier.width(8.dp))
@@ -174,49 +201,57 @@ private fun ColumnScope.CharityItems(
 }
 
 @Composable
-private fun ColumnScope.CharityImage(
+private fun CharityImage(
   imageUrl: String,
   imageLoader: ImageLoader,
+  windowSizeClass: WindowSizeClass,
   modifier: Modifier = Modifier,
 ) {
-  var isLoading by remember { mutableStateOf(false) }
-  var isFailed by remember { mutableStateOf(false) }
-  AnimatedVisibility(!isFailed) {
-    Spacer(Modifier.height(48.dp))
-  }
-  SubcomposeAsyncImage(
-    model = imageUrl.repeat(0),
-    contentDescription = null,
+  val painter = rememberAsyncImagePainter(
+    model = ImageRequest.Builder(LocalContext.current)
+      .data(imageUrl)
+      .size(Size.ORIGINAL)
+      .build(),
     imageLoader = imageLoader,
-    loading = {
-      Box(
-        Modifier
-          .fillMaxWidth()
-          .height(200.dp)
-          .placeholder(
-            visible = true,
-            highlight = PlaceholderHighlight.fade(),
-          ),
-      )
-    },
-    success = {
-      SubcomposeAsyncImageContent(modifier.padding(horizontal = 24.dp))
-    },
-    error = {},
-    onLoading = {},
-    onSuccess = {},
-    onError = {},
-    contentScale = ContentScale.Fit,
-    modifier = modifier
-      .fillMaxWidth()
-      .placeholder(
-        visible = isLoading,
-        highlight = PlaceholderHighlight.fade(),
-      )
-      .animateContentSize(),
   )
+  Box(
+    modifier
+      .fillMaxWidth(if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact) 1f else 0.4f)
+      .animateContentSize(),
+  ) {
+    when (painter.state) {
+      AsyncImagePainter.State.Empty -> {}
+      is AsyncImagePainter.State.Error -> {}
+      is AsyncImagePainter.State.Loading -> {
+        Column {
+          Spacer(Modifier.height(24.dp))
+          Box(
+            Modifier
+              .fillMaxWidth()
+              .height(150.dp)
+              .placeholder(
+                visible = true,
+                highlight = PlaceholderHighlight.fade(),
+              ),
+          )
+        }
+      }
+      is AsyncImagePainter.State.Success -> {
+        Column {
+          Spacer(Modifier.height(24.dp))
+          Image(
+            painter = painter,
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+            modifier = Modifier.padding(horizontal = 24.dp),
+          )
+        }
+      }
+    }
+  }
 }
 
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Preview
 @Composable
 private fun CharityScreenPreview() {
@@ -232,5 +267,6 @@ private fun CharityScreenPreview() {
     retry = {},
     goBack = {},
     imageLoader = rememberPreviewImageLoader(),
+    windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(500.dp, 300.dp)),
   )
 }
