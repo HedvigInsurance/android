@@ -15,6 +15,7 @@ dependencies {
   implementation(libs.androidx.other.appCompat)
   implementation(libs.androidx.other.activityCompose)
   implementation(libs.androidx.compose.runtime)
+  implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.accompanist.placeholder)
   implementation(libs.coil.compose)
   implementation(libs.koin.android)
