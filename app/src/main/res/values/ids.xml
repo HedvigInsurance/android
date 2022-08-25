@@ -7,9 +7,6 @@
     <item name="contactDetailsContainer" type="id" />
     <item name="name" type="id" />
     <item name="save" type="id" />
-    <item name="cashbackOptionTitle" type="id" />
-    <item name="cashbackOptionParagraph" type="id" />
-    <item name="cashbackSelect" type="id" />
     <item name="versionNumber" type="id" />
     <item name="dialogTitle" type="id" />
     <item name="dialogConfirm" type="id" />
