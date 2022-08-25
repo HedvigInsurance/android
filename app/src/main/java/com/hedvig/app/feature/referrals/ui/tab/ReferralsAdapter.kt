@@ -63,25 +63,20 @@ class ReferralsAdapter(
     R.layout.referrals_code -> ViewHolder.CodeViewHolder(parent)
     R.layout.referrals_invites_header -> ViewHolder.InvitesHeaderViewHolder(parent)
     R.layout.referrals_row -> ViewHolder.ReferralViewHolder(parent)
-    ERROR -> ViewHolder.ErrorViewHolder(ComposeView(parent.context))
+    ERROR -> ViewHolder.ErrorViewHolder(ComposeView(parent.context), reload)
     else -> throw Error("Invalid viewType")
   }
 
   override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-    holder.bind(getItem(position), reload, marketManager)
+    holder.bind(getItem(position), marketManager)
   }
 
   sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-    abstract fun bind(
-      data: ReferralsModel,
-      reload: () -> Unit,
-      marketManager: MarketManager,
-    )
+    abstract fun bind(data: ReferralsModel, marketManager: MarketManager)
 
     class TitleViewHolder(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.referrals_title)) {
       override fun bind(
         data: ReferralsModel,
-        reload: () -> Unit,
         marketManager: MarketManager,
       ) =
         Unit
@@ -91,7 +86,6 @@ class ReferralsAdapter(
       private val binding by viewBinding(ReferralsHeaderBinding::bind)
       override fun bind(
         data: ReferralsModel,
-        reload: () -> Unit,
         marketManager: MarketManager,
       ) {
         binding.apply {
@@ -306,7 +300,6 @@ class ReferralsAdapter(
       private val binding by viewBinding(ReferralsCodeBinding::bind)
       override fun bind(
         data: ReferralsModel,
-        reload: () -> Unit,
         marketManager: MarketManager,
       ) {
         binding.apply {
@@ -370,7 +363,6 @@ class ReferralsAdapter(
       ViewHolder(parent.inflate(R.layout.referrals_invites_header)) {
       override fun bind(
         data: ReferralsModel,
-        reload: () -> Unit,
         marketManager: MarketManager,
       ) = Unit
     }
@@ -379,7 +371,6 @@ class ReferralsAdapter(
       private val binding by viewBinding(ReferralsRowBinding::bind)
       override fun bind(
         data: ReferralsModel,
-        reload: () -> Unit,
         marketManager: MarketManager,
       ) {
         binding.apply {
@@ -451,10 +442,12 @@ class ReferralsAdapter(
       }
     }
 
-    class ErrorViewHolder(val composeView: ComposeView) : ViewHolder(composeView) {
+    class ErrorViewHolder(
+      val composeView: ComposeView,
+      val reload: () -> Unit,
+    ) : ViewHolder(composeView) {
       override fun bind(
         data: ReferralsModel,
-        reload: () -> Unit,
         marketManager: MarketManager,
       ) {
         composeView.setContent {

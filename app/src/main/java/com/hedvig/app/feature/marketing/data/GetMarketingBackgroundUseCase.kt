@@ -5,6 +5,7 @@ import com.hedvig.android.owldroid.graphql.MarketingBackgroundQuery
 import com.hedvig.android.owldroid.graphql.type.UserInterfaceStyle
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.toEither
 import com.hedvig.app.util.safeLet
 
 class GetMarketingBackgroundUseCase(

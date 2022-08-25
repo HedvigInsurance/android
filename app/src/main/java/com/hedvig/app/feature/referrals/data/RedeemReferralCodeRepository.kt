@@ -7,6 +7,7 @@ import com.hedvig.app.feature.offer.usecase.CampaignCode
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.toEither
 
 class RedeemReferralCodeRepository(
   private val apolloClient: ApolloClient,

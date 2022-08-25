@@ -10,6 +10,7 @@ import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.owldroid.graphql.ClaimDetailsQuery
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.toEither
 
 class GetClaimDetailUseCase(
   private val apolloClient: ApolloClient,

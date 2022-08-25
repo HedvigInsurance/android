@@ -8,6 +8,7 @@ import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.toEither
 
 interface CreateAccessTokenUseCase {
   object Success

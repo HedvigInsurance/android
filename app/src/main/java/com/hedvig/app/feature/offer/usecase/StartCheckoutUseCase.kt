@@ -9,6 +9,7 @@ import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.apollo.NetworkCacheManager
 import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.toEither
 import com.hedvig.hanalytics.HAnalytics
 
 class StartCheckoutUseCase(

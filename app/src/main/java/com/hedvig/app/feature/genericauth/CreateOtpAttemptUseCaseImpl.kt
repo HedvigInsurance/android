@@ -5,6 +5,7 @@ import arrow.core.merge
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.CreateOtpAttemptMutation
 import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.toEither
 import e
 
 interface CreateOtpAttemptUseCase {

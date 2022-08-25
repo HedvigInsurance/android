@@ -30,7 +30,7 @@ class InsuranceViewModel(
     val items: List<InsuranceModel>? = null,
     val navigateEmbark: NavigateEmbark? = null,
     val navigateChat: NavigateChat? = null,
-    val errorMessage: String? = null,
+    val hasError: Boolean = false,
     val loading: Boolean = false,
   )
 
@@ -41,7 +41,7 @@ class InsuranceViewModel(
     viewModelScope.launch {
       _viewState.value = ViewState(loading = true)
       when (val result = getContractsUseCase.invoke()) {
-        is Either.Left -> _viewState.value = ViewState(errorMessage = result.value.message, items = null)
+        is Either.Left -> _viewState.value = ViewState(hasError = true, items = null)
         is Either.Right -> _viewState.value = ViewState(items = createInsuranceItems(result))
       }
     }
@@ -89,7 +89,7 @@ class InsuranceViewModel(
 
   private suspend fun CrossSellData.Action.Embark.toViewState(): ViewState {
     return when (val result = createQuoteCartUseCase.invoke()) {
-      is Either.Left -> _viewState.value.copy(errorMessage = result.value.message)
+      is Either.Left -> _viewState.value.copy(hasError = true)
       is Either.Right -> {
         val embarkStoryId = appendQuoteCartId(embarkStoryId, result.value.id)
         val navigateEmbark = NavigateEmbark(embarkStoryId, title)

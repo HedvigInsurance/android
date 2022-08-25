@@ -9,6 +9,7 @@ import com.hedvig.android.owldroid.graphql.UpdateEmailMutation
 import com.hedvig.android.owldroid.graphql.UpdatePhoneNumberMutation
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeWatch
+import com.hedvig.app.util.apollo.toEither
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

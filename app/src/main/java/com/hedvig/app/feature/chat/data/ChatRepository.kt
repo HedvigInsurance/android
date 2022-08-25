@@ -30,6 +30,7 @@ import com.hedvig.android.owldroid.graphql.type.ChatResponseSingleSelectInput
 import com.hedvig.android.owldroid.graphql.type.ChatResponseTextInput
 import com.hedvig.app.service.FileService
 import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.toEither
 import com.hedvig.app.util.extensions.into
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

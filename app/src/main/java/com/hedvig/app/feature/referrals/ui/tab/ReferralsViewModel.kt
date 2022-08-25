@@ -1,78 +1,70 @@
 package com.hedvig.app.feature.referrals.ui.tab
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.feature.referrals.data.ReferralsRepository
-import e
+import com.hedvig.app.util.apollo.QueryResult
+import com.hedvig.app.util.coroutines.RetryChannel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.WhileSubscribed
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlin.time.Duration.Companion.seconds
 
 abstract class ReferralsViewModel : ViewModel() {
-  sealed class ViewState {
-    data class Success(
-      val data: ReferralsQuery.Data,
-    ) : ViewState()
 
-    object Loading : ViewState()
-    object Error : ViewState()
-  }
+  abstract val data: StateFlow<ReferralsUiState>
 
-  protected val _data = MutableStateFlow<ViewState>(ViewState.Loading)
-  val data = _data.asStateFlow()
-
-  protected val _isRefreshing = MutableLiveData<Boolean>()
-
-  val isRefreshing: LiveData<Boolean> = _isRefreshing
-
-  fun setRefreshing(refreshing: Boolean) {
-    _isRefreshing.postValue(refreshing)
-  }
-
-  abstract fun load()
-
-  fun retry() {
-    load()
-  }
+  abstract fun reload()
 }
 
 class ReferralsViewModelImpl(
   private val referralsRepository: ReferralsRepository,
 ) : ReferralsViewModel() {
-  init {
-    viewModelScope.launch {
+  private val retryChannel = RetryChannel()
 
-      referralsRepository
-        .referrals()
-        .onEach { response ->
-          if (response.errors?.isNotEmpty() == true) {
-            _data.value = ViewState.Error
-            return@onEach
-          }
-          response.data?.let {
-            _data.value = ViewState.Success(
-              data = it,
-            )
-          }
-        }
-        .catch { e ->
-          e(e)
-          _data.value = ViewState.Error
-        }
-        .launchIn(this)
+  private var isLoading = MutableStateFlow(false)
+
+  private val referralsResult = retryChannel.flatMapLatest {
+    referralsRepository.watchReferralsQueryData().onEach {
+      isLoading.update { false }
     }
   }
 
-  override fun load() {
-    viewModelScope.launch {
-      runCatching { referralsRepository.reloadReferrals() }
-      _isRefreshing.postValue(false)
+  override val data: StateFlow<ReferralsUiState> = combine(
+    isLoading,
+    referralsResult,
+  ) { isLoading, referralsResult ->
+    val referralsData: ReferralsQuery.Data? = (referralsResult as? QueryResult.Success)?.data
+    if (referralsData == null) {
+      ReferralsUiState.Error(isLoading)
+    } else {
+      ReferralsUiState.Success(referralsData, isLoading)
     }
+  }
+    .stateIn(
+      viewModelScope,
+      SharingStarted.WhileSubscribed(5.seconds),
+      ReferralsUiState.Loading,
+    )
+
+  override fun reload() {
+    isLoading.update { true }
+    retryChannel.retry()
+  }
+}
+
+sealed interface ReferralsUiState {
+  val isLoading: Boolean
+
+  data class Success(val data: ReferralsQuery.Data, override val isLoading: Boolean) : ReferralsUiState
+  data class Error(override val isLoading: Boolean) : ReferralsUiState
+  object Loading : ReferralsUiState {
+    override val isLoading: Boolean = true
   }
 }

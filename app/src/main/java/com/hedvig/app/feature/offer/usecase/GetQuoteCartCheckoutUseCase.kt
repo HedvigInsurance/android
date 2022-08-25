@@ -11,6 +11,7 @@ import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.model.toCheckout
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.toEither
 
 class GetQuoteCartCheckoutUseCase(
   private val apolloClient: ApolloClient,
