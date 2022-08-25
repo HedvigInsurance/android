@@ -40,7 +40,6 @@ class EmptyTest : TestCase() {
   @get:Rule
   val featureFlagRule = FeatureFlagRule(
     Feature.REFERRAL_CAMPAIGN to false,
-    Feature.KEY_GEAR to false,
     Feature.REFERRALS to true,
   )
 

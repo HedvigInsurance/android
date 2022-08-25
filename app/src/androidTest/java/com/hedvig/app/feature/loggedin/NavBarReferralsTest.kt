@@ -16,7 +16,7 @@ import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
 import org.junit.Rule
 import org.junit.Test
 
-class NavBarKeyGearAndReferralsTest : TestCase() {
+class NavBarReferralsTest : TestCase() {
   @get:Rule
   val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
@@ -29,7 +29,6 @@ class NavBarKeyGearAndReferralsTest : TestCase() {
 
   @get:Rule
   val featureFlagRule = FeatureFlagRule(
-    Feature.KEY_GEAR to true,
     Feature.REFERRALS to true,
   )
 
@@ -37,12 +36,12 @@ class NavBarKeyGearAndReferralsTest : TestCase() {
   val apolloCacheClearRule = ApolloCacheClearRule()
 
   @Test
-  fun shouldAllIconsIncludingKeyGear() = run {
+  fun shouldShowAllIcons() = run {
     activityRule.launch(LoggedInActivity.newInstance(context()))
 
     onScreen<LoggedInScreen> {
       bottomTabs {
-        hasNumberOfMenuItems(5)
+        hasNumberOfMenuItems(4)
       }
     }
   }

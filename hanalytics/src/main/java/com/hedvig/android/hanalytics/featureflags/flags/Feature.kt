@@ -8,7 +8,6 @@ enum class Feature(
   ),
   EXTERNAL_DATA_COLLECTION("Enables external data collection for offers, from eg. Insurely"),
   FRANCE_MARKET("Used to select french market in app"),
-  KEY_GEAR("Features where members can insure their important items. Only available for a small subset of members."),
   MOVING_FLOW("Lets a user change their address and get a new offer"),
   QUOTE_CART("Use new APIs for onboarding"),
   REFERRALS("Whether the referrals feature is enabled. Shows/Hides the forever tab. Used for Qasa."),

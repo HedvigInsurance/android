@@ -15,7 +15,6 @@ internal class DevFeatureFlagProvider(
       Feature.CONNECT_PAYIN_REMINDER -> !isQasaMember
       Feature.EXTERNAL_DATA_COLLECTION -> marketManager.market == Market.SE
       Feature.FRANCE_MARKET -> true
-      Feature.KEY_GEAR -> false
       Feature.MOVING_FLOW -> true
       Feature.QUOTE_CART -> false
       Feature.REFERRAL_CAMPAIGN -> false
