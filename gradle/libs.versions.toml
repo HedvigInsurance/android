@@ -1,6 +1,6 @@
 [versions]
 # androidSdkVersions
-compileSdkVersion = "32"
+compileSdkVersion = "33"
 targetSdkVersion = "32"
 minSdkVersion = "23"
 
@@ -38,6 +38,7 @@ androidx-other-constraintLayout = "2.1.4"
 androidx-other-core = "1.8.0"
 androidx-other-dynamicAnimation = "1.0.0"
 androidx-other-fragment = "1.5.2"
+androidx-other-material3 = "1.0.0-beta01"
 androidx-other-media = "1.6.0"
 androidx-other-preference = "1.2.0"
 androidx-other-recyclerView = "1.2.1"
@@ -104,6 +105,7 @@ androidx-arch-testing = { module = "androidx.arch.core:core-testing", version.re
 androidx-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "androidx-compose" }
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "androidx-compose" }
 androidx-compose-material = { module = "androidx.compose.material:material", version.ref = "androidx-compose" }
+androidx-compose-material3-windowSizeClass = { module = "androidx.compose.material3:material3-window-size-class", version.ref="androidx-other-material3" }
 androidx-compose-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended", version.ref = "androidx-compose" }
 androidx-compose-mdcAdapter = { module = "com.google.android.material:compose-theme-adapter", version.ref = "androidx-composeThemeAdapter" }
 androidx-compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "androidx-compose" }
