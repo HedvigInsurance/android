@@ -35,7 +35,6 @@
     <dimen name="common_claims_cell_height">100dp</dimen>
 
     <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="chat_top_bar_height">50dp</dimen>
     <dimen name="chat_top_bar_button_size">32dp</dimen>
     <dimen name="hedvig_logo_margin_top">2dp</dimen>
 
@@ -68,11 +67,7 @@
     <dimen name="tab_bar_icon_size">26dp</dimen>
     <dimen name="pick_date_button_corner_radius">6dp</dimen>
     <dimen name="base_margin_sesqui">12dp</dimen>
-    <dimen name="top_bar_elevation">2dp</dimen>
-    <dimen name="post_create_z_translation">7dp</dimen>
     <dimen name="horizontal_line_height">1dp</dimen>
-    <dimen name="valuation_card_height">100dp</dimen>
-    <dimen name="item_detail_gradient_size">300dp</dimen>
     <dimen name="premium_box_campaign_header_height">30dp</dimen>
     <dimen name="connect_payment_result_icon_size">56dp</dimen>
     <dimen name="referral_icon_placeholder_size">16dp</dimen>

@@ -18,9 +18,7 @@
     <color name="maroon">#AA0045</color>
     <color name="yellow">#F2C852</color>
     <color name="transparent">#00FFFFFF</color>
-    <color name="coral_700">#cc6e66</color>
     <color name="translucent_dark_mode">#aa0a0d14</color>
-    <color name="translucent_tool_bar">#730A0D14</color>
     <color name="button_background_dark">#333333</color>
     <color name="grey_inactive">#777777</color>
 

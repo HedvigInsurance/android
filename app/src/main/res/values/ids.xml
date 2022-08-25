@@ -7,16 +7,8 @@
     <item name="contactDetailsContainer" type="id" />
     <item name="name" type="id" />
     <item name="save" type="id" />
-    <item name="selectedCharityContainer" type="id" />
-    <item name="selectCharityContainer" type="id" />
-    <item name="selectedCharityBanner" type="id" />
-    <item name="selectedCharityCardTitle" type="id" />
-    <item name="selectedCharityCardParagraph" type="id" />
-    <item name="charityIcon" type="id" />
-    <item name="selectCharityExplainer" type="id" />
     <item name="cashbackOptionTitle" type="id" />
     <item name="cashbackOptionParagraph" type="id" />
-    <item name="cashbackOptions" type="id" />
     <item name="cashbackSelect" type="id" />
     <item name="versionNumber" type="id" />
     <item name="dialogTitle" type="id" />
@@ -47,5 +39,5 @@
     <item name="gradient_animation" type="id" />
 
     <!-- KeepScreenOnRequest tag to toggle View.keepScreenOn. See KeepScreenOnRequest.kt -->
-    <item name="keep_screen_on_state" type="id"/>
+    <item name="keep_screen_on_state" type="id" />
 </resources>
