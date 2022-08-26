@@ -5,7 +5,7 @@ on:
       - master
       - feature/APP-1816-github-actions-publish-release # Temporary, to test out this action
 jobs:
-  build_staging:
+  build_release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -24,7 +24,7 @@ jobs:
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
-      - run: echo VERSION_CODE=$(expr 4700 + ${{ github.run_number }} + ${{ github.run_attempt }} - 1) >> $GITHUB_ENV
+      - run: echo VERSION_CODE=$(date +%s) >> $GITHUB_ENV
       - uses: chkfung/android-version-actions@v1.1
         with:
           gradlePath: app/build.gradle.kts
@@ -34,7 +34,7 @@ jobs:
         env:
           LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
-          ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
+          ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_LIVE_CLIENT_KEY }}
           SHAKE_CLIENT_ID: ${{ secrets.SHAKE_CLIENT_ID }}
           SHAKE_CLIENT_SECRET: ${{ secrets.SHAKE_CLIENT_SECRET }}
       - name: Build
@@ -50,11 +50,11 @@ jobs:
           keyPassword: ${{ secrets.KEY_PASSWORD }}
         env:
           BUILD_TOOLS_VERSION: "30.0.2"
-      - name: Deploy to Alpha
+      - name: Deploy to Play Store Internal-track
         uses: r0adkll/upload-google-play@v1
         with:
-          serviceAccountJson: service_account.json
-          packageName: com.jshvarts.flows
-          releaseFile: app/build/outputs/bundle/release/app-release.aab
-          track: alpha
-          whatsNewDirectory: distribution/
+          serviceAccountJsonPlainText: $ {{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.hedvig.app
+          releaseFiles: ${{ steps.sign_app.outputs.signedReleaseFile }}
+          mappingFile: app/build/outputs/mapping/release/mapping.txt
+          track: internal
