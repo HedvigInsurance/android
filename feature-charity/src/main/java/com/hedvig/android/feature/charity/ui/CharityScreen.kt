@@ -79,8 +79,8 @@ internal fun CharityScreen(
     sheetState = sheetState,
     sheetContent = {
       CharityBottomSheet(
-        isShowing = sheetState.isVisible,
         closeSheet = { coroutineScope.launch { sheetState.hide() } },
+        isShowing = sheetState.isVisible,
       )
     },
     modifier = Modifier.fillMaxSize(),

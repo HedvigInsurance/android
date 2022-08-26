@@ -26,8 +26,8 @@ import hedvig.resources.R
 
 @Composable
 internal fun CharityBottomSheet(
-  isShowing: Boolean,
   closeSheet: () -> Unit,
+  isShowing: Boolean,
 ) {
   BackHandler(
     enabled = isShowing,
@@ -67,5 +67,5 @@ internal fun CharityBottomSheet(
 @Preview
 @Composable
 private fun CharityBottomSheetPreview() {
-  CharityBottomSheet(true) {}
+  CharityBottomSheet({}, true)
 }
