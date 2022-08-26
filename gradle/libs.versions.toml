@@ -175,7 +175,7 @@ markwon-linkify = { module = "io.noties.markwon:linkify", version.ref = "markwon
 materialComponents = { module = "com.google.android.material:material", version.ref = "materialComponents" }
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
 mockk-jvm = { module = "io.mockk:mockk", version.ref = "mockk" }
-moneta = { module = "org.javamoney:moneta", version.ref = "moneta" }
+moneta = { module = "org.javamoney.moneta:moneta-core", version.ref = "moneta" }
 okhttp-core = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-loggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
 okhttp-mockWebServer = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
