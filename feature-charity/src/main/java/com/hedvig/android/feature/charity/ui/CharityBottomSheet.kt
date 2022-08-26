@@ -31,7 +31,7 @@ internal fun CharityBottomSheet(
 ) {
   BackHandler(
     enabled = isShowing,
-    onBack = { closeSheet() },
+    onBack = closeSheet,
   )
   Column(
     Modifier
