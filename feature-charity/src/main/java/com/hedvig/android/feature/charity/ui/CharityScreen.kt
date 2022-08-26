@@ -108,11 +108,11 @@ private fun ScreenContent(
   Box(Modifier.fillMaxSize()) {
     Column {
       TopAppBarWithBack(
-        onClick = { goBack() },
-        title = "",
+        onClick = goBack,
         modifier = Modifier.windowInsetsPadding(
           WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top),
         ),
+        title = "",
       )
       Column(
         Modifier
