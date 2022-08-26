@@ -111,7 +111,8 @@ private fun ScreenContent(
         onClick = goBack,
         modifier = Modifier.windowInsetsPadding(
           WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top),
-        ),title = "",
+        ),
+        title = "",
       )
       Column(
         Modifier
