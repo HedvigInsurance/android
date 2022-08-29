@@ -60,3 +60,5 @@ jobs:
           releaseFiles: ${{ steps.sign_app.outputs.signedReleaseFile }}
           mappingFile: app/build/outputs/mapping/release/mapping.txt
           track: internal
+      - uses: hmarr/debug-action@v2
+        if: always()
