@@ -40,7 +40,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <LinearLayout
-                android:id="@id/selectedCharityContainer"
+                android:id="@+id/selectedCharityContainer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="@dimen/base_margin_sextuple"
@@ -52,7 +52,7 @@
                 tools:visibility="gone">
 
                 <androidx.compose.ui.platform.ComposeView
-                    android:id="@id/selectedCharityBanner"
+                    android:id="@+id/selectedCharityBanner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
@@ -70,7 +70,7 @@
                         android:orientation="vertical">
 
                         <TextView
-                            android:id="@id/selectedCharityCardTitle"
+                            android:id="@+id/selectedCharityCardTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/base_margin_double"
@@ -80,7 +80,7 @@
                             tools:text="SOS Barnbyar" />
 
                         <TextView
-                            android:id="@id/selectedCharityCardParagraph"
+                            android:id="@+id/selectedCharityCardParagraph"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/base_margin_double"
@@ -111,7 +111,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@id/selectCharityContainer"
+                android:id="@+id/selectCharityContainer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
@@ -123,7 +123,7 @@
                 tools:visibility="visible">
 
                 <ImageView
-                    android:id="@id/charityIcon"
+                    android:id="@+id/charityIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
@@ -131,7 +131,7 @@
                     app:srcCompat="@drawable/ic_charity" />
 
                 <TextView
-                    android:id="@id/selectCharityExplainer"
+                    android:id="@+id/selectCharityExplainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="64dp"
@@ -142,7 +142,7 @@
                     android:textAppearance="?textAppearanceBody2" />
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@id/cashbackOptions"
+                    android:id="@+id/cashbackOptions"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/base_margin_double"

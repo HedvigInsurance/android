@@ -43,7 +43,6 @@ class CodeSnackbarTest : TestCase() {
   val featureFlagRule = FeatureFlagRule(
     Feature.REFERRAL_CAMPAIGN to false,
     Feature.REFERRALS to true,
-    Feature.KEY_GEAR to false,
   )
 
   @Before

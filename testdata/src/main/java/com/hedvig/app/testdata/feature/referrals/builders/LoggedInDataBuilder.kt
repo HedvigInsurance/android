@@ -8,7 +8,6 @@ data class LoggedInDataBuilder(
   val referralTermsUrl: String = "https://www.example.com",
   val campaignIncentiveAmount: String = "10.00",
   val campaignIncentiveCurrency: String = "SEK",
-
 ) {
   fun build() = LoggedInQuery.Data(
     referralTerms = LoggedInQuery.ReferralTerms(

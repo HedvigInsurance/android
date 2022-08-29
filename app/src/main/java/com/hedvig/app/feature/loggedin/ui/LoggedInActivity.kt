@@ -212,7 +212,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
   override fun onCreateOptionsMenu(menu: Menu): Boolean {
     when (LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId)) {
       LoggedInTabs.HOME,
-      LoggedInTabs.KEY_GEAR,
       LoggedInTabs.PROFILE,
       LoggedInTabs.INSURANCE,
       -> {
@@ -274,7 +273,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
   override fun onOptionsItemSelected(item: MenuItem): Boolean {
     when (LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId)) {
       LoggedInTabs.HOME,
-      LoggedInTabs.KEY_GEAR,
       LoggedInTabs.PROFILE,
       LoggedInTabs.INSURANCE,
       -> {
@@ -328,7 +326,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
           .collectLatest { viewState: LoggedInViewState ->
             val loggedInQueryData = viewState.loggedInQueryData
             setupBottomNav(
-              isKeyGearEnabled = viewState.isKeyGearEnabled,
               isReferralsEnabled = viewState.isReferralsEnabled,
               unseenTabNotifications = viewState.unseenTabNotifications,
             )
@@ -356,16 +353,13 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
   }
 
   private fun setupBottomNav(
-    isKeyGearEnabled: Boolean,
     isReferralsEnabled: Boolean,
     unseenTabNotifications: Set<LoggedInTabs>,
   ) {
-    val menuId = when {
-      isKeyGearEnabled && isReferralsEnabled -> R.menu.logged_in_menu_referrals_key_gear
-      !isKeyGearEnabled && !isReferralsEnabled -> R.menu.logged_in_menu_no_referrals_no_key_gear
-      isReferralsEnabled -> R.menu.logged_in_menu_referrals
-      isKeyGearEnabled -> R.menu.logged_in_menu_key_gear
-      else -> R.menu.logged_in_menu_referrals
+    val menuId = if (isReferralsEnabled) {
+      R.menu.logged_in_menu_referrals
+    } else {
+      R.menu.logged_in_menu_no_referrals
     }
     // `inflateMenu` on the bottom nav isn't idempotent therefore we need to guard against doing it many times
     if (lastMenuIdInflated != null && lastMenuIdInflated == menuId) return
