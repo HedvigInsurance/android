@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - master
-      - feature/APP-1816-github-actions-publish-release # Temporary, to test out this action
 jobs:
   build_release:
     runs-on: ubuntu-latest
