@@ -35,7 +35,7 @@ fun MonetaryAmountFragment.toMonetaryAmount(): MonetaryAmount =
   Money.of(amount.toBigDecimal(), currency)
 
 fun MonetaryAmount.format(context: Context, market: Market?, minimumDecimals: Int = 0): String {
-  val locale = getLocale(context, market)
+  val locale = getLocale()
   return format(locale, minimumDecimals)
 }
 

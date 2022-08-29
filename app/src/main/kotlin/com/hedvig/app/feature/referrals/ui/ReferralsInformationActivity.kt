@@ -4,8 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.hedvig.android.market.MarketManager
-import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityReferralsInformationBinding
 import com.hedvig.app.util.apollo.format
@@ -23,7 +23,7 @@ import org.koin.android.ext.android.inject
 import java.math.BigDecimal
 import javax.money.MonetaryAmount
 
-class ReferralsInformationActivity : BaseActivity(R.layout.activity_referrals_information) {
+class ReferralsInformationActivity : AppCompatActivity(R.layout.activity_referrals_information) {
   private val binding by viewBinding(ActivityReferralsInformationBinding::bind)
   private val marketManager: MarketManager by inject()
 

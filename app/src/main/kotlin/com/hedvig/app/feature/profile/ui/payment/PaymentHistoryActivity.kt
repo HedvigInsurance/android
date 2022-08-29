@@ -3,11 +3,11 @@ package com.hedvig.app.feature.profile.ui.payment
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.apollo.graphql.PaymentQuery
 import com.hedvig.android.market.MarketManager
-import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityPaymentHistoryBinding
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class PaymentHistoryActivity : BaseActivity(R.layout.activity_payment_history) {
+class PaymentHistoryActivity : AppCompatActivity(R.layout.activity_payment_history) {
   private val binding by viewBinding(ActivityPaymentHistoryBinding::bind)
   private val viewModel: PaymentViewModel by viewModel()
   private val marketManager: MarketManager by inject()

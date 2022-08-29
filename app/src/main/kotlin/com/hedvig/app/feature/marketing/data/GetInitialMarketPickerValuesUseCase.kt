@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.marketing.data
 
-import android.content.Context
 import arrow.core.identity
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.GeoQuery
@@ -11,17 +10,18 @@ import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
+import com.hedvig.app.LanguageService
 
 class GetInitialMarketPickerValuesUseCase(
   private val marketManager: MarketManager,
-  private val context: Context,
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
+  private val languageService: LanguageService,
 ) {
   suspend operator fun invoke(): Pair<Market, Language> {
     val currentMarket = marketManager.market
     if (currentMarket != null) {
-      val currentLanguage = Language.fromSettings(context, currentMarket)
+      val currentLanguage = languageService.getLanguage() ?: currentMarket.defaultLanguage()
       return currentMarket to currentLanguage
     }
 

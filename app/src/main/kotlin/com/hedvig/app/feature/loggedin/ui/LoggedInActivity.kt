@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.forEach
 import androidx.dynamicanimation.animation.FloatValueHolder
 import androidx.dynamicanimation.animation.SpringAnimation
@@ -19,7 +20,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.github.florent37.viewtooltip.ViewTooltip
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.hedvig.app.BASE_MARGIN_DOUBLE
-import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityLoggedInBinding
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
@@ -58,7 +58,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.time.LocalDate
 import javax.money.MonetaryAmount
 
-class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
+class LoggedInActivity : AppCompatActivity(R.layout.activity_logged_in) {
   private val claimsViewModel: ClaimsViewModel by viewModel()
   private val whatsNewViewModel: WhatsNewViewModel by viewModel()
 

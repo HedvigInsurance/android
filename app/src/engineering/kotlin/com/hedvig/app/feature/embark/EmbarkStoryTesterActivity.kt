@@ -237,7 +237,7 @@ class EmbarkStoryTesterViewModel(
   fun onMarketClick(market: Market) {
     marketManager.market = market
     val language = Language.getAvailableLanguages(market).first()
-    Language.persist(context, language)
+    // TODO: Update application language
   }
 
   fun onStoryName(storyName: String) {

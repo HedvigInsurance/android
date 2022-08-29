@@ -1,15 +1,9 @@
 package com.hedvig.app.util
 
-import android.content.Context
+import androidx.appcompat.app.AppCompatDelegate
 import com.hedvig.android.apollo.graphql.type.Locale
-import com.hedvig.android.market.Language
-import com.hedvig.android.market.MarketManager
-import com.hedvig.app.getLocale
 
-class LocaleManager(
-  private val marketManager: MarketManager,
-  private val context: Context,
-) {
+class LocaleManager {
   fun defaultLocale(): Locale {
     val locale = getJavaUtilLocale()
     return when (locale.toString()) {
@@ -24,7 +18,11 @@ class LocaleManager(
   }
 
   fun getJavaUtilLocale(): java.util.Locale {
-    val localeFromSettings = Language.fromSettings(context, marketManager.market).apply(context)
-    return getLocale(localeFromSettings, marketManager.market)
+    val localeList = AppCompatDelegate.getApplicationLocales()
+    if (localeList.isEmpty) {
+      return java.util.Locale("en", "SE")
+    }
+
+    return localeList[0]!!
   }
 }

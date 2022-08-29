@@ -4,8 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.hedvig.android.market.MarketManager
-import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityReferralsActivatedBinding
 import com.hedvig.app.util.apollo.format
@@ -21,7 +21,7 @@ import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class ReferralsActivatedActivity : BaseActivity(R.layout.activity_referrals_activated) {
+class ReferralsActivatedActivity : AppCompatActivity(R.layout.activity_referrals_activated) {
   private val binding by viewBinding(ActivityReferralsActivatedBinding::bind)
   private val viewModel: ReferralsActivatedViewModel by viewModel()
   private val marketManager: MarketManager by inject()

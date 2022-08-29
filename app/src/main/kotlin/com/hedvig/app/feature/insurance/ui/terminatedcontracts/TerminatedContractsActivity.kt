@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Window
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -12,7 +13,6 @@ import coil.ImageLoader
 import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.hedvig.android.apollo.graphql.InsuranceQuery
 import com.hedvig.android.market.MarketManager
-import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.TerminatedContractsActivityBinding
 import com.hedvig.app.feature.insurance.data.GetContractsUseCase
@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class TerminatedContractsActivity : BaseActivity(R.layout.terminated_contracts_activity) {
+class TerminatedContractsActivity : AppCompatActivity(R.layout.terminated_contracts_activity) {
   private val binding by viewBinding(TerminatedContractsActivityBinding::bind)
   private val viewModel: TerminatedContractsViewModel by viewModel()
   private val marketManager: MarketManager by inject()

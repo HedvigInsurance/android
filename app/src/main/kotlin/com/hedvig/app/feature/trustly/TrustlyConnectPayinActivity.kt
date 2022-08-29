@@ -3,7 +3,7 @@ package com.hedvig.app.feature.trustly
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import com.hedvig.app.BaseActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.connectpayin.ConnectPayinType
 import com.hedvig.app.feature.connectpayin.ConnectPaymentResultFragment
@@ -14,9 +14,7 @@ import com.hedvig.app.feature.connectpayin.TransitionType
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class TrustlyConnectPayinActivity : BaseActivity(R.layout.fragment_container_activity) {
-
-  override val screenName = "connect_payment_trustly"
+class TrustlyConnectPayinActivity : AppCompatActivity(R.layout.fragment_container_activity) {
 
   private val connectPaymentViewModel: ConnectPaymentViewModel by viewModel()
 

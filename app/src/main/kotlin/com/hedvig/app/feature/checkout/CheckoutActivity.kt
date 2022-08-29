@@ -5,13 +5,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.transition.TransitionManager
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
-import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityCheckoutBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -28,7 +28,7 @@ import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
+class CheckoutActivity : AppCompatActivity(R.layout.activity_checkout) {
   private val parameter by lazy {
     intent.getParcelableExtra<CheckoutParameter>(PARAMETER)
       ?: throw IllegalArgumentException("No parameter found for ${this.javaClass.simpleName}")

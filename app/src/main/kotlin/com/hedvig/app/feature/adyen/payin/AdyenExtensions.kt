@@ -37,7 +37,7 @@ fun Activity.startAdyenPayment(market: Market?, paymentMethods: PaymentMethodsAp
     )
     .addCardConfiguration(cardConfig)
     .addGooglePayConfiguration(googlePayConfig)
-    .setShopperLocale(getLocale(this, market))
+    .setShopperLocale(getLocale())
     .setEnvironment(getEnvironment())
     .build()
 

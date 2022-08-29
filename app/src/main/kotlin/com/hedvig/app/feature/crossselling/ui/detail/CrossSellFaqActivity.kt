@@ -4,13 +4,13 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.app.BaseActivity
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.crossselling.model.NavigateChat
 import com.hedvig.app.feature.crossselling.model.NavigateEmbark
@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class CrossSellFaqActivity : BaseActivity() {
+class CrossSellFaqActivity : AppCompatActivity() {
 
   val crossSell by lazy {
     intent.getParcelableExtra<CrossSellData>(CROSS_SELL)

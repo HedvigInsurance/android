@@ -3,6 +3,7 @@ package com.hedvig.app.feature.profile.ui.payment
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.apollo.graphql.PayinStatusQuery
@@ -10,7 +11,6 @@ import com.hedvig.android.apollo.graphql.PaymentQuery
 import com.hedvig.android.apollo.graphql.type.PayinMethodStatus
 import com.hedvig.android.apollo.graphql.type.PayoutMethodStatus
 import com.hedvig.android.market.MarketManager
-import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityPaymentBinding
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
@@ -26,7 +26,7 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.time.format.DateTimeFormatter
 
-class PaymentActivity : BaseActivity(R.layout.activity_payment) {
+class PaymentActivity : AppCompatActivity(R.layout.activity_payment) {
   private val binding by viewBinding(ActivityPaymentBinding::bind)
   private val viewModel: PaymentViewModel by viewModel()
 

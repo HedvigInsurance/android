@@ -2,29 +2,42 @@ package com.hedvig.app.feature.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.apollo.graphql.type.Locale
-import com.hedvig.app.feature.marketpicker.LanguageRepository
-import com.hedvig.app.feature.marketpicker.LocaleBroadcastManager
+import com.apollographql.apollo3.ApolloClient
+import com.hedvig.android.apollo.graphql.UpdateLanguageMutation
+import com.hedvig.android.market.Language
+import com.hedvig.app.LanguageService
 import com.hedvig.app.util.apollo.NetworkCacheManager
+import com.hedvig.app.util.apollo.safeQuery
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.launch
 
 class SettingsViewModel(
-  private val repository: LanguageRepository,
-  private val localeBroadcastManager: LocaleBroadcastManager,
   hAnalytics: HAnalytics,
-  private val cacheManager: NetworkCacheManager,
+  private val changeDeviceLanguageAndUploadPreferredLanguageUseCase: ChangeDeviceLanguageAndUploadPreferredLanguageUseCase,
 ) : ViewModel() {
   init {
     hAnalytics.screenView(AppScreen.APP_SETTINGS)
   }
 
-  fun save(acceptLanguage: String, locale: Locale) {
+  fun applyLanguage(language: Language) {
     viewModelScope.launch {
-      repository.uploadLanguage(acceptLanguage, locale)
+      changeDeviceLanguageAndUploadPreferredLanguageUseCase.invoke(language)
     }
+  }
+}
+
+class ChangeDeviceLanguageAndUploadPreferredLanguageUseCase(
+  private val apolloClient: ApolloClient,
+  private val languageService: LanguageService,
+  private val cacheManager: NetworkCacheManager,
+) {
+  suspend fun invoke(language: Language) {
+    apolloClient
+      .mutation(
+        UpdateLanguageMutation(language.toString(), language.toLocale()),
+      ).safeQuery()
     cacheManager.clearCache()
-    localeBroadcastManager.sendBroadcast(recreate = true)
+    languageService.setLanguage(language)
   }
 }

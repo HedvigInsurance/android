@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.ListPreference
@@ -16,12 +17,10 @@ import com.hedvig.android.core.common.preferences.PreferenceKey
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
-import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.UserViewModel
 import com.hedvig.app.databinding.ActivitySettingsBinding
 import com.hedvig.app.feature.marketing.MarketingActivity
-import com.hedvig.app.makeLocaleString
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.showAlert
@@ -33,7 +32,7 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
-class SettingsActivity : BaseActivity(R.layout.activity_settings) {
+class SettingsActivity : AppCompatActivity(R.layout.activity_settings) {
   private val binding by viewBinding(ActivitySettingsBinding::bind)
 
   @SuppressLint("ApplySharedPref")
@@ -135,11 +134,8 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
         }
         lp.setOnPreferenceChangeListener { _, newValue ->
           (newValue as? String)?.let { v ->
-            Language
-              .from(v)
-              .apply(requireContext()).let { ctx ->
-                viewModel.save(makeLocaleString(ctx, marketManager.market), localeManager.defaultLocale())
-              }
+            val language = Language.from(v)
+            viewModel.applyLanguage(language)
           }
           true
         }

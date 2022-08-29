@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.transition.TransitionManager
 import android.view.MenuItem
 import android.view.animation.AnimationUtils
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
@@ -20,7 +21,6 @@ import com.adyen.checkout.dropin.DropInResult
 import com.carousell.concatadapterextension.ConcatItemDecoration
 import com.carousell.concatadapterextension.ConcatSpanSizeLookup
 import com.hedvig.android.market.MarketManager
-import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.authenticate.LoginStatus
@@ -69,10 +69,9 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class OfferActivity : BaseActivity(R.layout.activity_offer) {
+class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
 
   private lateinit var concatAdapter: ConcatAdapter
-  override val screenName = "offer"
 
   private val quoteCartId: QuoteCartId
     get() = intent.getParcelableExtra(QUOTE_CART_ID)
@@ -127,7 +126,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     binding.offerToolbar.setNavigationOnClickListener { onBackPressed() }
     binding.offerToolbar.setOnMenuItemClickListener(::handleMenuItem)
 
-    val locale = getLocale(this@OfferActivity, marketManager.market)
+    val locale = getLocale()
     val topOfferAdapter = OfferAdapter(
       fragmentManager = supportFragmentManager,
       locale = locale,

@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.os.Build
+import androidx.appcompat.app.AppCompatDelegate
 import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
@@ -25,8 +26,6 @@ import com.hedvig.android.hanalytics.di.appIdQualifier
 import com.hedvig.android.hanalytics.di.appVersionCodeQualifier
 import com.hedvig.android.hanalytics.di.appVersionNameQualifier
 import com.hedvig.android.hanalytics.di.hAnalyticsUrlQualifier
-import com.hedvig.android.market.Language
-import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.authenticate.LoginStatusService
@@ -127,7 +126,6 @@ import com.hedvig.app.feature.marketing.data.MarketingRepository
 import com.hedvig.app.feature.marketing.data.SubmitMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.feature.marketing.data.UpdateApplicationLanguageUseCase
 import com.hedvig.app.feature.marketpicker.LanguageRepository
-import com.hedvig.app.feature.marketpicker.LocaleBroadcastManager
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.OfferViewModelImpl
@@ -166,6 +164,7 @@ import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeViewModelIm
 import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeViewModel
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModel
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModelImpl
+import com.hedvig.app.feature.settings.ChangeDeviceLanguageAndUploadPreferredLanguageUseCase
 import com.hedvig.app.feature.settings.SettingsViewModel
 import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignViewModel
 import com.hedvig.app.feature.trustly.TrustlyRepository
@@ -237,8 +236,8 @@ val applicationModule = module {
           chain
             .request()
             .newBuilder()
-            .header("User-Agent", makeUserAgent(context, marketManager.market))
-            .header("Accept-Language", makeLocaleString(context, marketManager.market))
+            .header("User-Agent", makeUserAgent())
+            .header("Accept-Language", makeLocaleString())
             .header("apollographql-client-name", BuildConfig.APPLICATION_ID)
             .header("apollographql-client-version", BuildConfig.VERSION_NAME)
             .header("X-Build-Version", BuildConfig.VERSION_CODE.toString())
@@ -299,7 +298,7 @@ val apolloClientModule = module {
   }
 }
 
-fun makeUserAgent(context: Context, market: Market?) =
+fun makeUserAgent() =
   "${
   BuildConfig.APPLICATION_ID
   } ${
@@ -313,25 +312,18 @@ fun makeUserAgent(context: Context, market: Market?) =
   }; ${
   Build.DEVICE
   }; ${
-  getLocale(context, market).language
+  getLocale().language
   })"
 
-fun makeLocaleString(context: Context, market: Market?): String =
-  getLocale(context, market).toLanguageTag()
+fun makeLocaleString(): String =
+  getLocale().toLanguageTag()
 
-fun getLocale(context: Context, market: Market?): Locale {
-  val locale = if (market == null) {
-    Language.from(Language.SETTING_EN_SE)
-  } else {
-    Language.fromSettings(context, market)
+fun getLocale(): Locale {
+  val localeList = AppCompatDelegate.getApplicationLocales()
+  if (localeList.isEmpty) {
+    return Locale("en", "SE")
   }
-
-  return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-    locale.apply(context).resources.configuration.locales.get(0)
-  } else {
-    @Suppress("DEPRECATION")
-    locale.apply(context).resources.configuration.locale
-  }
+  return localeList[0]!!
 }
 
 val viewModelModule = module {
@@ -342,10 +334,8 @@ val viewModelModule = module {
   viewModel { WelcomeViewModel(get()) }
   viewModel {
     SettingsViewModel(
-      repository = get(),
-      localeBroadcastManager = get(),
       hAnalytics = get(),
-      cacheManager = get(),
+      changeDeviceLanguageAndUploadPreferredLanguageUseCase = get(),
     )
   }
   viewModel { DatePickerViewModel() }
@@ -601,10 +591,6 @@ val repositoriesModule = module {
   single { PaymentRepository(get(), get()) }
 }
 
-val localeBroadcastManagerModule = module {
-  single<LocaleBroadcastManager> { LocaleBroadcastManager(get()) }
-}
-
 val notificationModule = module {
   single { PaymentNotificationSender(get(), get(), get()) } bind NotificationSender::class
   single { CrossSellNotificationSender(get(), get()) } bind NotificationSender::class
@@ -616,7 +602,7 @@ val notificationModule = module {
 val clockModule = module { single { Clock.systemDefaultZone() } }
 
 val localeManagerModule = module {
-  single { LocaleManager(get(), get()) }
+  single { LocaleManager() }
 }
 
 val useCaseModule = module {
@@ -642,9 +628,9 @@ val useCaseModule = module {
   single<GetDanishAddressAutoCompletionUseCase> { GetDanishAddressAutoCompletionUseCase(get()) }
   single<GetFinalDanishAddressSelectionUseCase> { GetFinalDanishAddressSelectionUseCase(get()) }
   single { CreateQuoteCartUseCase(get(), get(), get()) }
-  single { SubmitMarketAndLanguagePreferencesUseCase(get(), get(), get(), get()) }
+  single { SubmitMarketAndLanguagePreferencesUseCase(get(), get(), get()) }
   single { GetMarketingBackgroundUseCase(get(), get()) }
-  single { UpdateApplicationLanguageUseCase(get(), get(), get()) }
+  single { UpdateApplicationLanguageUseCase(get()) }
   single { GetInitialMarketPickerValuesUseCase(get(), get(), get(), get()) }
   single<EditCheckoutUseCase> { EditCheckoutUseCase(get(), get()) }
   single<QuoteCartEditStartDateUseCase> { QuoteCartEditStartDateUseCase(get(), get()) }
@@ -655,6 +641,13 @@ val useCaseModule = module {
   single<ConnectPayoutUseCase> { ConnectPayoutUseCase(get(), get()) }
   single<GetExternalInsuranceProviderUseCase> { GetExternalInsuranceProviderUseCase(get(), get(), get()) }
   single<ObserveOfferStateUseCase> { ObserveOfferStateUseCase(get()) }
+  single<ChangeDeviceLanguageAndUploadPreferredLanguageUseCase> {
+    ChangeDeviceLanguageAndUploadPreferredLanguageUseCase(
+      apolloClient = get(),
+      languageService = get(),
+      cacheManager = get(),
+    )
+  }
 }
 
 val cacheManagerModule = module {

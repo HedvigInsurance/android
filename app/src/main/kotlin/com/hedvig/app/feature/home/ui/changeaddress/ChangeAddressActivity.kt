@@ -5,10 +5,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.transition.TransitionManager
 import androidx.annotation.DrawableRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressActivityBinding
 import com.hedvig.app.databinding.ListTextItemBinding
@@ -36,7 +36,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
+class ChangeAddressActivity : AppCompatActivity(R.layout.change_address_activity) {
 
   private val binding by viewBinding(ChangeAddressActivityBinding::bind)
   private val viewModel: ChangeAddressViewModel by viewModel()
