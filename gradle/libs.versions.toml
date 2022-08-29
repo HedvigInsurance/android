@@ -86,7 +86,7 @@ svg = "1.4"
 timber = "5.0.1"
 tooltip = "1.2.2"
 zXing = "3.5.0"
-datadog = "1.8.1"
+datadog = "1.13.0"
 
 [libraries]
 # Plugins
