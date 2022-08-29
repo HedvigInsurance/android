@@ -23,5 +23,7 @@ cat <<EOT > app/src/release/res/values/shake.xml
 </resources>
 EOT
 
-./gradlew :apollo:downloadGiraffeApolloSchemaFromIntrospection :core-resources:downloadStrings licenseReleaseReport
+./gradlew :apollo:downloadGiraffeApolloSchemaFromIntrospection
+./gradlew :core-resources:downloadStrings
+./gradlew licenseReleaseReport
 
