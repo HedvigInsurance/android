@@ -1,4 +1,4 @@
-package com.hedvig.app.ui.compose.composables
+package com.hedvig.android.core.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -9,8 +9,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
@@ -25,24 +24,24 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.app.R
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun FullScreenProgressOverlay(show: Boolean) {
+fun FullScreenProgressOverlay(
+  show: Boolean,
+  modifier: Modifier = Modifier,
+) {
   AnimatedVisibility(
     visible = show,
     enter = fadeIn(animationSpec = tween(500)),
     exit = fadeOut(animationSpec = tween(500, delayMillis = 400)),
+    modifier = modifier,
   ) {
     Surface(
       modifier = Modifier.fillMaxSize(),
       color = MaterialTheme.colors.onPrimary,
     ) {
-      Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-      ) {
+      Box(contentAlignment = Alignment.Center) {
         val infiniteTransition = rememberInfiniteTransition()
         val angle by infiniteTransition.animateFloat(
           initialValue = 0F,

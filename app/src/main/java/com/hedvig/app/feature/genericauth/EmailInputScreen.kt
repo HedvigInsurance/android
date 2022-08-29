@@ -49,7 +49,7 @@ fun EmailInputScreen(
       .fillMaxSize(),
   ) {
     TopAppBarWithBack(
-      onClick = { onUpClick() },
+      onClick = onUpClick,
       title = stringResource(hedvig.resources.R.string.login_navigation_bar_center_element_title),
     )
     Column(

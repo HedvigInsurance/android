@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.embark
 
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
@@ -11,7 +10,6 @@ class MockEmbarkViewModel(
   chatRepository: ChatRepository,
   hAnalytics: HAnalytics,
   loginStatusService: LoginStatusService,
-  featureManager: FeatureManager,
 ) : EmbarkViewModel(
   ValueStoreImpl(),
   graphQLQueryUseCase,

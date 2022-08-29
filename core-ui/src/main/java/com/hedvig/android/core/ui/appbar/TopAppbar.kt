@@ -17,16 +17,16 @@ import com.google.accompanist.insets.ui.TopAppBar
 @Composable
 fun TopAppBarWithBack(
   onClick: () -> Unit,
-  title: String,
   modifier: Modifier = Modifier,
+  title: String? = null,
   backgroundColor: Color = MaterialTheme.colors.background,
   contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
   TopAppBar(
     onClick,
-    title,
     TopAppBarActionType.BACK,
     modifier,
+    title,
     backgroundColor,
     contentPadding,
   )
@@ -42,9 +42,9 @@ fun TopAppBarWithClose(
 ) {
   TopAppBar(
     onClick,
-    title,
     TopAppBarActionType.CLOSE,
     modifier,
+    title,
     backgroundColor,
     contentPadding,
   )
@@ -57,19 +57,21 @@ private enum class TopAppBarActionType {
 @Composable
 private inline fun TopAppBar(
   crossinline onClick: () -> Unit,
-  title: String,
   actionType: TopAppBarActionType,
   modifier: Modifier = Modifier,
+  title: String? = null,
   backgroundColor: Color = MaterialTheme.colors.background,
   contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
   TopAppBar(
     modifier = modifier,
     title = {
-      Text(
-        text = title,
-        style = MaterialTheme.typography.h6,
-      )
+      if (title != null) {
+        Text(
+          text = title,
+          style = MaterialTheme.typography.h6,
+        )
+      }
     },
     contentPadding = contentPadding,
     navigationIcon = {
