@@ -15,7 +15,7 @@ doctor = "0.8.1"
 googleServices = "4.3.13"
 kotlin = "1.7.10"
 ktlint = "0.45.2"
-ktlintGradlePlugin = "10.3.0"
+ktlintGradlePlugin = "11.0.0"
 license = "0.9.0"
 
 # Other versions sorted alphabetically
