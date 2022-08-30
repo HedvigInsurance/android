@@ -98,7 +98,7 @@ jobs:
           SHAKE_CLIENT_ID: ${{ secrets.SHAKE_CLIENT_ID }}
           SHAKE_CLIENT_SECRET: ${{ secrets.SHAKE_CLIENT_SECRET }}
       - name: run ktlint from gradle
-        run: ./gradlew ktlintCheck --stacktrace
+        run: ./gradlew ktlintCheck --stacktrace --continue
   build:
     runs-on: ubuntu-latest
     steps:
