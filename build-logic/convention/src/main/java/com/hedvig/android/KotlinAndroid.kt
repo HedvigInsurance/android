@@ -1,12 +1,12 @@
 package com.hedvig.android
 
 import com.android.build.api.dsl.CommonExtension
+import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
-import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.the
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 
 /**
@@ -16,13 +16,15 @@ internal fun Project.configureKotlinAndroid(
   commonExtension: CommonExtension<*, *, *, *>,
   addStandardBuildTypes: Boolean,
 ) {
-  val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
+  val libs = the<LibrariesForLibs>()
 
   commonExtension.apply {
-    compileSdk = libs.compileSdkVersion
+    @Suppress("MISSING_DEPENDENCY_SUPERCLASS")
+    compileSdk = libs.versions.compileSdkVersion.get().toInt()
 
     defaultConfig {
-      minSdk = libs.minSdkVersion
+      @Suppress("MISSING_DEPENDENCY_SUPERCLASS")
+      minSdk = libs.versions.minSdkVersion.get().toInt()
     }
 
     compileOptions {
@@ -68,7 +70,7 @@ internal fun Project.configureKotlinAndroid(
   }
 
   dependencies {
-    add("coreLibraryDesugaring", libs.findLibrary("coreLibraryDesugaring").get())
+    add("coreLibraryDesugaring", libs.coreLibraryDesugaring.get())
   }
 }
 

@@ -1,9 +1,9 @@
 package com.hedvig.android
 
 import com.android.build.api.dsl.CommonExtension
+import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Project
-import org.gradle.api.artifacts.VersionCatalogsExtension
-import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.the
 
 /**
  * Configure Compose-specific options
@@ -11,7 +11,7 @@ import org.gradle.kotlin.dsl.getByType
 internal fun Project.configureAndroidCompose(
   commonExtension: CommonExtension<*, *, *, *>,
 ) {
-  val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
+  val libs = the<LibrariesForLibs>()
 
   commonExtension.apply {
     @Suppress("UnstableApiUsage")
@@ -21,7 +21,7 @@ internal fun Project.configureAndroidCompose(
 
     @Suppress("UnstableApiUsage")
     composeOptions {
-      kotlinCompilerExtensionVersion = libs.composeCompilerVersion
+      kotlinCompilerExtensionVersion = libs.versions.androidx.composeCompiler.get()
     }
   }
 }
