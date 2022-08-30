@@ -2,15 +2,15 @@ package com.hedvig.app.feature.addressautocompletion.model
 
 @Suppress("EnumEntryName")
 enum class DanishAddressStoreKey {
-  fullAddress,
-  bbrId,
-  zipCode,
-  city,
-  streetName,
-  streetNumber,
-  street,
-  floor,
-  apartment,
+  fullAddress, // ktlint-disable enum-entry-name-case
+  bbrId, // ktlint-disable enum-entry-name-case
+  zipCode, // ktlint-disable enum-entry-name-case
+  city, // ktlint-disable enum-entry-name-case
+  streetName, // ktlint-disable enum-entry-name-case
+  streetNumber, // ktlint-disable enum-entry-name-case
+  street, // ktlint-disable enum-entry-name-case
+  floor, // ktlint-disable enum-entry-name-case
+  apartment, // ktlint-disable enum-entry-name-case
   ;
 
   companion object {

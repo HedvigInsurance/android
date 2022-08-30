@@ -5,9 +5,6 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.the
 import org.gradle.kotlin.dsl.withType
 import org.jmailen.gradle.kotlinter.KotlinterExtension
-import org.jmailen.gradle.kotlinter.support.ReporterType
-import org.jmailen.gradle.kotlinter.tasks.FormatTask
-import org.jmailen.gradle.kotlinter.tasks.LintTask
 
 class KtlintConventionPlugin : Plugin<Project> {
   override fun apply(target: Project) {
@@ -19,25 +16,27 @@ class KtlintConventionPlugin : Plugin<Project> {
 
       extensions.configure<KotlinterExtension> {
         ignoreFailures = false
+        // kotlinter 3.11.1 doesn't read disabledRules from .editorconfig https://github.com/jeremymailen/kotlinter-gradle/issues/262
+        disabledRules = arrayOf("filename")
         @Suppress("MISSING_DEPENDENCY_SUPERCLASS")
-        reporters = arrayOf(ReporterType.checkstyle.name)
+        reporters = arrayOf(org.jmailen.gradle.kotlinter.support.ReporterType.checkstyle.name)
       }
 
-      tasks.withType<LintTask>().configureEach {
+      tasks.withType<org.jmailen.gradle.kotlinter.tasks.LintTask>().configureEach {
         @Suppress("MISSING_DEPENDENCY_SUPERCLASS")
         exclude { it.file.path.contains("generated/") }
       }
-      tasks.withType<FormatTask>().configureEach {
+      tasks.withType<org.jmailen.gradle.kotlinter.tasks.FormatTask>().configureEach {
         @Suppress("MISSING_DEPENDENCY_SUPERCLASS")
         exclude { it.file.path.contains("generated/") }
       }
 
       tasks.register("ktlintCheck") {
-        dependsOn(tasks.withType<LintTask>())
+        dependsOn(tasks.withType<org.jmailen.gradle.kotlinter.tasks.LintTask>())
       }
 
       tasks.register("ktlintFormat") {
-        dependsOn(tasks.withType<FormatTask>())
+        dependsOn(tasks.withType<org.jmailen.gradle.kotlinter.tasks.FormatTask>())
       }
     }
   }
