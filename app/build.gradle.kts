@@ -109,17 +109,17 @@ android {
 
   sourceSets {
     named("debug") {
-      java.srcDir("src/engineering/java")
+      kotlin.srcDir("src/engineering/kotlin")
       res.srcDir("src/engineering/res")
       manifest.srcFile("src/debug/AndroidManifest.xml")
     }
     named("staging") {
-      java.srcDir("src/engineering/java")
+      kotlin.srcDir("src/engineering/kotlin")
       res.srcDir("src/engineering/res")
       manifest.srcFile("src/debug/AndroidManifest.xml")
     }
     named("pullrequest") {
-      java.srcDir("src/engineering/java")
+      kotlin.srcDir("src/engineering/java")
       res.srcDir("src/engineering/res")
       manifest.srcFile("src/debug/AndroidManifest.xml")
     }
