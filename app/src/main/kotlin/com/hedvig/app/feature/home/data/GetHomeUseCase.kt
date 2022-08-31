@@ -4,7 +4,7 @@ import arrow.core.Either
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
-import com.hedvig.android.owldroid.graphql.HomeQuery
+import com.hedvig.android.apollo.graphql.HomeQuery
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery

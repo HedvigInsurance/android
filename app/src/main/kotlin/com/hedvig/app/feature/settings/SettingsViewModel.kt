@@ -2,7 +2,7 @@ package com.hedvig.app.feature.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.owldroid.graphql.type.Locale
+import com.hedvig.android.apollo.graphql.type.Locale
 import com.hedvig.app.feature.marketpicker.LanguageRepository
 import com.hedvig.app.feature.marketpicker.LocaleBroadcastManager
 import com.hedvig.app.util.apollo.NetworkCacheManager

@@ -1,13 +1,13 @@
 package com.hedvig.app.testdata.feature.embark.builders
 
-import com.hedvig.android.owldroid.graphql.fragment.BasicExpressionFragment
-import com.hedvig.android.owldroid.graphql.fragment.ExpressionFragment
-import com.hedvig.android.owldroid.graphql.type.EmbarkExpressionBinary
-import com.hedvig.android.owldroid.graphql.type.EmbarkExpressionMultiple
-import com.hedvig.android.owldroid.graphql.type.EmbarkExpressionTypeBinary
-import com.hedvig.android.owldroid.graphql.type.EmbarkExpressionTypeMultiple
-import com.hedvig.android.owldroid.graphql.type.EmbarkExpressionTypeUnary
-import com.hedvig.android.owldroid.graphql.type.EmbarkExpressionUnary
+import com.hedvig.android.apollo.graphql.fragment.BasicExpressionFragment
+import com.hedvig.android.apollo.graphql.fragment.ExpressionFragment
+import com.hedvig.android.apollo.graphql.type.EmbarkExpressionBinary
+import com.hedvig.android.apollo.graphql.type.EmbarkExpressionMultiple
+import com.hedvig.android.apollo.graphql.type.EmbarkExpressionTypeBinary
+import com.hedvig.android.apollo.graphql.type.EmbarkExpressionTypeMultiple
+import com.hedvig.android.apollo.graphql.type.EmbarkExpressionTypeUnary
+import com.hedvig.android.apollo.graphql.type.EmbarkExpressionUnary
 
 data class ExpressionBuilder(
   private val type: ExpressionType,

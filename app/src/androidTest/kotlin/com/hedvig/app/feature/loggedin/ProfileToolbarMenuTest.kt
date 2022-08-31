@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.loggedin
 
-import com.hedvig.android.owldroid.graphql.LoggedInQuery
-import com.hedvig.android.owldroid.graphql.TriggerFreeTextChatMutation
+import com.hedvig.android.apollo.graphql.LoggedInQuery
+import com.hedvig.android.apollo.graphql.TriggerFreeTextChatMutation
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA

@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.embark.passages.externalinsurer
 
 import android.os.Parcelable
-import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
+import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

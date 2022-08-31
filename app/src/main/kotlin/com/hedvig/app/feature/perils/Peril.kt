@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.perils
 
 import android.os.Parcelable
-import com.hedvig.android.owldroid.graphql.fragment.PerilFragment
+import com.hedvig.android.apollo.graphql.fragment.PerilFragment
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

@@ -1,11 +1,11 @@
 package com.hedvig.app.testdata.feature.embark.builders
 
-import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
-import com.hedvig.android.owldroid.graphql.fragment.BasicExpressionFragment
-import com.hedvig.android.owldroid.graphql.fragment.ExpressionFragment
-import com.hedvig.android.owldroid.graphql.type.EmbarkRedirectBinaryExpression
-import com.hedvig.android.owldroid.graphql.type.EmbarkRedirectMultipleExpressions
-import com.hedvig.android.owldroid.graphql.type.EmbarkRedirectUnaryExpression
+import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
+import com.hedvig.android.apollo.graphql.fragment.BasicExpressionFragment
+import com.hedvig.android.apollo.graphql.fragment.ExpressionFragment
+import com.hedvig.android.apollo.graphql.type.EmbarkRedirectBinaryExpression
+import com.hedvig.android.apollo.graphql.type.EmbarkRedirectMultipleExpressions
+import com.hedvig.android.apollo.graphql.type.EmbarkRedirectUnaryExpression
 
 data class RedirectBuilder(
   private val to: String,

@@ -1,8 +1,8 @@
 package com.hedvig.app.testdata.feature.changeaddress
 
-import com.hedvig.android.owldroid.graphql.ActiveContractBundlesQuery
-import com.hedvig.android.owldroid.graphql.UpcomingAgreementQuery
-import com.hedvig.android.owldroid.graphql.fragment.UpcomingAgreementFragment
+import com.hedvig.android.apollo.graphql.ActiveContractBundlesQuery
+import com.hedvig.android.apollo.graphql.UpcomingAgreementQuery
+import com.hedvig.android.apollo.graphql.fragment.UpcomingAgreementFragment
 import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
 import com.hedvig.app.testdata.feature.changeaddress.builders.ActiveContractBundlesBuilder
 import com.hedvig.app.testdata.feature.changeaddress.builders.UpcomingAgreementBuilder

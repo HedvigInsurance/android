@@ -2,7 +2,7 @@ package com.hedvig.app.feature.embark
 
 import arrow.core.Either
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
+import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.safeQuery

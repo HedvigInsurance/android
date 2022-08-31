@@ -1,7 +1,7 @@
 package com.hedvig.app.testdata.common.builders
 
-import com.hedvig.android.owldroid.graphql.fragment.CostFragment
-import com.hedvig.android.owldroid.graphql.fragment.MonetaryAmountFragment
+import com.hedvig.android.apollo.graphql.fragment.CostFragment
+import com.hedvig.android.apollo.graphql.fragment.MonetaryAmountFragment
 
 data class CostBuilder(
   val currency: String = "SEK",

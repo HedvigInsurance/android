@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.offer.model.quotebundle
 
-import com.hedvig.android.owldroid.graphql.type.QuoteBundleAppConfigurationPostSignStep
+import com.hedvig.android.apollo.graphql.type.QuoteBundleAppConfigurationPostSignStep
 
 enum class PostSignScreen {
   CONNECT_PAYIN,

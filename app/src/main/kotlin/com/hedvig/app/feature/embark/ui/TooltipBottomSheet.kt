@@ -12,7 +12,7 @@ import androidx.core.view.marginTop
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
+import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
 import com.hedvig.app.R
 import com.hedvig.app.databinding.TooltipBottomSheetBinding
 import com.hedvig.app.feature.embark.TooltipModel

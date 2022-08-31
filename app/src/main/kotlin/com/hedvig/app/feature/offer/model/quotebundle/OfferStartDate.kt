@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.offer.model.quotebundle
 
 import android.content.Context
-import com.hedvig.android.owldroid.graphql.fragment.QuoteBundleFragment
+import com.hedvig.android.apollo.graphql.fragment.QuoteBundleFragment
 import com.hedvig.app.R
 import com.hedvig.app.feature.embark.masking.ISO_8601_DATE
 import com.hedvig.app.util.extensions.isToday

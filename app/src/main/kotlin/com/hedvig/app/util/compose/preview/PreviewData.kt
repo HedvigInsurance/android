@@ -1,6 +1,6 @@
 package com.hedvig.app.util.compose.preview
 
-import com.hedvig.android.owldroid.graphql.type.ClaimStatus
+import com.hedvig.android.apollo.graphql.type.ClaimStatus
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailCardUiState
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailResult

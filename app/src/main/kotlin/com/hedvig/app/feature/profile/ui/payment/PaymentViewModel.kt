@@ -2,9 +2,9 @@ package com.hedvig.app.feature.profile.ui.payment
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.apollo.graphql.PayinStatusQuery
+import com.hedvig.android.apollo.graphql.PaymentQuery
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.android.owldroid.graphql.PayinStatusQuery
-import com.hedvig.android.owldroid.graphql.PaymentQuery
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics

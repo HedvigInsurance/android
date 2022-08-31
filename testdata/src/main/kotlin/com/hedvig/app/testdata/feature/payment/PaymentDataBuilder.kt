@@ -1,12 +1,12 @@
 package com.hedvig.app.testdata.feature.payment
 
-import com.hedvig.android.owldroid.graphql.PaymentQuery
-import com.hedvig.android.owldroid.graphql.fragment.ActivePaymentMethodsFragment
-import com.hedvig.android.owldroid.graphql.fragment.BankAccountFragment
-import com.hedvig.android.owldroid.graphql.fragment.CostFragment
-import com.hedvig.android.owldroid.graphql.fragment.MonetaryAmountFragment
-import com.hedvig.android.owldroid.graphql.type.PayoutMethodStatus
-import com.hedvig.android.owldroid.graphql.type.StoredCardDetails
+import com.hedvig.android.apollo.graphql.PaymentQuery
+import com.hedvig.android.apollo.graphql.fragment.ActivePaymentMethodsFragment
+import com.hedvig.android.apollo.graphql.fragment.BankAccountFragment
+import com.hedvig.android.apollo.graphql.fragment.CostFragment
+import com.hedvig.android.apollo.graphql.fragment.MonetaryAmountFragment
+import com.hedvig.android.apollo.graphql.type.PayoutMethodStatus
+import com.hedvig.android.apollo.graphql.type.StoredCardDetails
 import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.common.builders.ContractStatusFragmentBuilder
 import com.hedvig.app.testdata.common.builders.CostBuilder

@@ -7,11 +7,11 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import com.apollographql.apollo3.annotations.ApolloExperimental
 import com.apollographql.apollo3.mockserver.enqueue
-import com.hedvig.android.owldroid.graphql.InsuranceQuery
-import com.hedvig.android.owldroid.graphql.test.InsuranceQuery_TestBuilder.Data
-import com.hedvig.android.owldroid.graphql.type.AgreementStatus
-import com.hedvig.android.owldroid.graphql.type.SwedishApartmentAgreement
-import com.hedvig.android.typeadapter.PromiscuousLocalDateAdapter
+import com.hedvig.android.apollo.graphql.InsuranceQuery
+import com.hedvig.android.apollo.graphql.test.InsuranceQuery_TestBuilder.Data
+import com.hedvig.android.apollo.graphql.type.AgreementStatus
+import com.hedvig.android.apollo.graphql.type.SwedishApartmentAgreement
+import com.hedvig.android.apollo.typeadapter.PromiscuousLocalDateAdapter
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_TERMINATED
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_HOUSE
@@ -172,7 +172,7 @@ class InsuranceQueryParsingTest {
       mockServer.enqueue(jsonData)
 
       val response = apolloClient
-        .query(InsuranceQuery(locale = com.hedvig.android.owldroid.graphql.type.Locale.sv_SE))
+        .query(InsuranceQuery(locale = com.hedvig.android.apollo.graphql.type.Locale.sv_SE))
         .execute()
 
       assertThat(response.data).isNotNull()
@@ -187,7 +187,7 @@ class InsuranceQueryParsingTest {
       mockServer.enqueue(jsonData)
 
       val response = apolloClient
-        .query(InsuranceQuery(locale = com.hedvig.android.owldroid.graphql.type.Locale.sv_SE))
+        .query(InsuranceQuery(locale = com.hedvig.android.apollo.graphql.type.Locale.sv_SE))
         .execute()
 
       assertThat(response.data).isNotNull()
@@ -201,7 +201,7 @@ class InsuranceQueryParsingTest {
     mockServer.enqueue(jsonData)
 
     val response = apolloClient
-      .query(InsuranceQuery(locale = com.hedvig.android.owldroid.graphql.type.Locale.sv_SE))
+      .query(InsuranceQuery(locale = com.hedvig.android.apollo.graphql.type.Locale.sv_SE))
       .execute()
 
     assertThat(response.data).isNotNull()
@@ -215,7 +215,7 @@ class InsuranceQueryParsingTest {
     mockServer.enqueue(jsonData)
 
     val response = apolloClient
-      .query(InsuranceQuery(locale = com.hedvig.android.owldroid.graphql.type.Locale.sv_SE))
+      .query(InsuranceQuery(locale = com.hedvig.android.apollo.graphql.type.Locale.sv_SE))
       .execute()
 
     assertThat(response.data).isNotNull()

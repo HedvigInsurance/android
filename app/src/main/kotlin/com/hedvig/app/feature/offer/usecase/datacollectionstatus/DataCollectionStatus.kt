@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.offer.usecase.datacollectionstatus
 
-import com.hedvig.android.owldroid.graphql.DataCollectionStatusSubscription
+import com.hedvig.android.apollo.graphql.DataCollectionStatusSubscription
 
 data class DataCollectionStatus(
   val insuranceCompany: String?,
@@ -23,23 +23,23 @@ data class DataCollectionStatus(
 
     companion object {
       fun fromDto(
-        dto: com.hedvig.android.owldroid.graphql.type.DataCollectionStatus,
+        dto: com.hedvig.android.apollo.graphql.type.DataCollectionStatus,
       ): DataCollectionSubscriptionStatus {
         return when (dto) {
-          com.hedvig.android.owldroid.graphql.type.DataCollectionStatus.COLLECTING,
-          com.hedvig.android.owldroid.graphql.type.DataCollectionStatus.RUNNING,
-          com.hedvig.android.owldroid.graphql.type.DataCollectionStatus.LOGIN,
-          com.hedvig.android.owldroid.graphql.type.DataCollectionStatus.UNKNOWN__,
+          com.hedvig.android.apollo.graphql.type.DataCollectionStatus.COLLECTING,
+          com.hedvig.android.apollo.graphql.type.DataCollectionStatus.RUNNING,
+          com.hedvig.android.apollo.graphql.type.DataCollectionStatus.LOGIN,
+          com.hedvig.android.apollo.graphql.type.DataCollectionStatus.UNKNOWN__,
           -> IN_PROGRESS
 
-          com.hedvig.android.owldroid.graphql.type.DataCollectionStatus.COMPLETED_PARTIAL,
-          com.hedvig.android.owldroid.graphql.type.DataCollectionStatus.COMPLETED,
-          com.hedvig.android.owldroid.graphql.type.DataCollectionStatus.COMPLETED_EMPTY,
+          com.hedvig.android.apollo.graphql.type.DataCollectionStatus.COMPLETED_PARTIAL,
+          com.hedvig.android.apollo.graphql.type.DataCollectionStatus.COMPLETED,
+          com.hedvig.android.apollo.graphql.type.DataCollectionStatus.COMPLETED_EMPTY,
           -> COMPLETE
 
-          com.hedvig.android.owldroid.graphql.type.DataCollectionStatus.WAITING_FOR_AUTHENTICATION,
-          com.hedvig.android.owldroid.graphql.type.DataCollectionStatus.USER_INPUT,
-          com.hedvig.android.owldroid.graphql.type.DataCollectionStatus.FAILED,
+          com.hedvig.android.apollo.graphql.type.DataCollectionStatus.WAITING_FOR_AUTHENTICATION,
+          com.hedvig.android.apollo.graphql.type.DataCollectionStatus.USER_INPUT,
+          com.hedvig.android.apollo.graphql.type.DataCollectionStatus.FAILED,
           -> FAILED
         }
       }

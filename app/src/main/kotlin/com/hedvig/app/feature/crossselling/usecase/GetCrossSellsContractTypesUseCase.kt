@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.crossselling.usecase
 
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.owldroid.graphql.CrossSellsQuery
+import com.hedvig.android.apollo.graphql.CrossSellsQuery
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery

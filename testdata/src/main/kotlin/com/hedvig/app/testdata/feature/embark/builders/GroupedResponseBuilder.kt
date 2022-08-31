@@ -1,10 +1,10 @@
 package com.hedvig.app.testdata.feature.embark.builders
 
-import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
-import com.hedvig.android.owldroid.graphql.fragment.GroupedResponseFragment
-import com.hedvig.android.owldroid.graphql.fragment.MessageFragment
-import com.hedvig.android.owldroid.graphql.fragment.ResponseExpressionFragment
-import com.hedvig.android.owldroid.graphql.type.EmbarkGroupedResponse
+import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
+import com.hedvig.android.apollo.graphql.fragment.GroupedResponseFragment
+import com.hedvig.android.apollo.graphql.fragment.MessageFragment
+import com.hedvig.android.apollo.graphql.fragment.ResponseExpressionFragment
+import com.hedvig.android.apollo.graphql.type.EmbarkGroupedResponse
 
 class GroupedResponseBuilder(
   private val title: String,

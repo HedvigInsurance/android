@@ -3,12 +3,12 @@ package com.hedvig.app.feature.marketing.data
 import android.content.Context
 import arrow.core.identity
 import com.apollographql.apollo3.ApolloClient
+import com.hedvig.android.apollo.graphql.GeoQuery
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
-import com.hedvig.android.owldroid.graphql.GeoQuery
 import com.hedvig.app.util.apollo.safeQuery
 import com.hedvig.app.util.apollo.toEither
 

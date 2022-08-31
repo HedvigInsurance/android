@@ -11,11 +11,11 @@ import com.datadog.android.core.configuration.Credentials
 import com.datadog.android.privacy.TrackingConsent
 import com.datadog.android.rum.GlobalRum
 import com.datadog.android.rum.RumMonitor
+import com.hedvig.android.apollo.graphql.NewSessionMutation
 import com.hedvig.android.core.common.preferences.PreferenceKey
 import com.hedvig.android.hanalytics.tracking.ApplicationLifecycleTracker
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.MarketManager
-import com.hedvig.android.owldroid.graphql.NewSessionMutation
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.settings.Theme

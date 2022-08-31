@@ -16,8 +16,8 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
+import com.hedvig.android.apollo.graphql.ChatMessagesQuery
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticationTokenService

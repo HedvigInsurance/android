@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.embark.extensions
 
-import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
-import com.hedvig.android.owldroid.graphql.fragment.ApiFragment
+import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
+import com.hedvig.android.apollo.graphql.fragment.ApiFragment
 
 fun ApiFragment.AsEmbarkApiGraphQLQuery.getPassageNameFromError() = queryData
   .errors

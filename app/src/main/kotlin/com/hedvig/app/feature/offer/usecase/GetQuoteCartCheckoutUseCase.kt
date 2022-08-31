@@ -5,7 +5,7 @@ import arrow.core.continuations.either
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
-import com.hedvig.android.owldroid.graphql.QuoteCartCheckoutStatusQuery
+import com.hedvig.android.apollo.graphql.QuoteCartCheckoutStatusQuery
 import com.hedvig.app.feature.offer.model.Checkout
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.model.toCheckout

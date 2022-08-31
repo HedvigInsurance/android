@@ -5,9 +5,9 @@ import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.adyen.checkout.redirect.RedirectComponent
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
-import com.hedvig.android.owldroid.graphql.AdyenPaymentMethodsQuery
-import com.hedvig.android.owldroid.graphql.AdyenPayoutMethodsQuery
-import com.hedvig.android.owldroid.graphql.TokenizePayoutDetailsMutation
+import com.hedvig.android.apollo.graphql.AdyenPaymentMethodsQuery
+import com.hedvig.android.apollo.graphql.AdyenPayoutMethodsQuery
+import com.hedvig.android.apollo.graphql.TokenizePayoutDetailsMutation
 import org.json.JSONObject
 
 class AdyenRepository(

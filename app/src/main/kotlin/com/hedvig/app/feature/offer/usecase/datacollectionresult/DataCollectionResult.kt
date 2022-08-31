@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.offer.usecase.datacollectionresult
 
 import arrow.core.NonEmptyList
-import com.hedvig.android.owldroid.graphql.DataCollectionResultQuery
+import com.hedvig.android.apollo.graphql.DataCollectionResultQuery
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import javax.money.MonetaryAmount
 

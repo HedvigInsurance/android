@@ -2,8 +2,8 @@ package com.hedvig.app.feature.referrals.ui.tab
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.apollo.graphql.ReferralsQuery
 import com.hedvig.android.core.common.RetryChannel
-import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.feature.referrals.data.ReferralsRepository
 import com.hedvig.app.util.apollo.QueryResult
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -6,9 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
-import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
-import com.hedvig.android.owldroid.graphql.GifQuery
-import com.hedvig.android.owldroid.graphql.UploadFileMutation
+import com.hedvig.android.apollo.graphql.ChatMessagesQuery
+import com.hedvig.android.apollo.graphql.GifQuery
+import com.hedvig.android.apollo.graphql.UploadFileMutation
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.feature.chat.FileUploadOutcome
 import com.hedvig.app.feature.chat.data.ChatEventStore

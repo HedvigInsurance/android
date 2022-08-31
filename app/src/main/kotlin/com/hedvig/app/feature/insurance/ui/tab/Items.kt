@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.insurance.ui.tab
 
-import com.hedvig.android.owldroid.graphql.InsuranceQuery
+import com.hedvig.android.apollo.graphql.InsuranceQuery
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.insurance.ui.InsuranceModel
 import com.hedvig.app.feature.insurance.ui.detail.toContractCardViewState

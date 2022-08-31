@@ -2,10 +2,10 @@ package com.hedvig.app.feature.marketing.data
 
 import android.content.Context
 import com.apollographql.apollo3.ApolloClient
+import com.hedvig.android.apollo.graphql.UpdateLanguageMutation
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
-import com.hedvig.android.owldroid.graphql.UpdateLanguageMutation
 import com.hedvig.app.makeLocaleString
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.safeQuery

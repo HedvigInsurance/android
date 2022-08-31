@@ -6,8 +6,8 @@ import arrow.core.left
 import arrow.core.right
 import com.adyen.checkout.redirect.RedirectComponent
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.owldroid.graphql.TokenizePayoutDetailsMutation
-import com.hedvig.android.owldroid.graphql.type.TokenizationResultType
+import com.hedvig.android.apollo.graphql.TokenizePayoutDetailsMutation
+import com.hedvig.android.apollo.graphql.type.TokenizationResultType
 import com.hedvig.app.util.apollo.safeQuery
 import com.hedvig.app.util.apollo.toEither
 import org.json.JSONObject

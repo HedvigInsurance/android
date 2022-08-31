@@ -1,11 +1,11 @@
 package com.hedvig.app.testdata.feature.embark.builders
 
-import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
-import com.hedvig.android.owldroid.graphql.fragment.EmbarkLinkFragment
-import com.hedvig.android.owldroid.graphql.type.EmbarkDropdownAction
-import com.hedvig.android.owldroid.graphql.type.EmbarkMultiAction
-import com.hedvig.android.owldroid.graphql.type.EmbarkMultiActionNumberAction
-import com.hedvig.android.owldroid.graphql.type.EmbarkSwitchAction
+import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
+import com.hedvig.android.apollo.graphql.fragment.EmbarkLinkFragment
+import com.hedvig.android.apollo.graphql.type.EmbarkDropdownAction
+import com.hedvig.android.apollo.graphql.type.EmbarkMultiAction
+import com.hedvig.android.apollo.graphql.type.EmbarkMultiActionNumberAction
+import com.hedvig.android.apollo.graphql.type.EmbarkSwitchAction
 
 data class MultiActionBuilder(
   private val key: String,

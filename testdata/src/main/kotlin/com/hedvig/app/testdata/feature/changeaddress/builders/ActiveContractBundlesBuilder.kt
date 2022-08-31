@@ -1,6 +1,6 @@
 package com.hedvig.app.testdata.feature.changeaddress.builders
 
-import com.hedvig.android.owldroid.graphql.ActiveContractBundlesQuery
+import com.hedvig.android.apollo.graphql.ActiveContractBundlesQuery
 
 class ActiveContractBundlesBuilder(
   val embarkStoryId: String? = null,

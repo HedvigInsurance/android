@@ -1,11 +1,11 @@
 package com.hedvig.app.testdata.dashboard
 
-import com.hedvig.android.owldroid.graphql.InsuranceQuery
-import com.hedvig.android.owldroid.graphql.fragment.CrossSellFragment
-import com.hedvig.android.owldroid.graphql.type.CrossSell
-import com.hedvig.android.owldroid.graphql.type.CrossSellEmbark
-import com.hedvig.android.owldroid.graphql.type.CrossSellType
-import com.hedvig.android.owldroid.graphql.type.TypeOfContract
+import com.hedvig.android.apollo.graphql.InsuranceQuery
+import com.hedvig.android.apollo.graphql.fragment.CrossSellFragment
+import com.hedvig.android.apollo.graphql.type.CrossSell
+import com.hedvig.android.apollo.graphql.type.CrossSellEmbark
+import com.hedvig.android.apollo.graphql.type.CrossSellType
+import com.hedvig.android.apollo.graphql.type.TypeOfContract
 import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.dashboard.builders.InsuranceDataBuilder
 

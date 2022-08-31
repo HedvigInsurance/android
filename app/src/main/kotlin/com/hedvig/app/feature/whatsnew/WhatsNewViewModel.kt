@@ -3,7 +3,7 @@ package com.hedvig.app.feature.whatsnew
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
-import com.hedvig.android.owldroid.graphql.WhatsNewQuery
+import com.hedvig.android.apollo.graphql.WhatsNewQuery
 import com.hedvig.app.util.LiveEvent
 import com.hedvig.app.util.apollo.toEither
 import e

@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.embark.util
 
-import com.hedvig.android.owldroid.graphql.fragment.ApiFragment
-import com.hedvig.android.owldroid.graphql.fragment.GraphQLVariablesFragment
-import com.hedvig.android.owldroid.graphql.type.EmbarkAPIGraphQLSingleVariableCasting
+import com.hedvig.android.apollo.graphql.fragment.ApiFragment
+import com.hedvig.android.apollo.graphql.fragment.GraphQLVariablesFragment
+import com.hedvig.android.apollo.graphql.type.EmbarkAPIGraphQLSingleVariableCasting
 import com.hedvig.app.feature.embark.ValueStore
 import com.hedvig.app.feature.embark.variables.CastType
 import com.hedvig.app.feature.embark.variables.Variable

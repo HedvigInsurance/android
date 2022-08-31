@@ -1,11 +1,11 @@
 package com.hedvig.app.testdata.feature.profile.builders
 
-import com.hedvig.android.owldroid.graphql.ProfileQuery
-import com.hedvig.android.owldroid.graphql.fragment.ActivePaymentMethodsFragment
-import com.hedvig.android.owldroid.graphql.fragment.CashbackFragment
-import com.hedvig.android.owldroid.graphql.fragment.CostFragment
-import com.hedvig.android.owldroid.graphql.type.DirectDebitStatus
-import com.hedvig.android.owldroid.graphql.type.StoredCardDetails
+import com.hedvig.android.apollo.graphql.ProfileQuery
+import com.hedvig.android.apollo.graphql.fragment.ActivePaymentMethodsFragment
+import com.hedvig.android.apollo.graphql.fragment.CashbackFragment
+import com.hedvig.android.apollo.graphql.fragment.CostFragment
+import com.hedvig.android.apollo.graphql.type.DirectDebitStatus
+import com.hedvig.android.apollo.graphql.type.StoredCardDetails
 import com.hedvig.app.testdata.common.builders.CostBuilder
 import java.util.UUID
 

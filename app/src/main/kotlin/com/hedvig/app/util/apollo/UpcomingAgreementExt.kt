@@ -1,7 +1,7 @@
 package com.hedvig.app.util.apollo
 
-import com.hedvig.android.owldroid.graphql.fragment.UpcomingAgreementChangeFragment
-import com.hedvig.android.owldroid.graphql.fragment.UpcomingAgreementFragment
+import com.hedvig.android.apollo.graphql.fragment.UpcomingAgreementChangeFragment
+import com.hedvig.android.apollo.graphql.fragment.UpcomingAgreementFragment
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement
 import com.hedvig.app.feature.table.intoTable
 import java.time.LocalDate

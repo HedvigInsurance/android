@@ -4,7 +4,7 @@ import android.graphics.Color
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.core.graphics.ColorUtils
-import com.hedvig.android.owldroid.graphql.type.HedvigColor
+import com.hedvig.android.apollo.graphql.type.HedvigColor
 import com.hedvig.app.R
 import kotlin.math.abs
 import kotlin.math.max

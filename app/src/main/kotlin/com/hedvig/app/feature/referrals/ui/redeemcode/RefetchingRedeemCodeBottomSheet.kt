@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.referrals.ui.redeemcode
 
-import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
+import com.hedvig.android.apollo.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel

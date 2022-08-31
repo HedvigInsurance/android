@@ -3,9 +3,9 @@ package com.hedvig.app.feature.profile.data
 import arrow.core.Either
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.cache.normalized.apolloStore
-import com.hedvig.android.owldroid.graphql.ProfileQuery
-import com.hedvig.android.owldroid.graphql.UpdateEmailMutation
-import com.hedvig.android.owldroid.graphql.UpdatePhoneNumberMutation
+import com.hedvig.android.apollo.graphql.ProfileQuery
+import com.hedvig.android.apollo.graphql.UpdateEmailMutation
+import com.hedvig.android.apollo.graphql.UpdatePhoneNumberMutation
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeWatch
 import com.hedvig.app.util.apollo.toEither

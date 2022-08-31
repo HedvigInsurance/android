@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.profile.ui.tab
 
 import androidx.annotation.StringRes
-import com.hedvig.android.owldroid.graphql.ProfileQuery
-import com.hedvig.android.owldroid.graphql.fragment.CashbackFragment
+import com.hedvig.android.apollo.graphql.ProfileQuery
+import com.hedvig.android.apollo.graphql.fragment.CashbackFragment
 
 data class ProfileUiState(
   val member: Member,

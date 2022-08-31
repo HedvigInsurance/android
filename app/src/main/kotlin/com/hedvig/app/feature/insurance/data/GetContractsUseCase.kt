@@ -3,7 +3,7 @@ package com.hedvig.app.feature.insurance.data
 import arrow.core.Either
 import arrow.core.continuations.either
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.owldroid.graphql.InsuranceQuery
+import com.hedvig.android.apollo.graphql.InsuranceQuery
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.safeQuery

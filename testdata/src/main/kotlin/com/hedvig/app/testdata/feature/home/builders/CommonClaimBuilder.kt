@@ -1,10 +1,10 @@
 package com.hedvig.app.testdata.feature.home.builders
 
-import com.hedvig.android.owldroid.graphql.HomeQuery
-import com.hedvig.android.owldroid.graphql.fragment.IconVariantsFragment
-import com.hedvig.android.owldroid.graphql.type.Emergency
-import com.hedvig.android.owldroid.graphql.type.HedvigColor
-import com.hedvig.android.owldroid.graphql.type.TitleAndBulletPoints
+import com.hedvig.android.apollo.graphql.HomeQuery
+import com.hedvig.android.apollo.graphql.fragment.IconVariantsFragment
+import com.hedvig.android.apollo.graphql.type.Emergency
+import com.hedvig.android.apollo.graphql.type.HedvigColor
+import com.hedvig.android.apollo.graphql.type.TitleAndBulletPoints
 
 data class CommonClaimBuilder(
   val title: String = "Example",

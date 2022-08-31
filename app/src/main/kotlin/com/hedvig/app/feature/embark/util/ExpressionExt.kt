@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.embark.util
 
-import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
-import com.hedvig.android.owldroid.graphql.fragment.BasicExpressionFragment
-import com.hedvig.android.owldroid.graphql.fragment.ExpressionFragment
+import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
+import com.hedvig.android.apollo.graphql.fragment.BasicExpressionFragment
+import com.hedvig.android.apollo.graphql.fragment.ExpressionFragment
 
 fun EmbarkStoryQuery.Redirect.toExpressionFragment() = ExpressionFragment(
   __typename = "",

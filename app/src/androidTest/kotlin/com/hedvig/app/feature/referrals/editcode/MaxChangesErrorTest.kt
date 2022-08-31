@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.referrals.editcode
 
-import com.hedvig.android.owldroid.graphql.UpdateReferralCampaignCodeMutation
+import com.hedvig.android.apollo.graphql.UpdateReferralCampaignCodeMutation
 import com.hedvig.app.R
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeActivity
 import com.hedvig.app.testdata.feature.referrals.EDIT_CODE_DATA_TOO_MANY_CHANGES

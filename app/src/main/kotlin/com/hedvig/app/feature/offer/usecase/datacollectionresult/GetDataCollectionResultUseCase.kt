@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.offer.usecase.datacollectionresult
 
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.owldroid.graphql.DataCollectionResultQuery
+import com.hedvig.android.apollo.graphql.DataCollectionResultQuery
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
 

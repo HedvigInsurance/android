@@ -1,9 +1,9 @@
 package com.hedvig.app.testdata.feature.embark.builders
 
-import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
-import com.hedvig.android.owldroid.graphql.fragment.ApiFragment
-import com.hedvig.android.owldroid.graphql.fragment.EmbarkLinkFragment
-import com.hedvig.android.owldroid.graphql.type.EmbarkTextActionSet
+import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
+import com.hedvig.android.apollo.graphql.fragment.ApiFragment
+import com.hedvig.android.apollo.graphql.fragment.EmbarkLinkFragment
+import com.hedvig.android.apollo.graphql.type.EmbarkTextActionSet
 
 data class TextActionSetBuilder(
   private val link: EmbarkLinkFragment,

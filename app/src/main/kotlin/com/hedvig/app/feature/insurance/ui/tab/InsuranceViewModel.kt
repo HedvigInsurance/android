@@ -3,7 +3,7 @@ package com.hedvig.app.feature.insurance.ui.tab
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
-import com.hedvig.android.owldroid.graphql.InsuranceQuery
+import com.hedvig.android.apollo.graphql.InsuranceQuery
 import com.hedvig.app.feature.crossselling.model.NavigateChat
 import com.hedvig.app.feature.crossselling.model.NavigateEmbark
 import com.hedvig.app.feature.crossselling.ui.CrossSellData

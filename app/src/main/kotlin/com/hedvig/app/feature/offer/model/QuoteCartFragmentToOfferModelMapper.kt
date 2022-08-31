@@ -1,9 +1,9 @@
 package com.hedvig.app.feature.offer.model
 
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
+import com.hedvig.android.apollo.graphql.fragment.QuoteCartFragment
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
-import com.hedvig.android.owldroid.graphql.fragment.QuoteCartFragment
 import com.hedvig.app.common.Mapper
 
 class QuoteCartFragmentToOfferModelMapper(

@@ -7,7 +7,7 @@ import arrow.core.flatMap
 import arrow.core.left
 import arrow.core.right
 import arrow.core.sequence
-import com.hedvig.android.owldroid.graphql.QuoteCartEditQuoteMutation
+import com.hedvig.android.apollo.graphql.QuoteCartEditQuoteMutation
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.LocaleManager

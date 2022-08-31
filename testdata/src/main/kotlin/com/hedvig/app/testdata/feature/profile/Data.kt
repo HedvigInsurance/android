@@ -1,6 +1,6 @@
 package com.hedvig.app.testdata.feature.profile
 
-import com.hedvig.android.owldroid.graphql.type.DirectDebitStatus
+import com.hedvig.android.apollo.graphql.type.DirectDebitStatus
 import com.hedvig.app.testdata.feature.profile.builders.ProfileDataBuilder
 
 val PROFILE_DATA = ProfileDataBuilder().build()
