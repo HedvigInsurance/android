@@ -6,7 +6,7 @@ plugins {
   alias(libs.plugins.cacheFix) apply false
   alias(libs.plugins.doctor)
   alias(libs.plugins.kotlin) apply false
-  alias(libs.plugins.ktlint) apply false
+  alias(libs.plugins.kotlinter) apply false
 }
 
 buildtimetracker {
