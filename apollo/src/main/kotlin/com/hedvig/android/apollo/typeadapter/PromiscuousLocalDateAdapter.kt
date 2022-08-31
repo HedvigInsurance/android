@@ -1,4 +1,4 @@
-package com.hedvig.android.typeadapter
+package com.hedvig.android.apollo.typeadapter
 
 import com.apollographql.apollo3.api.Adapter
 import com.apollographql.apollo3.api.CustomScalarAdapters

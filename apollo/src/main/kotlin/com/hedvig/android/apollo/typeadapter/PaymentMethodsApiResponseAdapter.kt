@@ -1,4 +1,4 @@
-package com.hedvig.android.typeadapter
+package com.hedvig.android.apollo.typeadapter
 
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.apollographql.apollo3.api.Adapter
