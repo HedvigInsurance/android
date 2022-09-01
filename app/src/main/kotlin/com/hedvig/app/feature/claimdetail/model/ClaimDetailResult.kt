@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.claimdetail.model
 
-import com.hedvig.android.owldroid.graphql.ClaimDetailsQuery
-import com.hedvig.android.owldroid.graphql.type.ClaimOutcome
-import com.hedvig.android.owldroid.graphql.type.ClaimStatus
+import com.hedvig.android.apollo.graphql.ClaimDetailsQuery
+import com.hedvig.android.apollo.graphql.type.ClaimOutcome
+import com.hedvig.android.apollo.graphql.type.ClaimStatus
 import javax.money.MonetaryAmount
 
 sealed class ClaimDetailResult {

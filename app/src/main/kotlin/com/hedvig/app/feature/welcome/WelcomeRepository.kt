@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.welcome
 
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.owldroid.graphql.WelcomeQuery
+import com.hedvig.android.apollo.graphql.WelcomeQuery
 import com.hedvig.app.util.LocaleManager
 
 class WelcomeRepository(

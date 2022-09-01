@@ -1,6 +1,6 @@
 package com.hedvig.app.service.badge
 
-import com.hedvig.android.owldroid.graphql.type.TypeOfContract
+import com.hedvig.android.apollo.graphql.type.TypeOfContract
 import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsContractTypesUseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll

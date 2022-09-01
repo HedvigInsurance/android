@@ -3,7 +3,7 @@ package com.hedvig.app.feature.genericauth
 import arrow.core.continuations.either
 import arrow.core.merge
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.owldroid.graphql.CreateOtpAttemptMutation
+import com.hedvig.android.apollo.graphql.CreateOtpAttemptMutation
 import com.hedvig.app.util.apollo.safeQuery
 import com.hedvig.app.util.apollo.toEither
 import e

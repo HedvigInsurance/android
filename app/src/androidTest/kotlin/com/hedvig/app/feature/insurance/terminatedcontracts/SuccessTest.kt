@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.insurance.terminatedcontracts
 
-import com.hedvig.android.owldroid.graphql.InsuranceQuery
+import com.hedvig.android.apollo.graphql.InsuranceQuery
 import com.hedvig.app.feature.insurance.screens.InsuranceScreen
 import com.hedvig.app.feature.insurance.screens.TerminatedContractsScreen
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsActivity

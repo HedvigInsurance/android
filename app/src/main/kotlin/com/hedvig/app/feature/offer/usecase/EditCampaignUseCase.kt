@@ -4,8 +4,8 @@ import arrow.core.Either
 import arrow.core.flatMap
 import arrow.core.rightIfNotNull
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.owldroid.graphql.QuoteCartAddCampaignMutation
-import com.hedvig.android.owldroid.graphql.QuoteCartRemoveCampaignMutation
+import com.hedvig.android.apollo.graphql.QuoteCartAddCampaignMutation
+import com.hedvig.android.apollo.graphql.QuoteCartRemoveCampaignMutation
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage

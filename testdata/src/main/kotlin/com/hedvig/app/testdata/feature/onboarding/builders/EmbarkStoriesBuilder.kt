@@ -1,8 +1,8 @@
 package com.hedvig.app.testdata.feature.onboarding.builders
 
-import com.hedvig.android.owldroid.graphql.ChoosePlanQuery
-import com.hedvig.android.owldroid.graphql.type.EmbarkStoryMetaDataEntryWebUrlPath
-import com.hedvig.android.owldroid.graphql.type.EmbarkStoryMetadataEntryDiscount
+import com.hedvig.android.apollo.graphql.ChoosePlanQuery
+import com.hedvig.android.apollo.graphql.type.EmbarkStoryMetaDataEntryWebUrlPath
+import com.hedvig.android.apollo.graphql.type.EmbarkStoryMetadataEntryDiscount
 import com.hedvig.app.testdata.feature.onboarding.builders.EmbarkStoryBuilder.Companion.ENGLISH_COMBO
 import com.hedvig.app.testdata.feature.onboarding.builders.EmbarkStoryBuilder.Companion.ENGLISH_CONTENTS
 import com.hedvig.app.testdata.feature.onboarding.builders.EmbarkStoryBuilder.Companion.ENGLISH_CONTENTS_WEB_PATH

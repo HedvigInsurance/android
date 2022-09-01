@@ -7,8 +7,8 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import com.apollographql.apollo3.annotations.ApolloExperimental
 import com.apollographql.apollo3.mockserver.enqueue
-import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
-import com.hedvig.android.owldroid.graphql.test.EmbarkStoryQuery_TestBuilder.Data
+import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
+import com.hedvig.android.apollo.graphql.test.EmbarkStoryQuery_TestBuilder.Data
 import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_MUTATION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_MUTATION_AND_SINGLE_VARIABLE
@@ -208,17 +208,17 @@ class EmbarkStoryQueryParsingTest {
               tracks = listOf(
                 track {
                   customData = """
-                                    |{
-                                    |  "string": "Hello World",
-                                    |  "some": {
-                                    |    "arbitrary": [
-                                    |      { "object": 1 },
-                                    |      "object",
-                                    |      2
-                                    |    ],
-                                    |    "c": "d"
-                                    |  }
-                                    |}
+                  |{
+                  |  "string": "Hello World",
+                  |  "some": {
+                  |    "arbitrary": [
+                  |      { "object": 1 },
+                  |      "object",
+                  |      2
+                  |    ],
+                  |    "c": "d"
+                  |  }
+                  |}
                   """.trimMargin()
                 },
               )

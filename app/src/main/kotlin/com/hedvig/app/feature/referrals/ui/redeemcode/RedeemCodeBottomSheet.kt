@@ -10,7 +10,7 @@ import android.view.inputmethod.EditorInfo
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
+import com.hedvig.android.apollo.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.R
 import com.hedvig.app.databinding.PromotionCodeDialogBinding
 import com.hedvig.app.feature.offer.model.QuoteCartId

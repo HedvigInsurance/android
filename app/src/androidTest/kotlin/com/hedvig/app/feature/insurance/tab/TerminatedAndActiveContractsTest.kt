@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.insurance.tab
 
-import com.hedvig.android.owldroid.graphql.InsuranceQuery
-import com.hedvig.android.owldroid.graphql.LoggedInQuery
+import com.hedvig.android.apollo.graphql.InsuranceQuery
+import com.hedvig.android.apollo.graphql.LoggedInQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.insurance.screens.InsuranceScreen
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity

@@ -3,8 +3,8 @@ package com.hedvig.android.market
 import android.content.Context
 import android.net.Uri
 import androidx.annotation.StringRes
-import com.hedvig.android.owldroid.graphql.fragment.ActivePaymentMethodsFragment
-import com.hedvig.android.owldroid.graphql.type.DirectDebitStatus
+import com.hedvig.android.apollo.graphql.fragment.ActivePaymentMethodsFragment
+import com.hedvig.android.apollo.graphql.type.DirectDebitStatus
 
 enum class Market {
   SE,

@@ -1,7 +1,7 @@
 package com.hedvig.app.testdata.feature.payment
 
-import com.hedvig.android.owldroid.graphql.PaymentQuery
-import com.hedvig.android.owldroid.graphql.fragment.MonetaryAmountFragment
+import com.hedvig.android.apollo.graphql.PaymentQuery
+import com.hedvig.android.apollo.graphql.fragment.MonetaryAmountFragment
 import com.hedvig.app.util.months
 import java.time.LocalDate
 

@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.embark.util
 
 import android.os.Parcelable
-import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
+import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.ExpressionResult
 import com.hedvig.app.feature.embark.ValueStore
 import kotlinx.parcelize.Parcelize

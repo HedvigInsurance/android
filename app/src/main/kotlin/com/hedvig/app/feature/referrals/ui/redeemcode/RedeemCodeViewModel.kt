@@ -2,7 +2,7 @@ package com.hedvig.app.feature.referrals.ui.redeemcode
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
+import com.hedvig.android.apollo.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.usecase.CampaignCode
 import com.hedvig.app.feature.offer.usecase.EditCampaignUseCase

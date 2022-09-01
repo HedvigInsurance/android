@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.changeaddress
 
-import com.hedvig.android.owldroid.graphql.ActiveContractBundlesQuery
-import com.hedvig.android.owldroid.graphql.CreateOnboardingQuoteCartMutation
-import com.hedvig.android.owldroid.graphql.UpcomingAgreementQuery
+import com.hedvig.android.apollo.graphql.ActiveContractBundlesQuery
+import com.hedvig.android.apollo.graphql.CreateOnboardingQuoteCartMutation
+import com.hedvig.android.apollo.graphql.UpcomingAgreementQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.testdata.feature.changeaddress.SELF_CHANGE_ELIGIBILITY

@@ -8,7 +8,7 @@ import com.apollographql.apollo3.annotations.ApolloExperimental
 import com.apollographql.apollo3.cache.normalized.api.MemoryCacheFactory
 import com.apollographql.apollo3.cache.normalized.normalizedCache
 import com.apollographql.apollo3.mockserver.enqueue
-import com.hedvig.android.owldroid.graphql.ProviderStatusQuery
+import com.hedvig.android.apollo.graphql.ProviderStatusQuery
 import com.hedvig.app.apollo.runApolloTest
 import com.hedvig.app.apollo.toJsonStringWithData
 import com.hedvig.app.feature.offer.usecase.providerstatus.GetProviderDisplayNameUseCase

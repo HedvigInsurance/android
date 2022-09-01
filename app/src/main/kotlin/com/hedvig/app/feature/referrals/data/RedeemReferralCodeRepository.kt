@@ -2,7 +2,7 @@ package com.hedvig.app.feature.referrals.data
 
 import arrow.core.Either
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
+import com.hedvig.android.apollo.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.feature.offer.usecase.CampaignCode
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.LocaleManager

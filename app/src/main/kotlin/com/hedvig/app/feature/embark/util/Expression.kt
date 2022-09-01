@@ -1,9 +1,9 @@
 package com.hedvig.app.feature.embark.util
 
-import com.hedvig.android.owldroid.graphql.fragment.ExpressionFragment
-import com.hedvig.android.owldroid.graphql.type.EmbarkExpressionTypeBinary
-import com.hedvig.android.owldroid.graphql.type.EmbarkExpressionTypeMultiple
-import com.hedvig.android.owldroid.graphql.type.EmbarkExpressionTypeUnary
+import com.hedvig.android.apollo.graphql.fragment.ExpressionFragment
+import com.hedvig.android.apollo.graphql.type.EmbarkExpressionTypeBinary
+import com.hedvig.android.apollo.graphql.type.EmbarkExpressionTypeMultiple
+import com.hedvig.android.apollo.graphql.type.EmbarkExpressionTypeUnary
 import com.hedvig.app.feature.embark.ExpressionResult
 import com.hedvig.app.feature.embark.ValueStore
 

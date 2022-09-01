@@ -1,11 +1,11 @@
 package com.hedvig.app.testdata.feature.embark.builders
 
-import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
-import com.hedvig.android.owldroid.graphql.fragment.ExpressionFragment
-import com.hedvig.android.owldroid.graphql.fragment.MessageFragment
-import com.hedvig.android.owldroid.graphql.fragment.ResponseExpressionFragment
-import com.hedvig.android.owldroid.graphql.type.EmbarkMessage
-import com.hedvig.android.owldroid.graphql.type.EmbarkResponseExpression
+import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
+import com.hedvig.android.apollo.graphql.fragment.ExpressionFragment
+import com.hedvig.android.apollo.graphql.fragment.MessageFragment
+import com.hedvig.android.apollo.graphql.fragment.ResponseExpressionFragment
+import com.hedvig.android.apollo.graphql.type.EmbarkMessage
+import com.hedvig.android.apollo.graphql.type.EmbarkResponseExpression
 
 data class MessageBuilder(
   private val text: String,

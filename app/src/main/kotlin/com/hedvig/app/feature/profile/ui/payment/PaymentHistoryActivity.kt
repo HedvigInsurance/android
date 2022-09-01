@@ -5,8 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import com.hedvig.android.apollo.graphql.PaymentQuery
 import com.hedvig.android.market.MarketManager
-import com.hedvig.android.owldroid.graphql.PaymentQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityPaymentHistoryBinding

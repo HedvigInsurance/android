@@ -1,11 +1,11 @@
 package com.hedvig.app.testdata.feature.embark.builders
 
-import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
-import com.hedvig.android.owldroid.graphql.fragment.ApiFragment
-import com.hedvig.android.owldroid.graphql.fragment.EmbarkLinkFragment
-import com.hedvig.android.owldroid.graphql.fragment.MessageFragment
-import com.hedvig.android.owldroid.graphql.type.EmbarkExternalRedirectLocation
-import com.hedvig.android.owldroid.graphql.type.EmbarkMessage
+import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
+import com.hedvig.android.apollo.graphql.fragment.ApiFragment
+import com.hedvig.android.apollo.graphql.fragment.EmbarkLinkFragment
+import com.hedvig.android.apollo.graphql.fragment.MessageFragment
+import com.hedvig.android.apollo.graphql.type.EmbarkExternalRedirectLocation
+import com.hedvig.android.apollo.graphql.type.EmbarkMessage
 
 data class PassageBuilder(
   private val name: String,

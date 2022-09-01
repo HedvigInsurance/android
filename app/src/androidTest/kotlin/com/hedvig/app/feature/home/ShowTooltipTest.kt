@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.home
 
 import android.content.Context
-import com.hedvig.android.owldroid.graphql.HomeQuery
-import com.hedvig.android.owldroid.graphql.LoggedInQuery
+import com.hedvig.android.apollo.graphql.HomeQuery
+import com.hedvig.android.apollo.graphql.LoggedInQuery
 import com.hedvig.app.feature.home.screens.LoggedInScreen
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE

@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.embark
 
+import com.hedvig.android.apollo.graphql.MemberIdQuery
 import com.hedvig.android.core.common.jsonObjectOf
 import com.hedvig.android.market.Market
-import com.hedvig.android.owldroid.graphql.MemberIdQuery
 import com.hedvig.app.feature.embark.screens.MoreOptionsScreen
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.testdata.feature.onboarding.MEMBER_ID_DATA

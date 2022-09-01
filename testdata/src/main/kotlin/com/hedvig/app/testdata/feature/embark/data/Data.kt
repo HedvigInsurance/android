@@ -1,13 +1,13 @@
 package com.hedvig.app.testdata.feature.embark.data
 
-import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
-import com.hedvig.android.owldroid.graphql.fragment.EmbarkLinkFragment
-import com.hedvig.android.owldroid.graphql.fragment.GraphQLErrorsFragment
-import com.hedvig.android.owldroid.graphql.fragment.GraphQLResultsFragment
-import com.hedvig.android.owldroid.graphql.fragment.MessageFragment
-import com.hedvig.android.owldroid.graphql.type.EmbarkAPIGraphQLSingleVariableCasting
-import com.hedvig.android.owldroid.graphql.type.EmbarkAPIGraphQLVariableGeneratedType
-import com.hedvig.android.owldroid.graphql.type.EmbarkExternalRedirectLocation
+import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
+import com.hedvig.android.apollo.graphql.fragment.EmbarkLinkFragment
+import com.hedvig.android.apollo.graphql.fragment.GraphQLErrorsFragment
+import com.hedvig.android.apollo.graphql.fragment.GraphQLResultsFragment
+import com.hedvig.android.apollo.graphql.fragment.MessageFragment
+import com.hedvig.android.apollo.graphql.type.EmbarkAPIGraphQLSingleVariableCasting
+import com.hedvig.android.apollo.graphql.type.EmbarkAPIGraphQLVariableGeneratedType
+import com.hedvig.android.apollo.graphql.type.EmbarkExternalRedirectLocation
 import com.hedvig.app.testdata.feature.embark.builders.DatePickerActionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.EmbarkStoryDataBuilder
 import com.hedvig.app.testdata.feature.embark.builders.ExpressionBuilder

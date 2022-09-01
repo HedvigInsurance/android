@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.referrals.moreinfo
 
 import android.content.Intent
-import com.hedvig.android.owldroid.graphql.LoggedInQuery
+import com.hedvig.android.apollo.graphql.LoggedInQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs

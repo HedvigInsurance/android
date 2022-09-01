@@ -2,7 +2,7 @@ package com.hedvig.app.authenticate
 
 import android.os.Bundle
 import android.view.View
-import com.hedvig.android.owldroid.graphql.type.AuthState
+import com.hedvig.android.apollo.graphql.type.AuthState
 import com.hedvig.app.feature.genericauth.GenericAuthActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel

@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.payment
 
-import com.hedvig.android.owldroid.graphql.PayinStatusQuery
-import com.hedvig.android.owldroid.graphql.PaymentQuery
+import com.hedvig.android.apollo.graphql.PayinStatusQuery
+import com.hedvig.android.apollo.graphql.PaymentQuery
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_ACTIVE
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_REFERRAL

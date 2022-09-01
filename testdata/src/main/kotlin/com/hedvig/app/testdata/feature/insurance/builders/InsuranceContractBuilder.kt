@@ -1,18 +1,18 @@
 package com.hedvig.app.testdata.feature.insurance.builders
 
-import com.hedvig.android.owldroid.graphql.InsuranceQuery
-import com.hedvig.android.owldroid.graphql.fragment.ContractStatusFragment
-import com.hedvig.android.owldroid.graphql.fragment.IconVariantsFragment
-import com.hedvig.android.owldroid.graphql.fragment.InsurableLimitsFragment
-import com.hedvig.android.owldroid.graphql.fragment.TableFragment
-import com.hedvig.android.owldroid.graphql.fragment.UpcomingAgreementChangeFragment
-import com.hedvig.android.owldroid.graphql.fragment.UpcomingAgreementFragment
-import com.hedvig.android.owldroid.graphql.type.ActiveStatus
-import com.hedvig.android.owldroid.graphql.type.AgreementStatus
-import com.hedvig.android.owldroid.graphql.type.Contract
-import com.hedvig.android.owldroid.graphql.type.NorwegianTravelAgreement
-import com.hedvig.android.owldroid.graphql.type.SwedishApartmentAgreement
-import com.hedvig.android.owldroid.graphql.type.TypeOfContractGradientOption
+import com.hedvig.android.apollo.graphql.InsuranceQuery
+import com.hedvig.android.apollo.graphql.fragment.ContractStatusFragment
+import com.hedvig.android.apollo.graphql.fragment.IconVariantsFragment
+import com.hedvig.android.apollo.graphql.fragment.InsurableLimitsFragment
+import com.hedvig.android.apollo.graphql.fragment.TableFragment
+import com.hedvig.android.apollo.graphql.fragment.UpcomingAgreementChangeFragment
+import com.hedvig.android.apollo.graphql.fragment.UpcomingAgreementFragment
+import com.hedvig.android.apollo.graphql.type.ActiveStatus
+import com.hedvig.android.apollo.graphql.type.AgreementStatus
+import com.hedvig.android.apollo.graphql.type.Contract
+import com.hedvig.android.apollo.graphql.type.NorwegianTravelAgreement
+import com.hedvig.android.apollo.graphql.type.SwedishApartmentAgreement
+import com.hedvig.android.apollo.graphql.type.TypeOfContractGradientOption
 import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
 import java.time.LocalDate
 

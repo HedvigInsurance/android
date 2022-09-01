@@ -1,10 +1,10 @@
 package com.hedvig.app.testdata.feature.referrals
 
-import com.hedvig.android.owldroid.graphql.fragment.MonetaryAmountFragment
-import com.hedvig.android.owldroid.graphql.fragment.ReferralFragment
-import com.hedvig.android.owldroid.graphql.type.ActiveReferral
-import com.hedvig.android.owldroid.graphql.type.InProgressReferral
-import com.hedvig.android.owldroid.graphql.type.TerminatedReferral
+import com.hedvig.android.apollo.graphql.fragment.MonetaryAmountFragment
+import com.hedvig.android.apollo.graphql.fragment.ReferralFragment
+import com.hedvig.android.apollo.graphql.type.ActiveReferral
+import com.hedvig.android.apollo.graphql.type.InProgressReferral
+import com.hedvig.android.apollo.graphql.type.TerminatedReferral
 import com.hedvig.app.testdata.common.builders.CostBuilder
 import com.hedvig.app.testdata.feature.referrals.builders.EditCodeDataBuilder
 import com.hedvig.app.testdata.feature.referrals.builders.LoggedInDataBuilder

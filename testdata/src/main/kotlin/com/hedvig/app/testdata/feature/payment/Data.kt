@@ -1,13 +1,13 @@
 package com.hedvig.app.testdata.feature.payment
 
-import com.hedvig.android.owldroid.graphql.PayinStatusQuery
-import com.hedvig.android.owldroid.graphql.PaymentQuery
-import com.hedvig.android.owldroid.graphql.fragment.IncentiveFragment
-import com.hedvig.android.owldroid.graphql.type.FreeMonths
-import com.hedvig.android.owldroid.graphql.type.MonthlyCostDeduction
-import com.hedvig.android.owldroid.graphql.type.PayinMethodStatus
-import com.hedvig.android.owldroid.graphql.type.PayoutMethodStatus
-import com.hedvig.android.owldroid.graphql.type.PercentageDiscountMonths
+import com.hedvig.android.apollo.graphql.PayinStatusQuery
+import com.hedvig.android.apollo.graphql.PaymentQuery
+import com.hedvig.android.apollo.graphql.fragment.IncentiveFragment
+import com.hedvig.android.apollo.graphql.type.FreeMonths
+import com.hedvig.android.apollo.graphql.type.MonthlyCostDeduction
+import com.hedvig.android.apollo.graphql.type.PayinMethodStatus
+import com.hedvig.android.apollo.graphql.type.PayoutMethodStatus
+import com.hedvig.android.apollo.graphql.type.PercentageDiscountMonths
 import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.common.builders.CostBuilder
 import com.hedvig.app.util.months

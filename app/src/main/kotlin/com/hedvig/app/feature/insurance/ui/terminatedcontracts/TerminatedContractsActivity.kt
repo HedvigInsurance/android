@@ -10,8 +10,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import coil.ImageLoader
 import com.google.android.material.transition.platform.MaterialSharedAxis
+import com.hedvig.android.apollo.graphql.InsuranceQuery
 import com.hedvig.android.market.MarketManager
-import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.TerminatedContractsActivityBinding

@@ -2,7 +2,7 @@ package com.hedvig.app.feature.whatsnew
 
 import android.content.Context
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.owldroid.graphql.WhatsNewQuery
+import com.hedvig.android.apollo.graphql.WhatsNewQuery
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.QueryResult

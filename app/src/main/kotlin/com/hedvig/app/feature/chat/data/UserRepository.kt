@@ -1,9 +1,9 @@
 package com.hedvig.app.feature.chat.data
 
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.owldroid.graphql.AuthStatusSubscription
-import com.hedvig.android.owldroid.graphql.LogoutMutation
-import com.hedvig.android.owldroid.graphql.SwedishBankIdAuthMutation
+import com.hedvig.android.apollo.graphql.AuthStatusSubscription
+import com.hedvig.android.apollo.graphql.LogoutMutation
+import com.hedvig.android.apollo.graphql.SwedishBankIdAuthMutation
 import com.hedvig.app.util.apollo.safeQuery
 
 class UserRepository(

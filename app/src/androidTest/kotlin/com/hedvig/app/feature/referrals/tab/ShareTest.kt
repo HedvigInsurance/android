@@ -5,8 +5,8 @@ import android.net.Uri
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
-import com.hedvig.android.owldroid.graphql.LoggedInQuery
-import com.hedvig.android.owldroid.graphql.ReferralsQuery
+import com.hedvig.android.apollo.graphql.LoggedInQuery
+import com.hedvig.android.apollo.graphql.ReferralsQuery
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.testdata.feature.referrals.COMPLEX_REFERRAL_CODE

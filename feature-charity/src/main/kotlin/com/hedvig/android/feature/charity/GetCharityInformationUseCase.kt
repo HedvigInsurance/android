@@ -2,7 +2,7 @@ package com.hedvig.android.feature.charity
 
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.exception.ApolloException
-import com.hedvig.android.owldroid.graphql.CharityInformationQuery
+import com.hedvig.android.apollo.graphql.CharityInformationQuery
 
 internal class GetCharityInformationUseCase(
   private val apolloClient: ApolloClient,

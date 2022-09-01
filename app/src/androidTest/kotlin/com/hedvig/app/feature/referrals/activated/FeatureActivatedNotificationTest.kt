@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.referrals.activated
 
-import com.hedvig.android.owldroid.graphql.LoggedInQuery
+import com.hedvig.android.apollo.graphql.LoggedInQuery
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.referrals.tab.ReferralTabScreen

@@ -14,9 +14,9 @@ import androidx.transition.Transition
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
+import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
 import com.hedvig.android.core.common.android.whenApiVersion
 import com.hedvig.android.market.MarketManager
-import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityEmbarkBinding

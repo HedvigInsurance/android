@@ -1,7 +1,7 @@
 package com.hedvig.app.testdata.feature.insurance
 
-import com.hedvig.android.owldroid.graphql.InsuranceQuery
-import com.hedvig.android.owldroid.graphql.type.AgreementStatus
+import com.hedvig.android.apollo.graphql.InsuranceQuery
+import com.hedvig.android.apollo.graphql.type.AgreementStatus
 import com.hedvig.app.testdata.feature.insurance.builders.InsuranceContractBuilder
 
 val INSURANCE_DATA_SWEDISH_APARTMENT =

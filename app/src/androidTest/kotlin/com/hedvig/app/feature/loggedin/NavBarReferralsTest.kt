@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.loggedin
 
+import com.hedvig.android.apollo.graphql.LoggedInQuery
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
-import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA
 import com.hedvig.app.util.ApolloCacheClearRule

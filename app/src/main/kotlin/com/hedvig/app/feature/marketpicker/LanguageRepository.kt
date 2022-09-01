@@ -2,8 +2,8 @@ package com.hedvig.app.feature.marketpicker
 
 import arrow.core.Either
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.owldroid.graphql.UpdateLanguageMutation
-import com.hedvig.android.owldroid.graphql.type.Locale
+import com.hedvig.android.apollo.graphql.UpdateLanguageMutation
+import com.hedvig.android.apollo.graphql.type.Locale
 import com.hedvig.app.util.apollo.safeQuery
 import com.hedvig.app.util.apollo.toEither
 import e

@@ -1,9 +1,9 @@
 package com.hedvig.app.testdata.feature.embark.builders
 
-import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
-import com.hedvig.android.owldroid.graphql.fragment.EmbarkLinkFragment
-import com.hedvig.android.owldroid.graphql.fragment.IconVariantsFragment
-import com.hedvig.android.owldroid.graphql.type.EmbarkPreviousInsuranceProviderAction
+import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
+import com.hedvig.android.apollo.graphql.fragment.EmbarkLinkFragment
+import com.hedvig.android.apollo.graphql.fragment.IconVariantsFragment
+import com.hedvig.android.apollo.graphql.type.EmbarkPreviousInsuranceProviderAction
 
 data class PreviousInsurerActionBuilder(
   val storeKey: String = "BAR",

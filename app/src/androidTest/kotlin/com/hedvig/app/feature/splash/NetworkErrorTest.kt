@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.splash
 
-import com.hedvig.android.owldroid.graphql.ContractStatusQuery
+import com.hedvig.android.apollo.graphql.ContractStatusQuery
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.util.ApolloCacheClearRule

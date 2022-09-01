@@ -2,8 +2,8 @@ package com.hedvig.app.feature.addressautocompletion.data
 
 import arrow.core.Either
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.owldroid.graphql.AddressAutocompleteQuery
-import com.hedvig.android.owldroid.graphql.type.AddressAutocompleteType
+import com.hedvig.android.apollo.graphql.AddressAutocompleteQuery
+import com.hedvig.android.apollo.graphql.type.AddressAutocompleteType
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddressInput
 import com.hedvig.app.util.apollo.QueryResult

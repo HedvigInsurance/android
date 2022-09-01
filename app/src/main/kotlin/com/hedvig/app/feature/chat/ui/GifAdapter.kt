@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import coil.dispose
 import coil.load
-import com.hedvig.android.owldroid.graphql.GifQuery
+import com.hedvig.android.apollo.graphql.GifQuery
 import com.hedvig.app.R
 import com.hedvig.app.databinding.GifItemBinding
 import com.hedvig.app.util.GenericDiffUtilItemCallback

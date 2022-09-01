@@ -11,12 +11,12 @@ apollo {
   service("giraffe") {
     introspection {
       endpointUrl.set("https://graphql.dev.hedvigit.com/graphql")
-      schemaFile.set(file("src/main/graphql/com/hedvig/android/owldroid/schema.graphqls"))
+      schemaFile.set(file("src/main/graphql/com/hedvig/android/apollo/schema.graphqls"))
     }
-    schemaFile.set(file("src/main/graphql/com/hedvig/android/owldroid/schema.graphqls"))
-    srcDir(file("src/main/graphql/com/hedvig/android/owldroid/graphql"))
+    schemaFile.set(file("src/main/graphql/com/hedvig/android/apollo/schema.graphqls"))
+    srcDir(file("src/main/graphql/com/hedvig/android/apollo/graphql"))
 
-    packageName.set("com.hedvig.android.owldroid.graphql")
+    packageName.set("com.hedvig.android.apollo.graphql")
     codegenModels.set(MODELS_COMPAT)
 
     // Test builders setup
@@ -36,12 +36,12 @@ apollo {
     mapScalarToUpload("Upload")
     mapScalar("Instant", "java.time.Instant", "com.apollographql.apollo3.adapter.JavaInstantAdapter")
 
-    mapScalar("JSONString", "org.json.JSONObject", "com.hedvig.android.typeadapter.JSONStringAdapter")
-    mapScalar("LocalDate", "java.time.LocalDate", "com.hedvig.android.typeadapter.PromiscuousLocalDateAdapter")
+    mapScalar("JSONString", "org.json.JSONObject", "com.hedvig.android.apollo.typeadapter.JSONStringAdapter")
+    mapScalar("LocalDate", "java.time.LocalDate", "com.hedvig.android.apollo.typeadapter.PromiscuousLocalDateAdapter")
     mapScalar(
       "PaymentMethodsResponse",
       "com.adyen.checkout.components.model.PaymentMethodsApiResponse",
-      "com.hedvig.android.typeadapter.PaymentMethodsApiResponseAdapter",
+      "com.hedvig.android.apollo.typeadapter.PaymentMethodsApiResponseAdapter",
     )
     sealedClassesForEnumsMatching.set(
       listOf(

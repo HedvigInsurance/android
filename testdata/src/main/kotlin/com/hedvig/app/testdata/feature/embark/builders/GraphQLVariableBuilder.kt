@@ -1,11 +1,11 @@
 package com.hedvig.app.testdata.feature.embark.builders
 
-import com.hedvig.android.owldroid.graphql.fragment.GraphQLVariablesFragment
-import com.hedvig.android.owldroid.graphql.type.EmbarkAPIGraphQLGeneratedVariable
-import com.hedvig.android.owldroid.graphql.type.EmbarkAPIGraphQLMultiActionVariable
-import com.hedvig.android.owldroid.graphql.type.EmbarkAPIGraphQLSingleVariable
-import com.hedvig.android.owldroid.graphql.type.EmbarkAPIGraphQLSingleVariableCasting
-import com.hedvig.android.owldroid.graphql.type.EmbarkAPIGraphQLVariableGeneratedType
+import com.hedvig.android.apollo.graphql.fragment.GraphQLVariablesFragment
+import com.hedvig.android.apollo.graphql.type.EmbarkAPIGraphQLGeneratedVariable
+import com.hedvig.android.apollo.graphql.type.EmbarkAPIGraphQLMultiActionVariable
+import com.hedvig.android.apollo.graphql.type.EmbarkAPIGraphQLSingleVariable
+import com.hedvig.android.apollo.graphql.type.EmbarkAPIGraphQLSingleVariableCasting
+import com.hedvig.android.apollo.graphql.type.EmbarkAPIGraphQLVariableGeneratedType
 
 data class GraphQLVariableBuilder(
   private val kind: VariableKind,

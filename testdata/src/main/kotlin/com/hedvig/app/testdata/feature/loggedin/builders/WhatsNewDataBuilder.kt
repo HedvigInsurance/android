@@ -1,7 +1,7 @@
 package com.hedvig.app.testdata.feature.loggedin.builders
 
-import com.hedvig.android.owldroid.graphql.WhatsNewQuery
-import com.hedvig.android.owldroid.graphql.fragment.IconVariantsFragment
+import com.hedvig.android.apollo.graphql.WhatsNewQuery
+import com.hedvig.android.apollo.graphql.fragment.IconVariantsFragment
 
 data class WhatsNewDataBuilder(
   val pages: List<WhatsNewQuery.New> = listOf(WhatsNewPageBuilder().build()),

@@ -8,9 +8,9 @@ import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.apollographql.apollo3.annotations.ApolloExperimental
 import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.mockserver.enqueue
-import com.hedvig.android.owldroid.graphql.QuoteCartQuery
-import com.hedvig.android.owldroid.graphql.test.QuoteCartQuery_TestBuilder.Data
-import com.hedvig.android.owldroid.graphql.type.Locale
+import com.hedvig.android.apollo.graphql.QuoteCartQuery
+import com.hedvig.android.apollo.graphql.test.QuoteCartQuery_TestBuilder.Data
+import com.hedvig.android.apollo.graphql.type.Locale
 import org.junit.Test
 
 @Suppress("LocalVariableName")

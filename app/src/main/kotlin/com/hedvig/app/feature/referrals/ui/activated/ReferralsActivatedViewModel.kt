@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
-import com.hedvig.android.owldroid.graphql.LoggedInQuery
+import com.hedvig.android.apollo.graphql.LoggedInQuery
 import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
 import e
 import kotlinx.coroutines.launch

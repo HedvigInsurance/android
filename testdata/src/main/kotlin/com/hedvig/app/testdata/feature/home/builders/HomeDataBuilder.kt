@@ -1,11 +1,11 @@
 package com.hedvig.app.testdata.feature.home.builders
 
-import com.hedvig.android.owldroid.graphql.HomeQuery
-import com.hedvig.android.owldroid.graphql.fragment.IconVariantsFragment
-import com.hedvig.android.owldroid.graphql.type.ClaimStatus
-import com.hedvig.android.owldroid.graphql.type.ClaimStatusCardPillType
-import com.hedvig.android.owldroid.graphql.type.ClaimStatusProgressType
-import com.hedvig.android.owldroid.graphql.type.PayinMethodStatus
+import com.hedvig.android.apollo.graphql.HomeQuery
+import com.hedvig.android.apollo.graphql.fragment.IconVariantsFragment
+import com.hedvig.android.apollo.graphql.type.ClaimStatus
+import com.hedvig.android.apollo.graphql.type.ClaimStatusCardPillType
+import com.hedvig.android.apollo.graphql.type.ClaimStatusProgressType
+import com.hedvig.android.apollo.graphql.type.PayinMethodStatus
 import com.hedvig.app.testdata.common.ContractStatus
 import java.time.Instant
 import java.time.LocalDate
@@ -205,7 +205,7 @@ class ClaimStatusCardsBuilder {
           HomeQuery.ProgressSegment(
             __typename = "",
             fragments = HomeQuery.ProgressSegment.Fragments(
-              progressSegments = com.hedvig.android.owldroid.graphql.fragment.ProgressSegments(
+              progressSegments = com.hedvig.android.apollo.graphql.fragment.ProgressSegments(
                 text = "Segment #$it",
                 type = ClaimStatusProgressType.values().random(),
               ),

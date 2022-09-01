@@ -4,7 +4,7 @@ import android.content.SharedPreferences
 import androidx.core.content.edit
 import arrow.core.identity
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.owldroid.graphql.ContractStatusQuery
+import com.hedvig.android.apollo.graphql.ContractStatusQuery
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.apollo.safeQuery
 import com.hedvig.app.util.apollo.toOption

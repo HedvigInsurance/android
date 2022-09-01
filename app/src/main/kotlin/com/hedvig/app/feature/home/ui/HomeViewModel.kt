@@ -3,7 +3,7 @@ package com.hedvig.app.feature.home.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
-import com.hedvig.android.owldroid.graphql.HomeQuery
+import com.hedvig.android.apollo.graphql.HomeQuery
 import com.hedvig.app.feature.home.data.GetHomeUseCase
 import com.hedvig.app.feature.home.model.HomeItemsBuilder
 import com.hedvig.app.feature.home.model.HomeModel

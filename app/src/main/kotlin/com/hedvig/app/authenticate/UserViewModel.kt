@@ -3,10 +3,10 @@ package com.hedvig.app.authenticate
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.apollo.graphql.AuthStatusSubscription
+import com.hedvig.android.apollo.graphql.SwedishBankIdAuthMutation
+import com.hedvig.android.apollo.graphql.type.AuthState
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.android.owldroid.graphql.AuthStatusSubscription
-import com.hedvig.android.owldroid.graphql.SwedishBankIdAuthMutation
-import com.hedvig.android.owldroid.graphql.type.AuthState
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.hanalytics.HAnalytics

@@ -7,11 +7,11 @@ import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
+import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
+import com.hedvig.android.apollo.graphql.fragment.ApiFragment
+import com.hedvig.android.apollo.graphql.fragment.MessageFragment
+import com.hedvig.android.apollo.graphql.type.EmbarkExternalRedirectLocation
 import com.hedvig.android.core.common.asMap
-import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
-import com.hedvig.android.owldroid.graphql.fragment.ApiFragment
-import com.hedvig.android.owldroid.graphql.fragment.MessageFragment
-import com.hedvig.android.owldroid.graphql.type.EmbarkExternalRedirectLocation
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.chat.data.ChatRepository

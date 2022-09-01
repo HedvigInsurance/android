@@ -4,7 +4,7 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.continuations.ensureNotNull
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.owldroid.graphql.QuoteCartStartCheckoutMutation
+import com.hedvig.android.apollo.graphql.QuoteCartStartCheckoutMutation
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.apollo.NetworkCacheManager

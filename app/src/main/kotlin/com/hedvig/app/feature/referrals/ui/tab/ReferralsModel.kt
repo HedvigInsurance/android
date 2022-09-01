@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.referrals.ui.tab
 
-import com.hedvig.android.owldroid.graphql.ReferralsQuery
-import com.hedvig.android.owldroid.graphql.fragment.ReferralFragment
+import com.hedvig.android.apollo.graphql.ReferralsQuery
+import com.hedvig.android.apollo.graphql.fragment.ReferralFragment
 
 sealed class ReferralsModel {
 

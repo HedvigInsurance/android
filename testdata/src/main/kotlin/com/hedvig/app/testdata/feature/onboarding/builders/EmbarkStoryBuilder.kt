@@ -1,8 +1,8 @@
 package com.hedvig.app.testdata.feature.onboarding.builders
 
-import com.hedvig.android.owldroid.graphql.ChoosePlanQuery
-import com.hedvig.android.owldroid.graphql.type.EmbarkStoryMetadataEntryDiscount
-import com.hedvig.android.owldroid.graphql.type.EmbarkStoryType
+import com.hedvig.android.apollo.graphql.ChoosePlanQuery
+import com.hedvig.android.apollo.graphql.type.EmbarkStoryMetadataEntryDiscount
+import com.hedvig.android.apollo.graphql.type.EmbarkStoryType
 
 class EmbarkStoryBuilder(
   val name: String = ENGLISH_COMBO,

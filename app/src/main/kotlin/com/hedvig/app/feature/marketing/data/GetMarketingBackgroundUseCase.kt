@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.marketing.data
 
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.owldroid.graphql.MarketingBackgroundQuery
-import com.hedvig.android.owldroid.graphql.type.UserInterfaceStyle
+import com.hedvig.android.apollo.graphql.MarketingBackgroundQuery
+import com.hedvig.android.apollo.graphql.type.UserInterfaceStyle
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.safeQuery
 import com.hedvig.app.util.apollo.toEither

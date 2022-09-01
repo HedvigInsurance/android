@@ -1,11 +1,11 @@
 package com.hedvig.app.testdata.feature.referrals.builders
 
-import com.hedvig.android.owldroid.graphql.UpdateReferralCampaignCodeMutation
-import com.hedvig.android.owldroid.graphql.type.CodeAlreadyTaken
-import com.hedvig.android.owldroid.graphql.type.CodeTooLong
-import com.hedvig.android.owldroid.graphql.type.CodeTooShort
-import com.hedvig.android.owldroid.graphql.type.ExceededMaximumUpdates
-import com.hedvig.android.owldroid.graphql.type.SuccessfullyUpdatedCode
+import com.hedvig.android.apollo.graphql.UpdateReferralCampaignCodeMutation
+import com.hedvig.android.apollo.graphql.type.CodeAlreadyTaken
+import com.hedvig.android.apollo.graphql.type.CodeTooLong
+import com.hedvig.android.apollo.graphql.type.CodeTooShort
+import com.hedvig.android.apollo.graphql.type.ExceededMaximumUpdates
+import com.hedvig.android.apollo.graphql.type.SuccessfullyUpdatedCode
 
 data class EditCodeDataBuilder(
   private val code: String = "EDITEDCODE123",
