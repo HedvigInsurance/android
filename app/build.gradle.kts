@@ -119,7 +119,7 @@ android {
       manifest.srcFile("src/debug/AndroidManifest.xml")
     }
     named("pullrequest") {
-      kotlin.srcDir("src/engineering/java")
+      kotlin.srcDir("src/engineering/kotlin")
       res.srcDir("src/engineering/res")
       manifest.srcFile("src/debug/AndroidManifest.xml")
     }
