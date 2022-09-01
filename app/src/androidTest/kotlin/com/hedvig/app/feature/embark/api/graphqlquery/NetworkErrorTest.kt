@@ -50,7 +50,7 @@ class NetworkErrorTest : TestCase() {
 
     onScreen<EmbarkScreen> {
       compose
-        .onNodeWithTag("SelectActionGrid")
+        .onNodeWithTag("selectActionGrid")
         .onChildren()
         .onFirst()
         .performClick()

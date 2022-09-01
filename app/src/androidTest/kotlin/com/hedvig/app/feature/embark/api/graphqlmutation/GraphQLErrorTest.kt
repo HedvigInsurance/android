@@ -51,7 +51,7 @@ class GraphQLErrorTest : TestCase() {
 
     Screen.onScreen<EmbarkScreen> {
       compose
-        .onNodeWithTag("SelectActionGrid")
+        .onNodeWithTag("selectActionGrid")
         .onChildren()
         .onFirst()
         .performClick()

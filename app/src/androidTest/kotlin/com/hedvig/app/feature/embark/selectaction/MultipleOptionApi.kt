@@ -48,7 +48,7 @@ class MultipleOptionApi : TestCase() {
     onScreen<EmbarkScreen> {
       step("Click select option with API") {
         compose
-          .onNodeWithTag("SelectActionGrid")
+          .onNodeWithTag("selectActionGrid")
           .onChildren()
           .get(1)
           .performClick()
