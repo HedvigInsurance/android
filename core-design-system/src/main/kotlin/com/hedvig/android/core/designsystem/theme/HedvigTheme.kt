@@ -1,17 +1,23 @@
 package com.hedvig.android.core.designsystem.theme
 
 import android.content.res.Resources
+import androidx.compose.foundation.layout.Box
 import androidx.compose.material.Colors
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import com.google.android.material.composethemeadapter.createMdcTheme
 import java.lang.reflect.Method
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun HedvigTheme(
   colorOverrides: ((Colors) -> Colors)? = null,
@@ -28,15 +34,21 @@ fun HedvigTheme(
     )
   }
   val colors = themeParameters.colors ?: MaterialTheme.colors
-  MaterialTheme(
-    colors = colorOverrides?.invoke(colors) ?: colors,
-    typography = themeParameters.typography ?: MaterialTheme.typography,
-    shapes = themeParameters.shapes ?: MaterialTheme.shapes,
+  Box(
+    modifier = Modifier.semantics {
+      testTagsAsResourceId = true
+    },
   ) {
-    CompositionLocalProvider(
-      LocalContentColor provides MaterialTheme.colors.onBackground,
-      content = content,
-    )
+    MaterialTheme(
+      colors = colorOverrides?.invoke(colors) ?: colors,
+      typography = themeParameters.typography ?: MaterialTheme.typography,
+      shapes = themeParameters.shapes ?: MaterialTheme.shapes,
+    ) {
+      CompositionLocalProvider(
+        LocalContentColor provides MaterialTheme.colors.onBackground,
+        content = content,
+      )
+    }
   }
 }
 
