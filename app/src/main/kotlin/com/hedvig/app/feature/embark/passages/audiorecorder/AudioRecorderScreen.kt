@@ -23,6 +23,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -107,7 +108,8 @@ fun NotRecording(startRecording: () -> Unit) {
       onClick = startRecording,
       modifier = Modifier
         .padding(bottom = 24.dp)
-        .then(Modifier.size(72.dp)),
+        .size(72.dp)
+        .testTag("recordClaim"),
     ) {
       Image(
         painter = painterResource(
@@ -138,15 +140,16 @@ fun Recording(
   ) {
     Box(
       contentAlignment = Alignment.Center,
-      modifier = Modifier
-        .padding(bottom = 24.dp),
+      modifier = Modifier.padding(bottom = 24.dp),
     ) {
       if (viewState.amplitudes.isNotEmpty()) {
         RecordingAmplitudeIndicator(amplitude = viewState.amplitudes.last())
       }
       IconButton(
         onClick = stopRecording,
-        modifier = Modifier.size(72.dp),
+        modifier = Modifier
+          .size(72.dp)
+          .testTag("stopRecording"),
       ) {
         Image(
           painter = painterResource(
@@ -196,13 +199,17 @@ fun Playback(
     }
     LargeContainedButton(
       onClick = submit,
-      modifier = Modifier.padding(top = 16.dp),
+      modifier = Modifier
+        .padding(top = 16.dp)
+        .testTag("submitClaim"),
     ) {
       Text(stringResource(hedvig.resources.R.string.EMBARK_SUBMIT_CLAIM))
     }
     LargeTextButton(
       onClick = redo,
-      modifier = Modifier.padding(top = 8.dp),
+      modifier = Modifier
+        .padding(top = 8.dp)
+        .testTag("recordClaimAgain"),
     ) {
       Text(stringResource(hedvig.resources.R.string.EMBARK_RECORD_AGAIN))
     }
