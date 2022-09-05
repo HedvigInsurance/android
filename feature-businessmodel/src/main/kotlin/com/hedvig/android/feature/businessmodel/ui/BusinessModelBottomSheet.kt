@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.charity.ui
+package com.hedvig.android.feature.businessmodel.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
@@ -22,10 +22,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.BottomSheetHandle
-import hedvig.resources.R
 
 @Composable
-internal fun CharityBottomSheet(
+internal fun BusinessModelBottomSheet(
   closeSheet: () -> Unit,
   isShowing: Boolean,
 ) {
@@ -50,13 +49,13 @@ internal fun CharityBottomSheet(
     ) {
       Spacer(Modifier.height(8.dp))
       Text(
-        text = stringResource(R.string.CHARITY_INFO_DIALOG_TITLE),
+        text = stringResource(hedvig.resources.R.string.BUSINESS_MODEL_INFO_DIALOG_TITLE),
         style = MaterialTheme.typography.subtitle1,
         modifier = Modifier.align(Alignment.CenterHorizontally),
       )
       Spacer(Modifier.height(24.dp))
       Text(
-        text = stringResource(R.string.PROFILE_MY_CHARITY_INFO_BODY),
+        text = stringResource(hedvig.resources.R.string.BUSINESS_MODEL_INFO_DIALOG_TEXT),
         style = MaterialTheme.typography.body2,
       )
       Spacer(Modifier.height(24.dp))
@@ -66,6 +65,6 @@ internal fun CharityBottomSheet(
 
 @Preview
 @Composable
-private fun CharityBottomSheetPreview() {
-  CharityBottomSheet({}, true)
+private fun BusinessModelBottomSheetPreview() {
+  BusinessModelBottomSheet({}, true)
 }

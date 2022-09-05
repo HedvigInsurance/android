@@ -1,5 +1,6 @@
-package com.hedvig.android.feature.charity.ui
+package com.hedvig.android.feature.businessmodel.ui
 
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -56,15 +57,14 @@ import com.hedvig.android.core.ui.FullScreenHedvigProgress
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
-import com.hedvig.android.feature.charity.CharityInformation
-import com.hedvig.android.feature.charity.CharityUiState
-import hedvig.resources.R
+import com.hedvig.android.feature.businessmodel.BusinessModelInformation
+import com.hedvig.android.feature.businessmodel.BusinessModelUiState
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-internal fun CharityScreen(
-  uiState: CharityUiState,
+internal fun BusinessModelScreen(
+  uiState: BusinessModelUiState,
   retry: () -> Unit,
   goBack: () -> Unit,
   imageLoader: ImageLoader,
@@ -78,7 +78,7 @@ internal fun CharityScreen(
   ModalBottomSheetLayout(
     sheetState = sheetState,
     sheetContent = {
-      CharityBottomSheet(
+      BusinessModelBottomSheet(
         closeSheet = { coroutineScope.launch { sheetState.hide() } },
         isShowing = sheetState.isVisible,
       )
@@ -98,7 +98,7 @@ internal fun CharityScreen(
 
 @Composable
 private fun ScreenContent(
-  uiState: CharityUiState,
+  uiState: BusinessModelUiState,
   showSheet: () -> Unit,
   goBack: () -> Unit,
   retry: () -> Unit,
@@ -122,11 +122,11 @@ private fun ScreenContent(
             WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
           ),
       ) {
-        val charityInfo = uiState.charityInformation
-        if (charityInfo != null) {
-          CharityItems(
-            charityInfo = charityInfo,
-            openCharityInfo = { showSheet() },
+        val businessModelInfo = uiState.businessModelInformation
+        if (businessModelInfo != null) {
+          SuccessContent(
+            businessModelInfo = businessModelInfo,
+            openBusinessModelInfo = { showSheet() },
             imageLoader = imageLoader,
             windowSizeClass = windowSizeClass,
           )
@@ -143,19 +143,19 @@ private fun ScreenContent(
 }
 
 @Composable
-private fun ColumnScope.CharityItems(
-  charityInfo: CharityInformation,
-  openCharityInfo: () -> Unit,
+private fun ColumnScope.SuccessContent(
+  businessModelInfo: BusinessModelInformation,
+  openBusinessModelInfo: () -> Unit,
   imageLoader: ImageLoader,
   windowSizeClass: WindowSizeClass,
 ) {
   Text(
-    text = stringResource(R.string.PROFILE_CHARITY_TITLE),
+    text = stringResource(hedvig.resources.R.string.BUSINESS_MODEL_TITLE),
     style = MaterialTheme.typography.h4,
   )
-  if (charityInfo.imageUrl != null) {
-    CharityImage(
-      charityInfo.imageUrl,
+  if (businessModelInfo.imageUrl != null) {
+    BusinessModelImage(
+      com.hedvig.android.feature.businessmodel.R.drawable.milkywire,
       imageLoader,
       windowSizeClass,
       Modifier.align(Alignment.CenterHorizontally),
@@ -165,13 +165,13 @@ private fun ColumnScope.CharityItems(
   Card(Modifier.fillMaxWidth()) {
     Column(Modifier.padding(16.dp)) {
       Text(
-        text = charityInfo.name,
+        text = stringResource(hedvig.resources.R.string.BUSINESS_MODEL_CARD_TITLE),
         style = MaterialTheme.typography.subtitle1,
       )
-      if (charityInfo.description != null) {
+      if (businessModelInfo.description != null) {
         Spacer(Modifier.height(8.dp))
         Text(
-          text = charityInfo.description,
+          text = stringResource(hedvig.resources.R.string.BUSINESS_MODEL_CARD_TEXT),
           style = MaterialTheme.typography.body2,
         )
       }
@@ -180,7 +180,7 @@ private fun ColumnScope.CharityItems(
   Spacer(Modifier.height(8.dp))
   TextButton(
     onClick = {
-      openCharityInfo()
+      openBusinessModelInfo()
     },
     colors = ButtonDefaults.textButtonColors(
       contentColor = MaterialTheme.colors.textColorLink,
@@ -195,21 +195,21 @@ private fun ColumnScope.CharityItems(
     )
     Spacer(Modifier.width(8.dp))
     Text(
-      stringResource(R.string.CHARITY_INFO_BUTTON_LABEL),
+      stringResource(hedvig.resources.R.string.BUSINESS_MODEL_INFO_BUTTON_LABEL),
     )
   }
 }
 
 @Composable
-private fun CharityImage(
-  imageUrl: String,
+private fun BusinessModelImage(
+  @DrawableRes imageRes: Int,
   imageLoader: ImageLoader,
   windowSizeClass: WindowSizeClass,
   modifier: Modifier = Modifier,
 ) {
   val painter = rememberAsyncImagePainter(
     model = ImageRequest.Builder(LocalContext.current)
-      .data(imageUrl)
+      .data(imageRes)
       .size(Size.ORIGINAL)
       .build(),
     imageLoader = imageLoader,
@@ -228,7 +228,7 @@ private fun CharityImage(
           Box(
             Modifier
               .fillMaxWidth()
-              .height(150.dp)
+              .height(50.dp)
               .placeholder(
                 visible = true,
                 highlight = PlaceholderHighlight.fade(),
@@ -254,12 +254,12 @@ private fun CharityImage(
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Preview
 @Composable
-private fun CharityScreenPreview() {
-  CharityScreen(
-    uiState = CharityUiState(
-      charityInformation = CharityInformation(
-        name = "Name of charity",
-        description = "Some long description maybe? Yes.".repeat(8),
+private fun BusinessModelScreenPreview() {
+  BusinessModelScreen(
+    uiState = BusinessModelUiState(
+      businessModelInformation = BusinessModelInformation(
+        name = "Name of partner",
+        description = "Some long description maybe? Yes. ".repeat(8),
         imageUrl = null,
       ),
       isLoading = false,
