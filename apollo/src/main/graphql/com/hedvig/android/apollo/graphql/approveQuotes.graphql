@@ -1,3 +1,0 @@
-mutation ApproveQuotes($ids: [ID!]!) {
-  approveQuotes(quoteIds: $ids)
-}
