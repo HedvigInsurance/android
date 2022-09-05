@@ -98,7 +98,12 @@ jobs:
           SHAKE_CLIENT_ID: ${{ secrets.SHAKE_CLIENT_ID }}
           SHAKE_CLIENT_SECRET: ${{ secrets.SHAKE_CLIENT_SECRET }}
       - name: run ktlint from gradle
-        run: ./gradlew ktlintCheck --stacktrace --continue
+        run: ./gradlew ktlintCheck --continue
+        continue-on-error: true
+      - name: Annotate ktlint errors in the PR
+        uses: yutailang0119/action-ktlint@v3
+        with:
+          report-path: build/reports/ktlint/*.xml
   build:
     runs-on: ubuntu-latest
     steps:
@@ -154,7 +159,7 @@ jobs:
         env:
           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
           JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
-          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}        
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
       - uses: atlassian/gajira-cli@v2.0.2
       - uses: atlassian/gajira-find-issue-key@v2.0.2
         id: find_issue
