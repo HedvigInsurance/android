@@ -28,7 +28,7 @@ class BusinessModelActivity : AppCompatActivity() {
         BusinessModelScreen(
           uiState = uiState,
           retry = { viewModel.reload() },
-          goBack = { onBackPressed() },
+          navigateBack = { onBackPressed() },
           imageLoader = imageLoader,
           windowSizeClass = calculateWindowSizeClass(this),
         )

@@ -66,7 +66,7 @@ import kotlinx.coroutines.launch
 internal fun BusinessModelScreen(
   uiState: BusinessModelUiState,
   retry: () -> Unit,
-  goBack: () -> Unit,
+  navigateBack: () -> Unit,
   imageLoader: ImageLoader,
   windowSizeClass: WindowSizeClass,
 ) {
@@ -88,7 +88,7 @@ internal fun BusinessModelScreen(
     ScreenContent(
       uiState = uiState,
       showSheet = { coroutineScope.launch { sheetState.show() } },
-      goBack = goBack,
+      navigateBack = navigateBack,
       retry = retry,
       imageLoader = imageLoader,
       windowSizeClass = windowSizeClass,
@@ -100,7 +100,7 @@ internal fun BusinessModelScreen(
 private fun ScreenContent(
   uiState: BusinessModelUiState,
   showSheet: () -> Unit,
-  goBack: () -> Unit,
+  navigateBack: () -> Unit,
   retry: () -> Unit,
   imageLoader: ImageLoader,
   windowSizeClass: WindowSizeClass,
@@ -108,11 +108,10 @@ private fun ScreenContent(
   Box(Modifier.fillMaxSize()) {
     Column {
       TopAppBarWithBack(
-        onClick = goBack,
+        onClick = navigateBack,
         modifier = Modifier.windowInsetsPadding(
           WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top),
         ),
-        title = "",
       )
       Column(
         Modifier
@@ -265,7 +264,7 @@ private fun BusinessModelScreenPreview() {
       isLoading = false,
     ),
     retry = {},
-    goBack = {},
+    navigateBack = {},
     imageLoader = rememberPreviewImageLoader(),
     windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(500.dp, 300.dp)),
   )
