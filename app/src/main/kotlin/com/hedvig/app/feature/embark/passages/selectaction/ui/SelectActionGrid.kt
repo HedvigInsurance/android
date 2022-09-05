@@ -44,7 +44,7 @@ fun SelectActionGrid(
   Layout(
     modifier = modifier
       .padding(contentPadding)
-      .testTag("SelectActionGrid"),
+      .testTag("selectActionGrid"),
     content = content,
   ) { measurables, constraints ->
     val horizontalSpacingInPx = insideGridSpace.horizontal.roundToPx()

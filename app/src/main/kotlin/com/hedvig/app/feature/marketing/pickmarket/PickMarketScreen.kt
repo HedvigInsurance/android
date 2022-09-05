@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -39,7 +40,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -110,7 +113,7 @@ fun PickMarketScreen(
   }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
 @Composable
 private fun ScreenContent(
   setSheet: (PickMarketSheet?) -> Unit,
@@ -150,6 +153,7 @@ private fun ScreenContent(
         header = stringResource(hedvig.resources.R.string.market_language_screen_market_label),
         label = selectedMarket?.label?.let { stringResource(it) },
         enabled = true,
+        modifier = Modifier.testTag("marketPicker"),
       )
       PickerRow(
         onClick = {
@@ -162,12 +166,15 @@ private fun ScreenContent(
         header = stringResource(hedvig.resources.R.string.market_language_screen_language_label),
         label = selectedLanguage?.getLabel()?.let { stringResource(it) },
         enabled = selectedMarket?.let { Language.getAvailableLanguages(it).isNotEmpty() } ?: false,
+        modifier = Modifier.testTag("languagePicker"),
       )
       Spacer(Modifier.height(32.dp))
       LargeContainedButton(
         onClick = onSubmit,
-        modifier = Modifier.padding(horizontal = 16.dp),
         enabled = enabled,
+        modifier = Modifier
+          .padding(horizontal = 16.dp)
+          .testTag("continueButton"),
       ) {
         Text(stringResource(hedvig.resources.R.string.market_language_screen_continue_button_text))
       }
@@ -233,8 +240,9 @@ private fun LanguageFlag() {
   )
 }
 
+@Suppress("unused")
 @Composable
-private fun PickMarketSheetContent(
+private fun ColumnScope.PickMarketSheetContent(
   onSelectMarket: (Market) -> Unit,
   selectedMarket: Market?,
   markets: List<Market>,
@@ -251,12 +259,14 @@ private fun PickMarketSheetContent(
       onClick = { onSelectMarket(market) },
       selected = selectedMarket == market,
       text = stringResource(market.label),
+      modifier = Modifier.testTag("marketRadioButton$market"),
     )
   }
 }
 
+@Suppress("unused")
 @Composable
-private fun PickLanguageSheetContent(
+private fun ColumnScope.PickLanguageSheetContent(
   onSelectLanguage: (Language) -> Unit,
   selectedLanguage: Language?,
   selectedMarket: Market?,
@@ -281,14 +291,20 @@ private fun PickLanguageSheetContent(
       onClick = { onSelectLanguage(language) },
       selected = selectedLanguage == language,
       text = stringResource(language.getLabel()),
+      modifier = Modifier.testTag("languageRadioButton$language"),
     )
   }
 }
 
 @Composable
-private fun RadioButtonRow(onClick: () -> Unit, selected: Boolean, text: String) {
+private fun RadioButtonRow(
+  onClick: () -> Unit,
+  selected: Boolean,
+  text: String,
+  modifier: Modifier = Modifier,
+) {
   Row(
-    modifier = Modifier
+    modifier = modifier
       .fillMaxWidth()
       .clickable(onClick = onClick)
       .height(48.dp),
@@ -317,10 +333,11 @@ private fun PickerRow(
   header: String,
   label: String?,
   enabled: Boolean,
+  modifier: Modifier = Modifier,
 ) {
   Row(
     verticalAlignment = Alignment.CenterVertically,
-    modifier = Modifier
+    modifier = modifier
       .height(56.dp)
       .clickable(enabled = enabled, onClick = onClick)
       .padding(horizontal = 16.dp),
