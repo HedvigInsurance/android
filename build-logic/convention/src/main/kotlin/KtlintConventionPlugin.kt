@@ -5,6 +5,7 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.the
 import org.gradle.kotlin.dsl.withType
 import org.jmailen.gradle.kotlinter.KotlinterExtension
+import org.jmailen.gradle.kotlinter.support.ReporterType
 
 class KtlintConventionPlugin : Plugin<Project> {
   override fun apply(target: Project) {
@@ -19,12 +20,18 @@ class KtlintConventionPlugin : Plugin<Project> {
         // kotlinter 3.11.1 doesn't read disabledRules from .editorconfig https://github.com/jeremymailen/kotlinter-gradle/issues/262
         disabledRules = arrayOf("filename")
         @Suppress("MISSING_DEPENDENCY_SUPERCLASS")
-        reporters = arrayOf(org.jmailen.gradle.kotlinter.support.ReporterType.checkstyle.name)
+        reporters = arrayOf(ReporterType.checkstyle.name)
       }
 
       tasks.withType<org.jmailen.gradle.kotlinter.tasks.LintTask>().configureEach {
         @Suppress("MISSING_DEPENDENCY_SUPERCLASS")
         exclude { it.file.path.contains("generated/") }
+        @Suppress("MISSING_DEPENDENCY_SUPERCLASS")
+        reports.set(
+          mapOf(
+            ReporterType.checkstyle.name to rootDir.resolve("build/reports/ktlint/${project.path}.xml"),
+          ),
+        )
       }
       tasks.withType<org.jmailen.gradle.kotlinter.tasks.FormatTask>().configureEach {
         @Suppress("MISSING_DEPENDENCY_SUPERCLASS")
