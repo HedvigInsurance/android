@@ -98,9 +98,17 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
           },
         ),
       )
-      when (val charityState = profileUiState.charityState) {
-        CharityState.DontShow -> {}
-        is CharityState.Show -> add(buildCharityRowItem(charityState.charityName))
+      if (profileUiState.showBusinessModel) {
+        add(
+          ProfileModel.Row(
+            title = getString(hedvig.resources.R.string.BUSINESS_MODEL_TITLE),
+            caption = null,
+            icon = R.drawable.ic_profile_charity, // TODO Remove the heart and add a more fitting icon here
+            onClick = {
+              startActivity(Intent(requireContext(), BusinessModelActivity::class.java))
+            },
+          ),
+        )
       }
       when (val paymentState = profileUiState.paymentState) {
         is PaymentState.Show -> {
@@ -140,17 +148,6 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
       )
       add(ProfileModel.Logout)
     }
-  }
-
-  private fun buildCharityRowItem(charityName: String? = null): ProfileModel.Row {
-    return ProfileModel.Row(
-      title = getString(hedvig.resources.R.string.PROFILE_MY_CHARITY_ROW_TITLE),
-      caption = charityName,
-      icon = R.drawable.ic_profile_charity,
-      onClick = {
-        startActivity(Intent(requireContext(), BusinessModelActivity::class.java))
-      },
-    )
   }
 
   private fun getPriceCaption(paymentState: PaymentState.Show): String {

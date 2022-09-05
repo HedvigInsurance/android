@@ -7,7 +7,7 @@ import com.hedvig.android.apollo.graphql.fragment.CashbackFragment
 data class ProfileUiState(
   val member: Member,
   val contactInfoName: String,
-  val charityState: CharityState,
+  val showBusinessModel: Boolean,
   val paymentState: PaymentState,
   val cashbackUiState: CashbackUiState?,
 )
@@ -24,11 +24,6 @@ data class Member(
       )
     }
   }
-}
-
-sealed interface CharityState {
-  data class Show(val charityName: String?) : CharityState
-  object DontShow : CharityState
 }
 
 sealed interface PaymentState {

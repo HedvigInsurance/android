@@ -19,7 +19,7 @@ internal class HAnalyticsFeatureFlagProvider(
     Feature.PAYMENT_SCREEN -> hAnalytics.paymentScreen()
     Feature.REFERRAL_CAMPAIGN -> hAnalytics.foreverFebruaryCampaign()
     Feature.REFERRALS -> hAnalytics.forever()
-    Feature.SHOW_CHARITY -> hAnalytics.showCharity()
+    Feature.SHOW_BUSINESS_MODEL -> hAnalytics.showCharity()
     Feature.UPDATE_NECESSARY -> hAnalytics.updateNecessary()
   }
 }
