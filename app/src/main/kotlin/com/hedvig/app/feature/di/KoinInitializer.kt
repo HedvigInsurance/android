@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.startup.Initializer
 import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.core.datastore.di.deviceIdDataStoreModule
-import com.hedvig.android.feature.charity.di.charityModule
+import com.hedvig.android.feature.businessmodel.di.businessModelModule
 import com.hedvig.android.hanalytics.di.featureManagerModule
 import com.hedvig.android.hanalytics.di.hAnalyticsModule
 import com.hedvig.android.hanalytics.di.trackerModule
@@ -64,10 +64,10 @@ class KoinInitializer : Initializer<KoinApplication> {
         adyenModule,
         apolloClientModule,
         applicationModule,
+        businessModelModule,
         cacheManagerModule,
         changeAddressModule,
         changeDateBottomSheetModule,
-        charityModule,
         chatEventModule,
         checkoutModule,
         clockModule,

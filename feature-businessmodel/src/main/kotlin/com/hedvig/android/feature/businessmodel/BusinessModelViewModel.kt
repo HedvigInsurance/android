@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.charity
+package com.hedvig.android.feature.businessmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,8 +15,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlin.time.Duration.Companion.seconds
 
-internal class CharityViewModel(
-  private val getCharityInformationUseCase: GetCharityInformationUseCase,
+internal class BusinessModelViewModel(
+  private val getBusinessModelInformationUseCase: GetBusinessModelInformationUseCase,
   hAnalytics: HAnalytics,
 ) : ViewModel() {
 
@@ -26,22 +26,22 @@ internal class CharityViewModel(
 
   private val retryChannel = RetryChannel()
   private val isLoading = MutableStateFlow(false)
-  private val charityInformation: Flow<CharityInformation?> = retryChannel.transformLatest {
-    val charityInformation = getCharityInformationUseCase.invoke()
-    emit(charityInformation)
+  private val businessModelInformation: Flow<BusinessModelInformation?> = retryChannel.transformLatest {
+    val businessModelInformation = getBusinessModelInformationUseCase.invoke()
+    emit(businessModelInformation)
     isLoading.update { false }
   }
 
-  val uiState: StateFlow<CharityUiState> = combine(
+  val uiState: StateFlow<BusinessModelUiState> = combine(
     isLoading,
-    charityInformation,
-  ) { isLoading, charityInformation ->
-    CharityUiState(charityInformation, isLoading)
+    businessModelInformation,
+  ) { isLoading, businessModelInformation ->
+    BusinessModelUiState(businessModelInformation, isLoading)
   }
     .stateIn(
       viewModelScope,
       SharingStarted.WhileSubscribed(5.seconds),
-      CharityUiState(null, true),
+      BusinessModelUiState(null, true),
     )
 
   fun reload() {
@@ -50,7 +50,7 @@ internal class CharityViewModel(
   }
 }
 
-internal data class CharityUiState(
-  val charityInformation: CharityInformation?,
+internal data class BusinessModelUiState(
+  val businessModelInformation: BusinessModelInformation?,
   val isLoading: Boolean,
 )

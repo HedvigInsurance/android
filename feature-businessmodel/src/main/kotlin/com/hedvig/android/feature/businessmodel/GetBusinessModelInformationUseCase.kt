@@ -1,13 +1,13 @@
-package com.hedvig.android.feature.charity
+package com.hedvig.android.feature.businessmodel
 
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.exception.ApolloException
 import com.hedvig.android.apollo.graphql.CharityInformationQuery
 
-internal class GetCharityInformationUseCase(
+internal class GetBusinessModelInformationUseCase(
   private val apolloClient: ApolloClient,
 ) {
-  suspend fun invoke(): CharityInformation? {
+  suspend fun invoke(): BusinessModelInformation? {
     return try {
       val cashback = apolloClient
         .query(CharityInformationQuery())
@@ -18,7 +18,7 @@ internal class GetCharityInformationUseCase(
       if (cashbackName == null) {
         null
       } else {
-        CharityInformation(
+        BusinessModelInformation(
           cashbackName,
           cashback.description,
           cashback.imageUrl,
@@ -30,7 +30,7 @@ internal class GetCharityInformationUseCase(
   }
 }
 
-data class CharityInformation(
+data class BusinessModelInformation(
   val name: String,
   val description: String?,
   val imageUrl: String?,

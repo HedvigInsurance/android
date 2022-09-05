@@ -6,7 +6,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.hedvig.android.feature.charity.CharityActivity
+import com.hedvig.android.feature.businessmodel.BusinessModelActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ProfileFragmentBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
@@ -148,7 +148,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
       caption = charityName,
       icon = R.drawable.ic_profile_charity,
       onClick = {
-        startActivity(Intent(requireContext(), CharityActivity::class.java))
+        startActivity(Intent(requireContext(), BusinessModelActivity::class.java))
       },
     )
   }
