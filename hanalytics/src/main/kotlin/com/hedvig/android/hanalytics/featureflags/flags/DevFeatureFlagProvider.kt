@@ -20,7 +20,7 @@ internal class DevFeatureFlagProvider(
       Feature.REFERRAL_CAMPAIGN -> false
       Feature.PAYMENT_SCREEN -> !isQasaMember
       Feature.REFERRALS -> !isQasaMember
-      Feature.SHOW_CHARITY -> !isQasaMember
+      Feature.SHOW_BUSINESS_MODEL -> !isQasaMember
       Feature.UPDATE_NECESSARY -> false
     }
   }

@@ -5,7 +5,6 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.apollo)
   implementation(projects.coreCommon)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)
@@ -16,7 +15,5 @@ dependencies {
   implementation(libs.androidx.other.activityCompose)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.compose.material3.windowSizeClass)
-  implementation(libs.accompanist.placeholder)
-  implementation(libs.coil.compose)
   implementation(libs.koin.android)
 }

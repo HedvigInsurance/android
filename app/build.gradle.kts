@@ -141,7 +141,7 @@ dependencies {
   implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
-  implementation(projects.featureCharity)
+  implementation(projects.featureBusinessmodel)
   implementation(projects.hanalytics)
   implementation(projects.hedvigMarket)
 

@@ -95,7 +95,7 @@
             android:theme="@style/Hedvig.Theme.LoggedIn"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.hedvig.android.feature.charity.CharityActivity"
+            android:name="com.hedvig.android.feature.businessmodel.BusinessModelActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:theme="@style/Hedvig.Theme"

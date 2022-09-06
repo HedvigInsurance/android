@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.profile.ui.tab
 
 import assertk.assertThat
+import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
-import assertk.assertions.isNotInstanceOf
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.hanalytics.test.FakeFeatureManager
@@ -31,7 +31,7 @@ class ProfileQueryDataToProfileUiStateMapperTest {
       featureMap = {
         mapOf(
           Feature.PAYMENT_SCREEN to false,
-          Feature.SHOW_CHARITY to Random.nextBoolean(),
+          Feature.SHOW_BUSINESS_MODEL to Random.nextBoolean(),
         )
       },
     )
@@ -48,7 +48,7 @@ class ProfileQueryDataToProfileUiStateMapperTest {
       featureMap = {
         mapOf(
           Feature.PAYMENT_SCREEN to true,
-          Feature.SHOW_CHARITY to Random.nextBoolean(),
+          Feature.SHOW_BUSINESS_MODEL to Random.nextBoolean(),
         )
       },
     )
@@ -60,11 +60,11 @@ class ProfileQueryDataToProfileUiStateMapperTest {
   }
 
   @Test
-  fun `when charity-feature is deactivated, should not show charity-data`() = runTest {
+  fun `when business-model-feature is deactivated, should not show business-model-data`() = runTest {
     val featureManager = FakeFeatureManager(
       featureMap = {
         mapOf(
-          Feature.SHOW_CHARITY to false,
+          Feature.SHOW_BUSINESS_MODEL to false,
           Feature.PAYMENT_SCREEN to Random.nextBoolean(),
         )
       },
@@ -73,15 +73,15 @@ class ProfileQueryDataToProfileUiStateMapperTest {
 
     val result = mapper.map(PROFILE_DATA)
 
-    assertThat(result.charityState).isInstanceOf(CharityState.DontShow::class)
+    assertThat(result.showBusinessModel).isEqualTo(false)
   }
 
   @Test
-  fun `when charity-feature is activated, should show charity-data`() = runTest {
+  fun `when business-model-feature is activated, should show business-model-data`() = runTest {
     val featureManager = FakeFeatureManager(
       featureMap = {
         mapOf(
-          Feature.SHOW_CHARITY to true,
+          Feature.SHOW_BUSINESS_MODEL to true,
           Feature.PAYMENT_SCREEN to Random.nextBoolean(),
         )
       },
@@ -90,6 +90,6 @@ class ProfileQueryDataToProfileUiStateMapperTest {
 
     val result = mapper.map(PROFILE_DATA)
 
-    assertThat(result.charityState).isNotInstanceOf(CharityState.DontShow::class)
+    assertThat(result.showBusinessModel).isEqualTo(true)
   }
 }

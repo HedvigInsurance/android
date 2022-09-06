@@ -17,12 +17,6 @@ class ProfileQueryDataToProfileUiStateMapper(
 ) : Mapper<ProfileQuery.Data, ProfileUiState> {
 
   override suspend fun map(from: ProfileQuery.Data): ProfileUiState {
-    val cashbackFragment = from.cashback?.fragments?.cashbackFragment
-    val charityState = if (featureManager.isFeatureEnabled(Feature.SHOW_CHARITY).not()) {
-      CharityState.DontShow
-    } else {
-      CharityState.Show(cashbackFragment?.name)
-    }
     val priceData = if (featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN)) {
       PaymentState.Show(
         monetaryMonthlyNet = from.insuranceCost.formatMonetaryMonthlyNet(localeManager.getJavaUtilLocale()),
@@ -37,9 +31,8 @@ class ProfileQueryDataToProfileUiStateMapper(
     return ProfileUiState(
       member = Member.fromDto(from.member),
       contactInfoName = "${from.member.firstName} ${from.member.lastName}",
-      charityState = charityState,
+      showBusinessModel = featureManager.isFeatureEnabled(Feature.SHOW_BUSINESS_MODEL),
       paymentState = priceData,
-      cashbackUiState = CashbackUiState.fromDto(cashbackFragment),
     )
   }
 

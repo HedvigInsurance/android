@@ -2,12 +2,10 @@ package com.hedvig.app.testdata.feature.profile.builders
 
 import com.hedvig.android.apollo.graphql.ProfileQuery
 import com.hedvig.android.apollo.graphql.fragment.ActivePaymentMethodsFragment
-import com.hedvig.android.apollo.graphql.fragment.CashbackFragment
 import com.hedvig.android.apollo.graphql.fragment.CostFragment
 import com.hedvig.android.apollo.graphql.type.DirectDebitStatus
 import com.hedvig.android.apollo.graphql.type.StoredCardDetails
 import com.hedvig.app.testdata.common.builders.CostBuilder
-import java.util.UUID
 
 data class ProfileDataBuilder(
   private val memberId: String = "123",
@@ -32,17 +30,6 @@ data class ProfileDataBuilder(
       freeUntil = null,
       fragments = ProfileQuery.InsuranceCost.Fragments(
         costFragment = cost,
-      ),
-    ),
-    cashback = ProfileQuery.Cashback(
-      __typename = "",
-      fragments = ProfileQuery.Cashback.Fragments(
-        CashbackFragment(
-          id = UUID.randomUUID().toString(),
-          name = "Example Charity",
-          imageUrl = null,
-          description = null,
-        ),
       ),
     ),
     bankAccount = ProfileQuery.BankAccount(directDebitStatus = directDebitStatus),
