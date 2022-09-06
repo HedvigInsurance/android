@@ -53,19 +53,13 @@ import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.material.placeholder
 import com.hedvig.android.core.designsystem.theme.textColorLink
-import com.hedvig.android.core.ui.FullScreenHedvigProgress
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
-import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
-import com.hedvig.android.feature.businessmodel.BusinessModelInformation
-import com.hedvig.android.feature.businessmodel.BusinessModelUiState
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 internal fun BusinessModelScreen(
-  uiState: BusinessModelUiState,
-  retry: () -> Unit,
   navigateBack: () -> Unit,
   imageLoader: ImageLoader,
   windowSizeClass: WindowSizeClass,
@@ -86,10 +80,8 @@ internal fun BusinessModelScreen(
     modifier = Modifier.fillMaxSize(),
   ) {
     ScreenContent(
-      uiState = uiState,
       showSheet = { coroutineScope.launch { sheetState.show() } },
       navigateBack = navigateBack,
-      retry = retry,
       imageLoader = imageLoader,
       windowSizeClass = windowSizeClass,
     )
@@ -98,10 +90,8 @@ internal fun BusinessModelScreen(
 
 @Composable
 private fun ScreenContent(
-  uiState: BusinessModelUiState,
   showSheet: () -> Unit,
   navigateBack: () -> Unit,
-  retry: () -> Unit,
   imageLoader: ImageLoader,
   windowSizeClass: WindowSizeClass,
 ) {
@@ -121,29 +111,18 @@ private fun ScreenContent(
             WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
           ),
       ) {
-        val businessModelInfo = uiState.businessModelInformation
-        if (businessModelInfo != null) {
-          SuccessContent(
-            businessModelInfo = businessModelInfo,
-            openBusinessModelInfo = { showSheet() },
-            imageLoader = imageLoader,
-            windowSizeClass = windowSizeClass,
-          )
-        } else if (uiState.isLoading.not()) {
-          GenericErrorScreen(
-            onRetryButtonClick = { retry() },
-            Modifier.padding(top = 110.dp),
-          )
-        }
+        BusinessModelContent(
+          openBusinessModelInfo = { showSheet() },
+          imageLoader = imageLoader,
+          windowSizeClass = windowSizeClass,
+        )
       }
     }
-    FullScreenHedvigProgress(uiState.isLoading)
   }
 }
 
 @Composable
-private fun ColumnScope.SuccessContent(
-  businessModelInfo: BusinessModelInformation,
+private fun ColumnScope.BusinessModelContent(
   openBusinessModelInfo: () -> Unit,
   imageLoader: ImageLoader,
   windowSizeClass: WindowSizeClass,
@@ -152,14 +131,12 @@ private fun ColumnScope.SuccessContent(
     text = stringResource(hedvig.resources.R.string.BUSINESS_MODEL_TITLE),
     style = MaterialTheme.typography.h4,
   )
-  if (businessModelInfo.imageUrl != null) {
-    BusinessModelImage(
-      com.hedvig.android.feature.businessmodel.R.drawable.milkywire,
-      imageLoader,
-      windowSizeClass,
-      Modifier.align(Alignment.CenterHorizontally),
-    )
-  }
+  BusinessModelImage(
+    com.hedvig.android.feature.businessmodel.R.drawable.milkywire,
+    imageLoader,
+    windowSizeClass,
+    Modifier.align(Alignment.CenterHorizontally),
+  )
   Spacer(Modifier.height(24.dp))
   Card(Modifier.fillMaxWidth()) {
     Column(Modifier.padding(16.dp)) {
@@ -167,13 +144,11 @@ private fun ColumnScope.SuccessContent(
         text = stringResource(hedvig.resources.R.string.BUSINESS_MODEL_CARD_TITLE),
         style = MaterialTheme.typography.subtitle1,
       )
-      if (businessModelInfo.description != null) {
-        Spacer(Modifier.height(8.dp))
-        Text(
-          text = stringResource(hedvig.resources.R.string.BUSINESS_MODEL_CARD_TEXT),
-          style = MaterialTheme.typography.body2,
-        )
-      }
+      Spacer(Modifier.height(8.dp))
+      Text(
+        text = stringResource(hedvig.resources.R.string.BUSINESS_MODEL_CARD_TEXT),
+        style = MaterialTheme.typography.body2,
+      )
     }
   }
   Spacer(Modifier.height(8.dp))
@@ -183,7 +158,6 @@ private fun ColumnScope.SuccessContent(
     },
     colors = ButtonDefaults.textButtonColors(
       contentColor = MaterialTheme.colors.textColorLink,
-      disabledContentColor = MaterialTheme.colors.textColorLink.copy(alpha = 0.12f),
     ),
     modifier = Modifier.align(Alignment.CenterHorizontally),
   ) {
@@ -255,15 +229,6 @@ private fun BusinessModelImage(
 @Composable
 private fun BusinessModelScreenPreview() {
   BusinessModelScreen(
-    uiState = BusinessModelUiState(
-      businessModelInformation = BusinessModelInformation(
-        name = "Name of partner",
-        description = "Some long description maybe? Yes. ".repeat(8),
-        imageUrl = null,
-      ),
-      isLoading = false,
-    ),
-    retry = {},
     navigateBack = {},
     imageLoader = rememberPreviewImageLoader(),
     windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(500.dp, 300.dp)),

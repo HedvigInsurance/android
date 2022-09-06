@@ -103,7 +103,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
           ProfileModel.Row(
             title = getString(hedvig.resources.R.string.BUSINESS_MODEL_TITLE),
             caption = null,
-            icon = R.drawable.ic_profile_charity, // TODO Remove the heart and add a more fitting icon here
+            icon = R.drawable.ic_profile_business_model, // TODO Remove the heart and add a more fitting icon here
             onClick = {
               startActivity(Intent(requireContext(), BusinessModelActivity::class.java))
             },
