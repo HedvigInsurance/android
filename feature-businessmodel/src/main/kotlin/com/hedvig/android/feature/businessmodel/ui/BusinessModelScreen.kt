@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.businessmodel.ui
 
 import androidx.annotation.DrawableRes
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,30 +37,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import coil.ImageLoader
-import coil.compose.AsyncImagePainter
-import coil.compose.rememberAsyncImagePainter
-import coil.request.ImageRequest
-import coil.size.Size
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.material.fade
-import com.google.accompanist.placeholder.material.placeholder
 import com.hedvig.android.core.designsystem.theme.textColorLink
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
-import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 internal fun BusinessModelScreen(
   navigateBack: () -> Unit,
-  imageLoader: ImageLoader,
   windowSizeClass: WindowSizeClass,
 ) {
   val coroutineScope = rememberCoroutineScope()
@@ -82,7 +70,6 @@ internal fun BusinessModelScreen(
     ScreenContent(
       showSheet = { coroutineScope.launch { sheetState.show() } },
       navigateBack = navigateBack,
-      imageLoader = imageLoader,
       windowSizeClass = windowSizeClass,
     )
   }
@@ -92,7 +79,6 @@ internal fun BusinessModelScreen(
 private fun ScreenContent(
   showSheet: () -> Unit,
   navigateBack: () -> Unit,
-  imageLoader: ImageLoader,
   windowSizeClass: WindowSizeClass,
 ) {
   Box(Modifier.fillMaxSize()) {
@@ -113,7 +99,6 @@ private fun ScreenContent(
       ) {
         BusinessModelContent(
           openBusinessModelInfo = { showSheet() },
-          imageLoader = imageLoader,
           windowSizeClass = windowSizeClass,
         )
       }
@@ -124,16 +109,15 @@ private fun ScreenContent(
 @Composable
 private fun ColumnScope.BusinessModelContent(
   openBusinessModelInfo: () -> Unit,
-  imageLoader: ImageLoader,
   windowSizeClass: WindowSizeClass,
 ) {
   Text(
     text = stringResource(hedvig.resources.R.string.BUSINESS_MODEL_TITLE),
     style = MaterialTheme.typography.h4,
   )
+  Spacer(Modifier.height(24.dp))
   BusinessModelImage(
     com.hedvig.android.feature.businessmodel.R.drawable.milkywire,
-    imageLoader,
     windowSizeClass,
     Modifier.align(Alignment.CenterHorizontally),
   )
@@ -176,52 +160,16 @@ private fun ColumnScope.BusinessModelContent(
 @Composable
 private fun BusinessModelImage(
   @DrawableRes imageRes: Int,
-  imageLoader: ImageLoader,
   windowSizeClass: WindowSizeClass,
   modifier: Modifier = Modifier,
 ) {
-  val painter = rememberAsyncImagePainter(
-    model = ImageRequest.Builder(LocalContext.current)
-      .data(imageRes)
-      .size(Size.ORIGINAL)
-      .build(),
-    imageLoader = imageLoader,
+  Image(
+    painter = painterResource(imageRes),
+    contentDescription = null,
+    modifier = modifier
+      .padding(horizontal = 24.dp)
+      .fillMaxWidth(if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact) 1f else 0.4f),
   )
-  Box(
-    modifier
-      .fillMaxWidth(if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact) 1f else 0.4f)
-      .animateContentSize(),
-  ) {
-    when (painter.state) {
-      AsyncImagePainter.State.Empty -> {}
-      is AsyncImagePainter.State.Error -> {}
-      is AsyncImagePainter.State.Loading -> {
-        Column {
-          Spacer(Modifier.height(24.dp))
-          Box(
-            Modifier
-              .fillMaxWidth()
-              .height(50.dp)
-              .placeholder(
-                visible = true,
-                highlight = PlaceholderHighlight.fade(),
-              ),
-          )
-        }
-      }
-      is AsyncImagePainter.State.Success -> {
-        Column {
-          Spacer(Modifier.height(24.dp))
-          Image(
-            painter = painter,
-            contentDescription = null,
-            contentScale = ContentScale.Fit,
-            modifier = Modifier.padding(horizontal = 24.dp),
-          )
-        }
-      }
-    }
-  }
 }
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
@@ -230,7 +178,6 @@ private fun BusinessModelImage(
 private fun BusinessModelScreenPreview() {
   BusinessModelScreen(
     navigateBack = {},
-    imageLoader = rememberPreviewImageLoader(),
     windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(500.dp, 300.dp)),
   )
 }
