@@ -101,7 +101,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
       if (profileUiState.showBusinessModel) {
         add(
           ProfileModel.Row(
-            title = getString(hedvig.resources.R.string.BUSINESS_MODEL_TITLE),
+            title = getString(hedvig.resources.R.string.BUSINESS_MODEL_PROFILE_ROW),
             caption = null,
             icon = R.drawable.ic_profile_business_model,
             onClick = {
