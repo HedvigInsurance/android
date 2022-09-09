@@ -3,16 +3,23 @@ package com.hedvig.app.service.push
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import arrow.core.Either
+import arrow.core.continuations.either
+import arrow.fx.coroutines.parZip
 import com.apollographql.apollo3.ApolloClient
+import com.hedvig.android.apollo.graphql.NotificationRegisterDeviceMutation
 import com.hedvig.android.apollo.graphql.RegisterPushTokenMutation
 import com.hedvig.app.authenticate.AuthenticationTokenService
+import com.hedvig.app.util.apollo.QueryResult
+import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.toEither
 import e
 import i
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class PushNotificationWorker(
-  val context: Context,
+  context: Context,
   params: WorkerParameters,
 ) : CoroutineWorker(context, params), KoinComponent {
 
@@ -24,9 +31,10 @@ class PushNotificationWorker(
     if (!hasHedvigToken()) {
       return Result.retry()
     }
-    registerPushToken(pushToken)
-
-    return Result.success()
+    return when (registerPushToken(pushToken)) {
+      is Either.Left -> Result.retry()
+      is Either.Right -> Result.success()
+    }
   }
 
   private fun hasHedvigToken(): Boolean {
@@ -41,20 +49,20 @@ class PushNotificationWorker(
     return false
   }
 
-  private suspend fun registerPushToken(pushToken: String) {
+  private suspend fun registerPushToken(pushToken: String): Either<QueryResult.Error, Unit> {
     i { "Registering push token" }
-
-    val response = runCatching {
-      apolloClient
-        .mutation(RegisterPushTokenMutation(pushToken))
-        .execute()
+    return either {
+      parZip(
+        { apolloClient.mutation(RegisterPushTokenMutation(pushToken)).safeQuery().toEither().bind() },
+        { apolloClient.mutation(NotificationRegisterDeviceMutation(pushToken)).safeQuery().toEither().bind() },
+      ) { _, _ -> }
     }
-    if (response.isFailure) {
-      response.exceptionOrNull()
-        ?.let { e { "Failed to register push token: $it" } }
-      return
-    }
-    i { "Successfully registered push token" }
+      .tapLeft { queryResultError ->
+        e { "Failed to register push token: $queryResultError" }
+      }
+      .tap {
+        i { "Successfully registered push token" }
+      }
   }
 
   companion object {
