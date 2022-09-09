@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 // TODO: Remove once https://youtrack.jetbrains.com/issue/KTIJ-19369 is fixed
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
@@ -10,6 +12,7 @@ plugins {
   id("kotlin-kapt")
   alias(libs.plugins.license)
   alias(libs.plugins.serialization)
+  alias(libs.plugins.datadog)
 }
 
 licenseReport {
@@ -27,7 +30,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "7.0.2"
+    versionName = "7.1.0"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -53,8 +56,8 @@ android {
     maybeCreate("staging")
     maybeCreate("pullrequest")
     named("release") {
+//      signingConfig = signingConfigs.getByName("debug") // uncomment to run release build locally
       applicationIdSuffix = ".app"
-
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
 
       isMinifyEnabled = true
@@ -106,17 +109,17 @@ android {
 
   sourceSets {
     named("debug") {
-      java.srcDir("src/engineering/java")
+      kotlin.srcDir("src/engineering/kotlin")
       res.srcDir("src/engineering/res")
       manifest.srcFile("src/debug/AndroidManifest.xml")
     }
     named("staging") {
-      java.srcDir("src/engineering/java")
+      kotlin.srcDir("src/engineering/kotlin")
       res.srcDir("src/engineering/res")
       manifest.srcFile("src/debug/AndroidManifest.xml")
     }
     named("pullrequest") {
-      java.srcDir("src/engineering/java")
+      kotlin.srcDir("src/engineering/kotlin")
       res.srcDir("src/engineering/res")
       manifest.srcFile("src/debug/AndroidManifest.xml")
     }
@@ -124,9 +127,9 @@ android {
 
   configurations.all {
     resolutionStrategy.force(
-      "org.hamcrest:hamcrest-core:2.1",
-      "org.hamcrest:hamcrest-library:2.1",
-      "org.hamcrest:hamcrest:2.1",
+      "org.hamcrest:hamcrest-core:2.2",
+      "org.hamcrest:hamcrest-library:2.2",
+      "org.hamcrest:hamcrest:2.2",
     )
   }
 }
@@ -134,9 +137,22 @@ android {
 dependencies {
   implementation(projects.apollo)
   implementation(projects.coreCommon)
+  implementation(projects.coreDatastore)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
+  implementation(projects.featureBusinessmodel)
+  implementation(projects.hanalytics)
+  implementation(projects.hedvigMarket)
+
+  testImplementation(projects.hanalyticsTest)
+  androidTestImplementation(projects.hanalyticsTest)
+
+  implementation(projects.hanalyticsEngineeringApi)
+  releaseImplementation(projects.hanalyticsEngineeringNoop)
+  debugImplementation(projects.hanalyticsEngineering)
+  "stagingImplementation"(projects.hanalyticsEngineering)
+  "pullrequestImplementation"(projects.hanalyticsEngineering)
 
   androidTestImplementation(projects.testdata)
   testImplementation(projects.testdata)
@@ -184,7 +200,6 @@ dependencies {
 
   implementation(libs.accompanist.pager)
   implementation(libs.accompanist.pagerIndicators)
-  implementation(libs.accompanist.insets)
   implementation(libs.accompanist.insetsUi)
   implementation(libs.accompanist.systemUiController)
 
@@ -215,8 +230,6 @@ dependencies {
   implementation(libs.firebase.config)
   implementation(libs.firebase.messaging)
 
-  implementation(libs.hAnalytics)
-
   implementation(libs.koin.android)
   androidTestImplementation(libs.koin.test)
 
@@ -232,7 +245,6 @@ dependencies {
   implementation(libs.coil.svg)
   implementation(libs.coil.gif)
   implementation(libs.coil.compose)
-  implementation(libs.coil.transformations)
 
   implementation(libs.tooltip)
 
@@ -284,4 +296,6 @@ dependencies {
   kaptDebug(libs.showkase.processor)
   "kaptStaging"(libs.showkase.processor)
   "kaptPullrequest"(libs.showkase.processor)
+
+  implementation(libs.datadog.sdk)
 }

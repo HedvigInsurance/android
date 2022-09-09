@@ -27,20 +27,6 @@
         android:theme="@style/Hedvig.Theme">
         <activity android:name=".feature.embark.ui.MoreOptionsActivity" />
         <activity
-            android:name=".feature.keygear.KeyGearValuationInfoActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.keygear.KeyGearValuationActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name=".feature.chat.ui.ChatActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
@@ -109,10 +95,9 @@
             android:theme="@style/Hedvig.Theme.LoggedIn"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".feature.profile.ui.charity.CharityActivity"
+            android:name="com.hedvig.android.feature.businessmodel.BusinessModelActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
         <activity
@@ -194,34 +179,6 @@
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".feature.keygear.ui.createitem.CreateKeyGearItemActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme.KeyGear"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.keygear.ui.itemdetail.KeyGearItemDetailActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme.KeyGear.ItemDetail"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.keygear.ui.ReceiptActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme.KeyGear"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.webonboarding.WebOnboardingActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name=".feature.referrals.ui.activated.ReferralsActivatedActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
@@ -286,7 +243,9 @@
 
         <activity android:name=".feature.offer.quotedetail.QuoteDetailActivity" />
 
-        <activity android:name=".feature.crossselling.ui.detail.CrossSellDetailActivity" />
+        <activity
+            android:name=".feature.crossselling.ui.detail.CrossSellDetailActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".feature.crossselling.ui.detail.CrossSellFaqActivity" />
         <activity android:name=".feature.sunsetting.ForceUpgradeActivity" />
         <activity
@@ -303,11 +262,14 @@
             android:name=".feature.genericauth.otpinput.OtpInputActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".feature.claimdetail.ClaimDetailActivity" />
+        <activity
+            android:name=".feature.claimdetail.ClaimDetailActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".feature.tracking.NotificationOpenedTrackingActivity" />
         <activity
             android:name=".feature.marketing.MarketingActivity"
-            android:theme="@style/Hedvig.Theme.Marketing" />
+            android:theme="@style/Hedvig.Theme.Marketing"
+            android:windowSoftInputMode="adjustResize" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
