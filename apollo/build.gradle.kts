@@ -59,9 +59,11 @@ dependencies {
   implementation(projects.coreCommon)
 
   api(libs.apollo.runtime)
-  implementation(libs.apollo.adapters)
 
   implementation(libs.adyen)
+  implementation(libs.apollo.adapters)
+  implementation(libs.apollo.normalizedCache)
+  implementation(libs.arrowKt.core)
 }
 
 tasks.withType<com.apollographql.apollo3.gradle.internal.ApolloDownloadSchemaTask>().configureEach {

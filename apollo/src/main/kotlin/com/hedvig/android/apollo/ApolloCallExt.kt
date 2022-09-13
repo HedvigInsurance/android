@@ -1,4 +1,4 @@
-package com.hedvig.app.util.apollo
+package com.hedvig.android.apollo
 
 import com.apollographql.apollo3.ApolloCall
 import com.apollographql.apollo3.api.ApolloResponse
@@ -56,4 +56,18 @@ fun <D : Query.Data> ApolloCall<D>.safeWatch(): Flow<OperationResult<D>> {
         emit(OperationResult.Error.GeneralError(exception))
       }
     }
+}
+
+private fun <D : Operation.Data> ApolloResponse<D>.toOperationResult(): OperationResult<D> {
+  val data = data
+  return when {
+    hasErrors() -> {
+      val exception = errors?.first()?.extensions?.get("exception")
+      val body = (exception as? Map<*, *>)?.get("body")
+      val message = (body as? Map<*, *>)?.get("message") as? String
+      OperationResult.Error.OperationError(message ?: errors?.first()?.message)
+    }
+    data != null -> OperationResult.Success(data)
+    else -> OperationResult.Error.NoDataError("No data")
+  }
 }
