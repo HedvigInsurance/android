@@ -1,5 +1,6 @@
 package com.hedvig.android.notification.badge.data.di
 
+import com.hedvig.android.core.common.di.getGraphqlLocaleFunctionQualifier
 import com.hedvig.android.notification.badge.data.crosssell.CrossSellNotificationBadgeService
 import com.hedvig.android.notification.badge.data.crosssell.GetCrossSellsContractTypesUseCase
 import com.hedvig.android.notification.badge.data.crosssell.GetCrossSellsContractTypesUseCaseImpl
@@ -16,7 +17,9 @@ val notificationBadgeModule = module {
   single<CrossSellBottomNavNotificationBadgeService> { CrossSellBottomNavNotificationBadgeService(get()) }
   single<CrossSellCardNotificationBadgeService> { CrossSellCardNotificationBadgeService(get()) }
   single<CrossSellNotificationBadgeService> { CrossSellNotificationBadgeService(get(), get()) }
-  single<GetCrossSellsContractTypesUseCase> { GetCrossSellsContractTypesUseCaseImpl(get()/*, get()*/) }
+  single<GetCrossSellsContractTypesUseCase> {
+    GetCrossSellsContractTypesUseCaseImpl(get(), get(getGraphqlLocaleFunctionQualifier))
+  }
   single<NotificationBadgeService> { DatastoreNotificationBadgeService(get()) }
   single<ReferralsNotificationBadgeService> { ReferralsNotificationBadgeService(get(), get()) }
   single<TabNotificationBadgeService> { TabNotificationBadgeService(get(), get()) }

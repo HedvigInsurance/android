@@ -19,6 +19,7 @@ import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.datadog.android.DatadogInterceptor
 import com.google.firebase.messaging.FirebaseMessaging
+import com.hedvig.android.core.common.di.getGraphqlLocaleFunctionQualifier
 import com.hedvig.android.core.common.di.isDebugQualifier
 import com.hedvig.android.hanalytics.di.appIdQualifier
 import com.hedvig.android.hanalytics.di.appVersionCodeQualifier
@@ -520,6 +521,15 @@ val stringConstantsModule = module {
   single<String>(appVersionCodeQualifier) { BuildConfig.VERSION_CODE.toString() }
   single<String>(appIdQualifier) { BuildConfig.APPLICATION_ID }
   single<Boolean>(isDebugQualifier) { BuildConfig.DEBUG }
+}
+
+// TODO take Locale straight from whatever class owns that functionality after the language APIs are merged in. Can't
+//  yet pass LocaleManager as that's only visible in the :app module. After that PR is merged it can be moved to a
+//  separate module and provided directly.
+val tempLocaleModule = module {
+  single<() -> com.hedvig.android.apollo.graphql.type.Locale>(getGraphqlLocaleFunctionQualifier) {
+    { get<LocaleManager>().defaultLocale() }
+  }
 }
 
 val checkoutModule = module {

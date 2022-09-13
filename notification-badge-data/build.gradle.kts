@@ -5,6 +5,7 @@ plugins {
 
 dependencies {
   implementation(projects.apollo)
+  implementation(projects.coreCommon)
   implementation(projects.coreDatastore)
   implementation(projects.hanalytics)
 

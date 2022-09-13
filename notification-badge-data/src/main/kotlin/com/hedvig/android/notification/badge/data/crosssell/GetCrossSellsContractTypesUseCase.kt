@@ -14,11 +14,11 @@ interface GetCrossSellsContractTypesUseCase {
 
 internal class GetCrossSellsContractTypesUseCaseImpl(
   private val apolloClient: ApolloClient,
+  private val getLocale: () -> Locale,
 ) : GetCrossSellsContractTypesUseCase {
   override suspend fun invoke(): Set<TypeOfContract> {
     return apolloClient
-      // TODO take Locale straight from whatever class owns that functionality after the language APIs are merged in
-      .query(CrossSellsQuery(Locale.en_SE))
+      .query(CrossSellsQuery(getLocale()))
       .safeExecute()
       .toEither()
       .fold(
