@@ -8,7 +8,7 @@ import com.hedvig.android.apollo.graphql.QuoteCartStartCheckoutMutation
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.apollo.NetworkCacheManager
-import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.safeExecute
 import com.hedvig.app.util.apollo.toEither
 import com.hedvig.hanalytics.HAnalytics
 
@@ -39,7 +39,7 @@ class StartCheckoutUseCase(
     quoteIds: List<String>,
   ): Either<ErrorMessage, QuoteCartStartCheckoutMutation.Data> = apolloClient
     .mutation(QuoteCartStartCheckoutMutation(quoteCartId.id, quoteIds))
-    .safeQuery()
+    .safeExecute()
     .toEither()
     .mapLeft { ErrorMessage(it.message) }
 }

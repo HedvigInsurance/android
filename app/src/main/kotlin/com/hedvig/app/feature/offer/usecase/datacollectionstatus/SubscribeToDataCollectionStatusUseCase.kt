@@ -2,8 +2,8 @@ package com.hedvig.app.feature.offer.usecase.datacollectionstatus
 
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.DataCollectionStatusSubscription
-import com.hedvig.app.util.apollo.QueryResult
-import com.hedvig.app.util.apollo.safeSubscription
+import com.hedvig.app.util.apollo.OperationResult
+import com.hedvig.app.util.apollo.toSafeFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -24,11 +24,11 @@ class SubscribeToDataCollectionStatusUseCase(
   operator fun invoke(referenceUuid: String): Flow<Status> {
     return apolloClient
       .subscription(DataCollectionStatusSubscription(referenceUuid))
-      .safeSubscription()
+      .toSafeFlow()
       .map { queryResult ->
         when (queryResult) {
-          is QueryResult.Error -> Status.Error(referenceUuid)
-          is QueryResult.Success -> Status.Content(
+          is OperationResult.Error -> Status.Error(referenceUuid)
+          is OperationResult.Success -> Status.Content(
             referenceUuid,
             DataCollectionStatus.fromDto(queryResult.data),
           )

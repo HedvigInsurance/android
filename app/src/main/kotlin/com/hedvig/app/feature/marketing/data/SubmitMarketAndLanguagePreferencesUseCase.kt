@@ -8,7 +8,7 @@ import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.makeLocaleString
 import com.hedvig.app.util.LocaleManager
-import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.safeExecute
 import com.hedvig.app.util.apollo.toEither
 
 class SubmitMarketAndLanguagePreferencesUseCase(
@@ -24,7 +24,7 @@ class SubmitMarketAndLanguagePreferencesUseCase(
         localeManager.defaultLocale(),
       ),
     )
-    .safeQuery()
+    .safeExecute()
     .toEither()
     .tap { marketManager.hasSelectedMarket = true }
     .map { }

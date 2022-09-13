@@ -9,18 +9,18 @@ import com.hedvig.android.apollo.graphql.QuoteCartCheckoutStatusQuery
 import com.hedvig.app.feature.offer.model.Checkout
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.model.toCheckout
-import com.hedvig.app.util.apollo.QueryResult
-import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.OperationResult
+import com.hedvig.app.util.apollo.safeExecute
 import com.hedvig.app.util.apollo.toEither
 
 class GetQuoteCartCheckoutUseCase(
   private val apolloClient: ApolloClient,
 ) {
-  suspend fun invoke(quoteCartId: QuoteCartId): Either<QueryResult.Error, Checkout?> {
+  suspend fun invoke(quoteCartId: QuoteCartId): Either<OperationResult.Error, Checkout?> {
     return either {
       val checkout = apolloClient.query(QuoteCartCheckoutStatusQuery(quoteCartId.id))
         .fetchPolicy(FetchPolicy.NetworkOnly)
-        .safeQuery()
+        .safeExecute()
         .toEither()
         .bind()
         .quoteCart

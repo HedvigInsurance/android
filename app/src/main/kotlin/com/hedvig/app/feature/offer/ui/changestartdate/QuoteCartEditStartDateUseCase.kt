@@ -8,7 +8,7 @@ import com.hedvig.android.apollo.graphql.QuoteCartEditQuoteMutation
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.LocaleManager
-import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.safeExecute
 import com.hedvig.app.util.apollo.toEither
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -56,7 +56,7 @@ class QuoteCartEditStartDateUseCase(
 
     return either {
       val result = apolloClient.mutation(mutation)
-        .safeQuery()
+        .safeExecute()
         .toEither(::ErrorMessage)
         .bind()
 

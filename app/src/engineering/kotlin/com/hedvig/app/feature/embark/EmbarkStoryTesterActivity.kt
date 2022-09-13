@@ -46,7 +46,7 @@ import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.home.ui.changeaddress.appendQuoteCartId
 import com.hedvig.app.feature.offer.model.QuoteCartId
-import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.safeExecute
 import com.hedvig.app.util.apollo.toEither
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -266,7 +266,7 @@ class EmbarkStoryTesterViewModel(
       when (
         val result = apolloClient
           .mutation(ExchangeTokenMutation(exchangeToken))
-          .safeQuery()
+          .safeExecute()
           .toEither()
       ) {
         is Either.Left -> _viewState.update {

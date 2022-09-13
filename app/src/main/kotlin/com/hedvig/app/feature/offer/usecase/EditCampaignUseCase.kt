@@ -9,7 +9,7 @@ import com.hedvig.android.apollo.graphql.QuoteCartRemoveCampaignMutation
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
-import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.safeExecute
 import com.hedvig.app.util.apollo.toEither
 
 @JvmInline
@@ -24,7 +24,7 @@ class EditCampaignUseCase(
     quoteCartId: QuoteCartId,
   ): Either<ErrorMessage, QuoteCartId> = apolloClient
     .mutation(QuoteCartAddCampaignMutation(campaignCode.code, quoteCartId.id))
-    .safeQuery()
+    .safeExecute()
     .toEither(::ErrorMessage)
     .map { it.quoteCart_addCampaign }
     .flatMap {
@@ -39,7 +39,7 @@ class EditCampaignUseCase(
     quoteCartId: QuoteCartId,
   ): Either<ErrorMessage, QuoteCartId> = apolloClient
     .mutation(QuoteCartRemoveCampaignMutation(quoteCartId.id))
-    .safeQuery()
+    .safeExecute()
     .toEither(::ErrorMessage)
     .map { it.quoteCart_removeCampaign }
     .flatMap {

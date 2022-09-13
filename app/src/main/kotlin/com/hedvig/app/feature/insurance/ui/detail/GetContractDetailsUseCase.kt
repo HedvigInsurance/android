@@ -6,7 +6,7 @@ import arrow.core.flatMap
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.InsuranceQuery
 import com.hedvig.app.util.LocaleManager
-import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.safeExecute
 import com.hedvig.app.util.apollo.toEither
 
 class GetContractDetailsUseCase(
@@ -17,7 +17,7 @@ class GetContractDetailsUseCase(
   suspend operator fun invoke(contractId: String): Either<ContractDetailError, ContractDetailViewState> {
     return apolloClient
       .query(InsuranceQuery(localeManager.defaultLocale()))
-      .safeQuery()
+      .safeExecute()
       .toEither { ContractDetailError.NetworkError }
       .flatMap { data ->
         data.contracts

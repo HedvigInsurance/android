@@ -8,7 +8,7 @@ import com.hedvig.android.market.MarketManager
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.LocaleManager
-import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.safeExecute
 import com.hedvig.app.util.apollo.toEither
 
 class CreateQuoteCartUseCase(
@@ -25,7 +25,7 @@ class CreateQuoteCartUseCase(
   suspend fun invoke(): Either<ErrorMessage, QuoteCartId> {
     return apolloClient
       .mutation(mutation())
-      .safeQuery()
+      .safeExecute()
       .toEither { ErrorMessage(it) }
       .map { QuoteCartId(it.onboardingQuoteCart_create.id) }
   }

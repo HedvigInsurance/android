@@ -6,7 +6,7 @@ import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.hedvig.android.apollo.graphql.ProfileQuery
 import com.hedvig.android.apollo.graphql.UpdateEmailMutation
 import com.hedvig.android.apollo.graphql.UpdatePhoneNumberMutation
-import com.hedvig.app.util.apollo.QueryResult
+import com.hedvig.app.util.apollo.OperationResult
 import com.hedvig.app.util.apollo.safeWatch
 import com.hedvig.app.util.apollo.toEither
 import kotlinx.coroutines.flow.Flow
@@ -17,10 +17,10 @@ class ProfileRepository(
 ) {
   private val profileQuery = ProfileQuery()
 
-  fun profile(): Flow<Either<QueryResult.Error, ProfileQuery.Data>> = apolloClient
+  fun profile(): Flow<Either<OperationResult.Error, ProfileQuery.Data>> = apolloClient
     .query(profileQuery)
     .safeWatch()
-    .map(QueryResult<ProfileQuery.Data>::toEither)
+    .map(OperationResult<ProfileQuery.Data>::toEither)
 
   suspend fun updateEmail(input: String) =
     apolloClient.mutation(UpdateEmailMutation(input)).execute()

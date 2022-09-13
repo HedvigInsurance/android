@@ -4,8 +4,8 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.InsuranceProvidersQuery
 import com.hedvig.app.isDebug
 import com.hedvig.app.util.LocaleManager
-import com.hedvig.app.util.apollo.QueryResult
-import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.OperationResult
+import com.hedvig.app.util.apollo.safeExecute
 
 sealed class InsuranceProvidersResult {
   data class Success(val providers: List<InsuranceProvider>) : InsuranceProvidersResult()
@@ -26,14 +26,14 @@ class GetInsuranceProvidersUseCase(
 ) {
   suspend fun getInsuranceProviders(): InsuranceProvidersResult {
     val insuranceProviders = InsuranceProvidersQuery(localeManager.defaultLocale())
-    return when (val result = apolloClient.query(insuranceProviders).safeQuery()) {
-      is QueryResult.Success -> createSuccessResult(result)
-      is QueryResult.Error -> InsuranceProvidersResult.Error.NetworkError
+    return when (val result = apolloClient.query(insuranceProviders).safeExecute()) {
+      is OperationResult.Success -> createSuccessResult(result)
+      is OperationResult.Error -> InsuranceProvidersResult.Error.NetworkError
     }
   }
 
   private fun createSuccessResult(
-    result: QueryResult.Success<InsuranceProvidersQuery.Data>,
+    result: OperationResult.Success<InsuranceProvidersQuery.Data>,
   ): InsuranceProvidersResult.Success {
     var providers = result.data.insuranceProviders.map {
       InsuranceProvider(

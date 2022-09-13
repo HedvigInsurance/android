@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.apollo.graphql.ReferralsQuery
 import com.hedvig.android.core.common.RetryChannel
 import com.hedvig.app.feature.referrals.data.ReferralsRepository
-import com.hedvig.app.util.apollo.QueryResult
+import com.hedvig.app.util.apollo.OperationResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -38,7 +38,7 @@ class ReferralsViewModelImpl(
     isLoading,
     referralsResult,
   ) { isLoading, referralsResult ->
-    val referralsData: ReferralsQuery.Data? = (referralsResult as? QueryResult.Success)?.data
+    val referralsData: ReferralsQuery.Data? = (referralsResult as? OperationResult.Success)?.data
     if (referralsData == null) {
       ReferralsUiState.Error(isLoading)
     } else {

@@ -6,8 +6,8 @@ import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.graphql.HomeQuery
 import com.hedvig.app.util.LocaleManager
-import com.hedvig.app.util.apollo.QueryResult
-import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.OperationResult
+import com.hedvig.app.util.apollo.safeExecute
 import com.hedvig.app.util.apollo.toEither
 
 class GetHomeUseCase(
@@ -15,13 +15,13 @@ class GetHomeUseCase(
   private val localeManager: LocaleManager,
 ) {
 
-  suspend operator fun invoke(forceReload: Boolean): Either<QueryResult.Error, HomeQuery.Data> {
+  suspend operator fun invoke(forceReload: Boolean): Either<OperationResult.Error, HomeQuery.Data> {
     val apolloCall = apolloClient.query(homeQuery())
     if (forceReload) {
       apolloCall.fetchPolicy(FetchPolicy.NetworkOnly)
     }
     return apolloCall
-      .safeQuery()
+      .safeExecute()
       .toEither()
   }
 

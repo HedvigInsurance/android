@@ -6,7 +6,7 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.InsuranceQuery
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.LocaleManager
-import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.safeExecute
 import com.hedvig.app.util.apollo.toEither
 
 class GetContractsUseCase(
@@ -17,7 +17,7 @@ class GetContractsUseCase(
     return either {
       val insuranceQueryData = apolloClient
         .query(InsuranceQuery(localeManager.defaultLocale()))
-        .safeQuery()
+        .safeExecute()
         .toEither(::ErrorMessage)
         .bind()
       insuranceQueryData

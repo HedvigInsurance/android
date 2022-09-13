@@ -29,7 +29,7 @@ import com.hedvig.android.apollo.graphql.type.ChatResponseFileInput
 import com.hedvig.android.apollo.graphql.type.ChatResponseSingleSelectInput
 import com.hedvig.android.apollo.graphql.type.ChatResponseTextInput
 import com.hedvig.app.service.FileService
-import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.safeExecute
 import com.hedvig.app.util.apollo.toEither
 import com.hedvig.app.util.extensions.into
 import kotlinx.coroutines.Dispatchers
@@ -158,7 +158,7 @@ class ChatRepository(
 
   suspend fun triggerFreeTextChat(): Either<FreeTextError, FreeTextSuccess> =
     apolloClient.mutation(TriggerFreeTextChatMutation())
-      .safeQuery()
+      .safeExecute()
       .toEither { FreeTextError.NetworkError }
       .flatMap { data ->
         val didTriggerFreeTextChat = data.triggerFreeTextChat ?: false

@@ -4,9 +4,9 @@ import arrow.core.Either
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.AuthStatusSubscription
 import com.hedvig.android.apollo.graphql.type.AuthState
-import com.hedvig.app.util.apollo.QueryResult
-import com.hedvig.app.util.apollo.safeSubscription
+import com.hedvig.app.util.apollo.OperationResult
 import com.hedvig.app.util.apollo.toEither
+import com.hedvig.app.util.apollo.toSafeFlow
 import d
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -24,8 +24,8 @@ class SubscribeToAuthResultUseCase(
       while (currentCoroutineContext().isActive) {
         apolloClient
           .subscription(AuthStatusSubscription())
-          .safeSubscription()
-          .map(QueryResult<AuthStatusSubscription.Data>::toEither)
+          .toSafeFlow()
+          .map(OperationResult<AuthStatusSubscription.Data>::toEither)
           .collect { response ->
             d { "Auth subscription result:$response" }
             when (response) {

@@ -24,7 +24,7 @@ import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.safeExecute
 import com.hedvig.app.util.apollo.toEither
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -125,7 +125,7 @@ class ImpersonationReceiverViewModel(
       when (
         val result = apolloClient
           .mutation(ExchangeTokenMutation(exchangeToken))
-          .safeQuery()
+          .safeExecute()
           .toEither()
       ) {
         is Either.Left -> {

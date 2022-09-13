@@ -5,7 +5,7 @@ import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.hedvig.android.apollo.graphql.ReferralsQuery
 import com.hedvig.android.apollo.graphql.UpdateReferralCampaignCodeMutation
-import com.hedvig.app.util.apollo.QueryResult
+import com.hedvig.app.util.apollo.OperationResult
 import com.hedvig.app.util.apollo.safeWatch
 import kotlinx.coroutines.flow.Flow
 
@@ -14,7 +14,7 @@ class ReferralsRepository(
 ) {
   private val referralsQuery = ReferralsQuery()
 
-  fun watchReferralsQueryData(): Flow<QueryResult<ReferralsQuery.Data>> = apolloClient
+  fun watchReferralsQueryData(): Flow<OperationResult<ReferralsQuery.Data>> = apolloClient
     .query(referralsQuery)
     .safeWatch()
 

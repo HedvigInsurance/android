@@ -7,7 +7,7 @@ import com.hedvig.android.apollo.graphql.CreateAccessTokenMutation
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
-import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.safeExecute
 import com.hedvig.app.util.apollo.toEither
 
 interface CreateAccessTokenUseCase {
@@ -34,7 +34,7 @@ class CreateAccessTokenUseCaseImpl(
   private suspend fun query(quoteCartId: QuoteCartId): Either<ErrorMessage, AccessToken> =
     apolloClient
       .mutation(CreateAccessTokenMutation(quoteCartId.id))
-      .safeQuery()
+      .safeExecute()
       .toEither()
       .mapLeft { ErrorMessage(it.message) }
       .map { AccessToken(it.quoteCart_createAccessToken.accessToken) }

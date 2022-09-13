@@ -1,0 +1,142 @@
+package com.hedvig.app.util.apollo
+
+import arrow.core.Either
+import arrow.core.None
+import arrow.core.Option
+import arrow.core.Some
+import com.apollographql.apollo3.api.ApolloResponse
+import com.apollographql.apollo3.api.Operation
+import com.hedvig.android.core.common.await
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import okhttp3.Call
+import org.json.JSONObject
+import java.io.IOException
+
+sealed interface OperationResult<out T> {
+
+  data class Success<T>(val data: T) : OperationResult<T>
+
+  sealed interface Error : OperationResult<Nothing> {
+
+    val throwable: Throwable?
+    val message: String?
+
+    data class NoDataError(
+      override val throwable: Throwable?,
+      override val message: String?,
+    ) : Error {
+      companion object {
+        operator fun invoke(message: String?): NoDataError {
+          return NoDataError(null, message)
+        }
+
+        operator fun invoke(throwable: Throwable?): NoDataError {
+          return NoDataError(throwable, throwable?.localizedMessage)
+        }
+      }
+    }
+
+    data class GeneralError(
+      override val throwable: Throwable?,
+      override val message: String?,
+    ) : Error {
+      companion object {
+        operator fun invoke(message: String?): GeneralError {
+          return GeneralError(null, message)
+        }
+
+        operator fun invoke(throwable: Throwable?): GeneralError {
+          return GeneralError(throwable, throwable?.localizedMessage)
+        }
+      }
+    }
+
+    data class OperationError(
+      override val throwable: Throwable?,
+      override val message: String?,
+    ) : Error {
+      companion object {
+        operator fun invoke(message: String?): OperationError {
+          return OperationError(null, message)
+        }
+
+        operator fun invoke(throwable: Throwable?): OperationError {
+          return OperationError(throwable, throwable?.localizedMessage)
+        }
+      }
+    }
+
+    data class NetworkError(
+      override val throwable: Throwable?,
+      override val message: String?,
+    ) : Error {
+      companion object {
+        operator fun invoke(message: String?): NetworkError {
+          return NetworkError(null, message)
+        }
+
+        operator fun invoke(throwable: Throwable?): NetworkError {
+          return NetworkError(throwable, throwable?.localizedMessage)
+        }
+      }
+    }
+  }
+}
+
+fun <T> OperationResult<T>.toOption(): Option<T> = when (this) {
+  is OperationResult.Error -> None
+  is OperationResult.Success -> Some(this.data)
+}
+
+fun <T> OperationResult<T>.toEither(): Either<OperationResult.Error, T> = when (this) {
+  is OperationResult.Error -> Either.Left(this)
+  is OperationResult.Success -> Either.Right(this.data)
+}
+
+inline fun <ErrorType, T> OperationResult<T>.toEither(
+  ifEmpty: (message: String?) -> ErrorType,
+): Either<ErrorType, T> = when (this) {
+  is OperationResult.Error -> Either.Left(ifEmpty(message))
+  is OperationResult.Success -> Either.Right(this.data)
+}
+
+fun <D : Operation.Data> ApolloResponse<D>.toOperationResult(): OperationResult<D> {
+  val data = data
+  return when {
+    hasErrors() -> {
+      val exception = errors?.first()?.extensions?.get("exception")
+      val body = (exception as? Map<*, *>)?.get("body")
+      val message = (body as? Map<*, *>)?.get("message") as? String
+      OperationResult.Error.OperationError(message ?: errors?.first()?.message)
+    }
+    data != null -> OperationResult.Success(data)
+    else -> OperationResult.Error.NoDataError("No data")
+  }
+}
+
+/**
+ * Only to be used when making GraphQL calls.
+ * Returns [OperationResult.Success] only when the network request is successful and there are no graphQL error messages.
+ * Returns [OperationResult.Error] on all other cases.
+ */
+@Suppress("BlockingMethodInNonBlockingContext")
+suspend fun Call.safeGraphqlCall(): OperationResult<JSONObject> = withContext(Dispatchers.IO) {
+  try {
+    val response = await()
+    if (response.isSuccessful.not()) return@withContext OperationResult.Error.NetworkError(response.message)
+
+    val responseBody = response.body ?: return@withContext OperationResult.Error.NoDataError("No data")
+    val jsonObject = JSONObject(responseBody.string())
+
+    val errorJsonObject = jsonObject.optJSONArray("errors")?.getJSONObject(0)
+    if (errorJsonObject != null) {
+      val errorMessage = errorJsonObject.optString("message")
+      return@withContext OperationResult.Error.OperationError(errorMessage)
+    }
+
+    OperationResult.Success(jsonObject)
+  } catch (ioException: IOException) {
+    OperationResult.Error.GeneralError(ioException.localizedMessage)
+  }
+}

@@ -9,7 +9,7 @@ import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.app.feature.embark.QUOTE_CART_ID_KEY
 import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.util.ErrorMessage
-import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.safeExecute
 import com.hedvig.app.util.apollo.toEither
 
 class GetAddressChangeStoryIdUseCase(
@@ -23,7 +23,7 @@ class GetAddressChangeStoryIdUseCase(
       return SelfChangeEligibilityResult.Blocked
     }
     val activeContractBundlesQueryData = apolloClient.query(ActiveContractBundlesQuery())
-      .safeQuery()
+      .safeExecute()
       .toEither()
       .getOrHandle { errorQueryResult ->
         return SelfChangeEligibilityResult.Error(errorQueryResult.message)

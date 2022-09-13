@@ -27,7 +27,7 @@ class GraphQLQueryHandler(
     query: String,
     variables: JSONObject? = null,
     files: List<FileVariable>,
-  ): QueryResult<JSONObject> {
+  ): OperationResult<JSONObject> {
     var requestBody = createVariableRequestBody(query, variables, files)
     requestBody = if (files.isNotEmpty()) {
       createFileUploadRequestBody(requestBody, files)

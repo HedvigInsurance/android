@@ -9,7 +9,7 @@ import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
-import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.safeExecute
 import com.hedvig.app.util.apollo.toEither
 
 class GetInitialMarketPickerValuesUseCase(
@@ -27,7 +27,7 @@ class GetInitialMarketPickerValuesUseCase(
 
     val marketOrDefault = apolloClient
       .query(GeoQuery())
-      .safeQuery()
+      .safeExecute()
       .toEither()
       .map { runCatching { Market.valueOf(it.geo.countryISOCode) }.getOrNull() }
       .map { market ->

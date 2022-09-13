@@ -5,8 +5,8 @@ import com.hedvig.android.apollo.graphql.InitiateDataCollectionNOMutation
 import com.hedvig.android.apollo.graphql.InitiateDataCollectionSEMutation
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
-import com.hedvig.app.util.apollo.QueryResult
-import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.OperationResult
+import com.hedvig.app.util.apollo.safeExecute
 import java.util.UUID
 
 class StartDataCollectionUseCase(
@@ -26,9 +26,9 @@ class StartDataCollectionUseCase(
       insuranceProvider = insuranceProvider,
     )
 
-    return when (val result = apolloClient.mutation(mutation).safeQuery()) {
-      is QueryResult.Success -> DataCollectionResult.Success(reference)
-      is QueryResult.Error -> DataCollectionResult.Error.NetworkError(result.message)
+    return when (val result = apolloClient.mutation(mutation).safeExecute()) {
+      is OperationResult.Success -> DataCollectionResult.Success(reference)
+      is OperationResult.Error -> DataCollectionResult.Error.NetworkError(result.message)
     }
   }
 

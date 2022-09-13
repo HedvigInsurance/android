@@ -7,8 +7,8 @@ import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.NoUpcomingAgreementChange
 import com.hedvig.app.feature.table.Table
 import com.hedvig.app.util.LocaleManager
-import com.hedvig.app.util.apollo.QueryResult
-import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.OperationResult
+import com.hedvig.app.util.apollo.safeExecute
 import com.hedvig.app.util.apollo.toUpcomingAgreementResult
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
@@ -23,8 +23,8 @@ class GetUpcomingAgreementUseCase(
   )
 
   suspend fun invoke(): UpcomingAgreementResult {
-    return when (val response = apolloClient.query(upcomingAgreementQuery()).safeQuery()) {
-      is QueryResult.Success -> {
+    return when (val response = apolloClient.query(upcomingAgreementQuery()).safeExecute()) {
+      is OperationResult.Success -> {
         val contracts = response.data?.contracts
         if (contracts.isNullOrEmpty()) {
           Error.NoContractsError
@@ -43,7 +43,7 @@ class GetUpcomingAgreementUseCase(
             ?: NoUpcomingAgreementChange
         }
       }
-      is QueryResult.Error -> Error.GeneralError(response.message)
+      is OperationResult.Error -> Error.GeneralError(response.message)
     }
   }
 

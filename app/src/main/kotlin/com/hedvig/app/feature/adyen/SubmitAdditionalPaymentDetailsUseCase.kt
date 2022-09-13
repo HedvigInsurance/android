@@ -6,7 +6,7 @@ import arrow.core.right
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.SubmitAdditionalPaymentDetailsMutation
 import com.hedvig.android.apollo.graphql.type.TokenizationResultType
-import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.safeExecute
 import com.hedvig.app.util.apollo.toEither
 import org.json.JSONObject
 
@@ -26,7 +26,7 @@ class SubmitAdditionalPaymentDetailsUseCase(
 
   suspend fun submitAdditionalPaymentDetails(data: JSONObject) = apolloClient
     .mutation(SubmitAdditionalPaymentDetailsMutation(data.toString()))
-    .safeQuery()
+    .safeExecute()
     .toEither()
     .mapLeft { Error.ErrorMessage(it.message) }
     .flatMap {
