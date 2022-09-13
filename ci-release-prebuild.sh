@@ -10,7 +10,7 @@ EOT
 cat <<EOT > app/src/release/res/values/adyen.xml
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="ADYEN_CLIENT_KEY" translatable="false">${ADYEN_LIVE_CLIENT_KEY}</string>
+    <string name="ADYEN_CLIENT_KEY" translatable="false">${ADYEN_CLIENT_KEY}</string>
 </resources>
 EOT
 
