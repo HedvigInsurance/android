@@ -4,6 +4,8 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.CrossSellsQuery
 import com.hedvig.android.apollo.graphql.type.Locale
 import com.hedvig.android.apollo.graphql.type.TypeOfContract
+import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.apollo.toEither
 import e
 
 interface GetCrossSellsContractTypesUseCase {
@@ -14,26 +16,20 @@ internal class GetCrossSellsContractTypesUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetCrossSellsContractTypesUseCase {
   override suspend fun invoke(): Set<TypeOfContract> {
-    val result = apolloClient
+    return apolloClient
       // TODO take Locale straight from whatever class owns that functionality after the language APIs are merged in
       .query(CrossSellsQuery(Locale.en_SE))
-      .execute()
-    val data = result.data
-    return if (data != null) {
-      data.crossSells
-    } else {
-      e { "Error when loading potential cross-sells: ${result.errors}" }
-      emptySet()
-    }
-    // todo extract safeQuery into :apollo
-    //      .safeQuery()
-    //    is QueryResult.Success -> {
-    //      result.data.crossSells
-    //    }
-    //    is QueryResult.Error -> {
-    //      e { "Error when loading potential cross-sells: ${result.message}" }
-    //      emptySet()
-    //    }
+      .safeExecute()
+      .toEither()
+      .fold(
+        { operationResultError ->
+          e { "Error when loading potential cross-sells: $operationResultError" }
+          emptySet()
+        },
+        { data ->
+          data.crossSells
+        },
+      )
   }
 
   private val CrossSellsQuery.Data.crossSells: Set<TypeOfContract>
