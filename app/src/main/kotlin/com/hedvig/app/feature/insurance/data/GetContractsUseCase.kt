@@ -4,10 +4,10 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.InsuranceQuery
-import com.hedvig.app.util.ErrorMessage
-import com.hedvig.app.util.LocaleManager
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
+import com.hedvig.app.util.ErrorMessage
+import com.hedvig.app.util.LocaleManager
 
 class GetContractsUseCase(
   private val apolloClient: ApolloClient,

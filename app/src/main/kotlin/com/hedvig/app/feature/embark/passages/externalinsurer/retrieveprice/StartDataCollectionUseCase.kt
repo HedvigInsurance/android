@@ -1,12 +1,12 @@
 package com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice
 
 import com.apollographql.apollo3.ApolloClient
+import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.graphql.InitiateDataCollectionNOMutation
 import com.hedvig.android.apollo.graphql.InitiateDataCollectionSEMutation
+import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
-import com.hedvig.android.apollo.OperationResult
-import com.hedvig.android.apollo.safeExecute
 import java.util.UUID
 
 class StartDataCollectionUseCase(

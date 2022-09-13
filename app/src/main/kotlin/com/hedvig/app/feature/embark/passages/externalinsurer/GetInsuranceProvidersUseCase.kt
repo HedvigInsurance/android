@@ -1,11 +1,11 @@
 package com.hedvig.app.feature.embark.passages.externalinsurer
 
 import com.apollographql.apollo3.ApolloClient
+import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.graphql.InsuranceProvidersQuery
+import com.hedvig.android.apollo.safeExecute
 import com.hedvig.app.isDebug
 import com.hedvig.app.util.LocaleManager
-import com.hedvig.android.apollo.OperationResult
-import com.hedvig.android.apollo.safeExecute
 
 sealed class InsuranceProvidersResult {
   data class Success(val providers: List<InsuranceProvider>) : InsuranceProvidersResult()

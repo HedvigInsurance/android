@@ -1,10 +1,10 @@
 package com.hedvig.app.feature.crossselling.usecase
 
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.apollo.graphql.CrossSellsQuery
-import com.hedvig.app.util.LocaleManager
 import com.hedvig.android.apollo.OperationResult
+import com.hedvig.android.apollo.graphql.CrossSellsQuery
 import com.hedvig.android.apollo.safeExecute
+import com.hedvig.app.util.LocaleManager
 import e
 
 class GetCrossSellsContractTypesUseCase(

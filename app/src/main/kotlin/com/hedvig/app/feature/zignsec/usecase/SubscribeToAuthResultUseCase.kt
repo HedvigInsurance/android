@@ -2,9 +2,9 @@ package com.hedvig.app.feature.zignsec.usecase
 
 import arrow.core.Either
 import com.apollographql.apollo3.ApolloClient
+import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.graphql.AuthStatusSubscription
 import com.hedvig.android.apollo.graphql.type.AuthState
-import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.apollo.toSafeFlow
 import d

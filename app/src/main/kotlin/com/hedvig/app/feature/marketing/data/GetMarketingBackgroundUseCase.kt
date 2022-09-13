@@ -3,9 +3,9 @@ package com.hedvig.app.feature.marketing.data
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.MarketingBackgroundQuery
 import com.hedvig.android.apollo.graphql.type.UserInterfaceStyle
-import com.hedvig.app.util.LocaleManager
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
+import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.safeLet
 
 class GetMarketingBackgroundUseCase(

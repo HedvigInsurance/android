@@ -1,11 +1,11 @@
 package com.hedvig.app.authenticate.insurely
 
 import com.apollographql.apollo3.ApolloClient
+import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.graphql.ExternalInsuranceProviderV2Subscription
 import com.hedvig.android.apollo.graphql.type.DataCollectionStatus
-import com.hedvig.android.market.MarketManager
-import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.toSafeFlow
+import com.hedvig.android.market.MarketManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

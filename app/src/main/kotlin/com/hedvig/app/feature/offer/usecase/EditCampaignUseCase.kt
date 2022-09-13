@@ -6,11 +6,11 @@ import arrow.core.rightIfNotNull
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.QuoteCartAddCampaignMutation
 import com.hedvig.android.apollo.graphql.QuoteCartRemoveCampaignMutation
+import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.apollo.toEither
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
-import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 
 @JvmInline
 value class CampaignCode(val code: String)
