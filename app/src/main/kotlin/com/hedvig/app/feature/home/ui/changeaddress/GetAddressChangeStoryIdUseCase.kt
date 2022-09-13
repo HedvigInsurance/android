@@ -9,8 +9,8 @@ import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.app.feature.embark.QUOTE_CART_ID_KEY
 import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.util.ErrorMessage
-import com.hedvig.app.util.apollo.safeExecute
-import com.hedvig.app.util.apollo.toEither
+import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.apollo.toEither
 
 class GetAddressChangeStoryIdUseCase(
   private val createQuoteCartUseCase: CreateQuoteCartUseCase,

@@ -3,7 +3,7 @@ package com.hedvig.app.feature.offer.usecase
 import arrow.core.Either
 import com.hedvig.app.feature.offer.model.Checkout
 import com.hedvig.app.feature.offer.model.QuoteCartId
-import com.hedvig.app.util.apollo.OperationResult
+import com.hedvig.android.apollo.OperationResult
 import kotlinx.coroutines.flow.Flow
 
 class FakeObserveQuoteCartCheckoutUseCase(

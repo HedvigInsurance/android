@@ -2,8 +2,8 @@ package com.hedvig.app.feature.offer.usecase.datacollectionstatus
 
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.DataCollectionStatusSubscription
-import com.hedvig.app.util.apollo.OperationResult
-import com.hedvig.app.util.apollo.toSafeFlow
+import com.hedvig.android.apollo.OperationResult
+import com.hedvig.android.apollo.toSafeFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

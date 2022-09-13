@@ -4,8 +4,8 @@ import arrow.core.Either
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.UpdateLanguageMutation
 import com.hedvig.android.apollo.graphql.type.Locale
-import com.hedvig.app.util.apollo.safeExecute
-import com.hedvig.app.util.apollo.toEither
+import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.apollo.toEither
 import e
 import i
 

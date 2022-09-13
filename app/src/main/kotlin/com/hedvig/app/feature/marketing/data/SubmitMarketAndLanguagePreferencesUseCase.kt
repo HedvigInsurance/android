@@ -8,8 +8,8 @@ import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.makeLocaleString
 import com.hedvig.app.util.LocaleManager
-import com.hedvig.app.util.apollo.safeExecute
-import com.hedvig.app.util.apollo.toEither
+import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.apollo.toEither
 
 class SubmitMarketAndLanguagePreferencesUseCase(
   private val apolloClient: ApolloClient,

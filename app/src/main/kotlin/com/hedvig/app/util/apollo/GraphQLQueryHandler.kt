@@ -1,6 +1,8 @@
 package com.hedvig.app.util.apollo
 
 import com.apollographql.apollo3.api.json.BufferedSinkJsonWriter
+import com.hedvig.android.apollo.OperationResult
+import com.hedvig.android.apollo.safeGraphqlCall
 import com.hedvig.android.core.common.jsonObjectOfNotNull
 import com.hedvig.app.HedvigApplication
 import com.hedvig.app.service.FileService

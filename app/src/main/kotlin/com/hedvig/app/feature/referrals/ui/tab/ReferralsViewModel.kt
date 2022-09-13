@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.apollo.graphql.ReferralsQuery
 import com.hedvig.android.core.common.RetryChannel
 import com.hedvig.app.feature.referrals.data.ReferralsRepository
-import com.hedvig.app.util.apollo.OperationResult
+import com.hedvig.android.apollo.OperationResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

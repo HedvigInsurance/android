@@ -6,8 +6,8 @@ import com.hedvig.android.apollo.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.feature.offer.usecase.CampaignCode
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.LocaleManager
-import com.hedvig.app.util.apollo.safeExecute
-import com.hedvig.app.util.apollo.toEither
+import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.apollo.toEither
 
 class RedeemReferralCodeRepository(
   private val apolloClient: ApolloClient,

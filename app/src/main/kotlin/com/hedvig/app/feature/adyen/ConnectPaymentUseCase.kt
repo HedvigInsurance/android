@@ -9,7 +9,7 @@ import com.hedvig.android.apollo.graphql.ConnectPaymentMutation
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
-import com.hedvig.app.util.apollo.toEither
+import com.hedvig.android.apollo.toEither
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import org.json.JSONObject

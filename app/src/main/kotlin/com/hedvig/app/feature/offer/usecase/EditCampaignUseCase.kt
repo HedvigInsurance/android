@@ -9,8 +9,8 @@ import com.hedvig.android.apollo.graphql.QuoteCartRemoveCampaignMutation
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
-import com.hedvig.app.util.apollo.safeExecute
-import com.hedvig.app.util.apollo.toEither
+import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.apollo.toEither
 
 @JvmInline
 value class CampaignCode(val code: String)

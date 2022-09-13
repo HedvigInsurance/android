@@ -9,9 +9,9 @@ import com.hedvig.android.apollo.graphql.QuoteCartCheckoutStatusQuery
 import com.hedvig.app.feature.offer.model.Checkout
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.model.toCheckout
-import com.hedvig.app.util.apollo.OperationResult
-import com.hedvig.app.util.apollo.safeExecute
-import com.hedvig.app.util.apollo.toEither
+import com.hedvig.android.apollo.OperationResult
+import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.apollo.toEither
 
 class GetQuoteCartCheckoutUseCase(
   private val apolloClient: ApolloClient,

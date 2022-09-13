@@ -6,9 +6,9 @@ import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.hedvig.android.apollo.graphql.ProfileQuery
 import com.hedvig.android.apollo.graphql.UpdateEmailMutation
 import com.hedvig.android.apollo.graphql.UpdatePhoneNumberMutation
-import com.hedvig.app.util.apollo.OperationResult
-import com.hedvig.app.util.apollo.safeWatch
-import com.hedvig.app.util.apollo.toEither
+import com.hedvig.android.apollo.OperationResult
+import com.hedvig.android.apollo.safeWatch
+import com.hedvig.android.apollo.toEither
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

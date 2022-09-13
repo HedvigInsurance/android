@@ -6,7 +6,7 @@ import com.hedvig.android.core.common.getWithDotNotation
 import com.hedvig.android.core.common.toStringArray
 import com.hedvig.app.util.apollo.FileVariable
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
-import com.hedvig.app.util.apollo.OperationResult
+import com.hedvig.android.apollo.OperationResult
 import org.json.JSONArray
 import org.json.JSONObject
 

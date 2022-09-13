@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.hedvig.android.apollo.graphql.WhatsNewQuery
 import com.hedvig.app.util.LiveEvent
-import com.hedvig.app.util.apollo.toEither
+import com.hedvig.android.apollo.toEither
 import e
 import kotlinx.coroutines.launch
 

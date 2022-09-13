@@ -6,9 +6,9 @@ import com.hedvig.android.apollo.graphql.AddressAutocompleteQuery
 import com.hedvig.android.apollo.graphql.type.AddressAutocompleteType
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddressInput
-import com.hedvig.app.util.apollo.OperationResult
-import com.hedvig.app.util.apollo.safeExecute
-import com.hedvig.app.util.apollo.toEither
+import com.hedvig.android.apollo.OperationResult
+import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.apollo.toEither
 
 class GetDanishAddressAutoCompletionUseCase(
   private val apolloClient: ApolloClient,

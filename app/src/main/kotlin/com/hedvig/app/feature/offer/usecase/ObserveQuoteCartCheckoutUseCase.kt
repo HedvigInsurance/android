@@ -5,7 +5,7 @@ import arrow.core.continuations.either
 import arrow.core.continuations.ensureNotNull
 import com.hedvig.app.feature.offer.model.Checkout
 import com.hedvig.app.feature.offer.model.QuoteCartId
-import com.hedvig.app.util.apollo.OperationResult
+import com.hedvig.android.apollo.OperationResult
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow

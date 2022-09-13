@@ -29,8 +29,8 @@ import com.hedvig.android.apollo.graphql.type.ChatResponseFileInput
 import com.hedvig.android.apollo.graphql.type.ChatResponseSingleSelectInput
 import com.hedvig.android.apollo.graphql.type.ChatResponseTextInput
 import com.hedvig.app.service.FileService
-import com.hedvig.app.util.apollo.safeExecute
-import com.hedvig.app.util.apollo.toEither
+import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.apollo.toEither
 import com.hedvig.app.util.extensions.into
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

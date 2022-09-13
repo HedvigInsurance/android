@@ -5,7 +5,7 @@ import com.hedvig.android.market.MarketManager
 import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.service.push.PushTokenManager
-import com.hedvig.app.util.apollo.OperationResult
+import com.hedvig.android.apollo.OperationResult
 import com.hedvig.app.util.apollo.reconnectSubscriptions
 
 class LogoutUseCase(
