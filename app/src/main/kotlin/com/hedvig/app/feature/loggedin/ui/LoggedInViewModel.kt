@@ -7,8 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.apollo.graphql.LoggedInQuery
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
+import com.hedvig.android.notification.badge.data.tab.BottomNavTab
+import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.hedvig.app.feature.chat.data.ChatEventStore
-import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.BufferOverflow
@@ -56,7 +57,7 @@ abstract class LoggedInViewModel : ViewModel() {
 class LoggedInViewModelImpl(
   private val loggedInRepository: LoggedInRepository,
   private val chatEventStore: ChatEventStore,
-  private val tabNotificationService: TabNotificationService,
+  private val tabNotificationBadgeService: TabNotificationBadgeService,
   private val featureManager: FeatureManager,
   private val hAnalytics: HAnalytics,
 ) : LoggedInViewModel() {
@@ -77,9 +78,15 @@ class LoggedInViewModelImpl(
   override val viewState: StateFlow<LoggedInViewState?> = combine(
     loggedInQueryData,
     isReferralsEnabled,
-    tabNotificationService.unseenTabNotifications(),
+    tabNotificationBadgeService.unseenTabNotificationBadges().map { bottomNavTabs: Set<BottomNavTab> ->
+      bottomNavTabs.map(BottomNavTab::toLoggedInTab).toSet()
+    },
   ) { loggedInQueryData, isReferralsEnabled, unseenTabNotifications ->
-    LoggedInViewState(loggedInQueryData, isReferralsEnabled, unseenTabNotifications)
+    LoggedInViewState(
+      loggedInQueryData,
+      isReferralsEnabled,
+      unseenTabNotifications,
+    )
   }
     .stateIn(
       scope = viewModelScope,
@@ -100,6 +107,24 @@ class LoggedInViewModelImpl(
       LoggedInTabs.REFERRALS -> hAnalytics.screenView(AppScreen.FOREVER)
       LoggedInTabs.PROFILE -> hAnalytics.screenView(AppScreen.PROFILE)
     }
-    viewModelScope.launch { tabNotificationService.visitTab(tab) }
+    viewModelScope.launch { tabNotificationBadgeService.visitTab(tab.toBottomNavTab()) }
+  }
+}
+
+private fun LoggedInTabs.toBottomNavTab(): BottomNavTab {
+  return when (this) {
+    LoggedInTabs.HOME -> BottomNavTab.HOME
+    LoggedInTabs.INSURANCE -> BottomNavTab.INSURANCE
+    LoggedInTabs.REFERRALS -> BottomNavTab.REFERRALS
+    LoggedInTabs.PROFILE -> BottomNavTab.PROFILE
+  }
+}
+
+private fun BottomNavTab.toLoggedInTab(): LoggedInTabs {
+  return when (this) {
+    BottomNavTab.HOME -> LoggedInTabs.HOME
+    BottomNavTab.INSURANCE -> LoggedInTabs.INSURANCE
+    BottomNavTab.REFERRALS -> LoggedInTabs.REFERRALS
+    BottomNavTab.PROFILE -> LoggedInTabs.PROFILE
   }
 }

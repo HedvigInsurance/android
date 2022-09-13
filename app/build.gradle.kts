@@ -144,6 +144,7 @@ dependencies {
   implementation(projects.featureBusinessmodel)
   implementation(projects.hanalytics)
   implementation(projects.hedvigMarket)
+  implementation(projects.notificationBadgeData)
 
   testImplementation(projects.hanalyticsTest)
   androidTestImplementation(projects.hanalyticsTest)

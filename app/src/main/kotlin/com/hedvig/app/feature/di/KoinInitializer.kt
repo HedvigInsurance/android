@@ -10,6 +10,7 @@ import com.hedvig.android.hanalytics.di.hAnalyticsModule
 import com.hedvig.android.hanalytics.di.trackerModule
 import com.hedvig.android.hanalytics.engineering.di.HAnalyticsEngineeringModuleImpl
 import com.hedvig.android.market.di.marketManagerModule
+import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.app.adyenModule
 import com.hedvig.app.apolloClientModule
 import com.hedvig.app.applicationModule
@@ -61,6 +62,7 @@ class KoinInitializer : Initializer<KoinApplication> {
     androidContext(context.applicationContext)
     modules(
       listOf(
+        HAnalyticsEngineeringModuleImpl().getModule(),
         adyenModule,
         apolloClientModule,
         applicationModule,
@@ -79,7 +81,6 @@ class KoinInitializer : Initializer<KoinApplication> {
         externalInsuranceModule,
         featureManagerModule,
         graphQLQueryModule,
-        HAnalyticsEngineeringModuleImpl().getModule(),
         hAnalyticsModule,
         homeModule,
         insuranceModule,
@@ -88,6 +89,7 @@ class KoinInitializer : Initializer<KoinApplication> {
         localeManagerModule,
         loggedInModule,
         marketManagerModule,
+        notificationBadgeModule,
         notificationModule,
         numberActionSetModule,
         offerModule,

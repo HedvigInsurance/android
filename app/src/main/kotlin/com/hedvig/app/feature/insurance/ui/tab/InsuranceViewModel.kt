@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.hedvig.android.apollo.graphql.InsuranceQuery
+import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeService
 import com.hedvig.app.feature.crossselling.model.NavigateChat
 import com.hedvig.app.feature.crossselling.model.NavigateEmbark
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
@@ -11,7 +12,6 @@ import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.home.ui.changeaddress.appendQuoteCartId
 import com.hedvig.app.feature.insurance.data.GetContractsUseCase
 import com.hedvig.app.feature.insurance.ui.InsuranceModel
-import com.hedvig.app.service.badge.CrossSellNotificationBadgeService
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 
 class InsuranceViewModel(
   private val getContractsUseCase: GetContractsUseCase,
-  private val crossSellNotificationBadgeService: CrossSellNotificationBadgeService,
+  private val crossSellCardNotificationBadgeService: CrossSellCardNotificationBadgeService,
   private val createQuoteCartUseCase: CreateQuoteCartUseCase,
   private val hAnalytics: HAnalytics,
 ) : ViewModel() {
@@ -48,10 +48,7 @@ class InsuranceViewModel(
   }
 
   private suspend fun createInsuranceItems(result: Either.Right<InsuranceQuery.Data>): List<InsuranceModel> {
-    val showNotificationBadge = crossSellNotificationBadgeService
-      .getUnseenCrossSells(CrossSellNotificationBadgeService.CrossSellBadgeType.InsuranceFragmentCard)
-      .first()
-      .isNotEmpty()
+    val showNotificationBadge = crossSellCardNotificationBadgeService.showNotification().first()
 
     return items(
       data = result.value,
@@ -61,9 +58,7 @@ class InsuranceViewModel(
 
   fun markCardCrossSellsAsSeen() {
     viewModelScope.launch {
-      crossSellNotificationBadgeService.markCurrentCrossSellsAsSeen(
-        CrossSellNotificationBadgeService.CrossSellBadgeType.InsuranceFragmentCard,
-      )
+      crossSellCardNotificationBadgeService.markAsSeen()
     }
   }
 
