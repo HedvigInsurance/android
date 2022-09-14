@@ -17,6 +17,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.github.florent37.viewtooltip.ViewTooltip
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -46,6 +47,7 @@ import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.performOnTapHapticFeedback
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
+import d
 import e
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -326,6 +328,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
           .viewState
           .filterNotNull() // Emulate LiveData behavior of doing nothing until we get valid data
           .collectLatest { viewState: LoggedInViewState ->
+            d { "Stelios: viewState:$viewState" }
             val loggedInQueryData = viewState.loggedInQueryData
             setupBottomNav(
               isReferralsEnabled = viewState.isReferralsEnabled,
@@ -363,27 +366,27 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     } else {
       R.menu.logged_in_menu_no_referrals
     }
-    // `inflateMenu` on the bottom nav isn't idempotent therefore we need to guard against doing it many times
-    if (lastMenuIdInflated != null && lastMenuIdInflated == menuId) return
-    binding.bottomNavigation.menu.clear()
-    binding.bottomNavigation.inflateMenu(menuId)
-    binding.bottomNavigation.menu.forEach { item ->
-      val asTab = LoggedInTabs.fromId(item.itemId) ?: return@forEach
-      if (unseenTabNotifications.contains(asTab)) {
-        val badge = binding.bottomNavigation.getOrCreateBadge(item.itemId)
+    val bottomNavigationView: BottomNavigationView = binding.bottomNavigation
+    if (lastMenuIdInflated == null || lastMenuIdInflated != menuId) {
+      bottomNavigationView.menu.clear()
+      bottomNavigationView.inflateMenu(menuId)
+
+      val initialTab = savedTab
+        ?: intent.extras?.getSerializable(INITIAL_TAB) as? LoggedInTabs
+        ?: LoggedInTabs.HOME
+      bottomNavigationView.selectedItemId = initialTab.id()
+    }
+    bottomNavigationView.menu.forEach { item ->
+      val bottomNavTab = LoggedInTabs.fromId(item.itemId) ?: return@forEach
+      if (unseenTabNotifications.contains(bottomNavTab)) {
+        val badge = bottomNavigationView.getOrCreateBadge(item.itemId)
         badge.isVisible = true
         badge.horizontalOffset = 4.dp
         badge.verticalOffset = 4.dp
       } else {
-        binding.bottomNavigation.removeBadge(item.itemId)
+        bottomNavigationView.removeBadge(item.itemId)
       }
     }
-
-    val initialTab = savedTab
-      ?: intent.extras?.getSerializable(INITIAL_TAB) as? LoggedInTabs
-      ?: LoggedInTabs.HOME
-    binding.bottomNavigation.selectedItemId = initialTab.id()
-
     lastMenuIdInflated = menuId
   }
 
