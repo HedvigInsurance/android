@@ -211,6 +211,7 @@ dependencies {
   testImplementation(libs.apollo.testingSupport)
 
   implementation(libs.arrowKt.core)
+  implementation(libs.arrowKt.fx)
 
   implementation(libs.materialComponents)
   implementation(libs.flexbox)

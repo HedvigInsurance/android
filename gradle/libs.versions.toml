@@ -148,6 +148,7 @@ apollo-normalizedCache = { module = "com.apollographql.apollo3:apollo-normalized
 apollo-runtime = { module = "com.apollographql.apollo3:apollo-runtime", version.ref = "apollo" }
 apollo-testingSupport = { module = "com.apollographql.apollo3:apollo-testing-support", version.ref = "apollo" }
 arrowKt-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrowKt" }
+arrowKt-fx = { module = "io.arrow-kt:arrow-fx-coroutines", version.ref = "arrowKt" }
 assertK = { module = "com.willowtreeapps.assertk:assertk-jvm", version.ref = "assertK" }
 coil-coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt:coil-compose-base", version.ref = "coil" }
