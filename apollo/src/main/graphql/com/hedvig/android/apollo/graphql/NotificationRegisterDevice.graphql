@@ -1,0 +1,3 @@
+mutation NotificationRegisterDevice($token: String!) {
+  notification_registerDevice(input: {device: ANDROID, token: $token})
+}
