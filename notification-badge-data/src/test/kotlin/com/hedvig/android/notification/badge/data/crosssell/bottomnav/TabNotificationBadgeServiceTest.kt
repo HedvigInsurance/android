@@ -89,8 +89,9 @@ class TabNotificationBadgeServiceTest {
   @Test
   fun `When backend returns a cross sell but it's seen, show no badge`() = runTest {
     val notificationBadgeService = FakeNotificationBadgeService(this).apply {
-      setData(
-        mapOf(NotificationBadge.BottomNav.CrossSellOnInsuranceScreen to setOf(TypeOfContract.SE_ACCIDENT.rawValue)),
+      setValue(
+        NotificationBadge.BottomNav.CrossSellOnInsuranceScreen,
+        setOf(TypeOfContract.SE_ACCIDENT.rawValue),
       )
     }
     val getCrossSellsContractTypesUseCase = FakeGetCrossSellsContractTypesUseCase {
@@ -110,12 +111,11 @@ class TabNotificationBadgeServiceTest {
   @Test
   fun `When backend returns two cross sells but they're both seen, show no badge`() = runTest {
     val notificationBadgeService = FakeNotificationBadgeService(this).apply {
-      setData(
-        mapOf(
-          NotificationBadge.BottomNav.CrossSellOnInsuranceScreen to setOf(
-            TypeOfContract.SE_ACCIDENT.rawValue,
-            TypeOfContract.SE_CAR_FULL.rawValue,
-          ),
+      setValue(
+        NotificationBadge.BottomNav.CrossSellOnInsuranceScreen,
+        setOf(
+          TypeOfContract.SE_ACCIDENT.rawValue,
+          TypeOfContract.SE_CAR_FULL.rawValue,
         ),
       )
     }
@@ -136,12 +136,9 @@ class TabNotificationBadgeServiceTest {
   @Test
   fun `When backend returns two cross sells but only one is seen, show insurance badge`() = runTest {
     val notificationBadgeService = FakeNotificationBadgeService(this).apply {
-      setData(
-        mapOf(
-          NotificationBadge.BottomNav.CrossSellOnInsuranceScreen to setOf(
-            TypeOfContract.SE_ACCIDENT.rawValue,
-          ),
-        ),
+      setValue(
+        NotificationBadge.BottomNav.CrossSellOnInsuranceScreen,
+        setOf(TypeOfContract.SE_ACCIDENT.rawValue),
       )
     }
     val getCrossSellsContractTypesUseCase = FakeGetCrossSellsContractTypesUseCase {
