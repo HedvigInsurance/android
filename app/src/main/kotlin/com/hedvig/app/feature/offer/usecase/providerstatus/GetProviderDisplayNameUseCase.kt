@@ -1,9 +1,9 @@
 package com.hedvig.app.feature.offer.usecase.providerstatus
 
 import com.apollographql.apollo3.ApolloClient
+import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.graphql.ProviderStatusQuery
-import com.hedvig.app.util.apollo.OperationResult
-import com.hedvig.app.util.apollo.safeExecute
+import com.hedvig.android.apollo.safeExecute
 
 class GetProviderDisplayNameUseCase(
   private val apolloClient: ApolloClient,

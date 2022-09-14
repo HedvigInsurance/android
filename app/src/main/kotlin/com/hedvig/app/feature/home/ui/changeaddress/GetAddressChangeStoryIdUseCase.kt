@@ -4,13 +4,13 @@ import arrow.core.Either
 import arrow.core.getOrHandle
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.ActiveContractBundlesQuery
+import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.apollo.toEither
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.app.feature.embark.QUOTE_CART_ID_KEY
 import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.util.ErrorMessage
-import com.hedvig.app.util.apollo.safeExecute
-import com.hedvig.app.util.apollo.toEither
 
 class GetAddressChangeStoryIdUseCase(
   private val createQuoteCartUseCase: CreateQuoteCartUseCase,

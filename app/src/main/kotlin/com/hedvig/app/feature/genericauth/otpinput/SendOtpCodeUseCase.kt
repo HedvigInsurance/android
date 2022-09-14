@@ -1,9 +1,9 @@
 package com.hedvig.app.feature.genericauth.otpinput
 
 import com.apollographql.apollo3.ApolloClient
+import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.graphql.SendOtpCodeMutation
-import com.hedvig.app.util.apollo.OperationResult
-import com.hedvig.app.util.apollo.safeExecute
+import com.hedvig.android.apollo.safeExecute
 
 interface SendOtpCodeUseCase {
   suspend operator fun invoke(otpId: String, otpCode: String): OtpResult

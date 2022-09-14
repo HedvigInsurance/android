@@ -1,9 +1,9 @@
 package com.hedvig.app.feature.offer.usecase.datacollectionresult
 
 import com.apollographql.apollo3.ApolloClient
+import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.graphql.DataCollectionResultQuery
-import com.hedvig.app.util.apollo.OperationResult
-import com.hedvig.app.util.apollo.safeExecute
+import com.hedvig.android.apollo.safeExecute
 
 class GetDataCollectionResultUseCase(
   private val apolloClient: ApolloClient,

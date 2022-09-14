@@ -1,9 +1,9 @@
 package com.hedvig.app.feature.genericauth.otpinput
 
 import com.apollographql.apollo3.ApolloClient
+import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.graphql.CreateOtpAttemptMutation
-import com.hedvig.app.util.apollo.OperationResult
-import com.hedvig.app.util.apollo.safeExecute
+import com.hedvig.android.apollo.safeExecute
 
 interface ReSendOtpCodeUseCase {
   suspend operator fun invoke(credential: String): ResendOtpResult

@@ -4,12 +4,12 @@ import arrow.core.Either
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.CreateOnboardingQuoteCartMutation
 import com.hedvig.android.apollo.graphql.type.Market
+import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.apollo.toEither
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.LocaleManager
-import com.hedvig.app.util.apollo.safeExecute
-import com.hedvig.app.util.apollo.toEither
 
 class CreateQuoteCartUseCase(
   private val apolloClient: ApolloClient,

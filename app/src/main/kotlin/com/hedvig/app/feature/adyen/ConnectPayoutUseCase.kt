@@ -8,8 +8,8 @@ import com.adyen.checkout.redirect.RedirectComponent
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.TokenizePayoutDetailsMutation
 import com.hedvig.android.apollo.graphql.type.TokenizationResultType
-import com.hedvig.app.util.apollo.safeExecute
-import com.hedvig.app.util.apollo.toEither
+import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.apollo.toEither
 import org.json.JSONObject
 
 class ConnectPayoutUseCase(

@@ -2,11 +2,11 @@ package com.hedvig.app.feature.loggedin.ui
 
 import arrow.core.Either
 import com.apollographql.apollo3.ApolloClient
+import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.graphql.LoggedInQuery
+import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.apollo.toEither
 import com.hedvig.app.util.LocaleManager
-import com.hedvig.app.util.apollo.OperationResult
-import com.hedvig.app.util.apollo.safeExecute
-import com.hedvig.app.util.apollo.toEither
 
 class LoggedInRepository(
   private val apolloClient: ApolloClient,

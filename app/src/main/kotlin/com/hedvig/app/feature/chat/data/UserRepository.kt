@@ -4,7 +4,7 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.AuthStatusSubscription
 import com.hedvig.android.apollo.graphql.LogoutMutation
 import com.hedvig.android.apollo.graphql.SwedishBankIdAuthMutation
-import com.hedvig.app.util.apollo.safeExecute
+import com.hedvig.android.apollo.safeExecute
 
 class UserRepository(
   private val apolloClient: ApolloClient,
