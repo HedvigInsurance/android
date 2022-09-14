@@ -58,6 +58,7 @@ coilTransformations = "2.0.2"
 concatAdapterExtension = "1.2.1"
 coreLibraryDesugaring = "1.1.5"
 coroutines = "1.6.4"
+datadog = "1.13.0"
 firebase = "28.4.2"
 flexbox = "3.0.0"
 fragmentViewBindingDelegate = "1.0.1"
@@ -85,8 +86,8 @@ slimber = "1.0.7"
 svg = "1.4"
 timber = "5.0.1"
 tooltip = "1.2.2"
+turbine = "0.9.0"
 zXing = "3.5.0"
-datadog = "1.13.0"
 
 [libraries]
 
@@ -100,7 +101,7 @@ androidx-arch-testing = { module = "androidx.arch.core:core-testing", version.re
 androidx-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "androidx-compose" }
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "androidx-compose" }
 androidx-compose-material = { module = "androidx.compose.material:material", version.ref = "androidx-compose" }
-androidx-compose-material3-windowSizeClass = { module = "androidx.compose.material3:material3-window-size-class", version.ref="androidx-other-material3" }
+androidx-compose-material3-windowSizeClass = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "androidx-other-material3" }
 androidx-compose-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended", version.ref = "androidx-compose" }
 androidx-compose-mdcAdapter = { module = "com.google.android.material:compose-theme-adapter", version.ref = "androidx-composeThemeAdapter" }
 androidx-compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "androidx-compose" }
@@ -110,7 +111,7 @@ androidx-compose-uiTooling = { module = "androidx.compose.ui:ui-tooling", versio
 androidx-compose-uiToolingPreview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "androidx-compose" }
 androidx-compose-uiUtil = { module = "androidx.compose.ui:ui-util", version.ref = "androidx-compose" }
 androidx-compose-uiViewBinding = { module = "androidx.compose.ui:ui-viewbinding", version.ref = "androidx-compose" }
-androidx-customview-poolingcontainer = { group = "androidx.customview", name = "customview-poolingcontainer", version.ref = "androidx-poolingcontainer"}
+androidx-customview-poolingcontainer = { group = "androidx.customview", name = "customview-poolingcontainer", version.ref = "androidx-poolingcontainer" }
 androidx-datastore-core = { module = "androidx.datastore:datastore-core", version.ref = "androidx-datastore" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "androidx-datastore" }
 androidx-espresso-contrib = { module = "androidx.test.espresso:espresso-contrib", version.ref = "androidx-espresso" }
@@ -196,6 +197,7 @@ slimber = { module = "com.github.PaulWoitaschek:Slimber", version.ref = "slimber
 svg = { module = "com.caverock:androidsvg-aar", version.ref = "svg" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 tooltip = { module = "com.github.hansemannn:viewtooltip", version.ref = "tooltip" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 zXing = { module = "com.google.zxing:core", version.ref = "zXing" }
 
 # Plugin libraries for build-logic's convention plugins to use to resolve the types/tasks coming from these plugins

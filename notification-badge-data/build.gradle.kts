@@ -17,4 +17,5 @@ dependencies {
   testImplementation(libs.androidx.test.junit)
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
+  testImplementation(libs.turbine)
 }
