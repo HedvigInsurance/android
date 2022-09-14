@@ -9,6 +9,7 @@ dependencies {
   implementation(projects.coreDatastore)
   implementation(projects.hanalytics)
 
+  implementation(libs.arrowKt.core)
   implementation(libs.koin.android)
   implementation(libs.slimber)
 
