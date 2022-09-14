@@ -1,5 +1,6 @@
 package com.hedvig.android.notification.badge.data.crosssell.bottomnav
 
+import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import com.hedvig.android.apollo.graphql.type.TypeOfContract
@@ -15,6 +16,7 @@ import com.hedvig.android.notification.badge.data.storage.NotificationBadgeStora
 import com.hedvig.android.notification.badge.data.tab.BottomNavTab
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
@@ -134,7 +136,7 @@ class TabNotificationBadgeServiceTest {
   }
 
   @Test
-  fun `When backend returns two cross sells but only one is seen, show insurance badge`() = runTest {
+  fun `When backend returns two cross sells but only one is seen, still show insurance badge`() = runTest {
     val notificationBadgeService = FakeNotificationBadgeStorage(this).apply {
       setValue(
         NotificationBadge.BottomNav.CrossSellOnInsuranceScreen,
@@ -156,10 +158,20 @@ class TabNotificationBadgeServiceTest {
   }
 
   @Test
-  fun `When a notification is shown, when it is marked as seen it no longer shows`() = runTest {
-    val notificationBadgeService = FakeNotificationBadgeStorage(this)
+  fun `Storing old seen contract types shouldn't affect the shown badge`() = runTest {
+    val notificationBadgeService = FakeNotificationBadgeStorage(this).apply {
+      setValue(
+        NotificationBadge.BottomNav.CrossSellOnInsuranceScreen,
+        setOf(
+          TypeOfContract.SE_ACCIDENT.rawValue,
+          TypeOfContract.SE_APARTMENT_BRF.rawValue,
+          TypeOfContract.SE_CAR_FULL.rawValue,
+          TypeOfContract.SE_HOUSE.rawValue,
+        ),
+      )
+    }
     val getCrossSellsContractTypesUseCase = FakeGetCrossSellsContractTypesUseCase {
-      setOf(TypeOfContract.SE_ACCIDENT, TypeOfContract.SE_CAR_FULL)
+      setOf(TypeOfContract.SE_QASA_SHORT_TERM_RENTAL)
     }
     val service = tabNotificationBadgeService(
       notificationBadgeStorage = notificationBadgeService,
@@ -170,5 +182,50 @@ class TabNotificationBadgeServiceTest {
     val unseenBadges = service.unseenTabNotificationBadges().first()
 
     assertThat(unseenBadges).isEqualTo(setOf(BottomNavTab.INSURANCE))
+  }
+
+  @Test
+  fun `When a notification is shown, when it is marked as seen it no longer shows`() = runTest {
+    val notificationBadgeService = FakeNotificationBadgeStorage(this)
+    val getCrossSellsContractTypesUseCase = FakeGetCrossSellsContractTypesUseCase {
+      setOf(TypeOfContract.SE_ACCIDENT)
+    }
+    val service = tabNotificationBadgeService(
+      notificationBadgeStorage = notificationBadgeService,
+      getCrossSellsContractTypesUseCase = getCrossSellsContractTypesUseCase,
+      isReferralCampaignOn = false,
+    )
+
+    service.unseenTabNotificationBadges().test {
+      assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.INSURANCE))
+      service.visitTab(BottomNavTab.INSURANCE)
+      runCurrent()
+      assertThat(awaitItem()).isEqualTo(emptySet())
+      ensureAllEventsConsumed()
+    }
+  }
+
+  @Test
+  fun `When two notifications are shown, they get cleared one by one when visiting the tabs`() = runTest {
+    val notificationBadgeService = FakeNotificationBadgeStorage(this)
+    val getCrossSellsContractTypesUseCase = FakeGetCrossSellsContractTypesUseCase {
+      setOf(TypeOfContract.SE_ACCIDENT)
+    }
+    val service = tabNotificationBadgeService(
+      notificationBadgeStorage = notificationBadgeService,
+      getCrossSellsContractTypesUseCase = getCrossSellsContractTypesUseCase,
+      isReferralCampaignOn = true,
+    )
+
+    service.unseenTabNotificationBadges().test {
+      assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.REFERRALS))
+      service.visitTab(BottomNavTab.INSURANCE)
+      runCurrent()
+      assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.REFERRALS))
+      service.visitTab(BottomNavTab.REFERRALS)
+      runCurrent()
+      assertThat(awaitItem()).isEqualTo(emptySet())
+      ensureAllEventsConsumed()
+    }
   }
 }
