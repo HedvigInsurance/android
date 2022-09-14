@@ -1,7 +1,7 @@
 package com.hedvig.android.notification.badge.data.crosssell
 
 import com.hedvig.android.apollo.graphql.type.TypeOfContract
-import com.hedvig.android.notification.badge.data.storage.NotificationBadgeService
+import com.hedvig.android.notification.badge.data.storage.NotificationBadgeStorage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.map
  */
 internal class CrossSellNotificationBadgeService(
   private val getCrossSellsContractTypesUseCase: GetCrossSellsContractTypesUseCase,
-  private val notificationBadgeService: NotificationBadgeService,
+  private val notificationBadgeStorage: NotificationBadgeStorage,
 ) {
   fun showNotification(badgeType: CrossSellBadgeType): Flow<Boolean> {
     return flow {
@@ -23,7 +23,7 @@ internal class CrossSellNotificationBadgeService(
       val potentialCrossSells = getCrossSellsContractTypesUseCase.invoke().map(TypeOfContract::rawValue).toSet()
 
       emitAll(
-        notificationBadgeService.getValue(notificationBadge)
+        notificationBadgeStorage.getValue(notificationBadge)
           .map { seenCrossSells: Set<String> ->
             potentialCrossSells subtract seenCrossSells
           }
@@ -37,8 +37,8 @@ internal class CrossSellNotificationBadgeService(
   suspend fun markCurrentCrossSellsAsSeen(badgeType: CrossSellBadgeType) {
     val notificationBadge = badgeType.associatedNotificationBadge
     val potentialCrossSells = getCrossSellsContractTypesUseCase.invoke().map(TypeOfContract::rawValue).toSet()
-    val alreadySeenCrossSells = notificationBadgeService.getValue(notificationBadge).first()
-    notificationBadgeService.setValue(
+    val alreadySeenCrossSells = notificationBadgeStorage.getValue(notificationBadge).first()
+    notificationBadgeStorage.setValue(
       notificationBadge,
       potentialCrossSells + alreadySeenCrossSells,
     )

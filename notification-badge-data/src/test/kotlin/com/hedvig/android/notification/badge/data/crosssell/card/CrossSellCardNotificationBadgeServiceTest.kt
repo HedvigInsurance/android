@@ -4,10 +4,10 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import com.hedvig.android.apollo.graphql.type.TypeOfContract
 import com.hedvig.android.notification.badge.data.crosssell.CrossSellNotificationBadgeService
-import com.hedvig.android.notification.badge.data.crosssell.FakeNotificationBadgeService
+import com.hedvig.android.notification.badge.data.crosssell.FakeNotificationBadgeStorage
 import com.hedvig.android.notification.badge.data.crosssell.GetCrossSellsContractTypesUseCase
 import com.hedvig.android.notification.badge.data.storage.NotificationBadge
-import com.hedvig.android.notification.badge.data.storage.NotificationBadgeService
+import com.hedvig.android.notification.badge.data.storage.NotificationBadgeStorage
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
@@ -15,23 +15,23 @@ import org.junit.Test
 class CrossSellCardNotificationBadgeServiceTest {
 
   private fun crossSellCardNotificationBadgeService(
-    notificationBadgeService: NotificationBadgeService,
+    notificationBadgeStorage: NotificationBadgeStorage,
     getCrossSellsContractTypesUseCase: GetCrossSellsContractTypesUseCase,
   ): CrossSellCardNotificationBadgeService {
     return CrossSellCardNotificationBadgeService(
       CrossSellNotificationBadgeService(
         getCrossSellsContractTypesUseCase,
-        notificationBadgeService,
+        notificationBadgeStorage,
       ),
     )
   }
 
   @Test
   fun `When backend returns no cross sells, show no badge`() = runTest {
-    val notificationBadgeService = FakeNotificationBadgeService(this)
+    val notificationBadgeService = FakeNotificationBadgeStorage(this)
     val getCrossSellsContractTypesUseCase = FakeGetCrossSellsContractTypesUseCase()
     val service = crossSellCardNotificationBadgeService(
-      notificationBadgeService = notificationBadgeService,
+      notificationBadgeStorage = notificationBadgeService,
       getCrossSellsContractTypesUseCase = getCrossSellsContractTypesUseCase,
     )
 
@@ -42,12 +42,12 @@ class CrossSellCardNotificationBadgeServiceTest {
 
   @Test
   fun `When backend returns a cross sell and it's not seen, show card badge`() = runTest {
-    val notificationBadgeService = FakeNotificationBadgeService(this)
+    val notificationBadgeService = FakeNotificationBadgeStorage(this)
     val getCrossSellsContractTypesUseCase = FakeGetCrossSellsContractTypesUseCase {
       setOf(TypeOfContract.SE_ACCIDENT)
     }
     val service = crossSellCardNotificationBadgeService(
-      notificationBadgeService = notificationBadgeService,
+      notificationBadgeStorage = notificationBadgeService,
       getCrossSellsContractTypesUseCase = getCrossSellsContractTypesUseCase,
     )
 
@@ -58,7 +58,7 @@ class CrossSellCardNotificationBadgeServiceTest {
 
   @Test
   fun `When backend returns a cross sell but it's seen, show no badge`() = runTest {
-    val notificationBadgeService = FakeNotificationBadgeService(this).apply {
+    val notificationBadgeService = FakeNotificationBadgeStorage(this).apply {
       setValue(
         NotificationBadge.CrossSellInsuranceFragmentCard,
         setOf(TypeOfContract.SE_ACCIDENT.rawValue),
@@ -68,7 +68,7 @@ class CrossSellCardNotificationBadgeServiceTest {
       setOf(TypeOfContract.SE_ACCIDENT)
     }
     val service = crossSellCardNotificationBadgeService(
-      notificationBadgeService = notificationBadgeService,
+      notificationBadgeStorage = notificationBadgeService,
       getCrossSellsContractTypesUseCase = getCrossSellsContractTypesUseCase,
     )
 
@@ -79,7 +79,7 @@ class CrossSellCardNotificationBadgeServiceTest {
 
   @Test
   fun `When backend returns two cross sells but they're both seen, show no badge`() = runTest {
-    val notificationBadgeService = FakeNotificationBadgeService(this).apply {
+    val notificationBadgeService = FakeNotificationBadgeStorage(this).apply {
       setValue(
         NotificationBadge.CrossSellInsuranceFragmentCard,
         setOf(
@@ -92,7 +92,7 @@ class CrossSellCardNotificationBadgeServiceTest {
       setOf(TypeOfContract.SE_ACCIDENT, TypeOfContract.SE_CAR_FULL)
     }
     val service = crossSellCardNotificationBadgeService(
-      notificationBadgeService = notificationBadgeService,
+      notificationBadgeStorage = notificationBadgeService,
       getCrossSellsContractTypesUseCase = getCrossSellsContractTypesUseCase,
     )
 
@@ -103,7 +103,7 @@ class CrossSellCardNotificationBadgeServiceTest {
 
   @Test
   fun `When backend returns two cross sells but only one is seen, show badge`() = runTest {
-    val notificationBadgeService = FakeNotificationBadgeService(this).apply {
+    val notificationBadgeService = FakeNotificationBadgeStorage(this).apply {
       setValue(
         NotificationBadge.CrossSellInsuranceFragmentCard,
         setOf(TypeOfContract.SE_ACCIDENT.rawValue),
@@ -113,7 +113,7 @@ class CrossSellCardNotificationBadgeServiceTest {
       setOf(TypeOfContract.SE_ACCIDENT, TypeOfContract.SE_CAR_FULL)
     }
     val service = crossSellCardNotificationBadgeService(
-      notificationBadgeService = notificationBadgeService,
+      notificationBadgeStorage = notificationBadgeService,
       getCrossSellsContractTypesUseCase = getCrossSellsContractTypesUseCase,
     )
 
@@ -124,7 +124,7 @@ class CrossSellCardNotificationBadgeServiceTest {
 
   @Test
   fun `When backend returns two cross sells and one is seen plus another random one is seen, show badge`() = runTest {
-    val notificationBadgeService = FakeNotificationBadgeService(this).apply {
+    val notificationBadgeService = FakeNotificationBadgeStorage(this).apply {
       setValue(
         NotificationBadge.CrossSellInsuranceFragmentCard,
         setOf(
@@ -137,7 +137,7 @@ class CrossSellCardNotificationBadgeServiceTest {
       setOf(TypeOfContract.SE_ACCIDENT, TypeOfContract.SE_CAR_FULL)
     }
     val service = crossSellCardNotificationBadgeService(
-      notificationBadgeService = notificationBadgeService,
+      notificationBadgeStorage = notificationBadgeService,
       getCrossSellsContractTypesUseCase = getCrossSellsContractTypesUseCase,
     )
 

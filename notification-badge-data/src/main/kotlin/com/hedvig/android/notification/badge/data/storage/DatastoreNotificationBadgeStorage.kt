@@ -6,9 +6,9 @@ import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-internal class DatastoreNotificationBadgeService(
+internal class DatastoreNotificationBadgeStorage(
   private val dataStore: DataStore<Preferences>,
-) : NotificationBadgeService {
+) : NotificationBadgeStorage {
 
   @Suppress("INAPPLICABLE_JVM_NAME")
   @JvmName("getValueOrEmptySetIfItsNull")

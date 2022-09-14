@@ -1,14 +1,14 @@
 package com.hedvig.android.notification.badge.data.crosssell
 
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
-import com.hedvig.android.notification.badge.data.storage.DatastoreNotificationBadgeService
-import com.hedvig.android.notification.badge.data.storage.NotificationBadgeService
+import com.hedvig.android.notification.badge.data.storage.DatastoreNotificationBadgeStorage
+import com.hedvig.android.notification.badge.data.storage.NotificationBadgeStorage
 import kotlinx.coroutines.CoroutineScope
 import java.io.File
 
-internal class FakeNotificationBadgeService(
+internal class FakeNotificationBadgeStorage(
   coroutineScope: CoroutineScope,
-) : NotificationBadgeService by DatastoreNotificationBadgeService(
+) : NotificationBadgeStorage by DatastoreNotificationBadgeStorage(
   PreferenceDataStoreFactory.create(
     scope = coroutineScope,
     produceFile = { File.createTempFile("test_datastore_file", ".preferences_pb") },

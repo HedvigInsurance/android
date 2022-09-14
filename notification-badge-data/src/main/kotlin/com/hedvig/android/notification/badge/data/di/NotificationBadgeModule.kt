@@ -7,8 +7,8 @@ import com.hedvig.android.notification.badge.data.crosssell.GetCrossSellsContrac
 import com.hedvig.android.notification.badge.data.crosssell.bottomnav.CrossSellBottomNavNotificationBadgeService
 import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeService
 import com.hedvig.android.notification.badge.data.referrals.ReferralsNotificationBadgeService
-import com.hedvig.android.notification.badge.data.storage.DatastoreNotificationBadgeService
-import com.hedvig.android.notification.badge.data.storage.NotificationBadgeService
+import com.hedvig.android.notification.badge.data.storage.DatastoreNotificationBadgeStorage
+import com.hedvig.android.notification.badge.data.storage.NotificationBadgeStorage
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import org.koin.dsl.module
 
@@ -20,7 +20,7 @@ val notificationBadgeModule = module {
   single<GetCrossSellsContractTypesUseCase> {
     GetCrossSellsContractTypesUseCaseImpl(get(), get(getGraphqlLocaleFunctionQualifier))
   }
-  single<NotificationBadgeService> { DatastoreNotificationBadgeService(get()) }
+  single<NotificationBadgeStorage> { DatastoreNotificationBadgeStorage(get()) }
   single<ReferralsNotificationBadgeService> { ReferralsNotificationBadgeService(get(), get()) }
   single<TabNotificationBadgeService> { TabNotificationBadgeService(get(), get()) }
 }
