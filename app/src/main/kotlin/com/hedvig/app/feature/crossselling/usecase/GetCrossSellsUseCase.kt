@@ -1,11 +1,11 @@
 package com.hedvig.app.feature.crossselling.usecase
 
 import com.apollographql.apollo3.ApolloClient
+import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.graphql.CrossSellsQuery
+import com.hedvig.android.apollo.safeExecute
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.util.LocaleManager
-import com.hedvig.app.util.apollo.QueryResult
-import com.hedvig.app.util.apollo.safeQuery
 import e
 
 class GetCrossSellsUseCase(
@@ -15,12 +15,12 @@ class GetCrossSellsUseCase(
   suspend operator fun invoke() = when (
     val result = apolloClient
       .query(CrossSellsQuery(localeManager.defaultLocale()))
-      .safeQuery()
+      .safeExecute()
   ) {
-    is QueryResult.Success -> {
+    is OperationResult.Success -> {
       getCrossSellsContractTypes(result.data)
     }
-    is QueryResult.Error -> {
+    is OperationResult.Error -> {
       e { "Error when loading potential cross-sells: ${result.message}" }
       emptySet()
     }

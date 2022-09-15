@@ -7,12 +7,12 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.fx.coroutines.parZip
 import com.apollographql.apollo3.ApolloClient
+import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.graphql.NotificationRegisterDeviceMutation
 import com.hedvig.android.apollo.graphql.RegisterPushTokenMutation
+import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.apollo.toEither
 import com.hedvig.app.authenticate.AuthenticationTokenService
-import com.hedvig.app.util.apollo.QueryResult
-import com.hedvig.app.util.apollo.safeQuery
-import com.hedvig.app.util.apollo.toEither
 import e
 import i
 import org.koin.core.component.KoinComponent
@@ -49,12 +49,12 @@ class PushNotificationWorker(
     return false
   }
 
-  private suspend fun registerPushToken(pushToken: String): Either<QueryResult.Error, Unit> {
+  private suspend fun registerPushToken(pushToken: String): Either<OperationResult.Error, Unit> {
     i { "Registering push token" }
     return either {
       parZip(
-        { apolloClient.mutation(RegisterPushTokenMutation(pushToken)).safeQuery().toEither().bind() },
-        { apolloClient.mutation(NotificationRegisterDeviceMutation(pushToken)).safeQuery().toEither().bind() },
+        { apolloClient.mutation(RegisterPushTokenMutation(pushToken)).safeExecute().toEither().bind() },
+        { apolloClient.mutation(NotificationRegisterDeviceMutation(pushToken)).safeExecute().toEither().bind() },
       ) { _, _ -> }
     }
       .tapLeft { queryResultError ->

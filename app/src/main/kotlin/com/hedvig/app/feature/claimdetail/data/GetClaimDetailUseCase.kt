@@ -8,9 +8,9 @@ import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.graphql.ClaimDetailsQuery
+import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.apollo.toEither
 import com.hedvig.app.util.LocaleManager
-import com.hedvig.app.util.apollo.safeQuery
-import com.hedvig.app.util.apollo.toEither
 
 class GetClaimDetailUseCase(
   private val apolloClient: ApolloClient,
@@ -28,7 +28,7 @@ class GetClaimDetailUseCase(
 
   suspend operator fun invoke(claimId: String): Either<Error, ClaimDetailsQuery.ClaimDetail> {
     return queryCall
-      .safeQuery()
+      .safeExecute()
       .toEither {
         Error.NetworkError
       }

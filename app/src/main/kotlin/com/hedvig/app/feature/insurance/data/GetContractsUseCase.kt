@@ -4,10 +4,10 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.InsuranceQuery
+import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.apollo.toEither
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.LocaleManager
-import com.hedvig.app.util.apollo.safeQuery
-import com.hedvig.app.util.apollo.toEither
 
 class GetContractsUseCase(
   private val apolloClient: ApolloClient,
@@ -17,7 +17,7 @@ class GetContractsUseCase(
     return either {
       val insuranceQueryData = apolloClient
         .query(InsuranceQuery(localeManager.defaultLocale()))
-        .safeQuery()
+        .safeExecute()
         .toEither(::ErrorMessage)
         .bind()
       insuranceQueryData

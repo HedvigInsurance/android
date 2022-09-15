@@ -1,9 +1,9 @@
 package com.hedvig.app.feature.genericauth.otpinput
 
 import com.apollographql.apollo3.ApolloClient
+import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.graphql.SendOtpCodeMutation
-import com.hedvig.app.util.apollo.QueryResult
-import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.android.apollo.safeExecute
 
 interface SendOtpCodeUseCase {
   suspend operator fun invoke(otpId: String, otpCode: String): OtpResult
@@ -13,13 +13,13 @@ class SendOtpCodeUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : SendOtpCodeUseCase {
   override suspend operator fun invoke(otpId: String, otpCode: String): OtpResult {
-    return when (val result = apolloClient.mutation(SendOtpCodeMutation(otpId, otpCode)).safeQuery()) {
-      is QueryResult.Error -> OtpResult.Error.NetworkError(result.message)
-      is QueryResult.Success -> parseSuccessResponse(result)
+    return when (val result = apolloClient.mutation(SendOtpCodeMutation(otpId, otpCode)).safeExecute()) {
+      is OperationResult.Error -> OtpResult.Error.NetworkError(result.message)
+      is OperationResult.Success -> parseSuccessResponse(result)
     }
   }
 
-  private fun parseSuccessResponse(result: QueryResult.Success<SendOtpCodeMutation.Data>): OtpResult {
+  private fun parseSuccessResponse(result: OperationResult.Success<SendOtpCodeMutation.Data>): OtpResult {
     val attempt = result.data.login_verifyOtpAttempt
     return attempt.asVerifyOtpLoginAttemptError?.let {
       parseErrorCode(it.errorCode)
