@@ -1,43 +1,47 @@
-package com.hedvig.app.service.badge
+package com.hedvig.android.notification.badge.data.storage
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
-class NotificationBadgeService(
+internal class DatastoreNotificationBadgeStorage(
   private val dataStore: DataStore<Preferences>,
-) {
+) : NotificationBadgeStorage {
 
+  @Suppress("INAPPLICABLE_JVM_NAME")
   @JvmName("getValueOrEmptySetIfItsNull")
-  fun <SetOfT : Set<T>, T> getValue(
+  override fun <SetOfT : Set<T>, T> getValue(
     notificationBadge: NotificationBadge<SetOfT>,
   ): Flow<Set<T>> {
     return dataStore
       .data
       .map { preferences ->
-        val value = preferences[notificationBadge.key]
+        val value = preferences[notificationBadge.preferencesKey]
         value ?: emptySet()
       }
+      .distinctUntilChanged()
   }
 
-  fun <T> getValue(
+  override fun <T> getValue(
     notificationBadge: NotificationBadge<T>,
   ): Flow<T?> {
     return dataStore
       .data
       .map { preferences ->
-        preferences[notificationBadge.key]
+        preferences[notificationBadge.preferencesKey]
       }
+      .distinctUntilChanged()
   }
 
-  suspend fun <T> setValue(
+  override suspend fun <T> setValue(
     notificationBadge: NotificationBadge<T>,
     newStatus: T,
   ) {
     dataStore.edit { preferences ->
-      preferences[notificationBadge.key] = newStatus
+      preferences[notificationBadge.preferencesKey] = newStatus
     }
   }
 }

@@ -19,6 +19,7 @@ import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.datadog.android.DatadogInterceptor
 import com.google.firebase.messaging.FirebaseMessaging
+import com.hedvig.android.core.common.di.getGraphqlLocaleFunctionQualifier
 import com.hedvig.android.core.common.di.isDebugQualifier
 import com.hedvig.android.hanalytics.di.appIdQualifier
 import com.hedvig.android.hanalytics.di.appVersionCodeQualifier
@@ -65,7 +66,6 @@ import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.crossselling.ui.detail.CrossSellDetailViewModel
 import com.hedvig.app.feature.crossselling.ui.detail.CrossSellFaqViewModel
-import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsContractTypesUseCase
 import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsUseCase
 import com.hedvig.app.feature.embark.EmbarkRepository
 import com.hedvig.app.feature.embark.EmbarkViewModel
@@ -117,7 +117,6 @@ import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModelImpl
 import com.hedvig.app.feature.insurance.ui.detail.GetContractDetailsUseCase
 import com.hedvig.app.feature.insurance.ui.tab.InsuranceViewModel
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsViewModel
-import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModelImpl
@@ -182,9 +181,6 @@ import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthResultUseCase
 import com.hedvig.app.service.FileService
-import com.hedvig.app.service.badge.CrossSellNotificationBadgeService
-import com.hedvig.app.service.badge.NotificationBadgeService
-import com.hedvig.app.service.badge.ReferralsNotificationBadgeService
 import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.service.push.senders.CrossSellNotificationSender
 import com.hedvig.app.service.push.senders.GenericNotificationSender
@@ -527,6 +523,15 @@ val stringConstantsModule = module {
   single<Boolean>(isDebugQualifier) { BuildConfig.DEBUG }
 }
 
+// TODO take Locale straight from whatever class owns that functionality after the language APIs are merged in. Can't
+//  yet pass LocaleManager as that's only visible in the :app module. After that PR is merged it can be moved to a
+//  separate module and provided directly.
+val tempLocaleModule = module {
+  single<() -> com.hedvig.android.apollo.graphql.type.Locale>(getGraphqlLocaleFunctionQualifier) {
+    { get<LocaleManager>().defaultLocale() }
+  }
+}
+
 val checkoutModule = module {
   viewModel { (selectedVariantId: String, quoteCartId: QuoteCartId) ->
     CheckoutViewModel(
@@ -574,11 +579,6 @@ val serviceModule = module {
   single { FileService(get()) }
   single<LoginStatusService> { SharedPreferencesLoginStatusService(get(), get(), get()) }
   single<AuthenticationTokenService> { SharedPreferencesAuthenticationTokenService(get()) }
-
-  single { TabNotificationService(get(), get()) }
-  single { CrossSellNotificationBadgeService(get(), get()) }
-  single { ReferralsNotificationBadgeService(get(), get()) }
-  single { NotificationBadgeService(get()) }
 }
 
 val repositoriesModule = module {
@@ -628,7 +628,6 @@ val useCaseModule = module {
   single { StartCheckoutUseCase(get(), get(), get()) }
   single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get()) }
   single { GetContractsUseCase(get(), get()) }
-  single { GetCrossSellsContractTypesUseCase(get(), get()) }
   single { GraphQLQueryUseCase(get()) }
   single { GetCrossSellsUseCase(get(), get()) }
   single { StartDataCollectionUseCase(get(), get()) }
