@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
 internal class DatastoreNotificationBadgeStorage(
@@ -21,6 +22,7 @@ internal class DatastoreNotificationBadgeStorage(
         val value = preferences[notificationBadge.preferencesKey]
         value ?: emptySet()
       }
+      .distinctUntilChanged()
   }
 
   override fun <T> getValue(
@@ -31,6 +33,7 @@ internal class DatastoreNotificationBadgeStorage(
       .map { preferences ->
         preferences[notificationBadge.preferencesKey]
       }
+      .distinctUntilChanged()
   }
 
   override suspend fun <T> setValue(

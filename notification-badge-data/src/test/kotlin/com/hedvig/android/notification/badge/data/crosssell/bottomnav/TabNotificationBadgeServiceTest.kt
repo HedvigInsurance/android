@@ -16,7 +16,6 @@ import com.hedvig.android.notification.badge.data.storage.NotificationBadgeStora
 import com.hedvig.android.notification.badge.data.tab.BottomNavTab
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
@@ -195,11 +194,9 @@ class TabNotificationBadgeServiceTest {
       getCrossSellsContractTypesUseCase = getCrossSellsContractTypesUseCase,
       isReferralCampaignOn = false,
     )
-
     service.unseenTabNotificationBadges().test {
       assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.INSURANCE))
       service.visitTab(BottomNavTab.INSURANCE)
-      runCurrent()
       assertThat(awaitItem()).isEqualTo(emptySet())
       ensureAllEventsConsumed()
     }
@@ -220,10 +217,8 @@ class TabNotificationBadgeServiceTest {
     service.unseenTabNotificationBadges().test {
       assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.INSURANCE, BottomNavTab.REFERRALS))
       service.visitTab(BottomNavTab.INSURANCE)
-      runCurrent()
       assertThat(awaitItem()).isEqualTo(setOf(BottomNavTab.REFERRALS))
       service.visitTab(BottomNavTab.REFERRALS)
-      runCurrent()
       assertThat(awaitItem()).isEqualTo(emptySet())
       ensureAllEventsConsumed()
     }
