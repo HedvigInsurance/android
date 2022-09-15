@@ -47,7 +47,6 @@ import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.performOnTapHapticFeedback
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
-import d
 import e
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -328,7 +327,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
           .viewState
           .filterNotNull() // Emulate LiveData behavior of doing nothing until we get valid data
           .collectLatest { viewState: LoggedInViewState ->
-            d { "Stelios: viewState:$viewState" }
             val loggedInQueryData = viewState.loggedInQueryData
             setupBottomNav(
               isReferralsEnabled = viewState.isReferralsEnabled,

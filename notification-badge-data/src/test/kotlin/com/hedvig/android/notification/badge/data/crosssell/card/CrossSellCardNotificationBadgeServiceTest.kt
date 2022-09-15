@@ -131,7 +131,7 @@ class CrossSellCardNotificationBadgeServiceTest {
         NotificationBadge.CrossSellInsuranceFragmentCard,
         setOf(
           TypeOfContract.SE_ACCIDENT.rawValue,
-          TypeOfContract.SE_ACCIDENT.rawValue,
+          TypeOfContract.SE_APARTMENT_RENT.rawValue,
         ),
       )
     }
