@@ -298,4 +298,5 @@ dependencies {
   "kaptPullrequest"(libs.showkase.processor)
 
   implementation(libs.datadog.sdk)
+  implementation("com.hedvig.odyssey:common-android:1.0")
 }
