@@ -214,8 +214,6 @@ val applicationModule = module {
     MemoryCacheFactory(maxSizeBytes = 10 * 1024 * 1024)
   }
   single<OkHttpClient> {
-    val marketManager = get<MarketManager>()
-    val context = get<Context>()
     val builder = OkHttpClient.Builder()
       // Temporary fix until back-end problems are handled
       .readTimeout(30, TimeUnit.SECONDS)

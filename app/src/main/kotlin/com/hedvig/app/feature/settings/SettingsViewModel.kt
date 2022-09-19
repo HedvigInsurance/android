@@ -4,10 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.UpdateLanguageMutation
+import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.market.Language
 import com.hedvig.app.LanguageService
 import com.hedvig.app.util.apollo.NetworkCacheManager
-import com.hedvig.app.util.apollo.safeQuery
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.launch
@@ -36,7 +36,7 @@ class ChangeDeviceLanguageAndUploadPreferredLanguageUseCase(
     apolloClient
       .mutation(
         UpdateLanguageMutation(language.toString(), language.toLocale()),
-      ).safeQuery()
+      ).safeExecute()
     cacheManager.clearCache()
     languageService.setLanguage(language)
   }
