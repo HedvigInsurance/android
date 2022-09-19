@@ -21,6 +21,7 @@ import com.adyen.checkout.dropin.DropInResult
 import com.carousell.concatadapterextension.ConcatItemDecoration
 import com.carousell.concatadapterextension.ConcatSpanSizeLookup
 import com.hedvig.android.market.MarketManager
+import com.hedvig.app.LanguageService
 import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.authenticate.LoginStatus
@@ -47,7 +48,6 @@ import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignDialog
-import com.hedvig.app.getLocale
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
@@ -88,6 +88,7 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
   private val binding by viewBinding(ActivityOfferBinding::bind)
   private val imageLoader: ImageLoader by inject()
   private val marketManager: MarketManager by inject()
+  private val languageService: LanguageService by inject()
   private var hasStartedRecyclerAnimation: Boolean = false
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -126,7 +127,7 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
     binding.offerToolbar.setNavigationOnClickListener { onBackPressed() }
     binding.offerToolbar.setOnMenuItemClickListener(::handleMenuItem)
 
-    val locale = getLocale()
+    val locale = languageService.getLocale()
     val topOfferAdapter = OfferAdapter(
       fragmentManager = supportFragmentManager,
       locale = locale,
@@ -364,7 +365,7 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
       CheckoutMethod.SWEDISH_BANK_ID -> viewModel.onSwedishBankIdSign()
       CheckoutMethod.SIMPLE_SIGN -> {
         if (paymentMethods != null) {
-          startAdyenPayment(marketManager.market, paymentMethods)
+          startAdyenPayment(languageService.getLocale(), paymentMethods)
         } else {
           viewModel.onOpenCheckout()
         }

@@ -5,7 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.hedvig.android.market.MarketManager
+import com.hedvig.app.LanguageService
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityReferralsInformationBinding
 import com.hedvig.app.util.apollo.format
@@ -25,7 +25,7 @@ import javax.money.MonetaryAmount
 
 class ReferralsInformationActivity : AppCompatActivity(R.layout.activity_referrals_information) {
   private val binding by viewBinding(ActivityReferralsInformationBinding::bind)
-  private val marketManager: MarketManager by inject()
+  private val languageService: LanguageService by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -55,7 +55,7 @@ class ReferralsInformationActivity : AppCompatActivity(R.layout.activity_referra
       val incentive = Money.of(incentiveAmount, incentiveCurrency)
       body.text = getString(
         hedvig.resources.R.string.referrals_info_sheet_body,
-        incentive.format(this@ReferralsInformationActivity, marketManager.market),
+        incentive.format(languageService.getLocale()),
       )
 
       val termsAsUri = Uri.parse(termsUrl)

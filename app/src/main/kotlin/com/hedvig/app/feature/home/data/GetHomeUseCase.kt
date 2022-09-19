@@ -8,11 +8,11 @@ import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.graphql.HomeQuery
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
-import com.hedvig.app.util.LocaleManager
+import com.hedvig.app.util.GraphQLLocaleService
 
 class GetHomeUseCase(
   private val apolloClient: ApolloClient,
-  private val localeManager: LocaleManager,
+  private val localeManager: GraphQLLocaleService,
 ) {
 
   suspend operator fun invoke(forceReload: Boolean): Either<OperationResult.Error, HomeQuery.Data> {

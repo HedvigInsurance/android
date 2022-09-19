@@ -11,7 +11,7 @@ import com.hedvig.android.apollo.graphql.QuoteCartEditQuoteMutation
 import com.hedvig.android.apollo.toEither
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
-import com.hedvig.app.util.LocaleManager
+import com.hedvig.app.util.GraphQLLocaleService
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -20,7 +20,7 @@ import org.json.JSONException
 import org.json.JSONObject
 
 class EditCheckoutUseCase(
-  private val localeManager: LocaleManager,
+  private val localeManager: GraphQLLocaleService,
   private val graphQLQueryHandler: GraphQLQueryHandler,
 ) {
 

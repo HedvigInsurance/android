@@ -7,11 +7,11 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.app.feature.offer.usecase.CampaignCode
 import com.hedvig.app.util.ErrorMessage
-import com.hedvig.app.util.LocaleManager
+import com.hedvig.app.util.GraphQLLocaleService
 
 class RedeemReferralCodeRepository(
   private val apolloClient: ApolloClient,
-  private val localeManager: LocaleManager,
+  private val localeManager: GraphQLLocaleService,
 ) {
   suspend fun redeemReferralCode(
     campaignCode: CampaignCode,

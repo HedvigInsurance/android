@@ -10,10 +10,9 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.market.MarketManager
+import com.hedvig.app.LanguageService
 import com.hedvig.app.feature.claimdetail.ui.ClaimDetailScreen
 import com.hedvig.app.feature.claimdetail.ui.ClaimDetailViewModel
-import com.hedvig.app.getLocale
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.showErrorDialog
 import com.hedvig.app.util.extensions.startChat
@@ -24,7 +23,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class ClaimDetailActivity : AppCompatActivity() {
-  private val marketManager: MarketManager by inject()
+  private val languageService: LanguageService by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -48,7 +47,7 @@ class ClaimDetailActivity : AppCompatActivity() {
       }
       .launchIn(lifecycleScope)
 
-    val locale = getLocale()
+    val locale = languageService.getLocale()
     setContent {
       val viewState by viewModel.viewState.collectAsState()
 

@@ -9,11 +9,12 @@ import com.adyen.checkout.core.api.Environment
 import com.adyen.checkout.dropin.DropIn
 import com.adyen.checkout.dropin.DropInConfiguration
 import com.adyen.checkout.dropin.DropInResult
+import com.hedvig.app.LanguageService
 import com.hedvig.app.R
 import com.hedvig.app.feature.adyen.AdyenCurrency
-import com.hedvig.app.getLocale
 import com.hedvig.app.isDebug
 import e
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -21,6 +22,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
  */
 class AdyenConnectPayoutActivity : AppCompatActivity(R.layout.fragment_container_activity) {
   private val viewModel: AdyenConnectPayoutViewModel by viewModel()
+  private val languageService: LanguageService by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -40,7 +42,7 @@ class AdyenConnectPayoutActivity : AppCompatActivity(R.layout.fragment_container
           AdyenPayoutDropInService::class.java,
           getString(R.string.ADYEN_CLIENT_KEY),
         )
-        .setShopperLocale(getLocale())
+        .setShopperLocale(languageService.getLocale())
         .setEnvironment(
           if (isDebug()) {
             Environment.TEST

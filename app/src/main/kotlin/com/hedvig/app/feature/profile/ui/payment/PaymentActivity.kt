@@ -11,6 +11,7 @@ import com.hedvig.android.apollo.graphql.PaymentQuery
 import com.hedvig.android.apollo.graphql.type.PayinMethodStatus
 import com.hedvig.android.apollo.graphql.type.PayoutMethodStatus
 import com.hedvig.android.market.MarketManager
+import com.hedvig.app.LanguageService
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityPaymentBinding
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
@@ -31,6 +32,7 @@ class PaymentActivity : AppCompatActivity(R.layout.activity_payment) {
   private val viewModel: PaymentViewModel by viewModel()
 
   private val marketManager: MarketManager by inject()
+  private val languageService: LanguageService by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -41,7 +43,7 @@ class PaymentActivity : AppCompatActivity(R.layout.activity_payment) {
       toolbar.setNavigationOnClickListener { onBackPressed() }
 
       recycler.applyNavigationBarInsets()
-      recycler.adapter = PaymentAdapter(marketManager, supportFragmentManager)
+      recycler.adapter = PaymentAdapter(marketManager, supportFragmentManager, languageService)
 
       viewModel
         .data

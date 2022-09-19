@@ -10,11 +10,11 @@ import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.graphql.ClaimDetailsQuery
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
-import com.hedvig.app.util.LocaleManager
+import com.hedvig.app.util.GraphQLLocaleService
 
 class GetClaimDetailUseCase(
   private val apolloClient: ApolloClient,
-  private val localeManager: LocaleManager,
+  private val localeManager: GraphQLLocaleService,
 ) {
   sealed interface Error {
     object NetworkError : Error

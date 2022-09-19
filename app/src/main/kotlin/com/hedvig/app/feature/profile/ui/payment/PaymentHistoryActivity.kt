@@ -8,6 +8,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.apollo.graphql.PaymentQuery
 import com.hedvig.android.market.MarketManager
+import com.hedvig.app.LanguageService
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityPaymentHistoryBinding
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
@@ -24,6 +25,7 @@ class PaymentHistoryActivity : AppCompatActivity(R.layout.activity_payment_histo
   private val binding by viewBinding(ActivityPaymentHistoryBinding::bind)
   private val viewModel: PaymentViewModel by viewModel()
   private val marketManager: MarketManager by inject()
+  private val languageService: LanguageService by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -37,7 +39,7 @@ class PaymentHistoryActivity : AppCompatActivity(R.layout.activity_payment_histo
       }
       paymentHistory.setupToolbarScrollListener(toolbar)
 
-      paymentHistory.adapter = PaymentHistoryAdapter(marketManager)
+      paymentHistory.adapter = PaymentHistoryAdapter(marketManager, languageService)
 
       viewModel
         .data

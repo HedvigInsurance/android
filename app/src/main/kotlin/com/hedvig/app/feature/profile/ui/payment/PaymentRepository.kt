@@ -8,12 +8,12 @@ import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.apollographql.apollo3.cache.normalized.watch
 import com.hedvig.android.apollo.graphql.PaymentQuery
 import com.hedvig.android.apollo.graphql.type.PayoutMethodStatus
-import com.hedvig.app.util.LocaleManager
+import com.hedvig.app.util.GraphQLLocaleService
 import kotlinx.coroutines.flow.Flow
 
 class PaymentRepository(
   private val apolloClient: ApolloClient,
-  private val localeManager: LocaleManager,
+  private val localeManager: GraphQLLocaleService,
 ) {
   private val paymentQuery = PaymentQuery(localeManager.defaultLocale())
   fun payment(): Flow<ApolloResponse<PaymentQuery.Data>> = apolloClient

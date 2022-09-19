@@ -9,6 +9,7 @@ import androidx.preference.PreferenceManager
 import com.hedvig.android.core.common.preferences.PreferenceKey
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.MarketManager
+import java.util.Locale
 
 class LanguageService(
   private val context: Context,
@@ -25,13 +26,28 @@ class LanguageService(
     AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(language.toString()))
   }
 
-  fun getLanguage(): Language? {
+  fun getLanguage(): Language {
+    return Language.from(getLocale().toLanguageTag())
+  }
+
+  fun getLocale(): Locale {
     val localeList = AppCompatDelegate.getApplicationLocales()
     if (localeList.isEmpty) {
-      return null
+      return Locale("en", "SE")
     }
-    val locale = localeList[0]!!
-    return Language.from(locale.toLanguageTag())
+    return localeList[0]!!
+  }
+
+  fun getGraphQLLocale(): com.hedvig.android.apollo.graphql.type.Locale {
+    return when (getLocale().toString()) {
+      "en_NO" -> com.hedvig.android.apollo.graphql.type.Locale.en_NO
+      "nb_NO" -> com.hedvig.android.apollo.graphql.type.Locale.nb_NO
+      "sv_SE" -> com.hedvig.android.apollo.graphql.type.Locale.sv_SE
+      "en_SE" -> com.hedvig.android.apollo.graphql.type.Locale.en_SE
+      "da_DK" -> com.hedvig.android.apollo.graphql.type.Locale.da_DK
+      "en_DK" -> com.hedvig.android.apollo.graphql.type.Locale.en_DK
+      else -> com.hedvig.android.apollo.graphql.type.Locale.en_SE
+    }
   }
 
   fun performOnLaunchLanguageCheck() {

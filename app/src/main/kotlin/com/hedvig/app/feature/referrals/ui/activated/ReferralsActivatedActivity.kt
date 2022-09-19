@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import com.hedvig.android.market.MarketManager
+import com.hedvig.app.LanguageService
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityReferralsActivatedBinding
 import com.hedvig.app.util.apollo.format
@@ -24,7 +24,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class ReferralsActivatedActivity : AppCompatActivity(R.layout.activity_referrals_activated) {
   private val binding by viewBinding(ActivityReferralsActivatedBinding::bind)
   private val viewModel: ReferralsActivatedViewModel by viewModel()
-  private val marketManager: MarketManager by inject()
+  private val languageService: LanguageService by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -60,7 +60,7 @@ class ReferralsActivatedActivity : AppCompatActivity(R.layout.activity_referrals
             body.text =
               getString(
                 hedvig.resources.R.string.referrals_intro_screen_body,
-                incentive.format(this@ReferralsActivatedActivity, marketManager.market),
+                incentive.format(languageService.getLocale()),
               )
             body
               .animate()

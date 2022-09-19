@@ -13,14 +13,14 @@ import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.QuoteCartFragmentToOfferModelMapper
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
-import com.hedvig.app.util.LocaleManager
+import com.hedvig.app.util.GraphQLLocaleService
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 
 class OfferRepository(
   private val apolloClient: ApolloClient,
-  private val localeManager: LocaleManager,
+  private val localeManager: GraphQLLocaleService,
   private val quoteCartFragmentToOfferModelMapper: QuoteCartFragmentToOfferModelMapper,
   private val hAnalytics: HAnalytics,
 ) {

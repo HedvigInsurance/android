@@ -1,11 +1,13 @@
 package com.hedvig.app.util
 
-import androidx.appcompat.app.AppCompatDelegate
 import com.hedvig.android.apollo.graphql.type.Locale
+import com.hedvig.app.LanguageService
 
-class LocaleManager {
+class GraphQLLocaleService(
+  private val languageService: LanguageService,
+) {
   fun defaultLocale(): Locale {
-    val locale = getJavaUtilLocale()
+    val locale = languageService.getLocale()
     return when (locale.toString()) {
       "en_NO" -> Locale.en_NO
       "nb_NO" -> Locale.nb_NO
@@ -15,14 +17,5 @@ class LocaleManager {
       "en_DK" -> Locale.en_DK
       else -> Locale.en_SE
     }
-  }
-
-  fun getJavaUtilLocale(): java.util.Locale {
-    val localeList = AppCompatDelegate.getApplicationLocales()
-    if (localeList.isEmpty) {
-      return java.util.Locale("en", "SE")
-    }
-
-    return localeList[0]!!
   }
 }

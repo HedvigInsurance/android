@@ -9,11 +9,11 @@ import com.hedvig.android.apollo.toEither
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
-import com.hedvig.app.util.LocaleManager
+import com.hedvig.app.util.GraphQLLocaleService
 
 class CreateQuoteCartUseCase(
   private val apolloClient: ApolloClient,
-  private val localeManager: LocaleManager,
+  private val localeManager: GraphQLLocaleService,
   private val marketManager: MarketManager,
 ) {
 
