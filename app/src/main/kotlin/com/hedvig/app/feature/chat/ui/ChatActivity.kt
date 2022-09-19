@@ -11,6 +11,7 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
 import android.provider.MediaStore.MediaColumns
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -18,7 +19,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
 import com.hedvig.android.apollo.graphql.ChatMessagesQuery
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.databinding.ActivityChatBinding
@@ -51,7 +51,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 import java.io.IOException
 
-class ChatActivity : BaseActivity(R.layout.activity_chat) {
+class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
   private val chatViewModel: ChatViewModel by viewModel()
   private val binding by viewBinding(ActivityChatBinding::bind)
 
@@ -75,8 +75,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
   private var currentPhotoPath: String? = null
 
   private var forceScrollToBottom = true
-
-  override val preventRecreation = true
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)

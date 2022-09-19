@@ -4,11 +4,11 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import coil.ImageLoader
 import coil.load
-import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityEmergencyBinding
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
+class EmergencyActivity : AppCompatActivity(R.layout.activity_emergency) {
   private val claimsViewModel: ClaimsViewModel by viewModel()
   private val binding by viewBinding(ActivityEmergencyBinding::bind)
   private val imageLoader: ImageLoader by inject()

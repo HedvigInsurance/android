@@ -25,8 +25,6 @@ import com.hedvig.android.hanalytics.di.appIdQualifier
 import com.hedvig.android.hanalytics.di.appVersionCodeQualifier
 import com.hedvig.android.hanalytics.di.appVersionNameQualifier
 import com.hedvig.android.hanalytics.di.hAnalyticsUrlQualifier
-import com.hedvig.android.market.Language
-import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.authenticate.LoginStatusService
@@ -123,11 +121,9 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInViewModelImpl
 import com.hedvig.app.feature.marketing.MarketingViewModel
 import com.hedvig.app.feature.marketing.data.GetInitialMarketPickerValuesUseCase
 import com.hedvig.app.feature.marketing.data.GetMarketingBackgroundUseCase
-import com.hedvig.app.feature.marketing.data.MarketingRepository
 import com.hedvig.app.feature.marketing.data.SubmitMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.feature.marketing.data.UpdateApplicationLanguageUseCase
 import com.hedvig.app.feature.marketpicker.LanguageRepository
-import com.hedvig.app.feature.marketpicker.LocaleBroadcastManager
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.OfferViewModelImpl
@@ -166,6 +162,7 @@ import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeViewModelIm
 import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeViewModel
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModel
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModelImpl
+import com.hedvig.app.feature.settings.ChangeLanguageUseCase
 import com.hedvig.app.feature.settings.SettingsViewModel
 import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignViewModel
 import com.hedvig.app.feature.trustly.TrustlyRepository
@@ -187,7 +184,7 @@ import com.hedvig.app.service.push.senders.GenericNotificationSender
 import com.hedvig.app.service.push.senders.NotificationSender
 import com.hedvig.app.service.push.senders.PaymentNotificationSender
 import com.hedvig.app.service.push.senders.ReferralsNotificationSender
-import com.hedvig.app.util.LocaleManager
+import com.hedvig.app.util.GraphQLLocaleService
 import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.NetworkCacheManager
@@ -215,8 +212,7 @@ val applicationModule = module {
     MemoryCacheFactory(maxSizeBytes = 10 * 1024 * 1024)
   }
   single<OkHttpClient> {
-    val marketManager = get<MarketManager>()
-    val context = get<Context>()
+    val languageService = get<LanguageService>()
     val builder = OkHttpClient.Builder()
       // Temporary fix until back-end problems are handled
       .readTimeout(30, TimeUnit.SECONDS)
@@ -237,8 +233,8 @@ val applicationModule = module {
           chain
             .request()
             .newBuilder()
-            .header("User-Agent", makeUserAgent(context, marketManager.market))
-            .header("Accept-Language", makeLocaleString(context, marketManager.market))
+            .header("User-Agent", makeUserAgent(languageService.getLocale()))
+            .header("Accept-Language", languageService.getLocale().toLanguageTag())
             .header("apollographql-client-name", BuildConfig.APPLICATION_ID)
             .header("apollographql-client-version", BuildConfig.VERSION_NAME)
             .header("X-Build-Version", BuildConfig.VERSION_CODE.toString())
@@ -299,7 +295,7 @@ val apolloClientModule = module {
   }
 }
 
-fun makeUserAgent(context: Context, market: Market?) =
+fun makeUserAgent(locale: Locale) =
   "${
   BuildConfig.APPLICATION_ID
   } ${
@@ -313,26 +309,8 @@ fun makeUserAgent(context: Context, market: Market?) =
   }; ${
   Build.DEVICE
   }; ${
-  getLocale(context, market).language
+  locale.language
   })"
-
-fun makeLocaleString(context: Context, market: Market?): String =
-  getLocale(context, market).toLanguageTag()
-
-fun getLocale(context: Context, market: Market?): Locale {
-  val locale = if (market == null) {
-    Language.from(Language.SETTING_EN_SE)
-  } else {
-    Language.fromSettings(context, market)
-  }
-
-  return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-    locale.apply(context).resources.configuration.locales.get(0)
-  } else {
-    @Suppress("DEPRECATION")
-    locale.apply(context).resources.configuration.locale
-  }
-}
 
 val viewModelModule = module {
   viewModel { ClaimsViewModel(get(), get()) }
@@ -342,10 +320,8 @@ val viewModelModule = module {
   viewModel { WelcomeViewModel(get()) }
   viewModel {
     SettingsViewModel(
-      repository = get(),
-      localeBroadcastManager = get(),
       hAnalytics = get(),
-      cacheManager = get(),
+      changeLanguageUseCase = get(),
     )
   }
   viewModel { DatePickerViewModel() }
@@ -528,7 +504,7 @@ val stringConstantsModule = module {
 //  separate module and provided directly.
 val tempLocaleModule = module {
   single<() -> com.hedvig.android.apollo.graphql.type.Locale>(getGraphqlLocaleFunctionQualifier) {
-    { get<LocaleManager>().defaultLocale() }
+    { get<LanguageService>().getGraphQLLocale() }
   }
 }
 
@@ -579,6 +555,12 @@ val serviceModule = module {
   single { FileService(get()) }
   single<LoginStatusService> { SharedPreferencesLoginStatusService(get(), get(), get()) }
   single<AuthenticationTokenService> { SharedPreferencesAuthenticationTokenService(get()) }
+  single<LanguageService> {
+    LanguageService(
+      context = get(),
+      marketManager = get(),
+    )
+  }
 }
 
 val repositoriesModule = module {
@@ -590,7 +572,6 @@ val repositoriesModule = module {
   single { WhatsNewRepository(get(), get(), get()) }
   single { WelcomeRepository(get(), get()) }
   single { LanguageRepository(get()) }
-  single { MarketingRepository(get(), get()) }
   single { AdyenRepository(get(), get()) }
   single { EmbarkRepository(get(), get()) }
   single { ReferralsRepository(get()) }
@@ -599,10 +580,6 @@ val repositoriesModule = module {
   single { TrustlyRepository(get()) }
   single { GetMemberIdUseCase(get()) }
   single { PaymentRepository(get(), get()) }
-}
-
-val localeBroadcastManagerModule = module {
-  single<LocaleBroadcastManager> { LocaleBroadcastManager(get()) }
 }
 
 val notificationModule = module {
@@ -616,7 +593,7 @@ val notificationModule = module {
 val clockModule = module { single { Clock.systemDefaultZone() } }
 
 val localeManagerModule = module {
-  single { LocaleManager(get(), get()) }
+  single { GraphQLLocaleService(languageService = get()) }
 }
 
 val useCaseModule = module {
@@ -642,11 +619,28 @@ val useCaseModule = module {
   single<GetDanishAddressAutoCompletionUseCase> { GetDanishAddressAutoCompletionUseCase(get()) }
   single<GetFinalDanishAddressSelectionUseCase> { GetFinalDanishAddressSelectionUseCase(get()) }
   single { CreateQuoteCartUseCase(get(), get(), get()) }
-  single { SubmitMarketAndLanguagePreferencesUseCase(get(), get(), get(), get()) }
+  single {
+    SubmitMarketAndLanguagePreferencesUseCase(
+      apolloClient = get(),
+      marketManager = get(),
+      languageService = get(),
+    )
+  }
   single { GetMarketingBackgroundUseCase(get(), get()) }
-  single { UpdateApplicationLanguageUseCase(get(), get(), get()) }
+  single {
+    UpdateApplicationLanguageUseCase(
+      marketManager = get(),
+      languageService = get(),
+    )
+  }
   single { GetInitialMarketPickerValuesUseCase(get(), get(), get(), get()) }
-  single<EditCheckoutUseCase> { EditCheckoutUseCase(get(), get()) }
+  single<EditCheckoutUseCase> {
+    EditCheckoutUseCase(
+      localeManager = get(),
+      languageService = get(),
+      graphQLQueryHandler = get(),
+    )
+  }
   single<QuoteCartEditStartDateUseCase> { QuoteCartEditStartDateUseCase(get(), get()) }
   single<CreateAccessTokenUseCase> { CreateAccessTokenUseCaseImpl(get(), get()) }
   single<EditCampaignUseCase> { EditCampaignUseCase(get(), get()) }
@@ -655,6 +649,13 @@ val useCaseModule = module {
   single<ConnectPayoutUseCase> { ConnectPayoutUseCase(get(), get()) }
   single<GetExternalInsuranceProviderUseCase> { GetExternalInsuranceProviderUseCase(get(), get(), get()) }
   single<ObserveOfferStateUseCase> { ObserveOfferStateUseCase(get()) }
+  single<ChangeLanguageUseCase> {
+    ChangeLanguageUseCase(
+      apolloClient = get(),
+      languageService = get(),
+      cacheManager = get(),
+    )
+  }
 }
 
 val cacheManagerModule = module {

@@ -7,9 +7,9 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.QuoteCartEditQuoteMutation
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
+import com.hedvig.app.LanguageService
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
-import com.hedvig.app.util.LocaleManager
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonObject
@@ -18,7 +18,7 @@ import java.time.format.DateTimeFormatter
 
 class QuoteCartEditStartDateUseCase(
   private val apolloClient: ApolloClient,
-  private val localeManager: LocaleManager,
+  private val languageService: LanguageService,
 ) {
 
   object Success
@@ -52,7 +52,7 @@ class QuoteCartEditStartDateUseCase(
     startDate: LocalDate?,
   ): Either<ErrorMessage, Success> {
     val json = createPayload(startDate)
-    val mutation = QuoteCartEditQuoteMutation(quoteCartId.id, quoteId, json, localeManager.defaultLocale())
+    val mutation = QuoteCartEditQuoteMutation(quoteCartId.id, quoteId, json, languageService.getGraphQLLocale())
 
     return either {
       val result = apolloClient.mutation(mutation)

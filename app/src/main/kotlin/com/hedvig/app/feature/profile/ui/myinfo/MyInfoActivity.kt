@@ -5,12 +5,12 @@ import android.text.TextWatcher
 import android.view.HapticFeedbackConstants
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.menu.ActionMenuItemView
 import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.core.common.validation.validateEmail
-import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityMyInfoBinding
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MyInfoActivity : BaseActivity(R.layout.activity_my_info) {
+class MyInfoActivity : AppCompatActivity(R.layout.activity_my_info) {
   private val profileViewModel: ProfileViewModel by viewModel()
 
   private var emailTextWatcher: TextWatcher? = null

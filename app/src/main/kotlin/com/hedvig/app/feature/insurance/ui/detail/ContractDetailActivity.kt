@@ -15,7 +15,6 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import coil.ImageLoader
 import com.google.android.material.tabs.TabLayoutMediator
 import com.hedvig.android.market.MarketManager
-import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ContractDetailActivityBinding
 import com.hedvig.app.feature.insurance.ui.bindTo
@@ -34,9 +33,7 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
-
-  override val screenName = "insurance_detail"
+class ContractDetailActivity : AppCompatActivity(R.layout.contract_detail_activity) {
 
   private val binding by viewBinding(ContractDetailActivityBinding::bind)
   private val contractId: String

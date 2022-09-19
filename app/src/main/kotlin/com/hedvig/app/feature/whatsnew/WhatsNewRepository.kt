@@ -6,18 +6,18 @@ import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.graphql.WhatsNewQuery
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.app.BuildConfig
-import com.hedvig.app.util.LocaleManager
+import com.hedvig.app.LanguageService
 
 class WhatsNewRepository(
   private val apolloClient: ApolloClient,
   private val context: Context,
-  private val localeManager: LocaleManager,
+  private val languageService: LanguageService,
 ) {
   suspend fun whatsNew(sinceVersion: String?): OperationResult<WhatsNewQuery.Data> {
     return apolloClient
       .query(
         WhatsNewQuery(
-          locale = localeManager.defaultLocale(),
+          locale = languageService.getGraphQLLocale(),
           sinceVersion = sinceVersion ?: latestSeenNews(),
         ),
       )

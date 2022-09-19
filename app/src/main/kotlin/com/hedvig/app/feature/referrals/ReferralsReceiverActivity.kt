@@ -3,10 +3,10 @@ package com.hedvig.app.feature.referrals
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ReferralsReceiverActivityBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
@@ -17,7 +17,7 @@ import com.hedvig.app.util.extensions.viewBinding
 import e
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class ReferralsReceiverActivity : BaseActivity(R.layout.referrals_receiver_activity) {
+class ReferralsReceiverActivity : AppCompatActivity(R.layout.referrals_receiver_activity) {
   private val binding by viewBinding(ReferralsReceiverActivityBinding::bind)
   private val referralViewModel: RedeemCodeViewModel by viewModel()
 

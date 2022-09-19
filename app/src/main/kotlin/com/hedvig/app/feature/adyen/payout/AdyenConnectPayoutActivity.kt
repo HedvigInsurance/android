@@ -3,16 +3,15 @@ package com.hedvig.app.feature.adyen.payout
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.adyen.checkout.components.model.payments.Amount
 import com.adyen.checkout.core.api.Environment
 import com.adyen.checkout.dropin.DropIn
 import com.adyen.checkout.dropin.DropInConfiguration
 import com.adyen.checkout.dropin.DropInResult
-import com.hedvig.android.market.MarketManager
-import com.hedvig.app.BaseActivity
+import com.hedvig.app.LanguageService
 import com.hedvig.app.R
 import com.hedvig.app.feature.adyen.AdyenCurrency
-import com.hedvig.app.getLocale
 import com.hedvig.app.isDebug
 import e
 import org.koin.android.ext.android.inject
@@ -21,9 +20,9 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 /**
  * Hedvig paying to member
  */
-class AdyenConnectPayoutActivity : BaseActivity(R.layout.fragment_container_activity) {
+class AdyenConnectPayoutActivity : AppCompatActivity(R.layout.fragment_container_activity) {
   private val viewModel: AdyenConnectPayoutViewModel by viewModel()
-  private val marketManager: MarketManager by inject()
+  private val languageService: LanguageService by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -43,7 +42,7 @@ class AdyenConnectPayoutActivity : BaseActivity(R.layout.fragment_container_acti
           AdyenPayoutDropInService::class.java,
           getString(R.string.ADYEN_CLIENT_KEY),
         )
-        .setShopperLocale(getLocale(this, marketManager.market))
+        .setShopperLocale(languageService.getLocale())
         .setEnvironment(
           if (isDebug()) {
             Environment.TEST

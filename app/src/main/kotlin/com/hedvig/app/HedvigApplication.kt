@@ -3,7 +3,6 @@ package com.hedvig.app
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ProcessLifecycleOwner
-import androidx.preference.PreferenceManager
 import com.apollographql.apollo3.ApolloClient
 import com.datadog.android.Datadog
 import com.datadog.android.core.configuration.Configuration
@@ -12,12 +11,8 @@ import com.datadog.android.privacy.TrackingConsent
 import com.datadog.android.rum.GlobalRum
 import com.datadog.android.rum.RumMonitor
 import com.hedvig.android.apollo.graphql.NewSessionMutation
-import com.hedvig.android.core.common.preferences.PreferenceKey
 import com.hedvig.android.hanalytics.tracking.ApplicationLifecycleTracker
-import com.hedvig.android.market.Language
-import com.hedvig.android.market.MarketManager
 import com.hedvig.app.authenticate.AuthenticationTokenService
-import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.settings.Theme
 import com.hedvig.app.feature.whatsnew.WhatsNewRepository
 import com.hedvig.app.util.FirebaseCrashlyticsLogExceptionTree
@@ -36,7 +31,6 @@ import timber.log.Timber
 open class HedvigApplication : Application() {
   protected val apolloClient: ApolloClient by inject()
   private val whatsNewRepository: WhatsNewRepository by inject()
-  private val marketManager: MarketManager by inject()
   private val authenticationTokenService: AuthenticationTokenService by inject()
   private val applicationLifecycleTracker: ApplicationLifecycleTracker by inject()
 
@@ -46,23 +40,6 @@ open class HedvigApplication : Application() {
     Theme
       .fromSettings(this)
       ?.apply()
-
-    val previousLanguage = PreferenceManager
-      .getDefaultSharedPreferences(this)
-      .getString(PreferenceKey.SETTING_LANGUAGE, null)
-    if (previousLanguage == SettingsActivity.SYSTEM_DEFAULT) {
-      val market = marketManager.market
-      val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-      market?.let {
-        sharedPreferences.edit()
-          .putString(
-            PreferenceKey.SETTING_LANGUAGE,
-            Language.getAvailableLanguages(market).first().toString(),
-          ).commit()
-      }
-    }
-
-    Language.fromSettings(this, marketManager.market).apply(this)
 
     if (authenticationTokenService.authenticationToken == null && !getStoredBoolean(
         SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN,

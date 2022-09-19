@@ -5,21 +5,21 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.graphql.UpcomingAgreementQuery
 import com.hedvig.android.apollo.safeExecute
+import com.hedvig.app.LanguageService
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.Error
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.NoUpcomingAgreementChange
 import com.hedvig.app.feature.table.Table
-import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.toUpcomingAgreementResult
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
 
 class GetUpcomingAgreementUseCase(
   private val apolloClient: ApolloClient,
-  private val localeManager: LocaleManager,
+  private val languageService: LanguageService,
 ) {
 
   private fun upcomingAgreementQuery() = UpcomingAgreementQuery(
-    locale = localeManager.defaultLocale(),
+    locale = languageService.getGraphQLLocale(),
   )
 
   suspend fun invoke(): UpcomingAgreementResult {

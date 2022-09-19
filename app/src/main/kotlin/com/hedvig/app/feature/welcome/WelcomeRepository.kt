@@ -2,13 +2,13 @@ package com.hedvig.app.feature.welcome
 
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.WelcomeQuery
-import com.hedvig.app.util.LocaleManager
+import com.hedvig.app.LanguageService
 
 class WelcomeRepository(
   private val apolloClient: ApolloClient,
-  private val localeManager: LocaleManager,
+  private val languageService: LanguageService,
 ) {
   suspend fun fetchWelcomeScreens() = apolloClient
-    .query(WelcomeQuery(localeManager.defaultLocale()))
+    .query(WelcomeQuery(languageService.getGraphQLLocale()))
     .execute()
 }

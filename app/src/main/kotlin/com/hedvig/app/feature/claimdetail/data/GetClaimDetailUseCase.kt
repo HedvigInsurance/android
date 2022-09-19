@@ -10,11 +10,11 @@ import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.graphql.ClaimDetailsQuery
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
-import com.hedvig.app.util.LocaleManager
+import com.hedvig.app.LanguageService
 
 class GetClaimDetailUseCase(
   private val apolloClient: ApolloClient,
-  private val localeManager: LocaleManager,
+  private val languageService: LanguageService,
 ) {
   sealed interface Error {
     object NetworkError : Error
@@ -23,7 +23,7 @@ class GetClaimDetailUseCase(
 
   private val queryCall: ApolloCall<ClaimDetailsQuery.Data>
     get() = apolloClient
-      .query(ClaimDetailsQuery(localeManager.defaultLocale()))
+      .query(ClaimDetailsQuery(languageService.getGraphQLLocale()))
       .fetchPolicy(FetchPolicy.NetworkOnly)
 
   suspend operator fun invoke(claimId: String): Either<Error, ClaimDetailsQuery.ClaimDetail> {

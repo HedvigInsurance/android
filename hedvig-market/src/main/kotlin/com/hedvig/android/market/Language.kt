@@ -1,14 +1,6 @@
 package com.hedvig.android.market
 
-import android.annotation.TargetApi
-import android.content.Context
-import android.content.res.Configuration
-import android.os.Build
-import android.os.LocaleList
-import androidx.core.content.edit
-import androidx.preference.PreferenceManager
-import com.hedvig.android.core.common.preferences.PreferenceKey
-import java.util.Locale
+import com.hedvig.android.apollo.graphql.type.Locale
 
 enum class Language {
   SV_SE,
@@ -19,56 +11,6 @@ enum class Language {
   EN_DK,
   FR_FR,
   EN_FR;
-
-  fun apply(context: Context): Context {
-    val locale = into()
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-      apply(context, locale)
-    } else {
-      applySingleLocale(context, locale)
-    }
-  }
-
-  @Suppress("DEPRECATION")
-  private fun applySingleLocale(context: Context, locale: LocaleWrapper): Context {
-    if (locale !is LocaleWrapper.SingleLocale) {
-      throw RuntimeException("Invalid state: API version <= 21 but multiple locales was encountered")
-    }
-    val unwrappedLocale = locale.locale
-    Locale.setDefault(unwrappedLocale)
-
-    val config = Configuration(context.resources.configuration)
-    config.setLocale(unwrappedLocale)
-    context.resources.updateConfiguration(config, context.resources.displayMetrics)
-    return context.createConfigurationContext(config)
-  }
-
-  @TargetApi(Build.VERSION_CODES.N)
-  private fun apply(context: Context, locale: LocaleWrapper): Context {
-    return when (locale) {
-      is LocaleWrapper.SingleLocale -> {
-        applySingleLocale(context, locale)
-      }
-      is LocaleWrapper.MultipleLocales -> {
-        val locales = locale.locales
-        LocaleList.setDefault(locales)
-        val config = Configuration(context.resources.configuration)
-        config.setLocales(locales)
-        context.createConfigurationContext(config)
-      }
-    }
-  }
-
-  private fun into(): LocaleWrapper = when (this) {
-    SV_SE -> LocaleWrapper.SingleLocale(Locale.forLanguageTag(SETTING_SV_SE))
-    EN_SE -> LocaleWrapper.SingleLocale(Locale.forLanguageTag(SETTING_EN_SE))
-    NB_NO -> LocaleWrapper.SingleLocale(Locale.forLanguageTag(SETTING_NB_NO))
-    EN_NO -> LocaleWrapper.SingleLocale(Locale.forLanguageTag(SETTING_EN_NO))
-    DA_DK -> LocaleWrapper.SingleLocale(Locale.forLanguageTag(SETTING_DA_DK))
-    EN_DK -> LocaleWrapper.SingleLocale(Locale.forLanguageTag(SETTING_EN_DK))
-    FR_FR -> LocaleWrapper.SingleLocale(Locale.forLanguageTag(SETTING_FR_FR))
-    EN_FR -> LocaleWrapper.SingleLocale(Locale.forLanguageTag(SETTING_EN_FR))
-  }
 
   fun getLabel() = when (this) {
     SV_SE -> hedvig.resources.R.string.swedish
@@ -90,6 +32,17 @@ enum class Language {
     EN_DK -> SETTING_EN_DK
     FR_FR -> SETTING_FR_FR
     EN_FR -> SETTING_EN_FR
+  }
+
+  fun toLocale() = when (this) {
+    SV_SE -> Locale.sv_SE
+    EN_SE -> Locale.en_SE
+    NB_NO -> Locale.nb_NO
+    EN_NO -> Locale.en_NO
+    DA_DK -> Locale.da_DK
+    EN_DK -> Locale.en_DK
+    // Default to `en_SE` while FR-locales are not available
+    else -> Locale.en_SE
   }
 
   fun webPath() = when (this) {
@@ -114,7 +67,12 @@ enum class Language {
     const val SETTING_FR_FR = "fr-FR"
     const val SETTING_EN_FR = "en-FR"
 
-    fun from(value: String) = when (value) {
+    /**
+     * Parses the language tag, in BCP-47 format, to [Language]
+     * See [RFC-5646](https://www.rfc-editor.org/info/rfc5646) for more information
+     * @param value: A language tag in BCP-47 format
+     */
+    fun from(value: String): Language = when (value) {
       SETTING_SV_SE -> SV_SE
       SETTING_EN_SE -> EN_SE
       SETTING_NB_NO -> NB_NO
@@ -126,32 +84,6 @@ enum class Language {
       else -> throw RuntimeException("Invalid language value: $value")
     }
 
-    fun persist(context: Context, language: Language) {
-      PreferenceManager.getDefaultSharedPreferences(context).edit(commit = true) {
-        putString(PreferenceKey.SETTING_LANGUAGE, language.toString())
-      }
-    }
-
-    fun fromSettings(context: Context, market: Market?): Language = when (market) {
-      null -> from(SETTING_EN_SE)
-      else -> getLanguageFromSharedPreferences(context, market)
-    }
-
-    private fun getLanguageFromSharedPreferences(context: Context, market: Market): Language {
-      val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
-      val firstAvailableLanguage = getAvailableLanguages(market).first().toString()
-      val selectedLanguage = sharedPref.getString(
-        PreferenceKey.SETTING_LANGUAGE,
-        firstAvailableLanguage,
-      ) ?: firstAvailableLanguage
-
-      return if (selectedLanguage == SETTING_SYSTEM_DEFAULT) {
-        from(firstAvailableLanguage)
-      } else {
-        from(selectedLanguage)
-      }
-    }
-
     fun getAvailableLanguages(market: Market): List<Language> {
       return when (market) {
         Market.SE -> listOf(SV_SE, EN_SE)
@@ -160,10 +92,5 @@ enum class Language {
         Market.FR -> listOf(FR_FR, EN_FR)
       }
     }
-  }
-
-  sealed class LocaleWrapper {
-    data class SingleLocale(val locale: Locale) : LocaleWrapper()
-    data class MultipleLocales(val locales: LocaleList) : LocaleWrapper()
   }
 }
