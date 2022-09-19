@@ -630,7 +630,12 @@ val useCaseModule = module {
   single { CreateQuoteCartUseCase(get(), get(), get()) }
   single { SubmitMarketAndLanguagePreferencesUseCase(get(), get(), get()) }
   single { GetMarketingBackgroundUseCase(get(), get()) }
-  single { UpdateApplicationLanguageUseCase(get()) }
+  single {
+    UpdateApplicationLanguageUseCase(
+      marketManager = get(),
+      languageService = get(),
+    )
+  }
   single { GetInitialMarketPickerValuesUseCase(get(), get(), get(), get()) }
   single<EditCheckoutUseCase> { EditCheckoutUseCase(get(), get()) }
   single<QuoteCartEditStartDateUseCase> { QuoteCartEditStartDateUseCase(get(), get()) }

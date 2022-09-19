@@ -1,16 +1,16 @@
 package com.hedvig.app.feature.marketing.data
 
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.os.LocaleListCompat
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
+import com.hedvig.app.LanguageService
 
 class UpdateApplicationLanguageUseCase(
   private val marketManager: MarketManager,
+  private val languageService: LanguageService,
 ) {
   operator fun invoke(market: Market, language: Language) {
     marketManager.market = market
-    AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(language.toString()))
+    languageService.setLanguage(language)
   }
 }

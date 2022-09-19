@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.embark
 
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -43,6 +42,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
+import com.hedvig.app.LanguageService
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
@@ -199,8 +199,8 @@ class EmbarkStoryTesterViewModel(
   private val marketManager: MarketManager,
   private val authenticationTokenService: AuthenticationTokenService,
   private val apolloClient: ApolloClient,
-  private val context: Context,
   private val createQuoteCartUseCase: CreateQuoteCartUseCase,
+  private val languageService: LanguageService,
 ) : ViewModel() {
 
   data class ViewState(
@@ -237,7 +237,7 @@ class EmbarkStoryTesterViewModel(
   fun onMarketClick(market: Market) {
     marketManager.market = market
     val language = Language.getAvailableLanguages(market).first()
-    // TODO: Update application language
+    languageService.setLanguage(language)
   }
 
   fun onStoryName(storyName: String) {
