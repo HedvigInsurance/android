@@ -36,8 +36,8 @@ class WhatsNewTest {
       WhatsNewRepository(
         apolloClient = apolloClient,
         context = mockk(),
-        localeManager = mockk {
-          every { this@mockk.defaultLocale() } returns Locale.sv_SE
+        languageService = mockk {
+          every { getGraphQLLocale() } returns Locale.sv_SE
         },
       ),
     )

@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.embark
 
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -37,17 +36,18 @@ import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.ExchangeTokenMutation
+import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
+import com.hedvig.app.LanguageService
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.home.ui.changeaddress.appendQuoteCartId
 import com.hedvig.app.feature.offer.model.QuoteCartId
-import com.hedvig.app.util.apollo.safeQuery
-import com.hedvig.app.util.apollo.toEither
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -199,8 +199,8 @@ class EmbarkStoryTesterViewModel(
   private val marketManager: MarketManager,
   private val authenticationTokenService: AuthenticationTokenService,
   private val apolloClient: ApolloClient,
-  private val context: Context,
   private val createQuoteCartUseCase: CreateQuoteCartUseCase,
+  private val languageService: LanguageService,
 ) : ViewModel() {
 
   data class ViewState(
@@ -237,7 +237,7 @@ class EmbarkStoryTesterViewModel(
   fun onMarketClick(market: Market) {
     marketManager.market = market
     val language = Language.getAvailableLanguages(market).first()
-    Language.persist(context, language)
+    languageService.setLanguage(language)
   }
 
   fun onStoryName(storyName: String) {
@@ -266,7 +266,7 @@ class EmbarkStoryTesterViewModel(
       when (
         val result = apolloClient
           .mutation(ExchangeTokenMutation(exchangeToken))
-          .safeQuery()
+          .safeExecute()
           .toEither()
       ) {
         is Either.Left -> _viewState.update {

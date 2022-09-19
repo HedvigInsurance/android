@@ -1,12 +1,12 @@
 package com.hedvig.app.feature.embark
 
 import com.adyen.checkout.core.model.getStringOrNull
+import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.graphql.fragment.ApiFragment
 import com.hedvig.android.core.common.getWithDotNotation
 import com.hedvig.android.core.common.toStringArray
 import com.hedvig.app.util.apollo.FileVariable
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
-import com.hedvig.app.util.apollo.QueryResult
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -36,14 +36,14 @@ class GraphQLQueryUseCase(
       val result =
         graphQLQueryHandler.graphQLQuery(graphQLQuery.queryData.query, variables, fileVariables)
     ) {
-      is QueryResult.Error -> GraphQLQueryResult.Error(result.message, graphQLQuery.getErrorPassageName())
-      is QueryResult.Success -> handleQueryCallSuccess(graphQLQuery, result)
+      is OperationResult.Error -> GraphQLQueryResult.Error(result.message, graphQLQuery.getErrorPassageName())
+      is OperationResult.Success -> handleQueryCallSuccess(graphQLQuery, result)
     }
   }
 
   private fun handleQueryCallSuccess(
     graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery,
-    result: QueryResult.Success<JSONObject>,
+    result: OperationResult.Success<JSONObject>,
   ) = when {
     hasErrors(graphQLQuery) || result.data.isNull(DATA_TITLE) -> GraphQLQueryResult.Error(
       result.getErrorMessage(),
@@ -61,14 +61,14 @@ class GraphQLQueryUseCase(
       val result =
         graphQLQueryHandler.graphQLQuery(graphQLMutation.mutationData.mutation, variables, fileVariables)
     ) {
-      is QueryResult.Error -> GraphQLQueryResult.Error(result.message, graphQLMutation.getErrorPassageName())
-      is QueryResult.Success -> handleMutationCallSuccess(graphQLMutation, result)
+      is OperationResult.Error -> GraphQLQueryResult.Error(result.message, graphQLMutation.getErrorPassageName())
+      is OperationResult.Success -> handleMutationCallSuccess(graphQLMutation, result)
     }
   }
 
   private fun handleMutationCallSuccess(
     graphQLMutation: ApiFragment.AsEmbarkApiGraphQLMutation,
-    result: QueryResult.Success<JSONObject>,
+    result: OperationResult.Success<JSONObject>,
   ) = when {
     hasErrors(graphQLMutation) || result.data.isNull(DATA_TITLE) -> GraphQLQueryResult.Error(
       result.getErrorMessage(),
@@ -78,7 +78,7 @@ class GraphQLQueryUseCase(
   }
 
   private fun parseValuesFromJsonResult(
-    result: QueryResult.Success<JSONObject>,
+    result: OperationResult.Success<JSONObject>,
     graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery,
   ): GraphQLQueryResult.ValuesFromResponse {
     val response = result.data.getJSONObject(DATA_TITLE)
@@ -102,7 +102,7 @@ class GraphQLQueryUseCase(
   }
 
   private fun parseValuesFromJsonResult(
-    result: QueryResult.Success<JSONObject>,
+    result: OperationResult.Success<JSONObject>,
     graphQLMutation: ApiFragment.AsEmbarkApiGraphQLMutation,
   ): GraphQLQueryResult.ValuesFromResponse {
     val response = result.data.getJSONObject(DATA_TITLE)
@@ -157,7 +157,7 @@ class GraphQLQueryUseCase(
     .errors.first().fragments.graphQLErrorsFragment
     .next.fragments.embarkLinkFragment.name
 
-  private fun QueryResult.Success<JSONObject>.getErrorMessage(): String? {
+  private fun OperationResult.Success<JSONObject>.getErrorMessage(): String? {
     return (data.get(ERROR_TITLE) as JSONArray).getJSONObject(0).getStringOrNull(ERROR_MESSAGE)
   }
 

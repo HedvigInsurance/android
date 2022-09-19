@@ -1,6 +1,5 @@
 package com.hedvig.android.market
 
-import android.content.Context
 import android.net.Uri
 import androidx.annotation.StringRes
 import com.hedvig.android.apollo.graphql.fragment.ActivePaymentMethodsFragment
@@ -68,8 +67,8 @@ enum class Market {
   }
 }
 
-fun Market.createOnboardingUri(context: Context, baseUrl: String): Uri {
-  val webPath = Language.fromSettings(context, this).webPath()
+fun Market.createOnboardingUri(baseUrl: String, language: Language): Uri {
+  val webPath = language.webPath()
   val builder = Uri.Builder()
     .scheme("https")
     .authority(baseUrl)

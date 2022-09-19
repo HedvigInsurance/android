@@ -10,6 +10,7 @@ import com.hedvig.android.apollo.graphql.PaymentQuery
 import com.hedvig.android.apollo.graphql.type.PayinMethodStatus
 import com.hedvig.android.apollo.graphql.type.PayoutMethodStatus
 import com.hedvig.android.market.MarketManager
+import com.hedvig.app.LanguageService
 import com.hedvig.app.R
 import com.hedvig.app.databinding.AdyenPayinDetailsBinding
 import com.hedvig.app.databinding.CampaignInformationSectionBinding
@@ -44,6 +45,7 @@ import e
 class PaymentAdapter(
   private val marketManager: MarketManager,
   private val fragmentManager: FragmentManager,
+  private val languageService: LanguageService,
 ) : ListAdapter<PaymentModel, PaymentAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
   override fun getItemViewType(position: Int) = when (getItem(position)) {
@@ -66,11 +68,11 @@ class PaymentAdapter(
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
     R.layout.payment_header -> ViewHolder.Header(parent)
     R.layout.failed_payments_card -> ViewHolder.FailedPayments(parent)
-    R.layout.next_payment_card -> ViewHolder.NextPayment(parent)
+    R.layout.next_payment_card -> ViewHolder.NextPayment(parent, languageService)
     R.layout.connect_payin_card -> ViewHolder.ConnectPayment(parent)
     R.layout.campaign_information_section -> ViewHolder.CampaignInformation(parent)
     R.layout.payment_history_header -> ViewHolder.PaymentHistoryHeader(parent)
-    R.layout.payment_history_item -> ViewHolder.Charge(parent)
+    R.layout.payment_history_item -> ViewHolder.Charge(parent, languageService)
     R.layout.payment_history_link -> ViewHolder.PaymentHistoryLink(parent)
     R.layout.trustly_payin_details -> ViewHolder.TrustlyPayinDetails(parent)
     R.layout.adyen_payin_details -> ViewHolder.AdyenPayinDetails(parent)
@@ -124,8 +126,10 @@ class PaymentAdapter(
       }
     }
 
-    class NextPayment(parent: ViewGroup) :
-      ViewHolder(parent.inflate(R.layout.next_payment_card)) {
+    class NextPayment(
+      parent: ViewGroup,
+      private val languageService: LanguageService,
+    ) : ViewHolder(parent.inflate(R.layout.next_payment_card)) {
       private val binding by viewBinding(NextPaymentCardBinding::bind)
 
       init {
@@ -143,7 +147,7 @@ class PaymentAdapter(
 
         amount.text =
           data.inner.chargeEstimation.charge.fragments.monetaryAmountFragment.toMonetaryAmount()
-            .format(amount.context, marketManager.market)
+            .format(languageService.getLocale())
 
         val discountAmount =
           data.inner.chargeEstimation.discount.fragments.monetaryAmountFragment.toMonetaryAmount()
@@ -158,7 +162,7 @@ class PaymentAdapter(
             ?.fragments
             ?.monetaryAmountFragment
             ?.toMonetaryAmount()
-            ?.format(gross.context, marketManager.market)?.let { gross.text = it }
+            ?.format(languageService.getLocale())?.let { gross.text = it }
         }
 
         if (isActive(data.inner.contracts)) {
@@ -281,8 +285,10 @@ class PaymentAdapter(
       ) = Unit
     }
 
-    class Charge(parent: ViewGroup) :
-      ViewHolder(parent.inflate(R.layout.payment_history_item)) {
+    class Charge(
+      parent: ViewGroup,
+      private val languageService: LanguageService,
+    ) : ViewHolder(parent.inflate(R.layout.payment_history_item)) {
       private val binding by viewBinding(PaymentHistoryItemBinding::bind)
       override fun bind(
         data: PaymentModel,
@@ -296,7 +302,7 @@ class PaymentAdapter(
         date.text =
           data.inner.date.format(PaymentActivity.DATE_FORMAT)
         amount.text = data.inner.amount.fragments.monetaryAmountFragment.toMonetaryAmount()
-          .format(amount.context, marketManager.market)
+          .format(languageService.getLocale())
       }
     }
 

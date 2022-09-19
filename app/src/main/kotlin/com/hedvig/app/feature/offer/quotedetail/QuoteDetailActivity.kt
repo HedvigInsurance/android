@@ -3,6 +3,7 @@ package com.hedvig.app.feature.offer.quotedetail
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.ConcatAdapter
@@ -10,7 +11,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import coil.ImageLoader
 import com.carousell.concatadapterextension.ConcatItemDecoration
 import com.carousell.concatadapterextension.ConcatSpanSizeLookup
-import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.QuoteDetailActivityBinding
 import com.hedvig.app.feature.documents.DocumentAdapter
@@ -26,7 +26,7 @@ import dev.chrisbanes.insetter.Insetter
 import e
 import org.koin.android.ext.android.inject
 
-class QuoteDetailActivity : BaseActivity(R.layout.quote_detail_activity) {
+class QuoteDetailActivity : AppCompatActivity(R.layout.quote_detail_activity) {
   private val binding by viewBinding(QuoteDetailActivityBinding::bind)
   private val imageLoader: ImageLoader by inject()
 

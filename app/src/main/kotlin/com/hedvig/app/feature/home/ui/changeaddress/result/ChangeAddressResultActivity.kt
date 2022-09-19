@@ -4,8 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressResultActivityBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -18,9 +18,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
-class ChangeAddressResultActivity : BaseActivity(R.layout.change_address_result_activity) {
-
-  override val screenName = "moving_flow_signed"
+class ChangeAddressResultActivity : AppCompatActivity(R.layout.change_address_result_activity) {
 
   private val binding by viewBinding(ChangeAddressResultActivityBinding::bind)
 

@@ -4,8 +4,8 @@ import arrow.core.continuations.either
 import arrow.core.merge
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.CreateOtpAttemptMutation
-import com.hedvig.app.util.apollo.safeQuery
-import com.hedvig.app.util.apollo.toEither
+import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.apollo.toEither
 import e
 
 interface CreateOtpAttemptUseCase {
@@ -20,7 +20,7 @@ class CreateOtpAttemptUseCaseImpl(
     return either {
       val result = apolloClient
         .mutation(CreateOtpAttemptMutation(email))
-        .safeQuery()
+        .safeExecute()
         .toEither {
           if (it != null) e { it }
           CreateOtpResult.Error

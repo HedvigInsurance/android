@@ -3,12 +3,12 @@ package com.hedvig.app.feature.zignsec
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.hedvig.android.market.Market
-import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.SimpleSignAuthenticationActivityBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class SimpleSignAuthenticationActivity : BaseActivity(R.layout.simple_sign_authentication_activity) {
+class SimpleSignAuthenticationActivity : AppCompatActivity(R.layout.simple_sign_authentication_activity) {
   private val binding by viewBinding(SimpleSignAuthenticationActivityBinding::bind)
   private val viewModel: SimpleSignAuthenticationViewModel by viewModel { parametersOf(data) }
 

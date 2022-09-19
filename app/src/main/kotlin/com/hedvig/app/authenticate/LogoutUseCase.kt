@@ -1,11 +1,11 @@
 package com.hedvig.app.authenticate
 
 import com.apollographql.apollo3.ApolloClient
+import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.service.push.PushTokenManager
-import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.reconnectSubscriptions
 
 class LogoutUseCase(
@@ -24,8 +24,8 @@ class LogoutUseCase(
   }
 
   suspend fun invoke(): LogoutResult = when (val result = userRepository.logout()) {
-    is QueryResult.Error -> LogoutResult.Error(result.message)
-    is QueryResult.Success -> {
+    is OperationResult.Error -> LogoutResult.Error(result.message)
+    is OperationResult.Success -> {
       clearLoginStatus()
       clearMarket()
       clearAuthenticationToken()

@@ -4,7 +4,7 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.AuthStatusSubscription
 import com.hedvig.android.apollo.graphql.LogoutMutation
 import com.hedvig.android.apollo.graphql.SwedishBankIdAuthMutation
-import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.android.apollo.safeExecute
 
 class UserRepository(
   private val apolloClient: ApolloClient,
@@ -15,5 +15,5 @@ class UserRepository(
   fun subscribeAuthStatus() =
     apolloClient.subscription(AuthStatusSubscription()).toFlow()
 
-  suspend fun logout() = apolloClient.mutation(LogoutMutation()).safeQuery()
+  suspend fun logout() = apolloClient.mutation(LogoutMutation()).safeExecute()
 }

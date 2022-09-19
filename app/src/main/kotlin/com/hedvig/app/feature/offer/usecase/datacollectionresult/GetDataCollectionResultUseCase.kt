@@ -1,9 +1,9 @@
 package com.hedvig.app.feature.offer.usecase.datacollectionresult
 
 import com.apollographql.apollo3.ApolloClient
+import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.graphql.DataCollectionResultQuery
-import com.hedvig.app.util.apollo.QueryResult
-import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.android.apollo.safeExecute
 
 class GetDataCollectionResultUseCase(
   private val apolloClient: ApolloClient,
@@ -18,10 +18,10 @@ class GetDataCollectionResultUseCase(
   suspend operator fun invoke(referenceUuid: String): Result {
     val result = apolloClient
       .query(DataCollectionResultQuery(referenceUuid))
-      .safeQuery()
+      .safeExecute()
     return when (result) {
-      is QueryResult.Error -> Result.Error(referenceUuid)
-      is QueryResult.Success -> Result.Success(referenceUuid, DataCollectionResult.fromDto(result.data))
+      is OperationResult.Error -> Result.Error(referenceUuid)
+      is OperationResult.Success -> Result.Success(referenceUuid, DataCollectionResult.fromDto(result.data))
     }
   }
 }

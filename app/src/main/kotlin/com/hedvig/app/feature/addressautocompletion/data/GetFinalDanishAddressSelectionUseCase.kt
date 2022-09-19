@@ -2,9 +2,9 @@ package com.hedvig.app.feature.addressautocompletion.data
 
 import arrow.core.Either
 import arrow.core.getOrElse
+import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.graphql.type.AddressAutocompleteType
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
-import com.hedvig.app.util.apollo.QueryResult
 
 /**
  * Returns a [DanishAddress] when with all inputs considered, the selection is considered a final address selection
@@ -34,7 +34,7 @@ class GetFinalDanishAddressSelectionUseCase(
     return FinalAddressResult.NotFinalAddress
   }
 
-  private suspend fun fetchNewResults(address: DanishAddress): Either<QueryResult.Error, List<DanishAddress>> {
+  private suspend fun fetchNewResults(address: DanishAddress): Either<OperationResult.Error, List<DanishAddress>> {
     return getDanishAddressAutoCompletionUseCase
       .invoke(address, AddressAutocompleteType.APARTMENT)
       .map(AddressAutoCompleteResults::resultList)

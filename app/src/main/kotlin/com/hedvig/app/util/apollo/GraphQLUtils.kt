@@ -1,10 +1,7 @@
 package com.hedvig.app.util.apollo
 
-import android.content.Context
 import com.hedvig.android.apollo.graphql.fragment.MonetaryAmountFragment
 import com.hedvig.android.apollo.graphql.type.Locale
-import com.hedvig.android.market.Market
-import com.hedvig.app.getLocale
 import org.javamoney.moneta.Money
 import java.math.BigDecimal
 import java.text.NumberFormat
@@ -33,11 +30,6 @@ fun Locale.toWebLocaleTag() = when (this) {
 
 fun MonetaryAmountFragment.toMonetaryAmount(): MonetaryAmount =
   Money.of(amount.toBigDecimal(), currency)
-
-fun MonetaryAmount.format(context: Context, market: Market?, minimumDecimals: Int = 0): String {
-  val locale = getLocale(context, market)
-  return format(locale, minimumDecimals)
-}
 
 fun MonetaryAmount.format(locale: java.util.Locale, minimumDecimals: Int = 0): String =
   NumberFormat.getCurrencyInstance(locale).also {

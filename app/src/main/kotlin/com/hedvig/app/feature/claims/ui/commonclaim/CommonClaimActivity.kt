@@ -4,9 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import coil.ImageLoader
 import coil.load
-import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityCommonClaimBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.bulletpoint.BulletPointsAdapter
@@ -22,7 +22,7 @@ import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
-class CommonClaimActivity : BaseActivity(R.layout.activity_common_claim) {
+class CommonClaimActivity : AppCompatActivity(R.layout.activity_common_claim) {
 
   private val imageLoader: ImageLoader by inject()
   private val binding by viewBinding(ActivityCommonClaimBinding::bind)

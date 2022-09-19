@@ -1,11 +1,11 @@
 package com.hedvig.app.authenticate.insurely
 
 import com.apollographql.apollo3.ApolloClient
+import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.graphql.ExternalInsuranceProviderV2Subscription
 import com.hedvig.android.apollo.graphql.type.DataCollectionStatus
+import com.hedvig.android.apollo.toSafeFlow
 import com.hedvig.android.market.MarketManager
-import com.hedvig.app.util.apollo.QueryResult
-import com.hedvig.app.util.apollo.safeSubscription
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -18,9 +18,9 @@ class GetDataCollectionUseCase(
     reference: String,
   ): Flow<DataCollectionResult> {
     val subscription = ExternalInsuranceProviderV2Subscription(reference)
-    return apolloClient.subscription(subscription).safeSubscription().map { result ->
+    return apolloClient.subscription(subscription).toSafeFlow().map { result ->
       when (result) {
-        is QueryResult.Success -> {
+        is OperationResult.Success -> {
           val extraInfo = result.data?.dataCollectionStatusV2?.extraInformation
           val swedishAutoStartToken = extraInfo?.asSwedishBankIdExtraInfo?.autoStartToken
           val norwegianBankIdWords = extraInfo?.asNorwegianBankIdExtraInfo?.norwegianBankIdWords
@@ -40,7 +40,7 @@ class GetDataCollectionUseCase(
             )
           }
         }
-        is QueryResult.Error -> DataCollectionResult.Error.QueryError
+        is OperationResult.Error -> DataCollectionResult.Error.QueryError
       }
     }
   }

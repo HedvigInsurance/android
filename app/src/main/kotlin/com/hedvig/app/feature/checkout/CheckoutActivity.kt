@@ -5,13 +5,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.transition.TransitionManager
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
-import com.hedvig.app.BaseActivity
+import com.hedvig.app.LanguageService
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityCheckoutBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -25,10 +26,11 @@ import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.minus
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
+class CheckoutActivity : AppCompatActivity(R.layout.activity_checkout) {
   private val parameter by lazy {
     intent.getParcelableExtra<CheckoutParameter>(PARAMETER)
       ?: throw IllegalArgumentException("No parameter found for ${this.javaClass.simpleName}")
@@ -36,6 +38,7 @@ class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
   private val viewModel: CheckoutViewModel by viewModel {
     parametersOf(parameter.selectedVariantId, parameter.quoteCartId)
   }
+  private val languageService: LanguageService by inject()
   private val binding by viewBinding(ActivityCheckoutBinding::bind)
   private lateinit var progressDialog: AlertDialog
 
@@ -130,10 +133,10 @@ class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
         binding.originalCost.isVisible = !(titleState.netAmount - titleState.grossAmount).isZero
         binding.emailEditText.setText(titleState.email)
         binding.title.text = titleState.bundleName
-        val netAmount = titleState.netAmount.format(this, titleState.market)
+        val netAmount = titleState.netAmount.format(languageService.getLocale())
         val netString = getString(hedvig.resources.R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, netAmount)
         binding.cost.text = netString
-        binding.originalCost.text = titleState.grossAmount.format(this, titleState.market)
+        binding.originalCost.text = titleState.grossAmount.format(languageService.getLocale())
         binding.originalCost.setStrikethrough(true)
       }
       CheckoutViewModel.TitleViewState.Loading -> {

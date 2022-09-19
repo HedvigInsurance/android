@@ -1,27 +1,20 @@
 package com.hedvig.app.service.push
 
-import android.content.Context
 import androidx.work.BackoffPolicy
+import androidx.work.Constraints
 import androidx.work.Data
+import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import com.hedvig.android.market.Language
-import com.hedvig.android.market.MarketManager
 import com.hedvig.app.service.push.senders.NotificationSender
 import com.hedvig.app.util.extensions.injectAll
-import org.koin.android.ext.android.inject
 import java.util.concurrent.TimeUnit
 
 class PushNotificationService : FirebaseMessagingService() {
-  private val marketManager: MarketManager by inject()
 
   private val notificationSenders by injectAll<NotificationSender>()
-
-  override fun attachBaseContext(base: Context) {
-    super.attachBaseContext(Language.fromSettings(base, marketManager.market).apply(base))
-  }
 
   override fun onCreate() {
     super.onCreate()
@@ -32,6 +25,11 @@ class PushNotificationService : FirebaseMessagingService() {
   override fun onNewToken(token: String) {
     val work = OneTimeWorkRequest
       .Builder(PushNotificationWorker::class.java)
+      .setConstraints(
+        Constraints.Builder()
+          .setRequiredNetworkType(NetworkType.CONNECTED)
+          .build(),
+      )
       .setBackoffCriteria(BackoffPolicy.LINEAR, 1, TimeUnit.SECONDS)
       .setInputData(
         Data.Builder()

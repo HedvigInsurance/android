@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,7 +21,7 @@ import com.hedvig.android.core.designsystem.theme.hedvigOffWhite
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.createOnboardingUri
-import com.hedvig.app.BaseActivity
+import com.hedvig.app.LanguageService
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.LoginDialog
 import com.hedvig.app.feature.marketing.data.MarketingBackground
@@ -33,9 +34,11 @@ import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.hanalytics.LoginMethod
 import e
 import org.koin.android.ext.android.get
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
-class MarketingActivity : BaseActivity() {
+class MarketingActivity : AppCompatActivity() {
+  private val languageService: LanguageService by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -79,7 +82,7 @@ class MarketingActivity : BaseActivity() {
 
   private fun openOnboarding(market: Market) {
     val baseUrl = getString(R.string.WEB_BASE_URL).substringAfter("//")
-    val uri = market.createOnboardingUri(this, baseUrl)
+    val uri = market.createOnboardingUri(baseUrl, languageService.getLanguage())
     val browserIntent = Intent(Intent.ACTION_VIEW, uri)
 
     if (browserIntent.resolveActivity(packageManager) != null) {

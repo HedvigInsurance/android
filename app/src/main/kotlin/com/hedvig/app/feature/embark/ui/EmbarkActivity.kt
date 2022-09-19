@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
@@ -17,7 +18,6 @@ import com.google.android.material.transition.MaterialSharedAxis
 import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
 import com.hedvig.android.core.common.android.whenApiVersion
 import com.hedvig.android.market.MarketManager
-import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityEmbarkBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
@@ -60,7 +60,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.time.Duration.Companion.milliseconds
 
-class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
+class EmbarkActivity : AppCompatActivity(R.layout.activity_embark) {
 
   private val storyTitle: String by lazy {
     intent.getStringExtra(STORY_TITLE)

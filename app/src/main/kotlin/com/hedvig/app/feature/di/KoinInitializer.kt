@@ -10,6 +10,7 @@ import com.hedvig.android.hanalytics.di.hAnalyticsModule
 import com.hedvig.android.hanalytics.di.trackerModule
 import com.hedvig.android.hanalytics.engineering.di.HAnalyticsEngineeringModuleImpl
 import com.hedvig.android.market.di.marketManagerModule
+import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.app.adyenModule
 import com.hedvig.app.apolloClientModule
 import com.hedvig.app.applicationModule
@@ -27,7 +28,6 @@ import com.hedvig.app.graphQLQueryModule
 import com.hedvig.app.homeModule
 import com.hedvig.app.insuranceModule
 import com.hedvig.app.insurelyAuthModule
-import com.hedvig.app.localeBroadcastManagerModule
 import com.hedvig.app.localeManagerModule
 import com.hedvig.app.loggedInModule
 import com.hedvig.app.notificationModule
@@ -43,6 +43,7 @@ import com.hedvig.app.retrievePriceModule
 import com.hedvig.app.serviceModule
 import com.hedvig.app.sharedPreferencesModule
 import com.hedvig.app.stringConstantsModule
+import com.hedvig.app.tempLocaleModule
 import com.hedvig.app.textActionSetModule
 import com.hedvig.app.trustlyModule
 import com.hedvig.app.useCaseModule
@@ -61,6 +62,7 @@ class KoinInitializer : Initializer<KoinApplication> {
     androidContext(context.applicationContext)
     modules(
       listOf(
+        HAnalyticsEngineeringModuleImpl().getModule(),
         adyenModule,
         apolloClientModule,
         applicationModule,
@@ -79,15 +81,14 @@ class KoinInitializer : Initializer<KoinApplication> {
         externalInsuranceModule,
         featureManagerModule,
         graphQLQueryModule,
-        HAnalyticsEngineeringModuleImpl().getModule(),
         hAnalyticsModule,
         homeModule,
         insuranceModule,
         insurelyAuthModule,
-        localeBroadcastManagerModule,
         localeManagerModule,
         loggedInModule,
         marketManagerModule,
+        notificationBadgeModule,
         notificationModule,
         numberActionSetModule,
         offerModule,
@@ -101,6 +102,7 @@ class KoinInitializer : Initializer<KoinApplication> {
         serviceModule,
         sharedPreferencesModule,
         stringConstantsModule,
+        tempLocaleModule,
         textActionSetModule,
         trackerModule,
         trustlyModule,

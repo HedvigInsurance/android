@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
@@ -17,7 +18,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.android.market.Market
-import com.hedvig.app.BaseActivity
 import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.authenticate.insurely.InsurelyDialog
 import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoActivity
@@ -29,7 +29,7 @@ import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class RetrievePriceInfoActivity : BaseActivity() {
+class RetrievePriceInfoActivity : AppCompatActivity() {
 
   private val parameter by lazy {
     intent.getParcelableExtra<InsuranceProviderParameter>(PARAMETER)

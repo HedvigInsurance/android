@@ -13,7 +13,7 @@ import com.hedvig.app.util.LazyIntentsActivityScenarioRule
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
-import com.hedvig.app.util.market
+import com.hedvig.app.util.locale
 import com.hedvig.app.util.stubExternalIntents
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.kakao.intent.KIntent
@@ -58,7 +58,7 @@ class ReferralsInformationActivityTest : TestCase() {
     onScreen<ReferralsInformationScreen> {
       body {
         containsText(
-          Money.of(10, "SEK").format(context(), market()),
+          Money.of(10, "SEK").format(locale()),
         )
       }
       termsAndConditions { click() }
