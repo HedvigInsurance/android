@@ -21,7 +21,7 @@ class GetInitialMarketPickerValuesUseCase(
   suspend operator fun invoke(): Pair<Market, Language> {
     val currentMarket = marketManager.market
     if (currentMarket != null) {
-      val currentLanguage = languageService.getLanguage() ?: currentMarket.defaultLanguage()
+      val currentLanguage = languageService.getLanguage()
       return currentMarket to currentLanguage
     }
 

@@ -4,17 +4,17 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.graphql.CrossSellsQuery
 import com.hedvig.android.apollo.safeExecute
+import com.hedvig.app.LanguageService
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
-import com.hedvig.app.util.GraphQLLocaleService
 import e
 
 class GetCrossSellsUseCase(
   private val apolloClient: ApolloClient,
-  private val localeManager: GraphQLLocaleService,
+  private val languageService: LanguageService,
 ) {
   suspend operator fun invoke() = when (
     val result = apolloClient
-      .query(CrossSellsQuery(localeManager.defaultLocale()))
+      .query(CrossSellsQuery(languageService.getGraphQLLocale()))
       .safeExecute()
   ) {
     is OperationResult.Success -> {

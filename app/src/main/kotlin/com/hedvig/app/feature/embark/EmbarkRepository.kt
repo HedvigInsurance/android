@@ -5,16 +5,16 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
+import com.hedvig.app.LanguageService
 import com.hedvig.app.util.ErrorMessage
-import com.hedvig.app.util.GraphQLLocaleService
 
 class EmbarkRepository(
   private val apolloClient: ApolloClient,
-  private val localeManager: GraphQLLocaleService,
+  private val languageService: LanguageService,
 ) {
   suspend fun embarkStory(name: String): Either<ErrorMessage, EmbarkStoryQuery.Data> {
     return apolloClient
-      .query(EmbarkStoryQuery(name, localeManager.defaultLocale().rawValue))
+      .query(EmbarkStoryQuery(name, languageService.getGraphQLLocale().rawValue))
       .safeExecute()
       .toEither(::ErrorMessage)
   }

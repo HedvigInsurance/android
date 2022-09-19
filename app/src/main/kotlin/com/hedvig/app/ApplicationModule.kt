@@ -121,7 +121,6 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInViewModelImpl
 import com.hedvig.app.feature.marketing.MarketingViewModel
 import com.hedvig.app.feature.marketing.data.GetInitialMarketPickerValuesUseCase
 import com.hedvig.app.feature.marketing.data.GetMarketingBackgroundUseCase
-import com.hedvig.app.feature.marketing.data.MarketingRepository
 import com.hedvig.app.feature.marketing.data.SubmitMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.feature.marketing.data.UpdateApplicationLanguageUseCase
 import com.hedvig.app.feature.marketpicker.LanguageRepository
@@ -505,7 +504,7 @@ val stringConstantsModule = module {
 //  separate module and provided directly.
 val tempLocaleModule = module {
   single<() -> com.hedvig.android.apollo.graphql.type.Locale>(getGraphqlLocaleFunctionQualifier) {
-    { get<GraphQLLocaleService>().defaultLocale() }
+    { get<LanguageService>().getGraphQLLocale() }
   }
 }
 
@@ -556,6 +555,12 @@ val serviceModule = module {
   single { FileService(get()) }
   single<LoginStatusService> { SharedPreferencesLoginStatusService(get(), get(), get()) }
   single<AuthenticationTokenService> { SharedPreferencesAuthenticationTokenService(get()) }
+  single<LanguageService> {
+    LanguageService(
+      context = get(),
+      marketManager = get(),
+    )
+  }
 }
 
 val repositoriesModule = module {
@@ -567,7 +572,6 @@ val repositoriesModule = module {
   single { WhatsNewRepository(get(), get(), get()) }
   single { WelcomeRepository(get(), get()) }
   single { LanguageRepository(get()) }
-  single { MarketingRepository(get(), get()) }
   single { AdyenRepository(get(), get()) }
   single { EmbarkRepository(get(), get()) }
   single { ReferralsRepository(get()) }
@@ -618,7 +622,6 @@ val useCaseModule = module {
   single {
     SubmitMarketAndLanguagePreferencesUseCase(
       apolloClient = get(),
-      localeManager = get(),
       marketManager = get(),
       languageService = get(),
     )
@@ -631,7 +634,13 @@ val useCaseModule = module {
     )
   }
   single { GetInitialMarketPickerValuesUseCase(get(), get(), get(), get()) }
-  single<EditCheckoutUseCase> { EditCheckoutUseCase(get(), get()) }
+  single<EditCheckoutUseCase> {
+    EditCheckoutUseCase(
+      localeManager = get(),
+      languageService = get(),
+      graphQLQueryHandler = get(),
+    )
+  }
   single<QuoteCartEditStartDateUseCase> { QuoteCartEditStartDateUseCase(get(), get()) }
   single<CreateAccessTokenUseCase> { CreateAccessTokenUseCaseImpl(get(), get()) }
   single<EditCampaignUseCase> { EditCampaignUseCase(get(), get()) }

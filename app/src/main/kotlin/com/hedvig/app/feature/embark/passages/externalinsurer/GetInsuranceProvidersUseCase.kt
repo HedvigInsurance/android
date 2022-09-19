@@ -4,8 +4,8 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.graphql.InsuranceProvidersQuery
 import com.hedvig.android.apollo.safeExecute
+import com.hedvig.app.LanguageService
 import com.hedvig.app.isDebug
-import com.hedvig.app.util.GraphQLLocaleService
 
 sealed class InsuranceProvidersResult {
   data class Success(val providers: List<InsuranceProvider>) : InsuranceProvidersResult()
@@ -22,10 +22,10 @@ data class InsuranceProvider(
 
 class GetInsuranceProvidersUseCase(
   private val apolloClient: ApolloClient,
-  private val localeManager: GraphQLLocaleService,
+  private val languageService: LanguageService,
 ) {
   suspend fun getInsuranceProviders(): InsuranceProvidersResult {
-    val insuranceProviders = InsuranceProvidersQuery(localeManager.defaultLocale())
+    val insuranceProviders = InsuranceProvidersQuery(languageService.getGraphQLLocale())
     return when (val result = apolloClient.query(insuranceProviders).safeExecute()) {
       is OperationResult.Success -> createSuccessResult(result)
       is OperationResult.Error -> InsuranceProvidersResult.Error.NetworkError

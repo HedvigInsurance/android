@@ -9,18 +9,18 @@ import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.graphql.QuoteCartQuery
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
+import com.hedvig.app.LanguageService
 import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.QuoteCartFragmentToOfferModelMapper
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
-import com.hedvig.app.util.GraphQLLocaleService
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 
 class OfferRepository(
   private val apolloClient: ApolloClient,
-  private val localeManager: GraphQLLocaleService,
+  private val languageService: LanguageService,
   private val quoteCartFragmentToOfferModelMapper: QuoteCartFragmentToOfferModelMapper,
   private val hAnalytics: HAnalytics,
 ) {
@@ -39,7 +39,7 @@ class OfferRepository(
     id: QuoteCartId,
   ): Either<ErrorMessage, OfferModel> = either {
     val result = apolloClient
-      .query(QuoteCartQuery(localeManager.defaultLocale(), id.id))
+      .query(QuoteCartQuery(languageService.getGraphQLLocale(), id.id))
       .fetchPolicy(FetchPolicy.NetworkOnly)
       .safeExecute()
       .toEither { ErrorMessage(it) }

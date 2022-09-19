@@ -84,7 +84,7 @@ class MarketingActivity : AppCompatActivity() {
 
   private fun openOnboarding(market: Market) {
     val baseUrl = getString(R.string.WEB_BASE_URL).substringAfter("//")
-    val uri = market.createOnboardingUri(baseUrl, languageService.getLanguage() ?: Language.EN_SE)
+    val uri = market.createOnboardingUri(baseUrl, languageService.getLanguage())
     val browserIntent = Intent(Intent.ACTION_VIEW, uri)
 
     if (browserIntent.resolveActivity(packageManager) != null) {

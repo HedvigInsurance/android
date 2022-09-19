@@ -6,11 +6,9 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.LanguageService
-import com.hedvig.app.util.GraphQLLocaleService
 
 class SubmitMarketAndLanguagePreferencesUseCase(
   private val apolloClient: ApolloClient,
-  private val localeManager: GraphQLLocaleService,
   private val marketManager: MarketManager,
   private val languageService: LanguageService,
 ) {
@@ -18,11 +16,10 @@ class SubmitMarketAndLanguagePreferencesUseCase(
     .mutation(
       UpdateLanguageMutation(
         languageService.getLocale().toLanguageTag(),
-        localeManager.defaultLocale(),
+        languageService.getGraphQLLocale(),
       ),
     )
     .safeExecute()
     .toEither()
     .tap { marketManager.hasSelectedMarket = true }
-    .map { }
 }

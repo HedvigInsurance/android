@@ -6,6 +6,7 @@ import com.hedvig.app.LanguageService
 class GraphQLLocaleService(
   private val languageService: LanguageService,
 ) {
+  @Deprecated("don't")
   fun defaultLocale(): Locale {
     val locale = languageService.getLocale()
     return when (locale.toString()) {

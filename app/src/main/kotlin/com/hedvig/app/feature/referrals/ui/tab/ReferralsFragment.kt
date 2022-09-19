@@ -139,7 +139,7 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                         "${
                         requireContext().getString(R.string.WEB_BASE_URL)
                         }/${
-                        localeManager.defaultLocale().toWebLocaleTag()
+                        languageService.getGraphQLLocale().toWebLocaleTag()
                         }/forever/${
                         Uri.encode(
                           code,

@@ -7,16 +7,16 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.InsuranceQuery
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
-import com.hedvig.app.util.GraphQLLocaleService
+import com.hedvig.app.LanguageService
 
 class GetContractDetailsUseCase(
   private val apolloClient: ApolloClient,
-  private val localeManager: GraphQLLocaleService,
+  private val languageService: LanguageService,
 ) {
 
   suspend operator fun invoke(contractId: String): Either<ContractDetailError, ContractDetailViewState> {
     return apolloClient
-      .query(InsuranceQuery(localeManager.defaultLocale()))
+      .query(InsuranceQuery(languageService.getGraphQLLocale()))
       .safeExecute()
       .toEither { ContractDetailError.NetworkError }
       .flatMap { data ->
