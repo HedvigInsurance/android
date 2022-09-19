@@ -1,9 +1,6 @@
 package com.hedvig.android.market
 
-import android.content.Context
-import androidx.preference.PreferenceManager
 import com.hedvig.android.apollo.graphql.type.Locale
-import com.hedvig.android.core.common.preferences.PreferenceKey
 
 enum class Language {
   SV_SE,
@@ -60,7 +57,7 @@ enum class Language {
   }
 
   companion object {
-    private const val SETTING_SYSTEM_DEFAULT = "system_default"
+    const val SETTING_SYSTEM_DEFAULT = "system_default"
     const val SETTING_SV_SE = "sv-SE"
     const val SETTING_EN_SE = "en-SE"
     const val SETTING_NB_NO = "nb-NO"
@@ -70,7 +67,12 @@ enum class Language {
     const val SETTING_FR_FR = "fr-FR"
     const val SETTING_EN_FR = "en-FR"
 
-    fun from(value: String) = when (value) {
+    /**
+     * Parses the language tag, in BCP-47 format, to [Language]
+     * See [RFC-5646](https://www.rfc-editor.org/info/rfc5646) for more information
+     * @param value: A language tag in BCP-47 format
+     */
+    fun from(value: String): Language = when (value) {
       SETTING_SV_SE -> SV_SE
       SETTING_EN_SE -> EN_SE
       SETTING_NB_NO -> NB_NO
@@ -80,26 +82,6 @@ enum class Language {
       SETTING_FR_FR -> FR_FR
       SETTING_EN_FR -> EN_FR
       else -> throw RuntimeException("Invalid language value: $value")
-    }
-
-    fun fromSettings(context: Context, market: Market?): Language = when (market) {
-      null -> from(SETTING_EN_SE)
-      else -> getLanguageFromSharedPreferences(context, market)
-    }
-
-    private fun getLanguageFromSharedPreferences(context: Context, market: Market): Language {
-      val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
-      val firstAvailableLanguage = getAvailableLanguages(market).first().toString()
-      val selectedLanguage = sharedPref.getString(
-        PreferenceKey.SETTING_LANGUAGE,
-        firstAvailableLanguage,
-      ) ?: firstAvailableLanguage
-
-      return if (selectedLanguage == SETTING_SYSTEM_DEFAULT) {
-        from(firstAvailableLanguage)
-      } else {
-        from(selectedLanguage)
-      }
     }
 
     fun getAvailableLanguages(market: Market): List<Language> {

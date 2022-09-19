@@ -8,6 +8,7 @@ import androidx.core.os.LocaleListCompat
 import androidx.preference.PreferenceManager
 import com.hedvig.android.core.common.preferences.PreferenceKey
 import com.hedvig.android.market.Language
+import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import java.util.Locale
 
@@ -51,6 +52,7 @@ class LanguageService(
   }
 
   fun performOnLaunchLanguageCheck() {
+    performOneTimeLanguageMigration()
     val currentLanguage = AppCompatDelegate.getApplicationLocales()
     // Always default to English, Sweden, if nothing else is set
     if (currentLanguage.isEmpty) {
@@ -58,19 +60,38 @@ class LanguageService(
     }
   }
 
-  // Call this from SplashActivity
-  fun performOneTimeLanguageMigration() {
+  private fun performOneTimeLanguageMigration() {
     // We're already migrated, and hence we don't need to do anything
     if (preferences.contains(PreferenceKey.SETTING_LANGUAGE).not()) {
       return
     }
     // Retrieve the language from settings
-    val storedLanguage = Language.fromSettings(context, marketManager.market)
+    val storedLanguage = languageFromSettings(context, marketManager.market)
     // Set it using official APIs
     setLanguage(storedLanguage)
     // Clear it out from storage
     preferences.edit {
       remove(PreferenceKey.SETTING_LANGUAGE)
+    }
+  }
+
+  private fun languageFromSettings(context: Context, market: Market?): Language = when (market) {
+    null -> Language.from(Language.SETTING_EN_SE)
+    else -> getLanguageFromSharedPreferences(context, market)
+  }
+
+  private fun getLanguageFromSharedPreferences(context: Context, market: Market): Language {
+    val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
+    val firstAvailableLanguage = Language.getAvailableLanguages(market).first().toString()
+    val selectedLanguage = sharedPref.getString(
+      PreferenceKey.SETTING_LANGUAGE,
+      firstAvailableLanguage,
+    ) ?: firstAvailableLanguage
+
+    return if (selectedLanguage == Language.SETTING_SYSTEM_DEFAULT) {
+      Language.from(firstAvailableLanguage)
+    } else {
+      Language.from(selectedLanguage)
     }
   }
 }

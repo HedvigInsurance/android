@@ -43,8 +43,6 @@ class MarketingActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    languageService.performOnLaunchLanguageCheck()
-
     window.compatSetDecorFitsSystemWindows(false)
     val viewModel = getViewModel<MarketingViewModel>()
     val imageLoader = get<ImageLoader>()

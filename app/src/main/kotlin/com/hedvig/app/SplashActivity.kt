@@ -37,7 +37,7 @@ class SplashActivity : AppCompatActivity(R.layout.activity_splash) {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    languageService.performOneTimeLanguageMigration()
+    languageService.performOnLaunchLanguageCheck()
 
     window.compatSetDecorFitsSystemWindows(false)
   }
