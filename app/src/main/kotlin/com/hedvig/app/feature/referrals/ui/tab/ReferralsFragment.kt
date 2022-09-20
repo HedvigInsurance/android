@@ -8,9 +8,9 @@ import androidx.core.view.doOnLayout
 import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.BASE_MARGIN_DOUBLE
-import com.hedvig.app.LanguageService
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentReferralsBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel

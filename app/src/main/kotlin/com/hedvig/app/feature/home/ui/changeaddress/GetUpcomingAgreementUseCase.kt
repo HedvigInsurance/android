@@ -5,7 +5,7 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.graphql.UpcomingAgreementQuery
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.app.LanguageService
+import com.hedvig.android.language.LanguageService
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.Error
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.NoUpcomingAgreementChange
 import com.hedvig.app.feature.table.Table

@@ -6,8 +6,8 @@ import com.hedvig.android.apollo.graphql.CreateOnboardingQuoteCartMutation
 import com.hedvig.android.apollo.graphql.type.Market
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
-import com.hedvig.app.LanguageService
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
 

@@ -1,7 +1,7 @@
 package com.hedvig.app.util
 
 import com.hedvig.android.apollo.graphql.type.Locale
-import com.hedvig.app.LanguageService
+import com.hedvig.android.language.LanguageService
 
 class GraphQLLocaleService(
   private val languageService: LanguageService,

@@ -18,10 +18,10 @@ import coil.ImageLoader
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.hedvigBlack
 import com.hedvig.android.core.designsystem.theme.hedvigOffWhite
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.createOnboardingUri
-import com.hedvig.app.LanguageService
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.LoginDialog
 import com.hedvig.app.feature.marketing.data.MarketingBackground

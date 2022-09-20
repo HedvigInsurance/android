@@ -4,8 +4,8 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.UpdateLanguageMutation
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
-import com.hedvig.app.LanguageService
 
 class SubmitMarketAndLanguagePreferencesUseCase(
   private val apolloClient: ApolloClient,
