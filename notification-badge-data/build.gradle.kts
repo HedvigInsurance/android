@@ -8,6 +8,7 @@ dependencies {
   implementation(projects.coreCommon)
   implementation(projects.coreDatastore)
   implementation(projects.hanalytics)
+  implementation(projects.hedvigLanguage)
 
   implementation(libs.arrowKt.core)
   implementation(libs.koin.android)

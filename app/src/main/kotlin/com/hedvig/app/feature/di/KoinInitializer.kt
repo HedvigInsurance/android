@@ -44,7 +44,6 @@ import com.hedvig.app.retrievePriceModule
 import com.hedvig.app.serviceModule
 import com.hedvig.app.sharedPreferencesModule
 import com.hedvig.app.stringConstantsModule
-import com.hedvig.app.tempLocaleModule
 import com.hedvig.app.textActionSetModule
 import com.hedvig.app.trustlyModule
 import com.hedvig.app.useCaseModule
@@ -104,7 +103,6 @@ class KoinInitializer : Initializer<KoinApplication> {
         serviceModule,
         sharedPreferencesModule,
         stringConstantsModule,
-        tempLocaleModule,
         textActionSetModule,
         trackerModule,
         trustlyModule,

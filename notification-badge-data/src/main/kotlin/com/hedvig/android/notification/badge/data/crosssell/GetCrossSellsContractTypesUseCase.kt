@@ -2,10 +2,10 @@ package com.hedvig.android.notification.badge.data.crosssell
 
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.CrossSellsQuery
-import com.hedvig.android.apollo.graphql.type.Locale
 import com.hedvig.android.apollo.graphql.type.TypeOfContract
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
+import com.hedvig.android.language.LanguageService
 import e
 
 interface GetCrossSellsContractTypesUseCase {
@@ -14,11 +14,11 @@ interface GetCrossSellsContractTypesUseCase {
 
 internal class GetCrossSellsContractTypesUseCaseImpl(
   private val apolloClient: ApolloClient,
-  private val getLocale: () -> Locale,
+  private val languageService: LanguageService,
 ) : GetCrossSellsContractTypesUseCase {
   override suspend fun invoke(): Set<TypeOfContract> {
     return apolloClient
-      .query(CrossSellsQuery(getLocale()))
+      .query(CrossSellsQuery(languageService.getGraphQLLocale()))
       .safeExecute()
       .toEither()
       .fold(
