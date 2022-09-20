@@ -9,6 +9,7 @@ import com.hedvig.android.hanalytics.di.featureManagerModule
 import com.hedvig.android.hanalytics.di.hAnalyticsModule
 import com.hedvig.android.hanalytics.di.trackerModule
 import com.hedvig.android.hanalytics.engineering.di.HAnalyticsEngineeringModuleImpl
+import com.hedvig.android.language.di.languageModule
 import com.hedvig.android.market.di.marketManagerModule
 import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.app.adyenModule
@@ -85,6 +86,7 @@ class KoinInitializer : Initializer<KoinApplication> {
         homeModule,
         insuranceModule,
         insurelyAuthModule,
+        languageModule,
         localeManagerModule,
         loggedInModule,
         marketManagerModule,

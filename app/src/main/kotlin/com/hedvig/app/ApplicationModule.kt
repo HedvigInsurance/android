@@ -25,6 +25,7 @@ import com.hedvig.android.hanalytics.di.appIdQualifier
 import com.hedvig.android.hanalytics.di.appVersionCodeQualifier
 import com.hedvig.android.hanalytics.di.appVersionNameQualifier
 import com.hedvig.android.hanalytics.di.hAnalyticsUrlQualifier
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.authenticate.LoginStatusService
@@ -555,12 +556,6 @@ val serviceModule = module {
   single { FileService(get()) }
   single<LoginStatusService> { SharedPreferencesLoginStatusService(get(), get(), get()) }
   single<AuthenticationTokenService> { SharedPreferencesAuthenticationTokenService(get()) }
-  single<LanguageService> {
-    LanguageService(
-      context = get(),
-      marketManager = get(),
-    )
-  }
 }
 
 val repositoriesModule = module {
