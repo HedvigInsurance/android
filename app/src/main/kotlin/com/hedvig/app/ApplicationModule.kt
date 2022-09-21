@@ -184,7 +184,6 @@ import com.hedvig.app.service.push.senders.GenericNotificationSender
 import com.hedvig.app.service.push.senders.NotificationSender
 import com.hedvig.app.service.push.senders.PaymentNotificationSender
 import com.hedvig.app.service.push.senders.ReferralsNotificationSender
-import com.hedvig.app.util.GraphQLLocaleService
 import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.NetworkCacheManager
@@ -577,10 +576,6 @@ val notificationModule = module {
 
 val clockModule = module { single { Clock.systemDefaultZone() } }
 
-val localeManagerModule = module {
-  single { GraphQLLocaleService(languageService = get()) }
-}
-
 val useCaseModule = module {
   single { GetUpcomingAgreementUseCase(get(), get()) }
   single { GetAddressChangeStoryIdUseCase(get(), get(), get()) }
@@ -621,7 +616,6 @@ val useCaseModule = module {
   single { GetInitialMarketPickerValuesUseCase(get(), get(), get(), get()) }
   single<EditCheckoutUseCase> {
     EditCheckoutUseCase(
-      localeManager = get(),
       languageService = get(),
       graphQLQueryHandler = get(),
     )
