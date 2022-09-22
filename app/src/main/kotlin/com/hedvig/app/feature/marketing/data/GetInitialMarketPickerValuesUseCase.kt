@@ -7,10 +7,10 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
-import com.hedvig.app.LanguageService
 
 class GetInitialMarketPickerValuesUseCase(
   private val marketManager: MarketManager,

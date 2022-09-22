@@ -7,8 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.apollo.graphql.PaymentQuery
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
-import com.hedvig.app.LanguageService
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityPaymentHistoryBinding
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows

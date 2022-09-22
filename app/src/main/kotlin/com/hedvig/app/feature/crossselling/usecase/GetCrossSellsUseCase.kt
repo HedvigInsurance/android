@@ -4,7 +4,7 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.graphql.CrossSellsQuery
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.app.LanguageService
+import com.hedvig.android.language.LanguageService
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import e
 

@@ -1,4 +1,4 @@
-package com.hedvig.app
+package com.hedvig.android.language
 
 import android.content.Context
 import androidx.annotation.MainThread

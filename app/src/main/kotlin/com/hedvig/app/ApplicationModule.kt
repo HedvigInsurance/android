@@ -19,12 +19,12 @@ import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.datadog.android.DatadogInterceptor
 import com.google.firebase.messaging.FirebaseMessaging
-import com.hedvig.android.core.common.di.getGraphqlLocaleFunctionQualifier
 import com.hedvig.android.core.common.di.isDebugQualifier
 import com.hedvig.android.hanalytics.di.appIdQualifier
 import com.hedvig.android.hanalytics.di.appVersionCodeQualifier
 import com.hedvig.android.hanalytics.di.appVersionNameQualifier
 import com.hedvig.android.hanalytics.di.hAnalyticsUrlQualifier
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.authenticate.LoginStatusService
@@ -184,7 +184,6 @@ import com.hedvig.app.service.push.senders.GenericNotificationSender
 import com.hedvig.app.service.push.senders.NotificationSender
 import com.hedvig.app.service.push.senders.PaymentNotificationSender
 import com.hedvig.app.service.push.senders.ReferralsNotificationSender
-import com.hedvig.app.util.GraphQLLocaleService
 import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.NetworkCacheManager
@@ -499,15 +498,6 @@ val stringConstantsModule = module {
   single<Boolean>(isDebugQualifier) { BuildConfig.DEBUG }
 }
 
-// TODO take Locale straight from whatever class owns that functionality after the language APIs are merged in. Can't
-//  yet pass LocaleManager as that's only visible in the :app module. After that PR is merged it can be moved to a
-//  separate module and provided directly.
-val tempLocaleModule = module {
-  single<() -> com.hedvig.android.apollo.graphql.type.Locale>(getGraphqlLocaleFunctionQualifier) {
-    { get<LanguageService>().getGraphQLLocale() }
-  }
-}
-
 val checkoutModule = module {
   viewModel { (selectedVariantId: String, quoteCartId: QuoteCartId) ->
     CheckoutViewModel(
@@ -555,12 +545,6 @@ val serviceModule = module {
   single { FileService(get()) }
   single<LoginStatusService> { SharedPreferencesLoginStatusService(get(), get(), get()) }
   single<AuthenticationTokenService> { SharedPreferencesAuthenticationTokenService(get()) }
-  single<LanguageService> {
-    LanguageService(
-      context = get(),
-      marketManager = get(),
-    )
-  }
 }
 
 val repositoriesModule = module {
@@ -591,10 +575,6 @@ val notificationModule = module {
 }
 
 val clockModule = module { single { Clock.systemDefaultZone() } }
-
-val localeManagerModule = module {
-  single { GraphQLLocaleService(languageService = get()) }
-}
 
 val useCaseModule = module {
   single { GetUpcomingAgreementUseCase(get(), get()) }
@@ -636,7 +616,6 @@ val useCaseModule = module {
   single { GetInitialMarketPickerValuesUseCase(get(), get(), get(), get()) }
   single<EditCheckoutUseCase> {
     EditCheckoutUseCase(
-      localeManager = get(),
       languageService = get(),
       graphQLQueryHandler = get(),
     )

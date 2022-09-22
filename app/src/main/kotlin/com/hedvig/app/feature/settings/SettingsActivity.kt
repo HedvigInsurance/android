@@ -21,7 +21,6 @@ import com.hedvig.app.R
 import com.hedvig.app.authenticate.UserViewModel
 import com.hedvig.app.databinding.ActivitySettingsBinding
 import com.hedvig.app.feature.marketing.MarketingActivity
-import com.hedvig.app.util.GraphQLLocaleService
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.triggerRestartActivity
@@ -52,7 +51,6 @@ class SettingsActivity : AppCompatActivity(R.layout.activity_settings) {
     private val marketManager: MarketManager by inject()
     private val userViewModel: UserViewModel by sharedViewModel()
     private val viewModel: SettingsViewModel by sharedViewModel()
-    private val localeManager: GraphQLLocaleService by inject()
 
     @SuppressLint("ApplySharedPref")
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

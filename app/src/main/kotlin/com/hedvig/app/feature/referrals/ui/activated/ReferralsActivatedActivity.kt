@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import com.hedvig.app.LanguageService
+import com.hedvig.android.language.LanguageService
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityReferralsActivatedBinding
 import com.hedvig.app.util.apollo.format

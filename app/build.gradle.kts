@@ -143,6 +143,7 @@ dependencies {
   implementation(projects.coreUi)
   implementation(projects.featureBusinessmodel)
   implementation(projects.hanalytics)
+  implementation(projects.hedvigLanguage)
   implementation(projects.hedvigMarket)
   implementation(projects.notificationBadgeData)
 

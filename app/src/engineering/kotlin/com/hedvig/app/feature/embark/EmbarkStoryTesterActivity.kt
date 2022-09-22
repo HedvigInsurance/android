@@ -39,10 +39,10 @@ import com.hedvig.android.apollo.graphql.ExchangeTokenMutation
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
-import com.hedvig.app.LanguageService
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.embark.ui.EmbarkActivity

@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.adyen.checkout.dropin.DropIn
 import com.adyen.checkout.dropin.DropInResult
-import com.hedvig.app.LanguageService
+import com.hedvig.android.language.LanguageService
 import com.hedvig.app.R
 import com.hedvig.app.feature.adyen.AdyenCurrency
 import com.hedvig.app.feature.connectpayin.ConnectPayinType

@@ -10,8 +10,8 @@ import com.hedvig.android.apollo.graphql.PayinStatusQuery
 import com.hedvig.android.apollo.graphql.PaymentQuery
 import com.hedvig.android.apollo.graphql.type.PayinMethodStatus
 import com.hedvig.android.apollo.graphql.type.PayoutMethodStatus
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
-import com.hedvig.app.LanguageService
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityPaymentBinding
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows

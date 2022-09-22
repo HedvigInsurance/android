@@ -6,7 +6,7 @@ import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.graphql.LoggedInQuery
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
-import com.hedvig.app.LanguageService
+import com.hedvig.android.language.LanguageService
 
 class LoggedInRepository(
   private val apolloClient: ApolloClient,
