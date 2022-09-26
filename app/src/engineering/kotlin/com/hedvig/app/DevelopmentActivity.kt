@@ -76,9 +76,6 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
           DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Trustly") {
             startActivity(Intent(this, TrustlyMockActivity::class.java))
           },
-          DevelopmentScreenAdapter.DevelopmentScreenItem.Row("`VectorDrawable`-gallery") {
-            startActivity(Intent(this, VectorDrawableGalleryActivity::class.java))
-          },
           DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Theme-gallery") {
             startActivity(ViewGalleryActivity.newInstance(this))
           },

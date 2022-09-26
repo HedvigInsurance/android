@@ -7,7 +7,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.core.common.notification.setupNotificationChannel
-import com.hedvig.app.SplashActivity
+import com.hedvig.app.MainActivity
 import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.DATA_MESSAGE_BODY
 import com.hedvig.app.service.push.DATA_MESSAGE_TITLE
@@ -36,7 +36,7 @@ class GenericNotificationSender(
         addNextIntentWithParentStack(
           Intent(
             context,
-            SplashActivity::class.java,
+            MainActivity::class.java,
           ),
         )
         addNextIntentWithParentStack(

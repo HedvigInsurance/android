@@ -369,7 +369,6 @@ val viewModelModule = module {
   viewModel { (claimId: String) -> ClaimDetailViewModel(claimId, get(), get(), get()) }
   viewModel { HonestyPledgeViewModel(get()) }
   viewModel { CommonClaimViewModel(get()) }
-  viewModel { SplashViewModel(get()) }
   viewModel { TooltipViewModel(get()) }
   viewModel { (collectionId: String) -> AskForPriceInfoViewModel(collectionId, get()) }
   viewModel { MyInfoViewModel(get()) }

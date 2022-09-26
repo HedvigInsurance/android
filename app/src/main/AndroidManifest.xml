@@ -34,12 +34,11 @@
             android:theme="@style/Hedvig.Theme.Chat"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".SplashActivity"
+            android:name=".MainActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:exported="true"
             android:launchMode="singleTask"
             android:noHistory="true"
-            android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme.Splash"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
