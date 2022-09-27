@@ -20,8 +20,8 @@ import com.adyen.checkout.dropin.DropIn
 import com.adyen.checkout.dropin.DropInResult
 import com.carousell.concatadapterextension.ConcatItemDecoration
 import com.carousell.concatadapterextension.ConcatSpanSizeLookup
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
-import com.hedvig.app.LanguageService
 import com.hedvig.app.MainActivity
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.LoginStatus
