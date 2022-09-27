@@ -5,7 +5,7 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
-import com.hedvig.app.LanguageService
+import com.hedvig.android.language.LanguageService
 import com.hedvig.app.feature.offer.usecase.CampaignCode
 import com.hedvig.app.util.ErrorMessage
 

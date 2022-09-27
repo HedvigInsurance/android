@@ -2,7 +2,7 @@ package com.hedvig.app.feature.welcome
 
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.WelcomeQuery
-import com.hedvig.app.LanguageService
+import com.hedvig.android.language.LanguageService
 
 class WelcomeRepository(
   private val apolloClient: ApolloClient,

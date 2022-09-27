@@ -8,7 +8,7 @@ import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.apollographql.apollo3.cache.normalized.watch
 import com.hedvig.android.apollo.graphql.PaymentQuery
 import com.hedvig.android.apollo.graphql.type.PayoutMethodStatus
-import com.hedvig.app.LanguageService
+import com.hedvig.android.language.LanguageService
 import kotlinx.coroutines.flow.Flow
 
 class PaymentRepository(

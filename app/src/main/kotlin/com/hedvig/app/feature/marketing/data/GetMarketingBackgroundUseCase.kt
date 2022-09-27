@@ -5,7 +5,7 @@ import com.hedvig.android.apollo.graphql.MarketingBackgroundQuery
 import com.hedvig.android.apollo.graphql.type.UserInterfaceStyle
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
-import com.hedvig.app.LanguageService
+import com.hedvig.android.language.LanguageService
 import com.hedvig.app.util.safeLet
 
 class GetMarketingBackgroundUseCase(
