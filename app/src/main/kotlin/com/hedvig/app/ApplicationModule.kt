@@ -127,6 +127,7 @@ import com.hedvig.app.feature.marketpicker.LanguageRepository
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.OfferViewModelImpl
+import com.hedvig.app.feature.offer.SelectedVariantStore
 import com.hedvig.app.feature.offer.model.QuoteCartFragmentToOfferModelMapper
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
@@ -411,6 +412,7 @@ val offerModule = module {
       addPaymentTokenUseCase = get(),
       getExternalInsuranceProviderUseCase = get(),
       getBundleVariantUseCase = get(),
+      selectedVariantStore = get(),
       getQuoteCartCheckoutUseCase = get(),
     )
   }
@@ -420,6 +422,7 @@ val offerModule = module {
   single { QuoteCartFragmentToOfferModelMapper(get()) }
   single<GetQuoteCartCheckoutUseCase> { GetQuoteCartCheckoutUseCase(get()) }
   single<ObserveQuoteCartCheckoutUseCase> { ObserveQuoteCartCheckoutUseCaseImpl(get()) }
+  single<SelectedVariantStore> { SelectedVariantStore() }
 }
 
 val profileModule = module {
@@ -511,6 +514,7 @@ val checkoutModule = module {
       offerRepository = get(),
       featureManager = get(),
       bundleVariantUseCase = get(),
+      selectedVariantStore = get(),
     )
   }
 }
@@ -627,7 +631,7 @@ val useCaseModule = module {
   single<ConnectPaymentUseCase> { ConnectPaymentUseCase(get(), get(), get()) }
   single<ConnectPayoutUseCase> { ConnectPayoutUseCase(get(), get()) }
   single<GetExternalInsuranceProviderUseCase> { GetExternalInsuranceProviderUseCase(get(), get(), get()) }
-  single<ObserveOfferStateUseCase> { ObserveOfferStateUseCase(get()) }
+  single<ObserveOfferStateUseCase> { ObserveOfferStateUseCase(get(), get()) }
   single<ChangeLanguageUseCase> {
     ChangeLanguageUseCase(
       apolloClient = get(),
