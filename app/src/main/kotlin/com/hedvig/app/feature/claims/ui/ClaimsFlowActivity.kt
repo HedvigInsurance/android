@@ -7,8 +7,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.authenticate.AuthenticationTokenService
+import com.hedvig.app.util.extensions.startChat
 import com.hedvig.common.nav.OdysseyNavigationComposable
+import com.hedvig.common.remote.actions.CHAT_URL
+import com.hedvig.common.remote.actions.CLOSE_URL
 import org.koin.android.ext.android.inject
+import timber.log.Timber
 
 class ClaimsFlowActivity : ComponentActivity() {
 
@@ -26,13 +30,19 @@ class ClaimsFlowActivity : ComponentActivity() {
           authorizationToken = token,
           context = this,
           navigationRootUrl = ROOT_URL,
+          onExternalNavigation = { url ->
+            when (url) {
+              CLOSE_URL -> finish()
+              CHAT_URL -> startChat()
+            }
+          },
         )
       }
     }
   }
 
   companion object {
-    private const val API_URL = "http://10.0.2.2:9000"
+    private const val API_URL = "http://10.152.116.43:9000"
     private const val ROOT_URL = "/audio-claim"
 
     fun newInstance(context: Context) = Intent(context, ClaimsFlowActivity::class.java)
