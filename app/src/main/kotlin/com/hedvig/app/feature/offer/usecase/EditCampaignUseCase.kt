@@ -33,7 +33,7 @@ class EditCampaignUseCase(
         ?.let { id -> QuoteCartId(id) }
         .rightIfNotNull { ErrorMessage(it.asBasicError?.message) }
     }
-    .tap { offerRepository.queryAndEmitOffer(quoteCartId) }
+    .tap { offerRepository.fetchNewOffer(quoteCartId) }
 
   suspend fun removeCampaignFromQuoteCart(
     quoteCartId: QuoteCartId,
@@ -48,5 +48,5 @@ class EditCampaignUseCase(
         ?.let { id -> QuoteCartId(id) }
         .rightIfNotNull { ErrorMessage(it.asBasicError?.message) }
     }
-    .tap { offerRepository.queryAndEmitOffer(quoteCartId) }
+    .tap { offerRepository.fetchNewOffer(quoteCartId) }
 }
