@@ -136,6 +136,7 @@ android {
 
 dependencies {
   implementation(projects.apollo)
+  implementation(projects.coreCommon)
   implementation(projects.coreCommonAndroid)
   implementation(projects.coreDatastore)
   implementation(projects.coreDesignSystem)

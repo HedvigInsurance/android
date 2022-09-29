@@ -3,7 +3,7 @@ package com.hedvig.app.feature.claimdetail.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
-import com.hedvig.android.core.common.android.RetryChannel
+import com.hedvig.android.core.common.RetryChannel
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUiStateFlowUseCase
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailUiState
