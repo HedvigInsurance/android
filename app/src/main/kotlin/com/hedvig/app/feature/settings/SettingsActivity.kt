@@ -13,7 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import com.hedvig.android.core.common.android.preferences.PreferenceKey
+import com.hedvig.android.core.common.preferences.PreferenceKey
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager

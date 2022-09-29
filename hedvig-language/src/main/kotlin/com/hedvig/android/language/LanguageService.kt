@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
 import androidx.core.os.LocaleListCompat
 import androidx.preference.PreferenceManager
-import com.hedvig.android.core.common.android.preferences.PreferenceKey
+import com.hedvig.android.core.common.preferences.PreferenceKey
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
