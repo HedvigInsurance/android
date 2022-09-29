@@ -34,6 +34,8 @@ Current list of convention plugins:
 - [`hedvig.android.application`](convention/src/main/kotlin/ApplicationConventionPlugin.kt),
   [`hedvig.android.library`](convention/src/main/kotlin/LibraryConventionPlugin.kt),
   Configures common Android and Kotlin options.
+- [`hedvig.android.library.kotlin`](convention/src/main/kotlin/KotlinLibraryConventionPlugin.kt),
+  Configures pure Kotlin options without any Android references.
 - [`hedvig.android.application.compose`](convention/src/main/kotlin/ApplicationComposeConventionPlugin.kt),
   [`hedvig.android.library.compose`](convention/src/main/kotlin/LibraryComposeConventionPlugin.kt):
   Configures Jetpack Compose options
