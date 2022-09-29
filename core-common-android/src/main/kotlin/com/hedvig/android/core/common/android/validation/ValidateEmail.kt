@@ -1,10 +1,11 @@
-package com.hedvig.android.core.common.validation
+package com.hedvig.android.core.common.android.validation
 
 import androidx.core.util.PatternsCompat
+import hedvig.resources.R
 
 fun validateEmail(email: CharSequence): ValidationResult {
   return if (!isValidEmail(email.toString())) {
-    ValidationResult(false, hedvig.resources.R.string.PROFILE_MY_INFO_INVALID_EMAIL)
+    ValidationResult(false, R.string.PROFILE_MY_INFO_INVALID_EMAIL)
   } else {
     ValidationResult(true, null)
   }

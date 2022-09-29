@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.embark.textaction
 
 import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
-import com.hedvig.android.core.common.jsonObjectOf
+import com.hedvig.android.core.common.android.jsonObjectOf
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import com.hedvig.app.feature.embark.screens.TextActionSetScreen
 import com.hedvig.app.feature.embark.ui.EmbarkActivity

@@ -1,4 +1,4 @@
-package com.hedvig.android.core.common
+package com.hedvig.android.core.common.android
 
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow

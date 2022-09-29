@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
-import com.hedvig.android.core.common.RetryChannel
+import com.hedvig.android.core.common.android.RetryChannel
 import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.feature.profile.ui.tab.ProfileQueryDataToProfileUiStateMapper

@@ -1,4 +1,4 @@
-package com.hedvig.android.core.common.notification
+package com.hedvig.android.core.common.android.notification
 
 import android.app.NotificationChannel
 import android.app.NotificationManager

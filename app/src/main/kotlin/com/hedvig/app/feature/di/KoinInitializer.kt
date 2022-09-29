@@ -3,7 +3,6 @@ package com.hedvig.app.feature.di
 import android.content.Context
 import androidx.startup.Initializer
 import com.hedvig.android.core.datastore.di.dataStoreModule
-import com.hedvig.android.core.datastore.di.deviceIdDataStoreModule
 import com.hedvig.android.feature.businessmodel.di.businessModelModule
 import com.hedvig.android.hanalytics.di.hAnalyticsModule
 import com.hedvig.android.hanalytics.di.trackerModule
@@ -23,6 +22,7 @@ import com.hedvig.app.checkoutModule
 import com.hedvig.app.clockModule
 import com.hedvig.app.coilModule
 import com.hedvig.app.connectPaymentModule
+import com.hedvig.app.datastoreAndroidModule
 import com.hedvig.app.embarkModule
 import com.hedvig.app.externalInsuranceModule
 import com.hedvig.app.graphQLQueryModule
@@ -74,8 +74,8 @@ class KoinInitializer : Initializer<KoinApplication> {
         clockModule,
         coilModule,
         connectPaymentModule,
+        datastoreAndroidModule,
         dataStoreModule,
-        deviceIdDataStoreModule,
         embarkModule,
         externalInsuranceModule,
         featureManagerModule,

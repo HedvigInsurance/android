@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
   implementation(projects.apollo)
-  implementation(projects.coreCommon)
+  implementation(projects.coreCommonAndroid)
   implementation(projects.hedvigMarket)
 
   implementation(libs.androidx.other.appCompat)

@@ -5,7 +5,7 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
-import com.hedvig.android.core.common.notification.setupNotificationChannel
+import com.hedvig.android.core.common.android.notification.setupNotificationChannel
 import kotlinx.coroutines.flow.first
 
 class TrackingShortcutService : Service() {

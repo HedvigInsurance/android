@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import arrow.core.continuations.either
-import com.hedvig.android.core.common.validation.ValidationResult
-import com.hedvig.android.core.common.validation.validateEmail
+import com.hedvig.android.core.common.android.validation.ValidationResult
+import com.hedvig.android.core.common.android.validation.validateEmail
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager

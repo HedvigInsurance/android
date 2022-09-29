@@ -31,7 +31,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.hedvig.android.core.common.preferences.PreferenceKey
+import com.hedvig.android.core.common.android.preferences.PreferenceKey
 import com.hedvig.android.market.Language
 import com.hedvig.app.R
 import com.hedvig.app.SplashActivity

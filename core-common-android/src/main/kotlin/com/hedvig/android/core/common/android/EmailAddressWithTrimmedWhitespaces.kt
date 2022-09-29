@@ -1,6 +1,6 @@
-package com.hedvig.android.core.common
+package com.hedvig.android.core.common.android
 
-import com.hedvig.android.core.common.validation.validateEmail
+import com.hedvig.android.core.common.android.validation.validateEmail
 
 @JvmInline
 value class EmailAddressWithTrimmedWhitespaces private constructor(val value: String) {

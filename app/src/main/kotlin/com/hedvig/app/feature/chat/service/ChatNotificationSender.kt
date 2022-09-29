@@ -14,7 +14,7 @@ import androidx.core.app.TaskStackBuilder
 import androidx.core.content.getSystemService
 import androidx.core.graphics.drawable.IconCompat
 import com.google.firebase.messaging.RemoteMessage
-import com.hedvig.android.core.common.notification.setupNotificationChannel
+import com.hedvig.android.core.common.android.notification.setupNotificationChannel
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.getMutablePendingIntentFlags

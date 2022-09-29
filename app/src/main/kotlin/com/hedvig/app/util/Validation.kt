@@ -1,6 +1,6 @@
 package com.hedvig.app.util
 
-import com.hedvig.android.core.common.validation.ValidationResult
+import com.hedvig.android.core.common.android.validation.ValidationResult
 import hedvig.resources.R
 
 object Regexes {

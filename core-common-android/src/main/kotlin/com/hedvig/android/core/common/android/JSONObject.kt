@@ -1,4 +1,4 @@
-package com.hedvig.android.core.common
+package com.hedvig.android.core.common.android
 
 import org.json.JSONArray
 import org.json.JSONException

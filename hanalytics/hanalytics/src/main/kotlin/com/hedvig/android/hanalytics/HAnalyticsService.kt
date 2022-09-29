@@ -2,9 +2,9 @@ package com.hedvig.android.hanalytics
 
 import android.content.Context
 import android.os.Build
+import com.hedvig.android.core.common.android.jsonObjectOf
+import com.hedvig.android.core.common.android.plus
 import com.hedvig.android.core.common.await
-import com.hedvig.android.core.common.jsonObjectOf
-import com.hedvig.android.core.common.plus
 import com.hedvig.android.core.datastore.DeviceIdDataStore
 import com.hedvig.hanalytics.HAnalytics
 import com.hedvig.hanalytics.HAnalyticsEvent

@@ -1,6 +1,6 @@
 package com.hedvig.android.hanalytics.featureflags.di
 
-import com.hedvig.android.core.common.di.isDebugQualifier
+import com.hedvig.android.core.common.android.di.isDebugQualifier
 import com.hedvig.android.hanalytics.featureflags.ClearHAnalyticsExperimentsCacheUseCase
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.FeatureManagerImpl

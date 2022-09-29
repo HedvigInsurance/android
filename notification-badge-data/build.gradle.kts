@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
   implementation(projects.apollo)
-  implementation(projects.coreCommon)
+  implementation(projects.coreCommonAndroid)
   implementation(projects.coreDatastore)
   implementation(projects.hanalytics.hanalyticsFeatureFlags)
   implementation(projects.hedvigLanguage)

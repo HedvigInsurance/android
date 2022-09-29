@@ -10,7 +10,7 @@ import androidx.appcompat.view.menu.ActionMenuItemView
 import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.hedvig.android.core.common.validation.validateEmail
+import com.hedvig.android.core.common.android.validation.validateEmail
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityMyInfoBinding
 import com.hedvig.app.feature.profile.ui.ProfileViewModel

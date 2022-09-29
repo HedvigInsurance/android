@@ -6,7 +6,7 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.coreCommon)
+  implementation(projects.coreCommonAndroid)
   implementation(projects.coreDatastore)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)

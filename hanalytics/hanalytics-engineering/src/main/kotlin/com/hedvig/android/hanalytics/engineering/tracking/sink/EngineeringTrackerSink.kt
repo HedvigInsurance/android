@@ -1,6 +1,6 @@
 package com.hedvig.android.hanalytics.engineering.tracking.sink
 
-import com.hedvig.android.core.common.toJsonObject
+import com.hedvig.android.core.common.android.toJsonObject
 import com.hedvig.android.hanalytics.HAnalyticsSink
 import com.hedvig.android.hanalytics.engineering.tracking.TrackEvent
 import com.hedvig.hanalytics.HAnalyticsEvent

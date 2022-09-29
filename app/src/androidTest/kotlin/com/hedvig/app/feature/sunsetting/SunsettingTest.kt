@@ -2,7 +2,7 @@ package com.hedvig.app.feature.sunsetting
 
 import com.hedvig.android.apollo.graphql.HomeQuery
 import com.hedvig.android.apollo.graphql.LoggedInQuery
-import com.hedvig.android.core.common.jsonObjectOf
+import com.hedvig.android.core.common.android.jsonObjectOf
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.testdata.feature.home.HOME_DATA_PENDING
 import com.hedvig.app.util.ApolloCacheClearRule

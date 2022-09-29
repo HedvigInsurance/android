@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.referrals.editcode
 
 import com.hedvig.android.apollo.graphql.UpdateReferralCampaignCodeMutation
-import com.hedvig.android.core.common.jsonObjectOf
+import com.hedvig.android.core.common.android.jsonObjectOf
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeActivity
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule

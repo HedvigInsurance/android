@@ -2,22 +2,18 @@
 plugins {
   id("hedvig.android.library")
   id("hedvig.android.ktlint")
-  id("kotlin-parcelize")
   alias(libs.plugins.serialization)
 }
 
 dependencies {
-  implementation(projects.coreCommon)
+  implementation(projects.coreCommonAndroid)
   implementation(projects.coreDatastore)
-  implementation(projects.coreResources)
-  implementation(projects.hedvigMarket)
 
   api(libs.hAnalytics)
+  implementation(libs.androidx.lifecycle.common)
   implementation(libs.coroutines.core)
-  implementation(libs.koin.android)
-  implementation(libs.materialComponents)
+  implementation(libs.koin.core)
   implementation(libs.okhttp.core)
   implementation(libs.serialization)
-  implementation(libs.shake)
   implementation(libs.slimber)
 }
