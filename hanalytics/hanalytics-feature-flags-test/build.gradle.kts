@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.hanalytics)
+  implementation(projects.hanalytics.hanalyticsFeatureFlags)
 
   api(libs.hAnalytics)
 }

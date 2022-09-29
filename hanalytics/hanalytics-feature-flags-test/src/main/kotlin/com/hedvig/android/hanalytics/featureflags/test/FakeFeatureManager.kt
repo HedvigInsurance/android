@@ -1,4 +1,4 @@
-package com.hedvig.android.hanalytics.test
+package com.hedvig.android.hanalytics.featureflags.test
 
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature

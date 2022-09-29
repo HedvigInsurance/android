@@ -2,7 +2,6 @@
 
 package com.hedvig.android.hanalytics.di
 
-import com.hedvig.android.core.common.di.isDebugQualifier
 import com.hedvig.android.hanalytics.HAnalyticsExperimentManager
 import com.hedvig.android.hanalytics.HAnalyticsExperimentManagerImpl
 import com.hedvig.android.hanalytics.HAnalyticsImpl
@@ -12,15 +11,6 @@ import com.hedvig.android.hanalytics.HAnalyticsSink
 import com.hedvig.android.hanalytics.NetworkHAnalyticsSink
 import com.hedvig.android.hanalytics.SendHAnalyticsEventUseCase
 import com.hedvig.android.hanalytics.SendHAnalyticsEventUseCaseImpl
-import com.hedvig.android.hanalytics.featureflags.ClearHAnalyticsExperimentsCacheUseCase
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.android.hanalytics.featureflags.FeatureManagerImpl
-import com.hedvig.android.hanalytics.featureflags.flags.DevFeatureFlagProvider
-import com.hedvig.android.hanalytics.featureflags.flags.HAnalyticsFeatureFlagProvider
-import com.hedvig.android.hanalytics.featureflags.loginmethod.DevLoginMethodProvider
-import com.hedvig.android.hanalytics.featureflags.loginmethod.HAnalyticsLoginMethodProvider
-import com.hedvig.android.hanalytics.featureflags.paymenttype.DevPaymentTypeProvider
-import com.hedvig.android.hanalytics.featureflags.paymenttype.HAnalyticsPaymentTypeProvider
 import com.hedvig.android.hanalytics.tracking.ApplicationLifecycleTracker
 import com.hedvig.hanalytics.HAnalytics
 import org.koin.core.qualifier.StringQualifier
@@ -52,27 +42,6 @@ val hAnalyticsModule = module {
       appVersionCode = get(appVersionCodeQualifier),
       appId = get(appIdQualifier),
     )
-  }
-  single<ClearHAnalyticsExperimentsCacheUseCase> { ClearHAnalyticsExperimentsCacheUseCase(get()) }
-}
-
-val featureManagerModule = module {
-  single<FeatureManager> {
-    if (get(isDebugQualifier)) {
-      FeatureManagerImpl(
-        DevFeatureFlagProvider(get()),
-        DevLoginMethodProvider(get()),
-        DevPaymentTypeProvider(get()),
-        get<ClearHAnalyticsExperimentsCacheUseCase>(),
-      )
-    } else {
-      FeatureManagerImpl(
-        HAnalyticsFeatureFlagProvider(get()),
-        HAnalyticsLoginMethodProvider(get()),
-        HAnalyticsPaymentTypeProvider(get()),
-        get<ClearHAnalyticsExperimentsCacheUseCase>(),
-      )
-    }
   }
 }
 

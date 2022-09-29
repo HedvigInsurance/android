@@ -50,7 +50,6 @@ internal class HAnalyticsServiceImpl(
       .header("Content-Type", "application/json")
       .post(requestJsonObject.toString().toRequestBody())
       .build()
-    @Suppress("BlockingMethodInNonBlockingContext")
     withContext(Dispatchers.IO) {
       try {
         okHttpClient.newCall(eventRequest).execute()
