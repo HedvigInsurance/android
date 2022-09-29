@@ -5,10 +5,10 @@ import androidx.startup.Initializer
 import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.core.datastore.di.deviceIdDataStoreModule
 import com.hedvig.android.feature.businessmodel.di.businessModelModule
-import com.hedvig.android.hanalytics.di.featureManagerModule
 import com.hedvig.android.hanalytics.di.hAnalyticsModule
 import com.hedvig.android.hanalytics.di.trackerModule
 import com.hedvig.android.hanalytics.engineering.di.HAnalyticsEngineeringModuleImpl
+import com.hedvig.android.hanalytics.featureflags.di.featureManagerModule
 import com.hedvig.android.language.di.languageModule
 import com.hedvig.android.market.di.marketManagerModule
 import com.hedvig.android.notification.badge.data.di.notificationBadgeModule

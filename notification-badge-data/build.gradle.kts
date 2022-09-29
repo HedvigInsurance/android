@@ -7,14 +7,14 @@ dependencies {
   implementation(projects.apollo)
   implementation(projects.coreCommon)
   implementation(projects.coreDatastore)
-  implementation(projects.hanalytics)
+  implementation(projects.hanalytics.hanalyticsFeatureFlags)
   implementation(projects.hedvigLanguage)
 
   implementation(libs.arrowKt.core)
   implementation(libs.koin.android)
   implementation(libs.slimber)
 
-  testImplementation(projects.hanalyticsTest)
+  testImplementation(projects.hanalytics.hanalyticsFeatureFlagsTest)
 
   testImplementation(libs.androidx.test.junit)
   testImplementation(libs.assertK)

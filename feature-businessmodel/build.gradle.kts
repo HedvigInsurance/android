@@ -9,7 +9,7 @@ dependencies {
   implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
-  implementation(projects.hanalytics)
+  implementation(projects.hanalytics.hanalytics)
 
   implementation(libs.androidx.other.appCompat)
   implementation(libs.androidx.other.activityCompose)

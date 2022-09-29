@@ -4,6 +4,6 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.hanalyticsEngineeringApi)
+  implementation(projects.hanalytics.hanalyticsEngineeringApi)
   implementation(libs.koin.android)
 }
