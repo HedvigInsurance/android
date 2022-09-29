@@ -4,4 +4,5 @@ plugins {
 
 dependencies {
   implementation(libs.coroutines.core)
+  implementation(libs.okhttp.core)
 }
