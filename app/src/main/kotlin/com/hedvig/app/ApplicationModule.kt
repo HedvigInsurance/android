@@ -19,7 +19,8 @@ import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.datadog.android.DatadogInterceptor
 import com.google.firebase.messaging.FirebaseMessaging
-import com.hedvig.android.core.common.di.isDebugQualifier
+import com.hedvig.android.core.common.android.di.datastoreFileQualifier
+import com.hedvig.android.core.common.android.di.isDebugQualifier
 import com.hedvig.android.hanalytics.di.appIdQualifier
 import com.hedvig.android.hanalytics.di.appVersionCodeQualifier
 import com.hedvig.android.hanalytics.di.appVersionNameQualifier
@@ -199,6 +200,7 @@ import org.koin.core.parameter.ParametersHolder
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import timber.log.Timber
+import java.io.File
 import java.time.Clock
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -655,6 +657,13 @@ val sharedPreferencesModule = module {
       "hedvig_shared_preference",
       MODE_PRIVATE,
     )
+  }
+}
+
+val datastoreAndroidModule = module {
+  single<File>(datastoreFileQualifier) {
+    // https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:datastore/datastore/src/main/java/androidx/datastore/DataStoreFile.kt;l=35-36
+    get<Context>().applicationContext.filesDir
   }
 }
 
