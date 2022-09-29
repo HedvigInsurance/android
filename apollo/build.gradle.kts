@@ -8,7 +8,7 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.coreCommonAndroid)
+  implementation(projects.coreCommon)
 
   api(libs.apollo.runtime)
 
