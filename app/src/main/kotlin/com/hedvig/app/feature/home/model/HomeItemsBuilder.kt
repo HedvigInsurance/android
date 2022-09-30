@@ -2,11 +2,11 @@ package com.hedvig.app.feature.home.model
 
 import androidx.compose.ui.unit.dp
 import arrow.core.NonEmptyList
+import arrow.core.toNonEmptyListOrNull
 import com.hedvig.android.apollo.graphql.HomeQuery
 import com.hedvig.android.apollo.graphql.type.PayinMethodStatus
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
-import com.hedvig.app.R
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusCardUiState
@@ -103,11 +103,9 @@ class HomeItemsBuilder(
   }
 
   private fun claimStatusCardOrNull(successData: HomeQuery.Data): HomeModel.ClaimStatus? {
-    return NonEmptyList.fromList(successData.claimStatusCards)
-      .map { claimStatusCardsQuery ->
-        HomeModel.ClaimStatus(claimStatusCardsQuery.map(ClaimStatusCardUiState::fromClaimStatusCardsQuery))
-      }
-      .orNull()
+    val claimStatusCards: NonEmptyList<HomeQuery.ClaimStatusCard> =
+      successData.claimStatusCards.toNonEmptyListOrNull() ?: return null
+    return HomeModel.ClaimStatus(claimStatusCards.map(ClaimStatusCardUiState::fromClaimStatusCardsQuery))
   }
 
   private fun psaItems(
