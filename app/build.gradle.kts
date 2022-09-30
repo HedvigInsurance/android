@@ -9,7 +9,6 @@ plugins {
   alias(libs.plugins.googleServices)
   alias(libs.plugins.crashlytics)
   id("kotlin-parcelize")
-  id("kotlin-kapt")
   alias(libs.plugins.license)
   alias(libs.plugins.serialization)
   alias(libs.plugins.datadog)
@@ -93,7 +92,6 @@ android {
         listOf(
           getDefaultProguardFile("proguard-android.txt"),
           "proguard-rules.pro",
-          "proguard-rules-showkase.pro",
         ),
       )
     }
@@ -291,14 +289,6 @@ dependencies {
   implementation(libs.androidx.lifecycle.compose)
   androidTestImplementation(libs.androidx.compose.uiTestJunit)
   debugImplementation(libs.androidx.compose.uiTestManifest)
-
-  implementation(libs.showkase.annotation)
-  debugImplementation(libs.showkase.showkase)
-  "stagingImplementation"(libs.showkase.showkase)
-  "pullrequestImplementation"(libs.showkase.showkase)
-  kaptDebug(libs.showkase.processor)
-  "kaptStaging"(libs.showkase.processor)
-  "kaptPullrequest"(libs.showkase.processor)
 
   implementation(libs.datadog.sdk)
 }
