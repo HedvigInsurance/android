@@ -52,9 +52,8 @@ android {
   }
 
   buildTypes {
-    maybeCreate("staging")
-    maybeCreate("pullrequest")
-    named("release") {
+    @Suppress("UNUSED_VARIABLE")
+    val release by getting {
 //      signingConfig = signingConfigs.getByName("debug") // uncomment to run release build locally
       applicationIdSuffix = ".app"
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
@@ -68,11 +67,10 @@ android {
       )
     }
 
-    named("staging") {
+    @Suppress("UNUSED_VARIABLE")
+    val staging by creating {
       applicationIdSuffix = ".test.app"
-
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
-
       isMinifyEnabled = true
       setProguardFiles(
         listOf(
@@ -82,25 +80,10 @@ android {
       )
     }
 
-    named("pullrequest") {
-      applicationIdSuffix = ".test.app"
-
-      manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
-
-      isMinifyEnabled = true
-      setProguardFiles(
-        listOf(
-          getDefaultProguardFile("proguard-android.txt"),
-          "proguard-rules.pro",
-        ),
-      )
-    }
-
-    named("debug") {
+    @Suppress("UNUSED_VARIABLE")
+    val debug by getting {
       applicationIdSuffix = ".dev.app"
-
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = false
-
       isDebuggable = true
     }
   }
@@ -112,11 +95,6 @@ android {
       manifest.srcFile("src/debug/AndroidManifest.xml")
     }
     named("staging") {
-      kotlin.srcDir("src/engineering/kotlin")
-      res.srcDir("src/engineering/res")
-      manifest.srcFile("src/debug/AndroidManifest.xml")
-    }
-    named("pullrequest") {
       kotlin.srcDir("src/engineering/kotlin")
       res.srcDir("src/engineering/res")
       manifest.srcFile("src/debug/AndroidManifest.xml")
@@ -152,13 +130,11 @@ dependencies {
   releaseImplementation(projects.hanalyticsEngineeringNoop)
   debugImplementation(projects.hanalyticsEngineering)
   "stagingImplementation"(projects.hanalyticsEngineering)
-  "pullrequestImplementation"(projects.hanalyticsEngineering)
 
   androidTestImplementation(projects.testdata)
   testImplementation(projects.testdata)
   debugImplementation(projects.testdata)
   "stagingImplementation"(projects.testdata)
-  "pullrequestImplementation"(projects.testdata)
 
   implementation(libs.coroutines.core)
   implementation(libs.coroutines.android)
@@ -274,7 +250,6 @@ dependencies {
   debugImplementation(libs.leakCanary)
   debugImplementation(libs.shake)
   "stagingImplementation"(libs.shake)
-  "pullrequestImplementation"(libs.shake)
 
   implementation(libs.androidx.other.activityCompose)
   implementation(libs.androidx.compose.material)
