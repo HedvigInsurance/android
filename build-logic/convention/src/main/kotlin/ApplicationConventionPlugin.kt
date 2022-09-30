@@ -17,7 +17,7 @@ class ApplicationConventionPlugin : Plugin<Project> {
       }
 
       extensions.configure<BaseAppModuleExtension> {
-        configureKotlinAndroid(this, addStandardBuildTypes = false)
+        configureKotlinAndroid(this)
         @Suppress("MISSING_DEPENDENCY_SUPERCLASS")
         defaultConfig.targetSdk = libs.versions.targetSdkVersion.get().toInt()
       }

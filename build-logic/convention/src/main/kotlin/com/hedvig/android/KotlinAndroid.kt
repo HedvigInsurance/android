@@ -15,7 +15,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
  */
 internal fun Project.configureKotlinAndroid(
   commonExtension: CommonExtension<*, *, *, *>,
-  addStandardBuildTypes: Boolean,
 ) {
   val libs = the<LibrariesForLibs>()
 
@@ -35,18 +34,6 @@ internal fun Project.configureKotlinAndroid(
       sourceCompatibility = JavaVersion.VERSION_11
       @Suppress("UnstableApiUsage")
       targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    if (addStandardBuildTypes) {
-      buildTypes {
-        maybeCreate("staging")
-        maybeCreate("pullrequest")
-
-        named("debug") {}
-        named("staging") {}
-        named("pullrequest") {}
-        named("release") {}
-      }
     }
 
     kotlinOptions {
