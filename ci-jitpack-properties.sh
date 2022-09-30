@@ -2,6 +2,6 @@
 set +uex
 
 cat <<EOT > jitpack.properties
-odysseyRepositoryUsername=${{ secrets.JITPACK_AUTH_TOKEN }}
-odysseyRepositoryPassword=${{ secrets.JITPACK_AUTH_TOKEN }}
+odysseyRepositoryUsername=${JITPACK_AUTH_TOKEN}
+odysseyRepositoryPassword=${JITPACK_AUTH_TOKEN}
 EOT
