@@ -1,13 +1,13 @@
 plugins {
-  id("hedvig.android.library")
+  id("hedvig.android.library.kotlin")
   id("hedvig.android.ktlint")
 }
 
 dependencies {
   implementation(projects.coreCommon)
 
-  api(libs.androidx.datastore.preferencesCore)
-  api(libs.androidx.datastore.preferences)
+  implementation(libs.androidx.datastore.core)
+  implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.coroutines.core)
   implementation(libs.koin.core)
 }
