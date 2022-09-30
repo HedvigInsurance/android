@@ -6,9 +6,9 @@ import assertk.assertions.isInstanceOf
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.hanalytics.test.FakeFeatureManager
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.testdata.feature.profile.PROFILE_DATA
-import com.hedvig.app.util.LocaleManager
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
@@ -18,7 +18,7 @@ class ProfileQueryDataToProfileUiStateMapperTest {
   private fun sut(
     featureManager: FeatureManager = FakeFeatureManager(),
     marketManager: MarketManager = mockk(relaxed = true),
-    localeManager: LocaleManager = mockk(relaxed = true),
+    localeManager: LanguageService = mockk(relaxed = true),
   ) = ProfileQueryDataToProfileUiStateMapper(
     featureManager,
     marketManager,

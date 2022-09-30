@@ -5,9 +5,9 @@ import androidx.core.content.edit
 import arrow.core.identity
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.ContractStatusQuery
+import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.apollo.toOption
 import com.hedvig.app.feature.offer.model.QuoteCartId
-import com.hedvig.app.util.apollo.safeQuery
-import com.hedvig.app.util.apollo.toOption
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -90,7 +90,7 @@ class SharedPreferencesLoginStatusService(
   private suspend fun hasNoContracts(): Boolean {
     return apolloClient
       .query(ContractStatusQuery())
-      .safeQuery()
+      .safeExecute()
       .toOption()
       .map { contractStatusQueryData ->
         contractStatusQueryData.contracts.isEmpty()

@@ -30,7 +30,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "7.1.1"
+    versionName = "7.1.2"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -143,7 +143,9 @@ dependencies {
   implementation(projects.coreUi)
   implementation(projects.featureBusinessmodel)
   implementation(projects.hanalytics)
+  implementation(projects.hedvigLanguage)
   implementation(projects.hedvigMarket)
+  implementation(projects.notificationBadgeData)
 
   testImplementation(projects.hanalyticsTest)
   androidTestImplementation(projects.hanalyticsTest)
@@ -210,6 +212,7 @@ dependencies {
   testImplementation(libs.apollo.testingSupport)
 
   implementation(libs.arrowKt.core)
+  implementation(libs.arrowKt.fx)
 
   implementation(libs.materialComponents)
   implementation(libs.flexbox)

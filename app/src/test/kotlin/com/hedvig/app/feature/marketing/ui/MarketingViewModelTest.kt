@@ -9,6 +9,7 @@ import assertk.assertions.isNotEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isTrue
 import assertk.assertions.prop
+import com.hedvig.android.apollo.graphql.UpdateLanguageMutation
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
@@ -131,7 +132,14 @@ class MarketingViewModelTest {
   @Test
   fun `when submitting market and language preferences, should transition to market picked`() = runTest {
     val submitMarketAndLanguagePreferencesUseCase = mockk<SubmitMarketAndLanguagePreferencesUseCase>()
-    coEvery { submitMarketAndLanguagePreferencesUseCase.invoke(any(), any()) } returns Either.Right(Unit)
+    coEvery { submitMarketAndLanguagePreferencesUseCase.invoke() } returns Either.Right(
+      UpdateLanguageMutation.Data(
+        updateLanguage = true,
+        updatePickedLocale = UpdateLanguageMutation.UpdatePickedLocale(
+          acceptLanguage = "",
+        ),
+      ),
+    )
 
     val viewModel = createMarketingViewModel(
       market = null,

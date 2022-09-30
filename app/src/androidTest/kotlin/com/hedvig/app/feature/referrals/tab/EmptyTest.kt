@@ -14,7 +14,7 @@ import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
-import com.hedvig.app.util.market
+import com.hedvig.app.util.locale
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.kakao.screen.Screen
 import org.javamoney.moneta.Money
@@ -60,8 +60,7 @@ class EmptyTest : TestCase() {
           grossPrice {
             isVisible()
             hasText(
-              Money.of(349, "SEK")
-                .format(context(), market()),
+              Money.of(349, "SEK").format(locale()),
             )
           }
           discountPerMonthPlaceholder { isGone() }

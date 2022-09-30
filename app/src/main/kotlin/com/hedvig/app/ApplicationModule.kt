@@ -24,8 +24,7 @@ import com.hedvig.android.hanalytics.di.appIdQualifier
 import com.hedvig.android.hanalytics.di.appVersionCodeQualifier
 import com.hedvig.android.hanalytics.di.appVersionNameQualifier
 import com.hedvig.android.hanalytics.di.hAnalyticsUrlQualifier
-import com.hedvig.android.market.Language
-import com.hedvig.android.market.Market
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.authenticate.LoginStatusService
@@ -65,7 +64,6 @@ import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.crossselling.ui.detail.CrossSellDetailViewModel
 import com.hedvig.app.feature.crossselling.ui.detail.CrossSellFaqViewModel
-import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsContractTypesUseCase
 import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsUseCase
 import com.hedvig.app.feature.embark.EmbarkRepository
 import com.hedvig.app.feature.embark.EmbarkViewModel
@@ -117,21 +115,19 @@ import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModelImpl
 import com.hedvig.app.feature.insurance.ui.detail.GetContractDetailsUseCase
 import com.hedvig.app.feature.insurance.ui.tab.InsuranceViewModel
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsViewModel
-import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModelImpl
 import com.hedvig.app.feature.marketing.MarketingViewModel
 import com.hedvig.app.feature.marketing.data.GetInitialMarketPickerValuesUseCase
 import com.hedvig.app.feature.marketing.data.GetMarketingBackgroundUseCase
-import com.hedvig.app.feature.marketing.data.MarketingRepository
 import com.hedvig.app.feature.marketing.data.SubmitMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.feature.marketing.data.UpdateApplicationLanguageUseCase
 import com.hedvig.app.feature.marketpicker.LanguageRepository
-import com.hedvig.app.feature.marketpicker.LocaleBroadcastManager
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.OfferViewModelImpl
+import com.hedvig.app.feature.offer.SelectedVariantStore
 import com.hedvig.app.feature.offer.model.QuoteCartFragmentToOfferModelMapper
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
@@ -167,6 +163,7 @@ import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeViewModelIm
 import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeViewModel
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModel
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModelImpl
+import com.hedvig.app.feature.settings.ChangeLanguageUseCase
 import com.hedvig.app.feature.settings.SettingsViewModel
 import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignViewModel
 import com.hedvig.app.feature.trustly.TrustlyRepository
@@ -182,16 +179,12 @@ import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthResultUseCase
 import com.hedvig.app.service.FileService
-import com.hedvig.app.service.badge.CrossSellNotificationBadgeService
-import com.hedvig.app.service.badge.NotificationBadgeService
-import com.hedvig.app.service.badge.ReferralsNotificationBadgeService
 import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.service.push.senders.CrossSellNotificationSender
 import com.hedvig.app.service.push.senders.GenericNotificationSender
 import com.hedvig.app.service.push.senders.NotificationSender
 import com.hedvig.app.service.push.senders.PaymentNotificationSender
 import com.hedvig.app.service.push.senders.ReferralsNotificationSender
-import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.NetworkCacheManager
@@ -219,8 +212,7 @@ val applicationModule = module {
     MemoryCacheFactory(maxSizeBytes = 10 * 1024 * 1024)
   }
   single<OkHttpClient> {
-    val marketManager = get<MarketManager>()
-    val context = get<Context>()
+    val languageService = get<LanguageService>()
     val builder = OkHttpClient.Builder()
       // Temporary fix until back-end problems are handled
       .readTimeout(30, TimeUnit.SECONDS)
@@ -241,8 +233,8 @@ val applicationModule = module {
           chain
             .request()
             .newBuilder()
-            .header("User-Agent", makeUserAgent(context, marketManager.market))
-            .header("Accept-Language", makeLocaleString(context, marketManager.market))
+            .header("User-Agent", makeUserAgent(languageService.getLocale()))
+            .header("Accept-Language", languageService.getLocale().toLanguageTag())
             .header("apollographql-client-name", BuildConfig.APPLICATION_ID)
             .header("apollographql-client-version", BuildConfig.VERSION_NAME)
             .header("X-Build-Version", BuildConfig.VERSION_CODE.toString())
@@ -303,7 +295,7 @@ val apolloClientModule = module {
   }
 }
 
-fun makeUserAgent(context: Context, market: Market?) =
+fun makeUserAgent(locale: Locale) =
   "${
   BuildConfig.APPLICATION_ID
   } ${
@@ -317,26 +309,8 @@ fun makeUserAgent(context: Context, market: Market?) =
   }; ${
   Build.DEVICE
   }; ${
-  getLocale(context, market).language
+  locale.language
   })"
-
-fun makeLocaleString(context: Context, market: Market?): String =
-  getLocale(context, market).toLanguageTag()
-
-fun getLocale(context: Context, market: Market?): Locale {
-  val locale = if (market == null) {
-    Language.from(Language.SETTING_EN_SE)
-  } else {
-    Language.fromSettings(context, market)
-  }
-
-  return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-    locale.apply(context).resources.configuration.locales.get(0)
-  } else {
-    @Suppress("DEPRECATION")
-    locale.apply(context).resources.configuration.locale
-  }
-}
 
 val viewModelModule = module {
   viewModel { ClaimsViewModel(get(), get()) }
@@ -346,10 +320,8 @@ val viewModelModule = module {
   viewModel { WelcomeViewModel(get()) }
   viewModel {
     SettingsViewModel(
-      repository = get(),
-      localeBroadcastManager = get(),
       hAnalytics = get(),
-      cacheManager = get(),
+      changeLanguageUseCase = get(),
     )
   }
   viewModel { DatePickerViewModel() }
@@ -440,6 +412,7 @@ val offerModule = module {
       addPaymentTokenUseCase = get(),
       getExternalInsuranceProviderUseCase = get(),
       getBundleVariantUseCase = get(),
+      selectedVariantStore = get(),
       getQuoteCartCheckoutUseCase = get(),
     )
   }
@@ -449,6 +422,7 @@ val offerModule = module {
   single { QuoteCartFragmentToOfferModelMapper(get()) }
   single<GetQuoteCartCheckoutUseCase> { GetQuoteCartCheckoutUseCase(get()) }
   single<ObserveQuoteCartCheckoutUseCase> { ObserveQuoteCartCheckoutUseCaseImpl(get()) }
+  single<SelectedVariantStore> { SelectedVariantStore() }
 }
 
 val profileModule = module {
@@ -540,6 +514,7 @@ val checkoutModule = module {
       offerRepository = get(),
       featureManager = get(),
       bundleVariantUseCase = get(),
+      selectedVariantStore = get(),
     )
   }
 }
@@ -574,11 +549,6 @@ val serviceModule = module {
   single { FileService(get()) }
   single<LoginStatusService> { SharedPreferencesLoginStatusService(get(), get(), get()) }
   single<AuthenticationTokenService> { SharedPreferencesAuthenticationTokenService(get()) }
-
-  single { TabNotificationService(get(), get()) }
-  single { CrossSellNotificationBadgeService(get(), get()) }
-  single { ReferralsNotificationBadgeService(get(), get()) }
-  single { NotificationBadgeService(get()) }
 }
 
 val repositoriesModule = module {
@@ -590,7 +560,6 @@ val repositoriesModule = module {
   single { WhatsNewRepository(get(), get(), get()) }
   single { WelcomeRepository(get(), get()) }
   single { LanguageRepository(get()) }
-  single { MarketingRepository(get(), get()) }
   single { AdyenRepository(get(), get()) }
   single { EmbarkRepository(get(), get()) }
   single { ReferralsRepository(get()) }
@@ -599,10 +568,6 @@ val repositoriesModule = module {
   single { TrustlyRepository(get()) }
   single { GetMemberIdUseCase(get()) }
   single { PaymentRepository(get(), get()) }
-}
-
-val localeBroadcastManagerModule = module {
-  single<LocaleBroadcastManager> { LocaleBroadcastManager(get()) }
 }
 
 val notificationModule = module {
@@ -615,10 +580,6 @@ val notificationModule = module {
 
 val clockModule = module { single { Clock.systemDefaultZone() } }
 
-val localeManagerModule = module {
-  single { LocaleManager(get(), get()) }
-}
-
 val useCaseModule = module {
   single { GetUpcomingAgreementUseCase(get(), get()) }
   single { GetAddressChangeStoryIdUseCase(get(), get(), get()) }
@@ -628,7 +589,6 @@ val useCaseModule = module {
   single { StartCheckoutUseCase(get(), get(), get()) }
   single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get()) }
   single { GetContractsUseCase(get(), get()) }
-  single { GetCrossSellsContractTypesUseCase(get(), get()) }
   single { GraphQLQueryUseCase(get()) }
   single { GetCrossSellsUseCase(get(), get()) }
   single { StartDataCollectionUseCase(get(), get()) }
@@ -643,11 +603,27 @@ val useCaseModule = module {
   single<GetDanishAddressAutoCompletionUseCase> { GetDanishAddressAutoCompletionUseCase(get()) }
   single<GetFinalDanishAddressSelectionUseCase> { GetFinalDanishAddressSelectionUseCase(get()) }
   single { CreateQuoteCartUseCase(get(), get(), get()) }
-  single { SubmitMarketAndLanguagePreferencesUseCase(get(), get(), get(), get()) }
+  single {
+    SubmitMarketAndLanguagePreferencesUseCase(
+      apolloClient = get(),
+      marketManager = get(),
+      languageService = get(),
+    )
+  }
   single { GetMarketingBackgroundUseCase(get(), get()) }
-  single { UpdateApplicationLanguageUseCase(get(), get(), get()) }
+  single {
+    UpdateApplicationLanguageUseCase(
+      marketManager = get(),
+      languageService = get(),
+    )
+  }
   single { GetInitialMarketPickerValuesUseCase(get(), get(), get(), get()) }
-  single<EditCheckoutUseCase> { EditCheckoutUseCase(get(), get()) }
+  single<EditCheckoutUseCase> {
+    EditCheckoutUseCase(
+      languageService = get(),
+      graphQLQueryHandler = get(),
+    )
+  }
   single<QuoteCartEditStartDateUseCase> { QuoteCartEditStartDateUseCase(get(), get()) }
   single<CreateAccessTokenUseCase> { CreateAccessTokenUseCaseImpl(get(), get()) }
   single<EditCampaignUseCase> { EditCampaignUseCase(get(), get()) }
@@ -655,7 +631,14 @@ val useCaseModule = module {
   single<ConnectPaymentUseCase> { ConnectPaymentUseCase(get(), get(), get()) }
   single<ConnectPayoutUseCase> { ConnectPayoutUseCase(get(), get()) }
   single<GetExternalInsuranceProviderUseCase> { GetExternalInsuranceProviderUseCase(get(), get(), get()) }
-  single<ObserveOfferStateUseCase> { ObserveOfferStateUseCase(get()) }
+  single<ObserveOfferStateUseCase> { ObserveOfferStateUseCase(get(), get()) }
+  single<ChangeLanguageUseCase> {
+    ChangeLanguageUseCase(
+      apolloClient = get(),
+      languageService = get(),
+      cacheManager = get(),
+    )
+  }
 }
 
 val cacheManagerModule = module {

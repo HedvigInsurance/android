@@ -8,8 +8,8 @@ import com.adyen.checkout.redirect.RedirectComponent
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.TokenizePayoutDetailsMutation
 import com.hedvig.android.apollo.graphql.type.TokenizationResultType
-import com.hedvig.app.util.apollo.safeQuery
-import com.hedvig.app.util.apollo.toEither
+import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.apollo.toEither
 import org.json.JSONObject
 
 class ConnectPayoutUseCase(
@@ -29,7 +29,7 @@ class ConnectPayoutUseCase(
 
   suspend fun connectPayout(data: JSONObject) = apolloClient
     .mutation(createTokenizePayoutDetailsMutation(data))
-    .safeQuery()
+    .safeExecute()
     .toEither { Error.ErrorMessage(it) }
     .flatMap {
       it.tokenizePayoutDetails?.asTokenizationResponseAction?.let {

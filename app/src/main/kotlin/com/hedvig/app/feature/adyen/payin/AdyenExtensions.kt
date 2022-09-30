@@ -7,12 +7,11 @@ import com.adyen.checkout.core.api.Environment
 import com.adyen.checkout.dropin.DropIn
 import com.adyen.checkout.dropin.DropInConfiguration
 import com.adyen.checkout.googlepay.GooglePayConfiguration
-import com.hedvig.android.market.Market
 import com.hedvig.app.R
-import com.hedvig.app.getLocale
 import com.hedvig.app.isDebug
+import java.util.Locale
 
-fun Activity.startAdyenPayment(market: Market?, paymentMethods: PaymentMethodsApiResponse) {
+fun Activity.startAdyenPayment(locale: Locale, paymentMethods: PaymentMethodsApiResponse) {
   val cardConfig = CardConfiguration.Builder(this, getString(R.string.ADYEN_CLIENT_KEY))
     .setShowStorePaymentField(false)
     .setEnvironment(getEnvironment())
@@ -37,7 +36,7 @@ fun Activity.startAdyenPayment(market: Market?, paymentMethods: PaymentMethodsAp
     )
     .addCardConfiguration(cardConfig)
     .addGooglePayConfiguration(googlePayConfig)
-    .setShopperLocale(getLocale(this, market))
+    .setShopperLocale(locale)
     .setEnvironment(getEnvironment())
     .build()
 

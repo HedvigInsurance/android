@@ -7,6 +7,17 @@ plugins {
   alias(libs.plugins.apollo)
 }
 
+dependencies {
+  implementation(projects.coreCommon)
+
+  api(libs.apollo.runtime)
+
+  implementation(libs.adyen)
+  implementation(libs.apollo.adapters)
+  implementation(libs.apollo.normalizedCache)
+  implementation(libs.arrowKt.core)
+}
+
 apollo {
   service("giraffe") {
     introspection {
@@ -53,15 +64,6 @@ apollo {
       ),
     )
   }
-}
-
-dependencies {
-  implementation(projects.coreCommon)
-
-  api(libs.apollo.runtime)
-  implementation(libs.apollo.adapters)
-
-  implementation(libs.adyen)
 }
 
 tasks.withType<com.apollographql.apollo3.gradle.internal.ApolloDownloadSchemaTask>().configureEach {

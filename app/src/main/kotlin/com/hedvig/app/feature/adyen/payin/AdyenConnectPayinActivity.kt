@@ -3,11 +3,11 @@ package com.hedvig.app.feature.adyen.payin
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.adyen.checkout.dropin.DropIn
 import com.adyen.checkout.dropin.DropInResult
-import com.hedvig.android.market.MarketManager
-import com.hedvig.app.BaseActivity
+import com.hedvig.android.language.LanguageService
 import com.hedvig.app.R
 import com.hedvig.app.feature.adyen.AdyenCurrency
 import com.hedvig.app.feature.connectpayin.ConnectPayinType
@@ -20,14 +20,12 @@ import e
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activity) {
-
-  override val screenName = "connect_payment_adyen"
+class AdyenConnectPayinActivity : AppCompatActivity(R.layout.fragment_container_activity) {
 
   private val connectPaymentViewModel: ConnectPaymentViewModel by viewModel()
   private val adyenConnectPayinViewModel: AdyenConnectPayinViewModel by viewModel()
 
-  private val marketManager: MarketManager by inject()
+  private val languageService: LanguageService by inject()
   private lateinit var paymentMethods: PaymentMethodsApiResponse
   private lateinit var currency: AdyenCurrency
 
@@ -58,7 +56,7 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
               PostSignExplainerFragment.newInstance(ConnectPayinType.ADYEN),
             )
             .commitAllowingStateLoss()
-        is ConnectPaymentScreenState.Connect -> startAdyenPayment(marketManager.market, paymentMethods)
+        is ConnectPaymentScreenState.Connect -> startAdyenPayment(languageService.getLocale(), paymentMethods)
         is ConnectPaymentScreenState.Result ->
           supportFragmentManager
             .beginTransaction()
@@ -95,7 +93,7 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
       if (isPostSign()) {
         connectPaymentViewModel.isReadyToStart()
       } else {
-        startAdyenPayment(marketManager.market, paymentMethods)
+        startAdyenPayment(languageService.getLocale(), paymentMethods)
       }
     }
   }

@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import arrow.core.continuations.either
+import arrow.core.continuations.ensureNotNull
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.app.R
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.adyen.PaymentTokenId
@@ -168,14 +168,16 @@ class OfferViewModelImpl(
   private val featureManager: FeatureManager,
   private val addPaymentTokenUseCase: AddPaymentTokenUseCase,
   private val getExternalInsuranceProviderUseCase: GetExternalInsuranceProviderUseCase,
-  private val getBundleVariantUseCase: ObserveOfferStateUseCase,
+  getBundleVariantUseCase: ObserveOfferStateUseCase,
+  private val selectedVariantStore: SelectedVariantStore,
   private val getQuoteCartCheckoutUseCase: GetQuoteCartCheckoutUseCase,
 ) : OfferViewModel() {
 
   private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Loading)
   override val viewState: StateFlow<ViewState> = _viewState.asStateFlow()
 
-  private val offerState = getBundleVariantUseCase.observeOfferState(quoteCartId, selectedContractTypes)
+  private val offerState: Flow<Either<ErrorMessage, OfferState>> =
+    getBundleVariantUseCase.invoke(quoteCartId, selectedContractTypes)
 
   init {
     loginStatusService.isViewingOffer = shouldShowOnNextAppStart
@@ -192,7 +194,7 @@ class OfferViewModelImpl(
   private fun toViewState(offerResult: Either<ErrorMessage, OfferState>): Flow<ViewState> =
     offerResult.fold(
       ifLeft = { flowOf(ViewState.Error(it.message)) },
-      ifRight = { offerWithVariant ->
+      ifRight = { offerWithVariant: OfferState ->
         val offerModel = offerWithVariant.offerModel
         val bundle = offerWithVariant.selectedVariant
         if (bundle.externalProviderId != null) {
@@ -206,7 +208,7 @@ class OfferViewModelImpl(
                 paymentMethods = offerModel.paymentMethodsApiResponse,
                 externalProvider = externalProvider,
                 onVariantSelected = { variantId ->
-                  getBundleVariantUseCase.selectedVariant(variantId)
+                  selectedVariantStore.selectVariant(variantId)
                 },
               )
             }
@@ -220,7 +222,7 @@ class OfferViewModelImpl(
                 paymentMethods = offerModel.paymentMethodsApiResponse,
                 externalProvider = null,
                 onVariantSelected = { variantId ->
-                  getBundleVariantUseCase.selectedVariant(variantId)
+                  selectedVariantStore.selectVariant(variantId)
                 },
               ),
             )
@@ -261,24 +263,24 @@ class OfferViewModelImpl(
 
   override fun onOpenQuoteDetails(id: String) {
     viewModelScope.launch {
-      offerState
-        .first()
-        .map { it.findQuote(id) }
-        .fold(
-          ifLeft = { _viewState.value = ViewState.Error(it.message) },
-          ifRight = { quote ->
-            val quoteDetailItems = QuoteDetailItems(quote)
-            val event = Event.OpenQuoteDetails(quoteDetailItems)
-            _events.trySend(event)
-          },
-        )
+      either {
+        val currentOfferState = offerState.first().bind()
+        val quote = ensureNotNull(currentOfferState.findQuote(id), ::ErrorMessage)
+        val quoteDetailItems = QuoteDetailItems(quote)
+        Event.OpenQuoteDetails(quoteDetailItems)
+      }.fold(
+        ifLeft = { _viewState.value = ViewState.Error(it.message) },
+        ifRight = { event: Event ->
+          _events.trySend(event)
+        },
+      )
     }
   }
 
   override fun reload() {
     _viewState.value = ViewState.Loading
     viewModelScope.launch {
-      offerRepository.queryAndEmitOffer(quoteCartId)
+      offerRepository.fetchNewOffer(quoteCartId)
     }
   }
 
@@ -316,7 +318,7 @@ class OfferViewModelImpl(
 
   override fun onSwedishBankIdSign() {
     getQuoteIdsAndStartSign {
-      offerRepository.queryAndEmitOffer(quoteCartId)
+      offerRepository.fetchNewOffer(quoteCartId)
       _events.trySend(Event.StartSwedishBankIdSign)
     }
   }

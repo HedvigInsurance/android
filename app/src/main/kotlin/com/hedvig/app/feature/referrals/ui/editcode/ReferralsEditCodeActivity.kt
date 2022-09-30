@@ -5,11 +5,11 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.doOnLayout
 import androidx.core.view.updatePadding
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityReferralsEditCodeBinding
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_code) {
+class ReferralsEditCodeActivity : AppCompatActivity(R.layout.activity_referrals_edit_code) {
   private val binding by viewBinding(ActivityReferralsEditCodeBinding::bind)
   private val viewModel: ReferralsEditCodeViewModel by viewModel()
 

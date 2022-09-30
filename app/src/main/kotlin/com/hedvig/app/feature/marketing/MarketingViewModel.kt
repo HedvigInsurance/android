@@ -90,7 +90,7 @@ class MarketingViewModel(
 
       _state.update { it.copy(isLoading = true) }
 
-      when (submitMarketAndLanguagePreferencesUseCase.invoke(language, market)) {
+      when (submitMarketAndLanguagePreferencesUseCase.invoke()) {
         is Either.Left -> {
           _state.update { it.copy(isLoading = false) }
         }
@@ -132,7 +132,3 @@ data class MarketingViewState(
 ) {
   fun canSetMarketAndLanguage() = market != null && language != null
 }
-
-data class Background(
-  val data: MarketingBackground?,
-)

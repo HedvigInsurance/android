@@ -17,6 +17,7 @@ import com.hedvig.android.apollo.graphql.ReferralsQuery
 import com.hedvig.android.apollo.graphql.fragment.ReferralFragment
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
@@ -46,6 +47,7 @@ import org.javamoney.moneta.Money
 class ReferralsAdapter(
   private val reload: () -> Unit,
   private val marketManager: MarketManager,
+  private val languageService: LanguageService,
 ) : ListAdapter<ReferralsModel, ReferralsAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
   override fun getItemViewType(position: Int) = when (getItem(position)) {
@@ -59,10 +61,10 @@ class ReferralsAdapter(
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
     R.layout.referrals_title -> ViewHolder.TitleViewHolder(parent)
-    R.layout.referrals_header -> ViewHolder.HeaderViewHolder(parent)
-    R.layout.referrals_code -> ViewHolder.CodeViewHolder(parent)
+    R.layout.referrals_header -> ViewHolder.HeaderViewHolder(parent, languageService)
+    R.layout.referrals_code -> ViewHolder.CodeViewHolder(parent, languageService)
     R.layout.referrals_invites_header -> ViewHolder.InvitesHeaderViewHolder(parent)
-    R.layout.referrals_row -> ViewHolder.ReferralViewHolder(parent)
+    R.layout.referrals_row -> ViewHolder.ReferralViewHolder(parent, languageService)
     ERROR -> ViewHolder.ErrorViewHolder(ComposeView(parent.context), reload)
     else -> throw Error("Invalid viewType")
   }
@@ -82,7 +84,10 @@ class ReferralsAdapter(
         Unit
     }
 
-    class HeaderViewHolder(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.referrals_header)) {
+    class HeaderViewHolder(
+      parent: ViewGroup,
+      private val languageService: LanguageService,
+    ) : ViewHolder(parent.inflate(R.layout.referrals_header)) {
       private val binding by viewBinding(ReferralsHeaderBinding::bind)
       override fun bind(
         data: ReferralsModel,
@@ -123,9 +128,9 @@ class ReferralsAdapter(
                 ?.let { incentiveAmount ->
                   emptyBody.text = emptyBody.context.getString(
                     hedvig.resources.R.string.referrals_empty_body,
-                    incentiveAmount.format(emptyBody.context, marketManager.market),
+                    incentiveAmount.format(languageService.getLocale()),
                     Money.of(0, incentiveAmount.currency.currencyCode)
-                      .format(emptyBody.context, marketManager.market),
+                      .format(languageService.getLocale()),
                   )
                 }
               emptyTexts.show()
@@ -149,7 +154,7 @@ class ReferralsAdapter(
                 ?.fragments
                 ?.monetaryAmountFragment
                 ?.toMonetaryAmount()
-                ?.negate()?.format(discountPerMonth.context, marketManager.market)
+                ?.negate()?.format(languageService.getLocale())
                 ?.let { discountPerMonth.text = it }
               data
                 .inner
@@ -162,7 +167,7 @@ class ReferralsAdapter(
                 ?.monetaryAmountFragment
                 ?.toMonetaryAmount()
                 ?.let { referralNet ->
-                  newPrice.text = referralNet.format(newPrice.context, marketManager.market)
+                  newPrice.text = referralNet.format(languageService.getLocale())
                   otherDiscountBox.isVisible =
                     data
                     .inner
@@ -197,7 +202,7 @@ class ReferralsAdapter(
               ?.fragments
               ?.monetaryAmountFragment
               ?.toMonetaryAmount()
-          grossPriceAmount?.let { grossPrice.text = it.format(grossPrice.context, market) }
+          grossPriceAmount?.let { grossPrice.text = it.format(languageService.getLocale()) }
           val potentialDiscountAmount =
             data
               .referralInformation
@@ -296,7 +301,10 @@ class ReferralsAdapter(
       }
     }
 
-    class CodeViewHolder(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.referrals_code)) {
+    class CodeViewHolder(
+      parent: ViewGroup,
+      private val languageService: LanguageService,
+    ) : ViewHolder(parent.inflate(R.layout.referrals_code)) {
       private val binding by viewBinding(ReferralsCodeBinding::bind)
       override fun bind(
         data: ReferralsModel,
@@ -338,7 +346,7 @@ class ReferralsAdapter(
                 ?.let { incentiveAmount ->
                   codeFootnote.text = codeFootnote.resources.getString(
                     hedvig.resources.R.string.referrals_empty_code_footer,
-                    incentiveAmount.format(codeFootnote.context, marketManager.market),
+                    incentiveAmount.format(languageService.getLocale()),
                   )
                 }
               edit.setHapticClickListener {
@@ -367,7 +375,10 @@ class ReferralsAdapter(
       ) = Unit
     }
 
-    class ReferralViewHolder(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.referrals_row)) {
+    class ReferralViewHolder(
+      parent: ViewGroup,
+      private val languageService: LanguageService,
+    ) : ViewHolder(parent.inflate(R.layout.referrals_row)) {
       private val binding by viewBinding(ReferralsRowBinding::bind)
       override fun bind(
         data: ReferralsModel,
@@ -413,7 +424,7 @@ class ReferralsAdapter(
             val discountAsNegative =
               activeReferral.discount.fragments.monetaryAmountFragment.toMonetaryAmount()
                 .negate()
-            status.text = discountAsNegative.format(status.context, market)
+            status.text = discountAsNegative.format(languageService.getLocale())
           }
           data.asInProgressReferral?.let {
             icon.setImageResource(R.drawable.ic_clock_colorless)

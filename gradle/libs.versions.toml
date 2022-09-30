@@ -1,11 +1,11 @@
 [versions]
 # androidSdkVersions
 compileSdkVersion = "33"
-targetSdkVersion = "32"
+targetSdkVersion = "33"
 minSdkVersion = "23"
 
 # gradlePlugin versions
-androidGradlePlugin = "7.2.2"
+androidGradlePlugin = "7.3.0"
 apollo = "3.5.0"
 buildTimeTracker = "0.11.0"
 cacheFix = "2.5.6"
@@ -33,7 +33,7 @@ androidx-espresso = "3.4.0"
 androidx-lifecycle-common = "2.5.1"
 androidx-lifecycle-compose = "2.5.1"
 androidx-other-activityCompose = "1.5.1"
-androidx-other-appCompat = "1.5.0"
+androidx-other-appCompat = "1.6.0-beta01"
 androidx-other-browser = "1.4.0"
 androidx-other-constraintLayout = "2.1.4"
 androidx-other-core = "1.8.0"
@@ -51,13 +51,14 @@ androidx-other-workManager = "2.7.1"
 androidx-poolingcontainer = "1.0.0"
 androidx-test-core = "1.4.0"
 androidx-test-junit = "1.1.3"
-arrowKt = "1.1.2"
+arrowKt = "1.1.3"
 assertK = "0.25"
 coil = "2.2.1"
 coilTransformations = "2.0.2"
 concatAdapterExtension = "1.2.1"
 coreLibraryDesugaring = "1.1.5"
 coroutines = "1.6.4"
+datadog = "1.13.0"
 firebase = "28.4.2"
 flexbox = "3.0.0"
 fragmentViewBindingDelegate = "1.0.1"
@@ -70,7 +71,7 @@ leakCanary = "2.9.1"
 markwon = "4.6.2"
 materialComponents = "1.6.1"
 mixpanel = "5.9.4"
-mockk = "1.12.7"
+mockk = "1.12.8"
 moneta = "1.4.2"
 okhttp = "4.10.0"
 okio = "3.2.0"
@@ -85,8 +86,8 @@ slimber = "1.0.7"
 svg = "1.4"
 timber = "5.0.1"
 tooltip = "1.2.2"
+turbine = "0.10.0"
 zXing = "3.5.0"
-datadog = "1.13.0"
 
 [libraries]
 
@@ -100,7 +101,7 @@ androidx-arch-testing = { module = "androidx.arch.core:core-testing", version.re
 androidx-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "androidx-compose" }
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "androidx-compose" }
 androidx-compose-material = { module = "androidx.compose.material:material", version.ref = "androidx-compose" }
-androidx-compose-material3-windowSizeClass = { module = "androidx.compose.material3:material3-window-size-class", version.ref="androidx-other-material3" }
+androidx-compose-material3-windowSizeClass = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "androidx-other-material3" }
 androidx-compose-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended", version.ref = "androidx-compose" }
 androidx-compose-mdcAdapter = { module = "com.google.android.material:compose-theme-adapter", version.ref = "androidx-composeThemeAdapter" }
 androidx-compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "androidx-compose" }
@@ -110,7 +111,7 @@ androidx-compose-uiTooling = { module = "androidx.compose.ui:ui-tooling", versio
 androidx-compose-uiToolingPreview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "androidx-compose" }
 androidx-compose-uiUtil = { module = "androidx.compose.ui:ui-util", version.ref = "androidx-compose" }
 androidx-compose-uiViewBinding = { module = "androidx.compose.ui:ui-viewbinding", version.ref = "androidx-compose" }
-androidx-customview-poolingcontainer = { group = "androidx.customview", name = "customview-poolingcontainer", version.ref = "androidx-poolingcontainer"}
+androidx-customview-poolingcontainer = { group = "androidx.customview", name = "customview-poolingcontainer", version.ref = "androidx-poolingcontainer" }
 androidx-datastore-core = { module = "androidx.datastore:datastore-core", version.ref = "androidx-datastore" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "androidx-datastore" }
 androidx-espresso-contrib = { module = "androidx.test.espresso:espresso-contrib", version.ref = "androidx-espresso" }
@@ -147,6 +148,7 @@ apollo-normalizedCache = { module = "com.apollographql.apollo3:apollo-normalized
 apollo-runtime = { module = "com.apollographql.apollo3:apollo-runtime", version.ref = "apollo" }
 apollo-testingSupport = { module = "com.apollographql.apollo3:apollo-testing-support", version.ref = "apollo" }
 arrowKt-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrowKt" }
+arrowKt-fx = { module = "io.arrow-kt:arrow-fx-coroutines", version.ref = "arrowKt" }
 assertK = { module = "com.willowtreeapps.assertk:assertk-jvm", version.ref = "assertK" }
 coil-coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt:coil-compose-base", version.ref = "coil" }
@@ -196,6 +198,7 @@ slimber = { module = "com.github.PaulWoitaschek:Slimber", version.ref = "slimber
 svg = { module = "com.caverock:androidsvg-aar", version.ref = "svg" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 tooltip = { module = "com.github.hansemannn:viewtooltip", version.ref = "tooltip" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 zXing = { module = "com.google.zxing:core", version.ref = "zXing" }
 
 # Plugin libraries for build-logic's convention plugins to use to resolve the types/tasks coming from these plugins

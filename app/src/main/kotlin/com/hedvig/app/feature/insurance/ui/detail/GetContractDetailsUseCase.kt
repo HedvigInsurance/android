@@ -5,19 +5,19 @@ import arrow.core.firstOrNone
 import arrow.core.flatMap
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.InsuranceQuery
-import com.hedvig.app.util.LocaleManager
-import com.hedvig.app.util.apollo.safeQuery
-import com.hedvig.app.util.apollo.toEither
+import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.apollo.toEither
+import com.hedvig.android.language.LanguageService
 
 class GetContractDetailsUseCase(
   private val apolloClient: ApolloClient,
-  private val localeManager: LocaleManager,
+  private val languageService: LanguageService,
 ) {
 
   suspend operator fun invoke(contractId: String): Either<ContractDetailError, ContractDetailViewState> {
     return apolloClient
-      .query(InsuranceQuery(localeManager.defaultLocale()))
-      .safeQuery()
+      .query(InsuranceQuery(languageService.getGraphQLLocale()))
+      .safeExecute()
       .toEither { ContractDetailError.NetworkError }
       .flatMap { data ->
         data.contracts

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.transition.TransitionManager
 import android.view.MenuItem
 import android.view.animation.AnimationUtils
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
@@ -19,8 +20,8 @@ import com.adyen.checkout.dropin.DropIn
 import com.adyen.checkout.dropin.DropInResult
 import com.carousell.concatadapterextension.ConcatItemDecoration
 import com.carousell.concatadapterextension.ConcatSpanSizeLookup
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
-import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.authenticate.LoginStatus
@@ -47,7 +48,6 @@ import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignDialog
-import com.hedvig.app.getLocale
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
@@ -69,10 +69,9 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class OfferActivity : BaseActivity(R.layout.activity_offer) {
+class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
 
   private lateinit var concatAdapter: ConcatAdapter
-  override val screenName = "offer"
 
   private val quoteCartId: QuoteCartId
     get() = intent.getParcelableExtra(QUOTE_CART_ID)
@@ -89,6 +88,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
   private val binding by viewBinding(ActivityOfferBinding::bind)
   private val imageLoader: ImageLoader by inject()
   private val marketManager: MarketManager by inject()
+  private val languageService: LanguageService by inject()
   private var hasStartedRecyclerAnimation: Boolean = false
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -127,7 +127,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     binding.offerToolbar.setNavigationOnClickListener { onBackPressed() }
     binding.offerToolbar.setOnMenuItemClickListener(::handleMenuItem)
 
-    val locale = getLocale(this@OfferActivity, marketManager.market)
+    val locale = languageService.getLocale()
     val topOfferAdapter = OfferAdapter(
       fragmentManager = supportFragmentManager,
       locale = locale,
@@ -365,7 +365,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
       CheckoutMethod.SWEDISH_BANK_ID -> viewModel.onSwedishBankIdSign()
       CheckoutMethod.SIMPLE_SIGN -> {
         if (paymentMethods != null) {
-          startAdyenPayment(marketManager.market, paymentMethods)
+          startAdyenPayment(languageService.getLocale(), paymentMethods)
         } else {
           viewModel.onOpenCheckout()
         }

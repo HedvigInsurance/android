@@ -3,9 +3,9 @@ package com.hedvig.app.feature.embark.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityMoreOptionsBinding
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
+class MoreOptionsActivity : AppCompatActivity(R.layout.activity_more_options) {
   private val binding by viewBinding(ActivityMoreOptionsBinding::bind)
   private val viewModel: MemberIdViewModel by viewModel()
 

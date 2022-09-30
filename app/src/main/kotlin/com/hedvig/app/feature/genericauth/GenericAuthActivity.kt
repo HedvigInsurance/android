@@ -4,18 +4,18 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.app.BaseActivity
 import com.hedvig.app.feature.genericauth.otpinput.OtpInputActivity
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
-class GenericAuthActivity : BaseActivity() {
+class GenericAuthActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 

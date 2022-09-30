@@ -3,18 +3,18 @@ package com.hedvig.app.feature.marketing.data
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.MarketingBackgroundQuery
 import com.hedvig.android.apollo.graphql.type.UserInterfaceStyle
-import com.hedvig.app.util.LocaleManager
-import com.hedvig.app.util.apollo.safeQuery
-import com.hedvig.app.util.apollo.toEither
+import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.apollo.toEither
+import com.hedvig.android.language.LanguageService
 import com.hedvig.app.util.safeLet
 
 class GetMarketingBackgroundUseCase(
   private val apolloClient: ApolloClient,
-  private val localeManager: LocaleManager,
+  private val languageService: LanguageService,
 ) {
   suspend operator fun invoke() = apolloClient
-    .query(MarketingBackgroundQuery(localeManager.defaultLocale().rawValue))
-    .safeQuery()
+    .query(MarketingBackgroundQuery(languageService.getGraphQLLocale().rawValue))
+    .safeExecute()
     .toEither()
     .map { it.appMarketingImages.first() }
     .map { appMarketingImage ->

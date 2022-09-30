@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import com.hedvig.app.BaseActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.util.extensions.startChat
@@ -12,9 +12,7 @@ import org.koin.android.ext.android.inject
 import java.time.Clock
 import java.time.format.DateTimeFormatter
 
-class CrossSellingResultActivity : BaseActivity() {
-
-  override val screenName = "cross_sell_result"
+class CrossSellingResultActivity : AppCompatActivity() {
 
   private val clock: Clock by inject()
   private val crossSellingResult: CrossSellingResult

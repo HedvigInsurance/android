@@ -4,6 +4,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
 import com.hedvig.app.databinding.PaymentHistoryItemBinding
@@ -17,6 +18,7 @@ import e
 
 class PaymentHistoryAdapter(
   private val marketManager: MarketManager,
+  private val languageService: LanguageService,
 ) :
   ListAdapter<ChargeWrapper, PaymentHistoryAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
@@ -32,7 +34,7 @@ class PaymentHistoryAdapter(
   ): ViewHolder = when (viewType) {
     R.layout.payout_history_title -> ViewHolder.TitleViewHolder(parent)
     R.layout.payout_history_header -> ViewHolder.HeaderViewHolder(parent)
-    R.layout.payment_history_item -> ViewHolder.ItemViewHolder(parent)
+    R.layout.payment_history_item -> ViewHolder.ItemViewHolder(parent, languageService)
     else -> {
       throw RuntimeException("Invariant detected: viewType is $viewType")
     }
@@ -66,8 +68,10 @@ class PaymentHistoryAdapter(
       }
     }
 
-    class ItemViewHolder(parent: ViewGroup) :
-      ViewHolder(parent.inflate(R.layout.payment_history_item)) {
+    class ItemViewHolder(
+      parent: ViewGroup,
+      private val languageService: LanguageService,
+    ) : ViewHolder(parent.inflate(R.layout.payment_history_item)) {
       private val binding by viewBinding(PaymentHistoryItemBinding::bind)
       override fun bind(data: ChargeWrapper, marketManager: MarketManager) = with(binding) {
         if (data !is ChargeWrapper.Item) {
@@ -76,7 +80,7 @@ class PaymentHistoryAdapter(
         date.text = data.charge.date.format(PaymentActivity.DATE_FORMAT)
         amount.text =
           data.charge.amount.fragments.monetaryAmountFragment.toMonetaryAmount()
-            .format(amount.context, marketManager.market)
+            .format(languageService.getLocale())
       }
     }
   }

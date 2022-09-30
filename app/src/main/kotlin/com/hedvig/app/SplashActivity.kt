@@ -3,9 +3,11 @@ package com.hedvig.app
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.authenticate.LoginStatus
@@ -26,15 +28,18 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SplashActivity : BaseActivity(R.layout.activity_splash) {
+class SplashActivity : AppCompatActivity(R.layout.activity_splash) {
   private val loggedInService: LoginStatusService by inject()
   private val marketManager: MarketManager by inject()
   private val featureManager: FeatureManager by inject()
   private val binding by viewBinding(ActivitySplashBinding::bind)
   private val viewModel: SplashViewModel by viewModel()
+  private val languageService: LanguageService by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    languageService.performOnLaunchLanguageCheck()
+
     window.compatSetDecorFitsSystemWindows(false)
   }
 
