@@ -15,6 +15,18 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+    <!--
+    This exists in order to guard us from having some SDK we're including bring in the AD_ID
+    permission without us knowing. This is important since we've answered in the App Content Policy
+    that we are *not* using an Advertising ID.
+    More context here: https://support.google.com/googleplay/android-developer/answer/6048248?hl=en
+    Discussion here: https://hedviginsurance.slack.com/archives/C03HT2JRDPG/p1664544052874059
+    WARNING: DO *NOT* REMOVE THE "tools:node="remove" part of the AD_ID declaration
+    -->
+    <uses-permission
+        android:name="com.google.android.gms.permission.AD_ID"
+        tools:node="remove" />
+
     <application
         android:name=".HedvigApplication"
         android:allowBackup="true"

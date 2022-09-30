@@ -7,7 +7,7 @@ import com.shakebugs.shake.Shake
 
 class ShakeInitializer : Initializer<Unit> {
   override fun create(context: Context) {
-    // Only initialize Shake when running a staging build or the showkase pullrequest build
+    // Only initialize Shake when running a staging build
     val appId = BuildConfig.APPLICATION_ID
     if (appId != "com.hedvig.test.app") {
       return
