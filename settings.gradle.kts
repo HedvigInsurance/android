@@ -28,10 +28,6 @@ dependencyResolutionManagement {
     mavenLocal()
     maven {
       url = uri("https://jitpack.io")
-      name = "odysseyRepository"
-      credentials {
-         DefaultPasswordCredentials()
-      }
     }
     maven {
       url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
