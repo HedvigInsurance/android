@@ -1,4 +1,4 @@
-package com.hedvig.android.core.common.android.di
+package com.hedvig.android.core.common.di
 
 import org.koin.core.qualifier.qualifier
 

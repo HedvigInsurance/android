@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
   implementation(projects.apollo)
-  implementation(projects.coreCommonAndroid)
+  implementation(projects.coreCommon)
   implementation(projects.coreResources)
 
   implementation(libs.androidx.other.preference)

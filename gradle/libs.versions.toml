@@ -66,6 +66,7 @@ fragmentViewBindingDelegate = "1.0.1"
 hAnalytics = "v0.259.0"
 insetter = "0.6.1"
 jsonTest = "20220320"
+junit = "4.12"
 kaspresso = "1.4.1"
 koin = "3.2.0"
 leakCanary = "2.9.1"
@@ -173,6 +174,7 @@ fragmentViewBindingDelegate = { module = "com.github.Zhuinden:fragmentviewbindin
 hAnalytics = { module = "com.github.HedvigInsurance:hanalytics", version.ref = "hAnalytics" }
 insetter = { module = "dev.chrisbanes.insetter:insetter", version.ref = "insetter" }
 jsonTest = { module = "org.json:json", version.ref = "jsonTest" }
+junit = { module = "junit:junit", version.ref = "junit" }
 kaspresso = { module = "com.kaspersky.android-components:kaspresso", version.ref = "kaspresso" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }

@@ -19,8 +19,8 @@ import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.datadog.android.DatadogInterceptor
 import com.google.firebase.messaging.FirebaseMessaging
-import com.hedvig.android.core.common.android.di.datastoreFileQualifier
-import com.hedvig.android.core.common.android.di.isDebugQualifier
+import com.hedvig.android.core.common.di.datastoreFileQualifier
+import com.hedvig.android.core.common.di.isDebugQualifier
 import com.hedvig.android.hanalytics.di.appIdQualifier
 import com.hedvig.android.hanalytics.di.appVersionCodeQualifier
 import com.hedvig.android.hanalytics.di.appVersionNameQualifier

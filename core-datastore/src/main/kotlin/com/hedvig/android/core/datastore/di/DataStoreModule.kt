@@ -7,7 +7,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
-import com.hedvig.android.core.common.android.di.datastoreFileQualifier
+import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.datastore.DeviceIdDataStore
 import com.hedvig.android.core.datastore.DeviceIdDataStoreImpl
 import org.koin.dsl.module

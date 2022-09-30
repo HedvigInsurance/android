@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.coreCommonAndroid)
+  implementation(projects.coreCommon)
   implementation(projects.hanalytics.hanalytics)
   implementation(projects.hedvigMarket)
 
