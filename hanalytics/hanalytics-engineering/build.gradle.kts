@@ -14,6 +14,7 @@ dependencies {
   implementation(projects.hanalytics.hanalytics)
   implementation(projects.hanalytics.hanalyticsEngineeringApi)
 
+  implementation(libs.androidx.datastore.preferences)
   implementation(libs.androidx.other.activityCompose)
   implementation(libs.androidx.other.appCompat)
   implementation(libs.koin.android)

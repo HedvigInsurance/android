@@ -165,7 +165,6 @@ dependencies {
   implementation(libs.androidx.lifecycle.process)
   implementation(libs.androidx.other.workManager)
   implementation(libs.androidx.datastore.core)
-  implementation(libs.androidx.datastore.preferences)
   implementation(libs.androidx.other.startup)
   androidTestImplementation(libs.androidx.espresso.core)
   androidTestImplementation(libs.androidx.espresso.intents)
