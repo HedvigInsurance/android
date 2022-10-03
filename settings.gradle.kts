@@ -10,7 +10,9 @@ pluginManagement {
   repositories {
     google()
     mavenCentral()
-    mavenLocal()
+    maven {
+      url = uri("https://jitpack.io")
+    }
     gradlePluginPortal()
     maven {
       url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
@@ -25,9 +27,15 @@ dependencyResolutionManagement {
   repositories {
     google()
     mavenCentral()
-    mavenLocal()
     maven {
       url = uri("https://jitpack.io")
+    }
+    maven {
+      url = uri("https://jitpack.io")
+      name = "odysseyRepository"
+      credentials {
+        DefaultPasswordCredentials()
+      }
     }
     maven {
       url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
