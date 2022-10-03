@@ -12,6 +12,7 @@ import com.hedvig.app.util.extensions.startChat
 import com.hedvig.common.nav.OdysseyNavigationComposable
 import com.hedvig.common.remote.actions.CHAT_URL
 import com.hedvig.common.remote.actions.CLOSE_URL
+import com.hedvig.common.ui.OdysseyTheme
 import org.koin.android.ext.android.inject
 
 class ClaimsFlowActivity : ComponentActivity() {
@@ -25,7 +26,7 @@ class ClaimsFlowActivity : ComponentActivity() {
     requireNotNull(token)
 
     setContent {
-      HedvigTheme {
+      OdysseyTheme {
         OdysseyNavigationComposable(
           apiUrl = odysseyUrl,
           authorizationToken = token,
