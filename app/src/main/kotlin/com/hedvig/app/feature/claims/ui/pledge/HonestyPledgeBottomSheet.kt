@@ -5,13 +5,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.BottomSheetHonestyPledgeBinding
+import com.hedvig.app.feature.claims.ui.ClaimsFlowActivity
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.hanalytics.HAnalytics
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
@@ -32,21 +35,25 @@ class HonestyPledgeBottomSheet(
 
     binding.bottomSheetHonestyPledgeButton.setHapticClickListener {
       hAnalytics.honorPledgeConfirmed()
-      startClaimsFlow()
-      dismiss()
+      lifecycleScope.launch {
+        startClaimsFlow()
+        dismiss()
+      }
     }
   }
 
-  private fun startClaimsFlow() {
+  private suspend fun startClaimsFlow() {
     if (customActivityLaunch != null) {
-      customActivityLaunch.invoke(getEmbarkIntent())
+      customActivityLaunch.invoke(getClaimsFlowIntent())
     } else {
-      startActivity(getEmbarkIntent())
+      startActivity(getClaimsFlowIntent())
     }
   }
 
-  private fun getEmbarkIntent(): Intent {
-    return EmbarkActivity.newInstance(
+  private suspend fun getClaimsFlowIntent() = if (hAnalytics.odysseyClaims()) {
+    ClaimsFlowActivity.newInstance(requireContext())
+  } else {
+    EmbarkActivity.newInstance(
       requireContext(),
       "claims",
       getString(hedvig.resources.R.string.CLAIMS_HONESTY_PLEDGE_BOTTOM_SHEET_BUTTON_LABEL),

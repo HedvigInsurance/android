@@ -301,4 +301,5 @@ dependencies {
   "kaptPullrequest"(libs.showkase.processor)
 
   implementation(libs.datadog.sdk)
+  implementation(libs.odyssey)
 }

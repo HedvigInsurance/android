@@ -1,3 +1,5 @@
+import org.gradle.internal.credentials.DefaultPasswordCredentials
+
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
@@ -8,7 +10,9 @@ pluginManagement {
   repositories {
     google()
     mavenCentral()
-    mavenLocal()
+    maven {
+      url = uri("https://jitpack.io")
+    }
     gradlePluginPortal()
     maven {
       url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
@@ -23,9 +27,13 @@ dependencyResolutionManagement {
   repositories {
     google()
     mavenCentral()
-    mavenLocal()
     maven {
       url = uri("https://jitpack.io")
+    }
+    maven {
+      url = uri("https://jitpack.io")
+      name = "odysseyRepository"
+      credentials(PasswordCredentials::class)
     }
     maven {
       url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")

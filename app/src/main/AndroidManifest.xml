@@ -282,6 +282,7 @@
             android:name=".feature.marketing.MarketingActivity"
             android:theme="@style/Hedvig.Theme.Marketing"
             android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".feature.claims.ui.ClaimsFlowActivity" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
