@@ -38,6 +38,7 @@ class ClaimsFlowActivity : ComponentActivity() {
               CHAT_URL -> startChat()
             }
           },
+          onExit = { finish() },
         )
       }
     }
