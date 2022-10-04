@@ -25,6 +25,9 @@
 }
 
 # Facebook Yoga
+# Odyssey components are using facebook yoga, and the components are not called from application
+# code (they are part of a SDUI library). R8 will then try to optimise by removing classes from
+# yoga, since those does not seem to be called from anywhere.
 -keep class com.facebook.** { *; }
 
 # Keep `Companion` object fields of serializable classes.
