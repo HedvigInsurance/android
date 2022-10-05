@@ -264,7 +264,6 @@
             android:name=".feature.genericauth.GenericAuthActivity"
             android:windowSoftInputMode="adjustResize" />
 
-        <activity android:name=".feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoActivity" />
         <activity android:name=".feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceInfoActivity" />
         <activity
             android:name=".feature.addressautocompletion.ui.AddressAutoCompleteActivity"

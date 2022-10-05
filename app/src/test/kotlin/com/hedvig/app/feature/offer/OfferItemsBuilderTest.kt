@@ -24,7 +24,6 @@ class OfferItemsBuilderTest {
     val items = OfferItemsBuilder.createTopOfferItems(
       testData.variants.first(),
       null,
-      null,
       {},
       testData,
     )
@@ -45,7 +44,6 @@ class OfferItemsBuilderTest {
     val items = OfferItemsBuilder.createTopOfferItems(
       testData.variants.first(),
       null,
-      null,
       {},
       testData,
     )
@@ -64,7 +62,6 @@ class OfferItemsBuilderTest {
 
     val items = OfferItemsBuilder.createTopOfferItems(
       testData.variants.first(),
-      null,
       null,
       {},
       testData,
@@ -90,7 +87,6 @@ class OfferItemsBuilderTest {
 
     val topItems = OfferItemsBuilder.createTopOfferItems(
       testData.variants.first(),
-      null,
       null,
       {},
       testData,
@@ -118,7 +114,6 @@ class OfferItemsBuilderTest {
     val topItems = OfferItemsBuilder.createTopOfferItems(
       testData.variants.first(),
       null,
-      null,
       {},
       testData,
     )
@@ -139,7 +134,6 @@ class OfferItemsBuilderTest {
 
     val topItems = OfferItemsBuilder.createTopOfferItems(
       testData.variants.first(),
-      null,
       null,
       {},
       testData,

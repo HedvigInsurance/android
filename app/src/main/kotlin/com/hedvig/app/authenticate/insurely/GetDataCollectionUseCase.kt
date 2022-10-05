@@ -1,64 +1,19 @@
 package com.hedvig.app.authenticate.insurely
 
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.apollo.OperationResult
-import com.hedvig.android.apollo.graphql.ExternalInsuranceProviderV2Subscription
-import com.hedvig.android.apollo.graphql.type.DataCollectionStatus
-import com.hedvig.android.apollo.toSafeFlow
 import com.hedvig.android.market.MarketManager
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flowOf
 
 class GetDataCollectionUseCase(
   val apolloClient: ApolloClient,
   val marketManager: MarketManager,
 ) {
 
-  fun getCollectionStatus(
-    reference: String,
-  ): Flow<DataCollectionResult> {
-    val subscription = ExternalInsuranceProviderV2Subscription(reference)
-    return apolloClient.subscription(subscription).toSafeFlow().map { result ->
-      when (result) {
-        is OperationResult.Success -> {
-          val extraInfo = result.data?.dataCollectionStatusV2?.extraInformation
-          val swedishAutoStartToken = extraInfo?.asSwedishBankIdExtraInfo?.autoStartToken
-          val norwegianBankIdWords = extraInfo?.asNorwegianBankIdExtraInfo?.norwegianBankIdWords
-          val collectionStatus = result.data.dataCollectionStatusV2.status.toCollectionStatus()
-          when {
-            swedishAutoStartToken != null -> DataCollectionResult.Success.SwedishBankId(
-              swedishAutoStartToken,
-              collectionStatus,
-            )
-            norwegianBankIdWords != null -> DataCollectionResult.Success.NorwegianBankId(
-              norwegianBankIdWords,
-              collectionStatus,
-            )
-            else -> DataCollectionResult.Success.SwedishBankId(
-              null,
-              collectionStatus,
-            )
-          }
-        }
-        is OperationResult.Error -> DataCollectionResult.Error.QueryError
-      }
-    }
-  }
-
-  private fun DataCollectionStatus.toCollectionStatus() = when (this) {
-    DataCollectionStatus.RUNNING -> DataCollectionResult.Success.CollectionStatus.NONE
-    DataCollectionStatus.LOGIN -> DataCollectionResult.Success.CollectionStatus.LOGIN
-    DataCollectionStatus.COLLECTING -> DataCollectionResult.Success.CollectionStatus.COLLECTING
-    DataCollectionStatus.COMPLETED,
-    DataCollectionStatus.COMPLETED_PARTIAL,
-    -> DataCollectionResult.Success.CollectionStatus.COMPLETED
-    DataCollectionStatus.COMPLETED_EMPTY,
-    DataCollectionStatus.WAITING_FOR_AUTHENTICATION,
-    DataCollectionStatus.FAILED,
-    -> DataCollectionResult.Success.CollectionStatus.FAILED
-    DataCollectionStatus.USER_INPUT,
-    DataCollectionStatus.UNKNOWN__,
-    -> DataCollectionResult.Success.CollectionStatus.UNKNOWN
+  // Implementation removed since schema changed, and this functionality is not
+  // used in the apps. Keeping the UseCase if we want to implement later.
+  fun getCollectionStatus(reference: String): Flow<DataCollectionResult> {
+    return flowOf(DataCollectionResult.Error.QueryError)
   }
 }
 
