@@ -3,8 +3,6 @@ package com.hedvig.app.feature.embark
 import android.content.Intent
 import com.hedvig.app.MockActivity
 import com.hedvig.app.embarkModule
-import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoActivity
-import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.InsuranceProviderParameter
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.embark.ui.MemberIdViewModel
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
@@ -98,17 +96,6 @@ class EmbarkMockActivity : MockActivity() {
     clickableItem("Previous Insurer") {
       MockEmbarkViewModel.mockedData = PREVIOUS_INSURER_STORY
       startActivity(EmbarkActivity.newInstance(context, this.javaClass.name, "Previous Insurer"))
-    }
-    clickableItem("Ask for price info") {
-      startActivity(
-        AskForPriceInfoActivity.createIntent(
-          context,
-          InsuranceProviderParameter(
-            "Test ID",
-            "Test Name",
-          ),
-        ),
-      )
     }
     header("Embark Screen")
     clickableItem("Loading") {
