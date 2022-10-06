@@ -68,7 +68,7 @@ android {
     }
 
     @Suppress("UNUSED_VARIABLE")
-    val staging by creating {
+    val staging by getting {
       applicationIdSuffix = ".test.app"
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
       isMinifyEnabled = true
