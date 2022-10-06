@@ -13,3 +13,9 @@ val isDebugQualifier = qualifier("isDebugQualifier")
  * file from context, and instead being fed the file in directly.
  */
 val datastoreFileQualifier = qualifier("datastoreFileQualifier")
+
+/**
+ * A qualifier to pass a lambda to log information from jvm modules
+ */
+val logInfoQualifier = qualifier("logInfoQualifier")
+typealias LogInfoType = (() -> String) -> Unit

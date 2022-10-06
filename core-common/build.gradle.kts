@@ -1,5 +1,5 @@
 plugins {
-  id("hedvig.android.library.kotlin")
+  id("hedvig.kotlin.library")
   id("hedvig.android.ktlint")
 }
 

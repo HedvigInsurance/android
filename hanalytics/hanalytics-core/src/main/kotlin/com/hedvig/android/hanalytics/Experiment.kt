@@ -2,8 +2,9 @@ package com.hedvig.android.hanalytics
 
 import kotlinx.serialization.Serializable
 
+@InternalHanalyticsApi
 @Serializable
-internal data class Experiment(
+data class Experiment(
   val name: String,
   val variant: String,
 )

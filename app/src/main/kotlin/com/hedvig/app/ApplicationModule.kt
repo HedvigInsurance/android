@@ -19,12 +19,14 @@ import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.datadog.android.DatadogInterceptor
 import com.google.firebase.messaging.FirebaseMessaging
+import com.hedvig.android.core.common.di.LogInfoType
 import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.common.di.isDebugQualifier
-import com.hedvig.android.hanalytics.di.appIdQualifier
-import com.hedvig.android.hanalytics.di.appVersionCodeQualifier
-import com.hedvig.android.hanalytics.di.appVersionNameQualifier
-import com.hedvig.android.hanalytics.di.hAnalyticsUrlQualifier
+import com.hedvig.android.core.common.di.logInfoQualifier
+import com.hedvig.android.hanalytics.android.di.appIdQualifier
+import com.hedvig.android.hanalytics.android.di.appVersionCodeQualifier
+import com.hedvig.android.hanalytics.android.di.appVersionNameQualifier
+import com.hedvig.android.hanalytics.android.di.hAnalyticsUrlQualifier
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.authenticate.AuthenticationTokenService
@@ -191,6 +193,7 @@ import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.NetworkCacheManager
 import com.hedvig.app.util.apollo.ReopenSubscriptionException
 import com.hedvig.app.util.apollo.SunsettingInterceptor
+import i
 import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -664,6 +667,12 @@ val datastoreAndroidModule = module {
   single<File>(datastoreFileQualifier) {
     // https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:datastore/datastore/src/main/java/androidx/datastore/DataStoreFile.kt;l=35-36
     get<Context>().applicationContext.filesDir
+  }
+}
+
+val logModule = module {
+  single<LogInfoType>(logInfoQualifier) {
+    ::i
   }
 }
 

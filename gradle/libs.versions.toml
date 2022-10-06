@@ -192,7 +192,8 @@ okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 playKtx = { module = "com.google.android.play:core-ktx", version.ref = "playKtx" }
 reactiveX-android = { module = "io.reactivex.rxjava2:rxandroid", version.ref = "reactiveX-Android" }
 reactiveX-kotlin = { module = "io.reactivex.rxjava2:rxkotlin", version.ref = "reactiveX-Kotlin" }
-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
+serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "serialization" }
+serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 shake = { module = "com.shakebugs:shake", version.ref = "shake" }
 shimmer = { module = "com.facebook.shimmer:shimmer", version.ref = "shimmer" }
 slimber = { module = "com.github.PaulWoitaschek:Slimber", version.ref = "slimber" }

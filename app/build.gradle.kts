@@ -119,7 +119,8 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.featureBusinessmodel)
-  implementation(projects.hanalytics.hanalytics)
+  implementation(projects.hanalytics.hanalyticsAndroid)
+  implementation(projects.hanalytics.hanalyticsCore)
   implementation(projects.hanalytics.hanalyticsFeatureFlags)
   implementation(projects.hedvigLanguage)
   implementation(projects.hedvigMarket)
@@ -142,10 +143,12 @@ dependencies {
   implementation(libs.coroutines.android)
   testImplementation(libs.coroutines.test)
 
-  implementation(libs.serialization)
+  implementation(libs.serialization.json)
 
   testImplementation(libs.androidx.arch.testing)
 
+  implementation(libs.androidx.datastore.core)
+  implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.androidx.other.appCompat)
   implementation(libs.androidx.other.media)
   implementation(libs.androidx.other.constraintLayout)

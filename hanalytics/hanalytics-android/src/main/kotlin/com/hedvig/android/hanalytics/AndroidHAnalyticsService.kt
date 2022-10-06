@@ -8,6 +8,7 @@ import com.hedvig.android.core.common.await
 import com.hedvig.android.core.datastore.DeviceIdDataStore
 import com.hedvig.hanalytics.HAnalytics
 import com.hedvig.hanalytics.HAnalyticsEvent
+import d
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
@@ -21,13 +22,7 @@ import java.util.Locale
 import java.util.TimeZone
 import java.util.UUID
 
-internal interface HAnalyticsService {
-  suspend fun sendEvent(event: HAnalyticsEvent)
-  suspend fun getExperiments(): List<Experiment>?
-  suspend fun identify()
-}
-
-internal class HAnalyticsServiceImpl(
+internal class AndroidHAnalyticsService(
   private val context: Context,
   private val okHttpClient: OkHttpClient,
   private val deviceIdDataStore: DeviceIdDataStore,
@@ -45,6 +40,7 @@ internal class HAnalyticsServiceImpl(
       "properties" to event.properties,
       "graphql" to event.graphql,
     )
+    d { "Stelios: requestJsonObject:$requestJsonObject" }
     val eventRequest = Request.Builder()
       .url("$hAnalyticsBaseUrl/event")
       .header("Content-Type", "application/json")

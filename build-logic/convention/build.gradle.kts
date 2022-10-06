@@ -32,6 +32,6 @@ gradlePlugin {
     createPlugin("hedvig.android.ktlint", "KtlintConventionPlugin")
     createPlugin("hedvig.android.library", "LibraryConventionPlugin")
     createPlugin("hedvig.android.library.compose", "LibraryComposeConventionPlugin")
-    createPlugin("hedvig.android.library.kotlin", "KotlinLibraryConventionPlugin")
+    createPlugin("hedvig.kotlin.library", "KotlinLibraryConventionPlugin")
   }
 }

@@ -11,7 +11,7 @@ dependencies {
   implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
-  implementation(projects.hanalytics.hanalytics)
+  implementation(projects.hanalytics.hanalyticsCore)
   implementation(projects.hanalytics.hanalyticsEngineeringApi)
 
   implementation(libs.androidx.datastore.preferences)

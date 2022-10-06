@@ -1,17 +1,18 @@
 package com.hedvig.android.hanalytics
 
+import com.hedvig.android.core.common.di.LogInfoType
 import com.hedvig.hanalytics.HAnalytics
 import com.hedvig.hanalytics.HAnalyticsEvent
 import com.hedvig.hanalytics.HAnalyticsExperiment
-import i
 
 internal class HAnalyticsImpl(
   private val sendHAnalyticsEventUseCase: SendHAnalyticsEventUseCase,
   private val HAnalyticsExperimentManager: HAnalyticsExperimentManager,
+  private val logInfo: LogInfoType,
 ) : HAnalytics() {
   override suspend fun getExperiment(name: String): HAnalyticsExperiment {
     val experiment = HAnalyticsExperimentManager.getExperiment(name)
-    i { "Experiment requested: $experiment" }
+    logInfo { "Experiment requested: $experiment" }
     return experiment
   }
 

@@ -6,7 +6,7 @@ plugins {
 dependencies {
   implementation(libs.okio)
   implementation(libs.okhttp.core)
-  implementation(libs.serialization)
+  implementation(libs.serialization.json)
 }
 
 java {
