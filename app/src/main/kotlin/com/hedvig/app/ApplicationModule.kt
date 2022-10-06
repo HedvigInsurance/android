@@ -32,7 +32,6 @@ import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.authenticate.SharedPreferencesAuthenticationTokenService
 import com.hedvig.app.authenticate.SharedPreferencesLoginStatusService
 import com.hedvig.app.authenticate.UserViewModel
-import com.hedvig.app.authenticate.insurely.GetDataCollectionUseCase
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.addressautocompletion.data.GetDanishAddressAutoCompletionUseCase
 import com.hedvig.app.feature.addressautocompletion.data.GetFinalDanishAddressSelectionUseCase
@@ -559,7 +558,6 @@ val useCaseModule = module {
   single<CreateOtpAttemptUseCase> { CreateOtpAttemptUseCaseImpl(get()) }
   single<SendOtpCodeUseCase> { SendOtpCodeUseCaseImpl(get()) }
   single<ReSendOtpCodeUseCase> { ReSendOtpCodeUseCaseImpl(get()) }
-  single { GetDataCollectionUseCase(get(), get()) }
   single { GetClaimDetailUseCase(get(), get()) }
   single { GetClaimDetailUiStateFlowUseCase(get()) }
   single { GetContractDetailsUseCase(get(), get()) }
