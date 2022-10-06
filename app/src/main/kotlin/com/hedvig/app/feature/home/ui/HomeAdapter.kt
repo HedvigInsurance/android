@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.home.ui
 
-import android.content.Intent
+import android.content.Context
 import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
@@ -35,7 +35,6 @@ import com.hedvig.app.databinding.UpcomingRenewalCardBinding
 import com.hedvig.app.feature.claimdetail.ClaimDetailActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
-import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.home.model.HomeModel
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
@@ -57,13 +56,13 @@ import java.time.temporal.ChronoUnit
 class HomeAdapter(
   private val fragmentManager: FragmentManager,
   private val retry: () -> Unit,
-  private val startIntentForResult: (Intent) -> Unit,
   private val imageLoader: ImageLoader,
   private val marketManager: MarketManager,
   private val onClaimDetailCardClicked: (String) -> Unit,
   private val onClaimDetailCardShown: (String) -> Unit,
   private val onPaymentCardShown: () -> Unit,
   private val onPaymentCardClicked: (PaymentType) -> Unit,
+  private val onStartClaimClicked: () -> Unit,
 ) : ListAdapter<HomeModel, HomeAdapter.ViewHolder>(HomeModelDiffUtilItemCallback) {
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -76,8 +75,8 @@ class HomeAdapter(
       onClaimDetailCardShown,
     )
     SPACE -> ViewHolder.Space(ComposeView(parent.context))
-    R.layout.home_start_claim_outlined -> ViewHolder.StartClaimOutlined(parent, startIntentForResult)
-    R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent, startIntentForResult)
+    R.layout.home_start_claim_outlined -> ViewHolder.StartClaimOutlined(parent, onStartClaimClicked)
+    R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent, onStartClaimClicked)
     CONNECT_PAYIN -> ViewHolder.InfoCard(ComposeView(parent.context), onPaymentCardShown, onPaymentCardClicked)
     R.layout.home_common_claim -> ViewHolder.CommonClaim(parent, imageLoader)
     ERROR -> ViewHolder.Error(ComposeView(parent.context), retry)
@@ -252,7 +251,7 @@ class HomeAdapter(
 
     class StartClaimOutlined(
       parent: ViewGroup,
-      private val startIntentForResult: (Intent) -> Unit,
+      private val onStartClaimClicked: () -> Unit,
     ) : ViewHolder(parent.inflate(R.layout.home_start_claim_outlined)) {
       private val binding by viewBinding(HomeStartClaimOutlinedBinding::bind)
 
@@ -267,16 +266,14 @@ class HomeAdapter(
 
         binding.button.setText(data.textId)
         root.setHapticClickListener {
-          HonestyPledgeBottomSheet
-            .newInstance(startIntentForResult)
-            .show(fragmentManager, HonestyPledgeBottomSheet.TAG)
+          onStartClaimClicked()
         }
       }
     }
 
     class StartClaimContained(
       parent: ViewGroup,
-      private val startIntentForResult: (Intent) -> Unit,
+      private val onStartClaimClicked: () -> Unit,
     ) : ViewHolder(parent.inflate(R.layout.home_start_claim_contained)) {
       private val binding by viewBinding(HomeStartClaimContainedBinding::bind)
       override fun bind(
@@ -290,9 +287,7 @@ class HomeAdapter(
 
         binding.button.setText(data.textId)
         root.setHapticClickListener {
-          HonestyPledgeBottomSheet
-            .newInstance(startIntentForResult)
-            .show(fragmentManager, HonestyPledgeBottomSheet.TAG)
+          onStartClaimClicked()
         }
       }
     }

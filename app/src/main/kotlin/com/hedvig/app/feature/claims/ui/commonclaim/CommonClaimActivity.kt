@@ -5,20 +5,18 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import coil.ImageLoader
 import coil.load
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityCommonClaimBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.bulletpoint.BulletPointsAdapter
-import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
+import com.hedvig.app.feature.claims.ui.startClaimsFlow
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
-import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
-import com.hedvig.app.util.extensions.view.applyStatusBarInsets
-import com.hedvig.app.util.extensions.view.disable
-import com.hedvig.app.util.extensions.view.enable
-import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
+import com.hedvig.app.util.extensions.view.*
 import com.hedvig.app.util.extensions.viewBinding
+import com.hedvig.hanalytics.HAnalytics
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
@@ -26,6 +24,7 @@ class CommonClaimActivity : AppCompatActivity(R.layout.activity_common_claim) {
 
   private val imageLoader: ImageLoader by inject()
   private val binding by viewBinding(ActivityCommonClaimBinding::bind)
+  private val hAnalytics: HAnalytics by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -59,9 +58,13 @@ class CommonClaimActivity : AppCompatActivity(R.layout.activity_common_claim) {
       if (data.eligibleToClaim) {
         firstMessage.commonClaimCreateClaimButton.enable()
         firstMessage.commonClaimCreateClaimButton.setHapticClickListener {
-          HonestyPledgeBottomSheet
-            .newInstance()
-            .show(supportFragmentManager, HonestyPledgeBottomSheet.TAG)
+          lifecycleScope.launch {
+            startClaimsFlow(
+              hAnalytics = hAnalytics,
+              context = this@CommonClaimActivity,
+              fragmentManager = supportFragmentManager,
+            )
+          }
         }
       } else {
         firstMessage.commonClaimCreateClaimButton.disable()
