@@ -24,8 +24,6 @@ import com.hedvig.app.feature.offer.model.quotebundle.PostSignScreen
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import com.hedvig.app.feature.offer.usecase.AddPaymentTokenUseCase
 import com.hedvig.app.feature.offer.usecase.EditCampaignUseCase
-import com.hedvig.app.feature.offer.usecase.ExternalProvider
-import com.hedvig.app.feature.offer.usecase.GetExternalInsuranceProviderUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuoteCartCheckoutUseCase
 import com.hedvig.app.feature.offer.usecase.ObserveOfferStateUseCase
 import com.hedvig.app.feature.offer.usecase.OfferState
@@ -43,7 +41,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -111,12 +108,10 @@ abstract class OfferViewModel : ViewModel() {
       val bundleVariant: QuoteBundleVariant,
       val loginStatus: LoginStatus = LoginStatus.LoggedIn,
       val paymentMethods: PaymentMethodsApiResponse?,
-      val externalProvider: ExternalProvider?,
       val onVariantSelected: (id: String) -> Unit,
     ) : ViewState() {
       fun createTopOfferItems() = OfferItemsBuilder.createTopOfferItems(
         quoteBundleVariant = bundleVariant,
-        externalProvider = externalProvider,
         paymentMethods = paymentMethods,
         onVariantSelected = onVariantSelected,
         offerModel = offerModel,
@@ -167,7 +162,6 @@ class OfferViewModelImpl(
   private val editCampaignUseCase: EditCampaignUseCase,
   private val featureManager: FeatureManager,
   private val addPaymentTokenUseCase: AddPaymentTokenUseCase,
-  private val getExternalInsuranceProviderUseCase: GetExternalInsuranceProviderUseCase,
   getBundleVariantUseCase: ObserveOfferStateUseCase,
   private val selectedVariantStore: SelectedVariantStore,
   private val getQuoteCartCheckoutUseCase: GetQuoteCartCheckoutUseCase,
@@ -197,36 +191,18 @@ class OfferViewModelImpl(
       ifRight = { offerWithVariant: OfferState ->
         val offerModel = offerWithVariant.offerModel
         val bundle = offerWithVariant.selectedVariant
-        if (bundle.externalProviderId != null) {
-          getExternalInsuranceProviderUseCase
-            .observeExternalProviderOrNull(bundle.externalProviderId)
-            .mapLatest { externalProvider ->
-              ViewState.Content(
-                offerModel = offerModel,
-                bundleVariant = bundle,
-                loginStatus = loginStatusService.getLoginStatus(),
-                paymentMethods = offerModel.paymentMethodsApiResponse,
-                externalProvider = externalProvider,
-                onVariantSelected = { variantId ->
-                  selectedVariantStore.selectVariant(variantId)
-                },
-              )
-            }
-        } else {
-          flow {
-            emit(
-              ViewState.Content(
-                offerModel = offerModel,
-                bundleVariant = bundle,
-                loginStatus = loginStatusService.getLoginStatus(),
-                paymentMethods = offerModel.paymentMethodsApiResponse,
-                externalProvider = null,
-                onVariantSelected = { variantId ->
-                  selectedVariantStore.selectVariant(variantId)
-                },
-              ),
-            )
-          }
+        flow {
+          emit(
+            ViewState.Content(
+              offerModel = offerModel,
+              bundleVariant = bundle,
+              loginStatus = loginStatusService.getLoginStatus(),
+              paymentMethods = offerModel.paymentMethodsApiResponse,
+              onVariantSelected = { variantId ->
+                selectedVariantStore.selectVariant(variantId)
+              },
+            ),
+          )
         }
       },
     )

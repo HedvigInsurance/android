@@ -28,7 +28,6 @@ import com.hedvig.app.externalInsuranceModule
 import com.hedvig.app.graphQLQueryModule
 import com.hedvig.app.homeModule
 import com.hedvig.app.insuranceModule
-import com.hedvig.app.insurelyAuthModule
 import com.hedvig.app.logModule
 import com.hedvig.app.loggedInModule
 import com.hedvig.app.notificationModule
@@ -40,7 +39,6 @@ import com.hedvig.app.profileModule
 import com.hedvig.app.pushTokenManagerModule
 import com.hedvig.app.referralsModule
 import com.hedvig.app.repositoriesModule
-import com.hedvig.app.retrievePriceModule
 import com.hedvig.app.serviceModule
 import com.hedvig.app.sharedPreferencesModule
 import com.hedvig.app.stringConstantsModule
@@ -85,7 +83,6 @@ class KoinInitializer : Initializer<KoinApplication> {
         hAnalyticsModule,
         homeModule,
         insuranceModule,
-        insurelyAuthModule,
         languageModule,
         logModule,
         loggedInModule,
@@ -100,7 +97,6 @@ class KoinInitializer : Initializer<KoinApplication> {
         pushTokenManagerModule,
         referralsModule,
         repositoriesModule,
-        retrievePriceModule,
         serviceModule,
         sharedPreferencesModule,
         stringConstantsModule,
