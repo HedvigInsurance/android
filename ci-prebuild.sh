@@ -24,7 +24,7 @@ EOT
 
 ./gradlew :apollo:downloadGiraffeApolloSchemaFromIntrospection
 ./gradlew :core-resources:downloadStrings
-./gradlew licenseReleaseReport
+./gradlew licenseReleaseReport --continue
 
 cp app/src/debug/res/values/adyen.xml app/src/pullrequest/res/values/adyen.xml
 cp app/src/debug/res/values/shake.xml app/src/pullrequest/res/values/shake.xml

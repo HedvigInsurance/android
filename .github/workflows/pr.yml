@@ -179,6 +179,7 @@ jobs:
           string: ${{ github.event.pull_request.title }}
         continue-on-error: true
       - name: Update Jira issue with artifact URL
+        continue-on-error: true
         if: ${{ steps.find_issue.outputs.issue != null }}
         env:
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
