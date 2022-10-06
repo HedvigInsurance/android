@@ -13,6 +13,7 @@ import coil.ImageLoader
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
 import com.hedvig.app.databinding.HomeFragmentBinding
+import com.hedvig.app.feature.claims.ui.startClaimsFlow
 import com.hedvig.app.feature.home.model.HomeModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
@@ -20,10 +21,12 @@ import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
+import com.hedvig.hanalytics.HAnalytics
 import com.hedvig.hanalytics.PaymentType
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -35,6 +38,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
   private var scroll = 0
   private val imageLoader: ImageLoader by inject()
   private val marketManager: MarketManager by inject()
+  private val hAnalytics: HAnalytics by inject()
 
   private val registerForActivityResult: ActivityResultLauncher<Intent> =
     registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -52,13 +56,13 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     val homeAdapter = HomeAdapter(
       fragmentManager = parentFragmentManager,
       retry = viewModel::reload,
-      startIntentForResult = ::startEmbarkForResult,
       imageLoader = imageLoader,
       marketManager = marketManager,
       onClaimDetailCardClicked = viewModel::onClaimDetailCardClicked,
       onClaimDetailCardShown = viewModel::onClaimDetailCardShown,
       onPaymentCardShown = viewModel::onPaymentCardShown,
       onPaymentCardClicked = ::onPaymentCardClicked,
+      onStartClaimClicked = ::onStartClaimClicked
     )
 
     binding.swipeToRefresh.setOnRefreshListener {
@@ -110,6 +114,17 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
       .launchIn(lifecycleScope)
   }
 
+  private fun onStartClaimClicked() {
+    lifecycleScope.launch {
+      startClaimsFlow(
+        hAnalytics = hAnalytics,
+        context = requireContext(),
+        fragmentManager = parentFragmentManager,
+        registerForResult = ::registerForResult,
+      )
+    }
+  }
+
   private fun onPaymentCardClicked(paymentType: PaymentType) {
     viewModel.onPaymentCardClicked()
     val market = marketManager.market ?: return
@@ -123,7 +138,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     )
   }
 
-  private fun startEmbarkForResult(intent: Intent) {
+  private fun registerForResult(intent: Intent) {
     registerForActivityResult.launch(intent)
   }
 }

@@ -35,30 +35,25 @@ class HonestyPledgeBottomSheet(
 
     binding.bottomSheetHonestyPledgeButton.setHapticClickListener {
       hAnalytics.honorPledgeConfirmed()
-      lifecycleScope.launch {
-        startClaimsFlow()
-        dismiss()
-      }
+      startClaimsFlow()
+      dismiss()
     }
   }
 
-  private suspend fun startClaimsFlow() {
+  private fun startClaimsFlow() {
+    val intent = getClaimsFlowIntent()
     if (customActivityLaunch != null) {
-      customActivityLaunch.invoke(getClaimsFlowIntent())
+      customActivityLaunch.invoke(intent)
     } else {
-      startActivity(getClaimsFlowIntent())
+      startActivity(intent)
     }
   }
 
-  private suspend fun getClaimsFlowIntent() = if (hAnalytics.odysseyClaims()) {
-    ClaimsFlowActivity.newInstance(requireContext())
-  } else {
-    EmbarkActivity.newInstance(
-      requireContext(),
-      "claims",
-      getString(hedvig.resources.R.string.CLAIMS_HONESTY_PLEDGE_BOTTOM_SHEET_BUTTON_LABEL),
-    )
-  }
+  private fun getClaimsFlowIntent() = EmbarkActivity.newInstance(
+    requireContext(),
+    "claims",
+    getString(hedvig.resources.R.string.CLAIMS_HONESTY_PLEDGE_BOTTOM_SHEET_BUTTON_LABEL),
+  )
 
   companion object {
     const val TAG = "HonestyPledgeBottomSheet"
