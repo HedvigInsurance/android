@@ -32,8 +32,6 @@ import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.authenticate.SharedPreferencesAuthenticationTokenService
 import com.hedvig.app.authenticate.SharedPreferencesLoginStatusService
 import com.hedvig.app.authenticate.UserViewModel
-import com.hedvig.app.authenticate.insurely.GetDataCollectionUseCase
-import com.hedvig.app.authenticate.insurely.InsurelyAuthViewModel
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.addressautocompletion.data.GetDanishAddressAutoCompletionUseCase
 import com.hedvig.app.feature.addressautocompletion.data.GetFinalDanishAddressSelectionUseCase
@@ -76,10 +74,6 @@ import com.hedvig.app.feature.embark.passages.audiorecorder.AudioRecorderViewMod
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerViewModel
 import com.hedvig.app.feature.embark.passages.externalinsurer.ExternalInsurerViewModel
 import com.hedvig.app.feature.embark.passages.externalinsurer.GetInsuranceProvidersUseCase
-import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoViewModel
-import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.InsuranceProviderParameter
-import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceViewModel
-import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.StartDataCollectionUseCase
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionItem
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionParams
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionViewModel
@@ -137,15 +131,11 @@ import com.hedvig.app.feature.offer.usecase.AddPaymentTokenUseCase
 import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCase
 import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCaseImpl
 import com.hedvig.app.feature.offer.usecase.EditCampaignUseCase
-import com.hedvig.app.feature.offer.usecase.GetExternalInsuranceProviderUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuoteCartCheckoutUseCase
 import com.hedvig.app.feature.offer.usecase.ObserveOfferStateUseCase
 import com.hedvig.app.feature.offer.usecase.ObserveQuoteCartCheckoutUseCase
 import com.hedvig.app.feature.offer.usecase.ObserveQuoteCartCheckoutUseCaseImpl
 import com.hedvig.app.feature.offer.usecase.StartCheckoutUseCase
-import com.hedvig.app.feature.offer.usecase.datacollectionresult.GetDataCollectionResultUseCase
-import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase
-import com.hedvig.app.feature.offer.usecase.providerstatus.GetProviderDisplayNameUseCase
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppViewModel
@@ -371,7 +361,6 @@ val viewModelModule = module {
   viewModel { CommonClaimViewModel(get()) }
   viewModel { SplashViewModel(get()) }
   viewModel { TooltipViewModel(get()) }
-  viewModel { (collectionId: String) -> AskForPriceInfoViewModel(collectionId, get()) }
   viewModel { MyInfoViewModel(get()) }
   viewModel { AboutAppViewModel(get()) }
   viewModel { MarketingViewModel(get<MarketManager>().market, get(), get(), get(), get(), get(), get()) }
@@ -410,15 +399,11 @@ val offerModule = module {
       editCampaignUseCase = get(),
       featureManager = get(),
       addPaymentTokenUseCase = get(),
-      getExternalInsuranceProviderUseCase = get(),
       getBundleVariantUseCase = get(),
       selectedVariantStore = get(),
       getQuoteCartCheckoutUseCase = get(),
     )
   }
-  single { SubscribeToDataCollectionStatusUseCase(get()) }
-  single { GetProviderDisplayNameUseCase(get()) }
-  single { GetDataCollectionResultUseCase(get()) }
   single { QuoteCartFragmentToOfferModelMapper(get()) }
   single<GetQuoteCartCheckoutUseCase> { GetQuoteCartCheckoutUseCase(get()) }
   single<ObserveQuoteCartCheckoutUseCase> { ObserveQuoteCartCheckoutUseCaseImpl(get()) }
@@ -519,30 +504,8 @@ val checkoutModule = module {
   }
 }
 
-val retrievePriceModule = module {
-  viewModel { (data: InsuranceProviderParameter) ->
-    RetrievePriceViewModel(
-      collectionId = data.selectedInsuranceProviderCollectionId,
-      insurerName = data.selectedInsuranceProviderName,
-      marketManager = get(),
-      startDataCollectionUseCase = get(),
-      hAnalytics = get(),
-    )
-  }
-}
-
 val externalInsuranceModule = module {
   viewModel { ExternalInsurerViewModel(get(), get()) }
-}
-
-val insurelyAuthModule = module {
-  viewModel { (reference: String) ->
-    InsurelyAuthViewModel(
-      reference,
-      get(),
-      get(),
-    )
-  }
 }
 
 val serviceModule = module {
@@ -591,12 +554,10 @@ val useCaseModule = module {
   single { GetContractsUseCase(get(), get()) }
   single { GraphQLQueryUseCase(get()) }
   single { GetCrossSellsUseCase(get(), get()) }
-  single { StartDataCollectionUseCase(get(), get()) }
   single { GetInsuranceProvidersUseCase(get(), get()) }
   single<CreateOtpAttemptUseCase> { CreateOtpAttemptUseCaseImpl(get()) }
   single<SendOtpCodeUseCase> { SendOtpCodeUseCaseImpl(get()) }
   single<ReSendOtpCodeUseCase> { ReSendOtpCodeUseCaseImpl(get()) }
-  single { GetDataCollectionUseCase(get(), get()) }
   single { GetClaimDetailUseCase(get(), get()) }
   single { GetClaimDetailUiStateFlowUseCase(get()) }
   single { GetContractDetailsUseCase(get(), get()) }
@@ -630,7 +591,6 @@ val useCaseModule = module {
   single<AddPaymentTokenUseCase> { AddPaymentTokenUseCase(get()) }
   single<ConnectPaymentUseCase> { ConnectPaymentUseCase(get(), get(), get()) }
   single<ConnectPayoutUseCase> { ConnectPayoutUseCase(get(), get()) }
-  single<GetExternalInsuranceProviderUseCase> { GetExternalInsuranceProviderUseCase(get(), get(), get()) }
   single<ObserveOfferStateUseCase> { ObserveOfferStateUseCase(get(), get()) }
   single<ChangeLanguageUseCase> {
     ChangeLanguageUseCase(

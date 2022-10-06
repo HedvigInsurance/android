@@ -55,13 +55,11 @@ class ExternalInsurerViewModel(
         _events.trySend(Event.SkipDataCollection)
         return@launch
       }
-      _events.trySend(Event.AskForPrice(provider.collectionId, provider.name))
     }
   }
 
   sealed class Event {
     data class Error(val errorResult: InsuranceProvidersResult.Error) : Event()
-    data class AskForPrice(val collectionId: String, val providerName: String) : Event()
     object CantAutomaticallyMoveInsurance : Event()
     object SkipDataCollection : Event()
   }

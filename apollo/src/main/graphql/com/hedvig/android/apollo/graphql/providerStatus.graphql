@@ -1,8 +1,0 @@
-query providerStatus {
-  externalInsuranceProvider {
-    providerStatusV2 {
-      insuranceProvider
-      insuranceProviderDisplayName
-    }
-  }
-}
