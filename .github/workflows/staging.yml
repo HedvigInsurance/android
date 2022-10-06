@@ -38,6 +38,9 @@ jobs:
           ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_TEST_CLIENT_KEY }}
           SHAKE_CLIENT_ID: ${{ secrets.SHAKE_CLIENT_ID }}
           SHAKE_CLIENT_SECRET: ${{ secrets.SHAKE_CLIENT_SECRET }}
+      - name: Run license release report
+        run: ./gradlew licenseReleaseReport --continue
+        continue-on-error: true
       - name: Build
         run: "./gradlew app:assembleStaging"
       - uses: r0adkll/sign-android-release@v1
