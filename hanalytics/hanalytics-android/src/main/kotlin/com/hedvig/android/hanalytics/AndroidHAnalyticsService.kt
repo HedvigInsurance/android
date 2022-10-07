@@ -40,7 +40,6 @@ internal class AndroidHAnalyticsService(
       "properties" to event.properties,
       "graphql" to event.graphql,
     )
-    d { "Stelios: requestJsonObject:$requestJsonObject" }
     val eventRequest = Request.Builder()
       .url("$hAnalyticsBaseUrl/event")
       .header("Content-Type", "application/json")
