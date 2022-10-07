@@ -110,7 +110,7 @@ jobs:
           SHAKE_CLIENT_ID: ${{ secrets.SHAKE_CLIENT_ID }}
           SHAKE_CLIENT_SECRET: ${{ secrets.SHAKE_CLIENT_SECRET }}
       - name: run ktlint from gradle
-        run: ./gradlew ktlintCheck --continue
+        run: ./gradlew ktlintCheck
         continue-on-error: true
       - name: Annotate ktlint errors in the PR
         uses: yutailang0119/action-ktlint@v3
@@ -163,7 +163,7 @@ jobs:
         name: Sign app APK
         id: sign_app
         with:
-          releaseDirectory: app/build/outputs/apk/staging
+          releaseDirectory: app/build/outputs/apk/debug
           signingKeyBase64: ${{ secrets.SIGNING_KEY }}
           alias: ${{ secrets.ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
