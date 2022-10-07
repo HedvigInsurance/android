@@ -53,8 +53,15 @@ android {
 
   buildTypes {
     @Suppress("UNUSED_VARIABLE")
+    val debug by getting {
+      applicationIdSuffix = ".dev.app"
+      manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = false
+      isDebuggable = true
+    }
+
+    @Suppress("UNUSED_VARIABLE")
     val release by getting {
-//      signingConfig = signingConfigs.getByName("debug") // uncomment to run release build locally
+//      signingConfig = debug.signingConfig // uncomment to run release build locally
       applicationIdSuffix = ".app"
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
 
@@ -68,7 +75,7 @@ android {
     }
 
     @Suppress("UNUSED_VARIABLE")
-    val staging by getting {
+    val staging by creating {
       applicationIdSuffix = ".test.app"
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
       isMinifyEnabled = true
@@ -78,13 +85,6 @@ android {
           "proguard-rules.pro",
         ),
       )
-    }
-
-    @Suppress("UNUSED_VARIABLE")
-    val debug by getting {
-      applicationIdSuffix = ".dev.app"
-      manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = false
-      isDebuggable = true
     }
   }
 

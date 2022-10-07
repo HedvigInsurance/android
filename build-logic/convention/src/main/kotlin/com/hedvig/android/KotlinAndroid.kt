@@ -27,10 +27,6 @@ internal fun Project.configureKotlinAndroid(
       minSdk = libs.versions.minSdkVersion.get().toInt()
     }
 
-    buildTypes {
-      create("staging")
-    }
-
     compileOptions {
       @Suppress("UnstableApiUsage")
       isCoreLibraryDesugaringEnabled = true
