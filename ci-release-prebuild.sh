@@ -25,5 +25,3 @@ EOT
 
 ./gradlew :apollo:downloadGiraffeApolloSchemaFromIntrospection
 ./gradlew :core-resources:downloadStrings
-./gradlew licenseReleaseReport
-

@@ -82,7 +82,6 @@ reactiveX-Kotlin = "2.4.0"
 serialization = "1.4.0"
 shake = "15.3.0"
 shimmer = "0.5.0"
-showkase = "1.0.0-beta13"
 slimber = "1.0.7"
 svg = "1.4"
 timber = "5.0.1"
@@ -193,9 +192,6 @@ reactiveX-kotlin = { module = "io.reactivex.rxjava2:rxkotlin", version.ref = "re
 serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 shake = { module = "com.shakebugs:shake", version.ref = "shake" }
 shimmer = { module = "com.facebook.shimmer:shimmer", version.ref = "shimmer" }
-showkase-annotation = { module = "com.airbnb.android:showkase-annotation", version.ref = "showkase" }
-showkase-processor = { module = "com.airbnb.android:showkase-processor", version.ref = "showkase" }
-showkase-showkase = { module = "com.airbnb.android:showkase", version.ref = "showkase" }
 slimber = { module = "com.github.PaulWoitaschek:Slimber", version.ref = "slimber" }
 svg = { module = "com.caverock:androidsvg-aar", version.ref = "svg" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }

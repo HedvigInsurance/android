@@ -30,7 +30,7 @@ data class HomeDataBuilder(
     member = HomeQuery.Member(
       firstName = firstName,
     ),
-    claimStatusCards = if (withClaimStatusCards) { // Better preview the cards using Showkase
+    claimStatusCards = if (withClaimStatusCards) {
       ClaimStatusCardsBuilder().build()
     } else {
       emptyList()
