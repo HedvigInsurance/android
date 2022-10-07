@@ -3,8 +3,6 @@ package com.hedvig.app.feature.embark.passages.externalinsurer
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.doOnNextLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment

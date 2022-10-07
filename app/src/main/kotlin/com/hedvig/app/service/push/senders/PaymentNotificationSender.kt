@@ -6,7 +6,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import com.google.firebase.messaging.RemoteMessage
-import com.hedvig.android.core.common.notification.setupNotificationChannel
+import com.hedvig.android.core.common.android.notification.setupNotificationChannel
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity

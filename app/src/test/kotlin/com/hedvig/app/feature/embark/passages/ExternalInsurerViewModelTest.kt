@@ -2,7 +2,7 @@ package com.hedvig.app.feature.embark.passages
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import com.hedvig.android.hanalytics.test.FakeFeatureManager
+import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager
 import com.hedvig.app.feature.embark.passages.externalinsurer.ExternalInsurerViewModel
 import com.hedvig.app.feature.embark.passages.externalinsurer.GetInsuranceProvidersUseCase
 import com.hedvig.app.feature.embark.passages.externalinsurer.InsuranceProvider

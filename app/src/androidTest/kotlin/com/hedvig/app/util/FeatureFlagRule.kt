@@ -1,16 +1,15 @@
 package com.hedvig.app.util
 
-import com.hedvig.android.hanalytics.di.featureManagerModule
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.hanalytics.featureflags.di.featureManagerModule
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
-import com.hedvig.android.hanalytics.test.FakeFeatureManager
+import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager
 import com.hedvig.hanalytics.PaymentType
 import org.junit.rules.ExternalResource
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules
 import org.koin.dsl.module
 
-@Suppress("RemoveExplicitTypeArguments")
 class FeatureFlagRule(
   vararg flags: Pair<Feature, Boolean>,
   private val paymentType: PaymentType = PaymentType.TRUSTLY,

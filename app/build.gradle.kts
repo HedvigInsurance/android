@@ -113,23 +113,26 @@ android {
 dependencies {
   implementation(projects.apollo)
   implementation(projects.coreCommon)
+  implementation(projects.coreCommonAndroid)
   implementation(projects.coreDatastore)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.featureBusinessmodel)
-  implementation(projects.hanalytics)
+  implementation(projects.hanalytics.hanalyticsAndroid)
+  implementation(projects.hanalytics.hanalyticsCore)
+  implementation(projects.hanalytics.hanalyticsFeatureFlags)
   implementation(projects.hedvigLanguage)
   implementation(projects.hedvigMarket)
   implementation(projects.notificationBadgeData)
 
-  testImplementation(projects.hanalyticsTest)
-  androidTestImplementation(projects.hanalyticsTest)
+  testImplementation(projects.hanalytics.hanalyticsFeatureFlagsTest)
+  androidTestImplementation(projects.hanalytics.hanalyticsFeatureFlagsTest)
 
-  implementation(projects.hanalyticsEngineeringApi)
-  releaseImplementation(projects.hanalyticsEngineeringNoop)
-  debugImplementation(projects.hanalyticsEngineering)
-  "stagingImplementation"(projects.hanalyticsEngineering)
+  implementation(projects.hanalytics.hanalyticsEngineeringApi)
+  releaseImplementation(projects.hanalytics.hanalyticsEngineeringNoop)
+  debugImplementation(projects.hanalytics.hanalyticsEngineering)
+  "stagingImplementation"(projects.hanalytics.hanalyticsEngineering)
 
   androidTestImplementation(projects.testdata)
   testImplementation(projects.testdata)
@@ -140,10 +143,12 @@ dependencies {
   implementation(libs.coroutines.android)
   testImplementation(libs.coroutines.test)
 
-  implementation(libs.serialization)
+  implementation(libs.serialization.json)
 
   testImplementation(libs.androidx.arch.testing)
 
+  implementation(libs.androidx.datastore.core)
+  implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.androidx.other.appCompat)
   implementation(libs.androidx.other.media)
   implementation(libs.androidx.other.constraintLayout)
@@ -163,7 +168,6 @@ dependencies {
   implementation(libs.androidx.lifecycle.process)
   implementation(libs.androidx.other.workManager)
   implementation(libs.androidx.datastore.core)
-  implementation(libs.androidx.datastore.preferences)
   implementation(libs.androidx.other.startup)
   androidTestImplementation(libs.androidx.espresso.core)
   androidTestImplementation(libs.androidx.espresso.intents)
@@ -199,7 +203,6 @@ dependencies {
   implementation(libs.okhttp.loggingInterceptor)
   androidTestImplementation(libs.okhttp.mockWebServer)
 
-  // Todo: Look into if this is the proper way to use boms with version catalogs
   implementation(platform(libs.firebase.bom))
   implementation(libs.firebase.playServicesBase)
   implementation(libs.firebase.crashlytics)

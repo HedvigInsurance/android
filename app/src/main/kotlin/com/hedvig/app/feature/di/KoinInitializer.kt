@@ -3,12 +3,11 @@ package com.hedvig.app.feature.di
 import android.content.Context
 import androidx.startup.Initializer
 import com.hedvig.android.core.datastore.di.dataStoreModule
-import com.hedvig.android.core.datastore.di.deviceIdDataStoreModule
 import com.hedvig.android.feature.businessmodel.di.businessModelModule
-import com.hedvig.android.hanalytics.di.featureManagerModule
+import com.hedvig.android.hanalytics.android.di.hAnalyticsAndroidModule
 import com.hedvig.android.hanalytics.di.hAnalyticsModule
-import com.hedvig.android.hanalytics.di.trackerModule
 import com.hedvig.android.hanalytics.engineering.di.HAnalyticsEngineeringModuleImpl
+import com.hedvig.android.hanalytics.featureflags.di.featureManagerModule
 import com.hedvig.android.language.di.languageModule
 import com.hedvig.android.market.di.marketManagerModule
 import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
@@ -23,11 +22,13 @@ import com.hedvig.app.checkoutModule
 import com.hedvig.app.clockModule
 import com.hedvig.app.coilModule
 import com.hedvig.app.connectPaymentModule
+import com.hedvig.app.datastoreAndroidModule
 import com.hedvig.app.embarkModule
 import com.hedvig.app.externalInsuranceModule
 import com.hedvig.app.graphQLQueryModule
 import com.hedvig.app.homeModule
 import com.hedvig.app.insuranceModule
+import com.hedvig.app.logModule
 import com.hedvig.app.loggedInModule
 import com.hedvig.app.notificationModule
 import com.hedvig.app.numberActionSetModule
@@ -72,16 +73,18 @@ class KoinInitializer : Initializer<KoinApplication> {
         clockModule,
         coilModule,
         connectPaymentModule,
+        datastoreAndroidModule,
         dataStoreModule,
-        deviceIdDataStoreModule,
         embarkModule,
         externalInsuranceModule,
         featureManagerModule,
         graphQLQueryModule,
+        hAnalyticsAndroidModule,
         hAnalyticsModule,
         homeModule,
         insuranceModule,
         languageModule,
+        logModule,
         loggedInModule,
         marketManagerModule,
         notificationBadgeModule,
@@ -98,7 +101,6 @@ class KoinInitializer : Initializer<KoinApplication> {
         sharedPreferencesModule,
         stringConstantsModule,
         textActionSetModule,
-        trackerModule,
         trustlyModule,
         useCaseModule,
         valueStoreModule,
