@@ -72,6 +72,7 @@ class MainActivity : AppCompatActivity() {
             onDefault = { startDefaultActivity(loginStatus) },
           )
         }
+
         is LoginStatus.InOffer -> startDefaultActivity(loginStatus)
       }
       finish()
@@ -92,6 +93,7 @@ class MainActivity : AppCompatActivity() {
         ),
       )
     }
+
     LoginStatus.LoggedIn -> {
       // Upcast everyone that were logged in before Norway launch to be in the Swedish market
       if (marketManager.market == null) {

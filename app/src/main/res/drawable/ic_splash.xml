@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!--
+    We got 72dp room for our image.
+    We got an icon with size 70x70 for the masking not to cut the edges slightly.
+    Our viewport needs to be 108dp https://developer.android.com/develop/ui/views/launch/icon_design_adaptive#design-adaptive-icons
+    So we need 38dp of nothingness around, hence the 19dp translation
+    -->
+    <group>
+        <path
+            android:fillColor="#121212"
+            android:pathData="M0,0h108v108h-108z" />
+        <group
+            android:translateX="19"
+            android:translateY="19">
+            <path
+                android:fillColor="#FFFFFF"
+                android:pathData="M24.66 32.64h20.68v-16.7h4.72v38.11h-4.72V37.36H24.66v16.69H19.8v-38.1h4.87v16.69Z" />
+            <path
+                android:fillColor="#FFFFFF"
+                android:fillType="evenOdd"
+                android:pathData="M0 35C0 15.65 15.65 0 35 0s35 15.65 35 35-15.65 35-35 35S0 54.35 0 35Zm4.73 0C4.73 51.69 18.3 65.27 35 65.27c16.69 0 30.27-13.58 30.27-30.27C65.27 18.31 51.7 4.73 35 4.73 18.31 4.73 4.73 18.3 4.73 35Z" />
+        </group>
+    </group>
+</vector>
