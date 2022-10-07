@@ -5,7 +5,7 @@
         <item name="postSplashScreenTheme">@style/Hedvig.Theme</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash</item>
         <item name="windowSplashScreenAnimationDuration">0</item>
-        <item name="windowSplashScreenBackground">@color/hedvig_black</item>
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
 
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
