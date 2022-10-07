@@ -72,7 +72,7 @@ class ChangeDateBottomSheetViewModel(
       .fold(
         ifLeft = { ViewState.Error(it.message) },
         ifRight = {
-          offerRepository.queryAndEmitOffer(data.quoteCartId)
+          offerRepository.fetchNewOffer(data.quoteCartId)
           _viewState.value = ViewState.Dismiss
         },
       )

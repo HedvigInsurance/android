@@ -3,7 +3,6 @@ package com.hedvig.app
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.airbnb.android.showkase.models.Showkase
 import com.hedvig.android.hanalytics.engineering.tracking.TrackingLogActivity
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.databinding.ActivityDevelopmentBinding
@@ -39,9 +38,6 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
           },
           DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Tracking") {
             startActivity(TrackingLogActivity.newInstance(this))
-          },
-          DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Showkase") {
-            startActivity(Showkase.getBrowserIntent(this))
           },
           DevelopmentScreenAdapter.DevelopmentScreenItem.Row("App Sunsetting-Screen") {
             startActivity(ForceUpgradeActivity.newInstance(this))

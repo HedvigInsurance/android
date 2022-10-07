@@ -30,9 +30,8 @@ class OfferRepository(
     onBufferOverflow = BufferOverflow.DROP_OLDEST,
   )
 
-  suspend fun queryAndEmitOffer(quoteCartId: QuoteCartId) {
-    val offer = queryQuoteCart(quoteCartId)
-    offerFlow.tryEmit(offer)
+  suspend fun fetchNewOffer(quoteCartId: QuoteCartId) {
+    offerFlow.tryEmit(queryQuoteCart(quoteCartId))
   }
 
   private suspend fun queryQuoteCart(
@@ -42,7 +41,7 @@ class OfferRepository(
       .query(QuoteCartQuery(languageService.getGraphQLLocale(), id.id))
       .fetchPolicy(FetchPolicy.NetworkOnly)
       .safeExecute()
-      .toEither { ErrorMessage(it) }
+      .toEither(::ErrorMessage)
       .bind()
 
     val quoteCartFragment = result.quoteCart.fragments.quoteCartFragment

@@ -2,7 +2,7 @@ package com.hedvig.app.feature.genericauth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.core.common.EmailAddressWithTrimmedWhitespaces
+import com.hedvig.android.core.common.android.EmailAddressWithTrimmedWhitespaces
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.embark.api.graphqlquery
 
 import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
-import com.hedvig.android.core.common.jsonObjectOf
+import com.hedvig.android.core.common.android.jsonObjectOf
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_QUERY_API_AND_SINGLE_VARIABLE

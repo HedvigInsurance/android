@@ -7,7 +7,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import com.google.firebase.messaging.RemoteMessage
-import com.hedvig.android.core.common.notification.setupNotificationChannel
+import com.hedvig.android.core.common.android.notification.setupNotificationChannel
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.crossselling.ui.detail.CrossSellDetailActivity
 import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsUseCase
@@ -17,6 +17,7 @@ import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.DATA_MESSAGE_BODY
 import com.hedvig.app.service.push.DATA_MESSAGE_TITLE
 import com.hedvig.app.service.push.getImmutablePendingIntentFlags
+import hedvig.resources.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,7 +30,7 @@ class CrossSellNotificationSender(
     setupNotificationChannel(
       context,
       CROSS_SELL_CHANNEL_ID,
-      context.resources.getString(hedvig.resources.R.string.NOTIFICATION_CHANNEL_CROSS_SELL_TITLE),
+      context.resources.getString(R.string.NOTIFICATION_CHANNEL_CROSS_SELL_TITLE),
     )
   }
 

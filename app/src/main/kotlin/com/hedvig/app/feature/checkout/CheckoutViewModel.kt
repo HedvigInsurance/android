@@ -4,13 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import arrow.core.continuations.either
-import com.hedvig.android.core.common.validation.ValidationResult
-import com.hedvig.android.core.common.validation.validateEmail
+import com.hedvig.android.core.common.android.validation.ValidationResult
+import com.hedvig.android.core.common.android.validation.validateEmail
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.offer.OfferRepository
+import com.hedvig.app.feature.offer.SelectedVariantStore
 import com.hedvig.app.feature.offer.model.Checkout
 import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.QuoteBundleVariant
@@ -35,7 +36,7 @@ import javax.money.MonetaryAmount
 import kotlin.time.Duration.Companion.seconds
 
 class CheckoutViewModel(
-  private val selectedVariantId: String,
+  selectedVariantId: String,
   private val quoteCartId: QuoteCartId,
   private val signQuotesUseCase: StartCheckoutUseCase,
   private val editQuotesUseCase: EditCheckoutUseCase,
@@ -45,6 +46,7 @@ class CheckoutViewModel(
   private val offerRepository: OfferRepository,
   private val featureManager: FeatureManager,
   bundleVariantUseCase: ObserveOfferStateUseCase,
+  selectedVariantStore: SelectedVariantStore,
 ) : ViewModel() {
 
   private val _titleViewState = MutableStateFlow<TitleViewState>(TitleViewState.Loading)
@@ -62,11 +64,10 @@ class CheckoutViewModel(
   private var emailInput: String = ""
   private var identityNumberInput: String = ""
 
-  private val offerState = bundleVariantUseCase.observeOfferState(quoteCartId, emptyList()).also {
-    bundleVariantUseCase.selectedVariant(selectedVariantId)
-  }
+  private val offerState = bundleVariantUseCase.invoke(quoteCartId, emptyList())
 
   init {
+    selectedVariantStore.selectVariant(selectedVariantId)
     offerState
       .onEach(::handleOfferResult)
       .launchIn(viewModelScope)
@@ -98,7 +99,7 @@ class CheckoutViewModel(
   private suspend fun createAccessToken() {
     createAccessTokenUseCase.invoke(quoteCartId)
       .tapLeft { _events.trySend(Event.Error(it.message)) }
-      .tap { offerRepository.queryAndEmitOffer(quoteCartId) }
+      .tap { offerRepository.fetchNewOffer(quoteCartId) }
   }
 
   private fun QuoteBundleVariant.mapToViewState() = TitleViewState.Loaded(
@@ -173,7 +174,7 @@ class CheckoutViewModel(
         signQuotesUseCase.startCheckoutAndClearCache(quoteCartId, quoteIds).bind()
       }.fold(
         ifLeft = { _events.trySend(Event.Error(it.message)) },
-        ifRight = { offerRepository.queryAndEmitOffer(quoteCartId) },
+        ifRight = { offerRepository.fetchNewOffer(quoteCartId) },
       )
     }
   }

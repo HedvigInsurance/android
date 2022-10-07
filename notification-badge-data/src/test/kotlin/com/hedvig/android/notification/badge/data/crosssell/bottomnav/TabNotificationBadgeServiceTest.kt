@@ -5,7 +5,7 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import com.hedvig.android.apollo.graphql.type.TypeOfContract
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
-import com.hedvig.android.hanalytics.test.FakeFeatureManager
+import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager
 import com.hedvig.android.notification.badge.data.crosssell.CrossSellNotificationBadgeService
 import com.hedvig.android.notification.badge.data.crosssell.FakeNotificationBadgeStorage
 import com.hedvig.android.notification.badge.data.crosssell.GetCrossSellsContractTypesUseCase

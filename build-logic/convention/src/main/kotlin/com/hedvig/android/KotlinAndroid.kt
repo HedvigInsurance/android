@@ -8,13 +8,13 @@ import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.the
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 /**
  * Configure base Kotlin with Android options
  */
 internal fun Project.configureKotlinAndroid(
   commonExtension: CommonExtension<*, *, *, *>,
-  addStandardBuildTypes: Boolean,
 ) {
   val libs = the<LibrariesForLibs>()
 
@@ -36,42 +36,45 @@ internal fun Project.configureKotlinAndroid(
       targetCompatibility = JavaVersion.VERSION_11
     }
 
-    if (addStandardBuildTypes) {
-      buildTypes {
-        maybeCreate("staging")
-        maybeCreate("pullrequest")
-
-        named("debug") {}
-        named("staging") {}
-        named("pullrequest") {}
-        named("release") {}
-      }
-    }
-
     kotlinOptions {
-      // Treat all Kotlin warnings as errors (disabled by default)
-      allWarningsAsErrors = properties["warningsAsErrors"] as? Boolean ?: false
-
-      freeCompilerArgs = freeCompilerArgs + listOf(
-        "-opt-in=kotlin.RequiresOptIn",
-        // Enable experimental coroutines APIs, including Flow
-        "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-        "-opt-in=kotlinx.coroutines.FlowPreview",
-        "-opt-in=kotlin.Experimental",
-        // Enable experimental kotlinx serialization APIs
-        "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
-        // Fixes "Inheritance from an interface with '@JvmDefault' members is only allowed with -Xjvm-default option"
-        "-Xjvm-default=enable",
-      )
-
-      @Suppress("MISSING_DEPENDENCY_SUPERCLASS")
-      jvmTarget = JavaVersion.VERSION_11.toString()
+      configureKotlinOptions(this@configureKotlinAndroid)
     }
   }
 
   dependencies {
     add("coreLibraryDesugaring", libs.coreLibraryDesugaring.get())
   }
+}
+
+/**
+ * Configure base Kotlin without Android options
+ */
+internal fun Project.configureKotlin(kotlinCompile: KotlinCompile) {
+  kotlinCompile.kotlinOptions {
+    this.configureKotlinOptions(this@configureKotlin)
+  }
+}
+
+private fun KotlinJvmOptions.configureKotlinOptions(
+  project: Project,
+) {
+  // Treat all Kotlin warnings as errors (disabled by default)
+  allWarningsAsErrors = project.properties["warningsAsErrors"] as? Boolean ?: false
+
+  freeCompilerArgs = freeCompilerArgs + listOf(
+    "-opt-in=kotlin.RequiresOptIn",
+    // Enable experimental coroutines APIs, including Flow
+    "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+    "-opt-in=kotlinx.coroutines.FlowPreview",
+    "-opt-in=kotlin.Experimental",
+    // Enable experimental kotlinx serialization APIs
+    "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
+    // Fixes "Inheritance from an interface with '@JvmDefault' members is only allowed with -Xjvm-default option"
+    "-Xjvm-default=enable",
+  )
+
+  @Suppress("MISSING_DEPENDENCY_SUPERCLASS")
+  jvmTarget = JavaVersion.VERSION_11.toString()
 }
 
 private fun CommonExtension<*, *, *, *>.kotlinOptions(block: KotlinJvmOptions.() -> Unit) {
