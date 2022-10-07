@@ -110,7 +110,7 @@ jobs:
           SHAKE_CLIENT_ID: ${{ secrets.SHAKE_CLIENT_ID }}
           SHAKE_CLIENT_SECRET: ${{ secrets.SHAKE_CLIENT_SECRET }}
       - name: run ktlint from gradle
-        run: ./gradlew ktlintCheck --continue
+        run: ./gradlew ktlintCheck
         continue-on-error: true
       - name: Annotate ktlint errors in the PR
         uses: yutailang0119/action-ktlint@v3
