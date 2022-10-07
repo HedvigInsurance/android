@@ -32,6 +32,3 @@ mixpanel.xml
 
 # shake credentials
 shake.xml
-
-# jitpack credentials
-jitpack.properties

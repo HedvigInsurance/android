@@ -203,7 +203,6 @@ dependencies {
   implementation(libs.okhttp.loggingInterceptor)
   androidTestImplementation(libs.okhttp.mockWebServer)
 
-  // Todo: Look into if this is the proper way to use boms with version catalogs
   implementation(platform(libs.firebase.bom))
   implementation(libs.firebase.playServicesBase)
   implementation(libs.firebase.crashlytics)
