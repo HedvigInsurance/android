@@ -77,6 +77,7 @@ android {
     @Suppress("UNUSED_VARIABLE")
     val staging by creating {
       applicationIdSuffix = ".test.app"
+      matchingFallbacks.add("release")
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
       isMinifyEnabled = true
       setProguardFiles(
