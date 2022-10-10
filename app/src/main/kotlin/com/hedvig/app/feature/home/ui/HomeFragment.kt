@@ -62,7 +62,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
       onClaimDetailCardShown = viewModel::onClaimDetailCardShown,
       onPaymentCardShown = viewModel::onPaymentCardShown,
       onPaymentCardClicked = ::onPaymentCardClicked,
-      onStartClaimClicked = ::onStartClaimClicked
+      onStartClaimClicked = ::onStartClaimClicked,
     )
 
     binding.swipeToRefresh.setOnRefreshListener {
