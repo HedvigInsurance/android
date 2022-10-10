@@ -21,6 +21,7 @@ import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
+import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import com.hedvig.hanalytics.PaymentType
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
@@ -116,6 +117,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
 
   private fun onStartClaimClicked() {
     lifecycleScope.launch {
+      hAnalytics.beginClaim(AppScreen.HOME)
       startClaimsFlow(
         hAnalytics = hAnalytics,
         context = requireContext(),

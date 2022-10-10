@@ -20,6 +20,7 @@ import com.hedvig.app.util.extensions.view.enable
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.viewBinding
+import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -64,6 +65,7 @@ class CommonClaimActivity : AppCompatActivity(R.layout.activity_common_claim) {
         firstMessage.commonClaimCreateClaimButton.enable()
         firstMessage.commonClaimCreateClaimButton.setHapticClickListener {
           lifecycleScope.launch {
+            hAnalytics.beginClaim(AppScreen.COMMON_CLAIM_DETAIL)
             startClaimsFlow(
               hAnalytics = hAnalytics,
               context = this@CommonClaimActivity,
