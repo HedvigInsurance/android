@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import coil.ImageLoader
 import coil.load
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityCommonClaimBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.bulletpoint.BulletPointsAdapter
@@ -31,6 +32,7 @@ class CommonClaimActivity : AppCompatActivity(R.layout.activity_common_claim) {
   private val imageLoader: ImageLoader by inject()
   private val binding by viewBinding(ActivityCommonClaimBinding::bind)
   private val hAnalytics: HAnalytics by inject()
+  private val featureManager: FeatureManager by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -67,7 +69,7 @@ class CommonClaimActivity : AppCompatActivity(R.layout.activity_common_claim) {
           lifecycleScope.launch {
             hAnalytics.beginClaim(AppScreen.COMMON_CLAIM_DETAIL)
             startClaimsFlow(
-              hAnalytics = hAnalytics,
+              featureManager = featureManager,
               context = this@CommonClaimActivity,
               fragmentManager = supportFragmentManager,
             )

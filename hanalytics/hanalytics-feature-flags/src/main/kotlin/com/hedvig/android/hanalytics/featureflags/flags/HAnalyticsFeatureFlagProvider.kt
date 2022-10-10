@@ -21,5 +21,6 @@ internal class HAnalyticsFeatureFlagProvider(
     Feature.REFERRALS -> hAnalytics.forever()
     Feature.SHOW_BUSINESS_MODEL -> hAnalytics.showCharity()
     Feature.UPDATE_NECESSARY -> hAnalytics.updateNecessary()
+    Feature.USE_ODYSSEY_CLAIM_FLOW -> hAnalytics.odysseyClaims()
   }
 }

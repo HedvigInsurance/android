@@ -10,6 +10,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import coil.ImageLoader
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
 import com.hedvig.app.databinding.HomeFragmentBinding
@@ -40,6 +41,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
   private val imageLoader: ImageLoader by inject()
   private val marketManager: MarketManager by inject()
   private val hAnalytics: HAnalytics by inject()
+  private val featureManager: FeatureManager by inject()
 
   private val registerForActivityResult: ActivityResultLauncher<Intent> =
     registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -119,7 +121,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     lifecycleScope.launch {
       hAnalytics.beginClaim(AppScreen.HOME)
       startClaimsFlow(
-        hAnalytics = hAnalytics,
+        featureManager = featureManager,
         context = requireContext(),
         fragmentManager = parentFragmentManager,
         registerForResult = ::registerForResult,
