@@ -48,6 +48,9 @@ android {
       excludes += "README.txt"
       excludes += "META-INF/LGPL2.1"
       excludes += "META-INF/AL2.0"
+      excludes += "MANIFEST.MF"
+      excludes += "META-INF/LICENSE.md"
+      excludes += "META-INF/LICENSE-notice.md"
     }
   }
 
