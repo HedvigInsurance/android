@@ -19,9 +19,11 @@ import com.hedvig.app.util.context
 import com.hedvig.app.util.hasText
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
+@Ignore
 class ActiveTest : TestCase() {
   @get:Rule
   val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)

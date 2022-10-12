@@ -17,9 +17,11 @@ import com.hedvig.app.util.context
 import com.hedvig.app.util.swipeDownInCenter
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.kakao.screen.Screen
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
+@Ignore
 class SwipeToRefreshNewDataTest : TestCase() {
 
   @get:Rule

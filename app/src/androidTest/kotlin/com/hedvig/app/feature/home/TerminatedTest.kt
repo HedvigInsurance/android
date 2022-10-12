@@ -2,7 +2,6 @@ package com.hedvig.app.feature.home
 
 import com.hedvig.android.apollo.graphql.HomeQuery
 import com.hedvig.android.apollo.graphql.LoggedInQuery
-import com.hedvig.app.R
 import com.hedvig.app.feature.home.screens.HomeTabScreen
 import com.hedvig.app.feature.home.screens.HonestyPledgeSheetScreen
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -16,9 +15,11 @@ import com.hedvig.app.util.context
 import com.hedvig.app.util.hasText
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
+@Ignore
 class TerminatedTest : TestCase() {
   @get:Rule
   val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)

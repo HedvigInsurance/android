@@ -10,9 +10,11 @@ import com.kaspersky.kaspresso.screens.KScreen
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.kakao.edit.KTextInputLayout
 import io.github.kakaocup.kakao.text.KButton
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
+@Ignore
 class SimpleSignAuthenticationActivityTest : TestCase() {
   @get:Rule
   val activityRule = LazyActivityScenarioRule(SimpleSignAuthenticationActivity::class.java)
