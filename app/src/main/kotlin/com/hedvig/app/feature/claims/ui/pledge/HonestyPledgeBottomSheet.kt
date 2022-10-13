@@ -5,13 +5,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.BottomSheetHonestyPledgeBinding
+import com.hedvig.app.feature.claims.ui.ClaimsFlowActivity
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.hanalytics.HAnalytics
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
@@ -38,20 +41,19 @@ class HonestyPledgeBottomSheet(
   }
 
   private fun startClaimsFlow() {
+    val intent = getClaimsFlowIntent()
     if (customActivityLaunch != null) {
-      customActivityLaunch.invoke(getEmbarkIntent())
+      customActivityLaunch.invoke(intent)
     } else {
-      startActivity(getEmbarkIntent())
+      startActivity(intent)
     }
   }
 
-  private fun getEmbarkIntent(): Intent {
-    return EmbarkActivity.newInstance(
-      requireContext(),
-      "claims",
-      getString(hedvig.resources.R.string.CLAIMS_HONESTY_PLEDGE_BOTTOM_SHEET_BUTTON_LABEL),
-    )
-  }
+  private fun getClaimsFlowIntent() = EmbarkActivity.newInstance(
+    requireContext(),
+    "claims",
+    getString(hedvig.resources.R.string.CLAIMS_HONESTY_PLEDGE_BOTTOM_SHEET_BUTTON_LABEL),
+  )
 
   companion object {
     const val TAG = "HonestyPledgeBottomSheet"

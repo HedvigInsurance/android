@@ -3,8 +3,6 @@ package com.hedvig.app.feature.embark.passages.externalinsurer
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.doOnNextLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -17,11 +15,6 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.PreviousOrExternalInsurerFragmentBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.passages.MessageAdapter
-import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoActivity
-import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoActivity.Companion.RESULT_CONTINUE
-import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.InsuranceProviderParameter
-import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceInfoActivity.Companion.REFERENCE_RESULT
-import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceInfoActivity.Companion.SSN_RESULT
 import com.hedvig.app.feature.embark.passages.previousinsurer.InsurerProviderBottomSheet
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerParameter
 import com.hedvig.app.util.extensions.showErrorDialog
@@ -37,19 +30,6 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
 
   private val embarkViewModel: EmbarkViewModel by sharedViewModel()
   private val viewModel: ExternalInsurerViewModel by sharedViewModel()
-
-  private val askForPriceActivityResultLauncher =
-    registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-      if (result.resultCode == RESULT_CONTINUE) {
-        result.data?.getStringExtra(REFERENCE_RESULT)?.let {
-          embarkViewModel.putInStore("dataCollectionId", it)
-        }
-        result.data?.getStringExtra(SSN_RESULT)?.let {
-          embarkViewModel.putInStore("personalNumber", it)
-        }
-        continueEmbark()
-      }
-    }
 
   private val insurerData by lazy {
     requireArguments()
@@ -70,9 +50,6 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
                 message = getString(event.errorResult.getStringRes()),
                 positiveAction = {},
               )
-              is ExternalInsurerViewModel.Event.AskForPrice -> {
-                startAskForPrice(event.collectionId, event.providerName)
-              }
               ExternalInsurerViewModel.Event.CantAutomaticallyMoveInsurance -> {
                 MaterialAlertDialogBuilder(requireContext())
                   .setTitle(getString(hedvig.resources.R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_TITLE))
@@ -138,14 +115,6 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
         name = name,
       ),
     )
-  }
-
-  private fun startAskForPrice(collectionId: String, name: String) {
-    val intent = AskForPriceInfoActivity.createIntent(
-      requireContext(),
-      InsuranceProviderParameter(collectionId, name),
-    )
-    askForPriceActivityResultLauncher.launch(intent)
   }
 
   private fun showInsurers(insuranceProviders: List<InsuranceProvider>) {

@@ -9,7 +9,6 @@ plugins {
   alias(libs.plugins.googleServices)
   alias(libs.plugins.crashlytics)
   id("kotlin-parcelize")
-  id("kotlin-kapt")
   alias(libs.plugins.license)
   alias(libs.plugins.serialization)
   alias(libs.plugins.datadog)
@@ -30,7 +29,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "7.2.0"
+    versionName = "7.3.0"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -53,10 +52,16 @@ android {
   }
 
   buildTypes {
-    maybeCreate("staging")
-    maybeCreate("pullrequest")
-    named("release") {
-//      signingConfig = signingConfigs.getByName("debug") // uncomment to run release build locally
+    @Suppress("UNUSED_VARIABLE")
+    val debug by getting {
+      applicationIdSuffix = ".dev.app"
+      manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = false
+      isDebuggable = true
+    }
+
+    @Suppress("UNUSED_VARIABLE")
+    val release by getting {
+//      signingConfig = debug.signingConfig // uncomment to run release build locally
       applicationIdSuffix = ".app"
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
 
@@ -69,11 +74,11 @@ android {
       )
     }
 
-    named("staging") {
+    @Suppress("UNUSED_VARIABLE")
+    val staging by creating {
       applicationIdSuffix = ".test.app"
-
+      matchingFallbacks.add("release")
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
-
       isMinifyEnabled = true
       setProguardFiles(
         listOf(
@@ -81,29 +86,6 @@ android {
           "proguard-rules.pro",
         ),
       )
-    }
-
-    named("pullrequest") {
-      applicationIdSuffix = ".test.app"
-
-      manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
-
-      isMinifyEnabled = true
-      setProguardFiles(
-        listOf(
-          getDefaultProguardFile("proguard-android.txt"),
-          "proguard-rules.pro",
-          "proguard-rules-showkase.pro",
-        ),
-      )
-    }
-
-    named("debug") {
-      applicationIdSuffix = ".dev.app"
-
-      manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = false
-
-      isDebuggable = true
     }
   }
 
@@ -114,11 +96,6 @@ android {
       manifest.srcFile("src/debug/AndroidManifest.xml")
     }
     named("staging") {
-      kotlin.srcDir("src/engineering/kotlin")
-      res.srcDir("src/engineering/res")
-      manifest.srcFile("src/debug/AndroidManifest.xml")
-    }
-    named("pullrequest") {
       kotlin.srcDir("src/engineering/kotlin")
       res.srcDir("src/engineering/res")
       manifest.srcFile("src/debug/AndroidManifest.xml")
@@ -137,39 +114,42 @@ android {
 dependencies {
   implementation(projects.apollo)
   implementation(projects.coreCommon)
+  implementation(projects.coreCommonAndroid)
   implementation(projects.coreDatastore)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.featureBusinessmodel)
-  implementation(projects.hanalytics)
+  implementation(projects.hanalytics.hanalyticsAndroid)
+  implementation(projects.hanalytics.hanalyticsCore)
+  implementation(projects.hanalytics.hanalyticsFeatureFlags)
   implementation(projects.hedvigLanguage)
   implementation(projects.hedvigMarket)
   implementation(projects.notificationBadgeData)
 
-  testImplementation(projects.hanalyticsTest)
-  androidTestImplementation(projects.hanalyticsTest)
+  testImplementation(projects.hanalytics.hanalyticsFeatureFlagsTest)
+  androidTestImplementation(projects.hanalytics.hanalyticsFeatureFlagsTest)
 
-  implementation(projects.hanalyticsEngineeringApi)
-  releaseImplementation(projects.hanalyticsEngineeringNoop)
-  debugImplementation(projects.hanalyticsEngineering)
-  "stagingImplementation"(projects.hanalyticsEngineering)
-  "pullrequestImplementation"(projects.hanalyticsEngineering)
+  implementation(projects.hanalytics.hanalyticsEngineeringApi)
+  releaseImplementation(projects.hanalytics.hanalyticsEngineeringNoop)
+  debugImplementation(projects.hanalytics.hanalyticsEngineering)
+  "stagingImplementation"(projects.hanalytics.hanalyticsEngineering)
 
   androidTestImplementation(projects.testdata)
   testImplementation(projects.testdata)
   debugImplementation(projects.testdata)
   "stagingImplementation"(projects.testdata)
-  "pullrequestImplementation"(projects.testdata)
 
   implementation(libs.coroutines.core)
   implementation(libs.coroutines.android)
   testImplementation(libs.coroutines.test)
 
-  implementation(libs.serialization)
+  implementation(libs.serialization.json)
 
   testImplementation(libs.androidx.arch.testing)
 
+  implementation(libs.androidx.datastore.core)
+  implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.androidx.other.appCompat)
   implementation(libs.androidx.other.media)
   implementation(libs.androidx.other.constraintLayout)
@@ -189,7 +169,6 @@ dependencies {
   implementation(libs.androidx.lifecycle.process)
   implementation(libs.androidx.other.workManager)
   implementation(libs.androidx.datastore.core)
-  implementation(libs.androidx.datastore.preferences)
   implementation(libs.androidx.other.startup)
   androidTestImplementation(libs.androidx.espresso.core)
   androidTestImplementation(libs.androidx.espresso.intents)
@@ -225,7 +204,6 @@ dependencies {
   implementation(libs.okhttp.loggingInterceptor)
   androidTestImplementation(libs.okhttp.mockWebServer)
 
-  // Todo: Look into if this is the proper way to use boms with version catalogs
   implementation(platform(libs.firebase.bom))
   implementation(libs.firebase.playServicesBase)
   implementation(libs.firebase.crashlytics)
@@ -276,7 +254,6 @@ dependencies {
   debugImplementation(libs.leakCanary)
   debugImplementation(libs.shake)
   "stagingImplementation"(libs.shake)
-  "pullrequestImplementation"(libs.shake)
 
   implementation(libs.androidx.other.activityCompose)
   implementation(libs.androidx.compose.material)
@@ -292,13 +269,7 @@ dependencies {
   androidTestImplementation(libs.androidx.compose.uiTestJunit)
   debugImplementation(libs.androidx.compose.uiTestManifest)
 
-  implementation(libs.showkase.annotation)
-  debugImplementation(libs.showkase.showkase)
-  "stagingImplementation"(libs.showkase.showkase)
-  "pullrequestImplementation"(libs.showkase.showkase)
-  kaptDebug(libs.showkase.processor)
-  "kaptStaging"(libs.showkase.processor)
-  "kaptPullrequest"(libs.showkase.processor)
-
   implementation(libs.datadog.sdk)
+  implementation(libs.odyssey)
+  implementation(libs.kotlin.reflect)
 }

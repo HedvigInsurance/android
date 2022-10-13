@@ -2,7 +2,7 @@ package com.hedvig.app.feature.embark.util
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import com.hedvig.android.core.common.createAndAddWithLodashNotation
+import com.hedvig.android.core.common.android.createAndAddWithLodashNotation
 import org.json.JSONObject
 import org.junit.Test
 

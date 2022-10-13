@@ -30,7 +30,7 @@ task generateProjectDependencyGraph {
         def javaProjects = []
 
         queue = [rootProject]
-        println "Stelios: queue$queue"
+        println "[DEBUG]: queue$queue"
         while (!queue.isEmpty()) {
             def project = queue.remove(0)
             queue.addAll(project.childProjects.values())
@@ -48,7 +48,7 @@ task generateProjectDependencyGraph {
                 javaProjects.add(project)
             }
 
-            println "Stelios: configurations: ${project.configurations}"
+            println "[DEBUG]: configurations: ${project.configurations}"
             project.configurations.all { config ->
                 config.dependencies
                         .withType(ProjectDependency)

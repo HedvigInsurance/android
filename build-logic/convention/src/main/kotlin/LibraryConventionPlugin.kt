@@ -6,6 +6,9 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.the
 
+/**
+ * Defines an Android library
+ */
 class LibraryConventionPlugin : Plugin<Project> {
   override fun apply(target: Project) {
     with(target) {
@@ -17,7 +20,7 @@ class LibraryConventionPlugin : Plugin<Project> {
       }
 
       extensions.configure<LibraryExtension> {
-        configureKotlinAndroid(this, addStandardBuildTypes = true)
+        configureKotlinAndroid(this)
         @Suppress("MISSING_DEPENDENCY_SUPERCLASS")
         defaultConfig.targetSdk = libs.versions.targetSdkVersion.get().toInt()
         @Suppress("UnstableApiUsage")
