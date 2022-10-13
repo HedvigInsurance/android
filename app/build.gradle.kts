@@ -271,4 +271,5 @@ dependencies {
 
   implementation(libs.datadog.sdk)
   implementation(libs.odyssey)
+  implementation(libs.kotlin.reflect)
 }
