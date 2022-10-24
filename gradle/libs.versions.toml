@@ -63,7 +63,7 @@ dependencyAnalysis = "1.13.1"
 firebase = "28.4.2"
 flexbox = "3.0.0"
 fragmentViewBindingDelegate = "1.0.1"
-hAnalytics = "v0.263.0"
+hAnalytics = "v0.275.0"
 insetter = "0.6.1"
 jsonTest = "20220320"
 junit = "4.12"
@@ -171,7 +171,7 @@ firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 firebase-playServicesBase = { module = "com.google.android.gms:play-services-base" }
 flexbox = { module = "com.google.android.flexbox:flexbox", version.ref = "flexbox" }
 fragmentViewBindingDelegate = { module = "com.github.Zhuinden:fragmentviewbindingdelegate-kt", version.ref = "fragmentViewBindingDelegate" }
-hAnalytics = { module = "com.github.HedvigInsurance:hanalytics", version.ref = "hAnalytics" }
+hAnalytics = { module = "com.github.HedvigInsurance:hAnalytics", version.ref = "hAnalytics" }
 insetter = { module = "dev.chrisbanes.insetter:insetter", version.ref = "insetter" }
 jsonTest = { module = "org.json:json", version.ref = "jsonTest" }
 junit = { module = "junit:junit", version.ref = "junit" }
