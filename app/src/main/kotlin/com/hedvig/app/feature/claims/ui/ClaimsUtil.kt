@@ -3,16 +3,17 @@ package com.hedvig.app.feature.claims.ui
 import android.content.Context
 import android.content.Intent
 import androidx.fragment.app.FragmentManager
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
-import com.hedvig.hanalytics.HAnalytics
 
 suspend fun startClaimsFlow(
-  hAnalytics: HAnalytics,
+  featureManager: FeatureManager,
   context: Context,
   fragmentManager: FragmentManager,
   registerForResult: ((Intent) -> Unit)? = null,
 ) {
-  if (hAnalytics.odysseyClaims()) {
+  if (featureManager.isFeatureEnabled(Feature.USE_ODYSSEY_CLAIM_FLOW)) {
     val intent = ClaimsFlowActivity.newInstance(context)
     if (registerForResult != null) {
       registerForResult(intent)
