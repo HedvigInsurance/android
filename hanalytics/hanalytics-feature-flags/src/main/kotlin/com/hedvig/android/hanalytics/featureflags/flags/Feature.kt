@@ -19,4 +19,5 @@ enum class Feature(
   PAYMENT_SCREEN("Controls whether the payment screen should be accessible from the profile tab"),
   CONNECT_PAYIN_REMINDER("Show a reminder to connect payin on the home tab"),
   COMMON_CLAIMS("Show common claims on the home tab"),
+  USE_ODYSSEY_CLAIM_FLOW("Whether to show the odyssey claim flow or not"),
 }
