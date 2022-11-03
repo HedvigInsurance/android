@@ -11,6 +11,7 @@ import com.hedvig.app.feature.genericauth.otpinput.ReSendOtpCodeUseCase
 import com.hedvig.app.feature.genericauth.otpinput.ResendOtpResult
 import com.hedvig.app.feature.genericauth.otpinput.SendOtpCodeUseCase
 import com.hedvig.app.util.coroutines.MainCoroutineRule
+import io.mockk.mockk
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -51,6 +52,7 @@ class OtpInputViewModelTest {
         return resendOtpResult
       }
     },
+    uploadMarketAndLanguagePreferencesUseCase = mockk(relaxed = true),
   )
 
   @Test
