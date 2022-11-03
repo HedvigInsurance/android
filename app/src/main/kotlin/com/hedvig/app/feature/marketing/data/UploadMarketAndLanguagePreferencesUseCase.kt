@@ -7,7 +7,7 @@ import com.hedvig.android.apollo.toEither
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 
-class SubmitMarketAndLanguagePreferencesUseCase(
+class UploadMarketAndLanguagePreferencesUseCase(
   private val apolloClient: ApolloClient,
   private val marketManager: MarketManager,
   private val languageService: LanguageService,

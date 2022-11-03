@@ -118,8 +118,8 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInViewModelImpl
 import com.hedvig.app.feature.marketing.MarketingViewModel
 import com.hedvig.app.feature.marketing.data.GetInitialMarketPickerValuesUseCase
 import com.hedvig.app.feature.marketing.data.GetMarketingBackgroundUseCase
-import com.hedvig.app.feature.marketing.data.SubmitMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.feature.marketing.data.UpdateApplicationLanguageUseCase
+import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.feature.marketpicker.LanguageRepository
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferViewModel
@@ -368,7 +368,7 @@ val viewModelModule = module {
   viewModel { TooltipViewModel(get()) }
   viewModel { MyInfoViewModel(get()) }
   viewModel { AboutAppViewModel(get()) }
-  viewModel { MarketingViewModel(get<MarketManager>().market, get(), get(), get(), get(), get(), get()) }
+  viewModel { MarketingViewModel(get<MarketManager>().market, get(), get(), get(), get(), get()) }
 }
 
 val onboardingModule = module {
@@ -570,7 +570,7 @@ val useCaseModule = module {
   single<GetFinalDanishAddressSelectionUseCase> { GetFinalDanishAddressSelectionUseCase(get()) }
   single { CreateQuoteCartUseCase(get(), get(), get()) }
   single {
-    SubmitMarketAndLanguagePreferencesUseCase(
+    UploadMarketAndLanguagePreferencesUseCase(
       apolloClient = get(),
       marketManager = get(),
       languageService = get(),
