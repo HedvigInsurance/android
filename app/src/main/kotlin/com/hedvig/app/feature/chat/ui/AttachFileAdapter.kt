@@ -8,13 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
+import coil.ImageLoader
 import coil.size.Scale
 import coil.transform.RoundedCornersTransformation
 import com.hedvig.app.R
 import com.hedvig.app.databinding.AttachFileImageItemBinding
 import com.hedvig.app.databinding.CameraAndMiscItemBinding
 import com.hedvig.app.feature.chat.AttachImageData
+import com.hedvig.app.ui.coil.load
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.view.fadeIn
 import com.hedvig.app.util.extensions.view.fadeOut
@@ -31,6 +32,7 @@ class AttachFileAdapter(
   private val takePhoto: () -> Unit,
   private val showUploadFileDialog: () -> Unit,
   private val uploadFile: (Uri) -> Unit,
+  private val imageLoader: ImageLoader,
 ) : RecyclerView.Adapter<AttachFileAdapter.ViewHolder>() {
 
   private val roundedCornersRadius =
@@ -46,7 +48,7 @@ class AttachFileAdapter(
     if (viewType == CAMERA_AND_MISC_VIEW_TYPE) {
       ViewHolder.CameraAndMiscViewHolder(parent)
     } else {
-      ViewHolder.ImageViewHolder(parent)
+      ViewHolder.ImageViewHolder(parent, imageLoader)
     }
 
   override fun getItemCount() = attachImageData.size + 1
@@ -56,6 +58,7 @@ class AttachFileAdapter(
       is ViewHolder.CameraAndMiscViewHolder -> {
         viewHolder.bind(isUploadingTakenPicture, takePhoto, showUploadFileDialog)
       }
+
       is ViewHolder.ImageViewHolder -> {
         viewHolder.bind(attachImageData, pickerHeight, roundedCornersRadius, uploadFile)
       }
@@ -118,7 +121,10 @@ class AttachFileAdapter(
       }
     }
 
-    class ImageViewHolder(parent: ViewGroup) : ViewHolder(
+    class ImageViewHolder(
+      parent: ViewGroup,
+      private val imageLoader: ImageLoader,
+    ) : ViewHolder(
       LayoutInflater.from(parent.context).inflate(
         R.layout.attach_file_image_item,
         parent,
@@ -140,7 +146,7 @@ class AttachFileAdapter(
           params.height = pickerHeight - margin
           params.width = pickerHeight - margin
           attachFileImage.layoutParams = params
-          attachFileImage.load(image.path) {
+          attachFileImage.load(image.path, imageLoader) {
             transformations(RoundedCornersTransformation(roundedCornersRadius))
             scale(Scale.FILL)
           }
