@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import coil.ImageLoader
 import com.hedvig.android.language.LanguageService
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticationTokenService
@@ -19,6 +20,7 @@ class ClaimsFlowActivity : ComponentActivity() {
   private val authenticationTokenService: AuthenticationTokenService by inject()
   private val odysseyUrl get() = getString(R.string.ODYSSEY_URL)
   private val languageService: LanguageService by inject()
+  private val imageLoader: ImageLoader by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -30,6 +32,7 @@ class ClaimsFlowActivity : ComponentActivity() {
         apiUrl = odysseyUrl,
         authorizationToken = token,
         locale = languageService.getLocale().toString(),
+        imageLoader = imageLoader,
         initialUrl = ROOT_URL,
         onExternalNavigation = { url ->
           when (url) {
