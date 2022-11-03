@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.market.Market
 import com.hedvig.app.authenticate.LoginStatusService
+import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.feature.zignsec.usecase.AuthResult
 import com.hedvig.app.feature.zignsec.usecase.SimpleSignStartAuthResult
 import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
@@ -27,6 +28,7 @@ class SimpleSignAuthenticationViewModel(
   private val featureManager: FeatureManager,
   private val loginStatusService: LoginStatusService,
   private val subscribeToAuthResultUseCase: SubscribeToAuthResultUseCase,
+  private val uploadMarketAndLanguagePreferencesUseCase: UploadMarketAndLanguagePreferencesUseCase,
 ) : ViewModel() {
   private val _input = MutableLiveData("")
   val input: LiveData<String> = _input
@@ -125,6 +127,7 @@ class SimpleSignAuthenticationViewModel(
     hAnalytics.loggedIn()
     featureManager.invalidateExperiments()
     loginStatusService.isLoggedIn = true
+    uploadMarketAndLanguagePreferencesUseCase.invoke()
   }
 
   companion object {
