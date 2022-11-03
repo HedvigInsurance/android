@@ -41,3 +41,8 @@ run `./gradlew ktlintFormat` to make ktlint to format all files according to the
 
 Generated from `./gradlew :generateProjectDependencyGraph`*\
 *Note that this requires `dot` from graphviz to be on your path. Run `brew install graphviz`
+
+## Renovate
+
+`renovate.json` is a file which Renovate looks at in order to be able to suggest upgrading private artifacts to their latest version.
+The `username` used in there is the result of passing our jitpack username (from 1Password) through Renovate's [website](https://app.renovatebot.com/encrypt) to get the hashed version of it.
