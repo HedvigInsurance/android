@@ -42,7 +42,6 @@ class LogoutUseCase(
 
   private fun clearMarket() {
     marketManager.market = null
-    marketManager.hasSelectedMarket = false
   }
 
   private fun clearLoginStatus() {
