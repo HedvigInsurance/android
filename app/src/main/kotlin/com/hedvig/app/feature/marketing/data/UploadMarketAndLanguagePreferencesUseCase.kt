@@ -21,8 +21,8 @@ class UploadMarketAndLanguagePreferencesUseCase(
       .safeExecute()
       .toEither()
       .fold(
-        { i { "Succeeded uploading language preferences to language:$languageTag | locale:$locale" } },
-        { e { "Failed to to upload language preferences to language:$languageTag | locale:$locale" } },
+        ifLeft = { e { "Failed to to upload language preferences to language:$languageTag | locale:$locale" } },
+        ifRight = { i { "Succeeded uploading language preferences to language:$languageTag | locale:$locale" } },
       )
   }
 }
