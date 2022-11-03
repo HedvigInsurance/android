@@ -574,7 +574,6 @@ val useCaseModule = module {
   single {
     UploadMarketAndLanguagePreferencesUseCase(
       apolloClient = get(),
-      marketManager = get(),
       languageService = get(),
     )
   }
