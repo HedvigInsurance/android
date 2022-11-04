@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
-import coil.load
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ExpandableBottomSheetTitleBinding
 import com.hedvig.app.databinding.PreviousInsurerItemBinding
+import com.hedvig.app.ui.coil.load
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setHapticClickListener

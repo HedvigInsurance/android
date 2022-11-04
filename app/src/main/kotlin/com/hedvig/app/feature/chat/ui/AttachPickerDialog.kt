@@ -10,14 +10,18 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils.loadAnimation
+import coil.ImageLoader
 import com.hedvig.android.core.common.android.whenApiVersion
 import com.hedvig.app.R
 import com.hedvig.app.databinding.AttachPickerDialogBinding
 import com.hedvig.app.feature.chat.AttachImageData
 import com.hedvig.app.util.extensions.view.fadeIn
 import com.hedvig.app.util.extensions.view.remove
+import org.koin.java.KoinJavaComponent.inject
 
 class AttachPickerDialog(context: Context) : Dialog(context, R.style.TransparentDialog) {
+
+  private val imageLoader: ImageLoader by inject(ImageLoader::class.java)
   private lateinit var binding: AttachPickerDialogBinding
 
   var pickerHeight = 0
@@ -139,6 +143,7 @@ class AttachPickerDialog(context: Context) : Dialog(context, R.style.Transparent
       takePhotoCallback,
       showUploadBottomSheetCallback,
       uploadFileCallback,
+      imageLoader,
     )
     binding.apply {
       attachFileRecyclerView.adapter = adapter
