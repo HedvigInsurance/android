@@ -31,10 +31,10 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
-  private val viewModel: EmbarkViewModel by sharedViewModel()
+  private val viewModel: EmbarkViewModel by activityViewModel()
   private val binding by viewBinding(FragmentEmbarkSelectActionBinding::bind)
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

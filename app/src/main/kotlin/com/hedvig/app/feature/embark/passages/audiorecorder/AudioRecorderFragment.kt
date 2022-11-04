@@ -17,12 +17,12 @@ import com.hedvig.app.util.extensions.hasPermissions
 import com.hedvig.app.util.extensions.showPermissionExplanationDialog
 import com.hedvig.hanalytics.HAnalytics
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.time.Clock
 
 class AudioRecorderFragment : Fragment() {
-  private val embarkViewModel: EmbarkViewModel by sharedViewModel()
+  private val embarkViewModel: EmbarkViewModel by activityViewModel()
   private val viewModel: AudioRecorderViewModel by viewModel()
   private val clock: Clock by inject()
   private val hAnalytics: HAnalytics by inject()

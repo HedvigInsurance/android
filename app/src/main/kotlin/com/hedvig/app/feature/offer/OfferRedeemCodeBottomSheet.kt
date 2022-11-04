@@ -4,14 +4,14 @@ import android.os.Bundle
 import com.hedvig.android.apollo.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeBottomSheet
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 class OfferRedeemCodeBottomSheet : RedeemCodeBottomSheet() {
 
   override val quoteCartId: QuoteCartId?
     get() = arguments?.getParcelable(QUOTE_CART_ID)
 
-  private val offerViewModel: OfferViewModel by sharedViewModel()
+  private val offerViewModel: OfferViewModel by activityViewModel()
 
   override fun onRedeemSuccess(data: RedeemReferralCodeMutation.Data) {
     dismiss()

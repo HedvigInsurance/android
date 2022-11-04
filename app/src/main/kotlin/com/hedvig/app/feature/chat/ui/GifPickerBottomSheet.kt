@@ -20,11 +20,11 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import java.util.concurrent.TimeUnit
 
 class GifPickerBottomSheet : BottomSheetDialogFragment() {
-  private val viewModel: ChatViewModel by sharedViewModel()
+  private val viewModel: ChatViewModel by activityViewModel()
   private val binding by viewBinding(SendGifDialogBinding::bind)
   private val imageLoader: ImageLoader by inject()
 

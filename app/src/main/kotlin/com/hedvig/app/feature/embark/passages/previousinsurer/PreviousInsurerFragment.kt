@@ -16,12 +16,12 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import d
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 class PreviousInsurerFragment : Fragment(R.layout.previous_or_external_insurer_fragment) {
 
   private val binding by viewBinding(PreviousOrExternalInsurerFragmentBinding::bind)
-  private val viewModel: EmbarkViewModel by sharedViewModel()
+  private val viewModel: EmbarkViewModel by activityViewModel()
   private var insurerId: String? = null
 
   private val insurerData by lazy {

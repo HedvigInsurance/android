@@ -11,12 +11,12 @@ import com.hedvig.app.databinding.ConnectPaymentResultFragmentBinding
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import e
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 class ConnectPaymentResultFragment : Fragment(R.layout.connect_payment_result_fragment) {
 
   private val binding by viewBinding(ConnectPaymentResultFragmentBinding::bind)
-  private val connectPaymentViewModel: ConnectPaymentViewModel by sharedViewModel()
+  private val connectPaymentViewModel: ConnectPaymentViewModel by activityViewModel()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)

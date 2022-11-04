@@ -33,7 +33,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import java.time.LocalDate
@@ -47,7 +47,7 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
     get() = requireArguments().getParcelable(DATA)
       ?: throw Error("Programmer error: DATA is null in ${this.javaClass.name}")
   private val textActionViewModel: TextActionViewModel by viewModel { parametersOf(data) }
-  private val embarkViewModel: EmbarkViewModel by sharedViewModel()
+  private val embarkViewModel: EmbarkViewModel by activityViewModel()
   private val binding by viewBinding(FragmentTextActionSetBinding::bind)
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
