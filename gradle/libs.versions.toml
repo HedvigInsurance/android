@@ -68,7 +68,8 @@ insetter = "0.6.1"
 jsonTest = "20220320"
 junit = "4.12"
 kaspresso = "1.4.1"
-koin = "3.2.1"
+koinAndroid = "3.3.0"
+koinCore = "3.2.2"
 leakCanary = "2.9.1"
 markwon = "4.6.2"
 materialComponents = "1.6.1"
@@ -176,9 +177,9 @@ insetter = { module = "dev.chrisbanes.insetter:insetter", version.ref = "insette
 jsonTest = { module = "org.json:json", version.ref = "jsonTest" }
 junit = { module = "junit:junit", version.ref = "junit" }
 kaspresso = { module = "com.kaspersky.android-components:kaspresso", version.ref = "kaspresso" }
-koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
-koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
-koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koinAndroid" }
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koinCore" }
+koin-test = { module = "io.insert-koin:koin-test", version.ref = "koinCore" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 leakCanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakCanary" }
 markwon-core = { module = "io.noties.markwon:core", version.ref = "markwon" }
