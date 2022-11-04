@@ -42,7 +42,7 @@ class ClaimsFlowActivity : ComponentActivity() {
   }
 
   companion object {
-    private const val ROOT_URL = "/audio-claim"
+    private const val ROOT_URL = "/automation-claim"
 
     fun newInstance(context: Context) = Intent(context, ClaimsFlowActivity::class.java)
   }
