@@ -1,6 +1,9 @@
 name: Integration Tests
 
-on: pull_request
+#on: pull_request # re-enable when we actually look at our UI tests
+on:
+  workflow_dispatch:
+
 jobs:
   integration_test:
     runs-on: macos-latest
