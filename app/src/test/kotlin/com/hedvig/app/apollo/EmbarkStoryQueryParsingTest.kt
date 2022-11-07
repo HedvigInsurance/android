@@ -8,7 +8,9 @@ import assertk.assertions.isNotNull
 import com.apollographql.apollo3.annotations.ApolloExperimental
 import com.apollographql.apollo3.mockserver.enqueue
 import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
-import com.hedvig.android.apollo.graphql.test.EmbarkStoryQuery_TestBuilder.Data
+import com.hedvig.android.apollo.graphql.type.buildEmbarkPassage
+import com.hedvig.android.apollo.graphql.type.buildEmbarkStory
+import com.hedvig.android.apollo.graphql.type.buildEmbarkTrack
 import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_MUTATION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_MUTATION_AND_SINGLE_VARIABLE
@@ -20,6 +22,7 @@ import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_PASSED_KEY_VALUE
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_SELECT_ACTION_API_MULTIPLE_OPTIONS
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION_API
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_UNARY_EXPRESSIONS
+import org.json.JSONObject
 import org.junit.Test
 
 class EmbarkStoryQueryParsingTest {
@@ -198,28 +201,27 @@ class EmbarkStoryQueryParsingTest {
   @Test
   fun `apollo parses a story which contains a JSONString scalar`() = runApolloTest { mockServer, apolloClient ->
     mockServer.enqueue(
-      EmbarkStoryQuery.Data(TestDataTestResolver) {
-        embarkStory = embarkStory {
+      EmbarkStoryQuery.Data(TestFakeResolver) {
+        embarkStory = buildEmbarkStory {
           passages = listOf(
-            passage {
-              api = otherApi {
-                __typename = ""
-              }
+            buildEmbarkPassage {
               tracks = listOf(
-                track {
-                  customData = """
-                  |{
-                  |  "string": "Hello World",
-                  |  "some": {
-                  |    "arbitrary": [
-                  |      { "object": 1 },
-                  |      "object",
-                  |      2
-                  |    ],
-                  |    "c": "d"
-                  |  }
-                  |}
-                  """.trimMargin()
+                buildEmbarkTrack {
+                  customData = JSONObject(
+                    """
+                    |{
+                    |  "string": "Hello World",
+                    |  "some": {
+                    |    "arbitrary": [
+                    |      { "object": 1 },
+                    |      "object",
+                    |      2
+                    |    ],
+                    |    "c": "d"
+                    |  }
+                    |}
+                    """.trimMargin(),
+                  )
                 },
               )
             },
@@ -247,17 +249,15 @@ class EmbarkStoryQueryParsingTest {
   fun `apollo parses a story which contains a JSONString scalar which is minified`() =
     runApolloTest { mockServer, apolloClient ->
       mockServer.enqueue(
-        EmbarkStoryQuery.Data(TestDataTestResolver) {
-          embarkStory = embarkStory {
+        EmbarkStoryQuery.Data(TestFakeResolver) {
+          embarkStory = buildEmbarkStory {
             passages = listOf(
-              passage {
-                api = otherApi {
-                  __typename = ""
-                }
+              buildEmbarkPassage {
                 tracks = listOf(
-                  track {
-                    customData =
-                      """{"string":"Hello World","some":{"arbitrary":[{"object":1},"object",2],"c":"d"}}""" // ktlint-disable max-line-length
+                  buildEmbarkTrack {
+                    customData = JSONObject(
+                      """{"string":"Hello World","some":{"arbitrary":[{"object":1},"object",2],"c":"d"}}""",
+                    )
                   },
                 )
               },

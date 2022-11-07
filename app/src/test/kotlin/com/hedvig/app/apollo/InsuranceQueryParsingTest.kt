@@ -8,10 +8,21 @@ import assertk.assertions.isNotNull
 import com.apollographql.apollo3.annotations.ApolloExperimental
 import com.apollographql.apollo3.mockserver.enqueue
 import com.hedvig.android.apollo.graphql.InsuranceQuery
-import com.hedvig.android.apollo.graphql.test.InsuranceQuery_TestBuilder.Data
 import com.hedvig.android.apollo.graphql.type.AgreementStatus
-import com.hedvig.android.apollo.graphql.type.SwedishApartmentAgreement
-import com.hedvig.android.apollo.typeadapter.PromiscuousLocalDateAdapter
+import com.hedvig.android.apollo.graphql.type.TypeOfContractGradientOption
+import com.hedvig.android.apollo.graphql.type.buildActiveStatus
+import com.hedvig.android.apollo.graphql.type.buildContract
+import com.hedvig.android.apollo.graphql.type.buildIcon
+import com.hedvig.android.apollo.graphql.type.buildIconVariant
+import com.hedvig.android.apollo.graphql.type.buildIconVariants
+import com.hedvig.android.apollo.graphql.type.buildInsurableLimit
+import com.hedvig.android.apollo.graphql.type.buildInsuranceTerm
+import com.hedvig.android.apollo.graphql.type.buildPerilV2
+import com.hedvig.android.apollo.graphql.type.buildSwedishApartmentAgreement
+import com.hedvig.android.apollo.graphql.type.buildTable
+import com.hedvig.android.apollo.graphql.type.buildTableRow
+import com.hedvig.android.apollo.graphql.type.buildTableSection
+import com.hedvig.android.apollo.graphql.type.buildUpcomingRenewal
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_TERMINATED
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_HOUSE
@@ -22,71 +33,65 @@ class InsuranceQueryParsingTest {
 
   @Suppress("PrivatePropertyName")
   private val INSURANCE_DATA_from_test_builder by lazy {
-    InsuranceQuery.Data(TestDataTestResolver) {
-      activeContractBundles = emptyList()
+    InsuranceQuery.Data(TestFakeResolver) {
       contracts = listOf(
-        contract {
+        buildContract {
           id = "120e9ac9-84b1-4e5d-add1-70a9bad340be"
-          logo = logo {
-            variants = variants {
-              dark = dark {
+          logo = buildIcon {
+            variants = buildIconVariants {
+              dark = buildIconVariant {
                 svgUrl = "https://www.example.com"
               }
-              light = light {
+              light = buildIconVariant {
                 svgUrl = "https://www.example.com"
               }
             }
           }
-          status = activeStatusStatus {
-            pastInception = PromiscuousLocalDateAdapter.toJsonStringForTestBuilder(
-              LocalDate.of(2021, 1, 6),
-            )
+          status = buildActiveStatus {
+            pastInception = LocalDate.of(2021, 1, 6)
             upcomingAgreementChange = null
           }
           displayName = "Hemförsäkring"
-          upcomingRenewal = upcomingRenewal {
-            renewalDate = PromiscuousLocalDateAdapter.toJsonStringForTestBuilder(
-              LocalDate.of(2021, 5, 6),
-            )
+          upcomingRenewal = buildUpcomingRenewal {
+            renewalDate = LocalDate.of(2021, 5, 6)
             draftCertificateUrl = "https://www.example.com"
           }
-          currentAgreement = agreementCoreCurrentAgreement {
-            __typename = SwedishApartmentAgreement.type.name
-            status = AgreementStatus.ACTIVE.rawValue
+          currentAgreement = buildSwedishApartmentAgreement {
+            status = AgreementStatus.ACTIVE
             certificateUrl = "https://www.example.com"
           }
-          currentAgreementDetailsTable = currentAgreementDetailsTable {
+          currentAgreementDetailsTable = buildTable {
             title = ""
             sections = listOf(
-              section {
+              buildTableSection {
                 title = "Home details"
                 rows = listOf(
-                  row {
+                  buildTableRow {
                     title = "Adress"
                     subtitle = null
                     value = "Testvägen 1"
                   },
-                  row {
+                  buildTableRow {
                     title = "Postal code"
                     subtitle = null
                     value = "123 45"
                   },
-                  row {
+                  buildTableRow {
                     title = "Housing type"
                     subtitle = null
                     value = "Rental"
                   },
-                  row {
+                  buildTableRow {
                     title = "Size"
                     subtitle = null
                     value = "50 m2"
                   },
                 )
               },
-              section {
+              buildTableSection {
                 title = "Coinsured"
                 rows = listOf(
-                  row {
+                  buildTableRow {
                     title = "Insured people"
                     subtitle = null
                     value = "You + 1 person"
@@ -96,15 +101,15 @@ class InsuranceQueryParsingTest {
             )
           }
           contractPerils = List(6) {
-            contractPeril {
+            buildPerilV2 {
               title = "Mock"
               description = "Mock"
-              icon = icon {
-                variants = variants {
-                  dark = dark {
+              icon = buildIcon {
+                variants = buildIconVariants {
+                  dark = buildIconVariant {
                     svgUrl = "/app-content-service/fire_dark.svg"
                   }
-                  light = light {
+                  light = buildIconVariant {
                     svgUrl = "/app-content-service/fire.svg"
                   }
                 }
@@ -120,21 +125,21 @@ class InsuranceQueryParsingTest {
             }
           }
           insurableLimits = listOf(
-            insurableLimit {
+            buildInsurableLimit {
               label = "Utstyrene dine er forsikrat till"
               limit = "1 000 000 kr"
               description = "Dina prylar är försäkrade till"
             },
           )
-          termsAndConditions = termsAndConditions {
+          termsAndConditions = buildInsuranceTerm {
             displayName = "Terms and Conditions"
             url = "https://cdn.hedvig.com/info/insurance-terms-tenant-owners-2019-05.pdf"
           }
-          gradientOption = "GRADIENT_ONE"
+          gradientOption = TypeOfContractGradientOption.GRADIENT_ONE
           supportsAddressChange = true
-          upcomingAgreementDetailsTable = upcomingAgreementDetailsTable {
-            this.title = "Title"
-            this.sections = emptyList()
+          upcomingAgreementDetailsTable = buildTable {
+            title = "Title"
+            sections = emptyList()
           }
         },
       )

@@ -30,9 +30,8 @@ apollo {
     packageName.set("com.hedvig.android.apollo.graphql")
     codegenModels.set(MODELS_COMPAT)
 
-    // Test builders setup
     generateKotlinModels.set(true)
-    generateTestBuilders.set(true)
+    generateDataBuilders.set(true)
     testDirConnection {
       // Make test builders available to main (not just test or androidTest) to be used by our mock data
       connectToAndroidSourceSet("main")
