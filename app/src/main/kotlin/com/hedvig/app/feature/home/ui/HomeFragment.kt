@@ -30,12 +30,12 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class HomeFragment : Fragment(R.layout.home_fragment) {
   private val viewModel: HomeViewModel by viewModel()
-  private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
+  private val loggedInViewModel: LoggedInViewModel by activityViewModel()
   private val binding by viewBinding(HomeFragmentBinding::bind)
   private var scroll = 0
   private val imageLoader: ImageLoader by inject()

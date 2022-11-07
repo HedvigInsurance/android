@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -40,8 +40,8 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
     get() = requireArguments().getParcelable(DATA)
       ?: throw Error("Programmer error: DATA is null in ${this.javaClass.name}")
 
-  private val embarkViewModel: EmbarkViewModel by sharedViewModel()
-  private val viewModel: EmbarkAddressAutoCompleteViewModel by sharedViewModel {
+  private val embarkViewModel: EmbarkViewModel by activityViewModel()
+  private val viewModel: EmbarkAddressAutoCompleteViewModel by activityViewModel {
     val prefilledAddress: DanishAddress? = DanishAddress.fromValueStoreKeys(embarkViewModel::getPrefillFromStore)
     parametersOf(prefilledAddress)
   }

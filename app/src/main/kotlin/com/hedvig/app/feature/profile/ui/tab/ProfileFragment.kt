@@ -23,12 +23,12 @@ import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 class ProfileFragment : Fragment(R.layout.profile_fragment) {
   private val binding by viewBinding(ProfileFragmentBinding::bind)
-  private val viewModel: ProfileViewModel by sharedViewModel()
-  private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
+  private val viewModel: ProfileViewModel by activityViewModel()
+  private val loggedInViewModel: LoggedInViewModel by activityViewModel()
   private var scroll = 0
 
   override fun onResume() {

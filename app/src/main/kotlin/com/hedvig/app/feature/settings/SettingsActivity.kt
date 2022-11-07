@@ -28,8 +28,8 @@ import com.hedvig.app.util.extensions.viewBinding
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.getViewModel
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class SettingsActivity : AppCompatActivity(R.layout.activity_settings) {
   private val binding by viewBinding(ActivitySettingsBinding::bind)
@@ -49,8 +49,8 @@ class SettingsActivity : AppCompatActivity(R.layout.activity_settings) {
 
   class PreferenceFragment : PreferenceFragmentCompat() {
     private val marketManager: MarketManager by inject()
-    private val userViewModel: UserViewModel by sharedViewModel()
-    private val viewModel: SettingsViewModel by sharedViewModel()
+    private val userViewModel: UserViewModel by activityViewModel()
+    private val viewModel: SettingsViewModel by activityViewModel()
 
     @SuppressLint("ApplySharedPref")
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

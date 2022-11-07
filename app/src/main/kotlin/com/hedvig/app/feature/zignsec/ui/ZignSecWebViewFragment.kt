@@ -13,11 +13,11 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityZignSecAuthenticationBinding
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 class ZignSecWebViewFragment : Fragment(R.layout.activity_zign_sec_authentication) {
   private val binding by viewBinding(ActivityZignSecAuthenticationBinding::bind)
-  private val viewModel: SimpleSignAuthenticationViewModel by sharedViewModel()
+  private val viewModel: SimpleSignAuthenticationViewModel by activityViewModel()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)

@@ -16,12 +16,12 @@ import com.hedvig.app.util.extensions.setHelperText
 import com.hedvig.app.util.extensions.setMaxLength
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.core.parameter.parametersOf
 
 class IdentityInputFragment : Fragment(R.layout.identity_input_fragment) {
   private val binding by viewBinding(IdentityInputFragmentBinding::bind)
-  private val viewModel: SimpleSignAuthenticationViewModel by sharedViewModel { parametersOf(data) }
+  private val viewModel: SimpleSignAuthenticationViewModel by activityViewModel { parametersOf(data) }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)

@@ -33,7 +33,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.time.Duration.Companion.milliseconds
@@ -42,7 +42,7 @@ import kotlin.time.Duration.Companion.milliseconds
  * Used for Embark actions NumberAction and NumberActionSet
  */
 class NumberActionFragment : Fragment(R.layout.number_action_set_fragment) {
-  private val viewModel: EmbarkViewModel by sharedViewModel()
+  private val viewModel: EmbarkViewModel by activityViewModel()
   private val binding by viewBinding(NumberActionSetFragmentBinding::bind)
   private val data: NumberActionParams
     get() = requireArguments().getParcelable(PARAMS)

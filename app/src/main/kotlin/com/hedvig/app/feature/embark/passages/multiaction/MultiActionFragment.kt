@@ -24,18 +24,18 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.core.parameter.parametersOf
 
 class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action) {
-  private val viewModel: EmbarkViewModel by sharedViewModel()
+  private val viewModel: EmbarkViewModel by activityViewModel()
 
   private val multiActionParams: MultiActionParams by lazy {
     requireArguments().getParcelable<MultiActionParams>(DATA)
       ?: throw Error("Programmer error: No PARAMS provided to ${this.javaClass.name}")
   }
 
-  private val multiActionViewModel: MultiActionViewModel by sharedViewModel { parametersOf(multiActionParams) }
+  private val multiActionViewModel: MultiActionViewModel by activityViewModel { parametersOf(multiActionParams) }
   private val binding by viewBinding(FragmentEmbarkMultiActionBinding::bind)
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
