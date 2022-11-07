@@ -9,11 +9,16 @@ import com.hedvig.android.apollo.graphql.UpcomingAgreementQuery
 import com.hedvig.android.apollo.graphql.fragment.TableFragment
 import com.hedvig.android.apollo.graphql.fragment.UpcomingAgreementChangeFragment
 import com.hedvig.android.apollo.graphql.fragment.UpcomingAgreementFragment
-import com.hedvig.android.apollo.graphql.test.UpcomingAgreementQuery_TestBuilder.Data
 import com.hedvig.android.apollo.graphql.type.ActiveStatus
 import com.hedvig.android.apollo.graphql.type.Locale
 import com.hedvig.android.apollo.graphql.type.SwedishHouseAgreement
-import com.hedvig.android.apollo.typeadapter.PromiscuousLocalDateAdapter
+import com.hedvig.android.apollo.graphql.type.buildActiveStatus
+import com.hedvig.android.apollo.graphql.type.buildContract
+import com.hedvig.android.apollo.graphql.type.buildSwedishHouseAgreement
+import com.hedvig.android.apollo.graphql.type.buildTable
+import com.hedvig.android.apollo.graphql.type.buildTableRow
+import com.hedvig.android.apollo.graphql.type.buildTableSection
+import com.hedvig.android.apollo.graphql.type.buildUpcomingAgreementChange
 import com.hedvig.app.testdata.feature.changeaddress.UPCOMING_AGREEMENT_NONE
 import org.junit.Test
 import java.time.LocalDate
@@ -80,31 +85,28 @@ class UpcomingAgreementQueryParsing {
 
   @Suppress("PrivatePropertyName")
   private val UPCOMING_AGREEMENT_SWEDISH_APARTMENT_from_test_builder by lazy {
-    UpcomingAgreementQuery.Data(TestDataTestResolver) {
+    UpcomingAgreementQuery.Data(TestFakeResolver) {
       contracts = listOf(
-        this.contract {
-          this.upcomingAgreementDetailsTable = this.upcomingAgreementDetailsTable {
-            this.title = "Detail"
-            this.sections = listOf(
-              this.section {
-                this.title = "Detail"
-                this.rows = listOf(
-                  this.row {
-                    this.title = "Address"
-                    this.subtitle = "Subtitle"
-                    this.value = "Testgatan 123"
+        buildContract {
+          upcomingAgreementDetailsTable = buildTable {
+            title = "Detail"
+            sections = listOf(
+              buildTableSection {
+                title = "Detail"
+                rows = listOf(
+                  buildTableRow {
+                    title = "Address"
+                    subtitle = "Subtitle"
+                    value = "Testgatan 123"
                   },
                 )
               },
             )
           }
-          this.status = this.activeStatusStatus {
-            this.upcomingAgreementChange = this.upcomingAgreementChange {
-              this.newAgreement = this.agreementCoreNewAgreement {
-                this.__typename = "SwedishHouseAgreement"
-                this.activeFrom = PromiscuousLocalDateAdapter.toJsonStringForTestBuilder(
-                  LocalDate.of(2021, 4, 11),
-                )
+          status = buildActiveStatus {
+            upcomingAgreementChange = buildUpcomingAgreementChange {
+              newAgreement = buildSwedishHouseAgreement {
+                activeFrom = LocalDate.of(2021, 4, 11)
               }
             }
           }
