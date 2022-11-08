@@ -1,5 +1,0 @@
-mutation SelectCashback($id: ID!) {
-  selectCashbackOption(id: $id) {
-    ... CashbackFragment
-  }
-}

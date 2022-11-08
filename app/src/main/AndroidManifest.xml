@@ -15,6 +15,18 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+    <!--
+    This exists in order to guard us from having some SDK we're including bring in the AD_ID
+    permission without us knowing. This is important since we've answered in the App Content Policy
+    that we are *not* using an Advertising ID.
+    More context here: https://support.google.com/googleplay/android-developer/answer/6048248?hl=en
+    Discussion here: https://hedviginsurance.slack.com/archives/C03HT2JRDPG/p1664544052874059
+    WARNING: DO *NOT* REMOVE THE "tools:node="remove" part of the AD_ID declaration
+    -->
+    <uses-permission
+        android:name="com.google.android.gms.permission.AD_ID"
+        tools:node="remove" />
+
     <application
         android:name=".HedvigApplication"
         android:allowBackup="true"
@@ -26,20 +38,6 @@
         android:supportsRtl="true"
         android:theme="@style/Hedvig.Theme">
         <activity android:name=".feature.embark.ui.MoreOptionsActivity" />
-        <activity
-            android:name=".feature.keygear.KeyGearValuationInfoActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.keygear.KeyGearValuationActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme"
-            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature.chat.ui.ChatActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -109,10 +107,9 @@
             android:theme="@style/Hedvig.Theme.LoggedIn"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".feature.profile.ui.charity.CharityActivity"
+            android:name="com.hedvig.android.feature.businessmodel.BusinessModelActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
         <activity
@@ -194,27 +191,6 @@
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".feature.keygear.ui.createitem.CreateKeyGearItemActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme.KeyGear"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.keygear.ui.itemdetail.KeyGearItemDetailActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme.KeyGear.ItemDetail"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.keygear.ui.ReceiptActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme.KeyGear"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name=".feature.referrals.ui.activated.ReferralsActivatedActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
@@ -288,8 +264,6 @@
             android:name=".feature.genericauth.GenericAuthActivity"
             android:windowSoftInputMode="adjustResize" />
 
-        <activity android:name=".feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoActivity" />
-        <activity android:name=".feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceInfoActivity" />
         <activity
             android:name=".feature.addressautocompletion.ui.AddressAutoCompleteActivity"
             android:windowSoftInputMode="adjustResize" />
@@ -306,7 +280,9 @@
             android:name=".feature.marketing.MarketingActivity"
             android:theme="@style/Hedvig.Theme.Marketing"
             android:windowSoftInputMode="adjustResize" />
-
+        <activity
+            android:name=".feature.claims.ui.ClaimsFlowActivity"
+            android:windowSoftInputMode="adjustResize" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_hedvig_h" />
@@ -339,6 +315,16 @@
 
         <service android:name=".feature.adyen.payin.AdyenPayinDropInService" />
         <service android:name=".feature.adyen.payout.AdyenPayoutDropInService" />
+
+        <service
+            android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
+            android:enabled="false"
+            android:exported="false">
+            <meta-data
+                android:name="autoStoreLocales"
+                android:value="true" />
+        </service>
+
 
         <provider
             android:name="androidx.startup.InitializationProvider"

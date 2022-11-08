@@ -1,0 +1,19 @@
+query Profile {
+  member {
+    id
+    firstName
+    lastName
+    email
+    phoneNumber
+  }
+  insuranceCost {
+    ...CostFragment
+    freeUntil
+  }
+  bankAccount {
+    directDebitStatus
+  }
+  activePaymentMethodsV2 {
+    ...ActivePaymentMethodsFragment
+  }
+}

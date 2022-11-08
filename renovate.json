@@ -2,8 +2,14 @@
   "extends": [
     "config:base"
   ],
-  "ignoreDeps": [
-    "org.jetbrains.kotlin.plugin.serialization",
-    "org.jetbrains.kotlin:kotlin-gradle-plugin"
+  "hostRules": [
+    {
+      "hostType": "maven",
+      "matchHost": "https://jitpack.io",
+      "password": "",
+      "encrypted": {
+        "username": "wcFMA/xDdHCJBTolAQ//dmlKZCl7d/f5ogqq1JctWUVf9VFA8efOdQqQnQhVbE4vJUzG43//HsGWoF11VGkvVD4lYBVh/ALbf60cTtgwudECMoWDIKANXj0F2+oToDM9mCFuhn9qB0jRJS+axbfiSfoKvziIzM0Bbs34jx2rKHSv6FYOYweAg9z+LDRQmJiH5NfQQ+ykLAbgOKBShJBez+v05By4E21HKDwnurKgPUB4NtjRj4Oui0rnpbRexqtB3aRQJ2rTtiTyUnT02yBQBmtl7dyRge/uJU9i3eYmv/s4fQyVGTx5fdxFwGKoYE1UblA3TTIb/Ml4jb5v6uQQAZ2wppJPlwjXI/wbWG5JhhsaclTySLtwGZ9YYJoOaaM1y4YwcNmYxIddOBpTvEoq/13uFCwGnY+46LnUAJTIlnk2JwQCI+qq8nUU8o0HVYtkYd7FB3/X7JiWxLkOzc+TrUuaCjhVlTuCXWj5akXvjQl28NlWnL8d5iQVQ6WXUzLWzw/RSPsWvHRv+VxyjmjnMEZaHr9ZFwXXkAPTVy251xamGeU/Kv3OzqHMA9s/FkRXsPnbCGSXq7VMB4VeURLvQpcnpwDydMZEvQdJk7wH+zs7iLYziW5pjKHPenRuQjw6mLk9gGPphq+sYmKfigclRoOc+OJngR7AtGOgu3z31TtUjoAlKerS7nNShL5TyA7ScwFNmaoo/4xNIBhao7d9VyDuKH1DsYnnwLd2h/Q0zFryiPse06J+SSPrprDfqHIOhiRZNTlGOv4arhUhhcciOy2fPQyolNknamom4IJbiCOxOEmuxWZQbdlYDKil6YN88ZAv+RJny/xl9LHLEjoDKweIiTw"
+      }
+    }
   ]
 }

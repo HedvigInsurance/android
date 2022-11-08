@@ -10,11 +10,6 @@
         <item type="color">@color/hedvig_black</item>
         <item type="color">@color/hedvig_black</item>
     </array>
-    <array name="key_gear_gradient">
-        <item type="color">@color/hedvig_black</item>
-        <item type="color">#131313</item>
-        <item type="color">#262626</item>
-    </array>
     <array name="forever_gradient">
         <item type="color">@color/hedvig_black</item>
         <item type="color">#131313</item>

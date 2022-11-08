@@ -9,10 +9,6 @@
 
     <style name="Hedvig.Theme.Marketing" parent="Hedvig.Theme.Marketing.V23" />
 
-    <style name="Hedvig.Theme.KeyGear">
-        <item name="android:navigationBarColor">@color/translucent_background</item>
-    </style>
-
     <style name="Hedvig.Theme.LoggedIn">
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:statusBarColor">@color/transparent</item>
@@ -20,11 +16,6 @@
 
     <style name="Hedvig.Theme.Chat">
         <item name="android:navigationBarColor">@color/color_background_95</item>
-    </style>
-
-    <style name="Hedvig.Theme.KeyGear.ItemDetail">
-        <item name="colorControlNormal">@color/white</item>
-        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="Hedvig.Theme.Splash.V23" parent="Hedvig.Theme">

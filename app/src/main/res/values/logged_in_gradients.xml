@@ -12,12 +12,6 @@
         <item type="color">#F6F6F6</item>
     </array>
 
-    <array name="key_gear_gradient">
-        <item type="color">#D3D3D3</item>
-        <item type="color">#E5E5E5</item>
-        <item type="color">#F6F6F6</item>
-    </array>
-
     <array name="forever_gradient">
         <item type="color">#D3D3D3</item>
         <item type="color">#E5E5E5</item>
