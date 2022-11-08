@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.chat.data
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import arrow.core.Either
@@ -110,6 +111,7 @@ class ChatRepository(
       .writeOperation(messagesQuery, newData)
   }
 
+  @SuppressLint("Recycle")
   suspend fun uploadFileFromProvider(uri: Uri): ApolloResponse<UploadFileMutation.Data> {
     val mimeType = fileService.getMimeType(uri)
     val file = File(
