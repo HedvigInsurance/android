@@ -12,6 +12,7 @@ import com.hedvig.app.feature.marketing.data.MarketingBackground
 import com.hedvig.app.feature.marketing.data.UpdateApplicationLanguageUseCase
 import com.hedvig.hanalytics.HAnalytics
 import com.hedvig.hanalytics.LoginMethod
+import d
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -82,8 +83,11 @@ class MarketingViewModel(
 
   fun submitMarketAndLanguage() {
     viewModelScope.launch {
+      d { "Stelios: 1" }
       val market = _state.value.market ?: error("Market null")
+      d { "Stelios: 2" }
       val language = _state.value.language ?: error("Language null")
+      d { "Stelios: 3" }
 
       _state.update { it.copy(isLoading = true) }
       updateApplicationLanguageUseCase.invoke(market, language)
@@ -95,6 +99,7 @@ class MarketingViewModel(
           isLoading = false,
         )
       }
+      d { "Stelios: 4" }
     }
   }
 

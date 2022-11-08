@@ -5,20 +5,13 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector2D
-import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.VectorConverter
-import androidx.compose.animation.core.animateValue
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
@@ -34,9 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.layout.positionInWindow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
@@ -59,6 +50,7 @@ import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationActivity
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.hanalytics.LoginMethod
+import d
 import e
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.get
@@ -129,6 +121,7 @@ class MarketingActivity : AppCompatActivity() {
       supportFragmentManager,
       LoginDialog.TAG,
     )
+
     LoginMethod.NEM_ID, LoginMethod.BANK_ID_NORWAY -> {
       startActivity(
         SimpleSignAuthenticationActivity.newInstance(
@@ -137,9 +130,11 @@ class MarketingActivity : AppCompatActivity() {
         ),
       )
     }
+
     LoginMethod.OTP -> {
       // Not implemented
     }
+
     null -> {}
   }
 
@@ -166,7 +161,7 @@ private fun MarketingScreen(
   onClickSignUp: (market: Market) -> Unit,
   onClickLogIn: (market: Market) -> Unit,
 ) {
-  val ctaButton = remember {
+  val ctaButton: @Composable (CtaButtonParams) -> Unit = remember {
     movableContentOf<CtaButtonParams> { ctaButtonParams ->
       LargeContainedTextButton(
         text = ctaButtonParams.text,
@@ -179,12 +174,15 @@ private fun MarketingScreen(
   Box(Modifier.fillMaxSize()) {
     BackgroundImage(marketingBackground, imageLoader)
     val selectedMarket = state.selectedMarket
-//    Crossfade(selectedMarket) { market ->
     selectedMarket.let { market ->
       if (market == null) {
+        d { "Stelios: inside subcompose" }
         PickMarketScreen(
           ctaButton = ctaButton,
-          onSubmit = submitMarketAndLanguage,
+          onSubmit = { // <- onclick
+            d { "Stelios: inside subcompose onclick" }
+            submitMarketAndLanguage()
+          },
           onSelectMarket = setMarket,
           onSelectLanguage = setLanguage,
           selectedMarket = state.market,
@@ -193,10 +191,14 @@ private fun MarketingScreen(
           enabled = state.canSetMarketAndLanguage(),
         )
       } else {
+        d { "Stelios: outside subcompose" }
         MarketPickedScreen(
           ctaButton = ctaButton,
           onClickMarket = onFlagClick,
-          onClickSignUp = { onClickSignUp(market) },
+          onClickSignUp = { // <- on click
+            d { "Stelios: outside subcompose onclick" }
+            onClickSignUp(market)
+          },
           onClickLogIn = { onClickLogIn(market) },
           flagRes = market.flag,
         )
