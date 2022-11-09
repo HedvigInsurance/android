@@ -36,7 +36,7 @@ jobs:
           SHAKE_CLIENT_SECRET: ${{ secrets.SHAKE_CLIENT_SECRET }}
       - name: Unit tests
         run: ./gradlew testDebugUnitTest
-      - uses: test-summary/action@v1
+      - uses: test-summary/action@v2
         with:
           paths: "app/build/test-results/testDebugUnitTest/**/TEST-*.xml"
         if: always()
