@@ -162,7 +162,7 @@ coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-androi
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 datadog-sdk = { module = "com.datadoghq:dd-sdk-android", version.ref = "datadog" }
-firebase-bom = "com.google.firebase:firebase-bom:30.5.0"
+firebase-bom = "com.google.firebase:firebase-bom:31.0.2"
 firebase-config = { module = "com.google.firebase:firebase-config" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 firebase-dynamicLinks = { module = "com.google.firebase:firebase-dynamic-links" }
