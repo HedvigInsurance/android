@@ -208,7 +208,6 @@ dependencies {
   implementation(libs.firebase.playServicesBase)
   implementation(libs.firebase.crashlytics)
   implementation(libs.firebase.dynamicLinks)
-  implementation(libs.firebase.config)
   implementation(libs.firebase.messaging)
 
   implementation(libs.koin.android)
