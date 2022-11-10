@@ -13,8 +13,6 @@ class MockMarketManager : MarketManager {
       mockedMarket = value
     }
 
-  override var hasSelectedMarket: Boolean = true
-
   companion object {
     var mockedMarket: Market? = null
     var mockedEnabledMarkets = Market.values().toList()

@@ -8,15 +8,16 @@ import com.hedvig.android.apollo.graphql.SwedishBankIdAuthMutation
 import com.hedvig.android.apollo.graphql.type.AuthState
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.app.feature.chat.data.UserRepository
+import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.hanalytics.HAnalytics
-import e
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import slimber.log.e
 
 class UserViewModel(
   private val userRepository: UserRepository,
@@ -25,6 +26,7 @@ class UserViewModel(
   private val hAnalytics: HAnalytics,
   private val featureManager: FeatureManager,
   private val pushTokenManager: PushTokenManager,
+  private val uploadMarketAndLanguagePreferencesUseCase: UploadMarketAndLanguagePreferencesUseCase,
 ) : ViewModel() {
 
   val autoStartToken = MutableLiveData<SwedishBankIdAuthMutation.Data>()
@@ -83,5 +85,6 @@ class UserViewModel(
     hAnalytics.loggedIn()
     featureManager.invalidateExperiments()
     loginStatusService.isLoggedIn = true
+    uploadMarketAndLanguagePreferencesUseCase.invoke()
   }
 }

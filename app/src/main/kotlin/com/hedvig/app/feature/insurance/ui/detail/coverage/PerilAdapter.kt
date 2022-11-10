@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
-import coil.load
 import com.hedvig.app.R
 import com.hedvig.app.databinding.CoveredAndExceptionHeaderBinding
 import com.hedvig.app.databinding.CoveredAndExceptionItemBinding
@@ -13,6 +12,7 @@ import com.hedvig.app.databinding.ExpandableBottomSheetTitleBinding
 import com.hedvig.app.databinding.PerilDescriptionBinding
 import com.hedvig.app.databinding.PerilIconBinding
 import com.hedvig.app.databinding.PerilParagraphBinding
+import com.hedvig.app.ui.coil.load
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid

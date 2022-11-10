@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.marketing.ui
 
-import arrow.core.Either
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.isEqualTo
@@ -9,14 +8,12 @@ import assertk.assertions.isNotEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isTrue
 import assertk.assertions.prop
-import com.hedvig.android.apollo.graphql.UpdateLanguageMutation
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.app.feature.marketing.MarketingViewModel
 import com.hedvig.app.feature.marketing.data.GetInitialMarketPickerValuesUseCase
 import com.hedvig.app.feature.marketing.data.GetMarketingBackgroundUseCase
-import com.hedvig.app.feature.marketing.data.SubmitMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.feature.marketing.data.UpdateApplicationLanguageUseCase
 import com.hedvig.app.util.coroutines.MainCoroutineRule
 import com.hedvig.hanalytics.HAnalytics
@@ -34,7 +31,6 @@ class MarketingViewModelTest {
   private fun createMarketingViewModel(
     market: Market? = null,
     hAnalytics: HAnalytics = mockk(relaxed = true),
-    submitMarketAndLanguagePreferencesUseCase: SubmitMarketAndLanguagePreferencesUseCase = mockk(relaxed = true),
     getMarketingBackgroundUseCase: GetMarketingBackgroundUseCase = mockk(relaxed = true),
     updateApplicationLanguageUseCase: UpdateApplicationLanguageUseCase = mockk(relaxed = true),
     getInitialMarketPickerValuesUseCase: GetInitialMarketPickerValuesUseCase = mockk(relaxed = true),
@@ -42,7 +38,6 @@ class MarketingViewModelTest {
   ) = MarketingViewModel(
     market = market,
     hAnalytics = hAnalytics,
-    submitMarketAndLanguagePreferencesUseCase = submitMarketAndLanguagePreferencesUseCase,
     getMarketingBackgroundUseCase = getMarketingBackgroundUseCase,
     updateApplicationLanguageUseCase = updateApplicationLanguageUseCase,
     getInitialMarketPickerValuesUseCase = getInitialMarketPickerValuesUseCase,
@@ -131,19 +126,8 @@ class MarketingViewModelTest {
 
   @Test
   fun `when submitting market and language preferences, should transition to market picked`() = runTest {
-    val submitMarketAndLanguagePreferencesUseCase = mockk<SubmitMarketAndLanguagePreferencesUseCase>()
-    coEvery { submitMarketAndLanguagePreferencesUseCase.invoke() } returns Either.Right(
-      UpdateLanguageMutation.Data(
-        updateLanguage = true,
-        updatePickedLocale = UpdateLanguageMutation.UpdatePickedLocale(
-          acceptLanguage = "",
-        ),
-      ),
-    )
-
     val viewModel = createMarketingViewModel(
       market = null,
-      submitMarketAndLanguagePreferencesUseCase = submitMarketAndLanguagePreferencesUseCase,
     )
     advanceUntilIdle()
     viewModel.setMarket(Market.SE)

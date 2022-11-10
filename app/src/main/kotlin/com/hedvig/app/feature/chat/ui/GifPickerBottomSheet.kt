@@ -14,17 +14,17 @@ import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import e
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
+import slimber.log.e
 import java.util.concurrent.TimeUnit
 
 class GifPickerBottomSheet : BottomSheetDialogFragment() {
-  private val viewModel: ChatViewModel by sharedViewModel()
+  private val viewModel: ChatViewModel by activityViewModel()
   private val binding by viewBinding(SendGifDialogBinding::bind)
   private val imageLoader: ImageLoader by inject()
 

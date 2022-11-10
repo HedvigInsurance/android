@@ -10,6 +10,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import coil.ImageLoader
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
 import com.hedvig.app.databinding.HomeFragmentBinding
@@ -21,6 +22,7 @@ import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
+import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import com.hedvig.hanalytics.PaymentType
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
@@ -28,17 +30,18 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class HomeFragment : Fragment(R.layout.home_fragment) {
   private val viewModel: HomeViewModel by viewModel()
-  private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
+  private val loggedInViewModel: LoggedInViewModel by activityViewModel()
   private val binding by viewBinding(HomeFragmentBinding::bind)
   private var scroll = 0
   private val imageLoader: ImageLoader by inject()
   private val marketManager: MarketManager by inject()
   private val hAnalytics: HAnalytics by inject()
+  private val featureManager: FeatureManager by inject()
 
   private val registerForActivityResult: ActivityResultLauncher<Intent> =
     registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -62,7 +65,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
       onClaimDetailCardShown = viewModel::onClaimDetailCardShown,
       onPaymentCardShown = viewModel::onPaymentCardShown,
       onPaymentCardClicked = ::onPaymentCardClicked,
-      onStartClaimClicked = ::onStartClaimClicked
+      onStartClaimClicked = ::onStartClaimClicked,
     )
 
     binding.swipeToRefresh.setOnRefreshListener {
@@ -116,8 +119,9 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
 
   private fun onStartClaimClicked() {
     lifecycleScope.launch {
+      hAnalytics.beginClaim(AppScreen.HOME)
       startClaimsFlow(
-        hAnalytics = hAnalytics,
+        featureManager = featureManager,
         context = requireContext(),
         fragmentManager = parentFragmentManager,
         registerForResult = ::registerForResult,

@@ -56,9 +56,7 @@ class SimpleSignAuthenticationActivity : AppCompatActivity(R.layout.simple_sign_
     viewModel.events.observe(this) { event ->
       when (event) {
         SimpleSignAuthenticationViewModel.Event.LoadWebView -> showWebView()
-        SimpleSignAuthenticationViewModel.Event.Success -> {
-          goToLoggedIn()
-        }
+        SimpleSignAuthenticationViewModel.Event.Success -> goToLoggedIn()
         SimpleSignAuthenticationViewModel.Event.Error -> showError()
         SimpleSignAuthenticationViewModel.Event.CancelSignIn -> finishSignInActivity()
       }

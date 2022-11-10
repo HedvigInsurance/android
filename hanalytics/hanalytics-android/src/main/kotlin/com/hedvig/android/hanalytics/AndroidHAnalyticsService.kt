@@ -8,7 +8,6 @@ import com.hedvig.android.core.common.await
 import com.hedvig.android.core.datastore.DeviceIdDataStore
 import com.hedvig.hanalytics.HAnalytics
 import com.hedvig.hanalytics.HAnalyticsEvent
-import d
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext

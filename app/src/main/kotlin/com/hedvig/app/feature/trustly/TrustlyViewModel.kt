@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
-import e
 import kotlinx.coroutines.launch
+import slimber.log.e
 
 abstract class TrustlyViewModel : ViewModel() {
   protected val _data = MutableLiveData<String>()

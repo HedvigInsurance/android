@@ -9,8 +9,8 @@ import com.hedvig.app.feature.insurance.ui.detail.coverage.PerilAdapter
 import com.hedvig.app.feature.insurance.ui.detail.coverage.PerilModel
 import com.hedvig.app.ui.view.ExpandableBottomSheet
 import com.hedvig.app.util.extensions.dp
-import e
 import org.koin.android.ext.android.inject
+import slimber.log.e
 
 class PerilBottomSheet : ExpandableBottomSheet() {
 

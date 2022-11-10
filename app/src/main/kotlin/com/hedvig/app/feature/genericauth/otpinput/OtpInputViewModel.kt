@@ -3,6 +3,7 @@ package com.hedvig.app.feature.genericauth.otpinput
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.app.authenticate.AuthenticationTokenService
+import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,6 +17,7 @@ class OtpInputViewModel(
   private val authenticationTokenService: AuthenticationTokenService,
   private val sendOtpCodeUseCase: SendOtpCodeUseCase,
   private val reSendOtpCodeUseCase: ReSendOtpCodeUseCase,
+  private val uploadMarketAndLanguagePreferencesUseCase: UploadMarketAndLanguagePreferencesUseCase,
 ) : ViewModel() {
   private val _viewState = MutableStateFlow(ViewState(credential = credential))
   val viewState = _viewState.asStateFlow()
@@ -73,12 +75,13 @@ class OtpInputViewModel(
     }
   }
 
-  private fun OtpResult.Success.handleSuccess() {
+  private suspend fun OtpResult.Success.handleSuccess() {
     authenticationTokenService.authenticationToken = authToken
     _events.trySend(Event.Success(authToken))
     _viewState.update {
       it.copy(loadingCode = false)
     }
+    uploadMarketAndLanguagePreferencesUseCase.invoke()
   }
 
   private fun ResendOtpResult.Success.handleSuccess() {

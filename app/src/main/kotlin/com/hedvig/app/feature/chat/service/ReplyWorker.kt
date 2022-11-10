@@ -6,9 +6,9 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.hedvig.android.core.common.android.whenApiVersion
 import com.hedvig.app.feature.chat.data.ChatRepository
-import e
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import slimber.log.e
 
 class ReplyWorker(
   private val context: Context,

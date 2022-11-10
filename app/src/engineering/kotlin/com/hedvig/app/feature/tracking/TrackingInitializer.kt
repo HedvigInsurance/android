@@ -4,9 +4,9 @@ import android.content.Context
 import androidx.startup.Initializer
 import com.hedvig.android.hanalytics.engineering.tracking.TrackingShortcutService
 import com.hedvig.app.feature.di.KoinInitializer
-import d
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import slimber.log.d
 
 class TrackingInitializer : Initializer<Unit> {
   override fun create(context: Context) {

@@ -19,11 +19,11 @@ import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
-  private val insuranceViewModel: InsuranceViewModel by sharedViewModel()
-  private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
+  private val insuranceViewModel: InsuranceViewModel by activityViewModel()
+  private val loggedInViewModel: LoggedInViewModel by activityViewModel()
   private val marketManager: MarketManager by inject()
   private val imageLoader: ImageLoader by inject()
   private val binding by viewBinding(FragmentInsuranceBinding::bind)

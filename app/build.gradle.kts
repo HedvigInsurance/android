@@ -29,7 +29,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "7.3.1"
+    versionName = "8.0.0"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -208,7 +208,6 @@ dependencies {
   implementation(libs.firebase.playServicesBase)
   implementation(libs.firebase.crashlytics)
   implementation(libs.firebase.dynamicLinks)
-  implementation(libs.firebase.config)
   implementation(libs.firebase.messaging)
 
   implementation(libs.koin.android)
@@ -223,9 +222,9 @@ dependencies {
   implementation(libs.svg)
 
   implementation(libs.coil.coil)
-  implementation(libs.coil.svg)
-  implementation(libs.coil.gif)
   implementation(libs.coil.compose)
+  implementation(libs.coil.gif)
+  implementation(libs.coil.svg)
 
   implementation(libs.tooltip)
 

@@ -8,8 +8,8 @@ import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
-import e
 import kotlinx.coroutines.launch
+import slimber.log.e
 
 abstract class AdyenConnectPayinViewModel : ViewModel() {
   protected val _paymentMethods = MutableLiveData<PaymentMethodsApiResponse>()

@@ -12,10 +12,10 @@ import com.google.android.material.transition.MaterialSharedAxis
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 class ErrorFragment : Fragment() {
-  private val viewModel: SimpleSignAuthenticationViewModel by sharedViewModel()
+  private val viewModel: SimpleSignAuthenticationViewModel by activityViewModel()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)

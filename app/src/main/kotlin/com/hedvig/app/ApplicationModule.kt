@@ -118,8 +118,8 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInViewModelImpl
 import com.hedvig.app.feature.marketing.MarketingViewModel
 import com.hedvig.app.feature.marketing.data.GetInitialMarketPickerValuesUseCase
 import com.hedvig.app.feature.marketing.data.GetMarketingBackgroundUseCase
-import com.hedvig.app.feature.marketing.data.SubmitMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.feature.marketing.data.UpdateApplicationLanguageUseCase
+import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.feature.marketpicker.LanguageRepository
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferViewModel
@@ -183,7 +183,6 @@ import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.NetworkCacheManager
 import com.hedvig.app.util.apollo.ReopenSubscriptionException
 import com.hedvig.app.util.apollo.SunsettingInterceptor
-import i
 import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -192,6 +191,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.parameter.ParametersHolder
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import slimber.log.i
 import timber.log.Timber
 import java.io.File
 import java.time.Clock
@@ -311,7 +311,7 @@ val viewModelModule = module {
   viewModel { ClaimsViewModel(get(), get()) }
   viewModel { ChatViewModel(get(), get(), get(), get(), get(), get()) }
   viewModel { (quoteCartId: QuoteCartId?) -> RedeemCodeViewModel(quoteCartId, get(), get()) }
-  viewModel { UserViewModel(get(), get(), get(), get(), get(), get()) }
+  viewModel { UserViewModel(get(), get(), get(), get(), get(), get(), get()) }
   viewModel { WelcomeViewModel(get()) }
   viewModel {
     SettingsViewModel(
@@ -320,7 +320,9 @@ val viewModelModule = module {
     )
   }
   viewModel { DatePickerViewModel() }
-  viewModel { params -> SimpleSignAuthenticationViewModel(params.get(), get(), get(), get(), get(), get(), get()) }
+  viewModel { params ->
+    SimpleSignAuthenticationViewModel(params.get(), get(), get(), get(), get(), get(), get(), get())
+  }
   viewModel { (data: MultiActionParams) -> MultiActionViewModel(data) }
   viewModel { (componentState: MultiActionItem.Component?, multiActionParams: MultiActionParams) ->
     AddComponentViewModel(
@@ -347,6 +349,7 @@ val viewModelModule = module {
       get(),
       get(),
       get(),
+      get(),
     )
   }
   viewModel { parametersHolder: ParametersHolder ->
@@ -368,7 +371,7 @@ val viewModelModule = module {
   viewModel { TooltipViewModel(get()) }
   viewModel { MyInfoViewModel(get()) }
   viewModel { AboutAppViewModel(get()) }
-  viewModel { MarketingViewModel(get<MarketManager>().market, get(), get(), get(), get(), get(), get()) }
+  viewModel { MarketingViewModel(get<MarketManager>().market, get(), get(), get(), get(), get()) }
 }
 
 val onboardingModule = module {
@@ -570,9 +573,8 @@ val useCaseModule = module {
   single<GetFinalDanishAddressSelectionUseCase> { GetFinalDanishAddressSelectionUseCase(get()) }
   single { CreateQuoteCartUseCase(get(), get(), get()) }
   single {
-    SubmitMarketAndLanguagePreferencesUseCase(
+    UploadMarketAndLanguagePreferencesUseCase(
       apolloClient = get(),
-      marketManager = get(),
       languageService = get(),
     )
   }

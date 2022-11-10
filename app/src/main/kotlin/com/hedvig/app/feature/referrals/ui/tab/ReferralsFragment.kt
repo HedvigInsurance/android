@@ -29,15 +29,15 @@ import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewLifecycle
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import e
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import slimber.log.e
 
 class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
-  private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
+  private val loggedInViewModel: LoggedInViewModel by activityViewModel()
   private val referralsViewModel: ReferralsViewModel by viewModel()
   private val marketManager: MarketManager by inject()
   private val languageService: LanguageService by inject()

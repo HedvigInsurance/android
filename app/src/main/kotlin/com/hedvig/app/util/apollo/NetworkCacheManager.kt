@@ -2,8 +2,8 @@ package com.hedvig.app.util.apollo
 
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.cache.normalized.apolloStore
-import d
-import e
+import slimber.log.d
+import slimber.log.e
 
 class NetworkCacheManager(
   private val apolloClient: ApolloClient,

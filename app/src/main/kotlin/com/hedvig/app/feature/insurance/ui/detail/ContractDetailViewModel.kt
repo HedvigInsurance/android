@@ -6,10 +6,10 @@ import arrow.core.Either
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
-import e
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import slimber.log.e
 
 abstract class ContractDetailViewModel : ViewModel() {
   sealed class ViewState {

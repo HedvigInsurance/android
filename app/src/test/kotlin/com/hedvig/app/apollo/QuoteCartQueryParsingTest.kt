@@ -1,4 +1,4 @@
-@file:OptIn(ApolloExperimental::class, ApolloExperimental::class)
+@file:OptIn(ApolloExperimental::class)
 
 package com.hedvig.app.apollo
 
@@ -9,8 +9,11 @@ import com.apollographql.apollo3.annotations.ApolloExperimental
 import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.mockserver.enqueue
 import com.hedvig.android.apollo.graphql.QuoteCartQuery
-import com.hedvig.android.apollo.graphql.test.QuoteCartQuery_TestBuilder.Data
 import com.hedvig.android.apollo.graphql.type.Locale
+import com.hedvig.android.apollo.graphql.type.buildAdyen
+import com.hedvig.android.apollo.graphql.type.buildPaymentConnection
+import com.hedvig.android.apollo.graphql.type.buildQuoteCart
+import org.json.JSONObject
 import org.junit.Test
 
 @Suppress("LocalVariableName")
@@ -84,14 +87,18 @@ class QuoteCartQueryParsingTest {
   @Test
   fun `apollo parses an quote cart query with availablePaymentMethods being a string`() =
     runApolloTest { mockServer, apolloClient ->
-      val jsonData = QuoteCartQuery.Data(TestDataTestResolver) {
-        quoteCart = quoteCart {
-          paymentConnection = paymentConnection {
+      val jsonData = QuoteCartQuery.Data(TestFakeResolver) {
+        quoteCart = buildQuoteCart {
+          paymentConnection = buildPaymentConnection {
             providers = listOf(
-              adyenProvider {
-                availablePaymentMethods = """
-                                |{"paymentMethods":[{"brands":["visadankort","mc","visa"],"details":[{"key":"encryptedCardNumber","type":"cardToken"},{"key":"encryptedSecurityCode","type":"cardToken"},{"key":"encryptedExpiryMonth","type":"cardToken"},{"key":"encryptedExpiryYear","type":"cardToken"},{"key":"holderName","optional":true,"type":"text"}],"name":"Credit Card","type":"scheme"},{"configuration":{"merchantId":"50","gatewayMerchantId":"HEDVIG-DK"},"details":[{"key":"paywithgoogle.token","type":"payWithGoogleToken"}],"name":"Google Pay","type":"paywithgoogle"}]}
-                """.trimMargin()
+              buildAdyen {
+                availablePaymentMethods = PaymentMethodsApiResponse.SERIALIZER.deserialize(
+                  JSONObject(
+                    """
+                    |{"paymentMethods":[{"brands":["visadankort","mc","visa"],"details":[{"key":"encryptedCardNumber","type":"cardToken"},{"key":"encryptedSecurityCode","type":"cardToken"},{"key":"encryptedExpiryMonth","type":"cardToken"},{"key":"encryptedExpiryYear","type":"cardToken"},{"key":"holderName","optional":true,"type":"text"}],"name":"Credit Card","type":"scheme"},{"configuration":{"merchantId":"50","gatewayMerchantId":"HEDVIG-DK"},"details":[{"key":"paywithgoogle.token","type":"payWithGoogleToken"}],"name":"Google Pay","type":"paywithgoogle"}]}
+                    """.trimMargin(),
+                  ),
+                )
               },
             )
           }

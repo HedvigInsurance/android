@@ -19,10 +19,10 @@ import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.dismissKeyboard
 import com.hedvig.app.util.extensions.viewBinding
-import e
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import slimber.log.e
 
 class ReferralsEditCodeActivity : AppCompatActivity(R.layout.activity_referrals_edit_code) {
   private val binding by viewBinding(ActivityReferralsEditCodeBinding::bind)

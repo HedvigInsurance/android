@@ -13,9 +13,9 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.app.R
 import com.hedvig.app.feature.adyen.AdyenCurrency
 import com.hedvig.app.isDebug
-import e
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import slimber.log.e
 
 /**
  * Hedvig paying to member

@@ -40,7 +40,6 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.applyInsetter
-import e
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -48,6 +47,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import slimber.log.e
 import java.io.File
 import java.io.IOException
 
@@ -374,7 +374,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
         currentPhotoPath = absolutePath
       }
     } catch (ex: IOException) {
-      e { "Error occurred while creating the photo file" }
+      e(ex) { "Error occurred while creating the photo file" }
       null
     }
 
