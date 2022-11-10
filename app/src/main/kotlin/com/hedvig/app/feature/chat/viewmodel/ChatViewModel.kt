@@ -324,7 +324,7 @@ class ChatViewModel(
       authenticationTokenService.authenticationToken = null
       val response = runCatching { userRepository.logout() }
       if (response.isFailure) {
-        response.exceptionOrNull()?.let { e { "$it Failed to log out" } }
+        response.exceptionOrNull()?.let { e(it) { "$it Failed to log out" } }
         _events.trySend(Event.Error)
       }
       apolloClient.reconnectSubscriptions()

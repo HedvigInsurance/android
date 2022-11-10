@@ -51,7 +51,7 @@ class LegacyReactDatabaseSupplier private constructor(private val context: Conte
     }
     if (database == null) {
       lastSQLiteException?.let {
-        e { "$it database could not be created :(" }
+        e(it) { "$it database could not be created :(" }
       } ?: e { "database could not be created and lastSQLiteException :crying_sad_face:" }
     }
 

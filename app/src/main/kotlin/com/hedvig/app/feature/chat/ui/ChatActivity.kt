@@ -374,7 +374,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
         currentPhotoPath = absolutePath
       }
     } catch (ex: IOException) {
-      e { "Error occurred while creating the photo file" }
+      e(ex) { "Error occurred while creating the photo file" }
       null
     }
 

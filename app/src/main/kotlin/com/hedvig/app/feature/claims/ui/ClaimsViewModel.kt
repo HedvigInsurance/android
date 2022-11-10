@@ -35,7 +35,7 @@ class ClaimsViewModel(
     viewModelScope.launch {
       val response = runCatching { claimsRepository.fetchCommonClaims() }
       if (response.isFailure) {
-        response.exceptionOrNull()?.let { e { "$it Failed to fetch claims data" } }
+        response.exceptionOrNull()?.let { e(it) { "$it Failed to fetch claims data" } }
         return@launch
       }
       response.getOrNull()?.data?.let(data::postValue)

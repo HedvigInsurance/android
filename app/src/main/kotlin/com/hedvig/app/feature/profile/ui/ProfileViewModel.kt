@@ -75,7 +75,7 @@ class ProfileViewModel(
         val response =
           runCatching { profileRepository.updateEmail(emailInput) }
         if (response.isFailure) {
-          response.exceptionOrNull()?.let { e { "$it error updating email" } }
+          response.exceptionOrNull()?.let { e(it) { "$it error updating email" } }
           return@launch
         }
         response.getOrNull()?.let {
@@ -88,7 +88,7 @@ class ProfileViewModel(
           profileRepository.updatePhoneNumber(phoneNumberInput)
         }
         if (response.isFailure) {
-          response.exceptionOrNull()?.let { e { "$it error updating phone number" } }
+          response.exceptionOrNull()?.let { e(it) { "$it error updating phone number" } }
           return@launch
         }
         response.getOrNull()?.let {
