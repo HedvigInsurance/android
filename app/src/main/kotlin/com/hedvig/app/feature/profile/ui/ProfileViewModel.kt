@@ -9,7 +9,6 @@ import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.feature.profile.ui.tab.ProfileQueryDataToProfileUiStateMapper
 import com.hedvig.app.feature.profile.ui.tab.ProfileUiState
-import e
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,6 +17,7 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import slimber.log.e
 import kotlin.time.Duration.Companion.seconds
 
 class ProfileViewModel(

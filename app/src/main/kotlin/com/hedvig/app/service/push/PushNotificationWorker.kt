@@ -13,10 +13,10 @@ import com.hedvig.android.apollo.graphql.RegisterPushTokenMutation
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.app.authenticate.AuthenticationTokenService
-import e
-import i
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import slimber.log.e
+import slimber.log.i
 
 class PushNotificationWorker(
   context: Context,

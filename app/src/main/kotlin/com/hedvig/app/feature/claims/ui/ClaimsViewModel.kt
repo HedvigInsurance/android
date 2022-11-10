@@ -7,10 +7,10 @@ import arrow.core.Either
 import com.hedvig.android.apollo.graphql.CommonClaimQuery
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.claims.data.ClaimsRepository
-import e
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import slimber.log.e
 
 class ClaimsViewModel(
   private val claimsRepository: ClaimsRepository,

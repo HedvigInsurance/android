@@ -6,7 +6,7 @@ import com.hedvig.android.apollo.graphql.type.TypeOfContract
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.language.LanguageService
-import e
+import slimber.log.e
 
 interface GetCrossSellsContractTypesUseCase {
   suspend fun invoke(): Set<TypeOfContract>

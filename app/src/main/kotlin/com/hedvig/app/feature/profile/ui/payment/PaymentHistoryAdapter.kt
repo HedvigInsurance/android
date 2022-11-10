@@ -14,7 +14,7 @@ import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.viewBinding
-import e
+import slimber.log.e
 
 class PaymentHistoryAdapter(
   private val marketManager: MarketManager,

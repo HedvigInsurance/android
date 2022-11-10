@@ -7,8 +7,8 @@ import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.hedvig.android.apollo.graphql.LoggedInQuery
 import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
-import e
 import kotlinx.coroutines.launch
+import slimber.log.e
 
 abstract class ReferralsActivatedViewModel : ViewModel() {
   abstract val data: LiveData<LoggedInQuery.Data>

@@ -5,8 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.apollo.graphql.WelcomeQuery
-import e
 import kotlinx.coroutines.launch
+import slimber.log.e
 
 class WelcomeViewModel(
   private val welcomeRepository: WelcomeRepository,

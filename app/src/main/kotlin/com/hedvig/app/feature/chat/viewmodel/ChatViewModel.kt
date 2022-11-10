@@ -18,7 +18,6 @@ import com.hedvig.app.util.LiveEvent
 import com.hedvig.app.util.apollo.reconnectSubscriptions
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
-import e
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -30,6 +29,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import slimber.log.e
 import java.util.concurrent.TimeUnit
 
 class ChatViewModel(

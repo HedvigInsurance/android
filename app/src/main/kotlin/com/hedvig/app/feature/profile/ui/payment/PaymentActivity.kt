@@ -20,11 +20,11 @@ import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.safeLet
 import com.hedvig.hanalytics.PaymentType
-import e
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import slimber.log.e
 import java.time.format.DateTimeFormatter
 
 class PaymentActivity : AppCompatActivity(R.layout.activity_payment) {

@@ -23,7 +23,6 @@ import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import e
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
@@ -32,6 +31,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
+import slimber.log.e
 
 class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
   private val viewModel: EmbarkViewModel by activityViewModel()

@@ -11,13 +11,13 @@ import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.hanalytics.HAnalytics
-import e
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import slimber.log.e
 
 class UserViewModel(
   private val userRepository: UserRepository,

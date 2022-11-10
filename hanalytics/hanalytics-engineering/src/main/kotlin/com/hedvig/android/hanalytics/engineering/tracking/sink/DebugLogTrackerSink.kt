@@ -3,7 +3,7 @@ package com.hedvig.android.hanalytics.engineering.tracking.sink
 import com.hedvig.android.core.common.android.toJsonObject
 import com.hedvig.android.hanalytics.HAnalyticsSink
 import com.hedvig.hanalytics.HAnalyticsEvent
-import d
+import slimber.log.d
 
 /**
  * Sink to assist in seeing where in the app you are navigating while testing and which events are triggered

@@ -15,8 +15,8 @@ import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import d
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
+import slimber.log.d
 
 class PreviousInsurerFragment : Fragment(R.layout.previous_or_external_insurer_fragment) {
 
