@@ -10,8 +10,8 @@ import com.hedvig.app.databinding.ConnectPaymentExplainerFragmentBinding
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.onBackPressedCallback
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import e
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
+import slimber.log.e
 
 class PostSignExplainerFragment : Fragment(R.layout.connect_payment_explainer_fragment) {
   private val viewModel: ConnectPaymentViewModel by activityViewModel()

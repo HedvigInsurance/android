@@ -183,7 +183,6 @@ import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.NetworkCacheManager
 import com.hedvig.app.util.apollo.ReopenSubscriptionException
 import com.hedvig.app.util.apollo.SunsettingInterceptor
-import i
 import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -192,6 +191,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.parameter.ParametersHolder
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import slimber.log.i
 import timber.log.Timber
 import java.io.File
 import java.time.Clock

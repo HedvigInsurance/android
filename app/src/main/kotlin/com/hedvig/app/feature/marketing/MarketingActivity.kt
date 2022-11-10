@@ -32,10 +32,10 @@ import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationActivity
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.hanalytics.LoginMethod
-import e
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.getViewModel
+import slimber.log.e
 
 class MarketingActivity : AppCompatActivity() {
   private val languageService: LanguageService by inject()

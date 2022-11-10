@@ -7,13 +7,13 @@ import com.hedvig.android.apollo.graphql.AuthStatusSubscription
 import com.hedvig.android.apollo.graphql.type.AuthState
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.apollo.toSafeFlow
-import d
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
+import slimber.log.d
 import kotlin.time.Duration.Companion.seconds
 
 class SubscribeToAuthResultUseCase(

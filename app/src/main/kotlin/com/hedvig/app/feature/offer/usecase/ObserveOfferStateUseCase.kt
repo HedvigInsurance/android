@@ -11,10 +11,10 @@ import com.hedvig.app.feature.offer.model.QuoteBundleVariant
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import com.hedvig.app.util.ErrorMessage
-import e
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
+import slimber.log.e
 
 class ObserveOfferStateUseCase(
   private val offerRepository: OfferRepository,

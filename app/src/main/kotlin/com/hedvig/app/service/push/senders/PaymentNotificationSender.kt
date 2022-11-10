@@ -1,7 +1,10 @@
 package com.hedvig.app.service.push.senders
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
@@ -14,10 +17,10 @@ import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.getImmutablePendingIntentFlags
-import e
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import slimber.log.e
 
 class PaymentNotificationSender(
   private val context: Context,

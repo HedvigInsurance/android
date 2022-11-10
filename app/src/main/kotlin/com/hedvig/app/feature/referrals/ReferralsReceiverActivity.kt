@@ -14,8 +14,8 @@ import com.hedvig.app.feature.offer.usecase.CampaignCode
 import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeViewModel
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
-import e
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import slimber.log.e
 
 class ReferralsReceiverActivity : AppCompatActivity(R.layout.referrals_receiver_activity) {
   private val binding by viewBinding(ReferralsReceiverActivityBinding::bind)

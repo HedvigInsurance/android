@@ -9,7 +9,7 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentEmbarkNoActionBinding
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import e
+import slimber.log.e
 
 class NoActionFragment : Fragment(R.layout.fragment_embark_no_action) {
   private val binding by viewBinding(FragmentEmbarkNoActionBinding::bind)

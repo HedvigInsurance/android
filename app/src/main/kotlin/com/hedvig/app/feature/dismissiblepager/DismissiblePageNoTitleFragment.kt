@@ -10,8 +10,8 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.DismissiblePageNoTitleFragmentBinding
 import com.hedvig.app.ui.coil.load
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import e
 import org.koin.android.ext.android.inject
+import slimber.log.e
 
 class DismissiblePageNoTitleFragment : Fragment(R.layout.dismissible_page_no_title_fragment) {
   private val imageLoader: ImageLoader by inject()

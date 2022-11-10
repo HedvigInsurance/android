@@ -6,8 +6,8 @@ import arrow.core.Either
 import com.hedvig.android.apollo.graphql.WhatsNewQuery
 import com.hedvig.android.apollo.toEither
 import com.hedvig.app.util.LiveEvent
-import e
 import kotlinx.coroutines.launch
+import slimber.log.e
 
 abstract class WhatsNewViewModel : ViewModel() {
   val news = LiveEvent<WhatsNewQuery.Data>()

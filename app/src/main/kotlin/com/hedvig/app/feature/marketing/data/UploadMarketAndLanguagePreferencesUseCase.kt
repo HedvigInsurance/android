@@ -6,8 +6,8 @@ import com.hedvig.android.apollo.graphql.type.Locale
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.language.LanguageService
-import e
-import i
+import slimber.log.e
+import slimber.log.i
 
 class UploadMarketAndLanguagePreferencesUseCase(
   private val apolloClient: ApolloClient,

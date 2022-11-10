@@ -41,8 +41,8 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.safeLet
-import e
 import org.javamoney.moneta.Money
+import slimber.log.e
 
 class ReferralsAdapter(
   private val reload: () -> Unit,

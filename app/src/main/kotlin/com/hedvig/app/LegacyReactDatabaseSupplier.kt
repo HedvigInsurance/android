@@ -5,7 +5,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
-import e
+import slimber.log.e
 
 class LegacyReactDatabaseSupplier private constructor(private val context: Context) :
   SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
@@ -51,7 +51,7 @@ class LegacyReactDatabaseSupplier private constructor(private val context: Conte
     }
     if (database == null) {
       lastSQLiteException?.let {
-        e { "$it database could not be created :(" }
+        e(it) { "$it database could not be created :(" }
       } ?: e { "database could not be created and lastSQLiteException :crying_sad_face:" }
     }
 

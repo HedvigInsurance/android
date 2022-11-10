@@ -24,12 +24,12 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.viewBinding
-import e
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import slimber.log.e
 
 class EmergencyActivity : AppCompatActivity(R.layout.activity_emergency) {
   private val claimsViewModel: ClaimsViewModel by viewModel()
