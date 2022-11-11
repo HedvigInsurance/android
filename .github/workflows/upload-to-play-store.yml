@@ -60,7 +60,7 @@ jobs:
         env:
           BUILD_TOOLS_VERSION: "30.0.2"
       - name: Deploy to Play Store Internal-track
-        uses: r0adkll/upload-google-play@v1.0.17
+        uses: r0adkll/upload-google-play@v1.0.19
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
           packageName: com.hedvig.app
