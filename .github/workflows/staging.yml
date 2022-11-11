@@ -56,7 +56,7 @@ jobs:
           BUILD_TOOLS_VERSION: "30.0.2"
       - uses: wzieba/Firebase-Distribution-Github-Action@v1.4.0
         with:
-          token: ${{ secrets.FIREBASE_STAGING_TOKEN }}
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_CREDENTIALS_FILE_CONTENT }}
           appId: ${{ secrets.FIREBASE_STAGING_APP_ID }}
           file: ${{ steps.sign_app.outputs.signedReleaseFile }}
           groups: android-testers
