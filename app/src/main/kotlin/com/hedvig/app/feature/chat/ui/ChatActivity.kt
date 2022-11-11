@@ -197,14 +197,11 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
     binding.settings.setHapticClickListener {
       startActivity(SettingsActivity.newInstance(this))
     }
-
-    if (intent?.extras?.getBoolean(EXTRA_SHOW_CLOSE, false) == true) {
-      binding.close.setOnClickListener {
-        onBackPressed()
-      }
-      binding.close.contentDescription = getString(hedvig.resources.R.string.CHAT_CLOSE_DESCRIPTION)
-      binding.close.show()
+    binding.close.setOnClickListener {
+      onBackPressed()
     }
+    binding.close.contentDescription = getString(hedvig.resources.R.string.CHAT_CLOSE_DESCRIPTION)
+    binding.close.show()
   }
 
   private fun initializeKeyboardVisibilityHandler() {
@@ -453,9 +450,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
   override fun finish() {
     super.finish()
     chatViewModel.onChatClosed()
-    if (intent.getBooleanExtra(EXTRA_SHOW_CLOSE, false)) {
-      overridePendingTransition(R.anim.stay_in_place, R.anim.chat_slide_down_out)
-    }
+    overridePendingTransition(R.anim.stay_in_place, R.anim.chat_slide_down_out)
   }
 
   override fun onDestroy() {
@@ -469,8 +464,6 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
     private const val REQUEST_CAMERA_PERMISSION = 54332
 
     private const val TAKE_PICTURE_REQUEST_CODE = 2371
-
-    const val EXTRA_SHOW_CLOSE = "extra_show_close"
 
     const val ACTIVITY_IS_IN_FOREGROUND = "chat_activity_is_in_foreground"
   }
