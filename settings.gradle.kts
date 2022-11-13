@@ -1,22 +1,13 @@
-import org.gradle.internal.credentials.DefaultPasswordCredentials
-
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
+@Suppress("UnstableApiUsage")
 pluginManagement {
-  @Suppress("UnstableApiUsage")
   includeBuild("build-logic")
-  @Suppress("UnstableApiUsage")
   includeBuild("lokalise-gradle-plugin")
   repositories {
     google()
-    mavenCentral()
-    maven {
-      url = uri("https://jitpack.io")
-    }
+    maven("https://jitpack.io")
     gradlePluginPortal()
-    maven {
-      url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-    }
   }
 }
 
@@ -27,16 +18,10 @@ dependencyResolutionManagement {
   repositories {
     google()
     mavenCentral()
-    maven {
-      url = uri("https://jitpack.io")
-    }
-    maven {
-      url = uri("https://jitpack.io")
-      name = "odysseyRepository"
+    maven("https://jitpack.io")
+    maven("https://maven.pkg.github.com/HedvigInsurance/odyssey") {
+      name = "odyssey"
       credentials(PasswordCredentials::class)
-    }
-    maven {
-      url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
     }
   }
 }
