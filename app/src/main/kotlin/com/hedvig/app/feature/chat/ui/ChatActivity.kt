@@ -18,9 +18,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
 import com.hedvig.android.apollo.graphql.ChatMessagesQuery
+import com.hedvig.android.auth.AuthenticationTokenService
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.app.R
-import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.databinding.ActivityChatBinding
 import com.hedvig.app.feature.chat.ChatInputType
 import com.hedvig.app.feature.chat.ParagraphInput
@@ -91,6 +91,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
           ChatViewModel.Event.Restart -> {
             triggerRestartActivity(ChatActivity::class.java)
           }
+
           is ChatViewModel.Event.Error -> showAlert(
             title = com.adyen.checkout.dropin.R.string.error_dialog_title,
             message = com.adyen.checkout.dropin.R.string.component_error,
@@ -437,10 +438,12 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
         if ((grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED })) {
           openAttachPicker()
         }
+
       REQUEST_CAMERA_PERMISSION ->
         if ((grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED })) {
           startTakePicture()
         }
+
       else -> {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
       }

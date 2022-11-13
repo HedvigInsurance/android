@@ -2,7 +2,7 @@ package com.hedvig.app.feature.genericauth.otpinput
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.app.authenticate.AuthenticationTokenService
+import com.hedvig.android.auth.AuthenticationTokenService
 import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
