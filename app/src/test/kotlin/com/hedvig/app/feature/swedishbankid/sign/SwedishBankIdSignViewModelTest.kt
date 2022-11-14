@@ -33,7 +33,7 @@ class SwedishBankIdSignViewModelTest {
 
   @Test
   fun `a successful bankId sign and a successful access token call result in success`() = runTest {
-    val loginStatusService = FakeLoginStatusService(isViewingOffer = true)
+    val loginStatusService = FakeLoginStatusService()
     val viewModel = SwedishBankIdSignViewModel(
       QuoteCartId(""),
       loginStatusService,
@@ -81,14 +81,13 @@ class SwedishBankIdSignViewModelTest {
     assertThat(viewState).isEqualTo(BankIdSignViewState.Success)
 
     assertThat(loginStatusService.isLoggedIn).isEqualTo(true)
-    assertThat(loginStatusService.isViewingOffer).isEqualTo(false)
 
     collectingJob.cancelAndJoin()
   }
 
   @Test
   fun `a delayed successful bankId sign and a successful access token call result in success`() = runTest {
-    val loginStatusService = FakeLoginStatusService(isViewingOffer = true)
+    val loginStatusService = FakeLoginStatusService()
     val viewModel = SwedishBankIdSignViewModel(
       QuoteCartId(""),
       loginStatusService,
@@ -140,14 +139,13 @@ class SwedishBankIdSignViewModelTest {
     assertThat(viewState).isEqualTo(BankIdSignViewState.Success)
 
     assertThat(loginStatusService.isLoggedIn).isEqualTo(true)
-    assertThat(loginStatusService.isViewingOffer).isEqualTo(false)
 
     collectingJob.cancelAndJoin()
   }
 
   @Test
   fun `not opening the bankID app on this device still allows the singing flow to continue`() = runTest {
-    val loginStatusService = FakeLoginStatusService(isViewingOffer = true)
+    val loginStatusService = FakeLoginStatusService()
     val viewModel = SwedishBankIdSignViewModel(
       QuoteCartId(""),
       loginStatusService,
@@ -191,14 +189,13 @@ class SwedishBankIdSignViewModelTest {
     assertThat(viewState).isEqualTo(BankIdSignViewState.Success)
 
     assertThat(loginStatusService.isLoggedIn).isEqualTo(true)
-    assertThat(loginStatusService.isViewingOffer).isEqualTo(false)
 
     collectingJob.cancelAndJoin()
   }
 
   @Test
   fun `a successful bankId sign and a failed access token call result in failure`() = runTest {
-    val loginStatusService = FakeLoginStatusService(isViewingOffer = true)
+    val loginStatusService = FakeLoginStatusService()
     val viewModel = SwedishBankIdSignViewModel(
       QuoteCartId(""),
       loginStatusService,
@@ -236,14 +233,13 @@ class SwedishBankIdSignViewModelTest {
     assertThat(viewState).isInstanceOf(BankIdSignViewState.Error::class)
 
     assertThat(loginStatusService.isLoggedIn).isEqualTo(false)
-    assertThat(loginStatusService.isViewingOffer).isEqualTo(true)
 
     collectingJob.cancelAndJoin()
   }
 
   @Test
   fun `a failed bankId sign fails immediately`() = runTest {
-    val loginStatusService = FakeLoginStatusService(isViewingOffer = true)
+    val loginStatusService = FakeLoginStatusService()
     val viewModel = SwedishBankIdSignViewModel(
       QuoteCartId(""),
       loginStatusService,
@@ -277,7 +273,6 @@ class SwedishBankIdSignViewModelTest {
       .isEqualTo("Some Status Text")
 
     assertThat(loginStatusService.isLoggedIn).isEqualTo(false)
-    assertThat(loginStatusService.isViewingOffer).isEqualTo(true)
 
     collectingJob.cancelAndJoin()
   }
