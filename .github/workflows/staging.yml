@@ -12,7 +12,7 @@ jobs:
       - name: Copy CI gradle.properties
         run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
       - name: Add GitHub Packages auth
-        run: ./ci-github-packages-properties.sh
+        run: ./scripts/ci-github-packages-properties.sh
       - name: Setup JDK 11
         uses: actions/setup-java@v3.4.1
         with:
@@ -29,7 +29,7 @@ jobs:
           gradlePath: app/build.gradle.kts
           versionCode: ${{ env.VERSION_CODE }}
       - name: Prebuild
-        run: ./ci-staging-prebuild.sh
+        run: ./scripts/ci-staging-prebuild.sh
         env:
           LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
