@@ -14,6 +14,7 @@ import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.hedvig.android.core.common.preferences.PreferenceKey
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
@@ -51,6 +52,7 @@ class SettingsActivity : AppCompatActivity(R.layout.activity_settings) {
     private val marketManager: MarketManager by inject()
     private val userViewModel: UserViewModel by activityViewModel()
     private val viewModel: SettingsViewModel by activityViewModel()
+    private val languageService: LanguageService by inject()
 
     @SuppressLint("ApplySharedPref")
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -75,6 +77,9 @@ class SettingsActivity : AppCompatActivity(R.layout.activity_settings) {
         .launchIn(lifecycleScope)
 
       val market = marketManager.market
+      if (market == null) {
+        startActivity(MarketingActivity.newInstance(requireContext()))
+      }
 
       val themePreference = findPreference<ListPreference>(SETTING_THEME)
       themePreference?.let { tp ->
@@ -92,9 +97,6 @@ class SettingsActivity : AppCompatActivity(R.layout.activity_settings) {
       }
 
       val marketPreference = findPreference<Preference>(SETTINGS_MARKET)
-      if (market == null) {
-        startActivity(MarketingActivity.newInstance(requireContext()))
-      }
       marketPreference?.let { mp ->
         mp.icon = market?.flag?.let { requireContext().compatDrawable(it) }
         mp.summary = market?.label?.let { getString(it) }
@@ -112,6 +114,7 @@ class SettingsActivity : AppCompatActivity(R.layout.activity_settings) {
 
       val languagePreference = findPreference<ListPreference>(PreferenceKey.SETTING_LANGUAGE)
       languagePreference?.let { lp ->
+        lp.value = languageService.getLanguage().toString()
         when (market) {
           Market.SE -> {
             lp.entries = resources.getStringArray(R.array.language_settings)
@@ -135,7 +138,7 @@ class SettingsActivity : AppCompatActivity(R.layout.activity_settings) {
             val language = Language.from(v)
             viewModel.applyLanguage(language)
           }
-          true
+          false
         }
       }
 

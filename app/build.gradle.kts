@@ -29,7 +29,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "8.0.0"
+    versionName = "8.0.1"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -113,13 +113,16 @@ android {
 
 dependencies {
   implementation(projects.apollo)
+  implementation(projects.auth)
   implementation(projects.coreCommon)
   implementation(projects.coreCommonAndroid)
   implementation(projects.coreDatastore)
   implementation(projects.coreDesignSystem)
+  implementation(projects.coreNavigation)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.featureBusinessmodel)
+  implementation(projects.featureOdyssey)
   implementation(projects.hanalytics.hanalyticsAndroid)
   implementation(projects.hanalytics.hanalyticsCore)
   implementation(projects.hanalytics.hanalyticsFeatureFlags)
@@ -269,6 +272,5 @@ dependencies {
   debugImplementation(libs.androidx.compose.uiTestManifest)
 
   implementation(libs.datadog.sdk)
-  implementation(libs.odyssey)
   implementation(libs.kotlin.reflect)
 }

@@ -7,6 +7,7 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.ContractStatusQuery
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toOption
+import com.hedvig.android.auth.AuthenticationTokenService
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose

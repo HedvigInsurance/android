@@ -9,7 +9,7 @@ import com.apollographql.apollo3.api.ApolloResponse
 import com.hedvig.android.apollo.graphql.ChatMessagesQuery
 import com.hedvig.android.apollo.graphql.GifQuery
 import com.hedvig.android.apollo.graphql.UploadFileMutation
-import com.hedvig.app.authenticate.AuthenticationTokenService
+import com.hedvig.android.auth.AuthenticationTokenService
 import com.hedvig.app.feature.chat.FileUploadOutcome
 import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.ChatRepository

@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.hedvig.app.authenticate.AuthenticationTokenService
+import com.hedvig.android.auth.AuthenticationTokenService
 import com.hedvig.app.databinding.DevelopmentFooterBinding
 import com.hedvig.app.databinding.DevelopmentHeaderBinding
 import com.hedvig.app.databinding.DevelopmentRowBinding

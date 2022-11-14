@@ -1,14 +1,10 @@
-package com.hedvig.app.authenticate
+package com.hedvig.android.auth
 
 import android.content.SharedPreferences
 
 private const val SHARED_PREFERENCE_AUTHENTICATION_TOKEN = "shared_preference_authentication_token"
 
-interface AuthenticationTokenService {
-  var authenticationToken: String?
-}
-
-class SharedPreferencesAuthenticationTokenService(
+internal class SharedPreferencesAuthenticationTokenService(
   private val sharedPreferences: SharedPreferences,
 ) : AuthenticationTokenService {
   override var authenticationToken: String?
