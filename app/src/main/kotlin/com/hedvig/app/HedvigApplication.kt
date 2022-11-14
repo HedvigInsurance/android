@@ -11,8 +11,8 @@ import com.datadog.android.privacy.TrackingConsent
 import com.datadog.android.rum.GlobalRum
 import com.datadog.android.rum.RumMonitor
 import com.hedvig.android.apollo.graphql.NewSessionMutation
+import com.hedvig.android.auth.AuthenticationTokenService
 import com.hedvig.android.hanalytics.android.tracking.ApplicationLifecycleTracker
-import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.feature.settings.Theme
 import com.hedvig.app.feature.whatsnew.WhatsNewRepository
 import com.hedvig.app.util.FirebaseCrashlyticsLogExceptionTree

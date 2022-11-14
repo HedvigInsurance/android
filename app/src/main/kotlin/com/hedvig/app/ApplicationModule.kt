@@ -19,6 +19,7 @@ import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.datadog.android.DatadogInterceptor
 import com.google.firebase.messaging.FirebaseMessaging
+import com.hedvig.android.auth.AuthenticationTokenService
 import com.hedvig.android.core.common.di.LogInfoType
 import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.common.di.isDebugQualifier
@@ -29,10 +30,9 @@ import com.hedvig.android.hanalytics.android.di.appVersionNameQualifier
 import com.hedvig.android.hanalytics.android.di.hAnalyticsUrlQualifier
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
-import com.hedvig.app.authenticate.AuthenticationTokenService
+import com.hedvig.android.navigation.Navigator
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.authenticate.LogoutUseCase
-import com.hedvig.app.authenticate.SharedPreferencesAuthenticationTokenService
 import com.hedvig.app.authenticate.SharedPreferencesLoginStatusService
 import com.hedvig.app.authenticate.UserViewModel
 import com.hedvig.app.data.debit.PayinStatusRepository
@@ -183,6 +183,7 @@ import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.NetworkCacheManager
 import com.hedvig.app.util.apollo.ReopenSubscriptionException
 import com.hedvig.app.util.apollo.SunsettingInterceptor
+import com.hedvig.app.util.extensions.startChat
 import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -455,6 +456,10 @@ val textActionSetModule = module {
   viewModel { (data: TextActionParameter) -> TextActionViewModel(data) }
 }
 
+val navigatorModule = module {
+  single<Navigator> { Navigator(navigateToChat = { startChat() }) }
+}
+
 val numberActionSetModule = module {
   viewModel { (data: NumberActionParams) -> NumberActionViewModel(data) }
 }
@@ -519,7 +524,6 @@ val externalInsuranceModule = module {
 val serviceModule = module {
   single { FileService(get()) }
   single<LoginStatusService> { SharedPreferencesLoginStatusService(get(), get(), get()) }
-  single<AuthenticationTokenService> { SharedPreferencesAuthenticationTokenService(get()) }
 }
 
 val repositoriesModule = module {

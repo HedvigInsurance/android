@@ -81,7 +81,6 @@ class ChatNotificationSender(
     alertOnlyOnce: Boolean = false,
   ) {
     val chatIntent = Intent(context, ChatActivity::class.java)
-    chatIntent.putExtra(ChatActivity.EXTRA_SHOW_CLOSE, true)
 
     val flags = getMutablePendingIntentFlags()
 

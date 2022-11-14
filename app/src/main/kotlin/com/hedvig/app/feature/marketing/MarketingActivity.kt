@@ -45,7 +45,7 @@ class MarketingActivity : AppCompatActivity() {
 
     window.compatSetDecorFitsSystemWindows(false)
     val viewModel = getViewModel<MarketingViewModel>()
-    val imageLoader = get<ImageLoader>()
+    val imageLoader: ImageLoader = get()
     setContent {
       HedvigTheme(
         colorOverrides = { colors ->

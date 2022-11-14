@@ -18,9 +18,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
 import com.hedvig.android.apollo.graphql.ChatMessagesQuery
+import com.hedvig.android.auth.AuthenticationTokenService
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.app.R
-import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.databinding.ActivityChatBinding
 import com.hedvig.app.feature.chat.ChatInputType
 import com.hedvig.app.feature.chat.ParagraphInput
@@ -91,6 +91,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
           ChatViewModel.Event.Restart -> {
             triggerRestartActivity(ChatActivity::class.java)
           }
+
           is ChatViewModel.Event.Error -> showAlert(
             title = com.adyen.checkout.dropin.R.string.error_dialog_title,
             message = com.adyen.checkout.dropin.R.string.component_error,
@@ -197,14 +198,11 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
     binding.settings.setHapticClickListener {
       startActivity(SettingsActivity.newInstance(this))
     }
-
-    if (intent?.extras?.getBoolean(EXTRA_SHOW_CLOSE, false) == true) {
-      binding.close.setOnClickListener {
-        onBackPressed()
-      }
-      binding.close.contentDescription = getString(hedvig.resources.R.string.CHAT_CLOSE_DESCRIPTION)
-      binding.close.show()
+    binding.close.setOnClickListener {
+      onBackPressed()
     }
+    binding.close.contentDescription = getString(hedvig.resources.R.string.CHAT_CLOSE_DESCRIPTION)
+    binding.close.show()
   }
 
   private fun initializeKeyboardVisibilityHandler() {
@@ -440,10 +438,12 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
         if ((grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED })) {
           openAttachPicker()
         }
+
       REQUEST_CAMERA_PERMISSION ->
         if ((grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED })) {
           startTakePicture()
         }
+
       else -> {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
       }
@@ -453,9 +453,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
   override fun finish() {
     super.finish()
     chatViewModel.onChatClosed()
-    if (intent.getBooleanExtra(EXTRA_SHOW_CLOSE, false)) {
-      overridePendingTransition(R.anim.stay_in_place, R.anim.chat_slide_down_out)
-    }
+    overridePendingTransition(R.anim.stay_in_place, R.anim.chat_slide_down_out)
   }
 
   override fun onDestroy() {
@@ -469,8 +467,6 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
     private const val REQUEST_CAMERA_PERMISSION = 54332
 
     private const val TAKE_PICTURE_REQUEST_CODE = 2371
-
-    const val EXTRA_SHOW_CLOSE = "extra_show_close"
 
     const val ACTIVITY_IS_IN_FOREGROUND = "chat_activity_is_in_foreground"
   }
