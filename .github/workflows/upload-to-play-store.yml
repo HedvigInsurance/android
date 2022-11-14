@@ -68,3 +68,4 @@ jobs:
           releaseFiles: ${{ steps.sign_app.outputs.signedReleaseFile }}
           mappingFile: app/build/outputs/mapping/release/mapping.txt
           track: internal
+          status: completed
