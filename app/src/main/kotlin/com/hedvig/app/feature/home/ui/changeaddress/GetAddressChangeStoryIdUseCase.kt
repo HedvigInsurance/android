@@ -8,7 +8,7 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
-import com.hedvig.app.feature.embark.QUOTE_CART_ID_KEY
+import com.hedvig.app.feature.embark.QUOTE_CART_EMBARK_STORE_ID_KEY
 import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.util.ErrorMessage
 
@@ -53,7 +53,7 @@ class GetAddressChangeStoryIdUseCase(
 }
 
 fun appendQuoteCartId(embarkStoryId: String, quoteCartId: String) = if (embarkStoryId.contains("?")) {
-  "$embarkStoryId&$QUOTE_CART_ID_KEY=$quoteCartId"
+  "$embarkStoryId&$QUOTE_CART_EMBARK_STORE_ID_KEY=$quoteCartId"
 } else {
-  "$embarkStoryId?$QUOTE_CART_ID_KEY=$quoteCartId"
+  "$embarkStoryId?$QUOTE_CART_EMBARK_STORE_ID_KEY=$quoteCartId"
 }
