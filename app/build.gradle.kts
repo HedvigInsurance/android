@@ -272,6 +272,5 @@ dependencies {
   debugImplementation(libs.androidx.compose.uiTestManifest)
 
   implementation(libs.datadog.sdk)
-  implementation(libs.odyssey)
   implementation(libs.kotlin.reflect)
 }
