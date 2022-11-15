@@ -35,13 +35,18 @@ class ClaimsFlowActivity : ComponentActivity() {
         locale = locale,
         imageLoader = imageLoader,
         initialUrl = ROOT_URL,
-        onExternalNavigation = { url ->
-          when (url) {
-            CLOSE_URL -> finish()
-            CHAT_URL -> navigator.navigateToChat(this)
-          }
-        },
+        onExternalNavigation = ::onExternalNavigation,
       )
+    }
+  }
+
+  private fun onExternalNavigation(url: String) {
+    when (url) {
+      CLOSE_URL -> finish()
+      CHAT_URL -> {
+        finish()
+        navigator.navigateToChat(this@ClaimsFlowActivity)
+      }
     }
   }
 
