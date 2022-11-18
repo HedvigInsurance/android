@@ -72,6 +72,7 @@ class CommonClaimActivity : AppCompatActivity(R.layout.activity_common_claim) {
               featureManager = featureManager,
               context = this@CommonClaimActivity,
               fragmentManager = supportFragmentManager,
+              itemType = data.itemTypeFromId(),
             )
           }
         }
@@ -89,4 +90,9 @@ class CommonClaimActivity : AppCompatActivity(R.layout.activity_common_claim) {
         putExtra(CLAIMS_DATA, data)
       }
   }
+}
+
+private fun CommonClaimsData.itemTypeFromId() = when (id) {
+  "6" -> "PHONE"
+  else -> null
 }

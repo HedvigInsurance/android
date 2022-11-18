@@ -11,6 +11,8 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.Navigator
 import com.hedvig.common.remote.actions.CHAT_URL
 import com.hedvig.common.remote.actions.CLOSE_URL
+import com.hedvig.common.remote.scopes.ScopeValues
+import com.hedvig.common.remote.scopes.keys.InitialDataScopeValueKey
 import com.hedvig.common.ui.OdysseyRoot
 import org.koin.android.ext.android.inject
 
@@ -26,7 +28,14 @@ class ClaimsFlowActivity : ComponentActivity() {
     val token = authenticationTokenService.authenticationToken
     requireNotNull(token)
     val odysseyUrl = intent.getStringExtra(ODYSSEY_URL_KEY) ?: error("ODYSSEY_URL_KEY needs to be passed in")
+    val itemType = intent.getStringExtra(EXTRA_ITEM_TYPE)
+
     val locale = languageService.getLocale().toString()
+
+    val scopeValues = ScopeValues()
+    if (itemType != null) {
+      scopeValues.setValue(InitialDataScopeValueKey, mapOf("itemType" to itemType))
+    }
 
     setContent {
       OdysseyRoot(
@@ -36,6 +45,7 @@ class ClaimsFlowActivity : ComponentActivity() {
         imageLoader = imageLoader,
         initialUrl = ROOT_URL,
         onExternalNavigation = ::onExternalNavigation,
+        scopeValues = scopeValues,
       )
     }
   }
@@ -53,13 +63,16 @@ class ClaimsFlowActivity : ComponentActivity() {
   companion object {
     private const val ROOT_URL = "/automation-claim"
     private const val ODYSSEY_URL_KEY = "com.hedvig.android.odyssey.ODYSSEY_URL_KEY"
+    private const val EXTRA_ITEM_TYPE = "EXTRA_ITEM_TYPE"
 
     fun newInstance(
       context: Context,
       odysseyUrl: String,
+      itemType: String? = null
     ): Intent {
       return Intent(context, ClaimsFlowActivity::class.java)
         .putExtra(ODYSSEY_URL_KEY, odysseyUrl)
+        .putExtra(EXTRA_ITEM_TYPE, itemType)
     }
   }
 }
