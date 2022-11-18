@@ -3,6 +3,7 @@ package com.hedvig.android.odyssey
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Parcelable
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import coil.ImageLoader
@@ -14,6 +15,7 @@ import com.hedvig.common.remote.actions.CLOSE_URL
 import com.hedvig.common.remote.scopes.ScopeValues
 import com.hedvig.common.remote.scopes.keys.InitialDataScopeValueKey
 import com.hedvig.common.ui.OdysseyRoot
+import kotlinx.parcelize.Parcelize
 import org.koin.android.ext.android.inject
 
 class ClaimsFlowActivity : ComponentActivity() {
@@ -28,7 +30,7 @@ class ClaimsFlowActivity : ComponentActivity() {
     val token = authenticationTokenService.authenticationToken
     requireNotNull(token)
     val odysseyUrl = intent.getStringExtra(ODYSSEY_URL_KEY) ?: error("ODYSSEY_URL_KEY needs to be passed in")
-    val itemType = intent.getStringExtra(EXTRA_ITEM_TYPE)
+    val itemType = intent.getParcelableExtra<ItemType>(EXTRA_ITEM_TYPE)?.name
 
     val locale = languageService.getLocale().toString()
 
@@ -68,11 +70,15 @@ class ClaimsFlowActivity : ComponentActivity() {
     fun newInstance(
       context: Context,
       odysseyUrl: String,
-      itemType: String? = null
+      itemType: ItemType? = null
     ): Intent {
       return Intent(context, ClaimsFlowActivity::class.java)
         .putExtra(ODYSSEY_URL_KEY, odysseyUrl)
         .putExtra(EXTRA_ITEM_TYPE, itemType)
     }
   }
+
+  @Parcelize
+  @JvmInline
+  value class ItemType(val name: String) : Parcelable
 }

@@ -14,7 +14,7 @@ suspend fun startClaimsFlow(
   context: Context,
   fragmentManager: FragmentManager,
   registerForResult: ((Intent) -> Unit)? = null,
-  itemType: String? = null,
+  itemType: ClaimsFlowActivity.ItemType? = null,
 ) {
   if (featureManager.isFeatureEnabled(Feature.USE_ODYSSEY_CLAIM_FLOW)) {
     val intent = ClaimsFlowActivity.newInstance(

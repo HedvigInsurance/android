@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import coil.ImageLoader
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.odyssey.ClaimsFlowActivity
+import com.hedvig.android.odyssey.ClaimsFlowActivity.ItemType
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityCommonClaimBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.bulletpoint.BulletPointsAdapter
@@ -72,7 +74,7 @@ class CommonClaimActivity : AppCompatActivity(R.layout.activity_common_claim) {
               featureManager = featureManager,
               context = this@CommonClaimActivity,
               fragmentManager = supportFragmentManager,
-              itemType = data.itemTypeFromId(),
+              itemType = data.itemTypeFromId()?.let(::ItemType),
             )
           }
         }
