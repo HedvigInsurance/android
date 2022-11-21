@@ -5,4 +5,5 @@ plugins {
 
 dependencies {
   implementation(libs.koin.android)
+  implementation(libs.okhttp.core)
 }
