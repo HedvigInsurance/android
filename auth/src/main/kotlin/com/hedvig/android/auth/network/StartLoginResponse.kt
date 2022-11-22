@@ -26,7 +26,7 @@ data class StartLoginResponse(
   )
 }
 
-fun Response.responseToResult(): AuthAttemptResult {
+fun Response.toAuthAttemptResult(): AuthAttemptResult {
   val responseBody = body?.string()
   val result = if (isSuccessful && responseBody != null) {
     Json.decodeFromString<StartLoginResponse>(responseBody).toAuthAttemptResult()

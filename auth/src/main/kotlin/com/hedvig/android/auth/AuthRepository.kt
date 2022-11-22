@@ -11,7 +11,7 @@ interface AuthRepository {
     email: String? = null,
   ): AuthAttemptResult
 
-  fun observeLoginStatus(): Flow<LoginStatusResult>
+  fun observeLoginStatus(statusUrl: String): Flow<LoginStatusResult>
 
   fun submitOtp(otp: String): AuthorizationCode
 
@@ -63,9 +63,11 @@ sealed interface AuthTokenResult {
 
 sealed interface LoginStatusResult {
   data class Failed(val message: String) : LoginStatusResult
-  data class Pending(val message: String) : LoginStatusResult
+  data class Pending(val statusMessage: String?) : LoginStatusResult
   data class Completed(val authorizationCode: AuthorizationCode) : LoginStatusResult
 }
+
+fun LoginStatusResult.isPending() = this is LoginStatusResult.Pending
 
 @JvmInline
 value class AuthorizationCode(val code: String)
