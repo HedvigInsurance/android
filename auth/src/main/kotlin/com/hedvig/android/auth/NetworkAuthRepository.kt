@@ -1,20 +1,14 @@
 package com.hedvig.android.auth
 
-import com.hedvig.android.auth.network.LoginStatusResponse
 import com.hedvig.android.auth.network.createStartLoginRequest
+import com.hedvig.android.auth.network.createSubmitAuthorizationCodeRequest
 import com.hedvig.android.auth.network.toAuthAttemptResult
+import com.hedvig.android.auth.network.toAuthTokenResult
 import com.hedvig.android.auth.network.toLoginStatusResult
 import com.hedvig.android.core.common.await
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.NonCancellable.cancel
-import kotlinx.coroutines.awaitCancellation
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.cancel
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.withContext
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -84,8 +78,23 @@ class NetworkAuthRepository(
     TODO("Not yet implemented")
   }
 
-  override fun submitAuthorizationCode(authorizationCode: AuthorizationCode): AuthTokenResult {
-    TODO("Not yet implemented")
+  override suspend fun submitAuthorizationCode(authorizationCode: AuthorizationCode): AuthTokenResult {
+    val requestBody = FormBody
+      .Builder()
+      .createSubmitAuthorizationCodeRequest(authorizationCode)
+
+    val request = Request.Builder()
+      .post(requestBody)
+      .url("$url/oauth/token")
+      .build()
+
+    return try {
+      okhttpClient.newCall(request)
+        .await()
+        .toAuthTokenResult()
+    } catch (e: java.lang.Exception) {
+      AuthTokenResult.Error("Error: ${e.message}")
+    }
   }
 
   override fun submitRefreshToken(refreshToken: String): AuthTokenResult {

@@ -15,7 +15,7 @@ interface AuthRepository {
 
   fun submitOtp(otp: String): AuthorizationCode
 
-  fun submitAuthorizationCode(authorizationCode: AuthorizationCode): AuthTokenResult
+  suspend fun submitAuthorizationCode(authorizationCode: AuthorizationCode): AuthTokenResult
 
   fun submitRefreshToken(refreshToken: String): AuthTokenResult
 
