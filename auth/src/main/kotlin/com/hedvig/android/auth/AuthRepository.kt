@@ -13,11 +13,9 @@ interface AuthRepository {
 
   fun observeLoginStatus(statusUrl: String): Flow<LoginStatusResult>
 
-  fun submitOtp(otp: String): AuthorizationCode
+  fun submitOtp(otp: String): LoginAuthorizationCode
 
   suspend fun submitAuthorizationCode(authorizationCode: AuthorizationCode): AuthTokenResult
-
-  fun submitRefreshToken(refreshToken: String): AuthTokenResult
 
   fun logout(refreshToken: String): LogoutResult
 }
@@ -64,13 +62,21 @@ sealed interface AuthTokenResult {
 sealed interface LoginStatusResult {
   data class Failed(val message: String) : LoginStatusResult
   data class Pending(val statusMessage: String?) : LoginStatusResult
-  data class Completed(val authorizationCode: AuthorizationCode) : LoginStatusResult
+  data class Completed(val authorizationCode: LoginAuthorizationCode) : LoginStatusResult
 }
 
 fun LoginStatusResult.isPending() = this is LoginStatusResult.Pending
 
+sealed interface AuthorizationCode {
+  val code: String
+}
+
 @JvmInline
-value class AuthorizationCode(val code: String)
+value class LoginAuthorizationCode(override val code: String) : AuthorizationCode
+
+@JvmInline
+value class RefreshCode(override val code: String) : AuthorizationCode
+
 
 data class AccessToken(
   val token: String,
@@ -78,7 +84,7 @@ data class AccessToken(
 )
 
 data class RefreshToken(
-  val token: String,
+  val token: RefreshCode,
   val expiryInSeconds: Int,
 )
 

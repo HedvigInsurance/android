@@ -1,7 +1,7 @@
 package com.hedvig.android.auth
 
 import com.hedvig.android.auth.network.createStartLoginRequest
-import com.hedvig.android.auth.network.createSubmitAuthorizationCodeRequest
+import com.hedvig.android.auth.network.createRequestBody
 import com.hedvig.android.auth.network.toAuthAttemptResult
 import com.hedvig.android.auth.network.toAuthTokenResult
 import com.hedvig.android.auth.network.toLoginStatusResult
@@ -74,17 +74,13 @@ class NetworkAuthRepository(
     }
   }
 
-  override fun submitOtp(otp: String): AuthorizationCode {
+  override fun submitOtp(otp: String): LoginAuthorizationCode {
     TODO("Not yet implemented")
   }
 
   override suspend fun submitAuthorizationCode(authorizationCode: AuthorizationCode): AuthTokenResult {
-    val requestBody = FormBody
-      .Builder()
-      .createSubmitAuthorizationCodeRequest(authorizationCode)
-
     val request = Request.Builder()
-      .post(requestBody)
+      .post(authorizationCode.createRequestBody())
       .url("$url/oauth/token")
       .build()
 
@@ -95,10 +91,6 @@ class NetworkAuthRepository(
     } catch (e: java.lang.Exception) {
       AuthTokenResult.Error("Error: ${e.message}")
     }
-  }
-
-  override fun submitRefreshToken(refreshToken: String): AuthTokenResult {
-    TODO("Not yet implemented")
   }
 
   override fun logout(refreshToken: String): LogoutResult {

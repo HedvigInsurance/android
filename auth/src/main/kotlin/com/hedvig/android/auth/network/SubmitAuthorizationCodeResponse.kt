@@ -2,6 +2,7 @@ package com.hedvig.android.auth.network
 
 import com.hedvig.android.auth.AccessToken
 import com.hedvig.android.auth.AuthTokenResult
+import com.hedvig.android.auth.RefreshCode
 import com.hedvig.android.auth.RefreshToken
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -37,7 +38,7 @@ private fun SubmitAuthorizationCodeResponse.toAuthAttemptResult() = AuthTokenRes
     expiryInSeconds = accessTokenExpiresIn,
   ),
   refreshToken = RefreshToken(
-    token = refreshToken,
+    token = RefreshCode(refreshToken),
     expiryInSeconds = refreshTokenExpiresIn,
   ),
 )

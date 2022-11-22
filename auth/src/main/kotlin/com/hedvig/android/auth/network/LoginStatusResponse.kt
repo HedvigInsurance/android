@@ -1,6 +1,6 @@
 package com.hedvig.android.auth.network
 
-import com.hedvig.android.auth.AuthorizationCode
+import com.hedvig.android.auth.LoginAuthorizationCode
 import com.hedvig.android.auth.LoginStatusResult
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
@@ -36,7 +36,7 @@ private fun LoginStatusResponse.toLoginStatusResult() = when (status) {
       "Login status completed but did not receive authorization code"
     }
 
-    val code = AuthorizationCode(authorizationCode)
+    val code = LoginAuthorizationCode(authorizationCode)
     LoginStatusResult.Completed(code)
   }
 }
