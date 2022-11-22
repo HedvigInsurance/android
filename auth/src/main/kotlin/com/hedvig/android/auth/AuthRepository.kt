@@ -4,10 +4,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
 
-  fun startLoginAttempt(
+  suspend fun startLoginAttempt(
     loginMethod: LoginMethod,
     market: String,
-    email: String,
+    personalNumber: String,
+    email: String? = null,
   ): AuthAttemptResult
 
   fun observeLoginStatus(): Flow<LoginStatusResult>
@@ -27,30 +28,25 @@ enum class LoginMethod {
 
 sealed interface AuthAttemptResult {
 
-  val statusUrl: String
-  val id: String
-
   data class Error(
-    override val id: String,
-    override val statusUrl: String,
     val message: String,
   ) : AuthAttemptResult
 
   data class BankIdProperties(
-    override val id: String,
-    override val statusUrl: String,
+    val id: String,
+    val statusUrl: String,
     val autoStartToken: String,
   ) : AuthAttemptResult
 
   data class ZignSecProperties(
-    override val id: String,
-    override val statusUrl: String,
+    val id: String,
+    val statusUrl: String,
     val redirectUrl: String,
   ) : AuthAttemptResult
 
   data class OtpProperties(
-    override val id: String,
-    override val statusUrl: String,
+    val id: String,
+    val statusUrl: String,
     val validationUrl: String,
   ) : AuthAttemptResult
 }
