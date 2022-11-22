@@ -1,6 +1,5 @@
 package com.hedvig.android.auth
 
-import com.hedvig.android.auth.network.SubmitOtpResponse
 import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
@@ -18,7 +17,7 @@ interface AuthRepository {
 
   suspend fun submitAuthorizationCode(authorizationCode: AuthorizationCode): AuthTokenResult
 
-  fun logout(refreshToken: String): LogoutResult
+  suspend fun logout(refreshCode: RefreshCode): LogoutResult
 }
 
 enum class LoginMethod {
@@ -41,12 +40,6 @@ sealed interface AuthAttemptResult {
     val id: String,
     val statusUrl: StatusUrl,
     val redirectUrl: String,
-  ) : AuthAttemptResult
-
-  data class OtpProperties(
-    val id: String,
-    val statusUrl: StatusUrl,
-    val validationUrl: String,
   ) : AuthAttemptResult
 }
 

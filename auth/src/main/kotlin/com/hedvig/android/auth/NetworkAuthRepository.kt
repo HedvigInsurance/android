@@ -1,8 +1,8 @@
 package com.hedvig.android.auth
 
-import com.hedvig.android.auth.network.SubmitOtpResponse
-import com.hedvig.android.auth.network.createStartLoginRequest
+import com.hedvig.android.auth.network.createLogoutRequestBody
 import com.hedvig.android.auth.network.createRequestBody
+import com.hedvig.android.auth.network.createStartLoginRequest
 import com.hedvig.android.auth.network.createSubmitOtpRequest
 import com.hedvig.android.auth.network.toAuthAttemptResult
 import com.hedvig.android.auth.network.toAuthTokenResult
@@ -12,7 +12,6 @@ import com.hedvig.android.core.common.await
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
@@ -106,7 +105,21 @@ class NetworkAuthRepository(
     }
   }
 
-  override fun logout(refreshToken: String): LogoutResult {
-    TODO("Not yet implemented")
+  override suspend fun logout(refreshCode: RefreshCode): LogoutResult {
+    val request = Request.Builder()
+      .post(createLogoutRequestBody(refreshCode))
+      .url("$url/oauth/logout")
+      .build()
+
+    return try {
+      val result = okhttpClient.newCall(request).await()
+      if (result.isSuccessful) {
+        LogoutResult.Success
+      } else {
+        LogoutResult.Error("Could not logout: ${result.message}")
+      }
+    } catch (e: java.lang.Exception) {
+      LogoutResult.Error("Error: ${e.message}")
+    }
   }
 }
