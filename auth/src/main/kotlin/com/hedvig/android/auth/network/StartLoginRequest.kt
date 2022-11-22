@@ -4,19 +4,21 @@ import com.hedvig.android.auth.LoginMethod
 import okhttp3.FormBody
 import okhttp3.RequestBody
 
-fun FormBody.Builder.createStartLoginRequest(
+fun createStartLoginRequest(
   loginMethod: LoginMethod,
   market: String,
   personalNumber: String,
   email: String?,
 ): RequestBody {
-  add("method", loginMethod.name)
-  add("country", market)
-  add("personalNumber", personalNumber)
+  val builder = FormBody.Builder()
+
+  builder.add("method", loginMethod.name)
+  builder.add("country", market)
+  builder.add("personalNumber", personalNumber)
 
   if (email != null) {
-    add("email", email)
+    builder.add("email", email)
   }
 
-  return build()
+  return builder.build()
 }

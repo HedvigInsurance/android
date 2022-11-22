@@ -1,10 +1,13 @@
 package com.hedvig.android.auth
 
+import com.hedvig.android.auth.network.SubmitOtpResponse
 import com.hedvig.android.auth.network.createStartLoginRequest
 import com.hedvig.android.auth.network.createRequestBody
+import com.hedvig.android.auth.network.createSubmitOtpRequest
 import com.hedvig.android.auth.network.toAuthAttemptResult
 import com.hedvig.android.auth.network.toAuthTokenResult
 import com.hedvig.android.auth.network.toLoginStatusResult
+import com.hedvig.android.auth.network.toSubmitOtpResult
 import com.hedvig.android.core.common.await
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -27,9 +30,7 @@ class NetworkAuthRepository(
     email: String?,
   ): AuthAttemptResult {
 
-    val requestBody = FormBody
-      .Builder()
-      .createStartLoginRequest(loginMethod, market, personalNumber, email)
+    val requestBody = createStartLoginRequest(loginMethod, market, personalNumber, email)
 
     val request = Request.Builder()
       .post(requestBody)
@@ -45,10 +46,10 @@ class NetworkAuthRepository(
     }
   }
 
-  override fun observeLoginStatus(statusUrl: String): Flow<LoginStatusResult> {
+  override fun observeLoginStatus(statusUrl: StatusUrl): Flow<LoginStatusResult> {
     val request = Request.Builder()
       .get()
-      .url("$url$statusUrl")
+      .url("$url${statusUrl.url}")
       .build()
 
     var isPending = false
@@ -74,8 +75,20 @@ class NetworkAuthRepository(
     }
   }
 
-  override fun submitOtp(otp: String): LoginAuthorizationCode {
-    TODO("Not yet implemented")
+  override suspend fun submitOtp(statusUrl: StatusUrl, otp: String): SubmitOtpResult {
+    val requestBody = createSubmitOtpRequest(otp)
+    val request = Request.Builder()
+      .post(requestBody)
+      .url("$url/${statusUrl.url}/otp")
+      .build()
+
+    return try {
+      okhttpClient.newCall(request)
+        .await()
+        .toSubmitOtpResult()
+    } catch (e: java.lang.Exception) {
+      SubmitOtpResult.Error("Error: ${e.message}")
+    }
   }
 
   override suspend fun submitAuthorizationCode(authorizationCode: AuthorizationCode): AuthTokenResult {

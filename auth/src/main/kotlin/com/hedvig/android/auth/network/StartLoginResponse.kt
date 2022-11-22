@@ -1,6 +1,7 @@
 package com.hedvig.android.auth.network
 
 import com.hedvig.android.auth.AuthAttemptResult
+import com.hedvig.android.auth.StatusUrl
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -39,12 +40,12 @@ fun Response.toAuthAttemptResult(): AuthAttemptResult {
 private fun StartLoginResponse.toAuthAttemptResult() = when {
   seBankIdProperties != null -> AuthAttemptResult.BankIdProperties(
     id = id,
-    statusUrl = statusUrl,
+    statusUrl = StatusUrl(statusUrl),
     autoStartToken = seBankIdProperties.autoStartToken,
   )
   zignSecProperties != null -> AuthAttemptResult.ZignSecProperties(
     id = id,
-    statusUrl = statusUrl,
+    statusUrl = StatusUrl(statusUrl),
     redirectUrl = zignSecProperties.redirectUrl,
   )
   else -> AuthAttemptResult.Error(
