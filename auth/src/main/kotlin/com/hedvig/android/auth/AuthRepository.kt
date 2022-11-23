@@ -7,7 +7,7 @@ interface AuthRepository {
   suspend fun startLoginAttempt(
     loginMethod: LoginMethod,
     market: String,
-    personalNumber: String,
+    personalNumber: String? = null,
     email: String? = null,
   ): AuthAttemptResult
 
@@ -61,8 +61,6 @@ sealed interface LoginStatusResult {
   data class Pending(val statusMessage: String?) : LoginStatusResult
   data class Completed(val authorizationCode: LoginAuthorizationCode) : LoginStatusResult
 }
-
-fun LoginStatusResult.isPending() = this is LoginStatusResult.Pending
 
 
 sealed interface SubmitOtpResult {

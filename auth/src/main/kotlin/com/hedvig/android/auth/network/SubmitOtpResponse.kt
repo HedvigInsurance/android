@@ -12,13 +12,12 @@ data class SubmitOtpResponse(
   val authorizationCode: String,
 )
 
-fun Response.toSubmitOtpResult(): SubmitOtpResult {
-  val responseBody = body?.string()
-  val result = if (isSuccessful && responseBody != null) {
-    val response = Json.decodeFromString<SubmitOtpResponse>(responseBody)
-    SubmitOtpResult.Success(LoginAuthorizationCode(response.authorizationCode))
+fun Json.toSubmitOtpResult(response: Response): SubmitOtpResult {
+  val responseBody = response.body?.string()
+  return if (response.isSuccessful && responseBody != null) {
+    val submitOtpResponse = decodeFromString<SubmitOtpResponse>(responseBody)
+    SubmitOtpResult.Success(LoginAuthorizationCode(submitOtpResponse.authorizationCode))
   } else {
-    SubmitOtpResult.Error(message)
+    SubmitOtpResult.Error(message = responseBody ?: "Unknown error")
   }
-  return result
 }

@@ -22,14 +22,13 @@ data class SubmitAuthorizationCodeResponse(
   val refreshTokenExpiresIn: Int,
 )
 
-fun Response.toAuthTokenResult(): AuthTokenResult {
-  val responseBody = body?.string()
-  val result = if (isSuccessful && responseBody != null) {
-    Json.decodeFromString<SubmitAuthorizationCodeResponse>(responseBody).toAuthAttemptResult()
+fun Json.toAuthTokenResult(response: Response): AuthTokenResult {
+  val responseBody = response.body?.string()
+  return if (response.isSuccessful && responseBody != null) {
+    decodeFromString<SubmitAuthorizationCodeResponse>(responseBody).toAuthAttemptResult()
   } else {
-    AuthTokenResult.Error(message)
+    AuthTokenResult.Error(message = responseBody ?: "Unknown error")
   }
-  return result
 }
 
 private fun SubmitAuthorizationCodeResponse.toAuthAttemptResult() = AuthTokenResult.Success(
