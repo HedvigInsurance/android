@@ -184,7 +184,7 @@ jobs:
           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
           JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-      - uses: atlassian/gajira-cli@v2.0.2
+      - uses: atlassian/gajira-cli@v3.0.1
       - uses: atlassian/gajira-find-issue-key@v2.0.2
         id: find_issue
         with:
