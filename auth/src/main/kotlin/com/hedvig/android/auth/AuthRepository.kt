@@ -7,17 +7,17 @@ interface AuthRepository {
   suspend fun startLoginAttempt(
     loginMethod: LoginMethod,
     market: String,
-    personalNumber: String,
+    personalNumber: String? = null,
     email: String? = null,
   ): AuthAttemptResult
 
-  fun observeLoginStatus(statusUrl: String): Flow<LoginStatusResult>
+  fun observeLoginStatus(statusUrl: StatusUrl): Flow<LoginStatusResult>
 
-  fun submitOtp(otp: String): LoginAuthorizationCode
+  suspend fun submitOtp(statusUrl: StatusUrl, otp: String): SubmitOtpResult
 
   suspend fun submitAuthorizationCode(authorizationCode: AuthorizationCode): AuthTokenResult
 
-  fun logout(refreshToken: String): LogoutResult
+  suspend fun logout(refreshCode: RefreshCode): LogoutResult
 }
 
 enum class LoginMethod {
@@ -32,22 +32,19 @@ sealed interface AuthAttemptResult {
 
   data class BankIdProperties(
     val id: String,
-    val statusUrl: String,
+    val statusUrl: StatusUrl,
     val autoStartToken: String,
   ) : AuthAttemptResult
 
   data class ZignSecProperties(
     val id: String,
-    val statusUrl: String,
+    val statusUrl: StatusUrl,
     val redirectUrl: String,
   ) : AuthAttemptResult
-
-  data class OtpProperties(
-    val id: String,
-    val statusUrl: String,
-    val validationUrl: String,
-  ) : AuthAttemptResult
 }
+
+@JvmInline
+value class StatusUrl(val url: String)
 
 sealed interface AuthTokenResult {
 
@@ -65,7 +62,12 @@ sealed interface LoginStatusResult {
   data class Completed(val authorizationCode: LoginAuthorizationCode) : LoginStatusResult
 }
 
-fun LoginStatusResult.isPending() = this is LoginStatusResult.Pending
+
+sealed interface SubmitOtpResult {
+  data class Error(val message: String) : SubmitOtpResult
+  data class Success(val loginAuthorizationCode: LoginAuthorizationCode) : SubmitOtpResult
+}
+
 
 sealed interface AuthorizationCode {
   val code: String
