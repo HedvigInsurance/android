@@ -67,6 +67,7 @@
             android:paddingTop="@dimen/base_margin_half"
             android:paddingEnd="@dimen/base_margin_double"
             android:textAppearance="?textAppearanceCaption"
+            android:textIsSelectable="true"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
