@@ -2,6 +2,7 @@ package com.hedvig.android.auth.network
 
 import com.hedvig.android.auth.AccessToken
 import com.hedvig.android.auth.AuthTokenResult
+import com.hedvig.android.auth.RefreshCode
 import com.hedvig.android.auth.RefreshToken
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -21,14 +22,13 @@ data class SubmitAuthorizationCodeResponse(
   val refreshTokenExpiresIn: Int,
 )
 
-fun Response.toAuthTokenResult(): AuthTokenResult {
-  val responseBody = body?.string()
-  val result = if (isSuccessful && responseBody != null) {
-    Json.decodeFromString<SubmitAuthorizationCodeResponse>(responseBody).toAuthAttemptResult()
+fun Json.toAuthTokenResult(response: Response): AuthTokenResult {
+  val responseBody = response.body?.string()
+  return if (response.isSuccessful && responseBody != null) {
+    decodeFromString<SubmitAuthorizationCodeResponse>(responseBody).toAuthAttemptResult()
   } else {
-    AuthTokenResult.Error(message)
+    AuthTokenResult.Error(message = responseBody ?: "Unknown error")
   }
-  return result
 }
 
 private fun SubmitAuthorizationCodeResponse.toAuthAttemptResult() = AuthTokenResult.Success(
@@ -37,7 +37,7 @@ private fun SubmitAuthorizationCodeResponse.toAuthAttemptResult() = AuthTokenRes
     expiryInSeconds = accessTokenExpiresIn,
   ),
   refreshToken = RefreshToken(
-    token = refreshToken,
+    token = RefreshCode(refreshToken),
     expiryInSeconds = refreshTokenExpiresIn,
   ),
 )
