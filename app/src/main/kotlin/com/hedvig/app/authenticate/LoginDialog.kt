@@ -2,9 +2,15 @@ package com.hedvig.app.authenticate
 
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.apollo.graphql.type.AuthState
+import com.hedvig.android.auth.LoginStatusResult
 import com.hedvig.app.feature.genericauth.GenericAuthActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import hedvig.resources.R
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LoginDialog : AuthenticateDialog() {
@@ -13,13 +19,12 @@ class LoginDialog : AuthenticateDialog() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
-    viewModel.authStatus.observe(viewLifecycleOwner) { data ->
-      data.authStatus?.status?.let(::bindNewStatus)
-    }
+    binding.authTitle.setText(R.string.BANK_ID_AUTH_TITLE_INITIATED)
 
-    viewModel.autoStartToken.observe(viewLifecycleOwner) { data ->
-      handleAutoStartToken(data.swedishBankIdAuth.autoStartToken)
-    }
+    viewModel.viewState
+      .flowWithLifecycle(lifecycle)
+      .onEach(::bindViewState)
+      .launchIn(lifecycleScope)
 
     viewModel.fetchBankIdStartToken()
 
@@ -28,24 +33,32 @@ class LoginDialog : AuthenticateDialog() {
     }
   }
 
-  private fun bindNewStatus(state: AuthState) {
+  private fun bindViewState(viewState: UserViewModel.ViewState) {
+    viewState.authStatus?.let(::bindNewStatus)
+    viewState.autoStartToken?.let(::handleAutoStartToken)
+    if (viewState.navigateToLoggedIn) {
+      startLoggedInActivity()
+    }
+  }
+
+
+  private fun bindNewStatus(state: LoginStatusResult) {
     when (state) {
-      AuthState.INITIATED -> binding.authTitle.setText(hedvig.resources.R.string.BANK_ID_AUTH_TITLE_INITIATED)
-      AuthState.IN_PROGRESS -> binding.authTitle.setText(hedvig.resources.R.string.BANK_ID_LOG_IN_TITLE_IN_PROGRESS)
-      is AuthState.UNKNOWN__,
-      AuthState.FAILED,
-      -> {
-        binding.authTitle.setText(hedvig.resources.R.string.BANK_ID_LOG_IN_TITLE_FAILED)
+      is LoginStatusResult.Pending -> binding.authTitle.text = state.statusMessage
+      is LoginStatusResult.Failed -> {
+        binding.authTitle.text = state.message
         dialog?.setCanceledOnTouchOutside(true)
       }
-      AuthState.SUCCESS -> {
-        binding.authTitle.setText(hedvig.resources.R.string.BANK_ID_LOG_IN_TITLE_SUCCESS)
-        dismissAllowingStateLoss()
-        startActivity(
-          LoggedInActivity.newInstance(requireContext(), withoutHistory = true),
-        )
+      is LoginStatusResult.Completed -> {
+        binding.authTitle.setText(R.string.BANK_ID_LOG_IN_TITLE_SUCCESS)
       }
     }
+  }
+
+  private fun startLoggedInActivity() {
+    dismissAllowingStateLoss()
+    val loggedInActivity = LoggedInActivity.newInstance(requireContext(), withoutHistory = true)
+    startActivity(loggedInActivity)
   }
 
   companion object {

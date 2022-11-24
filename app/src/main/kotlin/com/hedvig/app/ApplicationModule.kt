@@ -19,7 +19,9 @@ import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.datadog.android.DatadogInterceptor
 import com.google.firebase.messaging.FirebaseMessaging
+import com.hedvig.android.auth.AuthRepository
 import com.hedvig.android.auth.AuthenticationTokenService
+import com.hedvig.android.auth.NetworkAuthRepository
 import com.hedvig.android.core.common.di.LogInfoType
 import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.common.di.isDebugQualifier
@@ -663,4 +665,8 @@ val chatEventModule = module {
 
 val graphQLQueryModule = module {
   single<GraphQLQueryHandler> { GraphQLQueryHandler(get(), get(), get()) }
+}
+
+val authRepositoryModule = module {
+  single<AuthRepository> { NetworkAuthRepository(get(), "https://auth.dev.hedvigit.com") }
 }

@@ -48,12 +48,7 @@ open class HedvigApplication : Application() {
       tryToMigrateTokenFromReactDB()
     }
 
-    if (authenticationTokenService.authenticationToken == null) {
-      whatsNewRepository.removeNewsForNewUser()
-      CoroutineScope(IO).launch {
-        acquireHedvigToken()
-      }
-    }
+    whatsNewRepository.removeNewsForNewUser()
 
     if (isDebug()) {
       Timber.plant(Timber.DebugTree())
@@ -86,21 +81,6 @@ open class HedvigApplication : Application() {
 
     val monitor = RumMonitor.Builder().build()
     GlobalRum.registerIfAbsent(monitor)
-  }
-
-  private suspend fun acquireHedvigToken() {
-    val response = runCatching {
-      apolloClient.mutation(NewSessionMutation()).execute()
-    }
-    if (response.isFailure) {
-      response.exceptionOrNull()?.let { e { "Failed to register a hedvig token: $it" } }
-      return
-    }
-    response.getOrNull()?.data?.createSessionV2?.token?.let { hedvigToken ->
-      authenticationTokenService.authenticationToken = hedvigToken
-      apolloClient.reconnectSubscriptions()
-      i { "Successfully saved hedvig token" }
-    } ?: e { "createSession returned no token" }
   }
 
   private fun tryToMigrateTokenFromReactDB() {

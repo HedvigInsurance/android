@@ -9,6 +9,6 @@ class FakeLoginStatusService(
   override var isLoggedIn: Boolean = false,
 ) : LoginStatusService {
   override suspend fun getLoginStatus(): LoginStatus = error("Not implemented")
-  override fun getLoginStatusAsFlow(): Flow<LoginStatus> = emptyFlow()
+  override fun observeIsLoggedIn(): Flow<LoginStatus> = emptyFlow()
   override fun persistOfferIds(quoteCartId: QuoteCartId) {}
 }
