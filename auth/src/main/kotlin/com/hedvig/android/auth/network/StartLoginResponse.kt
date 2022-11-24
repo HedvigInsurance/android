@@ -27,14 +27,13 @@ data class StartLoginResponse(
   )
 }
 
-fun Response.toAuthAttemptResult(): AuthAttemptResult {
-  val responseBody = body?.string()
-  val result = if (isSuccessful && responseBody != null) {
-    Json.decodeFromString<StartLoginResponse>(responseBody).toAuthAttemptResult()
+fun Json.toAuthAttemptResult(response: Response): AuthAttemptResult {
+  val responseBody = response.body?.string()
+  return if (response.isSuccessful && responseBody != null) {
+    decodeFromString<StartLoginResponse>(responseBody).toAuthAttemptResult()
   } else {
-    AuthAttemptResult.Error(message = message)
+    AuthAttemptResult.Error(message = responseBody ?: "Unknown error")
   }
-  return result
 }
 
 private fun StartLoginResponse.toAuthAttemptResult() = when {

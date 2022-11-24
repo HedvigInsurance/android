@@ -6,8 +6,9 @@ plugins {
 }
 
 dependencies {
+  implementation(projects.coreCommon)
+
   implementation(libs.koin.android)
   implementation(libs.okhttp.core)
   implementation(libs.serialization.json)
-  implementation(projects.coreCommon)
 }
