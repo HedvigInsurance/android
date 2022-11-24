@@ -251,6 +251,8 @@ dependencies {
   androidTestImplementation(libs.assertK)
   androidTestImplementation(libs.kaspresso)
 
+  testImplementation(libs.turbine)
+
   androidTestImplementation(libs.mockk.android)
   testImplementation(libs.mockk.jvm)
 

@@ -402,7 +402,6 @@ val offerModule = module {
       offerRepository = get(),
       loginStatusService = get(),
       startCheckoutUseCase = get(),
-      shouldShowOnNextAppStart = parametersHolder.get(),
       chatRepository = get(),
       editCampaignUseCase = get(),
       featureManager = get(),

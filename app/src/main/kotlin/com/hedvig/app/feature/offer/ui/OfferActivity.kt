@@ -79,11 +79,9 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
       ?: error("A quote cart ID must be passed into OfferActivity")
   private val selectedContractTypes: List<SelectedContractType>
     get() = intent.getParcelableArrayListExtra(SELECTED_CONTRACT_TYPES) ?: emptyList()
-  private val shouldShowOnNextAppStart: Boolean
-    get() = intent.getBooleanExtra(SHOULD_SHOW_ON_NEXT_APP_START, false)
 
   private val viewModel: OfferViewModel by viewModel {
-    parametersOf(quoteCartId, selectedContractTypes, shouldShowOnNextAppStart)
+    parametersOf(quoteCartId, selectedContractTypes)
   }
   private val binding by viewBinding(ActivityOfferBinding::bind)
   private val imageLoader: ImageLoader by inject()
@@ -426,20 +424,17 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
   companion object {
     private const val QUOTE_CART_ID = "QUOTE_CART_ID"
     private const val SELECTED_CONTRACT_TYPES = "SELECTED_TYPES"
-    private const val SHOULD_SHOW_ON_NEXT_APP_START = "SHOULD_SHOW_ON_NEXT_APP_START"
 
     fun newInstance(
       context: Context,
       quoteCartId: QuoteCartId,
       selectedContractTypes: List<SelectedContractType> = emptyList(),
-      shouldShowOnNextAppStart: Boolean = false,
     ) = Intent(
       context,
       OfferActivity::class.java,
     ).apply {
       putExtra(QUOTE_CART_ID, quoteCartId)
       putExtra(SELECTED_CONTRACT_TYPES, selectedContractTypes.toArrayList())
-      putExtra(SHOULD_SHOW_ON_NEXT_APP_START, shouldShowOnNextAppStart)
     }
   }
 }

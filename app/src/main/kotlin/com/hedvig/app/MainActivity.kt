@@ -89,7 +89,6 @@ class MainActivity : AppCompatActivity() {
         OfferActivity.newInstance(
           context = this,
           quoteCartId = loginStatus.quoteCartId,
-          shouldShowOnNextAppStart = true,
         ),
       )
     }
