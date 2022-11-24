@@ -7,19 +7,17 @@ interface AuthRepository {
   suspend fun startLoginAttempt(
     loginMethod: LoginMethod,
     market: String,
-    personalNumber: String,
+    personalNumber: String? = null,
     email: String? = null,
   ): AuthAttemptResult
 
-  fun observeLoginStatus(): Flow<LoginStatusResult>
+  fun observeLoginStatus(statusUrl: StatusUrl): Flow<LoginStatusResult>
 
-  fun submitOtp(otp: String): AuthorizationCode
+  suspend fun submitOtp(statusUrl: StatusUrl, otp: String): SubmitOtpResult
 
-  fun submitAuthorizationCode(authorizationCode: AuthorizationCode): AuthTokenResult
+  suspend fun submitAuthorizationCode(authorizationCode: AuthorizationCode): AuthTokenResult
 
-  fun submitRefreshToken(refreshToken: String): AuthTokenResult
-
-  fun logout(refreshToken: String): LogoutResult
+  suspend fun logout(refreshCode: RefreshCode): LogoutResult
 }
 
 enum class LoginMethod {
@@ -34,22 +32,19 @@ sealed interface AuthAttemptResult {
 
   data class BankIdProperties(
     val id: String,
-    val statusUrl: String,
+    val statusUrl: StatusUrl,
     val autoStartToken: String,
   ) : AuthAttemptResult
 
   data class ZignSecProperties(
     val id: String,
-    val statusUrl: String,
+    val statusUrl: StatusUrl,
     val redirectUrl: String,
   ) : AuthAttemptResult
-
-  data class OtpProperties(
-    val id: String,
-    val statusUrl: String,
-    val validationUrl: String,
-  ) : AuthAttemptResult
 }
+
+@JvmInline
+value class StatusUrl(val url: String)
 
 sealed interface AuthTokenResult {
 
@@ -63,12 +58,27 @@ sealed interface AuthTokenResult {
 
 sealed interface LoginStatusResult {
   data class Failed(val message: String) : LoginStatusResult
-  data class Pending(val message: String) : LoginStatusResult
-  data class Completed(val authorizationCode: AuthorizationCode) : LoginStatusResult
+  data class Pending(val statusMessage: String?) : LoginStatusResult
+  data class Completed(val authorizationCode: LoginAuthorizationCode) : LoginStatusResult
+}
+
+
+sealed interface SubmitOtpResult {
+  data class Error(val message: String) : SubmitOtpResult
+  data class Success(val loginAuthorizationCode: LoginAuthorizationCode) : SubmitOtpResult
+}
+
+
+sealed interface AuthorizationCode {
+  val code: String
 }
 
 @JvmInline
-value class AuthorizationCode(val code: String)
+value class LoginAuthorizationCode(override val code: String) : AuthorizationCode
+
+@JvmInline
+value class RefreshCode(override val code: String) : AuthorizationCode
+
 
 data class AccessToken(
   val token: String,
@@ -76,7 +86,7 @@ data class AccessToken(
 )
 
 data class RefreshToken(
-  val token: String,
+  val token: RefreshCode,
   val expiryInSeconds: Int,
 )
 

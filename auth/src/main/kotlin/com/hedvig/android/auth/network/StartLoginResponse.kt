@@ -1,6 +1,7 @@
 package com.hedvig.android.auth.network
 
 import com.hedvig.android.auth.AuthAttemptResult
+import com.hedvig.android.auth.StatusUrl
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -26,25 +27,24 @@ data class StartLoginResponse(
   )
 }
 
-fun Response.responseToResult(): AuthAttemptResult {
-  val responseBody = body?.string()
-  val result = if (isSuccessful && responseBody != null) {
-    Json.decodeFromString<StartLoginResponse>(responseBody).toAuthAttemptResult()
+fun Json.toAuthAttemptResult(response: Response): AuthAttemptResult {
+  val responseBody = response.body?.string()
+  return if (response.isSuccessful && responseBody != null) {
+    decodeFromString<StartLoginResponse>(responseBody).toAuthAttemptResult()
   } else {
-    AuthAttemptResult.Error(message = message)
+    AuthAttemptResult.Error(message = responseBody ?: "Unknown error")
   }
-  return result
 }
 
 private fun StartLoginResponse.toAuthAttemptResult() = when {
   seBankIdProperties != null -> AuthAttemptResult.BankIdProperties(
     id = id,
-    statusUrl = statusUrl,
+    statusUrl = StatusUrl(statusUrl),
     autoStartToken = seBankIdProperties.autoStartToken,
   )
   zignSecProperties != null -> AuthAttemptResult.ZignSecProperties(
     id = id,
-    statusUrl = statusUrl,
+    statusUrl = StatusUrl(statusUrl),
     redirectUrl = zignSecProperties.redirectUrl,
   )
   else -> AuthAttemptResult.Error(
