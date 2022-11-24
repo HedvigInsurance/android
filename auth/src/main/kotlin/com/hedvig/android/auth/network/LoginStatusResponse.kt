@@ -1,6 +1,6 @@
 package com.hedvig.android.auth.network
 
-import com.hedvig.android.auth.AuthorizationCode
+import com.hedvig.android.auth.LoginAuthorizationCode
 import com.hedvig.android.auth.LoginStatusResult
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
@@ -18,25 +18,24 @@ data class LoginStatusResponse(
   }
 }
 
-fun Response.toLoginStatusResult(): LoginStatusResult {
-  val responseBody = body?.string()
-  val result = if (isSuccessful && responseBody != null) {
-    Json.decodeFromString<LoginStatusResponse>(responseBody).toLoginStatusResult()
+fun Json.createLoginStatusResult(response: Response): LoginStatusResult {
+  val responseBody = response.body?.string()
+  return if (response.isSuccessful && responseBody != null) {
+    decodeFromString<LoginStatusResponse>(responseBody).toLoginStatusResult()
   } else {
-    LoginStatusResult.Failed(message = message)
+    LoginStatusResult.Failed(message = responseBody ?: "Unknown error")
   }
-  return result
 }
 
 private fun LoginStatusResponse.toLoginStatusResult() = when (status) {
   LoginStatusResponse.LoginStatus.PENDING -> LoginStatusResult.Pending(seBankidHintCode)
   LoginStatusResponse.LoginStatus.FAILED -> LoginStatusResult.Failed("Login status failed")
   LoginStatusResponse.LoginStatus.COMPLETED -> {
-    require(authorizationCode != null) {
-      "Login status completed but did not receive authorization code"
+    if (authorizationCode == null) {
+      LoginStatusResult.Failed("Did not get authorization code")
+    } else {
+      val code = LoginAuthorizationCode(authorizationCode)
+      LoginStatusResult.Completed(code)
     }
-
-    val code = AuthorizationCode(authorizationCode)
-    LoginStatusResult.Completed(code)
   }
 }
