@@ -16,7 +16,7 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 
-private const val POLL_DELAY_MILLIS = 1000L
+private const val POLL_DELAY_MILLIS = 3000L
 
 class NetworkAuthRepository(
   private val url: String,

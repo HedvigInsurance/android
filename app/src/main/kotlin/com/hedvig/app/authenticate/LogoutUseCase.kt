@@ -47,5 +47,6 @@ class LogoutUseCase(
 
   private fun clearLoginStatus() {
     loginStatusService.isLoggedIn = false
+    authenticationTokenService.authenticationToken = null
   }
 }
