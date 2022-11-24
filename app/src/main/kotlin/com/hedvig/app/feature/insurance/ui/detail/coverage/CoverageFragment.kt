@@ -20,11 +20,11 @@ import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 class CoverageFragment : Fragment(R.layout.contract_detail_coverage_fragment) {
   private val binding by viewBinding(ContractDetailCoverageFragmentBinding::bind)
-  private val viewModel: ContractDetailViewModel by sharedViewModel()
+  private val viewModel: ContractDetailViewModel by activityViewModel()
   private val imageLoader: ImageLoader by inject()
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

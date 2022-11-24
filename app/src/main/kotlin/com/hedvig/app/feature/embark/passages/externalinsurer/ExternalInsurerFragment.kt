@@ -22,14 +22,14 @@ import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import kotlinx.coroutines.launch
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_fragment) {
 
   private val binding by viewBinding(PreviousOrExternalInsurerFragmentBinding::bind)
 
-  private val embarkViewModel: EmbarkViewModel by sharedViewModel()
-  private val viewModel: ExternalInsurerViewModel by sharedViewModel()
+  private val embarkViewModel: EmbarkViewModel by activityViewModel()
+  private val viewModel: ExternalInsurerViewModel by activityViewModel()
 
   private val insurerData by lazy {
     requireArguments()

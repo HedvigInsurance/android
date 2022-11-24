@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import com.hedvig.app.BuildConfig
-import d
+import slimber.log.d
 
 /**
  * Only for use with [LogCompositions], not defined as private because inline [LogCompositions] doesn't allow it.

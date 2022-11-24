@@ -10,17 +10,15 @@
     - `app/src/${debug|staging|release}/res/values/mixpanel.xml`
 4. Acquire Shake credentials (you can find them in 1Password), place in the following paths:
     - `app/src/${debug|staging}/res/values/shake.xml`
-5. Acquire gradle.properties which contain a token for jitpack authentication (you can find them in 1Password), 
-   append (or create) your global gradle.properties in:
+5. Acquire gradle.properties which contain a token for Github Packages authentication. 
+   Generate your own at GitHub > Settings > Developer Settings > PAT > Tokens (Classic) > Generate New Token > Give the read:packages permission    
+   Append (or create) your global gradle.properties in:
     - `~/.gradle/gradle.properties`
+   Look inside [ci-github-packages-properties](scripts/ci-github-packages-properties.sh) for inspiration.
 6. Download the schema (required to consume any changes in schema as well):
-```bash
-$ ./gradlew :apollo:downloadGiraffeApolloSchemaFromIntrospection
-```
+    `./gradlew :apollo:downloadGiraffeApolloSchemaFromIntrospection`
 7. Download lokalise translations (required to consume latest translations as well):
-```bash
-$ ./gradlew core-resources/downloadStrings
-```
+    `./gradlew :core-resources:downloadStrings`
 8. Build and install via Android Studio
 
 ## Formatting
@@ -41,3 +39,8 @@ run `./gradlew ktlintFormat` to make ktlint to format all files according to the
 
 Generated from `./gradlew :generateProjectDependencyGraph`*\
 *Note that this requires `dot` from graphviz to be on your path. Run `brew install graphviz`
+
+## Renovate
+
+`renovate.json` is a file which Renovate looks at in order to be able to suggest upgrading private artifacts to their latest version.
+The `username` used in there is the result of passing our jitpack username (from 1Password) through Renovate's [website](https://app.renovatebot.com/encrypt) to get the hashed version of it.

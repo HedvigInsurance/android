@@ -11,8 +11,8 @@ import com.datadog.android.privacy.TrackingConsent
 import com.datadog.android.rum.GlobalRum
 import com.datadog.android.rum.RumMonitor
 import com.hedvig.android.apollo.graphql.NewSessionMutation
+import com.hedvig.android.auth.AuthenticationTokenService
 import com.hedvig.android.hanalytics.android.tracking.ApplicationLifecycleTracker
-import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.feature.settings.Theme
 import com.hedvig.app.feature.whatsnew.WhatsNewRepository
 import com.hedvig.app.util.FirebaseCrashlyticsLogExceptionTree
@@ -20,12 +20,12 @@ import com.hedvig.app.util.apollo.reconnectSubscriptions
 import com.hedvig.app.util.extensions.SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN
 import com.hedvig.app.util.extensions.getStoredBoolean
 import com.hedvig.app.util.extensions.storeBoolean
-import e
-import i
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import slimber.log.e
+import slimber.log.i
 import timber.log.Timber
 
 open class HedvigApplication : Application() {

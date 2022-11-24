@@ -7,10 +7,10 @@ import arrow.core.Either
 import com.hedvig.android.apollo.graphql.CommonClaimQuery
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.claims.data.ClaimsRepository
-import e
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import slimber.log.e
 
 class ClaimsViewModel(
   private val claimsRepository: ClaimsRepository,
@@ -35,7 +35,7 @@ class ClaimsViewModel(
     viewModelScope.launch {
       val response = runCatching { claimsRepository.fetchCommonClaims() }
       if (response.isFailure) {
-        response.exceptionOrNull()?.let { e { "$it Failed to fetch claims data" } }
+        response.exceptionOrNull()?.let { e(it) { "$it Failed to fetch claims data" } }
         return@launch
       }
       response.getOrNull()?.data?.let(data::postValue)

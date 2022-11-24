@@ -4,13 +4,14 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
-import com.hedvig.app.authenticate.AuthenticationTokenService
+import com.hedvig.android.auth.AuthenticationTokenService
 import com.hedvig.app.feature.genericauth.otpinput.OtpInputViewModel
 import com.hedvig.app.feature.genericauth.otpinput.OtpResult
 import com.hedvig.app.feature.genericauth.otpinput.ReSendOtpCodeUseCase
 import com.hedvig.app.feature.genericauth.otpinput.ResendOtpResult
 import com.hedvig.app.feature.genericauth.otpinput.SendOtpCodeUseCase
 import com.hedvig.app.util.coroutines.MainCoroutineRule
+import io.mockk.mockk
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -51,6 +52,7 @@ class OtpInputViewModelTest {
         return resendOtpResult
       }
     },
+    uploadMarketAndLanguagePreferencesUseCase = mockk(relaxed = true),
   )
 
   @Test

@@ -3,10 +3,10 @@ package com.hedvig.app.feature.embark.passages.audiorecorder
 import android.media.MediaPlayer
 import android.media.MediaRecorder
 import androidx.lifecycle.ViewModel
-import e
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import slimber.log.e
 import java.io.File
 import java.time.Clock
 import java.time.Instant

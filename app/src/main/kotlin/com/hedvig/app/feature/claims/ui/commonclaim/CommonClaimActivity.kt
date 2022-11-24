@@ -7,11 +7,14 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import coil.ImageLoader
-import coil.load
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.odyssey.ClaimsFlowActivity
+import com.hedvig.android.odyssey.ClaimsFlowActivity.ItemType
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityCommonClaimBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.bulletpoint.BulletPointsAdapter
 import com.hedvig.app.feature.claims.ui.startClaimsFlow
+import com.hedvig.app.ui.coil.load
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
@@ -20,6 +23,7 @@ import com.hedvig.app.util.extensions.view.enable
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.viewBinding
+import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -30,6 +34,7 @@ class CommonClaimActivity : AppCompatActivity(R.layout.activity_common_claim) {
   private val imageLoader: ImageLoader by inject()
   private val binding by viewBinding(ActivityCommonClaimBinding::bind)
   private val hAnalytics: HAnalytics by inject()
+  private val featureManager: FeatureManager by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -64,10 +69,12 @@ class CommonClaimActivity : AppCompatActivity(R.layout.activity_common_claim) {
         firstMessage.commonClaimCreateClaimButton.enable()
         firstMessage.commonClaimCreateClaimButton.setHapticClickListener {
           lifecycleScope.launch {
+            hAnalytics.beginClaim(AppScreen.COMMON_CLAIM_DETAIL)
             startClaimsFlow(
-              hAnalytics = hAnalytics,
+              featureManager = featureManager,
               context = this@CommonClaimActivity,
               fragmentManager = supportFragmentManager,
+              itemType = data.itemTypeFromId()?.let(::ItemType),
             )
           }
         }
@@ -85,4 +92,9 @@ class CommonClaimActivity : AppCompatActivity(R.layout.activity_common_claim) {
         putExtra(CLAIMS_DATA, data)
       }
   }
+}
+
+private fun CommonClaimsData.itemTypeFromId() = when (id) {
+  "6" -> "PHONE"
+  else -> null
 }

@@ -22,13 +22,13 @@ import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.connectpayin.TransitionType
 import com.hedvig.app.feature.connectpayin.showConfirmCloseDialog
 import com.hedvig.app.util.onBackPressedCallback
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
   private var binding: TrustlyConnectFragmentBinding? = null
   private val trustlyViewModel: TrustlyViewModel by viewModel()
-  private val connectPaymentViewModel: ConnectPaymentViewModel by sharedViewModel()
+  private val connectPaymentViewModel: ConnectPaymentViewModel by activityViewModel()
 
   private var hasLoadedWebView = false
 

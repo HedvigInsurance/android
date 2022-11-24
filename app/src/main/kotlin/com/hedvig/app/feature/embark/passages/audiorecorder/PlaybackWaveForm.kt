@@ -75,15 +75,17 @@ fun PlaybackWaveForm(
       }
 
       var size by remember { mutableStateOf(IntSize.Zero) }
-      val sampledAmplitudes by derivedStateOf {
-        val maxAmplitudes = size.width / 15
-        val sampleSize = ceil(amplitudes.size / maxAmplitudes.toDouble()).toInt()
-        if (sampleSize > 1) {
-          amplitudes
-            .chunked(sampleSize)
-            .map { it.average().toInt() }
-        } else {
-          amplitudes
+      val sampledAmplitudes by remember(amplitudes) {
+        derivedStateOf {
+          val maxAmplitudes = size.width / 15
+          val sampleSize = ceil(amplitudes.size / maxAmplitudes.toDouble()).toInt()
+          if (sampleSize > 1) {
+            amplitudes
+              .chunked(sampleSize)
+              .map { it.average().toInt() }
+          } else {
+            amplitudes
+          }
         }
       }
       val playedColor = MaterialTheme.colors.primary

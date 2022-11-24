@@ -2,7 +2,6 @@ package com.hedvig.app.feature.marketing
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import arrow.core.Either
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.market.Language
@@ -10,7 +9,6 @@ import com.hedvig.android.market.Market
 import com.hedvig.app.feature.marketing.data.GetInitialMarketPickerValuesUseCase
 import com.hedvig.app.feature.marketing.data.GetMarketingBackgroundUseCase
 import com.hedvig.app.feature.marketing.data.MarketingBackground
-import com.hedvig.app.feature.marketing.data.SubmitMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.feature.marketing.data.UpdateApplicationLanguageUseCase
 import com.hedvig.hanalytics.HAnalytics
 import com.hedvig.hanalytics.LoginMethod
@@ -22,7 +20,6 @@ import kotlinx.coroutines.launch
 class MarketingViewModel(
   market: Market?,
   private val hAnalytics: HAnalytics,
-  private val submitMarketAndLanguagePreferencesUseCase: SubmitMarketAndLanguagePreferencesUseCase,
   private val getMarketingBackgroundUseCase: GetMarketingBackgroundUseCase,
   private val updateApplicationLanguageUseCase: UpdateApplicationLanguageUseCase,
   private val getInitialMarketPickerValuesUseCase: GetInitialMarketPickerValuesUseCase,
@@ -89,22 +86,14 @@ class MarketingViewModel(
       val language = _state.value.language ?: error("Language null")
 
       _state.update { it.copy(isLoading = true) }
-
-      when (submitMarketAndLanguagePreferencesUseCase.invoke()) {
-        is Either.Left -> {
-          _state.update { it.copy(isLoading = false) }
-        }
-        is Either.Right -> {
-          updateApplicationLanguageUseCase.invoke(market, language)
-          featureManager.invalidateExperiments()
-          _state.update {
-            it.copy(
-              selectedMarket = market,
-              loginMethod = featureManager.getLoginMethod(),
-              isLoading = false,
-            )
-          }
-        }
+      updateApplicationLanguageUseCase.invoke(market, language)
+      featureManager.invalidateExperiments()
+      _state.update {
+        it.copy(
+          selectedMarket = market,
+          loginMethod = featureManager.getLoginMethod(),
+          isLoading = false,
+        )
       }
     }
   }

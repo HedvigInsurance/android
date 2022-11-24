@@ -11,7 +11,6 @@ import com.hedvig.app.util.ProgressPercentage
 import com.hedvig.app.util.getProgressPercentage
 import com.hedvig.app.util.hasReachedTheEnd
 import com.hedvig.app.util.seekToPercent
-import d
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitCancellation
@@ -34,6 +33,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.yield
+import slimber.log.d
 
 private const val ONE_SIXTIETH_OF_A_SECOND: Long = 1_000 / 60
 

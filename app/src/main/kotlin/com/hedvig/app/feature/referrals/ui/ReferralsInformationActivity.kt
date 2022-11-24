@@ -17,9 +17,9 @@ import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.viewBinding
-import e
 import org.javamoney.moneta.Money
 import org.koin.android.ext.android.inject
+import slimber.log.e
 import java.math.BigDecimal
 import javax.money.MonetaryAmount
 

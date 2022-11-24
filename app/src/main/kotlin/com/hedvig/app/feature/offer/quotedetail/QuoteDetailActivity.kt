@@ -23,8 +23,8 @@ import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.toArrayList
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.Insetter
-import e
 import org.koin.android.ext.android.inject
+import slimber.log.e
 
 class QuoteDetailActivity : AppCompatActivity(R.layout.quote_detail_activity) {
   private val binding by viewBinding(QuoteDetailActivityBinding::bind)

@@ -25,8 +25,8 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.windowHeight
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import e
 import org.koin.androidx.viewmodel.ext.android.getViewModel
+import slimber.log.e
 
 class TooltipBottomSheet : BottomSheetDialogFragment() {
   private val binding by viewBinding(TooltipBottomSheetBinding::bind)

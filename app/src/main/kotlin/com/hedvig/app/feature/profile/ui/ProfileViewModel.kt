@@ -9,7 +9,6 @@ import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.feature.profile.ui.tab.ProfileQueryDataToProfileUiStateMapper
 import com.hedvig.app.feature.profile.ui.tab.ProfileUiState
-import e
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,6 +17,7 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import slimber.log.e
 import kotlin.time.Duration.Companion.seconds
 
 class ProfileViewModel(
@@ -75,7 +75,7 @@ class ProfileViewModel(
         val response =
           runCatching { profileRepository.updateEmail(emailInput) }
         if (response.isFailure) {
-          response.exceptionOrNull()?.let { e { "$it error updating email" } }
+          response.exceptionOrNull()?.let { e(it) { "$it error updating email" } }
           return@launch
         }
         response.getOrNull()?.let {
@@ -88,7 +88,7 @@ class ProfileViewModel(
           profileRepository.updatePhoneNumber(phoneNumberInput)
         }
         if (response.isFailure) {
-          response.exceptionOrNull()?.let { e { "$it error updating phone number" } }
+          response.exceptionOrNull()?.let { e(it) { "$it error updating phone number" } }
           return@launch
         }
         response.getOrNull()?.let {

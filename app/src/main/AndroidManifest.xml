@@ -246,7 +246,6 @@
             android:name=".feature.genericauth.GenericAuthActivity"
             android:windowSoftInputMode="adjustResize" />
 
-        <activity android:name=".feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceInfoActivity" />
         <activity
             android:name=".feature.addressautocompletion.ui.AddressAutoCompleteActivity"
             android:windowSoftInputMode="adjustResize" />
@@ -264,7 +263,7 @@
             android:theme="@style/Hedvig.Theme.Marketing"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".feature.claims.ui.ClaimsFlowActivity"
+            android:name="com.hedvig.android.odyssey.ClaimsFlowActivity"
             android:windowSoftInputMode="adjustResize" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"

@@ -290,11 +290,8 @@ fun Context.tryOpenUri(uri: Uri) {
   }
 }
 
-fun Context.startChat(
-  closable: Boolean = true,
-) {
+fun Context.startChat() {
   val intent = Intent(this, ChatActivity::class.java)
-  intent.putExtra(ChatActivity.EXTRA_SHOW_CLOSE, closable)
 
   val options =
     ActivityOptionsCompat.makeCustomAnimation(

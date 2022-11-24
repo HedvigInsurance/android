@@ -6,7 +6,7 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.CreateOtpAttemptMutation
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
-import e
+import slimber.log.e
 
 interface CreateOtpAttemptUseCase {
   suspend fun invoke(email: String): CreateOtpResult

@@ -18,7 +18,7 @@ val hAnalyticsModule = module {
   single<HAnalytics> {
     HAnalyticsImpl(
       sendHAnalyticsEventUseCase = get(),
-      HAnalyticsExperimentManager = get(),
+      hAnalyticsExperimentManager = get(),
       logInfo = get<LogInfoType>(logInfoQualifier),
     )
   }

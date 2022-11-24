@@ -20,13 +20,13 @@ import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.lang.IllegalArgumentException
 import java.time.format.DateTimeFormatter
 
 class DatePickerFragment : Fragment(R.layout.fragment_embark_date_picker) {
-  private val viewModel: EmbarkViewModel by sharedViewModel()
+  private val viewModel: EmbarkViewModel by activityViewModel()
   private val datePickerViewModel: DatePickerViewModel by viewModel()
   private val binding by viewBinding(FragmentEmbarkDatePickerBinding::bind)
   private val data: DatePickerParams

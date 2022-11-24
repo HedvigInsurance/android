@@ -8,8 +8,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
-import coil.dispose
-import coil.load
 import com.hedvig.android.apollo.graphql.ChatMessagesQuery
 import com.hedvig.android.apollo.graphql.fragment.ChatMessageFragment
 import com.hedvig.app.R
@@ -18,13 +16,15 @@ import com.hedvig.app.databinding.ChatMessageHedvigBinding
 import com.hedvig.app.databinding.ChatMessageUserBinding
 import com.hedvig.app.databinding.ChatMessageUserGiphyBinding
 import com.hedvig.app.databinding.ChatMessageUserImageBinding
+import com.hedvig.app.ui.coil.dispose
+import com.hedvig.app.ui.coil.load
 import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
-import e
+import slimber.log.e
 
 class ChatAdapter(
   context: Context,

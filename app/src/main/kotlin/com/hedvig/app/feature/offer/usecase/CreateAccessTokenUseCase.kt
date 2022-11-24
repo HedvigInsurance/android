@@ -6,7 +6,7 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.CreateAccessTokenMutation
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
-import com.hedvig.app.authenticate.AuthenticationTokenService
+import com.hedvig.android.auth.AuthenticationTokenService
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
 

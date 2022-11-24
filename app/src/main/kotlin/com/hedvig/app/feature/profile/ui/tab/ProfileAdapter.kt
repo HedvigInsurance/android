@@ -19,7 +19,7 @@ import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
-import e
+import slimber.log.e
 
 class ProfileAdapter(
   private val lifecycleOwner: LifecycleOwner,

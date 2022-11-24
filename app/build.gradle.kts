@@ -29,7 +29,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "7.2.0"
+    versionName = "8.1.0"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -113,13 +113,16 @@ android {
 
 dependencies {
   implementation(projects.apollo)
+  implementation(projects.auth)
   implementation(projects.coreCommon)
   implementation(projects.coreCommonAndroid)
   implementation(projects.coreDatastore)
   implementation(projects.coreDesignSystem)
+  implementation(projects.coreNavigation)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.featureBusinessmodel)
+  implementation(projects.featureOdyssey)
   implementation(projects.hanalytics.hanalyticsAndroid)
   implementation(projects.hanalytics.hanalyticsCore)
   implementation(projects.hanalytics.hanalyticsFeatureFlags)
@@ -209,7 +212,6 @@ dependencies {
   implementation(libs.firebase.playServicesBase)
   implementation(libs.firebase.crashlytics)
   implementation(libs.firebase.dynamicLinks)
-  implementation(libs.firebase.config)
   implementation(libs.firebase.messaging)
 
   implementation(libs.koin.android)
@@ -224,9 +226,9 @@ dependencies {
   implementation(libs.svg)
 
   implementation(libs.coil.coil)
-  implementation(libs.coil.svg)
-  implementation(libs.coil.gif)
   implementation(libs.coil.compose)
+  implementation(libs.coil.gif)
+  implementation(libs.coil.svg)
 
   implementation(libs.tooltip)
 
@@ -271,5 +273,5 @@ dependencies {
   debugImplementation(libs.androidx.compose.uiTestManifest)
 
   implementation(libs.datadog.sdk)
-  implementation(libs.odyssey)
+  implementation(libs.kotlin.reflect)
 }

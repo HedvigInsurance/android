@@ -2,13 +2,11 @@ package com.hedvig.android.market
 
 import android.annotation.SuppressLint
 import android.content.Context
-import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 
 interface MarketManager {
   val enabledMarkets: List<Market>
   var market: Market?
-  var hasSelectedMarket: Boolean
 }
 
 internal class MarketManagerImpl(
@@ -29,15 +27,6 @@ internal class MarketManagerImpl(
     get() = getMarketLocally()
     set(value) {
       value?.let(::setMarketLocally) ?: removeMarket()
-    }
-  override var hasSelectedMarket: Boolean
-    get() {
-      return sharedPreferences.getBoolean("HAS_SELECTED_MARKET", false)
-    }
-    set(value) {
-      sharedPreferences.edit {
-        putBoolean("HAS_SELECTED_MARKET", value)
-      }
     }
 
   private fun getMarketLocally(): Market? {

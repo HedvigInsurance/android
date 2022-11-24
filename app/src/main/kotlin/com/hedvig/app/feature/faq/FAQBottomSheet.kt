@@ -9,7 +9,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FaqBottomSheetBinding
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import e
+import slimber.log.e
 
 class FAQBottomSheet : BottomSheetDialogFragment() {
   private val binding by viewBinding(FaqBottomSheetBinding::bind)

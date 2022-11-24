@@ -3,7 +3,7 @@ package com.hedvig.app.feature.chat
 import com.hedvig.android.apollo.graphql.ChatMessagesQuery
 import com.hedvig.android.apollo.graphql.fragment.ChatMessageFragment
 import com.hedvig.android.apollo.graphql.type.KeyboardType
-import e
+import slimber.log.e
 
 sealed class ChatInputType {
   companion object {

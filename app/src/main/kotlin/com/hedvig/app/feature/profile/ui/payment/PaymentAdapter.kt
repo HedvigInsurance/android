@@ -40,7 +40,7 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.navigation.getConnectPayoutActivity
-import e
+import slimber.log.e
 
 class PaymentAdapter(
   private val marketManager: MarketManager,

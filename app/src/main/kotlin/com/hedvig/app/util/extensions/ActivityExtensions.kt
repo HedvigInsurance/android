@@ -22,7 +22,7 @@ import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.authenticate.LoginDialog
 import com.hedvig.app.util.extensions.view.setupToolbar
-import e
+import slimber.log.e
 
 val Activity.screenWidth: Int
   get() = window.decorView.measuredWidth

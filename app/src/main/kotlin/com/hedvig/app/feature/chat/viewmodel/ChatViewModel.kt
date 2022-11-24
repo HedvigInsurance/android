@@ -9,7 +9,7 @@ import com.apollographql.apollo3.api.ApolloResponse
 import com.hedvig.android.apollo.graphql.ChatMessagesQuery
 import com.hedvig.android.apollo.graphql.GifQuery
 import com.hedvig.android.apollo.graphql.UploadFileMutation
-import com.hedvig.app.authenticate.AuthenticationTokenService
+import com.hedvig.android.auth.AuthenticationTokenService
 import com.hedvig.app.feature.chat.FileUploadOutcome
 import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.ChatRepository
@@ -18,7 +18,6 @@ import com.hedvig.app.util.LiveEvent
 import com.hedvig.app.util.apollo.reconnectSubscriptions
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
-import e
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -30,6 +29,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import slimber.log.e
 import java.util.concurrent.TimeUnit
 
 class ChatViewModel(
@@ -324,7 +324,7 @@ class ChatViewModel(
       authenticationTokenService.authenticationToken = null
       val response = runCatching { userRepository.logout() }
       if (response.isFailure) {
-        response.exceptionOrNull()?.let { e { "$it Failed to log out" } }
+        response.exceptionOrNull()?.let { e(it) { "$it Failed to log out" } }
         _events.trySend(Event.Error)
       }
       apolloClient.reconnectSubscriptions()

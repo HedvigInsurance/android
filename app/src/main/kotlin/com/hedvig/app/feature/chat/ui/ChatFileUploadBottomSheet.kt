@@ -3,14 +3,13 @@ package com.hedvig.app.feature.chat.ui
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import com.hedvig.app.R
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.ui.fragment.FileUploadBottomSheet
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 class ChatFileUploadBottomSheet : FileUploadBottomSheet() {
   override val title = hedvig.resources.R.string.FILE_UPLOAD_OVERLAY_TITLE
-  private val chatViewModel: ChatViewModel by sharedViewModel()
+  private val chatViewModel: ChatViewModel by activityViewModel()
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
