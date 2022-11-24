@@ -297,19 +297,19 @@ val apolloClientModule = module {
 
 fun makeUserAgent(locale: Locale) =
   "${
-  BuildConfig.APPLICATION_ID
+    BuildConfig.APPLICATION_ID
   } ${
-  BuildConfig.VERSION_NAME
+    BuildConfig.VERSION_NAME
   } (Android ${
-  Build.VERSION.RELEASE
+    Build.VERSION.RELEASE
   }; ${
-  Build.BRAND
+    Build.BRAND
   } ${
-  Build.MODEL
+    Build.MODEL
   }; ${
-  Build.DEVICE
+    Build.DEVICE
   }; ${
-  locale.language
+    locale.language
   })"
 
 val viewModelModule = module {
@@ -326,7 +326,7 @@ val viewModelModule = module {
   }
   viewModel { DatePickerViewModel() }
   viewModel { params ->
-    SimpleSignAuthenticationViewModel(params.get(), get(), get(), get(), get(), get(), get(), get())
+    SimpleSignAuthenticationViewModel(params.get(), get(), get(), get(), get(), get())
   }
   viewModel { (data: MultiActionParams) -> MultiActionViewModel(data) }
   viewModel { (componentState: MultiActionItem.Component?, multiActionParams: MultiActionParams) ->

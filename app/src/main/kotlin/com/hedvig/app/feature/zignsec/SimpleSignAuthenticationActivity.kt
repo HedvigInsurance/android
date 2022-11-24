@@ -48,11 +48,14 @@ class SimpleSignAuthenticationActivity : AppCompatActivity(R.layout.simple_sign_
       }
     }
 
-    lifecycleScope.launch {
-      lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-        viewModel.subscribeToAuthSuccessEvent().collect()
+    viewModel.statusUrl.observe(this) { statusUrl ->
+      lifecycleScope.launch {
+        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+          viewModel.subscribeToAuthSuccessEvent(statusUrl).collect()
+        }
       }
     }
+
     viewModel.events.observe(this) { event ->
       when (event) {
         SimpleSignAuthenticationViewModel.Event.LoadWebView -> showWebView()
