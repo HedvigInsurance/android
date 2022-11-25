@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.hedvig.android.apollo.graphql.type.AuthState
 import com.hedvig.android.auth.LoginStatusResult
 import com.hedvig.app.feature.genericauth.GenericAuthActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -40,7 +39,6 @@ class LoginDialog : AuthenticateDialog() {
       startLoggedInActivity()
     }
   }
-
 
   private fun bindNewStatus(state: LoginStatusResult) {
     when (state) {

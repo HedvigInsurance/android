@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.embark
 
-import com.hedvig.app.authenticate.LoginStatusService
+import com.hedvig.android.auth.LoginStatusService
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
 import com.hedvig.hanalytics.HAnalytics

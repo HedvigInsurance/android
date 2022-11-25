@@ -11,9 +11,9 @@ import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
 import com.hedvig.android.apollo.graphql.fragment.ApiFragment
 import com.hedvig.android.apollo.graphql.fragment.MessageFragment
 import com.hedvig.android.apollo.graphql.type.EmbarkExternalRedirectLocation
+import com.hedvig.android.auth.LoginStatus
+import com.hedvig.android.auth.LoginStatusService
 import com.hedvig.android.core.common.android.asMap
-import com.hedvig.app.authenticate.LoginStatus
-import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.embark.extensions.api
 import com.hedvig.app.feature.embark.extensions.getComputedValues

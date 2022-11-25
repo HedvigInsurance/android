@@ -33,7 +33,6 @@ class NetworkAuthRepository(
     personalNumber: String?,
     email: String?,
   ): AuthAttemptResult {
-
     val requestBody = buildJsonObject {
       put("method", loginMethod.name)
       put("country", market)

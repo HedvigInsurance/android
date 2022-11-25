@@ -7,8 +7,8 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.prop
+import com.hedvig.android.auth.test.FakeLoginStatusService
 import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager
-import com.hedvig.app.authenticate.FakeLoginStatusService
 import com.hedvig.app.feature.offer.model.Checkout
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCase

@@ -3,8 +3,8 @@ package com.hedvig.app.feature.loggedin
 import com.hedvig.android.apollo.graphql.ContractStatusQuery
 import com.hedvig.android.apollo.graphql.HomeQuery
 import com.hedvig.android.apollo.graphql.LoggedInQuery
+import com.hedvig.android.auth.LoginStatusService
 import com.hedvig.app.R
-import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.testdata.feature.home.HOME_DATA_TERMINATED
 import com.hedvig.app.testdata.feature.loggedin.CONTRACT_STATUS_DATA_ONE_TERMINATED_CONTRACT

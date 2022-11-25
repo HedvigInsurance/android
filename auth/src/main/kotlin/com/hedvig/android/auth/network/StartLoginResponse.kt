@@ -51,5 +51,3 @@ private fun StartLoginResponse.toAuthAttemptResult() = when {
     message = "Could not find properties on start login response",
   )
 }
-
-

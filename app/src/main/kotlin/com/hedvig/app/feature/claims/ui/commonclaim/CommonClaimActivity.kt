@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import coil.ImageLoader
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.android.odyssey.ClaimsFlowActivity
 import com.hedvig.android.odyssey.ClaimsFlowActivity.ItemType
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityCommonClaimBinding

@@ -33,9 +33,7 @@ import com.hedvig.android.hanalytics.android.di.hAnalyticsUrlQualifier
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.Navigator
-import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.authenticate.LogoutUseCase
-import com.hedvig.app.authenticate.SharedPreferencesLoginStatusService
 import com.hedvig.app.authenticate.UserViewModel
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.addressautocompletion.data.GetDanishAddressAutoCompletionUseCase
@@ -522,8 +520,7 @@ val externalInsuranceModule = module {
 }
 
 val serviceModule = module {
-  single { FileService(get()) }
-  single<LoginStatusService> { SharedPreferencesLoginStatusService(get(), get(), get()) }
+  single<FileService> { FileService(get()) }
 }
 
 val repositoriesModule = module {

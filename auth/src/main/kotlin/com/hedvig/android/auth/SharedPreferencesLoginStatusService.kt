@@ -1,12 +1,11 @@
-package com.hedvig.app.authenticate
+package com.hedvig.android.auth
 
 import android.content.SharedPreferences
 import arrow.core.identity
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.ContractStatusQuery
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toOption
-import com.hedvig.android.auth.AuthenticationTokenService
+import com.hedvig.android.apollo.toEither
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -15,12 +14,6 @@ import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.yield
-
-interface LoginStatusService {
-  var isLoggedIn: Boolean
-  suspend fun getLoginStatus(): LoginStatus
-  fun getLoginStatusAsFlow(): Flow<LoginStatus>
-}
 
 class SharedPreferencesLoginStatusService(
   private val apolloClient: ApolloClient,
@@ -68,7 +61,7 @@ class SharedPreferencesLoginStatusService(
     return apolloClient
       .query(ContractStatusQuery())
       .safeExecute()
-      .toOption()
+      .toEither()
       .map { contractStatusQueryData ->
         contractStatusQueryData.contracts.isEmpty()
       }

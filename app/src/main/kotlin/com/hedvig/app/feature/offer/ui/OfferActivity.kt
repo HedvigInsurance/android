@@ -20,11 +20,11 @@ import com.adyen.checkout.dropin.DropIn
 import com.adyen.checkout.dropin.DropInResult
 import com.carousell.concatadapterextension.ConcatItemDecoration
 import com.carousell.concatadapterextension.ConcatSpanSizeLookup
+import com.hedvig.android.auth.LoginStatus
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.MainActivity
 import com.hedvig.app.R
-import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.databinding.ActivityOfferBinding
 import com.hedvig.app.feature.adyen.PaymentTokenId
 import com.hedvig.app.feature.adyen.payin.startAdyenPayment

@@ -6,8 +6,10 @@ plugins {
 }
 
 dependencies {
+  implementation(projects.apollo)
   implementation(projects.coreCommon)
 
+  implementation(libs.arrowKt.core)
   implementation(libs.koin.android)
   implementation(libs.okhttp.core)
   implementation(libs.serialization.json)

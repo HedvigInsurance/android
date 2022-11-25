@@ -6,9 +6,9 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.continuations.ensureNotNull
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
+import com.hedvig.android.auth.LoginStatus
+import com.hedvig.android.auth.LoginStatusService
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.app.authenticate.LoginStatus
-import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.adyen.PaymentTokenId
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.checkout.CheckoutParameter

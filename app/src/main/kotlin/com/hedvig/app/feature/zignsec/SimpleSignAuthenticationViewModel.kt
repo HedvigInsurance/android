@@ -5,9 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.auth.LoginStatusService
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.market.Market
-import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.feature.zignsec.usecase.AuthResult
 import com.hedvig.app.feature.zignsec.usecase.SimpleSignStartAuthResult
