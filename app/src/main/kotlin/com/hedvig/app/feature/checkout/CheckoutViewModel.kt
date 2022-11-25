@@ -182,7 +182,6 @@ class CheckoutViewModel(
   private suspend fun onSignSuccess(): Event.CheckoutSuccess {
     featureManager.invalidateExperiments()
     loginStatusService.isLoggedIn = true
-    loginStatusService.isViewingOffer = false
     // Delay sending success in order for the signed quotes to be added on the member
     // Sending success instantly will start HomeFragment, but the member will not have
     // updated contracts.

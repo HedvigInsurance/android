@@ -123,7 +123,6 @@ class EmbarkActivity : AppCompatActivity(R.layout.activity_embark) {
                   context = this@EmbarkActivity,
                   quoteCartId = event.quoteCartId,
                   selectedContractTypes = event.selectedContractTypes,
-                  shouldShowOnNextAppStart = true,
                 ),
               )
             }

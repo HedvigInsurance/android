@@ -22,8 +22,8 @@ import com.carousell.concatadapterextension.ConcatItemDecoration
 import com.carousell.concatadapterextension.ConcatSpanSizeLookup
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
+import com.hedvig.app.MainActivity
 import com.hedvig.app.R
-import com.hedvig.app.SplashActivity
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.databinding.ActivityOfferBinding
 import com.hedvig.app.feature.adyen.PaymentTokenId
@@ -79,11 +79,9 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
       ?: error("A quote cart ID must be passed into OfferActivity")
   private val selectedContractTypes: List<SelectedContractType>
     get() = intent.getParcelableArrayListExtra(SELECTED_CONTRACT_TYPES) ?: emptyList()
-  private val shouldShowOnNextAppStart: Boolean
-    get() = intent.getBooleanExtra(SHOULD_SHOW_ON_NEXT_APP_START, false)
 
   private val viewModel: OfferViewModel by viewModel {
-    parametersOf(quoteCartId, selectedContractTypes, shouldShowOnNextAppStart)
+    parametersOf(quoteCartId, selectedContractTypes)
   }
   private val binding by viewBinding(ActivityOfferBinding::bind)
   private val imageLoader: ImageLoader by inject()
@@ -215,7 +213,7 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
           is OfferViewModel.Event.OpenCheckout -> startCheckoutActivity(event)
           is OfferViewModel.Event.ApproveSuccessful -> handlePostSign(event)
           is OfferViewModel.Event.ApproveError -> handlePostSignError(event)
-          OfferViewModel.Event.DiscardOffer -> startSplashActivity()
+          OfferViewModel.Event.DiscardOffer -> startMainActivity()
           OfferViewModel.Event.StartSwedishBankIdSign -> showSignDialog()
           OfferViewModel.Event.OpenChat -> startChat()
         }
@@ -241,8 +239,8 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
       .show(supportFragmentManager, SwedishBankIdSignDialog.TAG)
   }
 
-  private fun startSplashActivity() {
-    startActivity(Intent(this@OfferActivity, SplashActivity::class.java))
+  private fun startMainActivity() {
+    startActivity(Intent(this@OfferActivity, MainActivity::class.java))
   }
 
   private fun handlePostSignError(event: OfferViewModel.Event.ApproveError) {
@@ -426,20 +424,17 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
   companion object {
     private const val QUOTE_CART_ID = "QUOTE_CART_ID"
     private const val SELECTED_CONTRACT_TYPES = "SELECTED_TYPES"
-    private const val SHOULD_SHOW_ON_NEXT_APP_START = "SHOULD_SHOW_ON_NEXT_APP_START"
 
     fun newInstance(
       context: Context,
       quoteCartId: QuoteCartId,
       selectedContractTypes: List<SelectedContractType> = emptyList(),
-      shouldShowOnNextAppStart: Boolean = false,
     ) = Intent(
       context,
       OfferActivity::class.java,
     ).apply {
       putExtra(QUOTE_CART_ID, quoteCartId)
       putExtra(SELECTED_CONTRACT_TYPES, selectedContractTypes.toArrayList())
-      putExtra(SHOULD_SHOW_ON_NEXT_APP_START, shouldShowOnNextAppStart)
     }
   }
 }

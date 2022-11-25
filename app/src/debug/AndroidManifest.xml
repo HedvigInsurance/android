@@ -22,11 +22,6 @@
         </activity>
 
         <activity
-            android:name=".VectorDrawableGalleryActivity"
-            android:label="Vector Drawable Gallery"
-            android:theme="@style/Hedvig.Theme" />
-
-        <activity
             android:name=".viewgallery.ViewGalleryActivity"
             android:label="View Gallery"
             android:theme="@style/Hedvig.Theme" />

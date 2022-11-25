@@ -2,6 +2,7 @@
 <resources>
 
     <style name="Hedvig.Theme.V27" parent="Hedvig.Theme.V23">
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">?android:colorBackground</item>
         <item name="android:windowLightNavigationBar">?isLightTheme</item>
     </style>
@@ -13,12 +14,6 @@
     <style name="TransparentDialog.V27" parent="TransparentDialog.V23">
         <item name="android:windowLightNavigationBar">?isLightTheme</item>
     </style>
-
-    <style name="Hedvig.Theme.Splash.V27" parent="Hedvig.Theme.Splash.V23">
-        <item name="android:windowLightNavigationBar">false</item>
-    </style>
-
-    <style name="Hedvig.Theme.Splash" parent="Hedvig.Theme.Splash.V27" />
 
     <style name="Hedvig.Theme.Marketing.V27" parent="Hedvig.Theme.Marketing.V23">
         <item name="android:windowLightNavigationBar">false</item>

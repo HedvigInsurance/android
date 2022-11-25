@@ -370,7 +370,6 @@ val viewModelModule = module {
   viewModel { (claimId: String) -> ClaimDetailViewModel(claimId, get(), get(), get()) }
   viewModel { HonestyPledgeViewModel(get()) }
   viewModel { CommonClaimViewModel(get()) }
-  viewModel { SplashViewModel(get()) }
   viewModel { TooltipViewModel(get()) }
   viewModel { MyInfoViewModel(get()) }
   viewModel { AboutAppViewModel(get()) }
@@ -405,7 +404,6 @@ val offerModule = module {
       offerRepository = get(),
       loginStatusService = get(),
       startCheckoutUseCase = get(),
-      shouldShowOnNextAppStart = parametersHolder.get(),
       chatRepository = get(),
       editCampaignUseCase = get(),
       featureManager = get(),

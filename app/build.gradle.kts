@@ -29,7 +29,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "8.0.3"
+    versionName = "8.1.1"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -162,6 +162,7 @@ dependencies {
   implementation(libs.androidx.other.viewPager2)
   implementation(libs.androidx.other.swipeRefreshLayout)
   implementation(libs.androidx.other.recyclerView)
+  implementation(libs.androidx.other.splashscreen)
   implementation(libs.androidx.other.fragment)
   implementation(libs.androidx.other.browser)
   implementation(libs.androidx.other.transition)
@@ -249,6 +250,8 @@ dependencies {
   testImplementation(libs.assertK)
   androidTestImplementation(libs.assertK)
   androidTestImplementation(libs.kaspresso)
+
+  testImplementation(libs.turbine)
 
   androidTestImplementation(libs.mockk.android)
   testImplementation(libs.mockk.jvm)
