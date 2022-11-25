@@ -10,22 +10,13 @@ import com.datadog.android.core.configuration.Credentials
 import com.datadog.android.privacy.TrackingConsent
 import com.datadog.android.rum.GlobalRum
 import com.datadog.android.rum.RumMonitor
-import com.hedvig.android.apollo.graphql.NewSessionMutation
 import com.hedvig.android.auth.AuthenticationTokenService
 import com.hedvig.android.hanalytics.android.tracking.ApplicationLifecycleTracker
+import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.settings.Theme
 import com.hedvig.app.feature.whatsnew.WhatsNewRepository
 import com.hedvig.app.util.FirebaseCrashlyticsLogExceptionTree
-import com.hedvig.app.util.apollo.reconnectSubscriptions
-import com.hedvig.app.util.extensions.SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN
-import com.hedvig.app.util.extensions.getStoredBoolean
-import com.hedvig.app.util.extensions.storeBoolean
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
-import slimber.log.e
-import slimber.log.i
 import timber.log.Timber
 
 open class HedvigApplication : Application() {
@@ -40,13 +31,6 @@ open class HedvigApplication : Application() {
     Theme
       .fromSettings(this)
       ?.apply()
-
-    if (authenticationTokenService.authenticationToken == null && !getStoredBoolean(
-        SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN,
-      )
-    ) {
-      tryToMigrateTokenFromReactDB()
-    }
 
     whatsNewRepository.removeNewsForNewUser()
 
@@ -81,17 +65,6 @@ open class HedvigApplication : Application() {
 
     val monitor = RumMonitor.Builder().build()
     GlobalRum.registerIfAbsent(monitor)
-  }
-
-  private fun tryToMigrateTokenFromReactDB() {
-    val instance = LegacyReactDatabaseSupplier.getInstance(this)
-    instance.getTokenIfExists()?.let { token ->
-      authenticationTokenService.authenticationToken = token
-      apolloClient.reconnectSubscriptions()
-    }
-    instance.clearAndCloseDatabase()
-    // Let's only try this once
-    storeBoolean(SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN, true)
   }
 
   open val graphqlUrl get() = getString(R.string.GRAPHQL_URL)
