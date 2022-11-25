@@ -95,7 +95,6 @@ class SplashActivity : AppCompatActivity(R.layout.activity_splash) {
           OfferActivity.newInstance(
             context = this,
             quoteCartId = loginStatus.quoteCartId,
-            shouldShowOnNextAppStart = true,
           ),
         )
       }

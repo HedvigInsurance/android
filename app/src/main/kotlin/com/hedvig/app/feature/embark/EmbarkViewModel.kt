@@ -43,7 +43,7 @@ import kotlinx.coroutines.launch
 import java.util.Stack
 import kotlin.math.max
 
-const val QUOTE_CART_ID_KEY = "quoteCartId"
+const val QUOTE_CART_EMBARK_STORE_ID_KEY = "quoteCartId"
 
 abstract class EmbarkViewModel(
   private val valueStore: ValueStore,
@@ -164,7 +164,7 @@ abstract class EmbarkViewModel(
         // For offers, there is a problem with the Offer screen not committing before this stage is reached,
         //  meaning that the old values were returned from getList/get.
         valueStore.withCommittedVersion {
-          val quoteCartId = this.get(QUOTE_CART_ID_KEY)?.let { QuoteCartId(it) }
+          val quoteCartId = this.get(QUOTE_CART_EMBARK_STORE_ID_KEY)?.let { QuoteCartId(it) }
           if (quoteCartId == null) {
             _events.trySend(Event.Error())
           } else {
@@ -275,7 +275,7 @@ abstract class EmbarkViewModel(
   }
 
   private fun createOfferEvent(): Event {
-    val quoteCartId = valueStore.get(QUOTE_CART_ID_KEY)?.let(::QuoteCartId)
+    val quoteCartId = valueStore.get(QUOTE_CART_EMBARK_STORE_ID_KEY)?.let(::QuoteCartId)
     return if (quoteCartId != null) {
       Event.Offer(
         quoteCartId = quoteCartId,

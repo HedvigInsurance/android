@@ -146,7 +146,6 @@ abstract class OfferViewModel : ViewModel() {
   abstract fun onOpenCheckout()
   abstract fun reload()
   abstract fun onDiscardOffer()
-  abstract fun onGoToDirectDebit()
   abstract fun onSwedishBankIdSign()
   abstract fun onPaymentTokenIdReceived(id: PaymentTokenId)
 }
@@ -157,7 +156,6 @@ class OfferViewModelImpl(
   private val offerRepository: OfferRepository,
   private val loginStatusService: LoginStatusService,
   private val startCheckoutUseCase: StartCheckoutUseCase,
-  shouldShowOnNextAppStart: Boolean,
   private val chatRepository: ChatRepository,
   private val editCampaignUseCase: EditCampaignUseCase,
   private val featureManager: FeatureManager,
@@ -174,9 +172,6 @@ class OfferViewModelImpl(
     getBundleVariantUseCase.invoke(quoteCartId, selectedContractTypes)
 
   init {
-    loginStatusService.isViewingOffer = shouldShowOnNextAppStart
-    loginStatusService.persistOfferIds(quoteCartId)
-
     offerState
       .flatMapLatest(::toViewState)
       .onEach { viewState: ViewState ->
@@ -261,12 +256,7 @@ class OfferViewModelImpl(
   }
 
   override fun onDiscardOffer() {
-    loginStatusService.isViewingOffer = false
     _events.trySend(Event.DiscardOffer)
-  }
-
-  override fun onGoToDirectDebit() {
-    loginStatusService.isViewingOffer = false
   }
 
   override fun approveOffer() {
