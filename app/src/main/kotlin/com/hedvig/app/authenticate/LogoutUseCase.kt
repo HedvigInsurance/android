@@ -46,7 +46,6 @@ class LogoutUseCase(
   }
 
   private fun clearLoginStatus() {
-    loginStatusService.isViewingOffer = false
     loginStatusService.isLoggedIn = false
   }
 }

@@ -33,8 +33,8 @@ import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.android.core.common.preferences.PreferenceKey
 import com.hedvig.android.market.Language
+import com.hedvig.app.MainActivity
 import com.hedvig.app.R
-import com.hedvig.app.SplashActivity
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import kotlinx.coroutines.delay
 import kotlin.system.exitProcess
@@ -112,7 +112,7 @@ suspend fun Context.showKeyboardWithDelay(inputView: View, delayDuration: Durati
   }
 }
 
-fun Context.triggerRestartActivity(activity: Class<*> = SplashActivity::class.java) {
+fun Context.triggerRestartActivity(activity: Class<*> = MainActivity::class.java) {
   val startActivity = Intent(this, activity)
   startActivity.flags =
     Intent.FLAG_ACTIVITY_NEW_TASK or

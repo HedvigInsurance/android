@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <item name="splash_background" type="color">@color/hedvig_white</item>
+    <item name="splash_foreground" type="color">@color/hedvig_black</item>
+
     <color name="black">#000000</color>
     <color name="blur_white">#e6ffffff</color>
     <color name="white">#ffffff</color>
