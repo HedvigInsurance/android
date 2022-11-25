@@ -22,8 +22,8 @@ import com.carousell.concatadapterextension.ConcatItemDecoration
 import com.carousell.concatadapterextension.ConcatSpanSizeLookup
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
+import com.hedvig.app.MainActivity
 import com.hedvig.app.R
-import com.hedvig.app.SplashActivity
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.databinding.ActivityOfferBinding
 import com.hedvig.app.feature.adyen.PaymentTokenId
@@ -213,7 +213,7 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
           is OfferViewModel.Event.OpenCheckout -> startCheckoutActivity(event)
           is OfferViewModel.Event.ApproveSuccessful -> handlePostSign(event)
           is OfferViewModel.Event.ApproveError -> handlePostSignError(event)
-          OfferViewModel.Event.DiscardOffer -> startSplashActivity()
+          OfferViewModel.Event.DiscardOffer -> startMainActivity()
           OfferViewModel.Event.StartSwedishBankIdSign -> showSignDialog()
           OfferViewModel.Event.OpenChat -> startChat()
         }
@@ -239,8 +239,8 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
       .show(supportFragmentManager, SwedishBankIdSignDialog.TAG)
   }
 
-  private fun startSplashActivity() {
-    startActivity(Intent(this@OfferActivity, SplashActivity::class.java))
+  private fun startMainActivity() {
+    startActivity(Intent(this@OfferActivity, MainActivity::class.java))
   }
 
   private fun handlePostSignError(event: OfferViewModel.Event.ApproveError) {

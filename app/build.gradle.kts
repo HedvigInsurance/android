@@ -162,6 +162,7 @@ dependencies {
   implementation(libs.androidx.other.viewPager2)
   implementation(libs.androidx.other.swipeRefreshLayout)
   implementation(libs.androidx.other.recyclerView)
+  implementation(libs.androidx.other.splashscreen)
   implementation(libs.androidx.other.fragment)
   implementation(libs.androidx.other.browser)
   implementation(libs.androidx.other.transition)

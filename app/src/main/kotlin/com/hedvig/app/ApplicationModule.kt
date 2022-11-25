@@ -368,7 +368,6 @@ val viewModelModule = module {
   viewModel { (claimId: String) -> ClaimDetailViewModel(claimId, get(), get(), get()) }
   viewModel { HonestyPledgeViewModel(get()) }
   viewModel { CommonClaimViewModel(get()) }
-  viewModel { SplashViewModel(get()) }
   viewModel { TooltipViewModel(get()) }
   viewModel { MyInfoViewModel(get()) }
   viewModel { AboutAppViewModel(get()) }

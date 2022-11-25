@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Hedvig.Theme.Splash" parent="Theme.SplashScreen">
+        <item name="postSplashScreenTheme">@style/Hedvig.Theme</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash</item>
+        <item name="windowSplashScreenAnimationDuration">0</item>
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
+    </style>
 
     <style name="Hedvig.Theme" parent="Hedvig.Theme.V23" />
 
@@ -17,14 +27,6 @@
     <style name="Hedvig.Theme.Chat">
         <item name="android:navigationBarColor">@color/color_background_95</item>
     </style>
-
-    <style name="Hedvig.Theme.Splash.V23" parent="Hedvig.Theme">
-        <item name="android:windowLightStatusBar">false</item>
-        <item name="android:windowBackground">@drawable/splash_background</item>
-        <item name="android:navigationBarColor">@color/hedvig_black</item>
-    </style>
-
-    <style name="Hedvig.Theme.Splash" parent="Hedvig.Theme.Splash.V23" />
 
     <style name="FullScreenDialog" parent="Hedvig.Theme">
         <item name="windowNoTitle">true</item>

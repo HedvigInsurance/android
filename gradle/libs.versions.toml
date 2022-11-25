@@ -39,6 +39,7 @@ androidx-other-fragment = "1.5.4"
 androidx-other-media = "1.6.0"
 androidx-other-preference = "1.2.0"
 androidx-other-recyclerView = "1.2.1"
+androidx-other-splashscreen = "1.0.0"
 androidx-other-startup = "1.1.1"
 androidx-other-swipeRefreshLayout = "1.1.0"
 androidx-other-transition = "1.4.1"
@@ -134,6 +135,7 @@ androidx-other-fragment = { module = "androidx.fragment:fragment-ktx", version.r
 androidx-other-media = { module = "androidx.media:media", version.ref = "androidx-other-media" }
 androidx-other-preference = { module = "androidx.preference:preference-ktx", version.ref = "androidx-other-preference" }
 androidx-other-recyclerView = { module = "androidx.recyclerview:recyclerview", version.ref = "androidx-other-recyclerView" }
+androidx-other-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "androidx-other-splashscreen" }
 androidx-other-startup = { module = "androidx.startup:startup-runtime", version.ref = "androidx-other-startup" }
 androidx-other-swipeRefreshLayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "androidx-other-swipeRefreshLayout" }
 androidx-other-transition = { module = "androidx.transition:transition-ktx", version.ref = "androidx-other-transition" }
