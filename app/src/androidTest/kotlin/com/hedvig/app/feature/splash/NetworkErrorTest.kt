@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.splash
 
 import com.hedvig.android.apollo.graphql.ContractStatusQuery
-import com.hedvig.app.SplashActivity
+import com.hedvig.app.MainActivity
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
@@ -15,7 +15,7 @@ import org.junit.Test
 
 class NetworkErrorTest : TestCase() {
   @get:Rule
-  val activityRule = LazyIntentsActivityScenarioRule(SplashActivity::class.java)
+  val activityRule = LazyIntentsActivityScenarioRule(MainActivity::class.java)
 
   @get:Rule
   val mockServerRule = ApolloMockServerRule(

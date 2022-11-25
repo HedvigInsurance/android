@@ -45,7 +45,6 @@ class SwedishBankIdSignViewModel(
         when (createAccessTokenUseCase.invoke(quoteCartId)) {
           is Either.Left -> _viewState.value = BankIdSignViewState.Error()
           is Either.Right -> {
-            loginStatusService.isViewingOffer = false
             loginStatusService.isLoggedIn = true
             featureManager.invalidateExperiments()
             _viewState.value = BankIdSignViewState.StartDirectDebit(featureManager.getPaymentType())

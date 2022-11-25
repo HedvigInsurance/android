@@ -40,24 +40,3 @@ fun ImageView.avdStart() {
 fun ImageView.avdStop() {
   (drawable as? Animatable)?.stop()
 }
-
-inline fun ImageView.avdDoOnEnd(crossinline action: () -> Unit) {
-  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-    (drawable as? AnimatedVectorDrawable)?.registerAnimationCallback(
-      object : Animatable2.AnimationCallback() {
-        override fun onAnimationEnd(drawable: Drawable?) {
-          action()
-        }
-      },
-    )
-  } else {
-    (drawable as? AnimatedVectorDrawableCompat)
-      ?.registerAnimationCallback(
-        object : Animatable2Compat.AnimationCallback() {
-          override fun onAnimationEnd(drawable: Drawable?) {
-            action()
-          }
-        },
-      )
-  }
-}
