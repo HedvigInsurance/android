@@ -18,12 +18,12 @@ import okhttp3.RequestBody.Companion.toRequestBody
 
 private const val POLL_DELAY_MILLIS = 3000L
 
-class NetworkAuthRepository(
+internal class NetworkAuthRepository(
   private val okhttpClient: OkHttpClient,
   private val url: String,
 ) : AuthRepository {
 
-  private val jsonBuilder = Json {
+  private val json: Json = Json {
     ignoreUnknownKeys = true
   }
 
@@ -53,7 +53,7 @@ class NetworkAuthRepository(
     return try {
       okhttpClient.newCall(request)
         .await()
-        .let(jsonBuilder::toAuthAttemptResult)
+        .toAuthAttemptResult(json)
     } catch (e: Exception) {
       AuthAttemptResult.Error("Error: ${e.message}")
     }
@@ -71,7 +71,7 @@ class NetworkAuthRepository(
           val loginStatusResult = okhttpClient
             .newCall(request)
             .await()
-            .let(jsonBuilder::createLoginStatusResult)
+            .createLoginStatusResult(json)
 
           emit(loginStatusResult)
 
@@ -99,7 +99,7 @@ class NetworkAuthRepository(
     return try {
       okhttpClient.newCall(request)
         .await()
-        .let(jsonBuilder::toSubmitOtpResult)
+        .toSubmitOtpResult(json)
     } catch (e: Exception) {
       SubmitOtpResult.Error("Error: ${e.message}")
     }
@@ -126,7 +126,7 @@ class NetworkAuthRepository(
     return try {
       okhttpClient.newCall(request)
         .await()
-        .let(jsonBuilder::toAuthTokenResult)
+        .toAuthTokenResult(json)
     } catch (e: Exception) {
       AuthTokenResult.Error("Error: ${e.message}")
     }

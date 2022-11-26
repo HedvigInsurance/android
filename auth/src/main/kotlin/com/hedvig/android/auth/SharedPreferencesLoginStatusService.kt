@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.yield
 
-class SharedPreferencesLoginStatusService(
+internal class SharedPreferencesLoginStatusService(
   private val apolloClient: ApolloClient,
   private val sharedPreferences: SharedPreferences,
   private val authenticationTokenManager: AuthenticationTokenService,

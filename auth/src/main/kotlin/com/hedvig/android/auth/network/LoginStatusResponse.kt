@@ -8,7 +8,7 @@ import kotlinx.serialization.json.Json
 import okhttp3.Response
 
 @Serializable
-data class LoginStatusResponse(
+internal data class LoginStatusResponse(
   val status: LoginStatus,
   val statusText: String,
   val authorizationCode: String?,
@@ -18,10 +18,10 @@ data class LoginStatusResponse(
   }
 }
 
-fun Json.createLoginStatusResult(response: Response): LoginStatusResult {
-  val responseBody = response.body?.string()
-  return if (response.isSuccessful && responseBody != null) {
-    decodeFromString<LoginStatusResponse>(responseBody).toLoginStatusResult()
+internal fun Response.createLoginStatusResult(json: Json): LoginStatusResult {
+  val responseBody = body?.string()
+  return if (isSuccessful && responseBody != null) {
+    json.decodeFromString<LoginStatusResponse>(responseBody).toLoginStatusResult()
   } else {
     LoginStatusResult.Failed(message = responseBody ?: "Unknown error")
   }
