@@ -6,7 +6,6 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.apollo)
   implementation(projects.coreCommon)
 
   implementation(libs.arrowKt.core)
