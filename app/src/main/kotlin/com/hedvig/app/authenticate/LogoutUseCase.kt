@@ -4,6 +4,7 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.auth.AuthenticationTokenService
 import com.hedvig.android.auth.LoginStatusService
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.UserRepository
@@ -18,6 +19,7 @@ class LogoutUseCase(
   private val userRepository: UserRepository,
   private val authenticationTokenService: AuthenticationTokenService,
   private val chatEventStore: ChatEventStore,
+  private val featureManager: FeatureManager,
 ) {
 
   sealed class LogoutResult {
@@ -31,8 +33,9 @@ class LogoutUseCase(
       clearLoginStatus()
       clearMarket()
       clearAuthenticationToken()
-      apolloClient.reconnectSubscriptions()
       runCatching { pushTokenManager.refreshToken() }
+      apolloClient.reconnectSubscriptions()
+      featureManager.invalidateExperiments()
       chatEventStore.resetChatClosedCounter()
       LogoutResult.Success
     }
