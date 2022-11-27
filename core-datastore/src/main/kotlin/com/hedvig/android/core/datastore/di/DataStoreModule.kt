@@ -29,5 +29,5 @@ val dataStoreModule = module {
       },
     )
   }
-  single<DeviceIdDataStore> { DeviceIdDataStoreImpl(get()) }
+  single<DeviceIdDataStore> { DeviceIdDataStoreImpl(get(), get()) }
 }

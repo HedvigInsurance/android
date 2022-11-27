@@ -239,7 +239,7 @@ val applicationModule = module {
             .build(),
         )
       }
-      .addInterceptor(DeviceIdInterceptor(get()))
+      .addInterceptor(DeviceIdInterceptor(get(), get()))
     if (isDebug()) {
       val logger = HttpLoggingInterceptor { message ->
         if (message.contains("Content-Disposition")) {
@@ -541,8 +541,8 @@ val repositoriesModule = module {
 }
 
 val notificationModule = module {
-  single { PaymentNotificationSender(get(), get(), get()) } bind NotificationSender::class
-  single { CrossSellNotificationSender(get(), get()) } bind NotificationSender::class
+  single { PaymentNotificationSender(get(), get(), get(), get()) } bind NotificationSender::class
+  single { CrossSellNotificationSender(get(), get(), get()) } bind NotificationSender::class
   single { ChatNotificationSender(get()) } bind NotificationSender::class
   single { ReferralsNotificationSender(get()) } bind NotificationSender::class
   single { GenericNotificationSender(get()) } bind NotificationSender::class
@@ -557,7 +557,7 @@ val useCaseModule = module {
   single { StartNorwegianAuthUseCase(get()) }
   single { SubscribeToAuthResultUseCase(get()) }
   single { StartCheckoutUseCase(get(), get(), get()) }
-  single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get()) }
+  single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
   single { GetContractsUseCase(get(), get()) }
   single { GraphQLQueryUseCase(get()) }
   single { GetCrossSellsUseCase(get(), get()) }

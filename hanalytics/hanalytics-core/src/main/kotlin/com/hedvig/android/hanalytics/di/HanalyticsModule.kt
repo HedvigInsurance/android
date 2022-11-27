@@ -34,5 +34,5 @@ val hAnalyticsModule = module {
       logInfo = get<LogInfoType>(logInfoQualifier),
     )
   }
-  single<NetworkHAnalyticsSink> { NetworkHAnalyticsSink(get()) } bind HAnalyticsSink::class
+  single<NetworkHAnalyticsSink> { NetworkHAnalyticsSink(get(), get()) } bind HAnalyticsSink::class
 }
