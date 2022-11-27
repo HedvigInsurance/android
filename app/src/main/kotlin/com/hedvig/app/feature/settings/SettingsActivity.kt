@@ -8,8 +8,6 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
@@ -24,10 +22,7 @@ import com.hedvig.app.databinding.ActivitySettingsBinding
 import com.hedvig.app.feature.marketing.MarketingActivity
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.showAlert
-import com.hedvig.app.util.extensions.triggerRestartActivity
 import com.hedvig.app.util.extensions.viewBinding
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.getViewModel
@@ -59,22 +54,6 @@ class SettingsActivity : AppCompatActivity(R.layout.activity_settings) {
       setPreferencesFromResource(R.xml.preferences, rootKey)
 
       getViewModel<SettingsViewModel>()
-
-      userViewModel.events
-        .flowWithLifecycle(lifecycle)
-        .onEach { event ->
-          when (event) {
-            UserViewModel.Event.Logout -> {
-              requireActivity().triggerRestartActivity(MarketingActivity::class.java)
-            }
-            is UserViewModel.Event.Error -> requireContext().showAlert(
-              title = com.adyen.checkout.dropin.R.string.error_dialog_title,
-              message = com.adyen.checkout.dropin.R.string.component_error,
-              positiveAction = {},
-            )
-          }
-        }
-        .launchIn(lifecycleScope)
 
       val market = marketManager.market
       if (market == null) {
