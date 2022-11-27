@@ -4,18 +4,14 @@ import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
 import com.hedvig.android.apollo.graphql.ChatMessagesQuery
 import com.hedvig.android.apollo.graphql.GifQuery
 import com.hedvig.android.apollo.graphql.UploadFileMutation
-import com.hedvig.android.auth.AuthenticationTokenService
 import com.hedvig.app.feature.chat.FileUploadOutcome
 import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.ChatRepository
-import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.util.LiveEvent
-import com.hedvig.app.util.apollo.reconnectSubscriptions
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import io.reactivex.Observable
@@ -34,9 +30,6 @@ import java.util.concurrent.TimeUnit
 
 class ChatViewModel(
   private val chatRepository: ChatRepository,
-  private val userRepository: UserRepository,
-  private val authenticationTokenService: AuthenticationTokenService,
-  private val apolloClient: ApolloClient,
   private val chatClosedTracker: ChatEventStore,
   private val hAnalytics: HAnalytics,
 ) : ViewModel() {
@@ -316,19 +309,6 @@ class ChatViewModel(
         return@launch
       }
       response.getOrNull()?.data?.let { gifs.postValue(it) }
-    }
-  }
-
-  fun restartChat() {
-    viewModelScope.launch {
-      authenticationTokenService.authenticationToken = null
-      val response = runCatching { userRepository.logout() }
-      if (response.isFailure) {
-        response.exceptionOrNull()?.let { e(it) { "$it Failed to log out" } }
-        _events.trySend(Event.Error)
-      }
-      apolloClient.reconnectSubscriptions()
-      _events.trySend(Event.Restart)
     }
   }
 
