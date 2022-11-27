@@ -56,8 +56,7 @@ suspend fun DynamicLink.startActivity(
             null,
           )
         }
-        null -> context.startActivity(MarketingActivity.newInstance(context))
-        else -> context.startActivity(Intent(context, MarketingActivity::class.java))
+        else -> context.startActivity(MarketingActivity.newInstance(context))
       }
     }
     DynamicLink.None -> onDefault()
