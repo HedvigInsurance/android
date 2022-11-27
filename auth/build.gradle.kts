@@ -7,7 +7,9 @@ plugins {
 
 dependencies {
   implementation(projects.coreCommon)
+  implementation(projects.coreDatastore)
 
+  implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.arrowKt.core)
   implementation(libs.koin.android)
   implementation(libs.okhttp.core)
