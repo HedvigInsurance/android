@@ -116,12 +116,10 @@ class MarketingActivity : AppCompatActivity() {
   }
 
   companion object {
-    fun newInstance(context: Context, withoutHistory: Boolean = false) =
+    fun newInstance(context: Context): Intent =
       Intent(context, MarketingActivity::class.java).apply {
-        if (withoutHistory) {
-          addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-          addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        }
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
       }
   }
 }
