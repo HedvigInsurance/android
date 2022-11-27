@@ -17,9 +17,9 @@ import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
+import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.authenticate.UserViewModel
 import com.hedvig.app.databinding.ActivitySettingsBinding
-import com.hedvig.app.feature.marketing.MarketingActivity
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.viewBinding
@@ -48,6 +48,7 @@ class SettingsActivity : AppCompatActivity(R.layout.activity_settings) {
     private val userViewModel: UserViewModel by activityViewModel()
     private val viewModel: SettingsViewModel by activityViewModel()
     private val languageService: LanguageService by inject()
+    private val logoutUseCase: LogoutUseCase by inject()
 
     @SuppressLint("ApplySharedPref")
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -55,10 +56,7 @@ class SettingsActivity : AppCompatActivity(R.layout.activity_settings) {
 
       getViewModel<SettingsViewModel>()
 
-      val market = marketManager.market
-      if (market == null) {
-        startActivity(MarketingActivity.newInstance(requireContext()))
-      }
+      val market = marketManager.market ?: return logoutUseCase.invoke()
 
       val themePreference = findPreference<ListPreference>(SETTING_THEME)
       themePreference?.let { tp ->
@@ -77,8 +75,8 @@ class SettingsActivity : AppCompatActivity(R.layout.activity_settings) {
 
       val marketPreference = findPreference<Preference>(SETTINGS_MARKET)
       marketPreference?.let { mp ->
-        mp.icon = market?.flag?.let { requireContext().compatDrawable(it) }
-        mp.summary = market?.label?.let { getString(it) }
+        mp.icon = market.flag.let { requireContext().compatDrawable(it) }
+        mp.summary = getString(market.label)
         mp.setOnPreferenceClickListener {
           requireContext().showAlert(
             hedvig.resources.R.string.SETTINGS_ALERT_CHANGE_MARKET_TITLE,
@@ -107,10 +105,7 @@ class SettingsActivity : AppCompatActivity(R.layout.activity_settings) {
             lp.entries = resources.getStringArray(R.array.language_settings_dk)
             lp.entryValues = resources.getStringArray(R.array.language_settings_values_dk)
           }
-          Market.FR,
-          null,
-          -> {
-          }
+          Market.FR -> {}
         }
         lp.setOnPreferenceChangeListener { _, newValue ->
           (newValue as? String)?.let { v ->
