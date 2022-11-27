@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import slimber.log.e
 import timber.log.Timber
 
 class UserViewModel(
@@ -80,11 +81,8 @@ class UserViewModel(
 
   private suspend fun submitCode(authorizationCode: AuthorizationCode) {
     when (val result = authRepository.submitAuthorizationCode(authorizationCode)) {
-      is AuthTokenResult.Error -> Timber.e(result.message)
+      is AuthTokenResult.Error -> e { result.message }
       is AuthTokenResult.Success -> {
-        runCatching {
-          pushTokenManager.refreshToken()
-        }
         onAuthSuccess(result.accessToken)
       }
     }
@@ -97,6 +95,9 @@ class UserViewModel(
     uploadMarketAndLanguagePreferencesUseCase.invoke()
     mutableViewState.update {
       it.copy(navigateToLoggedIn = true)
+    }
+    runCatching {
+      pushTokenManager.refreshToken()
     }
   }
 

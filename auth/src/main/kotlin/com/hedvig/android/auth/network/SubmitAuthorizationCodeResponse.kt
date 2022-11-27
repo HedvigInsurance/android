@@ -11,7 +11,7 @@ import kotlinx.serialization.json.Json
 import okhttp3.Response
 
 @Serializable
-data class SubmitAuthorizationCodeResponse(
+internal data class SubmitAuthorizationCodeResponse(
   @SerialName("access_token")
   val accessToken: String,
   @SerialName("expires_in")
@@ -22,7 +22,7 @@ data class SubmitAuthorizationCodeResponse(
   val refreshTokenExpiresIn: Int,
 )
 
-fun Response.toAuthTokenResult(json: Json): AuthTokenResult {
+internal fun Response.toAuthTokenResult(json: Json): AuthTokenResult {
   val responseBody = body?.string()
   return if (isSuccessful && responseBody != null) {
     json.decodeFromString<SubmitAuthorizationCodeResponse>(responseBody).toAuthAttemptResult()

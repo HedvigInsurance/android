@@ -27,7 +27,7 @@ internal data class StartLoginResponse(
   )
 }
 
-fun Response.toAuthAttemptResult(json: Json): AuthAttemptResult {
+internal fun Response.toAuthAttemptResult(json: Json): AuthAttemptResult {
   val responseBody = body?.string()
   return if (isSuccessful && responseBody != null) {
     json.decodeFromString<StartLoginResponse>(responseBody).toAuthAttemptResult()
@@ -36,7 +36,7 @@ fun Response.toAuthAttemptResult(json: Json): AuthAttemptResult {
   }
 }
 
-private fun StartLoginResponse.toAuthAttemptResult() = when {
+private fun StartLoginResponse.toAuthAttemptResult(): AuthAttemptResult = when {
   seBankIdProperties != null -> AuthAttemptResult.BankIdProperties(
     id = id,
     statusUrl = StatusUrl(statusUrl),

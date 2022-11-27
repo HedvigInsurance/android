@@ -46,7 +46,6 @@ suspend fun DynamicLink.startActivity(
     )
     is DynamicLink.Referrals -> {
       when (marketManager.market) {
-        null -> context.startActivity(MarketingActivity.newInstance(context))
         Market.SE -> {
           context.startActivity(
             ReferralsReceiverActivity.newInstance(
@@ -57,6 +56,7 @@ suspend fun DynamicLink.startActivity(
             null,
           )
         }
+        null -> context.startActivity(MarketingActivity.newInstance(context))
         else -> context.startActivity(Intent(context, MarketingActivity::class.java))
       }
     }

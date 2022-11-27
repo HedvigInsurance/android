@@ -43,6 +43,9 @@ sealed interface AuthAttemptResult {
   ) : AuthAttemptResult
 }
 
+/**
+ * The URL path in which we can continuously poll to get an update on how the authentication attempt is going.
+ */
 @JvmInline
 value class StatusUrl(val url: String)
 

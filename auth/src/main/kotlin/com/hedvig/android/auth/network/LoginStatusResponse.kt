@@ -27,7 +27,7 @@ internal fun Response.createLoginStatusResult(json: Json): LoginStatusResult {
   }
 }
 
-private fun LoginStatusResponse.toLoginStatusResult() = when (status) {
+private fun LoginStatusResponse.toLoginStatusResult(): LoginStatusResult = when (status) {
   LoginStatusResponse.LoginStatus.PENDING -> LoginStatusResult.Pending(statusText)
   LoginStatusResponse.LoginStatus.FAILED -> LoginStatusResult.Failed(statusText)
   LoginStatusResponse.LoginStatus.COMPLETED -> {

@@ -153,7 +153,7 @@ internal class NetworkAuthRepository(
     }
   }
 
-  private fun createPostRequest(url: String, requestBody: RequestBody) = Request.Builder()
+  private fun createPostRequest(url: String, requestBody: RequestBody): Request = Request.Builder()
     .header("Content-Type", "application/json")
     .post(requestBody)
     .url(url)

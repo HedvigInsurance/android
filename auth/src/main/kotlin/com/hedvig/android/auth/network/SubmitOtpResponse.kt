@@ -8,11 +8,11 @@ import kotlinx.serialization.json.Json
 import okhttp3.Response
 
 @Serializable
-data class SubmitOtpResponse(
+internal data class SubmitOtpResponse(
   val authorizationCode: String,
 )
 
-fun Response.toSubmitOtpResult(json: Json): SubmitOtpResult {
+internal fun Response.toSubmitOtpResult(json: Json): SubmitOtpResult {
   val responseBody = body?.string()
   return if (isSuccessful && responseBody != null) {
     val submitOtpResponse = json.decodeFromString<SubmitOtpResponse>(responseBody)
