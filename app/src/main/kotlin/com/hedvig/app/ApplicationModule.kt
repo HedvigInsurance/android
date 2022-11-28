@@ -19,7 +19,10 @@ import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.datadog.android.DatadogInterceptor
 import com.google.firebase.messaging.FirebaseMessaging
+import com.hedvig.android.auth.AuthRepository
 import com.hedvig.android.auth.AuthenticationTokenService
+import com.hedvig.android.auth.NetworkAuthRepository
+import com.hedvig.android.auth.network.AccessTokenAuthenticator
 import com.hedvig.android.core.common.di.LogInfoType
 import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.common.di.isDebugQualifier
@@ -242,6 +245,7 @@ val applicationModule = module {
         )
       }
       .addInterceptor(DeviceIdInterceptor(get()))
+      .authenticator(AccessTokenAuthenticator(get(), get()))
     if (isDebug()) {
       val logger = HttpLoggingInterceptor { message ->
         if (message.contains("Content-Disposition")) {
@@ -661,4 +665,8 @@ val chatEventModule = module {
 
 val graphQLQueryModule = module {
   single<GraphQLQueryHandler> { GraphQLQueryHandler(get(), get(), get()) }
+}
+
+val authRepositoryModule = module {
+  single<AuthRepository> { NetworkAuthRepository("https://auth.dev.hedvigit.com") }
 }
