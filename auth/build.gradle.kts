@@ -11,4 +11,7 @@ dependencies {
   implementation(libs.koin.android)
   implementation(libs.okhttp.core)
   implementation(libs.serialization.json)
+
+  testImplementation(libs.assertK)
+  testImplementation(libs.okhttp.mockWebServer)
 }

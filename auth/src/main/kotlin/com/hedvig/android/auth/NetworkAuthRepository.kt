@@ -19,9 +19,10 @@ import okhttp3.RequestBody.Companion.toRequestBody
 private const val POLL_DELAY_MILLIS = 1000L
 
 class NetworkAuthRepository(
-  private val okhttpClient: OkHttpClient,
   private val url: String,
 ) : AuthRepository {
+
+  private val okHttpClient = OkHttpClient.Builder().build()
 
   private val jsonBuilder = Json {
     ignoreUnknownKeys = true
@@ -52,7 +53,7 @@ class NetworkAuthRepository(
     val request = createPostRequest("$url/member-login", requestBody)
 
     return try {
-      okhttpClient.newCall(request)
+      okHttpClient.newCall(request)
         .await()
         .let(jsonBuilder::toAuthAttemptResult)
     } catch (e: Exception) {
@@ -69,7 +70,7 @@ class NetworkAuthRepository(
     return flow {
       while (true) {
         try {
-          val loginStatusResult = okhttpClient
+          val loginStatusResult = okHttpClient
             .newCall(request)
             .await()
             .let(jsonBuilder::createLoginStatusResult)
@@ -98,7 +99,7 @@ class NetworkAuthRepository(
     val request = createPostRequest("$url/${statusUrl.url}/otp", requestBody)
 
     return try {
-      okhttpClient.newCall(request)
+      okHttpClient.newCall(request)
         .await()
         .let(jsonBuilder::toSubmitOtpResult)
     } catch (e: Exception) {
@@ -125,7 +126,7 @@ class NetworkAuthRepository(
     val request = createPostRequest("$url/oauth/token", requestBody)
 
     return try {
-      okhttpClient.newCall(request)
+      okHttpClient.newCall(request)
         .await()
         .let(jsonBuilder::toAuthTokenResult)
     } catch (e: Exception) {
@@ -143,7 +144,7 @@ class NetworkAuthRepository(
     val request = createPostRequest("$url/oauth/logout", requestBody)
 
     return try {
-      val result = okhttpClient.newCall(request).await()
+      val result = okHttpClient.newCall(request).await()
       if (result.isSuccessful) {
         LogoutResult.Success
       } else {

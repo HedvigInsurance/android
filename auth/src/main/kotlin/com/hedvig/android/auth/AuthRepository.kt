@@ -79,7 +79,6 @@ value class LoginAuthorizationCode(override val code: String) : AuthorizationCod
 @JvmInline
 value class RefreshCode(override val code: String) : AuthorizationCode
 
-
 data class AccessToken(
   val token: String,
   val expiryInSeconds: Int,

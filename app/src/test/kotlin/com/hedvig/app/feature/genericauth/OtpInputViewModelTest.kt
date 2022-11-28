@@ -5,6 +5,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import com.hedvig.android.auth.AuthenticationTokenService
+import com.hedvig.android.auth.RefreshToken
 import com.hedvig.app.feature.genericauth.otpinput.OtpInputViewModel
 import com.hedvig.app.feature.genericauth.otpinput.OtpResult
 import com.hedvig.app.feature.genericauth.otpinput.ReSendOtpCodeUseCase
@@ -39,6 +40,7 @@ class OtpInputViewModelTest {
         set(value) {
           authToken = value
         }
+      override var refreshToken: RefreshToken? = null
     },
     sendOtpCodeUseCase = object : SendOtpCodeUseCase {
       override suspend fun invoke(otpId: String, otpCode: String): OtpResult {
