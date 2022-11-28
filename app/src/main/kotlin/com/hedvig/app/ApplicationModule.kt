@@ -346,12 +346,12 @@ val viewModelModule = module {
   viewModel { (crossSell: CrossSellData) ->
     CrossSellDetailViewModel(crossSell.action, get(), get())
   }
-  viewModel { GenericAuthViewModel(get()) }
-  viewModel<OtpInputViewModel> { (otpId: String, credential: String) ->
+  viewModel { GenericAuthViewModel(get(), get()) }
+  viewModel<OtpInputViewModel> { (verifyUrl: String, resendUrl: String, credential: String) ->
     OtpInputViewModel(
-      otpId,
+      verifyUrl,
+      resendUrl,
       credential,
-      get(),
       get(),
       get(),
       get(),

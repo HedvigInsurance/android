@@ -28,8 +28,10 @@ class OtpInputActivity : AppCompatActivity() {
 
     val viewModel: OtpInputViewModel = getViewModel {
       parametersOf(
-        intent.getStringExtra(OTP_ID_EXTRA)
-          ?: error("Programmer error: Missing OTP_ID in ${this.javaClass.name}"),
+        intent.getStringExtra(VERIFY_URL_EXTRA)
+          ?: error("Programmer error: Missing verifyUrl in ${this.javaClass.name}"),
+        intent.getStringExtra(RESEND_URL_EXTRA)
+          ?: error("Programmer error: Missing resendUrl in ${this.javaClass.name}"),
         intent.getStringExtra(CREDENTIAL_EXTRA)
           ?: error("Programmer error: Missing CREDENTIAL in ${this.javaClass.name}"),
       )
@@ -56,11 +58,9 @@ class OtpInputActivity : AppCompatActivity() {
           onOpenExternalApp = { openEmail(getString(hedvig.resources.R.string.login_bottom_sheet_view_code)) },
           onSubmitCode = viewModel::submitCode,
           onResendCode = viewModel::resendCode,
-          onDismissError = viewModel::dismissError,
           onBackPressed = ::onBackPressed,
           inputValue = viewState.input,
           credential = viewState.credential,
-          otpErrorMessage = viewState.otpError?.toStringRes()?.let(::getString),
           networkErrorMessage = viewState.networkErrorMessage,
           loadingResend = viewState.loadingResend,
           loadingCode = viewState.loadingCode,
@@ -70,31 +70,24 @@ class OtpInputActivity : AppCompatActivity() {
     }
   }
 
-  private fun OtpResult.Error.OtpError.toStringRes() = when (this) {
-    OtpResult.Error.OtpError.AlreadyCompleted -> hedvig.resources.R.string.login_code_input_error_msg_code_already_used
-    OtpResult.Error.OtpError.Expired -> hedvig.resources.R.string.login_code_input_error_msg_expired
-    OtpResult.Error.OtpError.TooManyAttempts -> {
-      hedvig.resources.R.string.login_code_input_error_msg_too_many_wrong_attempts
-    }
-    OtpResult.Error.OtpError.Unknown -> hedvig.resources.R.string.general_unknown_error
-    OtpResult.Error.OtpError.WrongOtp -> hedvig.resources.R.string.login_code_input_error_msg_code_not_valid
-  }
-
   private fun startLoggedIn() {
     val intent = LoggedInActivity.newInstance(this, withoutHistory = true)
     startActivity(intent)
   }
 
   companion object {
-    private const val OTP_ID_EXTRA = "OTP_ID_EXTRA"
+    private const val VERIFY_URL_EXTRA = "VERIFY_URL_EXTRA"
+    private const val RESEND_URL_EXTRA = "RESEND_URL_EXTRA"
     private const val CREDENTIAL_EXTRA = "CREDENTIAL_EXTRA"
 
     fun newInstance(
       context: Context,
-      id: String,
+      verifyUrl: String,
+      resendUrl: String,
       credential: String,
     ) = Intent(context, OtpInputActivity::class.java).apply {
-      putExtra(OTP_ID_EXTRA, id)
+      putExtra(VERIFY_URL_EXTRA, verifyUrl)
+      putExtra(RESEND_URL_EXTRA, resendUrl)
       putExtra(CREDENTIAL_EXTRA, credential)
     }
   }
