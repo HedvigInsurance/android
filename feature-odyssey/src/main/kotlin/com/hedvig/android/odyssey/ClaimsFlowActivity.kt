@@ -70,7 +70,7 @@ class ClaimsFlowActivity : ComponentActivity() {
     fun newInstance(
       context: Context,
       odysseyUrl: String,
-      itemType: ItemType? = null
+      itemType: ItemType? = null,
     ): Intent {
       return Intent(context, ClaimsFlowActivity::class.java)
         .putExtra(ODYSSEY_URL_KEY, odysseyUrl)
