@@ -7,6 +7,8 @@ import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.auth.AuthAttemptResult
 import com.hedvig.android.auth.AuthRepository
+import com.hedvig.android.auth.AuthTokenResult
+import com.hedvig.android.auth.AuthenticationTokenService
 import com.hedvig.android.auth.LoginMethod
 import com.hedvig.android.auth.LoginStatusResult
 import com.hedvig.android.auth.StatusUrl
@@ -14,11 +16,6 @@ import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.market.Market
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
-import com.hedvig.app.feature.zignsec.usecase.AuthResult
-import com.hedvig.app.feature.zignsec.usecase.SimpleSignStartAuthResult
-import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
-import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
-import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthResultUseCase
 import com.hedvig.app.util.LiveEvent
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.flow.Flow
@@ -32,6 +29,7 @@ class SimpleSignAuthenticationViewModel(
   private val loginStatusService: LoginStatusService,
   private val uploadMarketAndLanguagePreferencesUseCase: UploadMarketAndLanguagePreferencesUseCase,
   private val authRepository: AuthRepository,
+  private val authenticationTokenService: AuthenticationTokenService,
 ) : ViewModel() {
   private val _input = MutableLiveData("")
   val input: LiveData<String> = _input
@@ -69,7 +67,7 @@ class SimpleSignAuthenticationViewModel(
     return authRepository.observeLoginStatus(statusUrl).onEach { loginStatusResult ->
       when (loginStatusResult) {
         is LoginStatusResult.Completed -> {
-          onAuthSuccess()
+          onSimpleSignSuccess(loginStatusResult)
           _events.postValue(Event.Success)
         }
         is LoginStatusResult.Failed -> _events.postValue(Event.Error)
@@ -124,11 +122,19 @@ class SimpleSignAuthenticationViewModel(
     _events.value = Event.CancelSignIn
   }
 
-  private suspend fun onAuthSuccess() {
-    hAnalytics.loggedIn()
-    featureManager.invalidateExperiments()
-    loginStatusService.isLoggedIn = true
-    uploadMarketAndLanguagePreferencesUseCase.invoke()
+  private suspend fun onSimpleSignSuccess(loginStatusResult: LoginStatusResult.Completed) {
+    when (val result = authRepository.submitAuthorizationCode(loginStatusResult.authorizationCode)) {
+      is AuthTokenResult.Error -> {
+        _events.postValue(Event.Error)
+      }
+      is AuthTokenResult.Success -> {
+        hAnalytics.loggedIn()
+        featureManager.invalidateExperiments()
+        authenticationTokenService.authenticationToken = result.accessToken.token
+        loginStatusService.isLoggedIn = true
+        uploadMarketAndLanguagePreferencesUseCase.invoke()
+      }
+    }
   }
 
   companion object {
