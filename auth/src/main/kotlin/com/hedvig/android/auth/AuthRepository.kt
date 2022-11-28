@@ -13,7 +13,9 @@ interface AuthRepository {
 
   fun observeLoginStatus(statusUrl: StatusUrl): Flow<LoginStatusResult>
 
-  suspend fun submitOtp(statusUrl: StatusUrl, otp: String): SubmitOtpResult
+  suspend fun submitOtp(verifyUrl: String, otp: String): SubmitOtpResult
+
+  suspend fun resendOtp(resendUrl: String): ResendOtpResult
 
   suspend fun submitAuthorizationCode(authorizationCode: AuthorizationCode): AuthTokenResult
 
@@ -21,7 +23,7 @@ interface AuthRepository {
 }
 
 enum class LoginMethod {
-  SE_BANKID, ZIGNSEC, EMAIL_OTP
+  SE_BANKID, ZIGNSEC, OTP
 }
 
 sealed interface AuthAttemptResult {
@@ -40,6 +42,13 @@ sealed interface AuthAttemptResult {
     val id: String,
     val statusUrl: StatusUrl,
     val redirectUrl: String,
+  ) : AuthAttemptResult
+
+  data class OtpProperties(
+    val id: String,
+    val statusUrl: StatusUrl,
+    val resendUrl: String,
+    val verifyUrl: String,
   ) : AuthAttemptResult
 }
 
@@ -66,6 +75,11 @@ sealed interface LoginStatusResult {
 sealed interface SubmitOtpResult {
   data class Error(val message: String) : SubmitOtpResult
   data class Success(val loginAuthorizationCode: LoginAuthorizationCode) : SubmitOtpResult
+}
+
+sealed interface ResendOtpResult {
+  data class Error(val message: String) : ResendOtpResult
+  object Success : ResendOtpResult
 }
 
 

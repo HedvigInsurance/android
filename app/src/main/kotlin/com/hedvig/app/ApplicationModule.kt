@@ -297,19 +297,19 @@ val apolloClientModule = module {
 
 fun makeUserAgent(locale: Locale) =
   "${
-  BuildConfig.APPLICATION_ID
+    BuildConfig.APPLICATION_ID
   } ${
-  BuildConfig.VERSION_NAME
+    BuildConfig.VERSION_NAME
   } (Android ${
-  Build.VERSION.RELEASE
+    Build.VERSION.RELEASE
   }; ${
-  Build.BRAND
+    Build.BRAND
   } ${
-  Build.MODEL
+    Build.MODEL
   }; ${
-  Build.DEVICE
+    Build.DEVICE
   }; ${
-  locale.language
+    locale.language
   })"
 
 val viewModelModule = module {
@@ -346,12 +346,12 @@ val viewModelModule = module {
   viewModel { (crossSell: CrossSellData) ->
     CrossSellDetailViewModel(crossSell.action, get(), get())
   }
-  viewModel { GenericAuthViewModel(get()) }
-  viewModel<OtpInputViewModel> { (otpId: String, credential: String) ->
+  viewModel { GenericAuthViewModel(get(), get()) }
+  viewModel<OtpInputViewModel> { (verifyUrl: String, resendUrl: String, credential: String) ->
     OtpInputViewModel(
-      otpId,
+      verifyUrl,
+      resendUrl,
       credential,
-      get(),
       get(),
       get(),
       get(),

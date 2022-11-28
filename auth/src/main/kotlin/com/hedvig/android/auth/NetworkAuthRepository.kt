@@ -3,6 +3,7 @@ package com.hedvig.android.auth
 import com.hedvig.android.auth.network.createLoginStatusResult
 import com.hedvig.android.auth.network.toAuthAttemptResult
 import com.hedvig.android.auth.network.toAuthTokenResult
+import com.hedvig.android.auth.network.toResendOtpResult
 import com.hedvig.android.auth.network.toSubmitOtpResult
 import com.hedvig.android.core.common.await
 import kotlinx.coroutines.delay
@@ -26,6 +27,7 @@ class NetworkAuthRepository(
 
   private val jsonBuilder = Json {
     ignoreUnknownKeys = true
+    explicitNulls = false
   }
 
   override suspend fun startLoginAttempt(
@@ -89,14 +91,14 @@ class NetworkAuthRepository(
     }
   }
 
-  override suspend fun submitOtp(statusUrl: StatusUrl, otp: String): SubmitOtpResult {
+  override suspend fun submitOtp(verifyUrl: String, otp: String): SubmitOtpResult {
     val requestBody = buildJsonObject {
       put("otp", otp)
     }
       .toString()
       .toRequestBody()
 
-    val request = createPostRequest("$url/${statusUrl.url}/otp", requestBody)
+    val request = createPostRequest("$url${verifyUrl}", requestBody)
 
     return try {
       okHttpClient.newCall(request)
@@ -104,6 +106,18 @@ class NetworkAuthRepository(
         .let(jsonBuilder::toSubmitOtpResult)
     } catch (e: Exception) {
       SubmitOtpResult.Error("Error: ${e.message}")
+    }
+  }
+
+  override suspend fun resendOtp(resendUrl: String): ResendOtpResult {
+    val request = createPostRequest("$url${resendUrl}", ByteArray(0).toRequestBody())
+
+    return try {
+      okhttpClient.newCall(request)
+        .await()
+        .let(::toResendOtpResult)
+    } catch (e: Exception) {
+      ResendOtpResult.Error("Error: ${e.message}")
     }
   }
 
