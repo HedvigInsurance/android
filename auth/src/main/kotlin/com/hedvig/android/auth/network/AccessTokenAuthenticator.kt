@@ -4,6 +4,8 @@ import com.hedvig.android.auth.AuthRepository
 import com.hedvig.android.auth.AuthTokenResult
 import com.hedvig.android.auth.AuthenticationTokenService
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import okhttp3.Authenticator
 import okhttp3.Request
 import okhttp3.Response
@@ -14,29 +16,30 @@ class AccessTokenAuthenticator(
   private val authRepository: AuthRepository,
 ) : Authenticator {
 
+  private val mutex = Mutex()
+
   override fun authenticate(route: Route?, response: Response): Request? {
-    val refreshToken = authenticationTokenService.refreshToken ?: return null
-    val result = synchronized(this) {
-      runBlocking {
-        authRepository.submitAuthorizationCode(refreshToken.token)
-      }
-    }
+    return runBlocking {
+      val refreshToken = authenticationTokenService.refreshToken ?: return@runBlocking null
 
-    return when (result) {
-      is AuthTokenResult.Error -> {
-        authenticationTokenService.refreshToken = null
-        authenticationTokenService.authenticationToken = null
-        null
-      }
-      is AuthTokenResult.Success -> {
-        authenticationTokenService.refreshToken = result.refreshToken
-        authenticationTokenService.authenticationToken = result.accessToken.token
+      return@runBlocking mutex.withLock {
+        when (val result = authRepository.submitAuthorizationCode(refreshToken.token)) {
+          is AuthTokenResult.Error -> {
+            authenticationTokenService.refreshToken = null
+            authenticationTokenService.authenticationToken = null
+            null
+          }
+          is AuthTokenResult.Success -> {
+            authenticationTokenService.refreshToken = result.refreshToken
+            authenticationTokenService.authenticationToken = result.accessToken.token
 
-        response.request
-          .newBuilder()
-          .removeHeader("Authorization")
-          .header("Authorization", result.accessToken.token)
-          .build()
+            response.request
+              .newBuilder()
+              .removeHeader("Authorization")
+              .header("Authorization", result.accessToken.token)
+              .build()
+          }
+        }
       }
     }
   }

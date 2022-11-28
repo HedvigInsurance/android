@@ -26,8 +26,11 @@ internal class SharedPreferencesAuthenticationTokenService(
         .apply()
     }
     get() {
-      val code = sharedPreferences.getString(SHARED_PREFERENCE_REFRESH_TOKEN, "") ?: ""
+      val code = sharedPreferences.getString(SHARED_PREFERENCE_REFRESH_TOKEN, "")
       val expiry = sharedPreferences.getInt(SHARED_PREFERENCE_REFRESH_TOKEN_EXPIRY, 0)
-      return RefreshToken(RefreshCode(code), expiry)
+      
+      return code?.let {
+        RefreshToken(RefreshCode(it), expiry)
+      }
     }
 }
