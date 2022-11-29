@@ -33,6 +33,9 @@ data class CrossSellData(
 
     @Parcelize
     object Chat : Action()
+
+    @Parcelize
+    data class Web(val url: String): Action()
   }
 
   @Parcelize

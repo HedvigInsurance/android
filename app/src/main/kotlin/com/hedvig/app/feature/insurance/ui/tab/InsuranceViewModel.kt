@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.insurance.ui.tab
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
@@ -30,6 +31,7 @@ class InsuranceViewModel(
     val items: List<InsuranceModel>? = null,
     val navigateEmbark: NavigateEmbark? = null,
     val navigateChat: NavigateChat? = null,
+    val navigateWeb: Uri? = null,
     val hasError: Boolean = false,
     val loading: Boolean = false,
   )
@@ -77,6 +79,12 @@ class InsuranceViewModel(
             id = data.typeOfContract,
           )
           _viewState.value = action.toViewState()
+        }
+        is CrossSellData.Action.Web -> {
+          hAnalytics.cardClickCrossSellDetail(
+            id = data.typeOfContract,
+          )
+          _viewState.value = ViewState(navigateWeb = Uri.parse(action.url))
         }
       }
     }
