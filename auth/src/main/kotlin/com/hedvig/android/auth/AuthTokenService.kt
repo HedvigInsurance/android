@@ -13,15 +13,15 @@ sealed interface LoggedInState {
   object LoggedOut : LoggedInState
 }
 
-interface AuthenticationRepository {
+interface AuthTokenService {
   fun loggedInState(): StateFlow<LoggedInState?>
   fun updateTokens(accessToken: AccessToken, refreshToken: RefreshToken)
 }
 
-internal class DataStoreAuthenticationRepository(
+internal class DataStoreAuthTokenService(
   private val authenticationDatastore: AuthenticationDatastore,
   private val applicationScope: ApplicationScope,
-) : AuthenticationRepository {
+) : AuthTokenService {
 
   @Suppress("NAME_SHADOWING")
   private val loggedInState: StateFlow<LoggedInState?> = authenticationDatastore.getTokens()
