@@ -36,7 +36,6 @@ class AccessTokenAuthenticator(
 
               response.request
                 .newBuilder()
-                .removeHeader("Authorization")
                 .header("Authorization", result.accessToken.token)
                 .build()
             }
