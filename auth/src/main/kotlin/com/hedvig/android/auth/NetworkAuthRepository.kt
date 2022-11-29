@@ -3,6 +3,7 @@ package com.hedvig.android.auth
 import com.hedvig.android.auth.network.createLoginStatusResult
 import com.hedvig.android.auth.network.toAuthAttemptResult
 import com.hedvig.android.auth.network.toAuthTokenResult
+import com.hedvig.android.auth.network.toResendOtpResult
 import com.hedvig.android.auth.network.toSubmitOtpResult
 import com.hedvig.android.core.common.await
 import kotlinx.coroutines.delay
@@ -16,15 +17,17 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 
-private const val POLL_DELAY_MILLIS = 3000L
+private const val POLL_DELAY_MILLIS = 1000L
 
 internal class NetworkAuthRepository(
-  private val okhttpClient: OkHttpClient,
   private val url: String,
 ) : AuthRepository {
 
+  private val okHttpClient = OkHttpClient.Builder().build()
+
   private val json: Json = Json {
     ignoreUnknownKeys = true
+    explicitNulls = false
   }
 
   override suspend fun startLoginAttempt(
@@ -53,7 +56,7 @@ internal class NetworkAuthRepository(
     val request = createPostRequest("$url/member-login", requestBody)
 
     return try {
-      okhttpClient.newCall(request)
+      okHttpClient.newCall(request)
         .await()
         .toAuthAttemptResult(json)
     } catch (e: Exception) {
@@ -70,7 +73,7 @@ internal class NetworkAuthRepository(
     return flow {
       while (true) {
         try {
-          val loginStatusResult = okhttpClient
+          val loginStatusResult = okHttpClient
             .newCall(request)
             .await()
             .createLoginStatusResult(json)
@@ -89,21 +92,33 @@ internal class NetworkAuthRepository(
     }
   }
 
-  override suspend fun submitOtp(statusUrl: StatusUrl, otp: String): SubmitOtpResult {
+  override suspend fun submitOtp(verifyUrl: String, otp: String): SubmitOtpResult {
     val requestBody = buildJsonObject {
       put("otp", otp)
     }
       .toString()
       .toRequestBody()
 
-    val request = createPostRequest("$url/${statusUrl.url}/otp", requestBody)
+    val request = createPostRequest("$url${verifyUrl}", requestBody)
 
     return try {
-      okhttpClient.newCall(request)
+      okHttpClient.newCall(request)
         .await()
         .toSubmitOtpResult(json)
     } catch (e: Exception) {
       SubmitOtpResult.Error("Error: ${e.message}")
+    }
+  }
+
+  override suspend fun resendOtp(resendUrl: String): ResendOtpResult {
+    val request = createPostRequest("$url${resendUrl}", ByteArray(0).toRequestBody())
+
+    return try {
+      okHttpClient.newCall(request)
+        .await()
+        .let(::toResendOtpResult)
+    } catch (e: Exception) {
+      ResendOtpResult.Error("Error: ${e.message}")
     }
   }
 
@@ -126,7 +141,7 @@ internal class NetworkAuthRepository(
     val request = createPostRequest("$url/oauth/token", requestBody)
 
     return try {
-      okhttpClient.newCall(request)
+      okHttpClient.newCall(request)
         .await()
         .toAuthTokenResult(json)
     } catch (e: Exception) {
@@ -144,7 +159,7 @@ internal class NetworkAuthRepository(
     val request = createPostRequest("$url/oauth/logout", requestBody)
 
     return try {
-      val result = okhttpClient.newCall(request).await()
+      val result = okHttpClient.newCall(request).await()
       if (result.isSuccessful) {
         LogoutResult.Success
       } else {

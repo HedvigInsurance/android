@@ -22,6 +22,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.android.auth.AuthRepository
 import com.hedvig.android.auth.AuthenticationTokenService
 import com.hedvig.android.auth.NetworkAuthRepository
+import com.hedvig.android.auth.network.AccessTokenAuthenticator
 import com.hedvig.android.core.common.di.LogInfoType
 import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.common.di.isDebugQualifier
@@ -242,6 +243,7 @@ val applicationModule = module {
         )
       }
       .addInterceptor(DeviceIdInterceptor(get(), get()))
+      .authenticator(AccessTokenAuthenticator(get(), get()))
     if (isDebug()) {
       val logger = HttpLoggingInterceptor { message ->
         if (message.contains("Content-Disposition")) {
@@ -342,12 +344,12 @@ val viewModelModule = module {
   viewModel { (crossSell: CrossSellData) ->
     CrossSellDetailViewModel(crossSell.action, get(), get())
   }
-  viewModel { GenericAuthViewModel(get()) }
-  viewModel<OtpInputViewModel> { (otpId: String, credential: String) ->
+  viewModel { GenericAuthViewModel(get(), get()) }
+  viewModel<OtpInputViewModel> { (verifyUrl: String, resendUrl: String, credential: String) ->
     OtpInputViewModel(
-      otpId,
+      verifyUrl,
+      resendUrl,
       credential,
-      get(),
       get(),
       get(),
       get(),
@@ -663,5 +665,5 @@ val graphQLQueryModule = module {
 }
 
 val authRepositoryModule = module {
-  single<AuthRepository> { NetworkAuthRepository(get(), "https://auth.dev.hedvigit.com") }
+  single<AuthRepository> { NetworkAuthRepository("https://auth.dev.hedvigit.com") }
 }

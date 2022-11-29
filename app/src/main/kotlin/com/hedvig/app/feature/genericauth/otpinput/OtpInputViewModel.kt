@@ -2,7 +2,14 @@ package com.hedvig.app.feature.genericauth.otpinput
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.auth.AuthRepository
+import com.hedvig.android.auth.AuthTokenResult
 import com.hedvig.android.auth.AuthenticationTokenService
+import com.hedvig.android.auth.LoginMethod
+import com.hedvig.android.auth.ResendOtpResult
+import com.hedvig.android.auth.StatusUrl
+import com.hedvig.android.auth.SubmitOtpResult
+import com.hedvig.android.market.MarketManager
 import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,11 +19,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class OtpInputViewModel(
-  private val otpId: String,
-  private val credential: String,
+  private val verifyUrl: String,
+  private val resendUrl: String,
+  credential: String,
   private val authenticationTokenService: AuthenticationTokenService,
-  private val sendOtpCodeUseCase: SendOtpCodeUseCase,
-  private val reSendOtpCodeUseCase: ReSendOtpCodeUseCase,
+  private val authRepository: AuthRepository,
   private val uploadMarketAndLanguagePreferencesUseCase: UploadMarketAndLanguagePreferencesUseCase,
 ) : ViewModel() {
   private val _viewState = MutableStateFlow(ViewState(credential = credential))
@@ -29,7 +36,6 @@ class OtpInputViewModel(
     val input: String = "",
     val credential: String,
     val networkErrorMessage: String? = null,
-    val otpError: OtpResult.Error.OtpError? = null,
     val loadingResend: Boolean = false,
     val loadingCode: Boolean = false,
   )
@@ -41,7 +47,7 @@ class OtpInputViewModel(
 
   fun setInput(value: String) {
     _viewState.update {
-      it.copy(input = value, otpError = null)
+      it.copy(input = value, networkErrorMessage = null)
     }
   }
 
@@ -49,11 +55,32 @@ class OtpInputViewModel(
     _viewState.update {
       it.copy(loadingCode = true, networkErrorMessage = null)
     }
+
     viewModelScope.launch {
-      when (val result = sendOtpCodeUseCase.invoke(otpId, code)) {
-        is OtpResult.Error -> result.handleError()
-        is OtpResult.Success -> result.handleSuccess()
+      when (val otpResult = authRepository.submitOtp(verifyUrl, code)) {
+        is SubmitOtpResult.Error -> setErrorState(otpResult.message)
+        is SubmitOtpResult.Success -> submitAuthCode(otpResult)
       }
+    }
+  }
+
+  private suspend fun submitAuthCode(otpResult: SubmitOtpResult.Success) {
+    when (val submitAuthCodeResult = authRepository.submitAuthorizationCode(otpResult.loginAuthorizationCode)) {
+      is AuthTokenResult.Error -> setErrorState(submitAuthCodeResult.message)
+      is AuthTokenResult.Success -> {
+        authenticationTokenService.authenticationToken = submitAuthCodeResult.accessToken.token
+        _events.trySend(Event.Success(submitAuthCodeResult.accessToken.token))
+        _viewState.update {
+          it.copy(loadingCode = false)
+        }
+        uploadMarketAndLanguagePreferencesUseCase.invoke()
+      }
+    }
+  }
+
+  private fun setErrorState(message: String) {
+    _viewState.update {
+      it.copy(networkErrorMessage = message, loadingCode = false)
     }
   }
 
@@ -62,9 +89,18 @@ class OtpInputViewModel(
       it.copy(networkErrorMessage = null, loadingResend = true)
     }
     viewModelScope.launch {
-      when (val result = reSendOtpCodeUseCase.invoke(credential)) {
-        is ResendOtpResult.Error -> result.handleError()
-        is ResendOtpResult.Success -> result.handleSuccess()
+      when (val result = authRepository.resendOtp(resendUrl)) {
+        is ResendOtpResult.Error -> {
+          _viewState.update {
+            it.copy(networkErrorMessage = result.message, loadingResend = false)
+          }
+        }
+        ResendOtpResult.Success -> {
+          _events.trySend(Event.CodeResent)
+          _viewState.update {
+            it.copy(networkErrorMessage = null, input = "", loadingResend = false)
+          }
+        }
       }
     }
   }
@@ -72,43 +108,6 @@ class OtpInputViewModel(
   fun dismissError() {
     _viewState.update {
       it.copy(networkErrorMessage = null)
-    }
-  }
-
-  private suspend fun OtpResult.Success.handleSuccess() {
-    authenticationTokenService.authenticationToken = authToken
-    _events.trySend(Event.Success(authToken))
-    _viewState.update {
-      it.copy(loadingCode = false)
-    }
-    uploadMarketAndLanguagePreferencesUseCase.invoke()
-  }
-
-  private fun ResendOtpResult.Success.handleSuccess() {
-    _events.trySend(Event.CodeResent)
-    _viewState.update {
-      it.copy(otpError = null, input = "", loadingResend = false)
-    }
-  }
-
-  private fun OtpResult.Error.handleError() {
-    when (val error = this) {
-      is OtpResult.Error.NetworkError -> {
-        _viewState.update {
-          it.copy(networkErrorMessage = error.message, loadingCode = false)
-        }
-      }
-      is OtpResult.Error.OtpError -> {
-        _viewState.update {
-          it.copy(otpError = error, loadingCode = false)
-        }
-      }
-    }
-  }
-
-  private fun ResendOtpResult.Error.handleError() {
-    _viewState.update {
-      it.copy(networkErrorMessage = message, loadingResend = false)
     }
   }
 }

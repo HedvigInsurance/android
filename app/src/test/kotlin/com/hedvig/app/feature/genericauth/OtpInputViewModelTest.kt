@@ -4,21 +4,31 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
+import com.hedvig.android.auth.AccessToken
+import com.hedvig.android.auth.AuthAttemptResult
+import com.hedvig.android.auth.AuthRepository
+import com.hedvig.android.auth.AuthTokenResult
 import com.hedvig.android.auth.AuthenticationTokenService
+import com.hedvig.android.auth.AuthorizationCode
+import com.hedvig.android.auth.LoginAuthorizationCode
+import com.hedvig.android.auth.LoginMethod
+import com.hedvig.android.auth.LoginStatusResult
+import com.hedvig.android.auth.LogoutResult
+import com.hedvig.android.auth.RefreshCode
+import com.hedvig.android.auth.RefreshToken
+import com.hedvig.android.auth.StatusUrl
+import com.hedvig.android.auth.SubmitOtpResult
 import com.hedvig.app.feature.genericauth.otpinput.OtpInputViewModel
-import com.hedvig.app.feature.genericauth.otpinput.OtpResult
-import com.hedvig.app.feature.genericauth.otpinput.ReSendOtpCodeUseCase
-import com.hedvig.app.feature.genericauth.otpinput.ResendOtpResult
-import com.hedvig.app.feature.genericauth.otpinput.SendOtpCodeUseCase
 import com.hedvig.app.util.coroutines.MainCoroutineRule
 import io.mockk.mockk
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
-import kotlin.time.Duration.Companion.milliseconds
 
 class OtpInputViewModelTest {
 
@@ -27,11 +37,12 @@ class OtpInputViewModelTest {
 
   private var authToken: String? = "testToken"
 
-  private var otpResult: OtpResult = OtpResult.Success("authtest")
-  private var resendOtpResult: ResendOtpResult = ResendOtpResult.Success("authtest")
+  private var otpResult: SubmitOtpResult = SubmitOtpResult.Success(LoginAuthorizationCode("test"))
+  private var resendOtpResult: com.hedvig.android.auth.ResendOtpResult = com.hedvig.android.auth.ResendOtpResult.Success
 
   private val viewModel = OtpInputViewModel(
-    otpId = "testId",
+    verifyUrl = "verifytest",
+    resendUrl = "resendtest",
     credential = "test@email.com",
     authenticationTokenService = object : AuthenticationTokenService {
       override var authenticationToken: String?
@@ -39,25 +50,51 @@ class OtpInputViewModelTest {
         set(value) {
           authToken = value
         }
+      override var refreshToken: RefreshToken? = null
     },
-    sendOtpCodeUseCase = object : SendOtpCodeUseCase {
-      override suspend fun invoke(otpId: String, otpCode: String): OtpResult {
+    authRepository = object : AuthRepository {
+      override suspend fun startLoginAttempt(
+        loginMethod: LoginMethod,
+        market: String,
+        personalNumber: String?,
+        email: String?,
+      ): AuthAttemptResult {
+        TODO("Not yet implemented")
+      }
+
+      override fun observeLoginStatus(statusUrl: StatusUrl): Flow<LoginStatusResult> {
+        TODO("Not yet implemented")
+      }
+
+      override suspend fun submitOtp(verifyUrl: String, otp: String): SubmitOtpResult {
         delay(100.milliseconds)
         return otpResult
       }
-    },
-    reSendOtpCodeUseCase = object : ReSendOtpCodeUseCase {
-      override suspend fun invoke(credential: String): ResendOtpResult {
+
+      override suspend fun resendOtp(resendUrl: String): com.hedvig.android.auth.ResendOtpResult {
         delay(100.milliseconds)
         return resendOtpResult
       }
+
+      override suspend fun submitAuthorizationCode(authorizationCode: AuthorizationCode): AuthTokenResult {
+        delay(100.milliseconds)
+        return AuthTokenResult.Success(
+          accessToken = AccessToken(authToken!!, 100),
+          refreshToken = RefreshToken(RefreshCode("test"), 100),
+        )
+      }
+
+      override suspend fun logout(refreshCode: RefreshCode): LogoutResult {
+        TODO("Not yet implemented")
+      }
+
     },
     uploadMarketAndLanguagePreferencesUseCase = mockk(relaxed = true),
   )
 
   @Test
   fun testNetworkError() = runTest {
-    otpResult = OtpResult.Error.NetworkError("Error")
+    otpResult = SubmitOtpResult.Error("Error")
 
     viewModel.submitCode("123456")
 
@@ -71,7 +108,7 @@ class OtpInputViewModelTest {
 
   @Test
   fun testDismissNetworkError() = runTest {
-    otpResult = OtpResult.Error.NetworkError("Error")
+    otpResult = SubmitOtpResult.Error("Error")
 
     viewModel.submitCode("123456")
     assertThat(viewModel.viewState.value.loadingCode).isEqualTo(true)
@@ -85,19 +122,19 @@ class OtpInputViewModelTest {
 
   @Test
   fun testOtpError() = runTest {
-    otpResult = OtpResult.Error.OtpError.Expired
+    otpResult = SubmitOtpResult.Error("Error")
 
     viewModel.submitCode("123456")
     assertThat(viewModel.viewState.value.loadingCode).isEqualTo(true)
     assertThat(viewModel.viewState.value.loadingResend).isEqualTo(false)
 
     advanceUntilIdle()
-    assertThat(viewModel.viewState.value.otpError).isEqualTo(OtpResult.Error.OtpError.Expired)
+    assertThat(viewModel.viewState.value.networkErrorMessage).isNotNull()
   }
 
   @Test
   fun testOtpSuccess() = runTest {
-    otpResult = OtpResult.Success("testOtpSuccess")
+    otpResult = SubmitOtpResult.Success(LoginAuthorizationCode("testOtpSuccess"))
 
     val events = mutableListOf<OtpInputViewModel.Event>()
     val eventCollectingJob = launch {
@@ -110,15 +147,15 @@ class OtpInputViewModelTest {
 
     advanceUntilIdle()
     assertThat(viewModel.viewState.value.loadingCode).isEqualTo(false)
-    assertThat(authToken).isEqualTo("testOtpSuccess")
+    assertThat(authToken).isEqualTo("testToken")
     assertThat(events.size).isEqualTo(1)
-    assertThat(events.first()).isEqualTo(OtpInputViewModel.Event.Success("testOtpSuccess"))
+    assertThat(events.first()).isEqualTo(OtpInputViewModel.Event.Success("testToken"))
     eventCollectingJob.cancel()
   }
 
   @Test
   fun testResendError() = runTest {
-    resendOtpResult = ResendOtpResult.Error("Error")
+    resendOtpResult = com.hedvig.android.auth.ResendOtpResult.Error("Error")
 
     viewModel.resendCode()
     assertThat(viewModel.viewState.value.loadingCode).isEqualTo(false)
@@ -130,7 +167,7 @@ class OtpInputViewModelTest {
 
   @Test
   fun testResend() = runTest {
-    resendOtpResult = ResendOtpResult.Success("auth")
+    resendOtpResult = com.hedvig.android.auth.ResendOtpResult.Success
 
     val events = mutableListOf<OtpInputViewModel.Event>()
     val eventCollectingJob = launch {
@@ -164,18 +201,18 @@ class OtpInputViewModelTest {
 
   @Test
   fun `updating the input after getting an error should clear the error`() = runTest {
-    otpResult = OtpResult.Error.OtpError.WrongOtp
+    otpResult = SubmitOtpResult.Error("Error")
     viewModel.setInput("111111")
     viewModel.submitCode("111111")
     assertThat(viewModel.viewState.value.loadingCode).isEqualTo(true)
     assertThat(viewModel.viewState.value.loadingResend).isEqualTo(false)
-    assertThat(viewModel.viewState.value.otpError).isNull()
+    assertThat(viewModel.viewState.value.networkErrorMessage).isNull()
 
     advanceUntilIdle()
     assertThat(viewModel.viewState.value.loadingCode).isEqualTo(false)
-    assertThat(viewModel.viewState.value.otpError).isNotNull()
+    assertThat(viewModel.viewState.value.networkErrorMessage).isNotNull()
 
     viewModel.setInput("1")
-    assertThat(viewModel.viewState.value.otpError).isNull()
+    assertThat(viewModel.viewState.value.networkErrorMessage).isNull()
   }
 }

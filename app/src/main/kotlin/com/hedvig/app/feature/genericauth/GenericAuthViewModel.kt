@@ -2,14 +2,19 @@ package com.hedvig.app.feature.genericauth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.auth.AuthAttemptResult
+import com.hedvig.android.auth.AuthRepository
+import com.hedvig.android.auth.LoginMethod
 import com.hedvig.android.core.common.android.EmailAddressWithTrimmedWhitespaces
+import com.hedvig.android.market.MarketManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class GenericAuthViewModel(
-  private val createOtpAttemptUseCase: CreateOtpAttemptUseCase,
+  private val authRepository: AuthRepository,
+  private val marketManager: MarketManager,
 ) : ViewModel() {
 
   private val _viewState = MutableStateFlow(GenericAuthViewState())
@@ -40,22 +45,32 @@ class GenericAuthViewModel(
   }
 
   fun onStartOtpInput() {
-    _viewState.update { it.copy(otpId = null) }
+    _viewState.update { it.copy(verifyUrl = null) }
   }
 
   private suspend fun createStateFromOtpAttempt(email: EmailAddressWithTrimmedWhitespaces) {
     _viewState.update { it.copy(loading = true) }
-    val newState = when (val result = createOtpAttemptUseCase.invoke(email.value)) {
-      is CreateOtpResult.Success -> _viewState.value.copy(
-        otpId = result.id,
-        error = null,
-        loading = false,
-      )
-      CreateOtpResult.Error -> _viewState.value.copy(
+    val startLoginResult = authRepository.startLoginAttempt(
+      loginMethod = LoginMethod.OTP,
+      market = marketManager.market?.name ?: "",
+      personalNumber = null,
+      email = email.value
+    )
+    val newState = when (startLoginResult) {
+      is AuthAttemptResult.BankIdProperties,
+      is AuthAttemptResult.ZignSecProperties,
+      is AuthAttemptResult.Error -> _viewState.value.copy(
         error = GenericAuthViewState.TextFieldError.NETWORK_ERROR,
         loading = false,
       )
+      is AuthAttemptResult.OtpProperties -> _viewState.value.copy(
+        verifyUrl = startLoginResult.verifyUrl,
+        resendUrl = startLoginResult.resendUrl,
+        error = null,
+        loading = false,
+      )
     }
+
     _viewState.update { newState }
   }
 
@@ -74,7 +89,8 @@ class GenericAuthViewModel(
 data class GenericAuthViewState(
   val emailInput: String = "",
   val error: TextFieldError? = null,
-  val otpId: String? = null,
+  val verifyUrl: String? = null,
+  val resendUrl: String? = null,
   val loading: Boolean = false,
 ) {
   val emailInputWithoutWhitespaces: EmailAddressWithTrimmedWhitespaces

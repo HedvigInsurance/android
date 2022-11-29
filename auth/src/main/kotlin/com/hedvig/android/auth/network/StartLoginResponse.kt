@@ -29,7 +29,8 @@ internal data class StartLoginResponse(
 
   @Serializable
   data class OtpProperties(
-    val otp: String
+    val resendUrl: String,
+    val verifyUrl: String,
   )
 }
 
@@ -52,6 +53,12 @@ private fun StartLoginResponse.toAuthAttemptResult(): AuthAttemptResult = when {
     id = id,
     statusUrl = StatusUrl(statusUrl),
     redirectUrl = zignSecProperties.redirectUrl,
+  )
+  otpProperties != null -> AuthAttemptResult.OtpProperties(
+    id = id,
+    statusUrl = StatusUrl(statusUrl),
+    resendUrl = otpProperties.resendUrl,
+    verifyUrl = otpProperties.verifyUrl,
   )
   else -> AuthAttemptResult.Error(
     message = "Could not find properties on start login response",
