@@ -20,8 +20,8 @@ import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.datadog.android.DatadogInterceptor
 import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.android.auth.AuthenticationTokenService
+import com.hedvig.android.auth.interceptor.AccessTokenAuthenticator
 import com.hedvig.android.auth.interceptor.ExistingTokenAppendingInterceptor
-import com.hedvig.android.auth.network.AccessTokenAuthenticator
 import com.hedvig.android.core.common.di.LogInfoType
 import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.common.di.isDebugQualifier

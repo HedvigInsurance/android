@@ -2,7 +2,7 @@ package com.hedvig.android.auth
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import com.hedvig.android.auth.network.AccessTokenAuthenticator
+import com.hedvig.android.auth.interceptor.AccessTokenAuthenticator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import okhttp3.HttpUrl
