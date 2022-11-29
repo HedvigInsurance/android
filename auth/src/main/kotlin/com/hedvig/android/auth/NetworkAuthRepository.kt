@@ -113,7 +113,7 @@ class NetworkAuthRepository(
     val request = createPostRequest("$url${resendUrl}", ByteArray(0).toRequestBody())
 
     return try {
-      okhttpClient.newCall(request)
+      okHttpClient.newCall(request)
         .await()
         .let(::toResendOtpResult)
     } catch (e: Exception) {
