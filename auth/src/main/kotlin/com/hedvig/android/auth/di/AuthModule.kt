@@ -11,7 +11,7 @@ import com.hedvig.android.auth.SharedPreferencesLoginStatusService
 import org.koin.dsl.module
 
 val authModule = module {
-  single<AuthRepository> { NetworkAuthRepository(get(), "https://auth.dev.hedvigit.com") }
+  single<AuthRepository> { NetworkAuthRepository("https://auth.dev.hedvigit.com") }
   single<AuthTokenService> { DataStoreAuthTokenService(get(), get()) }
   single<AuthenticationTokenService> { SharedPreferencesAuthenticationTokenService(get()) }
   single<LoginStatusService> { SharedPreferencesLoginStatusService(get(), get()) }

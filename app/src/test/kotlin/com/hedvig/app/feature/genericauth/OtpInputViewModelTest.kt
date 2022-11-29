@@ -21,7 +21,6 @@ import com.hedvig.android.auth.SubmitOtpResult
 import com.hedvig.app.feature.genericauth.otpinput.OtpInputViewModel
 import com.hedvig.app.util.coroutines.MainCoroutineRule
 import io.mockk.mockk
-import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -29,6 +28,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
+import kotlin.time.Duration.Companion.milliseconds
 
 class OtpInputViewModelTest {
 
@@ -87,7 +87,6 @@ class OtpInputViewModelTest {
       override suspend fun logout(refreshCode: RefreshCode): LogoutResult {
         TODO("Not yet implemented")
       }
-
     },
     uploadMarketAndLanguagePreferencesUseCase = mockk(relaxed = true),
   )

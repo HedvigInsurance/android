@@ -54,12 +54,13 @@ class GenericAuthViewModel(
       loginMethod = LoginMethod.OTP,
       market = marketManager.market?.name ?: "",
       personalNumber = null,
-      email = email.value
+      email = email.value,
     )
     val newState = when (startLoginResult) {
       is AuthAttemptResult.BankIdProperties,
       is AuthAttemptResult.ZignSecProperties,
-      is AuthAttemptResult.Error -> _viewState.value.copy(
+      is AuthAttemptResult.Error,
+      -> _viewState.value.copy(
         error = GenericAuthViewState.TextFieldError.NETWORK_ERROR,
         loading = false,
       )

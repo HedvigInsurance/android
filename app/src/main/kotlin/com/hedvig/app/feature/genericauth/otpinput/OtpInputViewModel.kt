@@ -5,11 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.auth.AuthRepository
 import com.hedvig.android.auth.AuthTokenResult
 import com.hedvig.android.auth.AuthenticationTokenService
-import com.hedvig.android.auth.LoginMethod
 import com.hedvig.android.auth.ResendOtpResult
-import com.hedvig.android.auth.StatusUrl
 import com.hedvig.android.auth.SubmitOtpResult
-import com.hedvig.android.market.MarketManager
 import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow

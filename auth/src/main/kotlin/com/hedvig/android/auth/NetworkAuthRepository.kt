@@ -99,7 +99,7 @@ internal class NetworkAuthRepository(
       .toString()
       .toRequestBody()
 
-    val request = createPostRequest("$url${verifyUrl}", requestBody)
+    val request = createPostRequest("$url$verifyUrl", requestBody)
 
     return try {
       okHttpClient.newCall(request)
@@ -111,7 +111,7 @@ internal class NetworkAuthRepository(
   }
 
   override suspend fun resendOtp(resendUrl: String): ResendOtpResult {
-    val request = createPostRequest("$url${resendUrl}", ByteArray(0).toRequestBody())
+    val request = createPostRequest("$url$resendUrl", ByteArray(0).toRequestBody())
 
     return try {
       okHttpClient.newCall(request)

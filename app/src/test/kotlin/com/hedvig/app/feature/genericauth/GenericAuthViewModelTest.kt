@@ -19,13 +19,13 @@ import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.util.coroutines.MainCoroutineRule
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import kotlin.time.Duration.Companion.milliseconds
-import kotlinx.coroutines.flow.Flow
 
 class GenericAuthViewModelTest {
 
@@ -73,7 +73,6 @@ class GenericAuthViewModelTest {
       override val enabledMarkets: List<Market>
         get() = listOf(Market.SE)
       override var market: Market? = Market.SE
-
     },
   )
 

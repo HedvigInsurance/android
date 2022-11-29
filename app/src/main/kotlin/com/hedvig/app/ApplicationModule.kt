@@ -19,9 +19,7 @@ import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.datadog.android.DatadogInterceptor
 import com.google.firebase.messaging.FirebaseMessaging
-import com.hedvig.android.auth.AuthRepository
 import com.hedvig.android.auth.AuthenticationTokenService
-import com.hedvig.android.auth.NetworkAuthRepository
 import com.hedvig.android.auth.network.AccessTokenAuthenticator
 import com.hedvig.android.core.common.di.LogInfoType
 import com.hedvig.android.core.common.di.datastoreFileQualifier
@@ -293,22 +291,24 @@ val apolloClientModule = module {
   }
 }
 
-fun makeUserAgent(locale: Locale) =
-  "${
-    BuildConfig.APPLICATION_ID
-  } ${
-    BuildConfig.VERSION_NAME
-  } (Android ${
-    Build.VERSION.RELEASE
-  }; ${
-    Build.BRAND
-  } ${
-    Build.MODEL
-  }; ${
-    Build.DEVICE
-  }; ${
-    locale.language
-  })"
+fun makeUserAgent(locale: Locale): String = buildString {
+  append(BuildConfig.APPLICATION_ID)
+  append(" ")
+  append(BuildConfig.VERSION_NAME)
+  append(" ")
+  append("(Android")
+  append(" ")
+  append(Build.VERSION.RELEASE)
+  append("; ")
+  append(Build.BRAND)
+  append(" ")
+  append(Build.MODEL)
+  append("; ")
+  append(Build.DEVICE)
+  append("; ")
+  append(locale.language)
+  append(")")
+}
 
 val viewModelModule = module {
   viewModel { ClaimsViewModel(get(), get()) }
@@ -662,8 +662,4 @@ val chatEventModule = module {
 
 val graphQLQueryModule = module {
   single<GraphQLQueryHandler> { GraphQLQueryHandler(get(), get(), get()) }
-}
-
-val authRepositoryModule = module {
-  single<AuthRepository> { NetworkAuthRepository("https://auth.dev.hedvigit.com") }
 }
