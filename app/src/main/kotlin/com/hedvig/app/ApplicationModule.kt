@@ -20,6 +20,7 @@ import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.datadog.android.DatadogInterceptor
 import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.android.auth.AuthenticationTokenService
+import com.hedvig.android.auth.interceptor.ExistingTokenAppendingInterceptor
 import com.hedvig.android.auth.network.AccessTokenAuthenticator
 import com.hedvig.android.core.common.di.LogInfoType
 import com.hedvig.android.core.common.di.datastoreFileQualifier
@@ -212,17 +213,7 @@ val applicationModule = module {
       // Temporary fix until back-end problems are handled
       .readTimeout(30, TimeUnit.SECONDS)
       .addInterceptor(DatadogInterceptor())
-      .addInterceptor { chain ->
-        val original = chain.request()
-        val builder = original
-          .newBuilder()
-          .method(original.method, original.body)
-
-        get<AuthenticationTokenService>().authenticationToken?.let { token ->
-          builder.header("Authorization", token)
-        }
-        chain.proceed(builder.build())
-      }
+      .addInterceptor(get<ExistingTokenAppendingInterceptor>())
       .addInterceptor { chain ->
         chain.proceed(
           chain
