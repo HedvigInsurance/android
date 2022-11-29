@@ -671,5 +671,5 @@ val graphQLQueryModule = module {
 }
 
 val authRepositoryModule = module {
-  single<AuthRepository> { NetworkAuthRepository(get(), "https://auth.dev.hedvigit.com") }
+  single<AuthRepository> { NetworkAuthRepository(get(), get<Context>().getString(R.string.AUTH_URL)) }
 }
