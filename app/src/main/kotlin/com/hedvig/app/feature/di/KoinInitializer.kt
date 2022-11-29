@@ -16,6 +16,7 @@ import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.app.adyenModule
 import com.hedvig.app.apolloClientModule
 import com.hedvig.app.applicationModule
+import com.hedvig.app.authRepositoryModule
 import com.hedvig.app.cacheManagerModule
 import com.hedvig.app.changeAddressModule
 import com.hedvig.app.changeDateBottomSheetModule
@@ -112,6 +113,7 @@ class KoinInitializer : Initializer<KoinApplication> {
         valueStoreModule,
         viewModelModule,
         whatsNewModule,
+        authRepositoryModule,
       ),
     )
   }

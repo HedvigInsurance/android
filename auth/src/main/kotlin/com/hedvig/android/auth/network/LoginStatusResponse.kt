@@ -10,7 +10,7 @@ import okhttp3.Response
 @Serializable
 internal data class LoginStatusResponse(
   val status: LoginStatus,
-  val statusText: String,
+  val statusText: String?,
   val authorizationCode: String?,
 ) {
   enum class LoginStatus {
@@ -29,7 +29,7 @@ internal fun Response.createLoginStatusResult(json: Json): LoginStatusResult {
 
 private fun LoginStatusResponse.toLoginStatusResult(): LoginStatusResult = when (status) {
   LoginStatusResponse.LoginStatus.PENDING -> LoginStatusResult.Pending(statusText)
-  LoginStatusResponse.LoginStatus.FAILED -> LoginStatusResult.Failed(statusText)
+  LoginStatusResponse.LoginStatus.FAILED -> LoginStatusResult.Failed("Login status failed")
   LoginStatusResponse.LoginStatus.COMPLETED -> {
     if (authorizationCode == null) {
       LoginStatusResult.Failed("Did not get authorization code")

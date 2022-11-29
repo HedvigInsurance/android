@@ -19,7 +19,9 @@ import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.datadog.android.DatadogInterceptor
 import com.google.firebase.messaging.FirebaseMessaging
+import com.hedvig.android.auth.AuthRepository
 import com.hedvig.android.auth.AuthenticationTokenService
+import com.hedvig.android.auth.NetworkAuthRepository
 import com.hedvig.android.core.common.di.LogInfoType
 import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.common.di.isDebugQualifier
@@ -291,19 +293,19 @@ val apolloClientModule = module {
 
 fun makeUserAgent(locale: Locale) =
   "${
-  BuildConfig.APPLICATION_ID
+    BuildConfig.APPLICATION_ID
   } ${
-  BuildConfig.VERSION_NAME
+    BuildConfig.VERSION_NAME
   } (Android ${
-  Build.VERSION.RELEASE
+    Build.VERSION.RELEASE
   }; ${
-  Build.BRAND
+    Build.BRAND
   } ${
-  Build.MODEL
+    Build.MODEL
   }; ${
-  Build.DEVICE
+    Build.DEVICE
   }; ${
-  locale.language
+    locale.language
   })"
 
 val viewModelModule = module {
@@ -320,7 +322,7 @@ val viewModelModule = module {
   }
   viewModel { DatePickerViewModel() }
   viewModel { params ->
-    SimpleSignAuthenticationViewModel(params.get(), get(), get(), get(), get(), get(), get(), get())
+    SimpleSignAuthenticationViewModel(params.get(), get(), get(), get(), get(), get(), get())
   }
   viewModel { (data: MultiActionParams) -> MultiActionViewModel(data) }
   viewModel { (componentState: MultiActionItem.Component?, multiActionParams: MultiActionParams) ->
@@ -658,4 +660,8 @@ val chatEventModule = module {
 
 val graphQLQueryModule = module {
   single<GraphQLQueryHandler> { GraphQLQueryHandler(get(), get(), get()) }
+}
+
+val authRepositoryModule = module {
+  single<AuthRepository> { NetworkAuthRepository(get(), "https://auth.dev.hedvigit.com") }
 }
