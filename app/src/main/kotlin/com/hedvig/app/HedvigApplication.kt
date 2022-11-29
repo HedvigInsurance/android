@@ -10,9 +10,7 @@ import com.datadog.android.core.configuration.Credentials
 import com.datadog.android.privacy.TrackingConsent
 import com.datadog.android.rum.GlobalRum
 import com.datadog.android.rum.RumMonitor
-import com.hedvig.android.auth.AuthenticationTokenService
 import com.hedvig.android.hanalytics.android.tracking.ApplicationLifecycleTracker
-import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.settings.Theme
 import com.hedvig.app.feature.whatsnew.WhatsNewRepository
 import com.hedvig.app.util.FirebaseCrashlyticsLogExceptionTree
@@ -22,7 +20,6 @@ import timber.log.Timber
 open class HedvigApplication : Application() {
   protected val apolloClient: ApolloClient by inject()
   private val whatsNewRepository: WhatsNewRepository by inject()
-  private val authenticationTokenService: AuthenticationTokenService by inject()
   private val applicationLifecycleTracker: ApplicationLifecycleTracker by inject()
 
   override fun onCreate() {
