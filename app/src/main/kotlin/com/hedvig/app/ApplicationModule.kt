@@ -22,10 +22,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.android.auth.AuthRepository
 import com.hedvig.android.auth.AuthenticationTokenService
 import com.hedvig.android.auth.NetworkAuthRepository
-<<<<<<< HEAD
 import com.hedvig.android.auth.network.AccessTokenAuthenticator
-=======
->>>>>>> 15532781e (Replace se bankid apis)
 import com.hedvig.android.core.common.di.LogInfoType
 import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.common.di.isDebugQualifier
@@ -671,5 +668,5 @@ val graphQLQueryModule = module {
 }
 
 val authRepositoryModule = module {
-  single<AuthRepository> { NetworkAuthRepository(get(), get<Context>().getString(R.string.AUTH_URL)) }
+  single<AuthRepository> { NetworkAuthRepository(get<Context>().getString(R.string.AUTH_URL)) }
 }
