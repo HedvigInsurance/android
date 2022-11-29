@@ -19,9 +19,9 @@ import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.datadog.android.DatadogInterceptor
 import com.google.firebase.messaging.FirebaseMessaging
-import com.hedvig.android.auth.AuthenticationTokenService
+import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.interceptor.AccessTokenAuthenticator
-import com.hedvig.android.auth.interceptor.ExistingTokenAppendingInterceptor
+import com.hedvig.android.auth.interceptor.ExistingAuthTokenAppendingInterceptor
 import com.hedvig.android.core.common.di.LogInfoType
 import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.common.di.isDebugQualifier
@@ -213,7 +213,7 @@ val applicationModule = module {
       // Temporary fix until back-end problems are handled
       .readTimeout(30, TimeUnit.SECONDS)
       .addInterceptor(DatadogInterceptor())
-      .addInterceptor(get<ExistingTokenAppendingInterceptor>())
+      .addInterceptor(get<ExistingAuthTokenAppendingInterceptor>())
       .addInterceptor { chain ->
         chain.proceed(
           chain
@@ -232,7 +232,7 @@ val applicationModule = module {
         )
       }
       .addInterceptor(DeviceIdInterceptor(get(), get()))
-      .authenticator(AccessTokenAuthenticator(get(), get()))
+      .authenticator(AccessTokenAuthenticator(get()))
     if (isDebug()) {
       val logger = HttpLoggingInterceptor { message ->
         if (message.contains("Content-Disposition")) {
@@ -266,7 +266,7 @@ val applicationModule = module {
       .wsProtocol(
         SubscriptionWsProtocol.Factory(
           connectionPayload = {
-            mapOf("Authorization" to get<AuthenticationTokenService>().authenticationToken)
+            mapOf("Authorization" to get<AuthTokenService>().getToken()?.token)
           },
         ),
       )

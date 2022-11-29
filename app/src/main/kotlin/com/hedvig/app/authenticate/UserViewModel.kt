@@ -23,7 +23,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import slimber.log.e
-import timber.log.Timber
 
 class UserViewModel(
   private val logoutUserCase: LogoutUseCase,
@@ -54,8 +53,9 @@ class UserViewModel(
 
       when (result) {
         is AuthAttemptResult.BankIdProperties -> observeBankIdStatus(result)
-        is AuthAttemptResult.Error -> Timber.e(result.message)
-        is AuthAttemptResult.ZignSecProperties -> Timber.e("Got ZignSec properties when signing in with BankId")
+        is AuthAttemptResult.Error -> e { result.message }
+        is AuthAttemptResult.ZignSecProperties -> e { "Got ZignSec properties when signing in with BankId" }
+        is AuthAttemptResult.OtpProperties -> e { "Got Otp properties when signing in with BankId" }
       }
     }
   }
