@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.crossselling.ui.detail
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
@@ -10,6 +11,7 @@ import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.home.ui.changeaddress.appendQuoteCartId
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
+import java.net.URI
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -31,6 +33,7 @@ class CrossSellDetailViewModel(
   data class ViewState(
     val navigateEmbark: NavigateEmbark? = null,
     val navigateChat: NavigateChat? = null,
+    val navigateWeb: Uri? = null,
     val errorMessage: String? = null,
     val loading: Boolean = false,
   )
@@ -40,6 +43,7 @@ class CrossSellDetailViewModel(
       when (val action = crossSellAction) {
         CrossSellData.Action.Chat -> _viewState.value = ViewState(navigateChat = NavigateChat)
         is CrossSellData.Action.Embark -> _viewState.value = action.toViewState()
+        is CrossSellData.Action.Web -> _viewState.value = ViewState(navigateWeb = Uri.parse(action.url))
       }
     }
   }
