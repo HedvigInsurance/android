@@ -70,6 +70,7 @@ class UserViewModel(
         is AuthAttemptResult.BankIdProperties -> observeBankIdStatus(result)
         is AuthAttemptResult.Error -> Timber.e(result.message)
         is AuthAttemptResult.ZignSecProperties -> Timber.e("Got ZignSec properties when signing in with BankId")
+        is AuthAttemptResult.OtpProperties -> Timber.e("Got Otp properties when signing in with BankId")
       }
     }
   }

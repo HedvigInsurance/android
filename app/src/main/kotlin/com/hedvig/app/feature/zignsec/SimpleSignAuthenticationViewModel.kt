@@ -113,6 +113,7 @@ class SimpleSignAuthenticationViewModel(
     when (result) {
       is AuthAttemptResult.BankIdProperties -> _events.postValue(Event.Error)
       is AuthAttemptResult.Error -> _events.postValue(Event.Error)
+      is AuthAttemptResult.OtpProperties -> _events.postValue(Event.Error)
       is AuthAttemptResult.ZignSecProperties -> {
         _zignSecUrl.postValue(result.redirectUrl)
         _statusUrl.postValue(result.statusUrl)
