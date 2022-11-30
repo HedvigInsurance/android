@@ -3,6 +3,7 @@ package com.hedvig.app.feature.zignsec
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.auth.AuthAttemptResult
@@ -19,6 +20,7 @@ import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesU
 import com.hedvig.app.util.LiveEvent
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
@@ -63,15 +65,17 @@ class SimpleSignAuthenticationViewModel(
   /**
    * While this flow is active, we listen to changes in authentication status and report Error/Success in [events]
    */
-  fun subscribeToAuthSuccessEvent(statusUrl: StatusUrl): Flow<LoginStatusResult> {
-    return authRepository.observeLoginStatus(statusUrl).onEach { loginStatusResult ->
-      when (loginStatusResult) {
-        is LoginStatusResult.Completed -> {
-          onSimpleSignSuccess(loginStatusResult)
-          _events.postValue(Event.Success)
+  suspend fun subscribeToAuthSuccessEvent() {
+    statusUrl.asFlow().collectLatest { statusUrl ->
+      authRepository.observeLoginStatus(statusUrl).collect { loginStatusResult ->
+        when (loginStatusResult) {
+          is LoginStatusResult.Completed -> {
+            onSimpleSignSuccess(loginStatusResult)
+            _events.postValue(Event.Success)
+          }
+          is LoginStatusResult.Failed -> _events.postValue(Event.Error)
+          is LoginStatusResult.Pending -> {}
         }
-        is LoginStatusResult.Failed -> _events.postValue(Event.Error)
-        is LoginStatusResult.Pending -> {}
       }
     }
   }
