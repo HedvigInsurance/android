@@ -24,6 +24,7 @@ import com.hedvig.android.market.Market
 import com.hedvig.android.market.createOnboardingUri
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.LoginDialog
+import com.hedvig.app.feature.genericauth.GenericAuthActivity
 import com.hedvig.app.feature.marketing.data.MarketingBackground
 import com.hedvig.app.feature.marketing.marketpicked.MarketPickedScreen
 import com.hedvig.app.feature.marketing.pickmarket.PickMarketScreen

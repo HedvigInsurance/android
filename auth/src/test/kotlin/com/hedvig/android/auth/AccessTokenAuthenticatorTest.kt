@@ -49,8 +49,12 @@ class AccessTokenAuthenticatorTest {
       return flowOf()
     }
 
-    override suspend fun submitOtp(statusUrl: StatusUrl, otp: String): SubmitOtpResult {
+    override suspend fun submitOtp(verifyUrl: String, otp: String): SubmitOtpResult {
       return SubmitOtpResult.Error("Should not use in this test")
+    }
+
+    override suspend fun resendOtp(resendUrl: String): ResendOtpResult {
+      return ResendOtpResult.Success
     }
 
     override suspend fun submitAuthorizationCode(authorizationCode: AuthorizationCode): AuthTokenResult {
