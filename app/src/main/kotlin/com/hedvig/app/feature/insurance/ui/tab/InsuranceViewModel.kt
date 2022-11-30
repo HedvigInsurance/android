@@ -103,7 +103,7 @@ class InsuranceViewModel(
 
   fun crossSellActionOpened() {
     _viewState.update {
-      it.copy(navigateChat = null, navigateEmbark = null)
+      it.copy(navigateChat = null, navigateEmbark = null, navigateWeb = null)
     }
   }
 }
