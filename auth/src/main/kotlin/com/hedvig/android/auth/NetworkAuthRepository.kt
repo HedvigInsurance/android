@@ -16,7 +16,9 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 
-private const val POLL_DELAY_MILLIS = 3000L
+private const val POLL_DELAY_MILLIS = 1000L
+const val SUCCESS_CALLBACK_URL = "https://google.se?q=success"
+const val FAILURE_CALLBACK_URL = "https://google.se?q=failure"
 
 class NetworkAuthRepository(
   private val url: String,
@@ -38,6 +40,8 @@ class NetworkAuthRepository(
     val requestBody = buildJsonObject {
       put("method", loginMethod.name)
       put("country", market)
+      put("callbackSuccess", SUCCESS_CALLBACK_URL)
+      put("callbackFailure", FAILURE_CALLBACK_URL)
 
       if (personalNumber != null) {
         put("personalNumber", personalNumber)

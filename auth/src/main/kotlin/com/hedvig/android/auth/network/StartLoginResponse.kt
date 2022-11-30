@@ -14,6 +14,7 @@ data class StartLoginResponse(
   val statusUrl: String,
   val seBankIdProperties: BankIdProperties?,
   val zignSecProperties: ZignSecProperties?,
+  val otpProperties: OtpProperties?,
 ) {
   @Serializable
   data class BankIdProperties(
@@ -24,6 +25,11 @@ data class StartLoginResponse(
   @Serializable
   data class ZignSecProperties(
     val redirectUrl: String,
+  )
+
+  @Serializable
+  data class OtpProperties(
+    val otp: String
   )
 }
 
