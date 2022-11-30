@@ -326,7 +326,7 @@ val viewModelModule = module {
   }
   viewModel { DatePickerViewModel() }
   viewModel { params ->
-    SimpleSignAuthenticationViewModel(params.get(), get(), get(), get(), get(), get())
+    SimpleSignAuthenticationViewModel(params.get(), get(), get(), get(), get(), get(), get())
   }
   viewModel { (data: MultiActionParams) -> MultiActionViewModel(data) }
   viewModel { (componentState: MultiActionItem.Component?, multiActionParams: MultiActionParams) ->

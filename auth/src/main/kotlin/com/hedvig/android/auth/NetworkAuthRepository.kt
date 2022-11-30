@@ -38,6 +38,8 @@ class NetworkAuthRepository(
     val requestBody = buildJsonObject {
       put("method", loginMethod.name)
       put("country", market)
+      put("callbackSuccess", "https://google.se?q=success")
+      put("callbackFailure", "https://google.se?q=failure")
 
       if (personalNumber != null) {
         put("personalNumber", personalNumber)
