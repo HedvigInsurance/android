@@ -1,8 +1,9 @@
 package com.hedvig.android.auth.network
 
-import com.hedvig.android.auth.AuthRepository
-import com.hedvig.android.auth.AuthTokenResult
 import com.hedvig.android.auth.AuthenticationTokenService
+import com.hedvig.authlib.AuthRepository
+import com.hedvig.authlib.AuthTokenResult
+import com.hedvig.authlib.RefreshTokenGrant
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -23,7 +24,7 @@ class AccessTokenAuthenticator(
       val refreshToken = authenticationTokenService.refreshToken ?: return@runBlocking null
 
       return@runBlocking mutex.withLock {
-        when (val result = authRepository.submitAuthorizationCode(refreshToken.token)) {
+        when (val result = authRepository.exchange(RefreshTokenGrant(refreshToken.token))) {
           is AuthTokenResult.Error -> {
             authenticationTokenService.refreshToken = null
             authenticationTokenService.authenticationToken = null

@@ -2,15 +2,13 @@ package com.hedvig.app.feature.genericauth.otpinput
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.auth.AuthRepository
-import com.hedvig.android.auth.AuthTokenResult
 import com.hedvig.android.auth.AuthenticationTokenService
-import com.hedvig.android.auth.LoginMethod
-import com.hedvig.android.auth.ResendOtpResult
-import com.hedvig.android.auth.StatusUrl
-import com.hedvig.android.auth.SubmitOtpResult
-import com.hedvig.android.market.MarketManager
 import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
+import com.hedvig.authlib.AuthRepository
+import com.hedvig.authlib.AuthTokenResult
+import com.hedvig.authlib.ResendOtpResult.Error
+import com.hedvig.authlib.ResendOtpResult.Success
+import com.hedvig.authlib.SubmitOtpResult
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -65,7 +63,7 @@ class OtpInputViewModel(
   }
 
   private suspend fun submitAuthCode(otpResult: SubmitOtpResult.Success) {
-    when (val submitAuthCodeResult = authRepository.submitAuthorizationCode(otpResult.loginAuthorizationCode)) {
+    when (val submitAuthCodeResult = authRepository.exchange(otpResult.loginAuthorizationCode)) {
       is AuthTokenResult.Error -> setErrorState(submitAuthCodeResult.message)
       is AuthTokenResult.Success -> {
         authenticationTokenService.authenticationToken = submitAuthCodeResult.accessToken.token
@@ -90,12 +88,12 @@ class OtpInputViewModel(
     }
     viewModelScope.launch {
       when (val result = authRepository.resendOtp(resendUrl)) {
-        is ResendOtpResult.Error -> {
+        is Error -> {
           _viewState.update {
             it.copy(networkErrorMessage = result.message, loadingResend = false)
           }
         }
-        ResendOtpResult.Success -> {
+        Success -> {
           _events.trySend(Event.CodeResent)
           _viewState.update {
             it.copy(networkErrorMessage = null, input = "", loadingResend = false)

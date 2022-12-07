@@ -9,8 +9,6 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.fragment.app.Fragment
 import com.google.android.material.transition.MaterialSharedAxis
-import com.hedvig.android.auth.FAILURE_CALLBACK_URL
-import com.hedvig.android.auth.SUCCESS_CALLBACK_URL
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityZignSecAuthenticationBinding
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
@@ -43,10 +41,10 @@ class ZignSecWebViewFragment : Fragment(R.layout.activity_zign_sec_authenticatio
             view: WebView?,
             request: WebResourceRequest?,
           ): Boolean {
-            if (request?.url?.toString()?.contains(SUCCESS_CALLBACK_URL) == true) {
+            if (request?.url?.toString()?.contains("success") == true) {
               return true
             }
-            if (request?.url?.toString()?.contains(FAILURE_CALLBACK_URL) == true) {
+            if (request?.url?.toString()?.contains("failure") == true) {
               viewModel.authFailed()
               return true
             }

@@ -19,9 +19,7 @@ import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.datadog.android.DatadogInterceptor
 import com.google.firebase.messaging.FirebaseMessaging
-import com.hedvig.android.auth.AuthRepository
 import com.hedvig.android.auth.AuthenticationTokenService
-import com.hedvig.android.auth.NetworkAuthRepository
 import com.hedvig.android.auth.network.AccessTokenAuthenticator
 import com.hedvig.android.core.common.di.LogInfoType
 import com.hedvig.android.core.common.di.datastoreFileQualifier
@@ -187,6 +185,14 @@ import com.hedvig.app.util.apollo.NetworkCacheManager
 import com.hedvig.app.util.apollo.ReopenSubscriptionException
 import com.hedvig.app.util.apollo.SunsettingInterceptor
 import com.hedvig.app.util.extensions.startChat
+import com.hedvig.authlib.AuthEnvironment
+import com.hedvig.authlib.AuthRepository
+import com.hedvig.authlib.NetworkAuthRepository
+import java.io.File
+import java.time.Clock
+import java.util.*
+import java.util.concurrent.TimeUnit
+import kotlin.math.pow
 import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -197,11 +203,6 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import slimber.log.i
 import timber.log.Timber
-import java.io.File
-import java.time.Clock
-import java.util.Locale
-import java.util.concurrent.TimeUnit
-import kotlin.math.pow
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APPLICATION_ID == "com.hedvig.test.app"
 
@@ -668,5 +669,14 @@ val graphQLQueryModule = module {
 }
 
 val authRepositoryModule = module {
-  single<AuthRepository> { NetworkAuthRepository(get<Context>().getString(R.string.AUTH_URL)) }
+  single<AuthRepository> {
+    NetworkAuthRepository(
+      environment = if (isDebug()) {
+        AuthEnvironment.STAGING
+      } else {
+        AuthEnvironment.PRODUCTION
+      },
+      additionalHttpHeaders = mapOf(),
+    )
+  }
 }

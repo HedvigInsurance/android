@@ -4,10 +4,9 @@ import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.hedvig.android.apollo.graphql.type.AuthState
-import com.hedvig.android.auth.LoginStatusResult
 import com.hedvig.app.feature.genericauth.GenericAuthActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.authlib.LoginStatusResult
 import hedvig.resources.R
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
