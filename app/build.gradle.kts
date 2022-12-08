@@ -277,4 +277,5 @@ dependencies {
 
   implementation(libs.datadog.sdk)
   implementation(libs.kotlin.reflect)
+  implementation(libs.authlib)
 }

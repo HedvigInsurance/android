@@ -2,27 +2,29 @@ package com.hedvig.app.authenticate
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.auth.AccessToken
-import com.hedvig.android.auth.AuthAttemptResult
-import com.hedvig.android.auth.AuthRepository
-import com.hedvig.android.auth.AuthTokenResult
 import com.hedvig.android.auth.AuthenticationTokenService
-import com.hedvig.android.auth.AuthorizationCode
-import com.hedvig.android.auth.LoginMethod
-import com.hedvig.android.auth.LoginStatusResult
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.market.Market
 import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.service.push.PushTokenManager
+import com.hedvig.authlib.AccessToken
+import com.hedvig.authlib.AuthAttemptResult
+import com.hedvig.authlib.AuthRepository
+import com.hedvig.authlib.AuthTokenResult
+import com.hedvig.authlib.Grant
+import com.hedvig.authlib.LoginMethod
+import com.hedvig.authlib.LoginStatusResult
 import com.hedvig.hanalytics.HAnalytics
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import slimber.log.e
+import timber.log.Timber
 
 class UserViewModel(
   private val logoutUserCase: LogoutUseCase,
@@ -79,8 +81,8 @@ class UserViewModel(
       .launchIn(viewModelScope)
   }
 
-  private suspend fun submitCode(authorizationCode: AuthorizationCode) {
-    when (val result = authRepository.submitAuthorizationCode(authorizationCode)) {
+  private suspend fun submitCode(grant: Grant) {
+    when (val result = authRepository.exchange(grant)) {
       is AuthTokenResult.Error -> e { result.message }
       is AuthTokenResult.Success -> {
         onAuthSuccess(result.accessToken)

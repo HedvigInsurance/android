@@ -22,6 +22,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.interceptor.AccessTokenAuthenticator
 import com.hedvig.android.auth.interceptor.ExistingAuthTokenAppendingInterceptor
+import com.hedvig.android.auth.network.AccessTokenAuthenticator
 import com.hedvig.android.core.common.di.LogInfoType
 import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.common.di.isDebugQualifier
@@ -184,6 +185,9 @@ import com.hedvig.app.util.apollo.NetworkCacheManager
 import com.hedvig.app.util.apollo.ReopenSubscriptionException
 import com.hedvig.app.util.apollo.SunsettingInterceptor
 import com.hedvig.app.util.extensions.startChat
+import com.hedvig.authlib.AuthEnvironment
+import com.hedvig.authlib.AuthRepository
+import com.hedvig.authlib.NetworkAuthRepository
 import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -196,7 +200,7 @@ import slimber.log.i
 import timber.log.Timber
 import java.io.File
 import java.time.Clock
-import java.util.Locale
+import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.pow
 
@@ -653,4 +657,17 @@ val chatEventModule = module {
 
 val graphQLQueryModule = module {
   single<GraphQLQueryHandler> { GraphQLQueryHandler(get(), get(), get()) }
+}
+
+val authRepositoryModule = module {
+  single<AuthRepository> {
+    NetworkAuthRepository(
+      environment = if (isDebug()) {
+        AuthEnvironment.STAGING
+      } else {
+        AuthEnvironment.PRODUCTION
+      },
+      additionalHttpHeaders = mapOf(),
+    )
+  }
 }

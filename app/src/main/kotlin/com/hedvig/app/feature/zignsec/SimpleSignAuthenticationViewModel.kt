@@ -3,23 +3,22 @@ package com.hedvig.app.feature.zignsec
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.auth.AuthAttemptResult
-import com.hedvig.android.auth.AuthRepository
-import com.hedvig.android.auth.AuthTokenResult
 import com.hedvig.android.auth.AuthenticationTokenService
-import com.hedvig.android.auth.LoginMethod
-import com.hedvig.android.auth.LoginStatusResult
-import com.hedvig.android.auth.LoginStatusService
-import com.hedvig.android.auth.StatusUrl
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.market.Market
 import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.util.LiveEvent
+import com.hedvig.authlib.AuthAttemptResult
+import com.hedvig.authlib.AuthRepository
+import com.hedvig.authlib.AuthTokenResult
+import com.hedvig.authlib.LoginMethod
+import com.hedvig.authlib.LoginStatusResult
+import com.hedvig.authlib.StatusUrl
 import com.hedvig.hanalytics.HAnalytics
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class SimpleSignAuthenticationViewModel(
@@ -63,12 +62,16 @@ class SimpleSignAuthenticationViewModel(
   /**
    * While this flow is active, we listen to changes in authentication status and report Error/Success in [events]
    */
-  fun subscribeToAuthSuccessEvent(statusUrl: StatusUrl): Flow<LoginStatusResult> {
-    return authRepository.observeLoginStatus(statusUrl).onEach { loginStatusResult ->
-      when (loginStatusResult) {
-        is LoginStatusResult.Completed -> {
-          onSimpleSignSuccess(loginStatusResult)
-          _events.postValue(Event.Success)
+  suspend fun subscribeToAuthSuccessEvent() {
+    statusUrl.asFlow().collectLatest { statusUrl ->
+      authRepository.observeLoginStatus(statusUrl).collect { loginStatusResult ->
+        when (loginStatusResult) {
+          is LoginStatusResult.Completed -> {
+            onSimpleSignSuccess(loginStatusResult)
+            _events.postValue(Event.Success)
+          }
+          is LoginStatusResult.Failed -> _events.postValue(Event.Error)
+          is LoginStatusResult.Pending -> {}
         }
         is LoginStatusResult.Failed -> _events.postValue(Event.Error)
         is LoginStatusResult.Pending -> {}
@@ -109,6 +112,7 @@ class SimpleSignAuthenticationViewModel(
     when (result) {
       is AuthAttemptResult.BankIdProperties -> _events.postValue(Event.Error)
       is AuthAttemptResult.Error -> _events.postValue(Event.Error)
+      is AuthAttemptResult.OtpProperties -> _events.postValue(Event.Error)
       is AuthAttemptResult.ZignSecProperties -> {
         _zignSecUrl.postValue(result.redirectUrl)
         _statusUrl.postValue(result.statusUrl)
@@ -123,7 +127,7 @@ class SimpleSignAuthenticationViewModel(
   }
 
   private suspend fun onSimpleSignSuccess(loginStatusResult: LoginStatusResult.Completed) {
-    when (val result = authRepository.submitAuthorizationCode(loginStatusResult.authorizationCode)) {
+    when (val result = authRepository.exchange(loginStatusResult.authorizationCode)) {
       is AuthTokenResult.Error -> {
         _events.postValue(Event.Error)
       }
