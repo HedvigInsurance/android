@@ -134,6 +134,7 @@ class SimpleSignAuthenticationViewModel(
         hAnalytics.loggedIn()
         featureManager.invalidateExperiments()
         authenticationTokenService.authenticationToken = result.accessToken.token
+        authenticationTokenService.refreshToken = result.refreshToken
         loginStatusService.isLoggedIn = true
         uploadMarketAndLanguagePreferencesUseCase.invoke()
       }
