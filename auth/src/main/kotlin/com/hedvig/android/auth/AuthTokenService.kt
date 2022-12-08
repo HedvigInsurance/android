@@ -17,6 +17,7 @@ interface AuthTokenService {
   fun getToken(): AccessToken?
   suspend fun refreshAndGetToken(): AccessToken?
   fun updateTokens(accessToken: AccessToken, refreshToken: RefreshToken)
+  fun invalidateTokens()
   fun authStatus(): StateFlow<AuthStatus?>
 }
 
@@ -63,6 +64,12 @@ internal class AuthTokenServiceImpl(
   override fun updateTokens(accessToken: AccessToken, refreshToken: RefreshToken) {
     applicationScope.launch {
       authTokenStorage.updateTokens(accessToken, refreshToken)
+    }
+  }
+
+  override fun invalidateTokens() {
+    applicationScope.launch {
+      authTokenStorage.clearTokens()
     }
   }
 
