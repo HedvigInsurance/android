@@ -329,7 +329,7 @@ val viewModelModule = module {
   }
   viewModel { TerminatedContractsViewModel(get()) }
   viewModel { (quoteCartId: QuoteCartId) ->
-    SwedishBankIdSignViewModel(quoteCartId, get(), get(), get(), get())
+    SwedishBankIdSignViewModel(quoteCartId, get(), get(), get())
   }
   viewModel { AudioRecorderViewModel(get()) }
   viewModel { (crossSell: CrossSellData) ->

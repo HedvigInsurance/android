@@ -7,6 +7,7 @@ import androidx.lifecycle.asFlow
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.auth.AuthenticationTokenService
+import com.hedvig.android.auth.LoginStatusService
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.market.Market
 import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
@@ -73,8 +74,6 @@ class SimpleSignAuthenticationViewModel(
           is LoginStatusResult.Failed -> _events.postValue(Event.Error)
           is LoginStatusResult.Pending -> {}
         }
-        is LoginStatusResult.Failed -> _events.postValue(Event.Error)
-        is LoginStatusResult.Pending -> {}
       }
     }
   }

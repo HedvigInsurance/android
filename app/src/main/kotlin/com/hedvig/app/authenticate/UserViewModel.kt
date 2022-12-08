@@ -15,16 +15,14 @@ import com.hedvig.authlib.Grant
 import com.hedvig.authlib.LoginMethod
 import com.hedvig.authlib.LoginStatusResult
 import com.hedvig.hanalytics.HAnalytics
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import timber.log.Timber
+import slimber.log.e
 
 class UserViewModel(
   private val logoutUserCase: LogoutUseCase,
