@@ -133,7 +133,7 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
               positiveLabel = hedvig.resources.R.string.general_back_button,
               negativeLabel = hedvig.resources.R.string.general_discard_button,
               positiveAction = {},
-              negativeAction = { viewModel.onDiscardOffer() },
+              negativeAction = { startMainActivity() },
             )
           }
           else -> return@setOnMenuItemClickListener false
@@ -229,7 +229,6 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
           is OfferViewModel.Event.OpenCheckout -> startCheckoutActivity(event)
           is OfferViewModel.Event.ApproveSuccessful -> handlePostSign(event)
           is OfferViewModel.Event.ApproveError -> handlePostSignError(event)
-          OfferViewModel.Event.DiscardOffer -> startMainActivity()
           OfferViewModel.Event.StartSwedishBankIdSign -> showSignDialog()
           OfferViewModel.Event.OpenChat -> startChat()
         }

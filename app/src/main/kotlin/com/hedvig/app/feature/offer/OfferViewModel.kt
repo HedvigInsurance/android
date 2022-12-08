@@ -70,8 +70,6 @@ abstract class OfferViewModel : ViewModel() {
     ) : Event()
 
     object StartSwedishBankIdSign : Event()
-
-    object DiscardOffer : Event()
   }
 
   protected val _events = Channel<Event>(Channel.UNLIMITED)
@@ -142,7 +140,6 @@ abstract class OfferViewModel : ViewModel() {
 
   abstract fun onOpenCheckout()
   abstract fun reload()
-  abstract fun onDiscardOffer()
   abstract fun onSwedishBankIdSign()
   abstract fun onPaymentTokenIdReceived(id: PaymentTokenId)
 }
@@ -248,10 +245,6 @@ class OfferViewModelImpl(
     viewModelScope.launch {
       offerRepository.fetchNewOffer(quoteCartId)
     }
-  }
-
-  override fun onDiscardOffer() {
-    _events.trySend(Event.DiscardOffer)
   }
 
   override fun approveOffer() {
