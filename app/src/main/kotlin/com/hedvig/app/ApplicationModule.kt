@@ -429,7 +429,7 @@ val embarkModule = module {
   viewModel<EmbarkViewModel> { (storyName: String) ->
     EmbarkViewModelImpl(
       embarkRepository = get(),
-      loginStatusService = get(),
+      authTokenService = get(),
       graphQLQueryUseCase = get(),
       chatRepository = get(),
       valueStore = get(),
@@ -552,7 +552,7 @@ val useCaseModule = module {
   single { StartNorwegianAuthUseCase(get()) }
   single { SubscribeToAuthResultUseCase(get()) }
   single { StartCheckoutUseCase(get(), get(), get()) }
-  single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+  single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
   single { GetContractsUseCase(get(), get()) }
   single { GraphQLQueryUseCase(get()) }
   single { GetCrossSellsUseCase(get(), get()) }
