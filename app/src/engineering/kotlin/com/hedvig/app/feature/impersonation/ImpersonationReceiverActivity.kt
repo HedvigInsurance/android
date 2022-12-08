@@ -16,16 +16,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
-import arrow.core.Either
-import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.apollo.graphql.ExchangeTokenMutation
-import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
-import com.hedvig.android.auth.AuthenticationTokenService
-import com.hedvig.android.auth.LoginStatusService
+import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.authlib.AuthTokenResult
+import com.hedvig.authlib.AuthorizationCodeGrant
+import com.hedvig.authlib.NetworkAuthRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,6 +30,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.androidx.viewmodel.ext.android.getViewModel
@@ -90,7 +88,7 @@ class ImpersonationReceiverActivity : AppCompatActivity() {
   companion object {
     val module = module {
       viewModel { params ->
-        ImpersonationReceiverViewModel(params.get(), get(), get(), get(), get())
+        ImpersonationReceiverViewModel(params.get(), get(), get(), get())
       }
     }
   }
@@ -98,9 +96,8 @@ class ImpersonationReceiverActivity : AppCompatActivity() {
 
 class ImpersonationReceiverViewModel(
   exchangeToken: String,
-  apolloClient: ApolloClient,
-  authenticationTokenService: AuthenticationTokenService,
-  loginStatusService: LoginStatusService,
+  authTokenService: AuthTokenService,
+  networkAuthRepository: NetworkAuthRepository,
   featureManager: FeatureManager,
 ) : ViewModel() {
   sealed class ViewState {
@@ -112,37 +109,23 @@ class ImpersonationReceiverViewModel(
   private val _state = MutableStateFlow<ViewState>(ViewState.Loading)
   val state = _state.asStateFlow()
 
-  object Event
+  object GoToLoggedInActivityEvent
 
-  private val _events = Channel<Event>(Channel.UNLIMITED)
+  private val _events = Channel<GoToLoggedInActivityEvent>(Channel.UNLIMITED)
   val events = _events.receiveAsFlow()
 
   init {
     viewModelScope.launch {
-      if (authenticationTokenService.authenticationToken == null) {
-        authenticationTokenService.authenticationToken = "123"
-      }
-      when (
-        val result = apolloClient
-          .mutation(ExchangeTokenMutation(exchangeToken))
-          .safeExecute()
-          .toEither()
-      ) {
-        is Either.Left -> {
-          _state.value = ViewState.Error(result.value.message)
+      when (val authTokenResult = networkAuthRepository.exchange(AuthorizationCodeGrant(exchangeToken))) {
+        is AuthTokenResult.Error -> {
+          _state.update { ViewState.Error(authTokenResult.message) }
         }
-        is Either.Right -> {
-          val newToken = result.value.exchangeToken.asExchangeTokenSuccessResponse?.token
-          if (newToken == null) {
-            _state.value = ViewState.Error("Did not receive token")
-            return@launch
-          }
-          authenticationTokenService.authenticationToken = newToken
-          loginStatusService.isLoggedIn = true
+        is AuthTokenResult.Success -> {
           featureManager.invalidateExperiments()
-          _state.value = ViewState.Success
+          authTokenService.updateTokens(authTokenResult.accessToken, authTokenResult.refreshToken)
+          _state.update { ViewState.Success }
           delay(500.milliseconds)
-          _events.send(Event)
+          _events.send(GoToLoggedInActivityEvent)
         }
       }
     }
