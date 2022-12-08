@@ -22,7 +22,6 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.interceptor.AccessTokenAuthenticator
 import com.hedvig.android.auth.interceptor.ExistingAuthTokenAppendingInterceptor
-import com.hedvig.android.auth.network.AccessTokenAuthenticator
 import com.hedvig.android.core.common.di.LogInfoType
 import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.common.di.isDebugQualifier
