@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import arrow.core.continuations.either
-import com.hedvig.android.auth.LoginStatusService
 import com.hedvig.android.core.common.android.validation.ValidationResult
 import com.hedvig.android.core.common.android.validation.validateEmail
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
@@ -42,7 +41,6 @@ class CheckoutViewModel(
   private val editQuotesUseCase: EditCheckoutUseCase,
   private val createAccessTokenUseCase: CreateAccessTokenUseCase,
   private val marketManager: MarketManager,
-  private val loginStatusService: LoginStatusService,
   private val offerRepository: OfferRepository,
   private val featureManager: FeatureManager,
   bundleVariantUseCase: ObserveOfferStateUseCase,
@@ -180,8 +178,6 @@ class CheckoutViewModel(
   }
 
   private suspend fun onSignSuccess(): Event.CheckoutSuccess {
-    featureManager.invalidateExperiments()
-    loginStatusService.isLoggedIn = true
     // Delay sending success in order for the signed quotes to be added on the member
     // Sending success instantly will start HomeFragment, but the member will not have
     // updated contracts.
