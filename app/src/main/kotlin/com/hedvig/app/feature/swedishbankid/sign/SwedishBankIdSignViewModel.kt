@@ -3,7 +3,6 @@ package com.hedvig.app.feature.swedishbankid.sign
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
-import com.hedvig.android.auth.LoginStatusService
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.app.feature.offer.model.Checkout
 import com.hedvig.app.feature.offer.model.QuoteCartId
@@ -19,7 +18,6 @@ import kotlinx.coroutines.flow.update
 
 class SwedishBankIdSignViewModel(
   quoteCartId: QuoteCartId,
-  private val loginStatusService: LoginStatusService,
   private val observeQuoteCartCheckoutUseCase: ObserveQuoteCartCheckoutUseCase,
   private val createAccessTokenUseCase: CreateAccessTokenUseCase,
   private val featureManager: FeatureManager,
@@ -45,7 +43,6 @@ class SwedishBankIdSignViewModel(
         when (createAccessTokenUseCase.invoke(quoteCartId)) {
           is Either.Left -> _viewState.value = BankIdSignViewState.Error()
           is Either.Right -> {
-            loginStatusService.isLoggedIn = true
             featureManager.invalidateExperiments()
             _viewState.value = BankIdSignViewState.StartDirectDebit(featureManager.getPaymentType())
           }
