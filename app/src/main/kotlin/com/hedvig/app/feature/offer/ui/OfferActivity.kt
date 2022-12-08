@@ -4,10 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.transition.TransitionManager
-import android.view.MenuItem
 import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -20,7 +18,6 @@ import com.adyen.checkout.dropin.DropIn
 import com.adyen.checkout.dropin.DropInResult
 import com.carousell.concatadapterextension.ConcatItemDecoration
 import com.carousell.concatadapterextension.ConcatSpanSizeLookup
-import com.hedvig.android.auth.LoginStatus
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.MainActivity
@@ -61,7 +58,6 @@ import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
-import com.hedvig.app.util.navigation.openAuth
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -122,8 +118,29 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
       },
     )
 
-    binding.offerToolbar.setNavigationOnClickListener { onBackPressed() }
-    binding.offerToolbar.setOnMenuItemClickListener(::handleMenuItem)
+    binding.offerToolbar.apply {
+      setNavigationOnClickListener { onBackPressed() }
+      inflateMenu(R.menu.offer_menu)
+      setOnMenuItemClickListener { menuItem ->
+        when (menuItem.itemId) {
+          R.id.chat -> openChat()
+          R.id.app_settings -> startActivity(SettingsActivity.newInstance(this@OfferActivity))
+          R.id.app_info -> startActivity(MoreOptionsActivity.newInstance(this@OfferActivity))
+          R.id.discard_offer -> {
+            showAlert(
+              title = hedvig.resources.R.string.OFFER_QUIT_TITLE,
+              message = hedvig.resources.R.string.OFFER_QUIT_MESSAGE,
+              positiveLabel = hedvig.resources.R.string.general_back_button,
+              negativeLabel = hedvig.resources.R.string.general_discard_button,
+              positiveAction = {},
+              negativeAction = { viewModel.onDiscardOffer() },
+            )
+          }
+          else -> return@setOnMenuItemClickListener false
+        }
+        true
+      }
+    }
 
     val locale = languageService.getLocale()
     val topOfferAdapter = OfferAdapter(
@@ -194,7 +211,6 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
 
             TransitionManager.beginDelayedTransition(binding.offerToolbar)
             setTitleVisibility(viewState)
-            inflateMenu(viewState.loginStatus)
 
             if (!hasStartedRecyclerAnimation) {
               scheduleEnterAnimation()
@@ -342,20 +358,6 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
     binding.offerScroll.layoutAnimation = animation
   }
 
-  private fun inflateMenu(loginStatus: LoginStatus) {
-    val menu = binding.offerToolbar.menu
-    menu.clear()
-    when (loginStatus) {
-      LoginStatus.Onboarding -> binding.offerToolbar.inflateMenu(R.menu.offer_menu)
-      LoginStatus.LoggedIn -> {
-        binding.offerToolbar.inflateMenu(R.menu.offer_menu_logged_in)
-        menu.getItem(0).actionView?.setOnClickListener {
-          handleMenuItem(menu[0])
-        }
-      }
-    }
-  }
-
   private fun onSign(checkoutMethod: CheckoutMethod, paymentMethods: PaymentMethodsApiResponse?) {
     when (checkoutMethod) {
       CheckoutMethod.SWEDISH_BANK_ID -> viewModel.onSwedishBankIdSign()
@@ -386,37 +388,6 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
       }
       else -> {}
     }
-  }
-
-  private fun handleMenuItem(menuItem: MenuItem) = when (menuItem.itemId) {
-    R.id.chat -> {
-      openChat()
-      true
-    }
-    R.id.app_settings -> {
-      startActivity(SettingsActivity.newInstance(this))
-      true
-    }
-    R.id.app_info -> {
-      startActivity(MoreOptionsActivity.newInstance(this))
-      true
-    }
-    R.id.login -> {
-      marketManager.market?.openAuth(this, supportFragmentManager)
-      true
-    }
-    R.id.discard_offer -> {
-      showAlert(
-        title = hedvig.resources.R.string.OFFER_QUIT_TITLE,
-        message = hedvig.resources.R.string.OFFER_QUIT_MESSAGE,
-        positiveLabel = hedvig.resources.R.string.general_back_button,
-        negativeLabel = hedvig.resources.R.string.general_discard_button,
-        positiveAction = {},
-        negativeAction = { viewModel.onDiscardOffer() },
-      )
-      true
-    }
-    else -> false
   }
 
   companion object {
