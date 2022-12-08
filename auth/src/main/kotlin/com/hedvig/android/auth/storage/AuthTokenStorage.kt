@@ -4,9 +4,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.hedvig.android.auth.AccessToken
-import com.hedvig.android.auth.RefreshCode
-import com.hedvig.android.auth.RefreshToken
+import com.hedvig.authlib.AccessToken
+import com.hedvig.authlib.RefreshToken
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -22,7 +21,7 @@ internal class AuthTokenStorage(
       .map { (accessToken, refreshToken) ->
         Pair(
           first = accessToken?.let { AccessToken(it, 0) },
-          second = refreshToken?.let { RefreshToken(RefreshCode(it), 0) },
+          second = refreshToken?.let { RefreshToken(it, 0) },
         )
       }
   }
@@ -30,7 +29,7 @@ internal class AuthTokenStorage(
   suspend fun updateTokens(accessToken: AccessToken, refreshToken: RefreshToken) {
     dataStore.edit { preferences ->
       preferences[accessTokenPreferenceKey] = accessToken.token
-      preferences[refreshTokenPreferenceKey] = refreshToken.token.code
+      preferences[refreshTokenPreferenceKey] = refreshToken.token
     }
   }
 

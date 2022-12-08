@@ -2,6 +2,11 @@ package com.hedvig.android.auth
 
 import com.hedvig.android.auth.storage.AuthTokenStorage
 import com.hedvig.android.core.common.ApplicationScope
+import com.hedvig.authlib.AccessToken
+import com.hedvig.authlib.AuthRepository
+import com.hedvig.authlib.AuthTokenResult
+import com.hedvig.authlib.RefreshToken
+import com.hedvig.authlib.RefreshTokenGrant
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.mapLatest
@@ -45,8 +50,8 @@ internal class AuthTokenServiceImpl(
   }
 
   override suspend fun refreshAndGetToken(): AccessToken? {
-    val refreshedToken = getRefreshToken() ?: return null
-    return when (val result = authRepository.submitAuthorizationCode(refreshedToken.token)) {
+    val refreshToken = getRefreshToken() ?: return null
+    return when (val result = authRepository.exchange(RefreshTokenGrant(refreshToken.token))) {
       is AuthTokenResult.Error -> {
         authTokenStorage.clearTokens()
         null
