@@ -11,7 +11,7 @@ import com.hedvig.app.feature.marketing.MarketingActivity
 import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
 
-suspend fun DynamicLink.startActivity(
+suspend inline fun DynamicLink.startActivity(
   context: Context,
   marketManager: MarketManager,
   featureManager: FeatureManager,
