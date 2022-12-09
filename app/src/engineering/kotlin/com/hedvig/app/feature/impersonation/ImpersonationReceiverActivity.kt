@@ -116,13 +116,11 @@ class ImpersonationReceiverViewModel(
 
   init {
     viewModelScope.launch {
-      when (val authTokenResult = networkAuthRepository.exchange(AuthorizationCodeGrant(exchangeToken))) {
-        is AuthTokenResult.Error -> {
-          _state.update { ViewState.Error(authTokenResult.message) }
-        }
+      when (val result = networkAuthRepository.exchange(AuthorizationCodeGrant(exchangeToken))) {
+        is AuthTokenResult.Error -> _state.update { ViewState.Error(result.message) }
         is AuthTokenResult.Success -> {
+          authTokenService.updateTokens(result.accessToken, result.refreshToken)
           featureManager.invalidateExperiments()
-          authTokenService.updateTokens(authTokenResult.accessToken, authTokenResult.refreshToken)
           _state.update { ViewState.Success }
           delay(500.milliseconds)
           _events.send(GoToLoggedInActivityEvent)
