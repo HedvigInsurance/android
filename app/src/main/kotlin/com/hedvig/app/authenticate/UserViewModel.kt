@@ -2,21 +2,21 @@ package com.hedvig.app.authenticate
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.auth.AuthenticationTokenService
+import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.market.Market
 import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.service.push.PushTokenManager
-import com.hedvig.authlib.AccessToken
 import com.hedvig.authlib.AuthAttemptResult
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult
-import com.hedvig.authlib.Grant
+import com.hedvig.authlib.AuthorizationCodeGrant
 import com.hedvig.authlib.LoginMethod
 import com.hedvig.authlib.LoginStatusResult
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
@@ -25,12 +25,12 @@ import kotlinx.coroutines.launch
 import slimber.log.e
 
 class UserViewModel(
-  private val logoutUserCase: LogoutUseCase,
+  private val logoutUseCase: LogoutUseCase,
   private val hAnalytics: HAnalytics,
   private val featureManager: FeatureManager,
   private val pushTokenManager: PushTokenManager,
   private val uploadMarketAndLanguagePreferencesUseCase: UploadMarketAndLanguagePreferencesUseCase,
-  private val authenticationTokenService: AuthenticationTokenService,
+  private val authTokenService: AuthTokenService,
   private val authRepository: AuthRepository,
 ) : ViewModel() {
 
@@ -42,7 +42,7 @@ class UserViewModel(
 
   private val mutableViewState = MutableStateFlow(ViewState())
   val viewState: StateFlow<ViewState>
-    get() = mutableViewState
+    get() = mutableViewState.asStateFlow()
 
   fun fetchBankIdStartToken() {
     viewModelScope.launch {
@@ -60,12 +60,12 @@ class UserViewModel(
     }
   }
 
-  private suspend fun observeBankIdStatus(result: AuthAttemptResult.BankIdProperties) {
+  private suspend fun observeBankIdStatus(bankIdProperties: AuthAttemptResult.BankIdProperties) {
     mutableViewState.update {
-      it.copy(autoStartToken = result.autoStartToken)
+      it.copy(autoStartToken = bankIdProperties.autoStartToken)
     }
 
-    authRepository.observeLoginStatus(result.statusUrl)
+    authRepository.observeLoginStatus(bankIdProperties.statusUrl)
       .onEach { loginStatusResult ->
         mutableViewState.update {
           it.copy(authStatus = loginStatusResult)
@@ -79,19 +79,22 @@ class UserViewModel(
       .launchIn(viewModelScope)
   }
 
-  private suspend fun submitCode(grant: Grant) {
-    when (val result = authRepository.exchange(grant)) {
-      is AuthTokenResult.Error -> e { result.message }
+  private suspend fun submitCode(grant: AuthorizationCodeGrant) {
+    when (val authTokenResult = authRepository.exchange(grant)) {
+      is AuthTokenResult.Error -> e { authTokenResult.message }
       is AuthTokenResult.Success -> {
-        onAuthSuccess(result.accessToken)
+        onAuthSuccess(authTokenResult)
       }
     }
   }
 
-  private suspend fun onAuthSuccess(accessToken: AccessToken) {
+  private suspend fun onAuthSuccess(authTokenResult: AuthTokenResult.Success) {
     hAnalytics.loggedIn()
     featureManager.invalidateExperiments()
-    authenticationTokenService.authenticationToken = accessToken.token
+    authTokenService.updateTokens(
+      authTokenResult.accessToken,
+      authTokenResult.refreshToken,
+    )
     uploadMarketAndLanguagePreferencesUseCase.invoke()
     mutableViewState.update {
       it.copy(navigateToLoggedIn = true)
@@ -102,6 +105,6 @@ class UserViewModel(
   }
 
   fun logout() {
-    logoutUserCase.invoke()
+    logoutUseCase.invoke()
   }
 }
