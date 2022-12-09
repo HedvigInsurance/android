@@ -7,7 +7,6 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.prop
-import com.hedvig.android.auth.test.FakeLoginStatusService
 import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager
 import com.hedvig.app.feature.offer.model.Checkout
 import com.hedvig.app.feature.offer.model.QuoteCartId
@@ -28,19 +27,16 @@ class SwedishBankIdSignViewModelTest {
 
   @Test
   fun `a successful bankId sign and a successful access token call result in success`() = runTest {
-    val loginStatusService = FakeLoginStatusService()
     val fakeObserveQuoteCartCheckoutUseCase = FakeObserveQuoteCartCheckoutUseCase()
     val fakeCreateAccessTokenUseCase = FakeCreateAccessTokenUseCase()
     val viewModel = SwedishBankIdSignViewModel(
       QuoteCartId(""),
-      loginStatusService,
       fakeObserveQuoteCartCheckoutUseCase,
       fakeCreateAccessTokenUseCase,
       FakeFeatureManager(paymentType = { enumValues<PaymentType>().random() }),
     )
 
     viewModel.viewState.test {
-      assertThat(loginStatusService.isLoggedIn).isEqualTo(false)
       assertThat(awaitItem()).isEqualTo(BankIdSignViewState.StartBankId)
 
       viewModel.bankIdStarted()
@@ -58,19 +54,15 @@ class SwedishBankIdSignViewModelTest {
 
       viewModel.directDebitStarted()
       assertThat(awaitItem()).isEqualTo(BankIdSignViewState.Success)
-
-      assertThat(loginStatusService.isLoggedIn).isEqualTo(true)
     }
   }
 
   @Test
   fun `a delayed successful bankId sign and a successful access token call result in success`() = runTest {
-    val loginStatusService = FakeLoginStatusService()
     val fakeObserveQuoteCartCheckoutUseCase = FakeObserveQuoteCartCheckoutUseCase()
     val fakeCreateAccessTokenUseCase = FakeCreateAccessTokenUseCase()
     val viewModel = SwedishBankIdSignViewModel(
       QuoteCartId(""),
-      loginStatusService,
       fakeObserveQuoteCartCheckoutUseCase,
       fakeCreateAccessTokenUseCase,
       FakeFeatureManager(paymentType = { enumValues<PaymentType>().random() }),
@@ -95,19 +87,15 @@ class SwedishBankIdSignViewModelTest {
 
       viewModel.directDebitStarted()
       assertThat(awaitItem()).isEqualTo(BankIdSignViewState.Success)
-
-      assertThat(loginStatusService.isLoggedIn).isEqualTo(true)
     }
   }
 
   @Test
   fun `not opening the bankID app on this device still allows the singing flow to continue`() = runTest {
-    val loginStatusService = FakeLoginStatusService()
     val fakeObserveQuoteCartCheckoutUseCase = FakeObserveQuoteCartCheckoutUseCase()
     val fakeCreateAccessTokenUseCase = FakeCreateAccessTokenUseCase()
     val viewModel = SwedishBankIdSignViewModel(
       QuoteCartId(""),
-      loginStatusService,
       fakeObserveQuoteCartCheckoutUseCase,
       fakeCreateAccessTokenUseCase,
       FakeFeatureManager(paymentType = { enumValues<PaymentType>().random() }),
@@ -127,19 +115,15 @@ class SwedishBankIdSignViewModelTest {
 
       viewModel.directDebitStarted()
       assertThat(awaitItem()).isEqualTo(BankIdSignViewState.Success)
-
-      assertThat(loginStatusService.isLoggedIn).isEqualTo(true)
     }
   }
 
   @Test
   fun `a successful bankId sign and a failed access token call result in failure`() = runTest {
-    val loginStatusService = FakeLoginStatusService()
     val fakeObserveQuoteCartCheckoutUseCase = FakeObserveQuoteCartCheckoutUseCase()
     val fakeCreateAccessTokenUseCase = FakeCreateAccessTokenUseCase()
     val viewModel = SwedishBankIdSignViewModel(
       QuoteCartId(""),
-      loginStatusService,
       fakeObserveQuoteCartCheckoutUseCase,
       fakeCreateAccessTokenUseCase,
       FakeFeatureManager(),
@@ -156,18 +140,14 @@ class SwedishBankIdSignViewModelTest {
 
       fakeCreateAccessTokenUseCase.results.add(ErrorMessage().left())
       assertThat(awaitItem()).isInstanceOf(BankIdSignViewState.Error::class)
-
-      assertThat(loginStatusService.isLoggedIn).isEqualTo(false)
     }
   }
 
   @Test
   fun `a failed bankId sign fails immediately`() = runTest {
-    val loginStatusService = FakeLoginStatusService()
     val fakeObserveQuoteCartCheckoutUseCase = FakeObserveQuoteCartCheckoutUseCase()
     val viewModel = SwedishBankIdSignViewModel(
       QuoteCartId(""),
-      loginStatusService,
       fakeObserveQuoteCartCheckoutUseCase,
       FakeCreateAccessTokenUseCase().apply { results.close() },
       FakeFeatureManager(),
@@ -186,8 +166,6 @@ class SwedishBankIdSignViewModelTest {
         .isInstanceOf(BankIdSignViewState.Error::class)
         .prop(BankIdSignViewState.Error::message)
         .isEqualTo("Some Status Text")
-
-      assertThat(loginStatusService.isLoggedIn).isEqualTo(false)
     }
   }
 }
