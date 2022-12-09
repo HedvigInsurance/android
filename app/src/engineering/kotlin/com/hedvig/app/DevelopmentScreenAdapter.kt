@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.hedvig.android.auth.AuthenticationTokenService
+import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.app.databinding.DevelopmentFooterBinding
 import com.hedvig.app.databinding.DevelopmentHeaderBinding
 import com.hedvig.app.databinding.DevelopmentRowBinding
@@ -16,11 +16,13 @@ import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
+import com.hedvig.authlib.AccessToken
+import com.hedvig.authlib.RefreshToken
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules
 
 class DevelopmentScreenAdapter(
-  private val authenticationTokenService: AuthenticationTokenService,
+  private val authTokenService: AuthTokenService,
 ) : ListAdapter<DevelopmentScreenAdapter.DevelopmentScreenItem, DevelopmentScreenAdapter.ViewHolder>(
   GenericDiffUtilItemCallback(),
 ) {
@@ -32,7 +34,7 @@ class DevelopmentScreenAdapter(
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
     R.layout.development_header -> ViewHolder.Header(parent)
-    R.layout.development_footer -> ViewHolder.Footer(parent, authenticationTokenService)
+    R.layout.development_footer -> ViewHolder.Footer(parent, authTokenService)
     R.layout.development_row -> ViewHolder.Row(parent)
     else -> throw Error("Invalid viewType")
   }
@@ -132,15 +134,19 @@ class DevelopmentScreenAdapter(
 
     class Footer(
       parent: ViewGroup,
-      private val authenticationTokenService: AuthenticationTokenService,
+      private val authTokenService: AuthTokenService,
     ) : ViewHolder(parent.inflate(R.layout.development_footer)) {
       private val binding by viewBinding(DevelopmentFooterBinding::bind)
       override fun bind(data: DevelopmentScreenItem) {
         with(binding) {
-          token.setText(authenticationTokenService.authenticationToken)
+          token.setText(authTokenService.getToken()?.token ?: "Token not found")
           saveToken.setHapticClickListener {
-            authenticationTokenService.authenticationToken = saveToken.text.toString()
-            saveToken.context.makeToast("Token saved")
+            authTokenService.updateTokens(
+              AccessToken(token.text.toString(), 600),
+              // todo maybe the dev screen shouldn't be doing this in the first place.
+              RefreshToken(token.text.toString(), 600),
+            )
+            token.context.makeToast("Token saved")
           }
         }
       }
