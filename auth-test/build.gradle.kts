@@ -6,5 +6,6 @@ plugins {
 dependencies {
   implementation(projects.auth)
 
+  implementation(libs.authlib)
   implementation(libs.coroutines.core)
 }
