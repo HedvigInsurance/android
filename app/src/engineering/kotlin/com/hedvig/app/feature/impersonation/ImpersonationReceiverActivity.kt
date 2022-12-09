@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.impersonation
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
@@ -16,16 +17,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
-import arrow.core.Either
-import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.apollo.graphql.ExchangeTokenMutation
-import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.auth.AuthenticationTokenService
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.authlib.AuthRepository
+import com.hedvig.authlib.AuthTokenResult
+import com.hedvig.authlib.AuthorizationCodeGrant
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -48,8 +47,8 @@ class ImpersonationReceiverActivity : AppCompatActivity() {
     loadKoinModules(module)
 
     val viewModel = getViewModel<ImpersonationReceiverViewModel> {
-      val token = intent.data?.getQueryParameter("token")?.split("=")?.get(1)
-        ?: intent?.getStringExtra("token")?.split("=")?.get(1)
+      val token = intent.data?.getQueryParameter("authorizationCode")
+        ?: throw IllegalArgumentException("authorizationCode not found in query parameter")
       parametersOf(token)
     }
 
@@ -98,8 +97,8 @@ class ImpersonationReceiverActivity : AppCompatActivity() {
 
 class ImpersonationReceiverViewModel(
   exchangeToken: String,
-  apolloClient: ApolloClient,
   authenticationTokenService: AuthenticationTokenService,
+  authRepository: AuthRepository,
   loginStatusService: LoginStatusService,
   featureManager: FeatureManager,
 ) : ViewModel() {
@@ -119,25 +118,11 @@ class ImpersonationReceiverViewModel(
 
   init {
     viewModelScope.launch {
-      if (authenticationTokenService.authenticationToken == null) {
-        authenticationTokenService.authenticationToken = "123"
-      }
-      when (
-        val result = apolloClient
-          .mutation(ExchangeTokenMutation(exchangeToken))
-          .safeExecute()
-          .toEither()
-      ) {
-        is Either.Left -> {
-          _state.value = ViewState.Error(result.value.message)
-        }
-        is Either.Right -> {
-          val newToken = result.value.exchangeToken.asExchangeTokenSuccessResponse?.token
-          if (newToken == null) {
-            _state.value = ViewState.Error("Did not receive token")
-            return@launch
-          }
-          authenticationTokenService.authenticationToken = newToken
+      when (val result = authRepository.exchange(AuthorizationCodeGrant(exchangeToken))) {
+        is AuthTokenResult.Error -> _state.value = ViewState.Error(result.message)
+        is AuthTokenResult.Success -> {
+          authenticationTokenService.authenticationToken = result.accessToken.token
+          authenticationTokenService.refreshToken = result.refreshToken
           loginStatusService.isLoggedIn = true
           featureManager.invalidateExperiments()
           _state.value = ViewState.Success
