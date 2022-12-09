@@ -7,7 +7,7 @@ import android.os.Parcelable
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import coil.ImageLoader
-import com.hedvig.android.auth.AuthenticationTokenService
+import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.Navigator
 import com.hedvig.common.remote.actions.CHAT_URL
@@ -20,14 +20,14 @@ import org.koin.android.ext.android.inject
 
 class ClaimsFlowActivity : ComponentActivity() {
 
-  private val authenticationTokenService: AuthenticationTokenService by inject()
+  private val authTokenService: AuthTokenService by inject()
   private val languageService: LanguageService by inject()
   private val imageLoader: ImageLoader by inject()
   private val navigator: Navigator by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    val token = authenticationTokenService.authenticationToken
+    val token = authTokenService.getToken()?.token
     requireNotNull(token)
     val odysseyUrl = intent.getStringExtra(ODYSSEY_URL_KEY) ?: error("ODYSSEY_URL_KEY needs to be passed in")
     val itemType = intent.getParcelableExtra<ItemType>(EXTRA_ITEM_TYPE)?.name
