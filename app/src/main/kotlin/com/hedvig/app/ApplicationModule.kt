@@ -131,8 +131,6 @@ import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetViewModel
 import com.hedvig.app.feature.offer.ui.changestartdate.QuoteCartEditStartDateUseCase
 import com.hedvig.app.feature.offer.usecase.AddPaymentTokenUseCase
-import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCase
-import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCaseImpl
 import com.hedvig.app.feature.offer.usecase.EditCampaignUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuoteCartCheckoutUseCase
 import com.hedvig.app.feature.offer.usecase.ObserveOfferStateUseCase
@@ -329,7 +327,7 @@ val viewModelModule = module {
   }
   viewModel { TerminatedContractsViewModel(get()) }
   viewModel { (quoteCartId: QuoteCartId) ->
-    SwedishBankIdSignViewModel(quoteCartId, get(), get(), get())
+    SwedishBankIdSignViewModel(quoteCartId, get(), get())
   }
   viewModel { AudioRecorderViewModel(get()) }
   viewModel { (crossSell: CrossSellData) ->
@@ -499,10 +497,8 @@ val checkoutModule = module {
       quoteCartId = quoteCartId,
       signQuotesUseCase = get(),
       editQuotesUseCase = get(),
-      createAccessTokenUseCase = get(),
       marketManager = get(),
       offerRepository = get(),
-      featureManager = get(),
       bundleVariantUseCase = get(),
       selectedVariantStore = get(),
     )
@@ -588,7 +584,6 @@ val useCaseModule = module {
     )
   }
   single<QuoteCartEditStartDateUseCase> { QuoteCartEditStartDateUseCase(get(), get()) }
-  single<CreateAccessTokenUseCase> { CreateAccessTokenUseCaseImpl(get(), get()) }
   single<EditCampaignUseCase> { EditCampaignUseCase(get(), get()) }
   single<AddPaymentTokenUseCase> { AddPaymentTokenUseCase(get()) }
   single<ConnectPaymentUseCase> { ConnectPaymentUseCase(get(), get(), get()) }

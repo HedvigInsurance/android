@@ -6,7 +6,6 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import com.hedvig.android.core.common.android.validation.ValidationResult
 import com.hedvig.android.core.common.android.validation.validateEmail
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.feature.offer.OfferRepository
@@ -16,7 +15,6 @@ import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.QuoteBundleVariant
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
-import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCase
 import com.hedvig.app.feature.offer.usecase.ObserveOfferStateUseCase
 import com.hedvig.app.feature.offer.usecase.OfferState
 import com.hedvig.app.feature.offer.usecase.StartCheckoutUseCase
@@ -39,10 +37,8 @@ class CheckoutViewModel(
   private val quoteCartId: QuoteCartId,
   private val signQuotesUseCase: StartCheckoutUseCase,
   private val editQuotesUseCase: EditCheckoutUseCase,
-  private val createAccessTokenUseCase: CreateAccessTokenUseCase,
   private val marketManager: MarketManager,
   private val offerRepository: OfferRepository,
-  private val featureManager: FeatureManager,
   bundleVariantUseCase: ObserveOfferStateUseCase,
   selectedVariantStore: SelectedVariantStore,
 ) : ViewModel() {
@@ -85,19 +81,13 @@ class CheckoutViewModel(
     val checkout = model.checkout
     when (checkout?.status) {
       Checkout.CheckoutStatus.PENDING -> _events.trySend(Event.Loading)
-      Checkout.CheckoutStatus.SIGNED -> createAccessToken()
+      Checkout.CheckoutStatus.SIGNED -> offerRepository.fetchNewOffer(quoteCartId)
       Checkout.CheckoutStatus.COMPLETED -> _events.trySend(onSignSuccess())
       Checkout.CheckoutStatus.FAILED,
       Checkout.CheckoutStatus.UNKNOWN,
       -> _events.trySend(Event.Error(checkout.statusText))
       null -> {}
     }
-  }
-
-  private suspend fun createAccessToken() {
-    createAccessTokenUseCase.invoke(quoteCartId)
-      .tapLeft { _events.trySend(Event.Error(it.message)) }
-      .tap { offerRepository.fetchNewOffer(quoteCartId) }
   }
 
   private fun QuoteBundleVariant.mapToViewState() = TitleViewState.Loaded(
@@ -160,7 +150,7 @@ class CheckoutViewModel(
 
   private fun signQuotes() {
     viewModelScope.launch {
-      either<ErrorMessage, StartCheckoutUseCase.Success> {
+      either {
         val quoteIds = offerState.first().map { it.selectedQuoteIds }.bind()
         val parameter = EditAndSignParameter(
           quoteIds = quoteIds,
