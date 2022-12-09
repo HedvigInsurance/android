@@ -21,4 +21,5 @@ dependencies {
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.okhttp.mockWebServer)
+  testImplementation(libs.turbine)
 }

@@ -8,22 +8,11 @@ import com.hedvig.android.auth.interceptor.AccessTokenAuthenticator
 import com.hedvig.android.auth.storage.AuthTokenStorage
 import com.hedvig.android.core.datastore.TestPreferencesDataStore
 import com.hedvig.authlib.AccessToken
-import com.hedvig.authlib.AuthAttemptResult
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult
-import com.hedvig.authlib.Grant
-import com.hedvig.authlib.LoginMethod
-import com.hedvig.authlib.LoginStatusResult
 import com.hedvig.authlib.RefreshToken
-import com.hedvig.authlib.ResendOtpResult
-import com.hedvig.authlib.RevokeResult
-import com.hedvig.authlib.StatusUrl
-import com.hedvig.authlib.SubmitOtpResult
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import okhttp3.Authenticator
 import okhttp3.HttpUrl
@@ -42,51 +31,7 @@ class AccessTokenAuthenticatorTest {
 
   private val expiredToken = "expiredToken"
 
-  private var submitAuthResult: AuthTokenResult = AuthTokenResult.Success(
-    accessToken = AccessToken(
-      token = "newToken",
-      expiryInSeconds = 1000,
-    ),
-    refreshToken = RefreshToken(
-      token = "newRefreshToken",
-      expiryInSeconds = 1000,
-    ),
-  )
-
-  private val testAuthRepository = object : AuthRepository {
-    override suspend fun startLoginAttempt(
-      loginMethod: LoginMethod,
-      market: String,
-      personalNumber: String?,
-      email: String?,
-    ): AuthAttemptResult {
-      return AuthAttemptResult.Error("Should not use in this test")
-    }
-
-    override fun observeLoginStatus(statusUrl: StatusUrl): Flow<LoginStatusResult> {
-      return flowOf()
-    }
-
-    override suspend fun submitOtp(verifyUrl: String, otp: String): SubmitOtpResult {
-      return SubmitOtpResult.Error("Should not use in this test")
-    }
-
-    override suspend fun resendOtp(resendUrl: String): ResendOtpResult {
-      return ResendOtpResult.Success
-    }
-
-    override suspend fun exchange(grant: Grant): AuthTokenResult {
-      return submitAuthResult
-    }
-
-    override suspend fun loginStatus(statusUrl: StatusUrl): LoginStatusResult {
-      return LoginStatusResult.Failed("Should not use in this test")
-    }
-
-    override suspend fun revoke(token: String): RevokeResult {
-      return RevokeResult.Error("Should not use in this test")
-    }
-  }
+  private val testAuthRepository = FakeAuthRepository()
 
   @Test
   fun shouldNotAddAuthHeaderWhenResponseIs200() = runTest {
@@ -119,6 +64,7 @@ class AccessTokenAuthenticatorTest {
     mockWebServer.enqueue(errorResponse)
     mockWebServer.enqueue(successResponse)
     mockWebServer.start()
+    testAuthRepository.exchangeResponse.add(AuthTokenResult.Success(refreshedAccessToken, refreshedRefreshToken))
 
     val url = mockWebServer.url("")
     val request = buildRequest(url)
@@ -129,7 +75,7 @@ class AccessTokenAuthenticatorTest {
     assertThat(firstRequest.headers["Authorization"]).isEqualTo(expiredToken)
     // Second request intercepted by authenticator, adding an updated token
     val secondRequest = mockWebServer.takeRequest()
-    assertThat(secondRequest.headers["Authorization"]).isEqualTo("newToken")
+    assertThat(secondRequest.headers["Authorization"]).isEqualTo(refreshedAccessToken.token)
   }
 
   @Test
@@ -145,13 +91,15 @@ class AccessTokenAuthenticatorTest {
     mockWebServer.enqueue(successResponse)
     mockWebServer.start()
 
+    testAuthRepository.exchangeResponse.add(AuthTokenResult.Success(refreshedAccessToken, refreshedRefreshToken))
+
     val url = mockWebServer.url("")
     val request = buildRequest(url)
     okHttpClient.newCall(request).execute()
 
     assertThat((authTokenService.authStatus().value as AuthStatus.LoggedIn).refreshToken.token)
-      .isEqualTo("newRefreshToken")
-    assertThat(authTokenService.getToken()?.token).isEqualTo("newToken")
+      .isEqualTo(refreshedRefreshToken.token)
+    assertThat(authTokenService.getToken()?.token).isEqualTo(refreshedAccessToken.token)
   }
 
   @Test
@@ -171,7 +119,7 @@ class AccessTokenAuthenticatorTest {
 
     assertThat((authTokenService.authStatus().value as AuthStatus.LoggedIn).refreshToken.token)
       .isEqualTo("oldRefreshToken")
-    assertThat(authTokenService.getToken()?.token).isEqualTo("oldToken")
+    assertThat(authTokenService.getToken()?.token).isEqualTo(originalAccessToken.token)
   }
 
   @Test
@@ -179,7 +127,6 @@ class AccessTokenAuthenticatorTest {
     val authTokenService = testAuthTokenService(testAuthRepository)
     val authenticator = testAccessTokenAuthenticator(authTokenService)
     val okHttpClient = okHttpClient(authenticator)
-    submitAuthResult = AuthTokenResult.Error("Error")
 
     val mockWebServer = MockWebServer()
     val errorResponse = MockResponse().setResponseCode(401).setBody("")
@@ -187,8 +134,10 @@ class AccessTokenAuthenticatorTest {
     mockWebServer.start()
 
     assertThat((authTokenService.authStatus().value as AuthStatus.LoggedIn).refreshToken.token)
-      .isEqualTo("oldRefreshToken")
-    assertThat(authTokenService.getToken()?.token).isEqualTo("oldToken")
+      .isEqualTo(originalRefreshToken.token)
+    assertThat(authTokenService.getToken()?.token).isEqualTo(originalAccessToken.token)
+
+    testAuthRepository.exchangeResponse.add(AuthTokenResult.Error("Error"))
 
     val url = mockWebServer.url("")
     val request = buildRequest(url)
@@ -222,11 +171,7 @@ class AccessTokenAuthenticatorTest {
       authRepository = authRepository,
       coroutineScope = backgroundScope,
     )
-    authTokenService.updateTokens(
-      AccessToken("oldToken", 100),
-      RefreshToken("oldRefreshToken", 100),
-    )
-    runCurrent()
+    authTokenService.updateTokens(originalAccessToken, originalRefreshToken)
     return authTokenService
   }
 
@@ -235,4 +180,12 @@ class AccessTokenAuthenticatorTest {
     .header("Authorization", expiredToken)
     .url(url)
     .build()
+
+  companion object {
+    private val originalAccessToken = AccessToken("oldToken", 100)
+    private val originalRefreshToken = RefreshToken("oldRefreshToken", 100)
+
+    private val refreshedAccessToken = AccessToken("newToken", 1000)
+    private val refreshedRefreshToken = RefreshToken("newRefreshToken", 1000)
+  }
 }
