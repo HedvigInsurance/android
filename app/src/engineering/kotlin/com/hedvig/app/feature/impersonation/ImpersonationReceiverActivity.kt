@@ -17,11 +17,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
-import arrow.core.Either
-import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.apollo.graphql.ExchangeTokenMutation
-import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
 import com.hedvig.android.auth.AuthenticationTokenService
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
@@ -30,7 +25,6 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult
 import com.hedvig.authlib.AuthorizationCodeGrant
-import com.hedvig.authlib.RefreshTokenGrant
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,7 +40,6 @@ import org.koin.core.context.unloadKoinModules
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 import kotlin.time.Duration.Companion.milliseconds
-import timber.log.Timber
 
 class ImpersonationReceiverActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
