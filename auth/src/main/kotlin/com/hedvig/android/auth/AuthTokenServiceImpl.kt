@@ -1,12 +1,12 @@
 package com.hedvig.android.auth
 
 import com.hedvig.android.auth.storage.AuthTokenStorage
-import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.authlib.AccessToken
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult
 import com.hedvig.authlib.RefreshToken
 import com.hedvig.authlib.RefreshTokenGrant
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.mapLatest
@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 internal class AuthTokenServiceImpl(
   private val authTokenStorage: AuthTokenStorage,
   private val authRepository: AuthRepository,
-  private val applicationScope: ApplicationScope,
+  private val coroutineScope: CoroutineScope,
 ) : AuthTokenService {
 
   @Suppress("NAME_SHADOWING")
@@ -27,7 +27,7 @@ internal class AuthTokenServiceImpl(
       AuthStatus.LoggedIn(accessToken, refreshToken)
     }
     .stateIn(
-      applicationScope,
+      coroutineScope,
       SharingStarted.Eagerly,
       null,
     )
@@ -40,27 +40,24 @@ internal class AuthTokenServiceImpl(
     val refreshToken = getRefreshToken() ?: return null
     return when (val result = authRepository.exchange(RefreshTokenGrant(refreshToken.token))) {
       is AuthTokenResult.Error -> {
-        authTokenStorage.clearTokens()
+        invalidateTokens()
         null
       }
       is AuthTokenResult.Success -> {
-        authTokenStorage.updateTokens(
-          result.accessToken,
-          result.refreshToken,
-        )
+        authTokenStorage.updateTokens(result.accessToken, result.refreshToken)
         result.accessToken
       }
     }
   }
 
   override fun updateTokens(accessToken: AccessToken, refreshToken: RefreshToken) {
-    applicationScope.launch {
+    coroutineScope.launch {
       authTokenStorage.updateTokens(accessToken, refreshToken)
     }
   }
 
   override fun invalidateTokens() {
-    applicationScope.launch {
+    coroutineScope.launch {
       authTokenStorage.clearTokens()
     }
   }

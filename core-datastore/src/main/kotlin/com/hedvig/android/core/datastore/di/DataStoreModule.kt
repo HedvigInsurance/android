@@ -5,6 +5,7 @@ package com.hedvig.android.core.datastore.di
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
+import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.datastore.DeviceIdDataStore
 import com.hedvig.android.core.datastore.DeviceIdDataStoreImpl
@@ -29,5 +30,5 @@ val dataStoreModule = module {
       },
     )
   }
-  single<DeviceIdDataStore> { DeviceIdDataStoreImpl(get(), get()) }
+  single<DeviceIdDataStore> { DeviceIdDataStoreImpl(get(), get<ApplicationScope>()) }
 }

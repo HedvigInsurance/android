@@ -4,7 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.hedvig.android.core.common.ApplicationScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
@@ -18,13 +18,13 @@ interface DeviceIdDataStore {
 
 internal class DeviceIdDataStoreImpl(
   private val dataStore: DataStore<Preferences>,
-  applicationScope: ApplicationScope,
+  coroutineScope: CoroutineScope,
 ) : DeviceIdDataStore {
 
   private val key = stringPreferencesKey("hedvig-device-id")
 
   init {
-    applicationScope.launch(Dispatchers.IO) {
+    coroutineScope.launch(Dispatchers.IO) {
       val deviceId = observeDeviceId().firstOrNull()
       if (deviceId == null || deviceId == "") {
         generateDeviceId()
