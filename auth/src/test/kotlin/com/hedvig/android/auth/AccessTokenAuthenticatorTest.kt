@@ -2,7 +2,11 @@ package com.hedvig.android.auth
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
+import assertk.assertions.isNotNull
 import com.hedvig.android.auth.interceptor.AccessTokenAuthenticator
+import com.hedvig.android.auth.storage.AuthTokenStorage
+import com.hedvig.android.core.datastore.TestPreferencesDataStore
 import com.hedvig.authlib.AccessToken
 import com.hedvig.authlib.AuthAttemptResult
 import com.hedvig.authlib.AuthRepository
@@ -17,24 +21,26 @@ import com.hedvig.authlib.StatusUrl
 import com.hedvig.authlib.SubmitOtpResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.test.runTest
+import okhttp3.Authenticator
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
 
 class AccessTokenAuthenticatorTest {
 
-  private val expiredToken = "expiredToken"
+  @get:Rule
+  val testFolder = TemporaryFolder()
 
-  private val mockAuthenticationTokenService = object : AuthenticationTokenService {
-    override var authenticationToken: String? = "oldToken"
-    override var refreshToken: RefreshToken? = RefreshToken(
-      token = "oldRefreshToken",
-      expiryInSeconds = 100,
-    )
-  }
+  private val expiredToken = "expiredToken"
 
   private var submitAuthResult: AuthTokenResult = AuthTokenResult.Success(
     accessToken = AccessToken(
@@ -47,7 +53,7 @@ class AccessTokenAuthenticatorTest {
     ),
   )
 
-  private val authRepository = object : AuthRepository {
+  private val testAuthRepository = object : AuthRepository {
     override suspend fun startLoginAttempt(
       loginMethod: LoginMethod,
       market: String,
@@ -69,10 +75,6 @@ class AccessTokenAuthenticatorTest {
       return ResendOtpResult.Success
     }
 
-    override suspend fun resendOtp(resendUrl: String): ResendOtpResult {
-      return ResendOtpResult.Success
-    }
-
     override suspend fun exchange(grant: Grant): AuthTokenResult {
       return submitAuthResult
     }
@@ -86,18 +88,12 @@ class AccessTokenAuthenticatorTest {
     }
   }
 
-  private val authenticator = AccessTokenAuthenticator(
-    authenticationTokenService = mockAuthenticationTokenService,
-    authRepository = authRepository,
-  )
-
-  private val okHttpClient = OkHttpClient
-    .Builder()
-    .authenticator(authenticator)
-    .build()
-
   @Test
-  fun shouldNotAddAuthHeaderWhenResponseIs200() {
+  fun shouldNotAddAuthHeaderWhenResponseIs200() = runTest {
+    val authTokenService = testAuthTokenService(testAuthRepository)
+    val authenticator = testAccessTokenAuthenticator(authTokenService)
+    val okHttpClient = okHttpClient(authenticator)
+
     val mockWebServer = MockWebServer()
     val successResponse = MockResponse().setBody("")
     mockWebServer.enqueue(successResponse)
@@ -112,7 +108,11 @@ class AccessTokenAuthenticatorTest {
   }
 
   @Test
-  fun shouldAddAuthHeaderWhenResponseIs401() {
+  fun shouldAddAuthHeaderWhenResponseIs401() = runTest(UnconfinedTestDispatcher()) {
+    val authTokenService = testAuthTokenService(testAuthRepository)
+    val authenticator = testAccessTokenAuthenticator(authTokenService)
+    val okHttpClient = okHttpClient(authenticator)
+
     val mockWebServer = MockWebServer()
     val errorResponse = MockResponse().setResponseCode(401).setBody("")
     val successResponse = MockResponse().setBody("")
@@ -133,7 +133,11 @@ class AccessTokenAuthenticatorTest {
   }
 
   @Test
-  fun shouldPersistNewTokenWhenResponseIs401AndCallIsSuccessFull() {
+  fun shouldPersistNewTokenWhenResponseIs401AndCallIsSuccessful() = runTest(UnconfinedTestDispatcher()) {
+    val authTokenService = testAuthTokenService(testAuthRepository)
+    val authenticator = testAccessTokenAuthenticator(authTokenService)
+    val okHttpClient = okHttpClient(authenticator)
+
     val mockWebServer = MockWebServer()
     val errorResponse = MockResponse().setResponseCode(401).setBody("")
     val successResponse = MockResponse().setBody("")
@@ -145,12 +149,17 @@ class AccessTokenAuthenticatorTest {
     val request = buildRequest(url)
     okHttpClient.newCall(request).execute()
 
-    assertThat(mockAuthenticationTokenService.refreshToken?.token).isEqualTo("newRefreshToken")
-    assertThat(mockAuthenticationTokenService.authenticationToken).isEqualTo("newToken")
+    assertThat((authTokenService.authStatus().value as AuthStatus.LoggedIn).refreshToken.token)
+      .isEqualTo("newRefreshToken")
+    assertThat(authTokenService.getToken()?.token).isEqualTo("newToken")
   }
 
   @Test
-  fun shouldNotPersistNewTokenWhenResponseIs200() {
+  fun shouldNotPersistNewTokenWhenResponseIs200() = runTest(UnconfinedTestDispatcher()) {
+    val authTokenService = testAuthTokenService(testAuthRepository)
+    val authenticator = testAccessTokenAuthenticator(authTokenService)
+    val okHttpClient = okHttpClient(authenticator)
+
     val mockWebServer = MockWebServer()
     val successResponse = MockResponse().setBody("")
     mockWebServer.enqueue(successResponse)
@@ -160,12 +169,16 @@ class AccessTokenAuthenticatorTest {
     val request = buildRequest(url)
     okHttpClient.newCall(request).execute()
 
-    assertThat(mockAuthenticationTokenService.refreshToken?.token).isEqualTo("oldRefreshToken")
-    assertThat(mockAuthenticationTokenService.authenticationToken).isEqualTo("oldToken")
+    assertThat((authTokenService.authStatus().value as AuthStatus.LoggedIn).refreshToken.token)
+      .isEqualTo("oldRefreshToken")
+    assertThat(authTokenService.getToken()?.token).isEqualTo("oldToken")
   }
 
   @Test
-  fun shouldRemovePersistedTokensWhenAuthCallResponseFails() {
+  fun shouldRemovePersistedTokensWhenAuthCallResponseFails() = runTest(UnconfinedTestDispatcher()) {
+    val authTokenService = testAuthTokenService(testAuthRepository)
+    val authenticator = testAccessTokenAuthenticator(authTokenService)
+    val okHttpClient = okHttpClient(authenticator)
     submitAuthResult = AuthTokenResult.Error("Error")
 
     val mockWebServer = MockWebServer()
@@ -173,15 +186,48 @@ class AccessTokenAuthenticatorTest {
     mockWebServer.enqueue(errorResponse)
     mockWebServer.start()
 
-    assertThat(mockAuthenticationTokenService.refreshToken?.token).isEqualTo("oldRefreshToken")
-    assertThat(mockAuthenticationTokenService.authenticationToken).isEqualTo("oldToken")
+    assertThat((authTokenService.authStatus().value as AuthStatus.LoggedIn).refreshToken.token)
+      .isEqualTo("oldRefreshToken")
+    assertThat(authTokenService.getToken()?.token).isEqualTo("oldToken")
 
     val url = mockWebServer.url("")
     val request = buildRequest(url)
     okHttpClient.newCall(request).execute()
 
-    assertThat(mockAuthenticationTokenService.refreshToken?.token).isEqualTo(null)
-    assertThat(mockAuthenticationTokenService.authenticationToken).isEqualTo(null)
+    assertThat(authTokenService.authStatus().value)
+      .isNotNull()
+      .isInstanceOf(AuthStatus.LoggedOut::class)
+    assertThat(authTokenService.getToken()).isEqualTo(null)
+  }
+
+  private fun okHttpClient(authenticator: Authenticator) = OkHttpClient
+    .Builder()
+    .authenticator(authenticator)
+    .build()
+
+  private fun testAccessTokenAuthenticator(authTokenService: AuthTokenService): Authenticator {
+    return AccessTokenAuthenticator(authTokenService)
+  }
+
+  private fun TestScope.testAuthTokenService(
+    authRepository: AuthRepository,
+  ): AuthTokenService {
+    val authTokenService = AuthTokenServiceImpl(
+      authTokenStorage = AuthTokenStorage(
+        dataStore = TestPreferencesDataStore(
+          datastoreTestFileDirectory = testFolder.newFolder("datastoreTempFolder"),
+          backgroundScope,
+        ),
+      ),
+      authRepository = authRepository,
+      coroutineScope = backgroundScope,
+    )
+    authTokenService.updateTokens(
+      AccessToken("oldToken", 100),
+      RefreshToken("oldRefreshToken", 100),
+    )
+    runCurrent()
+    return authTokenService
   }
 
   private fun buildRequest(url: HttpUrl) = Request

@@ -16,6 +16,9 @@ dependencies {
   implementation(libs.serialization.json)
   implementation(libs.authlib)
 
+  testImplementation(projects.coreDatastoreTest)
+
   testImplementation(libs.assertK)
+  testImplementation(libs.coroutines.test)
   testImplementation(libs.okhttp.mockWebServer)
 }
