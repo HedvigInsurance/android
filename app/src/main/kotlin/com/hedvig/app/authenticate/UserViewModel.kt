@@ -7,7 +7,6 @@ import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.market.Market
 import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.service.push.PushTokenManager
-import com.hedvig.authlib.AccessToken
 import com.hedvig.authlib.AuthAttemptResult
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult
@@ -96,15 +95,16 @@ class UserViewModel(
         runCatching {
           pushTokenManager.refreshToken()
         }
-        onAuthSuccess(result.accessToken)
+        onAuthSuccess(result)
       }
     }
   }
 
-  private suspend fun onAuthSuccess(accessToken: AccessToken) {
+  private suspend fun onAuthSuccess(result: AuthTokenResult.Success) {
     hAnalytics.loggedIn()
     featureManager.invalidateExperiments()
-    authenticationTokenService.authenticationToken = accessToken.token
+    authenticationTokenService.authenticationToken = result.accessToken.token
+    authenticationTokenService.refreshToken = result.refreshToken
     uploadMarketAndLanguagePreferencesUseCase.invoke()
     mutableViewState.update {
       it.copy(navigateToLoggedIn = true)
