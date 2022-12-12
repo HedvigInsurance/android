@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.Flow
 
 class FakeAuthRepository : AuthRepository {
 
+  val resendOtpResponse = Turbine<ResendOtpResult>()
+  val submitOtpResponse = Turbine<SubmitOtpResult>()
   val exchangeResponse = Turbine<AuthTokenResult>()
 
   override suspend fun startLoginAttempt(
@@ -23,19 +25,19 @@ class FakeAuthRepository : AuthRepository {
     personalNumber: String?,
     email: String?,
   ): AuthAttemptResult {
-    error("Should not use in this test")
+    error("Not implemented")
   }
 
   override fun observeLoginStatus(statusUrl: StatusUrl): Flow<LoginStatusResult> {
-    error("Should not use in this test")
+    error("Not implemented")
   }
 
   override suspend fun submitOtp(verifyUrl: String, otp: String): SubmitOtpResult {
-    error("Should not use in this test")
+    return submitOtpResponse.awaitItem()
   }
 
   override suspend fun resendOtp(resendUrl: String): ResendOtpResult {
-    error("Should not use in this test")
+    return resendOtpResponse.awaitItem()
   }
 
   override suspend fun exchange(grant: Grant): AuthTokenResult {
@@ -43,10 +45,10 @@ class FakeAuthRepository : AuthRepository {
   }
 
   override suspend fun loginStatus(statusUrl: StatusUrl): LoginStatusResult {
-    error("Should not use in this test")
+    error("Not implemented")
   }
 
   override suspend fun revoke(token: String): RevokeResult {
-    error("Should not use in this test")
+    error("Not implemented")
   }
 }

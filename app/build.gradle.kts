@@ -130,6 +130,9 @@ dependencies {
   implementation(projects.hedvigMarket)
   implementation(projects.notificationBadgeData)
 
+  testImplementation(projects.authTest)
+  testImplementation(projects.coreDatastoreTest)
+
   testImplementation(projects.hanalytics.hanalyticsFeatureFlagsTest)
   androidTestImplementation(projects.hanalytics.hanalyticsFeatureFlagsTest)
 

@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 // TODO Work with expiration dates.
-internal class AuthTokenStorage(
+class AuthTokenStorage(
   private val dataStore: DataStore<Preferences>,
 ) {
   fun getTokens(): Flow<Pair<AccessToken?, RefreshToken?>> {
