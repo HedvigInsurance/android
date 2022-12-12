@@ -2,11 +2,11 @@ package com.hedvig.app.feature.genericauth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.auth.AuthAttemptResult
-import com.hedvig.android.auth.AuthRepository
-import com.hedvig.android.auth.LoginMethod
 import com.hedvig.android.core.common.android.EmailAddressWithTrimmedWhitespaces
 import com.hedvig.android.market.MarketManager
+import com.hedvig.authlib.AuthAttemptResult
+import com.hedvig.authlib.AuthRepository
+import com.hedvig.authlib.LoginMethod
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

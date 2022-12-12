@@ -6,22 +6,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.auth.AuthAttemptResult
-import com.hedvig.android.auth.AuthRepository
-import com.hedvig.android.auth.AuthTokenResult
 import com.hedvig.android.auth.AuthenticationTokenService
-import com.hedvig.android.auth.LoginMethod
-import com.hedvig.android.auth.LoginStatusResult
-import com.hedvig.android.auth.StatusUrl
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.market.Market
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.util.LiveEvent
+import com.hedvig.authlib.AuthAttemptResult
+import com.hedvig.authlib.AuthRepository
+import com.hedvig.authlib.AuthTokenResult
+import com.hedvig.authlib.LoginMethod
+import com.hedvig.authlib.LoginStatusResult
+import com.hedvig.authlib.StatusUrl
 import com.hedvig.hanalytics.HAnalytics
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class SimpleSignAuthenticationViewModel(
@@ -128,7 +126,7 @@ class SimpleSignAuthenticationViewModel(
   }
 
   private suspend fun onSimpleSignSuccess(loginStatusResult: LoginStatusResult.Completed) {
-    when (val result = authRepository.submitAuthorizationCode(loginStatusResult.authorizationCode)) {
+    when (val result = authRepository.exchange(loginStatusResult.authorizationCode)) {
       is AuthTokenResult.Error -> {
         _events.postValue(Event.Error)
       }

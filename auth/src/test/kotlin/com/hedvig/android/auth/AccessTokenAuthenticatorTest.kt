@@ -3,6 +3,18 @@ package com.hedvig.android.auth
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import com.hedvig.android.auth.network.AccessTokenAuthenticator
+import com.hedvig.authlib.AccessToken
+import com.hedvig.authlib.AuthAttemptResult
+import com.hedvig.authlib.AuthRepository
+import com.hedvig.authlib.AuthTokenResult
+import com.hedvig.authlib.Grant
+import com.hedvig.authlib.LoginMethod
+import com.hedvig.authlib.LoginStatusResult
+import com.hedvig.authlib.RefreshToken
+import com.hedvig.authlib.ResendOtpResult
+import com.hedvig.authlib.RevokeResult
+import com.hedvig.authlib.StatusUrl
+import com.hedvig.authlib.SubmitOtpResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import okhttp3.HttpUrl
@@ -19,7 +31,7 @@ class AccessTokenAuthenticatorTest {
   private val mockAuthenticationTokenService = object : AuthenticationTokenService {
     override var authenticationToken: String? = "oldToken"
     override var refreshToken: RefreshToken? = RefreshToken(
-      token = RefreshCode("oldRefreshToken"),
+      token = "oldRefreshToken",
       expiryInSeconds = 100,
     )
   }
@@ -30,7 +42,7 @@ class AccessTokenAuthenticatorTest {
       expiryInSeconds = 1000,
     ),
     refreshToken = RefreshToken(
-      token = RefreshCode("newRefreshToken"),
+      token = "newRefreshToken",
       expiryInSeconds = 1000,
     ),
   )
@@ -57,12 +69,16 @@ class AccessTokenAuthenticatorTest {
       return ResendOtpResult.Success
     }
 
-    override suspend fun submitAuthorizationCode(authorizationCode: AuthorizationCode): AuthTokenResult {
+    override suspend fun exchange(grant: Grant): AuthTokenResult {
       return submitAuthResult
     }
 
-    override suspend fun logout(refreshCode: RefreshCode): LogoutResult {
-      return LogoutResult.Error("Should not use in this test")
+    override suspend fun loginStatus(statusUrl: StatusUrl): LoginStatusResult {
+      return LoginStatusResult.Failed("Should not use in this test")
+    }
+
+    override suspend fun revoke(token: String): RevokeResult {
+      return RevokeResult.Error("Should not use in this test")
     }
   }
 
@@ -125,7 +141,7 @@ class AccessTokenAuthenticatorTest {
     val request = buildRequest(url)
     okHttpClient.newCall(request).execute()
 
-    assertThat(mockAuthenticationTokenService.refreshToken?.token?.code).isEqualTo("newRefreshToken")
+    assertThat(mockAuthenticationTokenService.refreshToken?.token).isEqualTo("newRefreshToken")
     assertThat(mockAuthenticationTokenService.authenticationToken).isEqualTo("newToken")
   }
 
@@ -140,7 +156,7 @@ class AccessTokenAuthenticatorTest {
     val request = buildRequest(url)
     okHttpClient.newCall(request).execute()
 
-    assertThat(mockAuthenticationTokenService.refreshToken?.token?.code).isEqualTo("oldRefreshToken")
+    assertThat(mockAuthenticationTokenService.refreshToken?.token).isEqualTo("oldRefreshToken")
     assertThat(mockAuthenticationTokenService.authenticationToken).isEqualTo("oldToken")
   }
 
@@ -153,14 +169,14 @@ class AccessTokenAuthenticatorTest {
     mockWebServer.enqueue(errorResponse)
     mockWebServer.start()
 
-    assertThat(mockAuthenticationTokenService.refreshToken?.token?.code).isEqualTo("oldRefreshToken")
+    assertThat(mockAuthenticationTokenService.refreshToken?.token).isEqualTo("oldRefreshToken")
     assertThat(mockAuthenticationTokenService.authenticationToken).isEqualTo("oldToken")
 
     val url = mockWebServer.url("")
     val request = buildRequest(url)
     okHttpClient.newCall(request).execute()
 
-    assertThat(mockAuthenticationTokenService.refreshToken?.token?.code).isEqualTo(null)
+    assertThat(mockAuthenticationTokenService.refreshToken?.token).isEqualTo(null)
     assertThat(mockAuthenticationTokenService.authenticationToken).isEqualTo(null)
   }
 
