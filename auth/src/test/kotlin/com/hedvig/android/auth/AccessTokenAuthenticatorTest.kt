@@ -97,7 +97,7 @@ class AccessTokenAuthenticatorTest {
     val request = buildRequest(url)
     okHttpClient.newCall(request).execute()
 
-    assertThat((authTokenService.authStatus().value as AuthStatus.LoggedIn).refreshToken.token)
+    assertThat((authTokenService.authStatus.value as AuthStatus.LoggedIn).refreshToken.token)
       .isEqualTo(refreshedRefreshToken.token)
     assertThat(authTokenService.getToken()?.token).isEqualTo(refreshedAccessToken.token)
   }
@@ -117,7 +117,7 @@ class AccessTokenAuthenticatorTest {
     val request = buildRequest(url)
     okHttpClient.newCall(request).execute()
 
-    assertThat((authTokenService.authStatus().value as AuthStatus.LoggedIn).refreshToken.token)
+    assertThat((authTokenService.authStatus.value as AuthStatus.LoggedIn).refreshToken.token)
       .isEqualTo("oldRefreshToken")
     assertThat(authTokenService.getToken()?.token).isEqualTo(originalAccessToken.token)
   }
@@ -133,7 +133,7 @@ class AccessTokenAuthenticatorTest {
     mockWebServer.enqueue(errorResponse)
     mockWebServer.start()
 
-    assertThat((authTokenService.authStatus().value as AuthStatus.LoggedIn).refreshToken.token)
+    assertThat((authTokenService.authStatus.value as AuthStatus.LoggedIn).refreshToken.token)
       .isEqualTo(originalRefreshToken.token)
     assertThat(authTokenService.getToken()?.token).isEqualTo(originalAccessToken.token)
 
@@ -143,7 +143,7 @@ class AccessTokenAuthenticatorTest {
     val request = buildRequest(url)
     okHttpClient.newCall(request).execute()
 
-    assertThat(authTokenService.authStatus().value)
+    assertThat(authTokenService.authStatus.value)
       .isNotNull()
       .isInstanceOf(AuthStatus.LoggedOut::class)
     assertThat(authTokenService.getToken()).isEqualTo(null)

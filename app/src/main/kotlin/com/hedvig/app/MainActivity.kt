@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
 
   private fun getLoginStatusAndNavigate(intent: Intent) {
     lifecycleScope.launch {
-      val authStatusAsync = async { authTokenService.authStatus().filterNotNull().first() }
+      val authStatusAsync = async { authTokenService.authStatus.filterNotNull().first() }
       val mustForceUpdate = async { featureManager.isFeatureEnabled(Feature.UPDATE_NECESSARY) }
       val dynamicLinkAsync = async { getDynamicLinkFromFirebase(intent) }
       if (mustForceUpdate.await()) {
