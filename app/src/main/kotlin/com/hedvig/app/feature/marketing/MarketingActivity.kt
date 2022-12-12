@@ -30,12 +30,11 @@ import com.hedvig.app.feature.marketing.pickmarket.PickMarketScreen
 import com.hedvig.app.feature.marketing.ui.BackgroundImage
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationActivity
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
-import com.hedvig.app.util.extensions.makeToast
+import com.hedvig.app.util.extensions.openWebBrowser
 import com.hedvig.hanalytics.LoginMethod
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.getViewModel
-import slimber.log.e
 
 class MarketingActivity : AppCompatActivity() {
   private val languageService: LanguageService by inject()
@@ -83,14 +82,7 @@ class MarketingActivity : AppCompatActivity() {
   private fun openOnboarding(market: Market) {
     val baseUrl = getString(R.string.WEB_BASE_URL).substringAfter("//")
     val uri = market.createOnboardingUri(baseUrl, languageService.getLanguage())
-    val browserIntent = Intent(Intent.ACTION_VIEW, uri)
-
-    if (browserIntent.resolveActivity(packageManager) != null) {
-      startActivity(browserIntent)
-    } else {
-      e { "Tried to launch $uri but the phone has nothing to support such an intent." }
-      makeToast(hedvig.resources.R.string.general_unknown_error)
-    }
+    openWebBrowser(uri)
   }
 
   private fun onClickLogin(

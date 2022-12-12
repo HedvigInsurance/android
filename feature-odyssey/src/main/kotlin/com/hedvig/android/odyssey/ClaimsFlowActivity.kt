@@ -36,7 +36,13 @@ class ClaimsFlowActivity : ComponentActivity() {
 
     val scopeValues = ScopeValues()
     if (itemType != null) {
-      scopeValues.setValue(InitialDataScopeValueKey, mapOf("itemType" to itemType))
+      scopeValues.setValue(
+        InitialDataScopeValueKey,
+        mapOf(
+          "itemType" to itemType,
+          "itemProblem" to "BROKEN",
+        ),
+      )
     }
 
     setContent {

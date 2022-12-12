@@ -23,6 +23,10 @@ dependencyResolutionManagement {
       name = "odyssey"
       credentials(PasswordCredentials::class)
     }
+    maven("https://maven.pkg.github.com/HedvigInsurance/authlib") {
+      name = "authlib"
+      credentials(PasswordCredentials::class)
+    }
   }
 }
 

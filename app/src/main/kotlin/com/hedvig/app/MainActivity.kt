@@ -15,7 +15,6 @@ import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.marketing.MarketingActivity
-import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
 import com.hedvig.app.service.DynamicLink
 import com.hedvig.app.service.getDynamicLinkFromFirebase
@@ -72,8 +71,6 @@ class MainActivity : AppCompatActivity() {
             onDefault = { startDefaultActivity(loginStatus) },
           )
         }
-
-        is LoginStatus.InOffer -> startDefaultActivity(loginStatus)
       }
       finish()
     }
@@ -81,18 +78,6 @@ class MainActivity : AppCompatActivity() {
 
   private fun startDefaultActivity(loginStatus: LoginStatus) = when (loginStatus) {
     LoginStatus.Onboarding -> startActivity(MarketingActivity.newInstance(this))
-    is LoginStatus.InOffer -> {
-      if (marketManager.market == null) {
-        marketManager.market = Market.SE
-      }
-      startActivity(
-        OfferActivity.newInstance(
-          context = this,
-          quoteCartId = loginStatus.quoteCartId,
-        ),
-      )
-    }
-
     LoginStatus.LoggedIn -> {
       // Upcast everyone that were logged in before Norway launch to be in the Swedish market
       if (marketManager.market == null) {

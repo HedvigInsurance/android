@@ -18,7 +18,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.play.core.review.ReviewManagerFactory
-import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.authenticate.LoginDialog
 import com.hedvig.app.util.extensions.view.setupToolbar
@@ -196,5 +195,16 @@ fun Activity.showReviewDialog(
         onComplete()
       }
     }
+  }
+}
+
+fun Activity.openWebBrowser(uri: Uri) {
+  val browserIntent = Intent(Intent.ACTION_VIEW, uri)
+
+  if (browserIntent.resolveActivity(packageManager) != null) {
+    startActivity(browserIntent)
+  } else {
+    e { "Tried to launch $uri but the phone has nothing to support such an intent." }
+    makeToast(hedvig.resources.R.string.general_unknown_error)
   }
 }
