@@ -70,7 +70,6 @@ class OtpInputViewModel(
           authCodeResult.accessToken,
           authCodeResult.refreshToken,
         )
-        authenticationTokenService.refreshToken = submitAuthCodeResult.refreshToken
         _events.trySend(Event.Success(authCodeResult.accessToken.token))
         _viewState.update {
           it.copy(loadingCode = false)
