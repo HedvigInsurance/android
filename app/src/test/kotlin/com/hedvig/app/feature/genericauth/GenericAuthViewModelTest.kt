@@ -71,6 +71,7 @@ class GenericAuthViewModelTest {
       override suspend fun revoke(token: String): RevokeResult {
         TODO("Not yet implemented")
       }
+
     },
     marketManager = object : MarketManager {
       override val enabledMarkets: List<Market>

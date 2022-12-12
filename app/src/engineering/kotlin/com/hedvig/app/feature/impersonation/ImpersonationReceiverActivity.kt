@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.impersonation
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
@@ -46,8 +47,8 @@ class ImpersonationReceiverActivity : AppCompatActivity() {
     loadKoinModules(module)
 
     val viewModel = getViewModel<ImpersonationReceiverViewModel> {
-      val token = intent.data?.getQueryParameter("token")?.split("=")?.get(1)
-        ?: intent?.getStringExtra("token")?.split("=")?.get(1)
+      val token = intent.data?.getQueryParameter("authorizationCode")
+        ?: throw IllegalArgumentException("authorizationCode not found in query parameter")
       parametersOf(token)
     }
 
