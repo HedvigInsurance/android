@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.impersonation
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
@@ -21,9 +20,9 @@ import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult
 import com.hedvig.authlib.AuthorizationCodeGrant
-import com.hedvig.authlib.NetworkAuthRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -98,7 +97,7 @@ class ImpersonationReceiverActivity : AppCompatActivity() {
 class ImpersonationReceiverViewModel(
   exchangeToken: String,
   authTokenService: AuthTokenService,
-  networkAuthRepository: NetworkAuthRepository,
+  authRepository: AuthRepository,
   featureManager: FeatureManager,
 ) : ViewModel() {
   sealed class ViewState {
@@ -117,7 +116,7 @@ class ImpersonationReceiverViewModel(
 
   init {
     viewModelScope.launch {
-      when (val result = networkAuthRepository.exchange(AuthorizationCodeGrant(exchangeToken))) {
+      when (val result = authRepository.exchange(AuthorizationCodeGrant(exchangeToken))) {
         is AuthTokenResult.Error -> _state.update { ViewState.Error(result.message) }
         is AuthTokenResult.Success -> {
           authTokenService.updateTokens(result.accessToken, result.refreshToken)
