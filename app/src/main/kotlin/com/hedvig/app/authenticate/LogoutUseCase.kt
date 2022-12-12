@@ -27,9 +27,7 @@ class LogoutUseCase(
   fun invoke() {
     applicationScope.launch { hAnalytics.loggedOut() }
     applicationScope.launch { userRepository.logout() }
-    applicationScope.launch {
-      authTokenService.invalidateTokens()
-    }
+    applicationScope.launch { authTokenService.invalidateTokens() }
     applicationScope.launch { marketManager.market = null }
     applicationScope.launch { pushTokenManager.refreshToken() }
     applicationScope.launch { featureManager.invalidateExperiments() }
