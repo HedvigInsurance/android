@@ -4,6 +4,7 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
+import com.hedvig.android.auth.FakeAuthRepository
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.util.coroutines.MainCoroutineRule
@@ -65,6 +66,10 @@ class GenericAuthViewModelTest {
       }
 
       override suspend fun loginStatus(statusUrl: StatusUrl): LoginStatusResult {
+        TODO("Not yet implemented")
+      }
+
+      override suspend fun migrateOldToken(token: String): AuthTokenResult {
         TODO("Not yet implemented")
       }
 
