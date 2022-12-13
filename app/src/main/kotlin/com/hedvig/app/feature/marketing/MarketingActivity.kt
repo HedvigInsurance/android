@@ -24,7 +24,6 @@ import com.hedvig.android.market.Market
 import com.hedvig.android.market.createOnboardingUri
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.LoginDialog
-import com.hedvig.app.feature.genericauth.GenericAuthActivity
 import com.hedvig.app.feature.marketing.data.MarketingBackground
 import com.hedvig.app.feature.marketing.marketpicked.MarketPickedScreen
 import com.hedvig.app.feature.marketing.pickmarket.PickMarketScreen
@@ -117,12 +116,10 @@ class MarketingActivity : AppCompatActivity() {
   }
 
   companion object {
-    fun newInstance(context: Context, withoutHistory: Boolean = false) =
+    fun newInstance(context: Context): Intent =
       Intent(context, MarketingActivity::class.java).apply {
-        if (withoutHistory) {
-          addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-          addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        }
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
       }
   }
 }

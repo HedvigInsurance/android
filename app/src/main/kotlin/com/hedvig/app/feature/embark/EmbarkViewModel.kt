@@ -11,9 +11,9 @@ import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
 import com.hedvig.android.apollo.graphql.fragment.ApiFragment
 import com.hedvig.android.apollo.graphql.fragment.MessageFragment
 import com.hedvig.android.apollo.graphql.type.EmbarkExternalRedirectLocation
+import com.hedvig.android.auth.AuthStatus
+import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.common.android.asMap
-import com.hedvig.app.authenticate.LoginStatus
-import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.embark.extensions.api
 import com.hedvig.app.feature.embark.extensions.getComputedValues
@@ -31,13 +31,10 @@ import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Stack
@@ -51,24 +48,18 @@ abstract class EmbarkViewModel(
   private val chatRepository: ChatRepository,
   private val hAnalytics: HAnalytics,
   val storyName: String,
-  loginStatusService: LoginStatusService,
+  authTokenService: AuthTokenService,
 ) : ViewModel() {
   private val _passageState = MutableLiveData<PassageState>()
   val passageState: LiveData<PassageState> = _passageState
 
-  private val loginStatus = loginStatusService
-    .getLoginStatusAsFlow()
-    .stateIn(
-      scope = viewModelScope,
-      started = SharingStarted.Eagerly,
-      initialValue = null,
-    )
+  private val loginStatus: StateFlow<AuthStatus?> = authTokenService.authStatus
 
   val viewState: LiveData<ViewState> = passageState.asFlow()
-    .combine(loginStatus.filterNotNull()) { passageState, loginStatus ->
+    .combine(loginStatus) { passageState, loginStatus ->
       ViewState(
         passageState,
-        loginStatus == LoginStatus.LoggedIn,
+        loginStatus is AuthStatus.LoggedIn,
       )
     }
     .asLiveData()
@@ -529,7 +520,7 @@ abstract class EmbarkViewModel(
 
 class EmbarkViewModelImpl(
   private val embarkRepository: EmbarkRepository,
-  loginStatusService: LoginStatusService,
+  authTokenService: AuthTokenService,
   graphQLQueryUseCase: GraphQLQueryUseCase,
   chatRepository: ChatRepository,
   valueStore: ValueStore,
@@ -541,7 +532,7 @@ class EmbarkViewModelImpl(
   chatRepository,
   hAnalytics,
   storyName,
-  loginStatusService,
+  authTokenService,
 ) {
 
   init {

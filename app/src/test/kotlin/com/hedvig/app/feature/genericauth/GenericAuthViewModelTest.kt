@@ -18,13 +18,13 @@ import com.hedvig.authlib.RevokeResult
 import com.hedvig.authlib.StatusUrl
 import com.hedvig.authlib.SubmitOtpResult
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import kotlin.time.Duration.Companion.milliseconds
-import kotlinx.coroutines.flow.Flow
 
 class GenericAuthViewModelTest {
 
@@ -60,10 +60,6 @@ class GenericAuthViewModelTest {
         TODO("Not yet implemented")
       }
 
-      override suspend fun revoke(token: String): RevokeResult {
-        TODO("Not yet implemented")
-      }
-
       override suspend fun exchange(grant: Grant): AuthTokenResult {
         TODO("Not yet implemented")
       }
@@ -72,12 +68,14 @@ class GenericAuthViewModelTest {
         TODO("Not yet implemented")
       }
 
+      override suspend fun revoke(token: String): RevokeResult {
+        TODO("Not yet implemented")
+      }
     },
     marketManager = object : MarketManager {
       override val enabledMarkets: List<Market>
         get() = listOf(Market.SE)
       override var market: Market? = Market.SE
-
     },
   )
 

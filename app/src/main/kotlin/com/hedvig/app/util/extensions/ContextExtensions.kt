@@ -43,7 +43,6 @@ import kotlin.time.Duration.Companion.milliseconds
 
 private const val SHARED_PREFERENCE_NAME = "hedvig_shared_preference"
 
-const val SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN = "shared_preference_tried_migration_of_token"
 const val SHARED_PREFERENCE_ASKED_FOR_PERMISSION_PREFIX_KEY =
   "shared_preference_asked_for_permission_prefix"
 private const val SHARED_PREFERENCE_LAST_OPEN = "shared_preference_last_open"

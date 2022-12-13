@@ -1,4 +1,4 @@
-package com.hedvig.app.authenticate
+package com.hedvig.android.auth
 
 sealed class LoginStatus {
   object Onboarding : LoginStatus()

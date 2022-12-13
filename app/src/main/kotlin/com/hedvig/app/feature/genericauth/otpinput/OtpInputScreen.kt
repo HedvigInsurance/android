@@ -55,7 +55,6 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.FullScreenProgressOverlay
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.app.R
-import com.hedvig.app.ui.compose.composables.ErrorDialog
 import kotlinx.coroutines.isActive
 
 @Composable

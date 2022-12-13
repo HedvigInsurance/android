@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.impersonation
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
@@ -17,10 +16,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.auth.AuthenticationTokenService
+import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult
@@ -32,6 +30,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.androidx.viewmodel.ext.android.getViewModel
@@ -89,7 +88,7 @@ class ImpersonationReceiverActivity : AppCompatActivity() {
   companion object {
     val module = module {
       viewModel { params ->
-        ImpersonationReceiverViewModel(params.get(), get(), get(), get(), get())
+        ImpersonationReceiverViewModel(params.get(), get(), get(), get())
       }
     }
   }
@@ -97,9 +96,8 @@ class ImpersonationReceiverActivity : AppCompatActivity() {
 
 class ImpersonationReceiverViewModel(
   exchangeToken: String,
-  authenticationTokenService: AuthenticationTokenService,
+  authTokenService: AuthTokenService,
   authRepository: AuthRepository,
-  loginStatusService: LoginStatusService,
   featureManager: FeatureManager,
 ) : ViewModel() {
   sealed class ViewState {
@@ -111,23 +109,21 @@ class ImpersonationReceiverViewModel(
   private val _state = MutableStateFlow<ViewState>(ViewState.Loading)
   val state = _state.asStateFlow()
 
-  object Event
+  object GoToLoggedInActivityEvent
 
-  private val _events = Channel<Event>(Channel.UNLIMITED)
+  private val _events = Channel<GoToLoggedInActivityEvent>(Channel.UNLIMITED)
   val events = _events.receiveAsFlow()
 
   init {
     viewModelScope.launch {
       when (val result = authRepository.exchange(AuthorizationCodeGrant(exchangeToken))) {
-        is AuthTokenResult.Error -> _state.value = ViewState.Error(result.message)
+        is AuthTokenResult.Error -> _state.update { ViewState.Error(result.message) }
         is AuthTokenResult.Success -> {
-          authenticationTokenService.authenticationToken = result.accessToken.token
-          authenticationTokenService.refreshToken = result.refreshToken
-          loginStatusService.isLoggedIn = true
+          authTokenService.updateTokens(result.accessToken, result.refreshToken)
           featureManager.invalidateExperiments()
-          _state.value = ViewState.Success
+          _state.update { ViewState.Success }
           delay(500.milliseconds)
-          _events.send(Event)
+          _events.send(GoToLoggedInActivityEvent)
         }
       }
     }

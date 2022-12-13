@@ -18,14 +18,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
 import com.hedvig.android.apollo.graphql.ChatMessagesQuery
-import com.hedvig.android.auth.AuthenticationTokenService
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.app.R
+import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.databinding.ActivityChatBinding
 import com.hedvig.app.feature.chat.ChatInputType
 import com.hedvig.app.feature.chat.ParagraphInput
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
-import com.hedvig.app.feature.marketing.MarketingActivity
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.extensions.askForPermissions
 import com.hedvig.app.util.extensions.calculateNonFullscreenHeightDiff
@@ -56,8 +54,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
   private val binding by viewBinding(ActivityChatBinding::bind)
 
   private val imageLoader: ImageLoader by inject()
-  private val authenticationTokenService: AuthenticationTokenService by inject()
-  private val featureManager: FeatureManager by inject()
+  private val logoutUseCase: LogoutUseCase by inject()
 
   private var keyboardHeight = 0
   private var systemNavHeight = 0
@@ -147,11 +144,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
         handleSingleSelectLink(
           value = value,
           onLinkHandleFailure = {
-            authenticationTokenService.authenticationToken = null
-            lifecycleScope.launch {
-              featureManager.invalidateExperiments()
-            }
-            startActivity(MarketingActivity.newInstance(this, true))
+            logoutUseCase.invoke()
           },
         )
       },

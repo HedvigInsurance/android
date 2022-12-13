@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
-        android:id="@+id/chat"
-        android:title="@string/OFFER_FOOTER_BUTTON_TEXT"
-        app:actionLayout="@layout/menu_chat_icon"
-        app:showAsAction="always" />
-</menu>

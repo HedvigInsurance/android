@@ -6,10 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.auth.AuthenticationTokenService
+import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.market.Market
-import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.util.LiveEvent
 import com.hedvig.authlib.AuthAttemptResult
@@ -26,10 +25,9 @@ class SimpleSignAuthenticationViewModel(
   private val data: SimpleSignAuthenticationData,
   private val hAnalytics: HAnalytics,
   private val featureManager: FeatureManager,
-  private val loginStatusService: LoginStatusService,
   private val uploadMarketAndLanguagePreferencesUseCase: UploadMarketAndLanguagePreferencesUseCase,
   private val authRepository: AuthRepository,
-  private val authenticationTokenService: AuthenticationTokenService,
+  private val authTokenService: AuthTokenService,
 ) : ViewModel() {
   private val _input = MutableLiveData("")
   val input: LiveData<String> = _input
@@ -133,9 +131,7 @@ class SimpleSignAuthenticationViewModel(
       is AuthTokenResult.Success -> {
         hAnalytics.loggedIn()
         featureManager.invalidateExperiments()
-        authenticationTokenService.authenticationToken = result.accessToken.token
-        authenticationTokenService.refreshToken = result.refreshToken
-        loginStatusService.isLoggedIn = true
+        authTokenService.updateTokens(result.accessToken, result.refreshToken)
         uploadMarketAndLanguagePreferencesUseCase.invoke()
       }
     }

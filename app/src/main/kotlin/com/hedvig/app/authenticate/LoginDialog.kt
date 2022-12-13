@@ -40,7 +40,6 @@ class LoginDialog : AuthenticateDialog() {
     }
   }
 
-
   private fun bindNewStatus(state: LoginStatusResult) {
     when (state) {
       is LoginStatusResult.Pending -> binding.authTitle.text = state.statusMessage

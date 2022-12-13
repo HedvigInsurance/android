@@ -1,6 +1,7 @@
 package com.hedvig.android.auth.network
 
-import com.hedvig.android.auth.AuthenticationTokenService
+import com.hedvig.android.auth.AuthStatus
+import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult
 import com.hedvig.authlib.RefreshTokenGrant
@@ -11,16 +12,19 @@ import okhttp3.Response
 
 private const val MAX_PEEK_BYTES = 1000000L
 
+/**
+ * TODO make this work with a time-based approach instead of 401 based approach
+ */
 class AuthInterceptor(
   private val authRepository: AuthRepository,
-  private val authenticationTokenService: AuthenticationTokenService,
+  private val authTokenService: AuthTokenService,
 ) : Interceptor {
 
   override fun intercept(chain: Interceptor.Chain): Response {
     val original = chain.request()
     val builder = original.newBuilder().method(original.method, original.body)
 
-    val accessToken = authenticationTokenService.authenticationToken ?: return chain.proceed(builder.build())
+    val accessToken = authTokenService.getToken()?.token ?: return chain.proceed(builder.build())
 
     val response = builder.proceedWithAuthorization(accessToken, chain)
 
@@ -37,13 +41,14 @@ class AuthInterceptor(
     chain: Interceptor.Chain,
     originalResponse: Response,
   ): Response {
-    val newAccessToken = authenticationTokenService.authenticationToken
+    val newAccessToken = authTokenService.getToken()?.token
     return if (newAccessToken != accessToken) {
       // Access token refresh finished by another request, try that instead
       builder.proceedWithAuthorization(newAccessToken, chain)
     } else {
       // Use stored refresh token
-      val refreshToken = authenticationTokenService.refreshToken ?: return originalResponse
+      val refreshToken =
+        (authTokenService.authStatus.value as? AuthStatus.LoggedIn)?.refreshToken ?: return originalResponse
       fetchNewTokenAndUpdateStored(refreshToken.token, originalResponse, chain, builder)
     }
   }
@@ -57,15 +62,15 @@ class AuthInterceptor(
     runBlocking {
       when (val result = authRepository.exchange(RefreshTokenGrant(refreshToken))) {
         is AuthTokenResult.Error -> {
-          authenticationTokenService.refreshToken = null
-          authenticationTokenService.authenticationToken = null
+          authTokenService.invalidateTokens()
           // TODO: Logout
           originalResponse
         }
         is AuthTokenResult.Success -> {
-          authenticationTokenService.refreshToken = result.refreshToken
-          authenticationTokenService.authenticationToken = result.accessToken.token
-
+          authTokenService.updateTokens(
+            result.accessToken,
+            result.refreshToken,
+          )
           request.proceedWithAuthorization(result.accessToken.token, chain)
         }
       }
@@ -81,8 +86,8 @@ class AuthInterceptor(
   // explaining that some service(s) responded with 401
   private fun isUnauthorized(response: Response): Boolean {
     val responseBody = response.peekBody(MAX_PEEK_BYTES).string()
-    return response.code == 401
-      || responseBody.contains("status: 401")
-      || responseBody.contains("UNAUTHENTICATED")
+    return response.code == 401 ||
+      responseBody.contains("status: 401") ||
+      responseBody.contains("UNAUTHENTICATED")
   }
 }

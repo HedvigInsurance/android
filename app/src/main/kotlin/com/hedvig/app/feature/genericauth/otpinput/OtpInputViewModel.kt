@@ -2,7 +2,7 @@ package com.hedvig.app.feature.genericauth.otpinput
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.auth.AuthenticationTokenService
+import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult
@@ -20,7 +20,7 @@ class OtpInputViewModel(
   private val verifyUrl: String,
   private val resendUrl: String,
   credential: String,
-  private val authenticationTokenService: AuthenticationTokenService,
+  private val authTokenService: AuthTokenService,
   private val authRepository: AuthRepository,
   private val uploadMarketAndLanguagePreferencesUseCase: UploadMarketAndLanguagePreferencesUseCase,
 ) : ViewModel() {
@@ -63,12 +63,14 @@ class OtpInputViewModel(
   }
 
   private suspend fun submitAuthCode(otpResult: SubmitOtpResult.Success) {
-    when (val submitAuthCodeResult = authRepository.exchange(otpResult.loginAuthorizationCode)) {
-      is AuthTokenResult.Error -> setErrorState(submitAuthCodeResult.message)
+    when (val authCodeResult = authRepository.exchange(otpResult.loginAuthorizationCode)) {
+      is AuthTokenResult.Error -> setErrorState(authCodeResult.message)
       is AuthTokenResult.Success -> {
-        authenticationTokenService.authenticationToken = submitAuthCodeResult.accessToken.token
-        authenticationTokenService.refreshToken = submitAuthCodeResult.refreshToken
-        _events.trySend(Event.Success(submitAuthCodeResult.accessToken.token))
+        authTokenService.updateTokens(
+          authCodeResult.accessToken,
+          authCodeResult.refreshToken,
+        )
+        _events.trySend(Event.Success(authCodeResult.accessToken.token))
         _viewState.update {
           it.copy(loadingCode = false)
         }

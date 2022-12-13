@@ -3,6 +3,7 @@ package com.hedvig.app.feature.di
 import android.content.Context
 import androidx.startup.Initializer
 import com.hedvig.android.auth.di.authModule
+import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.feature.businessmodel.di.businessModelModule
 import com.hedvig.android.hanalytics.android.di.hAnalyticsAndroidModule
@@ -77,8 +78,9 @@ class KoinInitializer : Initializer<KoinApplication> {
         clockModule,
         coilModule,
         connectPaymentModule,
-        datastoreAndroidModule,
+        coreCommonModule,
         dataStoreModule,
+        datastoreAndroidModule,
         embarkModule,
         externalInsuranceModule,
         featureManagerModule,
