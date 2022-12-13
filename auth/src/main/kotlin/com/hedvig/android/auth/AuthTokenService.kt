@@ -10,4 +10,5 @@ interface AuthTokenService {
   suspend fun refreshAndGetToken(): AccessToken?
   fun updateTokens(accessToken: AccessToken, refreshToken: RefreshToken)
   fun invalidateTokens()
+  suspend fun migrateFromToken(token: String)
 }

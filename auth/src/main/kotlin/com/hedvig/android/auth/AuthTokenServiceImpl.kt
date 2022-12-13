@@ -65,4 +65,15 @@ class AuthTokenServiceImpl(
   private fun getRefreshToken(): RefreshToken? {
     return (authStatus.value as? AuthStatus.LoggedIn)?.refreshToken
   }
+
+  override suspend fun migrateFromToken(token: String) {
+    when (val result = authRepository.migrateOldToken(token)) {
+      is AuthTokenResult.Error -> {
+        // logout
+      }
+      is AuthTokenResult.Success -> {
+        updateTokens(result.accessToken, result.refreshToken)
+      }
+    }
+  }
 }
