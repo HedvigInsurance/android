@@ -8,7 +8,7 @@ import com.hedvig.app.R
 enum class StartDateLabel {
   SINGLE_START_DATE,
   MULTIPLE_START_DATES,
-  ACCESS_DATE
+  ACCESS_DATE,
 }
 
 fun StartDateLabel.toString(context: Context) = when (this) {

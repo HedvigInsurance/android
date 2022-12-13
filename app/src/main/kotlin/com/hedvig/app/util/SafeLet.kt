@@ -18,11 +18,15 @@ fun <T1, T2, T3, T4, T5, T6, R> safeLet(
   f: T6?,
   action: (T1, T2, T3, T4, T5, T6) -> R,
 ) =
-  if (a != null && b != null && c != null && d != null && e != null && f != null) action(
-    a,
-    b,
-    c,
-    d,
-    e,
-    f,
-  ) else null
+  if (a != null && b != null && c != null && d != null && e != null && f != null) {
+    action(
+      a,
+      b,
+      c,
+      d,
+      e,
+      f,
+    )
+  } else {
+    null
+  }

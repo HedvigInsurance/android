@@ -24,7 +24,7 @@ sealed class DocumentItems {
       TERMS_AND_CONDITIONS,
       PRE_SALE_INFO_EU_STANDARD,
       GENERAL_TERMS,
-      PRIVACY_POLICY
+      PRIVACY_POLICY,
     }
 
     fun getTitle(context: Context) = title ?: titleRes?.let(context::getString)

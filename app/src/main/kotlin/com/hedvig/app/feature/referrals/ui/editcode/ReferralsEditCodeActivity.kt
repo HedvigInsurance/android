@@ -201,7 +201,7 @@ class ReferralsEditCodeActivity : AppCompatActivity(R.layout.activity_referrals_
     private enum class ValidationResult {
       VALID,
       TOO_SHORT,
-      TOO_LONG
+      TOO_LONG,
     }
 
     private fun validate(code: String): ValidationResult {

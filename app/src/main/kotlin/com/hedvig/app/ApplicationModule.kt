@@ -22,6 +22,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.interceptor.AccessTokenAuthenticator
 import com.hedvig.android.auth.interceptor.ExistingAuthTokenAppendingInterceptor
+import com.hedvig.android.auth.interceptor.MigrateTokenInterceptor
 import com.hedvig.android.core.common.di.LogInfoType
 import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.common.di.isDebugQualifier
@@ -214,6 +215,7 @@ val applicationModule = module {
       // Temporary fix until back-end problems are handled
       .readTimeout(30, TimeUnit.SECONDS)
       .addInterceptor(DatadogInterceptor())
+      .addInterceptor(get<MigrateTokenInterceptor>())
       .addInterceptor(get<ExistingAuthTokenAppendingInterceptor>())
       .addInterceptor { chain ->
         chain.proceed(

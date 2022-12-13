@@ -5,7 +5,8 @@ import com.hedvig.android.apollo.graphql.type.QuoteBundleAppConfigurationPostSig
 enum class PostSignScreen {
   CONNECT_PAYIN,
   MOVE,
-  CROSS_SELL;
+  CROSS_SELL,
+  ;
 
   companion object {
     fun from(postSignStep: QuoteBundleAppConfigurationPostSignStep) = when (postSignStep) {

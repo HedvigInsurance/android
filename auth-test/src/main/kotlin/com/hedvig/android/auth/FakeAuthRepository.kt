@@ -48,6 +48,10 @@ class FakeAuthRepository : AuthRepository {
     error("Not implemented")
   }
 
+  override suspend fun migrateOldToken(token: String): AuthTokenResult {
+    error("Not implemented")
+  }
+
   override suspend fun revoke(token: String): RevokeResult {
     error("Not implemented")
   }

@@ -83,7 +83,7 @@ fun darkenColor(@ColorInt color: Int, factor: Float): Int {
 
 enum class LightClass {
   DARK,
-  LIGHT
+  LIGHT,
 }
 
 fun getLightness(@ColorInt color: Int) = if (ColorUtils.calculateLuminance(color) < 0.5) {
