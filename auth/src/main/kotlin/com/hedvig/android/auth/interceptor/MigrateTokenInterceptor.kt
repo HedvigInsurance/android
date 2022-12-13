@@ -1,6 +1,5 @@
 package com.hedvig.android.auth.interceptor
 
-import android.util.Log
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.storage.SharedPreferencesAuthenticationTokenService
 import kotlinx.coroutines.runBlocking

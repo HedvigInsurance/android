@@ -5,7 +5,8 @@ import java.lang.IllegalArgumentException
 
 enum class AdyenCurrency {
   NOK,
-  DKK;
+  DKK,
+  ;
 
   companion object {
     fun fromMarket(market: Market) = when (market) {

@@ -1,6 +1,5 @@
 package com.hedvig.android.auth.storage
 
-
 import android.content.SharedPreferences
 
 private const val SHARED_PREFERENCE_AUTHENTICATION_TOKEN = "shared_preference_authentication_token"
@@ -15,4 +14,3 @@ class SharedPreferencesAuthenticationTokenService(
       .apply()
     get() = sharedPreferences.getString(SHARED_PREFERENCE_AUTHENTICATION_TOKEN, null)
 }
-

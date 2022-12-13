@@ -51,7 +51,9 @@ class InsuranceContractBuilder(
                   ),
                 ),
               )
-            } else null,
+            } else {
+              null
+            },
           ),
           asActiveInFutureAndTerminatedInFutureStatus = null,
           asTerminatedInFutureStatus = null,
@@ -116,7 +118,9 @@ class InsuranceContractBuilder(
                   ),
                 ),
               )
-            } else null,
+            } else {
+              null
+            },
           ),
           asTerminatedTodayStatus = null,
           asTerminatedInFutureStatus = null,
