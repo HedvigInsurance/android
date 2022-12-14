@@ -91,7 +91,7 @@ class OtpInputViewModelTest {
     val authTokenStorage = testAuthTokenStorage()
     val viewModel = testViewModel(authRepository, authTokenStorage)
 
-    authTokenStorage.getTokens().first().also { tokenPair: Pair<AccessToken, RefreshToken>? ->
+    authTokenStorage.getTokens().first().also { tokenPair ->
       assertThat(tokenPair).isNull()
     }
     viewModel.events.test {
@@ -105,7 +105,7 @@ class OtpInputViewModelTest {
       runCurrent()
 
       assertThat(viewModel.viewState.value.loadingCode).isEqualTo(false)
-      authTokenStorage.getTokens().first().also { tokenPair: Pair<AccessToken, RefreshToken>? ->
+      authTokenStorage.getTokens().first().also { tokenPair ->
         assertThat(tokenPair).isNotNull()
         val (resultAccessToken, resultRefreshToken) = tokenPair!!
         assertThat(resultAccessToken.token).isEqualTo(accessToken.token)

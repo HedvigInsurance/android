@@ -2,6 +2,7 @@ package com.hedvig.android.auth.storage
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import com.hedvig.android.auth.TestClock
 import com.hedvig.android.core.datastore.TestPreferencesDataStore
 import com.hedvig.authlib.AccessToken
 import com.hedvig.authlib.RefreshToken
@@ -9,6 +10,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.Clock
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -19,8 +21,10 @@ internal class AuthTokenStorageTest {
   val testFolder = TemporaryFolder()
 
   @Test
-  fun `storing tokens in AuthTokenStorage persists their expiration time minus the buffer`() = runTest {
-    val authTokenStorage = authTokenStorage()
+  fun `storing tokens in AuthTokenStorage persists their expiration time`() = runTest {
+    val clock = TestClock()
+    val authTokenStorage = authTokenStorage(clock)
+    val now = clock.now()
 
     val expiryInSeconds = 5.minutes.inWholeSeconds.toInt()
     authTokenStorage.updateTokens(
@@ -30,18 +34,18 @@ internal class AuthTokenStorageTest {
 
     val (accessToken, refreshToken) = authTokenStorage.getTokens().filterNotNull().first()
 
-    val expectedTokenExpirationInSeconds =
-      expiryInSeconds - AuthTokenStorage.expirationTimeBuffer.inWholeSeconds.toInt()
-    assertThat(accessToken.expiryInSeconds).isEqualTo(expectedTokenExpirationInSeconds)
-    assertThat(refreshToken.expiryInSeconds).isEqualTo(expectedTokenExpirationInSeconds)
+    val expectedTokenExpirationInSeconds = now + 5.minutes
+    assertThat(accessToken.expiryDate).isEqualTo(expectedTokenExpirationInSeconds)
+    assertThat(refreshToken.expiryDate).isEqualTo(expectedTokenExpirationInSeconds)
   }
 
-  private fun TestScope.authTokenStorage(): AuthTokenStorage {
+  private fun TestScope.authTokenStorage(clock: Clock): AuthTokenStorage {
     return AuthTokenStorage(
       TestPreferencesDataStore(
         datastoreTestFileDirectory = testFolder.newFolder("datastoreTempFolder"),
         coroutineScope = backgroundScope,
       ),
+      clock,
     )
   }
 }

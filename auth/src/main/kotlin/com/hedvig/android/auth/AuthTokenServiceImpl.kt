@@ -1,6 +1,8 @@
 package com.hedvig.android.auth
 
 import com.hedvig.android.auth.storage.AuthTokenStorage
+import com.hedvig.android.auth.token.LocalAccessToken
+import com.hedvig.android.auth.token.LocalRefreshToken
 import com.hedvig.authlib.AccessToken
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult
@@ -9,6 +11,7 @@ import com.hedvig.authlib.RefreshTokenGrant
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -21,7 +24,7 @@ class AuthTokenServiceImpl(
 
   @Suppress("NAME_SHADOWING")
   override val authStatus: StateFlow<AuthStatus?> = authTokenStorage.getTokens()
-    .mapLatest { tokenPair: Pair<AccessToken, RefreshToken>? ->
+    .mapLatest { tokenPair ->
       val (accessToken, refreshToken) = tokenPair ?: return@mapLatest AuthStatus.LoggedOut
       AuthStatus.LoggedIn(accessToken, refreshToken)
     }
@@ -31,11 +34,11 @@ class AuthTokenServiceImpl(
       null,
     )
 
-  override fun getToken(): AccessToken? {
+  override fun getToken(): LocalAccessToken? {
     return (authStatus.value as? AuthStatus.LoggedIn)?.accessToken
   }
 
-  override suspend fun refreshAndGetToken(): AccessToken? {
+  override suspend fun refreshAndGetToken(): LocalAccessToken? {
     val refreshToken = getRefreshToken() ?: return null
     return when (val result = authRepository.exchange(RefreshTokenGrant(refreshToken.token))) {
       is AuthTokenResult.Error -> {
@@ -44,7 +47,8 @@ class AuthTokenServiceImpl(
       }
       is AuthTokenResult.Success -> {
         authTokenStorage.updateTokens(result.accessToken, result.refreshToken)
-        result.accessToken
+        val (accessToken, _) = authTokenStorage.getTokens().first() ?: return null
+        accessToken
       }
     }
   }
@@ -61,7 +65,7 @@ class AuthTokenServiceImpl(
     }
   }
 
-  private fun getRefreshToken(): RefreshToken? {
+  private fun getRefreshToken(): LocalRefreshToken? {
     return (authStatus.value as? AuthStatus.LoggedIn)?.refreshToken
   }
 
