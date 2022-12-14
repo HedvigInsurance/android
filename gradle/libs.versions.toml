@@ -68,6 +68,7 @@ junit = "4.13.2"
 kaspresso = "1.4.3"
 koinAndroid = "3.3.0"
 koinCore = "3.2.2"
+kotlinxDatetime = "0.4.0"
 leakCanary = "2.10"
 markwon = "4.6.2"
 materialComponents = "1.7.0"
@@ -181,6 +182,7 @@ koin-android = { module = "io.insert-koin:koin-android", version.ref = "koinAndr
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koinCore" }
 koin-test = { module = "io.insert-koin:koin-test", version.ref = "koinCore" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 leakCanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakCanary" }
 markwon-core = { module = "io.noties.markwon:core", version.ref = "markwon" }
 markwon-linkify = { module = "io.noties.markwon:linkify", version.ref = "markwon" }

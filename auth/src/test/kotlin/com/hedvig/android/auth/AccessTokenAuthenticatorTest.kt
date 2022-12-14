@@ -165,7 +165,7 @@ class AccessTokenAuthenticatorTest {
       authTokenStorage = AuthTokenStorage(
         dataStore = TestPreferencesDataStore(
           datastoreTestFileDirectory = testFolder.newFolder("datastoreTempFolder"),
-          backgroundScope,
+          coroutineScope = backgroundScope,
         ),
       ),
       authRepository = authRepository,

@@ -13,10 +13,11 @@ dependencies {
 
   implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.arrowKt.core)
+  implementation(libs.authlib)
   implementation(libs.koin.android)
+  implementation(libs.kotlinx.datetime)
   implementation(libs.okhttp.core)
   implementation(libs.serialization.json)
-  implementation(libs.authlib)
 
   testImplementation(projects.authTest)
   testImplementation(projects.coreDatastoreTest)

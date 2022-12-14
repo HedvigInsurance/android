@@ -91,9 +91,8 @@ class OtpInputViewModelTest {
     val authTokenStorage = testAuthTokenStorage()
     val viewModel = testViewModel(authRepository, authTokenStorage)
 
-    authTokenStorage.getTokens().first().also { (resultAccessToken, resultRefreshToken) ->
-      assertThat(resultAccessToken?.token).isNull()
-      assertThat(resultRefreshToken?.token).isNull()
+    authTokenStorage.getTokens().first().also { tokenPair: Pair<AccessToken, RefreshToken>? ->
+      assertThat(tokenPair).isNull()
     }
     viewModel.events.test {
       viewModel.submitCode("123456")
@@ -106,9 +105,11 @@ class OtpInputViewModelTest {
       runCurrent()
 
       assertThat(viewModel.viewState.value.loadingCode).isEqualTo(false)
-      authTokenStorage.getTokens().first().also { (resultAccessToken, resultRefreshToken) ->
-        assertThat(resultAccessToken?.token).isEqualTo(accessToken.token)
-        assertThat(resultRefreshToken?.token).isEqualTo(refreshToken.token)
+      authTokenStorage.getTokens().first().also { tokenPair: Pair<AccessToken, RefreshToken>? ->
+        assertThat(tokenPair).isNotNull()
+        val (resultAccessToken, resultRefreshToken) = tokenPair!!
+        assertThat(resultAccessToken.token).isEqualTo(accessToken.token)
+        assertThat(resultRefreshToken.token).isEqualTo(refreshToken.token)
       }
       val event = awaitItem()
       assertThat(event).isEqualTo(OtpInputViewModel.Event.Success(accessToken.token))
@@ -204,7 +205,7 @@ class OtpInputViewModelTest {
     return AuthTokenStorage(
       dataStore = TestPreferencesDataStore(
         datastoreTestFileDirectory = testFolder.newFolder("datastoreTempFolder"),
-        backgroundScope,
+        coroutineScope = backgroundScope,
       ),
     )
   }

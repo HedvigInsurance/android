@@ -21,9 +21,8 @@ class AuthTokenServiceImpl(
 
   @Suppress("NAME_SHADOWING")
   override val authStatus: StateFlow<AuthStatus?> = authTokenStorage.getTokens()
-    .mapLatest { (accessToken, refreshToken) ->
-      val accessToken = accessToken ?: return@mapLatest AuthStatus.LoggedOut
-      val refreshToken = refreshToken ?: return@mapLatest AuthStatus.LoggedOut
+    .mapLatest { tokenPair: Pair<AccessToken, RefreshToken>? ->
+      val (accessToken, refreshToken) = tokenPair ?: return@mapLatest AuthStatus.LoggedOut
       AuthStatus.LoggedIn(accessToken, refreshToken)
     }
     .stateIn(
