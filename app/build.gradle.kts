@@ -113,6 +113,7 @@ android {
 
 dependencies {
   implementation(projects.apollo)
+  implementation(projects.auth.authAndroid)
   implementation(projects.auth.authCore)
   implementation(projects.coreCommon)
   implementation(projects.coreCommonAndroid)
