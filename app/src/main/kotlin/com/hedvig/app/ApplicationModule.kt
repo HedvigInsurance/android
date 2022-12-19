@@ -20,8 +20,7 @@ import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.datadog.android.DatadogInterceptor
 import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.android.auth.AuthTokenService
-import com.hedvig.android.auth.interceptor.AccessTokenAuthenticator
-import com.hedvig.android.auth.interceptor.ExistingAuthTokenAppendingInterceptor
+import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.auth.interceptor.MigrateTokenInterceptor
 import com.hedvig.android.core.common.di.LogInfoType
 import com.hedvig.android.core.common.di.datastoreFileQualifier
@@ -216,7 +215,7 @@ val applicationModule = module {
       .readTimeout(30, TimeUnit.SECONDS)
       .addInterceptor(DatadogInterceptor())
       .addInterceptor(get<MigrateTokenInterceptor>())
-      .addInterceptor(get<ExistingAuthTokenAppendingInterceptor>())
+      .addInterceptor(get<AuthTokenRefreshingInterceptor>())
       .addInterceptor { chain ->
         chain.proceed(
           chain
@@ -235,7 +234,6 @@ val applicationModule = module {
         )
       }
       .addInterceptor(DeviceIdInterceptor(get(), get()))
-      .authenticator(AccessTokenAuthenticator(get()))
     if (isDebug()) {
       val logger = HttpLoggingInterceptor { message ->
         if (message.contains("Content-Disposition")) {
@@ -269,7 +267,7 @@ val applicationModule = module {
       .wsProtocol(
         SubscriptionWsProtocol.Factory(
           connectionPayload = {
-            mapOf("Authorization" to get<AuthTokenService>().getToken()?.token)
+            mapOf("Authorization" to get<AuthTokenService>().getTokens()?.accessToken?.token)
           },
         ),
       )

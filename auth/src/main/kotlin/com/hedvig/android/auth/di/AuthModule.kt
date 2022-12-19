@@ -2,7 +2,7 @@ package com.hedvig.android.auth.di
 
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.AuthTokenServiceImpl
-import com.hedvig.android.auth.interceptor.ExistingAuthTokenAppendingInterceptor
+import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.auth.interceptor.MigrateTokenInterceptor
 import com.hedvig.android.auth.storage.AuthTokenStorage
 import com.hedvig.android.auth.storage.SharedPreferencesAuthenticationTokenService
@@ -14,6 +14,6 @@ val authModule = module {
   single<SharedPreferencesAuthenticationTokenService> { SharedPreferencesAuthenticationTokenService(get()) }
   single<AuthTokenStorage> { AuthTokenStorage(get()) }
   single<AuthTokenService> { AuthTokenServiceImpl(get(), get(), get<ApplicationScope>()) }
-  single<ExistingAuthTokenAppendingInterceptor> { ExistingAuthTokenAppendingInterceptor(get()) }
   single<MigrateTokenInterceptor> { MigrateTokenInterceptor(get(), get()) }
+  single<AuthTokenRefreshingInterceptor> { AuthTokenRefreshingInterceptor(get()) }
 }

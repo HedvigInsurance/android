@@ -55,14 +55,12 @@ abstract class EmbarkViewModel(
 
   private val loginStatus: StateFlow<AuthStatus?> = authTokenService.authStatus
 
-  val viewState: LiveData<ViewState> = passageState.asFlow()
-    .combine(loginStatus) { passageState, loginStatus ->
-      ViewState(
-        passageState,
-        loginStatus is AuthStatus.LoggedIn,
-      )
-    }
-    .asLiveData()
+  val viewState: LiveData<ViewState> = combine(passageState.asFlow(), loginStatus) { passageState, loginStatus ->
+    ViewState(
+      passageState,
+      loginStatus is AuthStatus.LoggedIn,
+    )
+  }.asLiveData()
   protected val _events = Channel<Event>(Channel.UNLIMITED)
 
   val events = _events.receiveAsFlow()

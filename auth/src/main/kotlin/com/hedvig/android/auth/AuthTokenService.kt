@@ -6,9 +6,9 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface AuthTokenService {
   val authStatus: StateFlow<AuthStatus?>
-  fun getToken(): AccessToken?
-  suspend fun refreshAndGetToken(): AccessToken?
-  fun updateTokens(accessToken: AccessToken, refreshToken: RefreshToken)
-  fun invalidateTokens()
+  suspend fun getTokens(): AuthTokens?
+  suspend fun refreshAndGetAccessToken(): AccessToken?
+  suspend fun updateTokens(accessToken: AccessToken, refreshToken: RefreshToken)
+  suspend fun invalidateTokens()
   suspend fun migrateFromToken(token: String)
 }

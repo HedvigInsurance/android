@@ -253,7 +253,9 @@ class EmbarkStoryTesterViewModel(
   }
 
   fun setAuthToken(authToken: String) {
-    authTokenService.updateTokens(AccessToken(authToken, 600), RefreshToken(authToken, 600))
+    viewModelScope.launch {
+      authTokenService.updateTokens(AccessToken(authToken, 600), RefreshToken(authToken, 600))
+    }
   }
 
   fun generateAuthTokenFromPaymentsLink(paymentsUrl: String) {

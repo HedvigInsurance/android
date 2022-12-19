@@ -4,32 +4,48 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.hedvig.android.auth.AuthTokens
+import com.hedvig.android.auth.token.LocalAccessToken
+import com.hedvig.android.auth.token.LocalRefreshToken
 import com.hedvig.authlib.AccessToken
 import com.hedvig.authlib.RefreshToken
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import kotlin.time.Duration.Companion.seconds
 
-// TODO Work with expiration dates.
 class AuthTokenStorage(
   private val dataStore: DataStore<Preferences>,
+  private val clock: Clock = Clock.System,
 ) {
-  fun getTokens(): Flow<Pair<AccessToken?, RefreshToken?>> {
+  fun getTokens(): Flow<AuthTokens?> {
     return dataStore.data
       .map { preferences ->
-        preferences[accessTokenPreferenceKey] to preferences[refreshTokenPreferenceKey]
-      }
-      .map { (accessToken, refreshToken) ->
-        Pair(
-          first = accessToken?.let { AccessToken(it, 0) },
-          second = refreshToken?.let { RefreshToken(it, 0) },
+        val accessTokenString = preferences[accessTokenPreferenceKey] ?: return@map null
+        val accessTokenExpirationIso8601 = preferences[accessTokenExpirationIso8601PreferenceKey] ?: return@map null
+        val accessTokenExpirationInstant = Instant.parse(accessTokenExpirationIso8601)
+
+        val refreshTokenString = preferences[refreshTokenPreferenceKey] ?: return@map null
+        val refreshTokenExpirationIso8601 = preferences[refreshTokenExpirationIso8601PreferenceKey] ?: return@map null
+        val refreshTokenExpirationInstant = Instant.parse(refreshTokenExpirationIso8601)
+
+        AuthTokens(
+          LocalAccessToken(accessTokenString, accessTokenExpirationInstant),
+          LocalRefreshToken(refreshTokenString, refreshTokenExpirationInstant),
         )
       }
   }
 
   suspend fun updateTokens(accessToken: AccessToken, refreshToken: RefreshToken) {
     dataStore.edit { preferences ->
+      val now = clock.now()
+
       preferences[accessTokenPreferenceKey] = accessToken.token
+      preferences[accessTokenExpirationIso8601PreferenceKey] = (now + accessToken.expiryInSeconds.seconds).toString()
+
       preferences[refreshTokenPreferenceKey] = refreshToken.token
+      preferences[refreshTokenExpirationIso8601PreferenceKey] = (now + refreshToken.expiryInSeconds.seconds).toString()
     }
   }
 
@@ -42,6 +58,10 @@ class AuthTokenStorage(
 
   companion object {
     private val accessTokenPreferenceKey = stringPreferencesKey("com.hedvig.android.auth.storage.ACCESS_TOKEN")
+    private val accessTokenExpirationIso8601PreferenceKey =
+      stringPreferencesKey("com.hedvig.android.auth.storage.ACCESS_TOKEN_EXPIRATION_ISO_8601")
     private val refreshTokenPreferenceKey = stringPreferencesKey("com.hedvig.android.auth.storage.REFRESH_TOKEN")
+    private val refreshTokenExpirationIso8601PreferenceKey =
+      stringPreferencesKey("com.hedvig.android.auth.storage.REFRESH_TOKEN_EXPIRATION_ISO_8601")
   }
 }

@@ -1,9 +1,12 @@
 package com.hedvig.android.auth
 
-import com.hedvig.authlib.AccessToken
-import com.hedvig.authlib.RefreshToken
+import com.hedvig.android.auth.token.LocalAccessToken
+import com.hedvig.android.auth.token.LocalRefreshToken
 
 sealed interface AuthStatus {
-  data class LoggedIn(val accessToken: AccessToken, val refreshToken: RefreshToken) : AuthStatus
+  data class LoggedIn(
+    val accessToken: LocalAccessToken,
+    val refreshToken: LocalRefreshToken,
+  ) : AuthStatus
   object LoggedOut : AuthStatus
 }
