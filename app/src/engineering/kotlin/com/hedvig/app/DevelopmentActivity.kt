@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.hanalytics.engineering.tracking.TrackingLogActivity
 import com.hedvig.app.databinding.ActivityDevelopmentBinding
 import com.hedvig.app.feature.adyen.AdyenMockActivity
@@ -25,11 +26,12 @@ import org.koin.android.ext.android.inject
 class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
   private val binding by viewBinding(ActivityDevelopmentBinding::bind)
   private val authTokenService: AuthTokenService by inject()
+  private val applicationScope: ApplicationScope by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    binding.root.adapter = DevelopmentScreenAdapter(authTokenService).also {
+    binding.root.adapter = DevelopmentScreenAdapter(authTokenService, applicationScope).also {
       it.submitList(
         listOf(
           DevelopmentScreenAdapter.DevelopmentScreenItem.Header,

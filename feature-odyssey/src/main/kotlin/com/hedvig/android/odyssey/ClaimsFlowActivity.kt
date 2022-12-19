@@ -7,6 +7,7 @@ import android.os.Parcelable
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import coil.ImageLoader
+import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.Navigator
@@ -27,7 +28,7 @@ class ClaimsFlowActivity : ComponentActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    val token = authTokenService.getToken()?.token
+    val token = (authTokenService.authStatus.value as? AuthStatus.LoggedIn)?.accessToken?.token
     requireNotNull(token)
     val odysseyUrl = intent.getStringExtra(ODYSSEY_URL_KEY) ?: error("ODYSSEY_URL_KEY needs to be passed in")
     val itemType = intent.getParcelableExtra<ItemType>(EXTRA_ITEM_TYPE)?.name

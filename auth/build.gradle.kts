@@ -18,8 +18,11 @@ dependencies {
   implementation(libs.kotlinx.datetime)
   implementation(libs.okhttp.core)
   implementation(libs.serialization.json)
+  implementation(libs.slimber)
 
   testImplementation(projects.authTest)
+  testImplementation(projects.coreCommonAndroidTest)
+  testImplementation(projects.coreCommonTest)
   testImplementation(projects.coreDatastoreTest)
 
   testImplementation(libs.assertK)

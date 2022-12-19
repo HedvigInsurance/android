@@ -37,9 +37,9 @@ class PushNotificationWorker(
     }
   }
 
-  private fun hasHedvigToken(): Boolean {
+  private suspend fun hasHedvigToken(): Boolean {
     try {
-      val hedvigToken = authTokenService.getToken()
+      val hedvigToken = authTokenService.getTokens()
       if (hedvigToken != null) {
         return true
       }

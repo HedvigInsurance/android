@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.hedvig.android.auth.AuthTokens
 import com.hedvig.android.auth.token.LocalAccessToken
 import com.hedvig.android.auth.token.LocalRefreshToken
 import com.hedvig.authlib.AccessToken
@@ -18,7 +19,7 @@ class AuthTokenStorage(
   private val dataStore: DataStore<Preferences>,
   private val clock: Clock = Clock.System,
 ) {
-  fun getTokens(): Flow<Pair<LocalAccessToken, LocalRefreshToken>?> {
+  fun getTokens(): Flow<AuthTokens?> {
     return dataStore.data
       .map { preferences ->
         val accessTokenString = preferences[accessTokenPreferenceKey] ?: return@map null
@@ -29,7 +30,7 @@ class AuthTokenStorage(
         val refreshTokenExpirationIso8601 = preferences[refreshTokenExpirationIso8601PreferenceKey] ?: return@map null
         val refreshTokenExpirationInstant = Instant.parse(refreshTokenExpirationIso8601)
 
-        Pair(
+        AuthTokens(
           LocalAccessToken(accessTokenString, accessTokenExpirationInstant),
           LocalRefreshToken(refreshTokenString, refreshTokenExpirationInstant),
         )
