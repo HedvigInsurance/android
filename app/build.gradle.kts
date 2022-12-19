@@ -113,7 +113,7 @@ android {
 
 dependencies {
   implementation(projects.apollo)
-  implementation(projects.auth)
+  implementation(projects.auth.authCore)
   implementation(projects.coreCommon)
   implementation(projects.coreCommonAndroid)
   implementation(projects.coreDatastore)
@@ -130,7 +130,7 @@ dependencies {
   implementation(projects.hedvigMarket)
   implementation(projects.notificationBadgeData)
 
-  testImplementation(projects.authTest)
+  testImplementation(projects.auth.authTest)
   testImplementation(projects.coreDatastoreTest)
 
   testImplementation(projects.hanalytics.hanalyticsFeatureFlagsTest)

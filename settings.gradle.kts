@@ -34,8 +34,8 @@ rootProject.name = "hedvigandroid"
 
 include(":apollo")
 include(":app")
-include(":auth")
-include(":auth-test")
+include(":auth:auth-core")
+include(":auth:auth-test")
 include(":core-common")
 include(":core-common-android")
 include(":core-common-android-test")

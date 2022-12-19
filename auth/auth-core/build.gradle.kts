@@ -1,7 +1,7 @@
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
   id("hedvig.android.ktlint")
-  id("hedvig.kotlin.library")
+  id("hedvig.android.library")
   alias(libs.plugins.serialization)
 }
 
@@ -18,8 +18,9 @@ dependencies {
   implementation(libs.kotlinx.datetime)
   implementation(libs.okhttp.core)
   implementation(libs.serialization.json)
+  implementation(libs.slimber)
 
-  testImplementation(projects.authTest)
+  testImplementation(projects.auth.authTest)
   testImplementation(projects.coreCommonTest)
   testImplementation(projects.coreDatastoreTest)
 
