@@ -8,7 +8,6 @@ import com.hedvig.android.auth.AuthTokenServiceImpl
 import com.hedvig.android.auth.FakeAuthRepository
 import com.hedvig.android.auth.TestClock
 import com.hedvig.android.auth.storage.AuthTokenStorage
-import com.hedvig.android.core.common.android.test.TestTimberTree
 import com.hedvig.android.core.datastore.TestPreferencesDataStore
 import com.hedvig.authlib.AccessToken
 import com.hedvig.authlib.AuthTokenResult
@@ -27,7 +26,6 @@ import okhttp3.mockwebserver.RecordedRequest
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import timber.log.Timber
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
@@ -114,7 +112,6 @@ class AuthTokenRefreshingInterceptorTest {
 
   @Test
   fun `with two requests happening in parallel, the token is only refreshed once`() = runTest {
-    Timber.plant(TestTimberTree())
     val clock = TestClock()
     val authTokenStorage = authTokenStorage(clock)
     authTokenStorage.updateTokens(
@@ -153,7 +150,6 @@ class AuthTokenRefreshingInterceptorTest {
   @Test
   fun `two requests happen in parallel, the token is only refreshed once, then a third one gets the token eagerly`() =
     runTest {
-      Timber.plant(TestTimberTree())
       val clock = TestClock()
       val authTokenStorage = authTokenStorage(clock)
       authTokenStorage.updateTokens(
