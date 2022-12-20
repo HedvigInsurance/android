@@ -21,18 +21,21 @@ class AuthTokenRefreshingInterceptor(
   private val mutex = Mutex()
 
   override fun intercept(chain: Interceptor.Chain): Response {
-    val accessToken = (authTokenService.authStatus.value as? AuthStatus.LoggedIn)?.accessToken
-      ?: return chain.proceed(chain.request()) // We're not authenticated anyway here
+    val authStatus = authTokenService.authStatus.value
+    if (authStatus is AuthStatus.LoggedOut) {
+      return chain.proceed(chain.request()).also { d { "Not authenticated at all, fast track to doing nothing" } }
+    }
+    val accessToken = (authStatus as? AuthStatus.LoggedIn)?.accessToken
     d { "Got accessToken: $accessToken" }
-    if (accessToken.expiryDate.isExpired().not()) {
+    if (accessToken?.expiryDate?.isExpired()?.not() == true) {
       d { "Current AccessToken not expired, fast track to adding the header" }
       return chain.proceed(chain.request().withAuthorizationToken(accessToken.token))
     }
-    d { "AccessToken was expired, going to try to refresh it" }
+    d { "AccessToken was expired or not cached yet, going to try to refresh it" }
     val retrievedAccessToken: String? = runBlocking {
       mutex.withLock {
         val authTokens = authTokenService.getTokens()
-          ?: return@withLock null // Tokens were invalidated by the previous lock holder
+          ?: return@withLock null.also { d { "Tokens were invalidated by the previous lock holder" } }
         if (authTokens.accessToken.expiryDate.isExpired().not()) {
           d { "After lock, token was refreshed, proceeding with refreshed token" }
           return@withLock authTokens.accessToken.token
