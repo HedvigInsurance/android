@@ -4,6 +4,7 @@ package com.hedvig.app
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
 import coil.ImageLoader
@@ -448,7 +449,14 @@ val textActionSetModule = module {
 }
 
 val navigatorModule = module {
-  single<Navigator> { Navigator(navigateToChat = { startChat() }) }
+  single<Navigator> {
+    Navigator(
+      navigateToMarketingActivity = {
+        startActivity(Intent(this, MainActivity::class.java))
+      },
+      navigateToChat = { startChat() },
+    )
+  }
 }
 
 val numberActionSetModule = module {
