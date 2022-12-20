@@ -10,6 +10,7 @@ import androidx.core.view.doOnLayout
 import androidx.core.view.updatePadding
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityReferralsEditCodeBinding
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
@@ -34,6 +35,7 @@ class ReferralsEditCodeActivity : AppCompatActivity(R.layout.activity_referrals_
   @SuppressLint("InflateParams")
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    lifecycle.addObserver(AuthenticatedObserver())
 
     binding.apply {
       window.compatSetDecorFitsSystemWindows(false)

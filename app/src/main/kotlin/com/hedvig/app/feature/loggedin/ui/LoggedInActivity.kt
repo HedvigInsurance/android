@@ -19,6 +19,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.github.florent37.viewtooltip.ViewTooltip
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityLoggedInBinding
@@ -80,6 +81,7 @@ class LoggedInActivity : AppCompatActivity(R.layout.activity_logged_in) {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    lifecycle.addObserver(AuthenticatedObserver())
 
     savedTab = savedInstanceState?.getSerializable("tab") as? LoggedInTabs
 

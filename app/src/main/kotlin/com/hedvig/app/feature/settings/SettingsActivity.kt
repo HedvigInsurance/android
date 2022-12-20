@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.common.preferences.PreferenceKey
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Language
@@ -33,6 +34,7 @@ class SettingsActivity : AppCompatActivity(R.layout.activity_settings) {
   @SuppressLint("ApplySharedPref")
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    lifecycle.addObserver(AuthenticatedObserver())
     binding.toolbar.setNavigationOnClickListener {
       onBackPressed()
     }

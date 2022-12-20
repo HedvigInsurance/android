@@ -10,6 +10,7 @@ import com.hedvig.android.apollo.graphql.PayinStatusQuery
 import com.hedvig.android.apollo.graphql.PaymentQuery
 import com.hedvig.android.apollo.graphql.type.PayinMethodStatus
 import com.hedvig.android.apollo.graphql.type.PayoutMethodStatus
+import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
@@ -36,6 +37,7 @@ class PaymentActivity : AppCompatActivity(R.layout.activity_payment) {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    lifecycle.addObserver(AuthenticatedObserver())
 
     binding.apply {
       window.compatSetDecorFitsSystemWindows(false)

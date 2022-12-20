@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import coil.ImageLoader
 import com.carousell.concatadapterextension.ConcatItemDecoration
 import com.carousell.concatadapterextension.ConcatSpanSizeLookup
+import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.app.R
 import com.hedvig.app.databinding.QuoteDetailActivityBinding
 import com.hedvig.app.feature.documents.DocumentAdapter
@@ -32,6 +33,7 @@ class QuoteDetailActivity : AppCompatActivity(R.layout.quote_detail_activity) {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    lifecycle.addObserver(AuthenticatedObserver())
 
     val title = intent.getStringExtra(TITLE)
     val perils: List<PerilItem>? = intent.getParcelableArrayListExtra<PerilItem.Peril>(PERILS)
