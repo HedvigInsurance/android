@@ -5,4 +5,8 @@ plugins {
 
 dependencies {
   implementation(projects.auth.authCore)
+  implementation(projects.coreNavigation)
+
+  implementation(libs.androidx.other.appCompat)
+  implementation(libs.koin.android)
 }
