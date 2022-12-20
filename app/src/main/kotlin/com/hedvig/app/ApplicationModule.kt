@@ -115,6 +115,7 @@ import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContrac
 import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModelImpl
+import com.hedvig.app.feature.marketing.MarketingActivity
 import com.hedvig.app.feature.marketing.MarketingViewModel
 import com.hedvig.app.feature.marketing.data.GetInitialMarketPickerValuesUseCase
 import com.hedvig.app.feature.marketing.data.GetMarketingBackgroundUseCase
@@ -201,6 +202,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.pow
 
+@Suppress("KotlinConstantConditions")
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APPLICATION_ID == "com.hedvig.test.app"
 
 val applicationModule = module {
@@ -448,7 +450,13 @@ val textActionSetModule = module {
 }
 
 val navigatorModule = module {
-  single<Navigator> { Navigator(navigateToChat = { startChat() }) }
+  single<Navigator> {
+    Navigator(
+      application = get(),
+      loggedOutActivityClass = MarketingActivity::class.java,
+      navigateToChat = { startChat() },
+    )
+  }
 }
 
 val numberActionSetModule = module {

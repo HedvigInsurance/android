@@ -22,33 +22,33 @@ class AuthTokenRefreshingInterceptor(
 
   override fun intercept(chain: Interceptor.Chain): Response {
     val accessToken = (authTokenService.authStatus.value as? AuthStatus.LoggedIn)?.accessToken
-      ?: return chain.proceed(chain.request()) // We're not authenticated anyway here
-    d { "Got accessToken: $accessToken" }
-    if (accessToken.expiryDate.isExpired().not()) {
-      d { "Current AccessToken not expired, fast track to adding the header" }
+    d { "${chain.identifyingCode()} Got accessToken: $accessToken" }
+    if (accessToken?.expiryDate?.isExpired()?.not() == true) {
+      d { "${chain.identifyingCode()} Current AccessToken not expired, fast track to adding the header" }
       return chain.proceed(chain.request().withAuthorizationToken(accessToken.token))
     }
-    d { "AccessToken was expired, going to try to refresh it" }
+    d { "${chain.identifyingCode()} AccessToken was expired or not cached yet, going to try to refresh it" }
     val retrievedAccessToken: String? = runBlocking {
       mutex.withLock {
-        val authTokens = authTokenService.getTokens()
-          ?: return@withLock null // Tokens were invalidated by the previous lock holder
+        val authTokens = authTokenService.getTokens() ?: return@withLock null.also {
+          d { "${chain.identifyingCode()} Tokens were not stored, proceeding unauthenticated" }
+        }
         if (authTokens.accessToken.expiryDate.isExpired().not()) {
-          d { "After lock, token was refreshed, proceeding with refreshed token" }
+          d { "${chain.identifyingCode()} After lock, token was refreshed, proceeding with refreshed token" }
           return@withLock authTokens.accessToken.token
         }
-        d { "Still an expired token at this point, try to refresh it" }
+        d { "${chain.identifyingCode()} Still an expired token at this point, try to refresh it" }
         if (authTokens.refreshToken.expiryDate.isExpired()) {
-          d { "Refresh token was expired, invalidating tokens and proceeding unauthenticated" }
+          d { "${chain.identifyingCode()} Refresh token expired, invalidating tokens and proceeding unauthenticated" }
           // If refresh is also expired, consider ourselves logged out
           authTokenService.invalidateTokens()
           return@withLock null
         }
-        d { "Expired access, but not expired refresh token, refreshing tokens now" }
+        d { "${chain.identifyingCode()} Access token expired, but not expired refresh token, refreshing tokens now" }
         val refreshedAccessToken = authTokenService.refreshAndGetAccessToken() ?: return@withLock null.also {
-          d { "Refreshing failed, proceed unauthenticated" }
+          d { "${chain.identifyingCode()} Refreshing failed, proceed unauthenticated" }
         }
-        d { "Refreshing succeeded, proceeding with refreshed token" }
+        d { "${chain.identifyingCode()} Refreshing succeeded, proceeding with refreshed tokens" }
         refreshedAccessToken.token
       }
     }
@@ -70,6 +70,13 @@ class AuthTokenRefreshingInterceptor(
      * to run and not risk assuming it's active but until the request goes through it's already become invalidated.
      */
     private val expirationTimeBuffer = 60.seconds
+
+    /**
+     * Returns a unique ID from the chain. Used only for logging, to deduce which interceptor is doing what.
+     */
+    private fun Interceptor.Chain.identifyingCode(): String {
+      return "#${hashCode().toString(16)}"
+    }
   }
 }
 

@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import slimber.log.d
 import kotlin.time.Duration.Companion.seconds
 
 class AuthTokenStorage(
@@ -42,10 +43,20 @@ class AuthTokenStorage(
       val now = clock.now()
 
       preferences[accessTokenPreferenceKey] = accessToken.token
-      preferences[accessTokenExpirationIso8601PreferenceKey] = (now + accessToken.expiryInSeconds.seconds).toString()
+      val accessTokenExpirationInstant = (now + accessToken.expiryInSeconds.seconds)
+      preferences[accessTokenExpirationIso8601PreferenceKey] = accessTokenExpirationInstant.toString()
 
       preferences[refreshTokenPreferenceKey] = refreshToken.token
-      preferences[refreshTokenExpirationIso8601PreferenceKey] = (now + refreshToken.expiryInSeconds.seconds).toString()
+      val refreshTokenExpirationInstant = now + refreshToken.expiryInSeconds.seconds
+      preferences[refreshTokenExpirationIso8601PreferenceKey] = refreshTokenExpirationInstant.toString()
+      d {
+        buildString {
+          append("Saved tokens with expiration instants: ")
+          append("Access token:$accessTokenExpirationInstant")
+          append(" | ")
+          append("Refresh token:$refreshTokenExpirationInstant")
+        }
+      }
     }
   }
 

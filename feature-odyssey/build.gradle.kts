@@ -6,7 +6,7 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.auth)
+  implementation(projects.auth.authCore)
   implementation(projects.coreCommon)
   implementation(projects.coreNavigation)
   implementation(projects.hedvigLanguage)
