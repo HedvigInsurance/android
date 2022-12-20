@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ReferralsReceiverActivityBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
@@ -23,6 +24,7 @@ class ReferralsReceiverActivity : AppCompatActivity(R.layout.referrals_receiver_
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    lifecycle.addObserver(AuthenticatedObserver())
 
     binding.apply {
       lifecycleScope.launchWhenStarted {

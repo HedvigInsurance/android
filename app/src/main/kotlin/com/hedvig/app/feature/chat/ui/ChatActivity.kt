@@ -18,6 +18,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
 import com.hedvig.android.apollo.graphql.ChatMessagesQuery
+import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.databinding.ActivityChatBinding
@@ -75,6 +76,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    lifecycle.addObserver(AuthenticatedObserver())
 
     keyboardHeight = resources.getDimensionPixelSize(R.dimen.default_attach_file_height)
     isKeyboardBreakPoint =

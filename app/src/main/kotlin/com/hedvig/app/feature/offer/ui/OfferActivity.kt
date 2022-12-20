@@ -18,6 +18,7 @@ import com.adyen.checkout.dropin.DropIn
 import com.adyen.checkout.dropin.DropInResult
 import com.carousell.concatadapterextension.ConcatItemDecoration
 import com.carousell.concatadapterextension.ConcatSpanSizeLookup
+import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.MainActivity
@@ -87,6 +88,7 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    lifecycle.addObserver(AuthenticatedObserver())
 
     window.compatSetDecorFitsSystemWindows(false)
     binding.offerToolbar.applyStatusBarInsets()

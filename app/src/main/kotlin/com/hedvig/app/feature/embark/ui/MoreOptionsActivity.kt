@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityMoreOptionsBinding
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
@@ -21,6 +22,7 @@ class MoreOptionsActivity : AppCompatActivity(R.layout.activity_more_options) {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    lifecycle.addObserver(AuthenticatedObserver())
 
     binding.apply {
       window.compatSetDecorFitsSystemWindows(false)

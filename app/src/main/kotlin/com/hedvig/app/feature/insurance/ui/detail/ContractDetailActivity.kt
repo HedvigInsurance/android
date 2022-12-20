@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import coil.ImageLoader
 import com.google.android.material.tabs.TabLayoutMediator
+import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ContractDetailActivityBinding
@@ -51,6 +52,7 @@ class ContractDetailActivity : AppCompatActivity(R.layout.contract_detail_activi
       sharedElementExitTransition = sharedElementTransition()
     }
     super.onCreate(savedInstanceState)
+    lifecycle.addObserver(AuthenticatedObserver())
     binding.apply {
       window.compatSetDecorFitsSystemWindows(false)
       toolbar.applyStatusBarInsets()

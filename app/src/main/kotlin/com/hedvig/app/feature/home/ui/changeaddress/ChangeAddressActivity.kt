@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressActivityBinding
 import com.hedvig.app.databinding.ListTextItemBinding
@@ -43,6 +44,7 @@ class ChangeAddressActivity : AppCompatActivity(R.layout.change_address_activity
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    lifecycle.addObserver(AuthenticatedObserver())
 
     viewModel.events
       .flowWithLifecycle(lifecycle)

@@ -9,6 +9,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import coil.ImageLoader
+import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.offer.quotedetail.QuoteDetailActivity
@@ -26,6 +27,7 @@ class CrossSellDetailActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    lifecycle.addObserver(AuthenticatedObserver())
 
     val viewModel = getViewModel<CrossSellDetailViewModel> {
       parametersOf(crossSell)
