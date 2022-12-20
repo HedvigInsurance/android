@@ -29,29 +29,33 @@ class AuthTokenRefreshingInterceptor(
       return chain.proceed(chain.request().withAuthorizationToken(accessToken.token))
     }
     d { "AccessToken was expired, going to try to refresh it" }
-    return runBlocking {
-      return@runBlocking mutex.withLock {
+    val retrievedAccessToken: String? = runBlocking {
+      mutex.withLock {
         val authTokens = authTokenService.getTokens()
-          ?: return@withLock chain.proceed(chain.request()) // Tokens were invalidated by the previous lock holder
+          ?: return@withLock null // Tokens were invalidated by the previous lock holder
         if (authTokens.accessToken.expiryDate.isExpired().not()) {
           d { "After lock, token was refreshed, proceeding with refreshed token" }
-          return@withLock chain.proceed(chain.request().withAuthorizationToken(authTokens.accessToken.token))
+          return@withLock authTokens.accessToken.token
         }
         d { "Still an expired token at this point, try to refresh it" }
         if (authTokens.refreshToken.expiryDate.isExpired()) {
           d { "Refresh token was expired, invalidating tokens and proceeding unauthenticated" }
           // If refresh is also expired, consider ourselves logged out
           authTokenService.invalidateTokens()
-          return@withLock chain.proceed(chain.request())
+          return@withLock null
         }
         d { "Expired access, but not expired refresh token, refreshing tokens now" }
-        val refreshedAccessToken =
-          authTokenService.refreshAndGetAccessToken() ?: return@withLock chain.proceed(chain.request()).also {
-            d { "Refreshing failed, proceed unauthenticated" }
-          }
+        val refreshedAccessToken = authTokenService.refreshAndGetAccessToken() ?: return@withLock null.also {
+          d { "Refreshing failed, proceed unauthenticated" }
+        }
         d { "Refreshing succeeded, proceeding with refreshed token" }
-        chain.proceed(chain.request().withAuthorizationToken(refreshedAccessToken.token))
+        refreshedAccessToken.token
       }
+    }
+    return if (retrievedAccessToken != null) {
+      chain.proceed(chain.request().withAuthorizationToken(retrievedAccessToken))
+    } else {
+      chain.proceed(chain.request())
     }
   }
 
