@@ -43,7 +43,7 @@ class AuthTokenStorage(
       val now = clock.now()
 
       preferences[accessTokenPreferenceKey] = accessToken.token
-      val accessTokenExpirationInstant = (now + accessToken.expiryInSeconds.seconds)
+      val accessTokenExpirationInstant = now + accessToken.expiryInSeconds.seconds
       preferences[accessTokenExpirationIso8601PreferenceKey] = accessTokenExpirationInstant.toString()
 
       preferences[refreshTokenPreferenceKey] = refreshToken.token
