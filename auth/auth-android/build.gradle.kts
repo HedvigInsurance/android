@@ -9,4 +9,5 @@ dependencies {
 
   implementation(libs.androidx.other.appCompat)
   implementation(libs.koin.android)
+  implementation(libs.slimber)
 }
