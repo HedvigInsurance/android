@@ -202,6 +202,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.pow
 
+@Suppress("KotlinConstantConditions")
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APPLICATION_ID == "com.hedvig.test.app"
 
 val applicationModule = module {
