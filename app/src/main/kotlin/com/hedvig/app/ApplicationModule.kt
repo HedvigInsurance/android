@@ -4,7 +4,6 @@ package com.hedvig.app
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
 import coil.ImageLoader
@@ -116,6 +115,7 @@ import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContrac
 import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModelImpl
+import com.hedvig.app.feature.marketing.MarketingActivity
 import com.hedvig.app.feature.marketing.MarketingViewModel
 import com.hedvig.app.feature.marketing.data.GetInitialMarketPickerValuesUseCase
 import com.hedvig.app.feature.marketing.data.GetMarketingBackgroundUseCase
@@ -452,9 +452,8 @@ val textActionSetModule = module {
 val navigatorModule = module {
   single<Navigator> {
     Navigator(
-      navigateToMarketingActivity = {
-        startActivity(Intent(this, MainActivity::class.java))
-      },
+      application = get(),
+      loggedOutActivityClass = MarketingActivity::class.java,
       navigateToChat = { startChat() },
     )
   }
