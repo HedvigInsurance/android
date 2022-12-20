@@ -21,11 +21,7 @@ class AuthTokenRefreshingInterceptor(
   private val mutex = Mutex()
 
   override fun intercept(chain: Interceptor.Chain): Response {
-    val authStatus = authTokenService.authStatus.value
-    if (authStatus is AuthStatus.LoggedOut) {
-      return chain.proceed(chain.request()).also { d { "Not authenticated at all, fast track to doing nothing" } }
-    }
-    val accessToken = (authStatus as? AuthStatus.LoggedIn)?.accessToken
+    val accessToken = (authTokenService.authStatus.value as? AuthStatus.LoggedIn)?.accessToken
     d { "Got accessToken: $accessToken" }
     if (accessToken?.expiryDate?.isExpired()?.not() == true) {
       d { "Current AccessToken not expired, fast track to adding the header" }
