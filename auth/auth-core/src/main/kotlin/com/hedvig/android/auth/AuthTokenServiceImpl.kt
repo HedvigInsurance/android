@@ -1,6 +1,7 @@
 package com.hedvig.android.auth
 
 import com.hedvig.android.auth.storage.AuthTokenStorage
+import com.hedvig.android.auth.token.AuthTokens
 import com.hedvig.android.auth.token.LocalRefreshToken
 import com.hedvig.authlib.AccessToken
 import com.hedvig.authlib.AuthRepository
