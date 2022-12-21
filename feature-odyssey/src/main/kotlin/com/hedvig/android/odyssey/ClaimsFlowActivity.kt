@@ -8,6 +8,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import coil.ImageLoader
 import com.hedvig.android.auth.AccessTokenProvider
+import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.Navigator
 import com.hedvig.common.remote.actions.CHAT_URL
@@ -27,6 +28,7 @@ class ClaimsFlowActivity : ComponentActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    lifecycle.addObserver(AuthenticatedObserver())
     val odysseyUrl = intent.getStringExtra(ODYSSEY_URL_KEY) ?: error("ODYSSEY_URL_KEY needs to be passed in")
     val itemType = intent.getParcelableExtra<ItemType>(EXTRA_ITEM_TYPE)?.name
 

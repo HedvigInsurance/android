@@ -6,6 +6,7 @@ plugins {
 }
 
 dependencies {
+  implementation(projects.auth.authAndroid)
   implementation(projects.auth.authCore)
   implementation(projects.coreCommon)
   implementation(projects.coreNavigation)
