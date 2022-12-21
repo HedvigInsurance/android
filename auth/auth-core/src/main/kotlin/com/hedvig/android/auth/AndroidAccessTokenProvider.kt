@@ -1,5 +1,6 @@
 package com.hedvig.android.auth
 
+import com.hedvig.android.core.common.android.ifPlanted
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.Clock
@@ -15,7 +16,7 @@ internal class AndroidAccessTokenProvider(
   private val mutex = Mutex()
 
   override suspend fun provide(): String? {
-    val requestId = UUID.randomUUID().leastSignificantBits.toString(16)
+    val requestId = ifPlanted { "#${UUID.randomUUID().toString().takeLast(6)}" }
     val accessToken = (authTokenService.authStatus.value as? AuthStatus.LoggedIn)?.accessToken
     d { "$requestId Got accessToken: $accessToken" }
     if (accessToken?.expiryDate?.isExpired()?.not() == true) {

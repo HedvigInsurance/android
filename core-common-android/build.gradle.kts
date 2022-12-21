@@ -7,8 +7,9 @@ dependencies {
   implementation(projects.coreResources)
 
   implementation(libs.androidx.other.core)
+  implementation(libs.slimber)
 
-  testImplementation(libs.junit)
   testImplementation(libs.assertK)
   testImplementation(libs.jsonTest)
+  testImplementation(libs.junit)
 }
