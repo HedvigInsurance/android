@@ -13,6 +13,6 @@ dependencies {
 
   implementation(libs.androidx.other.activityCompose)
   implementation(libs.coil.coil)
+  implementation(libs.hedvig.odyssey)
   implementation(libs.koin.android)
-  implementation(libs.odyssey)
 }

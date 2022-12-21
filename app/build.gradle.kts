@@ -279,6 +279,6 @@ dependencies {
   debugImplementation(libs.androidx.compose.uiTestManifest)
 
   implementation(libs.datadog.sdk)
+  implementation(libs.hedvig.authlib)
   implementation(libs.kotlin.reflect)
-  implementation(libs.authlib)
 }
