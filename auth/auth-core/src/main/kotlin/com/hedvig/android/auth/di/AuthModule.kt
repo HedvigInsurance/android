@@ -13,7 +13,7 @@ import org.koin.dsl.module
 
 @Suppress("RemoveExplicitTypeArguments")
 val authModule = module {
-  single<AccessTokenProvider> { AndroidAccessTokenProvider(get(), get()) }
+  single<AccessTokenProvider> { AndroidAccessTokenProvider(get()) }
   single<AuthTokenRefreshingInterceptor> { AuthTokenRefreshingInterceptor(get()) }
   single<AuthTokenService> { AuthTokenServiceImpl(get(), get(), get<ApplicationScope>()) }
   single<AuthTokenStorage> { AuthTokenStorage(get()) }
