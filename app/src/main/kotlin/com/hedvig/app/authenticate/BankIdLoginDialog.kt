@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class LoginDialog : DialogFragment() {
+class BankIdLoginDialog : DialogFragment() {
 
   val binding by viewBinding(DialogAuthenticateBinding::bind)
   private val viewModel: UserViewModel by viewModel()
