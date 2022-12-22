@@ -308,7 +308,7 @@ val viewModelModule = module {
   viewModel { ClaimsViewModel(get(), get()) }
   viewModel { ChatViewModel(get(), get(), get()) }
   viewModel { (quoteCartId: QuoteCartId?) -> RedeemCodeViewModel(quoteCartId, get(), get()) }
-  viewModel { BankIdLoginViewModel(get(), get(), get(), get(), get(), get(), get()) }
+  viewModel { BankIdLoginViewModel(get(), get(), get(), get(), get(), get()) }
   viewModel { WelcomeViewModel(get()) }
   viewModel {
     SettingsViewModel(

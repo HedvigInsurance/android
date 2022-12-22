@@ -25,7 +25,6 @@ import kotlinx.coroutines.launch
 import slimber.log.e
 
 class BankIdLoginViewModel(
-  private val logoutUseCase: LogoutUseCase,
   private val hAnalytics: HAnalytics,
   private val featureManager: FeatureManager,
   private val pushTokenManager: PushTokenManager,
@@ -102,9 +101,5 @@ class BankIdLoginViewModel(
     runCatching {
       pushTokenManager.refreshToken()
     }
-  }
-
-  fun logout() {
-    logoutUseCase.invoke()
   }
 }
