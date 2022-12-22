@@ -18,10 +18,10 @@ as close levels as possible to developing on the same repo. Here are the steps t
 2. Go to [libs.versions.toml](/gradle/libs.versions.toml) and update the version to whatever 
  version of the library you're building 
 3. Go to the place where we declare the dependency to that library e.g. 
- ```implementation(libs.odyssey)``` 
+ ```implementation(libs.hedvig.odyssey)``` 
  and change it to
  ```
- implementation(libs.odyssey) {
+ implementation(libs.hedvig.odyssey) {
    isChanging = true
  }
  ```

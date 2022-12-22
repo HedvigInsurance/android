@@ -4,7 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.hedvig.android.auth.AuthTokens
+import com.hedvig.android.auth.token.AuthTokens
 import com.hedvig.android.auth.token.LocalAccessToken
 import com.hedvig.android.auth.token.LocalRefreshToken
 import com.hedvig.authlib.AccessToken
@@ -43,7 +43,7 @@ class AuthTokenStorage(
       val now = clock.now()
 
       preferences[accessTokenPreferenceKey] = accessToken.token
-      val accessTokenExpirationInstant = (now + accessToken.expiryInSeconds.seconds)
+      val accessTokenExpirationInstant = now + accessToken.expiryInSeconds.seconds
       preferences[accessTokenExpirationIso8601PreferenceKey] = accessTokenExpirationInstant.toString()
 
       preferences[refreshTokenPreferenceKey] = refreshToken.token

@@ -3,6 +3,8 @@ package com.hedvig.android.auth.interceptor
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
+import com.hedvig.android.auth.AccessTokenProvider
+import com.hedvig.android.auth.AndroidAccessTokenProvider
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.AuthTokenServiceImpl
 import com.hedvig.android.auth.FakeAuthRepository
@@ -44,7 +46,7 @@ class AuthTokenRefreshingInterceptorTest {
       RefreshToken("", 0),
     )
     val authTokenService = authTokenService(authTokenStorage)
-    val interceptor = AuthTokenRefreshingInterceptor(authTokenService, clock)
+    val interceptor = AuthTokenRefreshingInterceptor(accessTokenProvider(authTokenService, clock))
     val webServer = MockWebServer().also { it.enqueue(MockResponse()) }
     val okHttpClient = testOkHttpClient(interceptor)
     runCurrent()
@@ -65,7 +67,7 @@ class AuthTokenRefreshingInterceptorTest {
     )
     val authRepository = FakeAuthRepository()
     val authTokenService = authTokenService(authTokenStorage, authRepository)
-    val interceptor = AuthTokenRefreshingInterceptor(authTokenService, clock)
+    val interceptor = AuthTokenRefreshingInterceptor(accessTokenProvider(authTokenService, clock))
     val webServer = MockWebServer().also { it.enqueue(MockResponse()) }
     val okHttpClient = testOkHttpClient(interceptor)
     runCurrent()
@@ -96,7 +98,7 @@ class AuthTokenRefreshingInterceptorTest {
     )
     val authRepository = FakeAuthRepository()
     val authTokenService = authTokenService(authTokenStorage, authRepository)
-    val interceptor = AuthTokenRefreshingInterceptor(authTokenService, clock)
+    val interceptor = AuthTokenRefreshingInterceptor(accessTokenProvider(authTokenService, clock))
     val webServer = MockWebServer().also { it.enqueue(MockResponse()) }
     val okHttpClient = testOkHttpClient(interceptor)
     runCurrent()
@@ -120,7 +122,7 @@ class AuthTokenRefreshingInterceptorTest {
     )
     val authRepository = FakeAuthRepository()
     val authTokenService = authTokenService(authTokenStorage, authRepository)
-    val interceptor = AuthTokenRefreshingInterceptor(authTokenService, clock)
+    val interceptor = AuthTokenRefreshingInterceptor(accessTokenProvider(authTokenService, clock))
     val webServer = MockWebServer().also { mockWebServer ->
       repeat(2) { mockWebServer.enqueue(MockResponse()) }
     }
@@ -158,7 +160,7 @@ class AuthTokenRefreshingInterceptorTest {
       )
       val authRepository = FakeAuthRepository()
       val authTokenService = authTokenService(authTokenStorage, authRepository)
-      val interceptor = AuthTokenRefreshingInterceptor(authTokenService, clock)
+      val interceptor = AuthTokenRefreshingInterceptor(accessTokenProvider(authTokenService, clock))
       val webServer = MockWebServer().also { mockWebServer ->
         repeat(3) { mockWebServer.enqueue(MockResponse()) }
       }
@@ -212,6 +214,10 @@ class AuthTokenRefreshingInterceptorTest {
     ),
     clock,
   )
+
+  private fun accessTokenProvider(authTokenService: AuthTokenService, clock: Clock): AccessTokenProvider {
+    return AndroidAccessTokenProvider(authTokenService, clock)
+  }
 
   private fun testOkHttpClient(interceptor: Interceptor) = OkHttpClient
     .Builder()

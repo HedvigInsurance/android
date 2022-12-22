@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-  implementation(libs.authlib)
   implementation(libs.coroutines.core)
+  implementation(libs.hedvig.authlib)
   implementation(libs.turbine)
 }

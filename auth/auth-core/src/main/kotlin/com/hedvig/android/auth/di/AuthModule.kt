@@ -1,5 +1,7 @@
 package com.hedvig.android.auth.di
 
+import com.hedvig.android.auth.AccessTokenProvider
+import com.hedvig.android.auth.AndroidAccessTokenProvider
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.AuthTokenServiceImpl
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
@@ -11,9 +13,10 @@ import org.koin.dsl.module
 
 @Suppress("RemoveExplicitTypeArguments")
 val authModule = module {
-  single<SharedPreferencesAuthenticationTokenService> { SharedPreferencesAuthenticationTokenService(get()) }
-  single<AuthTokenStorage> { AuthTokenStorage(get()) }
-  single<AuthTokenService> { AuthTokenServiceImpl(get(), get(), get<ApplicationScope>()) }
-  single<MigrateTokenInterceptor> { MigrateTokenInterceptor(get(), get()) }
+  single<AccessTokenProvider> { AndroidAccessTokenProvider(get()) }
   single<AuthTokenRefreshingInterceptor> { AuthTokenRefreshingInterceptor(get()) }
+  single<AuthTokenService> { AuthTokenServiceImpl(get(), get(), get<ApplicationScope>()) }
+  single<AuthTokenStorage> { AuthTokenStorage(get()) }
+  single<MigrateTokenInterceptor> { MigrateTokenInterceptor(get(), get()) }
+  single<SharedPreferencesAuthenticationTokenService> { SharedPreferencesAuthenticationTokenService(get()) }
 }

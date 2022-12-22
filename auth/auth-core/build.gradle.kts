@@ -7,13 +7,13 @@ plugins {
 
 dependencies {
   implementation(projects.coreCommon)
+  implementation(projects.coreCommonAndroid)
   implementation(projects.coreDatastore)
 
-  api(libs.authlib)
+  api(libs.hedvig.authlib)
 
   implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.arrowKt.core)
-  implementation(libs.authlib)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.datetime)
   implementation(libs.okhttp.core)
