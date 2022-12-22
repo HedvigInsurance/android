@@ -69,15 +69,6 @@ class BankIdLoginDialog : DialogFragment(com.hedvig.app.R.layout.dialog_authenti
     }
   }
 
-  fun redirect() {
-    val bankIdUri = Uri.parse("bankid://?redirectUrl=hedvig://")
-    if (requireContext().canOpenUri(bankIdUri)) {
-      val intent = Intent(Intent.ACTION_VIEW, bankIdUri)
-      intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-      startActivity(intent)
-    }
-  }
-
   private fun bindViewState(viewState: UserViewModel.ViewState) {
     viewState.authStatus?.let(::bindNewStatus)
     viewState.autoStartToken?.let(::handleAutoStartToken)
