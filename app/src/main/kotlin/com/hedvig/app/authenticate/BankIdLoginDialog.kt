@@ -6,9 +6,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -24,16 +22,10 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class BankIdLoginDialog : DialogFragment() {
+class BankIdLoginDialog : DialogFragment(com.hedvig.app.R.layout.dialog_authenticate) {
 
   val binding by viewBinding(DialogAuthenticateBinding::bind)
   private val viewModel: UserViewModel by viewModel()
-
-  override fun onCreateView(
-    inflater: LayoutInflater,
-    container: ViewGroup?,
-    savedInstanceState: Bundle?,
-  ): View? = inflater.inflate(com.hedvig.app.R.layout.dialog_authenticate, container, false)
 
   override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
     return super.onCreateDialog(savedInstanceState).apply {
