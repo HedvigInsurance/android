@@ -8,8 +8,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.hedvig.app.databinding.DialogAuthenticateBinding
 import com.hedvig.app.feature.genericauth.GenericAuthActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -18,8 +19,7 @@ import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.authlib.LoginStatusResult
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import hedvig.resources.R
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class BankIdLoginDialog : DialogFragment(com.hedvig.app.R.layout.dialog_authenticate) {
@@ -39,17 +39,48 @@ class BankIdLoginDialog : DialogFragment(com.hedvig.app.R.layout.dialog_authenti
 
     binding.authTitle.setText(R.string.BANK_ID_AUTH_TITLE_INITIATED)
 
-    viewModel.viewState
-      .flowWithLifecycle(lifecycle)
-      .onEach(::bindViewState)
-      .launchIn(lifecycleScope)
-
     binding.login.setOnClickListener {
       requireActivity().startActivity(GenericAuthActivity.newInstance(requireActivity()))
     }
+    lifecycleScope.launch {
+      lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+        viewModel.viewState.collect {
+          bindViewState(it)
+        }
+      }
+    }
   }
 
-  private fun handleAutoStartToken(autoStartToken: String) {
+  private fun bindViewState(viewState: BankIdLoginViewState) {
+    when (viewState) {
+      is BankIdLoginViewState.Error -> {
+        binding.authTitle.text = viewState.errorMessage
+      }
+      BankIdLoginViewState.Loading -> {}
+      is BankIdLoginViewState.HandlingBankId -> {
+        if (!viewState.processedAutoStartToken) {
+          openBankIdOrShowQrCode(viewState.autoStartToken)
+          viewModel.didProcessAutoStartToken()
+        }
+        when (val authStatus = viewState.authStatus) {
+          is LoginStatusResult.Pending -> binding.authTitle.text = authStatus.statusMessage
+          is LoginStatusResult.Failed -> {
+            binding.authTitle.text = authStatus.message
+            dialog?.setCanceledOnTouchOutside(true)
+          }
+          is LoginStatusResult.Completed -> {
+            binding.authTitle.setText(R.string.BANK_ID_LOG_IN_TITLE_SUCCESS)
+            if (!viewState.processedNavigationToLoggedIn) {
+              viewModel.didNavigateToLoginScreen()
+              startLoggedInActivity()
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private fun openBankIdOrShowQrCode(autoStartToken: String) {
     val autoStartUrl = "bankid:///?autostarttoken=$autoStartToken"
     val bankIdUri = Uri.parse("$autoStartUrl&redirect=null")
     if (requireContext().canOpenUri(bankIdUri)) {
@@ -64,27 +95,6 @@ class BankIdLoginDialog : DialogFragment(com.hedvig.app.R.layout.dialog_authenti
         .with(requireContext())
         .load(autoStartUrl)
         .into(binding.qrCode)
-    }
-  }
-
-  private fun bindViewState(viewState: BankIdLoginViewState) {
-    viewState.authStatus?.let(::bindNewStatus)
-    viewState.autoStartToken?.let(::handleAutoStartToken)
-    if (viewState.navigateToLoggedIn) {
-      startLoggedInActivity()
-    }
-  }
-
-  private fun bindNewStatus(state: LoginStatusResult) {
-    when (state) {
-      is LoginStatusResult.Pending -> binding.authTitle.text = state.statusMessage
-      is LoginStatusResult.Failed -> {
-        binding.authTitle.text = state.message
-        dialog?.setCanceledOnTouchOutside(true)
-      }
-      is LoginStatusResult.Completed -> {
-        binding.authTitle.setText(R.string.BANK_ID_LOG_IN_TITLE_SUCCESS)
-      }
     }
   }
 

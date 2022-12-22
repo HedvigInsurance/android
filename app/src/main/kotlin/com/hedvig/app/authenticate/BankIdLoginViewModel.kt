@@ -10,19 +10,23 @@ import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.authlib.AuthAttemptResult
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult
-import com.hedvig.authlib.AuthorizationCodeGrant
 import com.hedvig.authlib.LoginMethod
 import com.hedvig.authlib.LoginStatusResult
 import com.hedvig.hanalytics.HAnalytics
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.WhileSubscribed
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import slimber.log.e
+import kotlin.time.Duration.Companion.seconds
 
 class BankIdLoginViewModel(
   private val hAnalytics: HAnalytics,
@@ -33,9 +37,27 @@ class BankIdLoginViewModel(
   private val authRepository: AuthRepository,
 ) : ViewModel() {
 
-  private val mutableViewState = MutableStateFlow(BankIdLoginViewState())
-  val viewState: StateFlow<BankIdLoginViewState>
-    get() = mutableViewState.asStateFlow()
+  private val bankIdProperties: MutableStateFlow<AuthAttemptResult.BankIdProperties?> = MutableStateFlow(null)
+  private val processedAutoStartToken: MutableStateFlow<Boolean> = MutableStateFlow(false)
+  private val processedNavigationToLoggedIn: MutableStateFlow<Boolean> = MutableStateFlow(false)
+  private val loginStatusResult: Flow<LoginStatusResult?> = bankIdProperties.flatMapConcat { bankIdProperties ->
+    if (bankIdProperties == null) return@flatMapConcat flowOf(null)
+    authRepository.observeLoginStatus(bankIdProperties.statusUrl)
+      .map { loginStatusResult ->
+        if (loginStatusResult is LoginStatusResult.Completed) {
+          when (val authTokenResult = authRepository.exchange(loginStatusResult.authorizationCode)) {
+            is AuthTokenResult.Error -> {
+              e { authTokenResult.message }
+              return@map LoginStatusResult.Failed(authTokenResult.message)
+            }
+            is AuthTokenResult.Success -> {
+              login(authTokenResult)
+            }
+          }
+        }
+        loginStatusResult
+      }
+  }
 
   init {
     viewModelScope.launch {
@@ -44,8 +66,9 @@ class BankIdLoginViewModel(
         market = Market.SE.name,
       )
 
+      // todo make error case representable in the view state and optionally prove a retry functionality
       when (result) {
-        is AuthAttemptResult.BankIdProperties -> observeBankIdStatus(result)
+        is AuthAttemptResult.BankIdProperties -> bankIdProperties.update { result }
         is AuthAttemptResult.Error -> e { result.message }
         is AuthAttemptResult.ZignSecProperties -> e { "Got ZignSec properties when signing in with BankId" }
         is AuthAttemptResult.OtpProperties -> e { "Got Otp properties when signing in with BankId" }
@@ -53,53 +76,57 @@ class BankIdLoginViewModel(
     }
   }
 
-  private suspend fun observeBankIdStatus(bankIdProperties: AuthAttemptResult.BankIdProperties) {
-    mutableViewState.update {
-      it.copy(autoStartToken = bankIdProperties.autoStartToken)
+  val viewState: StateFlow<BankIdLoginViewState> = combine(
+    bankIdProperties,
+    processedAutoStartToken,
+    loginStatusResult,
+    processedNavigationToLoggedIn,
+  ) { bankIdProperties, processedAutoStartToken, loginStatusResult, processedNavigationToLoggedIn ->
+    if (bankIdProperties == null || loginStatusResult == null) {
+      return@combine BankIdLoginViewState.Loading
     }
+    if (loginStatusResult is LoginStatusResult.Failed) {
+      return@combine BankIdLoginViewState.Error(loginStatusResult.message)
+    }
+    BankIdLoginViewState.HandlingBankId(
+      bankIdProperties.autoStartToken,
+      processedAutoStartToken,
+      loginStatusResult,
+      processedNavigationToLoggedIn,
+    )
+  }.stateIn(
+    viewModelScope,
+    SharingStarted.WhileSubscribed(5.seconds),
+    BankIdLoginViewState.Loading,
+  )
 
-    authRepository.observeLoginStatus(bankIdProperties.statusUrl)
-      .onEach { loginStatusResult ->
-        mutableViewState.update {
-          it.copy(authStatus = loginStatusResult)
-        }
-      }
-      .mapLatest {
-        if (it is LoginStatusResult.Completed) {
-          submitCode(it.authorizationCode)
-        }
-      }
-      .launchIn(viewModelScope)
+  fun didProcessAutoStartToken() {
+    processedAutoStartToken.update { true }
   }
 
-  private suspend fun submitCode(grant: AuthorizationCodeGrant) {
-    when (val authTokenResult = authRepository.exchange(grant)) {
-      is AuthTokenResult.Error -> e { authTokenResult.message }
-      is AuthTokenResult.Success -> {
-        onAuthSuccess(authTokenResult)
-      }
-    }
+  fun didNavigateToLoginScreen() {
+    processedNavigationToLoggedIn.update { true }
   }
 
-  private suspend fun onAuthSuccess(authTokenResult: AuthTokenResult.Success) {
-    hAnalytics.loggedIn()
-    featureManager.invalidateExperiments()
+  private suspend fun login(authTokenResult: AuthTokenResult.Success) {
     authTokenService.updateTokens(
       authTokenResult.accessToken,
       authTokenResult.refreshToken,
     )
+    featureManager.invalidateExperiments()
     uploadMarketAndLanguagePreferencesUseCase.invoke()
-    mutableViewState.update {
-      it.copy(navigateToLoggedIn = true)
-    }
-    runCatching {
-      pushTokenManager.refreshToken()
-    }
+    hAnalytics.loggedIn()
+    runCatching { pushTokenManager.refreshToken() }
   }
 }
 
-data class BankIdLoginViewState(
-  val autoStartToken: String? = null,
-  val authStatus: LoginStatusResult? = null,
-  val navigateToLoggedIn: Boolean = false,
-)
+sealed interface BankIdLoginViewState {
+  object Loading : BankIdLoginViewState
+  data class Error(val errorMessage: String) : BankIdLoginViewState
+  data class HandlingBankId(
+    val autoStartToken: String,
+    val processedAutoStartToken: Boolean,
+    val authStatus: LoginStatusResult,
+    val processedNavigationToLoggedIn: Boolean,
+  ) : BankIdLoginViewState
+}
