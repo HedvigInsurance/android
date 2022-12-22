@@ -1,6 +1,7 @@
 package com.hedvig.app.authenticate
 
 import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
@@ -31,6 +32,7 @@ class LogoutUseCase(
     applicationScope.launch { marketManager.market = null }
     applicationScope.launch { pushTokenManager.refreshToken() }
     applicationScope.launch { featureManager.invalidateExperiments() }
+    applicationScope.launch { apolloClient.apolloStore.clearAll() }
     applicationScope.launch { chatEventStore.resetChatClosedCounter() }
     applicationScope.launch { apolloClient.reconnectSubscriptions() }
   }
