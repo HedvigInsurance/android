@@ -6,7 +6,6 @@ pluginManagement {
   includeBuild("lokalise-gradle-plugin")
   repositories {
     google()
-    maven("https://jitpack.io")
     gradlePluginPortal()
   }
 }
@@ -18,7 +17,6 @@ dependencyResolutionManagement {
   repositories {
     google()
     mavenCentral()
-    maven("https://jitpack.io")
     maven("https://maven.pkg.github.com/HedvigInsurance/odyssey") {
       name = "odyssey"
       credentials(PasswordCredentials::class)
@@ -27,6 +25,7 @@ dependencyResolutionManagement {
       name = "authlib"
       credentials(PasswordCredentials::class)
     }
+    maven("https://jitpack.io")
   }
 }
 
