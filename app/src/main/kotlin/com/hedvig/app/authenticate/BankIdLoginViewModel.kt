@@ -37,7 +37,7 @@ class BankIdLoginViewModel(
   val viewState: StateFlow<BankIdLoginViewState>
     get() = mutableViewState.asStateFlow()
 
-  fun fetchBankIdStartToken() {
+  init {
     viewModelScope.launch {
       val result = authRepository.startLoginAttempt(
         loginMethod = LoginMethod.SE_BANKID,

@@ -44,8 +44,6 @@ class BankIdLoginDialog : DialogFragment(com.hedvig.app.R.layout.dialog_authenti
       .onEach(::bindViewState)
       .launchIn(lifecycleScope)
 
-    viewModel.fetchBankIdStartToken()
-
     binding.login.setOnClickListener {
       requireActivity().startActivity(GenericAuthActivity.newInstance(requireActivity()))
     }
