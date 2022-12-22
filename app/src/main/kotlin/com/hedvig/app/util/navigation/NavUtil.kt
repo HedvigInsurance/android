@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.fragment.app.FragmentManager
 import com.hedvig.android.market.Market
-import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.authenticate.LoginDialog
 import com.hedvig.app.feature.adyen.AdyenCurrency
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutActivity
@@ -20,7 +19,7 @@ fun Market?.getConnectPayoutActivity(context: Context): Intent? {
 fun Market.openAuth(context: Context, fragmentManager: FragmentManager) {
   when (this) {
     Market.SE -> {
-      LoginDialog().show(fragmentManager, AuthenticateDialog.TAG)
+      LoginDialog().show(fragmentManager, LoginDialog.TAG)
     }
     Market.NO, Market.DK -> {
       context.startActivity(SimpleSignAuthenticationActivity.newInstance(context, this))

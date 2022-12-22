@@ -18,7 +18,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.play.core.review.ReviewManagerFactory
-import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.authenticate.LoginDialog
 import com.hedvig.app.util.extensions.view.setupToolbar
 import slimber.log.e
@@ -162,7 +161,7 @@ fun AppCompatActivity.handleSingleSelectLink(
       .show()
   }
   "message.bankid.start", "message.bankid.autostart.respond", "message.bankid.autostart.respond.two" -> {
-    LoginDialog().show(supportFragmentManager, AuthenticateDialog.TAG)
+    LoginDialog().show(supportFragmentManager, LoginDialog.TAG)
   }
   // bot-service is weird. it sends this when the user gets the option to go to `Hem`.
   // We simply dismiss the activity for now in this case

@@ -58,8 +58,4 @@ abstract class AuthenticateDialog : DialogFragment() {
       startActivity(intent)
     }
   }
-
-  companion object {
-    const val TAG = "AuthenticateDialog"
-  }
 }
