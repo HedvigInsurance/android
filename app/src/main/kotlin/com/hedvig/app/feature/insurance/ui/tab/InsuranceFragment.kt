@@ -13,6 +13,7 @@ import com.hedvig.app.feature.insurance.ui.InsuranceModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
+import com.hedvig.app.util.extensions.openWebBrowser
 import com.hedvig.app.util.extensions.viewLifecycle
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
@@ -71,6 +72,10 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
 
           navigateChat
             ?.navigate(requireContext())
+            ?.also { insuranceViewModel.crossSellActionOpened() }
+
+          viewState.navigateWeb
+            ?.let { activity?.openWebBrowser(it) }
             ?.also { insuranceViewModel.crossSellActionOpened() }
 
           when {

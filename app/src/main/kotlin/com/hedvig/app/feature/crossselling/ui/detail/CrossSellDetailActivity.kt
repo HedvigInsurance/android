@@ -15,6 +15,7 @@ import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.offer.quotedetail.QuoteDetailActivity
 import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
+import com.hedvig.app.util.extensions.openWebBrowser
 import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.core.parameter.parametersOf
@@ -45,6 +46,10 @@ class CrossSellDetailActivity : AppCompatActivity() {
 
         viewState.navigateEmbark
           ?.navigate(this@CrossSellDetailActivity)
+          ?.also { viewModel.actionOpened() }
+
+        viewState.navigateWeb
+          ?.let(::openWebBrowser)
           ?.also { viewModel.actionOpened() }
       }
 
