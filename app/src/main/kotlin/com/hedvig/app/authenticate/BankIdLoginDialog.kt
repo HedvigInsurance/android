@@ -25,7 +25,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class BankIdLoginDialog : DialogFragment(com.hedvig.app.R.layout.dialog_authenticate) {
 
   val binding by viewBinding(DialogAuthenticateBinding::bind)
-  private val viewModel: UserViewModel by viewModel()
+  private val viewModel: BankIdLoginViewModel by viewModel()
 
   override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
     return super.onCreateDialog(savedInstanceState).apply {
@@ -69,7 +69,7 @@ class BankIdLoginDialog : DialogFragment(com.hedvig.app.R.layout.dialog_authenti
     }
   }
 
-  private fun bindViewState(viewState: UserViewModel.ViewState) {
+  private fun bindViewState(viewState: BankIdLoginViewModel.ViewState) {
     viewState.authStatus?.let(::bindNewStatus)
     viewState.autoStartToken?.let(::handleAutoStartToken)
     if (viewState.navigateToLoggedIn) {

@@ -33,8 +33,8 @@ import com.hedvig.android.hanalytics.android.di.hAnalyticsUrlQualifier
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.Navigator
+import com.hedvig.app.authenticate.BankIdLoginViewModel
 import com.hedvig.app.authenticate.LogoutUseCase
-import com.hedvig.app.authenticate.UserViewModel
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.addressautocompletion.data.GetDanishAddressAutoCompletionUseCase
 import com.hedvig.app.feature.addressautocompletion.data.GetFinalDanishAddressSelectionUseCase
@@ -308,7 +308,7 @@ val viewModelModule = module {
   viewModel { ClaimsViewModel(get(), get()) }
   viewModel { ChatViewModel(get(), get(), get()) }
   viewModel { (quoteCartId: QuoteCartId?) -> RedeemCodeViewModel(quoteCartId, get(), get()) }
-  viewModel { UserViewModel(get(), get(), get(), get(), get(), get(), get()) }
+  viewModel { BankIdLoginViewModel(get(), get(), get(), get(), get(), get(), get()) }
   viewModel { WelcomeViewModel(get()) }
   viewModel {
     SettingsViewModel(

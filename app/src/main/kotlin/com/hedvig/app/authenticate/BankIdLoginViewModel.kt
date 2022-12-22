@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import slimber.log.e
 
-class UserViewModel(
+class BankIdLoginViewModel(
   private val logoutUseCase: LogoutUseCase,
   private val hAnalytics: HAnalytics,
   private val featureManager: FeatureManager,
