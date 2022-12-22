@@ -69,7 +69,7 @@ class BankIdLoginDialog : DialogFragment(com.hedvig.app.R.layout.dialog_authenti
     }
   }
 
-  private fun bindViewState(viewState: BankIdLoginViewModel.ViewState) {
+  private fun bindViewState(viewState: BankIdLoginViewState) {
     viewState.authStatus?.let(::bindNewStatus)
     viewState.autoStartToken?.let(::handleAutoStartToken)
     if (viewState.navigateToLoggedIn) {

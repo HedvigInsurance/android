@@ -33,14 +33,8 @@ class BankIdLoginViewModel(
   private val authRepository: AuthRepository,
 ) : ViewModel() {
 
-  data class ViewState(
-    val autoStartToken: String? = null,
-    val authStatus: LoginStatusResult? = null,
-    val navigateToLoggedIn: Boolean = false,
-  )
-
-  private val mutableViewState = MutableStateFlow(ViewState())
-  val viewState: StateFlow<ViewState>
+  private val mutableViewState = MutableStateFlow(BankIdLoginViewState())
+  val viewState: StateFlow<BankIdLoginViewState>
     get() = mutableViewState.asStateFlow()
 
   fun fetchBankIdStartToken() {
@@ -103,3 +97,9 @@ class BankIdLoginViewModel(
     }
   }
 }
+
+data class BankIdLoginViewState(
+  val autoStartToken: String? = null,
+  val authStatus: LoginStatusResult? = null,
+  val navigateToLoggedIn: Boolean = false,
+)
