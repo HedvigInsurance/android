@@ -12,6 +12,7 @@ import androidx.lifecycle.viewModelScope
 import coil.ImageLoader
 import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.hedvig.android.apollo.graphql.InsuranceQuery
+import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
 import com.hedvig.app.databinding.TerminatedContractsActivityBinding
@@ -44,6 +45,7 @@ class TerminatedContractsActivity : AppCompatActivity(R.layout.terminated_contra
     window.returnTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
     postponeEnterTransition()
     super.onCreate(savedInstanceState)
+    lifecycle.addObserver(AuthenticatedObserver())
 
     binding.apply {
       window.compatSetDecorFitsSystemWindows(false)

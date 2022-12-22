@@ -1,5 +1,0 @@
-mutation CreateAccessToken($id: ID!) {
-  quoteCart_createAccessToken(id: $id) {
-    accessToken
-  }
-}

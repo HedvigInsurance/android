@@ -9,12 +9,10 @@ import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.feature.profile.ui.tab.ProfileQueryDataToProfileUiStateMapper
 import com.hedvig.app.feature.profile.ui.tab.ProfileUiState
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import slimber.log.e
@@ -30,14 +28,6 @@ class ProfileViewModel(
     object Error : ViewState
     object Loading : ViewState
   }
-
-  sealed interface Event {
-    object Logout : Event
-    data class Error(val message: String?) : Event
-  }
-
-  private val _events = Channel<Event>(Channel.UNLIMITED)
-  val events = _events.receiveAsFlow()
 
   val dirty: MutableLiveData<Boolean> = MutableLiveData(false)
 
@@ -123,11 +113,6 @@ class ProfileViewModel(
   }
 
   fun onLogout() {
-    viewModelScope.launch {
-      when (val result = logoutUseCase.invoke()) {
-        is LogoutUseCase.LogoutResult.Error -> _events.trySend(Event.Error(result.message))
-        LogoutUseCase.LogoutResult.Success -> _events.trySend(Event.Logout)
-      }
-    }
+    logoutUseCase.invoke()
   }
 }

@@ -16,6 +16,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
 import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
+import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.common.android.whenApiVersion
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
@@ -78,6 +79,7 @@ class EmbarkActivity : AppCompatActivity(R.layout.activity_embark) {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    lifecycle.addObserver(AuthenticatedObserver())
 
     binding.apply {
       whenApiVersion(Build.VERSION_CODES.R) {

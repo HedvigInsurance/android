@@ -11,7 +11,7 @@ import com.hedvig.app.feature.marketing.MarketingActivity
 import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
 
-suspend fun DynamicLink.startActivity(
+suspend inline fun DynamicLink.startActivity(
   context: Context,
   marketManager: MarketManager,
   featureManager: FeatureManager,
@@ -46,7 +46,6 @@ suspend fun DynamicLink.startActivity(
     )
     is DynamicLink.Referrals -> {
       when (marketManager.market) {
-        null -> context.startActivity(MarketingActivity.newInstance(context))
         Market.SE -> {
           context.startActivity(
             ReferralsReceiverActivity.newInstance(
@@ -57,7 +56,7 @@ suspend fun DynamicLink.startActivity(
             null,
           )
         }
-        else -> context.startActivity(Intent(context, MarketingActivity::class.java))
+        else -> context.startActivity(MarketingActivity.newInstance(context))
       }
     }
     DynamicLink.None -> onDefault()

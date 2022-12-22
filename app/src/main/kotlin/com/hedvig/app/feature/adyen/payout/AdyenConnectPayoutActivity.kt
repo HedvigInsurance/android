@@ -9,6 +9,7 @@ import com.adyen.checkout.core.api.Environment
 import com.adyen.checkout.dropin.DropIn
 import com.adyen.checkout.dropin.DropInConfiguration
 import com.adyen.checkout.dropin.DropInResult
+import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.language.LanguageService
 import com.hedvig.app.R
 import com.hedvig.app.feature.adyen.AdyenCurrency
@@ -26,6 +27,7 @@ class AdyenConnectPayoutActivity : AppCompatActivity(R.layout.fragment_container
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    lifecycle.addObserver(AuthenticatedObserver())
 
     val adyenCurrency = intent.getSerializableExtra(CURRENCY) as? AdyenCurrency
 

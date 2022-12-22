@@ -7,8 +7,6 @@ import arrow.core.continuations.either
 import arrow.core.continuations.ensureNotNull
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.app.authenticate.LoginStatus
-import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.adyen.PaymentTokenId
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.checkout.CheckoutParameter
@@ -72,8 +70,6 @@ abstract class OfferViewModel : ViewModel() {
     ) : Event()
 
     object StartSwedishBankIdSign : Event()
-
-    object DiscardOffer : Event()
   }
 
   protected val _events = Channel<Event>(Channel.UNLIMITED)
@@ -106,7 +102,6 @@ abstract class OfferViewModel : ViewModel() {
     data class Content(
       val offerModel: OfferModel,
       val bundleVariant: QuoteBundleVariant,
-      val loginStatus: LoginStatus = LoginStatus.LoggedIn,
       val paymentMethods: PaymentMethodsApiResponse?,
       val onVariantSelected: (id: String) -> Unit,
     ) : ViewState() {
@@ -145,7 +140,6 @@ abstract class OfferViewModel : ViewModel() {
 
   abstract fun onOpenCheckout()
   abstract fun reload()
-  abstract fun onDiscardOffer()
   abstract fun onSwedishBankIdSign()
   abstract fun onPaymentTokenIdReceived(id: PaymentTokenId)
 }
@@ -154,7 +148,6 @@ class OfferViewModelImpl(
   private val quoteCartId: QuoteCartId,
   selectedContractTypes: List<SelectedContractType>,
   private val offerRepository: OfferRepository,
-  private val loginStatusService: LoginStatusService,
   private val startCheckoutUseCase: StartCheckoutUseCase,
   private val chatRepository: ChatRepository,
   private val editCampaignUseCase: EditCampaignUseCase,
@@ -191,7 +184,6 @@ class OfferViewModelImpl(
             ViewState.Content(
               offerModel = offerModel,
               bundleVariant = bundle,
-              loginStatus = loginStatusService.getLoginStatus(),
               paymentMethods = offerModel.paymentMethodsApiResponse,
               onVariantSelected = { variantId ->
                 selectedVariantStore.selectVariant(variantId)
@@ -253,10 +245,6 @@ class OfferViewModelImpl(
     viewModelScope.launch {
       offerRepository.fetchNewOffer(quoteCartId)
     }
-  }
-
-  override fun onDiscardOffer() {
-    _events.trySend(Event.DiscardOffer)
   }
 
   override fun approveOffer() {

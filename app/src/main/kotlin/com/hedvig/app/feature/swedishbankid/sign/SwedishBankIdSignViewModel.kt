@@ -4,10 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.offer.model.Checkout
 import com.hedvig.app.feature.offer.model.QuoteCartId
-import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCase
 import com.hedvig.app.feature.offer.usecase.ObserveQuoteCartCheckoutUseCase
 import com.hedvig.hanalytics.PaymentType
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,9 +17,7 @@ import kotlinx.coroutines.flow.update
 
 class SwedishBankIdSignViewModel(
   quoteCartId: QuoteCartId,
-  private val loginStatusService: LoginStatusService,
   private val observeQuoteCartCheckoutUseCase: ObserveQuoteCartCheckoutUseCase,
-  private val createAccessTokenUseCase: CreateAccessTokenUseCase,
   private val featureManager: FeatureManager,
 ) : ViewModel() {
 
@@ -42,14 +38,8 @@ class SwedishBankIdSignViewModel(
           }
       }
       viewState is BankIdSignViewState.BankIdSuccess -> {
-        when (createAccessTokenUseCase.invoke(quoteCartId)) {
-          is Either.Left -> _viewState.value = BankIdSignViewState.Error()
-          is Either.Right -> {
-            loginStatusService.isLoggedIn = true
-            featureManager.invalidateExperiments()
-            _viewState.value = BankIdSignViewState.StartDirectDebit(featureManager.getPaymentType())
-          }
-        }
+        featureManager.invalidateExperiments()
+        _viewState.value = BankIdSignViewState.StartDirectDebit(featureManager.getPaymentType())
       }
     }
   }

@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import coil.ImageLoader
+import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityEmergencyBinding
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
@@ -38,6 +39,7 @@ class EmergencyActivity : AppCompatActivity(R.layout.activity_emergency) {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    lifecycle.addObserver(AuthenticatedObserver())
 
     val data = intent.getParcelableExtra<EmergencyData>(EMERGENCY_DATA)
 

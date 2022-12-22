@@ -10,7 +10,8 @@ enum class Language {
   DA_DK,
   EN_DK,
   FR_FR,
-  EN_FR;
+  EN_FR,
+  ;
 
   fun getLabel() = when (this) {
     SV_SE -> hedvig.resources.R.string.swedish

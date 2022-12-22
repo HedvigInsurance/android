@@ -33,7 +33,8 @@ abstract class OnSwipeListener : GestureDetector.SimpleOnGestureListener() {
     UP,
     DOWN,
     LEFT,
-    RIGHT;
+    RIGHT,
+    ;
 
     companion object {
       fun fromAngle(angle: Double): Direction {

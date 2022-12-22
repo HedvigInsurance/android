@@ -11,6 +11,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
+import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.crossselling.model.NavigateChat
@@ -32,7 +33,7 @@ import org.koin.core.parameter.parametersOf
 
 class CrossSellFaqActivity : AppCompatActivity() {
 
-  val crossSell by lazy {
+  private val crossSell by lazy {
     intent.getParcelableExtra<CrossSellData>(CROSS_SELL)
       ?: throw IllegalArgumentException("Programmer error: CROSS_SELL not passed to ${this.javaClass.name}")
   }
@@ -41,6 +42,7 @@ class CrossSellFaqActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    lifecycle.addObserver(AuthenticatedObserver())
 
     viewModel.viewState
       .flowWithLifecycle(lifecycle)

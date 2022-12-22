@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.feature.businessmodel.BusinessModelActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ProfileFragmentBinding
@@ -16,8 +15,6 @@ import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
 import com.hedvig.app.feature.profile.ui.myinfo.MyInfoActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.feature.settings.SettingsActivity
-import com.hedvig.app.util.extensions.showAlert
-import com.hedvig.app.util.extensions.triggerRestartActivity
 import com.hedvig.app.util.extensions.viewLifecycle
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
@@ -69,20 +66,6 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
         }
       }
       .launchIn(viewLifecycleScope)
-
-    viewModel.events
-      .flowWithLifecycle(lifecycle)
-      .onEach { event ->
-        when (event) {
-          ProfileViewModel.Event.Logout -> requireContext().triggerRestartActivity()
-          is ProfileViewModel.Event.Error -> requireContext().showAlert(
-            title = com.adyen.checkout.dropin.R.string.error_dialog_title,
-            message = com.adyen.checkout.dropin.R.string.component_error,
-            positiveAction = {},
-          )
-        }
-      }
-      .launchIn(lifecycleScope)
   }
 
   private fun buildProfileModelList(profileUiState: ProfileUiState): List<ProfileModel> {

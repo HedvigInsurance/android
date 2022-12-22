@@ -4,7 +4,6 @@ import com.hedvig.android.apollo.graphql.ContractStatusQuery
 import com.hedvig.android.apollo.graphql.HomeQuery
 import com.hedvig.android.apollo.graphql.LoggedInQuery
 import com.hedvig.app.R
-import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.testdata.feature.home.HOME_DATA_TERMINATED
 import com.hedvig.app.testdata.feature.loggedin.CONTRACT_STATUS_DATA_ONE_TERMINATED_CONTRACT
@@ -15,8 +14,6 @@ import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
-import io.mockk.every
-import io.mockk.mockk
 import org.junit.Rule
 import org.junit.Test
 
@@ -40,11 +37,8 @@ class TerminatedTest : TestCase() {
   @get:Rule
   val apolloCacheClearRule = ApolloCacheClearRule()
 
-  private val loginStatusService = mockk<LoginStatusService>(relaxed = true)
-
   @Test
   fun shouldOpenWithHomeTabWhenUserIsNotTerminated() = run {
-    every { loginStatusService.isLoggedIn }.returns(false)
     activityRule.launch()
 
     onScreen<LoggedInScreen> {

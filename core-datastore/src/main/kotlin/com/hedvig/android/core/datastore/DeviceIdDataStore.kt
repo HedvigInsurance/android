@@ -18,12 +18,13 @@ interface DeviceIdDataStore {
 
 internal class DeviceIdDataStoreImpl(
   private val dataStore: DataStore<Preferences>,
+  coroutineScope: CoroutineScope,
 ) : DeviceIdDataStore {
 
   private val key = stringPreferencesKey("hedvig-device-id")
 
   init {
-    CoroutineScope(Dispatchers.IO).launch {
+    coroutineScope.launch(Dispatchers.IO) {
       val deviceId = observeDeviceId().firstOrNull()
       if (deviceId == null || deviceId == "") {
         generateDeviceId()

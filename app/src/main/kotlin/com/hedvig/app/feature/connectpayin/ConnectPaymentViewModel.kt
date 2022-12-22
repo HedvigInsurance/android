@@ -72,5 +72,5 @@ sealed class ConnectPaymentScreenState {
 enum class TransitionType {
   NO_ENTER_EXIT_RIGHT,
   ENTER_LEFT_EXIT_RIGHT,
-  ENTER_RIGHT_EXIT_RIGHT
+  ENTER_RIGHT_EXIT_RIGHT,
 }

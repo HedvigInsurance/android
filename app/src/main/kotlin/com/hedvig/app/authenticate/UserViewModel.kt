@@ -1,90 +1,110 @@
 package com.hedvig.app.authenticate
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.apollo.graphql.AuthStatusSubscription
-import com.hedvig.android.apollo.graphql.SwedishBankIdAuthMutation
-import com.hedvig.android.apollo.graphql.type.AuthState
+import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.app.feature.chat.data.UserRepository
+import com.hedvig.android.market.Market
 import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.service.push.PushTokenManager
+import com.hedvig.authlib.AuthAttemptResult
+import com.hedvig.authlib.AuthRepository
+import com.hedvig.authlib.AuthTokenResult
+import com.hedvig.authlib.AuthorizationCodeGrant
+import com.hedvig.authlib.LoginMethod
+import com.hedvig.authlib.LoginStatusResult
 import com.hedvig.hanalytics.HAnalytics
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import slimber.log.e
 
 class UserViewModel(
-  private val userRepository: UserRepository,
-  private val logoutUserCase: LogoutUseCase,
-  private val loginStatusService: LoginStatusService,
+  private val logoutUseCase: LogoutUseCase,
   private val hAnalytics: HAnalytics,
   private val featureManager: FeatureManager,
   private val pushTokenManager: PushTokenManager,
   private val uploadMarketAndLanguagePreferencesUseCase: UploadMarketAndLanguagePreferencesUseCase,
+  private val authTokenService: AuthTokenService,
+  private val authRepository: AuthRepository,
 ) : ViewModel() {
 
-  val autoStartToken = MutableLiveData<SwedishBankIdAuthMutation.Data>()
-  val authStatus = MutableLiveData<AuthStatusSubscription.Data>()
+  data class ViewState(
+    val autoStartToken: String? = null,
+    val authStatus: LoginStatusResult? = null,
+    val navigateToLoggedIn: Boolean = false,
+  )
 
-  private val _events = Channel<Event>(Channel.UNLIMITED)
-  val events = _events.receiveAsFlow()
-
-  sealed class Event {
-    object Logout : Event()
-    data class Error(val message: String?) : Event()
-  }
+  private val mutableViewState = MutableStateFlow(ViewState())
+  val viewState: StateFlow<ViewState>
+    get() = mutableViewState.asStateFlow()
 
   fun fetchBankIdStartToken() {
     viewModelScope.launch {
-      userRepository
-        .subscribeAuthStatus()
-        .onEach { response ->
-          response.data?.let { status ->
-            if (status.authStatus?.status is AuthState.SUCCESS) {
-              onAuthSuccess()
-              runCatching {
-                pushTokenManager.refreshToken()
-              }
-            }
-            authStatus.postValue(status)
-          }
-        }
-        .catch { e(it) }
-        .launchIn(this)
+      val result = authRepository.startLoginAttempt(
+        loginMethod = LoginMethod.SE_BANKID,
+        market = Market.SE.name,
+      )
 
-      val response = runCatching { userRepository.fetchAutoStartToken() }
-      if (response.isFailure) {
-        response.exceptionOrNull()?.let { e(it) }
-        return@launch
+      when (result) {
+        is AuthAttemptResult.BankIdProperties -> observeBankIdStatus(result)
+        is AuthAttemptResult.Error -> e { result.message }
+        is AuthAttemptResult.ZignSecProperties -> e { "Got ZignSec properties when signing in with BankId" }
+        is AuthAttemptResult.OtpProperties -> e { "Got Otp properties when signing in with BankId" }
       }
-      response.getOrNull()?.data?.let { autoStartToken.postValue(it) }
+    }
+  }
+
+  private suspend fun observeBankIdStatus(bankIdProperties: AuthAttemptResult.BankIdProperties) {
+    mutableViewState.update {
+      it.copy(autoStartToken = bankIdProperties.autoStartToken)
+    }
+
+    authRepository.observeLoginStatus(bankIdProperties.statusUrl)
+      .onEach { loginStatusResult ->
+        mutableViewState.update {
+          it.copy(authStatus = loginStatusResult)
+        }
+      }
+      .mapLatest {
+        if (it is LoginStatusResult.Completed) {
+          submitCode(it.authorizationCode)
+        }
+      }
+      .launchIn(viewModelScope)
+  }
+
+  private suspend fun submitCode(grant: AuthorizationCodeGrant) {
+    when (val authTokenResult = authRepository.exchange(grant)) {
+      is AuthTokenResult.Error -> e { authTokenResult.message }
+      is AuthTokenResult.Success -> {
+        onAuthSuccess(authTokenResult)
+      }
+    }
+  }
+
+  private suspend fun onAuthSuccess(authTokenResult: AuthTokenResult.Success) {
+    hAnalytics.loggedIn()
+    featureManager.invalidateExperiments()
+    authTokenService.updateTokens(
+      authTokenResult.accessToken,
+      authTokenResult.refreshToken,
+    )
+    uploadMarketAndLanguagePreferencesUseCase.invoke()
+    mutableViewState.update {
+      it.copy(navigateToLoggedIn = true)
+    }
+    runCatching {
+      pushTokenManager.refreshToken()
     }
   }
 
   fun logout() {
-    viewModelScope.launch {
-      when (val result = logoutUserCase.invoke()) {
-        is LogoutUseCase.LogoutResult.Error -> {
-          _events.trySend(Event.Error(result.message))
-        }
-        LogoutUseCase.LogoutResult.Success -> {
-          hAnalytics.loggedOut()
-          _events.trySend(Event.Logout)
-        }
-      }
-    }
-  }
-
-  private suspend fun onAuthSuccess() {
-    hAnalytics.loggedIn()
-    featureManager.invalidateExperiments()
-    loginStatusService.isLoggedIn = true
-    uploadMarketAndLanguagePreferencesUseCase.invoke()
+    logoutUseCase.invoke()
   }
 }

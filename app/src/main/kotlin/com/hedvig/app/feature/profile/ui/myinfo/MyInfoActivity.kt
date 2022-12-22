@@ -10,6 +10,7 @@ import androidx.appcompat.view.menu.ActionMenuItemView
 import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.common.android.validation.validateEmail
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityMyInfoBinding
@@ -36,6 +37,7 @@ class MyInfoActivity : AppCompatActivity(R.layout.activity_my_info) {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    lifecycle.addObserver(AuthenticatedObserver())
 
     getViewModel<MyInfoViewModel>()
 

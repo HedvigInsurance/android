@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.language.LanguageService
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityReferralsActivatedBinding
@@ -28,6 +29,7 @@ class ReferralsActivatedActivity : AppCompatActivity(R.layout.activity_referrals
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    lifecycle.addObserver(AuthenticatedObserver())
 
     binding.apply {
       close.measure(

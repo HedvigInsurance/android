@@ -25,10 +25,15 @@ class GenericAuthActivity : AppCompatActivity() {
     setContent {
       val viewState by viewModel.viewState.collectAsState()
 
-      LaunchedEffect(viewState.otpId) {
-        val otpId = viewState.otpId ?: return@LaunchedEffect
+      LaunchedEffect(viewState.verifyUrl) {
+        val verifyUrl = viewState.verifyUrl ?: return@LaunchedEffect
+        val resendUrl = viewState.resendUrl ?: return@LaunchedEffect
         viewModel.onStartOtpInput()
-        startOtpInputActivity(otpId = otpId, email = viewState.emailInputWithoutWhitespaces.value)
+        startOtpInputActivity(
+          verifyUrl = verifyUrl,
+          resendUrl = resendUrl,
+          email = viewState.emailInputWithoutWhitespaces.value,
+        )
       }
 
       HedvigTheme {
@@ -57,8 +62,8 @@ class GenericAuthActivity : AppCompatActivity() {
     },
   )
 
-  private fun startOtpInputActivity(otpId: String, email: String) {
-    val intent = OtpInputActivity.newInstance(this, otpId, email)
+  private fun startOtpInputActivity(verifyUrl: String, resendUrl: String, email: String) {
+    val intent = OtpInputActivity.newInstance(this, verifyUrl, resendUrl, email)
     startActivity(intent)
   }
 

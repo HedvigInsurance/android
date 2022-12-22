@@ -9,7 +9,8 @@ enum class Market {
   SE,
   NO,
   DK,
-  FR;
+  FR,
+  ;
 
   val flag: Int
     get() = when (this) {

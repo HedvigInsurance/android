@@ -16,7 +16,8 @@ enum class ContractStatus {
   ACTIVE,
   TERMINATED_TODAY,
   TERMINATED,
-  TERMINATED_IN_FUTURE;
+  TERMINATED_IN_FUTURE,
+  ;
 
   val typename: String
     get() = when (this) {
