@@ -127,6 +127,27 @@ class BankIdLoginViewModelTest {
     assertThat(authTokenService.getTokens()).isNull()
   }
 
+  @Test
+  fun `login status result failing, results in an error with the returned message`() = runTest {
+    val authTokenService = testAuthTokenService()
+    val authRepository = FakeAuthRepository()
+    val viewModel: BankIdLoginViewModel = testBankIdLoginViewModel(authTokenService, authRepository)
+    backgroundScope.launch { viewModel.viewState.collect() }
+
+    assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Loading)
+    authRepository.authAttemptResponse.add(
+      AuthAttemptResult.BankIdProperties("", StatusUrl(""), ""),
+    )
+    authRepository.loginStatusResponse.add(LoginStatusResult.Pending(null))
+    runCurrent()
+    assertThat((viewModel.viewState.value as BankIdLoginViewState.HandlingBankId).authStatus)
+      .isEqualTo(LoginStatusResult.Pending(null))
+    authRepository.loginStatusResponse.add(LoginStatusResult.Failed("Failed login"))
+    runCurrent()
+    assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Error("Failed login"))
+    assertThat(authTokenService.getTokens()).isNull()
+  }
+
   private fun TestScope.testBankIdLoginViewModel(
     authTokenService: AuthTokenService = testAuthTokenService(),
     authRepository: AuthRepository = FakeAuthRepository(),
