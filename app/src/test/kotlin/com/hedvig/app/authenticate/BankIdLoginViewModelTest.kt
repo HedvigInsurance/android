@@ -51,7 +51,7 @@ class BankIdLoginViewModelTest {
     authRepository.authAttemptResponse.add(AuthAttemptResult.Error(""))
     assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Loading)
     runCurrent()
-    assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Error(null))
+    assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Error)
   }
 
   @Test
@@ -121,9 +121,9 @@ class BankIdLoginViewModelTest {
       .isEqualTo(LoginStatusResult.Pending(null))
     authRepository.loginStatusResponse.add(LoginStatusResult.Completed(AuthorizationCodeGrant("grant")))
     // Exchange fails
-    authRepository.exchangeResponse.add(AuthTokenResult.Error("err"))
+    authRepository.exchangeResponse.add(AuthTokenResult.Error(""))
     runCurrent()
-    assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Error("err"))
+    assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Error)
     assertThat(authTokenService.getTokens()).isNull()
   }
 
@@ -142,9 +142,9 @@ class BankIdLoginViewModelTest {
     runCurrent()
     assertThat((viewModel.viewState.value as BankIdLoginViewState.HandlingBankId).authStatus)
       .isEqualTo(LoginStatusResult.Pending(null))
-    authRepository.loginStatusResponse.add(LoginStatusResult.Failed("Failed login"))
+    authRepository.loginStatusResponse.add(LoginStatusResult.Failed(""))
     runCurrent()
-    assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Error("Failed login"))
+    assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Error)
     assertThat(authTokenService.getTokens()).isNull()
   }
 
