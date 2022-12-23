@@ -3,6 +3,7 @@ package com.hedvig.app.authenticate
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
+import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.AuthTokenServiceImpl
@@ -81,7 +82,7 @@ class BankIdLoginViewModelTest {
     // Before exchange resolves, still in pending state
     assertThat(viewModel.viewState.value).isEqualTo(pendingBankIdState)
 
-    // When exchange succeeds
+    // Exchange succeeds
     authRepository.exchangeResponse.add(AuthTokenResult.Success(AccessToken("123", 90), RefreshToken("456", 90)))
     runCurrent()
     assertThat(viewModel.viewState.value).isEqualTo(
@@ -101,6 +102,29 @@ class BankIdLoginViewModelTest {
     resultingTokens!!
     assertThat(resultingTokens.accessToken.token).isEqualTo("123")
     assertThat(resultingTokens.refreshToken.token).isEqualTo("456")
+  }
+
+  @Test
+  fun `auth repository failing the exchange, results in an error`() = runTest {
+    val authTokenService = testAuthTokenService()
+    val authRepository = FakeAuthRepository()
+    val viewModel: BankIdLoginViewModel = testBankIdLoginViewModel(authTokenService, authRepository)
+    backgroundScope.launch { viewModel.viewState.collect() }
+
+    assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Loading)
+    authRepository.authAttemptResponse.add(
+      AuthAttemptResult.BankIdProperties("", StatusUrl(""), "autoStartToken"),
+    )
+    authRepository.loginStatusResponse.add(LoginStatusResult.Pending(null))
+    runCurrent()
+    assertThat((viewModel.viewState.value as BankIdLoginViewState.HandlingBankId).authStatus)
+      .isEqualTo(LoginStatusResult.Pending(null))
+    authRepository.loginStatusResponse.add(LoginStatusResult.Completed(AuthorizationCodeGrant("grant")))
+    // Exchange fails
+    authRepository.exchangeResponse.add(AuthTokenResult.Error("err"))
+    runCurrent()
+    assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Error("err"))
+    assertThat(authTokenService.getTokens()).isNull()
   }
 
   private fun TestScope.testBankIdLoginViewModel(
