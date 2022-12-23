@@ -37,6 +37,7 @@ class BankIdLoginViewModel(
   private val authRepository: AuthRepository,
 ) : ViewModel() {
 
+  private val startLoginAttemptFailed: MutableStateFlow<Boolean> = MutableStateFlow(false)
   private val bankIdProperties: MutableStateFlow<AuthAttemptResult.BankIdProperties?> = MutableStateFlow(null)
   private val processedAutoStartToken: MutableStateFlow<Boolean> = MutableStateFlow(false)
   private val processedNavigationToLoggedIn: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -61,27 +62,36 @@ class BankIdLoginViewModel(
 
   init {
     viewModelScope.launch {
-      val result = authRepository.startLoginAttempt(
+      val result: AuthAttemptResult = authRepository.startLoginAttempt(
         loginMethod = LoginMethod.SE_BANKID,
         market = Market.SE.name,
       )
 
-      // todo make error case representable in the view state and optionally prove a retry functionality
       when (result) {
         is AuthAttemptResult.BankIdProperties -> bankIdProperties.update { result }
-        is AuthAttemptResult.Error -> e { result.message }
+        is AuthAttemptResult.Error -> e { "Got Error when signing in with BankId ${result.message}" }
         is AuthAttemptResult.ZignSecProperties -> e { "Got ZignSec properties when signing in with BankId" }
         is AuthAttemptResult.OtpProperties -> e { "Got Otp properties when signing in with BankId" }
+      }
+      if (result !is AuthAttemptResult.BankIdProperties) {
+        startLoginAttemptFailed.update { true }
       }
     }
   }
 
   val viewState: StateFlow<BankIdLoginViewState> = combine(
+    startLoginAttemptFailed,
     bankIdProperties,
     processedAutoStartToken,
     loginStatusResult,
     processedNavigationToLoggedIn,
-  ) { bankIdProperties, processedAutoStartToken, loginStatusResult, processedNavigationToLoggedIn ->
+  ) {
+      startLoginAttemptFailed, bankIdProperties, processedAutoStartToken, loginStatusResult,
+      processedNavigationToLoggedIn,
+    ->
+    if (startLoginAttemptFailed) {
+      return@combine BankIdLoginViewState.Error(null)
+    }
     if (bankIdProperties == null || loginStatusResult == null) {
       return@combine BankIdLoginViewState.Loading
     }
@@ -122,7 +132,7 @@ class BankIdLoginViewModel(
 
 sealed interface BankIdLoginViewState {
   object Loading : BankIdLoginViewState
-  data class Error(val errorMessage: String) : BankIdLoginViewState
+  data class Error(val errorMessage: String?) : BankIdLoginViewState
   data class HandlingBankId(
     val autoStartToken: String,
     val processedAutoStartToken: Boolean,

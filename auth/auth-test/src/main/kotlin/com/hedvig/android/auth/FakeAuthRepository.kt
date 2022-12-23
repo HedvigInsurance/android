@@ -12,9 +12,12 @@ import com.hedvig.authlib.RevokeResult
 import com.hedvig.authlib.StatusUrl
 import com.hedvig.authlib.SubmitOtpResult
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.consumeAsFlow
 
 class FakeAuthRepository : AuthRepository {
 
+  val authAttemptResponse = Turbine<AuthAttemptResult>()
+  val loginStatusResponse = Turbine<LoginStatusResult>()
   val resendOtpResponse = Turbine<ResendOtpResult>()
   val submitOtpResponse = Turbine<SubmitOtpResult>()
   val exchangeResponse = Turbine<AuthTokenResult>()
@@ -25,11 +28,11 @@ class FakeAuthRepository : AuthRepository {
     personalNumber: String?,
     email: String?,
   ): AuthAttemptResult {
-    error("Not implemented")
+    return authAttemptResponse.awaitItem()
   }
 
   override fun observeLoginStatus(statusUrl: StatusUrl): Flow<LoginStatusResult> {
-    error("Not implemented")
+    return loginStatusResponse.asChannel().consumeAsFlow()
   }
 
   override suspend fun submitOtp(verifyUrl: String, otp: String): SubmitOtpResult {
