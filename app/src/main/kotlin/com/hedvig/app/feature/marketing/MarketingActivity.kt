@@ -23,7 +23,7 @@ import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.createOnboardingUri
 import com.hedvig.app.R
-import com.hedvig.app.authenticate.LoginDialog
+import com.hedvig.app.authenticate.BankIdLoginDialog
 import com.hedvig.app.feature.marketing.data.MarketingBackground
 import com.hedvig.app.feature.marketing.marketpicked.MarketPickedScreen
 import com.hedvig.app.feature.marketing.pickmarket.PickMarketScreen
@@ -89,9 +89,9 @@ class MarketingActivity : AppCompatActivity() {
     state: MarketingViewState,
     market: Market,
   ) = when (state.loginMethod) {
-    LoginMethod.BANK_ID_SWEDEN -> LoginDialog().show(
+    LoginMethod.BANK_ID_SWEDEN -> BankIdLoginDialog().show(
       supportFragmentManager,
-      LoginDialog.TAG,
+      BankIdLoginDialog.TAG,
     )
     LoginMethod.NEM_ID, LoginMethod.BANK_ID_NORWAY -> {
       startActivity(

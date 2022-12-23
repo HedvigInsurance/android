@@ -19,7 +19,6 @@ import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.LogoutUseCase
-import com.hedvig.app.authenticate.UserViewModel
 import com.hedvig.app.databinding.ActivitySettingsBinding
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.showAlert
@@ -47,7 +46,6 @@ class SettingsActivity : AppCompatActivity(R.layout.activity_settings) {
 
   class PreferenceFragment : PreferenceFragmentCompat() {
     private val marketManager: MarketManager by inject()
-    private val userViewModel: UserViewModel by activityViewModel()
     private val viewModel: SettingsViewModel by activityViewModel()
     private val languageService: LanguageService by inject()
     private val logoutUseCase: LogoutUseCase by inject()
@@ -85,7 +83,7 @@ class SettingsActivity : AppCompatActivity(R.layout.activity_settings) {
             hedvig.resources.R.string.SETTINGS_ALERT_CHANGE_MARKET_TEXT,
             positiveLabel = hedvig.resources.R.string.ALERT_OK,
             negativeLabel = hedvig.resources.R.string.SETTINGS_ALERT_CHANGE_MARKET_CANCEL,
-            positiveAction = { userViewModel.logout() },
+            positiveAction = { logoutUseCase.invoke() },
           )
           true
         }
