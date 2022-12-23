@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.app.R
 import com.hedvig.app.feature.connectpayin.ConnectPayinType
 import com.hedvig.app.feature.connectpayin.ConnectPaymentResultFragment
@@ -20,6 +21,7 @@ class TrustlyConnectPayinActivity : AppCompatActivity(R.layout.fragment_containe
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    lifecycle.addObserver(AuthenticatedObserver())
 
     if (isPostSign()) {
       connectPaymentViewModel.setInitialNavigationDestination(ConnectPaymentScreenState.Explainer)

@@ -6,7 +6,6 @@ pluginManagement {
   includeBuild("lokalise-gradle-plugin")
   repositories {
     google()
-    maven("https://jitpack.io")
     gradlePluginPortal()
   }
 }
@@ -18,11 +17,15 @@ dependencyResolutionManagement {
   repositories {
     google()
     mavenCentral()
-    maven("https://jitpack.io")
     maven("https://maven.pkg.github.com/HedvigInsurance/odyssey") {
       name = "odyssey"
       credentials(PasswordCredentials::class)
     }
+    maven("https://maven.pkg.github.com/HedvigInsurance/authlib") {
+      name = "authlib"
+      credentials(PasswordCredentials::class)
+    }
+    maven("https://jitpack.io")
   }
 }
 
@@ -30,10 +33,15 @@ rootProject.name = "hedvigandroid"
 
 include(":apollo")
 include(":app")
-include(":auth")
+include(":auth:auth-android")
+include(":auth:auth-core")
+include(":auth:auth-test")
 include(":core-common")
 include(":core-common-android")
+include(":core-common-android-test")
+include(":core-common-test")
 include(":core-datastore")
+include(":core-datastore-test")
 include(":core-design-system")
 include(":core-navigation")
 include(":core-resources")

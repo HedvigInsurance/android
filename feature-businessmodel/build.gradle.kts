@@ -5,6 +5,7 @@ plugins {
 }
 
 dependencies {
+  implementation(projects.auth.authAndroid)
   implementation(projects.coreCommonAndroid)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)

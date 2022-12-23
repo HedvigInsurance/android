@@ -8,7 +8,8 @@ import androidx.preference.PreferenceManager
 enum class Theme {
   LIGHT,
   DARK,
-  SYSTEM_DEFAULT;
+  SYSTEM_DEFAULT,
+  ;
 
   fun apply() {
     when (this) {

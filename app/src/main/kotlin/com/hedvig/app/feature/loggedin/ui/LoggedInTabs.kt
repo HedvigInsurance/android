@@ -13,7 +13,8 @@ enum class LoggedInTabs {
   HOME,
   INSURANCE,
   REFERRALS,
-  PROFILE;
+  PROFILE,
+  ;
 
   val fragment: Fragment
     get() = when (this) {

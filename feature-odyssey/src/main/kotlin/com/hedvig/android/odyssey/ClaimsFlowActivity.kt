@@ -7,7 +7,8 @@ import android.os.Parcelable
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import coil.ImageLoader
-import com.hedvig.android.auth.AuthenticationTokenService
+import com.hedvig.android.auth.AccessTokenProvider
+import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.Navigator
 import com.hedvig.common.remote.actions.CHAT_URL
@@ -20,15 +21,14 @@ import org.koin.android.ext.android.inject
 
 class ClaimsFlowActivity : ComponentActivity() {
 
-  private val authenticationTokenService: AuthenticationTokenService by inject()
+  private val accessTokenProvider: AccessTokenProvider by inject()
   private val languageService: LanguageService by inject()
   private val imageLoader: ImageLoader by inject()
   private val navigator: Navigator by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    val token = authenticationTokenService.authenticationToken
-    requireNotNull(token)
+    lifecycle.addObserver(AuthenticatedObserver())
     val odysseyUrl = intent.getStringExtra(ODYSSEY_URL_KEY) ?: error("ODYSSEY_URL_KEY needs to be passed in")
     val itemType = intent.getParcelableExtra<ItemType>(EXTRA_ITEM_TYPE)?.name
 
@@ -36,13 +36,23 @@ class ClaimsFlowActivity : ComponentActivity() {
 
     val scopeValues = ScopeValues()
     if (itemType != null) {
-      scopeValues.setValue(InitialDataScopeValueKey, mapOf("itemType" to itemType))
+      scopeValues.setValue(
+        InitialDataScopeValueKey,
+        mapOf(
+          "itemType" to itemType,
+          "itemProblem" to "BROKEN",
+        ),
+      )
     }
 
     setContent {
       OdysseyRoot(
         apiUrl = odysseyUrl,
-        authorizationToken = token,
+        accessTokenProvider = object : com.hedvig.common.auth.AccessTokenProvider {
+          override suspend fun provide(): String? {
+            return accessTokenProvider.provide()
+          }
+        },
         locale = locale,
         imageLoader = imageLoader,
         initialUrl = ROOT_URL,

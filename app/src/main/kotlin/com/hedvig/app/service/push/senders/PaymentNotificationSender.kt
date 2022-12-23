@@ -6,6 +6,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import com.google.firebase.messaging.RemoteMessage
+import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.android.notification.setupNotificationChannel
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.market.MarketManager
@@ -14,7 +15,6 @@ import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.getImmutablePendingIntentFlags
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import slimber.log.e
@@ -23,6 +23,7 @@ class PaymentNotificationSender(
   private val context: Context,
   private val marketManager: MarketManager,
   private val featureManager: FeatureManager,
+  private val applicationScope: ApplicationScope,
 ) : NotificationSender {
   override fun createChannel() {
     setupNotificationChannel(
@@ -42,7 +43,7 @@ class PaymentNotificationSender(
 
   private fun sendConnectDirectDebitNotification() {
     val market = marketManager.market ?: return
-    CoroutineScope(Dispatchers.IO).launch {
+    applicationScope.launch(Dispatchers.IO) {
       val pendingIntent = TaskStackBuilder
         .create(context)
         .run {

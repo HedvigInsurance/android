@@ -6,13 +6,14 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.auth)
+  implementation(projects.auth.authAndroid)
+  implementation(projects.auth.authCore)
   implementation(projects.coreCommon)
   implementation(projects.coreNavigation)
   implementation(projects.hedvigLanguage)
 
   implementation(libs.androidx.other.activityCompose)
   implementation(libs.coil.coil)
+  implementation(libs.hedvig.odyssey)
   implementation(libs.koin.android)
-  implementation(libs.odyssey)
 }

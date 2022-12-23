@@ -55,7 +55,6 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.FullScreenProgressOverlay
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.app.R
-import com.hedvig.app.ui.compose.composables.ErrorDialog
 import kotlinx.coroutines.isActive
 
 @Composable
@@ -64,11 +63,9 @@ fun OtpInputScreen(
   onOpenExternalApp: () -> Unit,
   onSubmitCode: (String) -> Unit,
   onResendCode: () -> Unit,
-  onDismissError: () -> Unit,
   onBackPressed: () -> Unit,
   inputValue: String,
   credential: String,
-  otpErrorMessage: String?,
   networkErrorMessage: String?,
   loadingResend: Boolean,
   loadingCode: Boolean,
@@ -94,15 +91,12 @@ fun OtpInputScreen(
         inputValue,
         onInputChanged,
         onSubmitCode,
-        otpErrorMessage,
+        networkErrorMessage,
         onResendCode,
         loadingResend,
         onOpenExternalApp,
         Modifier.padding(paddingValues),
       )
-    }
-    if (networkErrorMessage != null) {
-      ErrorDialog(message = networkErrorMessage, onDismiss = onDismissError)
     }
     FullScreenProgressOverlay(show = loadingCode)
   }
@@ -260,11 +254,9 @@ fun OtpInputScreenValidPreview() {
       onOpenExternalApp = {},
       onSubmitCode = {},
       onResendCode = {},
-      onDismissError = {},
       onBackPressed = {},
       inputValue = "0123456",
       credential = "john@doe.com",
-      otpErrorMessage = null,
       networkErrorMessage = null,
       loadingResend = false,
       loadingCode = false,
@@ -282,11 +274,9 @@ fun OtpInputScreenInvalidPreview() {
       onOpenExternalApp = {},
       onSubmitCode = {},
       onResendCode = {},
-      onDismissError = {},
       onBackPressed = {},
       inputValue = "0123456",
       credential = "john@doe.com",
-      otpErrorMessage = "Code has expired",
       networkErrorMessage = null,
       loadingResend = false,
       loadingCode = false,

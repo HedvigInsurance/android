@@ -3,6 +3,7 @@ package com.hedvig.app.feature.di
 import android.content.Context
 import androidx.startup.Initializer
 import com.hedvig.android.auth.di.authModule
+import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.feature.businessmodel.di.businessModelModule
 import com.hedvig.android.hanalytics.android.di.hAnalyticsAndroidModule
@@ -15,6 +16,7 @@ import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.app.adyenModule
 import com.hedvig.app.apolloClientModule
 import com.hedvig.app.applicationModule
+import com.hedvig.app.authRepositoryModule
 import com.hedvig.app.cacheManagerModule
 import com.hedvig.app.changeAddressModule
 import com.hedvig.app.changeDateBottomSheetModule
@@ -76,8 +78,9 @@ class KoinInitializer : Initializer<KoinApplication> {
         clockModule,
         coilModule,
         connectPaymentModule,
-        datastoreAndroidModule,
+        coreCommonModule,
         dataStoreModule,
+        datastoreAndroidModule,
         embarkModule,
         externalInsuranceModule,
         featureManagerModule,
@@ -110,6 +113,7 @@ class KoinInitializer : Initializer<KoinApplication> {
         valueStoreModule,
         viewModelModule,
         whatsNewModule,
+        authRepositoryModule,
       ),
     )
   }

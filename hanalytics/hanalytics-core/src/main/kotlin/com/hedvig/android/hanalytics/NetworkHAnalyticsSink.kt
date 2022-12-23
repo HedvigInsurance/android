@@ -1,21 +1,22 @@
 package com.hedvig.android.hanalytics
 
+import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.hanalytics.HAnalyticsEvent
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 internal class NetworkHAnalyticsSink(
   private val hAnalyticsService: HAnalyticsService,
+  private val applicationScope: ApplicationScope,
 ) : HAnalyticsSink {
   override fun send(event: HAnalyticsEvent) {
-    CoroutineScope(Dispatchers.IO).launch {
+    applicationScope.launch(Dispatchers.IO) {
       hAnalyticsService.sendEvent(event)
     }
   }
 
   override fun identify() {
-    CoroutineScope(Dispatchers.IO).launch {
+    applicationScope.launch(Dispatchers.IO) {
       hAnalyticsService.identify()
     }
   }

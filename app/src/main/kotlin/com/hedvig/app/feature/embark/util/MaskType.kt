@@ -103,7 +103,7 @@ enum class MaskType {
     override fun isValid(text: String): Boolean = ANY_REGEX.matcher(text).find()
     override fun derivedValues(text: String, key: String, currentDate: LocalDate): List<Pair<String, String>>? =
       null
-  };
+  }, ;
 
   abstract fun mask(text: String): String
   abstract fun unMask(text: String): String

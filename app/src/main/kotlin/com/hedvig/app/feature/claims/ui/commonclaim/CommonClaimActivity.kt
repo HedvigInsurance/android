@@ -7,8 +7,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import coil.ImageLoader
+import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.android.odyssey.ClaimsFlowActivity
 import com.hedvig.android.odyssey.ClaimsFlowActivity.ItemType
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityCommonClaimBinding
@@ -38,6 +38,7 @@ class CommonClaimActivity : AppCompatActivity(R.layout.activity_common_claim) {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    lifecycle.addObserver(AuthenticatedObserver())
 
     val data = intent.getParcelableExtra<CommonClaimsData>(CLAIMS_DATA) ?: return
     getViewModel<CommonClaimViewModel>()

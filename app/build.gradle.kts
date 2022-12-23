@@ -29,7 +29,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "8.1.2"
+    versionName = "10.0.0"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -113,7 +113,8 @@ android {
 
 dependencies {
   implementation(projects.apollo)
-  implementation(projects.auth)
+  implementation(projects.auth.authAndroid)
+  implementation(projects.auth.authCore)
   implementation(projects.coreCommon)
   implementation(projects.coreCommonAndroid)
   implementation(projects.coreDatastore)
@@ -129,6 +130,9 @@ dependencies {
   implementation(projects.hedvigLanguage)
   implementation(projects.hedvigMarket)
   implementation(projects.notificationBadgeData)
+
+  testImplementation(projects.auth.authTest)
+  testImplementation(projects.coreDatastoreTest)
 
   testImplementation(projects.hanalytics.hanalyticsFeatureFlagsTest)
   androidTestImplementation(projects.hanalytics.hanalyticsFeatureFlagsTest)
@@ -275,5 +279,6 @@ dependencies {
   debugImplementation(libs.androidx.compose.uiTestManifest)
 
   implementation(libs.datadog.sdk)
+  implementation(libs.hedvig.authlib)
   implementation(libs.kotlin.reflect)
 }

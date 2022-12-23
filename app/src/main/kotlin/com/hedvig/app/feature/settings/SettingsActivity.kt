@@ -8,26 +8,21 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.common.preferences.PreferenceKey
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
-import com.hedvig.app.authenticate.UserViewModel
+import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.databinding.ActivitySettingsBinding
-import com.hedvig.app.feature.marketing.MarketingActivity
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.showAlert
-import com.hedvig.app.util.extensions.triggerRestartActivity
 import com.hedvig.app.util.extensions.viewBinding
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.getViewModel
@@ -38,6 +33,7 @@ class SettingsActivity : AppCompatActivity(R.layout.activity_settings) {
   @SuppressLint("ApplySharedPref")
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    lifecycle.addObserver(AuthenticatedObserver())
     binding.toolbar.setNavigationOnClickListener {
       onBackPressed()
     }
@@ -50,9 +46,9 @@ class SettingsActivity : AppCompatActivity(R.layout.activity_settings) {
 
   class PreferenceFragment : PreferenceFragmentCompat() {
     private val marketManager: MarketManager by inject()
-    private val userViewModel: UserViewModel by activityViewModel()
     private val viewModel: SettingsViewModel by activityViewModel()
     private val languageService: LanguageService by inject()
+    private val logoutUseCase: LogoutUseCase by inject()
 
     @SuppressLint("ApplySharedPref")
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -60,26 +56,7 @@ class SettingsActivity : AppCompatActivity(R.layout.activity_settings) {
 
       getViewModel<SettingsViewModel>()
 
-      userViewModel.events
-        .flowWithLifecycle(lifecycle)
-        .onEach { event ->
-          when (event) {
-            UserViewModel.Event.Logout -> {
-              requireActivity().triggerRestartActivity(MarketingActivity::class.java)
-            }
-            is UserViewModel.Event.Error -> requireContext().showAlert(
-              title = com.adyen.checkout.dropin.R.string.error_dialog_title,
-              message = com.adyen.checkout.dropin.R.string.component_error,
-              positiveAction = {},
-            )
-          }
-        }
-        .launchIn(lifecycleScope)
-
-      val market = marketManager.market
-      if (market == null) {
-        startActivity(MarketingActivity.newInstance(requireContext()))
-      }
+      val market = marketManager.market ?: return logoutUseCase.invoke()
 
       val themePreference = findPreference<ListPreference>(SETTING_THEME)
       themePreference?.let { tp ->
@@ -98,15 +75,15 @@ class SettingsActivity : AppCompatActivity(R.layout.activity_settings) {
 
       val marketPreference = findPreference<Preference>(SETTINGS_MARKET)
       marketPreference?.let { mp ->
-        mp.icon = market?.flag?.let { requireContext().compatDrawable(it) }
-        mp.summary = market?.label?.let { getString(it) }
+        mp.icon = market.flag.let { requireContext().compatDrawable(it) }
+        mp.summary = getString(market.label)
         mp.setOnPreferenceClickListener {
           requireContext().showAlert(
             hedvig.resources.R.string.SETTINGS_ALERT_CHANGE_MARKET_TITLE,
             hedvig.resources.R.string.SETTINGS_ALERT_CHANGE_MARKET_TEXT,
             positiveLabel = hedvig.resources.R.string.ALERT_OK,
             negativeLabel = hedvig.resources.R.string.SETTINGS_ALERT_CHANGE_MARKET_CANCEL,
-            positiveAction = { userViewModel.logout() },
+            positiveAction = { logoutUseCase.invoke() },
           )
           true
         }
@@ -128,10 +105,7 @@ class SettingsActivity : AppCompatActivity(R.layout.activity_settings) {
             lp.entries = resources.getStringArray(R.array.language_settings_dk)
             lp.entryValues = resources.getStringArray(R.array.language_settings_values_dk)
           }
-          Market.FR,
-          null,
-          -> {
-          }
+          Market.FR -> {}
         }
         lp.setOnPreferenceChangeListener { _, newValue ->
           (newValue as? String)?.let { v ->

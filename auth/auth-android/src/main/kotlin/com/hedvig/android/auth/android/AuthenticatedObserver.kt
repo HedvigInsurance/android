@@ -1,0 +1,38 @@
+package com.hedvig.android.auth.android
+
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
+import com.hedvig.android.auth.AuthStatus
+import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.navigation.Navigator
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import org.koin.java.KoinJavaComponent.inject
+import slimber.log.d
+
+class AuthenticatedObserver : DefaultLifecycleObserver {
+
+  private val authTokenService: AuthTokenService by inject(AuthTokenService::class.java)
+  private val navigator: Navigator by inject(Navigator::class.java)
+
+  private var authObservingJob: Job? = null
+
+  override fun onResume(owner: LifecycleOwner) {
+    authObservingJob = owner.lifecycleScope.launch {
+      authTokenService.authStatus
+        .onEach { d { "Owner: ${owner::class.simpleName} | Received authStatus: $it" } }
+        .filterIsInstance<AuthStatus.LoggedOut>()
+        .first()
+      navigator.navigateToMarketingActivity()
+    }
+  }
+
+  override fun onPause(ownerr: LifecycleOwner) {
+    authObservingJob?.cancel()
+    authObservingJob = null
+  }
+}

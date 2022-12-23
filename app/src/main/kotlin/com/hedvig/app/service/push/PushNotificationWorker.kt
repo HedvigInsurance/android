@@ -12,7 +12,7 @@ import com.hedvig.android.apollo.graphql.NotificationRegisterDeviceMutation
 import com.hedvig.android.apollo.graphql.RegisterPushTokenMutation
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
-import com.hedvig.android.auth.AuthenticationTokenService
+import com.hedvig.android.auth.AuthTokenService
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import slimber.log.e
@@ -24,7 +24,7 @@ class PushNotificationWorker(
 ) : CoroutineWorker(context, params), KoinComponent {
 
   private val apolloClient: ApolloClient by inject()
-  private val authenticationTokenService: AuthenticationTokenService by inject()
+  private val authTokenService: AuthTokenService by inject()
 
   override suspend fun doWork(): Result {
     val pushToken = inputData.getString(PUSH_TOKEN) ?: throw Exception("No token provided")
@@ -37,9 +37,9 @@ class PushNotificationWorker(
     }
   }
 
-  private fun hasHedvigToken(): Boolean {
+  private suspend fun hasHedvigToken(): Boolean {
     try {
-      val hedvigToken = authenticationTokenService.authenticationToken
+      val hedvigToken = authTokenService.getTokens()
       if (hedvigToken != null) {
         return true
       }

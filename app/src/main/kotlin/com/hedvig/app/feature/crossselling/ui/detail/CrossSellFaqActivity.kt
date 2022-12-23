@@ -2,6 +2,7 @@ package com.hedvig.app.feature.crossselling.ui.detail
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -10,6 +11,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
+import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.crossselling.model.NavigateChat
@@ -18,6 +20,7 @@ import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.faq.FAQBottomSheet
 import com.hedvig.app.feature.home.ui.changeaddress.appendQuoteCartId
+import com.hedvig.app.util.extensions.openWebBrowser
 import com.hedvig.app.util.extensions.showErrorDialog
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,7 +33,7 @@ import org.koin.core.parameter.parametersOf
 
 class CrossSellFaqActivity : AppCompatActivity() {
 
-  val crossSell by lazy {
+  private val crossSell by lazy {
     intent.getParcelableExtra<CrossSellData>(CROSS_SELL)
       ?: throw IllegalArgumentException("Programmer error: CROSS_SELL not passed to ${this.javaClass.name}")
   }
@@ -39,6 +42,7 @@ class CrossSellFaqActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    lifecycle.addObserver(AuthenticatedObserver())
 
     viewModel.viewState
       .flowWithLifecycle(lifecycle)
@@ -77,6 +81,10 @@ class CrossSellFaqActivity : AppCompatActivity() {
     navigateEmbark
       ?.navigate(this@CrossSellFaqActivity)
       ?.also { viewModel.actionOpened() }
+
+    navigateWeb
+      ?.let(::openWebBrowser)
+      ?.also { viewModel.actionOpened() }
   }
 
   private fun openChat() {
@@ -108,6 +116,7 @@ class CrossSellFaqViewModel(
   data class ViewState(
     val navigateEmbark: NavigateEmbark? = null,
     val navigateChat: NavigateChat? = null,
+    val navigateWeb: Uri? = null,
     val errorMessage: String? = null,
     val loading: Boolean = false,
   )
@@ -127,6 +136,7 @@ class CrossSellFaqViewModel(
       when (val action = crossSell.action) {
         CrossSellData.Action.Chat -> _viewState.value = ViewState(navigateChat = NavigateChat)
         is CrossSellData.Action.Embark -> _viewState.value = action.toViewState()
+        is CrossSellData.Action.Web -> _viewState.value = ViewState(navigateWeb = Uri.parse(action.url))
       }
     }
   }

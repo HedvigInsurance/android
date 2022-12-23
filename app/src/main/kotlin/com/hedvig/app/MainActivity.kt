@@ -6,27 +6,28 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
+import com.hedvig.android.auth.AuthStatus
+import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
-import com.hedvig.app.authenticate.LoginStatus
-import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.marketing.MarketingActivity
-import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
 import com.hedvig.app.service.DynamicLink
 import com.hedvig.app.service.getDynamicLinkFromFirebase
 import com.hedvig.app.service.startActivity
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity() {
-  private val loggedInService: LoginStatusService by inject()
+  private val authTokenService: AuthTokenService by inject()
   private val marketManager: MarketManager by inject()
   private val featureManager: FeatureManager by inject()
   private val hAnalytics: HAnalytics by inject()
@@ -48,52 +49,34 @@ class MainActivity : AppCompatActivity() {
 
   private fun getLoginStatusAndNavigate(intent: Intent) {
     lifecycleScope.launch {
-      val loginStatusAsync = async { loggedInService.getLoginStatus() }
+      val authStatusAsync = async { authTokenService.authStatus.filterNotNull().first() }
       val mustForceUpdate = async { featureManager.isFeatureEnabled(Feature.UPDATE_NECESSARY) }
+      val dynamicLinkAsync = async { getDynamicLinkFromFirebase(intent) }
       if (mustForceUpdate.await()) {
         applicationContext.startActivity(ForceUpgradeActivity.newInstance(applicationContext))
+        finish()
         return@launch
       }
-      when (val loginStatus = loginStatusAsync.await()) {
-        LoginStatus.Onboarding,
-        LoginStatus.LoggedIn,
-        -> {
-          val dynamicLink = getDynamicLinkFromFirebase(intent)
-          when (dynamicLink) {
-            DynamicLink.None, DynamicLink.Unknown -> {}
-            else -> {
-              hAnalytics.deepLinkOpened(dynamicLink.type)
-            }
-          }
-          dynamicLink.startActivity(
-            context = this@MainActivity,
-            marketManager = marketManager,
-            featureManager = featureManager,
-            onDefault = { startDefaultActivity(loginStatus) },
-          )
+      val dynamicLink = dynamicLinkAsync.await()
+      when (dynamicLink) {
+        DynamicLink.None, DynamicLink.Unknown -> {}
+        else -> {
+          hAnalytics.deepLinkOpened(dynamicLink.type)
         }
-
-        is LoginStatus.InOffer -> startDefaultActivity(loginStatus)
       }
+      dynamicLink.startActivity(
+        context = this@MainActivity,
+        marketManager = marketManager,
+        featureManager = featureManager,
+        onDefault = { startDefaultActivity(authStatusAsync.await()) },
+      )
       finish()
     }
   }
 
-  private fun startDefaultActivity(loginStatus: LoginStatus) = when (loginStatus) {
-    LoginStatus.Onboarding -> startActivity(MarketingActivity.newInstance(this))
-    is LoginStatus.InOffer -> {
-      if (marketManager.market == null) {
-        marketManager.market = Market.SE
-      }
-      startActivity(
-        OfferActivity.newInstance(
-          context = this,
-          quoteCartId = loginStatus.quoteCartId,
-        ),
-      )
-    }
-
-    LoginStatus.LoggedIn -> {
+  private fun startDefaultActivity(authStatus: AuthStatus) = when (authStatus) {
+    AuthStatus.LoggedOut -> startActivity(MarketingActivity.newInstance(this))
+    is AuthStatus.LoggedIn -> {
       // Upcast everyone that were logged in before Norway launch to be in the Swedish market
       if (marketManager.market == null) {
         marketManager.market = Market.SE

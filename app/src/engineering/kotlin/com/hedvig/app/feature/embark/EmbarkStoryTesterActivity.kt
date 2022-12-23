@@ -33,12 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import arrow.core.Either
-import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.apollo.graphql.ExchangeTokenMutation
-import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.apollo.toEither
-import com.hedvig.android.auth.AuthenticationTokenService
+import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Language
@@ -49,6 +44,11 @@ import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.home.ui.changeaddress.appendQuoteCartId
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
+import com.hedvig.authlib.AccessToken
+import com.hedvig.authlib.AuthRepository
+import com.hedvig.authlib.AuthTokenResult
+import com.hedvig.authlib.AuthorizationCodeGrant
+import com.hedvig.authlib.RefreshToken
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -197,8 +197,8 @@ val embarkStoryTesterModule = module {
 
 class EmbarkStoryTesterViewModel(
   private val marketManager: MarketManager,
-  private val authenticationTokenService: AuthenticationTokenService,
-  private val apolloClient: ApolloClient,
+  private val authTokenService: AuthTokenService,
+  private val authRepository: AuthRepository,
   private val createQuoteCartUseCase: CreateQuoteCartUseCase,
   private val languageService: LanguageService,
 ) : ViewModel() {
@@ -253,33 +253,24 @@ class EmbarkStoryTesterViewModel(
   }
 
   fun setAuthToken(authToken: String) {
-    authenticationTokenService.authenticationToken = authToken
+    viewModelScope.launch {
+      authTokenService.updateTokens(AccessToken(authToken, 600), RefreshToken(authToken, 600))
+    }
   }
 
   fun generateAuthTokenFromPaymentsLink(paymentsUrl: String) {
     val exchangeToken = paymentsUrl.split("=")[1]
 
     viewModelScope.launch {
-      if (authenticationTokenService.authenticationToken == null) {
-        authenticationTokenService.authenticationToken = "123"
-      }
-      when (
-        val result = apolloClient
-          .mutation(ExchangeTokenMutation(exchangeToken))
-          .safeExecute()
-          .toEither()
-      ) {
-        is Either.Left -> _viewState.update {
-          it.copy(errorMessage = result.value.message)
+      when (val authTokenResult = authRepository.exchange(AuthorizationCodeGrant(exchangeToken))) {
+        is AuthTokenResult.Error -> _viewState.update {
+          it.copy(errorMessage = authTokenResult.message)
         }
-        is Either.Right -> {
-          val newToken = result.value.exchangeToken.asExchangeTokenSuccessResponse?.token
-          if (newToken == null) {
-            _viewState.update {
-              it.copy(errorMessage = "Did not receive token")
-            }
-          }
-          authenticationTokenService.authenticationToken = newToken
+        is AuthTokenResult.Success -> {
+          authTokenService.updateTokens(
+            authTokenResult.accessToken,
+            authTokenResult.refreshToken,
+          )
         }
       }
     }

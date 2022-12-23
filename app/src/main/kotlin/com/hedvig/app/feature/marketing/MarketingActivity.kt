@@ -23,19 +23,18 @@ import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.createOnboardingUri
 import com.hedvig.app.R
-import com.hedvig.app.authenticate.LoginDialog
+import com.hedvig.app.authenticate.BankIdLoginDialog
 import com.hedvig.app.feature.marketing.data.MarketingBackground
 import com.hedvig.app.feature.marketing.marketpicked.MarketPickedScreen
 import com.hedvig.app.feature.marketing.pickmarket.PickMarketScreen
 import com.hedvig.app.feature.marketing.ui.BackgroundImage
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationActivity
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
-import com.hedvig.app.util.extensions.makeToast
+import com.hedvig.app.util.extensions.openWebBrowser
 import com.hedvig.hanalytics.LoginMethod
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.getViewModel
-import slimber.log.e
 
 class MarketingActivity : AppCompatActivity() {
   private val languageService: LanguageService by inject()
@@ -83,23 +82,16 @@ class MarketingActivity : AppCompatActivity() {
   private fun openOnboarding(market: Market) {
     val baseUrl = getString(R.string.WEB_BASE_URL).substringAfter("//")
     val uri = market.createOnboardingUri(baseUrl, languageService.getLanguage())
-    val browserIntent = Intent(Intent.ACTION_VIEW, uri)
-
-    if (browserIntent.resolveActivity(packageManager) != null) {
-      startActivity(browserIntent)
-    } else {
-      e { "Tried to launch $uri but the phone has nothing to support such an intent." }
-      makeToast(hedvig.resources.R.string.general_unknown_error)
-    }
+    openWebBrowser(uri)
   }
 
   private fun onClickLogin(
     state: MarketingViewState,
     market: Market,
   ) = when (state.loginMethod) {
-    LoginMethod.BANK_ID_SWEDEN -> LoginDialog().show(
+    LoginMethod.BANK_ID_SWEDEN -> BankIdLoginDialog().show(
       supportFragmentManager,
-      LoginDialog.TAG,
+      BankIdLoginDialog.TAG,
     )
     LoginMethod.NEM_ID, LoginMethod.BANK_ID_NORWAY -> {
       startActivity(
@@ -116,12 +108,10 @@ class MarketingActivity : AppCompatActivity() {
   }
 
   companion object {
-    fun newInstance(context: Context, withoutHistory: Boolean = false) =
+    fun newInstance(context: Context): Intent =
       Intent(context, MarketingActivity::class.java).apply {
-        if (withoutHistory) {
-          addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-          addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        }
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
       }
   }
 }

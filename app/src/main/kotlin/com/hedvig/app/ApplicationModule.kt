@@ -19,7 +19,9 @@ import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.datadog.android.DatadogInterceptor
 import com.google.firebase.messaging.FirebaseMessaging
-import com.hedvig.android.auth.AuthenticationTokenService
+import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
+import com.hedvig.android.auth.interceptor.MigrateTokenInterceptor
 import com.hedvig.android.core.common.di.LogInfoType
 import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.common.di.isDebugQualifier
@@ -31,10 +33,8 @@ import com.hedvig.android.hanalytics.android.di.hAnalyticsUrlQualifier
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.Navigator
-import com.hedvig.app.authenticate.LoginStatusService
+import com.hedvig.app.authenticate.BankIdLoginViewModel
 import com.hedvig.app.authenticate.LogoutUseCase
-import com.hedvig.app.authenticate.SharedPreferencesLoginStatusService
-import com.hedvig.app.authenticate.UserViewModel
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.addressautocompletion.data.GetDanishAddressAutoCompletionUseCase
 import com.hedvig.app.feature.addressautocompletion.data.GetFinalDanishAddressSelectionUseCase
@@ -115,6 +115,7 @@ import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContrac
 import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModelImpl
+import com.hedvig.app.feature.marketing.MarketingActivity
 import com.hedvig.app.feature.marketing.MarketingViewModel
 import com.hedvig.app.feature.marketing.data.GetInitialMarketPickerValuesUseCase
 import com.hedvig.app.feature.marketing.data.GetMarketingBackgroundUseCase
@@ -131,8 +132,6 @@ import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetViewModel
 import com.hedvig.app.feature.offer.ui.changestartdate.QuoteCartEditStartDateUseCase
 import com.hedvig.app.feature.offer.usecase.AddPaymentTokenUseCase
-import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCase
-import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCaseImpl
 import com.hedvig.app.feature.offer.usecase.EditCampaignUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuoteCartCheckoutUseCase
 import com.hedvig.app.feature.offer.usecase.ObserveOfferStateUseCase
@@ -184,6 +183,9 @@ import com.hedvig.app.util.apollo.NetworkCacheManager
 import com.hedvig.app.util.apollo.ReopenSubscriptionException
 import com.hedvig.app.util.apollo.SunsettingInterceptor
 import com.hedvig.app.util.extensions.startChat
+import com.hedvig.authlib.AuthEnvironment
+import com.hedvig.authlib.AuthRepository
+import com.hedvig.authlib.NetworkAuthRepository
 import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -196,10 +198,11 @@ import slimber.log.i
 import timber.log.Timber
 import java.io.File
 import java.time.Clock
-import java.util.Locale
+import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.pow
 
+@Suppress("KotlinConstantConditions")
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APPLICATION_ID == "com.hedvig.test.app"
 
 val applicationModule = module {
@@ -213,17 +216,8 @@ val applicationModule = module {
       // Temporary fix until back-end problems are handled
       .readTimeout(30, TimeUnit.SECONDS)
       .addInterceptor(DatadogInterceptor())
-      .addInterceptor { chain ->
-        val original = chain.request()
-        val builder = original
-          .newBuilder()
-          .method(original.method, original.body)
-
-        get<AuthenticationTokenService>().authenticationToken?.let { token ->
-          builder.header("Authorization", token)
-        }
-        chain.proceed(builder.build())
-      }
+      .addInterceptor(get<MigrateTokenInterceptor>())
+      .addInterceptor(get<AuthTokenRefreshingInterceptor>())
       .addInterceptor { chain ->
         chain.proceed(
           chain
@@ -241,7 +235,7 @@ val applicationModule = module {
             .build(),
         )
       }
-      .addInterceptor(DeviceIdInterceptor(get()))
+      .addInterceptor(DeviceIdInterceptor(get(), get()))
     if (isDebug()) {
       val logger = HttpLoggingInterceptor { message ->
         if (message.contains("Content-Disposition")) {
@@ -275,7 +269,7 @@ val applicationModule = module {
       .wsProtocol(
         SubscriptionWsProtocol.Factory(
           connectionPayload = {
-            mapOf("Authorization" to get<AuthenticationTokenService>().authenticationToken)
+            mapOf("Authorization" to get<AuthTokenService>().getTokens()?.accessToken?.token)
           },
         ),
       )
@@ -291,28 +285,30 @@ val apolloClientModule = module {
   }
 }
 
-fun makeUserAgent(locale: Locale) =
-  "${
-  BuildConfig.APPLICATION_ID
-  } ${
-  BuildConfig.VERSION_NAME
-  } (Android ${
-  Build.VERSION.RELEASE
-  }; ${
-  Build.BRAND
-  } ${
-  Build.MODEL
-  }; ${
-  Build.DEVICE
-  }; ${
-  locale.language
-  })"
+fun makeUserAgent(locale: Locale): String = buildString {
+  append(BuildConfig.APPLICATION_ID)
+  append(" ")
+  append(BuildConfig.VERSION_NAME)
+  append(" ")
+  append("(Android")
+  append(" ")
+  append(Build.VERSION.RELEASE)
+  append("; ")
+  append(Build.BRAND)
+  append(" ")
+  append(Build.MODEL)
+  append("; ")
+  append(Build.DEVICE)
+  append("; ")
+  append(locale.language)
+  append(")")
+}
 
 val viewModelModule = module {
   viewModel { ClaimsViewModel(get(), get()) }
-  viewModel { ChatViewModel(get(), get(), get(), get(), get(), get()) }
+  viewModel { ChatViewModel(get(), get(), get()) }
   viewModel { (quoteCartId: QuoteCartId?) -> RedeemCodeViewModel(quoteCartId, get(), get()) }
-  viewModel { UserViewModel(get(), get(), get(), get(), get(), get(), get()) }
+  viewModel { BankIdLoginViewModel(get(), get(), get(), get(), get(), get()) }
   viewModel { WelcomeViewModel(get()) }
   viewModel {
     SettingsViewModel(
@@ -322,7 +318,7 @@ val viewModelModule = module {
   }
   viewModel { DatePickerViewModel() }
   viewModel { params ->
-    SimpleSignAuthenticationViewModel(params.get(), get(), get(), get(), get(), get(), get(), get())
+    SimpleSignAuthenticationViewModel(params.get(), get(), get(), get(), get(), get())
   }
   viewModel { (data: MultiActionParams) -> MultiActionViewModel(data) }
   viewModel { (componentState: MultiActionItem.Component?, multiActionParams: MultiActionParams) ->
@@ -333,7 +329,7 @@ val viewModelModule = module {
   }
   viewModel { TerminatedContractsViewModel(get()) }
   viewModel { (quoteCartId: QuoteCartId) ->
-    SwedishBankIdSignViewModel(quoteCartId, get(), get(), get(), get())
+    SwedishBankIdSignViewModel(quoteCartId, get(), get())
   }
   viewModel { AudioRecorderViewModel(get()) }
   viewModel { (crossSell: CrossSellData) ->
@@ -342,12 +338,12 @@ val viewModelModule = module {
   viewModel { (crossSell: CrossSellData) ->
     CrossSellDetailViewModel(crossSell.action, get(), get())
   }
-  viewModel { GenericAuthViewModel(get()) }
-  viewModel<OtpInputViewModel> { (otpId: String, credential: String) ->
+  viewModel { GenericAuthViewModel(get(), get()) }
+  viewModel<OtpInputViewModel> { (verifyUrl: String, resendUrl: String, credential: String) ->
     OtpInputViewModel(
-      otpId,
+      verifyUrl,
+      resendUrl,
       credential,
-      get(),
       get(),
       get(),
       get(),
@@ -400,7 +396,6 @@ val offerModule = module {
       quoteCartId = parametersHolder.get(),
       selectedContractTypes = parametersHolder.get(),
       offerRepository = get(),
-      loginStatusService = get(),
       startCheckoutUseCase = get(),
       chatRepository = get(),
       editCampaignUseCase = get(),
@@ -436,7 +431,7 @@ val embarkModule = module {
   viewModel<EmbarkViewModel> { (storyName: String) ->
     EmbarkViewModelImpl(
       embarkRepository = get(),
-      loginStatusService = get(),
+      authTokenService = get(),
       graphQLQueryUseCase = get(),
       chatRepository = get(),
       valueStore = get(),
@@ -455,7 +450,13 @@ val textActionSetModule = module {
 }
 
 val navigatorModule = module {
-  single<Navigator> { Navigator(navigateToChat = { startChat() }) }
+  single<Navigator> {
+    Navigator(
+      application = get(),
+      loggedOutActivityClass = MarketingActivity::class.java,
+      navigateToChat = { startChat() },
+    )
+  }
 }
 
 val numberActionSetModule = module {
@@ -504,11 +505,8 @@ val checkoutModule = module {
       quoteCartId = quoteCartId,
       signQuotesUseCase = get(),
       editQuotesUseCase = get(),
-      createAccessTokenUseCase = get(),
       marketManager = get(),
-      loginStatusService = get(),
       offerRepository = get(),
-      featureManager = get(),
       bundleVariantUseCase = get(),
       selectedVariantStore = get(),
     )
@@ -520,8 +518,7 @@ val externalInsuranceModule = module {
 }
 
 val serviceModule = module {
-  single { FileService(get()) }
-  single<LoginStatusService> { SharedPreferencesLoginStatusService(get(), get(), get()) }
+  single<FileService> { FileService(get()) }
 }
 
 val repositoriesModule = module {
@@ -544,8 +541,8 @@ val repositoriesModule = module {
 }
 
 val notificationModule = module {
-  single { PaymentNotificationSender(get(), get(), get()) } bind NotificationSender::class
-  single { CrossSellNotificationSender(get(), get()) } bind NotificationSender::class
+  single { PaymentNotificationSender(get(), get(), get(), get()) } bind NotificationSender::class
+  single { CrossSellNotificationSender(get(), get(), get()) } bind NotificationSender::class
   single { ChatNotificationSender(get()) } bind NotificationSender::class
   single { ReferralsNotificationSender(get()) } bind NotificationSender::class
   single { GenericNotificationSender(get()) } bind NotificationSender::class
@@ -560,7 +557,7 @@ val useCaseModule = module {
   single { StartNorwegianAuthUseCase(get()) }
   single { SubscribeToAuthResultUseCase(get()) }
   single { StartCheckoutUseCase(get(), get(), get()) }
-  single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get()) }
+  single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
   single { GetContractsUseCase(get(), get()) }
   single { GraphQLQueryUseCase(get()) }
   single { GetCrossSellsUseCase(get(), get()) }
@@ -595,7 +592,6 @@ val useCaseModule = module {
     )
   }
   single<QuoteCartEditStartDateUseCase> { QuoteCartEditStartDateUseCase(get(), get()) }
-  single<CreateAccessTokenUseCase> { CreateAccessTokenUseCaseImpl(get(), get()) }
   single<EditCampaignUseCase> { EditCampaignUseCase(get(), get()) }
   single<AddPaymentTokenUseCase> { AddPaymentTokenUseCase(get()) }
   single<ConnectPaymentUseCase> { ConnectPaymentUseCase(get(), get(), get()) }
@@ -661,4 +657,17 @@ val chatEventModule = module {
 
 val graphQLQueryModule = module {
   single<GraphQLQueryHandler> { GraphQLQueryHandler(get(), get(), get()) }
+}
+
+val authRepositoryModule = module {
+  single<AuthRepository> {
+    NetworkAuthRepository(
+      environment = if (isDebug()) {
+        AuthEnvironment.STAGING
+      } else {
+        AuthEnvironment.PRODUCTION
+      },
+      additionalHttpHeaders = mapOf(),
+    )
+  }
 }

@@ -8,7 +8,8 @@ enum class CheckoutMethod {
   DANISH_BANK_ID,
   SIMPLE_SIGN,
   APPROVE_ONLY,
-  UNKNOWN;
+  UNKNOWN,
+  ;
 }
 
 fun CheckoutMethod.checkoutIconRes() = when (this) {

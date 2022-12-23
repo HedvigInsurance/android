@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressResultActivityBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -24,6 +25,7 @@ class ChangeAddressResultActivity : AppCompatActivity(R.layout.change_address_re
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    lifecycle.addObserver(AuthenticatedObserver())
 
     val result = intent.getParcelableExtra<Result>(RESULT) ?: run {
       e { "Programmer error: Missing argument RESULT in ${this.javaClass.name}" }
