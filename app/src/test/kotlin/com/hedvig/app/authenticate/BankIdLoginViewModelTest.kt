@@ -41,11 +41,24 @@ class BankIdLoginViewModelTest {
   val testFolder = TemporaryFolder()
 
   @Test
-  fun `auth repository responding successfully to the exchange, results in a login`() = runTest {
+  fun `start login attempt failing results in an error state immediately`() = runTest {
     val authTokenService = testAuthTokenService()
     val authRepository = FakeAuthRepository()
     val viewModel: BankIdLoginViewModel = testBankIdLoginViewModel(authTokenService, authRepository)
     backgroundScope.launch { viewModel.viewState.collect() } // Start a subscriber since we're using WhileSubscribed
+
+    authRepository.authAttemptResponse.add(AuthAttemptResult.Error(""))
+    assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Loading)
+    runCurrent()
+    assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Error(null))
+  }
+
+  @Test
+  fun `auth repository responding successfully to the exchange, results in a login`() = runTest {
+    val authTokenService = testAuthTokenService()
+    val authRepository = FakeAuthRepository()
+    val viewModel: BankIdLoginViewModel = testBankIdLoginViewModel(authTokenService, authRepository)
+    backgroundScope.launch { viewModel.viewState.collect() }
 
     assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Loading)
     authRepository.authAttemptResponse.add(
