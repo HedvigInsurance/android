@@ -264,6 +264,7 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name="com.hedvig.android.odyssey.ClaimsFlowActivity"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
