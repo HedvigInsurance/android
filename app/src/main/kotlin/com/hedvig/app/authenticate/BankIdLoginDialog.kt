@@ -55,6 +55,7 @@ class BankIdLoginDialog : DialogFragment(com.hedvig.app.R.layout.dialog_authenti
     when (viewState) {
       is BankIdLoginViewState.Error -> {
         binding.authTitle.text = viewState.errorMessage ?: getString(R.string.NETWORK_ERROR_ALERT_MESSAGE)
+        dialog?.setCanceledOnTouchOutside(true)
       }
       BankIdLoginViewState.Loading -> {}
       is BankIdLoginViewState.HandlingBankId -> {

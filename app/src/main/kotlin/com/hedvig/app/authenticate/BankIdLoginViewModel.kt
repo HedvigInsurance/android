@@ -62,7 +62,7 @@ class BankIdLoginViewModel(
 
   init {
     viewModelScope.launch {
-      val result = authRepository.startLoginAttempt(
+      val result: AuthAttemptResult = authRepository.startLoginAttempt(
         loginMethod = LoginMethod.SE_BANKID,
         market = Market.SE.name,
       )
