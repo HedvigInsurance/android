@@ -68,12 +68,12 @@ class BankIdLoginViewModelTest {
     runCurrent()
     assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Loading)
 
-    authRepository.loginStatusResponse.add(LoginStatusResult.Pending(null))
+    authRepository.loginStatusResponse.add(LoginStatusResult.Pending("pending status message"))
     runCurrent()
     val pendingBankIdState = BankIdLoginViewState.HandlingBankId(
       "autoStartToken",
       false,
-      LoginStatusResult.Pending(null),
+      LoginStatusResult.Pending("pending status message"),
       false,
     )
     assertThat(viewModel.viewState.value).isEqualTo(pendingBankIdState)
@@ -113,7 +113,7 @@ class BankIdLoginViewModelTest {
 
     assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Loading)
     authRepository.authAttemptResponse.add(
-      AuthAttemptResult.BankIdProperties("", StatusUrl(""), "autoStartToken"),
+      AuthAttemptResult.BankIdProperties("", StatusUrl(""), ""),
     )
     authRepository.loginStatusResponse.add(LoginStatusResult.Pending(null))
     runCurrent()
