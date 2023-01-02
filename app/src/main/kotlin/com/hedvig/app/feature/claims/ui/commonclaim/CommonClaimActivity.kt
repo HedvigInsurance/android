@@ -7,8 +7,10 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import coil.ImageLoader
+import com.hedvig.android.apollo.graphql.type.Locale
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.odyssey.ClaimsFlowActivity.ItemType
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityCommonClaimBinding
@@ -35,6 +37,7 @@ class CommonClaimActivity : AppCompatActivity(R.layout.activity_common_claim) {
   private val binding by viewBinding(ActivityCommonClaimBinding::bind)
   private val hAnalytics: HAnalytics by inject()
   private val featureManager: FeatureManager by inject()
+  private val languageService: LanguageService by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -75,7 +78,7 @@ class CommonClaimActivity : AppCompatActivity(R.layout.activity_common_claim) {
               featureManager = featureManager,
               context = this@CommonClaimActivity,
               fragmentManager = supportFragmentManager,
-              itemType = data.itemTypeFromId()?.let(::ItemType),
+              itemType = data.itemTypeFromId(languageService.getLanguage().toLocale())?.let(::ItemType),
             )
           }
         }
@@ -95,7 +98,32 @@ class CommonClaimActivity : AppCompatActivity(R.layout.activity_common_claim) {
   }
 }
 
-private fun CommonClaimsData.itemTypeFromId() = when (id) {
-  "6" -> "PHONE"
+private fun CommonClaimsData.itemTypeFromId(locale: Locale) = when (locale) {
+  Locale.sv_SE -> when (id) {
+    "5" -> PHONE_TYPE
+    else -> null
+  }
+  Locale.en_SE -> when (id) {
+    "6" -> PHONE_TYPE
+    else -> null
+  }
+  Locale.nb_NO -> when (id) {
+    "14" -> PHONE_TYPE
+    else -> null
+  }
+  Locale.en_NO -> when (id) {
+    "15" -> PHONE_TYPE
+    else -> null
+  }
+  Locale.da_DK -> when (id) {
+    "21" -> PHONE_TYPE
+    else -> null
+  }
+  Locale.en_DK -> when (id) {
+    "22" -> PHONE_TYPE
+    else -> null
+  }
   else -> null
 }
+
+private const val PHONE_TYPE = "PHONE"
