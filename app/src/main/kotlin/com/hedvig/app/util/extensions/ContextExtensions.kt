@@ -10,7 +10,6 @@ import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.graphics.Typeface
 import android.net.Uri
 import android.util.TypedValue
 import android.view.View
@@ -20,19 +19,14 @@ import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
-import androidx.annotation.FontRes
 import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.hedvig.android.core.common.preferences.PreferenceKey
-import com.hedvig.android.market.Language
 import com.hedvig.app.MainActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.ui.ChatActivity
@@ -67,17 +61,6 @@ fun Context.drawableAttr(
 ): Int {
   theme.resolveAttribute(drawable, typedValue, resolveRefs)
   return typedValue.resourceId
-}
-
-fun Context.compatFont(@FontRes font: Int) = ResourcesCompat.getFont(this, font)
-
-fun Context.fontAttr(
-  @AttrRes font: Int,
-  typedValue: TypedValue = TypedValue(),
-  resolveRefs: Boolean = true,
-): Typeface? {
-  theme.resolveAttribute(font, typedValue, resolveRefs)
-  return ResourcesCompat.getFont(this, typedValue.resourceId)
 }
 
 fun Context.compatDrawable(@DrawableRes drawable: Int) =
@@ -137,12 +120,6 @@ fun Context.setLastOpen(date: Long) =
 
 fun Context.getLastOpen() =
   getSharedPreferences().getLong(SHARED_PREFERENCE_LAST_OPEN, 0)
-
-fun Context.getLanguage(): Language? {
-  val pref = PreferenceManager.getDefaultSharedPreferences(this)
-  val language = pref.getString(PreferenceKey.SETTING_LANGUAGE, null)
-  return language?.let { Language.from(it) }
-}
 
 private fun Context.getSharedPreferences() =
   this.getSharedPreferences(SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE)
