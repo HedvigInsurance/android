@@ -1,4 +1,4 @@
-package com.hedvig.app.util
+package com.hedvig.app.util.firebase
 
 import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics

@@ -31,7 +31,7 @@ class AuthenticatedObserver : DefaultLifecycleObserver {
     }
   }
 
-  override fun onPause(ownerr: LifecycleOwner) {
+  override fun onPause(owner: LifecycleOwner) {
     authObservingJob?.cancel()
     authObservingJob = null
   }
