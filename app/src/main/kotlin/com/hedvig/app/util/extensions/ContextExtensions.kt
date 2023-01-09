@@ -103,7 +103,8 @@ suspend fun Context.hideKeyboardWithDelay(inputView: View, delayDuration: Durati
   }
 }
 
-suspend fun Context.showKeyboardWithDelay(inputView: View, delayDuration: Duration = 0.milliseconds) {
+suspend fun Context.showKeyboardWithDelay(inputView: View?, delayDuration: Duration = 0.milliseconds) {
+  if (inputView == null) return
   val windowInsets = WindowInsetsCompat.toWindowInsetsCompat(inputView.rootView.rootWindowInsets)
   if (!windowInsets.isVisible(WindowInsetsCompat.Type.ime())) {
     delay(delayDuration)
