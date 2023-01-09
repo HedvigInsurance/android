@@ -90,13 +90,13 @@ class BankIdLoginViewModel(
       processedNavigationToLoggedIn,
     ->
     if (startLoginAttemptFailed) {
-      return@combine BankIdLoginViewState.Error(null)
+      return@combine BankIdLoginViewState.Error
     }
     if (bankIdProperties == null || loginStatusResult == null) {
       return@combine BankIdLoginViewState.Loading
     }
     if (loginStatusResult is LoginStatusResult.Failed) {
-      return@combine BankIdLoginViewState.Error(loginStatusResult.message)
+      return@combine BankIdLoginViewState.Error
     }
     BankIdLoginViewState.HandlingBankId(
       bankIdProperties.autoStartToken,
@@ -132,7 +132,7 @@ class BankIdLoginViewModel(
 
 sealed interface BankIdLoginViewState {
   object Loading : BankIdLoginViewState
-  data class Error(val errorMessage: String?) : BankIdLoginViewState
+  object Error : BankIdLoginViewState
   data class HandlingBankId(
     val autoStartToken: String,
     val processedAutoStartToken: Boolean,
