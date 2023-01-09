@@ -125,11 +125,15 @@ fun Activity.openEmail(title: String) {
     )
     val openInChooser = Intent.createChooser(intentChooser, title)
 
-    // Then create a list of LabeledIntent for the rest of the registered email apps
-    val emailApps = resInfo.toLabeledIntentArray(packageManager)
+    try {
+      // Then create a list of LabeledIntent for the rest of the registered email apps and add to the picker selection
+      val emailApps = resInfo.toLabeledIntentArray(packageManager)
+      openInChooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, emailApps)
+    } catch (_: NullPointerException) {
+      // OnePlus crash prevention. Simply go with the initial email app found, don't give more options.
+      // console.firebase.google.com/u/0/project/hedvig-app/crashlytics/app/android:com.hedvig.app/issues/06823149a4ff8a411f4508e0cbfae9f4
+    }
 
-    // Add the rest of the email apps to the picker selection
-    openInChooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, emailApps)
     startActivity(openInChooser)
   } else {
     e { "No email app found" }
