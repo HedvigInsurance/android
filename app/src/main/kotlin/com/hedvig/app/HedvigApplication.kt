@@ -13,6 +13,7 @@ import com.datadog.android.rum.RumMonitor
 import com.hedvig.android.hanalytics.android.tracking.ApplicationLifecycleTracker
 import com.hedvig.app.feature.settings.Theme
 import com.hedvig.app.feature.whatsnew.WhatsNewRepository
+import com.hedvig.app.util.firebase.FirebaseBreadcrumbTimberTree
 import com.hedvig.app.util.firebase.FirebaseCrashlyticsLogExceptionTree
 import org.koin.android.ext.android.inject
 import timber.log.Timber
@@ -32,6 +33,7 @@ open class HedvigApplication : Application() {
     if (isDebug()) {
       Timber.plant(Timber.DebugTree())
     } else {
+      Timber.plant(FirebaseBreadcrumbTimberTree())
       Timber.plant(FirebaseCrashlyticsLogExceptionTree())
     }
 
