@@ -8,7 +8,7 @@ import slimber.log.d
 /**
  * Sink to assist in seeing where in the app you are navigating while testing and which events are triggered.
  * Also visible in Firebase Crashlytics, to give a better idea of what lead up to the crash.
- * Use in development by opening AS Logcat on "Debug" mode with the filter "DebugLogTrackerSink".
+ * Use in development by opening AS Logcat on "Debug" mode with the filter "LoggingHAnalyticsSink".
  */
 internal class LoggingHAnalyticsSink : HAnalyticsSink {
   override fun send(event: HAnalyticsEvent) {
