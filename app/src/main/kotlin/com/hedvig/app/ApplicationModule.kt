@@ -239,9 +239,9 @@ val applicationModule = module {
     if (isDebug()) {
       val logger = HttpLoggingInterceptor { message ->
         if (message.contains("Content-Disposition")) {
-          Timber.tag("OkHttp").i("File upload omitted from log")
+          Timber.tag("OkHttp").v("File upload omitted from log")
         } else {
-          Timber.tag("OkHttp").i(message)
+          Timber.tag("OkHttp").v(message)
         }
       }
       logger.level = HttpLoggingInterceptor.Level.BODY

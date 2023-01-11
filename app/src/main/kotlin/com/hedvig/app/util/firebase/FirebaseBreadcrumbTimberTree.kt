@@ -5,6 +5,10 @@ import com.google.firebase.ktx.Firebase
 import timber.log.Timber
 
 class FirebaseBreadcrumbTimberTree : Timber.Tree() {
+  override fun isLoggable(tag: String?, priority: Int): Boolean {
+    return priority >= android.util.Log.DEBUG
+  }
+
   override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
     if (t != null) return
     val tagFormatted = tag?.let { "[$tag]" }.orEmpty()

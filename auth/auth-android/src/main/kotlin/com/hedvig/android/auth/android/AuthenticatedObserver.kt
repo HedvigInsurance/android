@@ -24,7 +24,20 @@ class AuthenticatedObserver : DefaultLifecycleObserver {
   override fun onResume(owner: LifecycleOwner) {
     authObservingJob = owner.lifecycleScope.launch {
       authTokenService.authStatus
-        .onEach { d { "Owner: ${owner::class.simpleName} | Received authStatus: $it" } }
+        .onEach { authStatus ->
+          d {
+            buildString {
+              append("Owner: ${owner::class.simpleName} | Received authStatus: ")
+              append(
+                when (authStatus) {
+                  is AuthStatus.LoggedIn -> "LoggedIn"
+                  AuthStatus.LoggedOut -> "LoggedOut"
+                  null -> "null"
+                },
+              )
+            }
+          }
+        }
         .filterIsInstance<AuthStatus.LoggedOut>()
         .first()
       navigator.navigateToMarketingActivity()
