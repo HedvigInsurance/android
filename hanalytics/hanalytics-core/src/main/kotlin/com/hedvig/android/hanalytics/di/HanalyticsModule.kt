@@ -20,7 +20,6 @@ val hAnalyticsModule = module {
     HAnalyticsImpl(
       sendHAnalyticsEventUseCase = get(),
       hAnalyticsExperimentManager = get(),
-      logInfo = get<LogInfoType>(logInfoQualifier),
     )
   }
   single<SendHAnalyticsEventUseCase> {
@@ -32,9 +31,8 @@ val hAnalyticsModule = module {
     HAnalyticsExperimentManagerImpl(
       sendHAnalyticsEventUseCase = get(),
       hAnalyticsService = get(),
-      logInfo = get<LogInfoType>(logInfoQualifier),
     )
   }
   single<NetworkHAnalyticsSink> { NetworkHAnalyticsSink(get(), get()) } bind HAnalyticsSink::class
-  single<LoggingHAnalyticsSink> { LoggingHAnalyticsSink() } bind HAnalyticsSink::class
+  single<LoggingHAnalyticsSink> { LoggingHAnalyticsSink(get<LogInfoType>(logInfoQualifier)) } bind HAnalyticsSink::class
 }
