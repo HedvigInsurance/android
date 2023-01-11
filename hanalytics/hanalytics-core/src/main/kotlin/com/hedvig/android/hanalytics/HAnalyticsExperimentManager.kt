@@ -1,6 +1,5 @@
 package com.hedvig.android.hanalytics
 
-import com.hedvig.android.core.common.di.LogInfoType
 import com.hedvig.hanalytics.HAnalyticsEvent
 import com.hedvig.hanalytics.HAnalyticsExperiment
 import kotlinx.coroutines.sync.Mutex
@@ -14,7 +13,6 @@ internal interface HAnalyticsExperimentManager {
 internal class HAnalyticsExperimentManagerImpl(
   private val sendHAnalyticsEventUseCase: SendHAnalyticsEventUseCase,
   private val hAnalyticsService: HAnalyticsService,
-  private val logInfo: LogInfoType,
 ) : HAnalyticsExperimentManager {
   private val mutex = Mutex()
   private val experimentsData = mutableMapOf<String, String>()
@@ -46,7 +44,6 @@ internal class HAnalyticsExperimentManagerImpl(
     if (experimentsList == null) return
     experimentsData.clear()
     experimentsData.putAll(experimentsList.map { it.name to it.variant })
-    logInfo { "Experiments loaded: $experimentsData" }
   }
 
   private fun sendExperimentsLoadedEvent(experimentsList: List<Experiment>?) {
