@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
-import slimber.log.d
+import slimber.log.v
 
 class AuthTokenServiceImpl(
   private val authTokenStorage: AuthTokenStorage,
@@ -42,12 +42,12 @@ class AuthTokenServiceImpl(
     val refreshToken = getRefreshToken() ?: return null
     return when (val result = authRepository.exchange(RefreshTokenGrant(refreshToken.token))) {
       is AuthTokenResult.Error -> {
-        d { "Refreshing token failed. Invalidating present tokens" }
+        v { "Refreshing token failed. Invalidating present tokens" }
         invalidateTokens()
         null
       }
       is AuthTokenResult.Success -> {
-        d { "Refreshing token success. Updating tokens" }
+        v { "Refreshing token success. Updating tokens" }
         authTokenStorage.updateTokens(result.accessToken, result.refreshToken)
         result.accessToken
       }
