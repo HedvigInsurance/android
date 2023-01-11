@@ -32,10 +32,9 @@ open class HedvigApplication : Application() {
 
     if (isDebug()) {
       Timber.plant(Timber.DebugTree())
-    } else {
-      Timber.plant(FirebaseBreadcrumbTimberTree())
-      Timber.plant(FirebaseCrashlyticsLogExceptionTree())
     }
+    Timber.plant(FirebaseBreadcrumbTimberTree())
+    Timber.plant(FirebaseCrashlyticsLogExceptionTree())
 
     AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
