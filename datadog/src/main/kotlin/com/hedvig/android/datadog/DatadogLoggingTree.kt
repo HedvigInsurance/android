@@ -1,8 +1,8 @@
-package com.hedvig.app.util.datadog
+package com.hedvig.android.datadog
 
 import timber.log.Timber
 
-class DatadogLoggingTree : Timber.Tree() {
+internal class DatadogLoggingTree : Timber.Tree() {
   private val datadogLogger = com.datadog.android.log.Logger.Builder()
     .setNetworkInfoEnabled(true)
     .build()
