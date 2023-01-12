@@ -12,6 +12,7 @@ import com.datadog.android.rum.GlobalRum
 import com.datadog.android.rum.RumMonitor
 import com.hedvig.android.hanalytics.android.tracking.ApplicationLifecycleTracker
 import com.hedvig.app.feature.settings.Theme
+import com.hedvig.app.feature.tracking.ActivityChangeTracker
 import com.hedvig.app.feature.whatsnew.WhatsNewRepository
 import com.hedvig.app.util.firebase.FirebaseBreadcrumbTimberTree
 import com.hedvig.app.util.firebase.FirebaseCrashlyticsLogExceptionTree
@@ -35,6 +36,8 @@ open class HedvigApplication : Application() {
     }
     Timber.plant(FirebaseBreadcrumbTimberTree())
     Timber.plant(FirebaseCrashlyticsLogExceptionTree())
+
+    registerActivityLifecycleCallbacks(ActivityChangeTracker())
 
     AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 

@@ -8,6 +8,7 @@ import com.hedvig.hanalytics.HAnalytics
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
+@Suppress("unused") // Used in /app/src/main/AndroidManifest.xml
 class LaunchTrackingInitializer : Initializer<Unit>, KoinComponent {
   private val hAnalytics: HAnalytics by inject()
   override fun create(context: Context) {
