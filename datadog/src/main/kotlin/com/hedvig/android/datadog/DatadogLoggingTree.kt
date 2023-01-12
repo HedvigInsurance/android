@@ -5,6 +5,7 @@ import timber.log.Timber
 internal class DatadogLoggingTree : Timber.Tree() {
   private val datadogLogger = com.datadog.android.log.Logger.Builder()
     .setNetworkInfoEnabled(true)
+    .setDatadogLogsMinPriority(android.util.Log.DEBUG)
     .build()
 
   override fun isLoggable(tag: String?, priority: Int): Boolean {

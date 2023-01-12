@@ -8,10 +8,7 @@ import com.hedvig.android.hanalytics.android.tracking.ApplicationLifecycleTracke
 import com.hedvig.app.feature.settings.Theme
 import com.hedvig.app.feature.tracking.ActivityChangeTracker
 import com.hedvig.app.feature.whatsnew.WhatsNewRepository
-import com.hedvig.app.util.firebase.FirebaseBreadcrumbTimberTree
-import com.hedvig.app.util.firebase.FirebaseCrashlyticsLogExceptionTree
 import org.koin.android.ext.android.inject
-import timber.log.Timber
 
 open class HedvigApplication : Application() {
   protected val apolloClient: ApolloClient by inject()
@@ -24,12 +21,6 @@ open class HedvigApplication : Application() {
     Theme.fromSettings(this)?.apply()
 
     whatsNewRepository.removeNewsForNewUser()
-
-    if (isDebug()) {
-      Timber.plant(Timber.DebugTree())
-    }
-    Timber.plant(FirebaseBreadcrumbTimberTree())
-    Timber.plant(FirebaseCrashlyticsLogExceptionTree())
 
     registerActivityLifecycleCallbacks(ActivityChangeTracker())
 

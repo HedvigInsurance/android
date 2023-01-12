@@ -20,7 +20,7 @@ import slimber.log.v
 import timber.log.Timber
 
 @Suppress("unused") // Used in /app/src/main/AndroidManifest.xml
-class DatadogInitializer : Initializer<Unit>, KoinComponent {
+abstract class DatadogInitializer : Initializer<Unit>, KoinComponent {
 
   private val isDebug by inject<Boolean>(isDebugQualifier)
   private val isProduction by inject<Boolean>(isProductionQualifier)
@@ -65,9 +65,5 @@ class DatadogInitializer : Initializer<Unit>, KoinComponent {
     v { "Datadog Global Tracer registering succeeded: $didRegisterGlobalTracer" }
 
     Timber.plant(DatadogLoggingTree())
-  }
-
-  override fun dependencies(): List<Class<out Initializer<*>>> {
-    return emptyList()
   }
 }
