@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.startup.Initializer
 import com.shakebugs.shake.Shake
 
+@Suppress("unused") // Used in /app/src/main/AndroidManifest.xml
 class ShakeInitializer : Initializer<Unit> {
   override fun create(context: Context) {
     // Only initialize Shake when running a staging build

@@ -8,6 +8,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import slimber.log.d
 
+@Suppress("unused") // Used in /app/src/main/AndroidManifest.xml
 class TrackingInitializer : Initializer<Unit> {
   override fun create(context: Context) {
     GlobalScope.launch {
