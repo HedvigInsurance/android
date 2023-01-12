@@ -45,6 +45,7 @@ import com.hedvig.app.referralsModule
 import com.hedvig.app.repositoriesModule
 import com.hedvig.app.serviceModule
 import com.hedvig.app.sharedPreferencesModule
+import com.hedvig.app.startup.TimberInitializer
 import com.hedvig.app.stringConstantsModule
 import com.hedvig.app.textActionSetModule
 import com.hedvig.app.trustlyModule
@@ -118,5 +119,7 @@ class KoinInitializer : Initializer<KoinApplication> {
     )
   }
 
-  override fun dependencies() = emptyList<Class<out Initializer<*>>>()
+  override fun dependencies(): List<Class<out Initializer<*>>> {
+    return listOf(TimberInitializer::class.java)
+  }
 }

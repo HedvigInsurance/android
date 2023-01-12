@@ -122,6 +122,7 @@ dependencies {
   implementation(projects.coreNavigation)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
+  implementation(projects.datadog)
   implementation(projects.featureBusinessmodel)
   implementation(projects.featureOdyssey)
   implementation(projects.hanalytics.hanalyticsAndroid)

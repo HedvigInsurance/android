@@ -18,5 +18,7 @@ class LaunchTrackingInitializer : Initializer<Unit>, KoinComponent {
     )
   }
 
-  override fun dependencies() = listOf(KoinInitializer::class.java)
+  override fun dependencies(): List<Class<out Initializer<*>>> {
+    return listOf(KoinInitializer::class.java)
+  }
 }
