@@ -17,7 +17,9 @@ import com.apollographql.apollo3.cache.normalized.normalizedCache
 import com.apollographql.apollo3.interceptor.ApolloInterceptor
 import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
+import com.datadog.android.DatadogEventListener
 import com.datadog.android.DatadogInterceptor
+import com.datadog.android.tracing.TracingInterceptor
 import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
@@ -215,7 +217,7 @@ val applicationModule = module {
     val builder = OkHttpClient.Builder()
       // Temporary fix until back-end problems are handled
       .readTimeout(30, TimeUnit.SECONDS)
-      .addInterceptor(DatadogInterceptor())
+      .addDatadogConfiguration()
       .addInterceptor(get<MigrateTokenInterceptor>())
       .addInterceptor(get<AuthTokenRefreshingInterceptor>())
       .addInterceptor { chain ->
@@ -276,6 +278,12 @@ val applicationModule = module {
       .normalizedCache(get<NormalizedCacheFactory>())
       .addInterceptors(interceptors)
   }
+}
+
+private fun OkHttpClient.Builder.addDatadogConfiguration(): OkHttpClient.Builder {
+  return addInterceptor(DatadogInterceptor())
+    .addInterceptor(TracingInterceptor())
+    .eventListenerFactory(DatadogEventListener.Factory())
 }
 
 val apolloClientModule = module {

@@ -266,6 +266,7 @@
             android:name="com.hedvig.android.odyssey.ClaimsFlowActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_hedvig_h" />
@@ -314,15 +315,15 @@
             android:authorities="${applicationId}.androidx-startup"
             android:exported="false"
             tools:node="merge">
-
             <meta-data
                 android:name="com.hedvig.app.feature.di.KoinInitializer"
                 android:value="androidx.startup" />
-
             <meta-data
                 android:name="com.hedvig.app.feature.tracking.LaunchTrackingInitializer"
                 android:value="androidx.startup" />
-
+            <meta-data
+                android:name="com.hedvig.app.feature.tracking.DatadogInitializer"
+                android:value="androidx.startup" />
         </provider>
     </application>
 
