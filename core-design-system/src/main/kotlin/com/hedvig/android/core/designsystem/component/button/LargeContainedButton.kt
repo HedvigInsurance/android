@@ -20,11 +20,20 @@ fun LargeContainedTextButton(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
+  colors: ButtonColors = ButtonDefaults.buttonColors(
+    backgroundColor = if (MaterialTheme.colors.isLight) {
+      MaterialTheme.colors.primary
+    } else {
+      MaterialTheme.colors.secondary
+    },
+    contentColor = MaterialTheme.colors.onPrimary,
+  ),
 ) {
   LargeContainedButton(
     onClick = onClick,
     modifier = modifier,
     enabled = enabled,
+    colors = colors,
   ) {
     Text(text = text)
   }

@@ -26,6 +26,7 @@ androidx-composeBom = "2023.01.00"
 androidx-composeCompiler = "1.4.2"
 androidx-datastore = "1.0.0"
 androidx-espresso = "3.5.1"
+composeNavigation = "2.5.2"
 androidx-lifecycle-common = "2.5.1"
 androidx-lifecycle-compose = "2.5.1"
 androidx-other-activityCompose = "1.6.1"
@@ -68,6 +69,7 @@ junit = "4.13.2"
 kaspresso = "1.5.1"
 koinAndroid = "3.3.3"
 koinCore = "3.3.3"
+koinAndroidCompose = "3.4.1"
 kotlinxDatetime = "0.4.0"
 leakCanary = "2.10"
 markwon = "4.6.2"
@@ -92,6 +94,7 @@ zXing = "3.5.1"
 
 [libraries]
 
+accompanist-navigationAnimation = { module = "com.google.accompanist:accompanist-navigation-animation", version.ref = "accompanist" }
 accompanist-insetsUi = { module = "com.google.accompanist:accompanist-insets-ui", version.ref = "accompanist" }
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanist" }
 accompanist-pagerIndicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanist" }
@@ -106,6 +109,8 @@ androidx-compose-foundation = { module = "androidx.compose.foundation:foundation
 androidx-compose-material = { module = "androidx.compose.material:material" }
 androidx-compose-material3-windowSizeClass = { module = "androidx.compose.material3:material3-window-size-class" }
 androidx-compose-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended" }
+androidx-compose-mdcAdapter = { module = "com.google.android.material:compose-theme-adapter", version.ref = "androidx-composeThemeAdapter" }
+androidx-compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "composeNavigation" }
 androidx-compose-runtime = { module = "androidx.compose.runtime:runtime" }
 androidx-compose-uiTestJunit = { module = "androidx.compose.ui:ui-test-junit4" }
 androidx-compose-uiTestManifest = { module = "androidx.compose.ui:ui-test-manifest" }
@@ -178,6 +183,7 @@ jsonTest = { module = "org.json:json", version.ref = "jsonTest" }
 junit = { module = "junit:junit", version.ref = "junit" }
 kaspresso = { module = "com.kaspersky.android-components:kaspresso", version.ref = "kaspresso" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koinAndroid" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koinAndroidCompose" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koinCore" }
 koin-test = { module = "io.insert-koin:koin-test", version.ref = "koinCore" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }

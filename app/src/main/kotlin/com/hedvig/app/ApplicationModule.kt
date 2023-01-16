@@ -34,6 +34,10 @@ import com.hedvig.android.hanalytics.android.di.hAnalyticsUrlQualifier
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.Navigator
+import com.hedvig.android.odyssey.ClaimsFlowRepository
+import com.hedvig.android.odyssey.ClaimsFlowViewModel
+import com.hedvig.android.odyssey.NetworkClaimsFlowRepository
+import com.hedvig.android.odyssey.repository.MockClaimsFlowRepository
 import com.hedvig.app.authenticate.BankIdLoginViewModel
 import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.data.debit.PayinStatusRepository
@@ -672,6 +676,23 @@ val authRepositoryModule = module {
         AuthEnvironment.PRODUCTION
       },
       additionalHttpHeaders = mapOf(),
+    )
+  }
+}
+
+val claimsRepositoryModule = module {
+  single<ClaimsFlowRepository> {
+    //NetworkClaimsFlowRepository(get<OkHttpClient>())
+    MockClaimsFlowRepository()
+  }
+}
+
+val claimsViewModelModule = module {
+  viewModel { (itemType: String, itemProblem: String) ->
+    ClaimsFlowViewModel(
+      itemType,
+      itemProblem,
+      get(),
     )
   }
 }

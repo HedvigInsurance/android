@@ -15,10 +15,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.material.primarySurface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,7 +41,7 @@ fun FullScreenProgressOverlay(
   ) {
     Surface(
       modifier = Modifier.fillMaxSize(),
-      color = MaterialTheme.colors.onPrimary,
+      color = MaterialTheme.colors.background,
     ) {
       Box(contentAlignment = Alignment.Center) {
         val infiniteTransition = rememberInfiniteTransition()
@@ -62,6 +64,7 @@ fun FullScreenProgressOverlay(
               exit = fadeOut(animationSpec = tween(200)),
             )
             .size(32.dp),
+          tint = MaterialTheme.colors.onBackground,
           contentDescription = null,
         )
       }

@@ -15,6 +15,7 @@ import com.hedvig.android.language.di.languageModule
 import com.hedvig.android.market.di.marketManagerModule
 import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.android.odyssey.di.odysseyModule
+import com.hedvig.android.odyssey.di.submitClaimModule
 import com.hedvig.app.adyenModule
 import com.hedvig.app.apolloClientModule
 import com.hedvig.app.applicationModule
@@ -24,6 +25,8 @@ import com.hedvig.app.changeAddressModule
 import com.hedvig.app.changeDateBottomSheetModule
 import com.hedvig.app.chatEventModule
 import com.hedvig.app.checkoutModule
+import com.hedvig.app.claimsRepositoryModule
+import com.hedvig.app.claimsViewModelModule
 import com.hedvig.app.clockModule
 import com.hedvig.app.coilModule
 import com.hedvig.app.connectPaymentModule
@@ -119,6 +122,10 @@ class KoinInitializer : Initializer<KoinApplication> {
         valueStoreModule,
         viewModelModule,
         whatsNewModule,
+        authRepositoryModule,
+        submitClaimModule,
+        claimsRepositoryModule,
+        claimsViewModelModule
       ),
     )
   }

@@ -142,10 +142,6 @@ private fun AnimatedCircles() {
 @Composable
 fun TextProgressOverlayPreview() {
   HedvigTheme {
-    Surface(
-      color = MaterialTheme.colors.background,
-    ) {
-      TextProgressOverlay(progressText = "Calculating price...")
-    }
+    TextProgressOverlay(progressText = "Calculating price...")
   }
 }
