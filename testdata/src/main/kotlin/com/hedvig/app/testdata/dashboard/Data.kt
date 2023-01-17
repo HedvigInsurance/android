@@ -57,6 +57,7 @@ val INSURANCE_DATA_WITH_CROSS_SELL = InsuranceDataBuilder(
                 name = "123",
               ),
             ),
+            asCrossSellWeb = null
           ),
           blurHash = "LJC6\$2-:DiWB~WxuRkayMwNGo~of",
           imageUrl = "https://images.unsplash.com/photo-1628996796855-0b056a464e06",
