@@ -10,6 +10,9 @@ fragment CrossSellFragment on CrossSell {
         name
       }
     }
+    ... on CrossSellWeb {
+      url
+    }
   }
   blurHash
   imageUrl
