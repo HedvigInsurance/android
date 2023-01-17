@@ -20,7 +20,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.odyssey.AudioRecorderViewModel
 import com.hedvig.android.odyssey.ClaimsFlowViewModel
-import com.hedvig.android.odyssey.Input
 import com.hedvig.common.designsystem.LargeTextButton
 import com.hedvig.common.designsystem.ProgressableLargeContainedButton
 import com.hedvig.common.renderers.audiorecorder.PlaybackWaveForm
@@ -31,6 +30,7 @@ import java.time.Clock
 import java.time.Duration
 import java.time.Instant
 import com.hedvig.android.odyssey.R
+import com.hedvig.android.odyssey.model.Input
 import com.hedvig.common.remote.file.File
 import com.hedvig.common.remote.file.FileContent
 import com.hedvig.common.utils.contentType

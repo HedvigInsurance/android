@@ -682,8 +682,8 @@ val authRepositoryModule = module {
 
 val claimsRepositoryModule = module {
   single<ClaimsFlowRepository> {
-    //NetworkClaimsFlowRepository(get<OkHttpClient>())
-    MockClaimsFlowRepository()
+    NetworkClaimsFlowRepository(get<OkHttpClient>())
+    //MockClaimsFlowRepository()
   }
 }
 

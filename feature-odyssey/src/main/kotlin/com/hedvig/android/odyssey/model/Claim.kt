@@ -1,4 +1,4 @@
-package com.hedvig.android.odyssey
+package com.hedvig.android.odyssey.model
 
 import com.hedvig.android.odyssey.repository.AutomationClaimDTO2
 import com.hedvig.android.odyssey.repository.AutomationClaimInputDTO2

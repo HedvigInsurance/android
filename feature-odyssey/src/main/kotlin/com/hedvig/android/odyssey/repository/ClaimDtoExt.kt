@@ -1,8 +1,8 @@
 package com.hedvig.android.odyssey.repository
 
-import com.hedvig.android.odyssey.Claim
-import com.hedvig.android.odyssey.Input
-import com.hedvig.android.odyssey.Resolution
+import com.hedvig.android.odyssey.model.Claim
+import com.hedvig.android.odyssey.model.Input
+import com.hedvig.android.odyssey.model.Resolution
 
 fun AutomationClaimDTO2.toClaim() = Claim(
   state = Claim.ClaimState(

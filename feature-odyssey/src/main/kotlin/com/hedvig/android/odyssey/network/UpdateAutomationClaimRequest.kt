@@ -1,6 +1,6 @@
 package com.hedvig.android.odyssey.network
 
-import com.hedvig.android.odyssey.Claim
+import com.hedvig.android.odyssey.model.Claim
 import com.hedvig.common.remote.money.MonetaryAmount
 import java.time.LocalDate
 

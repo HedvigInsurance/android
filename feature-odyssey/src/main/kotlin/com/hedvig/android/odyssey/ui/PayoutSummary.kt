@@ -24,7 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.odyssey.ClaimsFlowViewModel
-import com.hedvig.android.odyssey.Resolution
+import com.hedvig.android.odyssey.model.Resolution
 import com.hedvig.common.remote.money.format
 import kotlinx.coroutines.launch
 

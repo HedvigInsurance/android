@@ -1,6 +1,7 @@
 package com.hedvig.android.odyssey
 
 import com.hedvig.android.core.common.await
+import com.hedvig.android.odyssey.model.Claim
 import com.hedvig.android.odyssey.network.toUpdateRequest
 import com.hedvig.android.odyssey.repository.AutomationClaimDTO2
 import com.hedvig.android.odyssey.repository.toClaim

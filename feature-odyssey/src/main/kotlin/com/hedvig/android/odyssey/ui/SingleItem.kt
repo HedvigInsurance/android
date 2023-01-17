@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.FormRowButton
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.odyssey.ClaimsFlowViewModel
-import com.hedvig.android.odyssey.Input
+import com.hedvig.android.odyssey.model.Input
 import com.hedvig.android.odyssey.repository.AutomationClaimInputDTO2
 import com.hedvig.common.remote.money.MonetaryAmount
 import com.hedvig.common.remote.money.format

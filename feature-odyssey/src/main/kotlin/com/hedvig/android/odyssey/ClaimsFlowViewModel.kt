@@ -1,14 +1,22 @@
 package com.hedvig.android.odyssey
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.hedvig.android.odyssey.model.Input
 import com.hedvig.android.odyssey.repository.AutomationClaimDTO2
 import com.hedvig.android.odyssey.repository.AutomationClaimInputDTO2
 import com.hedvig.common.remote.file.File
 import com.hedvig.common.remote.money.MonetaryAmount
 import java.time.LocalDate
 import java.util.*
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.WhileSubscribed
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
 class ClaimsFlowViewModel(
@@ -17,14 +25,30 @@ class ClaimsFlowViewModel(
   private val claimsRepository: ClaimsFlowRepository,
 ) : ViewModel() {
 
+  private val inputIndex = MutableStateFlow(0)
   private val _viewState = MutableStateFlow(ViewState())
-  val viewState: StateFlow<ViewState> = _viewState
+
+  val viewState = combine(inputIndex, _viewState) { index: Int, viewState: ViewState ->
+    viewState.copy(
+      currentInput = viewState.claim?.inputs?.get(index),
+    )
+  }.stateIn(
+    scope = viewModelScope,
+    started = SharingStarted.WhileSubscribed(5.seconds),
+    initialValue = ViewState(),
+  )
 
   suspend fun createClaim() = with(_viewState) {
     update { it.copy(isLoading = true) }
     when (val result = claimsRepository.createOrRestartClaim(itemType, itemProblem)) {
       is ClaimResult.Error -> update { it.copy(errorMessage = result.message, isLoading = false) }
-      is ClaimResult.Success -> update { it.copy(claim = result.claim, isLoading = false) }
+      is ClaimResult.Success -> update {
+        it.copy(
+          claim = result.claim,
+          currentInput = result.claim.inputs.first(),
+          isLoading = false,
+        )
+      }
     }
   }
 
@@ -58,7 +82,12 @@ class ClaimsFlowViewModel(
   }
 
   fun onNext() {
+    inputIndex.value = inputIndex.value++
     _viewState.update { it.copy(id = UUID.randomUUID()) }
+  }
+
+  fun onBack() {
+    inputIndex.value = inputIndex.value--
   }
 
   suspend fun onAudioFile(file: File) {

@@ -1,10 +1,10 @@
 package com.hedvig.android.odyssey.repository
 
-import com.hedvig.android.odyssey.Claim
+import com.hedvig.android.odyssey.model.Claim
 import com.hedvig.android.odyssey.ClaimResult
 import com.hedvig.android.odyssey.ClaimsFlowRepository
-import com.hedvig.android.odyssey.Input
-import com.hedvig.android.odyssey.Resolution
+import com.hedvig.android.odyssey.model.Input
+import com.hedvig.android.odyssey.model.Resolution
 import com.hedvig.common.remote.money.MonetaryAmount
 import java.time.LocalDate
 import kotlinx.coroutines.delay
