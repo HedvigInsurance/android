@@ -1,6 +1,7 @@
 package com.hedvig.android.odyssey.network
 
 import com.hedvig.android.odyssey.model.Claim
+import com.hedvig.android.odyssey.model.ClaimState
 import com.hedvig.common.remote.money.MonetaryAmount
 import java.time.LocalDate
 
@@ -19,7 +20,7 @@ data class UpdateClaimItem(
   val purchasePrice: MonetaryAmount?,
 )
 
-fun Claim.ClaimState.toUpdateRequest() = UpdateAutomationClaimRequest(
+fun ClaimState.toUpdateRequest() = UpdateAutomationClaimRequest(
   dateOfOccurrence = LocalDate.now().toString(),
 //  audioUrl = audioUrl,
   location = location.name,

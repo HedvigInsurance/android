@@ -36,7 +36,6 @@ fun HonestyPledge(viewModel: ClaimsFlowViewModel) {
       onClick = {
         coroutineScope.launch {
           viewModel.createClaim()
-          viewModel.onNext()
         }
       },
     ) {

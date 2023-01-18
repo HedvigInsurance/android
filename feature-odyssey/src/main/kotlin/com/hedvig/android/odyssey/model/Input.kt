@@ -4,7 +4,6 @@ import com.hedvig.android.odyssey.repository.AutomationClaimDTO2
 import com.hedvig.android.odyssey.repository.AutomationClaimInputDTO2
 import com.hedvig.common.remote.file.File
 import com.hedvig.common.remote.money.MonetaryAmount
-import java.time.LocalDate
 
 sealed interface Input {
 
@@ -23,16 +22,19 @@ sealed interface Input {
   }
 
   data class DateOfOccurrence(
-    val dateOfOccurrence: LocalDate?,
+    val selectedDateOfOccurrence: String?,
   ) : Input
 
   data class Location(
     val locationOptions: List<AutomationClaimDTO2.ClaimLocation>,
+    val selectedLocation: AutomationClaimDTO2.ClaimLocation?,
   ) : Input
 
   data class SingleItem(
     val purchasePrice: MonetaryAmount?,
+    val purchaseDate: String?,
     val problemIds: List<AutomationClaimInputDTO2.SingleItem.ClaimProblem>,
+    val selectedProblemIds: List<AutomationClaimInputDTO2.SingleItem.ClaimProblem>,
   ) : Input
 
   data class PhoneNumber(

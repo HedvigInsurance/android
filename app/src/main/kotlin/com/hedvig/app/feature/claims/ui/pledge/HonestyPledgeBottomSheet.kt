@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.hedvig.android.odyssey.ClaimsFlowActivity2
 import com.hedvig.app.R
 import com.hedvig.app.databinding.BottomSheetHonestyPledgeBinding
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
@@ -46,10 +47,8 @@ class HonestyPledgeBottomSheet(
     }
   }
 
-  private fun getClaimsFlowIntent() = EmbarkActivity.newInstance(
-    requireContext(),
-    "claims",
-    getString(hedvig.resources.R.string.CLAIMS_HONESTY_PLEDGE_BOTTOM_SHEET_BUTTON_LABEL),
+  private fun getClaimsFlowIntent() = ClaimsFlowActivity2.newInstance(
+    requireContext(), ClaimsFlowActivity2.ItemType("PHONE"),
   )
 
   companion object {

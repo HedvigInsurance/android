@@ -18,13 +18,9 @@ suspend fun startClaimsFlow(
   commonClaimId: String?,
 ) {
   if (true) {
-    val intent = ClaimsFlowActivity2.newInstance(context, ClaimsFlowActivity2.ItemType("PHONE"))
-
-    if (registerForResult != null) {
-      registerForResult(intent)
-    } else {
-      context.startActivity(intent)
-    }
+    HonestyPledgeBottomSheet
+      .newInstance(registerForResult)
+      .show(fragmentManager, HonestyPledgeBottomSheet.TAG)
   } else if (featureManager.isFeatureEnabled(Feature.USE_ODYSSEY_CLAIM_FLOW)) {
     val intent = ClaimsFlowActivity.newInstance(
       context = context,

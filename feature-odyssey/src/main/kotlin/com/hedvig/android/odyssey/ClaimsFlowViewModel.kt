@@ -2,22 +2,14 @@ package com.hedvig.android.odyssey
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.hedvig.android.odyssey.model.Input
 import com.hedvig.android.odyssey.repository.AutomationClaimDTO2
 import com.hedvig.android.odyssey.repository.AutomationClaimInputDTO2
 import com.hedvig.common.remote.file.File
 import com.hedvig.common.remote.money.MonetaryAmount
 import java.time.LocalDate
-import java.util.*
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.WhileSubscribed
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class ClaimsFlowViewModel(
   private val itemType: String?,
@@ -25,52 +17,42 @@ class ClaimsFlowViewModel(
   private val claimsRepository: ClaimsFlowRepository,
 ) : ViewModel() {
 
-  private val inputIndex = MutableStateFlow(0)
   private val _viewState = MutableStateFlow(ViewState())
+  val viewState = _viewState
 
-  val viewState = combine(inputIndex, _viewState) { index: Int, viewState: ViewState ->
-    viewState.copy(
-      currentInput = viewState.claim?.inputs?.get(index),
-    )
-  }.stateIn(
-    scope = viewModelScope,
-    started = SharingStarted.WhileSubscribed(5.seconds),
-    initialValue = ViewState(),
-  )
+  init {
+    viewModelScope.launch {
+      createClaim()
+    }
+  }
 
   suspend fun createClaim() = with(_viewState) {
     update { it.copy(isLoading = true) }
-    when (val result = claimsRepository.createOrRestartClaim(itemType, itemProblem)) {
-      is ClaimResult.Error -> update { it.copy(errorMessage = result.message, isLoading = false) }
-      is ClaimResult.Success -> update {
-        it.copy(
-          claim = result.claim,
-          currentInput = result.claim.inputs.first(),
-          isLoading = false,
-        )
-      }
-    }
+    val result = claimsRepository.getOrCreateClaim(itemType, itemProblem)
+    value = updateViewState(result)
   }
 
-  suspend fun updateClaim() = with(_viewState) {
-    val claimState = value.claim?.state
-    if (claimState != null) {
-      update { it.copy(isLoading = true) }
-      when (val result = claimsRepository.updateClaim(claimState)) {
-        is ClaimResult.Error -> update { it.copy(errorMessage = result.message, isLoading = false) }
-        is ClaimResult.Success -> update { it.copy(id = UUID.randomUUID(), claim = result.claim, isLoading = false) }
-      }
+  suspend fun onNext() = with(_viewState) {
+    val nextIndex = value.currentInputIndex + 1
+    val nrOfInputs = value.inputs.size
+    if (nextIndex < nrOfInputs) {
+      update { it.copy(currentInputIndex = nextIndex) }
     } else {
-      update { it.copy(errorMessage = "No claim found, please try starting a new claim") }
+      updateClaim()
+      openClaim()
     }
   }
 
-  suspend fun openClaim() = with(_viewState) {
+  private suspend fun updateClaim() = with(_viewState) {
     update { it.copy(isLoading = true) }
-    when (val result = claimsRepository.openClaim()) {
-      is ClaimResult.Error -> update { it.copy(errorMessage = result.message, isLoading = false) }
-      is ClaimResult.Success -> update { it.copy(id = UUID.randomUUID(), isLoading = false) }
-    }
+    val result = claimsRepository.updateClaim(value.claimState)
+    value = updateViewState(result)
+  }
+
+  private suspend fun openClaim() = with(_viewState) {
+    update { it.copy(isLoading = true) }
+    val result = claimsRepository.openClaim()
+    value = updateViewState(result)
   }
 
   suspend fun openClaimAndPayout(amount: MonetaryAmount) = with(_viewState) {
@@ -81,79 +63,45 @@ class ClaimsFlowViewModel(
     }
   }
 
-  fun onNext() {
-    inputIndex.value = inputIndex.value++
-    _viewState.update { it.copy(id = UUID.randomUUID()) }
-  }
-
-  fun onBack() {
-    inputIndex.value = inputIndex.value--
-  }
-
-  suspend fun onAudioFile(file: File) {
-    val currentClaim = _viewState.value.claim
-    if (currentClaim != null) {
-      // upload file
-      _viewState.update {
-        val newState = currentClaim.state.copy(audioUrl = file.name)
-        it.copy(claim = currentClaim.copy(state = newState))
-      }
+  fun onBack() = with(_viewState) {
+    val previousIndex = value.currentInputIndex - 1
+    if (previousIndex >= 0) {
+      update { it.copy(currentInputIndex = previousIndex) }
+    } else {
+      update { it.copy(shouldExit = true) }
     }
   }
 
-  fun onLocation(location: AutomationClaimDTO2.ClaimLocation) {
-    val currentClaim = _viewState.value.claim
-    if (currentClaim != null) {
-      _viewState.update {
-        val newState = currentClaim.state.copy(location = location)
-        it.copy(claim = currentClaim.copy(state = newState))
-      }
+  suspend fun onAudioFile(file: File) = with(_viewState) {
+    update { it.copy(claimState = value.claimState.copy(audioUrl = file.name)) }
+  }
+
+  fun onLocation(location: AutomationClaimDTO2.ClaimLocation) = with(_viewState) {
+    update { it.copy(claimState = value.claimState.copy(location = location)) }
+  }
+
+  fun onDateOfOccurrence(date: LocalDate) = with(_viewState) {
+    update { it.copy(claimState = value.claimState.copy(dateOfOccurrence = date)) }
+  }
+
+  fun onDateOfPurchase(date: LocalDate) = with(_viewState) {
+    update {
+      val newItem = it.claimState.item.copy(purchaseDate = date)
+      it.copy(claimState = it.claimState.copy(item = newItem))
     }
   }
 
-  fun onDateOfOccurrence(date: LocalDate) {
-    val currentClaim = _viewState.value.claim
-    if (currentClaim != null) {
-      _viewState.update {
-        val newState = currentClaim.state.copy(dateOfOccurrence = date)
-        it.copy(claim = currentClaim.copy(state = newState))
-      }
+  fun onPurchasePrice(price: MonetaryAmount) = with(_viewState) {
+    update {
+      val newItem = it.claimState.item.copy(purchasePrice = price)
+      it.copy(claimState = it.claimState.copy(item = newItem))
     }
   }
 
-  fun onDateOfPurchase(date: LocalDate) {
-    val currentClaim = _viewState.value.claim
-    if (currentClaim != null) {
-      _viewState.update {
-        val item = currentClaim.state.item
-        val newItem = item.copy(purchaseDate = date)
-        val newState = currentClaim.state.copy(item = newItem)
-        it.copy(claim = currentClaim.copy(state = newState))
-      }
-    }
-  }
-
-  fun onPurchasePrice(price: MonetaryAmount) {
-    val currentClaim = _viewState.value.claim
-    if (currentClaim != null) {
-      _viewState.update {
-        val item = currentClaim.state.item
-        val newItem = item.copy(purchasePrice = price)
-        val newState = currentClaim.state.copy(item = newItem)
-        it.copy(claim = currentClaim.copy(state = newState))
-      }
-    }
-  }
-
-  fun onTypeOfDamage(problem: AutomationClaimInputDTO2.SingleItem.ClaimProblem) {
-    val currentClaim = _viewState.value.claim
-    if (currentClaim != null) {
-      _viewState.update {
-        val item = currentClaim.state.item
-        val newItem = item.copy(problemIds = listOf(problem))
-        val newState = currentClaim.state.copy(item = newItem)
-        it.copy(claim = currentClaim.copy(state = newState))
-      }
+  fun onTypeOfDamage(problem: AutomationClaimInputDTO2.SingleItem.ClaimProblem) = with(_viewState) {
+    update {
+      val newItem = it.claimState.item.copy(problemIds = listOf(problem))
+      it.copy(claimState = it.claimState.copy(item = newItem))
     }
   }
 
@@ -161,11 +109,17 @@ class ClaimsFlowViewModel(
     _viewState.update { it.copy(shouldExit = true) }
   }
 
-  fun onLastScreen() {
-    _viewState.update { it.copy(isLastScreen = true) }
-  }
-
   fun onDismissError() {
     _viewState.update { it.copy(errorMessage = null) }
   }
+}
+
+private fun MutableStateFlow<ViewState>.updateViewState(claimResult: ClaimResult) = when (claimResult) {
+  is ClaimResult.Error -> this.value.copy(errorMessage = claimResult.message, isLoading = false)
+  is ClaimResult.Success -> this.value.copy(
+    claimState = claimResult.claimState,
+    inputs = claimResult.inputs,
+    resolutions = claimResult.resolutions,
+    isLoading = false,
+  )
 }

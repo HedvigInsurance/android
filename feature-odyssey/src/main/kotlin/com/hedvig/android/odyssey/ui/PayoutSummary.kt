@@ -25,15 +25,15 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.odyssey.ClaimsFlowViewModel
 import com.hedvig.android.odyssey.model.Resolution
+import com.hedvig.common.remote.money.MonetaryAmount
 import com.hedvig.common.remote.money.format
 import kotlinx.coroutines.launch
 
 @Composable
-fun PayoutSummary(viewModel: ClaimsFlowViewModel) {
-
-  val viewState by viewModel.viewState.collectAsState()
-  val resolution = viewState.claim?.resolutions?.filterIsInstance<Resolution.SingleItemPayout>()?.firstOrNull()
-    ?: throw java.lang.IllegalArgumentException()
+fun PayoutSummary(
+  resolution: Resolution.SingleItemPayout,
+  onPayout: suspend (MonetaryAmount) -> Unit,
+) {
   val coroutineScope = rememberCoroutineScope()
 
   Box(
@@ -91,7 +91,7 @@ fun PayoutSummary(viewModel: ClaimsFlowViewModel) {
     LargeContainedTextButton(
       onClick = {
         coroutineScope.launch {
-          viewModel.openClaimAndPayout(resolution.payoutAmount)
+          onPayout(resolution.payoutAmount)
         }
       },
       text = "Payout ${resolution.payoutAmount.format()}",

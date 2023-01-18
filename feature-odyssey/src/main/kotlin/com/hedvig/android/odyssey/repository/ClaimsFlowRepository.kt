@@ -2,6 +2,9 @@ package com.hedvig.android.odyssey
 
 import com.hedvig.android.core.common.await
 import com.hedvig.android.odyssey.model.Claim
+import com.hedvig.android.odyssey.model.ClaimState
+import com.hedvig.android.odyssey.model.Input
+import com.hedvig.android.odyssey.model.Resolution
 import com.hedvig.android.odyssey.network.toUpdateRequest
 import com.hedvig.android.odyssey.repository.AutomationClaimDTO2
 import com.hedvig.android.odyssey.repository.toClaim
@@ -17,18 +20,23 @@ import okhttp3.Response
 import org.json.JSONObject
 
 interface ClaimsFlowRepository {
-  suspend fun createOrRestartClaim(
+  suspend fun getOrCreateClaim(
     itemType: String?,
     itemProblem: String?,
   ): ClaimResult
 
-  suspend fun updateClaim(claimState: Claim.ClaimState): ClaimResult
+  suspend fun updateClaim(claimState: ClaimState): ClaimResult
   suspend fun getClaim(): ClaimResult
   suspend fun openClaim(amount: MonetaryAmount? = null): ClaimResult
 }
 
 sealed interface ClaimResult {
-  data class Success(val claim: Claim) : ClaimResult
+  data class Success(
+    val claimState: ClaimState,
+    val inputs: List<Input>,
+    val resolutions: Set<Resolution>,
+  ) : ClaimResult
+
   data class Error(val message: String) : ClaimResult
 }
 
@@ -43,9 +51,9 @@ class NetworkClaimsFlowRepository(
     ignoreUnknownKeys = true
   }
 
-  override suspend fun createOrRestartClaim(itemType: String?, itemProblem: String?): ClaimResult {
-    return when (getClaim()) {
-      is ClaimResult.Success -> restartClaim(itemType, itemProblem)
+  override suspend fun getOrCreateClaim(itemType: String?, itemProblem: String?): ClaimResult {
+    return when (val res = getClaim()) {
+      is ClaimResult.Success -> res
       is ClaimResult.Error -> createClaim(itemType, itemProblem)
     }
   }
@@ -80,7 +88,7 @@ class NetworkClaimsFlowRepository(
     return handleResponse(response)
   }
 
-  override suspend fun updateClaim(claimState: Claim.ClaimState): ClaimResult {
+  override suspend fun updateClaim(claimState: ClaimState): ClaimResult {
     val updateRequest = claimState.toUpdateRequest()
     val requestBody = json.encodeToString(updateRequest).toRequestBody()
     val request = Request.Builder()
@@ -137,7 +145,12 @@ class NetworkClaimsFlowRepository(
       ClaimResult.Error("No claim found in response!")
     } else {
       val claimDto = json.decodeFromString<AutomationClaimDTO2>(claimResponse)
-      ClaimResult.Success(claimDto.toClaim())
+      val (state, inputs, resolutions) = claimDto.toClaim()
+      ClaimResult.Success(
+        claimState = state,
+        inputs = inputs,
+        resolutions = resolutions,
+      )
     }
   }
 

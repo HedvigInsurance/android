@@ -10,6 +10,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -22,13 +23,16 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
 @Composable
-fun Success(viewModel: ClaimsFlowViewModel) {
+fun Success(
+  onExit: () -> Unit,
+  onNext: suspend () -> Unit,
+) {
+
+  val coroutineScope = rememberCoroutineScope()
 
   BackHandler {
-    viewModel.onExit()
+    onExit()
   }
-
-  viewModel.onLastScreen()
 
   Box(
     Modifier
@@ -43,7 +47,11 @@ fun Success(viewModel: ClaimsFlowViewModel) {
     }
 
     LargeContainedTextButton(
-      onClick = viewModel::onNext,
+      onClick = {
+        coroutineScope.launch {
+          onNext()
+        }
+      },
       text = "Continue",
       modifier = Modifier.align(Alignment.BottomCenter),
     )

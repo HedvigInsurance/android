@@ -8,52 +8,52 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.FormRowButton
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
-import com.hedvig.android.odyssey.ClaimsFlowViewModel
+import com.hedvig.android.odyssey.model.ClaimState
 import com.hedvig.android.odyssey.model.Input
 import com.hedvig.android.odyssey.repository.AutomationClaimInputDTO2
 import com.hedvig.common.remote.money.MonetaryAmount
 import com.hedvig.common.remote.money.format
 import java.time.LocalDate
+import kotlinx.coroutines.launch
 
 @Composable
-fun SingleItem(viewModel: ClaimsFlowViewModel) {
-  val viewState by viewModel.viewState.collectAsState()
-  val itemState = viewState.claim?.state?.item
+fun SingleItem(
+  state: ClaimState,
+  input: Input.SingleItem,
+  onDateOfPurchase: (LocalDate) -> Unit,
+  onTypeOfDamage: (AutomationClaimInputDTO2.SingleItem.ClaimProblem) -> Unit,
+  onPurchasePrice: (MonetaryAmount) -> Unit,
+  onNext: suspend () -> Unit,
+) {
 
+  val coroutineScope = rememberCoroutineScope()
   val openDamagePickerDialog = remember { mutableStateOf(false) }
 
   val now = LocalDate.now()
   val pickerDialog = DatePickerDialog(
     LocalContext.current,
     { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
-      viewModel.onDateOfPurchase(LocalDate.of(year, month, dayOfMonth))
+      onDateOfPurchase(LocalDate.of(year, month, dayOfMonth))
     },
     now.year,
     now.monthValue,
     now.dayOfMonth,
   )
 
-  val damageTypeValues = viewState.claim?.inputs
-    ?.filterIsInstance<Input.SingleItem>()
-    ?.firstOrNull()
-    ?.problemIds
-    ?: emptyList()
-
   if (openDamagePickerDialog.value) {
     SingleSelectDialog(
       title = "Select type of damage",
-      optionsList = damageTypeValues,
-      onSelected = viewModel::onTypeOfDamage,
+      optionsList = input.problemIds,
+      onSelected = onTypeOfDamage,
       getDisplayText = { damageType: AutomationClaimInputDTO2.SingleItem.ClaimProblem -> damageType.getText() },
     ) { openDamagePickerDialog.value = false }
   }
@@ -69,7 +69,7 @@ fun SingleItem(viewModel: ClaimsFlowViewModel) {
       openDialog = openDialog,
       editMessage = editMessage,
       onPositiveButtonClicked = {
-        viewModel.onPurchasePrice(MonetaryAmount(it, "SEK"))
+        onPurchasePrice(MonetaryAmount(it, "SEK"))
       },
       onDismissRequest = {
         openDialog.value = false
@@ -88,7 +88,7 @@ fun SingleItem(viewModel: ClaimsFlowViewModel) {
     Column {
       FormRowButton(
         mainText = "Date of purchase",
-        secondaryText = viewState.claim?.state?.item?.purchaseDate?.toString() ?: "-",
+        secondaryText = state.item.purchaseDate?.toString() ?: "-",
       ) {
         pickerDialog.show()
       }
@@ -97,7 +97,7 @@ fun SingleItem(viewModel: ClaimsFlowViewModel) {
 
       FormRowButton(
         mainText = "Purchase price",
-        secondaryText = itemState?.purchasePrice?.format() ?: "Not specified",
+        secondaryText = state.item.purchasePrice?.format() ?: "Not specified",
       ) {
         openDialog.value = true
       }
@@ -106,14 +106,18 @@ fun SingleItem(viewModel: ClaimsFlowViewModel) {
 
       FormRowButton(
         mainText = "Damage",
-        secondaryText = itemState?.problemIds?.firstOrNull()?.getText() ?: "-",
+        secondaryText = state.item.problemIds.joinToString { it.getText() },
       ) {
         openDamagePickerDialog.value = true
       }
     }
 
     LargeContainedTextButton(
-      onClick = viewModel::onNext,
+      onClick = {
+        coroutineScope.launch {
+          onNext()
+        }
+      },
       text = "Next",
       modifier = Modifier.align(Alignment.BottomCenter),
     )

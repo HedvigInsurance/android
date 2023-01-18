@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.odyssey.AudioRecorderViewModel
-import com.hedvig.android.odyssey.ClaimsFlowViewModel
 import com.hedvig.common.designsystem.LargeTextButton
 import com.hedvig.common.designsystem.ProgressableLargeContainedButton
 import com.hedvig.common.renderers.audiorecorder.PlaybackWaveForm
@@ -30,7 +29,6 @@ import java.time.Clock
 import java.time.Duration
 import java.time.Instant
 import com.hedvig.android.odyssey.R
-import com.hedvig.android.odyssey.model.Input
 import com.hedvig.common.remote.file.File
 import com.hedvig.common.remote.file.FileContent
 import com.hedvig.common.utils.contentType
@@ -38,22 +36,22 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
 @Composable
-fun AudioRecorderScreen(viewModel: ClaimsFlowViewModel) {
+fun AudioRecorderScreen(
+  questions: List<String?>,
+  onAudioFile: suspend (File) -> Unit,
+  onNext: suspend () -> Unit,
+) {
   val audioRecorderViewModel = getViewModel<AudioRecorderViewModel>()
   val audioRecorderViewState by audioRecorderViewModel.viewState.collectAsState()
-  val viewState = viewModel.viewState.collectAsState()
+
   val coroutineScope = rememberCoroutineScope()
 
   Box(Modifier.fillMaxHeight()) {
 
     Column(Modifier.padding(16.dp)) {
-      viewState.value.claim?.inputs
-        ?.filterIsInstance<Input.AudioRecording>()
-        ?.firstOrNull()
-        ?.questions
-        ?.forEach {
-          Text(it ?: "")
-        }
+      questions.forEach {
+        Text(it ?: "-")
+      }
     }
 
     Box(Modifier.align(Alignment.BottomCenter)) {
@@ -70,8 +68,8 @@ fun AudioRecorderScreen(viewModel: ClaimsFlowViewModel) {
             contentType = filePath.contentType(),
           )
           coroutineScope.launch {
-            viewModel.onAudioFile(audioFile)
-            viewModel.updateClaim()
+            onAudioFile(audioFile)
+            onNext()
           }
         },
         redo = audioRecorderViewModel::redo,

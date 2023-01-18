@@ -8,50 +8,53 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.FormRowButton
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
-import com.hedvig.android.odyssey.ClaimsFlowViewModel
+import com.hedvig.android.odyssey.model.Claim
+import com.hedvig.android.odyssey.model.ClaimState
 import com.hedvig.android.odyssey.model.Input
 import com.hedvig.android.odyssey.repository.AutomationClaimDTO2
-import com.hedvig.android.odyssey.repository.AutomationClaimInputDTO2
 import java.time.LocalDate
+import kotlinx.coroutines.launch
 
 @Composable
-fun DateOfOccurrenceAndLocation(viewModel: ClaimsFlowViewModel) {
-  val viewState by viewModel.viewState.collectAsState()
+fun DateOfOccurrenceAndLocation(
+  state: ClaimState,
+  onDateOfOccurrence: (LocalDate) -> Unit,
+  onLocation: (AutomationClaimDTO2.ClaimLocation) -> Unit,
+  onNext: suspend () -> Unit,
+) {
+  val coroutineScope = rememberCoroutineScope()
   val openLocationPickerDialog = remember { mutableStateOf(false) }
 
   val now = LocalDate.now()
   val pickerDialog = DatePickerDialog(
     LocalContext.current,
     { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
-      viewModel.onDateOfOccurrence(LocalDate.of(year, month, dayOfMonth))
+      onDateOfOccurrence(LocalDate.of(year, month, dayOfMonth))
     },
     now.year,
     now.monthValue,
     now.dayOfMonth,
   )
 
-  val locationValues = viewState.claim?.inputs
-    ?.filterIsInstance<Input.Location>()
-    ?.firstOrNull()
-    ?.locationOptions
-    ?: emptyList()
-
   if (openLocationPickerDialog.value) {
     SingleSelectDialog(
       title = "Select location",
-      optionsList = locationValues,
-      onSelected = viewModel::onLocation,
-      getDisplayText = { location: AutomationClaimDTO2.ClaimLocation -> location.getText() },
+      optionsList = listOf(
+        AutomationClaimDTO2.ClaimLocation.AT_HOME,
+        AutomationClaimDTO2.ClaimLocation.ABROAD,
+        AutomationClaimDTO2.ClaimLocation.IN_HOME_COUNTRY,
+      ),
+      onSelected = onLocation,
+      getDisplayText = { it.getText() },
     ) { openLocationPickerDialog.value = false }
   }
 
@@ -66,7 +69,7 @@ fun DateOfOccurrenceAndLocation(viewModel: ClaimsFlowViewModel) {
     Column {
       FormRowButton(
         mainText = "Date of incident",
-        secondaryText = viewState.claim?.state?.dateOfOccurrence?.toString() ?: now.toString(),
+        secondaryText = state.dateOfOccurrence?.toString() ?: "-",
       ) {
         pickerDialog.show()
       }
@@ -75,14 +78,18 @@ fun DateOfOccurrenceAndLocation(viewModel: ClaimsFlowViewModel) {
 
       FormRowButton(
         mainText = "Location",
-        secondaryText = viewState.claim?.state?.location?.getText() ?: "-",
+        secondaryText = state.location.getText(),
       ) {
         openLocationPickerDialog.value = true
       }
     }
 
     LargeContainedTextButton(
-      onClick = viewModel::onNext,
+      onClick = {
+        coroutineScope.launch {
+          onNext()
+        }
+      },
       text = "Next",
       modifier = Modifier.align(Alignment.BottomCenter),
     )
