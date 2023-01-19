@@ -14,6 +14,9 @@ dependencies {
 
   implementation(libs.androidx.other.activityCompose)
   implementation(libs.coil.coil)
-  implementation(libs.hedvig.odyssey)
+  implementation(libs.hedvig.odyssey) {
+    // TODO remove when Odyssey no longer exposes koin-test as a non-test dependency
+    exclude("io.insert-koin", "koin-test")
+  }
   implementation(libs.koin.android)
 }
