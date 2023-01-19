@@ -94,7 +94,7 @@ fun ChatIconPreview() {
     ) {
       Column {
         ChatIcon({}, null)
-        ChatIcon({}, null, false)
+        ChatIcon({}, null, true)
       }
     }
   }
