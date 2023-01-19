@@ -17,6 +17,7 @@ lokalise {
 
 android {
   defaultConfig {
+    @Suppress("UnstableApiUsage")
     vectorDrawables.useSupportLibrary = true
   }
 }
