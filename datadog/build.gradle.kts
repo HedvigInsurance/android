@@ -12,3 +12,11 @@ dependencies {
   implementation(libs.okhttp.core)
   implementation(libs.slimber)
 }
+
+android {
+  lint {
+    // Context: https://issuetracker.google.com/issues/265962219
+    @Suppress("UnstableApiUsage")
+    disable += "EnsureInitializerMetadata"
+  }
+}

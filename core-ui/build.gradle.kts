@@ -11,8 +11,6 @@ dependencies {
   api(libs.accompanist.insetsUi)
   api(libs.androidx.compose.foundation)
   api(libs.androidx.compose.material)
-  api(libs.androidx.compose.uiToolingPreview)
-  debugApi(libs.androidx.compose.uiTooling)
   implementation(libs.androidx.compose.mdcAdapter)
   implementation(libs.androidx.compose.uiUtil)
   implementation(libs.coil.coil)
