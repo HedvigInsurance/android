@@ -14,13 +14,13 @@ suspend fun startClaimsFlow(
   context: Context,
   fragmentManager: FragmentManager,
   registerForResult: ((Intent) -> Unit)? = null,
-  itemType: ClaimsFlowActivity.ItemType? = null,
+  commonClaimId: String?,
 ) {
   if (featureManager.isFeatureEnabled(Feature.USE_ODYSSEY_CLAIM_FLOW)) {
     val intent = ClaimsFlowActivity.newInstance(
       context = context,
       odysseyUrl = context.getString(R.string.ODYSSEY_URL),
-      itemType = itemType,
+      commonClaimId = commonClaimId
     )
 
     if (registerForResult != null) {
