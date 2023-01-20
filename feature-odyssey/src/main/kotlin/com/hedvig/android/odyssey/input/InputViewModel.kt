@@ -1,23 +1,26 @@
-package com.hedvig.android.odyssey
+package com.hedvig.android.odyssey.input
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.odyssey.repository.ClaimResult
+import com.hedvig.android.odyssey.repository.ClaimsFlowRepository
 import com.hedvig.android.odyssey.repository.AutomationClaimDTO2
 import com.hedvig.android.odyssey.repository.AutomationClaimInputDTO2
 import com.hedvig.common.remote.file.File
 import com.hedvig.common.remote.money.MonetaryAmount
+import com.hedvig.odyssey.remote.money.MonetaryAmount
+import java.io.File
 import java.time.LocalDate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class ClaimsFlowViewModel(
-  private val itemType: String?,
-  private val itemProblem: String?,
-  private val claimsRepository: ClaimsFlowRepository,
+class InputViewModel(
+  private val commonClaimId: String?,
+  private val repository: ClaimsFlowRepository,
 ) : ViewModel() {
 
-  private val _viewState = MutableStateFlow(ViewState())
+  private val _viewState = MutableStateFlow(InputViewState())
   val viewState = _viewState
 
   init {
@@ -26,41 +29,28 @@ class ClaimsFlowViewModel(
     }
   }
 
-  suspend fun createClaim() = with(_viewState) {
+  private suspend fun createClaim() = with(_viewState) {
     update { it.copy(isLoading = true) }
-    val result = claimsRepository.getOrCreateClaim(itemType, itemProblem)
+    val result = repository.getOrCreateClaim(commonClaimId)
     value = updateViewState(result)
   }
 
-  suspend fun onNext() = with(_viewState) {
-    val nextIndex = value.currentInputIndex + 1
-    val nrOfInputs = value.inputs.size
-    if (nextIndex < nrOfInputs) {
-      update { it.copy(currentInputIndex = nextIndex) }
-    } else {
-      updateClaim()
-      openClaim()
+  fun onNext() = with(_viewState) {
+    viewModelScope.launch {
+      val nextIndex = value.currentInputIndex + 1
+      val nrOfInputs = value.inputs.size
+      if (nextIndex < nrOfInputs) {
+        update { it.copy(currentInputIndex = nextIndex) }
+      } else {
+        updateClaim(nrOfInputs)
+      }
     }
   }
 
-  private suspend fun updateClaim() = with(_viewState) {
+  private suspend fun updateClaim(nrOfInputs: Int) = with(_viewState) {
     update { it.copy(isLoading = true) }
-    val result = claimsRepository.updateClaim(value.claimState)
+    val result = repository.updateClaim(value.claimState, nrOfInputs)
     value = updateViewState(result)
-  }
-
-  private suspend fun openClaim() = with(_viewState) {
-    update { it.copy(isLoading = true) }
-    val result = claimsRepository.openClaim()
-    value = updateViewState(result)
-  }
-
-  suspend fun openClaimAndPayout(amount: MonetaryAmount) = with(_viewState) {
-    update { it.copy(isLoadingPayment = true) }
-    when (val result = claimsRepository.openClaim(amount)) {
-      is ClaimResult.Error -> update { it.copy(errorMessage = result.message, isLoadingPayment = false) }
-      is ClaimResult.Success -> update { it.copy(shouldExit = true, isLoadingPayment = false) }
-    }
   }
 
   fun onBack() = with(_viewState) {
@@ -72,7 +62,8 @@ class ClaimsFlowViewModel(
     }
   }
 
-  suspend fun onAudioFile(file: File) = with(_viewState) {
+  fun onAudioFile(file: File) = with(_viewState) {
+    // TODO Upload audio file
     update { it.copy(claimState = value.claimState.copy(audioUrl = file.name)) }
   }
 
@@ -105,21 +96,17 @@ class ClaimsFlowViewModel(
     }
   }
 
-  fun onExit() {
-    _viewState.update { it.copy(shouldExit = true) }
-  }
-
   fun onDismissError() {
     _viewState.update { it.copy(errorMessage = null) }
   }
 }
 
-private fun MutableStateFlow<ViewState>.updateViewState(claimResult: ClaimResult) = when (claimResult) {
+private fun MutableStateFlow<InputViewState>.updateViewState(claimResult: ClaimResult) = when (claimResult) {
   is ClaimResult.Error -> this.value.copy(errorMessage = claimResult.message, isLoading = false)
   is ClaimResult.Success -> this.value.copy(
     claimState = claimResult.claimState,
     inputs = claimResult.inputs,
-    resolutions = claimResult.resolutions,
+    resolution = claimResult.resolution,
     isLoading = false,
   )
 }

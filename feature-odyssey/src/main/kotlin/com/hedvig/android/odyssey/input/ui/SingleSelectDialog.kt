@@ -9,15 +9,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ListItem
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.window.Dialog
-import com.hedvig.android.odyssey.repository.AutomationClaimDTO2
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

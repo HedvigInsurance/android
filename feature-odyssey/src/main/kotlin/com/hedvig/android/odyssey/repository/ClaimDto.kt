@@ -2,7 +2,6 @@ package com.hedvig.android.odyssey.repository
 
 import android.util.Log
 import com.hedvig.common.remote.money.MonetaryAmount
-import com.hedvig.common.remote.userContext.UserContext
 import kotlinx.serialization.SerialName
 
 @kotlinx.serialization.Serializable
@@ -68,7 +67,7 @@ sealed class AutomationClaimInputDTO2 {
   @SerialName("AudioRecording")
   data class AudioRecording(
     val audioUrl: String?,
-    val questions: List<String?>,
+    val questions: List<AudioRecordingQuestion>,
   ) : AutomationClaimInputDTO2() {
     enum class AudioRecordingQuestion {
       CLAIM_QUESTION_WHAT_HAS_HAPPENED,
@@ -77,11 +76,11 @@ sealed class AutomationClaimInputDTO2 {
       CLAIM_QUESTION_WHAT_WHO_TOOK_DAMAGE_OR_NEEDS_REPLACEMENT,
       ;
 
-      fun getText(context: UserContext): String = when (this) {
-        CLAIM_QUESTION_WHAT_HAS_HAPPENED -> "context.translate(I18n.message_claims_record_message1)"
-        CLAIM_QUESTION_WHERE_AND_WHEN_DID_IT_HAPPEN -> "context.translate(I18n.message_claims_record_message2)"
-        CLAIM_QUESTION_WHAT_WHO_TOOK_DAMAGE_OR_NEEDS_REPLACEMENT -> "context.translate(I18n.message_claims_record_message3)"
-        CLAIM_QUESTION_WHERE_DID_IT_HAPPEN -> "context.translate(I18n.message_claims_record_message4)"
+      fun getText(): String = when (this) {
+        CLAIM_QUESTION_WHAT_HAS_HAPPENED -> "What has happened?"
+        CLAIM_QUESTION_WHERE_AND_WHEN_DID_IT_HAPPEN -> "Where and when did it happen?"
+        CLAIM_QUESTION_WHAT_WHO_TOOK_DAMAGE_OR_NEEDS_REPLACEMENT -> "What needs replacement?"
+        CLAIM_QUESTION_WHERE_DID_IT_HAPPEN -> "Where did it happen?"
       }
     }
   }

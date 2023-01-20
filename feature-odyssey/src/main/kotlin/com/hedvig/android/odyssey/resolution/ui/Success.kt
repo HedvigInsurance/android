@@ -1,4 +1,4 @@
-package com.hedvig.android.odyssey.ui
+package com.hedvig.android.odyssey.resolution.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -15,17 +13,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewModelScope
-import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
-import com.hedvig.android.odyssey.ClaimsFlowViewModel
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun Success(
   onExit: () -> Unit,
-  onNext: suspend () -> Unit,
 ) {
 
   val coroutineScope = rememberCoroutineScope()
@@ -49,7 +42,7 @@ fun Success(
     LargeContainedTextButton(
       onClick = {
         coroutineScope.launch {
-          onNext()
+          onExit()
         }
       },
       text = "Continue",

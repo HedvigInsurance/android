@@ -8,7 +8,7 @@ import java.time.LocalDate
 data class Claim(
   val state: ClaimState,
   val inputs: List<Input> = emptyList(),
-  val resolutions: Set<Resolution> = emptySet(),
+  val resolution: Resolution = Resolution.None,
 )
 
 data class ClaimState(

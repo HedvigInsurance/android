@@ -1,4 +1,4 @@
-package com.hedvig.android.odyssey.ui
+package com.hedvig.android.odyssey.input.ui.audiorecorder
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.IconButton
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -18,39 +20,54 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.odyssey.AudioRecorderViewModel
-import com.hedvig.common.designsystem.LargeTextButton
-import com.hedvig.common.designsystem.ProgressableLargeContainedButton
+import androidx.compose.ui.unit.sp
+import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
+import com.hedvig.android.core.designsystem.component.button.LargeTextButton
+import com.hedvig.android.odyssey.R
+import com.hedvig.android.odyssey.repository.AutomationClaimInputDTO2
+import com.hedvig.common.remote.file.File
+import com.hedvig.common.remote.file.FileContent
 import com.hedvig.common.renderers.audiorecorder.PlaybackWaveForm
 import com.hedvig.common.renderers.audiorecorder.RecordingAmplitudeIndicator
 import com.hedvig.common.renderers.utils.ScreenOnFlag
 import com.hedvig.common.traits.composeTextStyle
+import com.hedvig.common.utils.contentType
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
-import com.hedvig.android.odyssey.R
-import com.hedvig.common.remote.file.File
-import com.hedvig.common.remote.file.FileContent
-import com.hedvig.common.utils.contentType
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun AudioRecorderScreen(
-  questions: List<String?>,
+  questions: List<AutomationClaimInputDTO2.AudioRecording.AudioRecordingQuestion>,
   onAudioFile: suspend (File) -> Unit,
-  onNext: suspend () -> Unit,
+  onNext: () -> Unit,
 ) {
   val audioRecorderViewModel = getViewModel<AudioRecorderViewModel>()
   val audioRecorderViewState by audioRecorderViewModel.viewState.collectAsState()
 
   val coroutineScope = rememberCoroutineScope()
 
-  Box(Modifier.fillMaxHeight()) {
+  Box(
+    Modifier
+      .fillMaxHeight()
+      .padding(all = 16.dp),
+  ) {
 
-    Column(Modifier.padding(16.dp)) {
+    Column {
       questions.forEach {
-        Text(it ?: "-")
+        Surface(
+          elevation = 2.dp,
+          modifier = Modifier.padding(vertical = 8.dp),
+          shape = RoundedCornerShape(20),
+        ) {
+          Text(
+            text = it.getText(),
+            modifier = Modifier.padding(12.dp),
+            fontSize = 16.sp,
+          )
+        }
       }
     }
 
@@ -75,7 +92,6 @@ fun AudioRecorderScreen(
         redo = audioRecorderViewModel::redo,
         play = audioRecorderViewModel::play,
         pause = audioRecorderViewModel::pause,
-        isLoading = false,
         startRecordingText = "Start recording",
         stopRecordingText = "Stop Recording",
         recordAgainText = "Record Again",
@@ -95,7 +111,6 @@ fun AudioRecorder(
   redo: () -> Unit,
   play: () -> Unit,
   pause: () -> Unit,
-  isLoading: Boolean,
   startRecordingText: String,
   stopRecordingText: String,
   recordAgainText: String,
@@ -122,7 +137,6 @@ fun AudioRecorder(
       redo = redo,
       play = play,
       pause = pause,
-      isLoading = isLoading,
     )
   }
 }
@@ -210,7 +224,6 @@ fun Playback(
   redo: () -> Unit,
   play: () -> Unit,
   pause: () -> Unit,
-  isLoading: Boolean,
 ) {
   Column(
     horizontalAlignment = Alignment.CenterHorizontally,
@@ -228,13 +241,11 @@ fun Playback(
       )
     }
 
-    ProgressableLargeContainedButton(
+    LargeContainedTextButton(
       onClick = submit,
+      text = submitClaimText,
       modifier = Modifier.padding(top = 16.dp),
-      isLoading = isLoading,
-    ) {
-      Text(submitClaimText)
-    }
+    )
 
     LargeTextButton(
       onClick = redo,

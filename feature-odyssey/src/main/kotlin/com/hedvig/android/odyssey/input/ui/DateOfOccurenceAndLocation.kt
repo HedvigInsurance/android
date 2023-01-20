@@ -1,4 +1,4 @@
-package com.hedvig.android.odyssey.ui
+package com.hedvig.android.odyssey.input.ui
 
 import android.app.DatePickerDialog
 import android.widget.DatePicker
@@ -17,10 +17,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.FormRowButton
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
-import com.hedvig.android.odyssey.model.Claim
 import com.hedvig.android.odyssey.model.ClaimState
-import com.hedvig.android.odyssey.model.Input
 import com.hedvig.android.odyssey.repository.AutomationClaimDTO2
+import com.hedvig.android.odyssey.ui.SingleSelectDialog
 import java.time.LocalDate
 import kotlinx.coroutines.launch
 
@@ -28,10 +27,10 @@ import kotlinx.coroutines.launch
 fun DateOfOccurrenceAndLocation(
   state: ClaimState,
   onDateOfOccurrence: (LocalDate) -> Unit,
+  locationOptions: List<AutomationClaimDTO2.ClaimLocation>,
   onLocation: (AutomationClaimDTO2.ClaimLocation) -> Unit,
-  onNext: suspend () -> Unit,
+  onNext: () -> Unit,
 ) {
-  val coroutineScope = rememberCoroutineScope()
   val openLocationPickerDialog = remember { mutableStateOf(false) }
 
   val now = LocalDate.now()
@@ -48,11 +47,7 @@ fun DateOfOccurrenceAndLocation(
   if (openLocationPickerDialog.value) {
     SingleSelectDialog(
       title = "Select location",
-      optionsList = listOf(
-        AutomationClaimDTO2.ClaimLocation.AT_HOME,
-        AutomationClaimDTO2.ClaimLocation.ABROAD,
-        AutomationClaimDTO2.ClaimLocation.IN_HOME_COUNTRY,
-      ),
+      optionsList = locationOptions,
       onSelected = onLocation,
       getDisplayText = { it.getText() },
     ) { openLocationPickerDialog.value = false }
@@ -85,11 +80,7 @@ fun DateOfOccurrenceAndLocation(
     }
 
     LargeContainedTextButton(
-      onClick = {
-        coroutineScope.launch {
-          onNext()
-        }
-      },
+      onClick = onNext,
       text = "Next",
       modifier = Modifier.align(Alignment.BottomCenter),
     )

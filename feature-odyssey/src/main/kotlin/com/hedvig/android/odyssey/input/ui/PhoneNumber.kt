@@ -1,4 +1,4 @@
-package com.hedvig.android.odyssey.ui
+package com.hedvig.android.odyssey.input.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Button
@@ -7,13 +7,11 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewModelScope
-import com.hedvig.android.odyssey.ClaimsFlowViewModel
+import com.hedvig.android.odyssey.input.InputViewModel
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.getViewModel
 
 @Composable
-fun PhoneNumber(viewModel: ClaimsFlowViewModel) {
+fun PhoneNumber(viewModel: InputViewModel) {
   val coroutineScope = rememberCoroutineScope()
   Column {
     Text("Phone", color = MaterialTheme.colors.onPrimary, fontSize = 40.sp)

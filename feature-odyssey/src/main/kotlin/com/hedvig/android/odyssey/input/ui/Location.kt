@@ -1,4 +1,4 @@
-package com.hedvig.android.odyssey.ui
+package com.hedvig.android.odyssey.input.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,11 +12,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.hedvig.android.odyssey.ClaimsFlowViewModel
+import com.hedvig.android.odyssey.input.InputViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun Location(viewModel: ClaimsFlowViewModel) {
+fun Location(viewModel: InputViewModel) {
   val coroutineScope = rememberCoroutineScope()
   Box(
     Modifier

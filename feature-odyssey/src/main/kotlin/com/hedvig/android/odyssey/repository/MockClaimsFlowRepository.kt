@@ -1,8 +1,5 @@
 package com.hedvig.android.odyssey.repository
 
-import com.hedvig.android.odyssey.model.Claim
-import com.hedvig.android.odyssey.ClaimResult
-import com.hedvig.android.odyssey.ClaimsFlowRepository
 import com.hedvig.android.odyssey.model.ClaimState
 import com.hedvig.android.odyssey.model.Input
 import com.hedvig.android.odyssey.model.Resolution
@@ -25,14 +22,14 @@ class MockClaimsFlowRepository : ClaimsFlowRepository {
         Input.AudioRecording(
           null,
           null,
-          listOf("Q1", "Q2"),
+          listOf(AutomationClaimInputDTO2.AudioRecording.AudioRecordingQuestion.CLAIM_QUESTION_WHAT_WHO_TOOK_DAMAGE_OR_NEEDS_REPLACEMENT),
         ),
       ),
-      resolutions = setOf(),
+      resolution = Resolution.None,
     )
   }
 
-  override suspend fun updateClaim(claimState: ClaimState): ClaimResult {
+  override suspend fun updateClaim(claimState: ClaimState, nrOfInputs: Int): ClaimResult {
     delay(1000)
     return ClaimResult.Success(
       claimState = ClaimState(),
@@ -45,17 +42,15 @@ class MockClaimsFlowRepository : ClaimsFlowRepository {
         Input.AudioRecording(
           null,
           null,
-          listOf("Q1", "Q2"),
+          listOf(AutomationClaimInputDTO2.AudioRecording.AudioRecordingQuestion.CLAIM_QUESTION_WHAT_WHO_TOOK_DAMAGE_OR_NEEDS_REPLACEMENT),
         ),
       ),
-      resolutions = listOf(
-        Resolution.SingleItemPayout(
-          purchasePrice = MonetaryAmount("2000", "SEK"),
-          depreciation = MonetaryAmount("2000", "SEK"),
-          deductible = MonetaryAmount("2000", "SEK"),
-          payoutAmount = MonetaryAmount("2000", "SEK"),
-        ),
-      ).toSet(),
+      resolution = Resolution.SingleItemPayout(
+        purchasePrice = MonetaryAmount("2000", "SEK"),
+        depreciation = MonetaryAmount("2000", "SEK"),
+        deductible = MonetaryAmount("2000", "SEK"),
+        payoutAmount = MonetaryAmount("2000", "SEK"),
+      ),
     )
   }
 
@@ -70,7 +65,7 @@ class MockClaimsFlowRepository : ClaimsFlowRepository {
           listOf(),
         ),
       ),
-      resolutions = setOf(),
+      resolution = Resolution.None,
     )
   }
 
@@ -85,16 +80,14 @@ class MockClaimsFlowRepository : ClaimsFlowRepository {
       Input.AudioRecording(
         null,
         null,
-        listOf("Q1", "Q2"),
+        listOf(AutomationClaimInputDTO2.AudioRecording.AudioRecordingQuestion.CLAIM_QUESTION_WHAT_WHO_TOOK_DAMAGE_OR_NEEDS_REPLACEMENT),
       ),
     ),
-    resolutions = listOf(
-      Resolution.SingleItemPayout(
-        purchasePrice = MonetaryAmount("2000", "SEK"),
-        depreciation = MonetaryAmount("2000", "SEK"),
-        deductible = MonetaryAmount("2000", "SEK"),
-        payoutAmount = MonetaryAmount("2000", "SEK"),
-      ),
-    ).toSet(),
+    resolution = Resolution.SingleItemPayout(
+      purchasePrice = MonetaryAmount("2000", "SEK"),
+      depreciation = MonetaryAmount("2000", "SEK"),
+      deductible = MonetaryAmount("2000", "SEK"),
+      payoutAmount = MonetaryAmount("2000", "SEK"),
+    ),
   )
 }

@@ -1,4 +1,4 @@
-package com.hedvig.android.odyssey.ui
+package com.hedvig.android.odyssey.input.ui
 
 import android.app.DatePickerDialog
 import android.widget.DatePicker
@@ -20,6 +20,7 @@ import com.hedvig.android.core.designsystem.component.button.LargeContainedTextB
 import com.hedvig.android.odyssey.model.ClaimState
 import com.hedvig.android.odyssey.model.Input
 import com.hedvig.android.odyssey.repository.AutomationClaimInputDTO2
+import com.hedvig.android.odyssey.ui.SingleSelectDialog
 import com.hedvig.common.remote.money.MonetaryAmount
 import com.hedvig.common.remote.money.format
 import java.time.LocalDate
@@ -32,7 +33,7 @@ fun SingleItem(
   onDateOfPurchase: (LocalDate) -> Unit,
   onTypeOfDamage: (AutomationClaimInputDTO2.SingleItem.ClaimProblem) -> Unit,
   onPurchasePrice: (MonetaryAmount) -> Unit,
-  onNext: suspend () -> Unit,
+  onNext: () -> Unit,
 ) {
 
   val coroutineScope = rememberCoroutineScope()
@@ -113,11 +114,7 @@ fun SingleItem(
     }
 
     LargeContainedTextButton(
-      onClick = {
-        coroutineScope.launch {
-          onNext()
-        }
-      },
+      onClick = onNext,
       text = "Next",
       modifier = Modifier.align(Alignment.BottomCenter),
     )

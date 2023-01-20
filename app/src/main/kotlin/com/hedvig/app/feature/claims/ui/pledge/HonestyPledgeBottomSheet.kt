@@ -6,10 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.hedvig.android.odyssey.ClaimsFlowActivity2
+import com.hedvig.android.odyssey.ClaimsFlowActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.BottomSheetHonestyPledgeBinding
-import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.hanalytics.HAnalytics
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
@@ -18,6 +17,7 @@ import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class HonestyPledgeBottomSheet(
   private val customActivityLaunch: ((Intent) -> Unit)? = null,
+  private val itemType: ClaimsFlowActivity.ItemType?,
 ) : BottomSheetDialogFragment() {
   private val binding by viewBinding(BottomSheetHonestyPledgeBinding::bind)
   private val hAnalytics: HAnalytics by inject()
@@ -47,8 +47,8 @@ class HonestyPledgeBottomSheet(
     }
   }
 
-  private fun getClaimsFlowIntent() = ClaimsFlowActivity2.newInstance(
-    requireContext(), ClaimsFlowActivity2.ItemType("PHONE"),
+  private fun getClaimsFlowIntent() = ClaimsFlowActivity.newInstance(
+    requireContext(), itemType?.name?.let { ClaimsFlowActivity.ItemType(it) },
   )
 
   companion object {
@@ -56,6 +56,7 @@ class HonestyPledgeBottomSheet(
 
     fun newInstance(
       customActivityLaunch: ((Intent) -> Unit)? = null,
-    ): HonestyPledgeBottomSheet = HonestyPledgeBottomSheet(customActivityLaunch)
+      itemType: ClaimsFlowActivity.ItemType?,
+    ): HonestyPledgeBottomSheet = HonestyPledgeBottomSheet(customActivityLaunch, itemType)
   }
 }

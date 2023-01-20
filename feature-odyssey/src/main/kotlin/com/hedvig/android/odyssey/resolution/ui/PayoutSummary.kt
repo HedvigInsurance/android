@@ -1,4 +1,4 @@
-package com.hedvig.android.odyssey.ui
+package com.hedvig.android.odyssey.resolution.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,15 +15,11 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
-import com.hedvig.android.odyssey.ClaimsFlowViewModel
 import com.hedvig.android.odyssey.model.Resolution
 import com.hedvig.common.remote.money.MonetaryAmount
 import com.hedvig.common.remote.money.format
@@ -32,10 +28,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun PayoutSummary(
   resolution: Resolution.SingleItemPayout,
-  onPayout: suspend (MonetaryAmount) -> Unit,
+  onPayout: (MonetaryAmount) -> Unit,
 ) {
-  val coroutineScope = rememberCoroutineScope()
-
   Box(
     Modifier
       .fillMaxHeight()
@@ -90,9 +84,7 @@ fun PayoutSummary(
 
     LargeContainedTextButton(
       onClick = {
-        coroutineScope.launch {
           onPayout(resolution.payoutAmount)
-        }
       },
       text = "Payout ${resolution.payoutAmount.format()}",
       modifier = Modifier.align(Alignment.BottomCenter),

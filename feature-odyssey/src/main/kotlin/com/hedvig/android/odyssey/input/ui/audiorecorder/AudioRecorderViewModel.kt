@@ -1,8 +1,7 @@
-package com.hedvig.android.odyssey
+package com.hedvig.android.odyssey.input.ui.audiorecorder
 
 import android.media.MediaPlayer
 import android.media.MediaRecorder
-import android.util.Log.e
 import androidx.lifecycle.ViewModel
 import java.io.File
 import java.time.Clock

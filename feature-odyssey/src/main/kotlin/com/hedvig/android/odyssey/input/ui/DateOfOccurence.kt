@@ -1,4 +1,4 @@
-package com.hedvig.android.odyssey.ui
+package com.hedvig.android.odyssey.input.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Button
@@ -7,21 +7,16 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.unit.sp
-import com.hedvig.android.odyssey.ClaimsFlowViewModel
-import java.time.LocalDate
+import com.hedvig.android.odyssey.input.InputViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun DateOfOccurence(viewModel: ClaimsFlowViewModel) {
-
-  val coroutineScope = rememberCoroutineScope()
+fun DateOfOccurrence(viewModel: InputViewModel) {
   Column {
     Text("Date", color = MaterialTheme.colors.onPrimary, fontSize = 40.sp)
     Button(
       onClick = {
-        coroutineScope.launch {
-          viewModel.onNext()
-        }
+        viewModel.onNext()
       },
     ) {
       Text(text = "Next")

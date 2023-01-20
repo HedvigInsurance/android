@@ -1,13 +1,10 @@
-package com.hedvig.android.odyssey
+package com.hedvig.android.odyssey.repository
 
 import com.hedvig.android.core.common.await
-import com.hedvig.android.odyssey.model.Claim
 import com.hedvig.android.odyssey.model.ClaimState
 import com.hedvig.android.odyssey.model.Input
 import com.hedvig.android.odyssey.model.Resolution
 import com.hedvig.android.odyssey.network.toUpdateRequest
-import com.hedvig.android.odyssey.repository.AutomationClaimDTO2
-import com.hedvig.android.odyssey.repository.toClaim
 import com.hedvig.common.remote.money.MonetaryAmount
 import com.hedvig.common.remote.money.format
 import kotlinx.serialization.decodeFromString
@@ -19,13 +16,14 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.json.JSONObject
 
+
 interface ClaimsFlowRepository {
   suspend fun getOrCreateClaim(
     itemType: String?,
     itemProblem: String?,
   ): ClaimResult
 
-  suspend fun updateClaim(claimState: ClaimState): ClaimResult
+  suspend fun updateClaim(claimState: ClaimState, nrOfInputs: Int): ClaimResult
   suspend fun getClaim(): ClaimResult
   suspend fun openClaim(amount: MonetaryAmount? = null): ClaimResult
 }
@@ -34,7 +32,7 @@ sealed interface ClaimResult {
   data class Success(
     val claimState: ClaimState,
     val inputs: List<Input>,
-    val resolutions: Set<Resolution>,
+    val resolution: Resolution,
   ) : ClaimResult
 
   data class Error(val message: String) : ClaimResult
@@ -88,7 +86,7 @@ class NetworkClaimsFlowRepository(
     return handleResponse(response)
   }
 
-  override suspend fun updateClaim(claimState: ClaimState): ClaimResult {
+  override suspend fun updateClaim(claimState: ClaimState, nrOfInputs: Int): ClaimResult {
     val updateRequest = claimState.toUpdateRequest()
     val requestBody = json.encodeToString(updateRequest).toRequestBody()
     val request = Request.Builder()
@@ -98,7 +96,7 @@ class NetworkClaimsFlowRepository(
       .build()
 
     val response = okHttpClient.newCall(request).await()
-    return handleResponse(response)
+    return handleResponse(response, nrOfInputs)
   }
 
   override suspend fun getClaim(): ClaimResult {
@@ -113,43 +111,44 @@ class NetworkClaimsFlowRepository(
   }
 
   override suspend fun openClaim(amount: MonetaryAmount?): ClaimResult {
-    val requestJson = if (amount != null) {
+    val requestBody = if (amount != null) {
       JSONObject()
         .put("type", "SingleItemPayout")
         .put("payoutAmount", amount.format())
         .put("method", "AutomaticAutogiroPayout")
         .toString()
+        .toRequestBody()
     } else {
-      JSONObject().toString()
+      ByteArray(0).toRequestBody()
     }
 
     val request = Request.Builder()
       .header("Content-Type", "application/json")
       .url("$BASE_URL/api/automation-claims/open")
-      .post(requestJson.toRequestBody())
+      .post(requestBody)
       .build()
 
     val response = okHttpClient.newCall(request).await()
     return handleResponse(response)
   }
 
-  private fun handleResponse(response: Response) = if (response.isSuccessful) {
-    parseClaimDto(response)
+  private fun handleResponse(response: Response, nrOfInputs: Int? = null) = if (response.isSuccessful) {
+    parseClaimDto(response, nrOfInputs)
   } else {
     ClaimResult.Error("${response.code} ${response.message}")
   }
 
-  private fun parseClaimDto(response: Response): ClaimResult {
+  private fun parseClaimDto(response: Response, nrOfInputs: Int?): ClaimResult {
     val claimResponse = response.body?.string()
     return if (claimResponse == null || claimResponse.isEmpty()) {
       ClaimResult.Error("No claim found in response!")
     } else {
       val claimDto = json.decodeFromString<AutomationClaimDTO2>(claimResponse)
-      val (state, inputs, resolutions) = claimDto.toClaim()
+      val (state, inputs, resolution) = claimDto.toClaim(nrOfInputs)
       ClaimResult.Success(
         claimState = state,
         inputs = inputs,
-        resolutions = resolutions,
+        resolution = resolution,
       )
     }
   }

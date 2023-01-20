@@ -34,10 +34,11 @@ import com.hedvig.android.hanalytics.android.di.hAnalyticsUrlQualifier
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.Navigator
-import com.hedvig.android.odyssey.ClaimsFlowRepository
-import com.hedvig.android.odyssey.ClaimsFlowViewModel
-import com.hedvig.android.odyssey.NetworkClaimsFlowRepository
-import com.hedvig.android.odyssey.repository.MockClaimsFlowRepository
+import com.hedvig.android.odyssey.repository.ClaimsFlowRepository
+import com.hedvig.android.odyssey.repository.NetworkClaimsFlowRepository
+import com.hedvig.android.odyssey.input.InputViewModel
+import com.hedvig.android.odyssey.model.Resolution
+import com.hedvig.android.odyssey.resolution.ResolutionViewModel
 import com.hedvig.app.authenticate.BankIdLoginViewModel
 import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.data.debit.PayinStatusRepository
@@ -689,10 +690,11 @@ val claimsRepositoryModule = module {
 
 val claimsViewModelModule = module {
   viewModel { (itemType: String, itemProblem: String) ->
-    ClaimsFlowViewModel(
+    InputViewModel(
       itemType,
       itemProblem,
       get(),
     )
   }
+  viewModel { (resolution: Resolution) -> ResolutionViewModel(get(), resolution) }
 }
