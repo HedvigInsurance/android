@@ -203,37 +203,37 @@ fun CrossSellDetailScreenPreview() {
       onFaqClick = {},
       onDismissError = {},
       data = CrossSellData(
-          title = "Accident Insurance",
-          description = "179 kr/mo.",
-          callToAction = "Calculate price",
-          action = CrossSellData.Action.Chat,
-          backgroundUrl = "https://images.unsplash.com/photo-1628996796855-0b056a464e06",
-          backgroundBlurHash = "LJC6\$2-:DiWB~WxuRkayMwNGo~of",
-          crossSellType = "ACCIDENT",
-          typeOfContract = "SE_ACCIDENT",
-          about = "If you or a family member is injured in an accident insurance, Hedvig is able to compensate" +
-            " you for a hospital stay, rehabilitation, therapy and dental injuries. \n\n" +
-            "In case of a permanent injury that affect your your quality of life and ability to work, an " +
-            "accident insurance can complement the support from the social welfare system and your employer.",
-          perils = emptyList(),
-          terms = emptyList(),
-          highlights = listOf(
-            CrossSellData.Highlight(
-              title = "Covers dental injuries",
-              description = "Up to 100 000 SEK per damage.",
-            ),
-            CrossSellData.Highlight(
-              title = "Compensates permanent injuries",
-              description = "A fixed amount up to 2 000 000 SEK is payed out in " +
-                "the event of a permanent injury.",
-            ),
-            CrossSellData.Highlight(
-              title = "Rehabilitation and therapy is covered",
-              description = "After accidents and sudden events, such as the death of a close family member.",
-            ),
+        title = "Accident Insurance",
+        description = "179 kr/mo.",
+        callToAction = "Calculate price",
+        action = CrossSellData.Action.Chat,
+        backgroundUrl = "https://images.unsplash.com/photo-1628996796855-0b056a464e06",
+        backgroundBlurHash = "LJC6\$2-:DiWB~WxuRkayMwNGo~of",
+        crossSellType = "ACCIDENT",
+        typeOfContract = "SE_ACCIDENT",
+        about = "If you or a family member is injured in an accident insurance, Hedvig is able to compensate" +
+          " you for a hospital stay, rehabilitation, therapy and dental injuries. \n\n" +
+          "In case of a permanent injury that affect your your quality of life and ability to work, an " +
+          "accident insurance can complement the support from the social welfare system and your employer.",
+        perils = emptyList(),
+        terms = emptyList(),
+        highlights = listOf(
+          CrossSellData.Highlight(
+            title = "Covers dental injuries",
+            description = "Up to 100 000 SEK per damage.",
           ),
-          faq = emptyList(),
-          insurableLimits = emptyList(),
+          CrossSellData.Highlight(
+            title = "Compensates permanent injuries",
+            description = "A fixed amount up to 2 000 000 SEK is payed out in " +
+              "the event of a permanent injury.",
+          ),
+          CrossSellData.Highlight(
+            title = "Rehabilitation and therapy is covered",
+            description = "After accidents and sudden events, such as the death of a close family member.",
+          ),
+        ),
+        faq = emptyList(),
+        insurableLimits = emptyList(),
       ),
       errorMessage = null,
       imageLoader = rememberPreviewImageLoader(),

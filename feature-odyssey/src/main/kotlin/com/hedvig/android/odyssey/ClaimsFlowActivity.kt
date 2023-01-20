@@ -3,7 +3,6 @@ package com.hedvig.android.odyssey
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Parcelable
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import coil.ImageLoader
@@ -14,9 +13,8 @@ import com.hedvig.common.datadog.DatadogProvider
 import com.hedvig.common.remote.actions.CHAT_URL
 import com.hedvig.common.remote.actions.CLOSE_URL
 import com.hedvig.common.remote.scopes.ScopeValues
-import com.hedvig.common.remote.scopes.keys.InitialDataScopeValueKey
+import com.hedvig.common.remote.scopes.keys.CommonClaimIdScopeValueKey
 import com.hedvig.common.ui.OdysseyRoot
-import kotlinx.parcelize.Parcelize
 import org.koin.android.ext.android.inject
 
 class ClaimsFlowActivity : ComponentActivity() {
@@ -30,18 +28,13 @@ class ClaimsFlowActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     lifecycle.addObserver(AuthenticatedObserver())
     val odysseyUrl = intent.getStringExtra(ODYSSEY_URL_KEY) ?: error("ODYSSEY_URL_KEY needs to be passed in")
-    val itemType = intent.getParcelableExtra<ItemType>(EXTRA_ITEM_TYPE)?.name
+    val commonClaimId = intent.getStringExtra(COMMON_CLAIM_ID)
 
     val scopeValues = ScopeValues()
-    if (itemType != null) {
-      scopeValues.setValue(
-        InitialDataScopeValueKey,
-        mapOf(
-          "itemType" to itemType,
-          "itemProblem" to "BROKEN",
-        ),
-      )
-    }
+    scopeValues.setValue(
+      CommonClaimIdScopeValueKey,
+      commonClaimId,
+    )
 
     setContent {
       OdysseyRoot(
@@ -73,20 +66,16 @@ class ClaimsFlowActivity : ComponentActivity() {
   companion object {
     private const val ROOT_URL = "/automation-claim"
     private const val ODYSSEY_URL_KEY = "com.hedvig.android.odyssey.ODYSSEY_URL_KEY"
-    private const val EXTRA_ITEM_TYPE = "EXTRA_ITEM_TYPE"
+    private const val COMMON_CLAIM_ID = "COMMON_CLAIM_ID"
 
     fun newInstance(
       context: Context,
       odysseyUrl: String,
-      itemType: ItemType? = null,
+      commonClaimId: String?,
     ): Intent {
       return Intent(context, ClaimsFlowActivity::class.java)
         .putExtra(ODYSSEY_URL_KEY, odysseyUrl)
-        .putExtra(EXTRA_ITEM_TYPE, itemType)
+        .putExtra(COMMON_CLAIM_ID, commonClaimId)
     }
   }
-
-  @Parcelize
-  @JvmInline
-  value class ItemType(val name: String) : Parcelable
 }
