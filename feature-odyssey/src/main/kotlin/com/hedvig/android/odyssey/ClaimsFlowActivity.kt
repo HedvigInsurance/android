@@ -9,8 +9,8 @@ import androidx.activity.compose.setContent
 import coil.ImageLoader
 import com.hedvig.android.auth.AccessTokenProvider
 import com.hedvig.android.auth.android.AuthenticatedObserver
-import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.Navigator
+import com.hedvig.common.datadog.DatadogProvider
 import com.hedvig.common.remote.actions.CHAT_URL
 import com.hedvig.common.remote.actions.CLOSE_URL
 import com.hedvig.common.remote.scopes.ScopeValues
@@ -22,7 +22,7 @@ import org.koin.android.ext.android.inject
 class ClaimsFlowActivity : ComponentActivity() {
 
   private val accessTokenProvider: AccessTokenProvider by inject()
-  private val languageService: LanguageService by inject()
+  private val datadogProvider: DatadogProvider by inject()
   private val imageLoader: ImageLoader by inject()
   private val navigator: Navigator by inject()
 
@@ -31,8 +31,6 @@ class ClaimsFlowActivity : ComponentActivity() {
     lifecycle.addObserver(AuthenticatedObserver())
     val odysseyUrl = intent.getStringExtra(ODYSSEY_URL_KEY) ?: error("ODYSSEY_URL_KEY needs to be passed in")
     val itemType = intent.getParcelableExtra<ItemType>(EXTRA_ITEM_TYPE)?.name
-
-    val locale = languageService.getLocale().toString()
 
     val scopeValues = ScopeValues()
     if (itemType != null) {
@@ -53,11 +51,11 @@ class ClaimsFlowActivity : ComponentActivity() {
             return accessTokenProvider.provide()
           }
         },
-        locale = locale,
+        datadogProvider = datadogProvider,
         imageLoader = imageLoader,
         initialUrl = ROOT_URL,
-        onExternalNavigation = ::onExternalNavigation,
         scopeValues = scopeValues,
+        onExternalNavigation = ::onExternalNavigation,
       )
     }
   }
