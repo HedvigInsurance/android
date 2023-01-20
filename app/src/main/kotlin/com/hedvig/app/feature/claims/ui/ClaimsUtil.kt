@@ -20,7 +20,7 @@ suspend fun startClaimsFlow(
     val intent = ClaimsFlowActivity.newInstance(
       context = context,
       odysseyUrl = context.getString(R.string.ODYSSEY_URL),
-      commonClaimId = commonClaimId
+      commonClaimId = commonClaimId,
     )
 
     if (registerForResult != null) {

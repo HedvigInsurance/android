@@ -9,6 +9,7 @@ import coil.ImageLoader
 import com.hedvig.android.auth.AccessTokenProvider
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.navigation.Navigator
+import com.hedvig.common.datadog.DatadogProvider
 import com.hedvig.common.remote.actions.CHAT_URL
 import com.hedvig.common.remote.actions.CLOSE_URL
 import com.hedvig.common.remote.scopes.ScopeValues
