@@ -95,6 +95,7 @@ private fun Input(
       input = input,
       onDateOfPurchase = viewModel::onDateOfPurchase,
       onTypeOfDamage = viewModel::onTypeOfDamage,
+      onModelOption = viewModel::onModelOption,
       onPurchasePrice = viewModel::onPurchasePrice,
       onNext = viewModel::onNext,
     )

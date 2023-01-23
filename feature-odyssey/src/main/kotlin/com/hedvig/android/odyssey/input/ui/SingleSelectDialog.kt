@@ -1,5 +1,6 @@
-package com.hedvig.android.odyssey.ui
+package com.hedvig.android.odyssey.input.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,8 +16,17 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import coil.ImageLoader
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import org.koin.androidx.compose.get
+import com.hedvig.android.odyssey.R
+
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -25,8 +35,10 @@ fun <T> SingleSelectDialog(
   optionsList: List<T>,
   onSelected: (T) -> Unit,
   getDisplayText: (T) -> String,
+  getImageUrl: (T) -> String?,
   onDismissRequest: () -> Unit,
 ) {
+  val imageLoader: ImageLoader = get()
 
   Dialog(onDismissRequest = { onDismissRequest.invoke() }) {
     Surface(
@@ -48,6 +60,28 @@ fun <T> SingleSelectDialog(
           ) { option: T ->
             ListItem(
               text = { Text(text = getDisplayText(option)) },
+              icon = if (getImageUrl(option) != null) {
+                {
+                  AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                      .data(getImageUrl(option))
+                      .crossfade(true)
+                      .build(),
+                    contentDescription = "Icon",
+                    imageLoader = imageLoader,
+                    modifier = Modifier
+                      .width(20.dp)
+                      .height(34.dp),
+                  )
+                }
+              } else {
+                {
+                  Image(
+                    painter = painterResource(R.drawable.ic_phone_model),
+                    contentDescription = null,
+                  )
+                }
+              },
               singleLineSecondaryText = true,
               modifier = Modifier.clickable {
                 onSelected(option)

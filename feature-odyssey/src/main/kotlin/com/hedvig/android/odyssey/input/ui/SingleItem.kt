@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -20,11 +19,9 @@ import com.hedvig.android.core.designsystem.component.button.LargeContainedTextB
 import com.hedvig.android.odyssey.model.ClaimState
 import com.hedvig.android.odyssey.model.Input
 import com.hedvig.android.odyssey.repository.AutomationClaimInputDTO2
-import com.hedvig.android.odyssey.ui.SingleSelectDialog
 import com.hedvig.common.remote.money.MonetaryAmount
 import com.hedvig.common.remote.money.format
 import java.time.LocalDate
-import kotlinx.coroutines.launch
 
 @Composable
 fun SingleItem(
@@ -32,12 +29,13 @@ fun SingleItem(
   input: Input.SingleItem,
   onDateOfPurchase: (LocalDate) -> Unit,
   onTypeOfDamage: (AutomationClaimInputDTO2.SingleItem.ClaimProblem) -> Unit,
+  onModelOption: (AutomationClaimInputDTO2.SingleItem.ItemOptions.ItemModelOption) -> Unit,
   onPurchasePrice: (MonetaryAmount) -> Unit,
   onNext: () -> Unit,
 ) {
 
-  val coroutineScope = rememberCoroutineScope()
   val openDamagePickerDialog = remember { mutableStateOf(false) }
+  val openModelPickerDialog = remember { mutableStateOf(false) }
 
   val now = LocalDate.now()
   val pickerDialog = DatePickerDialog(
@@ -56,7 +54,18 @@ fun SingleItem(
       optionsList = input.problemIds,
       onSelected = onTypeOfDamage,
       getDisplayText = { damageType: AutomationClaimInputDTO2.SingleItem.ClaimProblem -> damageType.getText() },
+      getImageUrl = { null },
     ) { openDamagePickerDialog.value = false }
+  }
+
+  if (openModelPickerDialog.value) {
+    SingleSelectDialog(
+      title = "Select phone model",
+      optionsList = input.modelOptions.sortedBy { it.modelName },
+      onSelected = onModelOption,
+      getDisplayText = { modelOption: AutomationClaimInputDTO2.SingleItem.ItemOptions.ItemModelOption -> modelOption.modelName },
+      getImageUrl = { itemModelOption -> itemModelOption.modelImageUrl },
+    ) { openModelPickerDialog.value = false }
   }
 
   val message = remember { mutableStateOf("") }
@@ -87,6 +96,20 @@ fun SingleItem(
     Spacer(modifier = Modifier.padding(top = 20.dp))
 
     Column {
+
+      val selectedModel = state.item.selectedModelOption.let { selectedId ->
+        input.modelOptions.find { it.modelId == selectedId?.modelId }
+      }
+
+      FormRowButton(
+        mainText = "Phone model",
+        secondaryText = selectedModel?.modelName ?: "-",
+      ) {
+        openModelPickerDialog.value = true
+      }
+
+      Spacer(modifier = Modifier.padding(top = 12.dp))
+
       FormRowButton(
         mainText = "Date of purchase",
         secondaryText = state.item.purchaseDate?.toString() ?: "-",

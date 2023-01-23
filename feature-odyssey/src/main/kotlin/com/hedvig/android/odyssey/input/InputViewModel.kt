@@ -96,6 +96,13 @@ class InputViewModel(
     }
   }
 
+  fun onModelOption(modelOption: AutomationClaimInputDTO2.SingleItem.ItemOptions.ItemModelOption) = with(_viewState) {
+    update {
+      val newItem = it.claimState.item.copy(selectedModelOption = modelOption)
+      it.copy(claimState = it.claimState.copy(item = newItem))
+    }
+  }
+
   fun onDismissError() {
     _viewState.update { it.copy(errorMessage = null) }
   }

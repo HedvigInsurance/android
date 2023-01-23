@@ -15,19 +15,25 @@ data class UpdateAutomationClaimRequest(
 @kotlinx.serialization.Serializable
 data class UpdateClaimItem(
   val problemIds: List<String>,
+  val brandId: String?,
+  val typeId: String?,
+  val customName: String?,
   val purchaseDate: String?,
   val purchasePrice: MonetaryAmount?,
 )
 
 fun ClaimState.toUpdateRequest() = UpdateAutomationClaimRequest(
-  dateOfOccurrence = LocalDate.now().toString(),
+  dateOfOccurrence = dateOfOccurrence?.toString(),
 //  audioUrl = audioUrl,
   location = location.name,
   items = listOf(
     UpdateClaimItem(
       problemIds = item.problemIds.map { it.name },
-      purchaseDate = LocalDate.now().toString(),
+      purchaseDate = item.purchaseDate?.toString(),
       purchasePrice = item.purchasePrice,
+      brandId = item.selectedModelOption?.brandId,
+      typeId = item.selectedModelOption?.typeId,
+      customName = item.selectedModelOption?.modelName
     ),
   ),
 )

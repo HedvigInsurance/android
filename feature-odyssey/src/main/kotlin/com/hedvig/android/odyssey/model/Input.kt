@@ -33,6 +33,8 @@ sealed interface Input {
     val purchaseDate: String?,
     val problemIds: List<AutomationClaimInputDTO2.SingleItem.ClaimProblem>,
     val selectedProblemIds: List<AutomationClaimInputDTO2.SingleItem.ClaimProblem>,
+    val modelOptions: List<AutomationClaimInputDTO2.SingleItem.ItemOptions.ItemModelOption>,
+    val selectedModelOptionId: String?,
   ) : Input
 
   data class PhoneNumber(

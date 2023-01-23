@@ -12,6 +12,7 @@ fun AutomationClaimDTO2.toClaim(nrOfInputs: Int?) = Claim(
     location = location ?: AutomationClaimDTO2.ClaimLocation.AT_HOME,
     item = ClaimState.ItemState(
       purchasePrice = items.firstOrNull()?.purchasePrice,
+      selectedModelOption = null,
     ),
   ),
   inputs = getInputs(),
@@ -69,6 +70,8 @@ private fun AutomationClaimDTO2.getInputs(): List<Input> {
         purchaseDate = singleItem.purchaseDate,
         problemIds = singleItem.options.itemProblems.map { it.problemId },
         selectedProblemIds = singleItem.problemIds,
+        modelOptions = singleItem.options.itemModels,
+        selectedModelOptionId = singleItem.modelId,
       ),
     )
   }

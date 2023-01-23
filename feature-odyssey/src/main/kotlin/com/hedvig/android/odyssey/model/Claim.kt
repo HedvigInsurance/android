@@ -21,5 +21,6 @@ data class ClaimState(
     val purchasePrice: MonetaryAmount? = null,
     val purchaseDate: LocalDate? = LocalDate.now(),
     val problemIds: List<AutomationClaimInputDTO2.SingleItem.ClaimProblem> = listOf(AutomationClaimInputDTO2.SingleItem.ClaimProblem.BROKEN_FRONT),
+    val selectedModelOption: AutomationClaimInputDTO2.SingleItem.ItemOptions.ItemModelOption? = null,
   )
 }

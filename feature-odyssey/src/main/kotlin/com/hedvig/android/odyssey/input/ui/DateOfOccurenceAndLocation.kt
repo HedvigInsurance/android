@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -19,9 +18,7 @@ import com.hedvig.android.core.designsystem.component.button.FormRowButton
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.odyssey.model.ClaimState
 import com.hedvig.android.odyssey.repository.AutomationClaimDTO2
-import com.hedvig.android.odyssey.ui.SingleSelectDialog
 import java.time.LocalDate
-import kotlinx.coroutines.launch
 
 @Composable
 fun DateOfOccurrenceAndLocation(
@@ -50,6 +47,7 @@ fun DateOfOccurrenceAndLocation(
       optionsList = locationOptions,
       onSelected = onLocation,
       getDisplayText = { it.getText() },
+      getImageUrl = { null },
     ) { openLocationPickerDialog.value = false }
   }
 
