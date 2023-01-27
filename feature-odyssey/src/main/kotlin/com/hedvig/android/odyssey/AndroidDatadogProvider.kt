@@ -1,10 +1,10 @@
 package com.hedvig.android.odyssey
 
 import com.datadog.opentracing.DDTracer.DDSpanBuilder
-import com.hedvig.common.datadog.DatadogLogger
-import com.hedvig.common.datadog.DatadogProvider
-import com.hedvig.common.datadog.OdysseyHTTPRequest
-import com.hedvig.common.datadog.OdysseyHTTPResponse
+import com.hedvig.odyssey.datadog.DatadogLogger
+import com.hedvig.odyssey.datadog.DatadogProvider
+import com.hedvig.odyssey.datadog.OdysseyHTTPRequest
+import com.hedvig.odyssey.datadog.OdysseyHTTPResponse
 import io.opentracing.Span
 import io.opentracing.Tracer
 import io.opentracing.propagation.Format

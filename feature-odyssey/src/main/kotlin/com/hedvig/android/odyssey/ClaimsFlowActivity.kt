@@ -9,12 +9,12 @@ import coil.ImageLoader
 import com.hedvig.android.auth.AccessTokenProvider
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.navigation.Navigator
-import com.hedvig.common.datadog.DatadogProvider
-import com.hedvig.common.remote.actions.CHAT_URL
-import com.hedvig.common.remote.actions.CLOSE_URL
-import com.hedvig.common.remote.scopes.ScopeValues
-import com.hedvig.common.remote.scopes.keys.CommonClaimIdScopeValueKey
-import com.hedvig.common.ui.OdysseyRoot
+import com.hedvig.odyssey.datadog.DatadogProvider
+import com.hedvig.odyssey.remote.actions.CHAT_URL
+import com.hedvig.odyssey.remote.actions.CLOSE_URL
+import com.hedvig.odyssey.remote.scopes.ScopeValues
+import com.hedvig.odyssey.remote.scopes.keys.CommonClaimIdScopeValueKey
+import com.hedvig.odyssey.ui.OdysseyRoot
 import org.koin.android.ext.android.inject
 
 class ClaimsFlowActivity : ComponentActivity() {
@@ -39,7 +39,7 @@ class ClaimsFlowActivity : ComponentActivity() {
     setContent {
       OdysseyRoot(
         apiUrl = odysseyUrl,
-        accessTokenProvider = object : com.hedvig.common.auth.AccessTokenProvider {
+        accessTokenProvider = object : com.hedvig.odyssey.auth.AccessTokenProvider {
           override suspend fun provide(): String? {
             return accessTokenProvider.provide()
           }
