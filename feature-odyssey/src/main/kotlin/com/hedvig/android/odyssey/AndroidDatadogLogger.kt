@@ -1,6 +1,6 @@
 package com.hedvig.android.odyssey
 
-import com.hedvig.common.datadog.DatadogLogger
+import com.hedvig.odyssey.datadog.DatadogLogger
 import timber.log.Timber
 
 internal class AndroidDatadogLogger : DatadogLogger {
