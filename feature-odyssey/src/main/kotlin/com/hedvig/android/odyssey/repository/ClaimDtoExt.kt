@@ -21,6 +21,13 @@ fun AutomationClaimDTO2.toClaim(nrOfInputs: Int?) = Claim(
 
 private fun AutomationClaimDTO2.getInputs(): List<Input> {
   val claimInputs = mutableListOf<Input>()
+
+  claimInputs.add(
+    Input.PhoneNumber(
+      phoneNumber = "07012345678",
+    ),
+  )
+
   val audioRecording = inputs.filterIsInstance<AutomationClaimInputDTO2.AudioRecording>().firstOrNull()
   if (audioRecording != null) {
     claimInputs.add(

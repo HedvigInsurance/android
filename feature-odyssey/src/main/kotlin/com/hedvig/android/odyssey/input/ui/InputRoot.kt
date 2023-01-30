@@ -48,7 +48,7 @@ fun InputRoot(
         AnimatedContent(targetState = viewState.currentInput) { input ->
           Input(
             input = input,
-            claimState = viewState.claimState,
+            viewState = viewState,
             viewModel = inputViewModel,
           )
         }
@@ -71,7 +71,7 @@ fun InputRoot(
 @Composable
 private fun Input(
   input: Input?,
-  claimState: ClaimState,
+  viewState: InputViewState,
   viewModel: InputViewModel,
 ) {
   when (input) {
@@ -81,7 +81,7 @@ private fun Input(
       onNext = viewModel::onNext,
     )
     is Input.DateOfOccurrencePlusLocation -> DateOfOccurrenceAndLocation(
-      state = claimState,
+      state = viewState.claimState,
       onDateOfOccurrence = viewModel::onDateOfOccurrence,
       onLocation = viewModel::onLocation,
       locationOptions = input.locationOptions,
@@ -89,9 +89,14 @@ private fun Input(
     )
     is Input.DateOfOccurrence -> DateOfOccurrence(viewModel)
     is Input.Location -> Location(viewModel)
-    is Input.PhoneNumber -> PhoneNumber(viewModel)
+    is Input.PhoneNumber -> PhoneNumber(
+      currentPhoneNumber = viewState.phoneNumber,
+      onPhoneNumber = viewModel::onPhoneNumber,
+      updatePhoneNumber = viewModel::updatePhoneNumber,
+      onNext = viewModel::onNext,
+    )
     is Input.SingleItem -> SingleItem(
-      state = claimState,
+      state = viewState.claimState,
       input = input,
       onDateOfPurchase = viewModel::onDateOfPurchase,
       onTypeOfDamage = viewModel::onTypeOfDamage,

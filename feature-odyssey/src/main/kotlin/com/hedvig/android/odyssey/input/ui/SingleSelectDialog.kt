@@ -75,12 +75,7 @@ fun <T> SingleSelectDialog(
                   )
                 }
               } else {
-                {
-                  Image(
-                    painter = painterResource(R.drawable.ic_phone_model),
-                    contentDescription = null,
-                  )
-                }
+                null
               },
               singleLineSecondaryText = true,
               modifier = Modifier.clickable {

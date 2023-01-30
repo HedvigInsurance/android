@@ -59,7 +59,7 @@ fun AudioRecorderScreen(
       questions.forEach {
         Surface(
           elevation = 2.dp,
-          modifier = Modifier.padding(vertical = 8.dp),
+          modifier = Modifier.padding(vertical = 4.dp),
           shape = RoundedCornerShape(20),
         ) {
           Text(

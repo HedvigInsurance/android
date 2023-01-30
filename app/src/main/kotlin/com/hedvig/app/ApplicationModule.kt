@@ -38,6 +38,7 @@ import com.hedvig.android.odyssey.repository.ClaimsFlowRepository
 import com.hedvig.android.odyssey.repository.NetworkClaimsFlowRepository
 import com.hedvig.android.odyssey.input.InputViewModel
 import com.hedvig.android.odyssey.model.Resolution
+import com.hedvig.android.odyssey.repository.GetPhoneNumberUseCase
 import com.hedvig.android.odyssey.resolution.ResolutionViewModel
 import com.hedvig.app.authenticate.BankIdLoginViewModel
 import com.hedvig.app.authenticate.LogoutUseCase
@@ -684,16 +685,19 @@ val authRepositoryModule = module {
 val claimsRepositoryModule = module {
   single<ClaimsFlowRepository> {
     NetworkClaimsFlowRepository(get<OkHttpClient>())
-    //MockClaimsFlowRepository()
+  }
+  single<GetPhoneNumberUseCase> {
+    GetPhoneNumberUseCase(get<ApolloClient>())
   }
 }
 
 val claimsViewModelModule = module {
   viewModel { (itemType: String, itemProblem: String) ->
     InputViewModel(
-      itemType,
-      itemProblem,
-      get(),
+      itemType = itemType,
+      itemProblem = itemProblem,
+      repository = get<ClaimsFlowRepository>(),
+      getPhoneNumberUseCase = get<GetPhoneNumberUseCase>(),
     )
   }
   viewModel { (resolution: Resolution) -> ResolutionViewModel(get(), resolution) }
