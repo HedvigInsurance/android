@@ -57,10 +57,10 @@ class PushNotificationWorker(
         { apolloClient.mutation(NotificationRegisterDeviceMutation(pushToken)).safeExecute().toEither().bind() },
       ) { _, _ -> }
     }
-      .tapLeft { queryResultError ->
+      .onLeft { queryResultError ->
         e { "Failed to register push token: $queryResultError" }
       }
-      .tap {
+      .onRight {
         i { "Successfully registered push token" }
       }
   }

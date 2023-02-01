@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import arrow.core.Either
-import arrow.core.flatMap
+import arrow.core.continuations.either
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.api.toUpload
@@ -158,19 +158,18 @@ class ChatRepository(
   suspend fun editLastResponse(): ApolloResponse<EditLastResponseMutation.Data> =
     apolloClient.mutation(EditLastResponseMutation()).execute()
 
-  suspend fun triggerFreeTextChat(): Either<FreeTextError, FreeTextSuccess> =
-    apolloClient.mutation(TriggerFreeTextChatMutation())
-      .safeExecute()
-      .toEither { FreeTextError.NetworkError }
-      .flatMap { data ->
-        val didTriggerFreeTextChat = data.triggerFreeTextChat ?: false
-
-        Either.conditionally(
-          didTriggerFreeTextChat,
-          ifFalse = { FreeTextError.CouldNotTrigger },
-          ifTrue = { FreeTextSuccess },
-        )
-      }
+  suspend fun triggerFreeTextChat(): Either<FreeTextError, FreeTextSuccess> {
+    return either {
+      val data = apolloClient
+        .mutation(TriggerFreeTextChatMutation())
+        .safeExecute()
+        .toEither { FreeTextError.NetworkError }
+        .bind()
+      val didTriggerFreeTextChat = data.triggerFreeTextChat == true
+      ensure(didTriggerFreeTextChat) { FreeTextError.CouldNotTrigger }
+      FreeTextSuccess
+    }
+  }
 
   suspend fun searchGifs(query: String): ApolloResponse<GifQuery.Data> =
     apolloClient.query(GifQuery(query)).execute()
