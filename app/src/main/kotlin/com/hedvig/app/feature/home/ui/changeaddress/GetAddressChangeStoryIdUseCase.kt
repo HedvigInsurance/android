@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.home.ui.changeaddress
 
 import arrow.core.Either
-import arrow.core.getOrHandle
+import arrow.core.getOrElse
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.ActiveContractBundlesQuery
 import com.hedvig.android.apollo.safeExecute
@@ -25,7 +25,7 @@ class GetAddressChangeStoryIdUseCase(
     val activeContractBundlesQueryData = apolloClient.query(ActiveContractBundlesQuery())
       .safeExecute()
       .toEither()
-      .getOrHandle { errorQueryResult ->
+      .getOrElse { errorQueryResult ->
         return SelfChangeEligibilityResult.Error(errorQueryResult.message)
       }
 
@@ -35,7 +35,7 @@ class GetAddressChangeStoryIdUseCase(
       ?.addressChangeV2
       ?: return SelfChangeEligibilityResult.Blocked
 
-    val storyIdWithQuoteCartId = addQuoteCartId(storyId).getOrHandle { errorMessage ->
+    val storyIdWithQuoteCartId = addQuoteCartId(storyId).getOrElse { errorMessage ->
       return SelfChangeEligibilityResult.Error(errorMessage.message)
     }
     return SelfChangeEligibilityResult.Eligible(storyIdWithQuoteCartId)

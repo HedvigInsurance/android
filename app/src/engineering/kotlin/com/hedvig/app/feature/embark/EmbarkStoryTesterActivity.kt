@@ -220,7 +220,7 @@ class EmbarkStoryTesterViewModel(
   init {
     viewModelScope.launch {
       _viewState.value = viewState.value.copy(availableMarkets = marketManager.enabledMarkets)
-      createQuoteCartUseCase.invoke().tap { quoteCartId = it }
+      createQuoteCartUseCase.invoke().onRight { quoteCartId = it }
     }
   }
 

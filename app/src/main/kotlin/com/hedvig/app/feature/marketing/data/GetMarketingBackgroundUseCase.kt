@@ -12,7 +12,7 @@ class GetMarketingBackgroundUseCase(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,
 ) {
-  suspend operator fun invoke() = apolloClient
+  suspend fun invoke() = apolloClient
     .query(MarketingBackgroundQuery(languageService.getGraphQLLocale().rawValue))
     .safeExecute()
     .toEither()
