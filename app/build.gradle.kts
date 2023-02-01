@@ -199,8 +199,8 @@ dependencies {
   testImplementation(libs.apollo.mockServer)
   testImplementation(libs.apollo.testingSupport)
 
-  implementation(libs.arrowKt.core)
-  implementation(libs.arrowKt.fx)
+  implementation(libs.arrow.core)
+  implementation(libs.arrow.fx)
 
   implementation(libs.materialComponents)
   implementation(libs.flexbox)
