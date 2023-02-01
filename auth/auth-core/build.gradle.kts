@@ -13,7 +13,7 @@ dependencies {
   api(libs.hedvig.authlib)
 
   implementation(libs.androidx.datastore.preferencesCore)
-  implementation(libs.arrowKt.core)
+  implementation(libs.arrow.core)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.datetime)
   implementation(libs.okhttp.core)

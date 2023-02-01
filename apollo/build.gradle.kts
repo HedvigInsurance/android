@@ -15,7 +15,7 @@ dependencies {
   implementation(libs.adyen)
   implementation(libs.apollo.adapters)
   implementation(libs.apollo.normalizedCache)
-  implementation(libs.arrowKt.core)
+  implementation(libs.arrow.core)
 }
 
 apollo {
