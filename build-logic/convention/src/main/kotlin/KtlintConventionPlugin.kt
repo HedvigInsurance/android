@@ -19,14 +19,11 @@ class KtlintConventionPlugin : Plugin<Project> {
         ignoreFailures = false
         // kotlinter 3.11.1 doesn't read disabledRules from .editorconfig https://github.com/jeremymailen/kotlinter-gradle/issues/262
         disabledRules = arrayOf("filename")
-        @Suppress("MISSING_DEPENDENCY_SUPERCLASS")
         reporters = arrayOf(ReporterType.checkstyle.name)
       }
 
       tasks.withType<org.jmailen.gradle.kotlinter.tasks.LintTask>().configureEach {
-        @Suppress("MISSING_DEPENDENCY_SUPERCLASS")
         exclude { it.file.path.contains("generated/") }
-        @Suppress("MISSING_DEPENDENCY_SUPERCLASS")
         reports.set(
           mapOf(
             ReporterType.checkstyle.name to rootDir.resolve("build/reports/ktlint/${project.path}.xml"),
@@ -34,7 +31,6 @@ class KtlintConventionPlugin : Plugin<Project> {
         )
       }
       tasks.withType<org.jmailen.gradle.kotlinter.tasks.FormatTask>().configureEach {
-        @Suppress("MISSING_DEPENDENCY_SUPERCLASS")
         exclude { it.file.path.contains("generated/") }
       }
 

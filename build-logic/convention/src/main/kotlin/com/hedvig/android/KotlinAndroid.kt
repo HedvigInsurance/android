@@ -19,20 +19,15 @@ internal fun Project.configureKotlinAndroid(
   val libs = the<LibrariesForLibs>()
 
   commonExtension.apply {
-    @Suppress("MISSING_DEPENDENCY_SUPERCLASS")
     compileSdk = libs.versions.compileSdkVersion.get().toInt()
 
     defaultConfig {
-      @Suppress("MISSING_DEPENDENCY_SUPERCLASS")
       minSdk = libs.versions.minSdkVersion.get().toInt()
     }
 
     compileOptions {
-      @Suppress("UnstableApiUsage")
       isCoreLibraryDesugaringEnabled = true
-      @Suppress("UnstableApiUsage")
       sourceCompatibility = JavaVersion.VERSION_11
-      @Suppress("UnstableApiUsage")
       targetCompatibility = JavaVersion.VERSION_11
     }
 
@@ -63,17 +58,14 @@ private fun KotlinJvmOptions.configureKotlinOptions(
 
   freeCompilerArgs = freeCompilerArgs + listOf(
     "-opt-in=kotlin.RequiresOptIn",
-    // Enable experimental coroutines APIs, including Flow
     "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
     "-opt-in=kotlinx.coroutines.FlowPreview",
     "-opt-in=kotlin.Experimental",
-    // Enable experimental kotlinx serialization APIs
     "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
     // Fixes "Inheritance from an interface with '@JvmDefault' members is only allowed with -Xjvm-default option"
     "-Xjvm-default=enable",
   )
 
-  @Suppress("MISSING_DEPENDENCY_SUPERCLASS")
   jvmTarget = JavaVersion.VERSION_11.toString()
 }
 
