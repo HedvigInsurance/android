@@ -1,7 +1,8 @@
-package com.hedvig.app.util
+package com.hedvig.app.util.firebase
 
 import android.util.Log
-import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import timber.log.Timber
 
 class FirebaseCrashlyticsLogExceptionTree : Timber.Tree() {
@@ -9,10 +10,10 @@ class FirebaseCrashlyticsLogExceptionTree : Timber.Tree() {
 
   override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
     if (t != null) {
-      FirebaseCrashlytics.getInstance().recordException(t)
+      Firebase.crashlytics.recordException(t)
     } else {
       val tagFormatted = tag?.let { "[$tag]" }.orEmpty()
-      FirebaseCrashlytics.getInstance().log("${prefix(priority)}${tagFormatted}$message")
+      Firebase.crashlytics.log("${prefix(priority)}${tagFormatted}$message")
     }
   }
 

@@ -32,7 +32,7 @@
 
 # Odyssey classes
 # Due to serialization and getting class names we need to keep these classes.
--keep class com.hedvig.common.** { *; }
+-keep class com.hedvig.odyssey.** { *; }
 
 # Keep `Companion` object fields of serializable classes.
 # This avoids serializer lookup through `getDeclaredClasses` as done for named companion objects.
@@ -65,6 +65,3 @@
 -keepclassmembers class * extends androidx.datastore.preferences.protobuf.GeneratedMessageLite {
     <fields>;
 }
-
-# Koin bug not resolving SavedStateHandle https://github.com/InsertKoinIO/koin/issues/1468
--keepnames class androidx.lifecycle.SavedStateHandle

@@ -5,7 +5,7 @@ targetSdkVersion = "33"
 minSdkVersion = "23"
 
 # gradlePlugin versions
-androidGradlePlugin = "7.3.1"
+androidGradlePlugin = "7.4.0"
 apollo = "3.7.0"
 buildTimeTracker = "0.11.0"
 cacheFix = "2.6.0"
@@ -13,17 +13,17 @@ crashlytics = "2.9.2"
 datadogPlugin = "1.5.1"
 doctor = "0.8.1"
 googleServices = "4.3.14"
-kotlin = "1.7.20"
+kotlin = "1.8.0"
 kotlinter = "3.11.1"
 ktlint = "0.45.2"
 license = "0.9.0"
 
 # Other versions sorted alphabetically
-accompanist = "0.27.0"
+accompanist = "0.29.0-alpha"
 adyen = "4.8.0"
 androidx-arch-testing = "2.1.0"
-androidx-composeBom = "2022.11.00"
-androidx-composeCompiler = "1.3.2"
+androidx-composeBom = "2023.01.00"
+androidx-composeCompiler = "1.4.0"
 androidx-composeThemeAdapter = "1.1.21"
 androidx-datastore = "1.0.0"
 androidx-espresso = "3.5.0"
@@ -45,7 +45,6 @@ androidx-other-swipeRefreshLayout = "1.1.0"
 androidx-other-transition = "1.4.1"
 androidx-other-viewPager2 = "1.0.0"
 androidx-other-workManager = "2.7.1"
-androidx-poolingcontainer = "1.0.0"
 androidx-test-core = "1.5.0"
 androidx-test-junit = "1.1.4"
 arrowKt = "1.1.3"
@@ -62,7 +61,7 @@ flexbox = "3.0.0"
 fragmentViewBindingDelegate = "1.0.2"
 hAnalytics = "v0.275.0"
 hedvigAuthlib = "1.1"
-hedvigOdyssey = "1.2.7"
+hedvigOdyssey = "1.3.2"
 insetter = "0.6.1"
 jsonTest = "20220924"
 junit = "4.13.2"
@@ -114,7 +113,6 @@ androidx-compose-uiTooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-compose-uiToolingPreview = { module = "androidx.compose.ui:ui-tooling-preview" }
 androidx-compose-uiUtil = { module = "androidx.compose.ui:ui-util" }
 androidx-compose-uiViewBinding = { module = "androidx.compose.ui:ui-viewbinding" }
-androidx-customview-poolingcontainer = { group = "androidx.customview", name = "customview-poolingcontainer", version.ref = "androidx-poolingcontainer" }
 androidx-datastore-core = { module = "androidx.datastore:datastore-core", version.ref = "androidx-datastore" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "androidx-datastore" }
 androidx-datastore-preferencesCore = { module = "androidx.datastore:datastore-preferences-core", version.ref = "androidx-datastore" }
@@ -166,7 +164,7 @@ coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", ve
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 datadog-sdk = { module = "com.datadoghq:dd-sdk-android", version.ref = "datadog" }
 firebase-bom = "com.google.firebase:firebase-bom:31.0.2"
-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics-ktx" }
 firebase-dynamicLinks = { module = "com.google.firebase:firebase-dynamic-links" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 firebase-playServicesBase = { module = "com.google.android.gms:play-services-base" }
@@ -174,7 +172,7 @@ flexbox = { module = "com.google.android.flexbox:flexbox", version.ref = "flexbo
 fragmentViewBindingDelegate = { module = "com.github.Zhuinden:fragmentviewbindingdelegate-kt", version.ref = "fragmentViewBindingDelegate" }
 hAnalytics = { module = "com.github.HedvigInsurance:hAnalytics", version.ref = "hAnalytics" }
 hedvig-authlib = { module = "com.hedvig.authlib:authlib", version.ref = "hedvigAuthlib" }
-hedvig-odyssey = { module = "com.hedvig.odyssey:common", version.ref = "hedvigOdyssey" }
+hedvig-odyssey = { module = "com.hedvig.odyssey:odyssey", version.ref = "hedvigOdyssey" }
 insetter = { module = "dev.chrisbanes.insetter:insetter", version.ref = "insetter" }
 jsonTest = { module = "org.json:json", version.ref = "jsonTest" }
 junit = { module = "junit:junit", version.ref = "junit" }

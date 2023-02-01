@@ -17,7 +17,6 @@ import com.apollographql.apollo3.cache.normalized.normalizedCache
 import com.apollographql.apollo3.interceptor.ApolloInterceptor
 import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
-import com.datadog.android.DatadogInterceptor
 import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
@@ -25,7 +24,9 @@ import com.hedvig.android.auth.interceptor.MigrateTokenInterceptor
 import com.hedvig.android.core.common.di.LogInfoType
 import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.common.di.isDebugQualifier
+import com.hedvig.android.core.common.di.isProductionQualifier
 import com.hedvig.android.core.common.di.logInfoQualifier
+import com.hedvig.android.datadog.addDatadogConfiguration
 import com.hedvig.android.hanalytics.android.di.appIdQualifier
 import com.hedvig.android.hanalytics.android.di.appVersionCodeQualifier
 import com.hedvig.android.hanalytics.android.di.appVersionNameQualifier
@@ -203,7 +204,9 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.pow
 
 @Suppress("KotlinConstantConditions")
-fun isDebug() = BuildConfig.DEBUG || BuildConfig.APPLICATION_ID == "com.hedvig.test.app"
+fun isDebug() = BuildConfig.APPLICATION_ID == "com.hedvig.dev.app" ||
+  BuildConfig.APPLICATION_ID == "com.hedvig.test.app" ||
+  BuildConfig.DEBUG
 
 val applicationModule = module {
   single { androidApplication() as HedvigApplication }
@@ -215,7 +218,7 @@ val applicationModule = module {
     val builder = OkHttpClient.Builder()
       // Temporary fix until back-end problems are handled
       .readTimeout(30, TimeUnit.SECONDS)
-      .addInterceptor(DatadogInterceptor())
+      .addDatadogConfiguration()
       .addInterceptor(get<MigrateTokenInterceptor>())
       .addInterceptor(get<AuthTokenRefreshingInterceptor>())
       .addInterceptor { chain ->
@@ -239,9 +242,9 @@ val applicationModule = module {
     if (isDebug()) {
       val logger = HttpLoggingInterceptor { message ->
         if (message.contains("Content-Disposition")) {
-          Timber.tag("OkHttp").i("File upload omitted from log")
+          Timber.tag("OkHttp").v("File upload omitted from log")
         } else {
-          Timber.tag("OkHttp").i(message)
+          Timber.tag("OkHttp").v(message)
         }
       }
       logger.level = HttpLoggingInterceptor.Level.BODY
@@ -496,6 +499,7 @@ val stringConstantsModule = module {
   single<String>(appVersionCodeQualifier) { BuildConfig.VERSION_CODE.toString() }
   single<String>(appIdQualifier) { BuildConfig.APPLICATION_ID }
   single<Boolean>(isDebugQualifier) { BuildConfig.DEBUG }
+  single<Boolean>(isProductionQualifier) { BuildConfig.BUILD_TYPE == "release" }
 }
 
 val checkoutModule = module {

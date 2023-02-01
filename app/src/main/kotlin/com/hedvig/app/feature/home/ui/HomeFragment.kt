@@ -125,6 +125,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         context = requireContext(),
         fragmentManager = parentFragmentManager,
         registerForResult = ::registerForResult,
+        commonClaimId = null,
       )
     }
   }

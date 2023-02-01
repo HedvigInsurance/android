@@ -5,7 +5,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import slimber.log.d
+import slimber.log.v
 import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 
@@ -18,31 +18,31 @@ internal class AndroidAccessTokenProvider(
   override suspend fun provide(): String? {
     val requestId = ifPlanted { "#${UUID.randomUUID().toString().takeLast(6)}" }
     val accessToken = (authTokenService.authStatus.value as? AuthStatus.LoggedIn)?.accessToken
-    d { "$requestId Got accessToken: $accessToken" }
+    v { "$requestId Got accessToken: $accessToken" }
     if (accessToken?.expiryDate?.isExpired()?.not() == true) {
-      d { "$requestId Current AccessToken not expired, fast track to adding the header" }
+      v { "$requestId Current AccessToken not expired, fast track to adding the header" }
       return accessToken.token
     }
     return mutex.withLock {
       val authTokens = authTokenService.getTokens() ?: return@withLock null.also {
-        d { "$requestId Tokens were not stored, proceeding unauthenticated" }
+        v { "$requestId Tokens were not stored, proceeding unauthenticated" }
       }
       if (authTokens.accessToken.expiryDate.isExpired().not()) {
-        d { "$requestId After lock, token was refreshed, proceeding with refreshed token" }
+        v { "$requestId After lock, token was refreshed, proceeding with refreshed token" }
         return@withLock authTokens.accessToken.token
       }
-      d { "$requestId Still an expired token at this point, try to refresh it" }
+      v { "$requestId Still an expired token at this point, try to refresh it" }
       if (authTokens.refreshToken.expiryDate.isExpired()) {
-        d { "$requestId Refresh token expired, invalidating tokens and proceeding unauthenticated" }
+        v { "$requestId Refresh token expired, invalidating tokens and proceeding unauthenticated" }
         // If refresh is also expired, consider ourselves logged out
         authTokenService.invalidateTokens()
         return@withLock null
       }
-      d { "$requestId Access token expired, but not expired refresh token, refreshing tokens now" }
+      v { "$requestId Access token expired, but not expired refresh token, refreshing tokens now" }
       val refreshedAccessToken = authTokenService.refreshAndGetAccessToken() ?: return@withLock null.also {
-        d { "$requestId Refreshing failed, proceed unauthenticated" }
+        v { "$requestId Refreshing failed, proceed unauthenticated" }
       }
-      d { "$requestId Refreshing succeeded, proceeding with refreshed tokens" }
+      v { "$requestId Refreshing succeeded, proceeding with refreshed tokens" }
       refreshedAccessToken.token
     }
   }

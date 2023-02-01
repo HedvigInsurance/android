@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.claimdetail.data
 
 import arrow.core.Either
+import arrow.core.continuations.either
 import arrow.core.firstOrNone
-import arrow.core.flatMap
 import com.apollographql.apollo3.ApolloCall
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.cache.normalized.FetchPolicy
@@ -27,17 +27,9 @@ class GetClaimDetailUseCase(
       .fetchPolicy(FetchPolicy.NetworkOnly)
 
   suspend operator fun invoke(claimId: String): Either<Error, ClaimDetailsQuery.ClaimDetail> {
-    return queryCall
-      .safeExecute()
-      .toEither {
-        Error.NetworkError
-      }
-      .flatMap { data ->
-        data.claimDetails
-          .firstOrNone { it.id == claimId }
-          .toEither {
-            Error.NoClaimFound
-          }
-      }
+    return either {
+      val data = queryCall.safeExecute().toEither { Error.NetworkError }.bind()
+      data.claimDetails.firstOrNone { it.id == claimId }.bind { Error.NoClaimFound }
+    }
   }
 }

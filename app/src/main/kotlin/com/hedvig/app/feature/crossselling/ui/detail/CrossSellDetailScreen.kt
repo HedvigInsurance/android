@@ -206,12 +206,11 @@ fun CrossSellDetailScreenPreview() {
         title = "Accident Insurance",
         description = "179 kr/mo.",
         callToAction = "Calculate price",
-        crossSellType = "ACCIDENT",
-        typeOfContract = "SE_ACCIDENT",
         action = CrossSellData.Action.Chat,
         backgroundUrl = "https://images.unsplash.com/photo-1628996796855-0b056a464e06",
         backgroundBlurHash = "LJC6\$2-:DiWB~WxuRkayMwNGo~of",
-        displayName = "Accident Insurance",
+        crossSellType = "ACCIDENT",
+        typeOfContract = "SE_ACCIDENT",
         about = "If you or a family member is injured in an accident insurance, Hedvig is able to compensate" +
           " you for a hospital stay, rehabilitation, therapy and dental injuries. \n\n" +
           "In case of a permanent injury that affect your your quality of life and ability to work, an " +

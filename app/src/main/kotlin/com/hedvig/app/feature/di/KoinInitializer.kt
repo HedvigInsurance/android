@@ -5,6 +5,7 @@ import androidx.startup.Initializer
 import com.hedvig.android.auth.di.authModule
 import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.datastore.di.dataStoreModule
+import com.hedvig.android.datadog.di.datadogModule
 import com.hedvig.android.feature.businessmodel.di.businessModelModule
 import com.hedvig.android.hanalytics.android.di.hAnalyticsAndroidModule
 import com.hedvig.android.hanalytics.di.hAnalyticsModule
@@ -13,6 +14,7 @@ import com.hedvig.android.hanalytics.featureflags.di.featureManagerModule
 import com.hedvig.android.language.di.languageModule
 import com.hedvig.android.market.di.marketManagerModule
 import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
+import com.hedvig.android.odyssey.di.odysseyModule
 import com.hedvig.app.adyenModule
 import com.hedvig.app.apolloClientModule
 import com.hedvig.app.applicationModule
@@ -45,6 +47,7 @@ import com.hedvig.app.referralsModule
 import com.hedvig.app.repositoriesModule
 import com.hedvig.app.serviceModule
 import com.hedvig.app.sharedPreferencesModule
+import com.hedvig.app.startup.TimberInitializer
 import com.hedvig.app.stringConstantsModule
 import com.hedvig.app.textActionSetModule
 import com.hedvig.app.trustlyModule
@@ -69,6 +72,7 @@ class KoinInitializer : Initializer<KoinApplication> {
         apolloClientModule,
         applicationModule,
         authModule,
+        authRepositoryModule,
         businessModelModule,
         cacheManagerModule,
         changeAddressModule,
@@ -80,6 +84,7 @@ class KoinInitializer : Initializer<KoinApplication> {
         connectPaymentModule,
         coreCommonModule,
         dataStoreModule,
+        datadogModule,
         datastoreAndroidModule,
         embarkModule,
         externalInsuranceModule,
@@ -93,10 +98,11 @@ class KoinInitializer : Initializer<KoinApplication> {
         logModule,
         loggedInModule,
         marketManagerModule,
+        navigatorModule,
         notificationBadgeModule,
         notificationModule,
-        navigatorModule,
         numberActionSetModule,
+        odysseyModule,
         offerModule,
         onboardingModule,
         paymentModule,
@@ -113,10 +119,11 @@ class KoinInitializer : Initializer<KoinApplication> {
         valueStoreModule,
         viewModelModule,
         whatsNewModule,
-        authRepositoryModule,
       ),
     )
   }
 
-  override fun dependencies() = emptyList<Class<out Initializer<*>>>()
+  override fun dependencies(): List<Class<out Initializer<*>>> {
+    return listOf(TimberInitializer::class.java)
+  }
 }

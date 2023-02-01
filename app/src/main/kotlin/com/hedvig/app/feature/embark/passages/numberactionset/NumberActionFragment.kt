@@ -64,8 +64,8 @@ class NumberActionFragment : Fragment(R.layout.number_action_set_fragment) {
       messages.adapter = MessageAdapter(data.messages)
       val views = createInputViews()
       views.firstOrNull()?.let {
-        val input = it.findViewById<TextInputEditText>(R.id.input)
         viewLifecycleScope.launchWhenCreated {
+          val input = it.findViewById<TextInputEditText?>(R.id.input)
           requireContext().showKeyboardWithDelay(input, 500.milliseconds)
         }
       }

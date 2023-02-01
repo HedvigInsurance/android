@@ -18,7 +18,6 @@ data class CrossSellData(
   val backgroundBlurHash: String,
   val crossSellType: String,
   val typeOfContract: String,
-  val displayName: String,
   val about: String,
   val perils: List<Peril>,
   val terms: List<DocumentItems.Document>,
@@ -35,7 +34,7 @@ data class CrossSellData(
     object Chat : Action()
 
     @Parcelize
-    data class Web(val url: String) : Action() // TODO Query from backend when available
+    data class Web(val url: String) : Action()
   }
 
   @Parcelize
@@ -57,14 +56,21 @@ data class CrossSellData(
       title = data.title,
       description = data.description,
       callToAction = data.callToAction,
-      action = data.action.asCrossSellEmbark?.embarkStoryV2?.name?.let { storyId ->
-        Action.Embark(storyId, data.title)
-      } ?: Action.Chat,
+      action = when {
+        data.action.asCrossSellEmbark?.embarkStoryV2?.name != null -> {
+          val storyId = data.action.asCrossSellEmbark!!.embarkStoryV2.name
+          Action.Embark(storyId, data.title)
+        }
+        data.action.asCrossSellWeb != null -> {
+          val url = data.action.asCrossSellWeb!!.url
+          Action.Web(url)
+        }
+        else -> Action.Chat
+      },
       backgroundUrl = data.imageUrl,
       backgroundBlurHash = data.blurHash,
       crossSellType = data.type.rawValue,
       typeOfContract = data.contractType.rawValue,
-      displayName = data.info.displayName,
       about = data.info.aboutSection,
       perils = data.info.contractPerils.map { Peril.from(it.fragments.perilFragment) },
       terms = data.info.insuranceTerms.map { DocumentItems.Document.from(it.fragments.insuranceTermFragment) },

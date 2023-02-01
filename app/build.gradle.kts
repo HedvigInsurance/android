@@ -29,7 +29,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "10.0.1"
+    versionName = "10.1.0"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -122,6 +122,7 @@ dependencies {
   implementation(projects.coreNavigation)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
+  implementation(projects.datadog)
   implementation(projects.featureBusinessmodel)
   implementation(projects.featureOdyssey)
   implementation(projects.hanalytics.hanalyticsAndroid)
