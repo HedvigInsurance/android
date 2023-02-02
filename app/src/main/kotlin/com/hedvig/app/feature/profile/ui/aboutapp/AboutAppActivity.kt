@@ -42,10 +42,6 @@ class AboutAppActivity : AppCompatActivity(R.layout.activity_about_app) {
         onBackPressed()
       }
 
-      licenseAttributions.setOnClickListener {
-        startActivity(Intent(this@AboutAppActivity, LicensesActivity::class.java))
-      }
-
       whatsNewViewModel.fetchNews(NEWS_BASE_VERSION)
       whatsNewViewModel.news.observe(this@AboutAppActivity) { data ->
         whatsNew.show()

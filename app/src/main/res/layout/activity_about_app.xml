@@ -36,13 +36,6 @@
                 android:textAppearance="?textAppearanceHeadline4" />
 
             <com.hedvig.app.feature.profile.ui.ProfileMenuRow
-                android:id="@+id/licenseAttributions"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="?textAppearanceBody2"
-                app:name="@string/PROFILE_ABOUT_APP_LICENSE_ATTRIBUTIONS" />
-
-            <com.hedvig.app.feature.profile.ui.ProfileMenuRow
                 android:id="@+id/whatsNew"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
