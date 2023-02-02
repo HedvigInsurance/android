@@ -64,7 +64,6 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
 
   private var isKeyboardShown = false
   private var preventOpenAttachFile = false
-  private var preventOpenAttachFileHandler = Handler(Looper.getMainLooper())
 
   private var attachPickerDialog: AttachPickerDialog? = null
 
@@ -72,18 +71,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
 
   private var forceScrollToBottom = true
 
-  private val externalStoragePermission = Manifest.permission.READ_EXTERNAL_STORAGE
   private val cameraPermission = Manifest.permission.CAMERA
-
-  private val externalStoragePermissionResultLauncher = registerForActivityResult(
-    ActivityResultContracts.RequestPermission(),
-  ) { permissionGranted ->
-    if (permissionGranted) {
-      openAttachPicker()
-    } else {
-      showPermissionExplanationDialog(externalStoragePermission)
-    }
-  }
 
   private val cameraPermissionResultLauncher = registerForActivityResult(
     ActivityResultContracts.RequestPermission(),
