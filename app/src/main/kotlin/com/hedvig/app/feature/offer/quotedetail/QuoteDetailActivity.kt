@@ -66,7 +66,6 @@ class QuoteDetailActivity : AppCompatActivity(R.layout.quote_detail_activity) {
         it.submitList(
           listOf(
             PerilItem.Header.Simple(getString(hedvig.resources.R.string.cross_sell_info_coverage_title)),
-            PerilItem.Header.Simple(getString(hedvig.resources.R.string.cross_sell_info_coverage_title)),
           ) + perils,
         )
       }
