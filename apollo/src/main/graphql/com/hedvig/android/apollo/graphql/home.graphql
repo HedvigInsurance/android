@@ -101,6 +101,7 @@ query HomeQuery($locale: Locale!, $languageCode: String!) {
   }
   payinMethodStatus
   insuranceProviders(locale: $locale) {
+    switchable
     id
   }
 }

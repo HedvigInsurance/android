@@ -154,7 +154,11 @@ class HomeItemsBuilder(
 
   private fun HomeQuery.Data.isTerminated() = contracts.all { it.status.asTerminatedStatus != null }
 
-  private fun HomeQuery.Data.isSwitching() = contracts.any {
-    insuranceProviders.map(HomeQuery.InsuranceProvider::id).contains(it.switchedFromInsuranceProvider)
+  private fun HomeQuery.Data.isSwitching() = contracts.any { contract ->
+    val switchedFromProvider = insuranceProviders.firstOrNull {
+      it.id == contract.switchedFromInsuranceProvider
+    }
+
+    switchedFromProvider?.switchable ?: false
   }
 }
