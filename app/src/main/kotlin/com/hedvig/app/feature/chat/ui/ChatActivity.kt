@@ -39,6 +39,8 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.applyInsetter
+import java.io.File
+import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -47,8 +49,6 @@ import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import slimber.log.e
-import java.io.File
-import java.io.IOException
 
 class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
   private val chatViewModel: ChatViewModel by viewModel()
@@ -174,11 +174,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
       openAttachFile = {
         scrollToBottom(true)
         if (!preventOpenAttachFile) {
-          if (hasPermissions(externalStoragePermission)) {
-            openAttachPicker()
-          } else {
-            externalStoragePermissionResultLauncher.launch(externalStoragePermission)
-          }
+          openAttachPicker()
         }
       },
       openSendGif = {

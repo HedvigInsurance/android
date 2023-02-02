@@ -57,14 +57,6 @@ fun AppCompatActivity.setupToolbar(
 
 fun Activity.showPermissionExplanationDialog(permission: String) {
   when (permission) {
-    android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-    android.Manifest.permission.READ_EXTERNAL_STORAGE,
-    ->
-      showAlert(
-        title = hedvig.resources.R.string.PERMISSION_DIALOG_TITLE,
-        message = hedvig.resources.R.string.PERMISSION_DIALOG_EXTERNAL_STORAGE_MESSAGE,
-        positiveAction = { openAppSettings() },
-      )
     android.Manifest.permission.RECORD_AUDIO ->
       showAlert(
         title = hedvig.resources.R.string.PERMISSION_DIALOG_TITLE,
