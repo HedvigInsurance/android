@@ -140,6 +140,7 @@ sealed class AutomationClaimInputDTO2 {
     enum class ClaimProblem {
       BROKEN,
       BROKEN_FRONT,
+      BROKEN_OTHER,
       BROKEN_BACK,
       WATER_DAMAGED,
       MISSING,
@@ -153,6 +154,7 @@ sealed class AutomationClaimInputDTO2 {
         BROKEN -> "Broken"
         BROKEN_FRONT -> "Front"
         BROKEN_BACK -> "Back"
+        BROKEN_OTHER -> "Other"
         WATER_DAMAGED -> "Water damage"
         MISSING -> "Missing"
         STOLEN -> "Stolen"
