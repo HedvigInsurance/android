@@ -44,7 +44,7 @@ class HomeItemsBuilder(
     ) {
       add(HomeModel.ConnectPayin(featureManager.getPaymentType()))
     }
-    if (featureManager.isFeatureEnabled(Feature.COMMON_CLAIMS)) {
+    if (featureManager.isFeatureEnabled(Feature.COMMON_CLAIMS) && homeData.commonClaims.isNotEmpty()) {
       add(HomeModel.Header(hedvig.resources.R.string.home_tab_common_claims_title))
       addAll(
         listOfNotNull(
