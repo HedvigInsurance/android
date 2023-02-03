@@ -1,6 +1,6 @@
 plugins {
-  id("hedvig.kotlin.library")
   id("hedvig.android.ktlint")
+  id("hedvig.kotlin.library")
 }
 
 dependencies {
