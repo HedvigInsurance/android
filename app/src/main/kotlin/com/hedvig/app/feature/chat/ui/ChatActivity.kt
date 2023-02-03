@@ -6,10 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
-import android.os.Handler
-import android.os.Looper
 import android.provider.MediaStore
-import android.provider.MediaStore.MediaColumns
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
@@ -39,16 +36,13 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.applyInsetter
-import java.io.File
-import java.io.IOException
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import slimber.log.e
+import java.io.File
+import java.io.IOException
 
 class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
   private val chatViewModel: ChatViewModel by viewModel()
@@ -313,24 +307,11 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
         binding.input.rotateFileUploadIcon(false)
         this.attachPickerDialog = null
       },
-      uploadFileCallback = { uri ->
-        chatViewModel.uploadFile(uri)
-      },
     )
-    chatViewModel.fileUploadOutcome.observe(this) { data ->
-      data?.uri?.path?.let { path ->
-        attachPickerDialog.imageWasUploaded(path)
-      }
-    }
     attachPickerDialog.pickerHeight = keyboardHeight
     attachPickerDialog.show()
 
-    lifecycleScope.launch(Dispatchers.IO) {
-      val images = getImagesPath()
-      lifecycleScope.launch(Dispatchers.Main) {
-        attachPickerDialog.setImages(images)
-      }
-    }
+    attachPickerDialog.setImages()
 
     binding.input.rotateFileUploadIcon(true)
     this.attachPickerDialog = attachPickerDialog
@@ -391,31 +372,6 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
         }
       }
     }
-  }
-
-  private suspend fun getImagesPath(): List<String> = withContext(Dispatchers.IO) {
-    val uri: Uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-    val listOfAllImages = ArrayList<String>()
-    val columnIndexData: Int
-
-    val projection = arrayOf(MediaColumns.DISPLAY_NAME, MediaStore.Images.Media.BUCKET_DISPLAY_NAME)
-    val cursor = this@ChatActivity.contentResolver.query(
-      uri,
-      projection,
-      null,
-      null,
-      "${MediaColumns.DATE_ADDED} DESC",
-    )
-
-    cursor?.let {
-      columnIndexData = cursor.getColumnIndexOrThrow(MediaColumns.DISPLAY_NAME)
-      while (it.moveToNext()) {
-        listOfAllImages.add(it.getString(columnIndexData))
-      }
-    }
-    cursor?.close()
-
-    listOfAllImages
   }
 
   override fun finish() {
