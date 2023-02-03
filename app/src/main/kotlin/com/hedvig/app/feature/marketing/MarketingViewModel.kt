@@ -46,7 +46,7 @@ class MarketingViewModel(
       }
     }
     viewModelScope.launch {
-      getMarketingBackgroundUseCase.invoke().tap { marketingBackground ->
+      getMarketingBackgroundUseCase.invoke().onRight { marketingBackground ->
         _marketingBackground.value = marketingBackground
       }
     }

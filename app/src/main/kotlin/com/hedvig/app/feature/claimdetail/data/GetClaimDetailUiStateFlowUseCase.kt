@@ -30,7 +30,7 @@ class GetClaimDetailUiStateFlowUseCase(
         while (isActive) {
           getClaimDetailUseCase
             .invoke(claimId)
-            .tap { claimDetail -> emit(claimDetail.right()) }
+            .onRight { claimDetail -> emit(claimDetail.right()) }
           delay(POLL_INTERVAL)
         }
       }

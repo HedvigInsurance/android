@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.offer.usecase
 
 import arrow.core.Either
-import arrow.core.flatMap
-import arrow.core.rightIfNotNull
+import arrow.core.continuations.either
+import arrow.core.continuations.ensureNotNull
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.QuoteCartAddCampaignMutation
 import com.hedvig.android.apollo.graphql.QuoteCartRemoveCampaignMutation
@@ -22,31 +22,41 @@ class EditCampaignUseCase(
   suspend fun addCampaignToQuoteCart(
     campaignCode: CampaignCode,
     quoteCartId: QuoteCartId,
-  ): Either<ErrorMessage, QuoteCartId> = apolloClient
-    .mutation(QuoteCartAddCampaignMutation(campaignCode.code, quoteCartId.id))
-    .safeExecute()
-    .toEither(::ErrorMessage)
-    .map { it.quoteCart_addCampaign }
-    .flatMap {
-      it.asQuoteCart
-        ?.id
-        ?.let { id -> QuoteCartId(id) }
-        .rightIfNotNull { ErrorMessage(it.asBasicError?.message) }
+  ): Either<ErrorMessage, QuoteCartId> {
+    return either {
+      val addCampaignResponse = apolloClient
+        .mutation(QuoteCartAddCampaignMutation(campaignCode.code, quoteCartId.id))
+        .safeExecute()
+        .toEither(::ErrorMessage)
+        .map { it.quoteCart_addCampaign }
+        .bind()
+
+      val quoteCartIdResponse: QuoteCartId? = addCampaignResponse.asQuoteCart?.id?.let(::QuoteCartId)
+      ensureNotNull(quoteCartIdResponse) {
+        ErrorMessage((addCampaignResponse.asBasicError?.message))
+      }
+      offerRepository.fetchNewOffer(quoteCartIdResponse)
+      quoteCartIdResponse
     }
-    .tap { offerRepository.fetchNewOffer(quoteCartId) }
+  }
 
   suspend fun removeCampaignFromQuoteCart(
     quoteCartId: QuoteCartId,
-  ): Either<ErrorMessage, QuoteCartId> = apolloClient
-    .mutation(QuoteCartRemoveCampaignMutation(quoteCartId.id))
-    .safeExecute()
-    .toEither(::ErrorMessage)
-    .map { it.quoteCart_removeCampaign }
-    .flatMap {
-      it.asQuoteCart
-        ?.id
-        ?.let { id -> QuoteCartId(id) }
-        .rightIfNotNull { ErrorMessage(it.asBasicError?.message) }
+  ): Either<ErrorMessage, QuoteCartId> {
+    return either {
+      val editCampaignResponse = apolloClient
+        .mutation(QuoteCartRemoveCampaignMutation(quoteCartId.id))
+        .safeExecute()
+        .toEither(::ErrorMessage)
+        .map { it.quoteCart_removeCampaign }
+        .bind()
+
+      val quoteCartIdResponse: QuoteCartId? = editCampaignResponse.asQuoteCart?.id?.let(::QuoteCartId)
+      ensureNotNull(quoteCartIdResponse) {
+        ErrorMessage(editCampaignResponse.asBasicError?.message)
+      }
+      offerRepository.fetchNewOffer(quoteCartIdResponse)
+      quoteCartIdResponse
     }
-    .tap { offerRepository.fetchNewOffer(quoteCartId) }
+  }
 }

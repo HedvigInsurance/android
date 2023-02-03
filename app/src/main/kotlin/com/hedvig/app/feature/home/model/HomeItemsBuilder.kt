@@ -44,7 +44,7 @@ class HomeItemsBuilder(
     ) {
       add(HomeModel.ConnectPayin(featureManager.getPaymentType()))
     }
-    if (featureManager.isFeatureEnabled(Feature.COMMON_CLAIMS)) {
+    if (featureManager.isFeatureEnabled(Feature.COMMON_CLAIMS) && homeData.commonClaims.isNotEmpty()) {
       add(HomeModel.Header(hedvig.resources.R.string.home_tab_common_claims_title))
       addAll(
         listOfNotNull(
@@ -154,7 +154,11 @@ class HomeItemsBuilder(
 
   private fun HomeQuery.Data.isTerminated() = contracts.all { it.status.asTerminatedStatus != null }
 
-  private fun HomeQuery.Data.isSwitching() = contracts.any {
-    insuranceProviders.map(HomeQuery.InsuranceProvider::id).contains(it.switchedFromInsuranceProvider)
+  private fun HomeQuery.Data.isSwitching() = contracts.any { contract ->
+    val switchedFromProvider = insuranceProviders.firstOrNull {
+      it.id == contract.switchedFromInsuranceProvider
+    }
+
+    switchedFromProvider?.switchable ?: false
   }
 }

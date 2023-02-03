@@ -10,7 +10,7 @@ dependencies {
 
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.datastore.preferencesCore)
-  implementation(libs.arrowKt.core)
+  implementation(libs.arrow.core)
   implementation(libs.koin.core)
   implementation(libs.slimber)
 
