@@ -56,7 +56,6 @@
 
     <dimen name="camera_and_misc_button_width">120dp</dimen>
     <dimen name="camera_and_misc_button_background_stroke_width">1dp</dimen>
-    <dimen name="attach_file_rounded_corners_radius">20dp</dimen>
     <dimen name="chat_text_input_vertical_padding">7dp</dimen>
     <dimen name="chat_text_input_send_button_offset">12dp</dimen>
     <dimen name="bottom_sheet_handle_height">4dp</dimen>

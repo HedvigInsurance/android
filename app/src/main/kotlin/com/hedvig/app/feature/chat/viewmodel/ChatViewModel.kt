@@ -42,7 +42,6 @@ class ChatViewModel(
   val sendMessageResponse = MutableLiveData<Boolean>()
   val isUploading = LiveEvent<Boolean>()
   val uploadBottomSheetResponse = LiveEvent<UploadFileMutation.Data>()
-  val fileUploadOutcome = LiveEvent<FileUploadOutcome>()
   val takePictureUploadOutcome = LiveEvent<FileUploadOutcome>()
   val networkError = LiveEvent<Boolean>()
   val gifs = MutableLiveData<GifQuery.Data>()
@@ -148,14 +147,6 @@ class ChatViewModel(
         },
         {},
       )
-  }
-
-  fun uploadFile(uri: Uri) {
-    hAnalytics.chatRichMessageSent()
-    viewModelScope.launch {
-      val data = uploadFileInner(uri) ?: return@launch
-      fileUploadOutcome.postValue(FileUploadOutcome(uri, !data.hasErrors()))
-    }
   }
 
   fun uploadTakenPicture(uri: Uri) {

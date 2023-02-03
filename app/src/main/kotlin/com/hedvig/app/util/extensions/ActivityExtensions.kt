@@ -15,7 +15,6 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.app.ActivityCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.hedvig.app.authenticate.BankIdLoginDialog
