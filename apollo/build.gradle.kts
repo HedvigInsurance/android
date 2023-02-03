@@ -11,11 +11,11 @@ dependencies {
   implementation(projects.coreCommon)
 
   api(libs.apollo.runtime)
+  api(libs.arrow.core)
 
   implementation(libs.adyen)
   implementation(libs.apollo.adapters)
   implementation(libs.apollo.normalizedCache)
-  implementation(libs.arrow.core)
 }
 
 apollo {
