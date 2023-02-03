@@ -3,14 +3,11 @@ package com.hedvig.app.feature.chat.ui
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
-import android.os.Handler
-import android.os.Looper
 import android.provider.MediaStore
-import android.provider.MediaStore.MediaColumns
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.lifecycle.flowWithLifecycle
@@ -26,12 +23,12 @@ import com.hedvig.app.feature.chat.ChatInputType
 import com.hedvig.app.feature.chat.ParagraphInput
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.feature.settings.SettingsActivity
-import com.hedvig.app.util.extensions.askForPermissions
 import com.hedvig.app.util.extensions.calculateNonFullscreenHeightDiff
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.handleSingleSelectLink
 import com.hedvig.app.util.extensions.hasPermissions
 import com.hedvig.app.util.extensions.showAlert
+import com.hedvig.app.util.extensions.showPermissionExplanationDialog
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.triggerRestartActivity
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
@@ -39,11 +36,8 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.applyInsetter
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import slimber.log.e
@@ -64,15 +58,24 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
 
   private var isKeyboardShown = false
   private var preventOpenAttachFile = false
-  private var preventOpenAttachFileHandler = Handler(Looper.getMainLooper())
-
-  private val resetPreventOpenAttachFile = { preventOpenAttachFile = false }
 
   private var attachPickerDialog: AttachPickerDialog? = null
 
   private var currentPhotoPath: String? = null
 
   private var forceScrollToBottom = true
+
+  private val cameraPermission = Manifest.permission.CAMERA
+
+  private val cameraPermissionResultLauncher = registerForActivityResult(
+    ActivityResultContracts.RequestPermission(),
+  ) { permissionGranted ->
+    if (permissionGranted) {
+      startTakePicture()
+    } else {
+      showPermissionExplanationDialog(cameraPermission)
+    }
+  }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -153,14 +156,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
       openAttachFile = {
         scrollToBottom(true)
         if (!preventOpenAttachFile) {
-          if (hasPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-            openAttachPicker()
-          } else {
-            askForPermissions(
-              arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-              REQUEST_WRITE_PERMISSION,
-            )
-          }
+          openAttachPicker()
         }
       },
       openSendGif = {
@@ -288,13 +284,10 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
     val attachPickerDialog = AttachPickerDialog(this)
     attachPickerDialog.initialize(
       takePhotoCallback = {
-        if (hasPermissions(Manifest.permission.CAMERA)) {
+        if (hasPermissions(cameraPermission)) {
           startTakePicture()
         } else {
-          askForPermissions(
-            arrayOf(Manifest.permission.CAMERA),
-            REQUEST_CAMERA_PERMISSION,
-          )
+          cameraPermissionResultLauncher.launch(cameraPermission)
         }
       },
       showUploadBottomSheetCallback = {
@@ -306,36 +299,19 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
           )
       },
       dismissCallback = { motionEvent ->
-
         motionEvent?.let {
           preventOpenAttachFile = true
           this.dispatchTouchEvent(motionEvent)
-          preventOpenAttachFileHandler.removeCallbacks(resetPreventOpenAttachFile)
-          // unfortunately the best way I found to prevent reopening :(
-          preventOpenAttachFileHandler.postDelayed(resetPreventOpenAttachFile, 100)
         }
 
         binding.input.rotateFileUploadIcon(false)
         this.attachPickerDialog = null
       },
-      uploadFileCallback = { uri ->
-        chatViewModel.uploadFile(uri)
-      },
     )
-    chatViewModel.fileUploadOutcome.observe(this) { data ->
-      data?.uri?.path?.let { path ->
-        attachPickerDialog.imageWasUploaded(path)
-      }
-    }
     attachPickerDialog.pickerHeight = keyboardHeight
     attachPickerDialog.show()
 
-    lifecycleScope.launch(Dispatchers.IO) {
-      val images = getImagesPath()
-      lifecycleScope.launch(Dispatchers.Main) {
-        attachPickerDialog.setImages(images)
-      }
-    }
+    attachPickerDialog.setImages()
 
     binding.input.rotateFileUploadIcon(true)
     this.attachPickerDialog = attachPickerDialog
@@ -398,68 +374,13 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
     }
   }
 
-  private suspend fun getImagesPath(): List<String> = withContext(Dispatchers.IO) {
-    val uri: Uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-    val listOfAllImages = ArrayList<String>()
-    val columnIndexData: Int
-
-    val projection = arrayOf(MediaColumns.DISPLAY_NAME, MediaStore.Images.Media.BUCKET_DISPLAY_NAME)
-    val cursor = this@ChatActivity.contentResolver.query(
-      uri,
-      projection,
-      null,
-      null,
-      "${MediaColumns.DATE_ADDED} DESC",
-    )
-
-    cursor?.let {
-      columnIndexData = cursor.getColumnIndexOrThrow(MediaColumns.DISPLAY_NAME)
-      while (it.moveToNext()) {
-        listOfAllImages.add(it.getString(columnIndexData))
-      }
-    }
-    cursor?.close()
-
-    listOfAllImages
-  }
-
-  override fun onRequestPermissionsResult(
-    requestCode: Int,
-    permissions: Array<String>,
-    grantResults: IntArray,
-  ) {
-    when (requestCode) {
-      REQUEST_WRITE_PERMISSION ->
-        if ((grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED })) {
-          openAttachPicker()
-        }
-
-      REQUEST_CAMERA_PERMISSION ->
-        if ((grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED })) {
-          startTakePicture()
-        }
-
-      else -> {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-      }
-    }
-  }
-
   override fun finish() {
     super.finish()
     chatViewModel.onChatClosed()
     overridePendingTransition(R.anim.stay_in_place, R.anim.chat_slide_down_out)
   }
 
-  override fun onDestroy() {
-    preventOpenAttachFileHandler.removeCallbacks(resetPreventOpenAttachFile)
-    super.onDestroy()
-  }
-
   companion object {
-
-    private const val REQUEST_WRITE_PERMISSION = 35134
-    private const val REQUEST_CAMERA_PERMISSION = 54332
 
     private const val TAKE_PICTURE_REQUEST_CODE = 2371
 

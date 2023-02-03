@@ -15,7 +15,6 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.app.ActivityCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.hedvig.app.authenticate.BankIdLoginDialog
@@ -55,38 +54,8 @@ fun AppCompatActivity.setupToolbar(
   )
 }
 
-fun Activity.askForPermissions(
-  permissions: Array<String>,
-  requestCode: Int,
-  shouldNotAskAction: (() -> Unit)? = null,
-) {
-  permissions.forEach {
-    if (ActivityCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_DENIED) {
-      when {
-        !getStoredBoolean(SHARED_PREFERENCE_ASKED_FOR_PERMISSION_PREFIX_KEY + it) -> {
-          storeBoolean(SHARED_PREFERENCE_ASKED_FOR_PERMISSION_PREFIX_KEY + it, true)
-          ActivityCompat.requestPermissions(this, permissions, requestCode)
-        }
-        !ActivityCompat.shouldShowRequestPermissionRationale(this, it) -> {
-          shouldNotAskAction?.invoke()
-          showPermissionExplanationDialog(it)
-        }
-        else -> ActivityCompat.requestPermissions(this, permissions, requestCode)
-      }
-    }
-  }
-}
-
 fun Activity.showPermissionExplanationDialog(permission: String) {
   when (permission) {
-    android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-    android.Manifest.permission.READ_EXTERNAL_STORAGE,
-    ->
-      showAlert(
-        title = hedvig.resources.R.string.PERMISSION_DIALOG_TITLE,
-        message = hedvig.resources.R.string.PERMISSION_DIALOG_EXTERNAL_STORAGE_MESSAGE,
-        positiveAction = { openAppSettings() },
-      )
     android.Manifest.permission.RECORD_AUDIO ->
       showAlert(
         title = hedvig.resources.R.string.PERMISSION_DIALOG_TITLE,

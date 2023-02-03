@@ -26,7 +26,7 @@
             android:orientation="horizontal"
             android:visibility="gone"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/attach_file_image_item"
+            tools:listitem="@layout/camera_and_misc_item"
             tools:visibility="visible" />
 
     </FrameLayout>

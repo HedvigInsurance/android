@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.chat.ui
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.MotionEvent
@@ -10,18 +10,14 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils.loadAnimation
-import coil.ImageLoader
 import com.hedvig.android.core.common.android.whenApiVersion
 import com.hedvig.app.R
 import com.hedvig.app.databinding.AttachPickerDialogBinding
-import com.hedvig.app.feature.chat.AttachImageData
 import com.hedvig.app.util.extensions.view.fadeIn
 import com.hedvig.app.util.extensions.view.remove
-import org.koin.java.KoinJavaComponent.inject
 
 class AttachPickerDialog(context: Context) : Dialog(context, R.style.TransparentDialog) {
 
-  private val imageLoader: ImageLoader by inject(ImageLoader::class.java)
   private lateinit var binding: AttachPickerDialogBinding
 
   var pickerHeight = 0
@@ -32,7 +28,6 @@ class AttachPickerDialog(context: Context) : Dialog(context, R.style.Transparent
   private lateinit var takePhotoCallback: () -> Unit
   private lateinit var showUploadBottomSheetCallback: () -> Unit
   private lateinit var dismissCallback: (MotionEvent?) -> Unit
-  private lateinit var uploadFileCallback: (Uri) -> Unit
 
   private var dismissMotionEvent: MotionEvent? = null
 
@@ -58,12 +53,10 @@ class AttachPickerDialog(context: Context) : Dialog(context, R.style.Transparent
     takePhotoCallback: () -> Unit,
     showUploadBottomSheetCallback: () -> Unit,
     dismissCallback: (MotionEvent?) -> Unit,
-    uploadFileCallback: (Uri) -> Unit,
   ) {
     this.takePhotoCallback = takePhotoCallback
     this.showUploadBottomSheetCallback = showUploadBottomSheetCallback
     this.dismissCallback = dismissCallback
-    this.uploadFileCallback = uploadFileCallback
   }
 
   override fun show() {
@@ -135,15 +128,10 @@ class AttachPickerDialog(context: Context) : Dialog(context, R.style.Transparent
     binding.attachPickerBottomSheet.layoutParams = params
   }
 
-  fun setImages(images: List<String>) {
+  fun setImages() {
     val adapter = AttachFileAdapter(
-      context,
-      images.map { AttachImageData(it) },
-      pickerHeight,
       takePhotoCallback,
       showUploadBottomSheetCallback,
-      uploadFileCallback,
-      imageLoader,
     )
     binding.apply {
       attachFileRecyclerView.adapter = adapter
@@ -152,12 +140,7 @@ class AttachPickerDialog(context: Context) : Dialog(context, R.style.Transparent
     }
   }
 
-  fun imageWasUploaded(path: String) {
-    val fileAdapter = binding.attachFileRecyclerView.adapter as? AttachFileAdapter
-      ?: return
-    fileAdapter.imageWasUploaded(path)
-  }
-
+  @SuppressLint("ClickableViewAccessibility") // Consider removing this function completely
   private fun setupDialogTouchEvents() {
     binding.attachPickerRoot.setOnTouchListener { _, event ->
       dismissMotionEvent = event
@@ -169,8 +152,7 @@ class AttachPickerDialog(context: Context) : Dialog(context, R.style.Transparent
   }
 
   fun uploadingTakenPicture(isUploading: Boolean) {
-    val fileAdapter = binding.attachFileRecyclerView.adapter as AttachFileAdapter?
-      ?: run { return }
+    val fileAdapter = binding.attachFileRecyclerView.adapter as? AttachFileAdapter ?: return
     fileAdapter.isUploadingTakenPicture = isUploading
   }
 }
