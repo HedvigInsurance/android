@@ -131,7 +131,7 @@ class SimpleSignAuthenticationViewModel(
       is AuthTokenResult.Success -> {
         hAnalytics.loggedIn()
         featureManager.invalidateExperiments()
-        authTokenService.updateTokens(result.accessToken, result.refreshToken)
+        authTokenService.loginWithTokens(result.accessToken, result.refreshToken)
         uploadMarketAndLanguagePreferencesUseCase.invoke()
       }
     }

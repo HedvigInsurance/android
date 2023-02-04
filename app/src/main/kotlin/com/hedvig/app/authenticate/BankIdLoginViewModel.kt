@@ -119,7 +119,7 @@ class BankIdLoginViewModel(
   }
 
   private suspend fun login(authTokenResult: AuthTokenResult.Success) {
-    authTokenService.updateTokens(
+    authTokenService.loginWithTokens(
       authTokenResult.accessToken,
       authTokenResult.refreshToken,
     )
