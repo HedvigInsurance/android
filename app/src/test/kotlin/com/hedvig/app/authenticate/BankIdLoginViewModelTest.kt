@@ -8,7 +8,11 @@ import assertk.assertions.isTrue
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.AuthTokenServiceImpl
 import com.hedvig.android.auth.FakeAuthRepository
+import com.hedvig.android.auth.event.AuthEventBroadcaster
+import com.hedvig.android.auth.event.AuthEventListener
+import com.hedvig.android.auth.event.FakeAuthEventListener
 import com.hedvig.android.auth.storage.AuthTokenStorage
+import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.datastore.TestPreferencesDataStore
 import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager
 import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
@@ -33,6 +37,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import kotlin.coroutines.EmptyCoroutineContext
 
 class BankIdLoginViewModelTest {
   @get:Rule
@@ -43,9 +48,8 @@ class BankIdLoginViewModelTest {
 
   @Test
   fun `start login attempt failing results in an error state immediately`() = runTest {
-    val authTokenService = testAuthTokenService()
     val authRepository = FakeAuthRepository()
-    val viewModel: BankIdLoginViewModel = testBankIdLoginViewModel(authTokenService, authRepository)
+    val viewModel: BankIdLoginViewModel = testBankIdLoginViewModel(authRepository)
     backgroundScope.launch { viewModel.viewState.collect() } // Start a subscriber since we're using WhileSubscribed
 
     authRepository.authAttemptResponse.add(AuthAttemptResult.Error(""))
@@ -58,7 +62,7 @@ class BankIdLoginViewModelTest {
   fun `auth repository responding successfully to the exchange, results in a login`() = runTest {
     val authTokenService = testAuthTokenService()
     val authRepository = FakeAuthRepository()
-    val viewModel: BankIdLoginViewModel = testBankIdLoginViewModel(authTokenService, authRepository)
+    val viewModel: BankIdLoginViewModel = testBankIdLoginViewModel(authRepository, authTokenService)
     backgroundScope.launch { viewModel.viewState.collect() }
 
     assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Loading)
@@ -108,7 +112,7 @@ class BankIdLoginViewModelTest {
   fun `auth repository failing the exchange, results in an error`() = runTest {
     val authTokenService = testAuthTokenService()
     val authRepository = FakeAuthRepository()
-    val viewModel: BankIdLoginViewModel = testBankIdLoginViewModel(authTokenService, authRepository)
+    val viewModel: BankIdLoginViewModel = testBankIdLoginViewModel(authRepository, authTokenService)
     backgroundScope.launch { viewModel.viewState.collect() }
 
     assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Loading)
@@ -131,7 +135,7 @@ class BankIdLoginViewModelTest {
   fun `login status result failing, results in an error with the returned message`() = runTest {
     val authTokenService = testAuthTokenService()
     val authRepository = FakeAuthRepository()
-    val viewModel: BankIdLoginViewModel = testBankIdLoginViewModel(authTokenService, authRepository)
+    val viewModel: BankIdLoginViewModel = testBankIdLoginViewModel(authRepository, authTokenService)
     backgroundScope.launch { viewModel.viewState.collect() }
 
     assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Loading)
@@ -148,9 +152,30 @@ class BankIdLoginViewModelTest {
     assertThat(authTokenService.getTokens()).isNull()
   }
 
+  @Test
+  fun `login status result succeeding, sends a loggedIn event`() = runTest {
+    val authEventListeners = List(2) { FakeAuthEventListener() }.toSet()
+    val authEventBroadcaster = testAuthEventBroadcaster(authEventListeners)
+    val authTokenService = testAuthTokenService(authEventBroadcaster)
+    val authRepository = FakeAuthRepository()
+    val viewModel: BankIdLoginViewModel = testBankIdLoginViewModel(authRepository, authTokenService)
+    backgroundScope.launch { viewModel.viewState.collect() }
+
+    authRepository.authAttemptResponse.add(
+      AuthAttemptResult.BankIdProperties("", StatusUrl(""), ""),
+    )
+    authRepository.loginStatusResponse.add(LoginStatusResult.Completed(AuthorizationCodeGrant("grant")))
+    authRepository.exchangeResponse.add(AuthTokenResult.Success(AccessToken("123", 90), RefreshToken("456", 90)))
+    for (authEventListener in authEventListeners) {
+      authEventListener.loggedInEvent.awaitEvent()
+      authEventListener.loggedInEvent.expectNoEvents()
+      authEventListener.loggedOutEvent.expectNoEvents()
+    }
+  }
+
   private fun TestScope.testBankIdLoginViewModel(
+    authRepository: AuthRepository,
     authTokenService: AuthTokenService = testAuthTokenService(),
-    authRepository: AuthRepository = FakeAuthRepository(),
   ): BankIdLoginViewModel {
     @Suppress("RemoveExplicitTypeArguments")
     return BankIdLoginViewModel(
@@ -163,7 +188,19 @@ class BankIdLoginViewModelTest {
     )
   }
 
-  private fun TestScope.testAuthTokenService(): AuthTokenService {
+  private fun TestScope.testAuthEventBroadcaster(
+    authEventListeners: Set<AuthEventListener> = emptySet(),
+  ): AuthEventBroadcaster {
+    return AuthEventBroadcaster(
+      authEventListeners,
+      ApplicationScope(backgroundScope),
+      EmptyCoroutineContext,
+    )
+  }
+
+  private fun TestScope.testAuthTokenService(
+    authEventBroadcaster: AuthEventBroadcaster = testAuthEventBroadcaster(),
+  ): AuthTokenService {
     return AuthTokenServiceImpl(
       AuthTokenStorage(
         dataStore = TestPreferencesDataStore(
@@ -172,6 +209,7 @@ class BankIdLoginViewModelTest {
         ),
       ),
       FakeAuthRepository(),
+      authEventBroadcaster,
       backgroundScope,
     )
   }
