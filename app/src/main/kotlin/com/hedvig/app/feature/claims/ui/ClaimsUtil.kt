@@ -7,6 +7,8 @@ import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.odyssey.OdysseyClaimsFlowActivity
 import com.hedvig.app.R
+import com.hedvig.android.odyssey.model.ItemType
+import com.hedvig.android.odyssey.search.SearchActivity
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 
 suspend fun startClaimsFlow(
@@ -17,11 +19,8 @@ suspend fun startClaimsFlow(
   commonClaimId: String?,
 ) {
   if (featureManager.isFeatureEnabled(Feature.USE_ODYSSEY_CLAIM_FLOW)) {
-    val intent = OdysseyClaimsFlowActivity.newInstance(
-      context = context,
-      odysseyUrl = context.getString(R.string.ODYSSEY_URL),
-      commonClaimId = commonClaimId,
-    )
+
+    val intent = Intent(context, SearchActivity::class.java)
 
     if (registerForResult != null) {
       registerForResult(intent)

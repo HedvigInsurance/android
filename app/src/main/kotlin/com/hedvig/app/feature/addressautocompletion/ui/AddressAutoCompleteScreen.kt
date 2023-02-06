@@ -50,9 +50,10 @@ import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddressInput
-import com.hedvig.app.ui.compose.composables.appbar.CenterAlignedTopAppBar
+import com.hedvig.android.core.ui.appbar.CenterAlignedTopAppBar
 import com.hedvig.app.util.compose.preview.previewData
 import com.hedvig.app.util.compose.preview.previewList
+import hedvig.resources.R
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -116,7 +117,7 @@ private fun TopAppBar(
   Surface(color = MaterialTheme.colors.background) {
     Column(Modifier.padding(contentPadding)) {
       CenterAlignedTopAppBar(
-        title = stringResource(hedvig.resources.R.string.EMBARK_ADDRESS_AUTOCOMPLETE_ADDRESS),
+        title = stringResource(R.string.EMBARK_ADDRESS_AUTOCOMPLETE_ADDRESS),
         onClick = { cancelAutoCompletion() },
         backgroundColor = MaterialTheme.colors.background,
       )
@@ -238,7 +239,7 @@ private fun SuggestionsList(
         ListItem(
           text = {
             Text(
-              stringResource(hedvig.resources.R.string.EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS),
+              stringResource(R.string.EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS),
               color = MaterialTheme.colors.error,
             )
           },

@@ -25,6 +25,7 @@ class ClaimsFlowActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     lifecycle.addObserver(AuthenticatedObserver())
+
     val commonClaimId = intent.getStringExtra(COMMON_CLAIM_ID)
 
     setContent {

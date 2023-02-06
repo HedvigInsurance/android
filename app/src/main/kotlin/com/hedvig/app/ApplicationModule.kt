@@ -40,6 +40,8 @@ import com.hedvig.android.odyssey.repository.ClaimsFlowRepository
 import com.hedvig.android.odyssey.repository.NetworkClaimsFlowRepository
 import com.hedvig.android.odyssey.repository.PhoneNumberRepository
 import com.hedvig.android.odyssey.resolution.ResolutionViewModel
+import com.hedvig.android.odyssey.search.GetCommonClaimsUseCase
+import com.hedvig.android.odyssey.search.SearchViewModel
 import com.hedvig.app.authenticate.BankIdLoginViewModel
 import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.data.debit.PayinStatusRepository
@@ -599,6 +601,7 @@ val useCaseModule = module {
       cacheManager = get(),
     )
   }
+  single<GetCommonClaimsUseCase> { GetCommonClaimsUseCase(get(), get()) }
 }
 
 val cacheManagerModule = module {
@@ -685,4 +688,8 @@ val claimsViewModelModule = module {
     )
   }
   viewModel { (resolution: Resolution) -> ResolutionViewModel(get(), resolution) }
+}
+
+val claimsSearchViewModelModule = module {
+  viewModel { SearchViewModel(get<GetCommonClaimsUseCase>()) }
 }

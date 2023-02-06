@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import coil.ImageLoader
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.market.MarketManager
+import com.hedvig.android.odyssey.search.SearchActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.HomeFragmentBinding
 import com.hedvig.app.feature.claims.ui.startClaimsFlow

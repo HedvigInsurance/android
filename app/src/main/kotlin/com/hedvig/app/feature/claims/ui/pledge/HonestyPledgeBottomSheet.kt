@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
-import com.hedvig.android.odyssey.ClaimsFlowActivity
+import com.hedvig.android.odyssey.search.SearchActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.BottomSheetHonestyPledgeBinding
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
@@ -57,10 +57,7 @@ class HonestyPledgeBottomSheet(
 
   private suspend fun getClaimsFlowIntent(): Intent {
     return if (featureManager.isFeatureEnabled(Feature.USE_NATIVE_CLAIMS_FLOW)) {
-      ClaimsFlowActivity.newInstance(
-        requireContext(),
-        commonClaimId,
-      )
+      return Intent(requireContext(), SearchActivity::class.java)
     } else {
       EmbarkActivity.newInstance(
         requireContext(),
