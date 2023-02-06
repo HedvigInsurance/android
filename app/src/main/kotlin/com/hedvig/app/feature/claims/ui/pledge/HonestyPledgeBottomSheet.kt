@@ -6,9 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.hedvig.android.odyssey.ClaimsFlowActivity
+import com.hedvig.android.odyssey.model.ItemType
+import com.hedvig.android.odyssey.search.SearchActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.BottomSheetHonestyPledgeBinding
-import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.hanalytics.HAnalytics
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
@@ -32,9 +34,14 @@ class HonestyPledgeBottomSheet(
 
     binding.bottomSheetHonestyPledgeButton.setHapticClickListener {
       hAnalytics.honorPledgeConfirmed()
-      startClaimsFlow()
+      //startClaimsFlow()
+      startSearchFlow()
       dismiss()
     }
+  }
+
+  private fun startSearchFlow() {
+    startActivity(Intent(requireContext(), SearchActivity::class.java))
   }
 
   private fun startClaimsFlow() {
@@ -46,10 +53,8 @@ class HonestyPledgeBottomSheet(
     }
   }
 
-  private fun getClaimsFlowIntent() = EmbarkActivity.newInstance(
-    requireContext(),
-    "claims",
-    getString(hedvig.resources.R.string.CLAIMS_HONESTY_PLEDGE_BOTTOM_SHEET_BUTTON_LABEL),
+  private fun getClaimsFlowIntent() = ClaimsFlowActivity.newInstance(
+    requireContext(), "", "",
   )
 
   companion object {

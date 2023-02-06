@@ -1,0 +1,11 @@
+query CommonClaimsQuery($locale: Locale!) {
+  commonClaims(locale: $locale) {
+    id
+    title
+    icon {
+      variants {
+        ...IconVariantsFragment
+      }
+    }
+  }
+}

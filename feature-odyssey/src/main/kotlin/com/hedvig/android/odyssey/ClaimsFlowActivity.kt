@@ -28,7 +28,7 @@ class ClaimsFlowActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     lifecycle.addObserver(AuthenticatedObserver())
     val odysseyUrl = intent.getStringExtra(ODYSSEY_URL_KEY) ?: error("ODYSSEY_URL_KEY needs to be passed in")
-    val commonClaimId = intent.getStringExtra(COMMON_CLAIM_ID)
+    val commonClaimId = "1001"
 
     val scopeValues = ScopeValues()
     scopeValues.setValue(

@@ -7,6 +7,8 @@ import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.odyssey.ClaimsFlowActivity
 import com.hedvig.app.R
+import com.hedvig.android.odyssey.model.ItemType
+import com.hedvig.android.odyssey.search.SearchActivity
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 
 suspend fun startClaimsFlow(

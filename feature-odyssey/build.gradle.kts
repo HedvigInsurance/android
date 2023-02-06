@@ -4,18 +4,28 @@ plugins {
   id("hedvig.android.ktlint")
   id("kotlin-parcelize")
 }
-
 dependencies {
   implementation(projects.auth.authAndroid)
   implementation(projects.auth.authCore)
   implementation(projects.coreCommon)
+  implementation(projects.coreUi)
+  implementation(projects.coreDesignSystem)
   implementation(projects.coreNavigation)
   implementation(projects.hedvigLanguage)
+  implementation(projects.hedvigMarket)
+  implementation(projects.apollo)
 
+  implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.other.activityCompose)
+  implementation(libs.androidx.compose.material)
+  implementation(libs.apollo.normalizedCache)
   implementation(libs.coil.coil)
+  implementation(libs.coil.compose)
   implementation(libs.datadog.sdk)
+  implementation(libs.androidx.compose.foundation)
   implementation(libs.hedvig.odyssey)
   implementation(libs.koin.android)
+  implementation(libs.koin.androidx.compose)
   implementation(libs.timber)
+  implementation(libs.serialization.json)
 }
