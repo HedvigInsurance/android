@@ -34,6 +34,7 @@ import com.hedvig.android.hanalytics.android.di.hAnalyticsUrlQualifier
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.Navigator
+import com.hedvig.android.odyssey.search.GetClaimEntryPointsUseCase
 import com.hedvig.android.odyssey.search.GetCommonClaimsUseCase
 import com.hedvig.android.odyssey.search.SearchViewModel
 import com.hedvig.app.authenticate.BankIdLoginViewModel
@@ -611,6 +612,7 @@ val useCaseModule = module {
     )
   }
   single<GetCommonClaimsUseCase> { GetCommonClaimsUseCase(get(), get()) }
+  single<GetClaimEntryPointsUseCase> { GetClaimEntryPointsUseCase(get(), get()) }
 }
 
 val cacheManagerModule = module {

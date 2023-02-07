@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
-  private val getCommonClaimsUseCase: GetCommonClaimsUseCase,
+  private val getClaimEntryPoints: GetClaimEntryPoints,
 ) : ViewModel() {
   private val searchableClaims = listOf(
     SearchableClaim(
@@ -77,7 +77,7 @@ class SearchViewModel(
 
   init {
     viewModelScope.launch {
-      when (val result = getCommonClaimsUseCase.invoke()) {
+      when (val result = getClaimEntryPoints.invoke()) {
         is CommonClaimsResult.Error -> _viewState.update { it.copy(errorMessage = result.message, isLoading = false) }
         is CommonClaimsResult.Success -> _viewState.update {
           it.copy(

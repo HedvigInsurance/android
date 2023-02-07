@@ -1,8 +1,10 @@
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
   id("hedvig.android.ktlint")
   id("kotlin-parcelize")
+  alias(libs.plugins.serialization)
 }
 dependencies {
   implementation(projects.auth.authAndroid)

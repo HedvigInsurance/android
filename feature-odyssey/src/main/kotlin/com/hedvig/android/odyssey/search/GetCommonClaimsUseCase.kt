@@ -14,9 +14,9 @@ import com.hedvig.android.odyssey.model.SearchableClaim
 class GetCommonClaimsUseCase(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,
-) {
+) : GetClaimEntryPoints {
 
-  suspend operator fun invoke(): CommonClaimsResult {
+  override suspend operator fun invoke(): CommonClaimsResult {
     return apolloClient
       .query(commonClaimsQuery())
       .safeExecute()
