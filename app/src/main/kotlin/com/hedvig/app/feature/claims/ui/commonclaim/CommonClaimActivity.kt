@@ -69,7 +69,7 @@ class CommonClaimActivity : AppCompatActivity(R.layout.activity_common_claim) {
       if (data.isFirstVet()) {
         firstMessage.commonClaimCreateClaimButton.enable()
         firstMessage.commonClaimCreateClaimButton.setHapticClickListener {
-          startActivity(getFirstVetIntent())
+          startActivity(getFirstVetIntent(this@CommonClaimActivity))
         }
       } else if (data.eligibleToClaim) {
         firstMessage.commonClaimCreateClaimButton.enable()
