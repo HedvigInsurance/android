@@ -24,7 +24,6 @@ import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.CenterAlignedTopAppBar
 import com.hedvig.android.odyssey.ClaimsFlowActivity
-import com.hedvig.android.odyssey.model.ItemType
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class SearchActivity : ComponentActivity() {
@@ -40,7 +39,7 @@ class SearchActivity : ComponentActivity() {
 
       val selectedItemType = viewState.selectedClaim?.id
       if (selectedItemType != null) {
-        startClaimsFlow(selectedItemType)
+        startClaimsFlow(viewModel, selectedItemType)
       }
 
       HedvigTheme {
@@ -54,22 +53,6 @@ class SearchActivity : ComponentActivity() {
 
         Surface(color = MaterialTheme.colors.background) {
           Column {
-            /*
-            SearchAppBar(
-              viewState = viewState,
-              cancelAutoCompletion = { finish() },
-              setNewTextInput = viewModel::onInput,
-              focusRequester = focusRequester,
-              closeKeyboard = closeKeyboard,
-              contentPadding = WindowInsets.safeDrawing
-                .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
-                .asPaddingValues(),
-              onFocus = { hasFocus ->
-                viewModel.onShowCommonClaims(!hasFocus)
-              },
-            )
-             */
-
             CenterAlignedTopAppBar(
               title = "",
               onClick = { finish() },
@@ -78,7 +61,7 @@ class SearchActivity : ComponentActivity() {
             )
 
             Text(
-              text = "Common Claims",
+              text = getString(hedvig.resources.R.string.home_tab_common_claims_title),
               style = MaterialTheme.typography.h5,
               modifier = Modifier.padding(22.dp),
             )
@@ -91,17 +74,17 @@ class SearchActivity : ComponentActivity() {
                   selectClaim = viewModel::onSelectClaim,
                   commonClaims = viewState.commonClaims,
                   showAll = {
-                    startClaimsFlow(commonClaimId = null)
-                    //viewModel.onShowCommonClaims(false)
+                    startClaimsFlow(
+                      viewModel = viewModel,
+                      commonClaimId = null,
+                    )
                   },
                 )
               } else {
                 ClaimsSearchResults(
                   viewState = viewState,
                   onClaimSelected = viewModel::onSelectClaim,
-                  onClaimNotCovered = {
-
-                  },
+                  onClaimNotCovered = {},
                   cantFindAddress = viewModel::onCantFind,
                   closeKeyboard = closeKeyboard,
                 )
@@ -113,11 +96,12 @@ class SearchActivity : ComponentActivity() {
     }
   }
 
-  private fun startClaimsFlow(commonClaimId: String?) {
+  private fun startClaimsFlow(viewModel: SearchViewModel, commonClaimId: String?) {
     val intent = ClaimsFlowActivity.newInstance(
       context = this,
       commonClaimId = commonClaimId,
     )
     startActivity(intent)
+    viewModel.resetState()
   }
 }

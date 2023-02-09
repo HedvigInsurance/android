@@ -40,6 +40,7 @@ import com.hedvig.android.odyssey.repository.ClaimsFlowRepository
 import com.hedvig.android.odyssey.repository.NetworkClaimsFlowRepository
 import com.hedvig.android.odyssey.repository.PhoneNumberRepository
 import com.hedvig.android.odyssey.resolution.ResolutionViewModel
+import com.hedvig.android.odyssey.search.GetClaimEntryPoints
 import com.hedvig.android.odyssey.search.GetClaimEntryPointsUseCase
 import com.hedvig.android.odyssey.search.GetCommonClaimsUseCase
 import com.hedvig.android.odyssey.search.SearchViewModel
@@ -603,7 +604,7 @@ val useCaseModule = module {
     )
   }
   single<GetCommonClaimsUseCase> { GetCommonClaimsUseCase(get(), get()) }
-  single<GetClaimEntryPointsUseCase> { GetClaimEntryPointsUseCase(get(), get()) }
+  single<GetClaimEntryPointsUseCase> { GetClaimEntryPointsUseCase(get()) }
 }
 
 val cacheManagerModule = module {
@@ -693,5 +694,5 @@ val claimsViewModelModule = module {
 }
 
 val claimsSearchViewModelModule = module {
-  viewModel { SearchViewModel(get<GetCommonClaimsUseCase>()) }
+  viewModel { SearchViewModel(get<GetClaimEntryPoints>()) }
 }
