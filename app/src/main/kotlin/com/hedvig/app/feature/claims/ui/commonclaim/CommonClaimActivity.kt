@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.claims.ui.commonclaim
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -65,7 +66,12 @@ class CommonClaimActivity : AppCompatActivity(R.layout.activity_common_claim) {
 
       firstMessage.commonClaimFirstMessage.text = data.layoutTitle
       firstMessage.commonClaimCreateClaimButton.text = data.buttonText
-      if (data.eligibleToClaim) {
+      if (data.isFirstVet()) {
+        firstMessage.commonClaimCreateClaimButton.enable()
+        firstMessage.commonClaimCreateClaimButton.setHapticClickListener {
+          startActivity(getFirstVetIntent(this@CommonClaimActivity))
+        }
+      } else if (data.eligibleToClaim) {
         firstMessage.commonClaimCreateClaimButton.enable()
         firstMessage.commonClaimCreateClaimButton.setHapticClickListener {
           lifecycleScope.launch {
