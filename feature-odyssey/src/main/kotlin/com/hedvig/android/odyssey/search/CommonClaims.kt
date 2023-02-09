@@ -74,6 +74,12 @@ fun CommonClaims(
                     .width(22.dp)
                     .height(22.dp),
                 )
+              } else {
+                Image(
+                  painter = painterResource(id = R.drawable.ic_claim_covered),
+                  contentDescription = "Claim icon",
+                  modifier = Modifier.size(22.dp),
+                )
               }
 
               Spacer(modifier = Modifier.padding(12.dp))
@@ -96,7 +102,7 @@ fun CommonClaims(
           ) {
             Image(
               painter = painterResource(id = R.drawable.ic_claim_covered),
-              contentDescription = "Other",
+              contentDescription = "Claim icon",
               modifier = Modifier.size(22.dp),
             )
 

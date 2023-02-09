@@ -11,67 +11,7 @@ import kotlinx.coroutines.launch
 class SearchViewModel(
   private val getClaimEntryPoints: GetClaimEntryPoints,
 ) : ViewModel() {
-  private val searchableClaims = listOf(
-    SearchableClaim(
-      id = "1",
-      displayName = "Broken phone",
-      itemType = ItemType("PHONE"),
-      hasQuickPayout = true,
-      keywords = listOf("mobile", "ios", "android"),
-    ),
-    SearchableClaim(
-      id = "2",
-      displayName = "Broken computer",
-      itemType = ItemType("COMPUTER"),
-      hasQuickPayout = true,
-      keywords = listOf("laptop", "broken"),
-    ),
-    SearchableClaim(
-      id = "3",
-      displayName = "Stolen bike",
-      itemType = ItemType("BIKE"),
-      hasQuickPayout = true,
-      keywords = listOf("laptop"),
-    ),
-    SearchableClaim(
-      id = "4",
-      displayName = "Delayed Luggage",
-      itemType = ItemType(""),
-      keywords = listOf("travel"),
-    ),
-    SearchableClaim(
-      id = "5",
-      displayName = "Accident Abroad",
-      itemType = ItemType(""),
-    ),
-    SearchableClaim(
-      id = "6",
-      displayName = "Water damage",
-      itemType = ItemType(""),
-    ),
-    SearchableClaim(
-      id = "7",
-      displayName = "Fire",
-      itemType = ItemType(""),
-    ),
-    SearchableClaim(
-      id = "8",
-      displayName = "Car damage",
-      itemType = ItemType(""),
-      isCovered = false,
-    ),
-    SearchableClaim(
-      id = "9",
-      displayName = "Personal damage",
-      itemType = ItemType(""),
-    ),
-    SearchableClaim(
-      id = "10",
-      displayName = "Veterinary visit",
-      itemType = ItemType(""),
-      isCovered = false,
-    ),
-  )
+  private val searchableClaims = emptyList<SearchableClaim>()
   private val _viewState = MutableStateFlow(SearchViewState(results = searchableClaims))
   val viewState = _viewState
 
@@ -115,5 +55,9 @@ class SearchViewModel(
         ),
       )
     }
+  }
+
+  fun resetState() {
+    _viewState.update { it.copy(selectedClaim = null) }
   }
 }

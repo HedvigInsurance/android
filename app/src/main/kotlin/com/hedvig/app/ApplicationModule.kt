@@ -612,7 +612,7 @@ val useCaseModule = module {
     )
   }
   single<GetCommonClaimsUseCase> { GetCommonClaimsUseCase(get(), get()) }
-  single<GetClaimEntryPointsUseCase> { GetClaimEntryPointsUseCase(get(), get()) }
+  single<GetClaimEntryPointsUseCase> { GetClaimEntryPointsUseCase(get()) }
 }
 
 val cacheManagerModule = module {
@@ -682,5 +682,5 @@ val authRepositoryModule = module {
 }
 
 val claimsViewModelModule = module {
-  viewModel { SearchViewModel(get<GetCommonClaimsUseCase>()) }
+  viewModel { SearchViewModel(get<GetClaimEntryPointsUseCase>()) }
 }

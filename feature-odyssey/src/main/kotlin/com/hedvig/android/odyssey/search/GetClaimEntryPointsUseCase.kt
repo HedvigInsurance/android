@@ -1,8 +1,7 @@
 package com.hedvig.android.odyssey.search
 
 import com.hedvig.android.apollo.OperationResult
-import com.hedvig.android.apollo.safeGraphqlCall
-import com.hedvig.android.language.LanguageService
+import com.hedvig.android.apollo.safeArrayRestCall
 import com.hedvig.android.odyssey.model.ItemProblem
 import com.hedvig.android.odyssey.model.ItemType
 import com.hedvig.android.odyssey.model.SearchableClaim
@@ -15,17 +14,16 @@ import okhttp3.Request
 
 class GetClaimEntryPointsUseCase(
   private val okhttpClient: OkHttpClient,
-  private val languageService: LanguageService,
 ) : GetClaimEntryPoints {
 
   override suspend operator fun invoke(): CommonClaimsResult {
     val url = HttpUrl.Builder()
       .scheme("https")
-      .host("claims-service")
+      .host("gateway.test.hedvig.com")
+      .addPathSegment("claims")
       .addPathSegment("api")
-      .addPathSegment("automation-claims")
-      .addPathSegment("entrypoints")
-      .addQueryParameter("count", NR_OF_ENTRYPOINTS)
+      .addPathSegment("claim-entrypoints")
+      .addQueryParameter("limit", NR_OF_ENTRYPOINTS)
       .build()
 
     val request = Request.Builder()
@@ -34,7 +32,7 @@ class GetClaimEntryPointsUseCase(
       .get()
       .build()
 
-    return when (val result = okhttpClient.newCall(request).safeGraphqlCall()) {
+    return when (val result = okhttpClient.newCall(request).safeArrayRestCall()) {
       is OperationResult.Error -> CommonClaimsResult.Error(result.message ?: "Unknown error")
       is OperationResult.Success -> {
         val claimEntryPointDTO = Json.decodeFromString<List<ClaimEntryPointDTO>>(result.data.toString())
@@ -49,10 +47,7 @@ private fun List<ClaimEntryPointDTO>.toSearchableClaims() = map {
   SearchableClaim(
     id = it.id,
     displayName = it.displayName,
-    icon = SearchableClaim.Icon(
-      darkUrl = it.icon,
-      lightUrl = it.icon,
-    ),
+    icon = null,
     itemType = ItemType(""),
     itemProblem = ItemProblem(""),
   )
@@ -64,5 +59,4 @@ private const val NR_OF_ENTRYPOINTS = "4"
 data class ClaimEntryPointDTO(
   val id: String,
   val displayName: String,
-  val icon: String,
 )
