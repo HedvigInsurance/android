@@ -167,7 +167,8 @@ class BankIdLoginViewModelTest {
     authRepository.loginStatusResponse.add(LoginStatusResult.Completed(AuthorizationCodeGrant("grant")))
     authRepository.exchangeResponse.add(AuthTokenResult.Success(AccessToken("123", 90), RefreshToken("456", 90)))
     for (authEventListener in authEventListeners) {
-      authEventListener.loggedInEvent.awaitEvent()
+      val accessToken = authEventListener.loggedInEvent.awaitItem()
+      assertThat(accessToken).isEqualTo("123")
       authEventListener.loggedInEvent.expectNoEvents()
       authEventListener.loggedOutEvent.expectNoEvents()
     }
