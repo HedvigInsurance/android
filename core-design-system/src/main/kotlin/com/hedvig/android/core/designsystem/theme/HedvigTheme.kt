@@ -14,7 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
-import com.google.android.material.composethemeadapter.createMdcTheme
+import com.google.accompanist.themeadapter.material.createMdcTheme
 import java.lang.reflect.Method
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -53,7 +53,7 @@ fun HedvigTheme(
 }
 
 /*
- * Copyright 2020 The Android Open Source Project
+ * Copyright 2022 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,10 +79,10 @@ private inline val Resources.Theme.key: Any?
   get() {
     if (!sThemeGetKeyMethodFetched) {
       try {
-        @Suppress("PrivateApi", "SoonBlockedPrivateApi")
+        @Suppress("SoonBlockedPrivateApi")
         sThemeGetKeyMethod = Resources.Theme::class.java.getDeclaredMethod("getKey")
           .apply { isAccessible = true }
-      } catch (e: Exception) {
+      } catch (e: ReflectiveOperationException) {
         // Failed to retrieve Theme.getKey method
       }
       sThemeGetKeyMethodFetched = true
