@@ -18,6 +18,10 @@ dependencies {
   implementation(libs.arrow.core)
 }
 
+android {
+  namespace = "com.hedvig.android.apollo"
+}
+
 apollo {
   service("giraffe") {
     introspection {

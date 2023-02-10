@@ -6,3 +6,7 @@ plugins {
 dependencies {
   implementation(libs.koin.android)
 }
+
+android {
+  namespace = "com.hedvig.android.hanalytics.engineering.api"
+}

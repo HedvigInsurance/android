@@ -12,3 +12,7 @@ dependencies {
   implementation(libs.androidx.other.preference)
   implementation(libs.koin.android)
 }
+
+android {
+  namespace = "com.hedvig.android.language"
+}

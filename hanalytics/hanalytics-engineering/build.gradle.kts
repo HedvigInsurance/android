@@ -21,3 +21,7 @@ dependencies {
   implementation(libs.shake)
   implementation(libs.slimber)
 }
+
+android {
+  namespace = "com.hedvig.android.hanalytics.engineering"
+}

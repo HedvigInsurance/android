@@ -18,7 +18,10 @@ licenseReport {
 }
 
 android {
+  namespace = "com.hedvig.app"
+
   buildFeatures {
+    buildConfig = true
     viewBinding = true
     aidl = false
     renderScript = false

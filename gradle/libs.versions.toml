@@ -8,12 +8,12 @@ minSdkVersion = "23"
 androidGradlePlugin = "7.4.1"
 apollo = "3.7.4"
 buildTimeTracker = "0.11.0"
-cacheFix = "2.6.0"
+cacheFix = "2.6.3" # Do not bump to 2.6.4 due to https://github.com/gradle/android-cache-fix-gradle-plugin/issues/432
 crashlytics = "2.9.2"
 datadogPlugin = "1.5.1"
 doctor = "0.8.1"
 googleServices = "4.3.15"
-kotlin = "1.8.0"
+kotlin = "1.8.10"
 kotlinter = "3.11.1"
 ktlint = "0.45.2"
 license = "0.9.0"
@@ -23,7 +23,7 @@ accompanist = "0.29.0-alpha"
 adyen = "4.9.1"
 androidx-arch-testing = "2.1.0"
 androidx-composeBom = "2023.01.00"
-androidx-composeCompiler = "1.4.0"
+androidx-composeCompiler = "1.4.2"
 androidx-datastore = "1.0.0"
 androidx-espresso = "3.5.1"
 androidx-lifecycle-common = "2.5.1"
@@ -44,8 +44,9 @@ androidx-other-swipeRefreshLayout = "1.1.0"
 androidx-other-transition = "1.4.1"
 androidx-other-viewPager2 = "1.0.0"
 androidx-other-workManager = "2.7.1"
-androidx-test-core = "1.5.0"
 androidx-test-junit = "1.1.5"
+androidx-test-rules = "1.5.0"
+androidx-test-runner = "1.5.2"
 arrow = "1.1.5"
 assertK = "0.25"
 coil = "2.2.2"
@@ -65,7 +66,7 @@ insetter = "0.6.1"
 jsonTest = "20220924"
 junit = "4.13.2"
 kaspresso = "1.4.3"
-koinAndroid = "3.3.1"
+koinAndroid = "3.3.3"
 koinCore = "3.3.0"
 kotlinxDatetime = "0.4.0"
 leakCanary = "2.10"
@@ -141,8 +142,8 @@ androidx-other-transition = { module = "androidx.transition:transition-ktx", ver
 androidx-other-viewPager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "androidx-other-viewPager2" }
 androidx-other-workManager = { module = "androidx.work:work-runtime-ktx", version.ref = "androidx-other-workManager" }
 androidx-test-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-test-junit" }
-androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidx-test-core" }
-androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-core" }
+androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidx-test-rules" }
+androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-runner" }
 apollo-adapters = { module = "com.apollographql.apollo3:apollo-adapters", version.ref = "apollo" }
 apollo-idlingResource = { module = "com.apollographql.apollo3:apollo-idling-resource", version.ref = "apollo" }
 apollo-mockServer = { module = "com.apollographql.apollo3:apollo-mockserver", version.ref = "apollo" }
@@ -162,7 +163,7 @@ coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-androi
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 datadog-sdk = { module = "com.datadoghq:dd-sdk-android", version.ref = "datadog" }
-firebase-bom = "com.google.firebase:firebase-bom:31.2.0"
+firebase-bom = "com.google.firebase:firebase-bom:31.2.1"
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics-ktx" }
 firebase-dynamicLinks = { module = "com.google.firebase:firebase-dynamic-links" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging" }

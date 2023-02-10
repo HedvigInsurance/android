@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.claims.ui.commonclaim
 
-import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri

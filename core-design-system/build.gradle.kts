@@ -4,17 +4,19 @@ plugins {
   id("hedvig.android.ktlint")
 }
 
-android {
-  defaultConfig {
-    @Suppress("UnstableApiUsage")
-    vectorDrawables.useSupportLibrary = true
-  }
-}
-
 dependencies {
   api(libs.accompanist.insetsUi)
   api(libs.androidx.compose.foundation)
   api(libs.androidx.compose.material)
 
   implementation(libs.accompanist.themeAdapter.material)
+}
+
+android {
+  namespace = "com.hedvig.android.core.designsystem"
+
+  defaultConfig {
+    @Suppress("UnstableApiUsage")
+    vectorDrawables.useSupportLibrary = true
+  }
 }
