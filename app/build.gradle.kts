@@ -1,7 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
-// TODO: Remove once https://youtrack.jetbrains.com/issue/KTIJ-19369 is fixed
-@Suppress("DSL_SCOPE_VIOLATION")
+@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once https://youtrack.jetbrains.com/issue/KTIJ-19369 is fixed
 plugins {
   id("hedvig.android.application")
   id("hedvig.android.application.compose")
@@ -19,7 +18,10 @@ licenseReport {
 }
 
 android {
+  namespace = "com.hedvig.app"
+
   buildFeatures {
+    buildConfig = true
     viewBinding = true
     aidl = false
     renderScript = false

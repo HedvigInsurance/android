@@ -5,14 +5,14 @@ plugins {
 group = "com.hedvig.android.buildlogic"
 
 java {
-  sourceCompatibility = JavaVersion.VERSION_11
-  targetCompatibility = JavaVersion.VERSION_11
+  sourceCompatibility = JavaVersion.VERSION_17
+  targetCompatibility = JavaVersion.VERSION_17
 }
 
 dependencies {
-  implementation(libs.android.gradlePlugin)
-  implementation(libs.kotlin.gradlePlugin)
-  implementation(libs.kotlinter.gradlePlugin)
+  compileOnly(libs.android.gradlePlugin)
+  compileOnly(libs.kotlin.gradlePlugin)
+  compileOnly(libs.kotlinter.gradlePlugin)
 
   // Enables using type-safe accessors to reference plugins from the [plugins] block defined in version catalogs.
   // Context: https://github.com/gradle/gradle/issues/15383#issuecomment-779893192

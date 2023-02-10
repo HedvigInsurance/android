@@ -13,3 +13,7 @@ dependencies {
   testImplementation(libs.jsonTest)
   testImplementation(libs.junit)
 }
+
+android {
+  namespace = "com.hedvig.android.core.common.android"
+}

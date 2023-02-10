@@ -29,3 +29,7 @@ dependencies {
   testImplementation(libs.okhttp.mockWebServer)
   testImplementation(libs.turbine)
 }
+
+android {
+  namespace = "com.hedvig.android.auth"
+}

@@ -7,3 +7,7 @@ dependencies {
   implementation(projects.apollo)
   implementation(libs.adyen)
 }
+
+android {
+  namespace = "com.hedvig.lib.testdata"
+}
