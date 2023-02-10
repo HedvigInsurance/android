@@ -7,4 +7,5 @@ dependencies {
   implementation(libs.coroutines.core)
   implementation(libs.koin.core)
   implementation(libs.okhttp.core)
+  implementation(libs.serialization.json)
 }

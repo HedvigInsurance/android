@@ -25,8 +25,8 @@ class AuthEventBroadcaster(
           authEventListeners.map { listener ->
             async {
               when (event) {
-                AuthEvent.LOGGED_IN -> listener.loggedIn()
-                AuthEvent.LOGGED_OUT -> listener.loggedOut()
+                is AuthEvent.LoggedIn -> listener.loggedIn(event.accessToken)
+                AuthEvent.LoggedOut -> listener.loggedOut()
               }
             }
           }.awaitAll()
@@ -34,13 +34,16 @@ class AuthEventBroadcaster(
     }
   }
 
-  fun loggedIn() {
-    authEvents.trySend(AuthEvent.LOGGED_IN)
+  fun loggedIn(accessToken: String) {
+    authEvents.trySend(AuthEvent.LoggedIn(accessToken))
   }
 
   fun loggedOut() {
-    authEvents.trySend(AuthEvent.LOGGED_OUT)
+    authEvents.trySend(AuthEvent.LoggedOut)
   }
 
-  private enum class AuthEvent { LOGGED_IN, LOGGED_OUT }
+  private sealed interface AuthEvent {
+    data class LoggedIn(val accessToken: String) : AuthEvent
+    object LoggedOut : AuthEvent
+  }
 }

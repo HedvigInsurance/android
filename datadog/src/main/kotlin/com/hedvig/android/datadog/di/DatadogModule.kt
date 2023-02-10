@@ -10,7 +10,7 @@ import org.koin.dsl.module
 @Suppress("RemoveExplicitTypeArguments")
 val datadogModule = module {
   single<DatadogMemberIdUpdatingAuthEventListener> {
-    DatadogMemberIdUpdatingAuthEventListener(get())
+    DatadogMemberIdUpdatingAuthEventListener()
   } bind AuthEventListener::class
   single<Tracer> { GlobalTracer.get() }
 }

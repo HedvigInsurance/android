@@ -58,7 +58,7 @@ class AuthTokenServiceImpl(
 
   override suspend fun loginWithTokens(accessToken: AccessToken, refreshToken: RefreshToken) {
     authTokenStorage.updateTokens(accessToken, refreshToken)
-    authEventBroadcaster.loggedIn()
+    authEventBroadcaster.loggedIn(accessToken.token)
   }
 
   override suspend fun logoutAndInvalidateTokens() {
