@@ -15,3 +15,7 @@ dependencies {
   implementation(libs.androidx.compose.uiUtil)
   implementation(libs.coil.coil)
 }
+
+android {
+  namespace = "com.hedvig.android.core.ui"
+}

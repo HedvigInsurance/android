@@ -5,4 +5,4 @@ Using `hedvig.resources` for easier use of R across the entire app with non-tran
 instead of
 `com.hedvig.android.core.resources.R.string…`
 -->
-<manifest package="hedvig.resources" />
+<manifest />

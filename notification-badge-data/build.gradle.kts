@@ -21,3 +21,7 @@ dependencies {
   testImplementation(libs.coroutines.test)
   testImplementation(libs.turbine)
 }
+
+android {
+  namespace = "com.hedvig.android.notification.badge.data"
+}

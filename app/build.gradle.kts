@@ -19,6 +19,8 @@ licenseReport {
 }
 
 android {
+  namespace = "com.hedvig.app"
+
   buildFeatures {
     viewBinding = true
     aidl = false

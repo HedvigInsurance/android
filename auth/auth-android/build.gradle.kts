@@ -11,3 +11,7 @@ dependencies {
   implementation(libs.koin.android)
   implementation(libs.slimber)
 }
+
+android {
+  namespace = "com.hedvig.android.auth.android"
+}
