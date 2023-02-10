@@ -18,8 +18,8 @@ class AuthEventBroadcaster(
 
   init {
     applicationScope.launch(coroutineContext) {
-      v { "AuthenticationEventDispatcher starting collection" }
-      authEvents.consumeAsFlow()
+      authEvents
+        .consumeAsFlow()
         .collect { event ->
           v { "AuthenticationEventDispatcher dispatching event:$event" }
           authEventListeners.map { listener ->

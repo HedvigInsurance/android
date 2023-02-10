@@ -11,20 +11,19 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import slimber.log.e
 import slimber.log.i
-import slimber.log.v
 
 class DatadogMemberIdUpdatingAuthEventListener : AuthEventListener {
   override suspend fun loggedOut() {
-    v { "MemberIdTrackingAuthenticationListener removing rum key:$MEMBER_ID_TRACKING_KEY" }
+    i { "Removing from global RUM attribute:$MEMBER_ID_TRACKING_KEY" }
     GlobalRum.removeAttribute(MEMBER_ID_TRACKING_KEY)
   }
 
   override suspend fun loggedIn(accessToken: String) {
-    val memberId = extractMemberIdFromAccessToken(accessToken) ?: kotlin.run {
+    val memberId = extractMemberIdFromAccessToken(accessToken) ?: run {
       e { "Failed to extract member ID from accessToken:$accessToken" }
       return
     }
-    i { "Appending to global RUM member ID:$memberId" }
+    i { "Appending to global RUM attribute:$MEMBER_ID_TRACKING_KEY = $memberId" }
     GlobalRum.addAttribute(MEMBER_ID_TRACKING_KEY, memberId)
   }
 
