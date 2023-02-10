@@ -190,10 +190,11 @@ dependencies {
   androidTestImplementation(libs.androidx.test.rules)
   androidTestImplementation(libs.androidx.test.junit)
 
+  implementation(libs.accompanist.insetsUi)
   implementation(libs.accompanist.pager)
   implementation(libs.accompanist.pagerIndicators)
-  implementation(libs.accompanist.insetsUi)
   implementation(libs.accompanist.systemUiController)
+  implementation(libs.accompanist.themeAdapter.material)
 
   implementation(libs.apollo.adapters)
   implementation(libs.apollo.normalizedCache)
@@ -267,21 +268,20 @@ dependencies {
   debugImplementation(libs.shake)
   "stagingImplementation"(libs.shake)
 
-  implementation(libs.androidx.other.activityCompose)
+  implementation(libs.androidx.compose.animation)
+  implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material)
   implementation(libs.androidx.compose.materialIconsExtended)
-  implementation(libs.androidx.compose.animation)
   implementation(libs.androidx.compose.runtime)
-  implementation(libs.androidx.compose.foundation)
-  implementation(libs.androidx.compose.mdcAdapter)
-  debugImplementation(libs.androidx.compose.uiTooling)
   implementation(libs.androidx.compose.uiToolingPreview)
   implementation(libs.androidx.compose.uiViewBinding)
   implementation(libs.androidx.lifecycle.compose)
-  androidTestImplementation(libs.androidx.compose.uiTestJunit)
-  debugImplementation(libs.androidx.compose.uiTestManifest)
-
+  implementation(libs.androidx.other.activityCompose)
   implementation(libs.datadog.sdk)
   implementation(libs.hedvig.authlib)
   implementation(libs.kotlin.reflect)
+
+  debugImplementation(libs.androidx.compose.uiTooling)
+  debugImplementation(libs.androidx.compose.uiTestManifest)
+  androidTestImplementation(libs.androidx.compose.uiTestJunit)
 }
