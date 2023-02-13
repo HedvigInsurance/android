@@ -49,7 +49,13 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
             val state = viewState.state.memberDetailsViewState
             tableAdapter.setTable(state.detailsTable)
             topYourInfoAdapter.submitList(listOfNotNull(state.pendingAddressChange))
-            bottomYourInfoAdapter.submitList(listOfNotNull(state.changeAddressButton, state.change))
+            bottomYourInfoAdapter.submitList(
+              listOfNotNull(
+                state.changeAddressButton,
+                state.change,
+                state.cancelInsurance,
+              ),
+            )
           }
         }
       }

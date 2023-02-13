@@ -25,12 +25,14 @@ class YourInfoAdapter(
     is YourInfoModel.ChangeAddressButton -> R.layout.change_address_button
     YourInfoModel.Change -> R.layout.your_info_change
     is YourInfoModel.PendingAddressChange -> R.layout.change_address_pending_change_card
+    YourInfoModel.CancelInsuranceButton -> R.layout.cancel_insurance_button
   }
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
     R.layout.change_address_button -> ViewHolder.ChangeAddressButton(parent)
     R.layout.your_info_change -> ViewHolder.Change(parent)
     R.layout.change_address_pending_change_card -> ViewHolder.PendingAddressChange(parent)
+    R.layout.cancel_insurance_button -> ViewHolder.CancelInsuranceButton(parent)
     else -> throw Error("Invalid view type")
   }
 
@@ -79,6 +81,15 @@ class YourInfoAdapter(
           hedvig.resources.R.string.insurance_details_adress_update_body_no_address,
           data.upcomingAgreement.activeFrom,
         )
+      }
+    }
+
+    class CancelInsuranceButton(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.cancel_insurance_button)) {
+      private val binding by viewBinding(ChangeAddressButtonBinding::bind)
+      override fun bind(data: YourInfoModel, fragmentManager: FragmentManager) {
+        binding.root.setHapticClickListener {
+          // TODO
+        }
       }
     }
   }

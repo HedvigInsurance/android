@@ -45,6 +45,7 @@ fun InsuranceQuery.Contract.toMemberDetailsViewState() =
       null
     },
     change = YourInfoModel.Change,
+    cancelInsurance = YourInfoModel.CancelInsuranceButton,
   )
 
 fun InsuranceQuery.Contract.toCoverageViewState() = ContractDetailViewState.CoverageViewState(

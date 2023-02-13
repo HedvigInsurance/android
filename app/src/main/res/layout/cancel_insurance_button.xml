@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Button xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cancel_insurance_button"
+    style="?materialButtonTextStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/base_margin_double"
+    android:layout_marginVertical="@dimen/base_margin"
+    android:padding="@dimen/base_margin_double"
+    android:text="@string/CANCEL_SUBSCRIPTION_BUTTON"
+    android:textColor="?colorError" />
