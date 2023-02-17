@@ -27,5 +27,6 @@ internal class HAnalyticsFeatureFlagProvider(
       hAnalytics.claimFlowType(if (useOdyssey) ClaimType.AUTOMATION else ClaimType.MANUAL)
       useOdyssey
     }
+    Feature.USE_NATIVE_CLAIMS_FLOW -> false
   }
 }

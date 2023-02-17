@@ -20,4 +20,5 @@ enum class Feature(
   CONNECT_PAYIN_REMINDER("Show a reminder to connect payin on the home tab"),
   COMMON_CLAIMS("Show common claims on the home tab"),
   USE_ODYSSEY_CLAIM_FLOW("Whether to show the odyssey claim flow or not"),
+  USE_NATIVE_CLAIMS_FLOW("Whether to use the native claims flow")
 }

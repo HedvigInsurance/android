@@ -78,6 +78,8 @@ class CommonClaimActivity : AppCompatActivity(R.layout.activity_common_claim) {
             startClaimsFlow(
               fragmentManager = supportFragmentManager,
               commonClaimId = data.id,
+              featureManager = featureManager,
+              context = this@CommonClaimActivity,
             )
           }
         }
