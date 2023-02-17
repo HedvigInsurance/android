@@ -2,7 +2,7 @@ package com.hedvig.android.odyssey.resolution.ui
 
 import androidx.compose.runtime.Composable
 import com.hedvig.android.odyssey.model.Resolution
-import com.hedvig.common.remote.money.MonetaryAmount
+import com.hedvig.odyssey.remote.money.MonetaryAmount
 
 @Composable
 fun SingleItemPayout(

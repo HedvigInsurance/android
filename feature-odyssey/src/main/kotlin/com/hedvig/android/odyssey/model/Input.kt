@@ -2,8 +2,8 @@ package com.hedvig.android.odyssey.model
 
 import com.hedvig.android.odyssey.repository.AutomationClaimDTO2
 import com.hedvig.android.odyssey.repository.AutomationClaimInputDTO2
-import com.hedvig.common.remote.file.File
-import com.hedvig.common.remote.money.MonetaryAmount
+import com.hedvig.odyssey.remote.file.File
+import com.hedvig.odyssey.remote.money.MonetaryAmount
 
 /**
  * An Input describes what the user needs to update the claim with in order to continue the automation flow.

@@ -27,8 +27,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
-import com.hedvig.common.R
-import com.hedvig.common.designsystem.BlurredFullScreenProgressOverlay
+import com.hedvig.odyssey.R
+import com.hedvig.odyssey.designsystem.BlurredFullScreenProgressOverlay
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable

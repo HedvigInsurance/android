@@ -692,10 +692,9 @@ val claimsRepositoryModule = module {
 }
 
 val claimsViewModelModule = module {
-  viewModel { (itemType: String, itemProblem: String) ->
+  viewModel { (commonClaimId: String) ->
     InputViewModel(
-      itemType = itemType,
-      itemProblem = itemProblem,
+      commonClaimId = commonClaimId,
       repository = get<ClaimsFlowRepository>(),
       getPhoneNumberUseCase = get<GetPhoneNumberUseCase>(),
     )

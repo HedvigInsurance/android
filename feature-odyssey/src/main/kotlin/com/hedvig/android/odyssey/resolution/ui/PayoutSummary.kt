@@ -15,15 +15,12 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.odyssey.model.Resolution
-import com.hedvig.common.remote.money.MonetaryAmount
-import com.hedvig.common.remote.money.format
-import kotlinx.coroutines.launch
+import com.hedvig.odyssey.remote.money.MonetaryAmount
 
 @Composable
 fun PayoutSummary(
@@ -46,7 +43,7 @@ fun PayoutSummary(
       Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
         Text(text = "Purchase price")
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-          Text(text = resolution.purchasePrice.format())
+          Text(text = resolution.purchasePrice.amount ?: "")
         }
       }
 
@@ -55,7 +52,7 @@ fun PayoutSummary(
       Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
         Text(text = "Deductible")
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-          Text(text = "-${resolution.deductible.format()}")
+          Text(text = "-${resolution.deductible.amount ?: ""}")
         }
       }
 
@@ -64,7 +61,7 @@ fun PayoutSummary(
       Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
         Text(text = "You will receive")
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-          Text(text = resolution.payoutAmount.format())
+          Text(text = resolution.payoutAmount.amount ?: "")
         }
       }
 
@@ -84,9 +81,9 @@ fun PayoutSummary(
 
     LargeContainedTextButton(
       onClick = {
-          onPayout(resolution.payoutAmount)
+        onPayout(resolution.payoutAmount)
       },
-      text = "Payout ${resolution.payoutAmount.format()}",
+      text = "Payout ${resolution.payoutAmount.amount ?: ""}",
       modifier = Modifier.align(Alignment.BottomCenter),
     )
   }

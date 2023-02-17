@@ -3,14 +3,14 @@ package com.hedvig.android.odyssey.repository
 import com.hedvig.android.odyssey.model.ClaimState
 import com.hedvig.android.odyssey.model.Input
 import com.hedvig.android.odyssey.model.Resolution
-import com.hedvig.common.remote.money.MonetaryAmount
+import com.hedvig.odyssey.remote.money.MonetaryAmount
 import java.time.LocalDate
 import kotlinx.coroutines.delay
 
 
 class MockClaimsFlowRepository : ClaimsFlowRepository {
 
-  override suspend fun getOrCreateClaim(itemType: String?, itemProblem: String?): ClaimResult {
+  override suspend fun getOrCreateClaim(commonClaimId: String?): ClaimResult {
     return ClaimResult.Success(
       ClaimState(),
       listOf(

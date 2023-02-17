@@ -19,8 +19,7 @@ import com.hedvig.android.core.designsystem.component.button.LargeContainedTextB
 import com.hedvig.android.odyssey.model.ClaimState
 import com.hedvig.android.odyssey.model.Input
 import com.hedvig.android.odyssey.repository.AutomationClaimInputDTO2
-import com.hedvig.common.remote.money.MonetaryAmount
-import com.hedvig.common.remote.money.format
+import com.hedvig.odyssey.remote.money.MonetaryAmount
 import java.time.LocalDate
 
 @Composable
@@ -121,7 +120,7 @@ fun SingleItem(
 
       FormRowButton(
         mainText = "Purchase price",
-        secondaryText = state.item.purchasePrice?.format() ?: "Not specified",
+        secondaryText = state.item.purchasePrice?.amount ?: "Not specified",
       ) {
         openDialog.value = true
       }

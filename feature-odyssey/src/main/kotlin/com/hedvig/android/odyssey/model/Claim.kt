@@ -2,7 +2,7 @@ package com.hedvig.android.odyssey.model
 
 import com.hedvig.android.odyssey.repository.AutomationClaimDTO2
 import com.hedvig.android.odyssey.repository.AutomationClaimInputDTO2
-import com.hedvig.common.remote.money.MonetaryAmount
+import com.hedvig.odyssey.remote.money.MonetaryAmount
 import java.time.LocalDate
 
 data class Claim(

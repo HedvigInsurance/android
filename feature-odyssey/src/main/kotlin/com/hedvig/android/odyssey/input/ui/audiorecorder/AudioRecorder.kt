@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -25,13 +26,12 @@ import com.hedvig.android.core.designsystem.component.button.LargeContainedTextB
 import com.hedvig.android.core.designsystem.component.button.LargeTextButton
 import com.hedvig.android.odyssey.R
 import com.hedvig.android.odyssey.repository.AutomationClaimInputDTO2
-import com.hedvig.common.remote.file.File
-import com.hedvig.common.remote.file.FileContent
-import com.hedvig.common.renderers.audiorecorder.PlaybackWaveForm
-import com.hedvig.common.renderers.audiorecorder.RecordingAmplitudeIndicator
-import com.hedvig.common.renderers.utils.ScreenOnFlag
-import com.hedvig.common.traits.composeTextStyle
-import com.hedvig.common.utils.contentType
+import com.hedvig.odyssey.remote.file.File
+import com.hedvig.odyssey.remote.file.FileContent
+import com.hedvig.odyssey.renderers.audiorecorder.PlaybackWaveForm
+import com.hedvig.odyssey.renderers.audiorecorder.RecordingAmplitudeIndicator
+import com.hedvig.odyssey.renderers.utils.ScreenOnFlag
+import com.hedvig.odyssey.utils.contentType
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
@@ -162,7 +162,7 @@ fun NotRecording(startRecording: () -> Unit, startRecordingText: String) {
     }
     Text(
       text = startRecordingText,
-      style = com.hedvig.common.remote.traits.TextStyle.CAPTION_ONE.composeTextStyle(),
+      style = MaterialTheme.typography.caption,
       modifier = Modifier.padding(bottom = 16.dp),
     )
   }
@@ -209,7 +209,7 @@ fun Recording(
     val label = String.format("%02d:%02d", diff.toMinutes(), diff.seconds % 60)
     Text(
       text = label,
-      style = com.hedvig.common.remote.traits.TextStyle.CAPTION_ONE.composeTextStyle(),
+      style = MaterialTheme.typography.caption,
       modifier = Modifier.padding(bottom = 16.dp),
     )
   }

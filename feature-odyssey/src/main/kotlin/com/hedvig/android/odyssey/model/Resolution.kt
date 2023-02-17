@@ -1,6 +1,6 @@
 package com.hedvig.android.odyssey.model
 
-import com.hedvig.common.remote.money.MonetaryAmount
+import com.hedvig.odyssey.remote.money.MonetaryAmount
 
 sealed interface Resolution {
   object None : Resolution

@@ -1,7 +1,7 @@
 package com.hedvig.android.odyssey.repository
 
 import android.util.Log
-import com.hedvig.common.remote.money.MonetaryAmount
+import com.hedvig.odyssey.remote.money.MonetaryAmount
 import kotlinx.serialization.SerialName
 
 @kotlinx.serialization.Serializable
@@ -148,6 +148,7 @@ sealed class AutomationClaimInputDTO2 {
       ROBBED,
       FORGOTTEN,
       OTHER,
+      BROKEN_SCREEN
       ;
 
       fun getText() = when (this) {
@@ -161,6 +162,7 @@ sealed class AutomationClaimInputDTO2 {
         ROBBED -> "Robbed"
         FORGOTTEN -> "Forgotten"
         OTHER -> "Other"
+        BROKEN_SCREEN -> "Broken Screen"
       }
     }
   }

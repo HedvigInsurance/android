@@ -9,10 +9,8 @@ import com.hedvig.android.odyssey.repository.AutomationClaimDTO2
 import com.hedvig.android.odyssey.repository.AutomationClaimInputDTO2
 import com.hedvig.android.odyssey.repository.GetPhoneNumberUseCase
 import com.hedvig.android.odyssey.repository.PhoneNumberResult
-import com.hedvig.common.remote.file.File
-import com.hedvig.common.remote.money.MonetaryAmount
+import com.hedvig.odyssey.remote.file.File
 import com.hedvig.odyssey.remote.money.MonetaryAmount
-import java.io.File
 import java.time.LocalDate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update

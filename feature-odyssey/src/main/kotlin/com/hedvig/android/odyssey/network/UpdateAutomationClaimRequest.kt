@@ -1,8 +1,7 @@
 package com.hedvig.android.odyssey.network
 
 import com.hedvig.android.odyssey.model.ClaimState
-import com.hedvig.common.remote.money.MonetaryAmount
-import java.time.LocalDate
+import com.hedvig.odyssey.remote.money.MonetaryAmount
 
 @kotlinx.serialization.Serializable
 data class UpdateAutomationClaimRequest(

@@ -17,7 +17,7 @@ import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class HonestyPledgeBottomSheet(
   private val customActivityLaunch: ((Intent) -> Unit)? = null,
-  private val itemType: ClaimsFlowActivity.ItemType?,
+  private val commonClaimId: String?,
 ) : BottomSheetDialogFragment() {
   private val binding by viewBinding(BottomSheetHonestyPledgeBinding::bind)
   private val hAnalytics: HAnalytics by inject()
@@ -48,7 +48,7 @@ class HonestyPledgeBottomSheet(
   }
 
   private fun getClaimsFlowIntent() = ClaimsFlowActivity.newInstance(
-    requireContext(), itemType?.name?.let { ClaimsFlowActivity.ItemType(it) },
+    requireContext(), commonClaimId,
   )
 
   companion object {
@@ -56,7 +56,7 @@ class HonestyPledgeBottomSheet(
 
     fun newInstance(
       customActivityLaunch: ((Intent) -> Unit)? = null,
-      itemType: ClaimsFlowActivity.ItemType?,
-    ): HonestyPledgeBottomSheet = HonestyPledgeBottomSheet(customActivityLaunch, itemType)
+      commonClaimId: String?,
+    ): HonestyPledgeBottomSheet = HonestyPledgeBottomSheet(customActivityLaunch, commonClaimId)
   }
 }

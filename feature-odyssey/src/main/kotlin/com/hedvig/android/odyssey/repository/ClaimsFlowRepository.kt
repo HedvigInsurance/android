@@ -5,8 +5,7 @@ import com.hedvig.android.odyssey.model.ClaimState
 import com.hedvig.android.odyssey.model.Input
 import com.hedvig.android.odyssey.model.Resolution
 import com.hedvig.android.odyssey.network.toUpdateRequest
-import com.hedvig.common.remote.money.MonetaryAmount
-import com.hedvig.common.remote.money.format
+import com.hedvig.odyssey.remote.money.MonetaryAmount
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -16,11 +15,9 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.json.JSONObject
 
-
 interface ClaimsFlowRepository {
   suspend fun getOrCreateClaim(
-    itemType: String?,
-    itemProblem: String?,
+    commonClaimId: String?,
   ): ClaimResult
 
   suspend fun updateClaim(claimState: ClaimState, nrOfInputs: Int): ClaimResult
@@ -49,15 +46,15 @@ class NetworkClaimsFlowRepository(
     ignoreUnknownKeys = true
   }
 
-  override suspend fun getOrCreateClaim(itemType: String?, itemProblem: String?): ClaimResult {
+  override suspend fun getOrCreateClaim(commonClaimId: String?): ClaimResult {
     return when (val res = getClaim()) {
       is ClaimResult.Success -> res
-      is ClaimResult.Error -> createClaim(itemType, itemProblem)
+      is ClaimResult.Error -> createClaim(commonClaimId)
     }
   }
 
-  private suspend fun createClaim(itemType: String?, itemProblem: String?): ClaimResult {
-    val body = JSONObject(mapOf("itemType" to itemType, "itemProblem" to itemProblem))
+  private suspend fun createClaim(commonClaimId: String?): ClaimResult {
+    val body = JSONObject(mapOf("itemType" to commonClaimId))
       .toString()
       .toRequestBody()
 
@@ -114,7 +111,7 @@ class NetworkClaimsFlowRepository(
     val requestBody = if (amount != null) {
       JSONObject()
         .put("type", "SingleItemPayout")
-        .put("payoutAmount", amount.format())
+        .put("payoutAmount", amount.amount)
         .put("method", "AutomaticAutogiroPayout")
         .toString()
         .toRequestBody()

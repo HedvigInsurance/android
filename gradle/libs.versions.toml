@@ -109,7 +109,6 @@ androidx-compose-foundation = { module = "androidx.compose.foundation:foundation
 androidx-compose-material = { module = "androidx.compose.material:material" }
 androidx-compose-material3-windowSizeClass = { module = "androidx.compose.material3:material3-window-size-class" }
 androidx-compose-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended" }
-androidx-compose-mdcAdapter = { module = "com.google.android.material:compose-theme-adapter", version.ref = "androidx-composeThemeAdapter" }
 androidx-compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "composeNavigation" }
 androidx-compose-runtime = { module = "androidx.compose.runtime:runtime" }
 androidx-compose-uiTestJunit = { module = "androidx.compose.ui:ui-test-junit4" }
