@@ -33,10 +33,7 @@ class PushNotificationService : FirebaseMessagingService() {
           .build(),
       )
       .build()
-    WorkManager
-      .getInstance(this)
-      .beginWith(work)
-      .enqueue()
+    WorkManager.getInstance(this).enqueue(work)
   }
 
   override fun onMessageReceived(remoteMessage: RemoteMessage) {

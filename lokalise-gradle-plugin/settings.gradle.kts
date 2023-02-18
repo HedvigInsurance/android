@@ -12,4 +12,6 @@ dependencyResolutionManagement {
   }
 }
 
+rootProject.name = "lokalise-gradle-plugin"
+
 include(":lokalise")

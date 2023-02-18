@@ -134,6 +134,7 @@ dependencies {
   implementation(projects.hedvigMarket)
   implementation(projects.notificationBadgeData)
 
+  testImplementation(projects.auth.authEventTest)
   testImplementation(projects.auth.authTest)
   testImplementation(projects.coreDatastoreTest)
 
