@@ -30,7 +30,7 @@ class SimpleSignAuthenticationActivity : AppCompatActivity(R.layout.simple_sign_
 
   private val data by lazy {
     intent.getParcelableExtra<SimpleSignAuthenticationData>(DATA)
-      ?: throw Error("Programmer error: DATA not passed to ${this.javaClass.name}")
+      ?: error("Programmer error: DATA not passed to ${this.javaClass.name}")
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
