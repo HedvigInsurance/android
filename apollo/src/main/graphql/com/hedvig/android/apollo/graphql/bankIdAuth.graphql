@@ -1,5 +1,0 @@
-mutation SwedishBankIdAuth {
-  swedishBankIdAuth {
-    autoStartToken
-  }
-}

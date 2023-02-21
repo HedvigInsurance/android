@@ -1,5 +1,0 @@
-subscription authStatus {
-  authStatus {
-    status
-  }
-}
