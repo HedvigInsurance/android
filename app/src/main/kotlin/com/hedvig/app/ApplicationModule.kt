@@ -91,14 +91,8 @@ import com.hedvig.app.feature.embark.ui.GetMemberIdUseCase
 import com.hedvig.app.feature.embark.ui.MemberIdViewModel
 import com.hedvig.app.feature.embark.ui.MemberIdViewModelImpl
 import com.hedvig.app.feature.embark.ui.TooltipViewModel
-import com.hedvig.app.feature.genericauth.CreateOtpAttemptUseCase
-import com.hedvig.app.feature.genericauth.CreateOtpAttemptUseCaseImpl
 import com.hedvig.app.feature.genericauth.GenericAuthViewModel
 import com.hedvig.app.feature.genericauth.otpinput.OtpInputViewModel
-import com.hedvig.app.feature.genericauth.otpinput.ReSendOtpCodeUseCase
-import com.hedvig.app.feature.genericauth.otpinput.ReSendOtpCodeUseCaseImpl
-import com.hedvig.app.feature.genericauth.otpinput.SendOtpCodeUseCase
-import com.hedvig.app.feature.genericauth.otpinput.SendOtpCodeUseCaseImpl
 import com.hedvig.app.feature.home.data.GetHomeUseCase
 import com.hedvig.app.feature.home.model.HomeItemsBuilder
 import com.hedvig.app.feature.home.ui.HomeViewModel
@@ -168,9 +162,6 @@ import com.hedvig.app.feature.whatsnew.WhatsNewRepository
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModelImpl
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
-import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
-import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
-import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthResultUseCase
 import com.hedvig.app.service.FileService
 import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.service.push.senders.CrossSellNotificationSender
@@ -557,18 +548,12 @@ val clockModule = module { single { Clock.systemDefaultZone() } }
 val useCaseModule = module {
   single { GetUpcomingAgreementUseCase(get(), get()) }
   single { GetAddressChangeStoryIdUseCase(get(), get(), get()) }
-  single { StartDanishAuthUseCase(get()) }
-  single { StartNorwegianAuthUseCase(get()) }
-  single { SubscribeToAuthResultUseCase(get()) }
   single { StartCheckoutUseCase(get(), get(), get()) }
   single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
   single { GetContractsUseCase(get(), get()) }
   single { GraphQLQueryUseCase(get()) }
   single { GetCrossSellsUseCase(get(), get()) }
   single { GetInsuranceProvidersUseCase(get(), get()) }
-  single<CreateOtpAttemptUseCase> { CreateOtpAttemptUseCaseImpl(get()) }
-  single<SendOtpCodeUseCase> { SendOtpCodeUseCaseImpl(get()) }
-  single<ReSendOtpCodeUseCase> { ReSendOtpCodeUseCaseImpl(get()) }
   single { GetClaimDetailUseCase(get(), get()) }
   single { GetClaimDetailUiStateFlowUseCase(get()) }
   single { GetContractDetailsUseCase(get(), get()) }

@@ -1,5 +1,0 @@
-mutation NorwegianBankIdAuth($nationalIdentityNumber: String!) {
-  norwegianBankIdAuth(personalNumber: $nationalIdentityNumber) {
-    redirectUrl
-  }
-}
