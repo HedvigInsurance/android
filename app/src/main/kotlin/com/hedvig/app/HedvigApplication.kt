@@ -8,15 +8,14 @@ import com.hedvig.android.hanalytics.android.tracking.ApplicationLifecycleTracke
 import com.hedvig.app.feature.settings.Theme
 import com.hedvig.app.feature.tracking.ActivityChangeTracker
 import com.hedvig.app.feature.whatsnew.WhatsNewRepository
-import io.customer.messagingpush.ModuleMessagingPushFCM
-import io.customer.sdk.CustomerIO
-import io.customer.sdk.data.model.Region
+import com.hedvig.app.service.push.CustomerIoInitializer
 import org.koin.android.ext.android.inject
 
 open class HedvigApplication : Application() {
   protected val apolloClient: ApolloClient by inject()
   private val whatsNewRepository: WhatsNewRepository by inject()
   private val applicationLifecycleTracker: ApplicationLifecycleTracker by inject()
+  private val customerIoInitializer: CustomerIoInitializer by inject()
 
   override fun onCreate() {
     super.onCreate()
@@ -25,26 +24,11 @@ open class HedvigApplication : Application() {
 
     whatsNewRepository.removeNewsForNewUser()
 
-    setupCustomerIo()
+    customerIoInitializer.setupCustomerIo(this)
 
     registerActivityLifecycleCallbacks(ActivityChangeTracker())
 
     AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
-  }
-
-  private fun setupCustomerIo() {
-    CustomerIO.Builder(
-      siteId = "id",
-      apiKey = "key",
-      appContext = this,
-    ).apply {
-      addCustomerIOModule(
-        ModuleMessagingPushFCM(),
-      )
-      setRequestTimeout(8000L)
-      setRegion(Region.US)
-      build()
-    }
   }
 
   open val graphqlUrl get() = getString(R.string.GRAPHQL_URL)

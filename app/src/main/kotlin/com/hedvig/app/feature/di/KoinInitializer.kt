@@ -27,6 +27,7 @@ import com.hedvig.app.checkoutModule
 import com.hedvig.app.clockModule
 import com.hedvig.app.coilModule
 import com.hedvig.app.connectPaymentModule
+import com.hedvig.app.customerIoInitializerModule
 import com.hedvig.app.datastoreAndroidModule
 import com.hedvig.app.embarkModule
 import com.hedvig.app.externalInsuranceModule
@@ -119,6 +120,7 @@ class KoinInitializer : Initializer<KoinApplication> {
         valueStoreModule,
         viewModelModule,
         whatsNewModule,
+        customerIoInitializerModule,
       ),
     )
   }

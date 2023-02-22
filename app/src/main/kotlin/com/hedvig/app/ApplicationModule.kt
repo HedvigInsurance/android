@@ -172,6 +172,7 @@ import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthResultUseCase
 import com.hedvig.app.service.FileService
+import com.hedvig.app.service.push.CustomerIoInitializer
 import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.service.push.senders.CrossSellNotificationSender
 import com.hedvig.app.service.push.senders.GenericNotificationSender
@@ -674,4 +675,8 @@ val authRepositoryModule = module {
       additionalHttpHeaders = mapOf(),
     )
   }
+}
+
+val customerIoInitializerModule = module {
+  single<CustomerIoInitializer> { CustomerIoInitializer(get(), get()) }
 }
