@@ -6,5 +6,5 @@ import com.hedvig.android.market.MarketManagerImpl
 import org.koin.dsl.module
 
 val marketManagerModule = module {
-  single<MarketManager> { MarketManagerImpl(get(), isDebug = get(isDebugQualifier)) }
+  single<MarketManager> { MarketManagerImpl(isDebug = get(isDebugQualifier), get()) }
 }

@@ -14,6 +14,7 @@ import com.hedvig.hanalytics.HAnalytics
 import com.hedvig.hanalytics.LoginMethod
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -37,7 +38,7 @@ class MarketingViewModel(
       val initialValues = getInitialMarketPickerValuesUseCase.invoke()
       _state.update {
         it.copy(
-          loginMethod = featureManager.getLoginMethod(),
+          loginMethod = featureManager.getLoginMethod().first(),
           availableMarkets = getAvailableMarkets(),
           market = initialValues.first,
           language = initialValues.second,
@@ -62,7 +63,9 @@ class MarketingViewModel(
   }
 
   fun setMarket(market: Market) {
-    updateApplicationLanguageUseCase.invoke(market, market.defaultLanguage())
+    viewModelScope.launch {
+      updateApplicationLanguageUseCase.invoke(market, market.defaultLanguage())
+    }
 
     _state.update {
       it.copy(
@@ -74,7 +77,9 @@ class MarketingViewModel(
 
   fun setLanguage(language: Language) {
     state.value.market?.let {
-      updateApplicationLanguageUseCase.invoke(it, language)
+      viewModelScope.launch {
+        updateApplicationLanguageUseCase.invoke(it, language)
+      }
     }
 
     _state.update { it.copy(language = language) }
@@ -91,7 +96,7 @@ class MarketingViewModel(
       _state.update {
         it.copy(
           selectedMarket = market,
-          loginMethod = featureManager.getLoginMethod(),
+          loginMethod = featureManager.getLoginMethod().first(),
           isLoading = false,
         )
       }

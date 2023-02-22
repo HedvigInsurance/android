@@ -53,6 +53,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.core.context.loadKoinModules
@@ -84,7 +85,9 @@ class EmbarkStoryTesterActivity : AppCompatActivity() {
 
       HedvigTheme {
         Column(
-          modifier = Modifier.fillMaxSize().safeDrawingPadding(),
+          modifier = Modifier
+            .fillMaxSize()
+            .safeDrawingPadding(),
         ) {
           TopAppBar(
             title = { Text(text = "Embark tester") },
@@ -235,9 +238,11 @@ class EmbarkStoryTesterViewModel(
   }
 
   fun onMarketClick(market: Market) {
-    marketManager.market = market
-    val language = Language.getAvailableLanguages(market).first()
-    languageService.setLanguage(language)
+    runBlocking {
+      marketManager.setMarket(market)
+      val language = Language.getAvailableLanguages(market).first()
+      languageService.setLanguage(language)
+    }
   }
 
   fun onStoryName(storyName: String) {

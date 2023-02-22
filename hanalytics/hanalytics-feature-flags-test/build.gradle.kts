@@ -6,6 +6,7 @@ plugins {
 dependencies {
   implementation(projects.hanalytics.hanalyticsFeatureFlags)
 
+  implementation(libs.coroutines.core)
   api(libs.hAnalytics)
 }
 

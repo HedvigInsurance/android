@@ -9,8 +9,8 @@ class UpdateApplicationLanguageUseCase(
   private val marketManager: MarketManager,
   private val languageService: LanguageService,
 ) {
-  operator fun invoke(market: Market, language: Language) {
-    marketManager.market = market
+  suspend operator fun invoke(market: Market, language: Language) {
+    marketManager.setMarket(market)
     languageService.setLanguage(language)
   }
 }

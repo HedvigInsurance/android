@@ -79,7 +79,9 @@ class MainActivity : AppCompatActivity() {
     is AuthStatus.LoggedIn -> {
       // Upcast everyone that were logged in before Norway launch to be in the Swedish market
       if (marketManager.market == null) {
-        marketManager.market = Market.SE
+        lifecycleScope.launch {
+          marketManager.setMarket(Market.SE)
+        }
       }
       startActivity(Intent(this, LoggedInActivity::class.java))
     }

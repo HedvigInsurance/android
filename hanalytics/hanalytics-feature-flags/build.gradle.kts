@@ -8,6 +8,7 @@ dependencies {
   implementation(projects.hanalytics.hanalyticsCore)
   implementation(projects.hedvigMarket)
 
+  implementation(libs.coroutines.core)
   implementation(libs.koin.core)
 }
 

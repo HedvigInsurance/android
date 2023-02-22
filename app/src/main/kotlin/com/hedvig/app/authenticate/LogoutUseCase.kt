@@ -30,7 +30,7 @@ class LogoutUseCase(
     applicationScope.launch { hAnalytics.loggedOut() }
     applicationScope.launch { userRepository.logout() }
     applicationScope.launch { authTokenService.logoutAndInvalidateTokens() }
-    applicationScope.launch { marketManager.market = null }
+    applicationScope.launch { marketManager.removeMarket() }
     applicationScope.launch { pushTokenManager.refreshToken() }
     applicationScope.launch { featureManager.invalidateExperiments() }
     applicationScope.launch { apolloClient.apolloStore.clearAll() }
