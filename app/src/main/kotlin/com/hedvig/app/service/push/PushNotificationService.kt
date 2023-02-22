@@ -10,6 +10,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.app.service.push.senders.NotificationSender
 import com.hedvig.app.util.extensions.injectAll
+import io.customer.messagingpush.CustomerIOFirebaseMessagingService
 import java.util.concurrent.TimeUnit
 
 class PushNotificationService : FirebaseMessagingService() {
@@ -34,10 +35,12 @@ class PushNotificationService : FirebaseMessagingService() {
       )
       .build()
     WorkManager.getInstance(this).enqueue(work)
+    CustomerIOFirebaseMessagingService.onNewToken(this, token)
   }
 
   override fun onMessageReceived(remoteMessage: RemoteMessage) {
     val type = remoteMessage.data[NOTIFICATION_TYPE_KEY] ?: return
+    CustomerIOFirebaseMessagingService.onMessageReceived(this, remoteMessage)
     notificationSenders.forEach { sender ->
       if (sender.handlesNotificationType(type)) {
         sender.sendNotification(type, remoteMessage)

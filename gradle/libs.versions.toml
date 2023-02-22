@@ -54,6 +54,7 @@ coilTransformations = "2.0.2"
 concatAdapterExtension = "1.2.1"
 coreLibraryDesugaring = "2.0.2"
 coroutines = "1.6.4"
+customerio = "3.2.0"
 datadog = "1.17.0"
 dependencyAnalysis = "1.19.0"
 firebase = "28.4.2"
@@ -162,6 +163,8 @@ coreLibraryDesugaring = { module = "com.android.tools:desugar_jdk_libs", version
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+customerio-messaging = { module = "io.customer.android:messaging-push-fcm", version.ref = "customerio" }
+customerio-tracking = { module = 'io.customer.android:tracking', version.ref = "customerio" }
 datadog-sdk = { module = "com.datadoghq:dd-sdk-android", version.ref = "datadog" }
 firebase-bom = "com.google.firebase:firebase-bom:31.2.2"
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics-ktx" }

@@ -282,6 +282,9 @@ dependencies {
   implementation(libs.hedvig.authlib)
   implementation(libs.kotlin.reflect)
 
+  implementation(libs.customerio.messaging)
+  implementation(libs.customerio.tracking)
+
   debugImplementation(libs.androidx.compose.uiTooling)
   debugImplementation(libs.androidx.compose.uiTestManifest)
   androidTestImplementation(libs.androidx.compose.uiTestJunit)
