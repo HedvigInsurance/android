@@ -25,6 +25,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.flow.flowOf
 
 class GenericAuthViewModelTest {
 
@@ -80,6 +81,13 @@ class GenericAuthViewModelTest {
       override val enabledMarkets: List<Market>
         get() = listOf(Market.SE)
       override var market: Market? = Market.SE
+      override suspend fun setMarket(market: Market) {
+        this.market = market
+      }
+
+      override fun observeMarket(): Flow<Market?> {
+        return flowOf(market)
+      }
     },
   )
 
