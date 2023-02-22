@@ -23,5 +23,17 @@ cat <<EOT > app/src/release/res/values/shake.xml
 </resources>
 EOT
 
+cat <<EOT > app/src/release/res/values/customerio.xml
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="CUSTOMERIO_SE_SITE_ID" translatable="false">${CUSTOMERIO_SE_SITE_ID}</string>
+    <string name="CUSTOMERIO_SE_API_KEY" translatable="false">${CUSTOMERIO_SE_API_KEY}</string>
+    <string name="CUSTOMERIO_DE_SITE_ID" translatable="false">${CUSTOMERIO_DE_SITE_ID}</string>
+    <string name="CUSTOMERIO_DE_API_KEY" translatable="false">${CUSTOMERIO_DE_API_KEY}</string>
+    <string name="CUSTOMERIO_NO_SITE_ID" translatable="false">${CUSTOMERIO_NO_SITE_ID}</string>
+    <string name="CUSTOMERIO_NO_API_KEY" translatable="false">${CUSTOMERIO_NO_API_KEY}</string>
+</resources>
+EOT
+
 ./gradlew :apollo:downloadGiraffeApolloSchemaFromIntrospection
 ./gradlew :core-resources:downloadStrings
