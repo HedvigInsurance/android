@@ -38,7 +38,7 @@ class MarketingViewModel(
       val initialValues = getInitialMarketPickerValuesUseCase.invoke()
       _state.update {
         it.copy(
-          loginMethod = featureManager.getLoginMethod().first(),
+          loginMethod = featureManager.getLoginMethod(),
           availableMarkets = getAvailableMarkets(),
           market = initialValues.first,
           language = initialValues.second,
@@ -96,7 +96,7 @@ class MarketingViewModel(
       _state.update {
         it.copy(
           selectedMarket = market,
-          loginMethod = featureManager.getLoginMethod().first(),
+          loginMethod = featureManager.getLoginMethod(),
           isLoading = false,
         )
       }
