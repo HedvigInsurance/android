@@ -10,6 +10,7 @@ import io.customer.sdk.CustomerIO
 import io.customer.sdk.data.model.Region
 import kotlinx.coroutines.launch
 import com.hedvig.app.R
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 private const val REQUEST_TIMEOUT_MILLIS = 8000L
 
@@ -22,20 +23,22 @@ class CustomerIoInitializer(
 
   fun setupCustomerIo(application: Application) {
     applicationScope.launch {
-      marketManager.observeMarket().collect { market ->
-        if (market != null) {
-          CustomerIO.Builder(
-            siteId = getSideId(application.applicationContext, market),
-            apiKey = getApiKey(application.applicationContext, market),
-            appContext = application,
-          ).apply {
-            addCustomerIOModule(ModuleMessagingPushFCM())
-            setRequestTimeout(REQUEST_TIMEOUT_MILLIS)
-            setRegion(region)
-            build()
+      marketManager.observeMarket()
+        .distinctUntilChanged()
+        .collect { market ->
+          if (market != null) {
+            CustomerIO.Builder(
+              siteId = getSideId(application.applicationContext, market),
+              apiKey = getApiKey(application.applicationContext, market),
+              appContext = application,
+            ).apply {
+              addCustomerIOModule(ModuleMessagingPushFCM())
+              setRequestTimeout(REQUEST_TIMEOUT_MILLIS)
+              setRegion(region)
+              build()
+            }
           }
         }
-      }
     }
   }
 
