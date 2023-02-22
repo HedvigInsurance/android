@@ -13,7 +13,6 @@ interface MarketManager {
   val enabledMarkets: List<Market>
   val market: Market?
   suspend fun setMarket(market: Market)
-  suspend fun removeMarket()
   fun observeMarket(): Flow<Market?>
 }
 
@@ -41,12 +40,6 @@ internal class MarketManagerImpl(
   override suspend fun setMarket(market: Market) {
     dataStore.edit { preferences ->
       preferences[marketPreferenceKey] = market.name
-    }
-  }
-
-  override suspend fun removeMarket() {
-    dataStore.edit { preferences ->
-      preferences.remove(marketPreferenceKey)
     }
   }
 

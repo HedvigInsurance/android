@@ -19,10 +19,6 @@ class MockMarketManager : MarketManager {
     this.market = market
   }
 
-  override suspend fun removeMarket() {
-    this.market = null
-  }
-
   override fun observeMarket(): Flow<Market?> {
     return flowOf(market)
   }
