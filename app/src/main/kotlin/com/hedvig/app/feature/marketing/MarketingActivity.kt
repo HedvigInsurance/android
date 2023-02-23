@@ -16,8 +16,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.designsystem.theme.hedvigBlack
-import com.hedvig.android.core.designsystem.theme.hedvigOffWhite
+import com.hedvig.android.core.designsystem.theme.hedvig_black
+import com.hedvig.android.core.designsystem.theme.hedvig_off_white
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
@@ -49,10 +49,10 @@ class MarketingActivity : AppCompatActivity() {
       HedvigTheme(
         colorOverrides = { colors ->
           colors.copy(
-            primary = hedvigOffWhite,
-            onPrimary = hedvigBlack,
-            secondary = hedvigOffWhite,
-            onBackground = hedvigOffWhite,
+            primary = hedvig_off_white,
+            onPrimary = hedvig_black,
+            secondary = hedvig_off_white,
+            onBackground = hedvig_off_white,
           )
         },
       ) {

@@ -32,9 +32,9 @@ import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.designsystem.theme.hedvigBlack
-import com.hedvig.android.core.designsystem.theme.hedvigBlack12percent
-import com.hedvig.android.core.designsystem.theme.whiteHighEmphasis
+import com.hedvig.android.core.designsystem.theme.hedvig_black
+import com.hedvig.android.core.designsystem.theme.hedvig_black12percent
+import com.hedvig.android.core.designsystem.theme.hedvig_off_white
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.util.compose.rememberBlurHashPainter
@@ -54,7 +54,7 @@ fun CrossSell(
   onCtaClick: (label: String) -> Unit,
 ) {
   Card(
-    border = BorderStroke(1.dp, hedvigBlack12percent),
+    border = BorderStroke(1.dp, hedvig_black12percent),
     modifier = Modifier
       .padding(
         horizontal = 16.dp,
@@ -94,13 +94,13 @@ fun CrossSell(
         Text(
           text = data.title,
           style = MaterialTheme.typography.subtitle1,
-          color = whiteHighEmphasis,
+          color = hedvig_off_white,
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
           text = data.description,
           style = MaterialTheme.typography.subtitle2,
-          color = whiteHighEmphasis,
+          color = hedvig_off_white,
         )
       }
       CompositionLocalProvider(
@@ -110,8 +110,8 @@ fun CrossSell(
           onClick = { onCtaClick(data.callToAction) },
           shape = RoundedCornerShape(6.dp),
           colors = ButtonDefaults.buttonColors(
-            backgroundColor = whiteHighEmphasis,
-            contentColor = hedvigBlack,
+            backgroundColor = hedvig_off_white,
+            contentColor = hedvig_black,
           ),
           modifier = Modifier.fillMaxWidth(),
         ) {

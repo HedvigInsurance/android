@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.progressBlue
 import com.hedvig.android.core.designsystem.theme.progressYellow
-import com.hedvig.app.ui.compose.theme.HedvigTypography
 import java.lang.Float.min
 
 @Composable
@@ -36,7 +35,7 @@ fun TextProgressOverlay(progressText: String) {
   BlurredFullScreenProgressOverlay {
     Text(
       progressText,
-      style = HedvigTypography.h5,
+      style = MaterialTheme.typography.h5,
       modifier = Modifier.align(Alignment.Center),
     )
   }
