@@ -10,8 +10,12 @@ import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.notification.badge.data.tab.BottomNavTab
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.hedvig.app.feature.chat.data.ChatEventStore
+import com.hedvig.app.feature.embark.ui.GetMemberIdUseCase
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
+import io.customer.sdk.CustomerIO
+import io.customer.sdk.data.model.CustomAttributes
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,7 +29,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.seconds
 
 data class LoggedInViewState(
   val loggedInQueryData: LoggedInQuery.Data?,
@@ -60,6 +63,7 @@ class LoggedInViewModelImpl(
   private val tabNotificationBadgeService: TabNotificationBadgeService,
   private val featureManager: FeatureManager,
   private val hAnalytics: HAnalytics,
+  private val memberIdUseCase: GetMemberIdUseCase,
 ) : LoggedInViewModel() {
 
   init {
@@ -67,6 +71,17 @@ class LoggedInViewModelImpl(
       chatEventStore.observeChatClosedCounter()
         .map { it == 3 }
         .collect(_shouldOpenReviewDialog::tryEmit)
+    }
+
+    viewModelScope.launch {
+      when (val result = memberIdUseCase.memberId()) {
+        is GetMemberIdUseCase.MemberIdResult.Error -> {
+          slimber.log.e { "Could not identify member to customer.io - could not fetch member id" }
+        }
+        is GetMemberIdUseCase.MemberIdResult.Success -> {
+          CustomerIO.instance().identify(identifier = result.id, attributes = mapOf("os" to "android"))
+        }
+      }
     }
   }
 

@@ -8,6 +8,9 @@ import com.hedvig.android.hanalytics.android.tracking.ApplicationLifecycleTracke
 import com.hedvig.app.feature.settings.Theme
 import com.hedvig.app.feature.tracking.ActivityChangeTracker
 import com.hedvig.app.feature.whatsnew.WhatsNewRepository
+import io.customer.messagingpush.ModuleMessagingPushFCM
+import io.customer.sdk.CustomerIO
+import io.customer.sdk.data.model.Region
 import org.koin.android.ext.android.inject
 
 open class HedvigApplication : Application() {
@@ -22,9 +25,26 @@ open class HedvigApplication : Application() {
 
     whatsNewRepository.removeNewsForNewUser()
 
+    setupCustomerIo()
+
     registerActivityLifecycleCallbacks(ActivityChangeTracker())
 
     AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
+  }
+
+  private fun setupCustomerIo() {
+    CustomerIO.Builder(
+      siteId = "id",
+      apiKey = "key",
+      appContext = this,
+    ).apply {
+      addCustomerIOModule(
+        ModuleMessagingPushFCM(),
+      )
+      setRequestTimeout(8000L)
+      setRegion(Region.US)
+      build()
+    }
   }
 
   open val graphqlUrl get() = getString(R.string.GRAPHQL_URL)

@@ -11,6 +11,7 @@ import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.util.apollo.reconnectSubscriptions
 import com.hedvig.hanalytics.HAnalytics
+import io.customer.sdk.CustomerIO
 import kotlinx.coroutines.launch
 
 class LogoutUseCase(
@@ -35,5 +36,6 @@ class LogoutUseCase(
     applicationScope.launch { apolloClient.apolloStore.clearAll() }
     applicationScope.launch { chatEventStore.resetChatClosedCounter() }
     applicationScope.launch { apolloClient.reconnectSubscriptions() }
+    CustomerIO.instance().clearIdentify()
   }
 }

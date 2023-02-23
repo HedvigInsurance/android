@@ -38,6 +38,12 @@ jobs:
           ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
           SHAKE_CLIENT_ID: ${{ secrets.SHAKE_CLIENT_ID }}
           SHAKE_CLIENT_SECRET: ${{ secrets.SHAKE_CLIENT_SECRET }}
+          CUSTOMERIO_SE_SITE_ID: ${{ secrets.CUSTOMERIO_SE_SITE_ID_TEST }}
+          CUSTOMERIO_SE_API_KEY: ${{ secrets.CUSTOMERIO_SE_API_KEY_TEST }}
+          CUSTOMERIO_DE_SITE_ID: ${{ secrets.CUSTOMERIO_DE_SITE_ID_TEST }}
+          CUSTOMERIO_DE_API_KEY: ${{ secrets.CUSTOMERIO_DE_API_KEY_TEST }}
+          CUSTOMERIO_NO_SITE_ID: ${{ secrets.CUSTOMERIO_NO_SITE_ID_TEST }}
+          CUSTOMERIO_NO_API_KEY: ${{ secrets.CUSTOMERIO_NO_API_KEY_TEST }}
       - name: Instrumentation tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
