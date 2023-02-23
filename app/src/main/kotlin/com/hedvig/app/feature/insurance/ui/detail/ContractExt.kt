@@ -2,7 +2,6 @@ package com.hedvig.app.feature.insurance.ui.detail
 
 import android.net.Uri
 import com.hedvig.android.apollo.graphql.InsuranceQuery
-import com.hedvig.app.R
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.insurance.ui.ContractCardViewState
@@ -45,6 +44,7 @@ fun InsuranceQuery.Contract.toMemberDetailsViewState() =
       null
     },
     change = YourInfoModel.Change,
+    cancelInsurance = YourInfoModel.CancelInsuranceButton(id), // todo ensure this is the correct ID
   )
 
 fun InsuranceQuery.Contract.toCoverageViewState() = ContractDetailViewState.CoverageViewState(
