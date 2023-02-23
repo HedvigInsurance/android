@@ -1,27 +1,13 @@
-package com.hedvig.app.ui.compose.theme
+package com.hedvig.android.core.designsystem.material2
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import com.hedvig.app.R
+import com.hedvig.android.core.designsystem.theme.SansStandard
 
-/**
- * Used in specific places instead of setting it to a particular font size.
- * Particularly, now used in the Home screen as the big header.
- */
 @Suppress("unused")
-private val SerifBookSmall = FontFamily(
-  Font(R.font.hedvig_letters_small),
-)
-
-private val SansStandard = FontFamily(
-  Font(R.font.hedvig_letters_standard),
-)
-
-val HedvigTypography = Typography(
+internal val HedvigTypography = Typography(
   defaultFontFamily = SansStandard,
   h4 = TextStyle(
     fontWeight = FontWeight.Normal,
