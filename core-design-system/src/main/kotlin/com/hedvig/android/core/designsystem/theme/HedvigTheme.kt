@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.material.Colors
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
@@ -15,12 +16,14 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import com.google.accompanist.themeadapter.material.createMdcTheme
+import com.hedvig.android.core.designsystem.material3.HedvigMaterial3Theme
 import java.lang.reflect.Method
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun HedvigTheme(
-  colorOverrides: ((Colors) -> Colors)? = null,
+  colorOverrides: (Colors) -> Colors = { it },
+  m3ColorOverrides: (ColorScheme) -> ColorScheme = { it },
   content: @Composable () -> Unit,
 ) {
   val context = LocalContext.current
@@ -40,14 +43,16 @@ fun HedvigTheme(
     },
   ) {
     MaterialTheme(
-      colors = colorOverrides?.invoke(colors) ?: colors,
+      colors = colorOverrides.invoke(colors),
       typography = themeParameters.typography ?: MaterialTheme.typography,
       shapes = themeParameters.shapes ?: MaterialTheme.shapes,
     ) {
-      CompositionLocalProvider(
-        LocalContentColor provides MaterialTheme.colors.onBackground,
-        content = content,
-      )
+      CompositionLocalProvider(LocalContentColor provides MaterialTheme.colors.onBackground) {
+        HedvigMaterial3Theme(
+          colorOverrides = m3ColorOverrides,
+          content = content,
+        )
+      }
     }
   }
 }

@@ -23,6 +23,8 @@ accompanist = "0.29.0-alpha"
 adyen = "4.10.0"
 androidx-arch-testing = "2.2.0"
 androidx-composeBom = "2023.01.00"
+#noinspection GradleDependency // alpha05 and alpha06 crash https://issuetracker.google.com/issues/269487074
+androidx-composeMaterial3 = { strictly = "1.1.0-alpha04" }
 androidx-composeCompiler = "1.4.2"
 androidx-datastore = "1.0.0"
 androidx-espresso = "3.5.1"
@@ -104,6 +106,7 @@ androidx-compose-animation = { module = "androidx.compose.animation:animation" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidx-composeBom" }
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation" }
 androidx-compose-material = { module = "androidx.compose.material:material" }
+androidx-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "androidx-composeMaterial3" }
 androidx-compose-material3-windowSizeClass = { module = "androidx.compose.material3:material3-window-size-class" }
 androidx-compose-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended" }
 androidx-compose-runtime = { module = "androidx.compose.runtime:runtime" }
