@@ -48,7 +48,7 @@ class CommonClaimActivity : AppCompatActivity(R.layout.activity_common_claim) {
       toolbar.applyStatusBarInsets()
 
       toolbar.setNavigationOnClickListener {
-        onBackPressed()
+        onBackPressedDispatcher.onBackPressed()
       }
       root.setupToolbarScrollListener(toolbar = toolbar)
       toolbar.title = data.title

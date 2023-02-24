@@ -190,7 +190,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
       startActivity(SettingsActivity.newInstance(this))
     }
     binding.close.setOnClickListener {
-      onBackPressed()
+      onBackPressedDispatcher.onBackPressed()
     }
     binding.close.contentDescription = getString(hedvig.resources.R.string.CHAT_CLOSE_DESCRIPTION)
     binding.close.show()

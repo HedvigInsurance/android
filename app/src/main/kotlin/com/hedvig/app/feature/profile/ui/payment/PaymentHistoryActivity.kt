@@ -37,7 +37,7 @@ class PaymentHistoryActivity : AppCompatActivity(R.layout.activity_payment_histo
       paymentHistory.applyNavigationBarInsets()
       toolbar.applyStatusBarInsets()
       toolbar.setNavigationOnClickListener {
-        onBackPressed()
+        onBackPressedDispatcher.onBackPressed()
       }
       paymentHistory.setupToolbarScrollListener(toolbar)
 

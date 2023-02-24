@@ -42,7 +42,7 @@ class PaymentActivity : AppCompatActivity(R.layout.activity_payment) {
     binding.apply {
       window.compatSetDecorFitsSystemWindows(false)
       toolbar.applyStatusBarInsets()
-      toolbar.setNavigationOnClickListener { onBackPressed() }
+      toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
       recycler.applyNavigationBarInsets()
       recycler.adapter = PaymentAdapter(marketManager, supportFragmentManager, languageService)

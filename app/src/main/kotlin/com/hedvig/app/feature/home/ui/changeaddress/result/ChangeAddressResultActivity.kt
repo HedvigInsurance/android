@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
+import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.hedvig.android.auth.android.AuthenticatedObserver
@@ -26,6 +27,9 @@ class ChangeAddressResultActivity : AppCompatActivity(R.layout.change_address_re
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     lifecycle.addObserver(AuthenticatedObserver())
+    onBackPressedDispatcher.addCallback(this) {
+      startLoggedIn()
+    }
 
     val result = intent.getParcelableExtra<Result>(RESULT) ?: run {
       e { "Programmer error: Missing argument RESULT in ${this.javaClass.name}" }
@@ -66,10 +70,6 @@ class ChangeAddressResultActivity : AppCompatActivity(R.layout.change_address_re
         }
       }
     }
-  }
-
-  override fun onBackPressed() {
-    startLoggedIn()
   }
 
   private fun startLoggedIn() {

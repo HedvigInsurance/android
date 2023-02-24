@@ -22,7 +22,7 @@ class LicensesActivity : AppCompatActivity(R.layout.activity_licenses) {
       toolbar.applyStatusBarInsets()
 
       toolbar.setNavigationOnClickListener {
-        onBackPressed()
+        onBackPressedDispatcher.onBackPressed()
       }
       root.setupToolbarScrollListener(toolbar)
 

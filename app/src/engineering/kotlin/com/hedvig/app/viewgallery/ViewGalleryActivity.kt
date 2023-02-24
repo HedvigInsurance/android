@@ -24,7 +24,7 @@ class ViewGalleryActivity : AppCompatActivity(R.layout.activity_view_gallery) {
       scrollViewContent.applyNavigationBarInsets()
 
       toolbar.setNavigationOnClickListener {
-        onBackPressed()
+        onBackPressedDispatcher.onBackPressed()
       }
 
       openBottomSheet.setHapticClickListener {

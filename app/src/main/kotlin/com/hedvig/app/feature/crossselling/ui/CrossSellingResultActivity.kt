@@ -3,6 +3,7 @@ package com.hedvig.app.feature.crossselling.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import com.hedvig.android.auth.android.AuthenticatedObserver
@@ -25,6 +26,15 @@ class CrossSellingResultActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     lifecycle.addObserver(AuthenticatedObserver())
+    onBackPressedDispatcher.addCallback(this) {
+      startActivity(
+        LoggedInActivity.newInstance(
+          context = this@CrossSellingResultActivity,
+          withoutHistory = true,
+          initialTab = LoggedInTabs.INSURANCE,
+        ),
+      )
+    }
 
     setContent {
       CrossSellingResultScreen(
@@ -32,27 +42,9 @@ class CrossSellingResultActivity : AppCompatActivity() {
         clock = clock,
         dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE,
         openChat = { startChat() },
-        closeResultScreen = {
-          startActivity(
-            LoggedInActivity.newInstance(
-              context = this,
-              withoutHistory = true,
-              initialTab = LoggedInTabs.INSURANCE,
-            ),
-          )
-        },
+        closeResultScreen = { onBackPressedDispatcher.onBackPressed() },
       )
     }
-  }
-
-  override fun onBackPressed() {
-    startActivity(
-      LoggedInActivity.newInstance(
-        context = this,
-        withoutHistory = true,
-        initialTab = LoggedInTabs.INSURANCE,
-      ),
-    )
   }
 
   companion object {

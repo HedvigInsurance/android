@@ -47,7 +47,9 @@ class CheckoutActivity : AppCompatActivity(R.layout.activity_checkout) {
     super.onCreate(savedInstanceState)
     lifecycle.addObserver(AuthenticatedObserver())
     binding.apply {
-      toolbar.setNavigationOnClickListener { onBackPressed() }
+      toolbar.setNavigationOnClickListener {
+        onBackPressedDispatcher.onBackPressed()
+      }
       val link = getString(
         hedvig.resources.R.string.OFFER_FOOTER_GDPR_INFO,
         getString(hedvig.resources.R.string.CHECKOUT_BUTTON),
@@ -119,6 +121,7 @@ class CheckoutActivity : AppCompatActivity(R.layout.activity_checkout) {
       is CheckoutViewModel.InputViewState.InputState.Invalid -> {
         textInputLayout.error = getString(state.stringRes ?: com.adyen.checkout.dropin.R.string.component_error)
       }
+
       CheckoutViewModel.InputViewState.InputState.NoInput,
       is CheckoutViewModel.InputViewState.InputState.Valid,
       -> textInputLayout.error = null
@@ -141,6 +144,7 @@ class CheckoutActivity : AppCompatActivity(R.layout.activity_checkout) {
         binding.originalCost.text = titleState.grossAmount.format(languageService.getLocale())
         binding.originalCost.setStrikethrough(true)
       }
+
       CheckoutViewModel.TitleViewState.Loading -> {
       }
     }
@@ -152,6 +156,7 @@ class CheckoutActivity : AppCompatActivity(R.layout.activity_checkout) {
         progressDialog.dismiss()
         showErrorDialog(event.message ?: getString(hedvig.resources.R.string.home_tab_error_body)) { }
       }
+
       CheckoutViewModel.Event.CheckoutSuccess -> startActivity(
         LoggedInActivity.newInstance(
           context = this,
@@ -159,6 +164,7 @@ class CheckoutActivity : AppCompatActivity(R.layout.activity_checkout) {
           withoutHistory = true,
         ),
       )
+
       CheckoutViewModel.Event.Loading -> progressDialog.show()
     }
   }
