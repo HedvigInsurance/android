@@ -14,6 +14,7 @@ import com.hedvig.app.databinding.ActivityZignSecAuthenticationBinding
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
+import slimber.log.d
 
 class ZignSecWebViewFragment : Fragment(R.layout.activity_zign_sec_authentication) {
   private val binding by viewBinding(ActivityZignSecAuthenticationBinding::bind)
@@ -21,7 +22,7 @@ class ZignSecWebViewFragment : Fragment(R.layout.activity_zign_sec_authenticatio
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-
+    d { "Fragment:ZignSecWebViewFragment was created" }
     enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
     returnTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
     exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)

@@ -23,6 +23,7 @@ import com.hedvig.app.util.extensions.viewBinding
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+import slimber.log.d
 
 class SimpleSignAuthenticationActivity : AppCompatActivity(R.layout.simple_sign_authentication_activity) {
   private val binding by viewBinding(SimpleSignAuthenticationActivityBinding::bind)
@@ -38,7 +39,10 @@ class SimpleSignAuthenticationActivity : AppCompatActivity(R.layout.simple_sign_
     window.compatSetDecorFitsSystemWindows(false)
     binding.toolbar.apply {
       applyStatusBarInsets()
-      setNavigationOnClickListener { finishSignInActivity() }
+      setNavigationOnClickListener {
+        d { "SimpleSignAuthenticationActivity: pressed back button and going back to marketing" }
+        finishSignInActivity()
+      }
     }
     binding.container.applyNavigationBarInsets()
     if (savedInstanceState == null) {
@@ -54,6 +58,7 @@ class SimpleSignAuthenticationActivity : AppCompatActivity(R.layout.simple_sign_
     }
 
     viewModel.events.observe(this) { event ->
+      d { "Simple sign event:$event" }
       when (event) {
         SimpleSignAuthenticationViewModel.Event.LoadWebView -> showWebView()
         SimpleSignAuthenticationViewModel.Event.Success -> goToLoggedIn()
