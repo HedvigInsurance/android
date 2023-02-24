@@ -195,7 +195,6 @@ dependencies {
   implementation(libs.accompanist.pager)
   implementation(libs.accompanist.pagerIndicators)
   implementation(libs.accompanist.systemUiController)
-  implementation(libs.accompanist.themeAdapter.material)
 
   implementation(libs.apollo.adapters)
   implementation(libs.apollo.normalizedCache)
