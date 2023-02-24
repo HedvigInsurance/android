@@ -17,7 +17,7 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.hedvig.android.sample.design.showcase.ui.components
+package com.hedvig.android.sample.design.showcase.ui.m3.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

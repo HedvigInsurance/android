@@ -17,26 +17,29 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.hedvig.android.sample.design.showcase.ui.components
+package com.hedvig.android.sample.design.showcase.ui.m3.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun M3Divider() {
+internal fun M3DatePicker() {
   Column {
     Spacer(Modifier.size(16.dp))
     M3OnSurfaceText(
-      text = "Divider",
+      text = "DatePicker",
       style = MaterialTheme.typography.headlineSmall,
     )
     Spacer(Modifier.size(16.dp))
-    Divider(thickness = 0.5.dp)
+    HedvigDatePicker(rememberDatePickerState(), Modifier.size(500.dp))
   }
 }

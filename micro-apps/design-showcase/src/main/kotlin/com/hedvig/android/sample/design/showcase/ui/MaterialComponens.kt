@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.hedvig.android.sample.design.showcase.ui
 
 import android.content.res.Configuration
@@ -14,20 +12,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.hedvig.android.core.designsystem.material3.HedvigMaterial3Theme
-import com.hedvig.android.sample.design.showcase.ui.components.M3Buttons
-import com.hedvig.android.sample.design.showcase.ui.components.M3Cards
-import com.hedvig.android.sample.design.showcase.ui.components.M3Checkbox
-import com.hedvig.android.sample.design.showcase.ui.components.M3Chips
-import com.hedvig.android.sample.design.showcase.ui.components.M3DatePicker
-import com.hedvig.android.sample.design.showcase.ui.components.M3Divider
-import com.hedvig.android.sample.design.showcase.ui.components.M3NavigationBars
-import com.hedvig.android.sample.design.showcase.ui.components.M3ProgressBar
-import com.hedvig.android.sample.design.showcase.ui.components.M3Slider
-import com.hedvig.android.sample.design.showcase.ui.components.M3Switch
-import com.hedvig.android.sample.design.showcase.ui.components.M3Tab
-import com.hedvig.android.sample.design.showcase.ui.components.M3TextFields
-import com.hedvig.android.sample.design.showcase.ui.components.M3TopAppBars
+import com.hedvig.android.sample.design.showcase.ui.m3.components.M3Buttons
+import com.hedvig.android.sample.design.showcase.ui.m3.components.M3Cards
+import com.hedvig.android.sample.design.showcase.ui.m3.components.M3Checkbox
+import com.hedvig.android.sample.design.showcase.ui.m3.components.M3Chips
+import com.hedvig.android.sample.design.showcase.ui.m3.components.M3DatePicker
+import com.hedvig.android.sample.design.showcase.ui.m3.components.M3Divider
+import com.hedvig.android.sample.design.showcase.ui.m3.components.M3NavigationBars
+import com.hedvig.android.sample.design.showcase.ui.m3.components.M3ProgressBar
+import com.hedvig.android.sample.design.showcase.ui.m3.components.M3Slider
+import com.hedvig.android.sample.design.showcase.ui.m3.components.M3Switch
+import com.hedvig.android.sample.design.showcase.ui.m3.components.M3Tab
+import com.hedvig.android.sample.design.showcase.ui.m3.components.M3TextFields
+import com.hedvig.android.sample.design.showcase.ui.m3.components.M3TopAppBars
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MaterialComponents() {
   LazyColumn(
@@ -50,6 +49,7 @@ fun MaterialComponents() {
   }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Suppress("FunctionName")
 fun LazyListScope.LightAndDarkItem(content: @Composable () -> Unit) {
   item {

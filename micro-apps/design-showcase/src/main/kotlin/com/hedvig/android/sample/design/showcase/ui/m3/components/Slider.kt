@@ -17,15 +17,13 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.hedvig.android.sample.design.showcase.ui.components
+package com.hedvig.android.sample.design.showcase.ui.m3.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.Slider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,33 +32,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun M3Chips() {
+internal fun M3Slider() {
+  var sliderPosition by remember { mutableStateOf(0.5f) }
   Column {
     Spacer(Modifier.size(16.dp))
     M3OnSurfaceText(
-      text = "Chips",
+      text = "Slider",
       style = MaterialTheme.typography.headlineSmall,
     )
     Spacer(Modifier.size(16.dp))
-    var selectedId by remember { mutableStateOf(1) }
-    FilterChip(
-      label = { Text("Android") },
-      onClick = { selectedId = 1 },
-      selected = selectedId == 1,
-    )
-    Spacer(modifier = Modifier.size(4.dp))
-    FilterChip(
-      label = { Text("Material") },
-      onClick = { selectedId = 2 },
-      selected = selectedId == 2,
-    )
-    Spacer(modifier = Modifier.size(4.dp))
-    FilterChip(
-      label = { Text("Compose") },
-      onClick = { selectedId = 3 },
-      selected = selectedId == 3,
-    )
+    Slider(sliderPosition, { sliderPosition = it })
   }
 }

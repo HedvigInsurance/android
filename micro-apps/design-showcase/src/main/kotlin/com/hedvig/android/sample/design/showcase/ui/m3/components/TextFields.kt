@@ -17,31 +17,70 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.hedvig.android.sample.design.showcase.ui.components
+package com.hedvig.android.sample.design.showcase.ui.m3.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun M3Slider() {
-  var sliderPosition by remember { mutableStateOf(0.5f) }
+internal fun M3TextFields() {
   Column {
     Spacer(Modifier.size(16.dp))
     M3OnSurfaceText(
-      text = "Slider",
+      text = "Text Fields",
       style = MaterialTheme.typography.headlineSmall,
     )
     Spacer(Modifier.size(16.dp))
-    Slider(sliderPosition, { sliderPosition = it })
+    Column {
+      val text = remember { mutableStateOf("") }
+      OutlinedTextField(
+        value = text.value,
+        onValueChange = { text.value = it },
+        placeholder = { Text("Please type a text") },
+      )
+      Spacer(Modifier.size(16.dp))
+      Column {
+        OutlinedTextField(
+          value = text.value,
+          onValueChange = { text.value = it },
+          placeholder = { Text("Please type a text") },
+          isError = true,
+        )
+        TextFieldErrorMessage()
+      }
+    }
   }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TextFieldErrorMessage() {
+  val startPadding = TextFieldDefaults.textFieldWithoutLabelPadding()
+    .calculateStartPadding(layoutDirection = LocalLayoutDirection.current)
+
+  Text(
+    modifier = Modifier
+      .padding(
+        top = 4.dp,
+        start = startPadding,
+      ),
+    text = "Something went wrong",
+    style = MaterialTheme.typography.labelSmall,
+    color = MaterialTheme.colorScheme.error,
+  )
 }

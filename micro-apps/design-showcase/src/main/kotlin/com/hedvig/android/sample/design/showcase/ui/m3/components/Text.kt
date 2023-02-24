@@ -17,26 +17,21 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.hedvig.android.sample.design.showcase.ui.components
+package com.hedvig.android.sample.design.showcase.ui.m3.components
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.TextStyle
 
 @Composable
-internal fun M3ProgressBar() {
-  Column {
-    Spacer(Modifier.size(16.dp))
-    M3OnSurfaceText(
-      text = "Progress bar ",
-      style = MaterialTheme.typography.headlineSmall,
-    )
-    Spacer(Modifier.size(16.dp))
-    CircularProgressIndicator()
-  }
+internal fun M3OnSurfaceText(
+  text: String,
+  style: TextStyle,
+) {
+  Text(
+    color = MaterialTheme.colorScheme.onSurface,
+    text = text,
+    style = style,
+  )
 }
