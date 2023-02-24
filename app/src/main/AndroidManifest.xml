@@ -27,6 +27,7 @@
     <application
         android:name=".HedvigApplication"
         android:allowBackup="true"
+        android:enableOnBackInvokedCallback="true"
         android:fullBackupOnly="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/APP_NAME"
@@ -263,6 +264,7 @@
             android:name="com.hedvig.android.odyssey.ClaimsFlowActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_hedvig_h" />
