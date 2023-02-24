@@ -19,6 +19,7 @@ import com.hedvig.authlib.LoginStatusResult
 import com.hedvig.authlib.StatusUrl
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import slimber.log.d
@@ -67,6 +68,7 @@ class SimpleSignAuthenticationViewModel(
   suspend fun subscribeToAuthSuccessEvent() {
     statusUrl.asFlow().collectLatest { statusUrl ->
       authRepository.observeLoginStatus(statusUrl)
+        .distinctUntilChanged()
         .onCompletion {
           d { "subscribeToAuthSuccessEvent finished" }
         }
