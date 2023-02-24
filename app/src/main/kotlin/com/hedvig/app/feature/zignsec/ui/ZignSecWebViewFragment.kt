@@ -46,6 +46,7 @@ class ZignSecWebViewFragment : Fragment(R.layout.activity_zign_sec_authenticatio
               return true
             }
             if (request?.url?.toString()?.contains("failure") == true) {
+              d { "Url loading had \"failure\" in it. Failing authentication" }
               viewModel.authFailed()
               return true
             }
