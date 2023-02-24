@@ -10,3 +10,7 @@ dependencies {
 
   implementation(libs.koin.core)
 }
+
+android {
+  namespace = "com.hedvig.android.hanalytics.featureflags"
+}

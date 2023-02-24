@@ -8,3 +8,7 @@ dependencies {
 
   api(libs.hAnalytics)
 }
+
+android {
+  namespace = "com.hedvig.android.hanalytics.featureflags.test"
+}

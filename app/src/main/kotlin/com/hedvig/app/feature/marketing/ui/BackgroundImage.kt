@@ -14,7 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.hedvig.android.core.designsystem.theme.hedvigBlack
+import com.hedvig.android.core.designsystem.theme.hedvig_black
 import com.hedvig.app.feature.marketing.data.MarketingBackground
 import com.hedvig.app.util.compose.blurHash
 import com.hedvig.app.util.compose.toPainter
@@ -62,11 +62,11 @@ private class BackgroundImageUiState private constructor(
   companion object {
     operator fun invoke(marketingBackground: MarketingBackground?, context: Context): BackgroundImageUiState {
       if (marketingBackground == null) {
-        return BackgroundImageUiState(null, ColorPainter(hedvigBlack), null)
+        return BackgroundImageUiState(null, ColorPainter(hedvig_black), null)
       }
 
       val blurHashDrawable: BitmapDrawable? = blurHash(marketingBackground.blurHash, 32, 32, context)
-      val fallbackPainter = blurHashDrawable?.toPainter() ?: ColorPainter(hedvigBlack)
+      val fallbackPainter = blurHashDrawable?.toPainter() ?: ColorPainter(hedvig_black)
       return BackgroundImageUiState(
         data = marketingBackground.url,
         fallbackPainter = fallbackPainter,

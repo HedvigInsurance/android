@@ -1,0 +1,8 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+# Ignore everything inside .idea
+/*
+# Except for shared run configurations
+!/runConfigurations/
+!.gitignore

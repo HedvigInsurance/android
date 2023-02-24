@@ -18,7 +18,7 @@ fun runApolloTest(
   return kotlinx.coroutines.test.runTest {
     val mockServer = MockServer()
     val apolloClient = ApolloClient.Builder()
-      .requestedDispatcher(StandardTestDispatcher(testScheduler))
+      .dispatcher(StandardTestDispatcher(testScheduler))
       .serverUrl(mockServer.url())
       .extraApolloClientConfiguration()
       .build()

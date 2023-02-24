@@ -19,3 +19,7 @@ dependencies {
   implementation(libs.koin.android)
   implementation(libs.timber)
 }
+
+android {
+  namespace = "com.hedvig.android.odyssey"
+}

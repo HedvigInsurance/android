@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.component.button.LargeOutlinedButton
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.designsystem.theme.hedvigOffWhite
+import com.hedvig.android.core.designsystem.theme.hedvig_off_white
 import com.hedvig.app.R
 
 @Composable
@@ -47,7 +47,7 @@ fun MarketPickedScreen(
       painter = painterResource(R.drawable.ic_wordmark_h),
       contentDescription = stringResource(hedvig.resources.R.string.HEDVIG_LOGO_ACCESSIBILITY),
       modifier = Modifier.align(Alignment.Center),
-      colorFilter = ColorFilter.tint(hedvigOffWhite),
+      colorFilter = ColorFilter.tint(hedvig_off_white),
     )
     Column(
       modifier = Modifier

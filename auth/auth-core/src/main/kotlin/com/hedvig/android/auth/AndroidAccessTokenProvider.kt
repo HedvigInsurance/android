@@ -35,7 +35,7 @@ internal class AndroidAccessTokenProvider(
       if (authTokens.refreshToken.expiryDate.isExpired()) {
         v { "$requestId Refresh token expired, invalidating tokens and proceeding unauthenticated" }
         // If refresh is also expired, consider ourselves logged out
-        authTokenService.invalidateTokens()
+        authTokenService.logoutAndInvalidateTokens()
         return@withLock null
       }
       v { "$requestId Access token expired, but not expired refresh token, refreshing tokens now" }

@@ -25,11 +25,7 @@ class PushNotificationService : FirebaseMessagingService() {
   override fun onNewToken(token: String) {
     val work = OneTimeWorkRequest
       .Builder(PushNotificationWorker::class.java)
-      .setConstraints(
-        Constraints.Builder()
-          .setRequiredNetworkType(NetworkType.CONNECTED)
-          .build(),
-      )
+      .setConstraints(Constraints(requiredNetworkType = NetworkType.CONNECTED))
       .setBackoffCriteria(BackoffPolicy.LINEAR, 1, TimeUnit.SECONDS)
       .setInputData(
         Data.Builder()
@@ -37,10 +33,7 @@ class PushNotificationService : FirebaseMessagingService() {
           .build(),
       )
       .build()
-    WorkManager
-      .getInstance(this)
-      .beginWith(work)
-      .enqueue()
+    WorkManager.getInstance(this).enqueue(work)
   }
 
   override fun onMessageReceived(remoteMessage: RemoteMessage) {

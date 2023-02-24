@@ -149,7 +149,7 @@ class DevelopmentScreenAdapter(
           )
           saveToken.setHapticClickListener {
             applicationScope.launch {
-              authTokenService.updateTokens(
+              authTokenService.loginWithTokens(
                 AccessToken(token.text.toString(), 600),
                 // todo maybe the dev screen shouldn't be doing this in the first place.
                 RefreshToken(token.text.toString(), 600),

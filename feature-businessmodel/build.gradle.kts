@@ -18,3 +18,7 @@ dependencies {
   implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.koin.android)
 }
+
+android {
+  namespace = "com.hedvig.android.feature.businessmodel"
+}

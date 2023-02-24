@@ -24,8 +24,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.designsystem.theme.hedvigBlack
-import com.hedvig.android.core.designsystem.theme.hedvigBlack12percent
+import com.hedvig.android.core.designsystem.theme.hedvig_black
+import com.hedvig.android.core.designsystem.theme.hedvig_black12percent
 import com.hedvig.app.util.compose.HorizontalTextsWithMaximumSpaceTaken
 import com.hedvig.app.util.compose.RadioButton
 
@@ -43,9 +43,9 @@ fun VariantButton(
   Card(
     onClick = { onClick(id) },
     border = if (selected) {
-      BorderStroke(2.dp, hedvigBlack)
+      BorderStroke(2.dp, hedvig_black)
     } else {
-      BorderStroke(1.dp, hedvigBlack12percent)
+      BorderStroke(1.dp, hedvig_black12percent)
     },
     modifier = Modifier
       .padding(top = 8.dp, start = 16.dp, end = 16.dp)

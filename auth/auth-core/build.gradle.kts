@@ -6,6 +6,7 @@ plugins {
 }
 
 dependencies {
+  implementation(projects.auth.authEvent)
   implementation(projects.coreCommon)
   implementation(projects.coreCommonAndroid)
   implementation(projects.coreDatastore)
@@ -28,4 +29,8 @@ dependencies {
   testImplementation(libs.coroutines.test)
   testImplementation(libs.okhttp.mockWebServer)
   testImplementation(libs.turbine)
+}
+
+android {
+  namespace = "com.hedvig.android.auth"
 }

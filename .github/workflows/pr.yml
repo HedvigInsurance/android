@@ -13,10 +13,10 @@ jobs:
         env:
           HEDVIG_GITHUB_PACKAGES_USER: ${{ secrets.HEDVIG_GITHUB_PACKAGES_USER }}
           HEDVIG_GITHUB_PACKAGES_TOKEN: ${{ secrets.HEDVIG_GITHUB_PACKAGES_TOKEN }}
-      - name: Setup JDK 11
-        uses: actions/setup-java@v3.4.1
+      - name: Setup JDK 17
+        uses: actions/setup-java@v3.10.0
         with:
-          java-version: '11'
+          java-version: '17'
           distribution: 'zulu'
           cache: 'gradle'
       - uses: actions/cache@v3
@@ -52,10 +52,10 @@ jobs:
         env:
           HEDVIG_GITHUB_PACKAGES_USER: ${{ secrets.HEDVIG_GITHUB_PACKAGES_USER }}
           HEDVIG_GITHUB_PACKAGES_TOKEN: ${{ secrets.HEDVIG_GITHUB_PACKAGES_TOKEN }}
-      - name: Setup JDK 11
-        uses: actions/setup-java@v3.4.1
+      - name: Setup JDK 17
+        uses: actions/setup-java@v3.10.0
         with:
-          java-version: '11'
+          java-version: '17'
           distribution: 'zulu'
           cache: 'gradle'
       - uses: actions/cache@v3
@@ -90,10 +90,10 @@ jobs:
         env:
           HEDVIG_GITHUB_PACKAGES_USER: ${{ secrets.HEDVIG_GITHUB_PACKAGES_USER }}
           HEDVIG_GITHUB_PACKAGES_TOKEN: ${{ secrets.HEDVIG_GITHUB_PACKAGES_TOKEN }}
-      - name: Setup JDK 11
-        uses: actions/setup-java@v3.4.1
+      - name: Setup JDK 17
+        uses: actions/setup-java@v3.10.0
         with:
-          java-version: '11'
+          java-version: '17'
           distribution: 'zulu'
           cache: 'gradle'
       - uses: actions/cache@v3
@@ -132,10 +132,10 @@ jobs:
         env:
           HEDVIG_GITHUB_PACKAGES_USER: ${{ secrets.HEDVIG_GITHUB_PACKAGES_USER }}
           HEDVIG_GITHUB_PACKAGES_TOKEN: ${{ secrets.HEDVIG_GITHUB_PACKAGES_TOKEN }}
-      - name: Setup JDK 11
-        uses: actions/setup-java@v3.4.1
+      - name: Setup JDK 17
+        uses: actions/setup-java@v3.10.0
         with:
-          java-version: '11'
+          java-version: '17'
           distribution: 'zulu'
           cache: 'gradle'
       - uses: actions/cache@v3
@@ -147,7 +147,7 @@ jobs:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
       - run: echo VERSION_CODE=$(expr 4700 + ${{ github.run_number }} + ${{ github.run_attempt }} - 1) >> $GITHUB_ENV
-      - uses: chkfung/android-version-actions@v1.1
+      - uses: chkfung/android-version-actions@v1.2
         with:
           gradlePath: app/build.gradle.kts
           versionCode: ${{ env.VERSION_CODE }}
@@ -179,13 +179,13 @@ jobs:
         with:
           name: Pull Request-Build
           path: ${{ steps.sign_app.outputs.signedReleaseFile }}
-      - uses: atlassian/gajira-login@v2.0.0
+      - uses: atlassian/gajira-login@v3.0.1
         env:
           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
           JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-      - uses: atlassian/gajira-cli@v2.0.2
-      - uses: atlassian/gajira-find-issue-key@v2.0.2
+      - uses: atlassian/gajira-cli@v3.0.1
+      - uses: atlassian/gajira-find-issue-key@v3.0.1
         id: find_issue
         with:
           string: ${{ github.event.pull_request.title }}

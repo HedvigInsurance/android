@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="translucent_background" type="color">@color/translucent_off_white</item>
     <item name="icon_tint" type="color">@null</item>
 
     <item name="colorPrimary" type="color">@color/hedvig_black</item>
@@ -33,7 +32,4 @@
     <item name="colorInfoCardSurface" type="color">@color/lavender_200</item>
 
     <item name="colorTooltip" type="color">@color/lavender_300</item>
-
-    <item name="progress_overlay" type="color">#66000000</item>
-
 </resources>

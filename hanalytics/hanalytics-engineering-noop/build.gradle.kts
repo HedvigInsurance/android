@@ -7,3 +7,7 @@ dependencies {
   implementation(projects.hanalytics.hanalyticsEngineeringApi)
   implementation(libs.koin.android)
 }
+
+android {
+  namespace = "com.hedvig.android.hanalytics.engineering.noop"
+}
