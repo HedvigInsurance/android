@@ -3,6 +3,7 @@ package com.hedvig.app.feature.zignsec
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
@@ -37,11 +38,15 @@ class SimpleSignAuthenticationActivity : AppCompatActivity(R.layout.simple_sign_
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     window.compatSetDecorFitsSystemWindows(false)
+    onBackPressedDispatcher.addCallback(this) {
+      d { "SimpleSignAuthenticationActivity: invoked back. Going back to marketing" }
+      remove()
+      onBackPressedDispatcher.onBackPressed()
+    }
     binding.toolbar.apply {
       applyStatusBarInsets()
       setNavigationOnClickListener {
-        d { "SimpleSignAuthenticationActivity: pressed back button and going back to marketing" }
-        finishSignInActivity()
+        onBackPressedDispatcher.onBackPressed()
       }
     }
     binding.container.applyNavigationBarInsets()
@@ -63,7 +68,7 @@ class SimpleSignAuthenticationActivity : AppCompatActivity(R.layout.simple_sign_
         SimpleSignAuthenticationViewModel.Event.LoadWebView -> showWebView()
         SimpleSignAuthenticationViewModel.Event.Success -> goToLoggedIn()
         SimpleSignAuthenticationViewModel.Event.Error -> showError()
-        SimpleSignAuthenticationViewModel.Event.CancelSignIn -> finishSignInActivity()
+        SimpleSignAuthenticationViewModel.Event.CancelSignIn -> finish()
       }
     }
   }
@@ -75,10 +80,6 @@ class SimpleSignAuthenticationActivity : AppCompatActivity(R.layout.simple_sign_
         withoutHistory = true,
       ),
     )
-  }
-
-  private fun finishSignInActivity() {
-    finish()
   }
 
   private fun showWebView() {
