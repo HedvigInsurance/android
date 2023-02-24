@@ -182,6 +182,7 @@ dependencies {
   implementation(libs.androidx.other.workManager)
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.other.startup)
+  implementation(libs.androidx.profileInstaller)
   androidTestImplementation(libs.androidx.espresso.core)
   androidTestImplementation(libs.androidx.espresso.intents)
   androidTestImplementation(libs.androidx.espresso.contrib)
