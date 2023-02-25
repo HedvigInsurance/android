@@ -48,9 +48,7 @@ fun LargeContainedButton(
   Button(
     onClick = onClick,
     enabled = enabled,
-    modifier = Modifier
-      .fillMaxWidth()
-      .then(modifier),
+    modifier = modifier.fillMaxWidth(),
     shape = MaterialTheme.shapes.large,
     contentPadding = PaddingValues(16.dp),
     colors = colors,

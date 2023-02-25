@@ -7,6 +7,8 @@ import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -17,7 +19,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.core.parameter.parametersOf
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class)
 class CancelInsuranceActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -36,6 +38,7 @@ class CancelInsuranceActivity : AppCompatActivity() {
           Toast.makeText(this@CancelInsuranceActivity, "Navigate to success screen", Toast.LENGTH_LONG).show()
         }
         CancelInsuranceScreen(
+          windowSizeClass = calculateWindowSizeClass(this),
           datePickerState = uiState.datePickerState,
           dateValidator = viewModel.dateValidator,
           canSubmit = uiState.canContinue,
