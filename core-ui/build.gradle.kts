@@ -12,7 +12,6 @@ dependencies {
   api(libs.androidx.compose.foundation)
   api(libs.androidx.compose.material)
 
-  implementation(libs.accompanist.themeAdapter.material)
   implementation(libs.androidx.compose.uiUtil)
   implementation(libs.coil.coil)
 }

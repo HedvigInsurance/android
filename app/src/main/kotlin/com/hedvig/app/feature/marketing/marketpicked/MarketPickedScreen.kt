@@ -8,10 +8,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,9 +56,7 @@ fun MarketPickedScreen(
     ) {
       LargeContainedButton(
         onClick = onClickSignUp,
-        colors = ButtonDefaults.buttonColors(
-          backgroundColor = MaterialTheme.colors.primary,
-        ),
+        colors = ButtonDefaults.buttonColors(),
       ) {
         Text(
           text = stringResource(hedvig.resources.R.string.MARKETING_GET_HEDVIG),

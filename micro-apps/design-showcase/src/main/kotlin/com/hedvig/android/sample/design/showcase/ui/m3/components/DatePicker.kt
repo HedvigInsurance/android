@@ -29,6 +29,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,6 +43,11 @@ internal fun M3DatePicker() {
       style = MaterialTheme.typography.headlineSmall,
     )
     Spacer(Modifier.size(16.dp))
-    HedvigDatePicker(rememberDatePickerState(), Modifier.size(500.dp))
+    HedvigDatePicker(
+      rememberDatePickerState(
+        LocalDate.now().atTime(LocalTime.MIDNIGHT).plusDays(1).atZone(ZoneId.of("UTC")).toInstant().toEpochMilli(),
+      ),
+      Modifier.size(500.dp),
+    )
   }
 }

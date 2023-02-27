@@ -1,13 +1,6 @@
-package com.hedvig.android.core.designsystem.material3
+package com.hedvig.android.core.designsystem.theme
 
 import androidx.compose.ui.graphics.Color
-import com.hedvig.android.core.designsystem.theme.hedvig_black
-import com.hedvig.android.core.designsystem.theme.hedvig_dark_gray
-import com.hedvig.android.core.designsystem.theme.hedvig_light_gray
-import com.hedvig.android.core.designsystem.theme.hedvig_off_white
-import com.hedvig.android.core.designsystem.theme.hedvig_white
-import com.hedvig.android.core.designsystem.theme.lavender_300
-import com.hedvig.android.core.designsystem.theme.lavender_400
 
 // Light from xml | https://github.com/HedvigInsurance/android/blob/e86158084061de59a9f1b6d71dda3b234057883d/app/src/main/res/values/colors.xml#L26
 internal val light_primary = hedvig_black
