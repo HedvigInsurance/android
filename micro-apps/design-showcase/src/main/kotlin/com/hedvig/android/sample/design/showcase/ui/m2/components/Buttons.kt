@@ -2,10 +2,9 @@ package com.hedvig.android.sample.design.showcase.ui.m2.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Button
-import androidx.compose.material.ExtendedFloatingActionButton
-import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
@@ -16,6 +15,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
+import com.hedvig.android.core.designsystem.component.button.LargeOutlinedButton
+import com.hedvig.android.core.designsystem.component.button.LargeTextButton
 
 @Composable
 internal fun M2Buttons() {
@@ -26,6 +28,19 @@ internal fun M2Buttons() {
       text = "Buttons",
       style = MaterialTheme.typography.h5,
     )
+    Spacer(Modifier.size(16.dp))
+    LargeContainedButton({}, Modifier.padding(horizontal = 8.dp)) {
+      Text("Hedvig LargeTextButton")
+    }
+    Spacer(Modifier.size(16.dp))
+    LargeOutlinedButton({}, Modifier.padding(horizontal = 8.dp)) {
+      Text("Hedvig LargeTextButton")
+    }
+    Spacer(Modifier.size(16.dp))
+    LargeTextButton({}, Modifier.padding(horizontal = 8.dp)) {
+      Text("Hedvig LargeTextButton")
+    }
+
     Spacer(Modifier.size(16.dp))
     Button(
       onClick = {},
@@ -47,16 +62,5 @@ internal fun M2Buttons() {
     ) {
       Text("Text button")
     }
-    Spacer(Modifier.size(16.dp))
-    FloatingActionButton(onClick = {}) {
-      Text("FAB")
-    }
-    Spacer(Modifier.size(16.dp))
-    ExtendedFloatingActionButton(
-      onClick = {},
-      text = {
-        Text("Extended FAB")
-      },
-    )
   }
 }
