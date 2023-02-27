@@ -3,6 +3,7 @@ package com.hedvig.app.feature.marketing.pickmarket
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,6 +34,7 @@ import androidx.compose.material.RadioButton
 import androidx.compose.material.RadioButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,7 +42,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -82,6 +83,11 @@ fun PickMarketScreen(
 
   ModalBottomSheetLayout(
     sheetState = modalBottomSheetState,
+    sheetBackgroundColor = if (isSystemInDarkTheme()) {
+      MaterialTheme.colors.surface
+    } else {
+      MaterialTheme.colors.onSurface
+    },
     sheetContent = {
       HedvigTheme { // Use standard theme again inside the sheet.
         BottomSheetContent(
@@ -113,7 +119,7 @@ fun PickMarketScreen(
   }
 }
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun ScreenContent(
   setSheet: (PickMarketSheet?) -> Unit,
@@ -172,6 +178,7 @@ private fun ScreenContent(
       LargeContainedButton(
         onClick = onSubmit,
         enabled = enabled,
+        colors = ButtonDefaults.buttonColors(),
         modifier = Modifier
           .padding(horizontal = 16.dp)
           .testTag("continueButton"),
@@ -216,6 +223,7 @@ private fun BottomSheetContent(
         selectedMarket = selectedMarket,
         markets = markets,
       )
+
       PickMarketSheet.COUNTRY -> PickLanguageSheetContent(
         onSelectLanguage = { language ->
           coroutineScope.launch {
@@ -226,6 +234,7 @@ private fun BottomSheetContent(
         selectedLanguage = selectedLanguage,
         selectedMarket = selectedMarket,
       )
+
       null -> {}
     }
     Spacer(Modifier.height(24.dp))
@@ -240,7 +249,7 @@ private fun LanguageFlag() {
   )
 }
 
-@Suppress("unused")
+@Suppress("UnusedReceiverParameter")
 @Composable
 private fun ColumnScope.PickMarketSheetContent(
   onSelectMarket: (Market) -> Unit,
@@ -264,7 +273,7 @@ private fun ColumnScope.PickMarketSheetContent(
   }
 }
 
-@Suppress("unused")
+@Suppress("UnusedReceiverParameter")
 @Composable
 private fun ColumnScope.PickLanguageSheetContent(
   onSelectLanguage: (Language) -> Unit,

@@ -36,21 +36,24 @@ import com.hedvig.android.core.designsystem.theme.light_surface
 import com.hedvig.android.core.designsystem.theme.light_surfaceVariant
 
 @Composable
-fun HedvigMaterial3Theme(
+internal fun HedvigMaterial3Theme(
   darkTheme: Boolean = isSystemInDarkTheme(),
   colorOverrides: (ColorScheme) -> ColorScheme = { it },
   content: @Composable () -> Unit,
 ) {
-  val colorScheme = when {
-    darkTheme -> DarkColorScheme
-    else -> LightColorScheme
+  val (colorScheme, hedvigColorTheme) = when {
+    darkTheme -> DarkColorScheme to darkHedvigColorScheme(DarkColorScheme)
+    else -> LightColorScheme to lightHedvigColorScheme(LightColorScheme)
   }
   MaterialTheme(
     colorScheme = colorOverrides.invoke(colorScheme),
     shapes = HedvigShapes,
     typography = HedvigTypography,
   ) {
-    CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onBackground) {
+    CompositionLocalProvider(
+      LocalContentColor provides MaterialTheme.colorScheme.onBackground,
+      LocalHedvigMaterial3ColorScheme provides hedvigColorTheme,
+    ) {
       content()
     }
   }
