@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -80,6 +81,13 @@ class EmbarkActivity : AppCompatActivity(R.layout.activity_embark) {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     lifecycle.addObserver(AuthenticatedObserver())
+    onBackPressedDispatcher.addCallback(this) {
+      val couldNavigateBack = viewModel.navigateBack()
+      if (!couldNavigateBack) {
+        remove()
+        onBackPressedDispatcher.onBackPressed()
+      }
+    }
 
     binding.apply {
       whenApiVersion(Build.VERSION_CODES.R) {
@@ -128,6 +136,7 @@ class EmbarkActivity : AppCompatActivity(R.layout.activity_embark) {
                 ),
               )
             }
+
             is EmbarkViewModel.Event.Error -> {
               fullScreenLoadingSpinnerLayout.hide()
               AlertDialog.Builder(this@EmbarkActivity)
@@ -139,6 +148,7 @@ class EmbarkActivity : AppCompatActivity(R.layout.activity_embark) {
                 .create()
                 .show()
             }
+
             EmbarkViewModel.Event.Close -> {
               finish()
             }
@@ -148,7 +158,7 @@ class EmbarkActivity : AppCompatActivity(R.layout.activity_embark) {
 
       progressToolbar.toolbar.apply {
         setOnMenuItemClickListener(::handleMenuItem)
-        setNavigationOnClickListener { onBackPressed() }
+        setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
       }
     }
   }
@@ -158,10 +168,12 @@ class EmbarkActivity : AppCompatActivity(R.layout.activity_embark) {
       marketManager.market?.openAuth(this, supportFragmentManager)
       true
     }
+
     R.id.exit -> {
       showExitDialog()
       true
     }
+
     R.id.tooltip -> {
       viewModel.viewState.value?.passageState?.passage?.tooltips?.let {
         TooltipBottomSheet.newInstance(it).show(
@@ -171,6 +183,7 @@ class EmbarkActivity : AppCompatActivity(R.layout.activity_embark) {
       }
       true
     }
+
     else -> false
   }
 
@@ -196,7 +209,7 @@ class EmbarkActivity : AppCompatActivity(R.layout.activity_embark) {
     }
   }
 
-  private suspend fun transitionToNextPassage(
+  private fun transitionToNextPassage(
     navigationDirection: NavigationDirection,
     passage: EmbarkStoryQuery.Passage?,
   ) {
@@ -212,6 +225,7 @@ class EmbarkActivity : AppCompatActivity(R.layout.activity_embark) {
       -> {
         MaterialSharedAxis(SHARED_AXIS, navigationDirection == NavigationDirection.FORWARDS)
       }
+
       NavigationDirection.INITIAL -> MaterialFadeThrough()
     }
 
@@ -223,7 +237,7 @@ class EmbarkActivity : AppCompatActivity(R.layout.activity_embark) {
       .commit()
   }
 
-  private suspend fun passageFragment(passage: EmbarkStoryQuery.Passage?): Fragment {
+  private fun passageFragment(passage: EmbarkStoryQuery.Passage?): Fragment {
     passage?.action?.asEmbarkSelectAction?.let { options ->
       val parameter = SelectActionParameter.from(
         passage.messages.map { it.fragments.messageFragment.text },
@@ -346,6 +360,7 @@ class EmbarkActivity : AppCompatActivity(R.layout.activity_embark) {
                 MultiActionComponent.Dropdown.Option(it.text, it.value)
               },
             )
+
             switchActionData != null -> MultiActionComponent.Switch(
               switchActionData.key,
               switchActionData.label,
@@ -358,6 +373,7 @@ class EmbarkActivity : AppCompatActivity(R.layout.activity_embark) {
               numberActionData.unit,
               numberActionData.label,
             )
+
             else -> throw IllegalArgumentException(
               "Could not match $it to a component",
             )
@@ -395,13 +411,6 @@ class EmbarkActivity : AppCompatActivity(R.layout.activity_embark) {
     }
 
     return UpgradeAppFragment.newInstance()
-  }
-
-  override fun onBackPressed() {
-    val couldNavigateBack = viewModel.navigateBack()
-    if (!couldNavigateBack) {
-      super.onBackPressed()
-    }
   }
 
   companion object {

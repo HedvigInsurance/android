@@ -22,7 +22,7 @@ class BusinessModelActivity : AppCompatActivity() {
     setContent {
       HedvigTheme {
         BusinessModelScreen(
-          navigateBack = { onBackPressed() },
+          navigateBack = { onBackPressedDispatcher.onBackPressed() },
           windowSizeClass = calculateWindowSizeClass(this),
         )
       }

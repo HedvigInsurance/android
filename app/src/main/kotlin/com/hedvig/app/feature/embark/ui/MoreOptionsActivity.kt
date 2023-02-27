@@ -30,7 +30,7 @@ class MoreOptionsActivity : AppCompatActivity(R.layout.activity_more_options) {
 
       setSupportActionBar(toolbar)
       toolbar.setNavigationOnClickListener {
-        onBackPressed()
+        onBackPressedDispatcher.onBackPressed()
       }
 
       val adapter = MoreOptionsAdapter(viewModel)

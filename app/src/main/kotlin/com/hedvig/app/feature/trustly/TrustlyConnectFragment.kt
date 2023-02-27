@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.View
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.activity.addCallback
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -21,7 +22,6 @@ import com.hedvig.app.feature.connectpayin.ConnectPaymentScreenState
 import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.connectpayin.TransitionType
 import com.hedvig.app.feature.connectpayin.showConfirmCloseDialog
-import com.hedvig.app.util.onBackPressedCallback
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -55,16 +55,13 @@ class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
     val isPostSign = requireArguments().getBoolean(IS_POST_SIGN)
 
     if (isPostSign) {
-      requireActivity().onBackPressedDispatcher.addCallback(
-        viewLifecycleOwner,
-        onBackPressedCallback {
-          showConfirmCloseDialog(
-            requireContext(),
-            ConnectPayinType.TRUSTLY,
-            connectPaymentViewModel::close,
-          )
-        },
-      )
+      requireActivity().onBackPressedDispatcher.addCallback(this) {
+        showConfirmCloseDialog(
+          requireContext(),
+          ConnectPayinType.TRUSTLY,
+          connectPaymentViewModel::close,
+        )
+      }
     }
 
     binding?.toolbar?.apply {

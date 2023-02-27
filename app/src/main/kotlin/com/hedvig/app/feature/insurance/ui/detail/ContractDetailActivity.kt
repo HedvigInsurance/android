@@ -57,7 +57,7 @@ class ContractDetailActivity : AppCompatActivity(R.layout.contract_detail_activi
       window.compatSetDecorFitsSystemWindows(false)
       toolbar.applyStatusBarInsets()
       toolbar.setNavigationOnClickListener {
-        onBackPressed()
+        onBackPressedDispatcher.onBackPressed()
       }
       tabContent.adapter = ContractDetailTabAdapter(this@ContractDetailActivity)
       TabLayoutMediator(tabContainer, tabContent) { tab, position ->

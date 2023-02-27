@@ -39,7 +39,7 @@ class AboutAppActivity : AppCompatActivity(R.layout.activity_about_app) {
       window.compatSetDecorFitsSystemWindows(false)
 
       setupToolbar(R.id.toolbar, hedvig.resources.R.drawable.ic_back, true, root) {
-        onBackPressed()
+        onBackPressedDispatcher.onBackPressed()
       }
 
       licenseAttributions.setOnClickListener {
