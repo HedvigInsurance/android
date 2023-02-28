@@ -6,7 +6,7 @@ plugins {
 dependencies {
   implementation(projects.apollo)
   implementation(projects.auth.authCore)
-  implementation(projects.auth.authEvent)
+  implementation(projects.auth.authEventCore)
   implementation(projects.coreCommon)
 
   implementation(libs.androidx.other.startup)
