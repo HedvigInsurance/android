@@ -43,7 +43,7 @@ import com.hedvig.android.core.designsystem.component.button.LargeContainedTextB
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation
 import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
-import com.hedvig.android.core.designsystem.material3.HedvigMaterial3Theme
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -99,10 +99,9 @@ fun CancelInsuranceScreen(
         )
         Spacer(Modifier.height(16.dp))
         Spacer(
-          Modifier
-            .windowInsetsPadding(
-              WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom),
-            ),
+          Modifier.windowInsetsPadding(
+            WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom),
+          ),
         )
       }
     }
@@ -164,7 +163,7 @@ fun ErrorSnackbar(hasError: Boolean, showedError: () -> Unit, modifier: Modifier
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun CancelInsuranceScreenPreview() {
-  HedvigMaterial3Theme {
+  HedvigTheme {
     Surface(
       color = MaterialTheme.colorScheme.background,
     ) {
