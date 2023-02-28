@@ -9,11 +9,7 @@ import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.hedvig.android.cancelinsurance.data.CancelInsuranceUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.WhileSubscribed
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -22,7 +18,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalMaterial3Api::class)
 internal class CancelInsuranceViewModel(
@@ -30,54 +25,49 @@ internal class CancelInsuranceViewModel(
   private val cancelInsuranceUseCase: CancelInsuranceUseCase,
   clock: Clock = Clock.System,
 ) : ViewModel() {
-  private val dateSubmissionError = MutableStateFlow(false)
-  private val dateSubmissionSuccess = MutableStateFlow(false)
-  private val isPerformingCancelInsuranceNetworkRequest = MutableStateFlow(false)
-
   private val datePickerConfiguration = DatePickerConfiguration(clock)
   val dateValidator = datePickerConfiguration.dateValidator
 
-  val uiState: StateFlow<CancelInsuranceUiState> = combine(
-    dateSubmissionError,
-    dateSubmissionSuccess,
-    isPerformingCancelInsuranceNetworkRequest,
-  ) { dateSubmissionError, dateSubmissionSuccess, isPerformingCancelInsuranceNetworkRequest ->
+  private val _uiState: MutableStateFlow<CancelInsuranceUiState> = MutableStateFlow(
     CancelInsuranceUiState(
       datePickerState = datePickerConfiguration.datePickerState,
-      dateSubmissionError = dateSubmissionError,
-      dateSubmissionSuccess = dateSubmissionSuccess,
-      isLoading = isPerformingCancelInsuranceNetworkRequest,
-    )
-  }.stateIn(
-    viewModelScope,
-    SharingStarted.WhileSubscribed(5.seconds),
-    CancelInsuranceUiState(
-      datePickerConfiguration.datePickerState,
-      dateSubmissionError.value,
-      dateSubmissionSuccess.value,
-      isPerformingCancelInsuranceNetworkRequest.value,
+      dateSubmissionError = false,
+      dateSubmissionSuccess = false,
+      isLoading = false,
     ),
   )
+  val uiState = _uiState.asStateFlow()
 
   fun showedError() {
-    dateSubmissionError.update { false }
+    _uiState.update {
+      it.copy(dateSubmissionError = false)
+    }
   }
 
   fun submitSelectedDate() {
-    val viewState = uiState.value
-    if (!viewState.canSubmitSelectedDate()) return
-    val selectedDateMillis = viewState.datePickerState.selectedDateMillis ?: return
-    isPerformingCancelInsuranceNetworkRequest.update { true }
+    val uiState = _uiState.value
+    if (!uiState.canSubmitSelectedDate()) return
+    val selectedDateMillis = uiState.datePickerState.selectedDateMillis ?: return
+    _uiState.update { it.copy(isLoading = true) }
     viewModelScope.launch {
       val result = cancelInsuranceUseCase.invoke(
         insuranceId,
         selectedDateMillis,
       )
       when (result) {
-        is Either.Left -> dateSubmissionError.update { true }
-        is Either.Right -> dateSubmissionSuccess.update { true }
+        is Either.Left -> _uiState.update {
+          it.copy(
+            dateSubmissionError = true,
+            isLoading = false,
+          )
+        }
+        is Either.Right -> _uiState.update {
+          it.copy(
+            dateSubmissionSuccess = true,
+            isLoading = false,
+          )
+        }
       }
-      isPerformingCancelInsuranceNetworkRequest.update { false }
     }
   }
 }
