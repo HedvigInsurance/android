@@ -103,7 +103,6 @@ import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCa
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase
 import com.hedvig.app.feature.insurance.data.GetContractsUseCase
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
-import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModelImpl
 import com.hedvig.app.feature.insurance.ui.detail.GetContractDetailsUseCase
 import com.hedvig.app.feature.insurance.ui.tab.InsuranceViewModel
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsViewModel
@@ -379,7 +378,7 @@ val whatsNewModule = module {
 val insuranceModule = module {
   viewModel { InsuranceViewModel(get(), get(), get(), get()) }
   viewModel<ContractDetailViewModel> { (contractId: String) ->
-    ContractDetailViewModelImpl(contractId, get(), get(), get())
+    ContractDetailViewModel(contractId, get(), get(), get())
   }
 }
 
@@ -490,6 +489,7 @@ val stringConstantsModule = module {
   single<String>(appVersionCodeQualifier) { BuildConfig.VERSION_CODE.toString() }
   single<String>(appIdQualifier) { BuildConfig.APPLICATION_ID }
   single<Boolean>(isDebugQualifier) { BuildConfig.DEBUG }
+  @Suppress("KotlinConstantConditions")
   single<Boolean>(isProductionQualifier) { BuildConfig.BUILD_TYPE == "release" }
 }
 
