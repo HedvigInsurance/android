@@ -57,10 +57,6 @@ class YourInfoAdapter(
     holder.bind(currentList[position], fragmentManager)
   }
 
-  override fun onViewRecycled(holder: ViewHolder) {
-    (holder.itemView as? ComposeView)?.disposeComposition()
-  }
-
   sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     abstract fun bind(data: YourInfoModel, fragmentManager: FragmentManager): Any?
 
