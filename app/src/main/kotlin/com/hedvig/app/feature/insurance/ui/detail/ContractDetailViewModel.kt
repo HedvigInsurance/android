@@ -11,33 +11,27 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import slimber.log.e
 
-abstract class ContractDetailViewModel : ViewModel() {
+class ContractDetailViewModel(
+  contractId: String,
+  private val getContractDetailsUseCase: GetContractDetailsUseCase,
+  private val chatRepository: ChatRepository,
+  hAnalytics: HAnalytics,
+) : ViewModel() {
   sealed class ViewState {
     data class Success(val state: ContractDetailViewState) : ViewState()
     object Error : ViewState()
     object Loading : ViewState()
   }
 
-  protected val _viewState = MutableStateFlow<ViewState>(ViewState.Loading)
+  private val _viewState = MutableStateFlow<ViewState>(ViewState.Loading)
   val viewState = _viewState.asStateFlow()
-
-  abstract fun loadContract(id: String)
-  abstract suspend fun triggerFreeTextChat()
-}
-
-class ContractDetailViewModelImpl(
-  contractId: String,
-  private val getContractDetailsUseCase: GetContractDetailsUseCase,
-  private val chatRepository: ChatRepository,
-  hAnalytics: HAnalytics,
-) : ContractDetailViewModel() {
 
   init {
     hAnalytics.screenView(AppScreen.INSURANCE_DETAIL)
     loadContract(contractId)
   }
 
-  override fun loadContract(id: String) {
+  fun loadContract(id: String) {
     viewModelScope.launch {
       val viewState = when (val insurance = getContractDetailsUseCase.invoke(id)) {
         is Either.Left -> ViewState.Error
@@ -47,10 +41,9 @@ class ContractDetailViewModelImpl(
     }
   }
 
-  override suspend fun triggerFreeTextChat() {
-    val response = runCatching { chatRepository.triggerFreeTextChat() }
-    if (response.isFailure) {
-      response.exceptionOrNull()?.let { e(it) }
+  suspend fun triggerFreeTextChat() {
+    chatRepository.triggerFreeTextChat().onLeft {
+      e { "Trigger free text chat error: $it" }
     }
   }
 }
