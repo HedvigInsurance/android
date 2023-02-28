@@ -12,7 +12,7 @@ class MockContractDetailViewModel : ContractDetailViewModel() {
       _viewState.value = ViewState.Error
     } else {
       val contract = mockData.contracts.first { it.id == id }
-      val viewState = contract.toContractDetailViewState()
+      val viewState = contract.toContractDetailViewState(true)
       _viewState.value = ViewState.Success(viewState)
     }
   }
