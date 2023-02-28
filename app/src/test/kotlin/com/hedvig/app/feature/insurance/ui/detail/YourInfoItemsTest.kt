@@ -28,7 +28,7 @@ class YourInfoItemsTest {
   }
 
   @Test
-  fun `when termination flow isn't disabled, it should not be part of the items`() {
+  fun `when termination flow is disabled, it should not be part of the items`() {
     val viewState = INSURANCE_DATA_UPCOMING_AGREEMENT.contracts[0].toMemberDetailsViewState(false)
     assertThat(viewState.cancelInsurance).isNull()
   }
