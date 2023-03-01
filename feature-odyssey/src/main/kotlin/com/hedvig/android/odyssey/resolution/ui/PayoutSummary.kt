@@ -67,7 +67,8 @@ fun PayoutSummary(
       Spacer(modifier = Modifier.padding(top = 29.dp))
 
       Text(
-        text = "If the repair cost exceeds the estimation, you can upload the invoice afterwards and we'll compensate you the difference.",
+        text = "If the repair cost exceeds the estimation, " +
+          "you can upload the invoice afterwards and we'll compensate you the difference.",
         style = MaterialTheme.typography.caption,
       )
 

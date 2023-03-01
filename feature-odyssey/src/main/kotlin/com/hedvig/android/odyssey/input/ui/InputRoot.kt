@@ -4,9 +4,11 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Modifier
 import coil.ImageLoader
 import com.hedvig.android.core.ui.FullScreenProgressOverlay
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
@@ -40,12 +42,18 @@ fun InputRoot(
       )
     },
   ) { paddingValues ->
-
-    Crossfade(targetState = viewState.isLoading) { loading ->
+    Crossfade(
+      targetState = viewState.isLoading,
+      modifier = Modifier.padding(paddingValues),
+      label = "ProgressOverlayOrContent",
+    ) { loading ->
       if (loading) {
         FullScreenProgressOverlay(show = true)
       } else {
-        AnimatedContent(targetState = viewState.currentInput) { input ->
+        AnimatedContent(
+          targetState = viewState.currentInput,
+          label = "Input",
+        ) { input ->
           Input(
             input = input,
             viewState = viewState,

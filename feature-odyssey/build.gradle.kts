@@ -31,7 +31,7 @@ dependencies {
   implementation(libs.koin.android)
   implementation(libs.koin.android)
   implementation(libs.serialization.json)
-  implementation(libs.timber)
+  implementation(libs.slimber)
 }
 
 android {

@@ -2,10 +2,12 @@ package com.hedvig.android.odyssey.resolution.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import com.hedvig.android.core.ui.FullScreenProgressOverlay
 import com.hedvig.android.core.ui.appbar.TopAppBarWithClose
 import com.hedvig.android.odyssey.model.Resolution
@@ -34,8 +36,11 @@ fun ResolutionRoot(
       )
     },
   ) { paddingValues ->
-
-    Crossfade(targetState = viewState.isLoading) { loading ->
+    Crossfade(
+      targetState = viewState.isLoading,
+      modifier = Modifier.padding(paddingValues),
+      label = "ProgressOverlayOrContent",
+    ) { loading ->
       if (loading) {
         FullScreenProgressOverlay(show = true)
       } else {

@@ -65,7 +65,9 @@ fun SingleItem(
       title = "Select phone model",
       optionsList = input.modelOptions.sortedBy { it.modelName },
       onSelected = onModelOption,
-      getDisplayText = { modelOption: AutomationClaimInputDTO2.SingleItem.ItemOptions.ItemModelOption -> modelOption.modelName },
+      getDisplayText = { modelOption: AutomationClaimInputDTO2.SingleItem.ItemOptions.ItemModelOption ->
+        modelOption.modelName
+      },
       getImageUrl = { itemModelOption -> itemModelOption.modelImageUrl },
       getId = { itemModelOption -> itemModelOption.modelId },
       imageLoader = imageLoader,

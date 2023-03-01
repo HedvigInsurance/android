@@ -148,7 +148,6 @@ sealed class AutomationClaimInputDTO2 {
       FORGOTTEN,
       OTHER,
       BROKEN_SCREEN,
-      
       ;
 
       fun getText() = when (this) {
