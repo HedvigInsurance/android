@@ -1,11 +1,11 @@
-package com.hedvig.android.cancelinsurance.data
+package com.hedvig.android.feature.cancelinsurance.data
 
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.OperationResult
-import com.hedvig.android.cancelinsurance.InsuranceId
+import com.hedvig.android.feature.cancelinsurance.InsuranceId
 import kotlinx.coroutines.ensureActive
 import kotlin.coroutines.coroutineContext
 

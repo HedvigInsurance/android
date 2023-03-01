@@ -1,4 +1,4 @@
-package com.hedvig.android.cancelinsurance.ui
+package com.hedvig.android.feature.cancelinsurance.ui
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box

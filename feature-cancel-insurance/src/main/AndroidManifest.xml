@@ -3,7 +3,7 @@
 
     <application>
         <activity
-            android:name="com.hedvig.android.cancelinsurance.CancelInsuranceActivity"
+            android:name="com.hedvig.android.feature.cancelinsurance.CancelInsuranceActivity"
             android:windowSoftInputMode="adjustResize" />
     </application>
 </manifest>

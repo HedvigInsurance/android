@@ -1,4 +1,4 @@
-package com.hedvig.android.cancelinsurance
+package com.hedvig.android.feature.cancelinsurance
 
 import android.content.Context
 import android.content.Intent
@@ -14,8 +14,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.core.view.WindowCompat
 import com.hedvig.android.auth.android.AuthenticatedObserver
-import com.hedvig.android.cancelinsurance.ui.CancelInsuranceScreen
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.feature.cancelinsurance.ui.CancelInsuranceScreen
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.core.parameter.parametersOf
 

@@ -5,7 +5,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
 import androidx.recyclerview.widget.ConcatAdapter
-import com.hedvig.android.cancelinsurance.CancelInsuranceActivity
+import com.hedvig.android.feature.cancelinsurance.CancelInsuranceActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ContractDetailYourInfoFragmentBinding
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel

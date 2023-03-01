@@ -1,4 +1,4 @@
-package com.hedvig.android.cancelinsurance
+package com.hedvig.android.feature.cancelinsurance
 
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -7,7 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
-import com.hedvig.android.cancelinsurance.data.CancelInsuranceUseCase
+import com.hedvig.android.feature.cancelinsurance.data.CancelInsuranceUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

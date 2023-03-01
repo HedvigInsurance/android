@@ -1,8 +1,8 @@
-package com.hedvig.android.cancelinsurance.di
+package com.hedvig.android.feature.cancelinsurance.di
 
-import com.hedvig.android.cancelinsurance.CancelInsuranceViewModel
-import com.hedvig.android.cancelinsurance.InsuranceId
-import com.hedvig.android.cancelinsurance.data.CancelInsuranceUseCase
+import com.hedvig.android.feature.cancelinsurance.CancelInsuranceViewModel
+import com.hedvig.android.feature.cancelinsurance.InsuranceId
+import com.hedvig.android.feature.cancelinsurance.data.CancelInsuranceUseCase
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 

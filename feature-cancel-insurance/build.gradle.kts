@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-  namespace = "com.hedvig.android.cancelinsurance"
+  namespace = "com.hedvig.android.feature.cancelinsurance"
 }
 
 dependencies {
