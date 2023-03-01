@@ -6,7 +6,7 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.auth.authEvent)
+  implementation(projects.auth.authEventCore)
   implementation(projects.coreCommon)
   implementation(projects.coreCommonAndroid)
   implementation(projects.coreDatastore)

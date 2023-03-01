@@ -19,6 +19,7 @@ data class ContractDetailViewState(
     val detailsTable: Table,
     val changeAddressButton: YourInfoModel.ChangeAddressButton?,
     val change: YourInfoModel.Change,
+    val cancelInsurance: YourInfoModel.CancelInsuranceButton?,
   )
 
   data class CoverageViewState(

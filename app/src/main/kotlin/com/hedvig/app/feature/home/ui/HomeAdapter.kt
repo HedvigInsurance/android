@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
@@ -113,13 +112,6 @@ class HomeAdapter(
     )
   }
 
-  override fun onViewRecycled(holder: ViewHolder) {
-    val itemView = holder.itemView
-    if (itemView is ComposeView) {
-      itemView.disposeComposition()
-    }
-  }
-
   sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     abstract fun bind(
       data: HomeModel,
@@ -197,10 +189,6 @@ class HomeAdapter(
       private val onClaimDetailCardClicked: (String) -> Unit,
       private val onClaimDetailCardShown: (String) -> Unit,
     ) : ViewHolder(composeView) {
-      init {
-        composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-      }
-
       private fun goToClaimDetailScreen(claimId: String) {
         onClaimDetailCardClicked(claimId)
         composeView.context.startActivity(
@@ -232,10 +220,6 @@ class HomeAdapter(
     class Space(
       private val composeView: ComposeView,
     ) : ViewHolder(composeView) {
-      init {
-        composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-      }
-
       override fun bind(
         data: HomeModel,
         fragmentManager: FragmentManager,
@@ -329,11 +313,6 @@ class HomeAdapter(
       private val onPaymentCardShown: () -> Unit,
       private val onPaymentCardClicked: (PaymentType) -> Unit,
     ) : ViewHolder(composeView) {
-
-      init {
-        composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-      }
-
       override fun bind(
         data: HomeModel,
         fragmentManager: FragmentManager,
@@ -453,11 +432,6 @@ class HomeAdapter(
       val composeView: ComposeView,
       private val retry: () -> Unit,
     ) : ViewHolder(composeView) {
-
-      init {
-        composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-      }
-
       override fun bind(
         data: HomeModel,
         fragmentManager: FragmentManager,

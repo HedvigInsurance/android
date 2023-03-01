@@ -120,13 +120,6 @@ class OfferAdapter(
     holder.bind(getItem(position))
   }
 
-  override fun onViewRecycled(holder: ViewHolder) {
-    val itemView = holder.itemView
-    if (itemView is ComposeView) {
-      itemView.disposeComposition()
-    }
-  }
-
   sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     abstract fun bind(data: OfferItems)
 
