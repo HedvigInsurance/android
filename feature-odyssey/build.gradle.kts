@@ -8,29 +8,29 @@ plugins {
 }
 
 dependencies {
+  implementation(projects.apollo)
   implementation(projects.auth.authAndroid)
   implementation(projects.auth.authCore)
   implementation(projects.coreCommon)
-  implementation(projects.coreUi)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreNavigation)
+  implementation(projects.coreUi)
   implementation(projects.hedvigLanguage)
-  implementation(projects.apollo)
 
-  implementation(libs.androidx.other.activityCompose)
+  implementation(libs.accompanist.navigationAnimation)
+  implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material)
-  implementation(libs.androidx.compose.navigation)
+  implementation(libs.androidx.navigation.compose)
+  implementation(libs.androidx.other.activityCompose)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.coil.coil)
   implementation(libs.coil.compose)
-  implementation(libs.androidx.compose.foundation)
-  implementation(libs.hedvig.odyssey)
-  implementation(libs.koin.android)
-  implementation(libs.serialization.json)
-  implementation(libs.accompanist.navigationAnimation)
   implementation(libs.datadog.sdk)
   implementation(libs.hedvig.odyssey)
+  implementation(libs.hedvig.odyssey)
   implementation(libs.koin.android)
+  implementation(libs.koin.android)
+  implementation(libs.serialization.json)
   implementation(libs.timber)
 }
 
