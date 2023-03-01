@@ -86,7 +86,6 @@ private fun AutomationClaimDTO2.getInputs(): List<Input> {
 }
 
 private fun AutomationClaimDTO2.getResolution(nrOfInputs: Int?): Resolution {
-
   var resolutions: Set<Resolution> = resolutions.map {
     when (it) {
       is AutomationClaimResolutionDTO2.SingleItemPayout -> Resolution.SingleItemPayout(

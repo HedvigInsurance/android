@@ -22,7 +22,6 @@ import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 
-
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun <T> SingleSelectDialog(
@@ -35,15 +34,12 @@ fun <T> SingleSelectDialog(
   imageLoader: ImageLoader,
   onDismissRequest: () -> Unit,
 ) {
-
   Dialog(onDismissRequest = { onDismissRequest.invoke() }) {
     Surface(
       modifier = Modifier.width(300.dp),
       shape = RoundedCornerShape(10.dp),
     ) {
-
       Column(modifier = Modifier.padding(12.dp)) {
-
         Text(text = title, Modifier.padding(12.dp))
 
         Spacer(modifier = Modifier.height(12.dp))

@@ -127,7 +127,7 @@ class KoinInitializer : Initializer<KoinApplication> {
         authRepositoryModule,
         submitClaimModule,
         claimsRepositoryModule,
-        claimsViewModelModule
+        claimsViewModelModule,
       ),
     )
   }

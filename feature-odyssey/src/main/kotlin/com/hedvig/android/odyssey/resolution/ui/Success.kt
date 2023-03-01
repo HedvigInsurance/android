@@ -8,21 +8,16 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
-import kotlinx.coroutines.launch
 
 @Composable
 fun Success(
   onExit: () -> Unit,
 ) {
-
-  val coroutineScope = rememberCoroutineScope()
-
   BackHandler {
     onExit()
   }
@@ -32,7 +27,6 @@ fun Success(
       .fillMaxHeight()
       .padding(all = 16.dp),
   ) {
-
     Column {
       Text("Claim submitted", fontSize = 40.sp)
       Spacer(modifier = Modifier.padding(top = 8.dp))

@@ -34,7 +34,6 @@ fun SingleItem(
   onPurchasePrice: (MonetaryAmount) -> Unit,
   onNext: () -> Unit,
 ) {
-
   val openDamagePickerDialog = remember { mutableStateOf(false) }
   val openModelPickerDialog = remember { mutableStateOf(false) }
 
@@ -97,11 +96,9 @@ fun SingleItem(
       .fillMaxHeight()
       .padding(all = 16.dp),
   ) {
-
     Spacer(modifier = Modifier.padding(top = 20.dp))
 
     Column {
-
       val selectedModel = state.item.selectedModelOption.let { selectedId ->
         input.modelOptions.find { it.modelId == selectedId?.modelId }
       }

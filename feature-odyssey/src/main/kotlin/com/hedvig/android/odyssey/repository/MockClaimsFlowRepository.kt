@@ -4,9 +4,8 @@ import com.hedvig.android.odyssey.model.ClaimState
 import com.hedvig.android.odyssey.model.Input
 import com.hedvig.android.odyssey.model.Resolution
 import com.hedvig.odyssey.remote.money.MonetaryAmount
-import java.time.LocalDate
 import kotlinx.coroutines.delay
-
+import java.time.LocalDate
 
 class MockClaimsFlowRepository : ClaimsFlowRepository {
 
@@ -22,7 +21,10 @@ class MockClaimsFlowRepository : ClaimsFlowRepository {
         Input.AudioRecording(
           null,
           null,
-          listOf(AutomationClaimInputDTO2.AudioRecording.AudioRecordingQuestion.CLAIM_QUESTION_WHAT_WHO_TOOK_DAMAGE_OR_NEEDS_REPLACEMENT),
+          listOf(
+            AutomationClaimInputDTO2.AudioRecording.AudioRecordingQuestion
+              .CLAIM_QUESTION_WHAT_WHO_TOOK_DAMAGE_OR_NEEDS_REPLACEMENT,
+          ),
         ),
       ),
       resolution = Resolution.None,
@@ -42,7 +44,10 @@ class MockClaimsFlowRepository : ClaimsFlowRepository {
         Input.AudioRecording(
           null,
           null,
-          listOf(AutomationClaimInputDTO2.AudioRecording.AudioRecordingQuestion.CLAIM_QUESTION_WHAT_WHO_TOOK_DAMAGE_OR_NEEDS_REPLACEMENT),
+          listOf(
+            AutomationClaimInputDTO2.AudioRecording.AudioRecordingQuestion
+              .CLAIM_QUESTION_WHAT_WHO_TOOK_DAMAGE_OR_NEEDS_REPLACEMENT,
+          ),
         ),
       ),
       resolution = Resolution.SingleItemPayout(
@@ -80,7 +85,10 @@ class MockClaimsFlowRepository : ClaimsFlowRepository {
       Input.AudioRecording(
         null,
         null,
-        listOf(AutomationClaimInputDTO2.AudioRecording.AudioRecordingQuestion.CLAIM_QUESTION_WHAT_WHO_TOOK_DAMAGE_OR_NEEDS_REPLACEMENT),
+        listOf(
+          AutomationClaimInputDTO2.AudioRecording.AudioRecordingQuestion
+            .CLAIM_QUESTION_WHAT_WHO_TOOK_DAMAGE_OR_NEEDS_REPLACEMENT,
+        ),
       ),
     ),
     resolution = Resolution.SingleItemPayout(

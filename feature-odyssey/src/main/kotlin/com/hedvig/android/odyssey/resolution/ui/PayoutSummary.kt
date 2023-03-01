@@ -33,7 +33,6 @@ fun PayoutSummary(
       .padding(all = 16.dp),
   ) {
     Column {
-
       Spacer(modifier = Modifier.padding(top = 28.dp))
 
       Text("Your compensation", style = MaterialTheme.typography.h5)

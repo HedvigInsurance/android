@@ -6,4 +6,3 @@ data class ResolutionViewState(
   val isLoading: Boolean = false,
   val isCompleted: Boolean = false,
 )
-

@@ -6,7 +6,7 @@ import com.hedvig.odyssey.remote.money.MonetaryAmount
 @kotlinx.serialization.Serializable
 data class UpdateAutomationClaimRequest(
   val dateOfOccurrence: String?,
-  //val audioUrl: String?,
+  // val audioUrl: String?,
   val location: String?,
   val items: List<UpdateClaimItem>,
 )
@@ -32,7 +32,7 @@ fun ClaimState.toUpdateRequest() = UpdateAutomationClaimRequest(
       purchasePrice = item.purchasePrice,
       brandId = item.selectedModelOption?.brandId,
       typeId = item.selectedModelOption?.typeId,
-      customName = item.selectedModelOption?.modelName
+      customName = item.selectedModelOption?.modelName,
     ),
   ),
 )

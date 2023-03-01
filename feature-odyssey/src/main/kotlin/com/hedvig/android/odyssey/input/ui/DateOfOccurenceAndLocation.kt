@@ -60,9 +60,7 @@ fun DateOfOccurrenceAndLocation(
       .fillMaxHeight()
       .padding(all = 16.dp),
   ) {
-
     Column {
-
       Spacer(modifier = Modifier.padding(top = 20.dp))
 
       FormRowButton(

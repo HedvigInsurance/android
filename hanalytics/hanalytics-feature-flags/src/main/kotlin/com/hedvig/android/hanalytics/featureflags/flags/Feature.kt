@@ -21,5 +21,5 @@ enum class Feature(
     "Defines the lowest supported app version. Should prompt a user to update if it uses an outdated version.",
   ),
   USE_ODYSSEY_CLAIM_FLOW("Whether to show the odyssey claim flow or not"),
-  USE_NATIVE_CLAIMS_FLOW("Whether to use the native claims flow")
+  USE_NATIVE_CLAIMS_FLOW("Whether to use the native claims flow"),
 }

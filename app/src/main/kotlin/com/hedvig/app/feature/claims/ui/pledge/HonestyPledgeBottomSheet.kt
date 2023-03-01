@@ -58,7 +58,8 @@ class HonestyPledgeBottomSheet(
   private suspend fun getClaimsFlowIntent(): Intent {
     return if (featureManager.isFeatureEnabled(Feature.USE_NATIVE_CLAIMS_FLOW)) {
       ClaimsFlowActivity.newInstance(
-        requireContext(), commonClaimId,
+        requireContext(),
+        commonClaimId,
       )
     } else {
       EmbarkActivity.newInstance(

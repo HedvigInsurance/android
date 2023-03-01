@@ -62,7 +62,6 @@ data class AutomationClaimItemDTO2(
 @kotlinx.serialization.Serializable
 sealed class AutomationClaimInputDTO2 {
 
-
   @kotlinx.serialization.Serializable
   @SerialName("AudioRecording")
   data class AudioRecording(
@@ -148,7 +147,8 @@ sealed class AutomationClaimInputDTO2 {
       ROBBED,
       FORGOTTEN,
       OTHER,
-      BROKEN_SCREEN
+      BROKEN_SCREEN,
+      
       ;
 
       fun getText() = when (this) {

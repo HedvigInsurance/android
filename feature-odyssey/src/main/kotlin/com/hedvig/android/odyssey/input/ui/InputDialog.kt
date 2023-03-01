@@ -78,7 +78,6 @@ fun PriceInputDialog(
           }
         }
       }
-
     }
   }
 }

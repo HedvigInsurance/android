@@ -5,10 +5,8 @@ import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.unit.sp
 import com.hedvig.android.odyssey.input.InputViewModel
-import kotlinx.coroutines.launch
 
 @Composable
 fun DateOfOccurrence(viewModel: InputViewModel) {

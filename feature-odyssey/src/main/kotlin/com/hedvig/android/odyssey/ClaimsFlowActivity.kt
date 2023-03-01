@@ -12,9 +12,7 @@ import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.odyssey.input.InputViewModel
 import com.hedvig.android.odyssey.input.ui.InputRoot
-import com.hedvig.android.odyssey.input.ui.audiorecorder.AudioRecorderViewModel
 import com.hedvig.android.odyssey.model.Resolution
-import com.hedvig.android.odyssey.resolution.ResolutionViewModel
 import com.hedvig.android.odyssey.resolution.ui.ResolutionRoot
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.getViewModel

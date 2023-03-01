@@ -78,4 +78,3 @@ private fun Resolution(
     Resolution.None -> {}
   }
 }
-

@@ -3,18 +3,18 @@ package com.hedvig.android.odyssey.input
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.apollo.OperationResult
-import com.hedvig.android.odyssey.repository.ClaimResult
-import com.hedvig.android.odyssey.repository.ClaimsFlowRepository
 import com.hedvig.android.odyssey.repository.AutomationClaimDTO2
 import com.hedvig.android.odyssey.repository.AutomationClaimInputDTO2
+import com.hedvig.android.odyssey.repository.ClaimResult
+import com.hedvig.android.odyssey.repository.ClaimsFlowRepository
 import com.hedvig.android.odyssey.repository.PhoneNumberRepository
 import com.hedvig.android.odyssey.repository.PhoneNumberResult
 import com.hedvig.odyssey.remote.file.File
 import com.hedvig.odyssey.remote.money.MonetaryAmount
-import java.time.LocalDate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 class InputViewModel(
   private val commonClaimId: String?,

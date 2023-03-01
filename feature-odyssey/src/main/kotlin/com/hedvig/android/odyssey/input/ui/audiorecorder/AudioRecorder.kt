@@ -49,7 +49,6 @@ fun AudioRecorderScreen(
       .fillMaxHeight()
       .padding(all = 16.dp),
   ) {
-
     Column {
       questions.forEach {
         Surface(
@@ -81,7 +80,6 @@ fun AudioRecorderScreen(
           )
           onAudioFile(audioFile)
           onNext()
-
         },
         redo = audioRecorderViewModel::redo,
         play = audioRecorderViewModel::play,
