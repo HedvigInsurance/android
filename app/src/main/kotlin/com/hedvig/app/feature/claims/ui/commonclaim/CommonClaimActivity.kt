@@ -76,10 +76,10 @@ class CommonClaimActivity : AppCompatActivity(R.layout.activity_common_claim) {
           lifecycleScope.launch {
             hAnalytics.beginClaim(AppScreen.COMMON_CLAIM_DETAIL)
             startClaimsFlow(
-              featureManager = featureManager,
-              context = this@CommonClaimActivity,
               fragmentManager = supportFragmentManager,
               commonClaimId = data.id,
+              featureManager = featureManager,
+              context = this@CommonClaimActivity,
             )
           }
         }

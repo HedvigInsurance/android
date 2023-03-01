@@ -39,7 +39,7 @@ fun FullScreenProgressOverlay(
   ) {
     Surface(
       modifier = Modifier.fillMaxSize(),
-      color = MaterialTheme.colors.onPrimary,
+      color = MaterialTheme.colors.background,
     ) {
       Box(contentAlignment = Alignment.Center) {
         val infiniteTransition = rememberInfiniteTransition()
@@ -62,6 +62,7 @@ fun FullScreenProgressOverlay(
               exit = fadeOut(animationSpec = tween(200)),
             )
             .size(32.dp),
+          tint = MaterialTheme.colors.onBackground,
           contentDescription = null,
         )
       }

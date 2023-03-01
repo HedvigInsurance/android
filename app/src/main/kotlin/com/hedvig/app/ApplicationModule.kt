@@ -34,6 +34,12 @@ import com.hedvig.android.hanalytics.android.di.hAnalyticsUrlQualifier
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.Navigator
+import com.hedvig.android.odyssey.input.InputViewModel
+import com.hedvig.android.odyssey.model.Resolution
+import com.hedvig.android.odyssey.repository.ClaimsFlowRepository
+import com.hedvig.android.odyssey.repository.NetworkClaimsFlowRepository
+import com.hedvig.android.odyssey.repository.PhoneNumberRepository
+import com.hedvig.android.odyssey.resolution.ResolutionViewModel
 import com.hedvig.app.authenticate.BankIdLoginViewModel
 import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.data.debit.PayinStatusRepository
@@ -659,4 +665,24 @@ val authRepositoryModule = module {
       additionalHttpHeaders = mapOf(),
     )
   }
+}
+
+val claimsRepositoryModule = module {
+  single<ClaimsFlowRepository> {
+    NetworkClaimsFlowRepository(get<OkHttpClient>())
+  }
+  single<PhoneNumberRepository> {
+    PhoneNumberRepository(get<ApolloClient>())
+  }
+}
+
+val claimsViewModelModule = module {
+  viewModel { (commonClaimId: String) ->
+    InputViewModel(
+      commonClaimId = commonClaimId,
+      repository = get<ClaimsFlowRepository>(),
+      getPhoneNumberUseCase = get<PhoneNumberRepository>(),
+    )
+  }
+  viewModel { (resolution: Resolution) -> ResolutionViewModel(get(), resolution) }
 }

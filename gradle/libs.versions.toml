@@ -30,6 +30,7 @@ androidx-datastore = "1.0.0"
 androidx-espresso = "3.5.1"
 androidx-lifecycle-common = "2.5.1"
 androidx-lifecycle-compose = "2.5.1"
+androidx-navigation = "2.5.3"
 androidx-other-activityCompose = "1.6.1"
 androidx-other-appCompat = "1.6.1"
 androidx-other-browser = "1.5.0"
@@ -71,6 +72,7 @@ junit = "4.13.2"
 kaspresso = "1.5.1"
 koinAndroid = "3.3.3"
 koinCore = "3.3.3"
+koinAndroidCompose = "3.4.1"
 kotlinxDatetime = "0.4.0"
 leakCanary = "2.10"
 markwon = "4.6.2"
@@ -95,6 +97,7 @@ zXing = "3.5.1"
 
 [libraries]
 
+accompanist-navigationAnimation = { module = "com.google.accompanist:accompanist-navigation-animation", version.ref = "accompanist" }
 accompanist-insetsUi = { module = "com.google.accompanist:accompanist-insets-ui", version.ref = "accompanist" }
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanist" }
 accompanist-pagerIndicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanist" }
@@ -129,6 +132,7 @@ androidx-lifecycle-liveData = { module = "androidx.lifecycle:lifecycle-livedata-
 androidx-lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "androidx-lifecycle-common" }
 androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "androidx-lifecycle-common" }
 androidx-lifecycle-viewModel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle-common" }
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
 androidx-other-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-other-activityCompose" }
 androidx-other-appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-other-appCompat" }
 androidx-other-browser = { module = "androidx.browser:browser", version.ref = "androidx-other-browser" }

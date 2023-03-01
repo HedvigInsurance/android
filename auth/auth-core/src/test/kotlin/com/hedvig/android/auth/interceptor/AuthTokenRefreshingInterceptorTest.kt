@@ -40,12 +40,24 @@ class AuthTokenRefreshingInterceptorTest {
   val testFolder = TemporaryFolder()
 
   @Test
+  fun `The token in the header contains the 'Bearer ' prefix as the backend expects it`() = runTest {
+    val webServer = MockWebServer().also { it.enqueue(MockResponse()) }
+    val okHttpClient = testOkHttpClient(
+      AuthTokenRefreshingInterceptor(accessTokenProvider = { "token" }),
+    )
+
+    okHttpClient.newCall(webServer.testRequest()).execute()
+    val requestSent: RecordedRequest = webServer.takeRequest()
+
+    assertThat(requestSent.headers["Authorization"]).isEqualTo("Bearer token")
+  }
+
+  @Test
   fun `when a token already exists, simply goes through adding the header`() = runTest {
     val clock = TestClock()
     val authTokenStorage = authTokenStorage(clock)
-    val expectedAuthorizationHeaderValue = "token"
     authTokenStorage.updateTokens(
-      AccessToken(expectedAuthorizationHeaderValue, 10.minutes.inWholeSeconds.toInt()),
+      AccessToken("token", 10.minutes.inWholeSeconds.toInt()),
       RefreshToken("", 0),
     )
     val authTokenService = authTokenService(authTokenStorage)
@@ -57,7 +69,7 @@ class AuthTokenRefreshingInterceptorTest {
     okHttpClient.newCall(webServer.testRequest()).execute()
     val requestSent: RecordedRequest = webServer.takeRequest()
 
-    assertThat(requestSent.headers["Authorization"]).isEqualTo(expectedAuthorizationHeaderValue)
+    assertThat(requestSent.headers["Authorization"]).isEqualTo("Bearer token")
   }
 
   @Test
@@ -88,7 +100,7 @@ class AuthTokenRefreshingInterceptorTest {
     val storedAuthTokens = authTokenStorage.getTokens().first()!!
     assertThat(storedAuthTokens.accessToken.token).isEqualTo("refreshedToken")
     assertThat(storedAuthTokens.refreshToken.token).isEqualTo("refreshedRefreshToken")
-    assertThat(requestSent.headers["Authorization"]).isEqualTo("refreshedToken")
+    assertThat(requestSent.headers["Authorization"]).isEqualTo("Bearer refreshedToken")
   }
 
   @Test
@@ -148,8 +160,8 @@ class AuthTokenRefreshingInterceptorTest {
     val storedAuthTokens = authTokenStorage.getTokens().first()!!
     assertThat(storedAuthTokens.accessToken.token).isEqualTo("refreshedToken")
     assertThat(storedAuthTokens.refreshToken.token).isEqualTo("refreshedRefreshToken")
-    assertThat(requestSent1.headers["Authorization"]).isEqualTo("refreshedToken")
-    assertThat(requestSent2.headers["Authorization"]).isEqualTo("refreshedToken")
+    assertThat(requestSent1.headers["Authorization"]).isEqualTo("Bearer refreshedToken")
+    assertThat(requestSent2.headers["Authorization"]).isEqualTo("Bearer refreshedToken")
   }
 
   @Test
@@ -190,9 +202,9 @@ class AuthTokenRefreshingInterceptorTest {
       val storedAuthTokens = authTokenStorage.getTokens().first()!!
       assertThat(storedAuthTokens.accessToken.token).isEqualTo("refreshedToken")
       assertThat(storedAuthTokens.refreshToken.token).isEqualTo("refreshedRefreshToken")
-      assertThat(requestSent1.headers["Authorization"]).isEqualTo("refreshedToken")
-      assertThat(requestSent2.headers["Authorization"]).isEqualTo("refreshedToken")
-      assertThat(requestSent3.headers["Authorization"]).isEqualTo("refreshedToken")
+      assertThat(requestSent1.headers["Authorization"]).isEqualTo("Bearer refreshedToken")
+      assertThat(requestSent2.headers["Authorization"]).isEqualTo("Bearer refreshedToken")
+      assertThat(requestSent3.headers["Authorization"]).isEqualTo("Bearer refreshedToken")
     }
 
   private fun MockWebServer.testRequest(): Request {

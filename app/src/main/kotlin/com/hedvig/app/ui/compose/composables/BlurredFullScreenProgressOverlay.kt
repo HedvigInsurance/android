@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -141,10 +140,6 @@ private fun AnimatedCircles() {
 @Composable
 fun TextProgressOverlayPreview() {
   HedvigTheme {
-    Surface(
-      color = MaterialTheme.colors.background,
-    ) {
-      TextProgressOverlay(progressText = "Calculating price...")
-    }
+    TextProgressOverlay(progressText = "Calculating price...")
   }
 }

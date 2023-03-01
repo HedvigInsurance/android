@@ -5,13 +5,13 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import com.hedvig.app.R
+import hedvig.resources.R
 
 @Composable
 fun ErrorDialog(
   message: String?,
   onDismiss: () -> Unit,
-  title: String = stringResource(com.adyen.checkout.dropin.R.string.error_dialog_title),
+  title: String = stringResource(R.string.general_unknown_error),
 ) {
   AlertDialog(
     onDismissRequest = onDismiss,
@@ -19,11 +19,11 @@ fun ErrorDialog(
       Text(title)
     },
     text = {
-      Text(message ?: stringResource(id = hedvig.resources.R.string.general_unknown_error))
+      Text(message ?: stringResource(id = R.string.general_unknown_error))
     },
     confirmButton = {
       TextButton(onClick = onDismiss) {
-        Text(stringResource(com.adyen.checkout.dropin.R.string.error_dialog_button))
+        Text(stringResource(R.string.general_close_button))
       }
     },
   )

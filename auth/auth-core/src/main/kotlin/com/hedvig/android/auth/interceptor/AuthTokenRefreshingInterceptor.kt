@@ -20,5 +20,7 @@ class AuthTokenRefreshingInterceptor(
 }
 
 private fun Request.withAuthorizationToken(token: String): Request {
-  return newBuilder().header("Authorization", token).build()
+  return newBuilder()
+    .header("Authorization", "Bearer $token")
+    .build()
 }
