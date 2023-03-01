@@ -1,3 +1,0 @@
-mutation CreateOtpAttempt($email: String!) {
-  login_createOtpAttempt(input: { otpType: EMAIL, credential: $email })
-}

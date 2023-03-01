@@ -1,7 +1,7 @@
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-  id("hedvig.kotlin.library")
   id("hedvig.android.ktlint")
+  id("hedvig.kotlin.library")
   alias(libs.plugins.serialization)
 }
 

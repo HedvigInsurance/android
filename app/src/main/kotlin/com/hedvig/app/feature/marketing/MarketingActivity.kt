@@ -16,8 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.designsystem.theme.hedvigBlack
-import com.hedvig.android.core.designsystem.theme.hedvigOffWhite
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
@@ -46,16 +44,7 @@ class MarketingActivity : AppCompatActivity() {
     val viewModel = getViewModel<MarketingViewModel>()
     val imageLoader: ImageLoader = get()
     setContent {
-      HedvigTheme(
-        colorOverrides = { colors ->
-          colors.copy(
-            primary = hedvigOffWhite,
-            onPrimary = hedvigBlack,
-            secondary = hedvigOffWhite,
-            onBackground = hedvigOffWhite,
-          )
-        },
-      ) {
+      HedvigTheme(darkTheme = true) { // Force dark theme as the background is dark
         val marketingBackground by viewModel.marketingBackground.collectAsState()
         val state by viewModel.state.collectAsState()
         MarketingScreen(
@@ -93,6 +82,7 @@ class MarketingActivity : AppCompatActivity() {
       supportFragmentManager,
       BankIdLoginDialog.TAG,
     )
+
     LoginMethod.NEM_ID, LoginMethod.BANK_ID_NORWAY -> {
       startActivity(
         SimpleSignAuthenticationActivity.newInstance(
@@ -101,9 +91,11 @@ class MarketingActivity : AppCompatActivity() {
         ),
       )
     }
+
     LoginMethod.OTP -> {
       // Not implemented
     }
+
     null -> {}
   }
 

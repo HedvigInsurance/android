@@ -20,4 +20,16 @@ class YourInfoItemsTest {
     val viewState = INSURANCE_DATA_UPCOMING_AGREEMENT.contracts[0].toMemberDetailsViewState()
     assertThat(viewState.pendingAddressChange).isNotNull()
   }
+
+  @Test
+  fun `when termination flow is enabled, it should be part of the items`() {
+    val viewState = INSURANCE_DATA_UPCOMING_AGREEMENT.contracts[0].toMemberDetailsViewState(true)
+    assertThat(viewState.cancelInsurance).isNotNull()
+  }
+
+  @Test
+  fun `when termination flow is disabled, it should not be part of the items`() {
+    val viewState = INSURANCE_DATA_UPCOMING_AGREEMENT.contracts[0].toMemberDetailsViewState(false)
+    assertThat(viewState.cancelInsurance).isNull()
+  }
 }

@@ -35,7 +35,7 @@ class SettingsActivity : AppCompatActivity(R.layout.activity_settings) {
     super.onCreate(savedInstanceState)
     lifecycle.addObserver(AuthenticatedObserver())
     binding.toolbar.setNavigationOnClickListener {
-      onBackPressed()
+      onBackPressedDispatcher.onBackPressed()
     }
     setTheme(R.style.Hedvig_Theme_Settings)
     supportFragmentManager

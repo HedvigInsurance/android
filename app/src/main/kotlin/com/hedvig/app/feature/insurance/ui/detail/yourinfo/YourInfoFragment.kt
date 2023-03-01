@@ -5,6 +5,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
 import androidx.recyclerview.widget.ConcatAdapter
+import com.hedvig.android.feature.cancelinsurance.CancelInsuranceActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ContractDetailYourInfoFragmentBinding
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
@@ -23,9 +24,9 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     binding.root.applyNavigationBarInsets()
-    val topYourInfoAdapter = YourInfoAdapter(parentFragmentManager)
+    val topYourInfoAdapter = YourInfoAdapter(parentFragmentManager, ::openCancelInsuranceScreen)
     val tableAdapter = TableAdapter()
-    val bottomYourInfoAdapter = YourInfoAdapter(parentFragmentManager)
+    val bottomYourInfoAdapter = YourInfoAdapter(parentFragmentManager, ::openCancelInsuranceScreen)
 
     binding.recycler.adapter = ConcatAdapter(
       topYourInfoAdapter,
@@ -49,10 +50,20 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
             val state = viewState.state.memberDetailsViewState
             tableAdapter.setTable(state.detailsTable)
             topYourInfoAdapter.submitList(listOfNotNull(state.pendingAddressChange))
-            bottomYourInfoAdapter.submitList(listOfNotNull(state.changeAddressButton, state.change))
+            bottomYourInfoAdapter.submitList(
+              listOfNotNull(
+                state.changeAddressButton,
+                state.change,
+                state.cancelInsurance,
+              ),
+            )
           }
         }
       }
       .launchIn(viewLifecycleScope)
+  }
+
+  private fun openCancelInsuranceScreen(insuranceId: String) {
+    startActivity(CancelInsuranceActivity.newInstance(requireContext(), insuranceId))
   }
 }

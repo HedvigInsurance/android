@@ -67,7 +67,7 @@ class EmergencyActivity : AppCompatActivity(R.layout.activity_emergency) {
 
       toolbar.title = data.title
       toolbar.setNavigationOnClickListener {
-        onBackPressed()
+        onBackPressedDispatcher.onBackPressed()
       }
       scrollView.setupToolbarScrollListener(toolbar = toolbar)
 

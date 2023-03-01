@@ -31,7 +31,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "10.1.4"
+    versionName = "10.2.1"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -126,6 +126,7 @@ dependencies {
   implementation(projects.coreUi)
   implementation(projects.datadog)
   implementation(projects.featureBusinessmodel)
+  implementation(projects.featureCancelInsurance)
   implementation(projects.featureOdyssey)
   implementation(projects.hanalytics.hanalyticsAndroid)
   implementation(projects.hanalytics.hanalyticsCore)
@@ -134,6 +135,7 @@ dependencies {
   implementation(projects.hedvigMarket)
   implementation(projects.notificationBadgeData)
 
+  testImplementation(projects.auth.authEventTest)
   testImplementation(projects.auth.authTest)
   testImplementation(projects.coreDatastoreTest)
 
@@ -181,6 +183,7 @@ dependencies {
   implementation(libs.androidx.other.workManager)
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.other.startup)
+  implementation(libs.androidx.profileInstaller)
   androidTestImplementation(libs.androidx.espresso.core)
   androidTestImplementation(libs.androidx.espresso.intents)
   androidTestImplementation(libs.androidx.espresso.contrib)
@@ -194,7 +197,6 @@ dependencies {
   implementation(libs.accompanist.pager)
   implementation(libs.accompanist.pagerIndicators)
   implementation(libs.accompanist.systemUiController)
-  implementation(libs.accompanist.themeAdapter.material)
 
   implementation(libs.apollo.adapters)
   implementation(libs.apollo.normalizedCache)

@@ -254,7 +254,7 @@ class EmbarkStoryTesterViewModel(
 
   fun setAuthToken(authToken: String) {
     viewModelScope.launch {
-      authTokenService.updateTokens(AccessToken(authToken, 600), RefreshToken(authToken, 600))
+      authTokenService.loginWithTokens(AccessToken(authToken, 600), RefreshToken(authToken, 600))
     }
   }
 
@@ -267,7 +267,7 @@ class EmbarkStoryTesterViewModel(
           it.copy(errorMessage = authTokenResult.message)
         }
         is AuthTokenResult.Success -> {
-          authTokenService.updateTokens(
+          authTokenService.loginWithTokens(
             authTokenResult.accessToken,
             authTokenResult.refreshToken,
           )

@@ -7,6 +7,7 @@ import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.datadog.di.datadogModule
 import com.hedvig.android.feature.businessmodel.di.businessModelModule
+import com.hedvig.android.feature.cancelinsurance.di.cancelInsuranceModule
 import com.hedvig.android.hanalytics.android.di.hAnalyticsAndroidModule
 import com.hedvig.android.hanalytics.di.hAnalyticsModule
 import com.hedvig.android.hanalytics.engineering.di.HAnalyticsEngineeringModuleImpl
@@ -78,6 +79,7 @@ class KoinInitializer : Initializer<KoinApplication> {
         authRepositoryModule,
         businessModelModule,
         cacheManagerModule,
+        cancelInsuranceModule,
         changeAddressModule,
         changeDateBottomSheetModule,
         chatEventModule,

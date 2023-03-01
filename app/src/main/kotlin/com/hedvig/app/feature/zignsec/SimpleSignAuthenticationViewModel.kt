@@ -19,7 +19,11 @@ import com.hedvig.authlib.LoginStatusResult
 import com.hedvig.authlib.StatusUrl
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
+import slimber.log.d
+import slimber.log.e
 
 class SimpleSignAuthenticationViewModel(
   private val data: SimpleSignAuthenticationData,
@@ -51,11 +55,22 @@ class SimpleSignAuthenticationViewModel(
   private val _events = LiveEvent<Event>()
   val events: LiveData<Event> = _events
 
-  sealed class Event {
-    object Success : Event()
-    object Error : Event()
-    object LoadWebView : Event()
-    object CancelSignIn : Event()
+  sealed class Event { // toStrings overwritten for logging purposes. todo change to `data object` in Kotlin 1.9.
+    object Success : Event() {
+      override fun toString() = "Success"
+    }
+
+    object Error : Event() {
+      override fun toString() = "Error"
+    }
+
+    object LoadWebView : Event() {
+      override fun toString() = "LoadWebView"
+    }
+
+    object CancelSignIn : Event() {
+      override fun toString() = "CancelSignIn"
+    }
   }
 
   /**
@@ -63,16 +78,23 @@ class SimpleSignAuthenticationViewModel(
    */
   suspend fun subscribeToAuthSuccessEvent() {
     statusUrl.asFlow().collectLatest { statusUrl ->
-      authRepository.observeLoginStatus(statusUrl).collect { loginStatusResult ->
-        when (loginStatusResult) {
-          is LoginStatusResult.Completed -> {
-            onSimpleSignSuccess(loginStatusResult)
-            _events.postValue(Event.Success)
-          }
-          is LoginStatusResult.Failed -> _events.postValue(Event.Error)
-          is LoginStatusResult.Pending -> {}
+      authRepository.observeLoginStatus(statusUrl)
+        .distinctUntilChanged()
+        .onCompletion {
+          d { "subscribeToAuthSuccessEvent finished" }
         }
-      }
+        .collect { loginStatusResult ->
+          d { "Login status:$loginStatusResult" }
+          when (loginStatusResult) {
+            is LoginStatusResult.Completed -> {
+              onSimpleSignSuccess(loginStatusResult)
+              _events.postValue(Event.Success)
+            }
+
+            is LoginStatusResult.Failed -> _events.postValue(Event.Error)
+            is LoginStatusResult.Pending -> {}
+          }
+        }
     }
   }
 
@@ -106,6 +128,7 @@ class SimpleSignAuthenticationViewModel(
   }
 
   private fun handleStartAuth(result: AuthAttemptResult) {
+    d { "Auth start result:$result" }
     when (result) {
       is AuthAttemptResult.BankIdProperties -> _events.postValue(Event.Error)
       is AuthAttemptResult.Error -> _events.postValue(Event.Error)
@@ -124,14 +147,18 @@ class SimpleSignAuthenticationViewModel(
   }
 
   private suspend fun onSimpleSignSuccess(loginStatusResult: LoginStatusResult.Completed) {
+    d { "Simple sign success:$loginStatusResult" }
     when (val result = authRepository.exchange(loginStatusResult.authorizationCode)) {
       is AuthTokenResult.Error -> {
         _events.postValue(Event.Error)
+        e { "Exchange error:$result" }
       }
+
       is AuthTokenResult.Success -> {
+        d { "Exchange success:$result" }
         hAnalytics.loggedIn()
         featureManager.invalidateExperiments()
-        authTokenService.updateTokens(result.accessToken, result.refreshToken)
+        authTokenService.loginWithTokens(result.accessToken, result.refreshToken)
         uploadMarketAndLanguagePreferencesUseCase.invoke()
       }
     }

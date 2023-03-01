@@ -66,7 +66,7 @@ class OtpInputViewModel(
     when (val authCodeResult = authRepository.exchange(otpResult.loginAuthorizationCode)) {
       is AuthTokenResult.Error -> setErrorState(authCodeResult.message)
       is AuthTokenResult.Success -> {
-        authTokenService.updateTokens(
+        authTokenService.loginWithTokens(
           authCodeResult.accessToken,
           authCodeResult.refreshToken,
         )

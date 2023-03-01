@@ -30,10 +30,7 @@ class ChatMessageNotificationReceiver : BroadcastReceiver() {
       )
       .build()
 
-    WorkManager
-      .getInstance(context)
-      .beginWith(work)
-      .enqueue()
+    WorkManager.getInstance(context).enqueue(work)
   }
 
   companion object {

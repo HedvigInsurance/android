@@ -3,6 +3,7 @@ package com.hedvig.app.feature.zignsec
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
@@ -23,6 +24,7 @@ import com.hedvig.app.util.extensions.viewBinding
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+import slimber.log.d
 
 class SimpleSignAuthenticationActivity : AppCompatActivity(R.layout.simple_sign_authentication_activity) {
   private val binding by viewBinding(SimpleSignAuthenticationActivityBinding::bind)
@@ -30,15 +32,22 @@ class SimpleSignAuthenticationActivity : AppCompatActivity(R.layout.simple_sign_
 
   private val data by lazy {
     intent.getParcelableExtra<SimpleSignAuthenticationData>(DATA)
-      ?: throw Error("Programmer error: DATA not passed to ${this.javaClass.name}")
+      ?: error("Programmer error: DATA not passed to ${this.javaClass.name}")
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     window.compatSetDecorFitsSystemWindows(false)
+    onBackPressedDispatcher.addCallback(this) {
+      d { "SimpleSignAuthenticationActivity: invoked back. Going back to marketing" }
+      remove()
+      onBackPressedDispatcher.onBackPressed()
+    }
     binding.toolbar.apply {
       applyStatusBarInsets()
-      setNavigationOnClickListener { finishSignInActivity() }
+      setNavigationOnClickListener {
+        onBackPressedDispatcher.onBackPressed()
+      }
     }
     binding.container.applyNavigationBarInsets()
     if (savedInstanceState == null) {
@@ -54,11 +63,12 @@ class SimpleSignAuthenticationActivity : AppCompatActivity(R.layout.simple_sign_
     }
 
     viewModel.events.observe(this) { event ->
+      d { "Simple sign event:$event" }
       when (event) {
         SimpleSignAuthenticationViewModel.Event.LoadWebView -> showWebView()
         SimpleSignAuthenticationViewModel.Event.Success -> goToLoggedIn()
         SimpleSignAuthenticationViewModel.Event.Error -> showError()
-        SimpleSignAuthenticationViewModel.Event.CancelSignIn -> finishSignInActivity()
+        SimpleSignAuthenticationViewModel.Event.CancelSignIn -> finish()
       }
     }
   }
@@ -70,10 +80,6 @@ class SimpleSignAuthenticationActivity : AppCompatActivity(R.layout.simple_sign_
         withoutHistory = true,
       ),
     )
-  }
-
-  private fun finishSignInActivity() {
-    finish()
   }
 
   private fun showWebView() {

@@ -8,10 +8,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.component.button.LargeOutlinedButton
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.designsystem.theme.hedvigOffWhite
+import com.hedvig.android.core.designsystem.theme.hedvig_off_white
 import com.hedvig.app.R
 
 @Composable
@@ -47,7 +46,7 @@ fun MarketPickedScreen(
       painter = painterResource(R.drawable.ic_wordmark_h),
       contentDescription = stringResource(hedvig.resources.R.string.HEDVIG_LOGO_ACCESSIBILITY),
       modifier = Modifier.align(Alignment.Center),
-      colorFilter = ColorFilter.tint(hedvigOffWhite),
+      colorFilter = ColorFilter.tint(hedvig_off_white),
     )
     Column(
       modifier = Modifier
@@ -57,9 +56,7 @@ fun MarketPickedScreen(
     ) {
       LargeContainedButton(
         onClick = onClickSignUp,
-        colors = ButtonDefaults.buttonColors(
-          backgroundColor = MaterialTheme.colors.primary,
-        ),
+        colors = ButtonDefaults.buttonColors(),
       ) {
         Text(
           text = stringResource(hedvig.resources.R.string.MARKETING_GET_HEDVIG),

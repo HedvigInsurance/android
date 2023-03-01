@@ -8,7 +8,9 @@ import assertk.assertions.isNull
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.AuthTokenServiceImpl
 import com.hedvig.android.auth.FakeAuthRepository
+import com.hedvig.android.auth.event.AuthEventBroadcaster
 import com.hedvig.android.auth.storage.AuthTokenStorage
+import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.datastore.TestPreferencesDataStore
 import com.hedvig.app.feature.genericauth.otpinput.OtpInputViewModel
 import com.hedvig.app.util.coroutines.MainCoroutineRule
@@ -27,6 +29,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import kotlin.coroutines.EmptyCoroutineContext
 
 class OtpInputViewModelTest {
 
@@ -217,6 +220,11 @@ class OtpInputViewModelTest {
     return AuthTokenServiceImpl(
       authTokenStorage = authTokenStorage,
       authRepository = authRepository,
+      authEventBroadcaster = AuthEventBroadcaster(
+        emptySet(),
+        ApplicationScope(backgroundScope),
+        EmptyCoroutineContext,
+      ),
       coroutineScope = backgroundScope,
     )
   }

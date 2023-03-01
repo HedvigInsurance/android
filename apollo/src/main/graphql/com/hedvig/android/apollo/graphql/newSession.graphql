@@ -1,5 +1,0 @@
-mutation NewSession {
-  createSessionV2 {
-    token
-  }
-}

@@ -3,7 +3,6 @@
     <item name="splash_background" type="color">@color/hedvig_black</item>
     <item name="splash_foreground" type="color">@color/hedvig_white</item>
 
-    <item name="translucent_background" type="color">@color/translucent_dark_mode</item>
     <item name="icon_tint" type="color">@color/off_white</item>
 
     <item name="colorPrimary" type="color">@color/hedvig_white</item>
@@ -41,6 +40,4 @@
     <item name="blur_fall_sunset" type="color">#c6ad8a</item>
     <item name="blur_spring_fog" type="color">#ec955f</item>
     <item name="default_insurance_card" type="color">#505050</item>
-
-    <item name="progress_overlay" type="color">#FA000000</item>
 </resources>

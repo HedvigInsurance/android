@@ -51,7 +51,9 @@ class TerminatedContractsActivity : AppCompatActivity(R.layout.terminated_contra
       window.compatSetDecorFitsSystemWindows(false)
       toolbar.applyStatusBarInsets()
       recycler.applyNavigationBarInsets()
-      toolbar.setNavigationOnClickListener { onBackPressed() }
+      toolbar.setNavigationOnClickListener {
+        onBackPressedDispatcher.onBackPressed()
+      }
       val adapter = InsuranceAdapter(marketManager, viewModel::load, {}, imageLoader, {})
       recycler.adapter = adapter
       viewModel
@@ -62,12 +64,14 @@ class TerminatedContractsActivity : AppCompatActivity(R.layout.terminated_contra
             is TerminatedContractsViewModel.ViewState.Error -> {
               adapter.submitList(listOf(InsuranceModel.Error))
             }
+
             is TerminatedContractsViewModel.ViewState.Success -> {
               adapter.submitList(
                 viewState.items,
               )
               recycler.post { startPostponedEnterTransition() }
             }
+
             TerminatedContractsViewModel.ViewState.Loading -> {}
           }
         }

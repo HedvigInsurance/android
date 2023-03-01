@@ -15,7 +15,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.designsystem.theme.hedvigBlack12percent
+import com.hedvig.android.core.designsystem.theme.hedvig_black12percent
 import com.hedvig.app.R
 import com.hedvig.app.feature.offer.ui.OfferItems
 import com.hedvig.app.feature.offer.ui.OfferItems.InsurelyCard.FailedToRetrieve
@@ -40,7 +40,7 @@ fun InsurelyCard(
     },
   )
   Card(
-    border = BorderStroke(1.dp, hedvigBlack12percent),
+    border = BorderStroke(1.dp, hedvig_black12percent),
     backgroundColor = backgroundColor,
     contentColor = hedvigContentColorFor(backgroundColor),
     elevation = 0.dp,

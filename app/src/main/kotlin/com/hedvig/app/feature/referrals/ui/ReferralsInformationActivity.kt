@@ -49,7 +49,9 @@ class ReferralsInformationActivity : AppCompatActivity(R.layout.activity_referra
       window.compatSetDecorFitsSystemWindows(false)
 
       toolbar.applyStatusBarInsets()
-      toolbar.setNavigationOnClickListener { onBackPressed() }
+      toolbar.setNavigationOnClickListener {
+        onBackPressedDispatcher.onBackPressed()
+      }
 
       scrollView.applyNavigationBarInsets()
       scrollView.setupToolbarScrollListener(toolbar)

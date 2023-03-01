@@ -26,3 +26,9 @@ val datastoreFileQualifier = qualifier("datastoreFileQualifier")
  */
 val logInfoQualifier = qualifier("logInfoQualifier")
 typealias LogInfoType = (() -> String) -> Unit
+
+/**
+ * A qualifier to pass a [kotlin.coroutines.CoroutineContext] which should default to
+ * [kotlinx.coroutines.Dispatchers.IO] for production code
+ */
+val ioDispatcherQualifier = qualifier("ioDispatcher")

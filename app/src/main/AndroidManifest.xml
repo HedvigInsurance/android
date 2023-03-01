@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <!--
     This exists in order to guard us from having some SDK we're including bring in the AD_ID
@@ -26,6 +27,7 @@
     <application
         android:name=".HedvigApplication"
         android:allowBackup="true"
+        android:enableOnBackInvokedCallback="true"
         android:fullBackupOnly="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/APP_NAME"

@@ -2,7 +2,6 @@ package com.hedvig.app.feature.insurance.ui.detail
 
 import android.net.Uri
 import com.hedvig.android.apollo.graphql.InsuranceQuery
-import com.hedvig.app.R
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.insurance.ui.ContractCardViewState
@@ -13,10 +12,12 @@ import com.hedvig.app.feature.table.intoTable
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.apollo.toUpcomingAgreementResult
 
-fun InsuranceQuery.Contract.toContractDetailViewState(): ContractDetailViewState {
+fun InsuranceQuery.Contract.toContractDetailViewState(
+  isTerminationFlowEnabled: Boolean,
+): ContractDetailViewState {
   return ContractDetailViewState(
     contractCardViewState = toContractCardViewState(),
-    memberDetailsViewState = toMemberDetailsViewState(),
+    memberDetailsViewState = toMemberDetailsViewState(isTerminationFlowEnabled),
     coverageViewState = toCoverageViewState(),
     documentsViewState = toDocumentsViewState(),
   )
@@ -32,7 +33,7 @@ fun InsuranceQuery.Contract.toContractCardViewState() = ContractCardViewState(
   logoUrls = logo?.variants?.fragments?.iconVariantsFragment?.let { ThemedIconUrls.from(it) },
 )
 
-fun InsuranceQuery.Contract.toMemberDetailsViewState() =
+fun InsuranceQuery.Contract.toMemberDetailsViewState(isTerminationFlowEnabled: Boolean = true) =
   ContractDetailViewState.MemberDetailsViewState(
     pendingAddressChange = fragments
       .upcomingAgreementFragment
@@ -45,6 +46,7 @@ fun InsuranceQuery.Contract.toMemberDetailsViewState() =
       null
     },
     change = YourInfoModel.Change,
+    cancelInsurance = if (isTerminationFlowEnabled) YourInfoModel.CancelInsuranceButton(id) else null,
   )
 
 fun InsuranceQuery.Contract.toCoverageViewState() = ContractDetailViewState.CoverageViewState(
