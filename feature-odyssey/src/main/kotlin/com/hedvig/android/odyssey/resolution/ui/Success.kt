@@ -40,11 +40,7 @@ fun Success(
     }
 
     LargeContainedTextButton(
-      onClick = {
-        coroutineScope.launch {
-          onExit()
-        }
-      },
+      onClick = onExit,
       text = "Continue",
       modifier = Modifier.align(Alignment.BottomCenter),
     )

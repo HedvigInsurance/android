@@ -12,15 +12,13 @@ import com.hedvig.android.odyssey.model.Resolution
 import com.hedvig.android.odyssey.resolution.ResolutionViewModel
 import com.hedvig.android.odyssey.resolution.ResolutionViewState
 import com.hedvig.app.ui.compose.composables.ErrorDialog
-import org.koin.androidx.compose.getViewModel
-import org.koin.core.parameter.parametersOf
 
 @Composable
 fun ResolutionRoot(
+  viewModel: ResolutionViewModel,
   resolution: Resolution,
   onFinish: () -> Unit,
 ) {
-  val viewModel: ResolutionViewModel = getViewModel { parametersOf(resolution) }
   val viewState by viewModel.viewState.collectAsState()
 
   BackHandler {

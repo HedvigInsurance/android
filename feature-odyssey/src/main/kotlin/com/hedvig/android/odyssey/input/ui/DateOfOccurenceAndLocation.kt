@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import coil.ImageLoader
 import com.hedvig.android.core.designsystem.component.button.FormRowButton
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.odyssey.model.ClaimState
@@ -23,6 +24,7 @@ import java.time.LocalDate
 @Composable
 fun DateOfOccurrenceAndLocation(
   state: ClaimState,
+  imageLoader: ImageLoader,
   onDateOfOccurrence: (LocalDate) -> Unit,
   locationOptions: List<AutomationClaimDTO2.ClaimLocation>,
   onLocation: (AutomationClaimDTO2.ClaimLocation) -> Unit,
@@ -48,6 +50,8 @@ fun DateOfOccurrenceAndLocation(
       onSelected = onLocation,
       getDisplayText = { it.getText() },
       getImageUrl = { null },
+      getId = { it.name },
+      imageLoader = imageLoader,
     ) { openLocationPickerDialog.value = false }
   }
 
@@ -57,9 +61,10 @@ fun DateOfOccurrenceAndLocation(
       .padding(all = 16.dp),
   ) {
 
-    Spacer(modifier = Modifier.padding(top = 20.dp))
-
     Column {
+
+      Spacer(modifier = Modifier.padding(top = 20.dp))
+
       FormRowButton(
         mainText = "Date of incident",
         secondaryText = state.dateOfOccurrence?.toString() ?: "-",

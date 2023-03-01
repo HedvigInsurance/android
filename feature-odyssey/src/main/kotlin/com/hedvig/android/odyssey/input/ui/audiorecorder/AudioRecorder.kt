@@ -16,7 +16,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -35,19 +34,15 @@ import com.hedvig.odyssey.utils.contentType
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
-import kotlinx.coroutines.launch
-import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun AudioRecorderScreen(
   questions: List<AutomationClaimInputDTO2.AudioRecording.AudioRecordingQuestion>,
-  onAudioFile: suspend (File) -> Unit,
+  onAudioFile: (File) -> Unit,
   onNext: () -> Unit,
+  audioRecorderViewModel: AudioRecorderViewModel,
 ) {
-  val audioRecorderViewModel = getViewModel<AudioRecorderViewModel>()
   val audioRecorderViewState by audioRecorderViewModel.viewState.collectAsState()
-
-  val coroutineScope = rememberCoroutineScope()
 
   Box(
     Modifier
@@ -84,10 +79,9 @@ fun AudioRecorderScreen(
             content = FileContent(path = filePath),
             contentType = filePath.contentType(),
           )
-          coroutineScope.launch {
-            onAudioFile(audioFile)
-            onNext()
-          }
+          onAudioFile(audioFile)
+          onNext()
+
         },
         redo = audioRecorderViewModel::redo,
         play = audioRecorderViewModel::play,

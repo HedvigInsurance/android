@@ -1,6 +1,5 @@
 package com.hedvig.android.odyssey.input.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,16 +15,12 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import org.koin.androidx.compose.get
-import com.hedvig.android.odyssey.R
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -36,9 +31,10 @@ fun <T> SingleSelectDialog(
   onSelected: (T) -> Unit,
   getDisplayText: (T) -> String,
   getImageUrl: (T) -> String?,
+  getId: (T) -> String,
+  imageLoader: ImageLoader,
   onDismissRequest: () -> Unit,
 ) {
-  val imageLoader: ImageLoader = get()
 
   Dialog(onDismissRequest = { onDismissRequest.invoke() }) {
     Surface(
@@ -55,7 +51,7 @@ fun <T> SingleSelectDialog(
         LazyColumn {
           items(
             items = optionsList,
-            key = { option: T -> option.toString() },
+            key = { option: T -> getId(option) },
             contentType = { "Option" },
           ) { option: T ->
             ListItem(

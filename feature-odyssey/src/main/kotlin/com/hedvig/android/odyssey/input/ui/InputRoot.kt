@@ -4,18 +4,16 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.with
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import coil.ImageLoader
 import com.hedvig.android.core.ui.FullScreenProgressOverlay
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.android.odyssey.input.InputViewState
 import com.hedvig.android.odyssey.input.InputViewModel
 import com.hedvig.android.odyssey.input.ui.audiorecorder.AudioRecorderScreen
-import com.hedvig.android.odyssey.model.ClaimState
+import com.hedvig.android.odyssey.input.ui.audiorecorder.AudioRecorderViewModel
 import com.hedvig.android.odyssey.model.Input
 import com.hedvig.app.ui.compose.composables.ErrorDialog
 
@@ -24,7 +22,9 @@ import com.hedvig.app.ui.compose.composables.ErrorDialog
 fun InputRoot(
   inputViewModel: InputViewModel,
   viewState: InputViewState,
+  imageLoader: ImageLoader,
   onFinish: () -> Unit,
+  audioRecorderViewModel: AudioRecorderViewModel,
 ) {
   BackHandler {
     inputViewModel.onBack()
@@ -50,6 +50,8 @@ fun InputRoot(
             input = input,
             viewState = viewState,
             viewModel = inputViewModel,
+            audioRecorderViewModel = audioRecorderViewModel,
+            imageLoader = imageLoader,
           )
         }
       }
@@ -62,8 +64,10 @@ fun InputRoot(
       )
     }
 
-    if (viewState.shouldExit) {
-      onFinish()
+    LaunchedEffect(viewState.shouldExit) {
+      if (viewState.shouldExit) {
+        onFinish()
+      }
     }
   }
 }
@@ -73,15 +77,19 @@ private fun Input(
   input: Input?,
   viewState: InputViewState,
   viewModel: InputViewModel,
+  imageLoader: ImageLoader,
+  audioRecorderViewModel: AudioRecorderViewModel,
 ) {
   when (input) {
     is Input.AudioRecording -> AudioRecorderScreen(
+      audioRecorderViewModel = audioRecorderViewModel,
       questions = input.questions,
       onAudioFile = viewModel::onAudioFile,
       onNext = viewModel::onNext,
     )
     is Input.DateOfOccurrencePlusLocation -> DateOfOccurrenceAndLocation(
       state = viewState.claimState,
+      imageLoader = imageLoader,
       onDateOfOccurrence = viewModel::onDateOfOccurrence,
       onLocation = viewModel::onLocation,
       locationOptions = input.locationOptions,
@@ -98,6 +106,7 @@ private fun Input(
     is Input.SingleItem -> SingleItem(
       state = viewState.claimState,
       input = input,
+      imageLoader = imageLoader,
       onDateOfPurchase = viewModel::onDateOfPurchase,
       onTypeOfDamage = viewModel::onTypeOfDamage,
       onModelOption = viewModel::onModelOption,

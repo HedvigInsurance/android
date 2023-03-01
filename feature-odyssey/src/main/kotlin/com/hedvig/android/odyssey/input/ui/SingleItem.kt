@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import coil.ImageLoader
 import com.hedvig.android.core.designsystem.component.button.FormRowButton
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.odyssey.model.ClaimState
@@ -26,6 +27,7 @@ import java.time.LocalDate
 fun SingleItem(
   state: ClaimState,
   input: Input.SingleItem,
+  imageLoader: ImageLoader,
   onDateOfPurchase: (LocalDate) -> Unit,
   onTypeOfDamage: (AutomationClaimInputDTO2.SingleItem.ClaimProblem) -> Unit,
   onModelOption: (AutomationClaimInputDTO2.SingleItem.ItemOptions.ItemModelOption) -> Unit,
@@ -54,6 +56,8 @@ fun SingleItem(
       onSelected = onTypeOfDamage,
       getDisplayText = { damageType: AutomationClaimInputDTO2.SingleItem.ClaimProblem -> damageType.getText() },
       getImageUrl = { null },
+      getId = { it.name },
+      imageLoader = imageLoader,
     ) { openDamagePickerDialog.value = false }
   }
 
@@ -64,6 +68,8 @@ fun SingleItem(
       onSelected = onModelOption,
       getDisplayText = { modelOption: AutomationClaimInputDTO2.SingleItem.ItemOptions.ItemModelOption -> modelOption.modelName },
       getImageUrl = { itemModelOption -> itemModelOption.modelImageUrl },
+      getId = { itemModelOption -> itemModelOption.modelId },
+      imageLoader = imageLoader,
     ) { openModelPickerDialog.value = false }
   }
 

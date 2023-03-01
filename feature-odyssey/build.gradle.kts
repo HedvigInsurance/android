@@ -26,7 +26,6 @@ dependencies {
   implementation(libs.androidx.compose.foundation)
   implementation(libs.hedvig.odyssey)
   implementation(libs.koin.android)
-  implementation(libs.koin.androidx.compose)
   implementation(libs.serialization.json)
   implementation(libs.accompanist.navigationAnimation)
   implementation(libs.datadog.sdk)

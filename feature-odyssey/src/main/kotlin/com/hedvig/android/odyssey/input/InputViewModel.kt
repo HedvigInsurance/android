@@ -7,7 +7,7 @@ import com.hedvig.android.odyssey.repository.ClaimResult
 import com.hedvig.android.odyssey.repository.ClaimsFlowRepository
 import com.hedvig.android.odyssey.repository.AutomationClaimDTO2
 import com.hedvig.android.odyssey.repository.AutomationClaimInputDTO2
-import com.hedvig.android.odyssey.repository.GetPhoneNumberUseCase
+import com.hedvig.android.odyssey.repository.PhoneNumberRepository
 import com.hedvig.android.odyssey.repository.PhoneNumberResult
 import com.hedvig.odyssey.remote.file.File
 import com.hedvig.odyssey.remote.money.MonetaryAmount
@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 class InputViewModel(
   private val commonClaimId: String?,
   private val repository: ClaimsFlowRepository,
-  private val getPhoneNumberUseCase: GetPhoneNumberUseCase,
+  private val getPhoneNumberUseCase: PhoneNumberRepository,
 ) : ViewModel() {
 
   private val _viewState = MutableStateFlow(InputViewState())
