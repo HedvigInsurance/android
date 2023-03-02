@@ -103,6 +103,7 @@ accompanist-pager = { module = "com.google.accompanist:accompanist-pager", versi
 accompanist-pagerIndicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanist" }
 accompanist-placeholder = { module = "com.google.accompanist:accompanist-placeholder-material", version.ref = "accompanist" }
 accompanist-systemUiController = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
 adyen = { module = "com.adyen.checkout:drop-in", version.ref = "adyen" }
 androidx-arch-testing = { module = "androidx.arch.core:core-testing", version.ref = "androidx-arch-testing" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation" }

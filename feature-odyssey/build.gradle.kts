@@ -18,6 +18,7 @@ dependencies {
   implementation(projects.hedvigLanguage)
 
   implementation(libs.accompanist.navigationAnimation)
+  implementation(libs.accompanist.permissions)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material)
   implementation(libs.androidx.navigation.compose)

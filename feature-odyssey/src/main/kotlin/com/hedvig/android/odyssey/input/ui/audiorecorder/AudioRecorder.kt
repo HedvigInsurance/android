@@ -16,11 +16,17 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionStatus
+import com.google.accompanist.permissions.rememberPermissionState
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.core.designsystem.component.button.LargeTextButton
 import com.hedvig.android.odyssey.R
@@ -35,6 +41,7 @@ import java.time.Clock
 import java.time.Duration
 import java.time.Instant
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun AudioRecorderScreen(
   questions: List<AutomationClaimInputDTO2.AudioRecording.AudioRecordingQuestion>,
@@ -43,6 +50,9 @@ fun AudioRecorderScreen(
   audioRecorderViewModel: AudioRecorderViewModel,
 ) {
   val audioRecorderViewState by audioRecorderViewModel.viewState.collectAsState()
+
+  var openPermissionDialog by remember { mutableStateOf(false) }
+  val recordAudioPermissionState = rememberPermissionState(android.Manifest.permission.RECORD_AUDIO)
 
   Box(
     Modifier
@@ -68,7 +78,12 @@ fun AudioRecorderScreen(
     Box(Modifier.align(Alignment.BottomCenter)) {
       AudioRecorder(
         viewState = audioRecorderViewState,
-        startRecording = audioRecorderViewModel::startRecording,
+        startRecording = {
+          when (recordAudioPermissionState.status) {
+            PermissionStatus.Granted -> audioRecorderViewModel.startRecording()
+            is PermissionStatus.Denied -> openPermissionDialog = true
+          }
+        },
         clock = audioRecorderViewModel.clock,
         stopRecording = audioRecorderViewModel::stopRecording,
         submit = {
@@ -90,6 +105,15 @@ fun AudioRecorderScreen(
         submitClaimText = "Continue",
       )
     }
+  }
+
+  if (openPermissionDialog) {
+    PermissionDialog(
+      recordAudioPermissionState = recordAudioPermissionState,
+      permissionTitle = "Permission required",
+      permissionMessage = "We need permission to record audio",
+      dismiss = { openPermissionDialog = false },
+    )
   }
 }
 
