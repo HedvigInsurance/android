@@ -13,17 +13,17 @@ import com.google.accompanist.permissions.PermissionState
 @Composable
 fun PermissionDialog(
   recordAudioPermissionState: PermissionState,
-  openDialog: MutableState<Boolean>,
   permissionTitle: String,
   permissionMessage: String,
+  dismiss: () -> Unit,
 ) {
   AlertDialog(
-    onDismissRequest = { openDialog.value = false },
+    onDismissRequest = dismiss,
     title = { Text(permissionTitle) },
     text = { Text(permissionMessage) },
     dismissButton = {
       TextButton(
-        onClick = { openDialog.value = false },
+        onClick = dismiss,
       ) {
         Text(stringResource(android.R.string.cancel))
       }
@@ -31,7 +31,7 @@ fun PermissionDialog(
     confirmButton = {
       TextButton(
         onClick = {
-          openDialog.value = false
+          dismiss()
           recordAudioPermissionState.launchPermissionRequest()
         },
       ) {

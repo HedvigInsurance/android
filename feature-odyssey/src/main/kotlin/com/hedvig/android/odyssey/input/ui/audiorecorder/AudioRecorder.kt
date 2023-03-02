@@ -18,6 +18,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -50,7 +51,7 @@ fun AudioRecorderScreen(
 ) {
   val audioRecorderViewState by audioRecorderViewModel.viewState.collectAsState()
 
-  val openPermissionDialog = remember { mutableStateOf(false) }
+  var openPermissionDialog by remember { mutableStateOf(false) }
   val recordAudioPermissionState = rememberPermissionState(android.Manifest.permission.RECORD_AUDIO)
 
   Box(
@@ -80,7 +81,7 @@ fun AudioRecorderScreen(
         startRecording = {
           when (recordAudioPermissionState.status) {
             PermissionStatus.Granted -> audioRecorderViewModel.startRecording()
-            is PermissionStatus.Denied -> openPermissionDialog.value = true
+            is PermissionStatus.Denied -> openPermissionDialog = true
           }
         },
         clock = audioRecorderViewModel.clock,
@@ -106,12 +107,12 @@ fun AudioRecorderScreen(
     }
   }
 
-  if (openPermissionDialog.value) {
+  if (openPermissionDialog) {
     PermissionDialog(
-      recordAudioPermissionState,
-      openPermissionDialog,
-      "Permission required",
-      "We need permission to record audio",
+      recordAudioPermissionState = recordAudioPermissionState,
+      permissionTitle = "Permission required",
+      permissionMessage = "We need permission to record audio",
+      dismiss = { openPermissionDialog = false },
     )
   }
 }
