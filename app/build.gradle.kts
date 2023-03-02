@@ -156,7 +156,7 @@ dependencies {
   implementation(libs.coroutines.android)
   testImplementation(libs.coroutines.test)
 
-  implementation(libs.serialization.json)
+  implementation(libs.kotlinx.serialization.json)
 
   testImplementation(libs.androidx.arch.testing)
 
@@ -277,7 +277,7 @@ dependencies {
   implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.compose.uiToolingPreview)
   implementation(libs.androidx.compose.uiViewBinding)
-  implementation(libs.androidx.lifecycle.compose)
+  implementation(libs.androidx.lifecycle.viewmodelCompose)
   implementation(libs.androidx.other.activityCompose)
   implementation(libs.datadog.sdk)
   implementation(libs.hedvig.authlib)

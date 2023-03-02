@@ -15,8 +15,8 @@ dependencies {
   implementation(libs.androidx.lifecycle.common)
   implementation(libs.coroutines.core)
   implementation(libs.koin.core)
+  implementation(libs.kotlinx.serialization.json)
   implementation(libs.okhttp.core)
-  implementation(libs.serialization.json)
   implementation(libs.slimber)
 }
 
