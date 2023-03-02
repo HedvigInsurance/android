@@ -13,9 +13,11 @@ import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
+import hedvig.resources.R
 
 @Composable
 fun PhoneNumber(
@@ -36,7 +38,7 @@ fun PhoneNumber(
         shape = RoundedCornerShape(20),
       ) {
         Text(
-          text = "If I need to reach you over the phone later which number can I reach you at?",
+          text = stringResource(R.string.message_claims_ask_phone),
           modifier = Modifier.padding(12.dp),
           fontSize = 16.sp,
         )
@@ -58,7 +60,7 @@ fun PhoneNumber(
       )
 
       Text(
-        "Phone number",
+        stringResource(R.string.ODYSSEY_PHONE_NUMBER_LABEL),
         modifier = Modifier.padding(
           start = 16.dp,
           top = 4.dp,
@@ -73,7 +75,7 @@ fun PhoneNumber(
           updatePhoneNumber()
           onNext()
         },
-        text = "Next",
+        text = stringResource(R.string.general_continue_button),
       )
     }
   }

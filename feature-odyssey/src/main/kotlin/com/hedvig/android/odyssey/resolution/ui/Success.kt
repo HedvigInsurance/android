@@ -6,13 +6,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
+import hedvig.resources.R
 
 @Composable
 fun Success(
@@ -28,14 +33,22 @@ fun Success(
       .padding(all = 16.dp),
   ) {
     Column {
-      Text("Claim submitted", fontSize = 40.sp)
-      Spacer(modifier = Modifier.padding(top = 8.dp))
-      Text("Your claim has been submitted successfully! Please contact us in the chat if you have any questions.")
+      Surface(
+        elevation = 2.dp,
+        modifier = Modifier.padding(vertical = 4.dp),
+        shape = RoundedCornerShape(20),
+      ) {
+        Text(
+          text = stringResource(R.string.message_claims_record_ok),
+          modifier = Modifier.padding(12.dp),
+          fontSize = 16.sp,
+        )
+      }
     }
 
     LargeContainedTextButton(
       onClick = onExit,
-      text = "Continue",
+      text = stringResource(R.string.general_close_button),
       modifier = Modifier.align(Alignment.BottomCenter),
     )
   }

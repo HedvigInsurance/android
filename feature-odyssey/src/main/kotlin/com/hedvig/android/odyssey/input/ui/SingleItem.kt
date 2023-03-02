@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.component.button.FormRowButton
@@ -21,6 +22,7 @@ import com.hedvig.android.odyssey.model.ClaimState
 import com.hedvig.android.odyssey.model.Input
 import com.hedvig.android.odyssey.repository.AutomationClaimInputDTO2
 import com.hedvig.odyssey.remote.money.MonetaryAmount
+import hedvig.resources.R
 import java.time.LocalDate
 
 @Composable
@@ -50,7 +52,7 @@ fun SingleItem(
 
   if (openDamagePickerDialog.value) {
     SingleSelectDialog(
-      title = "Select type of damage",
+      title = stringResource(R.string.claims_item_screen_type_of_damage_button),
       optionsList = input.problemIds,
       onSelected = onTypeOfDamage,
       getDisplayText = { damageType: AutomationClaimInputDTO2.SingleItem.ClaimProblem -> damageType.getText() },
@@ -62,7 +64,7 @@ fun SingleItem(
 
   if (openModelPickerDialog.value) {
     SingleSelectDialog(
-      title = "Select phone model",
+      title = stringResource(R.string.claims_item_screen_model_button),
       optionsList = input.modelOptions.sortedBy { it.modelName },
       onSelected = onModelOption,
       getDisplayText = { modelOption: AutomationClaimInputDTO2.SingleItem.ItemOptions.ItemModelOption ->
@@ -80,7 +82,7 @@ fun SingleItem(
 
   if (openDialog.value) {
     PriceInputDialog(
-      title = "Enter purchase price",
+      title = stringResource(R.string.claims_item_screen_purchase_price_button),
       message = message,
       openDialog = openDialog,
       editMessage = editMessage,
@@ -106,7 +108,7 @@ fun SingleItem(
       }
 
       FormRowButton(
-        mainText = "Phone model",
+        mainText = stringResource(R.string.claims_item_screen_model_button),
         secondaryText = selectedModel?.modelName ?: "-",
       ) {
         openModelPickerDialog.value = true
@@ -115,7 +117,7 @@ fun SingleItem(
       Spacer(modifier = Modifier.padding(top = 12.dp))
 
       FormRowButton(
-        mainText = "Date of purchase",
+        mainText = stringResource(R.string.claims_item_screen_date_of_purchase_button),
         secondaryText = state.item.purchaseDate?.toString() ?: "-",
       ) {
         pickerDialog.show()
@@ -124,8 +126,8 @@ fun SingleItem(
       Spacer(modifier = Modifier.padding(top = 12.dp))
 
       FormRowButton(
-        mainText = "Purchase price",
-        secondaryText = state.item.purchasePrice?.amount ?: "Not specified",
+        mainText = stringResource(R.string.claims_item_screen_purchase_price_button),
+        secondaryText = state.item.purchasePrice?.amount ?: "-",
       ) {
         openDialog.value = true
       }
@@ -133,7 +135,7 @@ fun SingleItem(
       Spacer(modifier = Modifier.padding(top = 12.dp))
 
       FormRowButton(
-        mainText = "Damage",
+        mainText = stringResource(R.string.claims_item_screen_type_of_damage_button),
         secondaryText = state.item.problemIds.joinToString { it.getText() },
       ) {
         openDamagePickerDialog.value = true
@@ -142,7 +144,7 @@ fun SingleItem(
 
     LargeContainedTextButton(
       onClick = onNext,
-      text = "Next",
+      text = stringResource(R.string.general_continue_button),
       modifier = Modifier.align(Alignment.BottomCenter),
     )
   }
