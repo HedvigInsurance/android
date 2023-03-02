@@ -16,7 +16,6 @@ dependencies {
   implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
-  implementation(projects.navigation.navigationComposeTypedExt)
 
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.material3.windowSizeClass)
@@ -35,12 +34,4 @@ dependencies {
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.slimber)
   implementation(libs.timber)
-}
-
-// Excludes material2 dependency from leaking through transitive dependencies
-// This enables us to avoid the confusion of both m2 and m3 functions popping up
-// Can be used in modules which are brand new and don't need to support legacy features-views
-// Can consider moving this in a convention plugin, standalone of even a `feature` plugin
-configurations.implementation {
-  exclude(libs.androidx.compose.material.get().group)
 }
