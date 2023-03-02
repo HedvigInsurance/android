@@ -89,7 +89,7 @@ class InputViewModel(
     }
   }
 
-  fun onPurchasePrice(price: MonetaryAmount) = with(_viewState) {
+  fun onPurchasePrice(price: MonetaryAmount?) = with(_viewState) {
     update {
       val newItem = it.claimState.item.copy(purchasePrice = price)
       it.copy(claimState = it.claimState.copy(item = newItem))
