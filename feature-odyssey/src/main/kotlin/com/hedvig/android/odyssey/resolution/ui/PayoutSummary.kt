@@ -17,10 +17,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
+import com.hedvig.android.core.designsystem.component.button.LargeOutlinedButton
+import com.hedvig.android.core.designsystem.component.button.LargeTextButton
 import com.hedvig.android.odyssey.model.Resolution
 import com.hedvig.odyssey.remote.money.MonetaryAmount
+import hedvig.resources.R
 
 @Composable
 fun PayoutSummary(
@@ -35,12 +39,15 @@ fun PayoutSummary(
     Column {
       Spacer(modifier = Modifier.padding(top = 28.dp))
 
-      Text("Your compensation", style = MaterialTheme.typography.h5)
+      Text(
+        text = stringResource(R.string.claims_payout_summary_title),
+        style = MaterialTheme.typography.h5,
+      )
 
       Spacer(modifier = Modifier.padding(top = 33.dp))
 
       Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-        Text(text = "Purchase price")
+        Text(text = stringResource(R.string.claims_payout_purchase_price))
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
           Text(text = resolution.purchasePrice.amount ?: "")
         }
@@ -49,7 +56,7 @@ fun PayoutSummary(
       Divider(modifier = Modifier.padding(vertical = 16.dp))
 
       Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-        Text(text = "Deductible")
+        Text(text = stringResource(R.string.claims_payout_age_deductable))
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
           Text(text = "-${resolution.deductible.amount ?: ""}")
         }
@@ -58,33 +65,24 @@ fun PayoutSummary(
       Divider(modifier = Modifier.padding(vertical = 16.dp))
 
       Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-        Text(text = "You will receive")
+        Text(text = stringResource(R.string.claims_payout_total))
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
           Text(text = resolution.payoutAmount.amount ?: "")
         }
       }
 
-      Spacer(modifier = Modifier.padding(top = 29.dp))
-
-      Text(
-        text = "If the repair cost exceeds the estimation, " +
-          "you can upload the invoice afterwards and we'll compensate you the difference.",
-        style = MaterialTheme.typography.caption,
-      )
-
       Spacer(modifier = Modifier.padding(top = 48.dp))
 
-      Text("Payout method", style = MaterialTheme.typography.h5)
+      Text(stringResource(R.string.claims_payout_summary_method), style = MaterialTheme.typography.h5)
 
-      Text("Connected bank account")
+      Text(stringResource(R.string.claims_payout_method_autogiro))
     }
 
     LargeContainedTextButton(
       onClick = {
         onPayout(resolution.payoutAmount)
       },
-      text = "Payout ${resolution.payoutAmount.amount ?: ""}",
-      modifier = Modifier.align(Alignment.BottomCenter),
+      text = stringResource(R.string.claims_payout_button_label, resolution.payoutAmount.amount ?: "-"),
     )
   }
 }

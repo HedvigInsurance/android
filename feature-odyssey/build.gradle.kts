@@ -15,6 +15,7 @@ dependencies {
   implementation(projects.coreDesignSystem)
   implementation(projects.coreNavigation)
   implementation(projects.coreUi)
+  implementation(projects.coreResources)
   implementation(projects.hedvigLanguage)
 
   implementation(libs.accompanist.navigationAnimation)

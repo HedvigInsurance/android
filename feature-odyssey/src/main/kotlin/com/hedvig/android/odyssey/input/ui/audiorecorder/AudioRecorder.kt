@@ -22,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -87,6 +88,7 @@ fun AudioRecorderScreen(
         clock = audioRecorderViewModel.clock,
         stopRecording = audioRecorderViewModel::stopRecording,
         submit = {
+          // TODO
           val filePath = (audioRecorderViewState as? AudioRecorderViewModel.ViewState.Playback)!!.filePath
           val audioFile = File(
             name = "AudioRecording",
@@ -99,10 +101,10 @@ fun AudioRecorderScreen(
         redo = audioRecorderViewModel::redo,
         play = audioRecorderViewModel::play,
         pause = audioRecorderViewModel::pause,
-        startRecordingText = "Start recording",
-        stopRecordingText = "Stop Recording",
-        recordAgainText = "Record Again",
-        submitClaimText = "Continue",
+        startRecordingText = stringResource(hedvig.resources.R.string.EMBARK_START_RECORDING),
+        stopRecordingText = stringResource(hedvig.resources.R.string.EMBARK_STOP_RECORDING),
+        recordAgainText = stringResource(hedvig.resources.R.string.EMBARK_RECORD_AGAIN),
+        submitClaimText = stringResource(hedvig.resources.R.string.general_continue_button),
       )
     }
   }
@@ -110,8 +112,8 @@ fun AudioRecorderScreen(
   if (openPermissionDialog) {
     PermissionDialog(
       recordAudioPermissionState = recordAudioPermissionState,
-      permissionTitle = "Permission required",
-      permissionMessage = "We need permission to record audio",
+      permissionTitle = stringResource(hedvig.resources.R.string.PERMISSION_DIALOG_TITLE),
+      permissionMessage = stringResource(hedvig.resources.R.string.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE),
       dismiss = { openPermissionDialog = false },
     )
   }

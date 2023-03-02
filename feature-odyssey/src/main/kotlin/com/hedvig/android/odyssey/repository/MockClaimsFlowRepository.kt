@@ -12,11 +12,14 @@ class MockClaimsFlowRepository : ClaimsFlowRepository {
   private val mockSuccessResult = ClaimResult.Success(
     ClaimState(),
     listOf(
-      Input.Location(
-        listOf(AutomationClaimDTO2.ClaimLocation.AT_HOME, AutomationClaimDTO2.ClaimLocation.ABROAD),
-        selectedLocation = AutomationClaimDTO2.ClaimLocation.ABROAD,
+      Input.DateOfOccurrencePlusLocation(
+        selectedDateOfOccurrence = LocalDate.now().toString(),
+        locationOptions = listOf(
+          AutomationClaimDTO2.ClaimLocation.AT_HOME,
+          AutomationClaimDTO2.ClaimLocation.ABROAD,
+        ),
+        selectedLocation = null,
       ),
-      Input.DateOfOccurrence(LocalDate.now().toString()),
       Input.SingleItem(
         purchasePrice = MonetaryAmount("1000", "SEK"),
         purchaseDate = "date",
@@ -70,5 +73,8 @@ class MockClaimsFlowRepository : ClaimsFlowRepository {
     return mockSuccessResult
   }
 
-  override suspend fun openClaim(amount: MonetaryAmount?) = mockSuccessResult
+  override suspend fun openClaim(amount: MonetaryAmount?): ClaimResult.Success {
+    delay(2000)
+    return mockSuccessResult
+  }
 }

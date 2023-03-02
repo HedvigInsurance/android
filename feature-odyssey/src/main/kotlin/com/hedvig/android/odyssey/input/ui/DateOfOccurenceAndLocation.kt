@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.component.button.FormRowButton
@@ -45,7 +46,7 @@ fun DateOfOccurrenceAndLocation(
 
   if (openLocationPickerDialog.value) {
     SingleSelectDialog(
-      title = "Select location",
+      title = stringResource(hedvig.resources.R.string.claims_location_screen_title),
       optionsList = locationOptions,
       onSelected = onLocation,
       getDisplayText = { it.getText() },
@@ -64,7 +65,7 @@ fun DateOfOccurrenceAndLocation(
       Spacer(modifier = Modifier.padding(top = 20.dp))
 
       FormRowButton(
-        mainText = "Date of incident",
+        mainText = stringResource(hedvig.resources.R.string.claims_incident_screen_date_of_incident),
         secondaryText = state.dateOfOccurrence?.toString() ?: "-",
       ) {
         pickerDialog.show()
@@ -73,7 +74,7 @@ fun DateOfOccurrenceAndLocation(
       Spacer(modifier = Modifier.padding(top = 12.dp))
 
       FormRowButton(
-        mainText = "Location",
+        mainText = stringResource(hedvig.resources.R.string.claims_incident_screen_location),
         secondaryText = state.location.getText(),
       ) {
         openLocationPickerDialog.value = true
@@ -82,7 +83,7 @@ fun DateOfOccurrenceAndLocation(
 
     LargeContainedTextButton(
       onClick = onNext,
-      text = "Next",
+      text = stringResource(hedvig.resources.R.string.general_continue_button),
       modifier = Modifier.align(Alignment.BottomCenter),
     )
   }
