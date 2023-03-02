@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.cancelinsurance.ui
+package com.hedvig.android.feature.cancelinsurance.ui.terminationdate
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
@@ -18,16 +18,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DatePickerState
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -35,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation
@@ -42,19 +43,53 @@ import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicke
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbar
+import com.hedvig.android.feature.cancelinsurance.CancelInsuranceViewModel
+import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CancelInsuranceScreen(
+internal fun TerminationDateDestination(
+  viewModel: CancelInsuranceViewModel,
+  windowSizeClass: WindowSizeClass,
+  navigateToSuccessScreen: () -> Unit,
+  navigateBack: () -> Unit,
+) {
+  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+  LaunchedEffect(Unit) {
+    delay(3_000)
+    navigateToSuccessScreen()
+  }
+  TerminationDateScreen(
+    windowSizeClass = windowSizeClass,
+    datePickerState = uiState.datePickerState,
+    dateSubmissionSuccess = uiState.dateSubmissionSuccess,
+    dateValidator = viewModel.dateValidator,
+    canSubmit = uiState.canContinue,
+    submit = viewModel::submitSelectedDate,
+    hasError = uiState.dateSubmissionError,
+    showedError = viewModel::showedError,
+    navigateToSuccessScreen = navigateToSuccessScreen,
+    navigateBack = navigateBack,
+  )
+}
+
+@Composable
+private fun TerminationDateScreen(
   windowSizeClass: WindowSizeClass,
   datePickerState: DatePickerState,
+  dateSubmissionSuccess: Boolean,
   dateValidator: (Long) -> Boolean,
   canSubmit: Boolean,
   submit: () -> Unit,
   hasError: Boolean,
   showedError: () -> Unit,
+  navigateToSuccessScreen: () -> Unit,
   navigateBack: () -> Unit,
 ) {
+  LaunchedEffect(dateSubmissionSuccess) {
+    if (!dateSubmissionSuccess) return@LaunchedEffect
+    navigateToSuccessScreen()
+  }
   Box(Modifier.fillMaxSize()) {
     Column {
       val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -126,7 +161,6 @@ private fun ChatCard(modifier: Modifier = Modifier) {
   }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DatePickerCard(
   datePickerState: DatePickerState,
@@ -143,7 +177,6 @@ private fun DatePickerCard(
   }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class)
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
@@ -152,13 +185,15 @@ fun CancelInsuranceScreenPreview() {
     Surface(
       color = MaterialTheme.colorScheme.background,
     ) {
-      CancelInsuranceScreen(
+      TerminationDateScreen(
         WindowSizeClass.calculateFromSize(DpSize(500.dp, 300.dp)),
         rememberDatePickerState(),
+        false,
         { true },
         true,
         {},
         false,
+        {},
         {},
         {},
       )

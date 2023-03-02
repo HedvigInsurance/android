@@ -9,13 +9,16 @@ import androidx.navigation.NavArgumentBuilder
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.NavType
+import androidx.navigation.PopUpToBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.kiwi.navigationcompose.typed.Destination
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.decodeArguments
 import com.kiwi.navigationcompose.typed.internal.isNavTypeOptional
+import com.kiwi.navigationcompose.typed.internal.toRoute
 import com.kiwi.navigationcompose.typed.registerDestinationType
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
@@ -78,4 +81,13 @@ private fun createNavArguments(
       extraConfiguration()
     }
   }
+}
+
+@ExperimentalSerializationApi
+@MainThread
+fun NavOptionsBuilder.popUpTo(
+  route: Destination,
+  popUpToBuilder: PopUpToBuilder.() -> Unit = {},
+) {
+  popUpTo(route.toRoute(), popUpToBuilder)
 }
