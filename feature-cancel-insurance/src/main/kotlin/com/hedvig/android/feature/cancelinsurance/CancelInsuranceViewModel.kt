@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.cancelinsurance
 
 import androidx.compose.material3.DatePickerState
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
@@ -19,7 +18,6 @@ import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 
-@OptIn(ExperimentalMaterial3Api::class)
 internal class CancelInsuranceViewModel(
   private val insuranceId: InsuranceId,
   private val cancelInsuranceUseCase: CancelInsuranceUseCase,
@@ -72,7 +70,6 @@ internal class CancelInsuranceViewModel(
   }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 class DatePickerConfiguration(clock: Clock) {
   private val todayAtStartOfDay: LocalDateTime = clock.now()
     .toLocalDateTime(TimeZone.UTC)
@@ -88,7 +85,6 @@ class DatePickerConfiguration(clock: Clock) {
   }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 data class CancelInsuranceUiState(
   val datePickerState: DatePickerState,
   val dateSubmissionError: Boolean,
@@ -105,7 +101,6 @@ data class CancelInsuranceUiState(
     ) { canSubmitSelectedDate() }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 private fun CancelInsuranceUiState.canSubmitSelectedDate(): Boolean {
   return datePickerState.selectedDateMillis != null &&
     !dateSubmissionError &&
