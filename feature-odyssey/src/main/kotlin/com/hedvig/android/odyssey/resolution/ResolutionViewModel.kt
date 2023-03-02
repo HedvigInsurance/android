@@ -6,6 +6,7 @@ import com.hedvig.android.odyssey.model.Resolution
 import com.hedvig.android.odyssey.repository.ClaimResult
 import com.hedvig.android.odyssey.repository.ClaimsFlowRepository
 import com.hedvig.odyssey.remote.money.MonetaryAmount
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -36,10 +37,10 @@ class ResolutionViewModel(
 
   fun payout(amount: MonetaryAmount) {
     viewModelScope.launch {
-      _viewState.update { it.copy(isLoading = true) }
+      _viewState.update { it.copy(isLoadingPayout = true) }
       when (val result = repository.openClaim(amount)) {
-        is ClaimResult.Error -> _viewState.update { it.copy(errorMessage = result.message, isLoading = false) }
-        is ClaimResult.Success -> _viewState.update { it.copy(isLoading = false, isCompleted = true) }
+        is ClaimResult.Error -> _viewState.update { it.copy(errorMessage = result.message, isLoadingPayout = false) }
+        is ClaimResult.Success -> _viewState.update { it.copy(isLoadingPayout = false, isCompleted = true) }
       }
     }
   }

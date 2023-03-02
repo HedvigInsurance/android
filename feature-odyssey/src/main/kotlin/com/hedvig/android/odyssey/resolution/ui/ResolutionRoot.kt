@@ -75,7 +75,7 @@ private fun Resolution(
     )
     is Resolution.SingleItemPayout -> SingleItemPayout(
       resolution = resolution,
-      isLoadingPayout = viewState.isLoading,
+      isLoadingPayout = viewState.isLoadingPayout,
       isCompleted = viewState.isCompleted,
       onPayout = viewModel::payout,
       onFinish = onFinish,
