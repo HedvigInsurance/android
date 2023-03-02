@@ -3,7 +3,10 @@ package com.hedvig.android.odyssey.input.ui
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -29,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -37,6 +41,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import com.hedvig.odyssey.compose.MonetaryAmountOffsetMapping
 import com.hedvig.odyssey.compose.getLocale
@@ -60,6 +65,7 @@ fun MonetaryAmountInput(
 
   var text by rememberSaveable { mutableStateOf("") }
   val isError by remember { derivedStateOf { text.lastOrNull() == decimalSeparator } }
+  val focusManager = LocalFocusManager.current
 
   val cursorColor = composeColor(if (isError) Color.content.destructive else Color.button.primaryBackground)
   CompositionLocalProvider(
@@ -110,7 +116,11 @@ fun MonetaryAmountInput(
         keyboardType = if (allowsDecimals(maximumFractionDigits)) KeyboardType.Number else KeyboardType.Decimal,
         imeAction = ImeAction.Done,
       ),
-      keyboardActions = KeyboardActions(),
+      keyboardActions = KeyboardActions(
+        onDone = {
+          focusManager.clearFocus()
+        },
+      ),
       singleLine = true,
       visualTransformation = visualTransformation@{ annotatedString: AnnotatedString ->
         val transformedString = buildAnnotatedString {
@@ -150,7 +160,7 @@ fun MonetaryAmountInput(
           showTrailingIcon = text.isNotEmpty(),
           onClick = {
             text = ""
-            focusRequester.freeFocus()
+            focusManager.clearFocus()
           },
         )
       },
@@ -170,8 +180,12 @@ private fun BoxWithTrailingIcon(
     modifier = Modifier.fillMaxWidth(),
   ) {
     textField()
+    Spacer(modifier = Modifier.padding(start = 8.dp))
     AnimatedVisibility(showTrailingIcon) {
-      IconButton(onClick = onClick) {
+      IconButton(
+        onClick = onClick,
+        modifier = Modifier.size(20.dp),
+      ) {
         Icon(Icons.Default.Clear, "Clear Selection")
       }
     }

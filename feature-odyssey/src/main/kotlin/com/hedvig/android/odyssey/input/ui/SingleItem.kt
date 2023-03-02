@@ -127,6 +127,7 @@ fun SingleItem(
         Row(
           modifier = Modifier.fillMaxWidth(),
           horizontalArrangement = Arrangement.SpaceBetween,
+          verticalAlignment = Alignment.CenterVertically,
         ) {
           Text(text = stringResource(R.string.claims_item_screen_purchase_price_button), maxLines = 1)
           MonetaryAmountInput(
