@@ -98,7 +98,7 @@ class InputViewModel(
 
   fun onTypeOfDamage(problem: AutomationClaimInputDTO2.SingleItem.ClaimProblem) = with(_viewState) {
     update {
-      val newItem = it.claimState.item.copy(problemIds = listOf(problem))
+      val newItem = it.claimState.item.copy(selectedProblem = problem)
       it.copy(claimState = it.claimState.copy(item = newItem))
     }
   }

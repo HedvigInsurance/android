@@ -16,6 +16,7 @@ import com.hedvig.android.odyssey.input.InputViewModel
 import com.hedvig.android.odyssey.input.InputViewState
 import com.hedvig.android.odyssey.input.ui.audiorecorder.AudioRecorderScreen
 import com.hedvig.android.odyssey.input.ui.audiorecorder.AudioRecorderViewModel
+import com.hedvig.android.odyssey.input.ui.summary.EditClaimScreen
 import com.hedvig.android.odyssey.model.Input
 import com.hedvig.app.ui.compose.composables.ErrorDialog
 
@@ -65,6 +66,7 @@ fun InputRoot(
       }
     }
 
+
     if (viewState.errorMessage != null) {
       ErrorDialog(
         message = viewState.errorMessage,
@@ -95,7 +97,7 @@ private fun Input(
       onAudioFile = viewModel::onAudioFile,
       onNext = viewModel::onNext,
     )
-    is Input.DateOfOccurrencePlusLocation -> DateOfOccurrenceAndLocation(
+    is Input.DateOfOccurrencePlusLocation -> DateOfOccurrenceAndLocationScreen(
       state = viewState.claimState,
       imageLoader = imageLoader,
       onDateOfOccurrence = viewModel::onDateOfOccurrence,
@@ -111,15 +113,30 @@ private fun Input(
       updatePhoneNumber = viewModel::updatePhoneNumber,
       onNext = viewModel::onNext,
     )
-    is Input.SingleItem -> SingleItem(
+    is Input.SingleItem -> SingleItemScreen(
       state = viewState.claimState,
-      input = input,
+      problemIds = input.problemIds,
+      modelOptions = input.modelOptions,
       imageLoader = imageLoader,
       onDateOfPurchase = viewModel::onDateOfPurchase,
       onTypeOfDamage = viewModel::onTypeOfDamage,
       onModelOption = viewModel::onModelOption,
       onPurchasePrice = viewModel::onPurchasePrice,
-      onNext = viewModel::onNext,
+      onSave = viewModel::onNext,
+    )
+    is Input.ClaimSummary -> EditClaimScreen(
+      state = viewState.claimState,
+      imageLoader = imageLoader,
+      locationOptions = input.dateOfOccurrencePlusLocation.locationOptions,
+      modelOptions = input.singleItem.modelOptions,
+      problemIds = input.singleItem.problemIds,
+      onDateOfOccurrence = viewModel::onDateOfOccurrence,
+      onLocation = viewModel::onLocation,
+      onDateOfPurchase = viewModel::onDateOfPurchase,
+      onTypeOfDamage = viewModel::onTypeOfDamage,
+      onModelOption = viewModel::onModelOption,
+      onPurchasePrice = viewModel::onPurchasePrice,
+      onSave = viewModel::onNext,
     )
     Input.Unknown -> {}
     null -> {}

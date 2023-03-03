@@ -48,6 +48,36 @@ class MockClaimsFlowRepository : ClaimsFlowRepository {
             .CLAIM_QUESTION_WHAT_WHO_TOOK_DAMAGE_OR_NEEDS_REPLACEMENT,
         ),
       ),
+      Input.ClaimSummary(
+        dateOfOccurrencePlusLocation = Input.DateOfOccurrencePlusLocation(
+          selectedDateOfOccurrence = LocalDate.now().toString(),
+          locationOptions = listOf(
+            AutomationClaimDTO2.ClaimLocation.AT_HOME,
+            AutomationClaimDTO2.ClaimLocation.ABROAD,
+          ),
+          selectedLocation = null,
+        ),
+        singleItem = Input.SingleItem(
+          purchasePrice = MonetaryAmount("1000", "SEK"),
+          purchaseDate = "date",
+          problemIds = listOf(
+            AutomationClaimInputDTO2.SingleItem.ClaimProblem.BROKEN,
+            AutomationClaimInputDTO2.SingleItem.ClaimProblem.BROKEN_FRONT,
+            AutomationClaimInputDTO2.SingleItem.ClaimProblem.MISSING,
+          ),
+          selectedProblemIds = listOf(),
+          modelOptions = listOf(
+            AutomationClaimInputDTO2.SingleItem.ItemOptions.ItemModelOption(
+              modelId = "1",
+              modelName = "iphone",
+              modelImageUrl = null,
+              typeId = "phone",
+              brandId = "apple",
+            ),
+          ),
+          selectedModelOptionId = null,
+        ),
+      ),
     ),
     resolution = Resolution.None,
   )
