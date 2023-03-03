@@ -27,7 +27,12 @@ class CancelInsuranceActivity : AppCompatActivity() {
           windowSizeClass = calculateWindowSizeClass(this),
           navController = rememberNavController(),
           insuranceId = insuranceId,
-          navigateUp = ::onSupportNavigateUp,
+          navigateUp = {
+            if (!onSupportNavigateUp()) {
+              finish()
+            }
+            true
+          },
         )
       }
     }
