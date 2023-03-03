@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -34,7 +35,7 @@ internal class TerminateInsuranceViewModel(
       isLoading = false,
     ),
   )
-  val uiState = _uiState.asStateFlow()
+  val uiState: StateFlow<TerminateInsuranceUiState> = _uiState.asStateFlow()
 
   fun showedError() {
     _uiState.update {
@@ -70,7 +71,7 @@ internal class TerminateInsuranceViewModel(
   }
 }
 
-class DatePickerConfiguration(clock: Clock) {
+private class DatePickerConfiguration(clock: Clock) {
   private val todayAtStartOfDay: LocalDateTime = clock.now()
     .toLocalDateTime(TimeZone.UTC)
     .date
@@ -85,7 +86,7 @@ class DatePickerConfiguration(clock: Clock) {
   }
 }
 
-data class TerminateInsuranceUiState(
+internal data class TerminateInsuranceUiState(
   val datePickerState: DatePickerState,
   val dateSubmissionError: Boolean,
   val dateSubmissionSuccess: Boolean,

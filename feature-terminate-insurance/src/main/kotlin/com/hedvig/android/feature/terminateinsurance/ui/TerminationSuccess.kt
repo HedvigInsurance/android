@@ -38,7 +38,7 @@ import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import hedvig.resources.R
 
 @Composable
-fun TerminationSuccessDestination(
+internal fun TerminationSuccessDestination(
   windowSizeClass: WindowSizeClass,
   navigateBack: () -> Unit,
 ) {
