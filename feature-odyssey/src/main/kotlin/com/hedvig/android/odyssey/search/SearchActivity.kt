@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.CenterAlignedTopAppBar
-import com.hedvig.android.odyssey.ClaimsFlowActivity
+import com.hedvig.android.odyssey.OdysseyClaimsFlowActivity
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class SearchActivity : ComponentActivity() {
@@ -73,7 +73,7 @@ class SearchActivity : ComponentActivity() {
                 CommonClaims(
                   selectClaim = viewModel::onSelectClaim,
                   commonClaims = viewState.commonClaims,
-                  showAll = {
+                  selectOther = {
                     startClaimsFlow(
                       viewModel = viewModel,
                       commonClaimId = null,
@@ -97,8 +97,9 @@ class SearchActivity : ComponentActivity() {
   }
 
   private fun startClaimsFlow(viewModel: SearchViewModel, commonClaimId: String?) {
-    val intent = ClaimsFlowActivity.newInstance(
+    val intent = OdysseyClaimsFlowActivity.newInstance(
       context = this,
+      odysseyUrl = "https://odyssey.dev.hedvigit.com",
       commonClaimId = commonClaimId,
     )
     startActivity(intent)

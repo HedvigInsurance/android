@@ -73,7 +73,7 @@ class OdysseyClaimsFlowActivity : ComponentActivity() {
       odysseyUrl: String,
       commonClaimId: String?,
     ): Intent {
-      return Intent(context, ClaimsFlowActivity::class.java)
+      return Intent(context, OdysseyClaimsFlowActivity::class.java)
         .putExtra(ODYSSEY_URL_KEY, odysseyUrl)
         .putExtra(COMMON_CLAIM_ID, commonClaimId)
     }

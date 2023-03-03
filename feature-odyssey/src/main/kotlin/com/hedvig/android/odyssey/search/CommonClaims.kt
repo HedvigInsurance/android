@@ -30,7 +30,7 @@ import com.hedvig.android.odyssey.model.SearchableClaim
 fun CommonClaims(
   selectClaim: (SearchableClaim) -> Unit,
   commonClaims: List<SearchableClaim>,
-  showAll: () -> Unit,
+  selectOther: () -> Unit,
 ) {
   Column {
     Surface(
@@ -71,7 +71,7 @@ fun CommonClaims(
 
         Column(
           modifier = Modifier.clickable {
-            showAll()
+            selectOther()
           },
         ) {
           Row(

@@ -265,6 +265,11 @@
             android:parentActivityName="com.hedvig.app.feature.loggedin.ui.LoggedInActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
+            android:name="com.hedvig.android.odyssey.OdysseyClaimsFlowActivity"
+            android:screenOrientation="portrait"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name="com.hedvig.android.odyssey.search.SearchActivity"
             android:windowSoftInputMode="adjustResize" />
         <meta-data
