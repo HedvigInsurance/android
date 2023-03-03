@@ -3,7 +3,6 @@ package com.hedvig.android.odyssey.input.ui
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
@@ -19,7 +18,6 @@ import com.hedvig.android.odyssey.input.ui.audiorecorder.AudioRecorderViewModel
 import com.hedvig.android.odyssey.model.Input
 import com.hedvig.app.ui.compose.composables.ErrorDialog
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun InputRoot(
   inputViewModel: InputViewModel,
