@@ -27,7 +27,7 @@ fun ClaimState.toUpdateRequest() = UpdateAutomationClaimRequest(
   location = location.name,
   items = listOf(
     UpdateClaimItem(
-      problemIds = item.problemIds.map { it.name },
+      problemIds = item.problems.map { it.name },
       purchaseDate = item.purchaseDate?.toString(),
       purchasePrice = item.purchasePrice,
       brandId = item.selectedModelOption?.brandId,

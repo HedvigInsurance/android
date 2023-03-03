@@ -44,5 +44,10 @@ sealed interface Input {
     val phoneNumber: String,
   ) : Input
 
+  data class ClaimSummary(
+    val dateOfOccurrencePlusLocation: DateOfOccurrencePlusLocation,
+    val singleItem: SingleItem,
+  ) : Input
+
   object Unknown : Input
 }

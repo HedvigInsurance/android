@@ -29,22 +29,56 @@ import com.hedvig.android.core.designsystem.component.button.FormRowButton
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.odyssey.model.ClaimState
-import com.hedvig.android.odyssey.model.Input
 import com.hedvig.android.odyssey.repository.AutomationClaimInputDTO2
 import com.hedvig.odyssey.remote.money.MonetaryAmount
 import hedvig.resources.R
 import java.time.LocalDate
 
 @Composable
-fun SingleItem(
+fun SingleItemScreen(
   state: ClaimState,
-  input: Input.SingleItem,
+  problemIds: List<AutomationClaimInputDTO2.SingleItem.ClaimProblem>,
+  modelOptions: List<AutomationClaimInputDTO2.SingleItem.ItemOptions.ItemModelOption>,
   imageLoader: ImageLoader,
   onDateOfPurchase: (LocalDate) -> Unit,
   onTypeOfDamage: (AutomationClaimInputDTO2.SingleItem.ClaimProblem) -> Unit,
   onModelOption: (AutomationClaimInputDTO2.SingleItem.ItemOptions.ItemModelOption) -> Unit,
   onPurchasePrice: (MonetaryAmount?) -> Unit,
-  onNext: () -> Unit,
+  onSave: () -> Unit,
+) {
+  Box(
+      Modifier
+          .fillMaxHeight()
+          .padding(all = 16.dp),
+  ) {
+    SingleItem(
+      state = state,
+      problemIds = problemIds,
+      modelOptions = modelOptions,
+      imageLoader = imageLoader,
+      onDateOfPurchase = onDateOfPurchase,
+      onTypeOfDamage = onTypeOfDamage,
+      onModelOption = onModelOption,
+      onPurchasePrice = onPurchasePrice,
+    )
+    LargeContainedTextButton(
+      onClick = onSave,
+      text = stringResource(R.string.general_continue_button),
+      modifier = Modifier.align(Alignment.BottomCenter),
+    )
+  }
+}
+
+@Composable
+fun SingleItem(
+  state: ClaimState,
+  problemIds: List<AutomationClaimInputDTO2.SingleItem.ClaimProblem>,
+  modelOptions: List<AutomationClaimInputDTO2.SingleItem.ItemOptions.ItemModelOption>,
+  imageLoader: ImageLoader,
+  onDateOfPurchase: (LocalDate) -> Unit,
+  onTypeOfDamage: (AutomationClaimInputDTO2.SingleItem.ClaimProblem) -> Unit,
+  onModelOption: (AutomationClaimInputDTO2.SingleItem.ItemOptions.ItemModelOption) -> Unit,
+  onPurchasePrice: (MonetaryAmount?) -> Unit,
 ) {
   var openDamagePickerDialog by remember { mutableStateOf(false) }
   var openModelPickerDialog by remember { mutableStateOf(false) }
@@ -64,7 +98,7 @@ fun SingleItem(
   if (openDamagePickerDialog) {
     SingleSelectDialog(
       title = stringResource(R.string.claims_item_screen_type_of_damage_button),
-      optionsList = input.problemIds,
+      optionsList = problemIds,
       onSelected = onTypeOfDamage,
       getDisplayText = { damageType: AutomationClaimInputDTO2.SingleItem.ClaimProblem -> damageType.getText() },
       getImageUrl = { null },
@@ -76,7 +110,7 @@ fun SingleItem(
   if (openModelPickerDialog) {
     SingleSelectDialog(
       title = stringResource(R.string.claims_item_screen_model_button),
-      optionsList = input.modelOptions.sortedBy { it.modelName },
+      optionsList = modelOptions.sortedBy { it.modelName },
       onSelected = onModelOption,
       getDisplayText = { modelOption: AutomationClaimInputDTO2.SingleItem.ItemOptions.ItemModelOption ->
         modelOption.modelName
@@ -87,72 +121,59 @@ fun SingleItem(
     ) { openModelPickerDialog = false }
   }
 
-  Box(
-    Modifier
-      .fillMaxHeight()
-      .padding(all = 16.dp),
-  ) {
-    Spacer(modifier = Modifier.padding(top = 20.dp))
+  Column {
+    val selectedModel = state.item.selectedModelOption.let { selectedId ->
+      modelOptions.find { it.modelId == selectedId?.modelId }
+    }
 
-    Column {
-      val selectedModel = state.item.selectedModelOption.let { selectedId ->
-        input.modelOptions.find { it.modelId == selectedId?.modelId }
-      }
+    FormRowButton(
+      mainText = stringResource(R.string.claims_item_screen_model_button),
+      secondaryText = selectedModel?.modelName ?: "-",
+    ) {
+      openModelPickerDialog = true
+    }
 
-      FormRowButton(
-        mainText = stringResource(R.string.claims_item_screen_model_button),
-        secondaryText = selectedModel?.modelName ?: "-",
+    Spacer(modifier = Modifier.padding(top = 4.dp))
+
+    FormRowButton(
+      mainText = stringResource(R.string.claims_item_screen_date_of_purchase_button),
+      secondaryText = state.item.purchaseDate?.toString() ?: "-",
+    ) {
+      pickerDialog.show()
+    }
+
+    Spacer(modifier = Modifier.padding(top = 4.dp))
+
+    LargeContainedButton(
+      onClick = { focusRequester.requestFocus() },
+      colors = ButtonDefaults.buttonColors(
+        containerColor = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.onSurface,
+      ),
+    ) {
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
       ) {
-        openModelPickerDialog = true
-      }
-
-      Spacer(modifier = Modifier.padding(top = 12.dp))
-
-      FormRowButton(
-        mainText = stringResource(R.string.claims_item_screen_date_of_purchase_button),
-        secondaryText = state.item.purchaseDate?.toString() ?: "-",
-      ) {
-        pickerDialog.show()
-      }
-
-      Spacer(modifier = Modifier.padding(top = 12.dp))
-
-      LargeContainedButton(
-        onClick = { focusRequester.requestFocus() },
-        colors = ButtonDefaults.buttonColors(
-          containerColor = MaterialTheme.colorScheme.surface,
-          contentColor = MaterialTheme.colorScheme.onSurface,
-        ),
-      ) {
-        Row(
-          modifier = Modifier.fillMaxWidth(),
-          horizontalArrangement = Arrangement.SpaceBetween,
-          verticalAlignment = Alignment.CenterVertically,
-        ) {
-          Text(text = stringResource(R.string.claims_item_screen_purchase_price_button), maxLines = 1)
-          MonetaryAmountInput(
-            onInput = onPurchasePrice,
-            currency = "SEK",
-            maximumFractionDigits = 0,
-            focusRequester = focusRequester,
-          )
-        }
-      }
-
-      Spacer(modifier = Modifier.padding(top = 12.dp))
-
-      FormRowButton(
-        mainText = stringResource(R.string.claims_item_screen_type_of_damage_button),
-        secondaryText = state.item.problemIds.joinToString { it.getText() },
-      ) {
-        openDamagePickerDialog = true
+        Text(text = stringResource(R.string.claims_item_screen_purchase_price_button), maxLines = 1)
+        MonetaryAmountInput(
+          value = state.item.purchasePrice,
+          onInput = onPurchasePrice,
+          currency = "SEK",
+          maximumFractionDigits = 0,
+          focusRequester = focusRequester,
+        )
       }
     }
 
-    LargeContainedTextButton(
-      onClick = onNext,
-      text = stringResource(R.string.general_continue_button),
-      modifier = Modifier.align(Alignment.BottomCenter),
-    )
+    Spacer(modifier = Modifier.padding(top = 4.dp))
+
+    FormRowButton(
+      mainText = stringResource(R.string.claims_item_screen_type_of_damage_button),
+      secondaryText = state.item.selectedProblem?.getText() ?: "-",
+    ) {
+      openDamagePickerDialog = true
+    }
   }
 }

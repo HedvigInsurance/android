@@ -54,6 +54,7 @@ import java.text.DecimalFormatSymbols
 @Composable
 @ComposeRenderer
 fun MonetaryAmountInput(
+  value: MonetaryAmount?,
   onInput: (MonetaryAmount?) -> Unit,
   currency: String,
   maximumFractionDigits: Int,
@@ -63,7 +64,7 @@ fun MonetaryAmountInput(
   val locale = getLocale()
   val decimalSeparator = remember(locale) { DecimalFormatSymbols.getInstance(locale).decimalSeparator }
 
-  var text by rememberSaveable { mutableStateOf("") }
+  var text by rememberSaveable { mutableStateOf(value?.amount ?: "") }
   val isError by remember { derivedStateOf { text.lastOrNull() == decimalSeparator } }
   val focusManager = LocalFocusManager.current
 

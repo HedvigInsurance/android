@@ -23,13 +23,41 @@ import com.hedvig.android.odyssey.repository.AutomationClaimDTO2
 import java.time.LocalDate
 
 @Composable
-fun DateOfOccurrenceAndLocation(
+fun DateOfOccurrenceAndLocationScreen(
   state: ClaimState,
   imageLoader: ImageLoader,
   onDateOfOccurrence: (LocalDate) -> Unit,
   locationOptions: List<AutomationClaimDTO2.ClaimLocation>,
   onLocation: (AutomationClaimDTO2.ClaimLocation) -> Unit,
   onNext: () -> Unit,
+) {
+  Box(
+    Modifier
+      .fillMaxHeight()
+      .padding(all = 16.dp),
+  ) {
+    DateOfOccurrenceAndLocation(
+      state = state,
+      imageLoader = imageLoader,
+      onDateOfOccurrence = onDateOfOccurrence,
+      locationOptions = locationOptions,
+      onLocation = onLocation,
+    )
+    LargeContainedTextButton(
+      onClick = onNext,
+      text = stringResource(hedvig.resources.R.string.general_continue_button),
+      modifier = Modifier.align(Alignment.BottomCenter),
+    )
+  }
+}
+
+@Composable
+fun DateOfOccurrenceAndLocation(
+  state: ClaimState,
+  imageLoader: ImageLoader,
+  onDateOfOccurrence: (LocalDate) -> Unit,
+  locationOptions: List<AutomationClaimDTO2.ClaimLocation>,
+  onLocation: (AutomationClaimDTO2.ClaimLocation) -> Unit,
 ) {
   val openLocationPickerDialog = remember { mutableStateOf(false) }
 
@@ -56,35 +84,21 @@ fun DateOfOccurrenceAndLocation(
     ) { openLocationPickerDialog.value = false }
   }
 
-  Box(
-    Modifier
-      .fillMaxHeight()
-      .padding(all = 16.dp),
-  ) {
-    Column {
-      Spacer(modifier = Modifier.padding(top = 20.dp))
-
-      FormRowButton(
-        mainText = stringResource(hedvig.resources.R.string.claims_incident_screen_date_of_incident),
-        secondaryText = state.dateOfOccurrence?.toString() ?: "-",
-      ) {
-        pickerDialog.show()
-      }
-
-      Spacer(modifier = Modifier.padding(top = 12.dp))
-
-      FormRowButton(
-        mainText = stringResource(hedvig.resources.R.string.claims_incident_screen_location),
-        secondaryText = state.location.getText(),
-      ) {
-        openLocationPickerDialog.value = true
-      }
+  Column {
+    FormRowButton(
+      mainText = stringResource(hedvig.resources.R.string.claims_incident_screen_date_of_incident),
+      secondaryText = state.dateOfOccurrence?.toString() ?: "-",
+    ) {
+      pickerDialog.show()
     }
 
-    LargeContainedTextButton(
-      onClick = onNext,
-      text = stringResource(hedvig.resources.R.string.general_continue_button),
-      modifier = Modifier.align(Alignment.BottomCenter),
-    )
+    Spacer(modifier = Modifier.padding(top = 4.dp))
+
+    FormRowButton(
+      mainText = stringResource(hedvig.resources.R.string.claims_incident_screen_location),
+      secondaryText = state.location.getText(),
+    ) {
+      openLocationPickerDialog.value = true
+    }
   }
 }
