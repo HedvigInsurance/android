@@ -36,6 +36,7 @@ internal fun NavGraphBuilder.terminateInsuranceGraph(
   navController: NavHostController,
   insuranceId: InsuranceId,
   navigateUp: () -> Boolean,
+  finishTerminationFlow: () -> Unit,
 ) {
   navigation<Destinations.TerminateInsurance>(
     startDestination = createRoutePattern<TerminateInsuranceDestinations.TerminationDate>(),
@@ -55,13 +56,17 @@ internal fun NavGraphBuilder.terminateInsuranceGraph(
             },
           )
         },
-        navigateBack = { navController.navigateUp() || navigateUp() },
+        navigateBack = {
+          navController.navigateUp() || navigateUp()
+        },
       )
     }
     composable<TerminateInsuranceDestinations.TerminationSuccess> {
       TerminationSuccessDestination(
         windowSizeClass = windowSizeClass,
-        navigateBack = { navController.navigateUp() || navigateUp() },
+        // Can't use navigateUp() from non-starting destination while it's the only one in the backstack due to:
+        // https://issuetracker.google.com/issues/271549886
+        navigateBack = finishTerminationFlow,
       )
     }
   }

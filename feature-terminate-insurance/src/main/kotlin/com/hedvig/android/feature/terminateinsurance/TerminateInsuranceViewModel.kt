@@ -37,6 +37,12 @@ internal class TerminateInsuranceViewModel(
   )
   val uiState: StateFlow<TerminateInsuranceUiState> = _uiState.asStateFlow()
 
+  fun handledSuccess() {
+    _uiState.update {
+      it.copy(dateSubmissionSuccess = false)
+    }
+  }
+
   fun showedError() {
     _uiState.update {
       it.copy(dateSubmissionError = false)

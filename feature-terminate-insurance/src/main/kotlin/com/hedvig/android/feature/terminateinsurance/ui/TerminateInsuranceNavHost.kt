@@ -15,6 +15,7 @@ internal fun TerminateInsuranceNavHost(
   navController: NavHostController,
   insuranceId: InsuranceId,
   navigateUp: () -> Boolean,
+  finishTerminationFlow: () -> Unit,
 ) {
   NavHost(
     navController,
@@ -25,6 +26,7 @@ internal fun TerminateInsuranceNavHost(
       navController = navController,
       insuranceId = insuranceId,
       navigateUp = navigateUp,
+      finishTerminationFlow = finishTerminationFlow,
     )
   }
 }

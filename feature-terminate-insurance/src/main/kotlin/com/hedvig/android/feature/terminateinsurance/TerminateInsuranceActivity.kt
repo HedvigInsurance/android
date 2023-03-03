@@ -27,12 +27,8 @@ class TerminateInsuranceActivity : AppCompatActivity() {
           windowSizeClass = calculateWindowSizeClass(this),
           navController = rememberNavController(),
           insuranceId = insuranceId,
-          navigateUp = {
-            if (!onSupportNavigateUp()) {
-              finish()
-            }
-            true
-          },
+          navigateUp = { onSupportNavigateUp() },
+          finishTerminationFlow = { finish() },
         )
       }
     }

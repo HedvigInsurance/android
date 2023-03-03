@@ -62,7 +62,10 @@ internal fun TerminationDateDestination(
     submit = viewModel::submitSelectedDate,
     hasError = uiState.dateSubmissionError,
     showedError = viewModel::showedError,
-    navigateToSuccessScreen = navigateToSuccessScreen,
+    navigateToSuccessScreen = {
+      viewModel.handledSuccess()
+      navigateToSuccessScreen()
+    },
     navigateBack = navigateBack,
   )
 }
