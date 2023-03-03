@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.cancelinsurance.ui.terminationdate
+package com.hedvig.android.feature.terminateinsurance.ui
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
@@ -43,11 +43,11 @@ import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicke
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbar
-import com.hedvig.android.feature.cancelinsurance.CancelInsuranceViewModel
+import com.hedvig.android.feature.terminateinsurance.TerminateInsuranceViewModel
 
 @Composable
 internal fun TerminationDateDestination(
-  viewModel: CancelInsuranceViewModel,
+  viewModel: TerminateInsuranceViewModel,
   windowSizeClass: WindowSizeClass,
   navigateToSuccessScreen: () -> Unit,
   navigateBack: () -> Unit,
@@ -174,7 +174,7 @@ private fun DatePickerCard(
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun CancelInsuranceScreenPreview() {
+private fun PreviewTerminationDateScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       TerminationDateScreen(

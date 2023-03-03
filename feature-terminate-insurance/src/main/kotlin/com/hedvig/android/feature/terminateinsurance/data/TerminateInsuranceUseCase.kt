@@ -1,11 +1,11 @@
-package com.hedvig.android.feature.cancelinsurance.data
+package com.hedvig.android.feature.terminateinsurance.data
 
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.OperationResult
-import com.hedvig.android.feature.cancelinsurance.InsuranceId
+import com.hedvig.android.feature.terminateinsurance.InsuranceId
 import kotlinx.coroutines.ensureActive
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -15,7 +15,7 @@ import kotlin.coroutines.coroutineContext
 import kotlin.time.Duration.Companion.days
 
 // todo real impl
-internal class CancelInsuranceUseCase(
+internal class TerminateInsuranceUseCase(
   private val apolloClient: ApolloClient,
 ) {
   suspend fun invoke(

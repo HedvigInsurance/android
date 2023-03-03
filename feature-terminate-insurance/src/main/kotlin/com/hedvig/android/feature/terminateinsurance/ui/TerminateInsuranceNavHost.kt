@@ -1,18 +1,16 @@
-@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
-
-package com.hedvig.android.feature.cancelinsurance.ui
+package com.hedvig.android.feature.terminateinsurance.ui
 
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import com.hedvig.android.feature.cancelinsurance.InsuranceId
-import com.hedvig.android.feature.cancelinsurance.navigation.Destinations
-import com.hedvig.android.feature.cancelinsurance.navigation.cancelInsuranceGraph
+import com.hedvig.android.feature.terminateinsurance.InsuranceId
+import com.hedvig.android.feature.terminateinsurance.navigation.Destinations
+import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceGraph
 import com.kiwi.navigationcompose.typed.createRoutePattern
 
 @Composable
-internal fun CancelInsuranceNavHost(
+internal fun TerminateInsuranceNavHost(
   windowSizeClass: WindowSizeClass,
   navController: NavHostController,
   insuranceId: InsuranceId,
@@ -20,9 +18,9 @@ internal fun CancelInsuranceNavHost(
 ) {
   NavHost(
     navController,
-    startDestination = createRoutePattern<Destinations.CancelInsurance>(),
+    startDestination = createRoutePattern<Destinations.TerminateInsurance>(),
   ) {
-    cancelInsuranceGraph(
+    terminateInsuranceGraph(
       windowSizeClass = windowSizeClass,
       navController = navController,
       insuranceId = insuranceId,

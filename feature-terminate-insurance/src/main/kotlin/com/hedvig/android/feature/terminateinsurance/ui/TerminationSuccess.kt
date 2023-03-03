@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.cancelinsurance.ui.result
+package com.hedvig.android.feature.terminateinsurance.ui
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
@@ -38,18 +38,18 @@ import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import hedvig.resources.R
 
 @Composable
-fun CancellationSuccessDestination(
+fun TerminationSuccessDestination(
   windowSizeClass: WindowSizeClass,
   navigateBack: () -> Unit,
 ) {
-  CancellationSuccessScreen(
+  TerminationSuccessScreen(
     windowSizeClass = windowSizeClass,
     navigateBack = navigateBack,
   )
 }
 
 @Composable
-private fun CancellationSuccessScreen(
+private fun TerminationSuccessScreen(
   windowSizeClass: WindowSizeClass,
   navigateBack: () -> Unit,
 ) {
@@ -118,10 +118,10 @@ private fun CancellationSuccessScreen(
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun PreviewCancellationSuccessScreen() {
+private fun PreviewTerminationSuccessScreen() {
   HedvigTheme {
     Surface {
-      CancellationSuccessScreen(WindowSizeClass.calculateFromSize(DpSize(500.dp, 300.dp)), {})
+      TerminationSuccessScreen(WindowSizeClass.calculateFromSize(DpSize(500.dp, 300.dp)), {})
     }
   }
 }

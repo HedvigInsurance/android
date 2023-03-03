@@ -1,13 +1,13 @@
-package com.hedvig.android.feature.cancelinsurance.navigation
+package com.hedvig.android.feature.terminateinsurance.navigation
 
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.navOptions
-import com.hedvig.android.feature.cancelinsurance.CancelInsuranceViewModel
-import com.hedvig.android.feature.cancelinsurance.InsuranceId
-import com.hedvig.android.feature.cancelinsurance.ui.result.CancellationSuccessDestination
-import com.hedvig.android.feature.cancelinsurance.ui.terminationdate.TerminationDateDestination
+import com.hedvig.android.feature.terminateinsurance.InsuranceId
+import com.hedvig.android.feature.terminateinsurance.TerminateInsuranceViewModel
+import com.hedvig.android.feature.terminateinsurance.ui.TerminationDateDestination
+import com.hedvig.android.feature.terminateinsurance.ui.TerminationSuccessDestination
 import com.kiwi.navigationcompose.typed.Destination
 import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createRoutePattern
@@ -20,28 +20,28 @@ import org.koin.core.parameter.parametersOf
 
 internal sealed interface Destinations : Destination {
   @Serializable
-  object CancelInsurance : Destinations
+  object TerminateInsurance : Destinations
 }
 
-internal sealed interface CancelInsuranceDestinations : Destination {
+internal sealed interface TerminateInsuranceDestinations : Destination {
   @Serializable
-  object TerminationDate : CancelInsuranceDestinations
+  object TerminationDate : TerminateInsuranceDestinations
 
   @Serializable
-  object TerminationSuccess : CancelInsuranceDestinations
+  object TerminationSuccess : TerminateInsuranceDestinations
 }
 
-internal fun NavGraphBuilder.cancelInsuranceGraph(
+internal fun NavGraphBuilder.terminateInsuranceGraph(
   windowSizeClass: WindowSizeClass,
   navController: NavHostController,
   insuranceId: InsuranceId,
   navigateUp: () -> Boolean,
 ) {
-  navigation<Destinations.CancelInsurance>(
-    startDestination = createRoutePattern<CancelInsuranceDestinations.TerminationDate>(),
+  navigation<Destinations.TerminateInsurance>(
+    startDestination = createRoutePattern<TerminateInsuranceDestinations.TerminationDate>(),
   ) {
-    composable<CancelInsuranceDestinations.TerminationDate> { navBackStackEntry ->
-      val viewModel: CancelInsuranceViewModel = koinViewModel(viewModelStoreOwner = navBackStackEntry) {
+    composable<TerminateInsuranceDestinations.TerminationDate> { navBackStackEntry ->
+      val viewModel: TerminateInsuranceViewModel = koinViewModel(viewModelStoreOwner = navBackStackEntry) {
         parametersOf(insuranceId)
       }
       TerminationDateDestination(
@@ -49,17 +49,17 @@ internal fun NavGraphBuilder.cancelInsuranceGraph(
         windowSizeClass = windowSizeClass,
         navigateToSuccessScreen = {
           navController.navigate(
-            route = CancelInsuranceDestinations.TerminationSuccess,
+            route = TerminateInsuranceDestinations.TerminationSuccess,
             navOptions = navOptions {
-              popUpTo<Destinations.CancelInsurance>()
+              popUpTo<Destinations.TerminateInsurance>()
             },
           )
         },
         navigateBack = { navController.navigateUp() || navigateUp() },
       )
     }
-    composable<CancelInsuranceDestinations.TerminationSuccess> {
-      CancellationSuccessDestination(
+    composable<TerminateInsuranceDestinations.TerminationSuccess> {
+      TerminationSuccessDestination(
         windowSizeClass = windowSizeClass,
         navigateBack = { navController.navigateUp() || navigateUp() },
       )

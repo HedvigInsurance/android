@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.cancelinsurance
+package com.hedvig.android.feature.terminateinsurance
 
 import kotlinx.serialization.Serializable
 

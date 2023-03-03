@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-  namespace = "com.hedvig.android.feature.cancelinsurance"
+  namespace = "com.hedvig.android.feature.terminateinsurance"
 }
 
 dependencies {
