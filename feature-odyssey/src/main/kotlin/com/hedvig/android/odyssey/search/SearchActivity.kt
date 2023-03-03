@@ -99,7 +99,7 @@ class SearchActivity : ComponentActivity() {
   private fun startClaimsFlow(viewModel: SearchViewModel, commonClaimId: String?) {
     val intent = OdysseyClaimsFlowActivity.newInstance(
       context = this,
-      odysseyUrl = "https://odyssey.dev.hedvigit.com",
+      odysseyUrl = intent.getStringExtra("ODYSSEY_URL_EXTRA") ?: throw java.lang.IllegalArgumentException("No url found"),
       commonClaimId = commonClaimId,
     )
     startActivity(intent)

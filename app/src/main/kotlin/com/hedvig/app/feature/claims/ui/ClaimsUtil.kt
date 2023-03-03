@@ -21,6 +21,7 @@ suspend fun startClaimsFlow(
   if (featureManager.isFeatureEnabled(Feature.USE_ODYSSEY_CLAIM_FLOW)) {
 
     val intent = Intent(context, SearchActivity::class.java)
+      .putExtra("ODYSSEY_URL_EXTRA", context.getString(R.string.ODYSSEY_URL))
 
     if (registerForResult != null) {
       registerForResult(intent)

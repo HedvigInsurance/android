@@ -17,19 +17,9 @@ class GetLocalEntryPointsUseCase : GetClaimEntryPoints {
   override suspend operator fun invoke(): CommonClaimsResult {
     return CommonClaimsResult.Success(
       searchableClaims = listOf(
-        SearchableClaim("6", displayName = "Broken iPhone"),
+        SearchableClaim("6", displayName = "Broken phone"),
         SearchableClaim("23", displayName = "Broken computer"),
       ),
     )
   }
-}
-
-private fun List<ClaimEntryPointDTO>.toSearchableClaims() = map {
-  SearchableClaim(
-    id = it.id,
-    displayName = it.displayName,
-    icon = null,
-    itemType = ItemType(""),
-    itemProblem = ItemProblem(""),
-  )
 }
