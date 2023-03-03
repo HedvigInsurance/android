@@ -83,6 +83,7 @@ fun PayoutSummary(
         onPayout(resolution.payoutAmount)
       },
       text = stringResource(R.string.claims_payout_button_label, resolution.payoutAmount.amount ?: "-"),
+      modifier = Modifier.align(Alignment.BottomCenter),
     )
   }
 }
