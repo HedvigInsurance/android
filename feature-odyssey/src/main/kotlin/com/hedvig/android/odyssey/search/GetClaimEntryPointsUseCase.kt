@@ -53,7 +53,7 @@ private fun List<ClaimEntryPointDTO>.toSearchableClaims() = map {
   )
 }
 
-private const val NR_OF_ENTRYPOINTS = "4"
+private const val NR_OF_ENTRYPOINTS = "10"
 
 @Serializable
 data class ClaimEntryPointDTO(

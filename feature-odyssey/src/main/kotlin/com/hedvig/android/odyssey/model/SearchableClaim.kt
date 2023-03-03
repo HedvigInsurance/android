@@ -3,7 +3,7 @@ package com.hedvig.android.odyssey.model
 data class SearchableClaim(
   val id: String,
   val displayName: String,
-  val itemType: ItemType?,
+  val itemType: ItemType? = null,
   val itemProblem: ItemProblem? = null,
   val icon: Icon? = null,
   val keywords: List<String> = emptyList(),

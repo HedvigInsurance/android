@@ -37,9 +37,9 @@ class SearchActivity : ComponentActivity() {
       val viewModel: SearchViewModel = getViewModel()
       val viewState by viewModel.viewState.collectAsState()
 
-      val selectedItemType = viewState.selectedClaim?.id
-      if (selectedItemType != null) {
-        startClaimsFlow(viewModel, selectedItemType)
+      val commonClaimId = viewState.selectedClaim?.id
+      if (commonClaimId != null) {
+        startClaimsFlow(viewModel, commonClaimId)
       }
 
       HedvigTheme {
