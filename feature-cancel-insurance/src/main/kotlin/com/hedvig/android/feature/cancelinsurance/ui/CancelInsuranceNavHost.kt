@@ -16,15 +16,17 @@ internal fun CancelInsuranceNavHost(
   windowSizeClass: WindowSizeClass,
   navController: NavHostController,
   insuranceId: InsuranceId,
+  navigateUp: () -> Boolean,
 ) {
   NavHost(
     navController,
     startDestination = createRoutePattern<Destinations.CancelInsurance>(),
   ) {
     cancelInsuranceGraph(
-      windowSizeClass,
-      navController,
-      insuranceId,
+      windowSizeClass = windowSizeClass,
+      navController = navController,
+      insuranceId = insuranceId,
+      navigateUp = navigateUp,
     )
   }
 }

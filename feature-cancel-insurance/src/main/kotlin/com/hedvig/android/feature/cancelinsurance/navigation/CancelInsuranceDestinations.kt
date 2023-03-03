@@ -8,15 +8,13 @@ import com.hedvig.android.feature.cancelinsurance.CancelInsuranceViewModel
 import com.hedvig.android.feature.cancelinsurance.InsuranceId
 import com.hedvig.android.feature.cancelinsurance.ui.result.CancellationSuccessDestination
 import com.hedvig.android.feature.cancelinsurance.ui.terminationdate.TerminationDateDestination
-import com.hedvig.android.navigation.compose.typed.ext.composable
-import com.hedvig.android.navigation.compose.typed.ext.popUpTo
 import com.kiwi.navigationcompose.typed.Destination
+import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
 import com.kiwi.navigationcompose.typed.navigation
+import com.kiwi.navigationcompose.typed.popUpTo
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -27,9 +25,7 @@ internal sealed interface Destinations : Destination {
 
 internal sealed interface CancelInsuranceDestinations : Destination {
   @Serializable
-  data class TerminationDate(
-    val insuranceId: InsuranceId,
-  ) : CancelInsuranceDestinations
+  object TerminationDate : CancelInsuranceDestinations
 
   @Serializable
   object TerminationSuccess : CancelInsuranceDestinations
@@ -39,17 +35,14 @@ internal fun NavGraphBuilder.cancelInsuranceGraph(
   windowSizeClass: WindowSizeClass,
   navController: NavHostController,
   insuranceId: InsuranceId,
+  navigateUp: () -> Boolean,
 ) {
   navigation<Destinations.CancelInsurance>(
     startDestination = createRoutePattern<CancelInsuranceDestinations.TerminationDate>(),
   ) {
-    composable<CancelInsuranceDestinations.TerminationDate>(
-      extraNavArgumentConfiguration = mapOf(
-        "insuranceId" to { defaultValue = Json.encodeToString(insuranceId) },
-      ),
-    ) { navBackStackEntry ->
+    composable<CancelInsuranceDestinations.TerminationDate> { navBackStackEntry ->
       val viewModel: CancelInsuranceViewModel = koinViewModel(viewModelStoreOwner = navBackStackEntry) {
-        parametersOf(this.insuranceId)
+        parametersOf(insuranceId)
       }
       TerminationDateDestination(
         viewModel = viewModel,
@@ -58,15 +51,18 @@ internal fun NavGraphBuilder.cancelInsuranceGraph(
           navController.navigate(
             route = CancelInsuranceDestinations.TerminationSuccess,
             navOptions = navOptions {
-              popUpTo(Destinations.CancelInsurance)
+              popUpTo<Destinations.CancelInsurance>()
             },
           )
         },
-        navigateBack = navController::popBackStack,
+        navigateBack = { navController.navigateUp() || navigateUp() },
       )
     }
     composable<CancelInsuranceDestinations.TerminationSuccess> {
-      CancellationSuccessDestination()
+      CancellationSuccessDestination(
+        windowSizeClass = windowSizeClass,
+        navigateBack = { navController.navigateUp() || navigateUp() },
+      )
     }
   }
 }

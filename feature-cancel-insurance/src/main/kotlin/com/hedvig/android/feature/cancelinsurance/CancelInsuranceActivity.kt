@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
+import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.feature.cancelinsurance.ui.CancelInsuranceNavHost
 
@@ -19,14 +20,14 @@ class CancelInsuranceActivity : AppCompatActivity() {
 
     val insuranceId = intent.getStringExtra(INSURANCE_ID)?.let(::InsuranceId)
       ?: error("Can't open CancelInsuranceActivity without an insurance ID")
-    val viewModel = getViewModel<CancelInsuranceViewModel> { parametersOf(insuranceId) }
 
     setContent {
       HedvigTheme {
         CancelInsuranceNavHost(
-          calculateWindowSizeClass(this),
-          rememberNavController(),
-          insuranceId,
+          windowSizeClass = calculateWindowSizeClass(this),
+          navController = rememberNavController(),
+          insuranceId = insuranceId,
+          navigateUp = ::onSupportNavigateUp,
         )
       }
     }
