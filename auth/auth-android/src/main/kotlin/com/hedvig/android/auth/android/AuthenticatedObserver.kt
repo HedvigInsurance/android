@@ -5,7 +5,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
-import com.hedvig.android.navigation.Navigator
+import com.hedvig.android.navigation.activity.Navigator
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first

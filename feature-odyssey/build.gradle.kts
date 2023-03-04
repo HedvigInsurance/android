@@ -13,9 +13,9 @@ dependencies {
   implementation(projects.auth.authCore)
   implementation(projects.coreCommon)
   implementation(projects.coreDesignSystem)
-  implementation(projects.coreNavigation)
   implementation(projects.coreUi)
   implementation(projects.hedvigLanguage)
+  implementation(projects.navigation.navigationActivity)
 
   implementation(libs.accompanist.navigationAnimation)
   implementation(libs.androidx.compose.foundation)

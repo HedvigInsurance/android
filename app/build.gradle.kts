@@ -121,7 +121,6 @@ dependencies {
   implementation(projects.coreCommonAndroid)
   implementation(projects.coreDatastore)
   implementation(projects.coreDesignSystem)
-  implementation(projects.coreNavigation)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.datadog)
@@ -133,6 +132,7 @@ dependencies {
   implementation(projects.hanalytics.hanalyticsFeatureFlags)
   implementation(projects.hedvigLanguage)
   implementation(projects.hedvigMarket)
+  implementation(projects.navigation.navigationActivity)
   implementation(projects.notificationBadgeData)
 
   testImplementation(projects.auth.authEventTest)

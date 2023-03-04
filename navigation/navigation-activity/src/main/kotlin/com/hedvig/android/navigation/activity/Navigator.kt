@@ -1,4 +1,4 @@
-package com.hedvig.android.navigation
+package com.hedvig.android.navigation.activity
 
 import android.app.Application
 import android.content.Context
