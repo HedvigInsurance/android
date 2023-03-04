@@ -5,4 +5,5 @@
 /*
 # Except for shared run configurations
 !/runConfigurations/
+!codeInsightSettings.xml
 !.gitignore
