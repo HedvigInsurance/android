@@ -16,7 +16,9 @@ dependencies {
   implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
+  implementation(projects.navigation.navigationComposeTyped)
 
+  implementation(libs.accompanist.navigationAnimation)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.lifecycle.compose)
@@ -31,7 +33,6 @@ dependencies {
   implementation(libs.koin.compose)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
-  implementation(libs.kotlinx.serialization.json)
   implementation(libs.slimber)
   implementation(libs.timber)
 }
