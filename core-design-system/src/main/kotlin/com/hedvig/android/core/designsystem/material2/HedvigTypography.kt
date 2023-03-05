@@ -93,7 +93,7 @@ private val Float.percentage: Float
 
 @Preview
 @Composable
-private fun TypographyPreview() {
+private fun PreviewTypography() {
   Surface {
     Column {
       Text("Headline 3", style = HedvigTypography.h3)

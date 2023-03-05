@@ -25,6 +25,7 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.SnackbarHostState
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.rememberDrawerState
@@ -42,13 +43,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.text.isDigitsOnly
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.FullScreenProgressOverlay
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
@@ -246,22 +247,24 @@ private fun RotatingIcon(isLoading: Boolean) {
   )
 }
 
-@Preview(showBackground = true)
+@HedvigPreview
 @Composable
-fun OtpInputScreenValidPreview() {
+private fun PreviewOtpInputScreenValid() {
   HedvigTheme {
-    OtpInputScreen(
-      onInputChanged = {},
-      onOpenExternalApp = {},
-      onSubmitCode = {},
-      onResendCode = {},
-      onBackPressed = {},
-      inputValue = "0123456",
-      credential = "john@doe.com",
-      networkErrorMessage = null,
-      loadingResend = false,
-      loadingCode = false,
-      snackbarHostState = SnackbarHostState(),
-    )
+    Surface(color = MaterialTheme.colors.background) {
+      OtpInputScreen(
+        onInputChanged = {},
+        onOpenExternalApp = {},
+        onSubmitCode = {},
+        onResendCode = {},
+        onBackPressed = {},
+        inputValue = "0123456",
+        credential = "john@doe.com",
+        networkErrorMessage = null,
+        loadingResend = false,
+        loadingCode = false,
+        snackbarHostState = SnackbarHostState(),
+      )
+    }
   }
 }

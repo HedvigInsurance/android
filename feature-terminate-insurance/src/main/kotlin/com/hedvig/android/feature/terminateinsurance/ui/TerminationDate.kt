@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.terminateinsurance.ui
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -32,7 +31,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -40,6 +38,7 @@ import com.hedvig.android.core.designsystem.component.button.LargeContainedTextB
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation
 import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
+import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbar
@@ -174,8 +173,7 @@ private fun DatePickerCard(
   }
 }
 
-@Preview
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@HedvigMultiScreenPreview
 @Composable
 private fun PreviewTerminationDateScreen() {
   HedvigTheme {

@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import arrow.core.NonEmptyList
 import arrow.core.nonEmptyListOf
@@ -22,6 +21,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusCardUiState
 import com.hedvig.app.feature.home.ui.claimstatus.data.PillUiState
@@ -80,13 +80,11 @@ fun ClaimStatusCards(
   }
 }
 
-@Preview(name = "ClaimStatusCard", group = "Claim Status")
+@HedvigPreview
 @Composable
-fun ClaimStatusCardsPreview() {
+private fun PreviewClaimStatusCards() {
   HedvigTheme {
-    Surface(
-      color = MaterialTheme.colors.background,
-    ) {
+    Surface(color = MaterialTheme.colors.background) {
       val claimStatusCardsUiState = ClaimStatusCardUiState(
         id = UUID.randomUUID().toString(),
         pillsUiState = PillUiState.previewList(),

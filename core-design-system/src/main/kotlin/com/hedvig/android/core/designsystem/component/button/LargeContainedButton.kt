@@ -11,8 +11,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.containedButtonContainer
 import com.hedvig.android.core.designsystem.theme.onContainedButtonContainer
@@ -74,12 +74,9 @@ fun LargeContainedButton(
   }
 }
 
-@Preview(
-  name = "Contained Button (Large)",
-  group = "Buttons",
-)
+@HedvigPreview
 @Composable
-fun LargeContainedButtonPreview() {
+private fun PreviewLargeContainedButton() {
   HedvigTheme {
     LargeContainedTextButton(text = "Contained Button (Large)", onClick = {})
   }

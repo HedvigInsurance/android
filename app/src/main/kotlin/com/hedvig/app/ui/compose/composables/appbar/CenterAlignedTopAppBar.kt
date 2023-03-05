@@ -1,6 +1,5 @@
 package com.hedvig.app.ui.compose.composables.appbar
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -26,9 +25,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 
 /**
@@ -98,10 +97,9 @@ fun CenterAlignedTopAppBar(
 
 private val AppBarHorizontalPadding = 4.dp
 
-@Preview
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@HedvigPreview
 @Composable
-fun CenterAlignedTopAppBarPreview() {
+private fun PreviewCenterAlignedTopAppBar() {
   HedvigTheme {
     Surface(color = MaterialTheme.colors.background) {
       Column {

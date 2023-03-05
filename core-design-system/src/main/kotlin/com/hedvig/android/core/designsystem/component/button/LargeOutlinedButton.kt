@@ -9,8 +9,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import androidx.compose.material.MaterialTheme as Material2Theme
 import androidx.compose.material.ProvideTextStyle as ProvideTextStyleM2
@@ -56,13 +56,9 @@ fun LargeOutlinedButton(
   }
 }
 
-@Preview(
-  name = "Outlined Button (Large)",
-  group = "Buttons",
-  showBackground = true,
-)
+@HedvigPreview
 @Composable
-private fun LargeOutlinedButtonPreview() {
+private fun PreviewLargeOutlinedButton() {
   HedvigTheme {
     LargeOutlinedTextButton(text = "Outlined Button (Large)", onClick = {})
   }

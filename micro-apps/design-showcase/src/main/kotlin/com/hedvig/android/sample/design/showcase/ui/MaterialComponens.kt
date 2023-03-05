@@ -1,6 +1,5 @@
 package com.hedvig.android.sample.design.showcase.ui
 
-import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,8 +22,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.sample.design.showcase.ui.m2.components.M2Buttons
@@ -189,17 +186,6 @@ fun LazyListScope.LightAndDarkItem(content: @Composable () -> Unit) {
           }
         }
       }
-    }
-  }
-}
-
-@Preview
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun MaterialComponentsPreview() {
-  HedvigTheme {
-    Surface {
-      MaterialComponents(WindowSizeClass.calculateFromSize(DpSize(500.dp, 300.dp)))
     }
   }
 }

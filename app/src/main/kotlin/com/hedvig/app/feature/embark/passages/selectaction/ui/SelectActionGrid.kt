@@ -13,8 +13,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 
 /**
@@ -114,9 +114,9 @@ private fun Placeable.withCoordinates(
   y: Int,
 ): PlaceableWithCoordinates = PlaceableWithCoordinates(this, x, y)
 
-@Preview
+@HedvigPreview
 @Composable
-fun SelectActionGridPreview() {
+private fun PreviewSelectActionGrid() {
   HedvigTheme {
     Surface(color = MaterialTheme.colors.background) {
       SelectActionGrid {

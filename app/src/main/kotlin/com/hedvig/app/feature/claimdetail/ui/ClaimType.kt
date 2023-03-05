@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.claimdetail.ui
 
-import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -16,8 +15,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 
@@ -56,14 +55,11 @@ fun ClaimType(
   }
 }
 
-@Preview
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@HedvigPreview
 @Composable
-fun ClaimTypePreview() {
+private fun PreviewClaimType() {
   HedvigTheme {
-    Surface(
-      color = MaterialTheme.colors.background,
-    ) {
+    Surface(color = MaterialTheme.colors.background) {
       Column {
         ClaimType(title = "title", subtitle = "subtitle")
         ClaimType(title = "title", subtitle = "")

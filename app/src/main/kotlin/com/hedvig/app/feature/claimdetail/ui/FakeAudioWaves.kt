@@ -20,8 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.tooling.preview.Preview
 import com.google.android.material.math.MathUtils
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.util.ProgressPercentage
 import kotlin.math.abs
@@ -120,9 +120,9 @@ private fun FakeAudioWave(
   ) {}
 }
 
-@Preview
+@HedvigPreview
 @Composable
-fun FakeAudioWavesPreview() {
+private fun PreviewFakeAudioWaves() {
   HedvigTheme {
     Surface(color = MaterialTheme.colors.background) {
       FakeAudioWaves(

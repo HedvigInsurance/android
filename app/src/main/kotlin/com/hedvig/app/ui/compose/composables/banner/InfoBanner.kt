@@ -12,8 +12,8 @@ import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.hedvig_black12percent
 import com.hedvig.app.R
@@ -46,10 +46,12 @@ fun InfoBanner(
   }
 }
 
-@Preview
+@HedvigPreview
 @Composable
-fun InfoBannerPreview() {
+private fun PreviewInfoBanner() {
   HedvigTheme {
-    InfoBanner(onClick = { }, text = "Test info banner text")
+    Surface(color = MaterialTheme.colors.background) {
+      InfoBanner(onClick = { }, text = "Test info banner text")
+    }
   }
 }

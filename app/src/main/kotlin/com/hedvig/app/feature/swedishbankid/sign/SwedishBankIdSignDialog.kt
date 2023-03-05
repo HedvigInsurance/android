@@ -24,12 +24,12 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
@@ -158,13 +158,12 @@ fun SwedishBankIdSignDialog(text: String) {
   }
 }
 
+@HedvigPreview
 @Composable
-@Preview(
-  name = "Swedish BankID Sign-Dialog",
-  group = "Offer Screen",
-)
-fun Preview() {
+private fun PreviewSwedishBankIdSignDialog() {
   HedvigTheme {
-    SwedishBankIdSignDialog(text = stringResource(id = hedvig.resources.R.string.SIGN_IN_PROGRESS))
+    Surface(color = MaterialTheme.colors.background) {
+      SwedishBankIdSignDialog(text = stringResource(id = hedvig.resources.R.string.SIGN_IN_PROGRESS))
+    }
   }
 }

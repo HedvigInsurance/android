@@ -16,6 +16,7 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material.ripple.RippleTheme
@@ -26,11 +27,11 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.hedvig_black
 import com.hedvig.android.core.designsystem.theme.hedvig_black12percent
@@ -171,19 +172,17 @@ private val previewData = CrossSellData(
   insurableLimits = emptyList(),
 )
 
-@Preview(
-  name = "Cross-Sell Card",
-  group = "Insurance Tab",
-  showBackground = true,
-)
+@HedvigPreview
 @Composable
-fun CrossSellPreview() {
+private fun PreviewCrossSell() {
   HedvigTheme {
-    CrossSell(
-      data = previewData,
-      imageLoader = rememberPreviewImageLoader(),
-      onCardClick = {},
-      onCtaClick = {},
-    )
+    Surface(color = MaterialTheme.colors.background) {
+      CrossSell(
+        data = previewData,
+        imageLoader = rememberPreviewImageLoader(),
+        onCardClick = {},
+        onCtaClick = {},
+      )
+    }
   }
 }

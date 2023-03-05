@@ -25,6 +25,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
@@ -38,9 +39,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.textColorLink
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import kotlinx.coroutines.launch
@@ -171,11 +173,15 @@ private fun BusinessModelImage(
   )
 }
 
-@Preview
+@HedvigMultiScreenPreview
 @Composable
-private fun BusinessModelScreenPreview() {
-  BusinessModelScreen(
-    navigateBack = {},
-    windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(500.dp, 300.dp)),
-  )
+private fun PreviewBusinessModelScreen() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colors.background) {
+      BusinessModelScreen(
+        navigateBack = {},
+        windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(500.dp, 300.dp)),
+      )
+    }
+  }
 }

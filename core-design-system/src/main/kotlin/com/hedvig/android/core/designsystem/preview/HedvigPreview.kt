@@ -23,7 +23,7 @@ annotation class HedvigPreview
   uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL,
   device = "spec:parent=pixel_5,orientation=landscape",
 )
-annotation class HedvigLandscapePreview
+private annotation class HedvigLandscapePreview
 
 @Preview(
   name = "lightMode tablet portrait",

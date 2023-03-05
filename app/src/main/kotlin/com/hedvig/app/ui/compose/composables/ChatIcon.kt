@@ -1,6 +1,5 @@
 package com.hedvig.app.ui.compose.composables
 
-import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -17,8 +16,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 
@@ -84,14 +83,11 @@ fun ChatIcon(
   }
 }
 
-@Preview
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@HedvigPreview
 @Composable
-fun ChatIconPreview() {
+private fun PreviewChatIcon() {
   HedvigTheme {
-    Surface(
-      color = MaterialTheme.colors.surface,
-    ) {
+    Surface(color = MaterialTheme.colors.background) {
       Column {
         ChatIcon({}, null)
         ChatIcon({}, null, true)

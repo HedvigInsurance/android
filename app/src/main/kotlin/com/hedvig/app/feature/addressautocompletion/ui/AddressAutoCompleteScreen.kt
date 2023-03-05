@@ -1,9 +1,7 @@
 package com.hedvig.app.feature.addressautocompletion.ui
 
-import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -47,8 +45,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddressInput
@@ -251,10 +249,9 @@ private fun SuggestionsList(
   }
 }
 
-@Preview
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@HedvigPreview
 @Composable
-fun AddressAutoCompleteScreenPreview() {
+private fun PreviewAddressAutoCompleteScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colors.background) {
       val previewDanishAddress = DanishAddress.previewData()
