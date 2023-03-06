@@ -8,7 +8,7 @@ import androidx.activity.compose.setContent
 import coil.ImageLoader
 import com.hedvig.android.auth.AccessTokenProvider
 import com.hedvig.android.auth.android.AuthenticatedObserver
-import com.hedvig.android.navigation.Navigator
+import com.hedvig.android.navigation.activity.Navigator
 import com.hedvig.odyssey.datadog.DatadogProvider
 import com.hedvig.odyssey.remote.actions.CHAT_URL
 import com.hedvig.odyssey.remote.actions.CLOSE_URL

@@ -13,10 +13,10 @@ dependencies {
   implementation(projects.auth.authCore)
   implementation(projects.coreCommon)
   implementation(projects.coreDesignSystem)
-  implementation(projects.coreNavigation)
   implementation(projects.coreUi)
   implementation(projects.coreResources)
   implementation(projects.hedvigLanguage)
+  implementation(projects.navigation.navigationActivity)
 
   implementation(libs.accompanist.navigationAnimation)
   implementation(libs.accompanist.permissions)

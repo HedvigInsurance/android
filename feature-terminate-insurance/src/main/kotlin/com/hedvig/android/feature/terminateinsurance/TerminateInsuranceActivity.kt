@@ -7,7 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.core.view.WindowCompat
-import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.feature.terminateinsurance.ui.TerminateInsuranceNavHost
@@ -25,7 +25,7 @@ class TerminateInsuranceActivity : AppCompatActivity() {
       HedvigTheme {
         TerminateInsuranceNavHost(
           windowSizeClass = calculateWindowSizeClass(this),
-          navController = rememberNavController(),
+          navController = rememberAnimatedNavController(),
           insuranceId = insuranceId,
           navigateUp = { onSupportNavigateUp() },
           finishTerminationFlow = { finish() },

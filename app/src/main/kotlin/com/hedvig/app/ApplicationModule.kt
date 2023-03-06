@@ -33,7 +33,7 @@ import com.hedvig.android.hanalytics.android.di.appVersionNameQualifier
 import com.hedvig.android.hanalytics.android.di.hAnalyticsUrlQualifier
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
-import com.hedvig.android.navigation.Navigator
+import com.hedvig.android.navigation.activity.Navigator
 import com.hedvig.android.odyssey.input.InputViewModel
 import com.hedvig.android.odyssey.model.Resolution
 import com.hedvig.android.odyssey.repository.ClaimsFlowRepository

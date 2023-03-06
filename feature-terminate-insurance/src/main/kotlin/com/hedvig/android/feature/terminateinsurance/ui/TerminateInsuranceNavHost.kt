@@ -2,8 +2,10 @@ package com.hedvig.android.feature.terminateinsurance.ui
 
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalDensity
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
 import com.hedvig.android.feature.terminateinsurance.navigation.Destinations
 import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceGraph
@@ -17,8 +19,13 @@ internal fun TerminateInsuranceNavHost(
   navigateUp: () -> Boolean,
   finishTerminationFlow: () -> Unit,
 ) {
-  NavHost(
-    navController,
+  val density = LocalDensity.current
+  AnimatedNavHost(
+    navController = navController,
+    enterTransition = { MotionDefaults.sharedXAxisEnter(density) },
+    exitTransition = { MotionDefaults.sharedXAxisExit(density) },
+    popEnterTransition = { MotionDefaults.sharedXAxisPopEnter(density) },
+    popExitTransition = { MotionDefaults.sharedXAxisPopExit(density) },
     startDestination = createRoutePattern<Destinations.TerminateInsurance>(),
   ) {
     terminateInsuranceGraph(
