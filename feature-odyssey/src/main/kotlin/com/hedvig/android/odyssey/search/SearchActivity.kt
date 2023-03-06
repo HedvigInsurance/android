@@ -99,10 +99,14 @@ class SearchActivity : ComponentActivity() {
   private fun startClaimsFlow(viewModel: SearchViewModel, commonClaimId: String?) {
     val intent = OdysseyClaimsFlowActivity.newInstance(
       context = this,
-      odysseyUrl = intent.getStringExtra("ODYSSEY_URL_EXTRA") ?: throw java.lang.IllegalArgumentException("No url found"),
+      odysseyUrl = intent.getStringExtra(ODYSSEY_URL) ?: throw java.lang.IllegalArgumentException("No url found"),
       commonClaimId = commonClaimId,
     )
     startActivity(intent)
     viewModel.resetState()
+  }
+
+  companion object {
+    const val ODYSSEY_URL = "ODYSSEY_URL_EXTRA"
   }
 }

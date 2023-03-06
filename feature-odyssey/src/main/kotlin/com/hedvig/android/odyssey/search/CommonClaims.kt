@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -57,7 +58,7 @@ fun CommonClaims(
                 modifier = Modifier
                   .size(16.dp)
                   .clip(CircleShape)
-                  .background(Color(0xFFA4C9C6))
+                  .background(Color(claim.color()))
                   .align(Alignment.CenterVertically),
               )
 
@@ -83,18 +84,40 @@ fun CommonClaims(
               modifier = Modifier
                 .size(16.dp)
                 .clip(CircleShape)
-                .background(Color(0xFFFFBF00))
+                .background(Color(0XFFD5CE82))
                 .align(Alignment.CenterVertically),
             )
 
             Spacer(modifier = Modifier.padding(12.dp))
 
-            Text("Other", Modifier.align(Alignment.CenterVertically))
+            Text(stringResource(id = hedvig.resources.R.string.claims_select_other), Modifier.align(Alignment.CenterVertically))
           }
         }
       }
     }
   }
+}
+
+private fun SearchableClaim.color() = when (this.displayName) {
+  "Stolen bike",
+  "Stulen cykel",
+  -> 0xFFA49758
+  "Trasig telefon",
+  "Broken phone",
+  -> 0XFFA4C9C6
+  "Broken headphones",
+  "Trasiga hörlurar",
+  -> 0xFFFFBF00
+  "Stolen phone",
+  "Stulen telefon",
+  -> 0XFF98C2DA
+  "Stolen computer",
+  "Stulen dator",
+  -> 0XFF727272
+  "Stolen headphones",
+  "Stulna hörlurar",
+  -> 0XFF727272
+  else -> 0XFF4B739B
 }
 
 @Preview
@@ -111,18 +134,28 @@ fun PreviewCommonClaims() {
           itemType = ItemType("PHONE"),
         ),
         SearchableClaim(
+          id = "4",
+          displayName = "Stolen phone",
+          itemType = ItemType(""),
+        ),
+        SearchableClaim(
           id = "2",
           displayName = "Broken computer",
           itemType = ItemType("COMPUTER"),
         ),
         SearchableClaim(
-          id = "3",
-          displayName = "Stolen bike",
-          itemType = ItemType("BIKE"),
+          id = "4",
+          displayName = "Stolen computer",
+          itemType = ItemType(""),
         ),
         SearchableClaim(
           id = "4",
-          displayName = "Delayed Luggage",
+          displayName = "Broken headphones",
+          itemType = ItemType(""),
+        ),
+        SearchableClaim(
+          id = "4",
+          displayName = "Stolen headphones",
           itemType = ItemType(""),
         ),
       ),

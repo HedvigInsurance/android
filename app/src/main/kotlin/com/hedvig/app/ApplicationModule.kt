@@ -41,8 +41,7 @@ import com.hedvig.android.odyssey.repository.NetworkClaimsFlowRepository
 import com.hedvig.android.odyssey.repository.PhoneNumberRepository
 import com.hedvig.android.odyssey.resolution.ResolutionViewModel
 import com.hedvig.android.odyssey.search.GetClaimEntryPoints
-import com.hedvig.android.odyssey.search.GetLocalEntryPointsUseCase
-import com.hedvig.android.odyssey.search.GetCommonClaimsUseCase
+import com.hedvig.android.odyssey.search.GetClaimEntryPointsUseCase
 import com.hedvig.android.odyssey.search.SearchViewModel
 import com.hedvig.app.authenticate.BankIdLoginViewModel
 import com.hedvig.app.authenticate.LogoutUseCase
@@ -603,8 +602,7 @@ val useCaseModule = module {
       cacheManager = get(),
     )
   }
-  single<GetCommonClaimsUseCase> { GetCommonClaimsUseCase(get(), get()) }
-  single<GetClaimEntryPoints> { GetLocalEntryPointsUseCase() }
+  single<GetClaimEntryPoints> { GetClaimEntryPointsUseCase(get(), get<Context>().getString(R.string.ODYSSEY_URL)) }
 }
 
 val cacheManagerModule = module {

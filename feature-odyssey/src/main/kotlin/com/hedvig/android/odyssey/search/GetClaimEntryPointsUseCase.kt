@@ -14,21 +14,22 @@ import okhttp3.Request
 
 class GetClaimEntryPointsUseCase(
   private val okhttpClient: OkHttpClient,
+  private val odysseyUrl: String,
 ) : GetClaimEntryPoints {
 
   override suspend operator fun invoke(): CommonClaimsResult {
     val url = HttpUrl.Builder()
       .scheme("https")
-      .host("gateway.test.hedvig.com")
-      .addPathSegment("claims")
+      .host(odysseyUrl.substringAfter("//"))
       .addPathSegment("api")
-      .addPathSegment("claim-entrypoints")
+      .addPathSegment("entrypoints")
       .addQueryParameter("limit", NR_OF_ENTRYPOINTS)
       .build()
 
     val request = Request.Builder()
       .url(url)
       .header("Content-Type", "application/json")
+      .header("Odyssey-Platform", "android")
       .get()
       .build()
 
@@ -59,4 +60,5 @@ private const val NR_OF_ENTRYPOINTS = "10"
 data class ClaimEntryPointDTO(
   val id: String,
   val displayName: String,
+  val path: String,
 )
