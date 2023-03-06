@@ -31,7 +31,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
@@ -41,6 +40,7 @@ import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicke
 import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
+import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbar
 import com.hedvig.android.feature.terminateinsurance.TerminateInsuranceViewModel
 
@@ -179,7 +179,7 @@ private fun PreviewTerminationDateScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       TerminationDateScreen(
-        WindowSizeClass.calculateFromSize(DpSize(500.dp, 300.dp)),
+        WindowSizeClass.calculateForPreview(),
         rememberDatePickerState(),
         false,
         { true },

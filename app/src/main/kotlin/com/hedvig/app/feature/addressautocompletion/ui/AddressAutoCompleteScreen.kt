@@ -46,7 +46,7 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
+import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddressInput
@@ -249,7 +249,7 @@ private fun SuggestionsList(
   }
 }
 
-@HedvigPreview
+@HedvigMultiScreenPreview
 @Composable
 private fun PreviewAddressAutoCompleteScreen() {
   HedvigTheme {

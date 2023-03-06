@@ -28,12 +28,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
+import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
+import com.hedvig.android.core.ui.preview.calculateForPreview
 import hedvig.resources.R
 
 @Composable
@@ -114,12 +114,12 @@ private fun TerminationSuccessScreen(
   }
 }
 
-@HedvigPreview
+@HedvigMultiScreenPreview
 @Composable
 private fun PreviewTerminationSuccessScreen() {
   HedvigTheme {
     Surface {
-      TerminationSuccessScreen(WindowSizeClass.calculateFromSize(DpSize(500.dp, 300.dp)), {})
+      TerminationSuccessScreen(WindowSizeClass.calculateForPreview()) {}
     }
   }
 }

@@ -39,12 +39,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.textColorLink
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
+import com.hedvig.android.core.ui.preview.calculateForPreview
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -180,7 +180,7 @@ private fun PreviewBusinessModelScreen() {
     Surface(color = MaterialTheme.colors.background) {
       BusinessModelScreen(
         navigateBack = {},
-        windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(500.dp, 300.dp)),
+        windowSizeClass = WindowSizeClass.calculateForPreview(),
       )
     }
   }

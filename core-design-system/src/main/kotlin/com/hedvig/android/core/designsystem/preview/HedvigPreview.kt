@@ -20,7 +20,7 @@ annotation class HedvigPreview
 )
 @Preview(
   name = "darkMode landscape",
-  uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL,
+  uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL,
   device = "spec:parent=pixel_5,orientation=landscape",
 )
 private annotation class HedvigLandscapePreview
