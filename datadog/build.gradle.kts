@@ -13,8 +13,8 @@ dependencies {
   implementation(libs.androidx.other.workManager)
   implementation(libs.datadog.sdk)
   implementation(libs.koin.android)
+  implementation(libs.kotlinx.serialization.json)
   implementation(libs.okhttp.core)
-  implementation(libs.serialization.json)
   implementation(libs.slimber)
 }
 

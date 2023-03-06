@@ -4,9 +4,9 @@ plugins {
 }
 
 dependencies {
-  implementation(libs.okio)
+  implementation(libs.kotlinx.serialization.json)
   implementation(libs.okhttp.core)
-  implementation(libs.serialization.json)
+  implementation(libs.okio)
 }
 
 java {

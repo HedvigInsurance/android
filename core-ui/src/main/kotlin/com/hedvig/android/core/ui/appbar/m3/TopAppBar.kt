@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -16,7 +15,6 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAppBarWithBack(
   title: String,
@@ -41,7 +39,6 @@ fun TopAppBarWithBack(
 }
 
 @Suppress("unused")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAppBarWithClose(
   title: String,
@@ -69,7 +66,6 @@ private enum class TopAppBarActionType {
   BACK, CLOSE
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private inline fun TopAppBar(
   title: String,

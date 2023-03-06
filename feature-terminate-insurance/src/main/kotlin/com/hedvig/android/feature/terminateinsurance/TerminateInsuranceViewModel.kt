@@ -1,14 +1,14 @@
-package com.hedvig.android.feature.cancelinsurance
+package com.hedvig.android.feature.terminateinsurance
 
 import androidx.compose.material3.DatePickerState
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
-import com.hedvig.android.feature.cancelinsurance.data.CancelInsuranceUseCase
+import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -19,24 +19,29 @@ import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 
-@OptIn(ExperimentalMaterial3Api::class)
-internal class CancelInsuranceViewModel(
+internal class TerminateInsuranceViewModel(
   private val insuranceId: InsuranceId,
-  private val cancelInsuranceUseCase: CancelInsuranceUseCase,
+  private val terminateInsuranceUseCase: TerminateInsuranceUseCase,
   clock: Clock = Clock.System,
 ) : ViewModel() {
   private val datePickerConfiguration = DatePickerConfiguration(clock)
   val dateValidator = datePickerConfiguration.dateValidator
 
-  private val _uiState: MutableStateFlow<CancelInsuranceUiState> = MutableStateFlow(
-    CancelInsuranceUiState(
+  private val _uiState: MutableStateFlow<TerminateInsuranceUiState> = MutableStateFlow(
+    TerminateInsuranceUiState(
       datePickerState = datePickerConfiguration.datePickerState,
       dateSubmissionError = false,
       dateSubmissionSuccess = false,
       isLoading = false,
     ),
   )
-  val uiState = _uiState.asStateFlow()
+  val uiState: StateFlow<TerminateInsuranceUiState> = _uiState.asStateFlow()
+
+  fun handledSuccess() {
+    _uiState.update {
+      it.copy(dateSubmissionSuccess = false)
+    }
+  }
 
   fun showedError() {
     _uiState.update {
@@ -50,7 +55,7 @@ internal class CancelInsuranceViewModel(
     val selectedDateMillis = uiState.datePickerState.selectedDateMillis ?: return
     _uiState.update { it.copy(isLoading = true) }
     viewModelScope.launch {
-      val result = cancelInsuranceUseCase.invoke(
+      val result = terminateInsuranceUseCase.invoke(
         insuranceId,
         selectedDateMillis,
       )
@@ -72,8 +77,7 @@ internal class CancelInsuranceViewModel(
   }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-class DatePickerConfiguration(clock: Clock) {
+private class DatePickerConfiguration(clock: Clock) {
   private val todayAtStartOfDay: LocalDateTime = clock.now()
     .toLocalDateTime(TimeZone.UTC)
     .date
@@ -88,8 +92,7 @@ class DatePickerConfiguration(clock: Clock) {
   }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-data class CancelInsuranceUiState(
+internal data class TerminateInsuranceUiState(
   val datePickerState: DatePickerState,
   val dateSubmissionError: Boolean,
   val dateSubmissionSuccess: Boolean,
@@ -105,8 +108,7 @@ data class CancelInsuranceUiState(
     ) { canSubmitSelectedDate() }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-private fun CancelInsuranceUiState.canSubmitSelectedDate(): Boolean {
+private fun TerminateInsuranceUiState.canSubmitSelectedDate(): Boolean {
   return datePickerState.selectedDateMillis != null &&
     !dateSubmissionError &&
     !dateSubmissionSuccess &&

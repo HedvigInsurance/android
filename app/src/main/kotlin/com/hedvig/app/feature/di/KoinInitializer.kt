@@ -7,7 +7,7 @@ import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.datadog.di.datadogModule
 import com.hedvig.android.feature.businessmodel.di.businessModelModule
-import com.hedvig.android.feature.cancelinsurance.di.cancelInsuranceModule
+import com.hedvig.android.feature.terminateinsurance.di.terminateInsuranceModule
 import com.hedvig.android.hanalytics.android.di.hAnalyticsAndroidModule
 import com.hedvig.android.hanalytics.di.hAnalyticsModule
 import com.hedvig.android.hanalytics.engineering.di.HAnalyticsEngineeringModuleImpl
@@ -77,13 +77,15 @@ class KoinInitializer : Initializer<KoinApplication> {
         applicationModule,
         authModule,
         authRepositoryModule,
+        authRepositoryModule,
         businessModelModule,
         cacheManagerModule,
-        cancelInsuranceModule,
         changeAddressModule,
         changeDateBottomSheetModule,
         chatEventModule,
         checkoutModule,
+        claimsRepositoryModule,
+        claimsViewModelModule,
         clockModule,
         coilModule,
         connectPaymentModule,
@@ -118,16 +120,14 @@ class KoinInitializer : Initializer<KoinApplication> {
         serviceModule,
         sharedPreferencesModule,
         stringConstantsModule,
+        submitClaimModule,
+        terminateInsuranceModule,
         textActionSetModule,
         trustlyModule,
         useCaseModule,
         valueStoreModule,
         viewModelModule,
         whatsNewModule,
-        authRepositoryModule,
-        submitClaimModule,
-        claimsRepositoryModule,
-        claimsViewModelModule,
       ),
     )
   }

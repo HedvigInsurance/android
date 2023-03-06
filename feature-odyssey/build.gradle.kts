@@ -32,7 +32,7 @@ dependencies {
   implementation(libs.hedvig.odyssey)
   implementation(libs.koin.android)
   implementation(libs.koin.android)
-  implementation(libs.serialization.json)
+  implementation(libs.kotlinx.serialization.json)
   implementation(libs.slimber)
 }
 

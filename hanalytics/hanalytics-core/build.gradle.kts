@@ -11,7 +11,7 @@ dependencies {
   api(libs.hAnalytics)
   implementation(libs.coroutines.core)
   implementation(libs.koin.core)
-  implementation(libs.serialization.core)
+  implementation(libs.kotlinx.serialization.core)
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java).configureEach {

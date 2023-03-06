@@ -1,7 +1,6 @@
 package com.hedvig.android.odyssey.resolution.ui
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.keyframes
@@ -29,7 +28,6 @@ import com.hedvig.android.core.designsystem.component.button.LargeContainedButto
 import com.hedvig.odyssey.R
 import com.hedvig.odyssey.designsystem.BlurredFullScreenProgressOverlay
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun PayoutProgress(
   title: String,

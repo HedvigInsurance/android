@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -36,7 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun M3TextFields() {
   Column {
@@ -67,7 +65,6 @@ internal fun M3TextFields() {
   }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TextFieldErrorMessage() {
   val startPadding = TextFieldDefaults.textFieldWithoutLabelPadding()

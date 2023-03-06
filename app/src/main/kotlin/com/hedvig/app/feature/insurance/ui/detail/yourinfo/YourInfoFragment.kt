@@ -5,7 +5,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
 import androidx.recyclerview.widget.ConcatAdapter
-import com.hedvig.android.feature.cancelinsurance.CancelInsuranceActivity
+import com.hedvig.android.feature.terminateinsurance.TerminateInsuranceActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ContractDetailYourInfoFragmentBinding
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
@@ -64,6 +64,6 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
   }
 
   private fun openCancelInsuranceScreen(insuranceId: String) {
-    startActivity(CancelInsuranceActivity.newInstance(requireContext(), insuranceId))
+    startActivity(TerminateInsuranceActivity.newInstance(requireContext(), insuranceId))
   }
 }
