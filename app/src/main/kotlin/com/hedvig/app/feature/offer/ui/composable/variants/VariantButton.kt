@@ -19,10 +19,10 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.hedvig_black
 import com.hedvig.android.core.designsystem.theme.hedvig_black12percent
@@ -94,16 +94,14 @@ fun VariantButton(
   }
 }
 
-@Preview
+@HedvigPreview
 @Composable
-fun VariantButtonPreview(
+private fun PreviewVariantButton(
   @PreviewParameter(VariantButtonInputsProvider::class) inputs: Triple<String, String, Boolean>,
 ) {
   val (title, subtitle, selected) = inputs
   HedvigTheme {
-    Surface(
-      color = MaterialTheme.colors.background,
-    ) {
+    Surface(color = MaterialTheme.colors.background) {
       VariantButton(
         id = "id",
         title = title,
@@ -117,7 +115,7 @@ fun VariantButtonPreview(
   }
 }
 
-class VariantButtonInputsProvider : CollectionPreviewParameterProvider<Triple<String, String, Boolean>>(
+private class VariantButtonInputsProvider : CollectionPreviewParameterProvider<Triple<String, String, Boolean>>(
   listOf(
     Triple("Hemförsäkring och Olyckssfall", "Test subtitle", true),
     Triple("Title".repeat(5), "Subtitle", false),

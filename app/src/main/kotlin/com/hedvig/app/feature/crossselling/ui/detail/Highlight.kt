@@ -7,12 +7,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 
@@ -42,13 +43,15 @@ fun Highlight(
   }
 }
 
-@Preview(showBackground = true)
+@HedvigPreview
 @Composable
-fun HighlightPreview() {
+private fun PreviewHighlight() {
   HedvigTheme {
-    Highlight(
-      title = "Covers dental injuries",
-      description = "Up to 100 000 SEK per damage.",
-    )
+    Surface(color = MaterialTheme.colors.background) {
+      Highlight(
+        title = "Covers dental injuries",
+        description = "Up to 100 000 SEK per damage.",
+      )
+    }
   }
 }

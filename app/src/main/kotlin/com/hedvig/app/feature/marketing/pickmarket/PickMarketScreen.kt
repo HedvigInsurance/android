@@ -32,6 +32,7 @@ import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.RadioButton
 import androidx.compose.material.RadioButtonDefaults
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.ButtonDefaults
@@ -47,10 +48,10 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.BottomSheetHandle
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
@@ -376,46 +377,54 @@ private fun PickerRow(
   }
 }
 
-@Preview(showBackground = true)
+@HedvigPreview
 @Composable
-fun RadioButtonRowPreview() {
+private fun PreviewRadioButtonRow() {
   HedvigTheme {
-    RadioButtonRow(
-      onClick = {},
-      selected = false,
-      text = "Sweden",
-    )
+    Surface(color = MaterialTheme.colors.background) {
+      RadioButtonRow(
+        onClick = {},
+        selected = false,
+        text = "Sweden",
+      )
+    }
   }
 }
 
-@Preview(showBackground = true)
+@HedvigPreview
 @Composable
-fun PickerRowPreviewEmpty() {
+private fun PreviewEmptyPickerRow() {
   HedvigTheme {
-    PickerRow(onClick = {}, icon = null, header = "asd", label = "efg", enabled = false)
+    Surface(color = MaterialTheme.colors.background) {
+      PickerRow(onClick = {}, icon = null, header = "asd", label = "efg", enabled = false)
+    }
   }
 }
 
-@Preview(showBackground = true)
+@HedvigPreview
 @Composable
-fun PickerRowPreview() {
+private fun PreviewPickerRow() {
   HedvigTheme {
-    PickerRow(onClick = {}, icon = { LanguageFlag() }, header = "asd", label = "efg", enabled = false)
+    Surface(color = MaterialTheme.colors.background) {
+      PickerRow(onClick = {}, icon = { LanguageFlag() }, header = "asd", label = "efg", enabled = false)
+    }
   }
 }
 
-@Preview(showBackground = true)
+@HedvigPreview
 @Composable
-fun PickMarketPreview() {
+private fun PreviewPickMarket() {
   HedvigTheme {
-    PickMarketScreen(
-      onSubmit = {},
-      onSelectMarket = {},
-      onSelectLanguage = {},
-      selectedMarket = Market.SE,
-      selectedLanguage = Language.SV_SE,
-      markets = emptyList(),
-      enabled = true,
-    )
+    Surface(color = MaterialTheme.colors.background) {
+      PickMarketScreen(
+        onSubmit = {},
+        onSelectMarket = {},
+        onSelectLanguage = {},
+        selectedMarket = Market.SE,
+        selectedLanguage = Language.SV_SE,
+        markets = emptyList(),
+        enabled = true,
+      )
+    }
   }
 }

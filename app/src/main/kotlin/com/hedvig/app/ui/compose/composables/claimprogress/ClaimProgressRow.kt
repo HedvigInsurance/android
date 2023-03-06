@@ -1,6 +1,5 @@
 package com.hedvig.app.ui.compose.composables.claimprogress
 
-import android.content.res.Configuration
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,8 +16,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusColors
 import com.hedvig.app.util.compose.ContentAlpha
@@ -102,13 +101,11 @@ private fun ClaimProgress(
   }
 }
 
-@Preview
+@HedvigPreview
 @Composable
-fun ClaimProgressRowPreview() {
+private fun PreviewClaimProgressRow() {
   HedvigTheme {
-    Surface(
-      color = MaterialTheme.colors.background,
-    ) {
+    Surface(color = MaterialTheme.colors.background) {
       ClaimProgressRow(
         listOf(
           ClaimProgressUiState(
@@ -129,14 +126,11 @@ fun ClaimProgressRowPreview() {
   }
 }
 
-@Preview
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@HedvigPreview
 @Composable
-fun ClaimProgressPreview() {
+private fun PreviewClaimProgress() {
   HedvigTheme {
-    Surface(
-      color = MaterialTheme.colors.background,
-    ) {
+    Surface(color = MaterialTheme.colors.background) {
       ClaimProgress(
         "Text",
         MaterialTheme.colors.primary,

@@ -9,13 +9,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 
 @Composable
@@ -49,14 +50,12 @@ fun NotificationSubheading(
   }
 }
 
-@Preview(
-  name = "Subheading with a notification Badge",
-  group = "Insurance Tab",
-  showBackground = true,
-)
+@HedvigPreview
 @Composable
-fun UnseenBadgeSubheadingPreview() {
+private fun PreviewUnseenBadgeSubheading() {
   HedvigTheme {
-    NotificationSubheading("Add more coverage", true)
+    Surface(color = MaterialTheme.colors.background) {
+      NotificationSubheading("Add more coverage", true)
+    }
   }
 }

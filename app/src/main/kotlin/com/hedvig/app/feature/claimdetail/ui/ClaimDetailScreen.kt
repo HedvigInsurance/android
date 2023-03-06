@@ -12,11 +12,12 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
@@ -109,15 +110,17 @@ private fun ClaimDetailScreen(
   }
 }
 
-@Preview(showBackground = true)
+@HedvigMultiScreenPreview
 @Composable
-fun ClaimDetailScreenPreview() {
+private fun PreviewClaimDetailScreen() {
   HedvigTheme {
-    ClaimDetailScreen(
-      uiState = ClaimDetailUiState.previewData(),
-      onPlayClick = {},
-      locale = Locale.getDefault(),
-      onChatClick = {},
-    )
+    Surface {
+      ClaimDetailScreen(
+        uiState = ClaimDetailUiState.previewData(),
+        onPlayClick = {},
+        locale = Locale.getDefault(),
+        onChatClick = {},
+      )
+    }
   }
 }

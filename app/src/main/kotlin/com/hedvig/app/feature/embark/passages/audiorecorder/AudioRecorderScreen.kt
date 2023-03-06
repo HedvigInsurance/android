@@ -26,10 +26,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.component.button.LargeTextButton
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 import com.hedvig.app.util.compose.ScreenOnFlag
@@ -216,129 +216,135 @@ fun Playback(
   }
 }
 
-@Preview(showBackground = true)
+@HedvigPreview
 @Composable
-fun AudioRecorderScreenNotRecordingPreview() {
+private fun PreviewAudioRecorderScreenNotRecording() {
   HedvigTheme {
-    AudioRecorderScreen(
-      parameters = AudioRecorderParameters(
-        messages = listOf("Hello", "World"),
-        key = "key",
-        label = "label",
-        link = "link",
-      ),
-      viewState = AudioRecorderViewModel.ViewState.NotRecording,
-      startRecording = {},
-      clock = Clock.systemDefaultZone(),
-      stopRecording = {},
-      submit = {},
-      redo = {},
-      play = {},
-      pause = {},
-    )
+    Surface(color = MaterialTheme.colors.background) {
+      AudioRecorderScreen(
+        parameters = AudioRecorderParameters(
+          messages = listOf("Hello", "World"),
+          key = "key",
+          label = "label",
+          link = "link",
+        ),
+        viewState = AudioRecorderViewModel.ViewState.NotRecording,
+        startRecording = {},
+        clock = Clock.systemDefaultZone(),
+        stopRecording = {},
+        submit = {},
+        redo = {},
+        play = {},
+        pause = {},
+      )
+    }
   }
 }
 
-@Preview(showBackground = true)
+@HedvigPreview
 @Composable
-fun AudioRecorderScreenRecordingPreview() {
+private fun PreviewAudioRecorderScreenRecording() {
   HedvigTheme {
-    AudioRecorderScreen(
-      parameters = AudioRecorderParameters(
-        messages = listOf("Hello", "World"),
-        key = "key",
-        label = "label",
-        link = "link",
-      ),
-      viewState = AudioRecorderViewModel.ViewState.Recording(
-        listOf(
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
+    Surface(color = MaterialTheme.colors.background) {
+      AudioRecorderScreen(
+        parameters = AudioRecorderParameters(
+          messages = listOf("Hello", "World"),
+          key = "key",
+          label = "label",
+          link = "link",
         ),
-        Instant.ofEpochSecond(1634025260),
-        "",
-      ),
-      startRecording = {},
-      clock = Clock.fixed(Instant.ofEpochSecond(1634025262), ZoneId.systemDefault()),
-      stopRecording = {},
-      submit = {},
-      redo = {},
-      play = {},
-      pause = {},
-    )
+        viewState = AudioRecorderViewModel.ViewState.Recording(
+          listOf(
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+          ),
+          Instant.ofEpochSecond(1634025260),
+          "",
+        ),
+        startRecording = {},
+        clock = Clock.fixed(Instant.ofEpochSecond(1634025262), ZoneId.systemDefault()),
+        stopRecording = {},
+        submit = {},
+        redo = {},
+        play = {},
+        pause = {},
+      )
+    }
   }
 }
 
-@Preview(showBackground = true)
+@HedvigPreview
 @Composable
-fun AudioRecorderScreenPlaybackPreview() {
+private fun PreviewAudioRecorderScreenPlayback() {
   HedvigTheme {
-    AudioRecorderScreen(
-      parameters = AudioRecorderParameters(
-        messages = listOf("Hello", "World"),
-        key = "key",
-        label = "label",
-        link = "link",
-      ),
-      viewState = AudioRecorderViewModel.ViewState.Playback(
-        "",
-        isPlaying = false,
-        isPrepared = true,
-        amplitudes = listOf(
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
-          100, 200, 150, 250, 0,
+    Surface(color = MaterialTheme.colors.background) {
+      AudioRecorderScreen(
+        parameters = AudioRecorderParameters(
+          messages = listOf("Hello", "World"),
+          key = "key",
+          label = "label",
+          link = "link",
         ),
-        progress = 0.5f,
-      ),
-      startRecording = {},
-      clock = Clock.systemDefaultZone(),
-      stopRecording = {},
-      submit = {},
-      redo = {},
-      play = {},
-      pause = {},
-    )
+        viewState = AudioRecorderViewModel.ViewState.Playback(
+          "",
+          isPlaying = false,
+          isPrepared = true,
+          amplitudes = listOf(
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+            100, 200, 150, 250, 0,
+          ),
+          progress = 0.5f,
+        ),
+        startRecording = {},
+        clock = Clock.systemDefaultZone(),
+        stopRecording = {},
+        submit = {},
+        redo = {},
+        play = {},
+        pause = {},
+      )
+    }
   }
 }

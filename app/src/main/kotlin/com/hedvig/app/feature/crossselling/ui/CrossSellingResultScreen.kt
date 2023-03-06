@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,13 +20,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.core.designsystem.component.button.LargeOutlinedTextButton
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 import java.time.Clock
@@ -180,30 +181,28 @@ private fun ButtonsSection(
   }
 }
 
-@Preview(
-  showSystemUi = true,
-  name = "Accident Result",
-  group = "Cross Sell result",
-)
+@HedvigPreview
 @Composable
-fun CrossSellingResultScreenPreview(
+private fun PreviewCrossSellingResultScreen(
   @PreviewParameter(ActivityResultProvider::class) crossSellingResult: CrossSellingResult,
 ) {
   HedvigTheme {
-    CrossSellingResultScreen(
-      crossSellingResult,
-      Clock.systemDefaultZone(),
-      DateTimeFormatter.ISO_LOCAL_DATE,
-      {},
-      {},
-    )
+    Surface {
+      CrossSellingResultScreen(
+        crossSellingResult,
+        Clock.systemDefaultZone(),
+        DateTimeFormatter.ISO_LOCAL_DATE,
+        {},
+        {},
+      )
+    }
   }
 }
 
-class ActivityResultProvider : PreviewParameterProvider<CrossSellingResult> {
-  override val values: Sequence<CrossSellingResult> = sequenceOf(
+private class ActivityResultProvider : CollectionPreviewParameterProvider<CrossSellingResult>(
+  listOf(
     CrossSellingResult.Error,
     CrossSellingResult.Success(LocalDate.now(), "Accident Insurance"),
     CrossSellingResult.Success(LocalDate.now().plusDays(2), "Accident Insurance"),
-  )
-}
+  ),
+)

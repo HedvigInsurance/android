@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.embark.passages.addressautocomplete.composables
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,8 +16,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -80,10 +79,9 @@ private fun AddressTextColumn(
   }
 }
 
-@Preview
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@HedvigPreview
 @Composable
-fun AddressCardPreview() {
+private fun PreviewAddressCard() {
   HedvigTheme {
     Surface(color = MaterialTheme.colors.background) {
       AddressCard(

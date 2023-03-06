@@ -1,6 +1,5 @@
 package com.hedvig.app.ui.compose.composables.pill
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.heightIn
@@ -12,8 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.ui.compose.theme.hedvigContentColorFor
 
@@ -45,14 +44,11 @@ fun Pill(
   }
 }
 
-@Preview
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@HedvigPreview
 @Composable
-fun PillPreview() {
+private fun PreviewPill() {
   HedvigTheme {
-    Surface(
-      color = MaterialTheme.colors.background,
-    ) {
+    Surface(color = MaterialTheme.colors.background) {
       Pill("PillText", MaterialTheme.colors.primary)
     }
   }

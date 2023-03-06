@@ -9,12 +9,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 
 /**
@@ -47,29 +48,27 @@ fun SectionTitle(
   }
 }
 
-@Preview(
-  name = "Section Title, Notification = False",
-  group = "List",
-)
+@HedvigPreview
 @Composable
-fun SectionTitlePreviewNoNotification() {
+private fun PreviewSectionTitleNoNotification() {
   HedvigTheme {
-    SectionTitle(
-      text = "Section Title",
-    )
+    Surface(color = MaterialTheme.colors.background) {
+      SectionTitle(
+        text = "Section Title",
+      )
+    }
   }
 }
 
-@Preview(
-  name = "Section Title, Notification = True",
-  group = "List",
-)
+@HedvigPreview
 @Composable
-fun SectionTitlePreviewNotification() {
+private fun PreviewSectionTitleNotification() {
   HedvigTheme {
-    SectionTitle(
-      text = "Section Title",
-      notification = true,
-    )
+    Surface(color = MaterialTheme.colors.background) {
+      SectionTitle(
+        text = "Section Title",
+        notification = true,
+      )
+    }
   }
 }

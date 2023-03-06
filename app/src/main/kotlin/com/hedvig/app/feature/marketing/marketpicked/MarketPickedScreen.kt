@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
@@ -17,10 +19,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.component.button.LargeOutlinedButton
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.hedvig_off_white
 import com.hedvig.app.R
@@ -69,15 +71,17 @@ fun MarketPickedScreen(
   }
 }
 
-@Preview(showBackground = true)
+@HedvigPreview
 @Composable
-fun MarketPickedPreview() {
+private fun PreviewMarketPicked() {
   HedvigTheme {
-    MarketPickedScreen(
-      onClickMarket = {},
-      onClickSignUp = {},
-      onClickLogIn = {},
-      flagRes = hedvig.resources.R.drawable.ic_flag_se,
-    )
+    Surface(color = MaterialTheme.colors.background) {
+      MarketPickedScreen(
+        onClickMarket = {},
+        onClickSignUp = {},
+        onClickLogIn = {},
+        flagRes = hedvig.resources.R.drawable.ic_flag_se,
+      )
+    }
   }
 }

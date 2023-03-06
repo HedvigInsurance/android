@@ -24,6 +24,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -40,10 +41,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.edit
 import com.google.accompanist.insets.ui.TopAppBar
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.hanalytics.engineering.R
 import com.hedvig.android.hanalytics.engineering.tracking.TrackDetailDialogFragment.Companion.show
@@ -185,20 +186,22 @@ private fun TrackingLogScreen(
   }
 }
 
-@Preview
+@HedvigPreview
 @Composable
-fun TrackingLogScreenPreview() {
+private fun PreviewTrackingLogScreen() {
   HedvigTheme {
-    TrackingLogScreen(
-      onNavigateUp = {},
-      onClickEvent = {},
-      onClickClearEvents = {},
-      tracks = listOf(
-        TrackEvent("example_event", "{}", LocalDateTime.now()),
-        TrackEvent("example_event", "{}", LocalDateTime.now()),
-        TrackEvent("example_event", "{}", LocalDateTime.now()),
-        TrackEvent("example_event", "{}", LocalDateTime.now()),
-      ),
-    )
+    Surface(color = MaterialTheme.colors.background) {
+      TrackingLogScreen(
+        onNavigateUp = {},
+        onClickEvent = {},
+        onClickClearEvents = {},
+        tracks = listOf(
+          TrackEvent("example_event", "{}", LocalDateTime.now()),
+          TrackEvent("example_event", "{}", LocalDateTime.now()),
+          TrackEvent("example_event", "{}", LocalDateTime.now()),
+          TrackEvent("example_event", "{}", LocalDateTime.now()),
+        ),
+      )
+    }
   }
 }

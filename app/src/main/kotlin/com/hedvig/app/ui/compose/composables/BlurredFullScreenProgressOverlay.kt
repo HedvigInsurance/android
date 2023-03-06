@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -21,9 +22,9 @@ import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.progressBlue
 import com.hedvig.android.core.designsystem.theme.progressYellow
@@ -136,10 +137,12 @@ private fun AnimatedCircles() {
   }
 }
 
-@Preview
+@HedvigPreview
 @Composable
-fun TextProgressOverlayPreview() {
+private fun PreviewTextProgressOverlay() {
   HedvigTheme {
-    TextProgressOverlay(progressText = "Calculating price...")
+    Surface(color = MaterialTheme.colors.background) {
+      TextProgressOverlay(progressText = "Calculating price...")
+    }
   }
 }

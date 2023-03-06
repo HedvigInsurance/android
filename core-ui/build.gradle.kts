@@ -13,6 +13,7 @@ dependencies {
   api(libs.androidx.compose.material)
   api(libs.androidx.compose.material3)
 
+  implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.compose.uiUtil)
   implementation(libs.coil.coil)
 }

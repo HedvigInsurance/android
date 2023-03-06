@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.claimdetail.ui
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,12 +14,11 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.app.R
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailResult
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusColors
 import com.hedvig.app.ui.compose.composables.pill.Pill
@@ -74,22 +72,19 @@ fun ClaimResultSection(
   }
 }
 
-@Preview
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@HedvigPreview
 @Composable
-fun ClaimResultSectionPreview(
+private fun PreviewClaimResultSection(
   @PreviewParameter(ClaimDetailResultProvider::class) result: ClaimDetailResult.Closed,
 ) {
   HedvigTheme {
-    Surface(
-      color = MaterialTheme.colors.background,
-    ) {
+    Surface(color = MaterialTheme.colors.background) {
       ClaimResultSection(result, Locale.getDefault())
     }
   }
 }
 
-class ClaimDetailResultProvider : CollectionPreviewParameterProvider<ClaimDetailResult.Closed>(
+private class ClaimDetailResultProvider : CollectionPreviewParameterProvider<ClaimDetailResult.Closed>(
   listOf(
     ClaimDetailResult.Closed.Paid(PreviewData.monetaryAmount(2_500.00)),
     ClaimDetailResult.Closed.Paid(null),

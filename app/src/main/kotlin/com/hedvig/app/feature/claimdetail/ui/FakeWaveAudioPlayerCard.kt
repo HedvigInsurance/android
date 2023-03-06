@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.claimdetail.ui
 
-import android.content.res.Configuration
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
@@ -32,10 +31,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.onWarning
 import com.hedvig.app.R
@@ -195,9 +194,9 @@ private fun AudioPlayerActionOrLoadingIcon(
   }
 }
 
-@Preview("Interactive Preview")
+@HedvigPreview
 @Composable
-fun FakeWaveAudioPlayerCardAnimationPreview() {
+private fun PreviewFakeWaveAudioPlayerCardAnimation() {
   HedvigTheme {
     Surface(color = MaterialTheme.colors.background) {
       var audioPlayerState: AudioPlayerState by remember {
@@ -221,22 +220,19 @@ fun FakeWaveAudioPlayerCardAnimationPreview() {
   }
 }
 
-@Preview
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@HedvigPreview
 @Composable
-fun FakeWaveAudioPlayerCardPreview(
+private fun PreviewFakeWaveAudioPlayerCard(
   @PreviewParameter(AudioPlayerStateProvider::class) audioPlayerState: AudioPlayerState,
 ) {
   HedvigTheme {
-    Surface(
-      color = MaterialTheme.colors.background,
-    ) {
+    Surface(color = MaterialTheme.colors.background) {
       FakeWaveAudioPlayerCard(audioPlayerState, {}, {}, {}, {})
     }
   }
 }
 
-class AudioPlayerStateProvider : CollectionPreviewParameterProvider<AudioPlayerState>(
+private class AudioPlayerStateProvider : CollectionPreviewParameterProvider<AudioPlayerState>(
   listOf(
     AudioPlayerState.Failed,
     AudioPlayerState.Ready(ReadyState.Paused, ProgressPercentage(0.4f)),

@@ -17,6 +17,7 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -26,9 +27,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.app.util.compose.submitOnEnter
@@ -138,34 +139,38 @@ private fun TrailingIcon(
   }
 }
 
-@Preview(showBackground = true)
+@HedvigPreview
 @Composable
-fun EmailInputScreenValidPreview() {
+private fun PreviewEmailInputScreenValid() {
   HedvigTheme {
-    EmailInputScreen(
-      onUpClick = {},
-      onInputChanged = {},
-      onSubmitEmail = {},
-      onClear = {},
-      emailInput = "example@example.com",
-      error = null,
-      loading = false,
-    )
+    Surface(color = MaterialTheme.colors.background) {
+      EmailInputScreen(
+        onUpClick = {},
+        onInputChanged = {},
+        onSubmitEmail = {},
+        onClear = {},
+        emailInput = "example@example.com",
+        error = null,
+        loading = false,
+      )
+    }
   }
 }
 
-@Preview(showBackground = true)
+@HedvigPreview
 @Composable
-fun EmailInputScreenInvalidPreview() {
+private fun PreviewEmailInputScreenInvalid() {
   HedvigTheme {
-    EmailInputScreen(
-      onUpClick = {},
-      onInputChanged = {},
-      onSubmitEmail = {},
-      onClear = {},
-      emailInput = "example.com",
-      error = "Invalid email",
-      loading = false,
-    )
+    Surface(color = MaterialTheme.colors.background) {
+      EmailInputScreen(
+        onUpClick = {},
+        onInputChanged = {},
+        onSubmitEmail = {},
+        onClear = {},
+        emailInput = "example.com",
+        error = "Invalid email",
+        loading = false,
+      )
+    }
   }
 }
