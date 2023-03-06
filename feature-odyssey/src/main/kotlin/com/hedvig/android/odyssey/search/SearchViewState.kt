@@ -9,7 +9,6 @@ data class SearchViewState(
   val commonClaims: List<SearchableClaim> = listOf(),
   val results: List<SearchableClaim> = emptyList(),
   val selectedClaim: SearchableClaim? = null,
-  val showCommonClaims: Boolean = true,
   val errorMessage: String? = null,
   val isLoading: Boolean = true,
 )

@@ -28,7 +28,6 @@ import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class SearchActivity : ComponentActivity() {
 
-  @OptIn(ExperimentalComposeUiApi::class)
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     lifecycle.addObserver(AuthenticatedObserver())
@@ -43,13 +42,6 @@ class SearchActivity : ComponentActivity() {
       }
 
       HedvigTheme {
-        val focusRequester = remember { FocusRequester() }
-        val keyboardController = LocalSoftwareKeyboardController.current
-
-        val closeKeyboard: () -> Unit = {
-          keyboardController?.hide()
-          focusRequester.freeFocus()
-        }
 
         Surface(color = MaterialTheme.colors.background) {
           Column {
@@ -68,28 +60,16 @@ class SearchActivity : ComponentActivity() {
 
             Spacer(modifier = Modifier.padding(8.dp))
 
-            Crossfade(targetState = viewState.showCommonClaims) { showCommonClaims ->
-              if (showCommonClaims) {
-                CommonClaims(
-                  selectClaim = viewModel::onSelectClaim,
-                  commonClaims = viewState.commonClaims,
-                  selectOther = {
-                    startClaimsFlow(
-                      viewModel = viewModel,
-                      commonClaimId = null,
-                    )
-                  },
+            CommonClaims(
+              selectClaim = viewModel::onSelectClaim,
+              commonClaims = viewState.commonClaims,
+              selectOther = {
+                startClaimsFlow(
+                  viewModel = viewModel,
+                  commonClaimId = null,
                 )
-              } else {
-                ClaimsSearchResults(
-                  viewState = viewState,
-                  onClaimSelected = viewModel::onSelectClaim,
-                  onClaimNotCovered = {},
-                  cantFindAddress = viewModel::onCantFind,
-                  closeKeyboard = closeKeyboard,
-                )
-              }
-            }
+              },
+            )
           }
         }
       }
