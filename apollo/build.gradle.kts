@@ -26,10 +26,10 @@ apollo {
   service("giraffe") {
     introspection {
       endpointUrl.set("https://graphql.dev.hedvigit.com/graphql")
-      schemaFile.set(file("src/main/graphql/com/hedvig/android/apollo/schema.graphqls"))
+      schemaFile.set(file("src/main/graphql/com/hedvig/android/apollo/giraffe/schema.graphqls"))
     }
-    schemaFile.set(file("src/main/graphql/com/hedvig/android/apollo/schema.graphqls"))
-    srcDir(file("src/main/graphql/com/hedvig/android/apollo/graphql"))
+    schemaFile.set(file("src/main/graphql/com/hedvig/android/apollo/giraffe/schema.graphqls"))
+    srcDir(file("src/main/graphql/com/hedvig/android/apollo/giraffe/graphql"))
 
     packageName.set("com.hedvig.android.apollo.graphql")
     codegenModels.set(MODELS_COMPAT)
