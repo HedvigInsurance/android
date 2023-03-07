@@ -16,6 +16,7 @@ dependencies {
   implementation(libs.adyen)
   implementation(libs.apollo.adapters)
   implementation(libs.apollo.normalizedCache)
+  implementation(libs.kotlinx.datetime)
 }
 
 android {
@@ -23,6 +24,19 @@ android {
 }
 
 apollo {
+  service("odyssey") {
+    introspection {
+      endpointUrl.set("https://odyssey.dev.hedvigit.com/graphql")
+      schemaFile.set(file("src/main/graphql/com/hedvig/android/apollo/odyssey/schema.graphqls"))
+    }
+    schemaFile.set(file("src/main/graphql/com/hedvig/android/apollo/odyssey/schema.graphqls"))
+    srcDir(file("src/main/graphql/com/hedvig/android/apollo/odyssey/graphql"))
+
+    packageName.set("com.hedvig.android.apollo.graphql.odyssey")
+    codegenModels.set(com.apollographql.apollo3.compiler.MODELS_RESPONSE_BASED)
+
+    mapScalar("Date", "kotlinx.datetime.Instant", "com.apollographql.apollo3.adapter.KotlinxInstantAdapter")
+  }
   service("giraffe") {
     introspection {
       endpointUrl.set("https://graphql.dev.hedvigit.com/graphql")
@@ -34,7 +48,6 @@ apollo {
     packageName.set("com.hedvig.android.apollo.graphql")
     codegenModels.set(MODELS_COMPAT)
 
-    generateKotlinModels.set(true)
     generateDataBuilders.set(true)
     testDirConnection {
       // Make test builders available to main (not just test or androidTest) to be used by our mock data
