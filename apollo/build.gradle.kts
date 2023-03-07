@@ -35,7 +35,7 @@ apollo {
     packageName.set("com.hedvig.android.apollo.graphql.odyssey")
     codegenModels.set(com.apollographql.apollo3.compiler.MODELS_RESPONSE_BASED)
 
-    mapScalar("Date", "kotlinx.datetime.Instant", "com.apollographql.apollo3.adapter.KotlinxInstantAdapter")
+    mapScalar("Date", "kotlinx.datetime.LocalDate", "com.apollographql.apollo3.adapter.KotlinxLocalDateAdapter")
   }
   service("giraffe") {
     introspection {
