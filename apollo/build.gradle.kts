@@ -26,7 +26,7 @@ android {
 apollo {
   service("odyssey") {
     introspection {
-      endpointUrl.set("https://odyssey.dev.hedvigit.com/graphql")
+      endpointUrl.set("https://apollo-router.dev.hedvigit.com")
       schemaFile.set(file("src/main/graphql/com/hedvig/android/apollo/odyssey/schema.graphqls"))
     }
     schemaFile.set(file("src/main/graphql/com/hedvig/android/apollo/odyssey/schema.graphqls"))
