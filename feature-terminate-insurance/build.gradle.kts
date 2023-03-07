@@ -12,7 +12,7 @@ android {
 
 dependencies {
   implementation(projects.apollo.core)
-  implementation(projects.apollo.giraffe)
+  implementation(projects.apollo.octopus)
   implementation(projects.auth.authAndroid)
   implementation(projects.coreCommon)
   implementation(projects.coreDesignSystem)
