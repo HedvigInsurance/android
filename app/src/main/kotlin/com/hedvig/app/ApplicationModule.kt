@@ -23,9 +23,14 @@ import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.auth.interceptor.MigrateTokenInterceptor
 import com.hedvig.android.core.common.di.LogInfoType
 import com.hedvig.android.core.common.di.datastoreFileQualifier
+import com.hedvig.android.core.common.di.giraffeClient
+import com.hedvig.android.core.common.di.giraffeGraphQLUrlQualifier
+import com.hedvig.android.core.common.di.giraffeGraphQLWebSocketUrlQualifier
 import com.hedvig.android.core.common.di.isDebugQualifier
 import com.hedvig.android.core.common.di.isProductionQualifier
 import com.hedvig.android.core.common.di.logInfoQualifier
+import com.hedvig.android.core.common.di.octopusClient
+import com.hedvig.android.core.common.di.octopusGraphQLUrlQualifier
 import com.hedvig.android.datadog.addDatadogConfiguration
 import com.hedvig.android.hanalytics.android.di.appIdQualifier
 import com.hedvig.android.hanalytics.android.di.appVersionCodeQualifier
@@ -252,8 +257,6 @@ val applicationModule = module {
   single<ApolloClient.Builder> {
     val interceptors = getAll<ApolloInterceptor>().distinct()
     ApolloClient.Builder()
-      .httpServerUrl(get<HedvigApplication>().graphqlUrl)
-      .webSocketServerUrl(get<HedvigApplication>().graphqlSubscriptionUrl)
       .okHttpClient(get<OkHttpClient>())
       .webSocketReopenWhen { throwable, reconnectAttempt ->
         if (throwable is ReopenSubscriptionException) {
@@ -278,8 +281,21 @@ val applicationModule = module {
 }
 
 val apolloClientModule = module {
-  single<ApolloClient> {
-    val builder: ApolloClient.Builder = get()
+  single<String>(giraffeGraphQLUrlQualifier) { get<Context>().getString(R.string.GRAPHQL_URL) }
+  single<String>(giraffeGraphQLWebSocketUrlQualifier) { get<Context>().getString(R.string.WS_GRAPHQL_URL) }
+  single<String>(octopusGraphQLUrlQualifier) { get<Context>().getString(R.string.OCTOPUS_GRAPHQL_URL) }
+
+  single<ApolloClient>(giraffeClient) {
+    // Copy builder to not edit the configuration of other ApolloClient instances.
+    val builder: ApolloClient.Builder = get<ApolloClient.Builder>().copy()
+      .httpServerUrl(get(giraffeGraphQLUrlQualifier))
+      .webSocketServerUrl(get(giraffeGraphQLWebSocketUrlQualifier))
+    builder.build()
+  }
+  single<ApolloClient>(octopusClient) {
+    // Copy builder to not edit the configuration of other ApolloClient instances.
+    val builder: ApolloClient.Builder = get<ApolloClient.Builder>().copy()
+      .httpServerUrl(get<String>(octopusGraphQLUrlQualifier))
     builder.build()
   }
 }
@@ -651,7 +667,7 @@ val chatEventModule = module {
 }
 
 val graphQLQueryModule = module {
-  single<GraphQLQueryHandler> { GraphQLQueryHandler(get(), get(), get()) }
+  single<GraphQLQueryHandler> { GraphQLQueryHandler(get(), get(), get(giraffeGraphQLUrlQualifier)) }
 }
 
 val authRepositoryModule = module {
