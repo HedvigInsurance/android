@@ -1,7 +1,7 @@
 package com.hedvig.android.notification.badge.data.di
 
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.core.common.di.giraffeClient
+import com.hedvig.android.apollo.giraffe.di.giraffeClient
 import com.hedvig.android.notification.badge.data.crosssell.CrossSellNotificationBadgeService
 import com.hedvig.android.notification.badge.data.crosssell.GetCrossSellsContractTypesUseCase
 import com.hedvig.android.notification.badge.data.crosssell.GetCrossSellsContractTypesUseCaseImpl

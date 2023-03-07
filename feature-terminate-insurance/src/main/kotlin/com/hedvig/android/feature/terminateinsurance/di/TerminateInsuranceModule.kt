@@ -1,7 +1,7 @@
 package com.hedvig.android.feature.terminateinsurance.di
 
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.core.common.di.giraffeClient
+import com.hedvig.android.apollo.giraffe.di.giraffeClient
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
 import com.hedvig.android.feature.terminateinsurance.TerminateInsuranceViewModel
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceUseCase
