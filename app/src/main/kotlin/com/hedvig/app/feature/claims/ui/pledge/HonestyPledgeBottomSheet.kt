@@ -57,7 +57,7 @@ class HonestyPledgeBottomSheet(
 
   private suspend fun getClaimsFlowIntent(): Intent {
     return if (featureManager.isFeatureEnabled(Feature.USE_NATIVE_CLAIMS_FLOW)) {
-      return Intent(requireContext(), SearchActivity::class.java)
+      return SearchActivity.newInstance(requireContext(), getString(R.string.ODYSSEY_URL))
     } else {
       EmbarkActivity.newInstance(
         requireContext(),

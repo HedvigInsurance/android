@@ -2,17 +2,15 @@ package com.hedvig.android.odyssey.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.odyssey.model.ItemType
 import com.hedvig.android.odyssey.model.SearchableClaim
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
-  private val getClaimEntryPoints: GetClaimEntryPoints,
+  private val getClaimEntryPoints: GetNetworkClaimEntryPointsUseCase,
 ) : ViewModel() {
-  private val searchableClaims = emptyList<SearchableClaim>()
-  private val _viewState = MutableStateFlow(SearchViewState(results = searchableClaims))
+  private val _viewState = MutableStateFlow(SearchViewState())
   val viewState = _viewState
 
   init {

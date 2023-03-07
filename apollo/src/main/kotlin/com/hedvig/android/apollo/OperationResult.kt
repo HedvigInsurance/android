@@ -7,6 +7,7 @@ import okhttp3.Call
 import org.json.JSONObject
 import java.io.IOException
 import org.json.JSONArray
+import org.json.JSONException
 
 sealed interface OperationResult<out T> {
 
@@ -116,5 +117,7 @@ suspend fun Call.safeArrayRestCall(): OperationResult<JSONArray> = withContext(D
     OperationResult.Success(jsonObject)
   } catch (ioException: IOException) {
     OperationResult.Error.GeneralError(ioException.localizedMessage)
+  } catch (jsonException: JSONException) {
+    OperationResult.Error.NetworkError(jsonException.localizedMessage)
   }
 }
