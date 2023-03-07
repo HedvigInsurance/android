@@ -83,7 +83,6 @@ sealed interface OperationResult<out T> {
  * Returns [OperationResult.Success] only when the network request is successful and there are no graphQL error messages.
  * Returns [OperationResult.Error] on all other cases.
  */
-@Suppress("BlockingMethodInNonBlockingContext")
 suspend fun Call.safeGraphqlCall(): OperationResult<JSONObject> = withContext(Dispatchers.IO) {
   try {
     val response = await()

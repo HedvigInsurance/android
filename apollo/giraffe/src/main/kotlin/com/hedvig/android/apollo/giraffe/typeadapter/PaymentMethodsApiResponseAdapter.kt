@@ -1,4 +1,4 @@
-package com.hedvig.android.apollo.typeadapter
+package com.hedvig.android.apollo.giraffe.typeadapter
 
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.apollographql.apollo3.api.Adapter
@@ -13,7 +13,7 @@ import org.json.JSONObject
  * This adapter handles both cases, therefore this special deserialization checking for a Map is required.
  */
 @Suppress("unused") // Used inside the `apollo` block inside build.gradle.kts
-object PaymentMethodsApiResponseAdapter : Adapter<PaymentMethodsApiResponse> {
+internal object PaymentMethodsApiResponseAdapter : Adapter<PaymentMethodsApiResponse> {
   override fun fromJson(reader: JsonReader, customScalarAdapters: CustomScalarAdapters): PaymentMethodsApiResponse {
     val data = AnyAdapter.fromJson(reader, customScalarAdapters)
     return if (data is Map<*, *>) {

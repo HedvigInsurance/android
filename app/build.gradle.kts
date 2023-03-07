@@ -114,7 +114,8 @@ android {
 }
 
 dependencies {
-  implementation(projects.apollo)
+  implementation(projects.apollo.core)
+  implementation(projects.apollo.giraffe)
   implementation(projects.auth.authAndroid)
   implementation(projects.auth.authCore)
   implementation(projects.coreCommon)

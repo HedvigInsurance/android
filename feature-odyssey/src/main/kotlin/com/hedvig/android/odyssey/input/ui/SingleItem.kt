@@ -47,9 +47,9 @@ fun SingleItemScreen(
   onSave: () -> Unit,
 ) {
   Box(
-      Modifier
-          .fillMaxHeight()
-          .padding(all = 16.dp),
+    Modifier
+      .fillMaxHeight()
+      .padding(all = 16.dp),
   ) {
     SingleItem(
       state = state,

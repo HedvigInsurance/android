@@ -4,9 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.hedvig.android.odyssey.model.Resolution
 import com.hedvig.odyssey.remote.money.MonetaryAmount
-import com.hedvig.odyssey.remote.money.MonetaryAmountFormatterOptions
-import com.hedvig.odyssey.remote.money.MonetaryAmountFormatterStyle
-import com.hedvig.odyssey.remote.money.format
 
 @Composable
 fun SingleItemPayout(
