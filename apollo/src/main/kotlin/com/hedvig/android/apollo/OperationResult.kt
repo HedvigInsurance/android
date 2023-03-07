@@ -6,6 +6,8 @@ import kotlinx.coroutines.withContext
 import okhttp3.Call
 import org.json.JSONObject
 import java.io.IOException
+import org.json.JSONArray
+import org.json.JSONException
 
 sealed interface OperationResult<out T> {
 
@@ -101,5 +103,21 @@ suspend fun Call.safeGraphqlCall(): OperationResult<JSONObject> = withContext(Di
     OperationResult.Success(jsonObject)
   } catch (ioException: IOException) {
     OperationResult.Error.GeneralError(ioException.localizedMessage)
+  }
+}
+
+suspend fun Call.safeArrayRestCall(): OperationResult<JSONArray> = withContext(Dispatchers.IO) {
+  try {
+    val response = await()
+    if (response.isSuccessful.not()) return@withContext OperationResult.Error.NetworkError(response.message)
+
+    val responseBody = response.body ?: return@withContext OperationResult.Error.NoDataError("No data")
+    val jsonObject = JSONArray(responseBody.string())
+
+    OperationResult.Success(jsonObject)
+  } catch (ioException: IOException) {
+    OperationResult.Error.GeneralError(ioException.localizedMessage)
+  } catch (jsonException: JSONException) {
+    OperationResult.Error.NetworkError(jsonException.localizedMessage)
   }
 }
