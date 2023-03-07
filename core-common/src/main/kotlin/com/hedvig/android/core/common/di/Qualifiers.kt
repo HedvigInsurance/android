@@ -37,7 +37,7 @@ val ioDispatcherQualifier = qualifier("ioDispatcher")
 val octopusGraphQLUrlQualifier = qualifier("octopusGraphQLUrlQualifier")
 
 // The URL for giraffe
-val giraffeGraphQLUrlQualifier = qualifier("octopusGraphQLUrlQualifier")
+val giraffeGraphQLUrlQualifier = qualifier("giraffeGraphQLUrlQualifier")
 
 // The URL for the websocket of giraffe
 val giraffeGraphQLWebSocketUrlQualifier = qualifier("giraffeGraphQLWebSocketUrlQualifier")
