@@ -15,6 +15,7 @@ dependencies {
   implementation(projects.coreDesignSystem)
   implementation(projects.coreUi)
   implementation(projects.coreResources)
+  implementation(projects.hanalytics.hanalyticsFeatureFlags)
   implementation(projects.hedvigLanguage)
   implementation(projects.navigation.navigationActivity)
   implementation(projects.hedvigMarket)

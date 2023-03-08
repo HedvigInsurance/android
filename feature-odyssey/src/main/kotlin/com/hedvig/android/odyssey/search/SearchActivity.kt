@@ -18,13 +18,21 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.CenterAlignedTopAppBar
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.hanalytics.featureflags.flags.Feature
+import com.hedvig.android.odyssey.ClaimsFlowActivity
 import com.hedvig.android.odyssey.OdysseyClaimsFlowActivity
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class SearchActivity : ComponentActivity() {
+
+  private val featureManager: FeatureManager by inject()
 
   private val odysseyUrl by lazy {
     intent.getStringExtra(ODYSSEY_URL) ?: throw java.lang.IllegalArgumentException("No url found")
@@ -40,8 +48,10 @@ class SearchActivity : ComponentActivity() {
 
       val commonClaimId = viewState.selectedClaim?.id
       LaunchedEffect(commonClaimId) {
-        if (commonClaimId != null) {
-          startClaimsFlow(viewModel, commonClaimId)
+        lifecycleScope.launch {
+          if (commonClaimId != null) {
+            startClaimsFlow(viewModel, commonClaimId)
+          }
         }
       }
 
@@ -68,10 +78,12 @@ class SearchActivity : ComponentActivity() {
               selectClaim = viewModel::onSelectClaim,
               commonClaims = viewState.commonClaims,
               selectOther = {
-                startClaimsFlow(
-                  viewModel = viewModel,
-                  commonClaimId = null,
-                )
+                lifecycleScope.launch {
+                  startClaimsFlow(
+                    viewModel = viewModel,
+                    commonClaimId = null,
+                  )
+                }
               },
             )
           }
@@ -80,15 +92,22 @@ class SearchActivity : ComponentActivity() {
     }
   }
 
-  private fun startClaimsFlow(viewModel: SearchViewModel, commonClaimId: String?) {
-    val intent = OdysseyClaimsFlowActivity.newInstance(
-      context = this,
-      odysseyUrl = odysseyUrl,
-      commonClaimId = commonClaimId,
-    )
+  private suspend fun startClaimsFlow(viewModel: SearchViewModel, commonClaimId: String?) {
+    val intent = createClaimsFlowIntent(commonClaimId)
     startActivity(intent)
     viewModel.resetState()
   }
+
+  private suspend fun createClaimsFlowIntent(commonClaimId: String?) =
+    if (featureManager.isFeatureEnabled(Feature.USE_NATIVE_CLAIMS_FLOW)) {
+      ClaimsFlowActivity.newInstance(this, commonClaimId)
+    } else {
+      OdysseyClaimsFlowActivity.newInstance(
+        context = this,
+        odysseyUrl = odysseyUrl,
+        commonClaimId = commonClaimId,
+      )
+    }
 
   companion object {
     const val ODYSSEY_URL = "ODYSSEY_URL_EXTRA"
