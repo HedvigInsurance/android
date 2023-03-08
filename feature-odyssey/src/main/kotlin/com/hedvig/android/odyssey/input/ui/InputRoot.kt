@@ -64,7 +64,6 @@ fun InputRoot(
       }
     }
 
-
     if (viewState.errorMessage != null) {
       ErrorDialog(
         message = viewState.errorMessage,

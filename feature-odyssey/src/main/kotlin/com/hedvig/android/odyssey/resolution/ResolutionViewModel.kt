@@ -6,7 +6,6 @@ import com.hedvig.android.odyssey.model.Resolution
 import com.hedvig.android.odyssey.repository.ClaimResult
 import com.hedvig.android.odyssey.repository.ClaimsFlowRepository
 import com.hedvig.odyssey.remote.money.MonetaryAmount
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch

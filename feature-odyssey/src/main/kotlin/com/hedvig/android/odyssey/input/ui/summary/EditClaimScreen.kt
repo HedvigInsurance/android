@@ -44,7 +44,7 @@ fun EditClaimScreen(
       .padding(all = 16.dp),
   ) {
     Column {
-      Text(stringResource(R.string.claims_incident_screen_header), color =  MaterialTheme.colorScheme.secondary)
+      Text(stringResource(R.string.claims_incident_screen_header), color = MaterialTheme.colorScheme.secondary)
       Spacer(Modifier.padding(top = 8.dp))
       DateOfOccurrenceAndLocation(
         state = state,
@@ -54,7 +54,7 @@ fun EditClaimScreen(
         onLocation = onLocation,
       )
       Spacer(Modifier.padding(top = 34.dp))
-      Text(stringResource(R.string.claims_incident_screen_header), color =  MaterialTheme.colorScheme.secondary)
+      Text(stringResource(R.string.claims_incident_screen_header), color = MaterialTheme.colorScheme.secondary)
       Spacer(Modifier.padding(top = 8.dp))
       SingleItem(
         state = state,

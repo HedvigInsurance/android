@@ -13,8 +13,8 @@ import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.util.ErrorMessage
 
 class GetAddressChangeStoryIdUseCase(
-  private val createQuoteCartUseCase: CreateQuoteCartUseCase,
   private val apolloClient: ApolloClient,
+  private val createQuoteCartUseCase: CreateQuoteCartUseCase,
   private val featureManager: FeatureManager,
 ) {
 

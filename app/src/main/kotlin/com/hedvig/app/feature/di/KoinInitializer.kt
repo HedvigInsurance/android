@@ -2,6 +2,7 @@ package com.hedvig.app.feature.di
 
 import android.content.Context
 import androidx.startup.Initializer
+import com.hedvig.android.apollo.di.apolloClientModule
 import com.hedvig.android.auth.di.authModule
 import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.datastore.di.dataStoreModule
@@ -18,7 +19,7 @@ import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.android.odyssey.di.odysseyModule
 import com.hedvig.android.odyssey.di.submitClaimModule
 import com.hedvig.app.adyenModule
-import com.hedvig.app.apolloClientModule
+import com.hedvig.app.apolloClientUrlsModule
 import com.hedvig.app.applicationModule
 import com.hedvig.app.authRepositoryModule
 import com.hedvig.app.cacheManagerModule
@@ -26,9 +27,8 @@ import com.hedvig.app.changeAddressModule
 import com.hedvig.app.changeDateBottomSheetModule
 import com.hedvig.app.chatEventModule
 import com.hedvig.app.checkoutModule
-import com.hedvig.app.claimsSearchViewModelModule
-
 import com.hedvig.app.claimsRepositoryModule
+import com.hedvig.app.claimsSearchViewModelModule
 import com.hedvig.app.claimsViewModelModule
 import com.hedvig.app.clockModule
 import com.hedvig.app.coilModule
@@ -76,6 +76,7 @@ class KoinInitializer : Initializer<KoinApplication> {
         HAnalyticsEngineeringModuleImpl().getModule(),
         adyenModule,
         apolloClientModule,
+        apolloClientUrlsModule,
         applicationModule,
         authModule,
         authRepositoryModule,

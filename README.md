@@ -16,7 +16,7 @@
     - `~/.gradle/gradle.properties`
    Look inside [ci-github-packages-properties](scripts/ci-github-packages-properties.sh) for inspiration.
 6. Download the schema (required to consume any changes in schema as well):
-    `./gradlew :apollo:downloadGiraffeApolloSchemaFromIntrospection`
+    `./gradlew downloadApolloSchemasFromIntrospection`
 7. Download lokalise translations (required to consume latest translations as well):
     `./gradlew :core-resources:downloadStrings`
 8. Build and install via Android Studio

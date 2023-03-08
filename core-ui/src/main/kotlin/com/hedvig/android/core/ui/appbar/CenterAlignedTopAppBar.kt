@@ -46,7 +46,7 @@ fun CenterAlignedTopAppBar(
   contentColor: Color = contentColorFor(backgroundColor),
   contentPadding: PaddingValues = PaddingValues(0.dp),
   elevation: Dp = 0.dp,
-  icon: ImageVector = Icons.Filled.Close
+  icon: ImageVector = Icons.Filled.Close,
 ) {
   Surface(
     color = backgroundColor,
