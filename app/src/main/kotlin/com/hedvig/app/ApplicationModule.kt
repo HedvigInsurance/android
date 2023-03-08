@@ -38,14 +38,7 @@ import com.hedvig.android.hanalytics.android.di.hAnalyticsUrlQualifier
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.activity.Navigator
-import com.hedvig.android.odyssey.input.InputViewModel
-import com.hedvig.android.odyssey.model.Resolution
-import com.hedvig.android.odyssey.repository.ClaimsFlowRepository
-import com.hedvig.android.odyssey.repository.NetworkClaimsFlowRepository
-import com.hedvig.android.odyssey.repository.PhoneNumberRepository
-import com.hedvig.android.odyssey.resolution.ResolutionViewModel
-import com.hedvig.android.odyssey.search.GetNetworkClaimEntryPointsUseCase
-import com.hedvig.android.odyssey.search.SearchViewModel
+import com.hedvig.android.odyssey.di.odysseyUrlQualifier
 import com.hedvig.app.authenticate.BankIdLoginViewModel
 import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.data.debit.PayinStatusRepository
@@ -494,6 +487,7 @@ val changeDateBottomSheetModule = module {
 
 val stringConstantsModule = module {
   single<String>(hAnalyticsUrlQualifier) { get<Context>().getString(R.string.HANALYTICS_URL) }
+  single<String>(odysseyUrlQualifier) { get<Context>().getString(R.string.ODYSSEY_URL) }
   single<String>(appVersionNameQualifier) { BuildConfig.VERSION_NAME }
   single<String>(appVersionCodeQualifier) { BuildConfig.VERSION_CODE.toString() }
   single<String>(appIdQualifier) { BuildConfig.APPLICATION_ID }
@@ -604,12 +598,6 @@ val useCaseModule = module {
       cacheManager = get(),
     )
   }
-  single<GetNetworkClaimEntryPointsUseCase> {
-    GetNetworkClaimEntryPointsUseCase(
-      get(),
-      get<Context>().getString(R.string.ODYSSEY_URL),
-    )
-  }
 }
 
 val cacheManagerModule = module {
@@ -676,28 +664,4 @@ val authRepositoryModule = module {
       additionalHttpHeaders = mapOf(),
     )
   }
-}
-
-val claimsRepositoryModule = module {
-  single<ClaimsFlowRepository> {
-    NetworkClaimsFlowRepository(get<OkHttpClient>())
-  }
-  single<PhoneNumberRepository> {
-    PhoneNumberRepository(get<ApolloClient>(giraffeClient))
-  }
-}
-
-val claimsViewModelModule = module {
-  viewModel { (commonClaimId: String) ->
-    InputViewModel(
-      commonClaimId = commonClaimId,
-      repository = get<ClaimsFlowRepository>(),
-      getPhoneNumberUseCase = get<PhoneNumberRepository>(),
-    )
-  }
-  viewModel { (resolution: Resolution) -> ResolutionViewModel(get(), resolution) }
-}
-
-val claimsSearchViewModelModule = module {
-  viewModel { SearchViewModel(get<GetNetworkClaimEntryPointsUseCase>()) }
 }
