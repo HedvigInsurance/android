@@ -34,74 +34,72 @@ fun PayoutSummary(
   resolution: Resolution.SingleItemPayout,
   onPayout: (MonetaryAmount) -> Unit,
 ) {
-  Surface(color = MaterialTheme.colors.background) {
-    Box(
-      Modifier
-        .fillMaxHeight()
-        .padding(all = 16.dp),
-    ) {
-      Column {
-        Spacer(modifier = Modifier.padding(top = 28.dp))
+  Box(
+    Modifier
+      .fillMaxHeight()
+      .padding(all = 16.dp),
+  ) {
+    Column {
+      Spacer(modifier = Modifier.padding(top = 28.dp))
 
-        Text(
-          text = stringResource(R.string.claims_payout_summary_subtitle),
-          style = MaterialTheme.typography.h5,
-        )
+      Text(
+        text = stringResource(R.string.claims_payout_summary_subtitle),
+        style = MaterialTheme.typography.h5,
+      )
 
-        Spacer(modifier = Modifier.padding(top = 33.dp))
+      Spacer(modifier = Modifier.padding(top = 33.dp))
 
-        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-          Text(text = stringResource(R.string.claims_payout_purchase_price))
-          CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-            Text(text = resolution.purchasePrice.amount ?: "")
-          }
-        }
-
-        Divider(modifier = Modifier.padding(vertical = 16.dp))
-
-        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-          Text(text = stringResource(R.string.claims_payout_age_deductable))
-          CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-            Text(text = "-${resolution.deductible.amount ?: ""}")
-          }
-        }
-
-        Divider(modifier = Modifier.padding(vertical = 16.dp))
-
-        Row(
-          horizontalArrangement = Arrangement.SpaceBetween,
-          verticalAlignment = Alignment.CenterVertically,
-          modifier = Modifier.fillMaxWidth(),
-        ) {
-          Text(text = stringResource(R.string.claims_payout_total))
-          Text(text = resolution.payoutAmount.amount ?: "", style = MaterialTheme.typography.h6)
-        }
-
-        Spacer(modifier = Modifier.padding(top = 48.dp))
-
-        Text(stringResource(R.string.claims_payout_summary_method), style = MaterialTheme.typography.h5)
-
-        Spacer(modifier = Modifier.padding(top = 4.dp))
-
-        Surface(
-          shape = RoundedCornerShape(8.dp),
-          color = MaterialTheme.colors.surface,
-          modifier = Modifier
-            .padding(top = 16.dp)
-            .fillMaxWidth(),
-        ) {
-          Text(stringResource(R.string.claims_payout_method_autogiro), modifier = Modifier.padding(16.dp))
+      Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+        Text(text = stringResource(R.string.claims_payout_purchase_price))
+        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+          Text(text = resolution.purchasePrice.amount ?: "")
         }
       }
 
-      LargeContainedTextButton(
-        onClick = {
-          onPayout(resolution.payoutAmount)
-        },
-        text = stringResource(R.string.claims_payout_button_label, resolution.payoutAmount.amount ?: "-"),
-        modifier = Modifier.align(Alignment.BottomCenter),
-      )
+      Divider(modifier = Modifier.padding(vertical = 16.dp))
+
+      Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+        Text(text = stringResource(R.string.claims_payout_age_deductable))
+        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+          Text(text = "-${resolution.deductible.amount ?: ""}")
+        }
+      }
+
+      Divider(modifier = Modifier.padding(vertical = 16.dp))
+
+      Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth(),
+      ) {
+        Text(text = stringResource(R.string.claims_payout_total))
+        Text(text = resolution.payoutAmount.amount ?: "", style = MaterialTheme.typography.h6)
+      }
+
+      Spacer(modifier = Modifier.padding(top = 48.dp))
+
+      Text(stringResource(R.string.claims_payout_summary_method), style = MaterialTheme.typography.h5)
+
+      Spacer(modifier = Modifier.padding(top = 4.dp))
+
+      Surface(
+        shape = RoundedCornerShape(8.dp),
+        color = MaterialTheme.colors.surface,
+        modifier = Modifier
+          .padding(top = 16.dp)
+          .fillMaxWidth(),
+      ) {
+        Text(stringResource(R.string.claims_payout_method_autogiro), modifier = Modifier.padding(16.dp))
+      }
     }
+
+    LargeContainedTextButton(
+      onClick = {
+        onPayout(resolution.payoutAmount)
+      },
+      text = stringResource(R.string.claims_payout_button_label, resolution.payoutAmount.amount ?: "-"),
+      modifier = Modifier.align(Alignment.BottomCenter),
+    )
   }
 }
 
@@ -109,14 +107,16 @@ fun PayoutSummary(
 @Composable
 private fun PreviewPayoutSummary() {
   HedvigTheme {
-    PayoutSummary(
-      resolution = Resolution.SingleItemPayout(
-        purchasePrice = MonetaryAmount("1000", "SEK"),
-        depreciation = MonetaryAmount("1000", "SEK"),
-        deductible = MonetaryAmount("1000", "SEK"),
-        payoutAmount = MonetaryAmount("1000", "SEK"),
-      ),
-      onPayout = {},
-    )
+    Surface {
+      PayoutSummary(
+        resolution = Resolution.SingleItemPayout(
+          purchasePrice = MonetaryAmount("1000", "SEK"),
+          depreciation = MonetaryAmount("1000", "SEK"),
+          deductible = MonetaryAmount("1000", "SEK"),
+          payoutAmount = MonetaryAmount("1000", "SEK"),
+        ),
+        onPayout = {},
+      )
+    }
   }
 }
