@@ -27,6 +27,8 @@ import com.hedvig.app.changeAddressModule
 import com.hedvig.app.changeDateBottomSheetModule
 import com.hedvig.app.chatEventModule
 import com.hedvig.app.checkoutModule
+import com.hedvig.app.claimsSearchViewModelModule
+
 import com.hedvig.app.claimsRepositoryModule
 import com.hedvig.app.claimsViewModelModule
 import com.hedvig.app.clockModule
@@ -130,6 +132,11 @@ class KoinInitializer : Initializer<KoinApplication> {
         valueStoreModule,
         viewModelModule,
         whatsNewModule,
+        authRepositoryModule,
+        submitClaimModule,
+        claimsRepositoryModule,
+        claimsViewModelModule,
+        claimsSearchViewModelModule,
       ),
     )
   }

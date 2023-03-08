@@ -1,4 +1,4 @@
-package com.hedvig.app.ui.compose.composables.appbar
+package com.hedvig.android.core.ui.appbar
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,6 +25,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -45,6 +46,7 @@ fun CenterAlignedTopAppBar(
   contentColor: Color = contentColorFor(backgroundColor),
   contentPadding: PaddingValues = PaddingValues(0.dp),
   elevation: Dp = 0.dp,
+  icon: ImageVector = Icons.Filled.Close
 ) {
   Surface(
     color = backgroundColor,
@@ -72,7 +74,7 @@ fun CenterAlignedTopAppBar(
             content = {
               IconButton(onClick) {
                 Icon(
-                  imageVector = Icons.Filled.Close,
+                  imageVector = icon,
                   contentDescription = null,
                 )
               }
