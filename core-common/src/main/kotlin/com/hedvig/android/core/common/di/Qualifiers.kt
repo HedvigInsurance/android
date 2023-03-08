@@ -32,3 +32,18 @@ typealias LogInfoType = (() -> String) -> Unit
  * [kotlinx.coroutines.Dispatchers.IO] for production code
  */
 val ioDispatcherQualifier = qualifier("ioDispatcher")
+
+// The URL for the octopus super-graph
+val octopusGraphQLUrlQualifier = qualifier("octopusGraphQLUrlQualifier")
+
+// The URL for giraffe
+val giraffeGraphQLUrlQualifier = qualifier("giraffeGraphQLUrlQualifier")
+
+// The URL for the websocket of giraffe
+val giraffeGraphQLWebSocketUrlQualifier = qualifier("giraffeGraphQLWebSocketUrlQualifier")
+
+// The ApolloClient targeting Octopus
+val octopusClient = qualifier("octopusClient")
+
+// The ApolloClient targeting Giraffe
+val giraffeClient = qualifier("giraffeClient")

@@ -13,8 +13,8 @@ import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 
 class GetInitialMarketPickerValuesUseCase(
-  private val marketManager: MarketManager,
   private val apolloClient: ApolloClient,
+  private val marketManager: MarketManager,
   private val featureManager: FeatureManager,
   private val languageService: LanguageService,
 ) {
