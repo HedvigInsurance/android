@@ -16,7 +16,7 @@ import com.hedvig.android.odyssey.input.InputViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun Location(viewModel: InputViewModel) {
+internal fun Location(viewModel: InputViewModel) {
   val coroutineScope = rememberCoroutineScope()
   Box(
     Modifier

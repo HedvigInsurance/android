@@ -12,7 +12,7 @@ import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-class GetNetworkClaimEntryPointsUseCase(
+internal class GetNetworkClaimEntryPointsUseCase(
   private val okhttpClient: OkHttpClient,
   private val odysseyUrl: String,
 ) : GetClaimEntryPointsUseCase {
@@ -57,7 +57,7 @@ private fun List<ClaimEntryPointDTO>.toSearchableClaims() = map {
 private const val NR_OF_ENTRYPOINTS = "10"
 
 @Serializable
-data class ClaimEntryPointDTO(
+internal data class ClaimEntryPointDTO(
   val id: String,
   val displayName: String,
   val path: String,

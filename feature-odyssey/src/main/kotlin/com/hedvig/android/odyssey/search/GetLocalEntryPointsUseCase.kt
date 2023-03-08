@@ -2,9 +2,9 @@ package com.hedvig.android.odyssey.search
 
 import com.hedvig.android.odyssey.model.SearchableClaim
 
-class GetLocalEntryPointsUseCase : GetClaimEntryPointsUseCase {
+internal class GetLocalEntryPointsUseCase : GetClaimEntryPointsUseCase {
 
-  override suspend operator fun invoke(): CommonClaimsResult {
+  override suspend fun invoke(): CommonClaimsResult {
     return CommonClaimsResult.Success(
       searchableClaims = listOf(
         SearchableClaim("6", displayName = "Broken phone"),

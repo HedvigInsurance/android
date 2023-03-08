@@ -8,7 +8,7 @@ import com.hedvig.android.apollo.graphql.ProfileQuery
 import com.hedvig.android.apollo.graphql.UpdatePhoneNumberMutation
 import com.hedvig.android.apollo.safeExecute
 
-class PhoneNumberRepository(
+internal class PhoneNumberRepository(
   private val apolloClient: ApolloClient,
 ) {
   private val profileQuery = ProfileQuery()

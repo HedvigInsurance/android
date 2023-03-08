@@ -13,7 +13,7 @@ import io.opentracing.tag.Tags
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
-class AndroidDatadogProvider(
+internal class AndroidDatadogProvider(
   private val tracer: Tracer,
   override val logger: DatadogLogger,
 ) : DatadogProvider {

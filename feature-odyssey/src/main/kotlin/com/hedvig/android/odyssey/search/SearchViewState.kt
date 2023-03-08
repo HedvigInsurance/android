@@ -2,7 +2,7 @@ package com.hedvig.android.odyssey.search
 
 import com.hedvig.android.odyssey.model.SearchableClaim
 
-data class SearchViewState(
+internal data class SearchViewState(
   val input: String? = null,
   val commonClaims: List<SearchableClaim> = listOf(),
   val results: List<SearchableClaim> = emptyList(),

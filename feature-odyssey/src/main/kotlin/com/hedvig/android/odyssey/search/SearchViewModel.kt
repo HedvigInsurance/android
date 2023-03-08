@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class SearchViewModel(
+internal class SearchViewModel(
   private val getClaimEntryPoints: GetNetworkClaimEntryPointsUseCase,
 ) : ViewModel() {
   private val _viewState = MutableStateFlow(SearchViewState())

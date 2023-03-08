@@ -16,7 +16,7 @@ import com.hedvig.android.odyssey.resolution.ResolutionViewState
 import com.hedvig.app.ui.compose.composables.ErrorDialog
 
 @Composable
-fun ResolutionRoot(
+internal fun ResolutionRoot(
   viewModel: ResolutionViewModel,
   resolution: Resolution,
   onFinish: () -> Unit,
