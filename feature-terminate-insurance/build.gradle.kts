@@ -11,8 +11,10 @@ android {
 }
 
 dependencies {
-  implementation(projects.apollo)
+  implementation(projects.apollo.core)
+  implementation(projects.apollo.octopus)
   implementation(projects.auth.authAndroid)
+  implementation(projects.coreCommon)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)
   implementation(projects.coreUi)

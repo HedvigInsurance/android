@@ -1,7 +1,5 @@
 package com.hedvig.android.odyssey.search
 
-import com.hedvig.android.odyssey.model.ItemProblem
-import com.hedvig.android.odyssey.model.ItemType
 import com.hedvig.android.odyssey.model.SearchableClaim
 
 data class SearchViewState(
@@ -12,4 +10,3 @@ data class SearchViewState(
   val errorMessage: String? = null,
   val isLoading: Boolean = true,
 )
-

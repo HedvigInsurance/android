@@ -29,6 +29,8 @@ in the module's `build.gradle`, as opposed to creating a convention plugin with 
 setup.
 
 Current list of convention plugins:
+- [`hedvig.android.apollo`](convention/src/main/kotlin/ApolloConventionPlugin.kt),
+  Setup apollo compiler and common tasks, like downloading the schema or editing the downloaded schema to not contain double white-spaces.
 - [`hedvig.android.ktlint`](convention/src/main/kotlin/KtlintConventionPlugin.kt),
   Setup ktlint plugin looking at configuration coming from [`.editorconfig`](../.editorconfig)
 - [`hedvig.android.application`](convention/src/main/kotlin/ApplicationConventionPlugin.kt),

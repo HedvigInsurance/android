@@ -20,8 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
-import com.hedvig.android.core.designsystem.component.button.LargeOutlinedButton
-import com.hedvig.android.core.designsystem.component.button.LargeTextButton
 import com.hedvig.android.odyssey.model.Resolution
 import com.hedvig.odyssey.remote.money.MonetaryAmount
 import hedvig.resources.R

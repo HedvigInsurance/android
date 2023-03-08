@@ -46,7 +46,6 @@ class SearchActivity : ComponentActivity() {
       }
 
       HedvigTheme {
-
         Surface(color = MaterialTheme.colors.background) {
           Column {
             CenterAlignedTopAppBar(
