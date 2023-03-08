@@ -18,14 +18,18 @@ import com.apollographql.apollo3.interceptor.ApolloInterceptor
 import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.google.firebase.messaging.FirebaseMessaging
+import com.hedvig.android.apollo.giraffe.di.giraffeClient
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.auth.interceptor.MigrateTokenInterceptor
 import com.hedvig.android.core.common.di.LogInfoType
 import com.hedvig.android.core.common.di.datastoreFileQualifier
+import com.hedvig.android.core.common.di.giraffeGraphQLUrlQualifier
+import com.hedvig.android.core.common.di.giraffeGraphQLWebSocketUrlQualifier
 import com.hedvig.android.core.common.di.isDebugQualifier
 import com.hedvig.android.core.common.di.isProductionQualifier
 import com.hedvig.android.core.common.di.logInfoQualifier
+import com.hedvig.android.core.common.di.octopusGraphQLUrlQualifier
 import com.hedvig.android.datadog.addDatadogConfiguration
 import com.hedvig.android.hanalytics.android.di.appIdQualifier
 import com.hedvig.android.hanalytics.android.di.appVersionCodeQualifier
@@ -254,8 +258,6 @@ val applicationModule = module {
   single<ApolloClient.Builder> {
     val interceptors = getAll<ApolloInterceptor>().distinct()
     ApolloClient.Builder()
-      .httpServerUrl(get<HedvigApplication>().graphqlUrl)
-      .webSocketServerUrl(get<HedvigApplication>().graphqlSubscriptionUrl)
       .okHttpClient(get<OkHttpClient>())
       .webSocketReopenWhen { throwable, reconnectAttempt ->
         if (throwable is ReopenSubscriptionException) {
@@ -279,11 +281,10 @@ val applicationModule = module {
   }
 }
 
-val apolloClientModule = module {
-  single<ApolloClient> {
-    val builder: ApolloClient.Builder = get()
-    builder.build()
-  }
+val apolloClientUrlsModule = module {
+  single<String>(giraffeGraphQLUrlQualifier) { get<Context>().getString(R.string.GRAPHQL_URL) }
+  single<String>(giraffeGraphQLWebSocketUrlQualifier) { get<Context>().getString(R.string.WS_GRAPHQL_URL) }
+  single<String>(octopusGraphQLUrlQualifier) { get<Context>().getString(R.string.OCTOPUS_GRAPHQL_URL) }
 }
 
 fun makeUserAgent(locale: Locale): String = buildString {
@@ -391,7 +392,7 @@ val insuranceModule = module {
 }
 
 val offerModule = module {
-  single<OfferRepository> { OfferRepository(get(), get(), get(), get()) }
+  single<OfferRepository> { OfferRepository(get<ApolloClient>(giraffeClient), get(), get(), get()) }
   viewModel<OfferViewModel> { parametersHolder: ParametersHolder ->
     OfferViewModelImpl(
       quoteCartId = parametersHolder.get(),
@@ -408,14 +409,14 @@ val offerModule = module {
     )
   }
   single { QuoteCartFragmentToOfferModelMapper(get()) }
-  single<GetQuoteCartCheckoutUseCase> { GetQuoteCartCheckoutUseCase(get()) }
+  single<GetQuoteCartCheckoutUseCase> { GetQuoteCartCheckoutUseCase(get<ApolloClient>(giraffeClient)) }
   single<ObserveQuoteCartCheckoutUseCase> { ObserveQuoteCartCheckoutUseCaseImpl(get()) }
   single<SelectedVariantStore> { SelectedVariantStore() }
 }
 
 val profileModule = module {
   single<ProfileQueryDataToProfileUiStateMapper> { ProfileQueryDataToProfileUiStateMapper(get(), get(), get()) }
-  single<ProfileRepository> { ProfileRepository(get()) }
+  single<ProfileRepository> { ProfileRepository(get<ApolloClient>(giraffeClient)) }
   viewModel<ProfileViewModel> { ProfileViewModel(get(), get(), get()) }
 }
 
@@ -525,22 +526,22 @@ val serviceModule = module {
 }
 
 val repositoriesModule = module {
-  single { ChatRepository(get(), get(), get()) }
-  single { PayinStatusRepository(get()) }
-  single { ClaimsRepository(get(), get()) }
-  single { RedeemReferralCodeRepository(get(), get()) }
-  single { UserRepository(get()) }
-  single { WhatsNewRepository(get(), get(), get()) }
-  single { WelcomeRepository(get(), get()) }
-  single { LanguageRepository(get()) }
-  single { AdyenRepository(get(), get()) }
-  single { EmbarkRepository(get(), get()) }
-  single { ReferralsRepository(get()) }
-  single { LoggedInRepository(get(), get()) }
-  single { GetHomeUseCase(get(), get()) }
-  single { TrustlyRepository(get()) }
-  single { GetMemberIdUseCase(get()) }
-  single { PaymentRepository(get(), get()) }
+  single { ChatRepository(get<ApolloClient>(giraffeClient), get(), get()) }
+  single { PayinStatusRepository(get<ApolloClient>(giraffeClient)) }
+  single { ClaimsRepository(get<ApolloClient>(giraffeClient), get()) }
+  single { RedeemReferralCodeRepository(get<ApolloClient>(giraffeClient), get()) }
+  single { UserRepository(get<ApolloClient>(giraffeClient)) }
+  single { WhatsNewRepository(get<ApolloClient>(giraffeClient), get(), get()) }
+  single { WelcomeRepository(get<ApolloClient>(giraffeClient), get()) }
+  single { LanguageRepository(get<ApolloClient>(giraffeClient)) }
+  single { AdyenRepository(get<ApolloClient>(giraffeClient), get()) }
+  single { EmbarkRepository(get<ApolloClient>(giraffeClient), get()) }
+  single { ReferralsRepository(get<ApolloClient>(giraffeClient)) }
+  single { LoggedInRepository(get<ApolloClient>(giraffeClient), get()) }
+  single { GetHomeUseCase(get<ApolloClient>(giraffeClient), get()) }
+  single { TrustlyRepository(get<ApolloClient>(giraffeClient)) }
+  single { GetMemberIdUseCase(get<ApolloClient>(giraffeClient)) }
+  single { PaymentRepository(get<ApolloClient>(giraffeClient), get()) }
 }
 
 val notificationModule = module {
@@ -554,58 +555,65 @@ val notificationModule = module {
 val clockModule = module { single { Clock.systemDefaultZone() } }
 
 val useCaseModule = module {
-  single { GetUpcomingAgreementUseCase(get(), get()) }
-  single { GetAddressChangeStoryIdUseCase(get(), get(), get()) }
-  single { StartCheckoutUseCase(get(), get(), get()) }
-  single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-  single { GetContractsUseCase(get(), get()) }
+  single { GetUpcomingAgreementUseCase(get<ApolloClient>(giraffeClient), get()) }
+  single { GetAddressChangeStoryIdUseCase(get<ApolloClient>(giraffeClient), get(), get()) }
+  single { StartCheckoutUseCase(get<ApolloClient>(giraffeClient), get(), get()) }
+  single { LogoutUseCase(get(), get(), get<ApolloClient>(giraffeClient), get(), get(), get(), get(), get(), get()) }
+  single { GetContractsUseCase(get<ApolloClient>(giraffeClient), get()) }
   single { GraphQLQueryUseCase(get()) }
-  single { GetCrossSellsUseCase(get(), get()) }
-  single { GetInsuranceProvidersUseCase(get(), get()) }
-  single { GetClaimDetailUseCase(get(), get()) }
+  single { GetCrossSellsUseCase(get<ApolloClient>(giraffeClient), get()) }
+  single { GetInsuranceProvidersUseCase(get<ApolloClient>(giraffeClient), get()) }
+  single { GetClaimDetailUseCase(get<ApolloClient>(giraffeClient), get()) }
   single { GetClaimDetailUiStateFlowUseCase(get()) }
-  single { GetContractDetailsUseCase(get(), get(), get()) }
-  single<GetDanishAddressAutoCompletionUseCase> { GetDanishAddressAutoCompletionUseCase(get()) }
+  single { GetContractDetailsUseCase(get<ApolloClient>(giraffeClient), get(), get()) }
+  single<GetDanishAddressAutoCompletionUseCase> {
+    GetDanishAddressAutoCompletionUseCase(get<ApolloClient>(giraffeClient))
+  }
   single<GetFinalDanishAddressSelectionUseCase> { GetFinalDanishAddressSelectionUseCase(get()) }
-  single { CreateQuoteCartUseCase(get(), get(), get()) }
+  single { CreateQuoteCartUseCase(get<ApolloClient>(giraffeClient), get(), get()) }
   single {
     UploadMarketAndLanguagePreferencesUseCase(
-      apolloClient = get(),
+      apolloClient = get<ApolloClient>(giraffeClient),
       languageService = get(),
     )
   }
-  single { GetMarketingBackgroundUseCase(get(), get()) }
+  single { GetMarketingBackgroundUseCase(get<ApolloClient>(giraffeClient), get()) }
   single {
     UpdateApplicationLanguageUseCase(
       marketManager = get(),
       languageService = get(),
     )
   }
-  single { GetInitialMarketPickerValuesUseCase(get(), get(), get(), get()) }
+  single { GetInitialMarketPickerValuesUseCase(get<ApolloClient>(giraffeClient), get(), get(), get()) }
   single<EditCheckoutUseCase> {
     EditCheckoutUseCase(
       languageService = get(),
       graphQLQueryHandler = get(),
     )
   }
-  single<QuoteCartEditStartDateUseCase> { QuoteCartEditStartDateUseCase(get(), get()) }
-  single<EditCampaignUseCase> { EditCampaignUseCase(get(), get()) }
-  single<AddPaymentTokenUseCase> { AddPaymentTokenUseCase(get()) }
+  single<QuoteCartEditStartDateUseCase> { QuoteCartEditStartDateUseCase(get<ApolloClient>(giraffeClient), get()) }
+  single<EditCampaignUseCase> { EditCampaignUseCase(get<ApolloClient>(giraffeClient), get()) }
+  single<AddPaymentTokenUseCase> { AddPaymentTokenUseCase(get<ApolloClient>(giraffeClient)) }
   single<ConnectPaymentUseCase> { ConnectPaymentUseCase(get(), get(), get()) }
   single<ConnectPayoutUseCase> { ConnectPayoutUseCase(get(), get()) }
   single<ObserveOfferStateUseCase> { ObserveOfferStateUseCase(get(), get()) }
   single<ChangeLanguageUseCase> {
     ChangeLanguageUseCase(
-      apolloClient = get(),
+      apolloClient = get<ApolloClient>(giraffeClient),
       languageService = get(),
       cacheManager = get(),
     )
   }
-  single<GetNetworkClaimEntryPointsUseCase> { GetNetworkClaimEntryPointsUseCase(get(), get<Context>().getString(R.string.ODYSSEY_URL)) }
+  single<GetNetworkClaimEntryPointsUseCase> {
+    GetNetworkClaimEntryPointsUseCase(
+      get(),
+      get<Context>().getString(R.string.ODYSSEY_URL),
+    )
+  }
 }
 
 val cacheManagerModule = module {
-  single { NetworkCacheManager(get()) }
+  single { NetworkCacheManager(get<ApolloClient>(giraffeClient)) }
 }
 
 val pushTokenManagerModule = module {
@@ -654,7 +662,7 @@ val chatEventModule = module {
 }
 
 val graphQLQueryModule = module {
-  single<GraphQLQueryHandler> { GraphQLQueryHandler(get(), get(), get()) }
+  single<GraphQLQueryHandler> { GraphQLQueryHandler(get(), get(), get(giraffeGraphQLUrlQualifier)) }
 }
 
 val authRepositoryModule = module {
@@ -675,7 +683,7 @@ val claimsRepositoryModule = module {
     NetworkClaimsFlowRepository(get<OkHttpClient>())
   }
   single<PhoneNumberRepository> {
-    PhoneNumberRepository(get<ApolloClient>())
+    PhoneNumberRepository(get<ApolloClient>(giraffeClient))
   }
 }
 

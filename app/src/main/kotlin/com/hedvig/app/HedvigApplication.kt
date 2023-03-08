@@ -26,7 +26,4 @@ open class HedvigApplication : Application() {
 
     AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
   }
-
-  open val graphqlUrl get() = getString(R.string.GRAPHQL_URL)
-  open val graphqlSubscriptionUrl get() = getString(R.string.WS_GRAPHQL_URL)
 }

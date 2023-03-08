@@ -32,6 +32,10 @@ dependencyResolutionManagement {
 rootProject.name = "hedvigandroid"
 
 include(":apollo")
+include(":apollo:core")
+include(":apollo:di")
+include(":apollo:giraffe")
+include(":apollo:octopus")
 include(":app")
 include(":auth:auth-android")
 include(":auth:auth-core")

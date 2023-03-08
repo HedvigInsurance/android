@@ -23,5 +23,5 @@ cat <<EOT > app/src/release/res/values/shake.xml
 </resources>
 EOT
 
-./gradlew :apollo:downloadGiraffeApolloSchemaFromIntrospection
+./gradlew downloadApolloSchemasFromIntrospection
 ./gradlew :core-resources:downloadStrings
