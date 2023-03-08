@@ -1,0 +1,20 @@
+mutation FlowTerminationStart($contractId: ID!) {
+  flowTerminationStart(contractId: $contractId) {
+    context
+    currentStep {
+      ... on FlowTerminationDateStep {
+        id
+        minDate
+        maxDate
+      }
+      ... on FlowTerminationFailedStep {
+        id
+      }
+      ... on FlowTerminationSuccessStep {
+        id
+        terminationDate
+        surveyUrl
+      }
+    }
+  }
+}

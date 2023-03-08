@@ -1,0 +1,21 @@
+mutation FlowTerminationDateNext($context: FlowContext!, $input: FlowTerminationDateInput!) {
+  flowTerminationDateNext(context: $context, input: $input) {
+    context
+    currentStep {
+      ... on FlowTerminationDateStep {
+        id
+        minDate
+        maxDate
+      }
+      ... on FlowTerminationFailedStep {
+        id
+      }
+      ... on FlowTerminationSuccessStep {
+        id
+        terminationDate
+        surveyUrl
+      }
+    }
+    id
+  }
+}

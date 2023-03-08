@@ -17,7 +17,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
@@ -29,27 +28,14 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.R
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
-import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
-import com.hedvig.android.core.ui.preview.calculateForPreview
-import hedvig.resources.R
 
 @Composable
-internal fun TerminationSuccessDestination(
+fun TerminationErrorScreen(
   windowSizeClass: WindowSizeClass,
-  navigateBack: () -> Unit,
-) {
-  TerminationSuccessScreen(
-    windowSizeClass = windowSizeClass,
-    navigateBack = navigateBack,
-  )
-}
-
-@Composable
-fun TerminationSuccessScreen(
-  windowSizeClass: WindowSizeClass,
+  errorMessage: String,
   navigateBack: () -> Unit,
 ) {
   Column {
@@ -76,31 +62,27 @@ fun TerminationSuccessScreen(
       }
       Spacer(Modifier.height(40.dp))
       Icon(
-        painter = painterResource(com.hedvig.android.core.designsystem.R.drawable.ic_checkmark_in_circle),
+        painter = painterResource(R.drawable.ic_warning_triangle),
         contentDescription = "Checkmark in circle",
         modifier = sideSpacingModifier.size(32.dp),
       )
       Spacer(Modifier.height(16.dp))
       Text(
-        text = "Cancellation successful",
+        text = "Cancellation unsuccessful",
         style = MaterialTheme.typography.headlineSmall,
         modifier = sideSpacingModifier,
       )
       Spacer(Modifier.height(16.dp))
       Text(
-        text = """
-          Your insurance with Hedvig will be cancelled on 31-10-2022. We'll send you a confirmation email with all the details.
-
-          Thanks for being part of Hedvig and trusting us to protect you and your loved ones when needed. The doors are always open if you decide to come back in the near future.
-        """.trimIndent(),
+        text = errorMessage,
         style = MaterialTheme.typography.bodyLarge,
         modifier = sideSpacingModifier,
 
-      )
+        )
       Spacer(Modifier.height(16.dp))
       Spacer(Modifier.weight(1f))
       LargeContainedTextButton(
-        text = stringResource(R.string.general_done_button),
+        text = stringResource(hedvig.resources.R.string.general_done_button),
         onClick = navigateBack,
         modifier = sideSpacingModifier,
       )
@@ -110,16 +92,6 @@ fun TerminationSuccessScreen(
           WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom),
         ),
       )
-    }
-  }
-}
-
-@HedvigMultiScreenPreview
-@Composable
-private fun PreviewTerminationSuccessScreen() {
-  HedvigTheme {
-    Surface {
-      TerminationSuccessScreen(WindowSizeClass.calculateForPreview()) {}
     }
   }
 }

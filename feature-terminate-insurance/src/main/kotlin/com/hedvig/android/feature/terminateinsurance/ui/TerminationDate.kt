@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.terminateinsurance.ui
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -43,30 +45,50 @@ import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbar
 import com.hedvig.android.feature.terminateinsurance.TerminateInsuranceViewModel
+import com.hedvig.android.feature.terminateinsurance.data.TerminationStep
 
 @Composable
-internal fun TerminationDateDestination(
+internal fun TerminationStepDestination(
   viewModel: TerminateInsuranceViewModel,
   windowSizeClass: WindowSizeClass,
   navigateToSuccessScreen: () -> Unit,
   navigateBack: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  TerminationDateScreen(
-    windowSizeClass = windowSizeClass,
-    datePickerState = uiState.datePickerState,
-    dateSubmissionSuccess = uiState.dateSubmissionSuccess,
-    dateValidator = viewModel.dateValidator,
-    canSubmit = uiState.canContinue,
-    submit = viewModel::submitSelectedDate,
-    hasError = uiState.dateSubmissionError,
-    showedError = viewModel::showedError,
-    navigateToSuccessScreen = {
-      viewModel.handledSuccess()
-      navigateToSuccessScreen()
-    },
-    navigateBack = navigateBack,
-  )
+  AnimatedContent(targetState = uiState.currentStep) {
+    when (it) {
+      is TerminationStep.Date -> TerminationDateScreen(
+        windowSizeClass = windowSizeClass,
+        datePickerState = uiState.datePickerState,
+        dateSubmissionSuccess = uiState.dateSubmissionSuccess,
+        dateValidator = viewModel.dateValidator,
+        canSubmit = uiState.canContinue,
+        submit = viewModel::submitSelectedDate,
+        hasError = uiState.dateSubmissionError,
+        showedError = viewModel::showedError,
+        navigateToSuccessScreen = {
+          viewModel.handledSuccess()
+          navigateToSuccessScreen()
+        },
+        navigateBack = navigateBack,
+      )
+
+      is TerminationStep.Success -> TerminationSuccessScreen(
+        windowSizeClass = windowSizeClass,
+        navigateBack = navigateBack,
+      )
+
+      is TerminationStep.Failed -> TerminationErrorScreen(
+        windowSizeClass = windowSizeClass,
+        errorMessage = it.message ?: "Unknown error",
+        navigateBack = navigateBack,
+      )
+
+      null -> Box(modifier = Modifier.fillMaxSize()) {
+        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+      }
+    }
+  }
 }
 
 @Composable

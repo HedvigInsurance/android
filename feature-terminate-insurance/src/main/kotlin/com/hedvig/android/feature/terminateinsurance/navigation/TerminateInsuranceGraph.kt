@@ -6,7 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.navOptions
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
 import com.hedvig.android.feature.terminateinsurance.TerminateInsuranceViewModel
-import com.hedvig.android.feature.terminateinsurance.ui.TerminationDateDestination
+import com.hedvig.android.feature.terminateinsurance.ui.TerminationStepDestination
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationSuccessDestination
 import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.compose.typed.animatedNavigation
@@ -30,7 +30,7 @@ internal fun NavGraphBuilder.terminateInsuranceGraph(
       val viewModel: TerminateInsuranceViewModel = koinViewModel(viewModelStoreOwner = navBackStackEntry) {
         parametersOf(insuranceId)
       }
-      TerminationDateDestination(
+      TerminationStepDestination(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
         navigateToSuccessScreen = {
