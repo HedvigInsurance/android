@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
@@ -48,10 +49,8 @@ class SearchActivity : ComponentActivity() {
 
       val commonClaimId = viewState.selectedClaim?.id
       LaunchedEffect(commonClaimId) {
-        lifecycleScope.launch {
-          if (commonClaimId != null) {
-            startClaimsFlow(viewModel, commonClaimId)
-          }
+        if (commonClaimId != null) {
+          startClaimsFlow(viewModel, commonClaimId)
         }
       }
 
@@ -74,11 +73,13 @@ class SearchActivity : ComponentActivity() {
 
             Spacer(modifier = Modifier.padding(8.dp))
 
+            val coroutineScope = rememberCoroutineScope()
+
             CommonClaims(
               selectClaim = viewModel::onSelectClaim,
               commonClaims = viewState.commonClaims,
               selectOther = {
-                lifecycleScope.launch {
+                coroutineScope.launch {
                   startClaimsFlow(
                     viewModel = viewModel,
                     commonClaimId = null,
