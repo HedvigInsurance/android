@@ -18,18 +18,17 @@ import com.apollographql.apollo3.interceptor.ApolloInterceptor
 import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.google.firebase.messaging.FirebaseMessaging
+import com.hedvig.android.apollo.giraffe.di.giraffeClient
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.auth.interceptor.MigrateTokenInterceptor
 import com.hedvig.android.core.common.di.LogInfoType
 import com.hedvig.android.core.common.di.datastoreFileQualifier
-import com.hedvig.android.core.common.di.giraffeClient
 import com.hedvig.android.core.common.di.giraffeGraphQLUrlQualifier
 import com.hedvig.android.core.common.di.giraffeGraphQLWebSocketUrlQualifier
 import com.hedvig.android.core.common.di.isDebugQualifier
 import com.hedvig.android.core.common.di.isProductionQualifier
 import com.hedvig.android.core.common.di.logInfoQualifier
-import com.hedvig.android.core.common.di.octopusClient
 import com.hedvig.android.core.common.di.octopusGraphQLUrlQualifier
 import com.hedvig.android.datadog.addDatadogConfiguration
 import com.hedvig.android.hanalytics.android.di.appIdQualifier
@@ -280,22 +279,10 @@ val applicationModule = module {
   }
 }
 
-val apolloClientModule = module {
+val apolloClientUrlsModule = module {
   single<String>(giraffeGraphQLUrlQualifier) { get<Context>().getString(R.string.GRAPHQL_URL) }
   single<String>(giraffeGraphQLWebSocketUrlQualifier) { get<Context>().getString(R.string.WS_GRAPHQL_URL) }
   single<String>(octopusGraphQLUrlQualifier) { get<Context>().getString(R.string.OCTOPUS_GRAPHQL_URL) }
-
-  single<ApolloClient>(giraffeClient) {
-    get<ApolloClient.Builder>().copy()
-      .httpServerUrl(get(giraffeGraphQLUrlQualifier))
-      .webSocketServerUrl(get(giraffeGraphQLWebSocketUrlQualifier))
-      .build()
-  }
-  single<ApolloClient>(octopusClient) {
-    get<ApolloClient.Builder>().copy()
-      .httpServerUrl(get<String>(octopusGraphQLUrlQualifier))
-      .build()
-  }
 }
 
 fun makeUserAgent(locale: Locale): String = buildString {

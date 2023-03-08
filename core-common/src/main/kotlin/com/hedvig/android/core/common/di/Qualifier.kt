@@ -41,9 +41,3 @@ val giraffeGraphQLUrlQualifier = qualifier("giraffeGraphQLUrlQualifier")
 
 // The URL for the websocket of giraffe
 val giraffeGraphQLWebSocketUrlQualifier = qualifier("giraffeGraphQLWebSocketUrlQualifier")
-
-// The ApolloClient targeting Octopus
-val octopusClient = qualifier("octopusClient")
-
-// The ApolloClient targeting Giraffe
-val giraffeClient = qualifier("giraffeClient")
