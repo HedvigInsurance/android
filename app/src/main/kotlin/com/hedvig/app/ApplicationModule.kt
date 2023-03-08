@@ -604,7 +604,12 @@ val useCaseModule = module {
       cacheManager = get(),
     )
   }
-  single<GetNetworkClaimEntryPointsUseCase> { GetNetworkClaimEntryPointsUseCase(get(), get<Context>().getString(R.string.ODYSSEY_URL)) }
+  single<GetNetworkClaimEntryPointsUseCase> {
+    GetNetworkClaimEntryPointsUseCase(
+      get(),
+      get<Context>().getString(R.string.ODYSSEY_URL),
+    )
+  }
 }
 
 val cacheManagerModule = module {

@@ -4,10 +4,10 @@ import com.hedvig.android.core.common.await
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Call
-import org.json.JSONObject
-import java.io.IOException
 import org.json.JSONArray
 import org.json.JSONException
+import org.json.JSONObject
+import java.io.IOException
 
 sealed interface OperationResult<out T> {
 
