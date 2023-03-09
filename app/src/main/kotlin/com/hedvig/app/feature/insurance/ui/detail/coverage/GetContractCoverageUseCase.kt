@@ -10,6 +10,8 @@ import com.hedvig.android.apollo.toEither
 import com.hedvig.android.language.LanguageService
 import com.hedvig.app.feature.perils.Peril
 import com.hedvig.app.util.ErrorMessage
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toPersistentList
 
 internal class GetContractCoverageUseCase(
   private val apolloClient: ApolloClient,
@@ -33,10 +35,10 @@ internal class GetContractCoverageUseCase(
 
 internal data class ContractCoverage(
   val contractDisplayName: String,
-  val contractPerils: List<Peril>,
-  val insurableLimits: List<MoreInfo>,
+  val contractPerils: ImmutableList<Peril>,
+  val insurableLimits: ImmutableList<InsurableLimit>,
 ) {
-  internal data class MoreInfo(
+  internal data class InsurableLimit(
     val label: String,
     val limit: String,
     val description: String,
@@ -46,18 +48,21 @@ internal data class ContractCoverage(
     fun fromContract(contract: ContractCoverageQuery.Contract): ContractCoverage {
       return ContractCoverage(
         contractDisplayName = contract.displayName,
-        contractPerils = contract.contractPerils.map { contractPeril ->
-          Peril.from(contractPeril.fragments.perilFragment)
-        },
+        contractPerils = contract.contractPerils
+          .map { contractPeril ->
+            Peril.from(contractPeril.fragments.perilFragment)
+          }
+          .toPersistentList(),
         insurableLimits = contract.insurableLimits
           .map { it.fragments.insurableLimitsFragment }
           .map { insurableLimit ->
-            MoreInfo(
+            InsurableLimit(
               label = insurableLimit.label,
               limit = insurableLimit.limit,
               description = insurableLimit.description,
             )
-          },
+          }
+          .toPersistentList(),
       )
     }
   }
