@@ -1,0 +1,12 @@
+query ContractCoverage($locale: Locale!) {
+  contracts {
+    id
+    displayName
+    contractPerils(locale: $locale) {
+      ...PerilFragment
+    }
+    insurableLimits(locale: $locale) {
+      ...InsurableLimitsFragment
+    }
+  }
+}

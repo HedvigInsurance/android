@@ -32,6 +32,7 @@ import com.hedvig.app.connectPaymentModule
 import com.hedvig.app.datastoreAndroidModule
 import com.hedvig.app.embarkModule
 import com.hedvig.app.externalInsuranceModule
+import com.hedvig.app.feature.insurance.ui.detail.coverage.di.insuranceCoverageModule
 import com.hedvig.app.graphQLQueryModule
 import com.hedvig.app.homeModule
 import com.hedvig.app.insuranceModule
@@ -96,6 +97,7 @@ class KoinInitializer : Initializer<KoinApplication> {
         hAnalyticsAndroidModule,
         hAnalyticsModule,
         homeModule,
+        insuranceCoverageModule,
         insuranceModule,
         languageModule,
         logModule,
