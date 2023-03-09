@@ -20,6 +20,8 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.grid.HedvigGrid
+import com.hedvig.android.core.ui.grid.InsideGridSpace
 import com.hedvig.app.R
 import com.hedvig.app.feature.embark.passages.selectaction.SelectActionParameter
 import com.hedvig.app.ui.compose.composables.CenteredContentWithTopBadge
@@ -30,10 +32,11 @@ fun SelectActionView(
   onActionClick: (SelectActionParameter.SelectAction, Int) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  SelectActionGrid(
+  HedvigGrid(
     modifier = modifier,
     contentPadding = PaddingValues(16.dp),
     insideGridSpace = InsideGridSpace(8.dp),
+    centerLastItem = true,
   ) {
     selectActions.forEachIndexed { index, selectAction ->
       SelectActionCard(
