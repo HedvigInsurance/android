@@ -15,6 +15,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.R
 import com.hedvig.android.feature.terminateinsurance.TerminateInsuranceViewModel
 import com.hedvig.android.feature.terminateinsurance.data.TerminationStep
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toKotlinLocalDate
+import java.time.Instant
+import java.time.ZoneId
 
 @Composable
 internal fun TerminationStepDestination(
@@ -33,7 +37,10 @@ internal fun TerminationStepDestination(
         windowSizeClass = windowSizeClass,
         datePickerState = uiState.datePickerState,
         dateSubmissionSuccess = uiState.dateSubmissionSuccess,
-        dateValidator = viewModel.dateValidator,
+        dateValidator = { long ->
+          val selectedDate = toLocalDate(long)
+          selectedDate in it.minDate..it.maxDate
+        },
         canSubmit = uiState.canContinue,
         submit = viewModel::submitSelectedDate,
         hasError = uiState.dateSubmissionError,
@@ -78,3 +85,6 @@ internal fun TerminationStepDestination(
     }
   }
 }
+
+private fun toLocalDate(long: Long) =
+  Instant.ofEpochMilli(long).atZone(ZoneId.systemDefault()).toLocalDate().toKotlinLocalDate()

@@ -5,7 +5,7 @@ import kotlinx.datetime.LocalDate
 sealed interface TerminationStep {
   class Date(
     val minDate: LocalDate,
-    val maxDate: LocalDate?,
+    val maxDate: LocalDate,
   ) : TerminationStep
 
   class Success(

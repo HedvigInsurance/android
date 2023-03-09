@@ -28,7 +28,6 @@ internal class TerminateInsuranceViewModel(
   clock: Clock = Clock.System,
 ) : ViewModel() {
   private val datePickerConfiguration = DatePickerConfiguration(clock)
-  val dateValidator = datePickerConfiguration.dateValidator
 
   private val _uiState: MutableStateFlow<TerminateInsuranceUiState> = MutableStateFlow(
     TerminateInsuranceUiState(
@@ -91,9 +90,6 @@ private class DatePickerConfiguration(clock: Clock) {
   private val yearsRange = todayAtStartOfDay.year..2100
 
   val datePickerState = DatePickerState(null, null, yearsRange)
-  val dateValidator: (Long) -> Boolean = { selectedDateEpochMillis ->
-    selectedDateEpochMillis >= todayAtStartOfDayEpochMillis
-  }
 }
 
 internal data class TerminateInsuranceUiState(
