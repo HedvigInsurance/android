@@ -45,6 +45,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.core.ui.insurance.PerilGrid
 import com.hedvig.android.core.ui.insurance.PerilGridData
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
@@ -53,6 +54,8 @@ import com.hedvig.app.databinding.ContractDetailCoverageFragmentBinding
 import com.hedvig.app.feature.perils.Peril
 import com.hedvig.app.feature.perils.PerilBottomSheet
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toPersistentList
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -81,11 +84,12 @@ class CoverageFragment : Fragment(R.layout.contract_detail_coverage_fragment) {
                 PerilBottomSheet.TAG,
               )
           },
-          onMoreInfoClick = { moreInfo ->
+          onInsurableLimitClick = { insurableLimit ->
             InsurableLimitsBottomSheet
-              .newInstance(moreInfo.label, moreInfo.description)
+              .newInstance(insurableLimit.label, insurableLimit.description)
               .show(parentFragmentManager, InsurableLimitsBottomSheet.TAG)
           },
+          retryLoading = viewModel::reload,
         )
       }
     }
@@ -107,17 +111,23 @@ private fun CoverageFragmentScreen(
   uiState: CoverageUiState,
   imageLoader: ImageLoader,
   onPerilClick: (Peril) -> Unit,
-  onMoreInfoClick: (ContractCoverage.MoreInfo) -> Unit,
+  onInsurableLimitClick: (ContractCoverage.InsurableLimit) -> Unit,
+  retryLoading: () -> Unit,
 ) {
   when (uiState) {
-    CoverageUiState.Error -> {}
+    CoverageUiState.Error -> {
+      GenericErrorScreen(
+        onRetryButtonClick = retryLoading,
+        modifier = Modifier.padding(16.dp).windowInsetsPadding(WindowInsets.safeDrawing),
+      )
+    }
     CoverageUiState.Loading -> {}
     is CoverageUiState.Success -> {
       SuccessScreen(
         uiState = uiState,
         imageLoader = imageLoader,
         onPerilClick = onPerilClick,
-        onMoreInfoClick = onMoreInfoClick,
+        onInsurableLimitClick = onInsurableLimitClick,
       )
     }
   }
@@ -128,15 +138,15 @@ private fun SuccessScreen(
   uiState: CoverageUiState.Success,
   imageLoader: ImageLoader,
   onPerilClick: (Peril) -> Unit,
-  onMoreInfoClick: (ContractCoverage.MoreInfo) -> Unit,
+  onInsurableLimitClick: (ContractCoverage.InsurableLimit) -> Unit,
 ) {
-  Column {
+  Column(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))) {
     Spacer(Modifier.height(8.dp))
-    PerilSection(uiState, imageLoader, onPerilClick)
+    PerilSection(uiState.contractDisplayName, uiState.perilItems, imageLoader, onPerilClick)
     Spacer(Modifier.height(32.dp))
     Divider(Modifier.padding(horizontal = 16.dp))
     Spacer(Modifier.height(8.dp))
-    MoreInfoSection(uiState, onMoreInfoClick)
+    InsurableLimitSection(uiState.insurableLimitItems, onInsurableLimitClick)
     Spacer(Modifier.height(16.dp))
     Spacer(
       Modifier.windowInsetsPadding(
@@ -149,12 +159,13 @@ private fun SuccessScreen(
 @Suppress("UnusedReceiverParameter")
 @Composable
 private fun ColumnScope.PerilSection(
-  uiState: CoverageUiState.Success,
+  contractDisplayName: String,
+  perilItems: ImmutableList<Peril>,
   imageLoader: ImageLoader,
   onPerilClick: (Peril) -> Unit,
 ) {
   Text(
-    text = stringResource(hedvig.resources.R.string.CONTRACT_COVERAGE_CONTRACT_TYPE, uiState.contractDisplayName),
+    text = stringResource(hedvig.resources.R.string.CONTRACT_COVERAGE_CONTRACT_TYPE, contractDisplayName),
     style = MaterialTheme.typography.titleLarge,
     modifier = Modifier
       .padding(horizontal = 16.dp)
@@ -163,7 +174,7 @@ private fun ColumnScope.PerilSection(
   )
   Spacer(Modifier.height(16.dp))
   PerilGrid(
-    perils = uiState.perilItems.map { peril: Peril ->
+    perils = perilItems.map { peril: Peril ->
       PerilGridData(
         text = peril.title,
         iconUrl = if (isSystemInDarkTheme()) peril.darkUrl else peril.lightUrl,
@@ -177,9 +188,9 @@ private fun ColumnScope.PerilSection(
 
 @Suppress("UnusedReceiverParameter")
 @Composable
-private fun ColumnScope.MoreInfoSection(
-  uiState: CoverageUiState.Success,
-  onMoreInfoClick: (ContractCoverage.MoreInfo) -> Unit,
+private fun ColumnScope.InsurableLimitSection(
+  insurableLimitItems: ImmutableList<ContractCoverage.InsurableLimit>,
+  onInsurableLimitClick: (ContractCoverage.InsurableLimit) -> Unit,
 ) {
   Text(
     text = stringResource(hedvig.resources.R.string.CONTRACT_COVERAGE_MORE_INFO),
@@ -190,13 +201,13 @@ private fun ColumnScope.MoreInfoSection(
       .wrapContentSize(Alignment.BottomStart),
   )
   Spacer(Modifier.height(16.dp))
-  uiState.moreInfoItems.map { insurableLimitItem ->
+  insurableLimitItems.map { insurableLimitItem ->
     Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier
         .heightIn(64.dp)
         .clickable {
-          onMoreInfoClick(insurableLimitItem)
+          onInsurableLimitClick(insurableLimitItem)
         }
         .padding(horizontal = 16.dp),
     ) {
@@ -221,10 +232,11 @@ private fun PreviewCoverageFragmentScreen() {
       CoverageFragmentScreen(
         CoverageUiState.Success(
           "Your insurance",
-          List(7) { Peril("Fire", "Descr", "", "", emptyList(), emptyList(), "Info") },
-          List(3) { ContractCoverage.MoreInfo("Label", "limit", "Description") },
+          List(7) { Peril("Fire", "Descr", "", "", emptyList(), emptyList(), "Info") }.toPersistentList(),
+          List(3) { ContractCoverage.InsurableLimit("Label", "limit", "Description") }.toPersistentList(),
         ),
         rememberPreviewImageLoader(),
+        {},
         {},
         {},
       )

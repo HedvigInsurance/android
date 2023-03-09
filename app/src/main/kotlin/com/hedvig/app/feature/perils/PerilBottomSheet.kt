@@ -4,17 +4,13 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.core.view.updatePadding
-import coil.ImageLoader
 import com.hedvig.app.feature.insurance.ui.detail.coverage.PerilAdapter
 import com.hedvig.app.feature.insurance.ui.detail.coverage.PerilModel
 import com.hedvig.app.ui.view.ExpandableBottomSheet
 import com.hedvig.app.util.extensions.dp
-import org.koin.android.ext.android.inject
 import slimber.log.e
 
 class PerilBottomSheet : ExpandableBottomSheet() {
-
-  private val imageLoader: ImageLoader by inject()
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
@@ -26,7 +22,7 @@ class PerilBottomSheet : ExpandableBottomSheet() {
     }
 
     binding.recycler.updatePadding(bottom = binding.recycler.paddingBottom + 56.dp)
-    binding.recycler.adapter = PerilAdapter(imageLoader).also { adapter ->
+    binding.recycler.adapter = PerilAdapter().also { adapter ->
       adapter.submitList(
         expandedList(
           peril.title,
@@ -34,8 +30,6 @@ class PerilBottomSheet : ExpandableBottomSheet() {
           peril.info,
           peril.covered,
           peril.exception,
-          peril.darkUrl,
-          peril.lightUrl,
         ),
       )
     }
@@ -47,33 +41,24 @@ class PerilBottomSheet : ExpandableBottomSheet() {
     info: String,
     covered: List<String>,
     exceptions: List<String>,
-    iconDarkLink: String,
-    iconLightLink: String,
-  ) = listOfNotNull(
-    PerilModel.Icon(iconLightLink, iconDarkLink),
-    PerilModel.Title(title),
-    PerilModel.Description(description),
-    if (covered.isNotEmpty()) {
-      PerilModel.Header.CoveredHeader
-    } else {
-      null
-    },
-    *covered.map { PerilModel.PerilList.Covered(it) }.toTypedArray(),
-    if (exceptions.isNotEmpty()) {
-      PerilModel.Header.ExceptionHeader
-    } else {
-      null
-    },
-    *exceptions.map { PerilModel.PerilList.Exception(it) }.toTypedArray(),
-    *(
-      if (info.isNotBlank()) {
-        arrayOf(PerilModel.Header.InfoHeader, PerilModel.Paragraph(info))
-      } else {
-        emptyArray()
+  ): List<PerilModel> {
+    return buildList {
+      add(PerilModel.Title(title))
+      add(PerilModel.Description(description))
+      if (covered.isNotEmpty()) {
+        add(PerilModel.Header.CoveredHeader)
       }
-      ),
-
-  )
+      addAll(covered.map { PerilModel.PerilList.Covered(it) })
+      if (exceptions.isNotEmpty()) {
+        add(PerilModel.Header.ExceptionHeader)
+      }
+      addAll(exceptions.map { PerilModel.PerilList.Exception(it) })
+      if (info.isNotBlank()) {
+        add(PerilModel.Header.InfoHeader)
+        add(PerilModel.Paragraph(info))
+      }
+    }
+  }
 
   companion object {
     private const val PERIL = "PERIL"

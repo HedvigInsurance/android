@@ -158,6 +158,7 @@ dependencies {
   implementation(libs.coroutines.android)
   testImplementation(libs.coroutines.test)
 
+  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.json)
 
   testImplementation(libs.androidx.arch.testing)
