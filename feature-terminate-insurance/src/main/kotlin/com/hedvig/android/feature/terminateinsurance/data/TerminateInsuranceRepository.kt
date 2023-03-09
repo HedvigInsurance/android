@@ -4,11 +4,13 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toKotlinLocalDate
 import octopus.FlowTerminationDateNextMutation
+import octopus.FlowTerminationDateNextMutation.Data.FlowTerminationDateNext
 import octopus.FlowTerminationStartMutation
+import octopus.FlowTerminationStartMutation.Data.FlowTerminationStart
 import octopus.type.FlowTerminationDateInput
-import java.time.LocalDate
 
 internal class TerminateInsuranceRepository(
   private val apolloClient: ApolloClient,
@@ -28,7 +30,7 @@ internal class TerminateInsuranceRepository(
   suspend fun setTerminationDate(terminationDate: LocalDate): TerminationStep {
     val nextMutation = FlowTerminationDateNextMutation(
       context = terminationContext!!,
-      input = FlowTerminationDateInput(terminationDate.toKotlinLocalDate()),
+      input = FlowTerminationDateInput(terminationDate),
     )
     return when (val res = apolloClient.mutation(nextMutation).safeExecute()) {
       is OperationResult.Error -> TerminationStep.Failed(res.message)
@@ -40,17 +42,17 @@ internal class TerminateInsuranceRepository(
   }
 }
 
-private fun FlowTerminationStartMutation.Data.FlowTerminationStart.CurrentStep.toTerminationStep(): TerminationStep = when (this) {
-  is FlowTerminationStartMutation.Data.FlowTerminationStart.FlowTerminationDateStepCurrentStep -> TerminationStep.Date(minDate, maxDate)
-  is FlowTerminationStartMutation.Data.FlowTerminationStart.FlowTerminationFailedStepCurrentStep -> TerminationStep.Failed("error")
-  is FlowTerminationStartMutation.Data.FlowTerminationStart.FlowTerminationSuccessStepCurrentStep -> TerminationStep.Success(terminationDate, surveyUrl)
-  is FlowTerminationStartMutation.Data.FlowTerminationStart.OtherCurrentStep -> TerminationStep.Failed("Unknown step: OtherCurrentStep")
+private fun FlowTerminationStart.CurrentStep.toTerminationStep(): TerminationStep = when (this) {
+  is FlowTerminationStart.FlowTerminationDateStepCurrentStep -> TerminationStep.Date(minDate, maxDate)
+  is FlowTerminationStart.FlowTerminationFailedStepCurrentStep -> TerminationStep.Failed("error")
+  is FlowTerminationStart.FlowTerminationSuccessStepCurrentStep -> TerminationStep.Success(terminationDate, surveyUrl)
+  is FlowTerminationStart.OtherCurrentStep -> TerminationStep.Failed("Unknown step: OtherCurrentStep")
 }
 
-private fun FlowTerminationDateNextMutation.Data.FlowTerminationDateNext.CurrentStep.toTerminationStep(): TerminationStep = when (this) {
-  is FlowTerminationDateNextMutation.Data.FlowTerminationDateNext.FlowTerminationDateStepCurrentStep -> TerminationStep.Date(minDate, maxDate)
-  is FlowTerminationDateNextMutation.Data.FlowTerminationDateNext.FlowTerminationFailedStepCurrentStep -> TerminationStep.Failed("error")
-  is FlowTerminationDateNextMutation.Data.FlowTerminationDateNext.FlowTerminationSuccessStepCurrentStep -> TerminationStep.Success(terminationDate, surveyUrl)
-  is FlowTerminationDateNextMutation.Data.FlowTerminationDateNext.OtherCurrentStep -> TerminationStep.Failed("Unknown step: OtherCurrentStep")
+private fun FlowTerminationDateNext.CurrentStep.toTerminationStep(): TerminationStep = when (this) {
+  is FlowTerminationDateNext.FlowTerminationDateStepCurrentStep -> TerminationStep.Date(minDate, maxDate)
+  is FlowTerminationDateNext.FlowTerminationFailedStepCurrentStep -> TerminationStep.Failed("error")
+  is FlowTerminationDateNext.FlowTerminationSuccessStepCurrentStep -> TerminationStep.Success(terminationDate, surveyUrl)
+  is FlowTerminationDateNext.OtherCurrentStep -> TerminationStep.Failed("Unknown step: OtherCurrentStep")
 }
 

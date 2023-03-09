@@ -5,23 +5,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import arrow.core.Either
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminationStep
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
-import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
-import java.time.Instant
-import java.time.ZoneId
 
 internal class TerminateInsuranceViewModel(
   private val insuranceId: InsuranceId,
@@ -67,7 +63,8 @@ internal class TerminateInsuranceViewModel(
     val uiState = _uiState.value
     if (!uiState.canSubmitSelectedDate()) return
     val selectedDateMillis = uiState.datePickerState.selectedDateMillis ?: return
-    val selectedDate = Instant.ofEpochMilli(selectedDateMillis).atZone(ZoneId.systemDefault()).toLocalDate()
+    val instant = Instant.fromEpochMilliseconds(selectedDateMillis)
+    val selectedDate = instant.toLocalDateTime(TimeZone.currentSystemDefault()).date
     _uiState.update { it.copy(isLoading = true) }
     viewModelScope.launch {
       val step = terminateInsuranceRepository.setTerminationDate(selectedDate)
