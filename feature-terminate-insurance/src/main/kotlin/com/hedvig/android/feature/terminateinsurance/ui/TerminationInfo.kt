@@ -87,8 +87,7 @@ fun TerminationInfoScreen(
         text = bodyText,
         style = MaterialTheme.typography.bodyLarge,
         modifier = sideSpacingModifier,
-
-        )
+      )
       Spacer(Modifier.height(16.dp))
       Spacer(Modifier.weight(1f))
       LargeContainedTextButton(

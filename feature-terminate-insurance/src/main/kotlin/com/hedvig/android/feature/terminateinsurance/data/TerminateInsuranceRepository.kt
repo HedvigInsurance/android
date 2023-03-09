@@ -5,7 +5,6 @@ import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toKotlinLocalDate
 import octopus.FlowTerminationDateNextMutation
 import octopus.FlowTerminationDateNextMutation.Data.FlowTerminationDateNext
 import octopus.FlowTerminationStartMutation
@@ -52,7 +51,9 @@ private fun FlowTerminationStart.CurrentStep.toTerminationStep(): TerminationSte
 private fun FlowTerminationDateNext.CurrentStep.toTerminationStep(): TerminationStep = when (this) {
   is FlowTerminationDateNext.FlowTerminationDateStepCurrentStep -> TerminationStep.Date(minDate, maxDate)
   is FlowTerminationDateNext.FlowTerminationFailedStepCurrentStep -> TerminationStep.Failed("error")
-  is FlowTerminationDateNext.FlowTerminationSuccessStepCurrentStep -> TerminationStep.Success(terminationDate, surveyUrl)
+  is FlowTerminationDateNext.FlowTerminationSuccessStepCurrentStep -> TerminationStep.Success(
+    terminationDate,
+    surveyUrl,
+  )
   is FlowTerminationDateNext.OtherCurrentStep -> TerminationStep.Failed("Unknown step: OtherCurrentStep")
 }
-

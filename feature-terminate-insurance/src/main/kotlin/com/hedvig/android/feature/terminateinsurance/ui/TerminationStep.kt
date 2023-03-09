@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.terminateinsurance.ui
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
@@ -16,7 +15,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.R
 import com.hedvig.android.feature.terminateinsurance.TerminateInsuranceViewModel
 import com.hedvig.android.feature.terminateinsurance.data.TerminationStep
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toKotlinLocalDate
 import java.time.Instant
 import java.time.ZoneId
