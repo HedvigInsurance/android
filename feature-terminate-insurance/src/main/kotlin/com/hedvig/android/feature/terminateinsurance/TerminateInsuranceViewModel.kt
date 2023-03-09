@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminationStep
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -41,10 +42,11 @@ internal class TerminateInsuranceViewModel(
   val uiState: StateFlow<TerminateInsuranceUiState> = _uiState.asStateFlow()
 
   init {
+    _uiState.update { it.copy(isLoading = true) }
     viewModelScope.launch {
       val step = terminateInsuranceRepository.startTerminationFlow(insuranceId)
       _uiState.update {
-        it.copy(currentStep = step)
+        it.copy(currentStep = step, isLoading = false)
       }
     }
   }
@@ -86,7 +88,6 @@ private class DatePickerConfiguration(clock: Clock) {
     .date
     .atStartOfDayIn(TimeZone.UTC)
     .toLocalDateTime(TimeZone.UTC)
-  private val todayAtStartOfDayEpochMillis = todayAtStartOfDay.toInstant(TimeZone.UTC).toEpochMilliseconds()
   private val yearsRange = todayAtStartOfDay.year..2100
 
   val datePickerState = DatePickerState(null, null, yearsRange)
