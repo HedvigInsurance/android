@@ -59,6 +59,7 @@ class ContractDetailActivity : AppCompatActivity(R.layout.contract_detail_activi
       toolbar.setNavigationOnClickListener {
         onBackPressedDispatcher.onBackPressed()
       }
+      tabContent.offscreenPageLimit = 1
       tabContent.adapter = ContractDetailTabAdapter(this@ContractDetailActivity, contractId)
       TabLayoutMediator(tabContainer, tabContent) { tab, position ->
         when (position) {
