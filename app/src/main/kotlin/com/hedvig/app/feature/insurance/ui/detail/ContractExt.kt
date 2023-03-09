@@ -3,11 +3,8 @@ package com.hedvig.app.feature.insurance.ui.detail
 import android.net.Uri
 import com.hedvig.android.apollo.graphql.InsuranceQuery
 import com.hedvig.app.feature.documents.DocumentItems
-import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.insurance.ui.ContractCardViewState
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoModel
-import com.hedvig.app.feature.perils.Peril
-import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.feature.table.intoTable
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.apollo.toUpcomingAgreementResult
@@ -18,7 +15,6 @@ fun InsuranceQuery.Contract.toContractDetailViewState(
   return ContractDetailViewState(
     contractCardViewState = toContractCardViewState(),
     memberDetailsViewState = toMemberDetailsViewState(isTerminationFlowEnabled),
-    coverageViewState = toCoverageViewState(),
     documentsViewState = toDocumentsViewState(),
   )
 }
@@ -48,23 +44,6 @@ fun InsuranceQuery.Contract.toMemberDetailsViewState(isTerminationFlowEnabled: B
     change = YourInfoModel.Change,
     cancelInsurance = if (isTerminationFlowEnabled) YourInfoModel.CancelInsuranceButton(id) else null,
   )
-
-fun InsuranceQuery.Contract.toCoverageViewState() = ContractDetailViewState.CoverageViewState(
-  perils = listOf(
-    PerilItem.Header.CoversSuffix(displayName),
-  ) + contractPerils.map {
-    PerilItem.Peril(Peril.from(it.fragments.perilFragment))
-  },
-  insurableLimits = insurableLimits.map {
-    it.fragments.insurableLimitsFragment.let { insurableLimitsFragment ->
-      InsurableLimitItem.InsurableLimit(
-        label = insurableLimitsFragment.label,
-        limit = insurableLimitsFragment.limit,
-        description = insurableLimitsFragment.description,
-      )
-    }
-  }.let { listOf(InsurableLimitItem.Header.MoreInfo) + it },
-)
 
 fun InsuranceQuery.Contract.toDocumentsViewState() = ContractDetailViewState.DocumentsViewState(
   documents = listOfNotNull(

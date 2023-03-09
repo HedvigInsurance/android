@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.embark.passages.selectaction.ui
+package com.hedvig.android.core.ui.grid
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable

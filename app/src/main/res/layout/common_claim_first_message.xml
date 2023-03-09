@@ -10,14 +10,6 @@
     android:paddingBottom="@dimen/common_claim_first_message_bottom_margin"
     tools:background="#D7FDF4">
 
-    <ImageView
-        android:id="@+id/commonClaimFirstMessageIcon"
-        android:layout_width="@dimen/common_claim_icon_size"
-        android:layout_height="@dimen/common_claim_icon_size"
-        android:layout_marginStart="@dimen/base_margin_triple"
-        android:contentDescription="@null"
-        tools:src="@drawable/ic_charity" />
-
     <TextView
         android:id="@+id/commonClaimFirstMessage"
         android:layout_width="wrap_content"

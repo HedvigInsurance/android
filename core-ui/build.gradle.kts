@@ -16,6 +16,7 @@ dependencies {
   implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.compose.uiUtil)
   implementation(libs.coil.coil)
+  implementation(libs.coil.compose)
 }
 
 android {

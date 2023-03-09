@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.embark.passages.selectaction.ui
+package com.hedvig.android.core.ui.grid
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -19,7 +19,8 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 
 /**
  * A grid which:
- * - Places items in a 2-wide grid, with the last item in the center if the number of items are odd
+ * - Places items in a 2-wide grid, with the last item in the center if the number of items are odd and centerLastItem
+ *   is `true`
  * - Takes on the entire width given by its constraints, and gives each child half of it as a fixed width constraint
  * - Calculates the maximum intrinsic height of each child and measures them all with the maximum one provided to them
  *   as a fixed height constraint
@@ -35,10 +36,11 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
  * ```
  */
 @Composable
-fun SelectActionGrid(
+fun HedvigGrid(
   modifier: Modifier = Modifier,
   contentPadding: PaddingValues = PaddingValues(0.dp),
   insideGridSpace: InsideGridSpace = InsideGridSpace(0.dp),
+  centerLastItem: Boolean = false,
   content: @Composable () -> Unit,
 ) {
   Layout(
@@ -63,7 +65,7 @@ fun SelectActionGrid(
     var yPosition = 0
     val placeableWithCoordinatesList: List<PlaceableWithCoordinates> = buildList {
       placeables.chunked(2) { placeables ->
-        if (placeables.size == 1) {
+        if (placeables.size == 1 && centerLastItem) {
           val (placeable) = placeables
           add(
             placeable.withCoordinates(
@@ -71,20 +73,23 @@ fun SelectActionGrid(
               yPosition,
             ),
           )
-        } else if (placeables.size == 2) {
-          val (placeableStart, placeableEnd) = placeables
+        } else {
+          val placeableStart = placeables[0]
+          val placeableEnd = placeables.getOrNull(1)
           add(
             placeableStart.withCoordinates(
               x = 0,
               y = yPosition,
             ),
           )
-          add(
-            placeableEnd.withCoordinates(
-              x = (constraints.maxWidth / 2) + (horizontalSpacingInPx / 2),
-              y = yPosition,
-            ),
-          )
+          if (placeableEnd != null) {
+            add(
+              placeableEnd.withCoordinates(
+                x = (constraints.maxWidth / 2) + (horizontalSpacingInPx / 2),
+                y = yPosition,
+              ),
+            )
+          }
         }
         yPosition += placeables.maxOf(Placeable::height) + insideGridSpace.vertical.roundToPx()
       }
@@ -119,7 +124,7 @@ private fun Placeable.withCoordinates(
 private fun PreviewSelectActionGrid() {
   HedvigTheme {
     Surface(color = MaterialTheme.colors.background) {
-      SelectActionGrid {
+      HedvigGrid {
         repeat(3) { index ->
           val normalIndex = index + 1
           Box(

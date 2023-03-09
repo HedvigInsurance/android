@@ -21,6 +21,8 @@
             <!-- <name>androidx.navigation.compose.navigation</name> -->
             <name>com.kiwi.navigationcompose.typed.composable</name>
             <name>com.kiwi.navigationcompose.typed.navigation</name>
+
+            <name>com.google.firebase.crashlytics.internal.model.ImmutableList</name>
         </excluded-names>
     </component>
 </project>

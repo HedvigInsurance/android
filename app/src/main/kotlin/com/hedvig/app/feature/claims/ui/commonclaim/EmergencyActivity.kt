@@ -7,12 +7,10 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import coil.ImageLoader
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityEmergencyBinding
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
-import com.hedvig.app.ui.coil.load
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.makeACall
 import com.hedvig.app.util.extensions.showErrorDialog
@@ -28,14 +26,12 @@ import com.hedvig.app.util.extensions.viewBinding
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import slimber.log.e
 
 class EmergencyActivity : AppCompatActivity(R.layout.activity_emergency) {
   private val claimsViewModel: ClaimsViewModel by viewModel()
   private val binding by viewBinding(ActivityEmergencyBinding::bind)
-  private val imageLoader: ImageLoader by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -70,9 +66,6 @@ class EmergencyActivity : AppCompatActivity(R.layout.activity_emergency) {
         onBackPressedDispatcher.onBackPressed()
       }
       scrollView.setupToolbarScrollListener(toolbar = toolbar)
-
-      val url = Uri.parse(data.iconUrls.iconByTheme(firstMessage.commonClaimFirstMessageIcon.context))
-      firstMessage.commonClaimFirstMessageIcon.load(url, imageLoader)
 
       firstMessage.commonClaimFirstMessage.text =
         getString(hedvig.resources.R.string.COMMON_CLAIM_EMERGENCY_LAYOUT_TITLE)

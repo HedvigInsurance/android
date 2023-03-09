@@ -158,6 +158,7 @@ dependencies {
   implementation(libs.coroutines.android)
   testImplementation(libs.coroutines.test)
 
+  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.json)
 
   testImplementation(libs.androidx.arch.testing)
@@ -178,10 +179,11 @@ dependencies {
   implementation(libs.androidx.other.browser)
   implementation(libs.androidx.other.transition)
   implementation(libs.androidx.lifecycle.common)
+  implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.lifecycle.liveData)
+  implementation(libs.androidx.lifecycle.process)
   implementation(libs.androidx.lifecycle.runtime)
   implementation(libs.androidx.lifecycle.viewModel)
-  implementation(libs.androidx.lifecycle.process)
   implementation(libs.androidx.other.workManager)
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.other.startup)

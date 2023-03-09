@@ -30,34 +30,29 @@ class PerilsAdapter(
   SpanSizeLookupOwner,
   ItemDecorationOwner {
 
-  override fun getItemViewType(position: Int) = when (getItem(position)) {
+  override fun getItemViewType(position: Int): Int = when (getItem(position)) {
     is PerilItem.Header -> R.layout.contract_detail_coverage_header
     is PerilItem.Peril -> R.layout.peril_detail
   }
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
     R.layout.contract_detail_coverage_header -> ViewHolder.Header(parent)
-    R.layout.peril_detail -> ViewHolder.Peril(parent, imageLoader)
+    R.layout.peril_detail -> ViewHolder.Peril(parent, fragmentManager, imageLoader)
     else -> throw Error("Invalid viewType: $viewType")
   }
 
   override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-    holder.bind(getItem(position), fragmentManager)
+    holder.bind(getItem(position))
   }
 
   sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-    abstract fun bind(
-      data: PerilItem,
-      fragmentManager: FragmentManager,
-    ): Any?
+    abstract fun bind(data: PerilItem)
 
-    class Header(parent: ViewGroup) :
-      ViewHolder(parent.inflate(R.layout.contract_detail_coverage_header)) {
+    class Header(
+      parent: ViewGroup,
+    ) : ViewHolder(parent.inflate(R.layout.contract_detail_coverage_header)) {
       private val binding by viewBinding(ContractDetailCoverageHeaderBinding::bind)
-      override fun bind(
-        data: PerilItem,
-        fragmentManager: FragmentManager,
-      ) = with(binding) {
+      override fun bind(data: PerilItem) {
         if (data !is PerilItem.Header) {
           return invalid(data)
         }
@@ -80,30 +75,27 @@ class PerilsAdapter(
 
     class Peril(
       parent: ViewGroup,
+      private val fragmentManager: FragmentManager,
       private val imageLoader: ImageLoader,
-    ) :
-      ViewHolder(parent.inflate(R.layout.peril_detail)) {
+    ) : ViewHolder(parent.inflate(R.layout.peril_detail)) {
       private val binding by viewBinding(PerilDetailBinding::bind)
 
-      override fun bind(
-        data: PerilItem,
-        fragmentManager: FragmentManager,
-      ) = with(binding) {
+      override fun bind(data: PerilItem) {
         if (data !is PerilItem.Peril) {
           return invalid(data)
         }
 
-        label.text = data.inner.title
-        val iconUrl = if (icon.context.isDarkThemeActive) {
+        binding.label.text = data.inner.title
+        val iconUrl = if (binding.icon.context.isDarkThemeActive) {
           data.inner.darkUrl
         } else {
           data.inner.lightUrl
         }
-        icon.load(iconUrl, imageLoader) {
+        binding.icon.load(iconUrl, imageLoader) {
           crossfade(true)
         }
 
-        root.setHapticClickListener {
+        binding.root.setHapticClickListener {
           PerilBottomSheet
             .newInstance(data.inner)
             .show(

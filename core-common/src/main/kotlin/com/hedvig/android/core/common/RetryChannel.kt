@@ -4,6 +4,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.transformLatest
@@ -102,5 +103,12 @@ class RetryChannel {
       .receiveAsFlow()
       .onStart { emit(Unit) }
       .flatMapLatest(transform)
+  }
+
+  fun <R> mapLatest(@BuilderInference transform: suspend (value: Unit) -> R): Flow<R> {
+    return channel
+      .receiveAsFlow()
+      .onStart { emit(Unit) }
+      .mapLatest(transform)
   }
 }

@@ -3,18 +3,15 @@ package com.hedvig.app.feature.insurance.ui.detail
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
-import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import slimber.log.e
 
 class ContractDetailViewModel(
   contractId: String,
   private val getContractDetailsUseCase: GetContractDetailsUseCase,
-  private val chatRepository: ChatRepository,
   hAnalytics: HAnalytics,
 ) : ViewModel() {
   sealed class ViewState {
@@ -38,12 +35,6 @@ class ContractDetailViewModel(
         is Either.Right -> ViewState.Success(insurance.value)
       }
       _viewState.value = viewState
-    }
-  }
-
-  suspend fun triggerFreeTextChat() {
-    chatRepository.triggerFreeTextChat().onLeft {
-      e { "Trigger free text chat error: $it" }
     }
   }
 }

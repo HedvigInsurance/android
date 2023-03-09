@@ -380,7 +380,7 @@ val whatsNewModule = module {
 val insuranceModule = module {
   viewModel { InsuranceViewModel(get(), get(), get(), get()) }
   viewModel<ContractDetailViewModel> { (contractId: String) ->
-    ContractDetailViewModel(contractId, get(), get(), get())
+    ContractDetailViewModel(contractId, get(), get())
   }
 }
 
