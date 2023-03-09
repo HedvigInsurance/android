@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.R
@@ -24,6 +25,8 @@ internal fun TerminationStepDestination(
   finishTerminationFlow: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  val uriHandler = LocalUriHandler.current
+
   AnimatedContent(targetState = uiState.currentStep) {
     when (it) {
       is TerminationStep.Date -> TerminationDateScreen(
@@ -52,6 +55,10 @@ internal fun TerminationStepDestination(
           it.terminationDate,
           "Hedvig",
         ),
+        buttonText = stringResource(hedvig.resources.R.string.TERMINATION_OPEN_SURVEY_LABEL),
+        onPrimaryButton = {
+          uriHandler.openUri(it.surveyUrl)
+        },
         icon = R.drawable.ic_checkmark_in_circle,
       )
 
@@ -61,6 +68,7 @@ internal fun TerminationStepDestination(
         title = "",
         headerText = stringResource(hedvig.resources.R.string.TERMINATION_NOT_SUCCESSFUL_TITLE),
         bodyText = it.message ?: stringResource(hedvig.resources.R.string.general_unknown_error),
+        onPrimaryButton = finishTerminationFlow,
         icon = R.drawable.ic_warning_triangle,
       )
 

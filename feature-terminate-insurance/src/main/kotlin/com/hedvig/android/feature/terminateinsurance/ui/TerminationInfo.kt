@@ -44,7 +44,8 @@ fun TerminationInfoScreen(
   headerText: String,
   bodyText: String,
   @DrawableRes icon: Int,
-
+  buttonText: String = stringResource(hedvig.resources.R.string.general_done_button),
+  onPrimaryButton: () -> Unit,
   navigateBack: () -> Unit,
 ) {
   Column {
@@ -91,8 +92,8 @@ fun TerminationInfoScreen(
       Spacer(Modifier.height(16.dp))
       Spacer(Modifier.weight(1f))
       LargeContainedTextButton(
-        text = stringResource(hedvig.resources.R.string.general_done_button),
-        onClick = navigateBack,
+        text = buttonText,
+        onClick = onPrimaryButton,
         modifier = sideSpacingModifier,
       )
       Spacer(Modifier.height(16.dp))
@@ -119,7 +120,8 @@ private fun PreviewTerminationInfoScreen() {
 
           Thanks for being part of Hedvig and trusting us to protect you and your loved ones when needed. The doors are always open if you decide to come back in the near future.
         """.trimIndent(),
-        icon = R.drawable.ic_checkmark_in_circle
+        onPrimaryButton = {},
+        icon = R.drawable.ic_checkmark_in_circle,
       ) {}
     }
   }
