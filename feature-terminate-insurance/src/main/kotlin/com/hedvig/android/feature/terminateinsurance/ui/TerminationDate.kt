@@ -26,13 +26,11 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation
@@ -42,35 +40,9 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbar
-import com.hedvig.android.feature.terminateinsurance.TerminateInsuranceViewModel
 
 @Composable
-internal fun TerminationDateDestination(
-  viewModel: TerminateInsuranceViewModel,
-  windowSizeClass: WindowSizeClass,
-  navigateToSuccessScreen: () -> Unit,
-  navigateBack: () -> Unit,
-) {
-  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  TerminationDateScreen(
-    windowSizeClass = windowSizeClass,
-    datePickerState = uiState.datePickerState,
-    dateSubmissionSuccess = uiState.dateSubmissionSuccess,
-    dateValidator = viewModel.dateValidator,
-    canSubmit = uiState.canContinue,
-    submit = viewModel::submitSelectedDate,
-    hasError = uiState.dateSubmissionError,
-    showedError = viewModel::showedError,
-    navigateToSuccessScreen = {
-      viewModel.handledSuccess()
-      navigateToSuccessScreen()
-    },
-    navigateBack = navigateBack,
-  )
-}
-
-@Composable
-private fun TerminationDateScreen(
+fun TerminationDateScreen(
   windowSizeClass: WindowSizeClass,
   datePickerState: DatePickerState,
   dateSubmissionSuccess: Boolean,
@@ -91,7 +63,7 @@ private fun TerminationDateScreen(
       val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
       TopAppBarWithBack(
         onClick = navigateBack,
-        title = "Set termination date",
+        title = stringResource(hedvig.resources.R.string.TERMINATION_DATE_TEXT),
         scrollBehavior = topAppBarScrollBehavior,
       )
       Column(
@@ -151,9 +123,9 @@ private fun ChatCard(modifier: Modifier = Modifier) {
     modifier = modifier.padding(end = 16.dp),
   ) {
     Text(
-      text = "Please set termination date for your insurance.",
+      text = stringResource(hedvig.resources.R.string.SET_TERMINATION_DATE_TEXT),
       modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp),
-    ) // TODO Add parameter for insurance name
+    )
   }
 }
 
@@ -188,8 +160,7 @@ private fun PreviewTerminationDateScreen() {
         false,
         {},
         {},
-        {},
-      )
+      ) {}
     }
   }
 }
