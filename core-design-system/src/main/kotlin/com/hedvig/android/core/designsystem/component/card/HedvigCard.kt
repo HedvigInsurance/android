@@ -24,9 +24,50 @@ fun HedvigCard(
   colors: CardColors = CardDefaults.outlinedCardColors(),
   elevation: HedvigCardElevation = HedvigCardElevation.NoElevation,
   border: BorderStroke? = null,
+  onClick: (() -> Unit)? = null,
+  content: @Composable ColumnScope.() -> Unit,
+) {
+  if (onClick == null) {
+    NonClickableHedvigCard(modifier, shape, colors, elevation, border, content)
+  } else {
+    ClickableHedvigCard(onClick, modifier, shape, colors, elevation, border, content)
+  }
+}
+
+@Composable
+private fun NonClickableHedvigCard(
+  modifier: Modifier = Modifier,
+  shape: Shape = CardDefaults.shape,
+  colors: CardColors = CardDefaults.outlinedCardColors(),
+  elevation: HedvigCardElevation = HedvigCardElevation.NoElevation,
+  border: BorderStroke? = null,
   content: @Composable ColumnScope.() -> Unit,
 ) {
   Card(
+    modifier = modifier,
+    shape = shape,
+    colors = colors,
+    elevation = when (elevation) {
+      HedvigCardElevation.NoElevation -> CardDefaults.cardElevation()
+      is HedvigCardElevation.Elevated -> CardDefaults.elevatedCardElevation(elevation.elevation)
+    },
+    border = border,
+    content = content,
+  )
+}
+
+@Composable
+private fun ClickableHedvigCard(
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  shape: Shape = CardDefaults.shape,
+  colors: CardColors = CardDefaults.outlinedCardColors(),
+  elevation: HedvigCardElevation = HedvigCardElevation.NoElevation,
+  border: BorderStroke? = null,
+  content: @Composable ColumnScope.() -> Unit,
+) {
+  Card(
+    onClick = onClick,
     modifier = modifier,
     shape = shape,
     colors = colors,
