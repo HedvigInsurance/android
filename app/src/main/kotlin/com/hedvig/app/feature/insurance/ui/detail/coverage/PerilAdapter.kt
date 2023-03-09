@@ -4,30 +4,23 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import coil.ImageLoader
 import com.hedvig.app.R
 import com.hedvig.app.databinding.CoveredAndExceptionHeaderBinding
 import com.hedvig.app.databinding.CoveredAndExceptionItemBinding
 import com.hedvig.app.databinding.ExpandableBottomSheetTitleBinding
 import com.hedvig.app.databinding.PerilDescriptionBinding
-import com.hedvig.app.databinding.PerilIconBinding
 import com.hedvig.app.databinding.PerilParagraphBinding
-import com.hedvig.app.ui.coil.load
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
-import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.viewBinding
 
-class PerilAdapter(
-  private val imageLoader: ImageLoader,
-) : ListAdapter<PerilModel, PerilAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
+class PerilAdapter : ListAdapter<PerilModel, PerilAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
     R.layout.covered_and_exception_item -> ViewHolder.CoveredAndException(parent)
     R.layout.covered_and_exception_header -> ViewHolder.Header(parent)
     R.layout.peril_paragraph -> ViewHolder.Paragraph(parent)
-    R.layout.peril_icon -> ViewHolder.Icon(parent, imageLoader)
     R.layout.expandable_bottom_sheet_title -> ViewHolder.Title(parent)
     R.layout.peril_description -> ViewHolder.Description(parent)
     else -> {
@@ -44,7 +37,6 @@ class PerilAdapter(
     PerilModel.Header.ExceptionHeader -> R.layout.covered_and_exception_header
     PerilModel.Header.InfoHeader -> R.layout.covered_and_exception_header
     is PerilModel.Paragraph -> R.layout.peril_paragraph
-    is PerilModel.Icon -> R.layout.peril_icon
     is PerilModel.Title -> R.layout.expandable_bottom_sheet_title
     is PerilModel.Description -> R.layout.peril_description
     is PerilModel.PerilList.Covered -> R.layout.covered_and_exception_item
@@ -111,28 +103,6 @@ class PerilAdapter(
           return
         }
         binding.root.text = item.text
-      }
-    }
-
-    class Icon(parent: ViewGroup, private val imageLoader: ImageLoader) :
-      ViewHolder(parent.inflate(R.layout.peril_icon)) {
-      private val binding by viewBinding(PerilIconBinding::bind)
-
-      override fun bind(item: PerilModel) {
-        if (item !is PerilModel.Icon) {
-          invalid(item)
-          return
-        }
-        binding.root.apply {
-          val link = if (context.isDarkThemeActive) {
-            item.darkUrl
-          } else {
-            item.lightUrl
-          }
-          load(link, imageLoader) {
-            crossfade(true)
-          }
-        }
       }
     }
 
