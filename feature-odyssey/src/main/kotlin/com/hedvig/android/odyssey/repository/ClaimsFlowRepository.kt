@@ -15,7 +15,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.json.JSONObject
 
-interface ClaimsFlowRepository {
+internal interface ClaimsFlowRepository {
   suspend fun getOrCreateClaim(
     commonClaimId: String?,
   ): ClaimResult
@@ -25,7 +25,7 @@ interface ClaimsFlowRepository {
   suspend fun openClaim(amount: MonetaryAmount? = null): ClaimResult
 }
 
-sealed interface ClaimResult {
+internal sealed interface ClaimResult {
   data class Success(
     val claimState: ClaimState,
     val inputs: List<Input>,
@@ -35,7 +35,7 @@ sealed interface ClaimResult {
   data class Error(val message: String) : ClaimResult
 }
 
-class NetworkClaimsFlowRepository(
+internal class NetworkClaimsFlowRepository(
   private val okHttpClient: OkHttpClient,
 ) : ClaimsFlowRepository {
 

@@ -20,7 +20,7 @@ import com.hedvig.android.odyssey.model.Input
 import com.hedvig.app.ui.compose.composables.ErrorDialog
 
 @Composable
-fun InputRoot(
+internal fun InputRoot(
   inputViewModel: InputViewModel,
   viewState: InputViewState,
   imageLoader: ImageLoader,

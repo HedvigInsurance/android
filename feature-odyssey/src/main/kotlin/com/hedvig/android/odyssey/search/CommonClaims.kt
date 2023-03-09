@@ -27,7 +27,7 @@ import com.hedvig.android.odyssey.model.ItemType
 import com.hedvig.android.odyssey.model.SearchableClaim
 
 @Composable
-fun CommonClaims(
+internal fun CommonClaims(
   selectClaim: (SearchableClaim) -> Unit,
   commonClaims: List<SearchableClaim>,
   selectOther: () -> Unit,

@@ -7,7 +7,7 @@ import com.hedvig.odyssey.remote.money.MonetaryAmount
 import kotlinx.coroutines.delay
 import java.time.LocalDate
 
-class MockClaimsFlowRepository : ClaimsFlowRepository {
+internal class MockClaimsFlowRepository : ClaimsFlowRepository {
 
   private val mockSuccessResult = ClaimResult.Success(
     ClaimState(),
