@@ -7,7 +7,6 @@ import androidx.navigation.navOptions
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
 import com.hedvig.android.feature.terminateinsurance.TerminateInsuranceViewModel
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationStepDestination
-import com.hedvig.android.feature.terminateinsurance.ui.TerminationSuccessDestination
 import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.compose.typed.animatedNavigation
 import com.kiwi.navigationcompose.typed.createRoutePattern
@@ -42,15 +41,7 @@ internal fun NavGraphBuilder.terminateInsuranceGraph(
           )
         },
         navigateBack = { navController.navigateUp() || navigateUp() },
-      )
-    }
-    animatedComposable<TerminateInsuranceDestinations.TerminationSuccess> {
-      TerminationSuccessDestination(
-        windowSizeClass = windowSizeClass,
-        // Can't use navigateUp() from non-starting destination while it's the only one in the backstack due to not
-        // having a fixed startDestination. This may be hard to achieve our this mixed compose-activity situation.
-        // https://issuetracker.google.com/issues/271549886
-        navigateBack = finishTerminationFlow,
+        finishTerminationFlow = finishTerminationFlow,
       )
     }
   }

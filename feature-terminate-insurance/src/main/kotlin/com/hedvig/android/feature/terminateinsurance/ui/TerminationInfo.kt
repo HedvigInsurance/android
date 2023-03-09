@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.terminateinsurance.ui
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -29,34 +30,28 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.R
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.preview.calculateForPreview
-import hedvig.resources.R
 
 @Composable
-internal fun TerminationSuccessDestination(
+fun TerminationInfoScreen(
   windowSizeClass: WindowSizeClass,
-  navigateBack: () -> Unit,
-) {
-  TerminationSuccessScreen(
-    windowSizeClass = windowSizeClass,
-    navigateBack = navigateBack,
-  )
-}
+  title: String,
+  headerText: String,
+  bodyText: String,
+  @DrawableRes icon: Int,
 
-@Composable
-fun TerminationSuccessScreen(
-  windowSizeClass: WindowSizeClass,
   navigateBack: () -> Unit,
 ) {
   Column {
     val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     TopAppBarWithBack(
       onClick = navigateBack,
-      title = "",
+      title = title,
       scrollBehavior = topAppBarScrollBehavior,
     )
     Column(
@@ -76,31 +71,27 @@ fun TerminationSuccessScreen(
       }
       Spacer(Modifier.height(40.dp))
       Icon(
-        painter = painterResource(com.hedvig.android.core.designsystem.R.drawable.ic_checkmark_in_circle),
-        contentDescription = "Checkmark in circle",
+        painter = painterResource(icon),
+        contentDescription = "Icon",
         modifier = sideSpacingModifier.size(32.dp),
       )
       Spacer(Modifier.height(16.dp))
       Text(
-        text = "Cancellation successful",
+        text = headerText,
         style = MaterialTheme.typography.headlineSmall,
         modifier = sideSpacingModifier,
       )
       Spacer(Modifier.height(16.dp))
       Text(
-        text = """
-          Your insurance with Hedvig will be cancelled on 31-10-2022. We'll send you a confirmation email with all the details.
-
-          Thanks for being part of Hedvig and trusting us to protect you and your loved ones when needed. The doors are always open if you decide to come back in the near future.
-        """.trimIndent(),
+        text = bodyText,
         style = MaterialTheme.typography.bodyLarge,
         modifier = sideSpacingModifier,
 
-      )
+        )
       Spacer(Modifier.height(16.dp))
       Spacer(Modifier.weight(1f))
       LargeContainedTextButton(
-        text = stringResource(R.string.general_done_button),
+        text = stringResource(hedvig.resources.R.string.general_done_button),
         onClick = navigateBack,
         modifier = sideSpacingModifier,
       )
@@ -116,10 +107,20 @@ fun TerminationSuccessScreen(
 
 @HedvigMultiScreenPreview
 @Composable
-private fun PreviewTerminationSuccessScreen() {
+private fun PreviewTerminationInfoScreen() {
   HedvigTheme {
     Surface {
-      TerminationSuccessScreen(WindowSizeClass.calculateForPreview()) {}
+      TerminationInfoScreen(
+        WindowSizeClass.calculateForPreview(),
+        title = "",
+        headerText = "Cancellation successful",
+        bodyText = """
+          Your insurance with Hedvig will be cancelled on 31-10-2022. We'll send you a confirmation email with all the details.
+
+          Thanks for being part of Hedvig and trusting us to protect you and your loved ones when needed. The doors are always open if you decide to come back in the near future.
+        """.trimIndent(),
+        icon = R.drawable.ic_checkmark_in_circle
+      ) {}
     }
   }
 }
