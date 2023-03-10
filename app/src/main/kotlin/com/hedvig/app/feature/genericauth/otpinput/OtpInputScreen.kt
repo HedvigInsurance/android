@@ -51,8 +51,8 @@ import androidx.core.text.isDigitsOnly
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.FullScreenProgressOverlay
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
+import com.hedvig.android.core.ui.progress.FullScreenProgressOverlay
 import com.hedvig.app.R
 import kotlinx.coroutines.isActive
 
