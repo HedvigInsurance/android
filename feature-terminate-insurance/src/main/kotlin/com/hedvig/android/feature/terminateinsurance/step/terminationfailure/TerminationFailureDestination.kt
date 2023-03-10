@@ -1,11 +1,16 @@
 package com.hedvig.android.feature.terminateinsurance.step.terminationfailure
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationInfoScreen
 import hedvig.resources.R
 
@@ -37,4 +42,14 @@ internal fun TerminationFailureScreen(
     onPrimaryButton = navigateBack,
     icon = ImageVector.vectorResource(com.hedvig.android.core.designsystem.R.drawable.ic_warning_triangle),
   )
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewTerminationFailureScreen() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      TerminationFailureScreen(WindowSizeClass.calculateForPreview(), ErrorMessage()) {}
+    }
+  }
 }
