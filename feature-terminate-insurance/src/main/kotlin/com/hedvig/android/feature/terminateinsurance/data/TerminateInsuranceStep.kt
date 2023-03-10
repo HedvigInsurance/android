@@ -19,7 +19,7 @@ internal sealed interface TerminateInsuranceStep {
    * Note that this is not a network error, or trying to show an unknown screen. This is an explicitly returned
    * "Failed" Screen returned from the backend
    */
-  data class Failure(val message: String? = "") : TerminateInsuranceStep
+  data class Failure(val message: String? = null) : TerminateInsuranceStep
 
   /**
    * When the client does not know how to parse a step, probably due to having an old Schema, it defaults to this
