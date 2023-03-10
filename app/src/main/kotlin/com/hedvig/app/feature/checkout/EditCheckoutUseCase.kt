@@ -9,9 +9,9 @@ import arrow.core.right
 import arrow.core.sequence
 import com.hedvig.android.apollo.graphql.QuoteCartEditQuoteMutation
 import com.hedvig.android.apollo.toEither
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.language.LanguageService
 import com.hedvig.app.feature.offer.model.QuoteCartId
-import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put

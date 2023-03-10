@@ -3,6 +3,7 @@ package com.hedvig.app.feature.offer.usecase
 import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.continuations.ensureNotNull
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.app.feature.embark.util.SelectedContractType
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.SelectedVariantStore
@@ -10,7 +11,6 @@ import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.QuoteBundleVariant
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
-import com.hedvig.app.util.ErrorMessage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart

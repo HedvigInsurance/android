@@ -6,6 +6,7 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.continuations.ensureNotNull
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.app.feature.adyen.PaymentTokenId
 import com.hedvig.app.feature.chat.data.ChatRepository
@@ -27,7 +28,6 @@ import com.hedvig.app.feature.offer.usecase.ObserveOfferStateUseCase
 import com.hedvig.app.feature.offer.usecase.OfferState
 import com.hedvig.app.feature.offer.usecase.StartCheckoutUseCase
 import com.hedvig.app.feature.perils.PerilItem
-import com.hedvig.app.util.ErrorMessage
 import com.hedvig.hanalytics.PaymentType
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -213,7 +213,7 @@ class OfferViewModelImpl(
   override fun removeDiscount() {
     viewModelScope.launch {
       editCampaignUseCase.removeCampaignFromQuoteCart(quoteCartId)
-        .tapLeft { _viewState.value = ViewState.Error(null) }
+        .onLeft { _viewState.value = ViewState.Error(null) }
     }
   }
 
@@ -303,7 +303,7 @@ class OfferViewModelImpl(
   override fun onPaymentTokenIdReceived(id: PaymentTokenId) {
     viewModelScope.launch {
       addPaymentTokenUseCase.invoke(quoteCartId, id)
-        .tapLeft { _viewState.value = ViewState.Error(null) }
+        .onLeft { _viewState.value = ViewState.Error(null) }
       onOpenCheckout()
     }
   }

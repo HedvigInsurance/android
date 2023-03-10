@@ -5,9 +5,9 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.language.LanguageService
 import com.hedvig.app.feature.offer.usecase.CampaignCode
-import com.hedvig.app.util.ErrorMessage
 
 class RedeemReferralCodeRepository(
   private val apolloClient: ApolloClient,
