@@ -33,7 +33,7 @@ internal fun TerminationFailureScreen(
     navigateBack = navigateBack,
     title = "",
     headerText = stringResource(R.string.TERMINATION_NOT_SUCCESSFUL_TITLE),
-    bodyText = errorMessage.message ?: stringResource(R.string.general_unknown_error),
+    bodyText = errorMessage.message ?: stringResource(R.string.something_went_wrong),
     onPrimaryButton = navigateBack,
     icon = ImageVector.vectorResource(com.hedvig.android.core.designsystem.R.drawable.ic_warning_triangle),
   )
