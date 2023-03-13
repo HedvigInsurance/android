@@ -27,7 +27,7 @@ apollo {
     schemaFile.set(file("src/main/graphql/com/hedvig/android/apollo/giraffe/schema.graphqls"))
     srcDir(file("src/main/graphql/com/hedvig/android/apollo/giraffe/graphql"))
 
-    packageName.set("com.hedvig.android.apollo.graphql")
+    packageName.set("giraffe")
     codegenModels.set(com.apollographql.apollo3.compiler.MODELS_COMPAT)
 
     generateDataBuilders.set(true)
