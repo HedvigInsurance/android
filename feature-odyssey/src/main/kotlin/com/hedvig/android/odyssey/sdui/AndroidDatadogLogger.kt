@@ -1,4 +1,4 @@
-package com.hedvig.android.odyssey
+package com.hedvig.android.odyssey.sdui
 
 import com.hedvig.odyssey.datadog.DatadogLogger
 import timber.log.Timber

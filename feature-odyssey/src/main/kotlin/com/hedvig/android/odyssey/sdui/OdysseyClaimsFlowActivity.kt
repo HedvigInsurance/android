@@ -1,4 +1,4 @@
-package com.hedvig.android.odyssey
+package com.hedvig.android.odyssey.sdui
 
 import android.content.Context
 import android.content.Intent

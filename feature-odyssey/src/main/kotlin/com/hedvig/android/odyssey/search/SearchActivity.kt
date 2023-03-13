@@ -25,7 +25,7 @@ import com.hedvig.android.core.ui.appbar.CenterAlignedTopAppBar
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.odyssey.ClaimsFlowActivity
-import com.hedvig.android.odyssey.OdysseyClaimsFlowActivity
+import com.hedvig.android.odyssey.sdui.OdysseyClaimsFlowActivity
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.getViewModel

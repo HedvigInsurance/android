@@ -2,8 +2,8 @@ package com.hedvig.android.odyssey.di
 
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.giraffe.di.giraffeClient
-import com.hedvig.android.odyssey.AndroidDatadogLogger
-import com.hedvig.android.odyssey.AndroidDatadogProvider
+import com.hedvig.android.odyssey.sdui.AndroidDatadogLogger
+import com.hedvig.android.odyssey.sdui.AndroidDatadogProvider
 import com.hedvig.android.odyssey.input.InputViewModel
 import com.hedvig.android.odyssey.input.ui.audiorecorder.AudioRecorderViewModel
 import com.hedvig.android.odyssey.model.Resolution

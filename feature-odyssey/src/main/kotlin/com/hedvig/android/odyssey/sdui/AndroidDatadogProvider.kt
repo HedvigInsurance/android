@@ -1,4 +1,4 @@
-package com.hedvig.android.odyssey
+package com.hedvig.android.odyssey.sdui
 
 import com.datadog.opentracing.DDTracer.DDSpanBuilder
 import com.hedvig.odyssey.datadog.DatadogLogger

@@ -265,7 +265,7 @@
             android:parentActivityName="com.hedvig.app.feature.loggedin.ui.LoggedInActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.hedvig.android.odyssey.OdysseyClaimsFlowActivity"
+            android:name="com.hedvig.android.odyssey.sdui.OdysseyClaimsFlowActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
