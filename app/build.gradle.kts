@@ -1,16 +1,19 @@
 @file:Suppress("UnstableApiUsage")
 
+import com.project.starter.easylauncher.filter.ColorRibbonFilter
+
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once https://youtrack.jetbrains.com/issue/KTIJ-19369 is fixed
 plugins {
   id("hedvig.android.application")
   id("hedvig.android.application.compose")
   id("hedvig.android.ktlint")
-  alias(libs.plugins.googleServices)
-  alias(libs.plugins.crashlytics)
   id("kotlin-parcelize")
+  alias(libs.plugins.appIconBannerGenerator) // Automatically adds the "DEBUG" banner on the debug app icon
+  alias(libs.plugins.crashlytics)
+  alias(libs.plugins.datadog)
+  alias(libs.plugins.googleServices)
   alias(libs.plugins.license)
   alias(libs.plugins.serialization)
-  alias(libs.plugins.datadog)
 }
 
 licenseReport {
@@ -290,4 +293,26 @@ dependencies {
   debugImplementation(libs.androidx.compose.uiTooling)
   debugImplementation(libs.androidx.compose.uiTestManifest)
   androidTestImplementation(libs.androidx.compose.uiTestJunit)
+}
+
+easylauncher {
+  buildTypes.register("staging") {
+    setFilters(
+      customRibbon(
+        label = "staging",
+        ribbonColor = "#99606060", // Gray
+        gravity = ColorRibbonFilter.Gravity.BOTTOM,
+        textSizeRatio = 0.25f,
+      ),
+    )
+  }
+  buildTypes.create("debug") {
+    setFilters(
+      customRibbon(
+        label = "debug",
+        ribbonColor = "#99FFC423", // Yellow
+        textSizeRatio = 0.2f,
+      ),
+    )
+  }
 }
