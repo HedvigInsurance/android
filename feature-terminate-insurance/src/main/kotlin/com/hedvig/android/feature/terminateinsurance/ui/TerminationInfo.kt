@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.terminateinsurance.ui
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -47,8 +48,7 @@ internal fun TerminationInfoScreen(
   headerText: String,
   bodyText: String,
   icon: ImageVector,
-  buttonText: String = stringResource(hedvig.resources.R.string.general_done_button),
-  onPrimaryButton: () -> Unit,
+  bottomContent: @Composable () -> Unit,
   navigateBack: () -> Unit,
 ) {
   Column {
@@ -93,11 +93,9 @@ internal fun TerminationInfoScreen(
       )
       Spacer(Modifier.height(16.dp))
       Spacer(Modifier.weight(1f))
-      LargeContainedTextButton(
-        text = buttonText,
-        onClick = onPrimaryButton,
-        modifier = sideSpacingModifier,
-      )
+      Box(sideSpacingModifier) {
+        bottomContent()
+      }
       Spacer(Modifier.height(16.dp))
       Spacer(
         Modifier.windowInsetsPadding(
@@ -122,8 +120,13 @@ private fun PreviewTerminationInfoScreen() {
 
           Thanks for being part of Hedvig and trusting us to protect you and your loved ones when needed. The doors are always open if you decide to come back in the near future.
         """.trimIndent(),
-        onPrimaryButton = {},
         icon = Icons.Outlined.CheckCircle,
+        {
+          LargeContainedTextButton(
+            text = stringResource(hedvig.resources.R.string.general_done_button),
+            onClick = { },
+          )
+        },
       ) {}
     }
   }

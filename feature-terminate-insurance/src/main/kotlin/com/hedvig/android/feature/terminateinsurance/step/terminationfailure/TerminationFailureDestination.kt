@@ -1,13 +1,20 @@
 package com.hedvig.android.feature.terminateinsurance.step.terminationfailure
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
+import com.hedvig.android.core.designsystem.component.button.LargeOutlinedTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.preview.calculateForPreview
@@ -18,11 +25,13 @@ import hedvig.resources.R
 internal fun TerminationFailureDestination(
   windowSizeClass: WindowSizeClass,
   errorMessage: ErrorMessage,
+  openChat: () -> Unit,
   navigateBack: () -> Unit,
 ) {
   TerminationFailureScreen(
     windowSizeClass = windowSizeClass,
     errorMessage = errorMessage,
+    openChat = openChat,
     navigateBack = navigateBack,
   )
 }
@@ -31,16 +40,29 @@ internal fun TerminationFailureDestination(
 internal fun TerminationFailureScreen(
   windowSizeClass: WindowSizeClass,
   errorMessage: ErrorMessage,
+  openChat: () -> Unit,
   navigateBack: () -> Unit,
 ) {
   TerminationInfoScreen(
     windowSizeClass = windowSizeClass,
-    navigateBack = navigateBack,
     title = "",
     headerText = stringResource(R.string.TERMINATION_NOT_SUCCESSFUL_TITLE),
     bodyText = errorMessage.message ?: stringResource(R.string.something_went_wrong),
-    onPrimaryButton = navigateBack,
     icon = ImageVector.vectorResource(com.hedvig.android.core.designsystem.R.drawable.ic_warning_triangle),
+    bottomContent = {
+      Column {
+        LargeOutlinedTextButton(
+          text = stringResource(id = R.string.open_chat),
+          onClick = openChat,
+        )
+        Spacer(Modifier.height(16.dp))
+        LargeContainedTextButton(
+          text = stringResource(R.string.general_done_button),
+          onClick = navigateBack,
+        )
+      }
+    },
+    navigateBack = navigateBack,
   )
 }
 
@@ -49,7 +71,7 @@ internal fun TerminationFailureScreen(
 private fun PreviewTerminationFailureScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      TerminationFailureScreen(WindowSizeClass.calculateForPreview(), ErrorMessage()) {}
+      TerminationFailureScreen(WindowSizeClass.calculateForPreview(), ErrorMessage(), {}) {}
     }
   }
 }

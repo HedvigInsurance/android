@@ -11,8 +11,13 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.feature.terminateinsurance.ui.TerminateInsuranceNavHost
+import com.hedvig.android.navigation.activity.Navigator
+import org.koin.android.ext.android.inject
 
 class TerminateInsuranceActivity : AppCompatActivity() {
+
+  private val activityNavigator: Navigator by inject()
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     lifecycle.addObserver(AuthenticatedObserver())
@@ -27,6 +32,10 @@ class TerminateInsuranceActivity : AppCompatActivity() {
           windowSizeClass = calculateWindowSizeClass(this),
           navController = rememberAnimatedNavController(),
           insuranceId = insuranceId,
+          openChat = {
+            onSupportNavigateUp()
+            activityNavigator.navigateToChat(this)
+          },
           navigateUp = { onSupportNavigateUp() },
           finishTerminationFlow = { finish() },
         )
