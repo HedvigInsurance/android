@@ -5,11 +5,11 @@ import arrow.core.Either
 import arrow.core.flatMap
 import arrow.core.right
 import com.adyen.checkout.redirect.RedirectComponent
-import com.hedvig.android.apollo.graphql.ConnectPaymentMutation
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
+import giraffe.ConnectPaymentMutation
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import org.json.JSONObject
@@ -47,11 +47,11 @@ class ConnectPaymentUseCase(
 
   private fun createConnectPaymentVariables(data: JSONObject): JSONObject? {
     val market = when (marketManager.market) {
-      Market.SE -> com.hedvig.android.apollo.graphql.type.Market.SWEDEN
-      Market.NO -> com.hedvig.android.apollo.graphql.type.Market.NORWAY
-      Market.DK -> com.hedvig.android.apollo.graphql.type.Market.DENMARK
-      Market.FR -> com.hedvig.android.apollo.graphql.type.Market.UNKNOWN__
-      null -> com.hedvig.android.apollo.graphql.type.Market.UNKNOWN__
+      Market.SE -> giraffe.type.Market.SWEDEN
+      Market.NO -> giraffe.type.Market.NORWAY
+      Market.DK -> giraffe.type.Market.DENMARK
+      Market.FR -> giraffe.type.Market.UNKNOWN__
+      null -> giraffe.type.Market.UNKNOWN__
     }.toString()
 
     return buildJsonObject {

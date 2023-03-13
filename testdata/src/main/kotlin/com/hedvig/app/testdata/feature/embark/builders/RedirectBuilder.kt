@@ -1,11 +1,11 @@
 package com.hedvig.app.testdata.feature.embark.builders
 
-import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
-import com.hedvig.android.apollo.graphql.fragment.BasicExpressionFragment
-import com.hedvig.android.apollo.graphql.fragment.ExpressionFragment
-import com.hedvig.android.apollo.graphql.type.EmbarkRedirectBinaryExpression
-import com.hedvig.android.apollo.graphql.type.EmbarkRedirectMultipleExpressions
-import com.hedvig.android.apollo.graphql.type.EmbarkRedirectUnaryExpression
+import giraffe.EmbarkStoryQuery
+import giraffe.fragment.BasicExpressionFragment
+import giraffe.fragment.ExpressionFragment
+import giraffe.type.EmbarkRedirectBinaryExpression
+import giraffe.type.EmbarkRedirectMultipleExpressions
+import giraffe.type.EmbarkRedirectUnaryExpression
 
 data class RedirectBuilder(
   private val to: String,

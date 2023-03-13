@@ -6,10 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.hedvig.android.apollo.graphql.fragment.InsurableLimitsFragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.InsurableLimitBottomSheetBinding
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import giraffe.fragment.InsurableLimitsFragment
 
 class InsurableLimitsBottomSheet : BottomSheetDialogFragment() {
   private val binding by viewBinding(InsurableLimitBottomSheetBinding::bind)

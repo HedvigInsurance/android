@@ -1,12 +1,12 @@
 package com.hedvig.app.feature.splash
 
-import com.hedvig.android.apollo.graphql.ContractStatusQuery
 import com.hedvig.app.MainActivity
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyIntentsActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import giraffe.ContractStatusQuery
 import org.junit.Rule
 import org.junit.Test
 

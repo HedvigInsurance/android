@@ -7,10 +7,10 @@ import com.apollographql.apollo3.ApolloCall
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
-import com.hedvig.android.apollo.graphql.ClaimDetailsQuery
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.language.LanguageService
+import giraffe.ClaimDetailsQuery
 
 class GetClaimDetailUseCase(
   private val apolloClient: ApolloClient,

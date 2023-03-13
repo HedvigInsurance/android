@@ -1,9 +1,9 @@
 package com.hedvig.app.testdata.feature.insurance.builders
 
-import com.hedvig.android.apollo.graphql.InsuranceQuery
-import com.hedvig.android.apollo.graphql.fragment.PerilFragment
-import com.hedvig.android.apollo.graphql.type.PerilV2
 import com.hedvig.app.util.toArrayList
+import giraffe.InsuranceQuery
+import giraffe.fragment.PerilFragment
+import giraffe.type.PerilV2
 
 class PerilBuilder {
 

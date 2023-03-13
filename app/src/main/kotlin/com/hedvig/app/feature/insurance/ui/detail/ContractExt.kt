@@ -1,13 +1,13 @@
 package com.hedvig.app.feature.insurance.ui.detail
 
 import android.net.Uri
-import com.hedvig.android.apollo.graphql.InsuranceQuery
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurance.ui.ContractCardViewState
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoModel
 import com.hedvig.app.feature.table.intoTable
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.apollo.toUpcomingAgreementResult
+import giraffe.InsuranceQuery
 
 fun InsuranceQuery.Contract.toContractDetailViewState(
   isTerminationFlowEnabled: Boolean,

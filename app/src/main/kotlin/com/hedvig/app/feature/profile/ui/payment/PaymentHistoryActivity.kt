@@ -6,7 +6,6 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.hedvig.android.apollo.graphql.PaymentQuery
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
@@ -17,6 +16,7 @@ import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.viewBinding
+import giraffe.PaymentQuery
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject

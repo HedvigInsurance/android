@@ -3,13 +3,13 @@ package com.hedvig.app.feature.home.ui.changeaddress
 import android.os.Parcelable
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.OperationResult
-import com.hedvig.android.apollo.graphql.UpcomingAgreementQuery
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.language.LanguageService
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.Error
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.NoUpcomingAgreementChange
 import com.hedvig.app.feature.table.Table
 import com.hedvig.app.util.apollo.toUpcomingAgreementResult
+import giraffe.UpcomingAgreementQuery
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
 

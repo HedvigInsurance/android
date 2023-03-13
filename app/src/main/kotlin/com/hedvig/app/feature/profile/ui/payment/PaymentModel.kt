@@ -1,9 +1,9 @@
 package com.hedvig.app.feature.profile.ui.payment
 
-import com.hedvig.android.apollo.graphql.PaymentQuery
-import com.hedvig.android.apollo.graphql.type.PayinMethodStatus
-import com.hedvig.android.apollo.graphql.type.PayoutMethodStatus
 import com.hedvig.hanalytics.PaymentType
+import giraffe.PaymentQuery
+import giraffe.type.PayinMethodStatus
+import giraffe.type.PayoutMethodStatus
 import java.time.LocalDate
 
 sealed class PaymentModel {

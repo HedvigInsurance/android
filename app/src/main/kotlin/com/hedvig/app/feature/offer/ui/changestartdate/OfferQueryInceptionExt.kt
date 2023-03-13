@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.offer.ui.changestartdate
 
-import com.hedvig.android.apollo.graphql.fragment.QuoteBundleFragment
 import com.hedvig.app.feature.offer.model.QuoteCartId
+import giraffe.fragment.QuoteBundleFragment
 
 fun QuoteBundleFragment.Inception1.toChangeDateBottomSheetData(
   quoteCartId: QuoteCartId,

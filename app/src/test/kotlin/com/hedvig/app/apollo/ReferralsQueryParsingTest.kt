@@ -7,8 +7,8 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import com.apollographql.apollo3.annotations.ApolloExperimental
 import com.apollographql.apollo3.mockserver.enqueue
-import com.hedvig.android.apollo.graphql.ReferralsQuery
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES
+import giraffe.ReferralsQuery
 import org.junit.Test
 
 class ReferralsQueryParsingTest {

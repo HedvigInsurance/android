@@ -14,7 +14,6 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
-import com.hedvig.android.apollo.graphql.ChatMessagesQuery
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.LogoutUseCase
@@ -36,6 +35,7 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.applyInsetter
+import giraffe.ChatMessagesQuery
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject

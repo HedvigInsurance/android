@@ -2,11 +2,11 @@ package com.hedvig.app.feature.embark
 
 import com.adyen.checkout.core.model.getStringOrNull
 import com.hedvig.android.apollo.OperationResult
-import com.hedvig.android.apollo.graphql.fragment.ApiFragment
 import com.hedvig.android.core.common.android.getWithDotNotation
 import com.hedvig.android.core.common.android.toStringArray
 import com.hedvig.app.util.apollo.FileVariable
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
+import giraffe.fragment.ApiFragment
 import org.json.JSONArray
 import org.json.JSONObject
 

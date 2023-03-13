@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Parcelable
 import androidx.annotation.StringRes
-import com.hedvig.android.apollo.graphql.fragment.InsuranceTermFragment
+import giraffe.fragment.InsuranceTermFragment
 import kotlinx.parcelize.Parcelize
 
 sealed class DocumentItems {

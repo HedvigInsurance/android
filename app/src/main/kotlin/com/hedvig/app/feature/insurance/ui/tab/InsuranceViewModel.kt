@@ -4,7 +4,6 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
-import com.hedvig.android.apollo.graphql.InsuranceQuery
 import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeService
 import com.hedvig.app.feature.crossselling.model.NavigateChat
 import com.hedvig.app.feature.crossselling.model.NavigateEmbark
@@ -14,6 +13,7 @@ import com.hedvig.app.feature.home.ui.changeaddress.appendQuoteCartId
 import com.hedvig.app.feature.insurance.data.GetContractsUseCase
 import com.hedvig.app.feature.insurance.ui.InsuranceModel
 import com.hedvig.hanalytics.HAnalytics
+import giraffe.InsuranceQuery
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first

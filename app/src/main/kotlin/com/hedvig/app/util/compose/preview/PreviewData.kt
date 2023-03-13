@@ -1,6 +1,5 @@
 package com.hedvig.app.util.compose.preview
 
-import com.hedvig.android.apollo.graphql.type.ClaimStatus
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailCardUiState
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailResult
@@ -8,6 +7,7 @@ import com.hedvig.app.feature.claimdetail.model.ClaimDetailUiState
 import com.hedvig.app.feature.home.ui.claimstatus.data.PillUiState
 import com.hedvig.app.feature.offer.ui.OfferItems
 import com.hedvig.app.ui.compose.composables.claimprogress.ClaimProgressUiState
+import giraffe.type.ClaimStatus
 import org.javamoney.moneta.CurrencyUnitBuilder
 import org.javamoney.moneta.Money
 import java.time.Duration

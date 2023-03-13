@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.embark
 
-import com.hedvig.android.apollo.graphql.MemberIdQuery
 import com.hedvig.android.core.common.android.jsonObjectOf
 import com.hedvig.android.market.Market
 import com.hedvig.app.feature.embark.screens.MoreOptionsScreen
@@ -12,6 +11,7 @@ import com.hedvig.app.util.MarketRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import giraffe.MemberIdQuery
 import org.junit.Rule
 import org.junit.Test
 

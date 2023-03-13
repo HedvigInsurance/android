@@ -1,11 +1,11 @@
 package com.hedvig.app.testdata.feature.embark.builders
 
-import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
-import com.hedvig.android.apollo.graphql.fragment.ExpressionFragment
-import com.hedvig.android.apollo.graphql.fragment.MessageFragment
-import com.hedvig.android.apollo.graphql.fragment.ResponseExpressionFragment
-import com.hedvig.android.apollo.graphql.type.EmbarkMessage
-import com.hedvig.android.apollo.graphql.type.EmbarkResponseExpression
+import giraffe.EmbarkStoryQuery
+import giraffe.fragment.ExpressionFragment
+import giraffe.fragment.MessageFragment
+import giraffe.fragment.ResponseExpressionFragment
+import giraffe.type.EmbarkMessage
+import giraffe.type.EmbarkResponseExpression
 
 data class MessageBuilder(
   private val text: String,

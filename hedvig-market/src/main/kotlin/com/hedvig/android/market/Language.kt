@@ -1,6 +1,6 @@
 package com.hedvig.android.market
 
-import com.hedvig.android.apollo.graphql.type.Locale
+import giraffe.type.Locale
 
 enum class Language {
   SV_SE,

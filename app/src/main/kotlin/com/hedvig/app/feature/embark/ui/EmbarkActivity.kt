@@ -16,7 +16,6 @@ import androidx.transition.Transition
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
-import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.common.android.whenApiVersion
 import com.hedvig.android.market.MarketManager
@@ -54,6 +53,7 @@ import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.navigation.openAuth
+import giraffe.EmbarkStoryQuery
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch

@@ -4,12 +4,12 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.continuations.ensureNotNull
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.apollo.graphql.ContractCoverageQuery
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.language.LanguageService
 import com.hedvig.app.feature.perils.Peril
+import giraffe.ContractCoverageQuery
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 

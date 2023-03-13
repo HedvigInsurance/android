@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.apollo.graphql.LoggedInQuery
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.notification.badge.data.tab.BottomNavTab
@@ -12,6 +11,7 @@ import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeServic
 import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
+import giraffe.LoggedInQuery
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -71,7 +71,7 @@ class LoggedInViewModelImpl(
   }
 
   private val loggedInQueryData: Flow<LoggedInQuery.Data?> = flow {
-    val loggedInQueryData = loggedInRepository.loggedInData().orNull()
+    val loggedInQueryData = loggedInRepository.loggedInData().getOrNull()
     emit(loggedInQueryData)
   }
   private val isReferralsEnabled: Flow<Boolean> = flow { emit(featureManager.isFeatureEnabled(Feature.REFERRALS)) }

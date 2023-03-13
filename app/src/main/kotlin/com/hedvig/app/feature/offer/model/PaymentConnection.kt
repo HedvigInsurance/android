@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.offer.model
 
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
-import com.hedvig.android.apollo.graphql.fragment.QuoteCartFragment
+import giraffe.fragment.QuoteCartFragment
 
 @JvmInline
 value class PaymentConnectionId(val id: String)

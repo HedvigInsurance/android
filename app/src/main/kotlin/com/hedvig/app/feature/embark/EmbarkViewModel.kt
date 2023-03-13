@@ -7,10 +7,6 @@ import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
-import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
-import com.hedvig.android.apollo.graphql.fragment.ApiFragment
-import com.hedvig.android.apollo.graphql.fragment.MessageFragment
-import com.hedvig.android.apollo.graphql.type.EmbarkExternalRedirectLocation
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.common.android.asMap
@@ -29,6 +25,10 @@ import com.hedvig.app.util.ProgressPercentage
 import com.hedvig.app.util.safeLet
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
+import giraffe.EmbarkStoryQuery
+import giraffe.fragment.ApiFragment
+import giraffe.fragment.MessageFragment
+import giraffe.type.EmbarkExternalRedirectLocation
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

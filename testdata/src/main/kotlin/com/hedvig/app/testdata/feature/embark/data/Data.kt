@@ -1,13 +1,5 @@
 package com.hedvig.app.testdata.feature.embark.data
 
-import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
-import com.hedvig.android.apollo.graphql.fragment.EmbarkLinkFragment
-import com.hedvig.android.apollo.graphql.fragment.GraphQLErrorsFragment
-import com.hedvig.android.apollo.graphql.fragment.GraphQLResultsFragment
-import com.hedvig.android.apollo.graphql.fragment.MessageFragment
-import com.hedvig.android.apollo.graphql.type.EmbarkAPIGraphQLSingleVariableCasting
-import com.hedvig.android.apollo.graphql.type.EmbarkAPIGraphQLVariableGeneratedType
-import com.hedvig.android.apollo.graphql.type.EmbarkExternalRedirectLocation
 import com.hedvig.app.testdata.feature.embark.builders.DatePickerActionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.EmbarkStoryDataBuilder
 import com.hedvig.app.testdata.feature.embark.builders.ExpressionBuilder
@@ -26,6 +18,14 @@ import com.hedvig.app.testdata.feature.embark.builders.SelectOptionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.TextActionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.TextActionSetBuilder
 import com.hedvig.app.testdata.feature.embark.builders.TrackBuilder
+import giraffe.EmbarkStoryQuery
+import giraffe.fragment.EmbarkLinkFragment
+import giraffe.fragment.GraphQLErrorsFragment
+import giraffe.fragment.GraphQLResultsFragment
+import giraffe.fragment.MessageFragment
+import giraffe.type.EmbarkAPIGraphQLSingleVariableCasting
+import giraffe.type.EmbarkAPIGraphQLVariableGeneratedType
+import giraffe.type.EmbarkExternalRedirectLocation
 import org.json.JSONObject
 
 val STANDARD_FIRST_MESSAGE = MessageBuilder(

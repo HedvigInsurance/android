@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.chat
 
-import com.hedvig.android.apollo.graphql.ChatMessagesQuery
-import com.hedvig.android.apollo.graphql.fragment.ChatMessageFragment
-import com.hedvig.android.apollo.graphql.type.KeyboardType
+import giraffe.ChatMessagesQuery
+import giraffe.fragment.ChatMessageFragment
+import giraffe.type.KeyboardType
 import slimber.log.e
 
 sealed class ChatInputType {

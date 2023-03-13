@@ -7,10 +7,6 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import com.apollographql.apollo3.annotations.ApolloExperimental
 import com.apollographql.apollo3.mockserver.enqueue
-import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
-import com.hedvig.android.apollo.graphql.type.buildEmbarkPassage
-import com.hedvig.android.apollo.graphql.type.buildEmbarkStory
-import com.hedvig.android.apollo.graphql.type.buildEmbarkTrack
 import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_MUTATION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_MUTATION_AND_SINGLE_VARIABLE
@@ -22,6 +18,10 @@ import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_PASSED_KEY_VALUE
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_SELECT_ACTION_API_MULTIPLE_OPTIONS
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION_API
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_UNARY_EXPRESSIONS
+import giraffe.EmbarkStoryQuery
+import giraffe.type.buildEmbarkPassage
+import giraffe.type.buildEmbarkStory
+import giraffe.type.buildEmbarkTrack
 import org.json.JSONObject
 import org.junit.Test
 

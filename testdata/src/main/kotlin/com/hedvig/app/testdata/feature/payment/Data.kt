@@ -1,16 +1,16 @@
 package com.hedvig.app.testdata.feature.payment
 
-import com.hedvig.android.apollo.graphql.PayinStatusQuery
-import com.hedvig.android.apollo.graphql.PaymentQuery
-import com.hedvig.android.apollo.graphql.fragment.IncentiveFragment
-import com.hedvig.android.apollo.graphql.type.FreeMonths
-import com.hedvig.android.apollo.graphql.type.MonthlyCostDeduction
-import com.hedvig.android.apollo.graphql.type.PayinMethodStatus
-import com.hedvig.android.apollo.graphql.type.PayoutMethodStatus
-import com.hedvig.android.apollo.graphql.type.PercentageDiscountMonths
 import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.common.builders.CostBuilder
 import com.hedvig.app.util.months
+import giraffe.PayinStatusQuery
+import giraffe.PaymentQuery
+import giraffe.fragment.IncentiveFragment
+import giraffe.type.FreeMonths
+import giraffe.type.MonthlyCostDeduction
+import giraffe.type.PayinMethodStatus
+import giraffe.type.PayoutMethodStatus
+import giraffe.type.PercentageDiscountMonths
 import java.time.LocalDate
 
 val PAYIN_STATUS_DATA_NEEDS_SETUP = PayinStatusQuery.Data(PayinMethodStatus.NEEDS_SETUP)

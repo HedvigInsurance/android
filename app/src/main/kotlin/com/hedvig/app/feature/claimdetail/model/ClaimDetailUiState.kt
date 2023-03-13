@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.claimdetail.model
 
-import com.hedvig.android.apollo.graphql.ClaimDetailsQuery
-import com.hedvig.android.apollo.graphql.type.ClaimStatus
+import giraffe.ClaimDetailsQuery
+import giraffe.type.ClaimStatus
 import java.time.Instant
 
 data class ClaimDetailUiState(

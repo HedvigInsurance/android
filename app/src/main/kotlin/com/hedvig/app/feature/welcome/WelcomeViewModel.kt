@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.apollo.graphql.WelcomeQuery
+import giraffe.WelcomeQuery
 import kotlinx.coroutines.launch
 import slimber.log.e
 

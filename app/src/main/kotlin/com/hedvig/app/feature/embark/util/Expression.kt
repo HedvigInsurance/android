@@ -1,11 +1,11 @@
 package com.hedvig.app.feature.embark.util
 
-import com.hedvig.android.apollo.graphql.fragment.ExpressionFragment
-import com.hedvig.android.apollo.graphql.type.EmbarkExpressionTypeBinary
-import com.hedvig.android.apollo.graphql.type.EmbarkExpressionTypeMultiple
-import com.hedvig.android.apollo.graphql.type.EmbarkExpressionTypeUnary
 import com.hedvig.app.feature.embark.ExpressionResult
 import com.hedvig.app.feature.embark.ValueStore
+import giraffe.fragment.ExpressionFragment
+import giraffe.type.EmbarkExpressionTypeBinary
+import giraffe.type.EmbarkExpressionTypeMultiple
+import giraffe.type.EmbarkExpressionTypeUnary
 
 fun evaluateExpression(expression: ExpressionFragment, valueStore: ValueStore): ExpressionResult {
   expression.fragments.basicExpressionFragment.asEmbarkExpressionUnary?.let { unaryExpression ->

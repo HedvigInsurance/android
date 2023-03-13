@@ -2,7 +2,7 @@ package com.hedvig.app.feature.perils
 
 import android.os.Parcelable
 import androidx.compose.runtime.Immutable
-import com.hedvig.android.apollo.graphql.fragment.PerilFragment
+import giraffe.fragment.PerilFragment
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

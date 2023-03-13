@@ -3,10 +3,10 @@ package com.hedvig.app.feature.loggedin.ui
 import arrow.core.Either
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.OperationResult
-import com.hedvig.android.apollo.graphql.LoggedInQuery
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.language.LanguageService
+import giraffe.LoggedInQuery
 
 class LoggedInRepository(
   private val apolloClient: ApolloClient,

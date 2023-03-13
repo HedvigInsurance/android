@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.offer.model.quotebundle
 
-import com.hedvig.android.apollo.graphql.fragment.QuoteBundleFragment
 import com.hedvig.app.util.apollo.toMonetaryAmount
+import giraffe.fragment.QuoteBundleFragment
 import javax.money.MonetaryAmount
 
 data class BundleCost constructor(

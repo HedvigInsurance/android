@@ -1,7 +1,5 @@
 package com.hedvig.app.feature.referrals.editcode
 
-import com.hedvig.android.apollo.graphql.UpdateReferralCampaignCodeMutation
-import com.hedvig.app.R
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeActivity
 import com.hedvig.app.testdata.feature.referrals.EDIT_CODE_DATA_UNKNOWN_RESULT
 import com.hedvig.app.util.ApolloCacheClearRule
@@ -10,6 +8,7 @@ import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import giraffe.UpdateReferralCampaignCodeMutation
 import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
 import org.junit.Rule
 import org.junit.Test

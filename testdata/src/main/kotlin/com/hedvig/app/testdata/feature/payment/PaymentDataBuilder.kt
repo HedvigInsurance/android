@@ -1,15 +1,15 @@
 package com.hedvig.app.testdata.feature.payment
 
-import com.hedvig.android.apollo.graphql.PaymentQuery
-import com.hedvig.android.apollo.graphql.fragment.ActivePaymentMethodsFragment
-import com.hedvig.android.apollo.graphql.fragment.BankAccountFragment
-import com.hedvig.android.apollo.graphql.fragment.CostFragment
-import com.hedvig.android.apollo.graphql.fragment.MonetaryAmountFragment
-import com.hedvig.android.apollo.graphql.type.PayoutMethodStatus
-import com.hedvig.android.apollo.graphql.type.StoredCardDetails
 import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.common.builders.ContractStatusFragmentBuilder
 import com.hedvig.app.testdata.common.builders.CostBuilder
+import giraffe.PaymentQuery
+import giraffe.fragment.ActivePaymentMethodsFragment
+import giraffe.fragment.BankAccountFragment
+import giraffe.fragment.CostFragment
+import giraffe.fragment.MonetaryAmountFragment
+import giraffe.type.PayoutMethodStatus
+import giraffe.type.StoredCardDetails
 import java.time.LocalDate
 
 data class PaymentDataBuilder(

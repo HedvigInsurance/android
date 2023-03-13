@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.addressautocompletion.model
 
 import android.os.Parcelable
-import com.hedvig.android.apollo.graphql.AddressAutocompleteQuery
+import giraffe.AddressAutocompleteQuery
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

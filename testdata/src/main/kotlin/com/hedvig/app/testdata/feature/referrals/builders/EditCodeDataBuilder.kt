@@ -1,11 +1,11 @@
 package com.hedvig.app.testdata.feature.referrals.builders
 
-import com.hedvig.android.apollo.graphql.UpdateReferralCampaignCodeMutation
-import com.hedvig.android.apollo.graphql.type.CodeAlreadyTaken
-import com.hedvig.android.apollo.graphql.type.CodeTooLong
-import com.hedvig.android.apollo.graphql.type.CodeTooShort
-import com.hedvig.android.apollo.graphql.type.ExceededMaximumUpdates
-import com.hedvig.android.apollo.graphql.type.SuccessfullyUpdatedCode
+import giraffe.UpdateReferralCampaignCodeMutation
+import giraffe.type.CodeAlreadyTaken
+import giraffe.type.CodeTooLong
+import giraffe.type.CodeTooShort
+import giraffe.type.ExceededMaximumUpdates
+import giraffe.type.SuccessfullyUpdatedCode
 
 data class EditCodeDataBuilder(
   private val code: String = "EDITEDCODE123",

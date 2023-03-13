@@ -5,8 +5,6 @@ import assertk.assertThat
 import assertk.assertions.isNotNull
 import com.apollographql.apollo3.annotations.ApolloExperimental
 import com.apollographql.apollo3.mockserver.enqueue
-import com.hedvig.android.apollo.graphql.WhatsNewQuery
-import com.hedvig.android.apollo.graphql.type.Locale
 import com.hedvig.app.apollo.runApolloTest
 import com.hedvig.app.apollo.toJsonStringWithData
 import com.hedvig.app.feature.whatsnew.WhatsNewRepository
@@ -14,6 +12,8 @@ import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModelImpl
 import com.hedvig.app.testdata.feature.loggedin.WHATS_NEW
 import com.hedvig.app.util.coroutines.MainCoroutineRule
+import giraffe.WhatsNewQuery
+import giraffe.type.Locale
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runCurrent

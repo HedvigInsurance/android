@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.profile.ui.tab
 
 import androidx.annotation.StringRes
-import com.hedvig.android.apollo.graphql.ProfileQuery
+import giraffe.ProfileQuery
 
 data class ProfileUiState(
   val member: Member,

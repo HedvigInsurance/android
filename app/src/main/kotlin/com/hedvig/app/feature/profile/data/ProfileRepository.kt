@@ -4,11 +4,11 @@ import arrow.core.Either
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.hedvig.android.apollo.OperationResult
-import com.hedvig.android.apollo.graphql.ProfileQuery
-import com.hedvig.android.apollo.graphql.UpdateEmailMutation
-import com.hedvig.android.apollo.graphql.UpdatePhoneNumberMutation
 import com.hedvig.android.apollo.safeWatch
 import com.hedvig.android.apollo.toEither
+import giraffe.ProfileQuery
+import giraffe.UpdateEmailMutation
+import giraffe.UpdatePhoneNumberMutation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

@@ -1,7 +1,7 @@
 package com.hedvig.app.util.apollo
 
-import com.hedvig.android.apollo.graphql.fragment.MonetaryAmountFragment
-import com.hedvig.android.apollo.graphql.type.Locale
+import giraffe.fragment.MonetaryAmountFragment
+import giraffe.type.Locale
 import org.javamoney.moneta.Money
 import java.math.BigDecimal
 import java.text.NumberFormat

@@ -1,11 +1,11 @@
 package com.hedvig.android.notification.badge.data.crosssell
 
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.apollo.graphql.CrossSellsQuery
-import com.hedvig.android.apollo.graphql.type.TypeOfContract
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.language.LanguageService
+import giraffe.CrossSellsQuery
+import giraffe.type.TypeOfContract
 import slimber.log.e
 
 interface GetCrossSellsContractTypesUseCase {
