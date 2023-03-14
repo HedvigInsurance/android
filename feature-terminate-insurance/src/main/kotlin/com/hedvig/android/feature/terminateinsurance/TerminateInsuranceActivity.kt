@@ -10,7 +10,7 @@ import androidx.core.view.WindowCompat
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.feature.terminateinsurance.ui.TerminateInsuranceNavHost
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceNavHost
 import com.hedvig.android.navigation.activity.Navigator
 import org.koin.android.ext.android.inject
 

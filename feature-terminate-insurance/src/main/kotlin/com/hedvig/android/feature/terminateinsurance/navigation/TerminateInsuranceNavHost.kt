@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.terminateinsurance.ui
+package com.hedvig.android.feature.terminateinsurance.navigation
 
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
@@ -6,8 +6,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
-import com.hedvig.android.feature.terminateinsurance.navigation.Destinations
-import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceGraph
 import com.kiwi.navigationcompose.typed.createRoutePattern
 
 @Composable
