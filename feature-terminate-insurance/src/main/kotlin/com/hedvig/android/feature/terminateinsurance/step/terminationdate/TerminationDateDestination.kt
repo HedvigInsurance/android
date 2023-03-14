@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.terminateinsurance.ui
+package com.hedvig.android.feature.terminateinsurance.step.terminationdate
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,11 +26,13 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation
@@ -40,23 +42,46 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbar
+import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 
 @Composable
-fun TerminationDateScreen(
+internal fun TerminationDateDestination(
+  viewModel: TerminationDateViewModel,
+  windowSizeClass: WindowSizeClass,
+  navigateToNextStep: (TerminateInsuranceStep) -> Unit,
+  navigateBack: () -> Unit,
+) {
+  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  TerminationDateScreen(
+    windowSizeClass = windowSizeClass,
+    datePickerState = uiState.datePickerState,
+    nextStep = uiState.nextStep,
+    dateValidator = viewModel.dateValidator,
+    canSubmit = uiState.canContinue,
+    submit = viewModel::submitSelectedDate,
+    hasError = uiState.dateSubmissionError,
+    showedError = viewModel::showedError,
+    navigateToNextStep = navigateToNextStep,
+    navigateBack = navigateBack,
+  )
+}
+
+@Composable
+private fun TerminationDateScreen(
   windowSizeClass: WindowSizeClass,
   datePickerState: DatePickerState,
-  dateSubmissionSuccess: Boolean,
+  nextStep: TerminateInsuranceStep?,
   dateValidator: (Long) -> Boolean,
   canSubmit: Boolean,
   submit: () -> Unit,
   hasError: Boolean,
   showedError: () -> Unit,
-  navigateToSuccessScreen: () -> Unit,
+  navigateToNextStep: (TerminateInsuranceStep) -> Unit,
   navigateBack: () -> Unit,
 ) {
-  LaunchedEffect(dateSubmissionSuccess) {
-    if (!dateSubmissionSuccess) return@LaunchedEffect
-    navigateToSuccessScreen()
+  LaunchedEffect(nextStep) {
+    if (nextStep == null) return@LaunchedEffect
+    navigateToNextStep(nextStep)
   }
   Box(Modifier.fillMaxSize()) {
     Column {
@@ -153,7 +178,7 @@ private fun PreviewTerminationDateScreen() {
       TerminationDateScreen(
         WindowSizeClass.calculateForPreview(),
         rememberDatePickerState(),
-        false,
+        null,
         { true },
         true,
         {},

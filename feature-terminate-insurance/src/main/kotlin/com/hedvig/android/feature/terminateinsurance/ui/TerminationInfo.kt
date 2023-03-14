@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.terminateinsurance.ui
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -16,6 +15,8 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -26,24 +27,26 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.R
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.preview.calculateForPreview
 
+/**
+ * Skeleton for any kind of summary screen about success and failure
+ */
 @Composable
-fun TerminationInfoScreen(
+internal fun TerminationInfoScreen(
   windowSizeClass: WindowSizeClass,
   title: String,
   headerText: String,
   bodyText: String,
-  @DrawableRes icon: Int,
+  icon: ImageVector,
   buttonText: String = stringResource(hedvig.resources.R.string.general_done_button),
   onPrimaryButton: () -> Unit,
   navigateBack: () -> Unit,
@@ -72,7 +75,7 @@ fun TerminationInfoScreen(
       }
       Spacer(Modifier.height(40.dp))
       Icon(
-        painter = painterResource(icon),
+        imageVector = icon,
         contentDescription = "Icon",
         modifier = sideSpacingModifier.size(32.dp),
       )
@@ -120,7 +123,7 @@ private fun PreviewTerminationInfoScreen() {
           Thanks for being part of Hedvig and trusting us to protect you and your loved ones when needed. The doors are always open if you decide to come back in the near future.
         """.trimIndent(),
         onPrimaryButton = {},
-        icon = R.drawable.ic_checkmark_in_circle,
+        icon = Icons.Outlined.CheckCircle,
       ) {}
     }
   }

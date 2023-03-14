@@ -5,8 +5,8 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.language.LanguageService
-import com.hedvig.app.util.ErrorMessage
 
 class EmbarkRepository(
   private val apolloClient: ApolloClient,

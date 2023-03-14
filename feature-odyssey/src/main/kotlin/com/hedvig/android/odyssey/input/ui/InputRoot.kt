@@ -9,8 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import coil.ImageLoader
-import com.hedvig.android.core.ui.FullScreenProgressOverlay
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
+import com.hedvig.android.core.ui.progress.FullScreenProgressOverlay
 import com.hedvig.android.odyssey.input.InputViewModel
 import com.hedvig.android.odyssey.input.InputViewState
 import com.hedvig.android.odyssey.input.ui.audiorecorder.AudioRecorderScreen

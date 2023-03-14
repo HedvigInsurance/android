@@ -7,9 +7,9 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.graphql.ContractCoverageQuery
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.language.LanguageService
 import com.hedvig.app.feature.perils.Peril
-import com.hedvig.app.util.ErrorMessage
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 
