@@ -11,6 +11,7 @@ import kotlinx.datetime.LocalDate
 import octopus.FlowTerminationDateNextMutation
 import octopus.FlowTerminationStartMutation
 import octopus.type.FlowTerminationDateInput
+import octopus.type.FlowTerminationStartInput
 
 internal class TerminateInsuranceRepository(
   private val apolloClient: ApolloClient,
@@ -20,7 +21,7 @@ internal class TerminateInsuranceRepository(
   suspend fun startTerminationFlow(insuranceId: InsuranceId): Either<ErrorMessage, TerminateInsuranceStep> {
     return either {
       val result = apolloClient
-        .mutation(FlowTerminationStartMutation(insuranceId.id))
+        .mutation(FlowTerminationStartMutation(FlowTerminationStartInput(insuranceId.id)))
         .safeExecute()
         .toEither { ErrorMessage(it) }
         .bind()

@@ -1,5 +1,5 @@
-mutation FlowTerminationStart($contractId: ID!) {
-  flowTerminationStart(contractId: $contractId) {
+mutation FlowTerminationStart($flowTerminationStartInput : FlowTerminationStartInput!) {
+  flowTerminationStart(input: $flowTerminationStartInput, context: null) {
     id
     context
     ...FlowStepFragment
