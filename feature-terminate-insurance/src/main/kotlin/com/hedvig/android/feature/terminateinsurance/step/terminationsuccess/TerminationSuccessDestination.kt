@@ -8,6 +8,7 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
+import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.preview.calculateForPreview
@@ -48,8 +49,12 @@ private fun TerminationSuccessScreen(
       terminationDate,
       "Hedvig",
     ),
-    buttonText = stringResource(R.string.TERMINATION_OPEN_SURVEY_LABEL),
-    onPrimaryButton = onPrimaryButtonClick,
+    bottomContent = {
+      LargeContainedTextButton(
+        text = stringResource(R.string.TERMINATION_OPEN_SURVEY_LABEL),
+        onClick = onPrimaryButtonClick,
+      )
+    },
     icon = Icons.Outlined.CheckCircle,
   )
 }

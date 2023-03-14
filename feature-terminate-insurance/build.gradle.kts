@@ -18,6 +18,7 @@ dependencies {
   implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
+  implementation(projects.navigation.navigationActivity)
   implementation(projects.navigation.navigationComposeTyped)
 
   implementation(libs.accompanist.navigationAnimation)

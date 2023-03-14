@@ -29,6 +29,7 @@ internal fun NavGraphBuilder.terminateInsuranceGraph(
   navController: NavHostController,
   insuranceId: InsuranceId,
   navigateUp: () -> Boolean,
+  openChat: () -> Unit,
   finishTerminationFlow: () -> Unit,
 ) {
   animatedNavigation<Destinations.TerminateInsurance>(
@@ -88,6 +89,7 @@ internal fun NavGraphBuilder.terminateInsuranceGraph(
       TerminationFailureDestination(
         windowSizeClass = windowSizeClass,
         errorMessage = ErrorMessage(this.message),
+        openChat = openChat,
         navigateBack = finishTerminationFlow,
       )
     }
@@ -95,6 +97,7 @@ internal fun NavGraphBuilder.terminateInsuranceGraph(
       BackHandler { finishTerminationFlow() }
       UnknownScreenDestination(
         windowSizeClass = windowSizeClass,
+        openChat = openChat,
         navigateBack = finishTerminationFlow,
       )
     }
