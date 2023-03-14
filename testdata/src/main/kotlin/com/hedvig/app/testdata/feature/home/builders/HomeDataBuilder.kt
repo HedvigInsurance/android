@@ -1,12 +1,12 @@
 package com.hedvig.app.testdata.feature.home.builders
 
-import com.hedvig.android.apollo.graphql.HomeQuery
-import com.hedvig.android.apollo.graphql.fragment.IconVariantsFragment
-import com.hedvig.android.apollo.graphql.type.ClaimStatus
-import com.hedvig.android.apollo.graphql.type.ClaimStatusCardPillType
-import com.hedvig.android.apollo.graphql.type.ClaimStatusProgressType
-import com.hedvig.android.apollo.graphql.type.PayinMethodStatus
 import com.hedvig.app.testdata.common.ContractStatus
+import giraffe.HomeQuery
+import giraffe.fragment.IconVariantsFragment
+import giraffe.type.ClaimStatus
+import giraffe.type.ClaimStatusCardPillType
+import giraffe.type.ClaimStatusProgressType
+import giraffe.type.PayinMethodStatus
 import java.time.Instant
 import java.time.LocalDate
 
@@ -205,7 +205,7 @@ class ClaimStatusCardsBuilder {
           HomeQuery.ProgressSegment(
             __typename = "",
             fragments = HomeQuery.ProgressSegment.Fragments(
-              progressSegments = com.hedvig.android.apollo.graphql.fragment.ProgressSegments(
+              progressSegments = giraffe.fragment.ProgressSegments(
                 text = "Segment #$it",
                 type = ClaimStatusProgressType.values().random(),
               ),

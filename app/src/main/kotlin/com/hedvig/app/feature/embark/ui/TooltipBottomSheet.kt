@@ -12,7 +12,6 @@ import androidx.core.view.marginTop
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
 import com.hedvig.app.R
 import com.hedvig.app.databinding.TooltipBottomSheetBinding
 import com.hedvig.app.feature.embark.TooltipModel
@@ -25,6 +24,7 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.windowHeight
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import giraffe.EmbarkStoryQuery
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import slimber.log.e
 

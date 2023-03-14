@@ -1,8 +1,8 @@
 package com.hedvig.app.testdata.feature.payment
 
-import com.hedvig.android.apollo.graphql.PaymentQuery
-import com.hedvig.android.apollo.graphql.fragment.MonetaryAmountFragment
 import com.hedvig.app.util.months
+import giraffe.PaymentQuery
+import giraffe.fragment.MonetaryAmountFragment
 import java.time.LocalDate
 
 data class ChargeHistoryBuilder(

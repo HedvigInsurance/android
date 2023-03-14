@@ -1,12 +1,12 @@
 package com.hedvig.app.testdata.feature.embark.builders
 
-import com.hedvig.android.apollo.graphql.fragment.ApiFragment
-import com.hedvig.android.apollo.graphql.fragment.EmbarkLinkFragment
-import com.hedvig.android.apollo.graphql.fragment.GraphQLErrorsFragment
-import com.hedvig.android.apollo.graphql.fragment.GraphQLResultsFragment
-import com.hedvig.android.apollo.graphql.fragment.GraphQLVariablesFragment
-import com.hedvig.android.apollo.graphql.type.EmbarkApiGraphQLMutation
-import com.hedvig.android.apollo.graphql.type.EmbarkApiGraphQLQuery
+import giraffe.fragment.ApiFragment
+import giraffe.fragment.EmbarkLinkFragment
+import giraffe.fragment.GraphQLErrorsFragment
+import giraffe.fragment.GraphQLResultsFragment
+import giraffe.fragment.GraphQLVariablesFragment
+import giraffe.type.EmbarkApiGraphQLMutation
+import giraffe.type.EmbarkApiGraphQLQuery
 
 data class GraphQLApiBuilder(
   private val type: Type,

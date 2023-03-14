@@ -10,7 +10,6 @@ import android.view.inputmethod.EditorInfo
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.hedvig.android.apollo.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.R
 import com.hedvig.app.databinding.PromotionCodeDialogBinding
 import com.hedvig.app.feature.offer.model.QuoteCartId
@@ -20,6 +19,7 @@ import com.hedvig.app.util.extensions.hideKeyboard
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import giraffe.RedeemReferralCodeMutation
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 

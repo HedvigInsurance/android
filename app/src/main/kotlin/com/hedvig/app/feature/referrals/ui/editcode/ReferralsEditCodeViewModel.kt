@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.apollo.graphql.UpdateReferralCampaignCodeMutation
 import com.hedvig.app.feature.referrals.data.ReferralsRepository
+import giraffe.UpdateReferralCampaignCodeMutation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch

@@ -1,9 +1,9 @@
 package com.hedvig.app.testdata.feature.embark.builders
 
-import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
-import com.hedvig.android.apollo.graphql.fragment.EmbarkLinkFragment
-import com.hedvig.android.apollo.graphql.fragment.EmbarkNumberActionFragment
-import com.hedvig.android.apollo.graphql.type.EmbarkNumberAction
+import giraffe.EmbarkStoryQuery
+import giraffe.fragment.EmbarkLinkFragment
+import giraffe.fragment.EmbarkNumberActionFragment
+import giraffe.type.EmbarkNumberAction
 
 data class NumberActionBuilder(
   val key: String = "BAR",

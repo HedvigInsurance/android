@@ -1,8 +1,8 @@
 package com.hedvig.app.testdata.feature.insurance
 
-import com.hedvig.android.apollo.graphql.InsuranceQuery
-import com.hedvig.android.apollo.graphql.type.AgreementStatus
 import com.hedvig.app.testdata.feature.insurance.builders.InsuranceContractBuilder
+import giraffe.InsuranceQuery
+import giraffe.type.AgreementStatus
 
 val INSURANCE_DATA_SWEDISH_APARTMENT =
   InsuranceQuery.Data(contracts = listOf(InsuranceContractBuilder().build()), activeContractBundles = emptyList())

@@ -1,6 +1,6 @@
 package com.hedvig.app.testdata.feature.embark.builders
 
-import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
+import giraffe.EmbarkStoryQuery
 
 data class EmbarkStoryDataBuilder(
   private val startPassage: String = "1",

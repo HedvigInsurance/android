@@ -6,9 +6,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.hedvig.android.apollo.graphql.PaymentQuery
-import com.hedvig.android.apollo.graphql.type.PayinMethodStatus
-import com.hedvig.android.apollo.graphql.type.PayoutMethodStatus
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
@@ -40,6 +37,9 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.navigation.getConnectPayoutActivity
+import giraffe.PaymentQuery
+import giraffe.type.PayinMethodStatus
+import giraffe.type.PayoutMethodStatus
 import slimber.log.e
 
 class PaymentAdapter(

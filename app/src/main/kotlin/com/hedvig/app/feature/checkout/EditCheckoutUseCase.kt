@@ -7,12 +7,12 @@ import arrow.core.flatMap
 import arrow.core.left
 import arrow.core.right
 import arrow.core.sequence
-import com.hedvig.android.apollo.graphql.QuoteCartEditQuoteMutation
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.language.LanguageService
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
+import giraffe.QuoteCartEditQuoteMutation
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonObject

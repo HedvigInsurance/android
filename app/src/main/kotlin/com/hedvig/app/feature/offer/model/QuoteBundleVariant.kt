@@ -1,9 +1,9 @@
 package com.hedvig.app.feature.offer.model
 
-import com.hedvig.android.apollo.graphql.fragment.QuoteCartFragment
-import com.hedvig.android.apollo.graphql.type.CheckoutMethod
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import com.hedvig.app.feature.offer.model.quotebundle.toQuoteBundle
+import giraffe.fragment.QuoteCartFragment
+import giraffe.type.CheckoutMethod
 
 data class QuoteBundleVariant(
   val id: String,

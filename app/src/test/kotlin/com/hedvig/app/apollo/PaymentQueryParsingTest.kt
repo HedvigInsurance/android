@@ -7,9 +7,9 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import com.apollographql.apollo3.annotations.ApolloExperimental
 import com.apollographql.apollo3.mockserver.enqueue
-import com.hedvig.android.apollo.graphql.PaymentQuery
-import com.hedvig.android.apollo.graphql.type.Locale
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_ADYEN_CONNECTED
+import giraffe.PaymentQuery
+import giraffe.type.Locale
 import org.junit.Test
 
 class PaymentQueryParsingTest {

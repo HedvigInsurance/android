@@ -3,11 +3,11 @@ package com.hedvig.app.feature.offer
 import assertk.assertThat
 import assertk.assertions.isDataClassEqualTo
 import assertk.assertions.isEqualTo
-import com.hedvig.android.apollo.graphql.fragment.CurrentInsurerFragment
-import com.hedvig.android.apollo.graphql.fragment.QuoteBundleFragment
 import com.hedvig.app.feature.offer.model.quotebundle.OfferStartDate
 import com.hedvig.app.feature.offer.model.quotebundle.getStartDate
 import com.hedvig.app.testdata.feature.offer.builders.ConcurrentInceptionBuilder
+import giraffe.fragment.CurrentInsurerFragment
+import giraffe.fragment.QuoteBundleFragment
 import org.junit.Test
 import java.time.LocalDate
 

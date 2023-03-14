@@ -1,14 +1,14 @@
 package com.hedvig.app.testdata.feature.referrals
 
-import com.hedvig.android.apollo.graphql.fragment.MonetaryAmountFragment
-import com.hedvig.android.apollo.graphql.fragment.ReferralFragment
-import com.hedvig.android.apollo.graphql.type.ActiveReferral
-import com.hedvig.android.apollo.graphql.type.InProgressReferral
-import com.hedvig.android.apollo.graphql.type.TerminatedReferral
 import com.hedvig.app.testdata.common.builders.CostBuilder
 import com.hedvig.app.testdata.feature.referrals.builders.EditCodeDataBuilder
 import com.hedvig.app.testdata.feature.referrals.builders.LoggedInDataBuilder
 import com.hedvig.app.testdata.feature.referrals.builders.ReferralsDataBuilder
+import giraffe.fragment.MonetaryAmountFragment
+import giraffe.fragment.ReferralFragment
+import giraffe.type.ActiveReferral
+import giraffe.type.InProgressReferral
+import giraffe.type.TerminatedReferral
 
 val LOGGED_IN_DATA = LoggedInDataBuilder().build()
 

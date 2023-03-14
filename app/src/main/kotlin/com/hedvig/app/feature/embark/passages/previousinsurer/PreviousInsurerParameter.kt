@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.embark.passages.previousinsurer
 
 import android.os.Parcelable
-import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
+import giraffe.EmbarkStoryQuery
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

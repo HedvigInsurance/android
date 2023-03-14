@@ -1,7 +1,7 @@
 package com.hedvig.app.testdata.feature.loggedin.builders
 
-import com.hedvig.android.apollo.graphql.WelcomeQuery
-import com.hedvig.android.apollo.graphql.fragment.IconVariantsFragment
+import giraffe.WelcomeQuery
+import giraffe.fragment.IconVariantsFragment
 
 data class WelcomeDataBuilder(
   val pages: List<WelcomeQuery.Welcome> = listOf(

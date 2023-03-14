@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.table
 
-import com.hedvig.android.apollo.graphql.fragment.TableFragment
+import giraffe.fragment.TableFragment
 
 fun TableFragment.intoTable() = Table(
   title = title,

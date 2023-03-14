@@ -3,10 +3,10 @@ package com.hedvig.app.feature.whatsnew
 import android.content.Context
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.OperationResult
-import com.hedvig.android.apollo.graphql.WhatsNewQuery
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.language.LanguageService
 import com.hedvig.app.BuildConfig
+import giraffe.WhatsNewQuery
 
 class WhatsNewRepository(
   private val apolloClient: ApolloClient,

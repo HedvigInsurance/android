@@ -1,9 +1,9 @@
 package com.hedvig.app.util.apollo
 
-import com.hedvig.android.apollo.graphql.fragment.UpcomingAgreementChangeFragment
-import com.hedvig.android.apollo.graphql.fragment.UpcomingAgreementFragment
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement
 import com.hedvig.app.feature.table.intoTable
+import giraffe.fragment.UpcomingAgreementChangeFragment
+import giraffe.fragment.UpcomingAgreementFragment
 import java.time.LocalDate
 
 fun UpcomingAgreementFragment.toUpcomingAgreementResult(): UpcomingAgreement? {

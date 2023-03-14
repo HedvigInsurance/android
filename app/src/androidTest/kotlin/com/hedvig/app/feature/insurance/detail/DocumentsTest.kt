@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.insurance.detail
 
-import com.hedvig.android.apollo.graphql.InsuranceQuery
 import com.hedvig.app.feature.documents.DocumentRecyclerItem
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS
@@ -11,6 +10,7 @@ import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.stubExternalIntents
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import giraffe.InsuranceQuery
 import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
 import org.junit.Rule
 import org.junit.Test

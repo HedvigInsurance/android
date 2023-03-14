@@ -4,12 +4,12 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.continuations.ensureNotNull
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.apollo.graphql.InsuranceQuery
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.language.LanguageService
+import giraffe.InsuranceQuery
 
 class GetContractDetailsUseCase(
   private val apolloClient: ApolloClient,

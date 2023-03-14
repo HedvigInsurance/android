@@ -7,25 +7,25 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import com.apollographql.apollo3.annotations.ApolloExperimental
 import com.apollographql.apollo3.mockserver.enqueue
-import com.hedvig.android.apollo.graphql.InsuranceQuery
-import com.hedvig.android.apollo.graphql.type.AgreementStatus
-import com.hedvig.android.apollo.graphql.type.TypeOfContractGradientOption
-import com.hedvig.android.apollo.graphql.type.buildActiveStatus
-import com.hedvig.android.apollo.graphql.type.buildContract
-import com.hedvig.android.apollo.graphql.type.buildIcon
-import com.hedvig.android.apollo.graphql.type.buildIconVariant
-import com.hedvig.android.apollo.graphql.type.buildIconVariants
-import com.hedvig.android.apollo.graphql.type.buildInsurableLimit
-import com.hedvig.android.apollo.graphql.type.buildInsuranceTerm
-import com.hedvig.android.apollo.graphql.type.buildPerilV2
-import com.hedvig.android.apollo.graphql.type.buildSwedishApartmentAgreement
-import com.hedvig.android.apollo.graphql.type.buildTable
-import com.hedvig.android.apollo.graphql.type.buildTableRow
-import com.hedvig.android.apollo.graphql.type.buildTableSection
-import com.hedvig.android.apollo.graphql.type.buildUpcomingRenewal
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_TERMINATED
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_HOUSE
+import giraffe.InsuranceQuery
+import giraffe.type.AgreementStatus
+import giraffe.type.TypeOfContractGradientOption
+import giraffe.type.buildActiveStatus
+import giraffe.type.buildContract
+import giraffe.type.buildIcon
+import giraffe.type.buildIconVariant
+import giraffe.type.buildIconVariants
+import giraffe.type.buildInsurableLimit
+import giraffe.type.buildInsuranceTerm
+import giraffe.type.buildPerilV2
+import giraffe.type.buildSwedishApartmentAgreement
+import giraffe.type.buildTable
+import giraffe.type.buildTableRow
+import giraffe.type.buildTableSection
+import giraffe.type.buildUpcomingRenewal
 import org.junit.Test
 import java.time.LocalDate
 
@@ -177,7 +177,7 @@ class InsuranceQueryParsingTest {
       mockServer.enqueue(jsonData)
 
       val response = apolloClient
-        .query(InsuranceQuery(locale = com.hedvig.android.apollo.graphql.type.Locale.sv_SE))
+        .query(InsuranceQuery(locale = giraffe.type.Locale.sv_SE))
         .execute()
 
       assertThat(response.data).isNotNull()
@@ -192,7 +192,7 @@ class InsuranceQueryParsingTest {
       mockServer.enqueue(jsonData)
 
       val response = apolloClient
-        .query(InsuranceQuery(locale = com.hedvig.android.apollo.graphql.type.Locale.sv_SE))
+        .query(InsuranceQuery(locale = giraffe.type.Locale.sv_SE))
         .execute()
 
       assertThat(response.data).isNotNull()
@@ -206,7 +206,7 @@ class InsuranceQueryParsingTest {
     mockServer.enqueue(jsonData)
 
     val response = apolloClient
-      .query(InsuranceQuery(locale = com.hedvig.android.apollo.graphql.type.Locale.sv_SE))
+      .query(InsuranceQuery(locale = giraffe.type.Locale.sv_SE))
       .execute()
 
     assertThat(response.data).isNotNull()
@@ -220,7 +220,7 @@ class InsuranceQueryParsingTest {
     mockServer.enqueue(jsonData)
 
     val response = apolloClient
-      .query(InsuranceQuery(locale = com.hedvig.android.apollo.graphql.type.Locale.sv_SE))
+      .query(InsuranceQuery(locale = giraffe.type.Locale.sv_SE))
       .execute()
 
     assertThat(response.data).isNotNull()

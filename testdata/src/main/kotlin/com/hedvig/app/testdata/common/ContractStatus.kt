@@ -1,12 +1,12 @@
 package com.hedvig.app.testdata.common
 
-import com.hedvig.android.apollo.graphql.type.ActiveInFutureAndTerminatedInFutureStatus
-import com.hedvig.android.apollo.graphql.type.ActiveInFutureStatus
-import com.hedvig.android.apollo.graphql.type.ActiveStatus
-import com.hedvig.android.apollo.graphql.type.PendingStatus
-import com.hedvig.android.apollo.graphql.type.TerminatedInFutureStatus
-import com.hedvig.android.apollo.graphql.type.TerminatedStatus
-import com.hedvig.android.apollo.graphql.type.TerminatedTodayStatus
+import giraffe.type.ActiveInFutureAndTerminatedInFutureStatus
+import giraffe.type.ActiveInFutureStatus
+import giraffe.type.ActiveStatus
+import giraffe.type.PendingStatus
+import giraffe.type.TerminatedInFutureStatus
+import giraffe.type.TerminatedStatus
+import giraffe.type.TerminatedTodayStatus
 
 enum class ContractStatus {
   PENDING,

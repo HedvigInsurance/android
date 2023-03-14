@@ -1,13 +1,13 @@
 package com.hedvig.app.testdata.dashboard
 
-import com.hedvig.android.apollo.graphql.InsuranceQuery
-import com.hedvig.android.apollo.graphql.fragment.CrossSellFragment
-import com.hedvig.android.apollo.graphql.type.CrossSell
-import com.hedvig.android.apollo.graphql.type.CrossSellEmbark
-import com.hedvig.android.apollo.graphql.type.CrossSellType
-import com.hedvig.android.apollo.graphql.type.TypeOfContract
 import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.dashboard.builders.InsuranceDataBuilder
+import giraffe.InsuranceQuery
+import giraffe.fragment.CrossSellFragment
+import giraffe.type.CrossSell
+import giraffe.type.CrossSellEmbark
+import giraffe.type.CrossSellType
+import giraffe.type.TypeOfContract
 
 val INSURANCE_DATA =
   InsuranceDataBuilder(

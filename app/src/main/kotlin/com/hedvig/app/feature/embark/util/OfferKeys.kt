@@ -1,9 +1,9 @@
 package com.hedvig.app.feature.embark.util
 
 import android.os.Parcelable
-import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.ExpressionResult
 import com.hedvig.app.feature.embark.ValueStore
+import giraffe.EmbarkStoryQuery
 import kotlinx.parcelize.Parcelize
 
 fun EmbarkStoryQuery.Passage.getOfferKeyOrNull(valueStore: ValueStore): String? {

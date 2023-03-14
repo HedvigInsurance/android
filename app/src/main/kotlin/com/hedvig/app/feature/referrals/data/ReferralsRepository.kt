@@ -4,9 +4,9 @@ import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.hedvig.android.apollo.OperationResult
-import com.hedvig.android.apollo.graphql.ReferralsQuery
-import com.hedvig.android.apollo.graphql.UpdateReferralCampaignCodeMutation
 import com.hedvig.android.apollo.safeWatch
+import giraffe.ReferralsQuery
+import giraffe.UpdateReferralCampaignCodeMutation
 import kotlinx.coroutines.flow.Flow
 
 class ReferralsRepository(

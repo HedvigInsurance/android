@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.offer.model
 
-import com.hedvig.android.apollo.graphql.QuoteCartCheckoutStatusQuery
-import com.hedvig.android.apollo.graphql.fragment.QuoteCartFragment
-import com.hedvig.android.apollo.graphql.type.CheckoutStatus
+import giraffe.QuoteCartCheckoutStatusQuery
+import giraffe.fragment.QuoteCartFragment
+import giraffe.type.CheckoutStatus
 
 data class Checkout(
   val status: CheckoutStatus,

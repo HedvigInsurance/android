@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.embark.numberaction
 
-import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import com.hedvig.app.feature.embark.screens.NumberActionScreen
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
@@ -13,6 +12,7 @@ import com.hedvig.app.util.context
 import com.hedvig.app.util.hasHelperText
 import com.hedvig.app.util.hasPlaceholderText
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import giraffe.EmbarkStoryQuery
 import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
 import org.junit.Rule
 import org.junit.Test

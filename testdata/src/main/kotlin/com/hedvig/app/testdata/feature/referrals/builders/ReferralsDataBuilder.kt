@@ -1,11 +1,11 @@
 package com.hedvig.app.testdata.feature.referrals.builders
 
-import com.hedvig.android.apollo.graphql.ReferralsQuery
-import com.hedvig.android.apollo.graphql.fragment.CostFragment
-import com.hedvig.android.apollo.graphql.fragment.MonetaryAmountFragment
-import com.hedvig.android.apollo.graphql.fragment.ReferralFragment
-import com.hedvig.android.apollo.graphql.type.MonthlyCostDeduction
 import com.hedvig.app.testdata.common.builders.CostBuilder
+import giraffe.ReferralsQuery
+import giraffe.fragment.CostFragment
+import giraffe.fragment.MonetaryAmountFragment
+import giraffe.fragment.ReferralFragment
+import giraffe.type.MonthlyCostDeduction
 
 data class ReferralsDataBuilder(
   val insuranceCost: CostFragment = CostBuilder()

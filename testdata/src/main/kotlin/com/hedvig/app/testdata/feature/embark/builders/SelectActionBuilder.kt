@@ -1,10 +1,10 @@
 package com.hedvig.app.testdata.feature.embark.builders
 
-import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
-import com.hedvig.android.apollo.graphql.fragment.ApiFragment
-import com.hedvig.android.apollo.graphql.fragment.EmbarkLinkFragment
-import com.hedvig.android.apollo.graphql.type.EmbarkLink
-import com.hedvig.android.apollo.graphql.type.EmbarkSelectAction
+import giraffe.EmbarkStoryQuery
+import giraffe.fragment.ApiFragment
+import giraffe.fragment.EmbarkLinkFragment
+import giraffe.type.EmbarkLink
+import giraffe.type.EmbarkSelectAction
 
 data class SelectActionBuilder(
   private val options: List<EmbarkStoryQuery.Option> = emptyList(),

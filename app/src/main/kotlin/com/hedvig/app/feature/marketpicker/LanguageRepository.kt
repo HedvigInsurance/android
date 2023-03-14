@@ -2,10 +2,10 @@ package com.hedvig.app.feature.marketpicker
 
 import arrow.core.Either
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.apollo.graphql.UpdateLanguageMutation
-import com.hedvig.android.apollo.graphql.type.Locale
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
+import giraffe.UpdateLanguageMutation
+import giraffe.type.Locale
 import slimber.log.e
 import slimber.log.i
 

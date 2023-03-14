@@ -1,10 +1,10 @@
 package com.hedvig.app.feature.offer.model.quotebundle
 
-import com.hedvig.android.apollo.graphql.fragment.QuoteBundleFragment
-import com.hedvig.android.apollo.graphql.type.QuoteBundleAppConfigurationStartDateTerminology
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import com.hedvig.app.feature.offer.ui.changestartdate.toChangeDateBottomSheetData
+import giraffe.fragment.QuoteBundleFragment
+import giraffe.type.QuoteBundleAppConfigurationStartDateTerminology
 
 data class Inception(
   val startDate: OfferStartDate,

@@ -1,7 +1,7 @@
 package com.hedvig.app.ui.compose.composables.claimprogress
 
-import com.hedvig.android.apollo.graphql.fragment.ProgressSegments
-import com.hedvig.android.apollo.graphql.type.ClaimStatusProgressType
+import giraffe.fragment.ProgressSegments
+import giraffe.type.ClaimStatusProgressType
 
 data class ClaimProgressUiState(
   val text: String,

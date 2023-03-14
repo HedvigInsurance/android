@@ -6,7 +6,6 @@ import arrow.core.continuations.ensureNotNull
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
-import com.hedvig.android.apollo.graphql.QuoteCartQuery
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
@@ -15,6 +14,7 @@ import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.QuoteCartFragmentToOfferModelMapper
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.hanalytics.HAnalytics
+import giraffe.QuoteCartQuery
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 

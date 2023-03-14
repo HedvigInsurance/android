@@ -1,9 +1,9 @@
 package com.hedvig.app.feature.offer
 
 import android.os.Bundle
-import com.hedvig.android.apollo.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeBottomSheet
+import giraffe.RedeemReferralCodeMutation
 
 class OfferRedeemCodeBottomSheet : RedeemCodeBottomSheet() {
 

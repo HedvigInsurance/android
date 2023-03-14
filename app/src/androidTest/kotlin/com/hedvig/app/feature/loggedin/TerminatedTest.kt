@@ -1,8 +1,5 @@
 package com.hedvig.app.feature.loggedin
 
-import com.hedvig.android.apollo.graphql.ContractStatusQuery
-import com.hedvig.android.apollo.graphql.HomeQuery
-import com.hedvig.android.apollo.graphql.LoggedInQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.testdata.feature.home.HOME_DATA_TERMINATED
@@ -13,6 +10,9 @@ import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import giraffe.ContractStatusQuery
+import giraffe.HomeQuery
+import giraffe.LoggedInQuery
 import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
 import org.junit.Rule
 import org.junit.Test

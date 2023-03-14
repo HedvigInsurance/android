@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.home.ui.claimstatus.data
 
-import com.hedvig.android.apollo.graphql.HomeQuery
-import com.hedvig.android.apollo.graphql.type.ClaimStatusCardPillType
+import giraffe.HomeQuery
+import giraffe.type.ClaimStatusCardPillType
 
 data class PillUiState(
   val text: String,

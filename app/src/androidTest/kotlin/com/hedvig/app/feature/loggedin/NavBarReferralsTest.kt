@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.loggedin
 
-import com.hedvig.android.apollo.graphql.LoggedInQuery
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA
@@ -12,6 +11,7 @@ import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.hasNumberOfMenuItems
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import giraffe.LoggedInQuery
 import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
 import org.junit.Rule
 import org.junit.Test

@@ -4,9 +4,9 @@ import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.OperationResult
-import com.hedvig.android.apollo.graphql.ProfileQuery
-import com.hedvig.android.apollo.graphql.UpdatePhoneNumberMutation
 import com.hedvig.android.apollo.safeExecute
+import giraffe.ProfileQuery
+import giraffe.UpdatePhoneNumberMutation
 
 internal class PhoneNumberRepository(
   private val apolloClient: ApolloClient,

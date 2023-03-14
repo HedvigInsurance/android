@@ -1,8 +1,5 @@
 package com.hedvig.app.feature.home
 
-import com.hedvig.android.apollo.graphql.HomeQuery
-import com.hedvig.android.apollo.graphql.LoggedInQuery
-import com.hedvig.app.R
 import com.hedvig.app.feature.home.screens.HomeTabScreen
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.testdata.feature.home.HOME_DATA_PENDING
@@ -14,6 +11,8 @@ import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.hasText
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import giraffe.HomeQuery
+import giraffe.LoggedInQuery
 import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
 import org.junit.Rule
 import org.junit.Test

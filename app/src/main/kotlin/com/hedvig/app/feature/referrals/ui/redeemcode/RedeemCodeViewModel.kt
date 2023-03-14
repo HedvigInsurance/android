@@ -2,11 +2,11 @@ package com.hedvig.app.feature.referrals.ui.redeemcode
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.apollo.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.usecase.CampaignCode
 import com.hedvig.app.feature.offer.usecase.EditCampaignUseCase
 import com.hedvig.app.feature.referrals.data.RedeemReferralCodeRepository
+import giraffe.RedeemReferralCodeMutation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

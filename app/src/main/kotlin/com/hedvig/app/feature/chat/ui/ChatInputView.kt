@@ -11,7 +11,6 @@ import android.widget.TextView
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.recyclerview.widget.RecyclerView
-import com.hedvig.android.apollo.graphql.type.KeyboardType
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChatInputViewBinding
 import com.hedvig.app.feature.chat.Audio
@@ -33,6 +32,7 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
+import giraffe.type.KeyboardType
 
 class ChatInputView : FrameLayout {
   private val binding by viewBinding(ChatInputViewBinding::bind)

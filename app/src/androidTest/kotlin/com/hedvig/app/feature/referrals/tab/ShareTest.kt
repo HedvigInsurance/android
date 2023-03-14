@@ -5,8 +5,6 @@ import android.net.Uri
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
-import com.hedvig.android.apollo.graphql.LoggedInQuery
-import com.hedvig.android.apollo.graphql.ReferralsQuery
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.testdata.feature.referrals.COMPLEX_REFERRAL_CODE
@@ -19,6 +17,8 @@ import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.stubExternalIntents
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import giraffe.LoggedInQuery
+import giraffe.ReferralsQuery
 import io.github.kakaocup.kakao.screen.Screen
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.containsString

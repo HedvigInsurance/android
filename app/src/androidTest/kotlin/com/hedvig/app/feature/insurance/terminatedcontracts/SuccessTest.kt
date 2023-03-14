@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.insurance.terminatedcontracts
 
-import com.hedvig.android.apollo.graphql.InsuranceQuery
 import com.hedvig.app.feature.insurance.screens.InsuranceScreen
 import com.hedvig.app.feature.insurance.screens.TerminatedContractsScreen
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsActivity
@@ -11,6 +10,7 @@ import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import giraffe.InsuranceQuery
 import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
 import org.junit.Rule
 import org.junit.Test

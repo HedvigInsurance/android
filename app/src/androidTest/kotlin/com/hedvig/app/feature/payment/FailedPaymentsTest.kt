@@ -1,8 +1,5 @@
 package com.hedvig.app.feature.payment
 
-import com.hedvig.android.apollo.graphql.PayinStatusQuery
-import com.hedvig.android.apollo.graphql.PaymentQuery
-import com.hedvig.app.R
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_NEEDS_SETUP
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_FAILED_PAYMENTS
@@ -13,6 +10,8 @@ import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.hasText
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import giraffe.PayinStatusQuery
+import giraffe.PaymentQuery
 import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
 import org.junit.Rule
 import org.junit.Test

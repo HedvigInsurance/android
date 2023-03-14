@@ -1,7 +1,5 @@
 package com.hedvig.app.feature.referrals.tab
 
-import com.hedvig.android.apollo.graphql.LoggedInQuery
-import com.hedvig.android.apollo.graphql.ReferralsQuery
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
@@ -16,6 +14,8 @@ import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.swipeDownInCenter
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import giraffe.LoggedInQuery
+import giraffe.ReferralsQuery
 import io.github.kakaocup.kakao.screen.Screen
 import org.junit.Rule
 import org.junit.Test

@@ -3,13 +3,13 @@ package com.hedvig.app.feature.home.model
 import androidx.compose.ui.unit.dp
 import arrow.core.NonEmptyList
 import arrow.core.toNonEmptyListOrNull
-import com.hedvig.android.apollo.graphql.HomeQuery
-import com.hedvig.android.apollo.graphql.type.PayinMethodStatus
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusCardUiState
+import giraffe.HomeQuery
+import giraffe.type.PayinMethodStatus
 
 class HomeItemsBuilder(
   private val featureManager: FeatureManager,

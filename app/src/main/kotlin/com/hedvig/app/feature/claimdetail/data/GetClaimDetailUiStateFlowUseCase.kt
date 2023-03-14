@@ -2,8 +2,8 @@ package com.hedvig.app.feature.claimdetail.data
 
 import arrow.core.Either
 import arrow.core.right
-import com.hedvig.android.apollo.graphql.ClaimDetailsQuery
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailUiState
+import giraffe.ClaimDetailsQuery
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow

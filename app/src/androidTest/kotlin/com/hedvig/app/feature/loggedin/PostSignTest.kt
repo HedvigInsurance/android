@@ -1,7 +1,5 @@
 package com.hedvig.app.feature.loggedin
 
-import com.hedvig.android.apollo.graphql.LoggedInQuery
-import com.hedvig.android.apollo.graphql.WelcomeQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity.Companion.EXTRA_IS_FROM_ONBOARDING
@@ -13,6 +11,8 @@ import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import giraffe.LoggedInQuery
+import giraffe.WelcomeQuery
 import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
 import org.junit.Rule
 import org.junit.Test

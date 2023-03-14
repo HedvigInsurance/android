@@ -39,15 +39,15 @@ class LanguageService(
     return localeList[0]!!
   }
 
-  fun getGraphQLLocale(): com.hedvig.android.apollo.graphql.type.Locale {
+  fun getGraphQLLocale(): giraffe.type.Locale {
     return when (getLocale().toString()) {
-      "en_NO" -> com.hedvig.android.apollo.graphql.type.Locale.en_NO
-      "nb_NO" -> com.hedvig.android.apollo.graphql.type.Locale.nb_NO
-      "sv_SE" -> com.hedvig.android.apollo.graphql.type.Locale.sv_SE
-      "en_SE" -> com.hedvig.android.apollo.graphql.type.Locale.en_SE
-      "da_DK" -> com.hedvig.android.apollo.graphql.type.Locale.da_DK
-      "en_DK" -> com.hedvig.android.apollo.graphql.type.Locale.en_DK
-      else -> com.hedvig.android.apollo.graphql.type.Locale.en_SE
+      "en_NO" -> giraffe.type.Locale.en_NO
+      "nb_NO" -> giraffe.type.Locale.nb_NO
+      "sv_SE" -> giraffe.type.Locale.sv_SE
+      "en_SE" -> giraffe.type.Locale.en_SE
+      "da_DK" -> giraffe.type.Locale.da_DK
+      "en_DK" -> giraffe.type.Locale.en_DK
+      else -> giraffe.type.Locale.en_SE
     }
   }
 
