@@ -12,6 +12,7 @@ cacheFix = "2.7.0"
 crashlytics = "2.9.4"
 datadogPlugin = "1.7.0"
 doctor = "0.8.1"
+easylauncher = "6.1.0"
 googleServices = "4.3.15"
 kotlin = "1.8.10"
 kotlinter = "3.13.0"
@@ -237,6 +238,7 @@ kotlinter-gradlePlugin = { module = "org.jmailen.gradle:kotlinter-gradle", versi
 androidApplication = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 androidLibrary = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 apollo = { id = "com.apollographql.apollo3", version.ref = "apollo" }
+appIconBannerGenerator = { id = "com.starter.easylauncher", version.ref = "easylauncher" }
 buildTimeTracker = { id = "net.rdrei.android.buildtimetracker", version.ref = "buildTimeTracker" }
 cacheFix = { id = "org.gradle.android.cache-fix", version.ref = "cacheFix" }
 crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
