@@ -3,24 +3,27 @@ package com.hedvig.android.odyssey
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.ui.Modifier
 import coil.ImageLoader
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.navigation.activity.Navigator
 import com.hedvig.android.odyssey.input.InputViewModel
-import com.hedvig.android.odyssey.input.ui.InputRoot
-import com.hedvig.android.odyssey.model.Resolution
-import com.hedvig.android.odyssey.resolution.ui.ResolutionRoot
+import com.hedvig.android.odyssey.navigation.ClaimFlowNavHost
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.core.parameter.parametersOf
 
-class ClaimsFlowActivity : ComponentActivity() {
+class ClaimsFlowActivity : AppCompatActivity() {
 
   private val imageLoader: ImageLoader by inject()
+  private val activityNavigator: Navigator by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -30,22 +33,17 @@ class ClaimsFlowActivity : ComponentActivity() {
 
     setContent {
       val inputViewModel: InputViewModel = getViewModel { parametersOf(commonClaimId) }
-      val viewState by inputViewModel.viewState.collectAsState()
-
       HedvigTheme {
-        if (viewState.resolution == Resolution.None) {
-          InputRoot(
-            viewState = viewState,
-            inputViewModel = inputViewModel,
-            audioRecorderViewModel = getViewModel(),
-            onFinish = ::finish,
+        Box(Modifier.fillMaxSize(), propagateMinConstraints = true) {
+          ClaimFlowNavHost(
+            windowSizeClass = calculateWindowSizeClass(this@ClaimsFlowActivity),
+            navController = rememberAnimatedNavController(),
             imageLoader = imageLoader,
-          )
-        } else {
-          ResolutionRoot(
-            viewModel = getViewModel { parametersOf(viewState.resolution) },
-            resolution = viewState.resolution,
-            onFinish = ::finish,
+            openChat = {
+              onSupportNavigateUp()
+              activityNavigator.navigateToChat(this@ClaimsFlowActivity)
+            },
+            navigateUp = ::onSupportNavigateUp,
           )
         }
       }

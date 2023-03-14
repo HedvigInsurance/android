@@ -1,4 +1,4 @@
-package com.hedvig.android.odyssey.input.ui
+package com.hedvig.android.odyssey.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +19,8 @@ import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
@@ -43,6 +45,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.odyssey.compose.MonetaryAmountOffsetMapping
 import com.hedvig.odyssey.compose.getLocale
 import com.hedvig.odyssey.remote.components.decorators.Color
@@ -53,7 +57,7 @@ import java.text.DecimalFormatSymbols
 
 @Composable
 @ComposeRenderer
-fun MonetaryAmountInput(
+internal fun MonetaryAmountInput(
   value: MonetaryAmount?,
   onInput: (MonetaryAmount?) -> Unit,
   currency: String,
@@ -194,3 +198,19 @@ private fun BoxWithTrailingIcon(
 }
 
 private fun allowsDecimals(maximumFractionDigits: Int): Boolean = maximumFractionDigits != 0
+
+@HedvigPreview
+@Composable
+private fun PreviewMonetaryAmountInput() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      MonetaryAmountInput(
+        MonetaryAmount("1234", "SEK"),
+        {},
+        "SEK",
+        2,
+        remember { FocusRequester() },
+      )
+    }
+  }
+}

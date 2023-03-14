@@ -29,7 +29,8 @@ fun Locale.toWebLocaleTag() = when (this) {
 }
 
 fun MonetaryAmountFragment.toMonetaryAmount(): MonetaryAmount =
-  Money.of(amount.toBigDecimal(), currency)
+//  Money.of(amount.toBigDecimal(), currency)
+  Money.of(1.0f, currency)
 
 fun MonetaryAmount.format(locale: java.util.Locale, minimumDecimals: Int = 0): String =
   NumberFormat.getCurrencyInstance(locale).also {

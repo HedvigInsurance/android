@@ -1,4 +1,4 @@
-package com.hedvig.android.odyssey.input.ui.summary
+package com.hedvig.android.odyssey.step.claimsummary
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,17 +14,44 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
-import com.hedvig.android.odyssey.input.ui.DateOfOccurrenceAndLocation
-import com.hedvig.android.odyssey.input.ui.SingleItem
 import com.hedvig.android.odyssey.model.ClaimState
 import com.hedvig.android.odyssey.repository.AutomationClaimDTO2
 import com.hedvig.android.odyssey.repository.AutomationClaimInputDTO2
+import com.hedvig.android.odyssey.step.dateofoccurrencepluslocation.DateOfOccurrenceAndLocation
+import com.hedvig.android.odyssey.ui.SingleItem
 import com.hedvig.odyssey.remote.money.MonetaryAmount
 import hedvig.resources.R
 import java.time.LocalDate
 
 @Composable
-fun EditClaimScreen(
+internal fun ClaimSummaryDestination(
+  imageLoader: ImageLoader,
+) {
+  ClaimSummaryScreen(imageLoader)
+}
+
+@Composable
+private fun ClaimSummaryScreen(
+  imageLoader: ImageLoader,
+) {
+  EditClaimScreen(
+    state = ClaimState(), // viewState.claimState,
+    imageLoader = imageLoader, // imageLoader,
+    locationOptions = emptyList(), // input.dateOfOccurrencePlusLocation.locationOptions,
+    modelOptions = emptyList(), // input.singleItem.modelOptions,
+    problemIds = emptyList(), // input.singleItem.problemIds,
+    onDateOfOccurrence = {}, // viewModel::onDateOfOccurrence,
+    onLocation = { }, // viewModel::onLocation,
+    onDateOfPurchase = {}, // viewModel::onDateOfPurchase,
+    onTypeOfDamage = {}, // viewModel::onTypeOfDamage,
+    onModelOption = {}, // viewModel::onModelOption,
+    onPurchasePrice = {}, // viewModel::onPurchasePrice,
+    onSave = {}, // viewModel::onNext,
+  )
+}
+
+@Composable
+private fun EditClaimScreen(
   state: ClaimState,
   problemIds: List<AutomationClaimInputDTO2.SingleItem.ClaimProblem>,
   modelOptions: List<AutomationClaimInputDTO2.SingleItem.ItemOptions.ItemModelOption>,

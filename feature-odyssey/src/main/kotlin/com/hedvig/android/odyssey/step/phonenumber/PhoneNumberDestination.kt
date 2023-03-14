@@ -1,4 +1,4 @@
-package com.hedvig.android.odyssey.input.ui
+package com.hedvig.android.odyssey.step.phonenumber
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +24,17 @@ import com.hedvig.android.core.designsystem.component.button.LargeContainedTextB
 import hedvig.resources.R
 
 @Composable
-fun PhoneNumber(
+internal fun PhoneNumberDestination() {
+  PhoneNumberScreen(
+    currentPhoneNumber = "todo".repeat(1), // todo
+    onPhoneNumber = {},
+    updatePhoneNumber = {},
+    onNext = {},
+  )
+}
+
+@Composable
+private fun PhoneNumberScreen(
   currentPhoneNumber: String,
   onPhoneNumber: (String) -> Unit,
   updatePhoneNumber: () -> Unit,

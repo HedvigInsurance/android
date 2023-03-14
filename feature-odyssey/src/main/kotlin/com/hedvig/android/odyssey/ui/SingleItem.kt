@@ -1,18 +1,17 @@
-package com.hedvig.android.odyssey.input.ui
+package com.hedvig.android.odyssey.ui
 
 import android.app.DatePickerDialog
 import android.widget.DatePicker
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,7 +26,9 @@ import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.component.button.FormRowButton
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
-import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.odyssey.model.ClaimState
 import com.hedvig.android.odyssey.repository.AutomationClaimInputDTO2
 import com.hedvig.odyssey.remote.money.MonetaryAmount
@@ -35,42 +36,7 @@ import hedvig.resources.R
 import java.time.LocalDate
 
 @Composable
-fun SingleItemScreen(
-  state: ClaimState,
-  problemIds: List<AutomationClaimInputDTO2.SingleItem.ClaimProblem>,
-  modelOptions: List<AutomationClaimInputDTO2.SingleItem.ItemOptions.ItemModelOption>,
-  imageLoader: ImageLoader,
-  onDateOfPurchase: (LocalDate) -> Unit,
-  onTypeOfDamage: (AutomationClaimInputDTO2.SingleItem.ClaimProblem) -> Unit,
-  onModelOption: (AutomationClaimInputDTO2.SingleItem.ItemOptions.ItemModelOption) -> Unit,
-  onPurchasePrice: (MonetaryAmount?) -> Unit,
-  onSave: () -> Unit,
-) {
-  Box(
-    Modifier
-      .fillMaxHeight()
-      .padding(all = 16.dp),
-  ) {
-    SingleItem(
-      state = state,
-      problemIds = problemIds,
-      modelOptions = modelOptions,
-      imageLoader = imageLoader,
-      onDateOfPurchase = onDateOfPurchase,
-      onTypeOfDamage = onTypeOfDamage,
-      onModelOption = onModelOption,
-      onPurchasePrice = onPurchasePrice,
-    )
-    LargeContainedTextButton(
-      onClick = onSave,
-      text = stringResource(R.string.general_continue_button),
-      modifier = Modifier.align(Alignment.BottomCenter),
-    )
-  }
-}
-
-@Composable
-fun SingleItem(
+internal fun SingleItem(
   state: ClaimState,
   problemIds: List<AutomationClaimInputDTO2.SingleItem.ClaimProblem>,
   modelOptions: List<AutomationClaimInputDTO2.SingleItem.ItemOptions.ItemModelOption>,
@@ -156,7 +122,10 @@ fun SingleItem(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
       ) {
-        Text(text = stringResource(R.string.claims_item_screen_purchase_price_button), maxLines = 1)
+        Text(
+          text = stringResource(R.string.claims_item_screen_purchase_price_button),
+          maxLines = 1,
+        )
         MonetaryAmountInput(
           value = state.item.purchasePrice,
           onInput = onPurchasePrice,
@@ -174,6 +143,25 @@ fun SingleItem(
       secondaryText = state.item.selectedProblem?.getText() ?: "-",
     ) {
       openDamagePickerDialog = true
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewSingleItem() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      SingleItem(
+        ClaimState(),
+        emptyList(),
+        emptyList(),
+        rememberPreviewImageLoader(),
+        {},
+        {},
+        {},
+        {},
+      )
     }
   }
 }

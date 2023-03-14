@@ -1,4 +1,4 @@
-package com.hedvig.android.odyssey.input.ui
+package com.hedvig.android.odyssey.step.dateofoccurrence
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Button
@@ -6,15 +6,24 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.sp
-import com.hedvig.android.odyssey.input.InputViewModel
 
 @Composable
-internal fun DateOfOccurrence(viewModel: InputViewModel) {
+internal fun DateOfOccurrenceDestination() {
+  DateOfOccurrenceScreen()
+}
+
+@Composable
+private fun DateOfOccurrenceScreen() {
+  DateOfOccurrence()
+}
+
+@Composable
+private fun DateOfOccurrence() {
   Column {
     Text("Date", color = MaterialTheme.colors.onPrimary, fontSize = 40.sp)
     Button(
       onClick = {
-        viewModel.onNext()
+        // todo this click
       },
     ) {
       Text(text = "Next")

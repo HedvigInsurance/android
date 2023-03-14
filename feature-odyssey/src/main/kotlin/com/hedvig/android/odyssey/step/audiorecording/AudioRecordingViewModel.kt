@@ -1,4 +1,4 @@
-package com.hedvig.android.odyssey.input.ui.audiorecorder
+package com.hedvig.android.odyssey.step.audiorecording
 
 import android.media.MediaPlayer
 import android.media.MediaRecorder
@@ -6,37 +6,26 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import java.io.File
-import java.time.Clock
-import java.time.Instant
-import java.util.*
+import java.util.Timer
+import java.util.TimerTask
+import java.util.UUID
 
-class AudioRecorderViewModel(
-  val clock: Clock,
+internal class AudioRecordingViewModel(
+  val clock: Clock = Clock.System,
 ) : ViewModel() {
-  sealed class ViewState {
-    object NotRecording : ViewState()
-    data class Recording(
-      val amplitudes: List<Int>,
-      val startedAt: Instant,
-      val filePath: String,
-    ) : ViewState()
-
-    data class Playback(
-      val filePath: String,
-      val isPlaying: Boolean,
-      val isPrepared: Boolean,
-      val amplitudes: List<Int>,
-      val progress: Float,
-    ) : ViewState()
-  }
 
   private var recorder: MediaRecorder? = null
   private var timer: Timer? = null
   private var player: MediaPlayer? = null
 
-  private val _viewState = MutableStateFlow<ViewState>(ViewState.NotRecording)
-  val viewState = _viewState.asStateFlow()
+  private val _uiState = MutableStateFlow<AudioRecordingUiState>(AudioRecordingUiState.NotRecording)
+  val uiState = _uiState.asStateFlow()
+
+  fun submitAudioFile(file: File) {
+  }
 
   fun startRecording() {
     if (recorder == null) {
@@ -53,14 +42,14 @@ class AudioRecorderViewModel(
         setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
         prepare()
         start()
-        _viewState.value = ViewState.Recording(emptyList(), Instant.now(clock), filePath)
+        _uiState.value = AudioRecordingUiState.Recording(emptyList(), clock.now(), filePath)
       }
       timer = Timer()
       timer?.schedule(
         timerTask {
           recorder?.maxAmplitude?.let { amplitude ->
-            _viewState.update { vs ->
-              if (vs is ViewState.Recording) {
+            _uiState.update { vs ->
+              if (vs is AudioRecordingUiState.Recording) {
                 vs.copy(amplitudes = vs.amplitudes + amplitude)
               } else {
                 vs
@@ -68,22 +57,22 @@ class AudioRecorderViewModel(
             }
           }
         },
-        0,
+        0L,
         1000L / 60,
       )
     }
   }
 
   fun stopRecording() {
-    val currentState = viewState.value
-    if (currentState !is ViewState.Recording) {
+    val currentState = uiState.value
+    if (currentState !is AudioRecordingUiState.Recording) {
       throw IllegalStateException("Must be in Recording-state to stop recording")
     }
     cleanup()
     player = MediaPlayer().apply {
       setDataSource(currentState.filePath)
       setOnPreparedListener {
-        _viewState.value = ViewState.Playback(
+        _uiState.value = AudioRecordingUiState.Playback(
           filePath = currentState.filePath,
           isPlaying = false,
           isPrepared = true,
@@ -93,9 +82,9 @@ class AudioRecorderViewModel(
       }
       setOnCompletionListener {
         // Bail if the user has backed out of the playback-state
-        val currentPlaybackState = viewState.value as? ViewState.Playback ?: return@setOnCompletionListener
+        val currentPlaybackState = uiState.value as? AudioRecordingUiState.Playback ?: return@setOnCompletionListener
         cleanupTimer()
-        _viewState.value = currentPlaybackState.copy(isPlaying = false)
+        _uiState.value = currentPlaybackState.copy(isPlaying = false)
       }
       prepare()
     }
@@ -103,12 +92,12 @@ class AudioRecorderViewModel(
 
   fun redo() {
     cleanup()
-    _viewState.value = ViewState.NotRecording
+    _uiState.value = AudioRecordingUiState.NotRecording
   }
 
   fun play() {
-    val currentState = viewState.value
-    if (currentState !is ViewState.Playback) {
+    val currentState = uiState.value
+    if (currentState !is AudioRecordingUiState.Playback) {
       throw IllegalStateException("Must be in Playback-state to play")
     }
     if (!currentState.isPrepared) {
@@ -118,8 +107,8 @@ class AudioRecorderViewModel(
     timer?.schedule(
       timerTask {
         val progress = player?.let { it.currentPosition.toFloat() / it.duration } ?: return@timerTask
-        _viewState.update { vs ->
-          if (vs is ViewState.Playback) {
+        _uiState.update { vs ->
+          if (vs is AudioRecordingUiState.Playback) {
             vs.copy(progress = progress)
           } else {
             vs
@@ -129,18 +118,18 @@ class AudioRecorderViewModel(
       0,
       1000L / 60,
     )
-    _viewState.value = currentState.copy(isPlaying = true)
+    _uiState.value = currentState.copy(isPlaying = true)
     player?.start()
   }
 
   fun pause() {
-    val currentState = viewState.value as? ViewState.Playback
-    if (currentState !is ViewState.Playback) {
+    val currentState = uiState.value as? AudioRecordingUiState.Playback
+    if (currentState !is AudioRecordingUiState.Playback) {
       throw IllegalStateException("Must be in Playback-state to pause")
     }
     cleanupTimer()
     player?.pause()
-    _viewState.value = currentState.copy(isPlaying = false)
+    _uiState.value = currentState.copy(isPlaying = false)
   }
 
   override fun onCleared() {
@@ -173,4 +162,21 @@ class AudioRecorderViewModel(
       }
     }
   }
+}
+
+internal sealed class AudioRecordingUiState {
+  object NotRecording : AudioRecordingUiState()
+  data class Recording(
+    val amplitudes: List<Int>,
+    val startedAt: Instant,
+    val filePath: String,
+  ) : AudioRecordingUiState()
+
+  data class Playback(
+    val filePath: String,
+    val isPlaying: Boolean,
+    val isPrepared: Boolean,
+    val amplitudes: List<Int>,
+    val progress: Float,
+  ) : AudioRecordingUiState()
 }

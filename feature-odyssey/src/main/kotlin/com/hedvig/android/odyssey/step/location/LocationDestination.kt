@@ -1,4 +1,4 @@
-package com.hedvig.android.odyssey.input.ui
+package com.hedvig.android.odyssey.step.location
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,11 +12,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.hedvig.android.odyssey.input.InputViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-internal fun Location(viewModel: InputViewModel) {
+internal fun LocationDestination() {
+  LocationScreen()
+}
+
+@Composable
+private fun LocationScreen() {
   val coroutineScope = rememberCoroutineScope()
   Box(
     Modifier
@@ -28,7 +32,7 @@ internal fun Location(viewModel: InputViewModel) {
       Button(
         onClick = {
           coroutineScope.launch {
-            viewModel.onNext()
+            // todo
           }
         },
       ) {

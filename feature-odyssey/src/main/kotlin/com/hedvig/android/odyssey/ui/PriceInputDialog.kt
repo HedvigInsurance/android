@@ -1,4 +1,4 @@
-package com.hedvig.android.odyssey.input.ui
+package com.hedvig.android.odyssey.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 
 @Composable
-fun PriceInputDialog(
+fun PriceInputDialog( // todo check if this is used
   title: String,
   message: MutableState<String>,
   openDialog: MutableState<Boolean>,

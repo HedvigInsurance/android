@@ -1,6 +1,5 @@
-package com.hedvig.android.odyssey.resolution.ui
+package com.hedvig.android.odyssey.step.manualhandling
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -18,13 +17,16 @@ import com.hedvig.android.core.designsystem.component.button.LargeContainedTextB
 import hedvig.resources.R
 
 @Composable
-fun Success(
-  onExit: () -> Unit,
+internal fun ManualHandlingDestination(
+  navigateUp: () -> Unit,
 ) {
-  BackHandler {
-    onExit()
-  }
+  ManualHandlingScreen(navigateUp = navigateUp)
+}
 
+@Composable
+private fun ManualHandlingScreen(
+  navigateUp: () -> Unit,
+) {
   Box(
     Modifier
       .fillMaxHeight()
@@ -45,7 +47,7 @@ fun Success(
     }
 
     LargeContainedTextButton(
-      onClick = onExit,
+      onClick = navigateUp,
       text = stringResource(R.string.general_close_button),
       modifier = Modifier.align(Alignment.BottomCenter),
     )

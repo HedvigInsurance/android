@@ -1,4 +1,4 @@
-package com.hedvig.android.odyssey.input.ui
+package com.hedvig.android.odyssey.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column

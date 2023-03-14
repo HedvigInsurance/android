@@ -5,7 +5,10 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.hedvig.android.auth.android.AuthenticatedObserver
@@ -28,17 +31,19 @@ class TerminateInsuranceActivity : AppCompatActivity() {
 
     setContent {
       HedvigTheme {
-        TerminateInsuranceNavHost(
-          windowSizeClass = calculateWindowSizeClass(this),
-          navController = rememberAnimatedNavController(),
-          insuranceId = insuranceId,
-          openChat = {
-            onSupportNavigateUp()
-            activityNavigator.navigateToChat(this)
-          },
-          navigateUp = { onSupportNavigateUp() },
-          finishTerminationFlow = { finish() },
-        )
+        Box(Modifier.fillMaxSize(), propagateMinConstraints = true) {
+          TerminateInsuranceNavHost(
+            windowSizeClass = calculateWindowSizeClass(this@TerminateInsuranceActivity),
+            navController = rememberAnimatedNavController(),
+            insuranceId = insuranceId,
+            openChat = {
+              onSupportNavigateUp()
+              activityNavigator.navigateToChat(this@TerminateInsuranceActivity)
+            },
+            navigateUp = { onSupportNavigateUp() },
+            finishTerminationFlow = { finish() },
+          )
+        }
       }
     }
   }

@@ -1,4 +1,4 @@
-package com.hedvig.android.odyssey.input.ui
+package com.hedvig.android.odyssey.step.dateofoccurrencepluslocation
 
 import android.app.DatePickerDialog
 import android.widget.DatePicker
@@ -20,7 +20,32 @@ import com.hedvig.android.core.designsystem.component.button.FormRowButton
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.odyssey.model.ClaimState
 import com.hedvig.android.odyssey.repository.AutomationClaimDTO2
+import com.hedvig.android.odyssey.ui.SingleSelectDialog
+import hedvig.resources.R
 import java.time.LocalDate
+
+@Composable
+internal fun DateOfOccurrencePlusLocationDestination(
+  imageLoader: ImageLoader,
+) {
+  DateOfOccurrencePlusLocationScreen(
+    imageLoader = imageLoader,
+  )
+}
+
+@Composable
+private fun DateOfOccurrencePlusLocationScreen(
+  imageLoader: ImageLoader,
+) {
+  DateOfOccurrenceAndLocationScreen(
+    state = ClaimState(),
+    imageLoader = imageLoader,
+    onDateOfOccurrence = {},
+    onLocation = {},
+    locationOptions = emptyList(),
+    onNext = {},
+  )
+}
 
 @Composable
 fun DateOfOccurrenceAndLocationScreen(
@@ -45,7 +70,7 @@ fun DateOfOccurrenceAndLocationScreen(
     )
     LargeContainedTextButton(
       onClick = onNext,
-      text = stringResource(hedvig.resources.R.string.general_continue_button),
+      text = stringResource(R.string.general_continue_button),
       modifier = Modifier.align(Alignment.BottomCenter),
     )
   }
@@ -74,7 +99,7 @@ fun DateOfOccurrenceAndLocation(
 
   if (openLocationPickerDialog.value) {
     SingleSelectDialog(
-      title = stringResource(hedvig.resources.R.string.claims_location_screen_title),
+      title = stringResource(R.string.claims_location_screen_title),
       optionsList = locationOptions,
       onSelected = onLocation,
       getDisplayText = { it.getText() },
@@ -86,7 +111,7 @@ fun DateOfOccurrenceAndLocation(
 
   Column {
     FormRowButton(
-      mainText = stringResource(hedvig.resources.R.string.claims_incident_screen_date_of_incident),
+      mainText = stringResource(R.string.claims_incident_screen_date_of_incident),
       secondaryText = state.dateOfOccurrence?.toString() ?: "-",
     ) {
       pickerDialog.show()
@@ -95,7 +120,7 @@ fun DateOfOccurrenceAndLocation(
     Spacer(modifier = Modifier.padding(top = 4.dp))
 
     FormRowButton(
-      mainText = stringResource(hedvig.resources.R.string.claims_incident_screen_location),
+      mainText = stringResource(R.string.claims_incident_screen_location),
       secondaryText = state.location.getText(),
     ) {
       openLocationPickerDialog.value = true
