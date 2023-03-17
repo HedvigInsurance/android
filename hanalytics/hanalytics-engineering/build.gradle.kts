@@ -18,7 +18,6 @@ dependencies {
   implementation(libs.androidx.other.activityCompose)
   implementation(libs.androidx.other.appCompat)
   implementation(libs.koin.android)
-  implementation(libs.shake)
   implementation(libs.slimber)
 }
 

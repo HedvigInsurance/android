@@ -36,8 +36,6 @@ jobs:
           LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
           ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
-          SHAKE_CLIENT_ID: ${{ secrets.SHAKE_CLIENT_ID }}
-          SHAKE_CLIENT_SECRET: ${{ secrets.SHAKE_CLIENT_SECRET }}
       - name: Instrumentation tests
         uses: reactivecircus/android-emulator-runner@v2
         with:

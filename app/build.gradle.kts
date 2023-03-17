@@ -274,8 +274,6 @@ dependencies {
   testImplementation(libs.mockk.jvm)
 
   debugImplementation(libs.leakCanary)
-  debugImplementation(libs.shake)
-  "stagingImplementation"(libs.shake)
 
   implementation(libs.androidx.compose.animation)
   implementation(libs.androidx.compose.foundation)

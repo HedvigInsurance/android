@@ -8,18 +8,16 @@
     - `lokalise.properties`
 3. Acquire Mixpanel credentials (you can find them in 1Password), place in the following paths:
     - `app/src/${debug|staging|release}/res/values/mixpanel.xml`
-4. Acquire Shake credentials (you can find them in 1Password), place in the following paths:
-    - `app/src/${debug|staging}/res/values/shake.xml`
-5. Acquire gradle.properties which contain a token for Github Packages authentication. 
+4. Acquire gradle.properties which contain a token for Github Packages authentication. 
    Generate your own at GitHub > Settings > Developer Settings > PAT > Tokens (Classic) > Generate New Token > Give the read:packages permission    
    Append (or create) your global gradle.properties in:
     - `~/.gradle/gradle.properties`
    Look inside [ci-github-packages-properties](scripts/ci-github-packages-properties.sh) for inspiration.
-6. Download the schema (required to consume any changes in schema as well):
+5. Download the schema (required to consume any changes in schema as well):
     `./gradlew downloadApolloSchemasFromIntrospection`
-7. Download lokalise translations (required to consume latest translations as well):
+6. Download lokalise translations (required to consume latest translations as well):
     `./gradlew :core-resources:downloadStrings`
-8. Build and install via Android Studio
+7. Build and install via Android Studio
 
 ## Formatting
 
