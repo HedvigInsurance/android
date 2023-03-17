@@ -29,8 +29,15 @@ fun InsuranceQuery.Contract.toContractCardViewState() = ContractCardViewState(
   logoUrls = logo?.variants?.fragments?.iconVariantsFragment?.let { ThemedIconUrls.from(it) },
 )
 
-fun InsuranceQuery.Contract.toMemberDetailsViewState(isTerminationFlowEnabled: Boolean = true) =
-  ContractDetailViewState.MemberDetailsViewState(
+fun InsuranceQuery.Contract.toMemberDetailsViewState(
+  isTerminationFlowEnabled: Boolean = true,
+): ContractDetailViewState.MemberDetailsViewState {
+  val isContractTerminated = run {
+    val isTerminatedInTheFuture = fragments.upcomingAgreementFragment.status.asTerminatedInFutureStatus != null
+    val isTerminatedToday = fragments.upcomingAgreementFragment.status.asTerminatedTodayStatus != null
+    isTerminatedInTheFuture || isTerminatedToday
+  }
+  return ContractDetailViewState.MemberDetailsViewState(
     pendingAddressChange = fragments
       .upcomingAgreementFragment
       .toUpcomingAgreementResult()
@@ -42,8 +49,9 @@ fun InsuranceQuery.Contract.toMemberDetailsViewState(isTerminationFlowEnabled: B
       null
     },
     change = YourInfoModel.Change,
-    cancelInsurance = if (isTerminationFlowEnabled) YourInfoModel.CancelInsuranceButton(id) else null,
+    cancelInsurance = if (isTerminationFlowEnabled && !isContractTerminated) YourInfoModel.CancelInsuranceButton(id) else null,
   )
+}
 
 fun InsuranceQuery.Contract.toDocumentsViewState() = ContractDetailViewState.DocumentsViewState(
   documents = listOfNotNull(
