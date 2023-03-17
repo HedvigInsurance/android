@@ -256,7 +256,7 @@
             android:theme="@style/Hedvig.Theme.Marketing"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.hedvig.android.odyssey.ClaimsFlowActivity"
+            android:name="com.hedvig.android.odyssey.ClaimFlowActivity"
             android:parentActivityName="com.hedvig.app.feature.loggedin.ui.LoggedInActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity

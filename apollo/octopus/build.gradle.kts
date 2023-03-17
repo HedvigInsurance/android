@@ -30,6 +30,9 @@ apollo {
     packageName.set("octopus")
     codegenModels.set(com.apollographql.apollo3.compiler.MODELS_RESPONSE_BASED)
 
+    // https://www.apollographql.com/docs/android/advanced/operation-variables/#make-nullable-variables-non-optional
+    generateOptionalOperationVariables.set(false)
+
     mapScalar("Date", "kotlinx.datetime.LocalDate", "com.apollographql.apollo3.adapter.KotlinxLocalDateAdapter")
   }
 }

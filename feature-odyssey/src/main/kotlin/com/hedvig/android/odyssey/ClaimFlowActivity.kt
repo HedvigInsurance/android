@@ -9,18 +9,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.ui.Modifier
+import androidx.core.view.WindowCompat
 import coil.ImageLoader
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.navigation.activity.Navigator
-import com.hedvig.android.odyssey.input.InputViewModel
 import com.hedvig.android.odyssey.navigation.ClaimFlowNavHost
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.getViewModel
-import org.koin.core.parameter.parametersOf
 
-class ClaimsFlowActivity : AppCompatActivity() {
+class ClaimFlowActivity : AppCompatActivity() {
 
   private val imageLoader: ImageLoader by inject()
   private val activityNavigator: Navigator by inject()
@@ -28,20 +26,21 @@ class ClaimsFlowActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     lifecycle.addObserver(AuthenticatedObserver())
+    WindowCompat.setDecorFitsSystemWindows(window, false)
 
-    val commonClaimId = intent.getStringExtra(COMMON_CLAIM_ID)
+    val commonClaimId: String? = intent.getStringExtra(COMMON_CLAIM_ID)
 
     setContent {
-      val inputViewModel: InputViewModel = getViewModel { parametersOf(commonClaimId) }
       HedvigTheme {
         Box(Modifier.fillMaxSize(), propagateMinConstraints = true) {
           ClaimFlowNavHost(
-            windowSizeClass = calculateWindowSizeClass(this@ClaimsFlowActivity),
+            windowSizeClass = calculateWindowSizeClass(this@ClaimFlowActivity),
             navController = rememberAnimatedNavController(),
             imageLoader = imageLoader,
+            entryPointId = commonClaimId,
             openChat = {
               onSupportNavigateUp()
-              activityNavigator.navigateToChat(this@ClaimsFlowActivity)
+              activityNavigator.navigateToChat(this@ClaimFlowActivity)
             },
             navigateUp = ::onSupportNavigateUp,
           )
@@ -57,7 +56,7 @@ class ClaimsFlowActivity : AppCompatActivity() {
       context: Context,
       commonClaimId: String?,
     ): Intent {
-      return Intent(context, ClaimsFlowActivity::class.java)
+      return Intent(context, ClaimFlowActivity::class.java)
         .putExtra(COMMON_CLAIM_ID, commonClaimId)
     }
   }

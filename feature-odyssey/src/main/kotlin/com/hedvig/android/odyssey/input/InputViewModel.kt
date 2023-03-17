@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
-internal class InputViewModel(
+internal class InputViewModel( // todo delete this when everything is migrated
   private val commonClaimId: String?,
   private val repository: ClaimsFlowRepository,
   private val getPhoneNumberUseCase: PhoneNumberRepository,

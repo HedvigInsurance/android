@@ -10,6 +10,7 @@ plugins {
 dependencies {
   implementation(projects.apollo.core)
   implementation(projects.apollo.giraffe)
+  implementation(projects.apollo.octopus)
   implementation(projects.auth.authAndroid)
   implementation(projects.auth.authCore)
   implementation(projects.coreCommon)
@@ -27,10 +28,12 @@ dependencies {
   implementation(libs.androidx.compose.material)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.material3.windowSizeClass)
+  implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.compose)
   implementation(libs.androidx.other.activityCompose)
   implementation(libs.apollo.normalizedCache)
+  implementation(libs.arrow.core)
   implementation(libs.coil.coil)
   implementation(libs.coil.compose)
   implementation(libs.datadog.sdk)
@@ -41,6 +44,9 @@ dependencies {
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
+  implementation(libs.retrofit)
+  implementation(libs.retrofitArrow)
+  implementation(libs.retrofitKotlinxSerializationConverter)
   implementation(libs.slimber)
 }
 

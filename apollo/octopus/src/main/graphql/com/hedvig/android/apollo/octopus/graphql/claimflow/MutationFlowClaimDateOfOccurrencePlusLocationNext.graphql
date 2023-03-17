@@ -1,0 +1,17 @@
+mutation FlowClaimDateOfOccurrencePlusLocationNext(
+  $dateOfOccurrence: Date,
+  $location: ID,
+  $context: FlowContext!
+) {
+  flowClaimDateOfOccurrencePlusLocationNext(
+    input: {
+      dateOfOccurrence: $dateOfOccurrence,
+      location: $location
+    },
+    context: $context
+  ) {
+    id
+    context
+    ...ClaimFlowStepFragment
+  }
+}

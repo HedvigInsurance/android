@@ -3,9 +3,14 @@ package com.hedvig.android.odyssey.step.audiorecording
 import android.media.MediaPlayer
 import android.media.MediaRecorder
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.hedvig.android.odyssey.data.ClaimFlowRepository
+import com.hedvig.android.odyssey.data.ClaimFlowStep
+import com.hedvig.android.odyssey.model.FlowId
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import java.io.File
@@ -14,6 +19,8 @@ import java.util.TimerTask
 import java.util.UUID
 
 internal class AudioRecordingViewModel(
+  private val flowId: FlowId,
+  private val claimFlowRepository: ClaimFlowRepository,
   val clock: Clock = Clock.System,
 ) : ViewModel() {
 
@@ -24,10 +31,44 @@ internal class AudioRecordingViewModel(
   private val _uiState = MutableStateFlow<AudioRecordingUiState>(AudioRecordingUiState.NotRecording)
   val uiState = _uiState.asStateFlow()
 
-  fun submitAudioFile(file: File) {
+  fun submitAudioFile(audioFile: File) {
+    val uiState = _uiState.value as? AudioRecordingUiState.Playback ?: return
+    if (uiState.hasError || uiState.isLoading) return
+    viewModelScope.launch {
+      claimFlowRepository.submitAudioRecording(flowId, audioFile).fold(
+        ifLeft = {
+          _uiState.update {
+            uiState.copy(hasError = true)
+          }
+        },
+        ifRight = { claimFlowStep ->
+          _uiState.update {
+            uiState.copy(isLoading = false, nextStep = claimFlowStep)
+          }
+        },
+      )
+    }
+  }
+
+  fun showedError() {
+    _uiState.update {
+      if (it is AudioRecordingUiState.Playback) {
+        it.copy(hasError = false)
+      } else {
+        it
+      }
+    }
+  }
+
+  fun handledNextStepNavigation() {
+    val uiState = _uiState.value
+    if (uiState is AudioRecordingUiState.Playback) {
+      _uiState.update { uiState.copy(nextStep = null) }
+    }
   }
 
   fun startRecording() {
+    if ((_uiState.value as? AudioRecordingUiState.Playback)?.isLoading == true) return
     if (recorder == null) {
       recorder = MediaRecorder().apply {
         setAudioSource(MediaRecorder.AudioSource.VOICE_RECOGNITION)
@@ -78,6 +119,9 @@ internal class AudioRecordingViewModel(
           isPrepared = true,
           amplitudes = currentState.amplitudes,
           progress = 0f,
+          nextStep = null,
+          isLoading = false,
+          hasError = false,
         )
       }
       setOnCompletionListener {
@@ -91,6 +135,7 @@ internal class AudioRecordingViewModel(
   }
 
   fun redo() {
+    if ((_uiState.value as? AudioRecordingUiState.Playback)?.isLoading == true) return
     cleanup()
     _uiState.value = AudioRecordingUiState.NotRecording
   }
@@ -124,6 +169,7 @@ internal class AudioRecordingViewModel(
 
   fun pause() {
     val currentState = uiState.value as? AudioRecordingUiState.Playback
+    if (currentState?.isLoading == true) return
     if (currentState !is AudioRecordingUiState.Playback) {
       throw IllegalStateException("Must be in Playback-state to pause")
     }
@@ -134,7 +180,6 @@ internal class AudioRecordingViewModel(
 
   override fun onCleared() {
     super.onCleared()
-
     cleanup()
   }
 
@@ -165,6 +210,12 @@ internal class AudioRecordingViewModel(
 }
 
 internal sealed class AudioRecordingUiState {
+  val hasAudioSubmissionError: Boolean
+    get() = this is Playback && hasError
+
+  val canSubmit: Boolean // todo use this to disable interactions on the buttons
+    get() = this is Playback && !this.isPlaying && this.nextStep == null && !isLoading && !hasError
+
   object NotRecording : AudioRecordingUiState()
   data class Recording(
     val amplitudes: List<Int>,
@@ -178,5 +229,8 @@ internal sealed class AudioRecordingUiState {
     val isPrepared: Boolean,
     val amplitudes: List<Int>,
     val progress: Float,
+    val nextStep: ClaimFlowStep?,
+    val isLoading: Boolean,
+    val hasError: Boolean,
   ) : AudioRecordingUiState()
 }

@@ -1,0 +1,7 @@
+mutation FlowClaimSingleItemCheckoutNext($amount: Float!, $context: FlowContext!) {
+  flowClaimSingleItemCheckoutNext(input: { automaticAutogiro: { amount: $amount } }, context: $context) {
+    id
+    context
+    ...ClaimFlowStepFragment
+  }
+}
