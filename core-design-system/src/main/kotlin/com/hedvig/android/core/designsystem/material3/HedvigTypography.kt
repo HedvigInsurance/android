@@ -11,26 +11,27 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.hedvig.android.core.designsystem.theme.SansStandard
+import com.hedvig.android.core.designsystem.theme.SerifBookSmall
 
 internal val HedvigTypography: Typography
   @Composable
   get() = Typography(
     displayLarge = MaterialTheme.typography.displayLarge.copy(
-      fontFamily = SansStandard,
+      fontFamily = SerifBookSmall,
       fontWeight = FontWeight.Normal,
       fontSize = 57.sp,
       lineHeight = 64.sp,
       letterSpacing = (-1f).percentage.em,
     ),
     displayMedium = MaterialTheme.typography.displayMedium.copy(
-      fontFamily = SansStandard,
+      fontFamily = SerifBookSmall,
       fontWeight = FontWeight.Normal,
       fontSize = 45.sp,
       lineHeight = 52.sp,
       letterSpacing = (-0.5f).percentage.em,
     ),
     displaySmall = MaterialTheme.typography.displaySmall.copy(
-      fontFamily = SansStandard,
+      fontFamily = SerifBookSmall,
       fontWeight = FontWeight.Normal,
       fontSize = 36.sp,
       lineHeight = 44.sp,
