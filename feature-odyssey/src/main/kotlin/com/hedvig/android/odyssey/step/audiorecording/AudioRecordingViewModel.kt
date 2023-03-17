@@ -76,7 +76,7 @@ internal class AudioRecordingViewModel(
         setAudioSamplingRate(96_000)
         setAudioEncodingBitRate(128_000)
         val filePath = File.createTempFile(
-          "claim_${UUID.randomUUID()}",
+          "claim_android_recording_${UUID.randomUUID()}",
           ".aac",
         ).absolutePath
         setOutputFile(filePath)

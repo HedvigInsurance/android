@@ -70,8 +70,7 @@ fragment FlowClaimSingleItemStepFragment on FlowStep {
     id
     preferredCurrency
     purchasePrice {
-      amount
-      currencyCode
+      ...MoneyFragment
     }
     purchaseDate
     selectedItemProblems

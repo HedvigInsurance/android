@@ -110,7 +110,8 @@ val odysseyModule = module {
   // Retrofit
   single<Retrofit> {
     Retrofit.Builder()
-      .baseUrl(get<String>(odysseyUrlQualifier))
+      .callFactory(get<OkHttpClient>())
+      .baseUrl("${get<String>(odysseyUrlQualifier)}/api/flows/")
       .addCallAdapterFactory(EitherCallAdapterFactory.create())
       .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
       .build()

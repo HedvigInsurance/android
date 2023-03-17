@@ -10,6 +10,7 @@ import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.odyssey.model.FlowId
 import com.hedvig.android.odyssey.retrofit.toErrorMessage
+import java.io.File
 import kotlinx.datetime.LocalDate
 import octopus.FlowClaimAudioRecordingNextMutation
 import octopus.FlowClaimDateOfOccurrenceNextMutation
@@ -22,8 +23,10 @@ import octopus.type.FlowClaimItemBrandInput
 import octopus.type.FlowClaimItemModelInput
 import octopus.type.FlowClaimSingleItemInput
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import java.io.File
+import slimber.log.d
+import slimber.log.e
 
 internal interface ClaimFlowRepository {
   suspend fun startClaimFlow(entryPointId: String?): Either<ErrorMessage, ClaimFlowStep>
@@ -63,21 +66,24 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimStart
       claimFlowContext = result.context
-      result.currentStep.toClaimFlowStep()
+      result.currentStep.toClaimFlowStep(FlowId(result.id))
     }
   }
 
   override suspend fun submitAudioRecording(flowId: FlowId, audioFile: File): Either<ErrorMessage, ClaimFlowStep> {
     return either {
+      d { "Uploading file with flowId:$flowId and audio file name:${audioFile.name}" }
       val audioUrl = uploadAudioFile(flowId.value, audioFile).bind()
+      d { "Uploaded audio file, resulting url:$audioUrl" }
       val result = apolloClient
         .mutation(FlowClaimAudioRecordingNextMutation(audioUrl.value, claimFlowContext!!))
         .safeExecute()
         .toEither(::ErrorMessage)
         .bind()
         .flowClaimAudioRecordingNext
+      d { "Submitted audio file to GQL with URL $audioUrl" }
       claimFlowContext = result.context
-      result.currentStep.toClaimFlowStep()
+      result.currentStep.toClaimFlowStep(FlowId(result.id))
     }
   }
 
@@ -92,7 +98,7 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimDateOfOccurrenceNext
       claimFlowContext = result.context
-      result.currentStep.toClaimFlowStep()
+      result.currentStep.toClaimFlowStep(FlowId(result.id))
     }
   }
 
@@ -107,7 +113,7 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimLocationNext
       claimFlowContext = result.context
-      result.currentStep.toClaimFlowStep()
+      result.currentStep.toClaimFlowStep(FlowId(result.id))
     }
   }
 
@@ -123,7 +129,7 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimDateOfOccurrencePlusLocationNext
       claimFlowContext = result.context
-      result.currentStep.toClaimFlowStep()
+      result.currentStep.toClaimFlowStep(FlowId(result.id))
     }
   }
 
@@ -138,7 +144,7 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimPhoneNumberNext
       claimFlowContext = result.context
-      result.currentStep.toClaimFlowStep()
+      result.currentStep.toClaimFlowStep(FlowId(result.id))
     }
   }
 
@@ -170,14 +176,24 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimSingleItemNext
       claimFlowContext = result.context
-      result.currentStep.toClaimFlowStep()
+      result.currentStep.toClaimFlowStep(FlowId(result.id))
     }
   }
 
   private suspend fun uploadAudioFile(flowId: String, file: File): Either<ErrorMessage, AudioUrl> {
     return either {
       val result = odysseyService
-        .uploadAudioRecordingFile(flowId, file.asRequestBody("audio/aac".toMediaType()))
+        .uploadAudioRecordingFile(
+          flowId = flowId,
+          file = MultipartBody.Part.createFormData(
+            name = "android_audio_file",
+            filename = file.name,
+            body = file.asRequestBody("audio/aac".toMediaType()),
+          ),
+        )
+        .onLeft {
+          e { "Failed to upload file for flowId:$flowId. Error:$it" }
+        }
         .mapLeft(CallError::toErrorMessage)
         .bind()
       AudioUrl(result.audioUrl)

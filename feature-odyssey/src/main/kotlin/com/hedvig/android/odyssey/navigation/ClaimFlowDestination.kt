@@ -47,12 +47,12 @@ internal sealed interface ClaimFlowDestination : Destination {
   data class SingleItem(
     val preferredCurrency: CurrencyCode,
     val purchaseDate: LocalDate?,
-    val purchasePrice: ClaimFlowStepFragment.FlowClaimSingleItemStepCurrentStep.PurchasePrice?,
-    val availableItemBrands: List<ClaimFlowStepFragment.FlowClaimSingleItemStepCurrentStep.AvailableItemBrand>?,
+    val purchasePrice: UiMoney?,
+    val availableItemBrands: List<AvailableItemBrand>?,
     val selectedItemBrand: String?,
-    val availableItemModels: List<ClaimFlowStepFragment.FlowClaimSingleItemStepCurrentStep.AvailableItemModel>?,
+    val availableItemModels: List<AvailableItemModel>?,
     val selectedItemModel: String?,
-    val availableItemProblems: List<ClaimFlowStepFragment.FlowClaimSingleItemStepCurrentStep.AvailableItemProblem>?,
+    val availableItemProblems: List<AvailableItemProblem>?,
     val selectedItemProblems: List<String>?,
   ) : ClaimFlowDestination
 
@@ -83,3 +83,35 @@ internal data class LocationOption(
   val value: String,
   val displayName: String,
 )
+
+@Serializable
+internal data class AvailableItemBrand(
+  val displayName: String,
+  val itemTypeId: String,
+  val itemBrandId: String,
+)
+
+@Serializable
+internal data class AvailableItemModel(
+  val displayName: String,
+  val imageUrl: String?,
+  val itemTypeId: String,
+  val itemBrandId: String,
+  val itemModelId: String,
+)
+
+@Serializable
+internal data class AvailableItemProblem(
+  val displayName: String,
+  val itemProblemId: String,
+)
+
+@Serializable
+internal data class UiMoney(val amount: Double, val currencyCode: CurrencyCode) {
+  companion object {
+    fun fromMoneyFragment(fragment: MoneyFragment?): UiMoney? {
+      fragment ?: return null
+      return UiMoney(fragment.amount, fragment.currencyCode)
+    }
+  }
+}
