@@ -94,7 +94,7 @@ internal data class TerminateInsuranceUiState(
   val nextStep: TerminateInsuranceStep?,
   val isLoading: Boolean,
 ) {
-  val canContinue: Boolean
+  val canSubmit: Boolean
     @Composable
     get() = remember(
       datePickerState.selectedDateMillis,

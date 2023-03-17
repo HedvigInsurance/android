@@ -99,7 +99,7 @@ internal data class DateOfOccurrenceUiState(
   val nextStep: ClaimFlowStep?,
   val isLoading: Boolean,
 ) {
-  val canContinue: Boolean
+  val canSubmit: Boolean
     @Composable
     get() = remember(
       datePickerState.selectedDateMillis,

@@ -32,7 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,14 +50,15 @@ import com.hedvig.android.core.designsystem.component.button.LargeTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
+import com.hedvig.android.core.ui.progress.FullScreenHedvigProgress
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbar
 import com.hedvig.android.odyssey.data.ClaimFlowStep
 import com.hedvig.odyssey.renderers.audiorecorder.PlaybackWaveForm
 import com.hedvig.odyssey.renderers.audiorecorder.RecordingAmplitudeIndicator
 import com.hedvig.odyssey.renderers.utils.ScreenOnFlag
 import hedvig.resources.R
-import java.io.File
 import kotlinx.datetime.Clock
+import java.io.File
 
 @Composable
 internal fun AudioRecordingDestination(
@@ -168,6 +169,7 @@ private fun AudioRecordingScreen(
         )
       }
     }
+    FullScreenHedvigProgress(show = (uiState as? AudioRecordingUiState.Playback)?.isLoading == true)
     ErrorSnackbar(
       hasError = uiState.hasAudioSubmissionError,
       showedError = showedError,
@@ -193,7 +195,7 @@ private fun AudioRecordingSection(
   modifier: Modifier = Modifier,
 ) {
   val recordAudioPermissionState = rememberPermissionState(Manifest.permission.RECORD_AUDIO)
-  var openPermissionDialog by remember { mutableStateOf(false) }
+  var openPermissionDialog by rememberSaveable { mutableStateOf(false) }
 
   if (openPermissionDialog) {
     PermissionDialog(
@@ -402,11 +404,13 @@ private fun Playback(
     LargeContainedTextButton(
       onClick = submit,
       text = submitClaimText,
+      enabled = uiState.canSubmit,
       modifier = Modifier.padding(top = 16.dp),
     )
 
     LargeTextButton(
       onClick = redo,
+      enabled = uiState.canSubmit,
       modifier = Modifier.padding(top = 8.dp),
     ) {
       Text(recordAgainText)

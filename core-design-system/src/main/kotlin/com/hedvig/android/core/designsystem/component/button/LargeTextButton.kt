@@ -17,11 +17,13 @@ import androidx.compose.material3.ProvideTextStyle as ProvideTextStyleM3
 fun LargeTextButton(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
+  enabled: Boolean = true,
   content: @Composable RowScope.() -> Unit,
 ) {
   TextButton(
     onClick = onClick,
     modifier = modifier.fillMaxWidth(),
+    enabled = enabled,
     shape = Material3Theme.shapes.large,
     contentPadding = PaddingValues(16.dp),
   ) {
