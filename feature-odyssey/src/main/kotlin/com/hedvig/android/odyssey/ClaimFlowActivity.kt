@@ -38,6 +38,9 @@ class ClaimFlowActivity : AppCompatActivity() {
             navController = rememberAnimatedNavController(),
             imageLoader = imageLoader,
             entryPointId = commonClaimId,
+            openAppSettings = {
+              activityNavigator.openAppSettings(this@ClaimFlowActivity)
+            },
             openChat = {
               onSupportNavigateUp()
               activityNavigator.navigateToChat(this@ClaimFlowActivity)

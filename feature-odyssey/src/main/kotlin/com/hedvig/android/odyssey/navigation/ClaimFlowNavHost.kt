@@ -14,6 +14,7 @@ fun ClaimFlowNavHost(
   navController: NavHostController,
   imageLoader: ImageLoader,
   entryPointId: String?,
+  openAppSettings: () -> Unit,
   openChat: () -> Unit,
   navigateUp: () -> Boolean,
 ) {
@@ -28,6 +29,7 @@ fun ClaimFlowNavHost(
       navController = navController,
       imageLoader = imageLoader,
       entryPointId = entryPointId,
+      openAppSettings = openAppSettings,
       navigateUp = navigateUp,
       openChat = openChat,
       finishClaimFlow = { navigateUp() },

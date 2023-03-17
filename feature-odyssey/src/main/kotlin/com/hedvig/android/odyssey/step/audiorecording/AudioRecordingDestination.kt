@@ -56,14 +56,15 @@ import com.hedvig.odyssey.renderers.audiorecorder.PlaybackWaveForm
 import com.hedvig.odyssey.renderers.audiorecorder.RecordingAmplitudeIndicator
 import com.hedvig.odyssey.renderers.utils.ScreenOnFlag
 import hedvig.resources.R
-import kotlinx.datetime.Clock
 import java.io.File
+import kotlinx.datetime.Clock
 
 @Composable
 internal fun AudioRecordingDestination(
   viewModel: AudioRecordingViewModel,
   windowSizeClass: WindowSizeClass,
   questions: List<String>,
+  openAppSettings: () -> Unit,
   navigateToNextStep: (ClaimFlowStep) -> Unit,
   navigateBack: () -> Unit,
 ) {
@@ -86,6 +87,7 @@ internal fun AudioRecordingDestination(
     play = viewModel::play,
     pause = viewModel::pause,
     showedError = viewModel::showedError,
+    openAppSettings = openAppSettings,
     navigateBack = navigateBack,
   )
 }
@@ -103,6 +105,7 @@ private fun AudioRecordingScreen(
   play: () -> Unit,
   pause: () -> Unit,
   showedError: () -> Unit,
+  openAppSettings: () -> Unit,
   navigateBack: () -> Unit,
 ) {
   Box(Modifier.fillMaxSize()) {
@@ -154,6 +157,7 @@ private fun AudioRecordingScreen(
           redo = redo,
           play = play,
           pause = pause,
+          openAppSettings = openAppSettings,
           modifier = sideSpacingModifier,
         )
         Spacer(Modifier.height(16.dp))
@@ -185,6 +189,7 @@ private fun AudioRecordingSection(
   redo: () -> Unit,
   play: () -> Unit,
   pause: () -> Unit,
+  openAppSettings: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val recordAudioPermissionState = rememberPermissionState(Manifest.permission.RECORD_AUDIO)
@@ -199,6 +204,7 @@ private fun AudioRecordingSection(
 
   AudioRecorder(
     uiState = uiState,
+    audioPermissionStatus = recordAudioPermissionState.status,
     startRecording = {
       when (recordAudioPermissionState.status) {
         PermissionStatus.Granted -> startRecording()
@@ -215,13 +221,16 @@ private fun AudioRecordingSection(
     stopRecordingText = stringResource(R.string.EMBARK_STOP_RECORDING),
     recordAgainText = stringResource(R.string.EMBARK_RECORD_AGAIN),
     submitClaimText = stringResource(R.string.general_continue_button),
+    openAppSettings = openAppSettings,
     modifier = modifier,
   )
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 private fun AudioRecorder(
   uiState: AudioRecordingUiState,
+  audioPermissionStatus: PermissionStatus,
   startRecording: () -> Unit,
   clock: Clock,
   stopRecording: () -> Unit,
@@ -233,34 +242,60 @@ private fun AudioRecorder(
   stopRecordingText: String,
   recordAgainText: String,
   submitClaimText: String,
+  openAppSettings: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  when (uiState) {
-    AudioRecordingUiState.NotRecording -> NotRecording(
-      startRecording = startRecording,
-      startRecordingText = startRecordingText,
-      modifier = modifier,
-    )
-    is AudioRecordingUiState.Recording -> Recording(
-      uiState = uiState,
-      stopRecording = stopRecording,
-      stopRecordingText = stopRecordingText,
-      clock = clock,
-      modifier = modifier,
-    )
-    is AudioRecordingUiState.Playback -> Playback(
-      uiState = uiState,
-      submit = {
-        val filePath = uiState.filePath
-        val audioFile = File(filePath)
-        submitAudioFile(audioFile)
-      },
-      submitClaimText = submitClaimText,
-      recordAgainText = recordAgainText,
-      redo = redo,
-      play = play,
-      pause = pause,
-      modifier = modifier,
+  when (audioPermissionStatus) {
+    is PermissionStatus.Denied -> {
+      DeniedMicrophonePermission(modifier, openAppSettings)
+    }
+    PermissionStatus.Granted -> {
+      when (uiState) {
+        AudioRecordingUiState.NotRecording -> NotRecording(
+          startRecording = startRecording,
+          startRecordingText = startRecordingText,
+          modifier = modifier,
+        )
+        is AudioRecordingUiState.Recording -> Recording(
+          uiState = uiState,
+          stopRecording = stopRecording,
+          stopRecordingText = stopRecordingText,
+          clock = clock,
+          modifier = modifier,
+        )
+        is AudioRecordingUiState.Playback -> Playback(
+          uiState = uiState,
+          submit = {
+            val filePath = uiState.filePath
+            val audioFile = File(filePath)
+            submitAudioFile(audioFile)
+          },
+          submitClaimText = submitClaimText,
+          recordAgainText = recordAgainText,
+          redo = redo,
+          play = play,
+          pause = pause,
+          modifier = modifier,
+        )
+      }
+    }
+  }
+}
+
+@Composable
+private fun DeniedMicrophonePermission(
+  modifier: Modifier = Modifier,
+  openAppSettings: () -> Unit,
+) {
+  Column(
+    horizontalAlignment = Alignment.CenterHorizontally,
+    modifier = modifier.fillMaxWidth(),
+  ) {
+    Text(stringResource(R.string.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE))
+    Spacer(Modifier.height(16.dp))
+    LargeContainedTextButton(
+      text = stringResource(R.string.SETTINGS_TITLE),
+      onClick = { openAppSettings() },
     )
   }
 }
