@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -18,6 +20,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -73,6 +76,10 @@ class SearchActivity : ComponentActivity() {
                 selectClaim = viewModel::onSelectClaim,
                 commonClaims = viewState.commonClaims,
               )
+            }
+
+            if (viewState.isLoading) {
+              CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
           }
         }
