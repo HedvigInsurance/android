@@ -34,6 +34,7 @@ import com.hedvig.android.odyssey.OdysseyClaimsFlowActivity
 import org.koin.android.ext.android.inject
 import com.hedvig.android.odyssey.search.ui.CommonClaims
 import org.koin.androidx.viewmodel.ext.android.getViewModel
+import hedvig.resources.R
 
 class SearchActivity : ComponentActivity() {
 
@@ -70,7 +71,7 @@ class SearchActivity : ComponentActivity() {
               )
 
               Text(
-                text = "Tell us what happened",
+                text = getString(R.string.CLAIM_TRIAGING_TITLE),
                 style = androidx.compose.material3.MaterialTheme.typography.displaySmall,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(22.dp),

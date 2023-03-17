@@ -118,7 +118,7 @@ class YourInfoAdapter(
               Modifier.padding(horizontal = 16.dp).padding(bottom = 8.dp),
             ) {
               CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.error) {
-                Text(stringResource(hedvig.resources.R.string.CANCEL_SUBSCRIPTION_BUTTON))
+                Text(stringResource(hedvig.resources.R.string.TERMINATION_BUTTON))
               }
             }
           }
