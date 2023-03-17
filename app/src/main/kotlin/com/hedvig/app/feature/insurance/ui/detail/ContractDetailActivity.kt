@@ -79,7 +79,7 @@ class ContractDetailActivity : AppCompatActivity(R.layout.contract_detail_activi
       }.attach()
       cardContainer.arrow.isInvisible = true
       cardContainer.card.transitionName = "contract_card"
-      error.onClick = { viewModel.loadContract(contractId) }
+      error.onClick = { viewModel.retryLoadingContract() }
 
       viewModel
         .viewState

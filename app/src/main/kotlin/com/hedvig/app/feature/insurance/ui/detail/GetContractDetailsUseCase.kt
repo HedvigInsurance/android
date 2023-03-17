@@ -4,6 +4,8 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.continuations.ensureNotNull
 import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.cache.normalized.FetchPolicy
+import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
@@ -21,6 +23,7 @@ class GetContractDetailsUseCase(
     return either {
       val data = apolloClient
         .query(InsuranceQuery(languageService.getGraphQLLocale()))
+        .fetchPolicy(FetchPolicy.NetworkOnly)
         .safeExecute()
         .toEither { ContractDetailError.NetworkError }
         .bind()
