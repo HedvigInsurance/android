@@ -2,7 +2,6 @@ package com.hedvig.android.odyssey.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.odyssey.model.ItemType
 import com.hedvig.android.odyssey.model.SearchableClaim
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
