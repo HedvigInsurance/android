@@ -66,7 +66,7 @@ class OdysseyClaimsFlowActivity : ComponentActivity() {
   companion object {
     private const val ROOT_URL = "/automation-claim"
     private const val ODYSSEY_URL_KEY = "com.hedvig.android.odyssey.ODYSSEY_URL_KEY"
-    private const val ENTRYPOINT_ID = "COMMON_CLAIM_ID"
+    private const val ENTRYPOINT_ID = "ENTRYPOINT_ID"
 
     fun newInstance(
       context: Context,

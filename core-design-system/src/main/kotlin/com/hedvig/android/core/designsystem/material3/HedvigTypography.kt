@@ -17,21 +17,21 @@ internal val HedvigTypography: Typography
   @Composable
   get() = Typography(
     displayLarge = MaterialTheme.typography.displayLarge.copy(
-      fontFamily = SerifBookSmall,
+      fontFamily = SansStandard,
       fontWeight = FontWeight.Normal,
       fontSize = 57.sp,
       lineHeight = 64.sp,
       letterSpacing = (-1f).percentage.em,
     ),
     displayMedium = MaterialTheme.typography.displayMedium.copy(
-      fontFamily = SerifBookSmall,
+      fontFamily = SansStandard,
       fontWeight = FontWeight.Normal,
       fontSize = 45.sp,
       lineHeight = 52.sp,
       letterSpacing = (-0.5f).percentage.em,
     ),
     displaySmall = MaterialTheme.typography.displaySmall.copy(
-      fontFamily = SerifBookSmall,
+      fontFamily = SansStandard,
       fontWeight = FontWeight.Normal,
       fontSize = 36.sp,
       lineHeight = 44.sp,

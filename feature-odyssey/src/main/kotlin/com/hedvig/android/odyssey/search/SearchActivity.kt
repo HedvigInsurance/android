@@ -22,6 +22,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.auth.android.AuthenticatedObserver
@@ -72,7 +74,11 @@ class SearchActivity : ComponentActivity() {
 
               Text(
                 text = getString(R.string.CLAIM_TRIAGING_TITLE),
-                style = androidx.compose.material3.MaterialTheme.typography.displaySmall,
+                style = androidx.compose.material3.MaterialTheme.typography.displaySmall.copy(
+                  fontFamily = FontFamily(
+                    Font(R.font.hedvig_letters_small),
+                  ),
+                ),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(22.dp),
               )

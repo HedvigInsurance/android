@@ -22,6 +22,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.odyssey.model.ItemType
 import com.hedvig.android.odyssey.model.SearchableClaim
+import java.util.*
 
 @Composable
 internal fun CommonClaims(
@@ -61,7 +62,7 @@ internal fun CommonClaims(
                 contentDescription = "Arrow",
               )
             }
-            if (index < commonClaims.size - 1) {
+            if (index < commonClaims.lastIndex) {
               Divider(Modifier.padding(horizontal = 8.dp))
             }
           }
@@ -79,32 +80,32 @@ fun PreviewCommonClaims() {
       selectClaim = {},
       commonClaims = listOf(
         SearchableClaim(
-          entryPointId = "1",
+          entryPointId = UUID.randomUUID().toString(),
           displayName = "Broken phone",
           itemType = ItemType("PHONE"),
         ),
         SearchableClaim(
-          entryPointId = "4",
+          entryPointId = UUID.randomUUID().toString(),
           displayName = "Stolen phone",
           itemType = ItemType(""),
         ),
         SearchableClaim(
-          entryPointId = "2",
+          entryPointId = UUID.randomUUID().toString(),
           displayName = "Broken computer",
           itemType = ItemType("COMPUTER"),
         ),
         SearchableClaim(
-          entryPointId = "4",
+          entryPointId = UUID.randomUUID().toString(),
           displayName = "Stolen computer",
           itemType = ItemType(""),
         ),
         SearchableClaim(
-          entryPointId = "4",
+          entryPointId = UUID.randomUUID().toString(),
           displayName = "Broken headphones",
           itemType = ItemType(""),
         ),
         SearchableClaim(
-          entryPointId = "4",
+          entryPointId = UUID.randomUUID().toString(),
           displayName = "Stolen headphones",
           itemType = ItemType(""),
         ),
