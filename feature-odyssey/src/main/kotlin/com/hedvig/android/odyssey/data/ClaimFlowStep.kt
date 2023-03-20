@@ -176,7 +176,7 @@ internal fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
         availableCheckoutMethods,
       )
     }
-    is ClaimFlowStep.ClaimSuccessStep -> ClaimFlowDestination.SingleItemPayout
+    is ClaimFlowStep.ClaimSuccessStep -> ClaimFlowDestination.ClaimSuccess
     is ClaimFlowStep.ClaimFailedStep -> ClaimFlowDestination.Failure
     is ClaimFlowStep.UnknownStep -> ClaimFlowDestination.UnknownScreen
   }
