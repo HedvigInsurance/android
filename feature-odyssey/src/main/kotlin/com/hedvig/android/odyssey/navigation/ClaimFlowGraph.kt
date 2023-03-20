@@ -28,7 +28,6 @@ import com.hedvig.android.odyssey.step.manualhandling.ManualHandlingDestination
 import com.hedvig.android.odyssey.step.phonenumber.PhoneNumberDestination
 import com.hedvig.android.odyssey.step.phonenumber.PhoneNumberViewModel
 import com.hedvig.android.odyssey.step.singleitem.SingleItemDestination
-import com.hedvig.android.odyssey.step.singleitem.SingleItemViewModel
 import com.hedvig.android.odyssey.step.singleitempayout.ClaimSuccessDestination
 import com.hedvig.android.odyssey.step.start.ClaimFlowStartDestination
 import com.hedvig.android.odyssey.step.start.ClaimFlowStartStepViewModel
