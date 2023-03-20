@@ -16,18 +16,8 @@ internal class SearchViewModel(
   init {
     viewModelScope.launch {
       when (val result = getClaimEntryPoints.invoke()) {
-        is CommonClaimsResult.Error -> _viewState.update {
-          it.copy(
-            errorMessage = result.message,
-            isLoading = false,
-          )
-        }
-        is CommonClaimsResult.Success -> _viewState.update {
-          it.copy(
-            commonClaims = result.searchableClaims,
-            isLoading = false,
-          )
-        }
+        is CommonClaimsResult.Error -> _viewState.update { it.copy(errorMessage = result.message, isLoading = false) }
+        is CommonClaimsResult.Success -> _viewState.update { it.copy(commonClaims = result.searchableClaims, isLoading = false) }
       }
     }
   }

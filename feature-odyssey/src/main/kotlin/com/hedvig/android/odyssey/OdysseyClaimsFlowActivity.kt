@@ -13,7 +13,7 @@ import com.hedvig.odyssey.datadog.DatadogProvider
 import com.hedvig.odyssey.remote.actions.CHAT_URL
 import com.hedvig.odyssey.remote.actions.CLOSE_URL
 import com.hedvig.odyssey.remote.scopes.ScopeValues
-import com.hedvig.odyssey.remote.scopes.keys.CommonClaimIdScopeValueKey
+import com.hedvig.odyssey.remote.scopes.keys.EntrypointIdScopeValueKey
 import com.hedvig.odyssey.ui.OdysseyRoot
 import org.koin.android.ext.android.inject
 
@@ -28,12 +28,12 @@ class OdysseyClaimsFlowActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     lifecycle.addObserver(AuthenticatedObserver())
     val odysseyUrl = intent.getStringExtra(ODYSSEY_URL_KEY) ?: error("ODYSSEY_URL_KEY needs to be passed in")
-    val commonClaimId = intent.getStringExtra(COMMON_CLAIM_ID)
+    val entryPointId = intent.getStringExtra(ENTRYPOINT_ID)
 
     val scopeValues = ScopeValues()
     scopeValues.setValue(
-      CommonClaimIdScopeValueKey,
-      commonClaimId,
+      EntrypointIdScopeValueKey,
+      entryPointId,
     )
 
     setContent {
@@ -66,16 +66,16 @@ class OdysseyClaimsFlowActivity : ComponentActivity() {
   companion object {
     private const val ROOT_URL = "/automation-claim"
     private const val ODYSSEY_URL_KEY = "com.hedvig.android.odyssey.ODYSSEY_URL_KEY"
-    private const val COMMON_CLAIM_ID = "COMMON_CLAIM_ID"
+    private const val ENTRYPOINT_ID = "ENTRYPOINT_ID"
 
     fun newInstance(
       context: Context,
       odysseyUrl: String,
-      commonClaimId: String?,
+      entryPointId: String?,
     ): Intent {
       return Intent(context, OdysseyClaimsFlowActivity::class.java)
         .putExtra(ODYSSEY_URL_KEY, odysseyUrl)
-        .putExtra(COMMON_CLAIM_ID, commonClaimId)
+        .putExtra(ENTRYPOINT_ID, entryPointId)
     }
   }
 }

@@ -1,7 +1,7 @@
 package com.hedvig.android.odyssey.model
 
 data class SearchableClaim(
-  val id: String,
+  val entryPointId: String,
   val displayName: String,
   val itemType: ItemType? = null,
   val itemProblem: ItemProblem? = null,
