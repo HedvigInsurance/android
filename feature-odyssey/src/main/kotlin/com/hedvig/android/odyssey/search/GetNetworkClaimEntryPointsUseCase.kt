@@ -46,7 +46,7 @@ internal class GetNetworkClaimEntryPointsUseCase(
 
 private fun List<ClaimEntryPointDTO>.toSearchableClaims() = map {
   SearchableClaim(
-    id = it.id,
+    entryPointId = it.id,
     displayName = it.displayName,
     icon = null,
     itemType = ItemType(""),
@@ -54,7 +54,7 @@ private fun List<ClaimEntryPointDTO>.toSearchableClaims() = map {
   )
 }
 
-private const val NR_OF_ENTRYPOINTS = "10"
+private const val NR_OF_ENTRYPOINTS = "20"
 
 @Serializable
 internal data class ClaimEntryPointDTO(
