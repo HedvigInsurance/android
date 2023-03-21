@@ -2,12 +2,14 @@ package com.hedvig.app.feature.insurance.ui.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import arrow.core.Either
+import com.hedvig.android.core.common.RetryChannel
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.WhileSubscribed
+import kotlinx.coroutines.flow.stateIn
 
 class ContractDetailViewModel(
   contractId: String,
@@ -20,21 +22,25 @@ class ContractDetailViewModel(
     object Loading : ViewState()
   }
 
-  private val _viewState = MutableStateFlow<ViewState>(ViewState.Loading)
-  val viewState = _viewState.asStateFlow()
-
   init {
     hAnalytics.screenView(AppScreen.INSURANCE_DETAIL)
-    loadContract(contractId)
   }
 
-  fun loadContract(id: String) {
-    viewModelScope.launch {
-      val viewState = when (val insurance = getContractDetailsUseCase.invoke(id)) {
-        is Either.Left -> ViewState.Error
-        is Either.Right -> ViewState.Success(insurance.value)
-      }
-      _viewState.value = viewState
+  private val retryChannel = RetryChannel()
+  val viewState: StateFlow<ViewState> = retryChannel
+    .mapLatest {
+      getContractDetailsUseCase.invoke(contractId).fold(
+        ifLeft = { ViewState.Error },
+        ifRight = { ViewState.Success(it) },
+      )
     }
+    .stateIn(
+      viewModelScope,
+      SharingStarted.WhileSubscribed(5.seconds),
+      ViewState.Loading,
+    )
+
+  fun retryLoadingContract() {
+    retryChannel.retry()
   }
 }
