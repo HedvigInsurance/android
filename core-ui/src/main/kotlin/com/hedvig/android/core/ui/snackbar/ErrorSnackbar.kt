@@ -20,3 +20,23 @@ fun ErrorSnackbar(hasError: Boolean, showedError: () -> Unit, modifier: Modifier
   }
   SnackbarHost(snackbarHostState, modifier)
 }
+
+@Composable
+fun ErrorSnackbar(
+  errorSnackbarState: ErrorSnackbarState,
+  modifier: Modifier = Modifier,
+) {
+  val snackbarHostState = remember { SnackbarHostState() }
+  val somethingWentWrongText = stringResource(R.string.something_went_wrong)
+  LaunchedEffect(errorSnackbarState.error) {
+    if (!errorSnackbarState.error) return@LaunchedEffect
+    snackbarHostState.showSnackbar(somethingWentWrongText)
+    errorSnackbarState.showedError()
+  }
+  SnackbarHost(snackbarHostState, modifier)
+}
+
+class ErrorSnackbarState(
+  val error: Boolean,
+  val showedError: () -> Unit,
+)

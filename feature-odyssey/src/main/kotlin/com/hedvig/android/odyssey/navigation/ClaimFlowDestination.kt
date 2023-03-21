@@ -66,7 +66,7 @@ internal sealed interface ClaimFlowDestination : Destination {
   ) : ClaimFlowDestination
 
   @Serializable
-  object SingleItemPayout : ClaimFlowDestination
+  object ClaimSuccess : ClaimFlowDestination
 
   @Serializable
   object ManualHandling : ClaimFlowDestination // todo which step is this?

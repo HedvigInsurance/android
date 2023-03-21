@@ -1,4 +1,4 @@
-package com.hedvig.android.odyssey.step.unknown
+package com.hedvig.android.odyssey.step.unknownscreen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

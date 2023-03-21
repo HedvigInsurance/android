@@ -16,8 +16,9 @@ class ApolloConventionPlugin : Plugin<Project> {
         doLast {
           val schemaPath = schema.get()
           val schemaFile = file(schemaPath)
-          val textWithoutDoubleLineBreaks = schemaFile.readText().replace("\n\n", "\n")
-          schemaFile.writeText(textWithoutDoubleLineBreaks)
+          val schemaText = schemaFile.readText()
+          val convertedSchema = schemaText.performClientSideChanges()
+          schemaFile.writeText(convertedSchema)
         }
       }
 
@@ -31,4 +32,15 @@ class ApolloConventionPlugin : Plugin<Project> {
       }
     }
   }
+}
+
+private fun String.performClientSideChanges(): String {
+  return this.withoutDoubleLineBreaks()
+}
+
+/**
+ * Just so the schema looks more neat and is easier to navigate without all the extra whitespace
+ */
+private fun String.withoutDoubleLineBreaks(): String {
+  return replace("\n\n", "\n")
 }
