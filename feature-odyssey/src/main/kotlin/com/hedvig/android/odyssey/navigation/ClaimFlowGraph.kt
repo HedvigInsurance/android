@@ -2,7 +2,9 @@ package com.hedvig.android.odyssey.navigation
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.Density
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import coil.ImageLoader
@@ -62,6 +64,7 @@ internal fun NavGraphBuilder.claimFlowGraph(
       )
     }
     animatedComposable<ClaimFlowDestination.AudioRecording> {
+      ClaimFlowBackHandler(navController, finishClaimFlow)
       val viewModel: AudioRecordingViewModel = koinViewModel { parametersOf(flowId) }
       AudioRecordingDestination(
         viewModel = viewModel,
@@ -76,6 +79,7 @@ internal fun NavGraphBuilder.claimFlowGraph(
       )
     }
     animatedComposable<ClaimFlowDestination.DateOfOccurrence> {
+      ClaimFlowBackHandler(navController, finishClaimFlow)
       val viewModel: DateOfOccurrenceViewModel = koinViewModel { parametersOf(dateOfOccurrence, maxDate) }
       DateOfOccurrenceDestination(
         viewModel = viewModel,
@@ -88,6 +92,7 @@ internal fun NavGraphBuilder.claimFlowGraph(
       )
     }
     animatedComposable<ClaimFlowDestination.DateOfOccurrencePlusLocation> {
+      ClaimFlowBackHandler(navController, finishClaimFlow)
       val viewModel: DateOfOccurrencePlusLocationViewModel = koinViewModel {
         parametersOf(dateOfOccurrence, maxDate, selectedLocation, locationOptions)
       }
@@ -102,6 +107,7 @@ internal fun NavGraphBuilder.claimFlowGraph(
       )
     }
     animatedComposable<ClaimFlowDestination.Location> {
+      ClaimFlowBackHandler(navController, finishClaimFlow)
       val viewModel: LocationViewModel = koinViewModel { parametersOf(selectedLocation, locationOptions) }
       LocationDestination(
         viewModel = viewModel,
@@ -114,6 +120,7 @@ internal fun NavGraphBuilder.claimFlowGraph(
       )
     }
     animatedComposable<ClaimFlowDestination.PhoneNumber> {
+      ClaimFlowBackHandler(navController, finishClaimFlow)
       val viewModel: PhoneNumberViewModel = koinViewModel { parametersOf(phoneNumber) }
       PhoneNumberDestination(
         viewModel = viewModel,
@@ -131,12 +138,14 @@ internal fun NavGraphBuilder.claimFlowGraph(
 //      ClaimSummaryDestination(imageLoader = imageLoader)
 //    }
     animatedComposable<ClaimFlowDestination.SingleItem> {
+      ClaimFlowBackHandler(navController, finishClaimFlow)
 //      val viewModel: SingleItemViewModel = koinViewModel()
       SingleItemDestination(
         imageLoader = imageLoader,
       )
     }
     animatedComposable<ClaimFlowDestination.SingleItemPayout> {
+      ClaimFlowBackHandler(navController, finishClaimFlow)
       SingleItemPayoutDestination()
     }
     animatedComposable<ClaimFlowDestination.ManualHandling> {
@@ -153,5 +162,22 @@ internal fun NavGraphBuilder.claimFlowGraph(
         navigateBack = finishClaimFlow,
       )
     }
+  }
+}
+
+/**
+ * If the previous entry is the start step, which is meant to only start the flow and move to the next step, skip that
+ * and finish the entire flow instead.
+ * This workaround should be deleted once and if this ever becomes part of another navigation graph and the start step
+ * can be skipped.
+ */
+@Composable
+private fun ClaimFlowBackHandler(navController: NavController, finishClaimFlow: () -> Unit) {
+  val shouldFinishFlowOnBack = run {
+    val previousBackstackEntryRoute = navController.previousBackStackEntry?.destination?.route
+    previousBackstackEntryRoute == createRoutePattern<ClaimFlowDestination.StartStep>()
+  }
+  BackHandler(shouldFinishFlowOnBack) {
+    finishClaimFlow()
   }
 }
