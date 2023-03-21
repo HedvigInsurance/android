@@ -13,6 +13,8 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,7 +61,7 @@ internal fun CommonClaims(
             ) {
               Text(claim.displayName, Modifier.align(Alignment.CenterVertically))
               Icon(
-                painter = painterResource(id = R.drawable.ic_arrow_forward),
+                imageVector = Icons.Default.ArrowForward,
                 contentDescription = "Arrow",
               )
             }
