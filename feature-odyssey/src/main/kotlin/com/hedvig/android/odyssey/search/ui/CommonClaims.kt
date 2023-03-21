@@ -13,6 +13,8 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,6 +25,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.odyssey.model.ItemType
 import com.hedvig.android.odyssey.model.SearchableClaim
 import java.util.*
+import hedvig.resources.R
 
 @Composable
 internal fun CommonClaims(
@@ -58,7 +61,7 @@ internal fun CommonClaims(
             ) {
               Text(claim.displayName, Modifier.align(Alignment.CenterVertically))
               Icon(
-                painter = painterResource(id = com.hedvig.android.odyssey.R.drawable.ic_list_item_indicator),
+                imageVector = Icons.Default.ArrowForward,
                 contentDescription = "Arrow",
               )
             }
