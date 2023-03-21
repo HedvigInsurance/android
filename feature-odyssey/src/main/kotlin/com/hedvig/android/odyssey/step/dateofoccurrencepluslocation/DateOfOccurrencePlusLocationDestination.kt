@@ -40,6 +40,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,6 +56,7 @@ import com.hedvig.android.core.designsystem.component.button.LargeContainedTextB
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
+import com.hedvig.android.core.ui.progress.FullScreenHedvigProgress
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbar
 import com.hedvig.android.odyssey.data.ClaimFlowStep
 import com.hedvig.android.odyssey.navigation.LocationOption
@@ -146,6 +148,7 @@ private fun DateOfOccurrencePlusLocationScreen(
         )
       }
     }
+    FullScreenHedvigProgress(show = uiState.isLoading)
     ErrorSnackbar(
       hasError = uiState.error,
       showedError = showedError,
@@ -163,7 +166,7 @@ private fun DateOfIncident(
   dateValidator: (Long) -> Boolean,
   modifier: Modifier = Modifier,
 ) {
-  var showDatePicker by remember { mutableStateOf(false) }
+  var showDatePicker by rememberSaveable { mutableStateOf(false) }
   if (showDatePicker) {
     Dialog(onDismissRequest = { showDatePicker = false }) {
       Surface(
@@ -204,7 +207,9 @@ private fun DateOfIncident(
   HedvigCard(
     modifier = modifier.heightIn(min = 64.dp),
     onClick = {
-      showDatePicker = !showDatePicker
+      if (!uiState.isLoading) {
+        showDatePicker = true
+      }
     },
   ) {
     Row(
@@ -231,7 +236,6 @@ private fun DateOfIncident(
         }
         Text(
           text = dateText,
-          // Take the same-ish space even if there is no selection
           modifier = Modifier
             .padding(12.dp)
             .alpha(if (selectedDateMillis != null) 1f else 0f),
@@ -247,7 +251,7 @@ private fun Location(
   selectLocationOption: (LocationOption) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  var showLocationPickerDialog by remember { mutableStateOf(false) }
+  var showLocationPickerDialog by rememberSaveable { mutableStateOf(false) }
   if (showLocationPickerDialog) {
     AlertDialog(
       onDismissRequest = { showLocationPickerDialog = false },
@@ -298,7 +302,9 @@ private fun Location(
   HedvigCard(
     modifier = modifier,
     onClick = {
-      showLocationPickerDialog = true
+      if (!uiState.isLoading) {
+        showLocationPickerDialog = true
+      }
     },
   ) {
     Row(

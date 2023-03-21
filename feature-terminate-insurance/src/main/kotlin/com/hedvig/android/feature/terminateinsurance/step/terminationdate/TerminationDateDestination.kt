@@ -41,6 +41,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.preview.calculateForPreview
+import com.hedvig.android.core.ui.progress.FullScreenHedvigProgress
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbar
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 
@@ -52,37 +53,30 @@ internal fun TerminationDateDestination(
   navigateBack: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  val nextStep = uiState.nextStep
+  LaunchedEffect(nextStep) {
+    if (nextStep == null) return@LaunchedEffect
+    navigateToNextStep(nextStep)
+  }
   TerminationDateScreen(
+    uiState = uiState,
     windowSizeClass = windowSizeClass,
-    datePickerState = uiState.datePickerState,
-    nextStep = uiState.nextStep,
     dateValidator = viewModel.dateValidator,
-    canSubmit = uiState.canContinue,
     submit = viewModel::submitSelectedDate,
-    hasError = uiState.dateSubmissionError,
     showedError = viewModel::showedError,
-    navigateToNextStep = navigateToNextStep,
     navigateBack = navigateBack,
   )
 }
 
 @Composable
 private fun TerminationDateScreen(
+  uiState: TerminateInsuranceUiState,
   windowSizeClass: WindowSizeClass,
-  datePickerState: DatePickerState,
-  nextStep: TerminateInsuranceStep?,
   dateValidator: (Long) -> Boolean,
-  canSubmit: Boolean,
   submit: () -> Unit,
-  hasError: Boolean,
   showedError: () -> Unit,
-  navigateToNextStep: (TerminateInsuranceStep) -> Unit,
   navigateBack: () -> Unit,
 ) {
-  LaunchedEffect(nextStep) {
-    if (nextStep == null) return@LaunchedEffect
-    navigateToNextStep(nextStep)
-  }
   Box(Modifier.fillMaxSize()) {
     Column {
       val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -111,7 +105,7 @@ private fun TerminationDateScreen(
         Spacer(Modifier.height(20.dp))
         Spacer(Modifier.weight(1f))
         DatePickerCard(
-          datePickerState = datePickerState,
+          datePickerState = uiState.datePickerState,
           dateValidator = dateValidator,
           modifier = sideSpacingModifier,
         )
@@ -119,7 +113,7 @@ private fun TerminationDateScreen(
         LargeContainedTextButton(
           text = stringResource(hedvig.resources.R.string.general_continue_button),
           onClick = submit,
-          enabled = canSubmit,
+          enabled = uiState.canSubmit,
           modifier = sideSpacingModifier,
         )
         Spacer(Modifier.height(16.dp))
@@ -130,8 +124,9 @@ private fun TerminationDateScreen(
         )
       }
     }
+    FullScreenHedvigProgress(show = uiState.isLoading)
     ErrorSnackbar(
-      hasError = hasError,
+      hasError = uiState.dateSubmissionError,
       showedError = showedError,
       modifier = Modifier
         .align(Alignment.BottomCenter)
@@ -176,16 +171,13 @@ private fun PreviewTerminationDateScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       TerminationDateScreen(
+        TerminateInsuranceUiState(rememberDatePickerState(), false, null, false),
         WindowSizeClass.calculateForPreview(),
-        rememberDatePickerState(),
-        null,
         { true },
-        true,
-        {},
-        false,
         {},
         {},
-      ) {}
+        {},
+      )
     }
   }
 }

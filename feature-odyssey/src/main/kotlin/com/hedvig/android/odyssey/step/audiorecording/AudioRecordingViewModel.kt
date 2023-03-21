@@ -34,11 +34,12 @@ internal class AudioRecordingViewModel(
   fun submitAudioFile(audioFile: File) {
     val uiState = _uiState.value as? AudioRecordingUiState.Playback ?: return
     if (uiState.hasError || uiState.isLoading) return
+    _uiState.update { uiState.copy(isLoading = true) }
     viewModelScope.launch {
       claimFlowRepository.submitAudioRecording(flowId, audioFile).fold(
         ifLeft = {
           _uiState.update {
-            uiState.copy(hasError = true)
+            uiState.copy(isLoading = false, hasError = true)
           }
         },
         ifRight = { claimFlowStep ->
@@ -145,9 +146,8 @@ internal class AudioRecordingViewModel(
     if (currentState !is AudioRecordingUiState.Playback) {
       throw IllegalStateException("Must be in Playback-state to play")
     }
-    if (!currentState.isPrepared) {
-      return
-    }
+    if (currentState.isLoading) return
+    if (!currentState.isPrepared) return
     timer = Timer()
     timer?.schedule(
       timerTask {
@@ -213,8 +213,8 @@ internal sealed class AudioRecordingUiState {
   val hasAudioSubmissionError: Boolean
     get() = this is Playback && hasError
 
-  val canSubmit: Boolean // todo use this to disable interactions on the buttons
-    get() = this is Playback && !this.isPlaying && this.nextStep == null && !isLoading && !hasError
+  val canSubmit: Boolean
+    get() = this is Playback && !isPlaying && nextStep == null && !isLoading && !hasError
 
   object NotRecording : AudioRecordingUiState()
   data class Recording(

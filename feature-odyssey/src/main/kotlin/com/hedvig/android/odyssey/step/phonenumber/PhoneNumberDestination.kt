@@ -120,6 +120,7 @@ private fun PhoneNumberScreen(
           label = {
             Text(stringResource(R.string.ODYSSEY_PHONE_NUMBER_LABEL))
           },
+          enabled = uiState.status != PhoneNumberUiState.Status.LOADING,
           placeholder = { Text("070000000") },
           keyboardOptions = KeyboardOptions(
             autoCorrect = false,
