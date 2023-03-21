@@ -1,12 +1,12 @@
-package com.hedvig.android.feature.terminateinsurance.step.terminationdate
+package com.hedvig.android.odyssey.step.dateofoccurrence
 
 import androidx.compose.material3.DatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
-import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
+import com.hedvig.android.odyssey.data.ClaimFlowRepository
+import com.hedvig.android.odyssey.data.ClaimFlowStep
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,23 +18,23 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toLocalDateTime
 
-internal class TerminationDateViewModel(
-  minDate: LocalDate,
+internal class DateOfOccurrenceViewModel(
+  initialDateOfOccurrence: LocalDate?,
   maxDate: LocalDate,
-  private val terminateInsuranceRepository: TerminateInsuranceRepository,
+  private val claimFlowRepository: ClaimFlowRepository,
 ) : ViewModel() {
-  private val datePickerConfiguration = DatePickerConfiguration(minDate, maxDate)
+  private val datePickerConfiguration = DatePickerConfiguration(initialDateOfOccurrence, maxDate)
   val dateValidator = datePickerConfiguration.dateValidator
 
-  private val _uiState: MutableStateFlow<TerminateInsuranceUiState> = MutableStateFlow(
-    TerminateInsuranceUiState(
+  private val _uiState: MutableStateFlow<DateOfOccurrenceUiState> = MutableStateFlow(
+    DateOfOccurrenceUiState(
       datePickerState = datePickerConfiguration.datePickerState,
       dateSubmissionError = false,
       nextStep = null,
       isLoading = false,
     ),
   )
-  val uiState: StateFlow<TerminateInsuranceUiState> = _uiState.asStateFlow()
+  val uiState: StateFlow<DateOfOccurrenceUiState> = _uiState.asStateFlow()
 
   fun submitSelectedDate() {
     val uiState = _uiState.value
@@ -43,7 +43,7 @@ internal class TerminationDateViewModel(
     _uiState.update { it.copy(isLoading = true) }
     val selectedDate = Instant.fromEpochMilliseconds(selectedDateMillis).toLocalDateTime(TimeZone.UTC).date
     viewModelScope.launch {
-      terminateInsuranceRepository.setTerminationDate(selectedDate).fold(
+      claimFlowRepository.submitDateOfOccurrence(selectedDate).fold(
         ifLeft = {
           _uiState.update {
             it.copy(
@@ -52,10 +52,10 @@ internal class TerminationDateViewModel(
             )
           }
         },
-        ifRight = { terminateInsuranceStep: TerminateInsuranceStep ->
+        ifRight = { claimFlowStep: ClaimFlowStep ->
           _uiState.update {
             it.copy(
-              nextStep = terminateInsuranceStep,
+              nextStep = claimFlowStep,
               isLoading = false,
             )
           }
@@ -77,21 +77,26 @@ internal class TerminationDateViewModel(
   }
 }
 
-private class DatePickerConfiguration(minDate: LocalDate, maxDate: LocalDate) {
+private class DatePickerConfiguration(dateOfOccurrence: LocalDate?, maxDate: LocalDate) {
+  private val minDate = LocalDate(1900, 1, 1)
   private val minDateInMillis = minDate.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
   private val maxDateInMillis = maxDate.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
   private val yearsRange = minDate.year..maxDate.year
 
-  val datePickerState = DatePickerState(null, null, yearsRange)
+  val datePickerState = DatePickerState(
+    initialSelectedDateMillis = dateOfOccurrence?.atStartOfDayIn(TimeZone.UTC)?.toEpochMilliseconds(),
+    initialDisplayedMonthMillis = null,
+    yearsRange = yearsRange,
+  )
   val dateValidator: (Long) -> Boolean = { selectedDateEpochMillis ->
     selectedDateEpochMillis in minDateInMillis..maxDateInMillis
   }
 }
 
-internal data class TerminateInsuranceUiState(
+internal data class DateOfOccurrenceUiState(
   val datePickerState: DatePickerState,
   val dateSubmissionError: Boolean,
-  val nextStep: TerminateInsuranceStep?,
+  val nextStep: ClaimFlowStep?,
   val isLoading: Boolean,
 ) {
   val canContinue: Boolean
@@ -104,7 +109,7 @@ internal data class TerminateInsuranceUiState(
     ) { canSubmitSelectedDate() }
 }
 
-private fun TerminateInsuranceUiState.canSubmitSelectedDate(): Boolean {
+private fun DateOfOccurrenceUiState.canSubmitSelectedDate(): Boolean {
   return datePickerState.selectedDateMillis != null &&
     !dateSubmissionError &&
     nextStep == null &&

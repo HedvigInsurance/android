@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.terminateinsurance
+package com.hedvig.android.odyssey
 
 import android.content.Context
 import android.content.Intent
@@ -10,15 +10,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
+import coil.ImageLoader
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceNavHost
 import com.hedvig.android.navigation.activity.Navigator
+import com.hedvig.android.odyssey.navigation.ClaimFlowNavHost
 import org.koin.android.ext.android.inject
 
-class TerminateInsuranceActivity : AppCompatActivity() {
+class ClaimFlowActivity : AppCompatActivity() {
 
+  private val imageLoader: ImageLoader by inject()
   private val activityNavigator: Navigator by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,22 +28,21 @@ class TerminateInsuranceActivity : AppCompatActivity() {
     lifecycle.addObserver(AuthenticatedObserver())
     WindowCompat.setDecorFitsSystemWindows(window, false)
 
-    val insuranceId = intent.getStringExtra(INSURANCE_ID)?.let(::InsuranceId)
-      ?: error("Can't open TerminateInsuranceActivity without an insurance ID")
+    val commonClaimId: String? = intent.getStringExtra(COMMON_CLAIM_ID)
 
     setContent {
       HedvigTheme {
         Box(Modifier.fillMaxSize(), propagateMinConstraints = true) {
-          TerminateInsuranceNavHost(
-            windowSizeClass = calculateWindowSizeClass(this@TerminateInsuranceActivity),
+          ClaimFlowNavHost(
+            windowSizeClass = calculateWindowSizeClass(this@ClaimFlowActivity),
             navController = rememberAnimatedNavController(),
-            insuranceId = insuranceId,
+            imageLoader = imageLoader,
+            entryPointId = commonClaimId,
             openChat = {
               onSupportNavigateUp()
-              activityNavigator.navigateToChat(this@TerminateInsuranceActivity)
+              activityNavigator.navigateToChat(this@ClaimFlowActivity)
             },
-            navigateUp = { onSupportNavigateUp() },
-            finishTerminationFlow = { finish() },
+            navigateUp = ::onSupportNavigateUp,
           )
         }
       }
@@ -49,11 +50,14 @@ class TerminateInsuranceActivity : AppCompatActivity() {
   }
 
   companion object {
-    private const val INSURANCE_ID = "com.hedvig.android.feature.terminateinsurance.INSURANCE_ID"
+    private const val COMMON_CLAIM_ID = "COMMON_CLAIM_ID"
 
-    fun newInstance(context: Context, insuranceId: String): Intent {
-      return Intent(context, TerminateInsuranceActivity::class.java)
-        .putExtra(INSURANCE_ID, insuranceId)
+    fun newInstance(
+      context: Context,
+      commonClaimId: String?,
+    ): Intent {
+      return Intent(context, ClaimFlowActivity::class.java)
+        .putExtra(COMMON_CLAIM_ID, commonClaimId)
     }
   }
 }

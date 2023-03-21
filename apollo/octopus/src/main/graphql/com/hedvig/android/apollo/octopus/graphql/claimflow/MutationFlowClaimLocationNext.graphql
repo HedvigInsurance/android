@@ -1,0 +1,7 @@
+mutation FlowClaimLocationNext($location: ID, $context: FlowContext!) {
+  flowClaimLocationNext(input: { location: $location }, context: $context) {
+    id
+    context
+    ...ClaimFlowStepFragment
+  }
+}

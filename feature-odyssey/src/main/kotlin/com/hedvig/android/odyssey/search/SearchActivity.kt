@@ -31,8 +31,8 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.CenterAlignedTopAppBar
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
-import com.hedvig.android.odyssey.ClaimsFlowActivity
-import com.hedvig.android.odyssey.OdysseyClaimsFlowActivity
+import com.hedvig.android.odyssey.ClaimFlowActivity
+import com.hedvig.android.odyssey.sdui.OdysseyClaimsFlowActivity
 import org.koin.android.ext.android.inject
 import com.hedvig.android.odyssey.search.ui.CommonClaims
 import org.koin.androidx.viewmodel.ext.android.getViewModel
@@ -43,7 +43,7 @@ class SearchActivity : ComponentActivity() {
   private val featureManager: FeatureManager by inject()
 
   private val odysseyUrl by lazy {
-    intent.getStringExtra(ODYSSEY_URL) ?: throw java.lang.IllegalArgumentException("No url found")
+    intent.getStringExtra(ODYSSEY_URL) ?: throw IllegalArgumentException("No url found")
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -108,7 +108,7 @@ class SearchActivity : ComponentActivity() {
 
   private suspend fun createClaimsFlowIntent(entryPointId: String?) =
     if (featureManager.isFeatureEnabled(Feature.USE_NATIVE_CLAIMS_FLOW)) {
-      ClaimsFlowActivity.newInstance(this, entryPointId)
+      ClaimFlowActivity.newInstance(this, entryPointId)
     } else {
       OdysseyClaimsFlowActivity.newInstance(
         context = this,

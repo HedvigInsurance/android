@@ -37,7 +37,7 @@ internal fun TerminationFailureDestination(
 }
 
 @Composable
-internal fun TerminationFailureScreen(
+private fun TerminationFailureScreen(
   windowSizeClass: WindowSizeClass,
   errorMessage: ErrorMessage,
   openChat: () -> Unit,
