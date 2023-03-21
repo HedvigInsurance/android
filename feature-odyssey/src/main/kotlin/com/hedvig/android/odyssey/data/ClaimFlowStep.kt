@@ -1,8 +1,12 @@
 package com.hedvig.android.odyssey.data
 
 import com.hedvig.android.odyssey.model.FlowId
+import com.hedvig.android.odyssey.navigation.AvailableItemBrand
+import com.hedvig.android.odyssey.navigation.AvailableItemModel
+import com.hedvig.android.odyssey.navigation.AvailableItemProblem
 import com.hedvig.android.odyssey.navigation.ClaimFlowDestination
 import com.hedvig.android.odyssey.navigation.LocationOption
+import com.hedvig.android.odyssey.navigation.UiMoney
 import kotlinx.datetime.LocalDate
 import octopus.fragment.ClaimFlowStepFragment
 import octopus.fragment.MoneyFragment
@@ -42,7 +46,7 @@ internal sealed interface ClaimFlowStep {
     override val flowId: FlowId,
     val preferredCurrency: CurrencyCode,
     val purchaseDate: LocalDate?,
-    val purchasePrice: ClaimFlowStepFragment.FlowClaimSingleItemStepCurrentStep.PurchasePrice?,
+    val purchasePrice: MoneyFragment?,
     val availableItemBrands: List<ClaimFlowStepFragment.FlowClaimSingleItemStepCurrentStep.AvailableItemBrand>?,
     val selectedItemBrand: String?,
     val availableItemModels: List<ClaimFlowStepFragment.FlowClaimSingleItemStepCurrentStep.AvailableItemModel>?,
@@ -70,20 +74,20 @@ internal sealed interface ClaimFlowStep {
   data class UnknownStep(override val flowId: FlowId) : ClaimFlowStep
 }
 
-internal fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(): ClaimFlowStep {
+internal fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(flowId: FlowId): ClaimFlowStep {
   return when (this) {
     is ClaimFlowStepFragment.FlowClaimAudioRecordingStepCurrentStep -> {
-      ClaimFlowStep.ClaimAudioRecordingStep(FlowId(id), questions)
+      ClaimFlowStep.ClaimAudioRecordingStep(flowId, questions)
     }
     is ClaimFlowStepFragment.FlowClaimDateOfOccurrenceStepCurrentStep -> {
-      ClaimFlowStep.ClaimDateOfOccurrenceStep(FlowId(id), dateOfOccurrence, maxDate)
+      ClaimFlowStep.ClaimDateOfOccurrenceStep(flowId, dateOfOccurrence, maxDate)
     }
     is ClaimFlowStepFragment.FlowClaimLocationStepCurrentStep -> {
-      ClaimFlowStep.ClaimLocationStep(FlowId(id), location, options)
+      ClaimFlowStep.ClaimLocationStep(flowId, location, options)
     }
     is ClaimFlowStepFragment.FlowClaimDateOfOccurrencePlusLocationStepCurrentStep -> {
       ClaimFlowStep.ClaimDateOfOccurrencePlusLocationStep(
-        FlowId(id),
+        flowId,
         dateOfOccurrenceStep.dateOfOccurrence,
         dateOfOccurrenceStep.maxDate,
         locationStep.location,
@@ -91,11 +95,11 @@ internal fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(): ClaimFlowStep 
       )
     }
     is ClaimFlowStepFragment.FlowClaimPhoneNumberStepCurrentStep -> {
-      ClaimFlowStep.ClaimPhoneNumberStep(FlowId(id), phoneNumber)
+      ClaimFlowStep.ClaimPhoneNumberStep(flowId, phoneNumber)
     }
     is ClaimFlowStepFragment.FlowClaimSingleItemStepCurrentStep -> {
       ClaimFlowStep.ClaimSingleItemStep(
-        FlowId(id),
+        flowId,
         preferredCurrency,
         purchaseDate,
         purchasePrice,
@@ -109,7 +113,7 @@ internal fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(): ClaimFlowStep 
     }
     is ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep -> {
       ClaimFlowStep.ClaimResolutionSingleItemStep(
-        FlowId(id),
+        flowId,
         price,
         depreciation,
         deductible,
@@ -117,9 +121,9 @@ internal fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(): ClaimFlowStep 
         availableCheckoutMethods,
       )
     }
-    is ClaimFlowStepFragment.FlowClaimFailedStepCurrentStep -> ClaimFlowStep.ClaimFailedStep(FlowId(id))
-    is ClaimFlowStepFragment.FlowClaimSuccessStepCurrentStep -> ClaimFlowStep.ClaimSuccessStep(FlowId(id))
-    else -> ClaimFlowStep.UnknownStep(FlowId(id))
+    is ClaimFlowStepFragment.FlowClaimFailedStepCurrentStep -> ClaimFlowStep.ClaimFailedStep(flowId)
+    is ClaimFlowStepFragment.FlowClaimSuccessStepCurrentStep -> ClaimFlowStep.ClaimSuccessStep(flowId)
+    else -> ClaimFlowStep.UnknownStep(flowId)
   }
 }
 
@@ -150,12 +154,16 @@ internal fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
       ClaimFlowDestination.SingleItem(
         preferredCurrency = preferredCurrency,
         purchaseDate = purchaseDate,
-        purchasePrice = purchasePrice,
-        availableItemBrands = availableItemBrands,
+        purchasePrice = UiMoney.fromMoneyFragment(purchasePrice),
+        availableItemBrands = availableItemBrands?.map {
+          AvailableItemBrand(it.displayName, it.itemTypeId, it.itemBrandId)
+        },
         selectedItemBrand = selectedItemBrand,
-        availableItemModels = availableItemModels,
+        availableItemModels = availableItemModels?.map {
+          AvailableItemModel(it.displayName, it.imageUrl, it.itemTypeId, it.itemBrandId, it.itemModelId)
+        },
         selectedItemModel = selectedItemModel,
-        availableItemProblems = availableItemProblems,
+        availableItemProblems = availableItemProblems?.map { AvailableItemProblem(it.displayName, it.itemProblemId) },
         selectedItemProblems = selectedItemProblems,
       )
     }

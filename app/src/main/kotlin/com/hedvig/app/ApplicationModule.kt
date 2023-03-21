@@ -449,6 +449,7 @@ val navigatorModule = module {
     Navigator(
       application = get(),
       loggedOutActivityClass = MarketingActivity::class.java,
+      buildConfigApplicationId = BuildConfig.APPLICATION_ID,
       navigateToChat = { startChat() },
     )
   }

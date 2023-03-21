@@ -38,6 +38,7 @@ internal fun NavGraphBuilder.claimFlowGraph(
   navController: NavHostController,
   imageLoader: ImageLoader,
   entryPointId: String?,
+  openAppSettings: () -> Unit,
   navigateUp: () -> Boolean,
   openChat: () -> Unit,
   finishClaimFlow: () -> Unit,
@@ -66,6 +67,7 @@ internal fun NavGraphBuilder.claimFlowGraph(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
         questions = questions,
+        openAppSettings = openAppSettings,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
           navController.navigate(claimFlowStep.toClaimFlowDestination())
