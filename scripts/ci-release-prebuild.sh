@@ -14,14 +14,5 @@ cat <<EOT > app/src/release/res/values/adyen.xml
 </resources>
 EOT
 
-
-cat <<EOT > app/src/release/res/values/shake.xml
-<?xml version="1.0" encoding="utf-8" ?>
-<resources>
-    <string name="SHAKE_CLIENT_ID" translatable="false">${SHAKE_CLIENT_ID}</string>
-    <string name="SHAKE_CLIENT_SECRET" translatable="false">${SHAKE_CLIENT_SECRET}</string>
-</resources>
-EOT
-
 ./gradlew downloadApolloSchemasFromIntrospection
 ./gradlew :core-resources:downloadStrings

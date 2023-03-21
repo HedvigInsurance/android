@@ -99,10 +99,6 @@
             tools:node="merge">
 
             <meta-data
-                android:name="com.hedvig.app.ShakeInitializer"
-                android:value="androidx.startup" />
-
-            <meta-data
                 android:name="com.hedvig.app.feature.tracking.TrackingInitializer"
                 android:value="androidx.startup" />
         </provider>

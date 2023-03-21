@@ -91,7 +91,6 @@ reactiveX-Kotlin = "2.4.0"
 retrofit = "2.9.0"
 retrofitArrow = "1.1.5"
 retrofitKotlinxSerializationConverter = "0.8.0"
-shake = "15.3.1"
 shimmer = "0.5.0"
 slimber = "2.0.0"
 svg = "1.4"
@@ -222,7 +221,6 @@ reactiveX-kotlin = { module = "io.reactivex.rxjava2:rxkotlin", version.ref = "re
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofitArrow = { module = "io.arrow-kt:arrow-core-retrofit", version.ref = "retrofitArrow" }
 retrofitKotlinxSerializationConverter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofitKotlinxSerializationConverter" }
-shake = { module = "com.shakebugs:shake", version.ref = "shake" }
 shimmer = { module = "com.facebook.shimmer:shimmer", version.ref = "shimmer" }
 slimber = { module = "com.github.PaulWoitaschek:Slimber", version.ref = "slimber" }
 svg = { module = "com.caverock:androidsvg-aar", version.ref = "svg" }
