@@ -1,14 +1,20 @@
 package com.hedvig.android.feature.terminateinsurance.step.terminationsuccess
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
+import com.hedvig.android.core.designsystem.component.button.LargeOutlinedTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.preview.calculateForPreview
@@ -27,7 +33,7 @@ internal fun TerminationSuccessDestination(
   TerminationSuccessScreen(
     terminationDate = terminationDate,
     windowSizeClass = windowSizeClass,
-    onPrimaryButtonClick = { uriHandler.openUri(surveyUrl) },
+    onOpenSurvey = { uriHandler.openUri(surveyUrl) },
     navigateBack = navigateBack,
   )
 }
@@ -36,7 +42,7 @@ internal fun TerminationSuccessDestination(
 private fun TerminationSuccessScreen(
   terminationDate: LocalDate,
   windowSizeClass: WindowSizeClass,
-  onPrimaryButtonClick: () -> Unit,
+  onOpenSurvey: () -> Unit,
   navigateBack: () -> Unit,
 ) {
   TerminationInfoScreen(
@@ -50,10 +56,17 @@ private fun TerminationSuccessScreen(
       "Hedvig",
     ),
     bottomContent = {
-      LargeContainedTextButton(
-        text = stringResource(R.string.TERMINATION_OPEN_SURVEY_LABEL),
-        onClick = onPrimaryButtonClick,
-      )
+      Column {
+        LargeOutlinedTextButton(
+          text = stringResource(R.string.general_done_button),
+          onClick = navigateBack,
+        )
+        Spacer(Modifier.height(16.dp))
+        LargeContainedTextButton(
+          text = stringResource(R.string.TERMINATION_OPEN_SURVEY_LABEL),
+          onClick = onOpenSurvey,
+        )
+      }
     },
     icon = Icons.Outlined.CheckCircle,
   )
