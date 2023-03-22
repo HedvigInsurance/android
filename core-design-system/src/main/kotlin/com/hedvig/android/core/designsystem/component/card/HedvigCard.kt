@@ -1,11 +1,13 @@
 package com.hedvig.android.core.designsystem.component.card
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.material3.Card
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
@@ -24,24 +26,7 @@ fun HedvigCard(
   colors: CardColors = CardDefaults.outlinedCardColors(),
   elevation: HedvigCardElevation = HedvigCardElevation.NoElevation,
   border: BorderStroke? = null,
-  onClick: (() -> Unit)? = null,
-  content: @Composable ColumnScope.() -> Unit,
-) {
-  if (onClick == null) {
-    NonClickableHedvigCard(modifier, shape, colors, elevation, border, content)
-  } else {
-    ClickableHedvigCard(onClick, modifier, shape, colors, elevation, border, content)
-  }
-}
-
-@Composable
-private fun NonClickableHedvigCard(
-  modifier: Modifier = Modifier,
-  shape: Shape = CardDefaults.shape,
-  colors: CardColors = CardDefaults.outlinedCardColors(),
-  elevation: HedvigCardElevation = HedvigCardElevation.NoElevation,
-  border: BorderStroke? = null,
-  content: @Composable ColumnScope.() -> Unit,
+  content: @Composable () -> Unit,
 ) {
   Card(
     modifier = modifier,
@@ -56,18 +41,23 @@ private fun NonClickableHedvigCard(
   )
 }
 
+/**
+ * Same as [HedvigCard] but is clickable.
+ */
 @Composable
-private fun ClickableHedvigCard(
+fun HedvigCard(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   shape: Shape = CardDefaults.shape,
   colors: CardColors = CardDefaults.outlinedCardColors(),
   elevation: HedvigCardElevation = HedvigCardElevation.NoElevation,
   border: BorderStroke? = null,
-  content: @Composable ColumnScope.() -> Unit,
+  enabled: Boolean = true,
+  content: @Composable () -> Unit,
 ) {
   Card(
     onClick = onClick,
+    enabled = enabled,
     modifier = modifier,
     shape = shape,
     colors = colors,
@@ -83,4 +73,63 @@ private fun ClickableHedvigCard(
 sealed interface HedvigCardElevation {
   object NoElevation : HedvigCardElevation
   class Elevated(val elevation: Dp = 0.dp) : HedvigCardElevation
+}
+
+/**
+ * A copy of the `androidx.compose.material3.Card` but does not wrap the content in a Column which ends up not
+ * propagating the minimum size constraints that are set to the card itself.
+ */
+@Composable
+private fun Card(
+  modifier: Modifier = Modifier,
+  shape: Shape = CardDefaults.shape,
+  colors: CardColors = CardDefaults.cardColors(),
+  elevation: CardElevation = CardDefaults.cardElevation(),
+  border: BorderStroke? = null,
+  content: @Composable () -> Unit,
+) {
+  @Suppress("INVISIBLE_MEMBER")
+  Surface(
+    modifier = modifier,
+    shape = shape,
+    color = colors.containerColor(enabled = true).value,
+    contentColor = colors.contentColor(enabled = true).value,
+    tonalElevation = elevation.tonalElevation(enabled = true, interactionSource = null).value,
+    shadowElevation = elevation.shadowElevation(enabled = true, interactionSource = null).value,
+    border = border,
+  ) {
+    content()
+  }
+}
+
+/**
+ * Same as [Card] but is clickable
+ */
+@Composable
+private fun Card(
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  enabled: Boolean = true,
+  shape: Shape = CardDefaults.shape,
+  colors: CardColors = CardDefaults.cardColors(),
+  elevation: CardElevation = CardDefaults.cardElevation(),
+  border: BorderStroke? = null,
+  interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+  content: @Composable () -> Unit,
+) {
+  @Suppress("INVISIBLE_MEMBER")
+  Surface(
+    onClick = onClick,
+    modifier = modifier,
+    enabled = enabled,
+    shape = shape,
+    color = colors.containerColor(enabled).value,
+    contentColor = colors.contentColor(enabled).value,
+    tonalElevation = elevation.tonalElevation(enabled, interactionSource).value,
+    shadowElevation = elevation.shadowElevation(enabled, interactionSource).value,
+    border = border,
+    interactionSource = interactionSource,
+  ) {
+    content()
+  }
 }

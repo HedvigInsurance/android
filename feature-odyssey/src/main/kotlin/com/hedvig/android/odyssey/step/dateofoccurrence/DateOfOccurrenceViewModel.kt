@@ -77,6 +77,7 @@ internal class DateOfOccurrenceViewModel(
   }
 }
 
+// todo change with generic DatePickerUiState
 private class DatePickerConfiguration(dateOfOccurrence: LocalDate?, maxDate: LocalDate) {
   private val minDate = LocalDate(1900, 1, 1)
   private val minDateInMillis = minDate.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()

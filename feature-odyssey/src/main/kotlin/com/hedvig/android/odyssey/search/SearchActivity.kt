@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -33,10 +32,10 @@ import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.odyssey.ClaimFlowActivity
 import com.hedvig.android.odyssey.sdui.OdysseyClaimsFlowActivity
-import org.koin.android.ext.android.inject
 import com.hedvig.android.odyssey.search.ui.CommonClaims
-import org.koin.androidx.viewmodel.ext.android.getViewModel
 import hedvig.resources.R
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class SearchActivity : ComponentActivity() {
 

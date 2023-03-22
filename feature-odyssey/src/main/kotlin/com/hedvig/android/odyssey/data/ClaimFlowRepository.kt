@@ -40,7 +40,6 @@ internal interface ClaimFlowRepository {
 
   suspend fun submitPhoneNumber(phoneNumber: String): Either<ErrorMessage, ClaimFlowStep>
   suspend fun submitSingleItem(
-    customName: String?,
     itemBrandInput: FlowClaimItemBrandInput?,
     itemModelInput: FlowClaimItemModelInput?,
     itemProblemIds: List<String>?,
@@ -149,7 +148,6 @@ internal class ClaimFlowRepositoryImpl(
   }
 
   override suspend fun submitSingleItem(
-    customName: String?,
     itemBrandInput: FlowClaimItemBrandInput?,
     itemModelInput: FlowClaimItemModelInput?,
     itemProblemIds: List<String>?,
@@ -161,7 +159,7 @@ internal class ClaimFlowRepositoryImpl(
         .mutation(
           FlowClaimSingleItemNextMutation(
             FlowClaimSingleItemInput(
-              customName = Optional.presentIfNotNull(customName),
+              customName = Optional.absent(), // Will be used when entering a free form text is supported
               itemBrandInput = Optional.presentIfNotNull(itemBrandInput),
               itemModelInput = Optional.presentIfNotNull(itemModelInput),
               itemProblemIds = Optional.presentIfNotNull(itemProblemIds),

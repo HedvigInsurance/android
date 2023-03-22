@@ -77,6 +77,7 @@ internal class TerminationDateViewModel(
   }
 }
 
+// todo change with generic DatePickerUiState
 private class DatePickerConfiguration(minDate: LocalDate, maxDate: LocalDate) {
   private val minDateInMillis = minDate.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
   private val maxDateInMillis = maxDate.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()

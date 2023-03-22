@@ -1,14 +1,17 @@
 package com.hedvig.android.odyssey.data
 
 import com.hedvig.android.odyssey.model.FlowId
-import com.hedvig.android.odyssey.navigation.AvailableItemBrand
-import com.hedvig.android.odyssey.navigation.AvailableItemModel
-import com.hedvig.android.odyssey.navigation.AvailableItemProblem
 import com.hedvig.android.odyssey.navigation.ClaimFlowDestination
+import com.hedvig.android.odyssey.navigation.ItemBrand
+import com.hedvig.android.odyssey.navigation.ItemModel
+import com.hedvig.android.odyssey.navigation.ItemProblem
 import com.hedvig.android.odyssey.navigation.LocationOption
 import com.hedvig.android.odyssey.navigation.UiMoney
 import kotlinx.datetime.LocalDate
 import octopus.fragment.ClaimFlowStepFragment
+import octopus.fragment.FlowClaimLocationStepFragment
+import octopus.fragment.FlowClaimSingleItemCheckoutStepFragment
+import octopus.fragment.FlowClaimSingleItemStepFragment
 import octopus.fragment.MoneyFragment
 import octopus.type.CurrencyCode
 
@@ -30,7 +33,7 @@ internal sealed interface ClaimFlowStep {
   data class ClaimLocationStep(
     override val flowId: FlowId,
     val location: String?,
-    val options: List<ClaimFlowStepFragment.FlowClaimLocationStepCurrentStep.Option>,
+    val options: List<FlowClaimLocationStepFragment.Option>,
   ) : ClaimFlowStep
 
   data class ClaimDateOfOccurrencePlusLocationStep(
@@ -38,7 +41,7 @@ internal sealed interface ClaimFlowStep {
     val dateOfOccurrence: LocalDate?,
     val maxDate: LocalDate,
     val location: String?,
-    val options: List<ClaimFlowStepFragment.FlowClaimDateOfOccurrencePlusLocationStepCurrentStep.LocationStep.Option>,
+    val options: List<FlowClaimLocationStepFragment.Option>,
   ) : ClaimFlowStep
 
   data class ClaimPhoneNumberStep(override val flowId: FlowId, val phoneNumber: String) : ClaimFlowStep
@@ -47,11 +50,11 @@ internal sealed interface ClaimFlowStep {
     val preferredCurrency: CurrencyCode,
     val purchaseDate: LocalDate?,
     val purchasePrice: MoneyFragment?,
-    val availableItemBrands: List<ClaimFlowStepFragment.FlowClaimSingleItemStepCurrentStep.AvailableItemBrand>?,
+    val availableItemBrands: List<FlowClaimSingleItemStepFragment.AvailableItemBrand>?,
     val selectedItemBrand: String?,
-    val availableItemModels: List<ClaimFlowStepFragment.FlowClaimSingleItemStepCurrentStep.AvailableItemModel>?,
+    val availableItemModels: List<FlowClaimSingleItemStepFragment.AvailableItemModel>?,
     val selectedItemModel: String?,
-    val availableItemProblems: List<ClaimFlowStepFragment.FlowClaimSingleItemStepCurrentStep.AvailableItemProblem>?,
+    val availableItemProblems: List<FlowClaimSingleItemStepFragment.AvailableItemProblem>?,
     val selectedItemProblems: List<String>?,
   ) : ClaimFlowStep
 
@@ -61,7 +64,24 @@ internal sealed interface ClaimFlowStep {
     val depreciation: MoneyFragment,
     val deductible: MoneyFragment,
     val payoutAmount: MoneyFragment,
-    val availableCheckoutMethods: List<ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep.AvailableCheckoutMethod>,
+    val availableCheckoutMethods: List<FlowClaimSingleItemCheckoutStepFragment.AvailableCheckoutMethod>,
+  ) : ClaimFlowStep
+
+  data class ClaimSummaryStep(
+    override val flowId: FlowId,
+    val location: String?,
+    val options: List<FlowClaimLocationStepFragment.Option>,
+    val dateOfOccurrence: LocalDate?,
+    val maxDate: LocalDate,
+    val preferredCurrency: CurrencyCode,
+    val purchaseDate: LocalDate?,
+    val purchasePrice: MoneyFragment?,
+    val availableItemBrands: List<FlowClaimSingleItemStepFragment.AvailableItemBrand>?,
+    val selectedItemBrand: String?,
+    val availableItemModels: List<FlowClaimSingleItemStepFragment.AvailableItemModel>?,
+    val selectedItemModel: String?,
+    val availableItemProblems: List<FlowClaimSingleItemStepFragment.AvailableItemProblem>?,
+    val selectedItemProblems: List<String>?,
   ) : ClaimFlowStep
 
   data class ClaimFailedStep(override val flowId: FlowId) : ClaimFlowStep
@@ -121,6 +141,24 @@ internal fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(flowId: FlowId): 
         availableCheckoutMethods,
       )
     }
+    is ClaimFlowStepFragment.FlowClaimSummaryStepCurrentStep -> {
+      ClaimFlowStep.ClaimSummaryStep(
+        flowId,
+        locationStep.location,
+        locationStep.options,
+        dateOfOccurrenceStep.dateOfOccurrence,
+        dateOfOccurrenceStep.maxDate,
+        singleItemStep.preferredCurrency,
+        singleItemStep.purchaseDate,
+        singleItemStep.purchasePrice,
+        singleItemStep.availableItemBrands,
+        singleItemStep.selectedItemBrand,
+        singleItemStep.availableItemModels,
+        singleItemStep.selectedItemModel,
+        singleItemStep.availableItemProblems,
+        singleItemStep.selectedItemProblems,
+      )
+    }
     is ClaimFlowStepFragment.FlowClaimFailedStepCurrentStep -> ClaimFlowStep.ClaimFailedStep(flowId)
     is ClaimFlowStepFragment.FlowClaimSuccessStepCurrentStep -> ClaimFlowStep.ClaimSuccessStep(flowId)
     else -> ClaimFlowStep.UnknownStep(flowId)
@@ -138,7 +176,7 @@ internal fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
     is ClaimFlowStep.ClaimLocationStep -> {
       ClaimFlowDestination.Location(
         selectedLocation = location,
-        locationOptions = options.map { LocationOption(it.value, it.displayName) },
+        locationOptions = options.map { it.toLocationOption() },
       )
     }
     is ClaimFlowStep.ClaimDateOfOccurrencePlusLocationStep -> {
@@ -146,7 +184,7 @@ internal fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
         dateOfOccurrence = dateOfOccurrence,
         maxDate = maxDate,
         selectedLocation = location,
-        locationOptions = options.map { LocationOption(it.value, it.displayName) },
+        locationOptions = options.map { it.toLocationOption() },
       )
     }
     is ClaimFlowStep.ClaimPhoneNumberStep -> ClaimFlowDestination.PhoneNumber(phoneNumber)
@@ -155,15 +193,28 @@ internal fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
         preferredCurrency = preferredCurrency,
         purchaseDate = purchaseDate,
         purchasePrice = UiMoney.fromMoneyFragment(purchasePrice),
-        availableItemBrands = availableItemBrands?.map {
-          AvailableItemBrand(it.displayName, it.itemTypeId, it.itemBrandId)
-        },
+        availableItemBrands = availableItemBrands?.map { it.toItemBrand() },
         selectedItemBrand = selectedItemBrand,
-        availableItemModels = availableItemModels?.map {
-          AvailableItemModel(it.displayName, it.imageUrl, it.itemTypeId, it.itemBrandId, it.itemModelId)
-        },
+        availableItemModels = availableItemModels?.map { it.toItemModel() },
         selectedItemModel = selectedItemModel,
-        availableItemProblems = availableItemProblems?.map { AvailableItemProblem(it.displayName, it.itemProblemId) },
+        availableItemProblems = availableItemProblems?.map { it.toItemProblem() },
+        selectedItemProblems = selectedItemProblems,
+      )
+    }
+    is ClaimFlowStep.ClaimSummaryStep -> {
+      ClaimFlowDestination.Summary(
+        selectedLocation = location,
+        locationOptions = options.map { it.toLocationOption() },
+        dateOfOccurrence = dateOfOccurrence,
+        maxDate = maxDate,
+        preferredCurrency = preferredCurrency,
+        purchaseDate = purchaseDate,
+        purchasePrice = UiMoney.fromMoneyFragment(purchasePrice),
+        availableItemBrands = availableItemBrands?.map { it.toItemBrand() },
+        selectedItemBrand = selectedItemBrand,
+        availableItemModels = availableItemModels?.map { it.toItemModel() },
+        selectedItemModel = selectedItemModel,
+        availableItemProblems = availableItemProblems?.map { it.toItemProblem() },
         selectedItemProblems = selectedItemProblems,
       )
     }
@@ -180,4 +231,20 @@ internal fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
     is ClaimFlowStep.ClaimFailedStep -> ClaimFlowDestination.Failure
     is ClaimFlowStep.UnknownStep -> ClaimFlowDestination.UnknownScreen
   }
+}
+
+internal fun FlowClaimSingleItemStepFragment.AvailableItemModel.toItemModel(): ItemModel {
+  return ItemModel.Known(displayName, imageUrl, itemTypeId, itemBrandId, itemModelId)
+}
+
+internal fun FlowClaimSingleItemStepFragment.AvailableItemProblem.toItemProblem(): ItemProblem {
+  return ItemProblem(displayName, itemProblemId)
+}
+
+internal fun FlowClaimSingleItemStepFragment.AvailableItemBrand.toItemBrand(): ItemBrand {
+  return ItemBrand.Known(displayName, itemTypeId, itemBrandId)
+}
+
+private fun FlowClaimLocationStepFragment.Option.toLocationOption(): LocationOption {
+  return LocationOption(value, displayName)
 }
