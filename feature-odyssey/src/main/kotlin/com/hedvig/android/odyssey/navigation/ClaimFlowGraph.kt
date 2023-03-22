@@ -102,6 +102,7 @@ internal fun NavGraphBuilder.claimFlowGraph(
       DateOfOccurrencePlusLocationDestination(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
+        imageLoader = imageLoader,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
           navController.navigate(claimFlowStep.toClaimFlowDestination())

@@ -108,12 +108,14 @@ internal sealed interface ItemBrand {
 
   val displayName: String
 
+  @Serializable
   data class Known(
     override val displayName: String,
     val itemTypeId: String,
     val itemBrandId: String,
   ) : ItemBrand
 
+  @Serializable
   data class Unknown(
     override val displayName: String,
   ) : ItemBrand
@@ -125,6 +127,7 @@ internal sealed interface ItemModel {
 
   val displayName: String
 
+  @Serializable
   data class Known(
     override val displayName: String,
     val imageUrl: String?,
@@ -133,6 +136,7 @@ internal sealed interface ItemModel {
     val itemModelId: String,
   ) : ItemModel
 
+  @Serializable
   data class Unknown(
     override val displayName: String,
   ) : ItemModel
