@@ -55,7 +55,6 @@ internal fun DateOfOccurrenceDestination(
   }
   DateOfOccurrenceScreen(
     uiState = uiState,
-    dateValidator = viewModel.dateValidator,
     windowSizeClass = windowSizeClass,
     submitSelectedDate = viewModel::submitSelectedDate,
     showedError = viewModel::showedError,
@@ -66,7 +65,6 @@ internal fun DateOfOccurrenceDestination(
 @Composable
 private fun DateOfOccurrenceScreen(
   uiState: DateOfOccurrenceUiState,
-  dateValidator: (Long) -> Boolean,
   windowSizeClass: WindowSizeClass,
   submitSelectedDate: () -> Unit,
   showedError: () -> Unit,
@@ -110,8 +108,8 @@ private fun DateOfOccurrenceScreen(
         Spacer(Modifier.weight(1f))
         HedvigCard(modifier = sideSpacingModifier.fillMaxWidth()) {
           HedvigDatePicker(
-            datePickerState = uiState.datePickerState,
-            dateValidator = dateValidator,
+            datePickerState = uiState.datePickerUiState.datePickerState,
+            dateValidator = uiState.datePickerUiState::validateDate,
           )
         }
         Spacer(Modifier.height(16.dp))
