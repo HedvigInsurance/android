@@ -1,7 +1,10 @@
 package com.hedvig.android.odyssey.navigation
 
+import android.content.res.Resources
+import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
 import com.hedvig.android.odyssey.model.FlowId
+import com.hedvig.android.odyssey.navigation.ItemModel.Unknown.displayName
 import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
@@ -106,30 +109,40 @@ internal data class LocationOption(
 internal sealed interface ItemBrand {
   fun asKnown(): Known? = this as? Known
 
-  val displayName: String
+  fun displayName(resources: Resources): String {
+    return when (this) {
+      is Known -> displayName
+      is Unknown -> resources.getString(displayName)
+    }
+  }
 
   @Serializable
   data class Known(
-    override val displayName: String,
+    val displayName: String,
     val itemTypeId: String,
     val itemBrandId: String,
   ) : ItemBrand
 
   @Serializable
-  data class Unknown(
-    override val displayName: String,
-  ) : ItemBrand
+  object Unknown : ItemBrand {
+    @StringRes val displayName: Int = hedvig.resources.R.string.GENERAL_NOT_SURE
+  }
 }
 
 @Serializable
 internal sealed interface ItemModel {
   fun asKnown(): Known? = this as? Known
 
-  val displayName: String
+  fun displayName(resources: Resources): String {
+    return when (this) {
+      is Known -> displayName
+      is Unknown -> resources.getString(displayName)
+    }
+  }
 
   @Serializable
   data class Known(
-    override val displayName: String,
+    val displayName: String,
     val imageUrl: String?,
     val itemTypeId: String,
     val itemBrandId: String,
@@ -137,9 +150,9 @@ internal sealed interface ItemModel {
   ) : ItemModel
 
   @Serializable
-  data class Unknown(
-    override val displayName: String,
-  ) : ItemModel
+  object Unknown : ItemModel {
+    @StringRes val displayName: Int = hedvig.resources.R.string.GENERAL_NOT_SURE
+  }
 }
 
 @Serializable

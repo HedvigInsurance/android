@@ -1,6 +1,5 @@
 package com.hedvig.android.odyssey.di
 
-import android.content.Context
 import arrow.retrofit.adapter.either.EitherCallAdapterFactory
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.octopus.di.octopusClient
@@ -87,7 +86,7 @@ val odysseyModule = module {
     )
   }
   viewModel<SingleItemViewModel> { (singleItem: ClaimFlowDestination.SingleItem) ->
-    SingleItemViewModel(singleItem, get(), get<Context>().resources)
+    SingleItemViewModel(singleItem, get<ClaimFlowRepository>())
   }
 
   // Retrofit

@@ -21,6 +21,8 @@ dependencies {
   implementation(projects.navigation.navigationActivity)
   implementation(projects.navigation.navigationComposeTyped)
 
+  testImplementation(projects.coreCommonTest)
+
   implementation(libs.accompanist.navigationAnimation)
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.compose.foundation)
@@ -47,6 +49,11 @@ dependencies {
   implementation(libs.retrofitArrow)
   implementation(libs.retrofitKotlinxSerializationConverter)
   implementation(libs.slimber)
+
+  testImplementation(libs.assertK)
+  testImplementation(libs.coroutines.test)
+  testImplementation(libs.junit)
+  testImplementation(libs.turbine)
 }
 
 android {
