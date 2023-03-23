@@ -1,5 +1,11 @@
 package com.hedvig.android.odyssey.step.singleitem
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -25,9 +31,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -103,15 +112,25 @@ private fun SingleItemScreen(
       showedError = showedError,
     ),
   ) { sideSpacingModifier ->
-    Spacer(Modifier.height(32.dp))
-    uiState.itemModelsUiState.asContent()?.let { itemModelsUiState ->
-      Models(itemModelsUiState, selectModel, imageLoader, sideSpacingModifier)
-      Spacer(Modifier.height(20.dp))
-    }
+    Spacer(Modifier.height(22.dp))
     uiState.itemBrandsUiState.asContent()?.let { itemBrandsUiState ->
+      Spacer(Modifier.height(10.dp))
       Brands(itemBrandsUiState, selectBrand, imageLoader, sideSpacingModifier)
-      Spacer(Modifier.height(20.dp))
+      Spacer(Modifier.height(10.dp))
     }
+    val itemModelsUiStateContent = uiState.itemModelsUiState.asContent()
+    AnimatedVisibility(
+      visible = itemModelsUiStateContent != null,
+      enter = fadeIn() + expandVertically(expandFrom = Alignment.CenterVertically, clip = false),
+      exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.CenterVertically, clip = false),
+    ) {
+      Column {
+        Spacer(Modifier.height(10.dp))
+        Models(itemModelsUiStateContent, selectModel, imageLoader, sideSpacingModifier)
+        Spacer(Modifier.height(10.dp))
+      }
+    }
+    Spacer(Modifier.height(10.dp))
     DateOfPurchase(uiState.datePickerUiState, uiState.canSubmit, sideSpacingModifier)
     Spacer(Modifier.height(20.dp))
     PriceOfPurchase(
@@ -119,11 +138,13 @@ private fun SingleItemScreen(
       enabled = uiState.canSubmit,
       modifier = sideSpacingModifier,
     )
-    Spacer(Modifier.height(20.dp))
+    Spacer(Modifier.height(10.dp))
     uiState.itemProblemsUiState.asContent()?.let { itemProblemsUiState ->
+      Spacer(Modifier.height(10.dp))
       ItemProblems(itemProblemsUiState, selectProblem, imageLoader, sideSpacingModifier)
-      Spacer(Modifier.height(20.dp))
+      Spacer(Modifier.height(10.dp))
     }
+    Spacer(Modifier.height(10.dp))
     Spacer(Modifier.weight(1f))
     LargeContainedTextButton(
       onClick = submitSelections,
@@ -138,18 +159,20 @@ private fun SingleItemScreen(
 
 @Composable
 private fun Models(
-  uiState: ItemModelsUiState.Content,
+  uiState: ItemModelsUiState.Content?,
   selectModel: (ItemModel) -> Unit,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
 ) {
+  LocalConfiguration.current
+  val resources = LocalContext.current.resources
   var showDialog by rememberSaveable { mutableStateOf(false) }
-  if (showDialog) {
+  if (showDialog && uiState != null) {
     SingleSelectDialog(
       title = stringResource(R.string.claims_item_screen_model_button),
       optionsList = uiState.availableItemModels,
       onSelected = selectModel,
-      getDisplayText = { it.displayName },
+      getDisplayText = { it.displayName(resources) },
       getImageUrl = { it.asKnown()?.imageUrl },
       getId = { it.asKnown()?.itemModelId ?: "id" },
       imageLoader = imageLoader,
@@ -166,7 +189,7 @@ private fun Models(
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.width(8.dp))
     CompositionLocalProvider(LocalContentColor provides LocalContentColor.current.copy(alpha = ContentAlpha.medium)) {
-      Text(uiState.selectedItemModel?.displayName ?: "")
+      Text(uiState?.selectedItemModel?.displayName(resources) ?: "")
       Spacer(Modifier.width(8.dp))
       Icon(Icons.Default.ArrowForward, null)
     }
@@ -181,13 +204,15 @@ private fun Brands(
   imageLoader: ImageLoader,
   modifier: Modifier,
 ) {
+  LocalConfiguration.current
+  val resources = LocalContext.current.resources
   var showDialog by rememberSaveable { mutableStateOf(false) }
   if (showDialog) {
     SingleSelectDialog(
       title = stringResource(R.string.SINGLE_ITEM_INFO_BRAND),
       optionsList = uiState.availableItemBrands,
       onSelected = selectBrand,
-      getDisplayText = { it.displayName },
+      getDisplayText = { it.displayName(resources) },
       getImageUrl = { null },
       getId = { it.asKnown()?.itemBrandId ?: "id" },
       imageLoader = imageLoader,
@@ -203,9 +228,9 @@ private fun Brands(
     Text(stringResource(R.string.SINGLE_ITEM_INFO_BRAND))
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.width(8.dp))
-    Text(uiState.selectedItemBrand?.displayName ?: "")
-    Spacer(Modifier.width(8.dp))
     CompositionLocalProvider(LocalContentColor provides LocalContentColor.current.copy(alpha = ContentAlpha.medium)) {
+      Text(uiState.selectedItemBrand?.displayName(resources) ?: "")
+      Spacer(Modifier.width(8.dp))
       Icon(Icons.Default.ArrowForward, null)
     }
     Spacer(Modifier.width(8.dp))
