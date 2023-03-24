@@ -228,6 +228,7 @@ dependencies {
 
   implementation(platform(libs.firebase.bom))
   implementation(libs.firebase.playServicesBase)
+  implementation(libs.firebase.analytics)
   implementation(libs.firebase.crashlytics)
   implementation(libs.firebase.dynamicLinks)
   implementation(libs.firebase.messaging)
