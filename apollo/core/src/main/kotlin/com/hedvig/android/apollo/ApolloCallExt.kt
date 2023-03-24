@@ -4,7 +4,6 @@ import com.apollographql.apollo3.ApolloCall
 import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.api.Operation
 import com.apollographql.apollo3.api.Query
-import com.apollographql.apollo3.api.Subscription
 import com.apollographql.apollo3.cache.normalized.watch
 import com.apollographql.apollo3.exception.ApolloException
 import kotlinx.coroutines.CancellationException
@@ -25,14 +24,14 @@ suspend fun <D : Operation.Data> ApolloCall<D>.safeExecute(): OperationResult<D>
   }
 }
 
-fun <D : Subscription.Data> ApolloCall<D>.toSafeFlow(): Flow<OperationResult<D>> {
+fun <D : Operation.Data> ApolloCall<D>.safeFlow(): Flow<OperationResult<D>> {
   return toFlow()
     .map(ApolloResponse<D>::toOperationResult)
-    .catch { exception ->
-      if (exception is ApolloException) {
-        emit(OperationResult.Error.NetworkError(exception))
+    .catch { throwable ->
+      if (throwable is ApolloException) {
+        OperationResult.Error.NetworkError(throwable)
       } else {
-        emit(OperationResult.Error.GeneralError(exception))
+        OperationResult.Error.GeneralError(throwable)
       }
     }
 }
