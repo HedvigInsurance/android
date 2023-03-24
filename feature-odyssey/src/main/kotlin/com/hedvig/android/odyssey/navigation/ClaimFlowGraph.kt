@@ -30,6 +30,7 @@ import com.hedvig.android.odyssey.step.singleitempayout.ClaimSuccessDestination
 import com.hedvig.android.odyssey.step.start.ClaimFlowStartDestination
 import com.hedvig.android.odyssey.step.start.ClaimFlowStartStepViewModel
 import com.hedvig.android.odyssey.step.summary.ClaimSummaryDestination
+import com.hedvig.android.odyssey.step.summary.ClaimSummaryViewModel
 import com.hedvig.android.odyssey.step.unknownerror.UnknownErrorDestination
 import com.hedvig.android.odyssey.step.unknownscreen.UnknownScreenDestination
 import com.kiwi.navigationcompose.typed.createRoutePattern
@@ -152,9 +153,19 @@ internal fun NavGraphBuilder.claimFlowGraph(
       )
     }
     animatedComposable<ClaimFlowDestination.Summary> {
+      val summary: ClaimFlowDestination.Summary = this
       ClaimFlowBackHandler(navController, finishClaimFlow)
-//      val viewModel: ClaimSummaryViewModel = koinViewModel()
-      ClaimSummaryDestination()
+      val viewModel: ClaimSummaryViewModel = koinViewModel { parametersOf(summary) }
+      ClaimSummaryDestination(
+        viewModel = viewModel,
+        windowSizeClass = windowSizeClass,
+        imageLoader = imageLoader,
+        navigateToNextStep = { claimFlowStep ->
+          viewModel.handledNextStepNavigation()
+          navController.navigate(claimFlowStep.toClaimFlowDestination())
+        },
+        navigateBack = { navController.navigateUp() || navigateUp() },
+      )
     }
     animatedComposable<ClaimFlowDestination.ClaimSuccess> {
       BackHandler { finishClaimFlow() }

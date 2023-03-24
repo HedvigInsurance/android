@@ -20,6 +20,7 @@ import com.hedvig.android.odyssey.step.location.LocationViewModel
 import com.hedvig.android.odyssey.step.phonenumber.PhoneNumberViewModel
 import com.hedvig.android.odyssey.step.singleitem.SingleItemViewModel
 import com.hedvig.android.odyssey.step.start.ClaimFlowStartStepViewModel
+import com.hedvig.android.odyssey.step.summary.ClaimSummaryViewModel
 import com.hedvig.odyssey.datadog.DatadogLogger
 import com.hedvig.odyssey.datadog.DatadogProvider
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -87,6 +88,9 @@ val odysseyModule = module {
   }
   viewModel<SingleItemViewModel> { (singleItem: ClaimFlowDestination.SingleItem) ->
     SingleItemViewModel(singleItem, get<ClaimFlowRepository>())
+  }
+  viewModel<ClaimSummaryViewModel> { (summary: ClaimFlowDestination.Summary) ->
+    ClaimSummaryViewModel(summary, get<ClaimFlowRepository>())
   }
 
   // Retrofit
