@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.claims.ui.commonclaim
 
 import android.os.Parcelable
-import com.hedvig.android.apollo.graphql.HomeQuery
 import com.hedvig.app.util.apollo.ThemedIconUrls
+import giraffe.HomeQuery
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

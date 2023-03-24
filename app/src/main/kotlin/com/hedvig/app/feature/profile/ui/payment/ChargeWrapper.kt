@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.profile.ui.payment
 
-import com.hedvig.android.apollo.graphql.PaymentQuery
+import giraffe.PaymentQuery
 
 sealed class ChargeWrapper {
   object Title : ChargeWrapper()

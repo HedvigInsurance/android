@@ -1,8 +1,8 @@
 package com.hedvig.app.testdata.feature.offer.builders
 
-import com.hedvig.android.apollo.graphql.fragment.CurrentInsurerFragment
-import com.hedvig.android.apollo.graphql.fragment.QuoteBundleFragment
-import com.hedvig.android.apollo.graphql.type.ConcurrentInception
+import giraffe.fragment.CurrentInsurerFragment
+import giraffe.fragment.QuoteBundleFragment
+import giraffe.type.ConcurrentInception
 import java.time.LocalDate
 
 class ConcurrentInceptionBuilder(

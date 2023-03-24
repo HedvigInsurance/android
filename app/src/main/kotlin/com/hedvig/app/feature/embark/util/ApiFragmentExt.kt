@@ -1,13 +1,13 @@
 package com.hedvig.app.feature.embark.util
 
-import com.hedvig.android.apollo.graphql.fragment.ApiFragment
-import com.hedvig.android.apollo.graphql.fragment.GraphQLVariablesFragment
-import com.hedvig.android.apollo.graphql.type.EmbarkAPIGraphQLSingleVariableCasting
 import com.hedvig.app.feature.embark.ValueStore
 import com.hedvig.app.feature.embark.variables.CastType
 import com.hedvig.app.feature.embark.variables.Variable
 import com.hedvig.app.feature.embark.variables.VariableExtractor
 import com.hedvig.app.util.apollo.FileVariable
+import giraffe.fragment.ApiFragment
+import giraffe.fragment.GraphQLVariablesFragment
+import giraffe.type.EmbarkAPIGraphQLSingleVariableCasting
 import org.json.JSONObject
 
 fun ApiFragment.AsEmbarkApiGraphQLQuery.getVariables(valueStore: ValueStore): JSONObject? {

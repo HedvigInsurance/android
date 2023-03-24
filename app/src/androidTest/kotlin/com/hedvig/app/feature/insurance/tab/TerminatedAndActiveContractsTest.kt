@@ -1,8 +1,5 @@
 package com.hedvig.app.feature.insurance.tab
 
-import com.hedvig.android.apollo.graphql.InsuranceQuery
-import com.hedvig.android.apollo.graphql.LoggedInQuery
-import com.hedvig.app.R
 import com.hedvig.app.feature.insurance.screens.InsuranceScreen
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
@@ -16,6 +13,8 @@ import com.hedvig.app.util.context
 import com.hedvig.app.util.hasPluralText
 import com.hedvig.app.util.stub
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import giraffe.InsuranceQuery
+import giraffe.LoggedInQuery
 import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
 import org.junit.Rule
 import org.junit.Test

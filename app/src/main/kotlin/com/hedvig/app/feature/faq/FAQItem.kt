@@ -1,10 +1,10 @@
 package com.hedvig.app.feature.faq
 
 import android.os.Parcelable
-import com.hedvig.android.apollo.graphql.fragment.CrossSellFragment
-import com.hedvig.android.apollo.graphql.fragment.QuoteBundleFragment
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import com.hedvig.app.util.safeLet
+import giraffe.fragment.CrossSellFragment
+import giraffe.fragment.QuoteBundleFragment
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

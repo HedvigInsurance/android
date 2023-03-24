@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Card
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -23,9 +24,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 import kotlin.math.ceil
@@ -123,68 +124,70 @@ fun PlaybackWaveForm(
   }
 }
 
-@Preview(showBackground = true)
+@HedvigPreview
 @Composable
-fun PlaybackWaveFormPreview() {
+private fun PreviewPlaybackWaveForm() {
   HedvigTheme {
-    PlaybackWaveForm(
-      isPlaying = false,
-      play = {},
-      pause = {},
-      amplitudes = listOf(
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-        200, 400, 300, 500, 0,
-      ),
-      progress = 0.5f,
-    )
+    Surface(color = MaterialTheme.colors.background) {
+      PlaybackWaveForm(
+        isPlaying = false,
+        play = {},
+        pause = {},
+        amplitudes = listOf(
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+          200, 400, 300, 500, 0,
+        ),
+        progress = 0.5f,
+      )
+    }
   }
 }

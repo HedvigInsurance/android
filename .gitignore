@@ -28,6 +28,3 @@ app/src/main/res/**/strings.xml
 
 # mixpanel credentials
 mixpanel.xml
-
-# shake credentials
-shake.xml

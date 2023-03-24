@@ -1,9 +1,9 @@
 package com.hedvig.app.testdata.feature.home
 
-import com.hedvig.android.apollo.graphql.type.PayinMethodStatus
 import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.feature.home.builders.HomeDataBuilder
 import com.hedvig.app.testdata.feature.home.builders.ImportantMessageBuilder
+import giraffe.type.PayinMethodStatus
 import java.time.LocalDate
 
 val HOME_DATA_TERMINATED_IN_FUTURE = HomeDataBuilder(listOf(ContractStatus.TERMINATED_IN_FUTURE)).build()

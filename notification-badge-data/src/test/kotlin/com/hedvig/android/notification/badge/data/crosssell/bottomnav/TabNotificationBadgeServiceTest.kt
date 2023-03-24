@@ -3,7 +3,6 @@ package com.hedvig.android.notification.badge.data.crosssell.bottomnav
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import com.hedvig.android.apollo.graphql.type.TypeOfContract
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager
 import com.hedvig.android.notification.badge.data.crosssell.CrossSellNotificationBadgeService
@@ -15,6 +14,7 @@ import com.hedvig.android.notification.badge.data.storage.NotificationBadge
 import com.hedvig.android.notification.badge.data.storage.NotificationBadgeStorage
 import com.hedvig.android.notification.badge.data.tab.BottomNavTab
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
+import giraffe.type.TypeOfContract
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Test

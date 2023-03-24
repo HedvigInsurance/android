@@ -6,10 +6,6 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.hedvig.android.apollo.graphql.PayinStatusQuery
-import com.hedvig.android.apollo.graphql.PaymentQuery
-import com.hedvig.android.apollo.graphql.type.PayinMethodStatus
-import com.hedvig.android.apollo.graphql.type.PayoutMethodStatus
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
@@ -21,6 +17,10 @@ import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.safeLet
 import com.hedvig.hanalytics.PaymentType
+import giraffe.PayinStatusQuery
+import giraffe.PaymentQuery
+import giraffe.type.PayinMethodStatus
+import giraffe.type.PayoutMethodStatus
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
@@ -42,7 +42,7 @@ class PaymentActivity : AppCompatActivity(R.layout.activity_payment) {
     binding.apply {
       window.compatSetDecorFitsSystemWindows(false)
       toolbar.applyStatusBarInsets()
-      toolbar.setNavigationOnClickListener { onBackPressed() }
+      toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
       recycler.applyNavigationBarInsets()
       recycler.adapter = PaymentAdapter(marketManager, supportFragmentManager, languageService)

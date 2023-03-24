@@ -2,7 +2,6 @@ package com.hedvig.app.feature.claims.ui.commonclaim
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -13,7 +12,6 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityCommonClaimBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.bulletpoint.BulletPointsAdapter
 import com.hedvig.app.feature.claims.ui.startClaimsFlow
-import com.hedvig.app.ui.coil.load
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
@@ -48,7 +46,7 @@ class CommonClaimActivity : AppCompatActivity(R.layout.activity_common_claim) {
       toolbar.applyStatusBarInsets()
 
       toolbar.setNavigationOnClickListener {
-        onBackPressed()
+        onBackPressedDispatcher.onBackPressed()
       }
       root.setupToolbarScrollListener(toolbar = toolbar)
       toolbar.title = data.title
@@ -60,9 +58,6 @@ class CommonClaimActivity : AppCompatActivity(R.layout.activity_common_claim) {
     }
 
     binding.apply {
-      val url = Uri.parse(data.iconUrls.iconByTheme(this@CommonClaimActivity))
-      firstMessage.commonClaimFirstMessageIcon.load(url, imageLoader)
-
       firstMessage.commonClaimFirstMessage.text = data.layoutTitle
       firstMessage.commonClaimCreateClaimButton.text = data.buttonText
       if (data.isFirstVet()) {
@@ -76,10 +71,10 @@ class CommonClaimActivity : AppCompatActivity(R.layout.activity_common_claim) {
           lifecycleScope.launch {
             hAnalytics.beginClaim(AppScreen.COMMON_CLAIM_DETAIL)
             startClaimsFlow(
-              featureManager = featureManager,
-              context = this@CommonClaimActivity,
               fragmentManager = supportFragmentManager,
               commonClaimId = data.id,
+              featureManager = featureManager,
+              context = this@CommonClaimActivity,
             )
           }
         }

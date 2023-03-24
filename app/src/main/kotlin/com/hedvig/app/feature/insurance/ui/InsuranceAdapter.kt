@@ -9,7 +9,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityOptionsCompat
@@ -75,13 +74,6 @@ class InsuranceAdapter(
     holder.bind(getItem(position))
   }
 
-  override fun onViewRecycled(holder: ViewHolder) {
-    val itemView = holder.itemView
-    if (itemView is ComposeView) {
-      itemView.disposeComposition()
-    }
-  }
-
   sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     abstract fun bind(data: InsuranceModel)
 
@@ -91,10 +83,6 @@ class InsuranceAdapter(
       private val onClickCrossSellAction: (CrossSellData) -> Unit,
       private val onClickCrossSellCard: (CrossSellData) -> Unit,
     ) : ViewHolder(composeView) {
-      init {
-        composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-      }
-
       override fun bind(data: InsuranceModel) {
         if (data !is InsuranceModel.CrossSellCard) {
           return invalid(data)
@@ -166,11 +154,6 @@ class InsuranceAdapter(
       val composeView: ComposeView,
       private val retry: () -> Unit,
     ) : ViewHolder(composeView) {
-
-      init {
-        composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-      }
-
       override fun bind(data: InsuranceModel) {
         if (data !is InsuranceModel.Error) {
           return invalid(data)
@@ -190,11 +173,6 @@ class InsuranceAdapter(
     }
 
     class SubheadingViewHolder(private val composeView: ComposeView) : ViewHolder(composeView) {
-
-      init {
-        composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-      }
-
       override fun bind(data: InsuranceModel) {
         if (data !is InsuranceModel.TerminatedContractsHeader) {
           return invalid(data)
@@ -212,7 +190,6 @@ class InsuranceAdapter(
       private var data by mutableStateOf<InsuranceModel.CrossSellHeader?>(null)
 
       init {
-        composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         composeView.setContent {
           val data = data ?: return@setContent
           HedvigTheme {

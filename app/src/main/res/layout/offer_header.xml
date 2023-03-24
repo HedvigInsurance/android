@@ -23,7 +23,8 @@
 
             <TextView
                 android:id="@+id/campaign"
-                style="@style/Hedvig.TextAppearance.Discount"
+                style="?textAppearanceCaption"
+                android:textColor="?android:textColorSecondary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/base_margin_half"
@@ -91,11 +92,11 @@
                 android:id="@+id/startDateContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingVertical="@dimen/base_margin_double"
                 android:layout_marginHorizontal="@dimen/base_margin"
-                android:paddingHorizontal="@dimen/base_margin"
                 android:layout_marginTop="@dimen/base_margin_quintuple"
-                android:background="@drawable/background_rounded_corners_ripple">
+                android:background="@drawable/background_rounded_corners_ripple"
+                android:paddingHorizontal="@dimen/base_margin"
+                android:paddingVertical="@dimen/base_margin_double">
 
                 <TextView
                     android:id="@+id/startDateLabel"

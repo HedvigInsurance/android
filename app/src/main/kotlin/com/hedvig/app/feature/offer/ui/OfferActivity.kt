@@ -121,7 +121,7 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
     )
 
     binding.offerToolbar.apply {
-      setNavigationOnClickListener { onBackPressed() }
+      setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
       inflateMenu(R.menu.offer_menu)
       setOnMenuItemClickListener { menuItem ->
         when (menuItem.itemId) {

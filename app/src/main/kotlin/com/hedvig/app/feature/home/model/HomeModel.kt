@@ -3,12 +3,11 @@ package com.hedvig.app.feature.home.model
 import androidx.annotation.StringRes
 import androidx.compose.ui.unit.Dp
 import arrow.core.NonEmptyList
-import com.hedvig.android.apollo.graphql.HomeQuery
-import com.hedvig.app.R
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusCardUiState
 import com.hedvig.hanalytics.PaymentType
+import giraffe.HomeQuery
 import java.time.LocalDate
 
 sealed class HomeModel {

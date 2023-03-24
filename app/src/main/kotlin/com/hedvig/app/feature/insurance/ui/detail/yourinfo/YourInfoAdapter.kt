@@ -2,9 +2,21 @@ package com.hedvig.app.feature.insurance.ui.detail.yourinfo
 
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.hedvig.android.core.designsystem.component.button.LargeTextButton
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressButtonBinding
 import com.hedvig.app.databinding.ChangeAddressPendingChangeCardBinding
@@ -19,18 +31,25 @@ import com.hedvig.app.util.extensions.viewBinding
 
 class YourInfoAdapter(
   private val fragmentManager: FragmentManager,
+  private val openCancelInsuranceScreen: (insuranceId: String) -> Unit,
 ) : ListAdapter<YourInfoModel, YourInfoAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
-  override fun getItemViewType(position: Int) = when (currentList[position]) {
+  override fun getItemViewType(position: Int) = when (getItem(position)) {
     is YourInfoModel.ChangeAddressButton -> R.layout.change_address_button
     YourInfoModel.Change -> R.layout.your_info_change
     is YourInfoModel.PendingAddressChange -> R.layout.change_address_pending_change_card
+    is YourInfoModel.CancelInsuranceButton -> TERMINATE_INSURANCE_BUTTON
   }
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
     R.layout.change_address_button -> ViewHolder.ChangeAddressButton(parent)
     R.layout.your_info_change -> ViewHolder.Change(parent)
     R.layout.change_address_pending_change_card -> ViewHolder.PendingAddressChange(parent)
+    TERMINATE_INSURANCE_BUTTON -> ViewHolder.CancelInsuranceButton(
+      ComposeView(parent.context),
+      openCancelInsuranceScreen,
+    )
+
     else -> throw Error("Invalid view type")
   }
 
@@ -81,5 +100,34 @@ class YourInfoAdapter(
         )
       }
     }
+
+    class CancelInsuranceButton(
+      private val composeView: ComposeView,
+      private val openCancelInsuranceScreen: (insuranceId: String) -> Unit,
+    ) : ViewHolder(composeView) {
+      init {
+        composeView.setViewCompositionStrategy(ViewCompositionStrategy.Default)
+      }
+
+      override fun bind(data: YourInfoModel, fragmentManager: FragmentManager) {
+        require(data is YourInfoModel.CancelInsuranceButton)
+        composeView.setContent {
+          HedvigTheme {
+            LargeTextButton(
+              { openCancelInsuranceScreen(data.insuranceId) },
+              Modifier.padding(horizontal = 16.dp).padding(bottom = 8.dp),
+            ) {
+              CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.error) {
+                Text(stringResource(hedvig.resources.R.string.TERMINATION_BUTTON))
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  companion object {
+    private const val TERMINATE_INSURANCE_BUTTON = 1
   }
 }

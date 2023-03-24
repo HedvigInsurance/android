@@ -5,7 +5,6 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
-        android:networkSecurityConfig="@xml/network_security_config"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning,MissingApplicationIcon"
         tools:targetApi="28">
 
@@ -71,8 +70,8 @@
             android:launchMode="singleTop" />
 
         <activity
-            android:exported="true"
-            android:name=".feature.impersonation.ImpersonationReceiverActivity">
+            android:name=".feature.impersonation.ImpersonationReceiverActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -80,8 +79,8 @@
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <data
-                    android:scheme="hedvigengineering"
-                    android:host="impersonate" />
+                    android:host="impersonate"
+                    android:scheme="hedvigengineering" />
             </intent-filter>
         </activity>
 
@@ -98,10 +97,6 @@
             android:authorities="${applicationId}.androidx-startup"
             android:exported="false"
             tools:node="merge">
-
-            <meta-data
-                android:name="com.hedvig.app.ShakeInitializer"
-                android:value="androidx.startup" />
 
             <meta-data
                 android:name="com.hedvig.app.feature.tracking.TrackingInitializer"

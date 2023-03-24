@@ -121,11 +121,11 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     lifecycleScope.launch {
       hAnalytics.beginClaim(AppScreen.HOME)
       startClaimsFlow(
-        featureManager = featureManager,
-        context = requireContext(),
         fragmentManager = parentFragmentManager,
         registerForResult = ::registerForResult,
         commonClaimId = null,
+        featureManager = featureManager,
+        context = requireContext(),
       )
     }
   }

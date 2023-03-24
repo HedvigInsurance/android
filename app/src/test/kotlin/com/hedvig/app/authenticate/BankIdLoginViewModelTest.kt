@@ -13,12 +13,12 @@ import com.hedvig.android.auth.event.AuthEventListener
 import com.hedvig.android.auth.event.FakeAuthEventListener
 import com.hedvig.android.auth.storage.AuthTokenStorage
 import com.hedvig.android.core.common.ApplicationScope
+import com.hedvig.android.core.common.test.MainCoroutineRule
 import com.hedvig.android.core.datastore.TestPreferencesDataStore
 import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager
 import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.feature.tracking.MockHAnalytics
 import com.hedvig.app.service.push.PushTokenManager
-import com.hedvig.app.util.coroutines.MainCoroutineRule
 import com.hedvig.authlib.AccessToken
 import com.hedvig.authlib.AuthAttemptResult
 import com.hedvig.authlib.AuthRepository

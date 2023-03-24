@@ -4,7 +4,8 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.apollo)
+  implementation(projects.apollo.core)
+  implementation(projects.apollo.giraffe)
   implementation(projects.coreCommon)
   implementation(projects.coreResources)
 

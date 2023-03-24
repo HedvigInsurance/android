@@ -1,16 +1,19 @@
 @file:Suppress("UnstableApiUsage")
 
+import com.project.starter.easylauncher.filter.ColorRibbonFilter
+
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once https://youtrack.jetbrains.com/issue/KTIJ-19369 is fixed
 plugins {
   id("hedvig.android.application")
   id("hedvig.android.application.compose")
   id("hedvig.android.ktlint")
-  alias(libs.plugins.googleServices)
-  alias(libs.plugins.crashlytics)
   id("kotlin-parcelize")
+  alias(libs.plugins.appIconBannerGenerator) // Automatically adds the "DEBUG" banner on the debug app icon
+  alias(libs.plugins.crashlytics)
+  alias(libs.plugins.datadog)
+  alias(libs.plugins.googleServices)
   alias(libs.plugins.license)
   alias(libs.plugins.serialization)
-  alias(libs.plugins.datadog)
 }
 
 licenseReport {
@@ -31,7 +34,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "10.2.1"
+    versionName = "10.3.0"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -114,28 +117,32 @@ android {
 }
 
 dependencies {
-  implementation(projects.apollo)
+  implementation(projects.apollo.core)
+  implementation(projects.apollo.di)
+  implementation(projects.apollo.giraffe)
   implementation(projects.auth.authAndroid)
   implementation(projects.auth.authCore)
   implementation(projects.coreCommon)
   implementation(projects.coreCommonAndroid)
   implementation(projects.coreDatastore)
   implementation(projects.coreDesignSystem)
-  implementation(projects.coreNavigation)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.datadog)
   implementation(projects.featureBusinessmodel)
   implementation(projects.featureOdyssey)
+  implementation(projects.featureTerminateInsurance)
   implementation(projects.hanalytics.hanalyticsAndroid)
   implementation(projects.hanalytics.hanalyticsCore)
   implementation(projects.hanalytics.hanalyticsFeatureFlags)
   implementation(projects.hedvigLanguage)
   implementation(projects.hedvigMarket)
+  implementation(projects.navigation.navigationActivity)
   implementation(projects.notificationBadgeData)
 
   testImplementation(projects.auth.authEventTest)
   testImplementation(projects.auth.authTest)
+  testImplementation(projects.coreCommonTest)
   testImplementation(projects.coreDatastoreTest)
 
   testImplementation(projects.hanalytics.hanalyticsFeatureFlagsTest)
@@ -155,7 +162,8 @@ dependencies {
   implementation(libs.coroutines.android)
   testImplementation(libs.coroutines.test)
 
-  implementation(libs.serialization.json)
+  implementation(libs.kotlinx.immutable.collections)
+  implementation(libs.kotlinx.serialization.json)
 
   testImplementation(libs.androidx.arch.testing)
 
@@ -175,10 +183,11 @@ dependencies {
   implementation(libs.androidx.other.browser)
   implementation(libs.androidx.other.transition)
   implementation(libs.androidx.lifecycle.common)
+  implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.lifecycle.liveData)
+  implementation(libs.androidx.lifecycle.process)
   implementation(libs.androidx.lifecycle.runtime)
   implementation(libs.androidx.lifecycle.viewModel)
-  implementation(libs.androidx.lifecycle.process)
   implementation(libs.androidx.other.workManager)
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.other.startup)
@@ -196,7 +205,6 @@ dependencies {
   implementation(libs.accompanist.pager)
   implementation(libs.accompanist.pagerIndicators)
   implementation(libs.accompanist.systemUiController)
-  implementation(libs.accompanist.themeAdapter.material)
 
   implementation(libs.apollo.adapters)
   implementation(libs.apollo.normalizedCache)
@@ -220,6 +228,7 @@ dependencies {
 
   implementation(platform(libs.firebase.bom))
   implementation(libs.firebase.playServicesBase)
+  implementation(libs.firebase.analytics)
   implementation(libs.firebase.crashlytics)
   implementation(libs.firebase.dynamicLinks)
   implementation(libs.firebase.messaging)
@@ -267,8 +276,6 @@ dependencies {
   testImplementation(libs.mockk.jvm)
 
   debugImplementation(libs.leakCanary)
-  debugImplementation(libs.shake)
-  "stagingImplementation"(libs.shake)
 
   implementation(libs.androidx.compose.animation)
   implementation(libs.androidx.compose.foundation)
@@ -277,7 +284,7 @@ dependencies {
   implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.compose.uiToolingPreview)
   implementation(libs.androidx.compose.uiViewBinding)
-  implementation(libs.androidx.lifecycle.compose)
+  implementation(libs.androidx.lifecycle.viewmodelCompose)
   implementation(libs.androidx.other.activityCompose)
   implementation(libs.datadog.sdk)
   implementation(libs.hedvig.authlib)
@@ -286,4 +293,26 @@ dependencies {
   debugImplementation(libs.androidx.compose.uiTooling)
   debugImplementation(libs.androidx.compose.uiTestManifest)
   androidTestImplementation(libs.androidx.compose.uiTestJunit)
+}
+
+easylauncher {
+  buildTypes.register("staging") {
+    setFilters(
+      customRibbon(
+        label = "staging",
+        ribbonColor = "#99606060", // Gray
+        gravity = ColorRibbonFilter.Gravity.BOTTOM,
+        textSizeRatio = 0.25f,
+      ),
+    )
+  }
+  buildTypes.create("debug") {
+    setFilters(
+      customRibbon(
+        label = "debug",
+        ribbonColor = "#99FFC423", // Yellow
+        textSizeRatio = 0.2f,
+      ),
+    )
+  }
 }

@@ -2,8 +2,8 @@ package com.hedvig.app.util.apollo
 
 import android.content.Context
 import android.os.Parcelable
-import com.hedvig.android.apollo.graphql.fragment.IconVariantsFragment
 import com.hedvig.app.util.extensions.isDarkThemeActive
+import giraffe.fragment.IconVariantsFragment
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

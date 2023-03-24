@@ -3,8 +3,8 @@ package com.hedvig.app.feature.addressautocompletion.data
 import arrow.core.Either
 import arrow.core.getOrElse
 import com.hedvig.android.apollo.OperationResult
-import com.hedvig.android.apollo.graphql.type.AddressAutocompleteType
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
+import giraffe.type.AddressAutocompleteType
 
 /**
  * Returns a [DanishAddress] when with all inputs considered, the selection is considered a final address selection

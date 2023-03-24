@@ -1,23 +1,20 @@
 package com.hedvig.app.feature.insurance.ui.detail
 
 import android.net.Uri
-import com.hedvig.android.apollo.graphql.InsuranceQuery
-import com.hedvig.app.R
 import com.hedvig.app.feature.documents.DocumentItems
-import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.insurance.ui.ContractCardViewState
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoModel
-import com.hedvig.app.feature.perils.Peril
-import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.feature.table.intoTable
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.apollo.toUpcomingAgreementResult
+import giraffe.InsuranceQuery
 
-fun InsuranceQuery.Contract.toContractDetailViewState(): ContractDetailViewState {
+fun InsuranceQuery.Contract.toContractDetailViewState(
+  isTerminationFlowEnabled: Boolean,
+): ContractDetailViewState {
   return ContractDetailViewState(
     contractCardViewState = toContractCardViewState(),
-    memberDetailsViewState = toMemberDetailsViewState(),
-    coverageViewState = toCoverageViewState(),
+    memberDetailsViewState = toMemberDetailsViewState(isTerminationFlowEnabled),
     documentsViewState = toDocumentsViewState(),
   )
 }
@@ -32,8 +29,15 @@ fun InsuranceQuery.Contract.toContractCardViewState() = ContractCardViewState(
   logoUrls = logo?.variants?.fragments?.iconVariantsFragment?.let { ThemedIconUrls.from(it) },
 )
 
-fun InsuranceQuery.Contract.toMemberDetailsViewState() =
-  ContractDetailViewState.MemberDetailsViewState(
+fun InsuranceQuery.Contract.toMemberDetailsViewState(
+  isTerminationFlowEnabled: Boolean = true,
+): ContractDetailViewState.MemberDetailsViewState {
+  val isContractTerminated = run {
+    val isTerminatedInTheFuture = fragments.upcomingAgreementFragment.status.asTerminatedInFutureStatus != null
+    val isTerminatedToday = fragments.upcomingAgreementFragment.status.asTerminatedTodayStatus != null
+    isTerminatedInTheFuture || isTerminatedToday
+  }
+  return ContractDetailViewState.MemberDetailsViewState(
     pendingAddressChange = fragments
       .upcomingAgreementFragment
       .toUpcomingAgreementResult()
@@ -45,24 +49,9 @@ fun InsuranceQuery.Contract.toMemberDetailsViewState() =
       null
     },
     change = YourInfoModel.Change,
+    cancelInsurance = if (isTerminationFlowEnabled && !isContractTerminated) YourInfoModel.CancelInsuranceButton(id) else null,
   )
-
-fun InsuranceQuery.Contract.toCoverageViewState() = ContractDetailViewState.CoverageViewState(
-  perils = listOf(
-    PerilItem.Header.CoversSuffix(displayName),
-  ) + contractPerils.map {
-    PerilItem.Peril(Peril.from(it.fragments.perilFragment))
-  },
-  insurableLimits = insurableLimits.map {
-    it.fragments.insurableLimitsFragment.let { insurableLimitsFragment ->
-      InsurableLimitItem.InsurableLimit(
-        label = insurableLimitsFragment.label,
-        limit = insurableLimitsFragment.limit,
-        description = insurableLimitsFragment.description,
-      )
-    }
-  }.let { listOf(InsurableLimitItem.Header.MoreInfo) + it },
-)
+}
 
 fun InsuranceQuery.Contract.toDocumentsViewState() = ContractDetailViewState.DocumentsViewState(
   documents = listOfNotNull(

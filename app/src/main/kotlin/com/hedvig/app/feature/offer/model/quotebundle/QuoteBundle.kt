@@ -1,7 +1,5 @@
 package com.hedvig.app.feature.offer.model.quotebundle
 
-import com.hedvig.android.apollo.graphql.fragment.QuoteBundleFragment
-import com.hedvig.android.apollo.graphql.type.CheckoutMethod
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.offer.model.CheckoutLabel
@@ -10,6 +8,8 @@ import com.hedvig.app.feature.offer.ui.checkoutLabel
 import com.hedvig.app.feature.perils.Peril
 import com.hedvig.app.feature.table.Table
 import com.hedvig.app.feature.table.intoTable
+import giraffe.fragment.QuoteBundleFragment
+import giraffe.type.CheckoutMethod
 import java.time.LocalDate
 
 data class QuoteBundle(

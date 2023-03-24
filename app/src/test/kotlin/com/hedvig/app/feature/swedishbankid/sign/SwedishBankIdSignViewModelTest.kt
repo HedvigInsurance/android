@@ -6,11 +6,11 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.prop
+import com.hedvig.android.core.common.test.MainCoroutineRule
 import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager
 import com.hedvig.app.feature.offer.model.Checkout
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.usecase.FakeObserveQuoteCartCheckoutUseCase
-import com.hedvig.app.util.coroutines.MainCoroutineRule
 import com.hedvig.hanalytics.PaymentType
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule

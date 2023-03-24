@@ -2,11 +2,11 @@ package com.hedvig.app.feature.embark
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import com.hedvig.android.apollo.graphql.fragment.GraphQLVariablesFragment
-import com.hedvig.android.apollo.graphql.type.EmbarkAPIGraphQLSingleVariableCasting
 import com.hedvig.app.feature.embark.variables.CastType
 import com.hedvig.app.feature.embark.variables.Variable
 import com.hedvig.app.feature.embark.variables.VariableExtractor
+import giraffe.fragment.GraphQLVariablesFragment
+import giraffe.type.EmbarkAPIGraphQLSingleVariableCasting
 import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.Test

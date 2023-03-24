@@ -62,7 +62,7 @@ class ChangeAddressActivity : AppCompatActivity(R.layout.change_address_activity
       continueButton.applyNavigationBarInsetsMargin()
 
       toolbar.setNavigationOnClickListener {
-        onBackPressed()
+        onBackPressedDispatcher.onBackPressed()
       }
     }
 

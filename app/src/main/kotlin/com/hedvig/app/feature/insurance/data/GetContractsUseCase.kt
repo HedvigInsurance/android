@@ -3,11 +3,13 @@ package com.hedvig.app.feature.insurance.data
 import arrow.core.Either
 import arrow.core.continuations.either
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.apollo.graphql.InsuranceQuery
+import com.apollographql.apollo3.cache.normalized.FetchPolicy
+import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.language.LanguageService
-import com.hedvig.app.util.ErrorMessage
+import giraffe.InsuranceQuery
 
 class GetContractsUseCase(
   private val apolloClient: ApolloClient,
@@ -17,6 +19,7 @@ class GetContractsUseCase(
     return either {
       val insuranceQueryData = apolloClient
         .query(InsuranceQuery(languageService.getGraphQLLocale()))
+        .fetchPolicy(FetchPolicy.NetworkFirst)
         .safeExecute()
         .toEither(::ErrorMessage)
         .bind()

@@ -55,11 +55,22 @@ class SimpleSignAuthenticationViewModel(
   private val _events = LiveEvent<Event>()
   val events: LiveData<Event> = _events
 
-  sealed class Event {
-    object Success : Event()
-    object Error : Event()
-    object LoadWebView : Event()
-    object CancelSignIn : Event()
+  sealed class Event { // toStrings overwritten for logging purposes. todo change to `data object` in Kotlin 1.9.
+    object Success : Event() {
+      override fun toString() = "Success"
+    }
+
+    object Error : Event() {
+      override fun toString() = "Error"
+    }
+
+    object LoadWebView : Event() {
+      override fun toString() = "LoadWebView"
+    }
+
+    object CancelSignIn : Event() {
+      override fun toString() = "CancelSignIn"
+    }
   }
 
   /**

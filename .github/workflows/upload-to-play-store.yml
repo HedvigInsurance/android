@@ -42,8 +42,6 @@ jobs:
           LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
           ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_LIVE_CLIENT_KEY }}
-          SHAKE_CLIENT_ID: ${{ secrets.SHAKE_CLIENT_ID }}
-          SHAKE_CLIENT_SECRET: ${{ secrets.SHAKE_CLIENT_SECRET }}
       - name: Run license release report
         run: ./gradlew licenseReleaseReport --continue
         continue-on-error: true

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import arrow.core.continuations.either
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.android.validation.ValidationResult
 import com.hedvig.android.core.common.android.validation.validateEmail
 import com.hedvig.android.market.Market
@@ -18,7 +19,6 @@ import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import com.hedvig.app.feature.offer.usecase.ObserveOfferStateUseCase
 import com.hedvig.app.feature.offer.usecase.OfferState
 import com.hedvig.app.feature.offer.usecase.StartCheckoutUseCase
-import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.validateNationalIdentityNumber
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay

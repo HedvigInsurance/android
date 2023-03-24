@@ -6,7 +6,7 @@ import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.apollographql.apollo3.cache.normalized.watch
-import com.hedvig.android.apollo.graphql.PayinStatusQuery
+import giraffe.PayinStatusQuery
 import kotlinx.coroutines.flow.Flow
 
 class PayinStatusRepository(

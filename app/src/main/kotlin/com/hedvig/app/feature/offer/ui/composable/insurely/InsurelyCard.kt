@@ -12,8 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.hedvig_black12percent
 import com.hedvig.app.R
@@ -56,13 +56,11 @@ fun InsurelyCard(
   }
 }
 
-@Preview
+@HedvigPreview
 @Composable
-fun InsurelyCardPreview() {
+private fun PreviewInsurelyCard() {
   HedvigTheme {
-    Surface(
-      color = MaterialTheme.colors.background,
-    ) {
+    Surface(color = MaterialTheme.colors.background) {
       Column {
         val insuranceProvider = "insuranceProvider"
         listOf(

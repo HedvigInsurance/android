@@ -1,8 +1,8 @@
 package com.hedvig.app.testdata.common.builders
 
-import com.hedvig.android.apollo.graphql.fragment.ContractStatusFragment
-import com.hedvig.android.apollo.graphql.type.SwedishApartmentAgreement
 import com.hedvig.app.testdata.common.ContractStatus
+import giraffe.fragment.ContractStatusFragment
+import giraffe.type.SwedishApartmentAgreement
 import java.time.LocalDate
 
 data class ContractStatusFragmentBuilder(

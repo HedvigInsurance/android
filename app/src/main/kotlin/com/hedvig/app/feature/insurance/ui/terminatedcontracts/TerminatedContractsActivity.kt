@@ -11,7 +11,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import coil.ImageLoader
 import com.google.android.material.transition.platform.MaterialSharedAxis
-import com.hedvig.android.apollo.graphql.InsuranceQuery
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
@@ -24,6 +23,7 @@ import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.viewBinding
+import giraffe.InsuranceQuery
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -51,7 +51,9 @@ class TerminatedContractsActivity : AppCompatActivity(R.layout.terminated_contra
       window.compatSetDecorFitsSystemWindows(false)
       toolbar.applyStatusBarInsets()
       recycler.applyNavigationBarInsets()
-      toolbar.setNavigationOnClickListener { onBackPressed() }
+      toolbar.setNavigationOnClickListener {
+        onBackPressedDispatcher.onBackPressed()
+      }
       val adapter = InsuranceAdapter(marketManager, viewModel::load, {}, imageLoader, {})
       recycler.adapter = adapter
       viewModel
@@ -62,12 +64,14 @@ class TerminatedContractsActivity : AppCompatActivity(R.layout.terminated_contra
             is TerminatedContractsViewModel.ViewState.Error -> {
               adapter.submitList(listOf(InsuranceModel.Error))
             }
+
             is TerminatedContractsViewModel.ViewState.Success -> {
               adapter.submitList(
                 viewState.items,
               )
               recycler.post { startPostponedEnterTransition() }
             }
+
             TerminatedContractsViewModel.ViewState.Loading -> {}
           }
         }

@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
+import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.doOnLayout
 import androidx.core.view.updatePadding
@@ -36,6 +37,27 @@ class ReferralsEditCodeActivity : AppCompatActivity(R.layout.activity_referrals_
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     lifecycle.addObserver(AuthenticatedObserver())
+    onBackPressedDispatcher.addCallback(this) {
+      if (isSubmitting) {
+        return@addCallback
+      }
+      if (dirty) {
+        showAlert(
+          hedvig.resources.R.string.referrals_edit_code_confirm_dismiss_title,
+          hedvig.resources.R.string.referrals_edit_code_confirm_dismiss_body,
+          hedvig.resources.R.string.referrals_edit_code_confirm_dismiss_continue,
+          hedvig.resources.R.string.referrals_edit_code_confirm_dismiss_cancel,
+          positiveAction = {
+            remove()
+            onBackPressedDispatcher.onBackPressed()
+          },
+          negativeAction = {},
+        )
+      } else {
+        remove()
+        onBackPressedDispatcher.onBackPressed()
+      }
+    }
 
     binding.apply {
       window.compatSetDecorFitsSystemWindows(false)
@@ -46,7 +68,7 @@ class ReferralsEditCodeActivity : AppCompatActivity(R.layout.activity_referrals_
       scrollView.applyNavigationBarInsets()
 
       toolbar.setNavigationOnClickListener {
-        onBackPressed()
+        onBackPressedDispatcher.onBackPressed()
       }
       toolbar.setOnMenuItemClickListener { menuItem ->
         when (menuItem.itemId) {
@@ -55,6 +77,7 @@ class ReferralsEditCodeActivity : AppCompatActivity(R.layout.activity_referrals_
             submit()
             true
           }
+
           else -> false
         }
       }
@@ -73,10 +96,12 @@ class ReferralsEditCodeActivity : AppCompatActivity(R.layout.activity_referrals_
             toolbar.menu.findItem(R.id.save).isEnabled = true
             codeContainer.error = null
           }
+
           ValidationResult.TOO_SHORT -> {
             toolbar.menu.findItem(R.id.save).isEnabled = false
             codeContainer.error = null
           }
+
           ValidationResult.TOO_LONG -> {
             toolbar.menu.findItem(R.id.save).isEnabled = false
             codeContainer.error =
@@ -157,31 +182,12 @@ class ReferralsEditCodeActivity : AppCompatActivity(R.layout.activity_referrals_
               codeContainer.error =
                 getString(hedvig.resources.R.string.referrals_change_code_sheet_general_error)
             }
+
             else -> {
             }
           }
         }
         .launchIn(lifecycleScope)
-    }
-  }
-
-  override fun onBackPressed() {
-    if (isSubmitting) {
-      return
-    }
-    if (dirty) {
-      showAlert(
-        hedvig.resources.R.string.referrals_edit_code_confirm_dismiss_title,
-        hedvig.resources.R.string.referrals_edit_code_confirm_dismiss_body,
-        hedvig.resources.R.string.referrals_edit_code_confirm_dismiss_continue,
-        hedvig.resources.R.string.referrals_edit_code_confirm_dismiss_cancel,
-        positiveAction = {
-          super.onBackPressed()
-        },
-        negativeAction = {},
-      )
-    } else {
-      super.onBackPressed()
     }
   }
 

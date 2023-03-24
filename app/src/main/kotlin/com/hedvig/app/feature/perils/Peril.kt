@@ -1,10 +1,12 @@
 package com.hedvig.app.feature.perils
 
 import android.os.Parcelable
-import com.hedvig.android.apollo.graphql.fragment.PerilFragment
+import androidx.compose.runtime.Immutable
+import giraffe.fragment.PerilFragment
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
+@Immutable
 data class Peril(
   val title: String,
   val description: String,

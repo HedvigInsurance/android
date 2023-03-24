@@ -1,7 +1,5 @@
 package com.hedvig.app.feature.home
 
-import com.hedvig.android.apollo.graphql.HomeQuery
-import com.hedvig.android.apollo.graphql.LoggedInQuery
 import com.hedvig.android.market.Market
 import com.hedvig.app.feature.home.screens.CommonClaimScreen
 import com.hedvig.app.feature.home.screens.EmergencyScreen
@@ -18,6 +16,8 @@ import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.hasText
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import giraffe.HomeQuery
+import giraffe.LoggedInQuery
 import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
 import org.junit.Rule
 import org.junit.Test

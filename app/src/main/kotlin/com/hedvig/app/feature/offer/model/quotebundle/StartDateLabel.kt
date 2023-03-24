@@ -1,9 +1,8 @@
 package com.hedvig.app.feature.offer.model.quotebundle
 
 import android.content.Context
-import com.hedvig.android.apollo.graphql.fragment.QuoteBundleFragment
-import com.hedvig.android.apollo.graphql.type.QuoteBundleAppConfigurationStartDateTerminology
-import com.hedvig.app.R
+import giraffe.fragment.QuoteBundleFragment
+import giraffe.type.QuoteBundleAppConfigurationStartDateTerminology
 
 enum class StartDateLabel {
   SINGLE_START_DATE,

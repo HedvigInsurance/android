@@ -4,10 +4,10 @@ import arrow.core.flatMap
 import arrow.core.left
 import arrow.core.right
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.apollo.graphql.SubmitAdditionalPaymentDetailsMutation
-import com.hedvig.android.apollo.graphql.type.TokenizationResultType
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
+import giraffe.SubmitAdditionalPaymentDetailsMutation
+import giraffe.type.TokenizationResultType
 import org.json.JSONObject
 
 class SubmitAdditionalPaymentDetailsUseCase(

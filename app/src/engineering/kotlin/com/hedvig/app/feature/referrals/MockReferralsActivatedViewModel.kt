@@ -3,9 +3,9 @@ package com.hedvig.app.feature.referrals
 import android.os.Handler
 import android.os.Looper.getMainLooper
 import androidx.lifecycle.MutableLiveData
-import com.hedvig.android.apollo.graphql.LoggedInQuery
 import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedViewModel
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA
+import giraffe.LoggedInQuery
 
 class MockReferralsActivatedViewModel : ReferralsActivatedViewModel() {
   override val data = MutableLiveData<LoggedInQuery.Data>()

@@ -8,30 +8,58 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import com.hedvig.android.core.designsystem.theme.dark_background
+import com.hedvig.android.core.designsystem.theme.dark_error
+import com.hedvig.android.core.designsystem.theme.dark_onBackground
+import com.hedvig.android.core.designsystem.theme.dark_onError
+import com.hedvig.android.core.designsystem.theme.dark_onPrimary
+import com.hedvig.android.core.designsystem.theme.dark_onSecondary
+import com.hedvig.android.core.designsystem.theme.dark_onSurface
+import com.hedvig.android.core.designsystem.theme.dark_onSurfaceVariant
+import com.hedvig.android.core.designsystem.theme.dark_primary
+import com.hedvig.android.core.designsystem.theme.dark_primaryVariant
+import com.hedvig.android.core.designsystem.theme.dark_secondary
+import com.hedvig.android.core.designsystem.theme.dark_surface
+import com.hedvig.android.core.designsystem.theme.dark_surfaceVariant
+import com.hedvig.android.core.designsystem.theme.light_background
+import com.hedvig.android.core.designsystem.theme.light_error
+import com.hedvig.android.core.designsystem.theme.light_onBackground
+import com.hedvig.android.core.designsystem.theme.light_onError
+import com.hedvig.android.core.designsystem.theme.light_onPrimary
+import com.hedvig.android.core.designsystem.theme.light_onSecondary
+import com.hedvig.android.core.designsystem.theme.light_onSurface
+import com.hedvig.android.core.designsystem.theme.light_onSurfaceVariant
+import com.hedvig.android.core.designsystem.theme.light_primary
+import com.hedvig.android.core.designsystem.theme.light_primaryVariant
+import com.hedvig.android.core.designsystem.theme.light_secondary
+import com.hedvig.android.core.designsystem.theme.light_surface
+import com.hedvig.android.core.designsystem.theme.light_surfaceVariant
 
 @Composable
-fun HedvigMaterial3Theme(
+internal fun HedvigMaterial3Theme(
   darkTheme: Boolean = isSystemInDarkTheme(),
   colorOverrides: (ColorScheme) -> ColorScheme = { it },
   content: @Composable () -> Unit,
 ) {
-  val colorScheme = when {
-    darkTheme -> DarkColorScheme
-    else -> LightColorScheme
+  val (colorScheme, hedvigColorTheme) = when {
+    darkTheme -> DarkColorScheme to darkHedvigColorScheme(DarkColorScheme)
+    else -> LightColorScheme to lightHedvigColorScheme(LightColorScheme)
   }
   MaterialTheme(
     colorScheme = colorOverrides.invoke(colorScheme),
     shapes = HedvigShapes,
     typography = HedvigTypography,
   ) {
-    CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onBackground) {
+    CompositionLocalProvider(
+      LocalContentColor provides MaterialTheme.colorScheme.onBackground,
+      LocalHedvigMaterial3ColorScheme provides hedvigColorTheme,
+    ) {
       content()
     }
   }
 }
 
-@Suppress("PrivatePropertyName")
-private val LightColorScheme = lightColorScheme(
+internal val LightColorScheme = lightColorScheme(
   primary = light_primary,
   onPrimary = light_onPrimary,
   inversePrimary = light_primaryVariant,
@@ -63,7 +91,6 @@ private val LightColorScheme = lightColorScheme(
 //  scrim = no equivalent,
 )
 
-@Suppress("PrivatePropertyName")
 private val DarkColorScheme = darkColorScheme(
   primary = dark_primary,
   onPrimary = dark_onPrimary,

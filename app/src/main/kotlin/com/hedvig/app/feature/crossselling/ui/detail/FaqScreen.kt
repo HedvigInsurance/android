@@ -11,16 +11,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.component.button.LargeOutlinedButton
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.app.R
@@ -85,38 +86,40 @@ fun FaqScreen(
   }
 }
 
-@Preview(showBackground = true)
+@HedvigPreview
 @Composable
-fun FaqScreenPreview() {
+private fun PreviewFaqScreen() {
   HedvigTheme {
-    FaqScreen(
-      ctaLabel = "Calculate your price",
-      onUpClick = {},
-      openSheet = {},
-      openChat = {},
-      onCtaClick = {},
-      items = listOf(
-        FAQItem(
-          headline = "What is included in my home insurance?",
-          body = "",
+    Surface {
+      FaqScreen(
+        ctaLabel = "Calculate your price",
+        onUpClick = {},
+        openSheet = {},
+        openChat = {},
+        onCtaClick = {},
+        items = listOf(
+          FAQItem(
+            headline = "What is included in my home insurance?",
+            body = "",
+          ),
+          FAQItem(
+            headline = "Why should I choose Hedvig?",
+            body = "",
+          ),
+          FAQItem(
+            headline = "Can I get Hedvig even though I already have an insurance policy?",
+            body = "",
+          ),
+          FAQItem(
+            headline = "How do I pay for my insurance?",
+            body = "",
+          ),
+          FAQItem(
+            headline = "How do I make a claim?",
+            body = "",
+          ),
         ),
-        FAQItem(
-          headline = "Why should I choose Hedvig?",
-          body = "",
-        ),
-        FAQItem(
-          headline = "Can I get Hedvig even though I already have an insurance policy?",
-          body = "",
-        ),
-        FAQItem(
-          headline = "How do I pay for my insurance?",
-          body = "",
-        ),
-        FAQItem(
-          headline = "How do I make a claim?",
-          body = "",
-        ),
-      ),
-    )
+      )
+    }
   }
 }

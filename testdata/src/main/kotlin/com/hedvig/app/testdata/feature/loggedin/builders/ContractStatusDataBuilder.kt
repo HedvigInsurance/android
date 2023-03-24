@@ -1,7 +1,7 @@
 package com.hedvig.app.testdata.feature.loggedin.builders
 
-import com.hedvig.android.apollo.graphql.ContractStatusQuery
 import com.hedvig.app.testdata.common.ContractStatus
+import giraffe.ContractStatusQuery
 
 data class ContractStatusDataBuilder(
   private val statuses: List<ContractStatus> = emptyList(),

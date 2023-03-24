@@ -1,11 +1,11 @@
 package com.hedvig.app.testdata.feature.changeaddress
 
-import com.hedvig.android.apollo.graphql.ActiveContractBundlesQuery
-import com.hedvig.android.apollo.graphql.UpcomingAgreementQuery
-import com.hedvig.android.apollo.graphql.fragment.UpcomingAgreementFragment
 import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
 import com.hedvig.app.testdata.feature.changeaddress.builders.ActiveContractBundlesBuilder
 import com.hedvig.app.testdata.feature.changeaddress.builders.UpcomingAgreementBuilder
+import giraffe.ActiveContractBundlesQuery
+import giraffe.UpcomingAgreementQuery
+import giraffe.fragment.UpcomingAgreementFragment
 
 val UPCOMING_AGREEMENT_NONE = UpcomingAgreementQuery.Data(
   contracts = listOf(

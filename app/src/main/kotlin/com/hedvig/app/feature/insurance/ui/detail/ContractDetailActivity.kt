@@ -57,9 +57,10 @@ class ContractDetailActivity : AppCompatActivity(R.layout.contract_detail_activi
       window.compatSetDecorFitsSystemWindows(false)
       toolbar.applyStatusBarInsets()
       toolbar.setNavigationOnClickListener {
-        onBackPressed()
+        onBackPressedDispatcher.onBackPressed()
       }
-      tabContent.adapter = ContractDetailTabAdapter(this@ContractDetailActivity)
+      tabContent.offscreenPageLimit = 1
+      tabContent.adapter = ContractDetailTabAdapter(this@ContractDetailActivity, contractId)
       TabLayoutMediator(tabContainer, tabContent) { tab, position ->
         when (position) {
           0 -> {
@@ -78,7 +79,7 @@ class ContractDetailActivity : AppCompatActivity(R.layout.contract_detail_activi
       }.attach()
       cardContainer.arrow.isInvisible = true
       cardContainer.card.transitionName = "contract_card"
-      error.onClick = { viewModel.loadContract(contractId) }
+      error.onClick = { viewModel.retryLoadingContract() }
 
       viewModel
         .viewState
@@ -117,11 +118,14 @@ class ContractDetailActivity : AppCompatActivity(R.layout.contract_detail_activi
   }
 }
 
-class ContractDetailTabAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {
+class ContractDetailTabAdapter(
+  activity: AppCompatActivity,
+  private val contractId: String,
+) : FragmentStateAdapter(activity) {
   override fun getItemCount() = 3
   override fun createFragment(position: Int) = when (position) {
     0 -> YourInfoFragment()
-    1 -> CoverageFragment()
+    1 -> CoverageFragment.newInstance(contractId)
     2 -> DocumentsFragment()
     else -> Fragment()
   }

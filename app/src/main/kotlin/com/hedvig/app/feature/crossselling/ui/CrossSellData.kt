@@ -1,11 +1,11 @@
 package com.hedvig.app.feature.crossselling.ui
 
 import android.os.Parcelable
-import com.hedvig.android.apollo.graphql.fragment.CrossSellFragment
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.faq.FAQItem
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.perils.Peril
+import giraffe.fragment.CrossSellFragment
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

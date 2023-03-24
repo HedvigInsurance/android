@@ -1,0 +1,7 @@
+mutation FlowTerminationStart($flowTerminationStartInput : FlowTerminationStartInput!) {
+  flowTerminationStart(input: $flowTerminationStartInput, context: null) {
+    id
+    context
+    ...FlowStepFragment
+  }
+}

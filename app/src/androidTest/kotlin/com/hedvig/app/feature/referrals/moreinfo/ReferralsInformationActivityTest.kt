@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.referrals.moreinfo
 
 import android.content.Intent
-import com.hedvig.android.apollo.graphql.LoggedInQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
@@ -16,6 +15,7 @@ import com.hedvig.app.util.context
 import com.hedvig.app.util.locale
 import com.hedvig.app.util.stubExternalIntents
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import giraffe.LoggedInQuery
 import io.github.kakaocup.kakao.intent.KIntent
 import io.github.kakaocup.kakao.screen.Screen
 import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen

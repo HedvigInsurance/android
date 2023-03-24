@@ -2,11 +2,13 @@ package com.hedvig.app.feature.di
 
 import android.content.Context
 import androidx.startup.Initializer
+import com.hedvig.android.apollo.di.apolloClientModule
 import com.hedvig.android.auth.di.authModule
 import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.datadog.di.datadogModule
 import com.hedvig.android.feature.businessmodel.di.businessModelModule
+import com.hedvig.android.feature.terminateinsurance.di.terminateInsuranceModule
 import com.hedvig.android.hanalytics.android.di.hAnalyticsAndroidModule
 import com.hedvig.android.hanalytics.di.hAnalyticsModule
 import com.hedvig.android.hanalytics.engineering.di.HAnalyticsEngineeringModuleImpl
@@ -16,7 +18,7 @@ import com.hedvig.android.market.di.marketManagerModule
 import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.android.odyssey.di.odysseyModule
 import com.hedvig.app.adyenModule
-import com.hedvig.app.apolloClientModule
+import com.hedvig.app.apolloClientUrlsModule
 import com.hedvig.app.applicationModule
 import com.hedvig.app.authRepositoryModule
 import com.hedvig.app.cacheManagerModule
@@ -30,6 +32,7 @@ import com.hedvig.app.connectPaymentModule
 import com.hedvig.app.datastoreAndroidModule
 import com.hedvig.app.embarkModule
 import com.hedvig.app.externalInsuranceModule
+import com.hedvig.app.feature.insurance.ui.detail.coverage.di.insuranceCoverageModule
 import com.hedvig.app.graphQLQueryModule
 import com.hedvig.app.homeModule
 import com.hedvig.app.insuranceModule
@@ -70,6 +73,7 @@ class KoinInitializer : Initializer<KoinApplication> {
         HAnalyticsEngineeringModuleImpl().getModule(),
         adyenModule,
         apolloClientModule,
+        apolloClientUrlsModule,
         applicationModule,
         authModule,
         authRepositoryModule,
@@ -93,6 +97,7 @@ class KoinInitializer : Initializer<KoinApplication> {
         hAnalyticsAndroidModule,
         hAnalyticsModule,
         homeModule,
+        insuranceCoverageModule,
         insuranceModule,
         languageModule,
         logModule,
@@ -113,6 +118,7 @@ class KoinInitializer : Initializer<KoinApplication> {
         serviceModule,
         sharedPreferencesModule,
         stringConstantsModule,
+        terminateInsuranceModule,
         textActionSetModule,
         trustlyModule,
         useCaseModule,

@@ -13,8 +13,6 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-import com.hedvig.android.apollo.graphql.ReferralsQuery
-import com.hedvig.android.apollo.graphql.fragment.ReferralFragment
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.language.LanguageService
@@ -41,6 +39,8 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.safeLet
+import giraffe.ReferralsQuery
+import giraffe.fragment.ReferralFragment
 import org.javamoney.moneta.Money
 import slimber.log.e
 

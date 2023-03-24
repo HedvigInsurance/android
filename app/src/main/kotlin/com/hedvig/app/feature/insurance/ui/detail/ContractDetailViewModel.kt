@@ -2,55 +2,49 @@ package com.hedvig.app.feature.insurance.ui.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import arrow.core.Either
-import com.hedvig.app.feature.chat.data.ChatRepository
+import com.hedvig.android.core.common.RetryChannel
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
-import slimber.log.e
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.WhileSubscribed
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
-abstract class ContractDetailViewModel : ViewModel() {
+class ContractDetailViewModel(
+  contractId: String,
+  private val getContractDetailsUseCase: GetContractDetailsUseCase,
+  hAnalytics: HAnalytics,
+) : ViewModel() {
   sealed class ViewState {
     data class Success(val state: ContractDetailViewState) : ViewState()
     object Error : ViewState()
     object Loading : ViewState()
   }
 
-  protected val _viewState = MutableStateFlow<ViewState>(ViewState.Loading)
-  val viewState = _viewState.asStateFlow()
-
-  abstract fun loadContract(id: String)
-  abstract suspend fun triggerFreeTextChat()
-}
-
-class ContractDetailViewModelImpl(
-  contractId: String,
-  private val getContractDetailsUseCase: GetContractDetailsUseCase,
-  private val chatRepository: ChatRepository,
-  hAnalytics: HAnalytics,
-) : ContractDetailViewModel() {
-
   init {
     hAnalytics.screenView(AppScreen.INSURANCE_DETAIL)
-    loadContract(contractId)
   }
 
-  override fun loadContract(id: String) {
-    viewModelScope.launch {
-      val viewState = when (val insurance = getContractDetailsUseCase.invoke(id)) {
-        is Either.Left -> ViewState.Error
-        is Either.Right -> ViewState.Success(insurance.value)
-      }
-      _viewState.value = viewState
+  private val retryChannel = RetryChannel()
+  val viewState: StateFlow<ViewState> = retryChannel
+    .flatMapLatest {
+      getContractDetailsUseCase.invoke(contractId)
+        .map { result ->
+          result.fold(
+            ifLeft = { ViewState.Error },
+            ifRight = { ViewState.Success(it) },
+          )
+        }
     }
-  }
+    .stateIn(
+      viewModelScope,
+      SharingStarted.WhileSubscribed(5.seconds),
+      ViewState.Loading,
+    )
 
-  override suspend fun triggerFreeTextChat() {
-    val response = runCatching { chatRepository.triggerFreeTextChat() }
-    if (response.isFailure) {
-      response.exceptionOrNull()?.let { e(it) }
-    }
+  fun retryLoadingContract() {
+    retryChannel.retry()
   }
 }

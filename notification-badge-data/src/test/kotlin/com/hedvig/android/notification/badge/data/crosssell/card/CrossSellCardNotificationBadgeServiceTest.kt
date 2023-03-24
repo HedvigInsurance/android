@@ -3,12 +3,12 @@ package com.hedvig.android.notification.badge.data.crosssell.card
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import com.hedvig.android.apollo.graphql.type.TypeOfContract
 import com.hedvig.android.notification.badge.data.crosssell.CrossSellNotificationBadgeService
 import com.hedvig.android.notification.badge.data.crosssell.FakeNotificationBadgeStorage
 import com.hedvig.android.notification.badge.data.crosssell.GetCrossSellsContractTypesUseCase
 import com.hedvig.android.notification.badge.data.storage.NotificationBadge
 import com.hedvig.android.notification.badge.data.storage.NotificationBadgeStorage
+import giraffe.type.TypeOfContract
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest

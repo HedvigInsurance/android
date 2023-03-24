@@ -22,9 +22,9 @@ import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.progressBlue
 import com.hedvig.android.core.designsystem.theme.progressYellow
@@ -137,13 +137,11 @@ private fun AnimatedCircles() {
   }
 }
 
-@Preview
+@HedvigPreview
 @Composable
-fun TextProgressOverlayPreview() {
+private fun PreviewTextProgressOverlay() {
   HedvigTheme {
-    Surface(
-      color = MaterialTheme.colors.background,
-    ) {
+    Surface(color = MaterialTheme.colors.background) {
       TextProgressOverlay(progressText = "Calculating price...")
     }
   }

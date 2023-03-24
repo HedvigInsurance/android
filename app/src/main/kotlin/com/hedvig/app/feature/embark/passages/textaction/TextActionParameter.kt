@@ -1,9 +1,9 @@
 package com.hedvig.app.feature.embark.passages.textaction
 
 import android.os.Parcelable
-import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.util.MaskType
 import com.hedvig.app.feature.embark.util.maskTypeFromString
+import giraffe.EmbarkStoryQuery
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

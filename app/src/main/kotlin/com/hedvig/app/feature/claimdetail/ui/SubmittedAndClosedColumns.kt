@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.claimdetail.ui
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,8 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.app.R
 import com.hedvig.app.util.HedvigDateUtils
 import com.hedvig.app.util.compose.currentTimeAsState
 import java.time.Duration
@@ -83,19 +82,16 @@ private fun SubmittedAndClosedColumn(
   }
 }
 
-@Preview
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@HedvigPreview
 @Preview(locale = "sv")
 @Preview(locale = "nn")
 @Preview(locale = "da")
 @Preview(locale = "fr")
 @Preview(locale = "el")
 @Composable
-fun SubmittedAndClosedInformationPreview() {
+private fun PreviewSubmittedAndClosedInformation() {
   HedvigTheme {
-    Surface(
-      color = MaterialTheme.colors.background,
-    ) {
+    Surface(color = MaterialTheme.colors.background) {
       SubmittedAndClosedColumns(
         submittedAt = Instant.now().minus(Duration.ofDays(10)),
         closedAt = Instant.now().minus(Duration.ofSeconds(30)),

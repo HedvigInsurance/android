@@ -1,7 +1,7 @@
 package com.hedvig.android.notification.badge.data.crosssell
 
-import com.hedvig.android.apollo.graphql.type.TypeOfContract
 import com.hedvig.android.notification.badge.data.storage.NotificationBadgeStorage
+import giraffe.type.TypeOfContract
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first

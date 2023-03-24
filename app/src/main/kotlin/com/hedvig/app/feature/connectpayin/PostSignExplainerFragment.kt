@@ -2,13 +2,13 @@ package com.hedvig.app.feature.connectpayin
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.addCallback
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.google.android.material.transition.MaterialSharedAxis
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ConnectPaymentExplainerFragmentBinding
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.onBackPressedCallback
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import slimber.log.e
@@ -31,12 +31,9 @@ class PostSignExplainerFragment : Fragment(R.layout.connect_payment_explainer_fr
       return
     }
 
-    requireActivity().onBackPressedDispatcher.addCallback(
-      viewLifecycleOwner,
-      onBackPressedCallback {
-        showConfirmCloseDialog(requireContext(), paymentType, viewModel::close)
-      },
-    )
+    requireActivity().onBackPressedDispatcher.addCallback(this) {
+      showConfirmCloseDialog(requireContext(), paymentType, viewModel::close)
+    }
 
     binding.apply {
       when (paymentType) {

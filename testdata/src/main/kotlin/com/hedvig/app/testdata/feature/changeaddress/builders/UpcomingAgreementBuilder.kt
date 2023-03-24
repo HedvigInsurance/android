@@ -1,11 +1,11 @@
 package com.hedvig.app.testdata.feature.changeaddress.builders
 
-import com.hedvig.android.apollo.graphql.fragment.TableFragment
-import com.hedvig.android.apollo.graphql.fragment.UpcomingAgreementChangeFragment
-import com.hedvig.android.apollo.graphql.fragment.UpcomingAgreementFragment
-import com.hedvig.android.apollo.graphql.type.ActiveStatus
-import com.hedvig.android.apollo.graphql.type.SwedishHouseAgreement
 import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
+import giraffe.fragment.TableFragment
+import giraffe.fragment.UpcomingAgreementChangeFragment
+import giraffe.fragment.UpcomingAgreementFragment
+import giraffe.type.ActiveStatus
+import giraffe.type.SwedishHouseAgreement
 import java.time.LocalDate
 
 class UpcomingAgreementBuilder(

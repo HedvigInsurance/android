@@ -1,8 +1,8 @@
 package com.hedvig.app.testdata.feature.referrals.builders
 
-import com.hedvig.android.apollo.graphql.LoggedInQuery
-import com.hedvig.android.apollo.graphql.fragment.MonetaryAmountFragment
-import com.hedvig.android.apollo.graphql.type.MonthlyCostDeduction
+import giraffe.LoggedInQuery
+import giraffe.fragment.MonetaryAmountFragment
+import giraffe.type.MonthlyCostDeduction
 
 data class LoggedInDataBuilder(
   val referralTermsUrl: String = "https://www.example.com",

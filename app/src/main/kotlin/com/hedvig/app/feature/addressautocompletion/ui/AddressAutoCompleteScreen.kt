@@ -1,9 +1,7 @@
 package com.hedvig.app.feature.addressautocompletion.ui
 
-import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -47,14 +45,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.appbar.CenterAlignedTopAppBar
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddressInput
-import com.hedvig.app.ui.compose.composables.appbar.CenterAlignedTopAppBar
 import com.hedvig.app.util.compose.preview.previewData
 import com.hedvig.app.util.compose.preview.previewList
+import hedvig.resources.R
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -118,7 +117,7 @@ private fun TopAppBar(
   Surface(color = MaterialTheme.colors.background) {
     Column(Modifier.padding(contentPadding)) {
       CenterAlignedTopAppBar(
-        title = stringResource(hedvig.resources.R.string.EMBARK_ADDRESS_AUTOCOMPLETE_ADDRESS),
+        title = stringResource(R.string.EMBARK_ADDRESS_AUTOCOMPLETE_ADDRESS),
         onClick = { cancelAutoCompletion() },
         backgroundColor = MaterialTheme.colors.background,
       )
@@ -240,7 +239,7 @@ private fun SuggestionsList(
         ListItem(
           text = {
             Text(
-              stringResource(hedvig.resources.R.string.EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS),
+              stringResource(R.string.EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS),
               color = MaterialTheme.colors.error,
             )
           },
@@ -251,10 +250,9 @@ private fun SuggestionsList(
   }
 }
 
-@Preview
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@HedvigMultiScreenPreview
 @Composable
-fun AddressAutoCompleteScreenPreview() {
+private fun PreviewAddressAutoCompleteScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colors.background) {
       val previewDanishAddress = DanishAddress.previewData()

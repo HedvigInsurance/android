@@ -1,8 +1,8 @@
 package com.hedvig.app.testdata.feature.embark.builders
 
-import com.hedvig.android.apollo.graphql.EmbarkStoryQuery
-import com.hedvig.android.apollo.graphql.fragment.EmbarkLinkFragment
-import com.hedvig.android.apollo.graphql.type.EmbarkNumberActionSet
+import giraffe.EmbarkStoryQuery
+import giraffe.fragment.EmbarkLinkFragment
+import giraffe.type.EmbarkNumberActionSet
 
 data class NumberActionSetBuilder(
   val numberActions: List<NumberAction>,

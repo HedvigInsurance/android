@@ -6,7 +6,7 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.auth.authEvent)
+  implementation(projects.auth.authEventCore)
   implementation(projects.coreCommon)
   implementation(projects.coreCommonAndroid)
   implementation(projects.coreDatastore)
@@ -17,8 +17,8 @@ dependencies {
   implementation(libs.arrow.core)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.datetime)
+  implementation(libs.kotlinx.serialization.json)
   implementation(libs.okhttp.core)
-  implementation(libs.serialization.json)
   implementation(libs.slimber)
 
   testImplementation(projects.auth.authTest)

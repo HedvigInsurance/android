@@ -5,9 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Parcelable
-import com.hedvig.android.apollo.graphql.HomeQuery
-import com.hedvig.android.apollo.graphql.type.HedvigColor
 import com.hedvig.app.util.apollo.ThemedIconUrls
+import giraffe.HomeQuery
+import giraffe.type.HedvigColor
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

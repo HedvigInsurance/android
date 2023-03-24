@@ -8,11 +8,12 @@ import arrow.core.continuations.either
 import arrow.fx.coroutines.parZip
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.OperationResult
-import com.hedvig.android.apollo.graphql.NotificationRegisterDeviceMutation
-import com.hedvig.android.apollo.graphql.RegisterPushTokenMutation
+import com.hedvig.android.apollo.giraffe.di.giraffeClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.auth.AuthTokenService
+import giraffe.NotificationRegisterDeviceMutation
+import giraffe.RegisterPushTokenMutation
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import slimber.log.e
@@ -23,7 +24,7 @@ class PushNotificationWorker(
   params: WorkerParameters,
 ) : CoroutineWorker(context, params), KoinComponent {
 
-  private val apolloClient: ApolloClient by inject()
+  private val apolloClient: ApolloClient by inject(giraffeClient)
   private val authTokenService: AuthTokenService by inject()
 
   override suspend fun doWork(): Result {

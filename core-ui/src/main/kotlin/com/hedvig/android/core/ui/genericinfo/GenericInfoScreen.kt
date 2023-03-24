@@ -1,26 +1,23 @@
 package com.hedvig.android.core.ui.genericinfo
 
-import android.content.res.Configuration
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.component.button.LargeOutlinedButton
 import com.hedvig.android.core.designsystem.component.information.AppStateInformation
 import com.hedvig.android.core.designsystem.component.information.AppStateInformationType
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 
 /**
@@ -99,12 +96,11 @@ fun GenericInfoScreen(
   }
 }
 
-@Preview
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@HedvigPreview
 @Composable
-fun GenericInfoScreenPreview() {
+private fun PreviewGenericInfoScreen() {
   HedvigTheme {
-    Surface {
+    Surface(color = MaterialTheme.colors.background) {
       GenericInfoScreen(
         title = "Title",
         description = "description test test test",
@@ -115,16 +111,5 @@ fun GenericInfoScreenPreview() {
         {},
       )
     }
-  }
-}
-
-@Preview
-@Composable
-fun GenericErrorScreenWithBackgroundPreview() {
-  HedvigTheme {
-    GenericErrorScreen(
-      onRetryButtonClick = {},
-      Modifier.background(Brush.horizontalGradient(listOf(Color(0xFFEBD2D5), Color(0xFFD9D1F1)))),
-    )
   }
 }

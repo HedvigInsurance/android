@@ -8,11 +8,11 @@ import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.apollographql.apollo3.annotations.ApolloExperimental
 import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.mockserver.enqueue
-import com.hedvig.android.apollo.graphql.QuoteCartQuery
-import com.hedvig.android.apollo.graphql.type.Locale
-import com.hedvig.android.apollo.graphql.type.buildAdyen
-import com.hedvig.android.apollo.graphql.type.buildPaymentConnection
-import com.hedvig.android.apollo.graphql.type.buildQuoteCart
+import giraffe.QuoteCartQuery
+import giraffe.type.Locale
+import giraffe.type.buildAdyen
+import giraffe.type.buildPaymentConnection
+import giraffe.type.buildQuoteCart
 import org.json.JSONObject
 import org.junit.Test
 

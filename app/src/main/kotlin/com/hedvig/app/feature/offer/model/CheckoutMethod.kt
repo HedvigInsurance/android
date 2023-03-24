@@ -22,11 +22,11 @@ fun CheckoutMethod.checkoutIconRes() = when (this) {
   -> null
 }
 
-fun com.hedvig.android.apollo.graphql.type.CheckoutMethod.toCheckoutMethod() = when (this) {
-  com.hedvig.android.apollo.graphql.type.CheckoutMethod.SWEDISH_BANK_ID -> CheckoutMethod.SWEDISH_BANK_ID
-  com.hedvig.android.apollo.graphql.type.CheckoutMethod.NORWEGIAN_BANK_ID -> CheckoutMethod.NORWEGIAN_BANK_ID
-  com.hedvig.android.apollo.graphql.type.CheckoutMethod.DANISH_BANK_ID -> CheckoutMethod.DANISH_BANK_ID
-  com.hedvig.android.apollo.graphql.type.CheckoutMethod.SIMPLE_SIGN -> CheckoutMethod.SIMPLE_SIGN
-  com.hedvig.android.apollo.graphql.type.CheckoutMethod.APPROVE_ONLY -> CheckoutMethod.APPROVE_ONLY
-  com.hedvig.android.apollo.graphql.type.CheckoutMethod.UNKNOWN__ -> CheckoutMethod.UNKNOWN
+fun giraffe.type.CheckoutMethod.toCheckoutMethod() = when (this) {
+  giraffe.type.CheckoutMethod.SWEDISH_BANK_ID -> CheckoutMethod.SWEDISH_BANK_ID
+  giraffe.type.CheckoutMethod.NORWEGIAN_BANK_ID -> CheckoutMethod.NORWEGIAN_BANK_ID
+  giraffe.type.CheckoutMethod.DANISH_BANK_ID -> CheckoutMethod.DANISH_BANK_ID
+  giraffe.type.CheckoutMethod.SIMPLE_SIGN -> CheckoutMethod.SIMPLE_SIGN
+  giraffe.type.CheckoutMethod.APPROVE_ONLY -> CheckoutMethod.APPROVE_ONLY
+  giraffe.type.CheckoutMethod.UNKNOWN__ -> CheckoutMethod.UNKNOWN
 }

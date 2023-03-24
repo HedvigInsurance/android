@@ -8,10 +8,11 @@ import com.apollographql.apollo3.api.CustomScalarAdapters
 import com.apollographql.apollo3.api.Operation
 import com.apollographql.apollo3.api.json.buildJsonString
 import com.apollographql.apollo3.api.toJson
+import com.hedvig.android.apollo.giraffe.di.giraffeClient
+import com.hedvig.android.apollo.giraffe.di.giraffeModule
 import com.hedvig.android.core.common.android.jsonObjectOf
 import com.hedvig.android.core.common.android.toJsonArray
 import com.hedvig.app.TestApplication
-import com.hedvig.app.apolloClientModule
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import okhttp3.mockwebserver.Dispatcher
@@ -142,7 +143,7 @@ class ApolloMockServerRule(
   private val mockWebServer = apolloMockServer(*mocks)
   private val idlingResource = ApolloIdlingResource("ApolloIdlingResource")
 
-  private val originalApolloClientModule = apolloClientModule
+  private val originalApolloClientModule = giraffeModule
 
   private var testApolloModule: Module = constructTestApolloModule(idlingResource)
 
@@ -166,7 +167,7 @@ private fun constructTestApolloModule(
   idlingResource: ApolloIdlingResource,
 ): Module {
   return module {
-    single<ApolloClient> {
+    single<ApolloClient>(giraffeClient) {
       // Copy builder to not accumulate many idlingResource calls which crashes the tests.
       val builder: ApolloClient.Builder = get<ApolloClient.Builder>().copy()
       builder.idlingResource(idlingResource)

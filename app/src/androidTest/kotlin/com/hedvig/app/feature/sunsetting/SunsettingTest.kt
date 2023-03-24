@@ -1,7 +1,5 @@
 package com.hedvig.app.feature.sunsetting
 
-import com.hedvig.android.apollo.graphql.HomeQuery
-import com.hedvig.android.apollo.graphql.LoggedInQuery
 import com.hedvig.android.core.common.android.jsonObjectOf
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.testdata.feature.home.HOME_DATA_PENDING
@@ -13,6 +11,8 @@ import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.stub
 import com.kaspersky.kaspresso.screens.KScreen
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import giraffe.HomeQuery
+import giraffe.LoggedInQuery
 import io.github.kakaocup.kakao.intent.KIntent
 import org.junit.Ignore
 import org.junit.Rule

@@ -2,7 +2,10 @@ package com.hedvig.android.core.ui.genericinfo
 
 import android.content.Context
 import android.util.AttributeSet
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,7 +47,13 @@ class GenericErrorScreenView @JvmOverloads constructor(
   @Composable
   override fun Content() {
     HedvigTheme {
-      GenericErrorScreen(onRetryButtonClick = onClick, Modifier.padding(top = 48.dp))
+      GenericErrorScreen(
+        onRetryButtonClick = onClick,
+        modifier = Modifier
+          .padding(top = 32.dp)
+          .padding(16.dp)
+          .windowInsetsPadding(WindowInsets.safeDrawing),
+      )
     }
   }
 }

@@ -1,6 +1,6 @@
 package com.hedvig.app.testdata.feature.marketpicker.builders
 
-import com.hedvig.android.apollo.graphql.GeoQuery
+import giraffe.GeoQuery
 
 data class GeoDataBuilder(
   val countryISOCode: String = "SE",

@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.home.ui.claimstatus.data
 
-import com.hedvig.android.apollo.graphql.HomeQuery
 import com.hedvig.app.ui.compose.composables.claimprogress.ClaimProgressUiState
+import giraffe.HomeQuery
 
 data class ClaimStatusCardUiState(
   val id: String,

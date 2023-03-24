@@ -1,15 +1,17 @@
 package com.hedvig.app.util.compose
 
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import kotlin.math.max
 
@@ -88,76 +90,88 @@ fun HorizontalTextsWithMaximumSpaceTaken(
   }
 }
 
-@Preview
+@HedvigPreview
 @Composable
-fun SmallTextsPreview() {
+private fun PreviewSmallTexts() {
   HedvigTheme {
-    HorizontalTextsWithMaximumSpaceTaken(
-      startText = { Text(text = "Start") },
-      endText = { Text(text = "End", textAlign = it) },
-      modifier = Modifier.size(width = 250.dp, height = 100.dp),
-    )
+    Surface(color = MaterialTheme.colors.background) {
+      HorizontalTextsWithMaximumSpaceTaken(
+        startText = { Text(text = "Start") },
+        endText = { Text(text = "End", textAlign = it) },
+        modifier = Modifier.size(width = 250.dp, height = 100.dp),
+      )
+    }
   }
 }
 
-@Preview
+@HedvigPreview
 @Composable
-fun BigTextsPreview() {
+private fun PreviewBigTexts() {
   HedvigTheme {
-    HorizontalTextsWithMaximumSpaceTaken(
-      startText = { Text(text = "Start".repeat(10)) },
-      endText = { Text(text = "End".repeat(10), textAlign = it) },
-      modifier = Modifier.size(width = 250.dp, height = 100.dp),
-    )
+    Surface(color = MaterialTheme.colors.background) {
+      HorizontalTextsWithMaximumSpaceTaken(
+        startText = { Text(text = "Start".repeat(10)) },
+        endText = { Text(text = "End".repeat(10), textAlign = it) },
+        modifier = Modifier.size(width = 250.dp, height = 100.dp),
+      )
+    }
   }
 }
 
-@Preview
+@HedvigPreview
 @Composable
-fun BigTextsWithSpaceTextPreview() {
+private fun PreviewBigTextsWithSpaceText() {
   HedvigTheme {
-    HorizontalTextsWithMaximumSpaceTaken(
-      startText = { Text(text = "Start".repeat(10)) },
-      endText = { Text(text = "End".repeat(10), textAlign = it) },
-      modifier = Modifier.size(width = 250.dp, height = 100.dp),
-      spaceBetween = 30.dp,
-    )
+    Surface(color = MaterialTheme.colors.background) {
+      HorizontalTextsWithMaximumSpaceTaken(
+        startText = { Text(text = "Start".repeat(10)) },
+        endText = { Text(text = "End".repeat(10), textAlign = it) },
+        modifier = Modifier.size(width = 250.dp, height = 100.dp),
+        spaceBetween = 30.dp,
+      )
+    }
   }
 }
 
-@Preview
+@HedvigPreview
 @Composable
-fun BigStartTextPreview() {
+private fun PreviewBigStartText() {
   HedvigTheme {
-    HorizontalTextsWithMaximumSpaceTaken(
-      startText = { Text(text = "Start".repeat(10)) },
-      endText = { Text(text = "End", textAlign = it) },
-      modifier = Modifier.size(width = 250.dp, height = 100.dp),
-    )
+    Surface(color = MaterialTheme.colors.background) {
+      HorizontalTextsWithMaximumSpaceTaken(
+        startText = { Text(text = "Start".repeat(10)) },
+        endText = { Text(text = "End", textAlign = it) },
+        modifier = Modifier.size(width = 250.dp, height = 100.dp),
+      )
+    }
   }
 }
 
-@Preview
+@HedvigPreview
 @Composable
-fun BigEndTextPreview() {
+private fun PreviewBigEndText() {
   HedvigTheme {
-    HorizontalTextsWithMaximumSpaceTaken(
-      startText = { Text(text = "Start") },
-      endText = { Text(text = "End".repeat(10), textAlign = it) },
-      modifier = Modifier.size(width = 250.dp, height = 100.dp),
-    )
+    Surface(color = MaterialTheme.colors.background) {
+      HorizontalTextsWithMaximumSpaceTaken(
+        startText = { Text(text = "Start") },
+        endText = { Text(text = "End".repeat(10), textAlign = it) },
+        modifier = Modifier.size(width = 250.dp, height = 100.dp),
+      )
+    }
   }
 }
 
-@Preview
+@HedvigPreview
 @Composable
-fun BigEndTextWithSpacePreview() {
+private fun PreviewBigEndTextWithSpace() {
   HedvigTheme {
-    HorizontalTextsWithMaximumSpaceTaken(
-      startText = { Text(text = "Start") },
-      endText = { Text(text = "End".repeat(10), textAlign = it) },
-      modifier = Modifier.size(width = 250.dp, height = 100.dp),
-      spaceBetween = 32.dp,
-    )
+    Surface(color = MaterialTheme.colors.background) {
+      HorizontalTextsWithMaximumSpaceTaken(
+        startText = { Text(text = "Start") },
+        endText = { Text(text = "End".repeat(10), textAlign = it) },
+        modifier = Modifier.size(width = 250.dp, height = 100.dp),
+        spaceBetween = 32.dp,
+      )
+    }
   }
 }
