@@ -50,16 +50,16 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.odyssey.compose.MonetaryAmountOffsetMapping
 import com.hedvig.odyssey.compose.getLocale
 import com.hedvig.odyssey.remote.components.decorators.Color
-import com.hedvig.odyssey.remote.money.MonetaryAmount
-import com.hedvig.odyssey.renderers.ComposeRenderer
 import com.hedvig.odyssey.renderers.utils.composeColor
 import java.text.DecimalFormatSymbols
 
+/**
+ * [onInput] guarantees that it either returns a valid double, or null
+ */
 @Composable
-@ComposeRenderer
 internal fun MonetaryAmountInput(
-  value: MonetaryAmount?,
-  onInput: (MonetaryAmount?) -> Unit,
+  value: String?,
+  onInput: (String?) -> Unit,
   currency: String,
   maximumFractionDigits: Int,
   focusRequester: FocusRequester,
@@ -68,7 +68,7 @@ internal fun MonetaryAmountInput(
   val locale = getLocale()
   val decimalSeparator = remember(locale) { DecimalFormatSymbols.getInstance(locale).decimalSeparator }
 
-  var text by rememberSaveable { mutableStateOf(value?.amount ?: "") }
+  var text by rememberSaveable { mutableStateOf(value ?: "") }
   val isError by remember { derivedStateOf { text.lastOrNull() == decimalSeparator } }
   val focusManager = LocalFocusManager.current
 
@@ -98,15 +98,7 @@ internal fun MonetaryAmountInput(
         if (numberOfDecimalDigits > maximumFractionDigits) return@onValueChange
         text = newValue
         if (newValue.last() != decimalSeparator) {
-          val monetaryAmount = if (newValue.isBlank()) {
-            null
-          } else {
-            MonetaryAmount(
-              newValue.ifBlank { null },
-              currency,
-            )
-          }
-          onInput(monetaryAmount)
+          onInput(newValue.ifBlank { null })
         }
       },
       modifier = modifier
@@ -205,7 +197,7 @@ private fun PreviewMonetaryAmountInput() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       MonetaryAmountInput(
-        MonetaryAmount("1234", "SEK"),
+        "1234",
         {},
         "SEK",
         2,

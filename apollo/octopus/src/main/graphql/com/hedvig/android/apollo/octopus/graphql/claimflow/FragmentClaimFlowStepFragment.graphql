@@ -8,129 +8,118 @@ fragment ClaimFlowStepFragment on Flow {
     ...FlowClaimPhoneNumberStepFragment
     ...FlowClaimSingleItemStepFragment
     ...FlowClaimSingleItemCheckoutStepFragment
+    ...FlowClaimSummaryStepFragment
     ...FlowClaimFailedStepFragment
     ...FlowClaimSuccessStepFragment
   }
 }
 
-fragment FlowClaimAudioRecordingStepFragment on FlowStep {
-  ... on FlowClaimAudioRecordingStep {
-    id
-    questions
+fragment FlowClaimAudioRecordingStepFragment on FlowClaimAudioRecordingStep {
+  id
+  questions
+}
+
+fragment FlowClaimDateOfOccurrenceStepFragment on FlowClaimDateOfOccurrenceStep {
+  id
+  dateOfOccurrence
+  maxDate
+}
+
+fragment FlowClaimLocationStepFragment on FlowClaimLocationStep {
+  id
+  location
+  options {
+    value
+    displayName
   }
 }
 
-fragment FlowClaimDateOfOccurrenceStepFragment on FlowStep {
-  ... on FlowClaimDateOfOccurrenceStep {
-    id
-    dateOfOccurrence
-    maxDate
+fragment FlowClaimDateOfOccurrencePlusLocationStepFragment on FlowClaimDateOfOccurrencePlusLocationStep {
+  id
+  dateOfOccurrenceStep {
+    ...FlowClaimDateOfOccurrenceStepFragment
+  }
+  locationStep {
+    ...FlowClaimLocationStepFragment
   }
 }
 
-fragment FlowClaimLocationStepFragment on FlowStep {
-  ... on FlowClaimLocationStep {
+fragment FlowClaimPhoneNumberStepFragment on FlowClaimPhoneNumberStep {
+  id
+  phoneNumber
+}
+
+fragment FlowClaimSingleItemStepFragment on FlowClaimSingleItemStep {
+  id
+  preferredCurrency
+  purchasePrice {
+    ...MoneyFragment
+  }
+  purchaseDate
+  selectedItemProblems
+  availableItemProblems {
+    displayName
+    itemProblemId
+  }
+  selectedItemBrand
+  availableItemBrands {
+    displayName
+    itemTypeId
+    itemBrandId
+  }
+  selectedItemModel
+  availableItemModels {
+    displayName
+    imageUrl
+    itemTypeId
+    itemBrandId
+    itemModelId
+  }
+}
+
+fragment FlowClaimSingleItemCheckoutStepFragment on FlowClaimSingleItemCheckoutStep {
+  id
+  price {
+    ...MoneyFragment
+  }
+  depreciation {
+    ...MoneyFragment
+  }
+  deductible {
+    ...MoneyFragment
+  }
+  payoutAmount {
+    ...MoneyFragment
+  }
+  availableCheckoutMethods {
     id
-    location
-    options {
-      value
+    ... on FlowClaimAutomaticAutogiroPayout {
+      id
       displayName
-    }
-  }
-}
-
-fragment FlowClaimDateOfOccurrencePlusLocationStepFragment on FlowStep {
-  ... on FlowClaimDateOfOccurrencePlusLocationStep {
-    id
-    dateOfOccurrenceStep {
-      id
-      dateOfOccurrence
-      maxDate
-    }
-    locationStep {
-      id
-      location
-      options {
-        value
-        displayName
+      amount {
+        ...MoneyFragment
       }
     }
   }
 }
 
-fragment FlowClaimPhoneNumberStepFragment on FlowStep {
-  ... on FlowClaimPhoneNumberStep {
-    id
-    phoneNumber
+fragment FlowClaimSummaryStepFragment on FlowClaimSummaryStep {
+  id
+  locationStep {
+    ...FlowClaimLocationStepFragment
+  }
+  dateOfOccurrenceStep {
+    ...FlowClaimDateOfOccurrenceStepFragment
+  }
+  singleItemStep {
+    ...FlowClaimSingleItemStepFragment
   }
 }
 
-fragment FlowClaimSingleItemStepFragment on FlowStep {
-  ... on FlowClaimSingleItemStep {
-    id
-    preferredCurrency
-    purchasePrice {
-      ...MoneyFragment
-    }
-    purchaseDate
-    selectedItemProblems
-    availableItemProblems {
-      displayName
-      itemProblemId
-    }
-    selectedItemBrand
-    availableItemBrands {
-      displayName
-      itemTypeId
-      itemBrandId
-    }
-    selectedItemModel
-    availableItemModels {
-      displayName
-      imageUrl
-      itemTypeId
-      itemBrandId
-      itemModelId
-    }
-  }
+fragment FlowClaimFailedStepFragment on FlowClaimFailedStep {
+  id
 }
 
-fragment FlowClaimSingleItemCheckoutStepFragment on FlowStep {
-  ... on FlowClaimSingleItemCheckoutStep {
-    id
-    price {
-      ...MoneyFragment
-    }
-    depreciation {
-      ...MoneyFragment
-    }
-    deductible {
-      ...MoneyFragment
-    }
-    payoutAmount {
-      ...MoneyFragment
-    }
-    availableCheckoutMethods {
-      id
-      ... on FlowClaimAutomaticAutogiroPayout {
-        id
-        displayName
-        amount {
-          ...MoneyFragment
-        }
-      }
-    }
-  }
-}
-
-fragment FlowClaimFailedStepFragment on FlowStep {
-  ... on FlowClaimFailedStep {
-    id
-  }
-}
-
-fragment FlowClaimSuccessStepFragment on FlowStep {
-  ... on FlowClaimSuccessStep {
-    id
-  }
+fragment FlowClaimSuccessStepFragment on FlowClaimSuccessStep {
+  id
 }

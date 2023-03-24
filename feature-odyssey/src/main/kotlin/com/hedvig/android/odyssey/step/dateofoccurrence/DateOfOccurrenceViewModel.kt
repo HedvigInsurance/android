@@ -1,12 +1,12 @@
 package com.hedvig.android.odyssey.step.dateofoccurrence
 
-import androidx.compose.material3.DatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.odyssey.data.ClaimFlowRepository
 import com.hedvig.android.odyssey.data.ClaimFlowStep
+import com.hedvig.android.odyssey.ui.DatePickerUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +15,6 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toLocalDateTime
 
 internal class DateOfOccurrenceViewModel(
@@ -23,12 +22,9 @@ internal class DateOfOccurrenceViewModel(
   maxDate: LocalDate,
   private val claimFlowRepository: ClaimFlowRepository,
 ) : ViewModel() {
-  private val datePickerConfiguration = DatePickerConfiguration(initialDateOfOccurrence, maxDate)
-  val dateValidator = datePickerConfiguration.dateValidator
-
   private val _uiState: MutableStateFlow<DateOfOccurrenceUiState> = MutableStateFlow(
     DateOfOccurrenceUiState(
-      datePickerState = datePickerConfiguration.datePickerState,
+      datePickerUiState = DatePickerUiState(initiallySelectedDate = initialDateOfOccurrence, maxDate = maxDate),
       dateSubmissionError = false,
       nextStep = null,
       isLoading = false,
@@ -39,7 +35,7 @@ internal class DateOfOccurrenceViewModel(
   fun submitSelectedDate() {
     val uiState = _uiState.value
     if (!uiState.canSubmitSelectedDate()) return
-    val selectedDateMillis = uiState.datePickerState.selectedDateMillis ?: return
+    val selectedDateMillis = uiState.datePickerUiState.datePickerState.selectedDateMillis ?: return
     _uiState.update { it.copy(isLoading = true) }
     val selectedDate = Instant.fromEpochMilliseconds(selectedDateMillis).toLocalDateTime(TimeZone.UTC).date
     viewModelScope.launch {
@@ -77,24 +73,8 @@ internal class DateOfOccurrenceViewModel(
   }
 }
 
-private class DatePickerConfiguration(dateOfOccurrence: LocalDate?, maxDate: LocalDate) {
-  private val minDate = LocalDate(1900, 1, 1)
-  private val minDateInMillis = minDate.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
-  private val maxDateInMillis = maxDate.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
-  private val yearsRange = minDate.year..maxDate.year
-
-  val datePickerState = DatePickerState(
-    initialSelectedDateMillis = dateOfOccurrence?.atStartOfDayIn(TimeZone.UTC)?.toEpochMilliseconds(),
-    initialDisplayedMonthMillis = null,
-    yearsRange = yearsRange,
-  )
-  val dateValidator: (Long) -> Boolean = { selectedDateEpochMillis ->
-    selectedDateEpochMillis in minDateInMillis..maxDateInMillis
-  }
-}
-
 internal data class DateOfOccurrenceUiState(
-  val datePickerState: DatePickerState,
+  val datePickerUiState: DatePickerUiState,
   val dateSubmissionError: Boolean,
   val nextStep: ClaimFlowStep?,
   val isLoading: Boolean,
@@ -102,7 +82,7 @@ internal data class DateOfOccurrenceUiState(
   val canSubmit: Boolean
     @Composable
     get() = remember(
-      datePickerState.selectedDateMillis,
+      datePickerUiState.datePickerState.selectedDateMillis,
       dateSubmissionError,
       nextStep,
       isLoading,
@@ -110,7 +90,7 @@ internal data class DateOfOccurrenceUiState(
 }
 
 private fun DateOfOccurrenceUiState.canSubmitSelectedDate(): Boolean {
-  return datePickerState.selectedDateMillis != null &&
+  return datePickerUiState.datePickerState.selectedDateMillis != null &&
     !dateSubmissionError &&
     nextStep == null &&
     !isLoading

@@ -2,19 +2,13 @@ package com.hedvig.android.odyssey.di
 
 import arrow.retrofit.adapter.either.EitherCallAdapterFactory
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.apollo.giraffe.di.giraffeClient
 import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.odyssey.data.ClaimFlowRepository
 import com.hedvig.android.odyssey.data.ClaimFlowRepositoryImpl
 import com.hedvig.android.odyssey.data.OdysseyService
-import com.hedvig.android.odyssey.input.InputViewModel
 import com.hedvig.android.odyssey.model.FlowId
-import com.hedvig.android.odyssey.model.Resolution
+import com.hedvig.android.odyssey.navigation.ClaimFlowDestination
 import com.hedvig.android.odyssey.navigation.LocationOption
-import com.hedvig.android.odyssey.repository.ClaimsFlowRepository
-import com.hedvig.android.odyssey.repository.NetworkClaimsFlowRepository
-import com.hedvig.android.odyssey.repository.PhoneNumberRepository
-import com.hedvig.android.odyssey.resolution.ResolutionViewModel
 import com.hedvig.android.odyssey.sdui.AndroidDatadogLogger
 import com.hedvig.android.odyssey.sdui.AndroidDatadogProvider
 import com.hedvig.android.odyssey.search.GetNetworkClaimEntryPointsUseCase
@@ -24,6 +18,7 @@ import com.hedvig.android.odyssey.step.dateofoccurrence.DateOfOccurrenceViewMode
 import com.hedvig.android.odyssey.step.dateofoccurrencepluslocation.DateOfOccurrencePlusLocationViewModel
 import com.hedvig.android.odyssey.step.location.LocationViewModel
 import com.hedvig.android.odyssey.step.phonenumber.PhoneNumberViewModel
+import com.hedvig.android.odyssey.step.singleitem.SingleItemViewModel
 import com.hedvig.android.odyssey.step.start.ClaimFlowStartStepViewModel
 import com.hedvig.odyssey.datadog.DatadogLogger
 import com.hedvig.odyssey.datadog.DatadogProvider
@@ -47,24 +42,8 @@ val odysseyModule = module {
   single<DatadogLogger> { AndroidDatadogLogger() }
   single<DatadogProvider> { AndroidDatadogProvider(get(), get()) }
 
-  viewModel<ResolutionViewModel> { (resolution: Resolution) ->
-    ResolutionViewModel(get(), resolution)
-  }
-  viewModel<InputViewModel> { (commonClaimId: String) ->
-    InputViewModel(
-      commonClaimId = commonClaimId,
-      repository = get<ClaimsFlowRepository>(),
-      getPhoneNumberUseCase = get<PhoneNumberRepository>(),
-    )
-  }
-  single<PhoneNumberRepository> {
-    PhoneNumberRepository(get<ApolloClient>(giraffeClient))
-  }
   single<ClaimFlowRepository> {
     ClaimFlowRepositoryImpl(get<ApolloClient>(octopusClient), get<OdysseyService>())
-  }
-  single<ClaimsFlowRepository> {
-    NetworkClaimsFlowRepository(get<OkHttpClient>())
   }
 
   viewModel<SearchViewModel> { SearchViewModel(get<GetNetworkClaimEntryPointsUseCase>()) }
@@ -105,6 +84,9 @@ val odysseyModule = module {
       locationOptions = locationOptions,
       get<ClaimFlowRepository>(),
     )
+  }
+  viewModel<SingleItemViewModel> { (singleItem: ClaimFlowDestination.SingleItem) ->
+    SingleItemViewModel(singleItem, get<ClaimFlowRepository>())
   }
 
   // Retrofit

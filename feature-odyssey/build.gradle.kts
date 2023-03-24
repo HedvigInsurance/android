@@ -9,7 +9,6 @@ plugins {
 
 dependencies {
   implementation(projects.apollo.core)
-  implementation(projects.apollo.giraffe)
   implementation(projects.apollo.octopus)
   implementation(projects.auth.authAndroid)
   implementation(projects.auth.authCore)
@@ -21,6 +20,8 @@ dependencies {
   implementation(projects.coreUi)
   implementation(projects.navigation.navigationActivity)
   implementation(projects.navigation.navigationComposeTyped)
+
+  testImplementation(projects.coreCommonTest)
 
   implementation(libs.accompanist.navigationAnimation)
   implementation(libs.accompanist.permissions)
@@ -48,6 +49,11 @@ dependencies {
   implementation(libs.retrofitArrow)
   implementation(libs.retrofitKotlinxSerializationConverter)
   implementation(libs.slimber)
+
+  testImplementation(libs.assertK)
+  testImplementation(libs.coroutines.test)
+  testImplementation(libs.junit)
+  testImplementation(libs.turbine)
 }
 
 android {

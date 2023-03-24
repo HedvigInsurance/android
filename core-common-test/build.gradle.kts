@@ -4,5 +4,6 @@ plugins {
 }
 
 dependencies {
-  implementation(libs.kotlinx.datetime)
+  implementation(libs.coroutines.test)
+  implementation(libs.junit)
 }

@@ -11,7 +11,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.hedvig.android.core.designsystem.theme.SansStandard
-import com.hedvig.android.core.designsystem.theme.SerifBookSmall
 
 internal val HedvigTypography: Typography
   @Composable

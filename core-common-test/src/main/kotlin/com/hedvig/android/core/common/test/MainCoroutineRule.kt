@@ -1,4 +1,4 @@
-package com.hedvig.app.util.coroutines
+package com.hedvig.android.core.common.test
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.StandardTestDispatcher

@@ -11,9 +11,9 @@ import com.hedvig.android.auth.FakeAuthRepository
 import com.hedvig.android.auth.event.AuthEventBroadcaster
 import com.hedvig.android.auth.storage.AuthTokenStorage
 import com.hedvig.android.core.common.ApplicationScope
+import com.hedvig.android.core.common.test.MainCoroutineRule
 import com.hedvig.android.core.datastore.TestPreferencesDataStore
 import com.hedvig.app.feature.genericauth.otpinput.OtpInputViewModel
-import com.hedvig.app.util.coroutines.MainCoroutineRule
 import com.hedvig.authlib.AccessToken
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult

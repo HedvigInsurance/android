@@ -1,11 +1,11 @@
 package com.hedvig.android.odyssey.step.dateofoccurrencepluslocation
 
-import androidx.compose.material3.DatePickerState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.odyssey.data.ClaimFlowRepository
 import com.hedvig.android.odyssey.data.ClaimFlowStep
 import com.hedvig.android.odyssey.navigation.LocationOption
+import com.hedvig.android.odyssey.ui.DatePickerUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -13,7 +13,6 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toLocalDateTime
 
 internal class DateOfOccurrencePlusLocationViewModel(
@@ -24,22 +23,17 @@ internal class DateOfOccurrencePlusLocationViewModel(
   private val claimFlowRepository: ClaimFlowRepository,
 ) : ViewModel() {
 
-  private val datePickerConfiguration = DatePickerConfiguration(initialDateOfOccurrence, maxDate)
-  val dateValidator = datePickerConfiguration.dateValidator
-
   private val _uiState = MutableStateFlow(
     DateOfOccurrencePlusLocationUiState.fromInitialSelection(
-      datePickerConfiguration.datePickerState,
+      DatePickerUiState(
+        initiallySelectedDate = initialDateOfOccurrence,
+        maxDate = maxDate,
+      ),
       selectedLocation,
       locationOptions,
     ),
   )
   val uiState = _uiState.asStateFlow()
-
-  fun clearDateSelection() {
-    @Suppress("INVISIBLE_MEMBER") // Resetting the date exists in material3 1.1.0-alpha08, for now access internal code
-    datePickerConfiguration.datePickerState.selectedDate = null
-  }
 
   fun selectLocationOption(selectedLocationOption: LocationOption) {
     _uiState.update { oldUiState ->
@@ -55,7 +49,7 @@ internal class DateOfOccurrencePlusLocationViewModel(
 
   fun submitDateOfOccurrenceAndLocation() {
     val uiState = _uiState.value
-    val selectedDateOfOccurrence = uiState.datePickerState.selectedDateMillis?.let {
+    val selectedDateOfOccurrence = uiState.datePickerUiState.datePickerState.selectedDateMillis?.let {
       Instant.fromEpochMilliseconds(it).toLocalDateTime(TimeZone.UTC).date
     }
     val selectedLocation = uiState.selectedLocation
@@ -88,27 +82,8 @@ internal class DateOfOccurrencePlusLocationViewModel(
   }
 }
 
-private class DatePickerConfiguration(
-  dateOfOccurrence: LocalDate?,
-  maxDate: LocalDate,
-) {
-  private val minDate = LocalDate(1900, 1, 1)
-  private val minDateInMillis = minDate.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
-  private val maxDateInMillis = maxDate.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
-  private val yearsRange = minDate.year..maxDate.year
-
-  val datePickerState = DatePickerState(
-    initialSelectedDateMillis = dateOfOccurrence?.atStartOfDayIn(TimeZone.UTC)?.toEpochMilliseconds(),
-    initialDisplayedMonthMillis = null,
-    yearsRange = yearsRange,
-  )
-  val dateValidator: (Long) -> Boolean = { selectedDateEpochMillis ->
-    selectedDateEpochMillis in minDateInMillis..maxDateInMillis
-  }
-}
-
 internal data class DateOfOccurrencePlusLocationUiState(
-  val datePickerState: DatePickerState,
+  val datePickerUiState: DatePickerUiState,
   val locationOptions: List<LocationOption>,
   val selectedLocation: LocationOption?,
   val isLoading: Boolean = false,
@@ -119,14 +94,14 @@ internal data class DateOfOccurrencePlusLocationUiState(
 
   companion object {
     fun fromInitialSelection(
-      datePickerState: DatePickerState,
+      datePickerUiState: DatePickerUiState,
       initialSelectedLocation: String?,
       locationOptions: List<LocationOption>,
     ): DateOfOccurrencePlusLocationUiState {
       val selectedLocation = locationOptions
         .firstOrNull { it.value == initialSelectedLocation }
       return DateOfOccurrencePlusLocationUiState(
-        datePickerState,
+        datePickerUiState,
         locationOptions,
         selectedLocation,
       )

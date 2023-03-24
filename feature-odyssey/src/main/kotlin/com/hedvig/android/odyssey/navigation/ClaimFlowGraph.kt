@@ -3,10 +3,7 @@ package com.hedvig.android.odyssey.navigation
 import androidx.activity.compose.BackHandler
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.Density
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -28,9 +25,11 @@ import com.hedvig.android.odyssey.step.manualhandling.ManualHandlingDestination
 import com.hedvig.android.odyssey.step.phonenumber.PhoneNumberDestination
 import com.hedvig.android.odyssey.step.phonenumber.PhoneNumberViewModel
 import com.hedvig.android.odyssey.step.singleitem.SingleItemDestination
+import com.hedvig.android.odyssey.step.singleitem.SingleItemViewModel
 import com.hedvig.android.odyssey.step.singleitempayout.ClaimSuccessDestination
 import com.hedvig.android.odyssey.step.start.ClaimFlowStartDestination
 import com.hedvig.android.odyssey.step.start.ClaimFlowStartStepViewModel
+import com.hedvig.android.odyssey.step.summary.ClaimSummaryDestination
 import com.hedvig.android.odyssey.step.unknownerror.UnknownErrorDestination
 import com.hedvig.android.odyssey.step.unknownscreen.UnknownScreenDestination
 import com.kiwi.navigationcompose.typed.createRoutePattern
@@ -103,6 +102,7 @@ internal fun NavGraphBuilder.claimFlowGraph(
       DateOfOccurrencePlusLocationDestination(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
+        imageLoader = imageLoader,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
           navController.navigate(claimFlowStep.toClaimFlowDestination())
@@ -136,22 +136,28 @@ internal fun NavGraphBuilder.claimFlowGraph(
         navigateBack = { navController.navigateUp() || navigateUp() },
       )
     }
-    // todo these screens below here aren't implemented yet. Also maybe there are some missing
-//    animatedComposable<ClaimFlowDestination.ClaimSummary> {
-//      val viewModel: ClaimSummaryViewModel = koinViewModel()
-//      ClaimSummaryDestination(imageLoader = imageLoader)
-//    }
     animatedComposable<ClaimFlowDestination.SingleItem> {
+      val singleItem: ClaimFlowDestination.SingleItem = this
       ClaimFlowBackHandler(navController, finishClaimFlow)
-//      val viewModel: SingleItemViewModel = koinViewModel()
+      val viewModel: SingleItemViewModel = koinViewModel { parametersOf(singleItem) }
       SingleItemDestination(
+        viewModel = viewModel,
+        windowSizeClass = windowSizeClass,
         imageLoader = imageLoader,
+        navigateToNextStep = { claimFlowStep ->
+          viewModel.handledNextStepNavigation()
+          navController.navigate(claimFlowStep.toClaimFlowDestination())
+        },
+        navigateBack = { navController.navigateUp() || navigateUp() },
       )
+    }
+    animatedComposable<ClaimFlowDestination.Summary> {
+      ClaimFlowBackHandler(navController, finishClaimFlow)
+//      val viewModel: ClaimSummaryViewModel = koinViewModel()
+      ClaimSummaryDestination()
     }
     animatedComposable<ClaimFlowDestination.ClaimSuccess> {
       BackHandler { finishClaimFlow() }
-      // todo backend for success returns nothing but an ID. Not sure if it's only missing on the backend or if it's a
-      //  different screen.
       ClaimSuccessDestination()
     }
     animatedComposable<ClaimFlowDestination.ManualHandling> {
@@ -164,16 +170,18 @@ internal fun NavGraphBuilder.claimFlowGraph(
     animatedComposable<ClaimFlowDestination.UnknownScreen> {
       BackHandler { finishClaimFlow() }
       UnknownScreenDestination(
+        windowSizeClass = windowSizeClass,
         openChat = openChat,
         navigateBack = finishClaimFlow,
       )
     }
     animatedComposable<ClaimFlowDestination.Failure> {
-      BackHandler { finishClaimFlow() }
+      ClaimFlowBackHandler(navController, finishClaimFlow)
       UnknownErrorDestination(
         windowSizeClass = windowSizeClass,
         openChat = openChat,
-        navigateBack = finishClaimFlow,
+        finishClaimFlow = finishClaimFlow,
+        navigateBack = { navController.navigateUp() || navigateUp() },
       )
     }
   }

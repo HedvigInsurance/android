@@ -142,6 +142,7 @@ dependencies {
 
   testImplementation(projects.auth.authEventTest)
   testImplementation(projects.auth.authTest)
+  testImplementation(projects.coreCommonTest)
   testImplementation(projects.coreDatastoreTest)
 
   testImplementation(projects.hanalytics.hanalyticsFeatureFlagsTest)

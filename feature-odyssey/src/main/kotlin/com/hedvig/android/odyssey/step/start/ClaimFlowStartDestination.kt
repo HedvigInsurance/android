@@ -43,7 +43,10 @@ private fun TerminationStartScreen(
       ClaimFlowUiState.Error -> {
         GenericErrorScreen(
           onRetryButtonClick = retryLoad,
-          modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing).padding(16.dp),
+          modifier = Modifier
+            .windowInsetsPadding(WindowInsets.safeDrawing)
+            .padding(16.dp)
+            .padding(top = 40.dp),
         )
       }
       ClaimFlowUiState.Loading,

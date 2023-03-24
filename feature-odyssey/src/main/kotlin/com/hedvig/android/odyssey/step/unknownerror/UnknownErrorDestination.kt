@@ -28,11 +28,13 @@ import com.hedvig.android.odyssey.ui.ClaimFlowScaffold
 fun UnknownErrorDestination(
   windowSizeClass: WindowSizeClass,
   openChat: () -> Unit,
+  finishClaimFlow: () -> Unit,
   navigateBack: () -> Unit,
 ) {
   UnknownErrorScreen(
     windowSizeClass = windowSizeClass,
     openChat = openChat,
+    finishClaimFlow = finishClaimFlow,
     navigateBack = navigateBack,
   )
 }
@@ -41,6 +43,7 @@ fun UnknownErrorDestination(
 private fun UnknownErrorScreen(
   windowSizeClass: WindowSizeClass,
   openChat: () -> Unit,
+  finishClaimFlow: () -> Unit,
   navigateBack: () -> Unit,
 ) {
   ClaimFlowScaffold(
@@ -60,7 +63,7 @@ private fun UnknownErrorScreen(
       Text(stringResource(hedvig.resources.R.string.open_chat))
     }
     Spacer(Modifier.height(16.dp))
-    LargeContainedButton(navigateBack, sideSpacingModifier) {
+    LargeContainedButton(finishClaimFlow, sideSpacingModifier) {
       Text(stringResource(hedvig.resources.R.string.general_close_button))
     }
     Spacer(Modifier.height(16.dp))
@@ -73,7 +76,7 @@ private fun UnknownErrorScreen(
 private fun PreviewUnknownErrorScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      UnknownErrorScreen(WindowSizeClass.calculateForPreview(), {}, {})
+      UnknownErrorScreen(WindowSizeClass.calculateForPreview(), {}, {}, {})
     }
   }
 }
