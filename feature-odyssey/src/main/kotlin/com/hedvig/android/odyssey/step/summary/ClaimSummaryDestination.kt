@@ -15,9 +15,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.DeviceUnknown
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.rounded.DeviceUnknown
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -57,13 +55,14 @@ import com.hedvig.android.odyssey.data.ClaimFlowStep
 import com.hedvig.android.odyssey.navigation.ItemProblem
 import com.hedvig.android.odyssey.navigation.LocationOption
 import com.hedvig.android.odyssey.navigation.UiMoney
+import com.hedvig.android.odyssey.step.summary.resources.HedvigDeviceUnknown
 import com.hedvig.android.odyssey.ui.ClaimFlowScaffold
 import com.hedvig.odyssey.compose.getLocale
 import hedvig.resources.R
+import java.time.format.DateTimeFormatter
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 import octopus.type.CurrencyCode
-import java.time.format.DateTimeFormatter
 
 @Composable
 internal fun ClaimSummaryDestination(
@@ -160,50 +159,40 @@ private fun ItemIcon(
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
 ) {
-  if (uiState.imageUrl == null) {
-    Box(
-      modifier = modifier.size(145.dp),
-      contentAlignment = Alignment.Center,
-      propagateMinConstraints = true,
+  val context = LocalContext.current
+  val density = LocalDensity.current
+  val sizeInPx = with(density) { Dimension(145.dp.roundToPx()) }
+  SubcomposeAsyncImage(
+    model = ImageRequest.Builder(context)
+      .data(uiState.imageUrl)
+      .size(sizeInPx, sizeInPx)
+      .build(),
+    contentDescription = null,
+    imageLoader = imageLoader,
+  ) {
+    Crossfade(
+      targetState = painter.state,
+      label = "imageCrossfade",
     ) {
-      Icon(Icons.Default.DeviceUnknown, null)
-    }
-  } else {
-    val context = LocalContext.current
-    val density = LocalDensity.current
-    val sizeInPx = with(density) { Dimension(145.dp.roundToPx()) }
-    SubcomposeAsyncImage(
-      model = ImageRequest.Builder(context)
-        .data(uiState.imageUrl)
-        .size(sizeInPx, sizeInPx)
-        .build(),
-      contentDescription = null,
-      imageLoader = imageLoader,
-    ) {
-      Crossfade(
-        targetState = painter.state,
-        label = "imageCrossfade",
+      Box(
+        modifier = modifier.size(145.dp),
+        contentAlignment = Alignment.Center,
+        propagateMinConstraints = true,
       ) {
-        Box(
-          modifier = modifier.size(145.dp),
-          contentAlignment = Alignment.Center,
-          propagateMinConstraints = true,
-        ) {
-          when (it) {
-            is AsyncImagePainter.State.Success -> this@SubcomposeAsyncImage.SubcomposeAsyncImageContent()
-            is AsyncImagePainter.State.Error -> Icon(Icons.Rounded.DeviceUnknown, null)
-            AsyncImagePainter.State.Empty,
-            is AsyncImagePainter.State.Loading,
-            -> {
-              Box(
-                Modifier.placeholder(
-                  visible = true,
-                  color = Color.LightGray,
-                  shape = MaterialTheme.shapes.medium,
-                  highlight = PlaceholderHighlight.fade(Color.Gray),
-                ),
-              )
-            }
+        when (it) {
+          is AsyncImagePainter.State.Success -> this@SubcomposeAsyncImage.SubcomposeAsyncImageContent()
+          is AsyncImagePainter.State.Error -> Icon(Icons.Default.HedvigDeviceUnknown, null)
+          AsyncImagePainter.State.Empty,
+          is AsyncImagePainter.State.Loading,
+          -> {
+            Box(
+              Modifier.placeholder(
+                visible = true,
+                color = Color.LightGray,
+                shape = MaterialTheme.shapes.medium,
+                highlight = PlaceholderHighlight.fade(Color.Gray),
+              ),
+            )
           }
         }
       }
