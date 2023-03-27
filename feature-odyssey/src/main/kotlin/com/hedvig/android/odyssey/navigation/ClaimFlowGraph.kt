@@ -26,9 +26,10 @@ import com.hedvig.android.odyssey.step.phonenumber.PhoneNumberDestination
 import com.hedvig.android.odyssey.step.phonenumber.PhoneNumberViewModel
 import com.hedvig.android.odyssey.step.singleitem.SingleItemDestination
 import com.hedvig.android.odyssey.step.singleitem.SingleItemViewModel
-import com.hedvig.android.odyssey.step.singleitempayout.ClaimSuccessDestination
+import com.hedvig.android.odyssey.step.singleitempayout.SingleItemPayoutDestination
 import com.hedvig.android.odyssey.step.start.ClaimFlowStartDestination
 import com.hedvig.android.odyssey.step.start.ClaimFlowStartStepViewModel
+import com.hedvig.android.odyssey.step.success.ClaimSuccessDestination
 import com.hedvig.android.odyssey.step.summary.ClaimSummaryDestination
 import com.hedvig.android.odyssey.step.summary.ClaimSummaryViewModel
 import com.hedvig.android.odyssey.step.unknownerror.UnknownErrorDestination
@@ -167,9 +168,17 @@ internal fun NavGraphBuilder.claimFlowGraph(
         navigateBack = { navController.navigateUp() || navigateUp() },
       )
     }
+    animatedComposable<ClaimFlowDestination.SingleItemCheckout> {
+      BackHandler { finishClaimFlow() }
+      SingleItemPayoutDestination()
+    }
     animatedComposable<ClaimFlowDestination.ClaimSuccess> {
       BackHandler { finishClaimFlow() }
-      ClaimSuccessDestination()
+      ClaimSuccessDestination(
+        windowSizeClass = windowSizeClass,
+        openChat = openChat,
+        navigateBack = { finishClaimFlow() },
+      )
     }
     animatedComposable<ClaimFlowDestination.ManualHandling> {
       BackHandler { finishClaimFlow() }
