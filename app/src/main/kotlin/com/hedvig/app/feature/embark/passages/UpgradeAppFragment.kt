@@ -3,9 +3,9 @@ package com.hedvig.app.feature.embark.passages
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import com.hedvig.android.core.common.android.tryOpenPlayStore
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentEmbarkUpgradeAppBinding
-import com.hedvig.android.core.common.android.tryOpenPlayStore
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 
