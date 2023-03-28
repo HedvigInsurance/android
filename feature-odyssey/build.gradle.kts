@@ -13,11 +13,12 @@ dependencies {
   implementation(projects.auth.authAndroid)
   implementation(projects.auth.authCore)
   implementation(projects.coreCommon)
+  implementation(projects.coreCommonAndroid)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)
+  implementation(projects.coreUi)
   implementation(projects.hanalytics.hanalyticsFeatureFlags)
   implementation(projects.hedvigLanguage)
-  implementation(projects.coreUi)
   implementation(projects.navigation.navigationActivity)
   implementation(projects.navigation.navigationComposeTyped)
 

@@ -15,6 +15,7 @@ fun ClaimFlowNavHost(
   imageLoader: ImageLoader,
   entryPointId: String?,
   openAppSettings: () -> Unit,
+  openPlayStore: () -> Unit,
   openChat: () -> Unit,
   navigateUp: () -> Boolean,
 ) {
@@ -30,6 +31,7 @@ fun ClaimFlowNavHost(
       imageLoader = imageLoader,
       entryPointId = entryPointId,
       openAppSettings = openAppSettings,
+      openPlayStore = openPlayStore,
       navigateUp = navigateUp,
       openChat = openChat,
       finishClaimFlow = { navigateUp() },
