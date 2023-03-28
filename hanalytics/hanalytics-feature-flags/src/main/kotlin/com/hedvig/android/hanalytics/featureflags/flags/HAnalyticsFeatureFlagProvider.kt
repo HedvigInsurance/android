@@ -25,6 +25,10 @@ internal class HAnalyticsFeatureFlagProvider(
       hAnalytics.claimFlowType(if (useOdyssey) ClaimType.AUTOMATION else ClaimType.MANUAL)
       useOdyssey
     }
-    Feature.USE_NATIVE_CLAIMS_FLOW -> false
+    Feature.USE_NATIVE_CLAIMS_FLOW -> {
+      val useOdyssey = hAnalytics.claimsFlow()
+      hAnalytics.claimFlowType(if (useOdyssey) ClaimType.AUTOMATION else ClaimType.MANUAL)
+      useOdyssey
+    }
   }
 }
