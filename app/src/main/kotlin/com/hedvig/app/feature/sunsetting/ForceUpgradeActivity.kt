@@ -23,7 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.app.feature.ratings.tryOpenPlayStore
+import com.hedvig.android.core.common.android.tryOpenPlayStore
 
 class ForceUpgradeActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {

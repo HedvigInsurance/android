@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.hedvig.android.auth.android.AuthenticatedObserver
+import com.hedvig.android.core.common.android.tryOpenPlayStore
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceNavHost
 import com.hedvig.android.navigation.activity.Navigator
@@ -40,6 +41,7 @@ class TerminateInsuranceActivity : AppCompatActivity() {
               onSupportNavigateUp()
               activityNavigator.navigateToChat(this@TerminateInsuranceActivity)
             },
+            openPlayStore = { tryOpenPlayStore() },
             navigateUp = { onSupportNavigateUp() },
             finishTerminationFlow = { finish() },
           )

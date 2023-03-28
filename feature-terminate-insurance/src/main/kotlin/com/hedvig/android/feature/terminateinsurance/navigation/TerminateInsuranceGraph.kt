@@ -30,6 +30,7 @@ internal fun NavGraphBuilder.terminateInsuranceGraph(
   insuranceId: InsuranceId,
   navigateUp: () -> Boolean,
   openChat: () -> Unit,
+  openPlayStore: () -> Unit,
   finishTerminationFlow: () -> Unit,
 ) {
   animatedNavigation<Destinations.TerminateInsurance>(
@@ -97,7 +98,7 @@ internal fun NavGraphBuilder.terminateInsuranceGraph(
       BackHandler { finishTerminationFlow() }
       UnknownScreenDestination(
         windowSizeClass = windowSizeClass,
-        openChat = openChat,
+        openPlayStore = openPlayStore,
         navigateBack = finishTerminationFlow,
       )
     }
