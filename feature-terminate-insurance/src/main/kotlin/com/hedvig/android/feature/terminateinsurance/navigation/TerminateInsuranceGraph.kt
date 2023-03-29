@@ -9,6 +9,8 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
 import com.hedvig.android.feature.terminateinsurance.data.toTerminateInsuranceDestination
+import com.hedvig.android.feature.terminateinsurance.step.deletion.InsuranceDeletionDestination
+import com.hedvig.android.feature.terminateinsurance.step.deletion.InsuranceDeletionViewModel
 import com.hedvig.android.feature.terminateinsurance.step.start.TerminationStartDestination
 import com.hedvig.android.feature.terminateinsurance.step.start.TerminationStartStepViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationdate.TerminationDateDestination
@@ -28,6 +30,7 @@ internal fun NavGraphBuilder.terminateInsuranceGraph(
   density: Density,
   navController: NavHostController,
   insuranceId: InsuranceId,
+  insuranceDisplayName: String,
   navigateUp: () -> Boolean,
   openChat: () -> Unit,
   openPlayStore: () -> Unit,
@@ -83,6 +86,19 @@ internal fun NavGraphBuilder.terminateInsuranceGraph(
         surveyUrl = this.surveyUrl,
         windowSizeClass = windowSizeClass,
         navigateBack = finishTerminationFlow,
+      )
+    }
+    animatedComposable<TerminateInsuranceDestination.InsuranceDeletion> {
+      val viewModel: InsuranceDeletionViewModel = koinViewModel { parametersOf(this) }
+      InsuranceDeletionDestination(
+        viewModel = viewModel,
+        insuranceDisplayName = insuranceDisplayName,
+        windowSizeClass = windowSizeClass,
+        navigateToNextStep = { terminationStep ->
+          viewModel.handledNextStepNavigation()
+          navController.navigate(terminationStep.toTerminateInsuranceDestination())
+        },
+        navigateBack = { navController.navigateUp() || navigateUp() },
       )
     }
     animatedComposable<TerminateInsuranceDestination.TerminationFailure> {

@@ -2,6 +2,6 @@ mutation FlowTerminationDateNext($context: FlowContext!, $input: FlowTermination
   flowTerminationDateNext(context: $context, input: $input) {
     id
     context
-    ...FlowStepFragment
+    ...TerminationFlowStepFragment
   }
 }

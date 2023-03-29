@@ -1,0 +1,30 @@
+fragment TerminationFlowStepFragment on Flow {
+  currentStep {
+    id
+    ...FlowTerminationDateStepFragment
+    ...FlowTerminationDeletionStepFragment
+    ...FlowTerminationFailedStepFragment
+    ...FlowTerminationSuccessStepFragment
+  }
+}
+
+fragment FlowTerminationDateStepFragment on FlowTerminationDateStep {
+  id
+  minDate
+  maxDate
+}
+
+fragment FlowTerminationDeletionStepFragment on FlowTerminationDeletionStep {
+  id
+  disclaimer
+}
+
+fragment FlowTerminationFailedStepFragment on FlowTerminationFailedStep {
+  id
+}
+
+fragment FlowTerminationSuccessStepFragment on FlowTerminationSuccessStep {
+  id
+  terminationDate
+  surveyUrl
+}

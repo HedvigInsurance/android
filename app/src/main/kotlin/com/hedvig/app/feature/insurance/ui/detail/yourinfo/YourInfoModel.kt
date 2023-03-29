@@ -13,5 +13,6 @@ sealed class YourInfoModel {
 
   data class CancelInsuranceButton(
     val insuranceId: String,
+    val insuranceDisplayName: String,
   ) : YourInfoModel()
 }

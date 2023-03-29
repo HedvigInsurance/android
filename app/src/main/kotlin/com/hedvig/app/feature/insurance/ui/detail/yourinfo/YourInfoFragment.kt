@@ -63,7 +63,7 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
       .launchIn(viewLifecycleScope)
   }
 
-  private fun openCancelInsuranceScreen(insuranceId: String) {
-    startActivity(TerminateInsuranceActivity.newInstance(requireContext(), insuranceId))
+  private fun openCancelInsuranceScreen(insuranceId: String, insuranceDisplayName: String) {
+    startActivity(TerminateInsuranceActivity.newInstance(requireContext(), insuranceId, insuranceDisplayName))
   }
 }

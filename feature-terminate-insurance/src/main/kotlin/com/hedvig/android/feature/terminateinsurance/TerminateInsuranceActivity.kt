@@ -29,6 +29,8 @@ class TerminateInsuranceActivity : AppCompatActivity() {
 
     val insuranceId = intent.getStringExtra(INSURANCE_ID)?.let(::InsuranceId)
       ?: error("Can't open TerminateInsuranceActivity without an insurance ID")
+    val insuranceDisplayName = intent.getStringExtra(INSURANCE_DISPLAY_NAME)
+      ?: error("Can't open TerminateInsuranceActivity without an insurance display name")
 
     setContent {
       HedvigTheme {
@@ -37,6 +39,7 @@ class TerminateInsuranceActivity : AppCompatActivity() {
             windowSizeClass = calculateWindowSizeClass(this@TerminateInsuranceActivity),
             navController = rememberAnimatedNavController(),
             insuranceId = insuranceId,
+            insuranceDisplayName = insuranceDisplayName,
             openChat = {
               onSupportNavigateUp()
               activityNavigator.navigateToChat(this@TerminateInsuranceActivity)
@@ -52,10 +55,12 @@ class TerminateInsuranceActivity : AppCompatActivity() {
 
   companion object {
     private const val INSURANCE_ID = "com.hedvig.android.feature.terminateinsurance.INSURANCE_ID"
+    private const val INSURANCE_DISPLAY_NAME = "com.hedvig.android.feature.terminateinsurance.INSURANCE_DISPLAY_NAME"
 
-    fun newInstance(context: Context, insuranceId: String): Intent {
+    fun newInstance(context: Context, insuranceId: String, insuranceDisplayName: String): Intent {
       return Intent(context, TerminateInsuranceActivity::class.java)
         .putExtra(INSURANCE_ID, insuranceId)
+        .putExtra(INSURANCE_DISPLAY_NAME, insuranceDisplayName)
     }
   }
 }
