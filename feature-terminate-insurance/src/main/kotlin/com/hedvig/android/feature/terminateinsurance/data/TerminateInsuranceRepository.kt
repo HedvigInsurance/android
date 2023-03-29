@@ -9,6 +9,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
 import kotlinx.datetime.LocalDate
 import octopus.FlowTerminationDateNextMutation
+import octopus.FlowTerminationDeletionNextMutation
 import octopus.FlowTerminationStartMutation
 import octopus.type.FlowTerminationDateInput
 import octopus.type.FlowTerminationStartInput
@@ -23,10 +24,11 @@ internal class TerminateInsuranceRepository(
       val result = apolloClient
         .mutation(FlowTerminationStartMutation(FlowTerminationStartInput(insuranceId.id)))
         .safeExecute()
-        .toEither { ErrorMessage(it) }
+        .toEither(::ErrorMessage)
         .bind()
-      terminationContext = result.flowTerminationStart.context
-      result.flowTerminationStart.currentStep.toTerminateInsuranceStep()
+        .flowTerminationStart
+      terminationContext = result.context
+      result.currentStep.toTerminateInsuranceStep()
     }
   }
 
@@ -39,10 +41,29 @@ internal class TerminateInsuranceRepository(
       val result = apolloClient
         .mutation(nextMutation)
         .safeExecute()
-        .toEither { ErrorMessage(it) }
+        .toEither(::ErrorMessage)
         .bind()
-      terminationContext = result.flowTerminationDateNext.context
-      result.flowTerminationDateNext.currentStep.toTerminateInsuranceStep()
+        .flowTerminationDateNext
+      terminationContext = result.context
+      result.currentStep.toTerminateInsuranceStep()
+    }
+  }
+
+  suspend fun submitDeletionDecision(confirmDeletion: Boolean): Either<ErrorMessage, TerminateInsuranceStep> {
+    return either {
+      val result = apolloClient
+        .mutation(
+          FlowTerminationDeletionNextMutation(
+            context = terminationContext,
+            confirmDeletion = confirmDeletion,
+          ),
+        )
+        .safeExecute()
+        .toEither(::ErrorMessage)
+        .bind()
+        .flowTerminationDeletionNext
+      terminationContext = result.context
+      result.currentStep.toTerminateInsuranceStep()
     }
   }
 }
