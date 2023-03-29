@@ -9,7 +9,7 @@ import com.hedvig.odyssey.remote.money.MonetaryAmount
 import hedvig.resources.R
 
 @Composable
-internal fun ClaimSuccessDestination() {
+internal fun SingleItemPayoutDestination() {
   SingleItemPayoutScreen(
     resolution = Resolution.SingleItemPayout(
       MonetaryAmount("100", "SEK"),
