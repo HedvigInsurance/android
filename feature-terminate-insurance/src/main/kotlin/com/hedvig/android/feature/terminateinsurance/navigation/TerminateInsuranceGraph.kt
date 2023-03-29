@@ -9,6 +9,8 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
 import com.hedvig.android.feature.terminateinsurance.data.toTerminateInsuranceDestination
+import com.hedvig.android.feature.terminateinsurance.step.deletion.InsuranceDeletionDestination
+import com.hedvig.android.feature.terminateinsurance.step.deletion.InsuranceDeletionViewModel
 import com.hedvig.android.feature.terminateinsurance.step.start.TerminationStartDestination
 import com.hedvig.android.feature.terminateinsurance.step.start.TerminationStartStepViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationdate.TerminationDateDestination
@@ -28,8 +30,10 @@ internal fun NavGraphBuilder.terminateInsuranceGraph(
   density: Density,
   navController: NavHostController,
   insuranceId: InsuranceId,
+  insuranceDisplayName: String,
   navigateUp: () -> Boolean,
   openChat: () -> Unit,
+  openPlayStore: () -> Unit,
   finishTerminationFlow: () -> Unit,
 ) {
   animatedNavigation<Destinations.TerminateInsurance>(
@@ -84,6 +88,19 @@ internal fun NavGraphBuilder.terminateInsuranceGraph(
         navigateBack = finishTerminationFlow,
       )
     }
+    animatedComposable<TerminateInsuranceDestination.InsuranceDeletion> {
+      val viewModel: InsuranceDeletionViewModel = koinViewModel { parametersOf(this) }
+      InsuranceDeletionDestination(
+        viewModel = viewModel,
+        insuranceDisplayName = insuranceDisplayName,
+        windowSizeClass = windowSizeClass,
+        navigateToNextStep = { terminationStep ->
+          viewModel.handledNextStepNavigation()
+          navController.navigate(terminationStep.toTerminateInsuranceDestination())
+        },
+        navigateBack = { navController.navigateUp() || navigateUp() },
+      )
+    }
     animatedComposable<TerminateInsuranceDestination.TerminationFailure> {
       BackHandler { finishTerminationFlow() }
       TerminationFailureDestination(
@@ -97,7 +114,7 @@ internal fun NavGraphBuilder.terminateInsuranceGraph(
       BackHandler { finishTerminationFlow() }
       UnknownScreenDestination(
         windowSizeClass = windowSizeClass,
-        openChat = openChat,
+        openPlayStore = openPlayStore,
         navigateBack = finishTerminationFlow,
       )
     }

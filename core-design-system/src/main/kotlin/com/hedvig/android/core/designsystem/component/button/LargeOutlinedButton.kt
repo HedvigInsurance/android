@@ -22,13 +22,15 @@ fun LargeOutlinedTextButton(
   text: String,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
-) {
+  enabled: Boolean = true,
+  ) {
   LargeOutlinedButton(
     modifier = modifier,
     content = {
       Text(text = text)
     },
     onClick = onClick,
+    enabled = enabled,
   )
 }
 
@@ -36,6 +38,7 @@ fun LargeOutlinedTextButton(
 fun LargeOutlinedButton(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
+  enabled: Boolean = true,
   content: @Composable RowScope.() -> Unit,
 ) {
   OutlinedButton(
@@ -43,6 +46,7 @@ fun LargeOutlinedButton(
     modifier = modifier.fillMaxWidth(),
     shape = Material3Theme.shapes.large,
     contentPadding = PaddingValues(16.dp),
+    enabled = enabled,
   ) {
     CompositionLocalProvider(
       LocalContentColor provides Material2Theme.colors.onBackground,

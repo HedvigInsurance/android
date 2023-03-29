@@ -1,7 +1,7 @@
 name: remove_unused_resources
 on:
   schedule:
-    - cron: "30 9 * * 0-5"
+    - cron: "30 9 1 * *"
 
 jobs:
   execute:

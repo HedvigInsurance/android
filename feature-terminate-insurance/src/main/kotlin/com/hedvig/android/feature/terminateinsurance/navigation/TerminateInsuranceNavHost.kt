@@ -13,7 +13,9 @@ internal fun TerminateInsuranceNavHost(
   windowSizeClass: WindowSizeClass,
   navController: NavHostController,
   insuranceId: InsuranceId,
+  insuranceDisplayName: String,
   openChat: () -> Unit,
+  openPlayStore: () -> Unit,
   navigateUp: () -> Boolean,
   finishTerminationFlow: () -> Unit,
 ) {
@@ -27,7 +29,9 @@ internal fun TerminateInsuranceNavHost(
       density = density,
       navController = navController,
       insuranceId = insuranceId,
+      insuranceDisplayName = insuranceDisplayName,
       navigateUp = navigateUp,
+      openPlayStore = openPlayStore,
       openChat = openChat,
       finishTerminationFlow = finishTerminationFlow,
     )

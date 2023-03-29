@@ -48,8 +48,8 @@ internal fun TerminationInfoScreen(
   headerText: String,
   bodyText: String,
   icon: ImageVector,
-  bottomContent: @Composable () -> Unit,
   navigateBack: () -> Unit,
+  bottomContent: @Composable () -> Unit,
 ) {
   Column {
     val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -121,13 +121,13 @@ private fun PreviewTerminationInfoScreen() {
           Thanks for being part of Hedvig and trusting us to protect you and your loved ones when needed. The doors are always open if you decide to come back in the near future.
         """.trimIndent(),
         icon = Icons.Outlined.CheckCircle,
-        {
-          LargeContainedTextButton(
-            text = stringResource(hedvig.resources.R.string.general_done_button),
-            onClick = { },
-          )
-        },
-      ) {}
+        navigateBack = {},
+      ) {
+        LargeContainedTextButton(
+          text = stringResource(hedvig.resources.R.string.general_done_button),
+          onClick = { },
+        )
+      }
     }
   }
 }

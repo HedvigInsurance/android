@@ -26,10 +26,12 @@ import com.hedvig.android.odyssey.step.phonenumber.PhoneNumberDestination
 import com.hedvig.android.odyssey.step.phonenumber.PhoneNumberViewModel
 import com.hedvig.android.odyssey.step.singleitem.SingleItemDestination
 import com.hedvig.android.odyssey.step.singleitem.SingleItemViewModel
-import com.hedvig.android.odyssey.step.singleitempayout.ClaimSuccessDestination
+import com.hedvig.android.odyssey.step.singleitempayout.SingleItemPayoutDestination
 import com.hedvig.android.odyssey.step.start.ClaimFlowStartDestination
 import com.hedvig.android.odyssey.step.start.ClaimFlowStartStepViewModel
+import com.hedvig.android.odyssey.step.success.ClaimSuccessDestination
 import com.hedvig.android.odyssey.step.summary.ClaimSummaryDestination
+import com.hedvig.android.odyssey.step.summary.ClaimSummaryViewModel
 import com.hedvig.android.odyssey.step.unknownerror.UnknownErrorDestination
 import com.hedvig.android.odyssey.step.unknownscreen.UnknownScreenDestination
 import com.kiwi.navigationcompose.typed.createRoutePattern
@@ -44,6 +46,7 @@ internal fun NavGraphBuilder.claimFlowGraph(
   imageLoader: ImageLoader,
   entryPointId: String?,
   openAppSettings: () -> Unit,
+  openPlayStore: () -> Unit,
   navigateUp: () -> Boolean,
   openChat: () -> Unit,
   finishClaimFlow: () -> Unit,
@@ -152,13 +155,31 @@ internal fun NavGraphBuilder.claimFlowGraph(
       )
     }
     animatedComposable<ClaimFlowDestination.Summary> {
+      val summary: ClaimFlowDestination.Summary = this
       ClaimFlowBackHandler(navController, finishClaimFlow)
-//      val viewModel: ClaimSummaryViewModel = koinViewModel()
-      ClaimSummaryDestination()
+      val viewModel: ClaimSummaryViewModel = koinViewModel { parametersOf(summary) }
+      ClaimSummaryDestination(
+        viewModel = viewModel,
+        windowSizeClass = windowSizeClass,
+        imageLoader = imageLoader,
+        navigateToNextStep = { claimFlowStep ->
+          viewModel.handledNextStepNavigation()
+          navController.navigate(claimFlowStep.toClaimFlowDestination())
+        },
+        navigateBack = { navController.navigateUp() || navigateUp() },
+      )
+    }
+    animatedComposable<ClaimFlowDestination.SingleItemCheckout> {
+      BackHandler { finishClaimFlow() }
+      SingleItemPayoutDestination()
     }
     animatedComposable<ClaimFlowDestination.ClaimSuccess> {
       BackHandler { finishClaimFlow() }
-      ClaimSuccessDestination()
+      ClaimSuccessDestination(
+        windowSizeClass = windowSizeClass,
+        openChat = openChat,
+        navigateBack = { finishClaimFlow() },
+      )
     }
     animatedComposable<ClaimFlowDestination.ManualHandling> {
       BackHandler { finishClaimFlow() }
@@ -171,7 +192,7 @@ internal fun NavGraphBuilder.claimFlowGraph(
       BackHandler { finishClaimFlow() }
       UnknownScreenDestination(
         windowSizeClass = windowSizeClass,
-        openChat = openChat,
+        openPlayStore = openPlayStore,
         navigateBack = finishClaimFlow,
       )
     }

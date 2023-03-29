@@ -21,9 +21,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.common.android.tryOpenPlayStore
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.app.feature.ratings.tryOpenPlayStore
 
 class ForceUpgradeActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {

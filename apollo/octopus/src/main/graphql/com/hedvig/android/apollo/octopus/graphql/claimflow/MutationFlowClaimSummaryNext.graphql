@@ -1,0 +1,7 @@
+mutation FlowClaimSummaryNext($input: FlowClaimSummaryInput!, $context: FlowContext!) {
+  flowClaimSummaryNext(input: $input, context: $context) {
+    id
+    context
+    ...ClaimFlowStepFragment
+  }
+}

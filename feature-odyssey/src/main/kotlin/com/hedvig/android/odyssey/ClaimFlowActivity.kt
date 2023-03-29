@@ -13,6 +13,7 @@ import androidx.core.view.WindowCompat
 import coil.ImageLoader
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.hedvig.android.auth.android.AuthenticatedObserver
+import com.hedvig.android.core.common.android.tryOpenPlayStore
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.navigation.activity.Navigator
 import com.hedvig.android.odyssey.navigation.ClaimFlowNavHost
@@ -41,6 +42,7 @@ class ClaimFlowActivity : AppCompatActivity() {
             openAppSettings = {
               activityNavigator.openAppSettings(this@ClaimFlowActivity)
             },
+            openPlayStore = { tryOpenPlayStore() },
             openChat = {
               onSupportNavigateUp()
               activityNavigator.navigateToChat(this@ClaimFlowActivity)

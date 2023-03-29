@@ -31,7 +31,7 @@ import com.hedvig.app.util.extensions.viewBinding
 
 class YourInfoAdapter(
   private val fragmentManager: FragmentManager,
-  private val openCancelInsuranceScreen: (insuranceId: String) -> Unit,
+  private val openCancelInsuranceScreen: (insuranceId: String, insuranceDisplayName: String) -> Unit,
 ) : ListAdapter<YourInfoModel, YourInfoAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
   override fun getItemViewType(position: Int) = when (getItem(position)) {
@@ -103,7 +103,7 @@ class YourInfoAdapter(
 
     class CancelInsuranceButton(
       private val composeView: ComposeView,
-      private val openCancelInsuranceScreen: (insuranceId: String) -> Unit,
+      private val openCancelInsuranceScreen: (insuranceId: String, insuranceDisplayName: String) -> Unit,
     ) : ViewHolder(composeView) {
       init {
         composeView.setViewCompositionStrategy(ViewCompositionStrategy.Default)
@@ -114,7 +114,7 @@ class YourInfoAdapter(
         composeView.setContent {
           HedvigTheme {
             LargeTextButton(
-              { openCancelInsuranceScreen(data.insuranceId) },
+              { openCancelInsuranceScreen(data.insuranceId, data.insuranceDisplayName) },
               Modifier.padding(horizontal = 16.dp).padding(bottom = 8.dp),
             ) {
               CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.error) {

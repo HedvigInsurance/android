@@ -49,21 +49,20 @@ private fun TerminationFailureScreen(
     headerText = stringResource(R.string.TERMINATION_NOT_SUCCESSFUL_TITLE),
     bodyText = errorMessage.message ?: stringResource(R.string.something_went_wrong),
     icon = ImageVector.vectorResource(com.hedvig.android.core.designsystem.R.drawable.ic_warning_triangle),
-    bottomContent = {
-      Column {
-        LargeOutlinedTextButton(
-          text = stringResource(id = R.string.open_chat),
-          onClick = openChat,
-        )
-        Spacer(Modifier.height(16.dp))
-        LargeContainedTextButton(
-          text = stringResource(R.string.general_done_button),
-          onClick = navigateBack,
-        )
-      }
-    },
     navigateBack = navigateBack,
-  )
+  ) {
+    Column {
+      LargeOutlinedTextButton(
+        text = stringResource(id = R.string.open_chat),
+        onClick = openChat,
+      )
+      Spacer(Modifier.height(16.dp))
+      LargeContainedTextButton(
+        text = stringResource(R.string.general_done_button),
+        onClick = navigateBack,
+      )
+    }
+  }
 }
 
 @HedvigPreview

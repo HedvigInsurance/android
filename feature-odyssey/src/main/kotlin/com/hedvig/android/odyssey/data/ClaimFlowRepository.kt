@@ -18,9 +18,11 @@ import octopus.FlowClaimLocationNextMutation
 import octopus.FlowClaimPhoneNumberNextMutation
 import octopus.FlowClaimSingleItemNextMutation
 import octopus.FlowClaimStartMutation
+import octopus.FlowClaimSummaryNextMutation
 import octopus.type.FlowClaimItemBrandInput
 import octopus.type.FlowClaimItemModelInput
 import octopus.type.FlowClaimSingleItemInput
+import octopus.type.FlowClaimSummaryInput
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -43,6 +45,16 @@ internal interface ClaimFlowRepository {
     itemBrandInput: FlowClaimItemBrandInput?,
     itemModelInput: FlowClaimItemModelInput?,
     itemProblemIds: List<String>?,
+    purchaseDate: LocalDate?,
+    purchasePrice: Double?,
+  ): Either<ErrorMessage, ClaimFlowStep>
+
+  suspend fun submitSummary(
+    dateOfOccurrence: LocalDate?,
+    itemBrandInput: FlowClaimItemBrandInput?,
+    itemModelInput: FlowClaimItemModelInput?,
+    itemProblemIds: List<String>?,
+    location: String?,
     purchaseDate: LocalDate?,
     purchasePrice: Double?,
   ): Either<ErrorMessage, ClaimFlowStep>
@@ -178,13 +190,49 @@ internal class ClaimFlowRepositoryImpl(
     }
   }
 
+  override suspend fun submitSummary(
+    dateOfOccurrence: LocalDate?,
+    itemBrandInput: FlowClaimItemBrandInput?,
+    itemModelInput: FlowClaimItemModelInput?,
+    itemProblemIds: List<String>?,
+    location: String?,
+    purchaseDate: LocalDate?,
+    purchasePrice: Double?,
+  ): Either<ErrorMessage, ClaimFlowStep> {
+    return either {
+      val result = apolloClient
+        .mutation(
+          FlowClaimSummaryNextMutation(
+            FlowClaimSummaryInput(
+              customName = Optional.absent(),
+              dateOfOccurrence = Optional.presentIfNotNull(dateOfOccurrence),
+              itemBrandInput = Optional.presentIfNotNull(itemBrandInput),
+              itemModelInput = Optional.presentIfNotNull(itemModelInput),
+              itemProblemIds = Optional.presentIfNotNull(itemProblemIds),
+              location = Optional.presentIfNotNull(location),
+              purchaseDate = Optional.presentIfNotNull(purchaseDate),
+              purchasePrice = Optional.presentIfNotNull(purchasePrice),
+            ),
+            claimFlowContext!!,
+          ),
+        )
+        .safeExecute()
+        .toEither(::ErrorMessage)
+        .bind()
+        .flowClaimSummaryNext
+      claimFlowContext = result.context
+      result.currentStep.toClaimFlowStep(FlowId(result.id))
+    }
+  }
+
   private suspend fun uploadAudioFile(flowId: String, file: File): Either<ErrorMessage, AudioUrl> {
     return either {
       val result = odysseyService
         .uploadAudioRecordingFile(
           flowId = flowId,
           file = MultipartBody.Part.createFormData(
-            name = "android_audio_file",
+            // Same name for both due to this: https://hedviginsurance.slack.com/archives/C03RP2M458V/p1680004365854429
+            name = file.name,
             filename = file.name,
             body = file.asRequestBody("audio/aac".toMediaType()),
           ),

@@ -52,4 +52,16 @@ internal class TestClaimFlowRepository : ClaimFlowRepository {
     submitSingleItemBrandAndModelInput.add(itemBrandInput to itemModelInput)
     return submitSingleItemResponse.awaitItem()
   }
+
+  override suspend fun submitSummary(
+    dateOfOccurrence: LocalDate?,
+    itemBrandInput: FlowClaimItemBrandInput?,
+    itemModelInput: FlowClaimItemModelInput?,
+    itemProblemIds: List<String>?,
+    location: String?,
+    purchaseDate: LocalDate?,
+    purchasePrice: Double?,
+  ): Either<ErrorMessage, ClaimFlowStep> {
+    error("Not implemented")
+  }
 }

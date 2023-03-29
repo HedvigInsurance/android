@@ -7,9 +7,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -25,7 +25,7 @@ import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.odyssey.ui.ClaimFlowScaffold
 
 @Composable
-fun UnknownErrorDestination(
+internal fun UnknownErrorDestination(
   windowSizeClass: WindowSizeClass,
   openChat: () -> Unit,
   finishClaimFlow: () -> Unit,

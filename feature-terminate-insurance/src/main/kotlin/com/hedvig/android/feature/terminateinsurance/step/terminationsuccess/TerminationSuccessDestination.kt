@@ -24,7 +24,7 @@ import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun TerminationSuccessDestination(
-  terminationDate: LocalDate,
+  terminationDate: LocalDate?,
   surveyUrl: String,
   windowSizeClass: WindowSizeClass,
   navigateBack: () -> Unit,
@@ -40,36 +40,42 @@ internal fun TerminationSuccessDestination(
 
 @Composable
 private fun TerminationSuccessScreen(
-  terminationDate: LocalDate,
+  terminationDate: LocalDate?,
   windowSizeClass: WindowSizeClass,
   onOpenSurvey: () -> Unit,
   navigateBack: () -> Unit,
 ) {
   TerminationInfoScreen(
     windowSizeClass = windowSizeClass,
-    navigateBack = navigateBack,
     title = "",
     headerText = stringResource(R.string.TERMINATION_SUCCESSFUL_TITLE),
-    bodyText = stringResource(
-      R.string.TERMINATION_SUCCESSFUL_TEXT,
-      terminationDate,
-      "Hedvig",
-    ),
-    bottomContent = {
-      Column {
-        LargeOutlinedTextButton(
-          text = stringResource(R.string.general_done_button),
-          onClick = navigateBack,
-        )
-        Spacer(Modifier.height(16.dp))
-        LargeContainedTextButton(
-          text = stringResource(R.string.TERMINATION_OPEN_SURVEY_LABEL),
-          onClick = onOpenSurvey,
-        )
-      }
+    bodyText = if (terminationDate != null) {
+      stringResource(
+        R.string.TERMINATION_SUCCESSFUL_TEXT,
+        terminationDate,
+        stringResource(R.string.HEDVIG_NAME_TEXT),
+      )
+    } else {
+      stringResource(
+        R.string.TERMINATION_SUCCESSFUL_DELETION_TEXT,
+        stringResource(R.string.HEDVIG_NAME_TEXT),
+      )
     },
     icon = Icons.Outlined.CheckCircle,
-  )
+    navigateBack = navigateBack,
+  ) {
+    Column {
+      LargeOutlinedTextButton(
+        text = stringResource(R.string.general_done_button),
+        onClick = navigateBack,
+      )
+      Spacer(Modifier.height(16.dp))
+      LargeContainedTextButton(
+        text = stringResource(R.string.TERMINATION_OPEN_SURVEY_LABEL),
+        onClick = onOpenSurvey,
+      )
+    }
+  }
 }
 
 @HedvigPreview
@@ -79,6 +85,21 @@ private fun PreviewTerminationSuccessScreen() {
     Surface(color = MaterialTheme.colorScheme.background) {
       TerminationSuccessScreen(
         LocalDate(2021, 12, 21),
+        WindowSizeClass.calculateForPreview(),
+        {},
+        {},
+      )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewTerminationSuccessScreenWithoutTeriminationDate() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      TerminationSuccessScreen(
+        null,
         WindowSizeClass.calculateForPreview(),
         {},
         {},

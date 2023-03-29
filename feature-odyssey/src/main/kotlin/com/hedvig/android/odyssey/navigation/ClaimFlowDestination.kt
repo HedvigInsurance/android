@@ -66,7 +66,7 @@ internal sealed interface ClaimFlowDestination : Destination {
     val locationOptions: List<LocationOption>,
     val dateOfOccurrence: LocalDate?,
     val maxDate: LocalDate,
-    val preferredCurrency: CurrencyCode,
+    val preferredCurrency: CurrencyCode?,
     val purchaseDate: LocalDate?,
     val purchasePrice: UiMoney?,
     val availableItemBrands: List<ItemBrand>?,

@@ -26,19 +26,18 @@ import com.hedvig.android.odyssey.ui.ClaimFlowScaffold
 import hedvig.resources.R
 
 @Composable
-fun UnknownScreenDestination(
+internal fun UnknownScreenDestination(
   windowSizeClass: WindowSizeClass,
-  openChat: () -> Unit,
+  openPlayStore: () -> Unit,
   navigateBack: () -> Unit,
 ) {
-  UnknownScreenScreen(windowSizeClass, openChat, navigateBack)
+  UnknownScreenScreen(windowSizeClass, openPlayStore, navigateBack)
 }
 
 @Composable
 private fun UnknownScreenScreen(
-  // todo maybe show "Update your app" here instead.
   windowSizeClass: WindowSizeClass,
-  openChat: () -> Unit,
+  openPlayStore: () -> Unit,
   navigateBack: () -> Unit,
 ) {
   ClaimFlowScaffold(
@@ -48,18 +47,18 @@ private fun UnknownScreenScreen(
     Spacer(Modifier.height(20.dp))
     AppStateInformation(
       type = AppStateInformationType.Failure,
-      title = stringResource(R.string.something_went_wrong),
-      description = stringResource(R.string.home_tab_error_body),
+      title = stringResource(R.string.EMBARK_UPDATE_APP_TITLE),
+      description = stringResource(R.string.EMBARK_UPDATE_APP_BODY),
       modifier = sideSpacingModifier,
     )
     Spacer(Modifier.height(40.dp))
     Spacer(Modifier.weight(1f))
-    LargeOutlinedButton(openChat, sideSpacingModifier) {
-      Text(stringResource(R.string.open_chat))
+    LargeOutlinedButton(openPlayStore, sideSpacingModifier) {
+      Text(stringResource(R.string.EMBARK_UPDATE_APP_BUTTON))
     }
     Spacer(Modifier.height(16.dp))
     LargeContainedButton(navigateBack, sideSpacingModifier) {
-      Text(text = stringResource(R.string.general_done_button))
+      Text(text = stringResource(R.string.general_close_button))
     }
     Spacer(Modifier.height(16.dp))
     Spacer(

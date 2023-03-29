@@ -2,7 +2,7 @@ package com.hedvig.android.feature.terminateinsurance.data
 
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
 import kotlinx.datetime.LocalDate
-import octopus.fragment.FlowStepFragment
+import octopus.fragment.TerminationFlowStepFragment
 
 internal sealed interface TerminateInsuranceStep {
   data class TerminateInsuranceDate(
@@ -11,8 +11,12 @@ internal sealed interface TerminateInsuranceStep {
   ) : TerminateInsuranceStep
 
   data class TerminateInsuranceSuccess(
-    val terminationDate: LocalDate,
+    val terminationDate: LocalDate?,
     val surveyUrl: String,
+  ) : TerminateInsuranceStep
+
+  data class InsuranceDeletion(
+    val disclaimer: String,
   ) : TerminateInsuranceStep
 
   /**
@@ -28,14 +32,17 @@ internal sealed interface TerminateInsuranceStep {
   data class UnknownStep(val message: String? = "") : TerminateInsuranceStep
 }
 
-internal fun FlowStepFragment.CurrentStep.toTerminateInsuranceStep(): TerminateInsuranceStep {
+internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep(): TerminateInsuranceStep {
   return when (this) {
-    is FlowStepFragment.FlowTerminationDateStepCurrentStep -> {
-      TerminateInsuranceStep.TerminateInsuranceDate(this.minDate, this.maxDate)
+    is TerminationFlowStepFragment.FlowTerminationDateStepCurrentStep -> {
+      TerminateInsuranceStep.TerminateInsuranceDate(minDate, maxDate)
     }
-    is FlowStepFragment.FlowTerminationFailedStepCurrentStep -> TerminateInsuranceStep.Failure()
-    is FlowStepFragment.FlowTerminationSuccessStepCurrentStep -> {
-      TerminateInsuranceStep.TerminateInsuranceSuccess(this.terminationDate, this.surveyUrl)
+    is TerminationFlowStepFragment.FlowTerminationFailedStepCurrentStep -> TerminateInsuranceStep.Failure()
+    is TerminationFlowStepFragment.FlowTerminationDeletionStepCurrentStep -> {
+      TerminateInsuranceStep.InsuranceDeletion(disclaimer)
+    }
+    is TerminationFlowStepFragment.FlowTerminationSuccessStepCurrentStep -> {
+      TerminateInsuranceStep.TerminateInsuranceSuccess(terminationDate, surveyUrl)
     }
     else -> TerminateInsuranceStep.UnknownStep()
   }
@@ -46,6 +53,9 @@ internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(): Terminate
     is TerminateInsuranceStep.Failure -> TerminateInsuranceDestination.TerminationFailure(message)
     is TerminateInsuranceStep.TerminateInsuranceDate -> {
       TerminateInsuranceDestination.TerminationDate(minDate, maxDate)
+    }
+    is TerminateInsuranceStep.InsuranceDeletion -> {
+      TerminateInsuranceDestination.InsuranceDeletion(disclaimer)
     }
     is TerminateInsuranceStep.TerminateInsuranceSuccess -> {
       TerminateInsuranceDestination.TerminationSuccess(terminationDate, surveyUrl)

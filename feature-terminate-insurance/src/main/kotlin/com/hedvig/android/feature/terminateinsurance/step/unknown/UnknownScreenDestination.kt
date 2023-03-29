@@ -18,12 +18,12 @@ import hedvig.resources.R
 @Composable
 internal fun UnknownScreenDestination(
   windowSizeClass: WindowSizeClass,
-  openChat: () -> Unit,
+  openPlayStore: () -> Unit,
   navigateBack: () -> Unit,
 ) {
   UnknownScreenScreen(
     windowSizeClass = windowSizeClass,
-    openChat = openChat,
+    openPlayStore = openPlayStore,
     navigateBack = navigateBack,
   )
 }
@@ -31,28 +31,27 @@ internal fun UnknownScreenDestination(
 @Composable
 private fun UnknownScreenScreen(
   windowSizeClass: WindowSizeClass,
-  openChat: () -> Unit,
+  openPlayStore: () -> Unit,
   navigateBack: () -> Unit,
 ) {
   TerminationInfoScreen(
     windowSizeClass = windowSizeClass,
-    navigateBack = navigateBack,
     title = "",
-    headerText = stringResource(R.string.TERMINATION_NOT_SUCCESSFUL_TITLE),
-    bodyText = "Could not find next step in flow. Please try again.",
-    bottomContent = {
-      Column {
-        LargeOutlinedTextButton(
-          text = stringResource(id = R.string.open_chat),
-          onClick = openChat,
-        )
-        Spacer(Modifier.height(16.dp))
-        LargeContainedTextButton(
-          text = stringResource(R.string.general_done_button),
-          onClick = navigateBack,
-        )
-      }
-    },
+    headerText = stringResource(R.string.EMBARK_UPDATE_APP_TITLE),
+    bodyText = stringResource(R.string.EMBARK_UPDATE_APP_BODY),
     icon = ImageVector.vectorResource(com.hedvig.android.core.designsystem.R.drawable.ic_warning_triangle),
-  )
+    navigateBack = navigateBack,
+  ) {
+    Column {
+      LargeOutlinedTextButton(
+        text = stringResource(R.string.EMBARK_UPDATE_APP_BUTTON),
+        onClick = openPlayStore,
+      )
+      Spacer(Modifier.height(16.dp))
+      LargeContainedTextButton(
+        text = stringResource(R.string.general_close_button),
+        onClick = navigateBack,
+      )
+    }
+  }
 }

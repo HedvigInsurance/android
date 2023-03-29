@@ -39,6 +39,7 @@ internal fun ClaimFlowScaffold(
   topAppBarText: String? = null,
   isLoading: Boolean = false,
   errorSnackbarState: ErrorSnackbarState? = null,
+  itemsColumnHorizontalAlignment: Alignment.Horizontal = Alignment.Start,
   content: @Composable() (ColumnScope.(sideSpacingModifier: Modifier) -> Unit),
 ) {
   Box(modifier.fillMaxSize()) {
@@ -50,7 +51,8 @@ internal fun ClaimFlowScaffold(
         scrollBehavior = topAppBarScrollBehavior,
       )
       Column(
-        Modifier
+        horizontalAlignment = itemsColumnHorizontalAlignment,
+        modifier = Modifier
           .fillMaxSize()
           .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
           .verticalScroll(rememberScrollState())

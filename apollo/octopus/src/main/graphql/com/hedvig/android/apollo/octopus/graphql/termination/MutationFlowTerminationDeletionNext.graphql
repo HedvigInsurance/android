@@ -1,0 +1,7 @@
+mutation FlowTerminationDeletionNext($confirmDeletion: Boolean!, $context: FlowContext!) {
+  flowTerminationDeletionNext(input: {confirmed: $confirmDeletion}, context: $context) {
+    id
+    context
+    ...TerminationFlowStepFragment
+  }
+}
