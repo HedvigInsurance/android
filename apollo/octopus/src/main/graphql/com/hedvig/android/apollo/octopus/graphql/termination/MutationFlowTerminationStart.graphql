@@ -2,6 +2,6 @@ mutation FlowTerminationStart($flowTerminationStartInput : FlowTerminationStartI
   flowTerminationStart(input: $flowTerminationStartInput, context: null) {
     id
     context
-    ...FlowStepFragment
+    ...TerminationFlowStepFragment
   }
 }
