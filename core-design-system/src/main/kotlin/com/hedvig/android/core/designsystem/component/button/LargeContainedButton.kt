@@ -27,11 +27,22 @@ fun LargeContainedTextButton(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
+  colors: ButtonColors = ButtonDefaults.buttonColors(
+    containerColor = Material3Theme.colorScheme.containedButtonContainer,
+    contentColor = Material3Theme.colorScheme.onContainedButtonContainer,
+    disabledContainerColor = Material3Theme.colorScheme.containedButtonContainer.copy(
+      alpha = 0.12f,
+    ),
+    disabledContentColor = Material3Theme.colorScheme.onContainedButtonContainer.copy(
+      alpha = 0.38f,
+    ),
+  ),
 ) {
   LargeContainedButton(
     onClick = onClick,
     modifier = modifier,
     enabled = enabled,
+    colors = colors,
   ) {
     Text(text = text)
   }
