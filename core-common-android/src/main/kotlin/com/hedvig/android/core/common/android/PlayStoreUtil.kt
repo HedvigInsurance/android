@@ -1,20 +1,23 @@
-package com.hedvig.app.feature.ratings
+package com.hedvig.android.core.common.android
 
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import com.hedvig.app.R
-import com.hedvig.app.util.extensions.makeToast
-
-private fun Context.playStoreIntent() = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$packageName"))
+import android.widget.Toast
 
 fun Context.tryOpenPlayStore() {
   if (canOpenPlayStore()) {
     openPlayStore()
   } else {
-    makeToast(hedvig.resources.R.string.TOAST_PLAY_STORE_MISSING_ON_DEVICE)
+    Toast.makeText(
+      this,
+      getString(hedvig.resources.R.string.TOAST_PLAY_STORE_MISSING_ON_DEVICE),
+      Toast.LENGTH_LONG,
+    ).show()
   }
 }
+
+private fun Context.playStoreIntent() = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$packageName"))
 
 private fun Context.canOpenPlayStore() = playStoreIntent().resolveActivity(packageManager) != null
 

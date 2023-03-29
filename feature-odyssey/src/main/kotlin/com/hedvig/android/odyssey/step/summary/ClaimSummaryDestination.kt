@@ -59,10 +59,10 @@ import com.hedvig.android.odyssey.step.summary.resources.HedvigDeviceUnknown
 import com.hedvig.android.odyssey.ui.ClaimFlowScaffold
 import com.hedvig.odyssey.compose.getLocale
 import hedvig.resources.R
-import java.time.format.DateTimeFormatter
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 import octopus.type.CurrencyCode
+import java.time.format.DateTimeFormatter
 
 @Composable
 internal fun ClaimSummaryDestination(

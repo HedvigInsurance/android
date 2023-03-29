@@ -14,6 +14,7 @@ internal fun TerminateInsuranceNavHost(
   navController: NavHostController,
   insuranceId: InsuranceId,
   openChat: () -> Unit,
+  openPlayStore: () -> Unit,
   navigateUp: () -> Boolean,
   finishTerminationFlow: () -> Unit,
 ) {
@@ -28,6 +29,7 @@ internal fun TerminateInsuranceNavHost(
       navController = navController,
       insuranceId = insuranceId,
       navigateUp = navigateUp,
+      openPlayStore = openPlayStore,
       openChat = openChat,
       finishTerminationFlow = finishTerminationFlow,
     )

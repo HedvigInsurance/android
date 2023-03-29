@@ -46,6 +46,7 @@ internal fun NavGraphBuilder.claimFlowGraph(
   imageLoader: ImageLoader,
   entryPointId: String?,
   openAppSettings: () -> Unit,
+  openPlayStore: () -> Unit,
   navigateUp: () -> Boolean,
   openChat: () -> Unit,
   finishClaimFlow: () -> Unit,
@@ -191,7 +192,7 @@ internal fun NavGraphBuilder.claimFlowGraph(
       BackHandler { finishClaimFlow() }
       UnknownScreenDestination(
         windowSizeClass = windowSizeClass,
-        openChat = openChat,
+        openPlayStore = openPlayStore,
         navigateBack = finishClaimFlow,
       )
     }
