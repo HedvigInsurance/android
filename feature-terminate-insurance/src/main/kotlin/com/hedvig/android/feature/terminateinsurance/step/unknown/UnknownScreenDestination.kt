@@ -40,19 +40,18 @@ private fun UnknownScreenScreen(
     headerText = stringResource(R.string.EMBARK_UPDATE_APP_TITLE),
     bodyText = stringResource(R.string.EMBARK_UPDATE_APP_BODY),
     icon = ImageVector.vectorResource(com.hedvig.android.core.designsystem.R.drawable.ic_warning_triangle),
-    bottomContent = {
-      Column {
-        LargeOutlinedTextButton(
-          text = stringResource(R.string.EMBARK_UPDATE_APP_BUTTON),
-          onClick = openPlayStore,
-        )
-        Spacer(Modifier.height(16.dp))
-        LargeContainedTextButton(
-          text = stringResource(R.string.general_close_button),
-          onClick = navigateBack,
-        )
-      }
-    },
     navigateBack = navigateBack,
-  )
+  ) {
+    Column {
+      LargeOutlinedTextButton(
+        text = stringResource(R.string.EMBARK_UPDATE_APP_BUTTON),
+        onClick = openPlayStore,
+      )
+      Spacer(Modifier.height(16.dp))
+      LargeContainedTextButton(
+        text = stringResource(R.string.general_close_button),
+        onClick = navigateBack,
+      )
+    }
+  }
 }
