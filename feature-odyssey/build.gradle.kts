@@ -25,10 +25,12 @@ dependencies {
 
   implementation(libs.accompanist.navigationAnimation)
   implementation(libs.accompanist.permissions)
+  implementation(libs.accompanist.placeholderM3)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.material3.windowSizeClass)
+  implementation(libs.androidx.compose.materialIconsExtended)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.compose)
