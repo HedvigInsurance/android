@@ -28,6 +28,7 @@ internal fun NavGraphBuilder.terminateInsuranceGraph(
   density: Density,
   navController: NavHostController,
   insuranceId: InsuranceId,
+  insuranceDisplayName: String,
   navigateUp: () -> Boolean,
   openChat: () -> Unit,
   openPlayStore: () -> Unit,

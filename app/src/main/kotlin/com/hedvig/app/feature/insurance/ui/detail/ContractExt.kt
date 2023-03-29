@@ -49,7 +49,11 @@ fun InsuranceQuery.Contract.toMemberDetailsViewState(
       null
     },
     change = YourInfoModel.Change,
-    cancelInsurance = if (isTerminationFlowEnabled && !isContractTerminated) YourInfoModel.CancelInsuranceButton(id) else null,
+    cancelInsurance = if (isTerminationFlowEnabled && !isContractTerminated) {
+      YourInfoModel.CancelInsuranceButton(id, displayName)
+    } else {
+      null
+    },
   )
 }
 
