@@ -1,7 +1,11 @@
 package com.hedvig.app.feature.insurance.ui.detail.yourinfo
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
 import androidx.recyclerview.widget.ConcatAdapter
@@ -21,6 +25,13 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
 
   private val binding by viewBinding(ContractDetailYourInfoFragmentBinding::bind)
   private val viewModel: ContractDetailViewModel by activityViewModel()
+
+  private val registerForActivityResult: ActivityResultLauncher<Intent> =
+    registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { activityResult ->
+      if (activityResult.resultCode == Activity.RESULT_OK) {
+        requireActivity().onBackPressedDispatcher.onBackPressed()
+      }
+    }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     binding.root.applyNavigationBarInsets()
@@ -64,6 +75,8 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
   }
 
   private fun openCancelInsuranceScreen(insuranceId: String, insuranceDisplayName: String) {
-    startActivity(TerminateInsuranceActivity.newInstance(requireContext(), insuranceId, insuranceDisplayName))
+    registerForActivityResult.launch(
+      TerminateInsuranceActivity.newInstance(requireContext(), insuranceId, insuranceDisplayName),
+    )
   }
 }

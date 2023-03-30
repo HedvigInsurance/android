@@ -35,6 +35,7 @@ internal fun NavGraphBuilder.terminateInsuranceGraph(
   openChat: () -> Unit,
   openPlayStore: () -> Unit,
   finishTerminationFlow: () -> Unit,
+  finishTerminationFlowWithTerminatedContract: () -> Unit,
 ) {
   animatedNavigation<Destinations.TerminateInsurance>(
     startDestination = createRoutePattern<TerminateInsuranceDestination.StartStep>(),
@@ -106,12 +107,12 @@ internal fun NavGraphBuilder.terminateInsuranceGraph(
       )
     }
     animatedComposable<TerminateInsuranceDestination.TerminationSuccess> {
-      BackHandler { finishTerminationFlow() }
+      BackHandler { finishTerminationFlowWithTerminatedContract() }
       TerminationSuccessDestination(
         terminationDate = this.terminationDate,
         surveyUrl = this.surveyUrl,
         windowSizeClass = windowSizeClass,
-        navigateBack = finishTerminationFlow,
+        navigateBack = finishTerminationFlowWithTerminatedContract,
       )
     }
     animatedComposable<TerminateInsuranceDestination.TerminationFailure> {
