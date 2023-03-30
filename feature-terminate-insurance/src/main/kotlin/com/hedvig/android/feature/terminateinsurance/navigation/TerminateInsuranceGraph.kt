@@ -79,16 +79,14 @@ internal fun NavGraphBuilder.terminateInsuranceGraph(
         },
       )
     }
-    animatedComposable<TerminateInsuranceDestination.TerminationSuccess> {
-      BackHandler { finishTerminationFlow() }
-      TerminationSuccessDestination(
-        terminationDate = this.terminationDate,
-        surveyUrl = this.surveyUrl,
-        windowSizeClass = windowSizeClass,
-        navigateBack = finishTerminationFlow,
-      )
-    }
     animatedComposable<TerminateInsuranceDestination.InsuranceDeletion> {
+      val shouldFinishFlowOnBack = run {
+        val previousBackstackEntryRoute = navController.previousBackStackEntry?.destination?.route
+        previousBackstackEntryRoute == createRoutePattern<TerminateInsuranceDestination.StartStep>()
+      }
+      BackHandler(shouldFinishFlowOnBack) {
+        finishTerminationFlow()
+      }
       val viewModel: InsuranceDeletionViewModel = koinViewModel { parametersOf(this) }
       InsuranceDeletionDestination(
         viewModel = viewModel,
@@ -98,7 +96,22 @@ internal fun NavGraphBuilder.terminateInsuranceGraph(
           viewModel.handledNextStepNavigation()
           navController.navigate(terminationStep.toTerminateInsuranceDestination())
         },
-        navigateBack = { navController.navigateUp() || navigateUp() },
+        navigateBack = {
+          if (shouldFinishFlowOnBack) {
+            finishTerminationFlow()
+          } else {
+            navController.navigateUp() || navigateUp()
+          }
+        },
+      )
+    }
+    animatedComposable<TerminateInsuranceDestination.TerminationSuccess> {
+      BackHandler { finishTerminationFlow() }
+      TerminationSuccessDestination(
+        terminationDate = this.terminationDate,
+        surveyUrl = this.surveyUrl,
+        windowSizeClass = windowSizeClass,
+        navigateBack = finishTerminationFlow,
       )
     }
     animatedComposable<TerminateInsuranceDestination.TerminationFailure> {
