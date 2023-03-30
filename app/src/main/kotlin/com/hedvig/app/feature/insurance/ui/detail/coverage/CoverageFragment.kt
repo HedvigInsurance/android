@@ -34,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -42,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import arrow.core.toNonEmptyListOrNull
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -118,7 +120,9 @@ private fun CoverageFragmentScreen(
     CoverageUiState.Error -> {
       GenericErrorScreen(
         onRetryButtonClick = retryLoading,
-        modifier = Modifier.padding(16.dp).windowInsetsPadding(WindowInsets.safeDrawing),
+        modifier = Modifier
+          .padding(16.dp)
+          .windowInsetsPadding(WindowInsets.safeDrawing),
       )
     }
     CoverageUiState.Loading -> {}
@@ -164,26 +168,32 @@ private fun ColumnScope.PerilSection(
   imageLoader: ImageLoader,
   onPerilClick: (Peril) -> Unit,
 ) {
-  Text(
-    text = stringResource(hedvig.resources.R.string.CONTRACT_COVERAGE_CONTRACT_TYPE, contractDisplayName),
-    style = MaterialTheme.typography.titleLarge,
-    modifier = Modifier
-      .padding(horizontal = 16.dp)
-      .heightIn(min = 40.dp)
-      .wrapContentSize(Alignment.BottomStart),
-  )
-  Spacer(Modifier.height(16.dp))
-  PerilGrid(
-    perils = perilItems.map { peril: Peril ->
+  val isSystemInDarkTheme = isSystemInDarkTheme()
+  val perilGridData = remember(perilItems, isSystemInDarkTheme) {
+    perilItems.map { peril: Peril ->
       PerilGridData(
         text = peril.title,
-        iconUrl = if (isSystemInDarkTheme()) peril.darkUrl else peril.lightUrl,
+        iconUrl = if (isSystemInDarkTheme) peril.darkUrl else peril.lightUrl,
         onClick = { onPerilClick(peril) },
       )
-    },
-    imageLoader = imageLoader,
-    contentPadding = PaddingValues(horizontal = 16.dp),
-  )
+    }.toNonEmptyListOrNull()
+  }
+  if (perilGridData != null) {
+    Text(
+      text = stringResource(hedvig.resources.R.string.CONTRACT_COVERAGE_CONTRACT_TYPE, contractDisplayName),
+      style = MaterialTheme.typography.titleLarge,
+      modifier = Modifier
+        .padding(horizontal = 16.dp)
+        .heightIn(min = 40.dp)
+        .wrapContentSize(Alignment.BottomStart),
+    )
+    Spacer(Modifier.height(16.dp))
+    PerilGrid(
+      perils = perilGridData,
+      imageLoader = imageLoader,
+      contentPadding = PaddingValues(horizontal = 16.dp),
+    )
+  }
 }
 
 @Suppress("UnusedReceiverParameter")
