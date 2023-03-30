@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.terminateinsurance
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -47,6 +48,12 @@ class TerminateInsuranceActivity : AppCompatActivity() {
             openPlayStore = { tryOpenPlayStore() },
             navigateUp = { onSupportNavigateUp() },
             finishTerminationFlow = { finish() },
+            finishTerminationFlowWithTerminatedContract = {
+              // If the contract was terminated, note that this was successful so the call-site can act appropriately
+              // like exiting the contract detail screen
+              setResult(Activity.RESULT_OK)
+              finish()
+            },
           )
         }
       }

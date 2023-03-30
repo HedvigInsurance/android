@@ -50,7 +50,7 @@ internal fun InsuranceDeletionDestination(
     insuranceDisplayName = insuranceDisplayName,
     windowSizeClass = windowSizeClass,
     showedError = viewModel::showedError,
-    submitDeletionDecision = viewModel::submitDeletionDecision,
+    confirmDeletion = viewModel::confirmDeletion,
     navigateBack = navigateBack,
   )
 }
@@ -61,7 +61,7 @@ private fun InsuranceDeletionScreen(
   insuranceDisplayName: String,
   windowSizeClass: WindowSizeClass,
   showedError: () -> Unit,
-  submitDeletionDecision: (Boolean) -> Unit,
+  confirmDeletion: () -> Unit,
   navigateBack: () -> Unit,
 ) {
   Box {
@@ -79,13 +79,13 @@ private fun InsuranceDeletionScreen(
       Column {
         LargeOutlinedTextButton(
           text = stringResource(R.string.general_cancel_button),
-          onClick = { submitDeletionDecision(false) },
+          onClick = navigateBack,
           enabled = uiState.canSubmit,
         )
         Spacer(Modifier.height(16.dp))
         LargeContainedTextButton(
           text = stringResource(R.string.general_continue_button),
-          onClick = { submitDeletionDecision(true) },
+          onClick = { confirmDeletion() },
           enabled = uiState.canSubmit,
           colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.error,

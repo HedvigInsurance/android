@@ -18,6 +18,7 @@ internal fun TerminateInsuranceNavHost(
   openPlayStore: () -> Unit,
   navigateUp: () -> Boolean,
   finishTerminationFlow: () -> Unit,
+  finishTerminationFlowWithTerminatedContract: () -> Unit,
 ) {
   val density = LocalDensity.current
   AnimatedNavHost(
@@ -34,6 +35,7 @@ internal fun TerminateInsuranceNavHost(
       openPlayStore = openPlayStore,
       openChat = openChat,
       finishTerminationFlow = finishTerminationFlow,
+      finishTerminationFlowWithTerminatedContract = finishTerminationFlowWithTerminatedContract,
     )
   }
 }
