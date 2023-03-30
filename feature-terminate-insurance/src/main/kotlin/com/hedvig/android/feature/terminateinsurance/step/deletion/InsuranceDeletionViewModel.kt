@@ -20,12 +20,12 @@ internal class InsuranceDeletionViewModel(
     MutableStateFlow(InsuranceDeletionUiState(insuranceDeletion.disclaimer))
   val uiState: StateFlow<InsuranceDeletionUiState> = _uiState.asStateFlow()
 
-  fun submitDeletionDecision(confirmDeletion: Boolean) {
+  fun confirmDeletion() {
     val uiState = _uiState.value
     if (!uiState.canSubmit) return
     _uiState.update { it.copy(isLoading = true) }
     viewModelScope.launch {
-      terminateInsuranceRepository.submitDeletionDecision(confirmDeletion).fold(
+      terminateInsuranceRepository.confirmDeletion().fold(
         ifLeft = {
           _uiState.update {
             uiState.copy(isLoading = false, hasError = true)

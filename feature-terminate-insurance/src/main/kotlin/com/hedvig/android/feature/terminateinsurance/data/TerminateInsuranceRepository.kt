@@ -49,15 +49,10 @@ internal class TerminateInsuranceRepository(
     }
   }
 
-  suspend fun submitDeletionDecision(confirmDeletion: Boolean): Either<ErrorMessage, TerminateInsuranceStep> {
+  suspend fun confirmDeletion(): Either<ErrorMessage, TerminateInsuranceStep> {
     return either {
       val result = apolloClient
-        .mutation(
-          FlowTerminationDeletionNextMutation(
-            context = terminationContext,
-            confirmDeletion = confirmDeletion,
-          ),
-        )
+        .mutation(FlowTerminationDeletionNextMutation(terminationContext))
         .safeExecute()
         .toEither(::ErrorMessage)
         .bind()
