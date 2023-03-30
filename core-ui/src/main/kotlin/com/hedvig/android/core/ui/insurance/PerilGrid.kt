@@ -7,6 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import arrow.core.NonEmptyList
+import arrow.core.toNonEmptyListOrNull
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -17,7 +19,7 @@ import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 
 @Composable
 fun PerilGrid(
-  perils: List<PerilGridData>,
+  perils: NonEmptyList<PerilGridData>,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
   contentPadding: PaddingValues = PaddingValues(0.dp),
@@ -51,7 +53,7 @@ private fun PreviewPerilGrid() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       PerilGrid(
-        List(9) { PerilGridData("Peril#$it", "", {}) },
+        List(9) { PerilGridData("Peril#$it", "", {}) }.toNonEmptyListOrNull()!!,
         rememberPreviewImageLoader(),
         contentPadding = PaddingValues(16.dp),
       )
