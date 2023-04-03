@@ -4,11 +4,11 @@ import android.content.res.Resources
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
 import com.hedvig.android.odyssey.model.FlowId
+import com.hedvig.android.odyssey.navigation.ItemBrand.Unknown.displayName
 import com.hedvig.android.odyssey.navigation.ItemModel.Unknown.displayName
 import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
-import octopus.fragment.FlowClaimSingleItemCheckoutStepFragment
 import octopus.fragment.MoneyFragment
 import octopus.type.CurrencyCode
 
@@ -79,24 +79,21 @@ internal sealed interface ClaimFlowDestination : Destination {
 
   @Serializable
   data class SingleItemCheckout(
-    val price: MoneyFragment,
-    val depreciation: MoneyFragment,
-    val deductible: MoneyFragment,
-    val payoutAmount: MoneyFragment,
-    val availableCheckoutMethods: List<FlowClaimSingleItemCheckoutStepFragment.AvailableCheckoutMethod>,
+    val price: UiGuaranteedMoney,
+    val depreciation: UiGuaranteedMoney,
+    val deductible: UiGuaranteedMoney,
+    val payoutAmount: UiGuaranteedMoney,
+    val availableCheckoutMethods: List<CheckoutMethod.Known>,
   ) : ClaimFlowDestination
 
   @Serializable
   object ClaimSuccess : ClaimFlowDestination
 
   @Serializable
-  object ManualHandling : ClaimFlowDestination // todo which step is this?
-
-  @Serializable
   object Failure : ClaimFlowDestination
 
   @Serializable
-  object UnknownScreen : ClaimFlowDestination
+  object UpdateApp : ClaimFlowDestination
 }
 
 @Serializable
@@ -125,7 +122,8 @@ internal sealed interface ItemBrand {
 
   @Serializable
   object Unknown : ItemBrand {
-    @StringRes val displayName: Int = hedvig.resources.R.string.GENERAL_NOT_SURE
+    @StringRes
+    val displayName: Int = hedvig.resources.R.string.GENERAL_NOT_SURE
   }
 }
 
@@ -151,7 +149,8 @@ internal sealed interface ItemModel {
 
   @Serializable
   object Unknown : ItemModel {
-    @StringRes val displayName: Int = hedvig.resources.R.string.GENERAL_NOT_SURE
+    @StringRes
+    val displayName: Int = hedvig.resources.R.string.GENERAL_NOT_SURE
   }
 }
 
@@ -161,13 +160,52 @@ internal data class ItemProblem(
   val itemProblemId: String,
 )
 
+@Serializable
+internal sealed interface CheckoutMethod {
+
+  @Serializable
+  sealed interface Known : CheckoutMethod {
+    val id: String
+    val displayName: String
+    val uiMoney: UiGuaranteedMoney
+
+    @Serializable
+    data class AutomaticAutogiro(
+      override val id: String,
+      override val displayName: String,
+      override val uiMoney: UiGuaranteedMoney,
+    ) : Known
+  }
+
+  object Unknown : CheckoutMethod
+}
+
 @Immutable
 @Serializable
 internal data class UiMoney(val amount: Double?, val currencyCode: CurrencyCode) {
+  override fun toString(): String {
+    return "${amount ?: "-"} $currencyCode"
+  }
+
   companion object {
     fun fromMoneyFragment(fragment: MoneyFragment?): UiMoney? {
       fragment ?: return null
       return UiMoney(fragment.amount, fragment.currencyCode)
+    }
+  }
+}
+
+@Immutable
+@Serializable
+// todo consider a better name
+internal data class UiGuaranteedMoney(val amount: Double, val currencyCode: CurrencyCode) {
+  override fun toString(): String {
+    return "$amount $currencyCode"
+  }
+
+  companion object {
+    fun fromMoneyFragment(fragment: MoneyFragment): UiGuaranteedMoney {
+      return UiGuaranteedMoney(fragment.amount, fragment.currencyCode)
     }
   }
 }

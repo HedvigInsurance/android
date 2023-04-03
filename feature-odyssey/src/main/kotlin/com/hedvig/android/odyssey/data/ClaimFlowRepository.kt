@@ -16,6 +16,7 @@ import octopus.FlowClaimDateOfOccurrenceNextMutation
 import octopus.FlowClaimDateOfOccurrencePlusLocationNextMutation
 import octopus.FlowClaimLocationNextMutation
 import octopus.FlowClaimPhoneNumberNextMutation
+import octopus.FlowClaimSingleItemCheckoutNextMutation
 import octopus.FlowClaimSingleItemNextMutation
 import octopus.FlowClaimStartMutation
 import octopus.FlowClaimSummaryNextMutation
@@ -48,6 +49,8 @@ internal interface ClaimFlowRepository {
     purchaseDate: LocalDate?,
     purchasePrice: Double?,
   ): Either<ErrorMessage, ClaimFlowStep>
+
+  suspend fun submitSingleItemCheckout(amount: Double): Either<ErrorMessage, ClaimFlowStep>
 
   suspend fun submitSummary(
     dateOfOccurrence: LocalDate?,
@@ -185,6 +188,26 @@ internal class ClaimFlowRepositoryImpl(
         .toEither(::ErrorMessage)
         .bind()
         .flowClaimSingleItemNext
+      claimFlowContext = result.context
+      result.currentStep.toClaimFlowStep(FlowId(result.id))
+    }
+  }
+
+  override suspend fun submitSingleItemCheckout(
+    amount: Double,
+  ): Either<ErrorMessage, ClaimFlowStep> {
+    return either {
+      val result = apolloClient
+        .mutation(
+          FlowClaimSingleItemCheckoutNextMutation(
+            amount,
+            claimFlowContext!!,
+          ),
+        )
+        .safeExecute()
+        .toEither(::ErrorMessage)
+        .bind()
+        .flowClaimSingleItemCheckoutNext
       claimFlowContext = result.context
       result.currentStep.toClaimFlowStep(FlowId(result.id))
     }

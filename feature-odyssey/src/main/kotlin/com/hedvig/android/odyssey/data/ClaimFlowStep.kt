@@ -1,16 +1,19 @@
 package com.hedvig.android.odyssey.data
 
 import com.hedvig.android.odyssey.model.FlowId
+import com.hedvig.android.odyssey.navigation.CheckoutMethod
 import com.hedvig.android.odyssey.navigation.ClaimFlowDestination
 import com.hedvig.android.odyssey.navigation.ItemBrand
 import com.hedvig.android.odyssey.navigation.ItemModel
 import com.hedvig.android.odyssey.navigation.ItemProblem
 import com.hedvig.android.odyssey.navigation.LocationOption
+import com.hedvig.android.odyssey.navigation.UiGuaranteedMoney
 import com.hedvig.android.odyssey.navigation.UiMoney
 import kotlinx.datetime.LocalDate
+import octopus.fragment.AutomaticAutogiroPayoutFragment
+import octopus.fragment.CheckoutMethodFragment
 import octopus.fragment.ClaimFlowStepFragment
 import octopus.fragment.FlowClaimLocationStepFragment
-import octopus.fragment.FlowClaimSingleItemCheckoutStepFragment
 import octopus.fragment.FlowClaimSingleItemStepFragment
 import octopus.fragment.MoneyFragment
 import octopus.type.CurrencyCode
@@ -21,8 +24,7 @@ import octopus.type.CurrencyCode
 internal sealed interface ClaimFlowStep {
   val flowId: FlowId
 
-  data class ClaimAudioRecordingStep(override val flowId: FlowId, val questions: List<String>) :
-    ClaimFlowStep
+  data class ClaimAudioRecordingStep(override val flowId: FlowId, val questions: List<String>) : ClaimFlowStep
 
   data class ClaimDateOfOccurrenceStep(
     override val flowId: FlowId,
@@ -64,7 +66,7 @@ internal sealed interface ClaimFlowStep {
     val depreciation: MoneyFragment,
     val deductible: MoneyFragment,
     val payoutAmount: MoneyFragment,
-    val availableCheckoutMethods: List<FlowClaimSingleItemCheckoutStepFragment.AvailableCheckoutMethod>,
+    val availableCheckoutMethods: List<CheckoutMethodFragment>,
   ) : ClaimFlowStep
 
   data class ClaimSummaryStep(
@@ -220,16 +222,16 @@ internal fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
     }
     is ClaimFlowStep.ClaimResolutionSingleItemStep -> {
       ClaimFlowDestination.SingleItemCheckout(
-        price,
-        depreciation,
-        deductible,
-        payoutAmount,
-        availableCheckoutMethods,
+        UiGuaranteedMoney.fromMoneyFragment(price),
+        UiGuaranteedMoney.fromMoneyFragment(depreciation),
+        UiGuaranteedMoney.fromMoneyFragment(deductible),
+        UiGuaranteedMoney.fromMoneyFragment(payoutAmount),
+        availableCheckoutMethods.map(CheckoutMethodFragment::toCheckoutMethod).filterIsInstance<CheckoutMethod.Known>(),
       )
     }
     is ClaimFlowStep.ClaimSuccessStep -> ClaimFlowDestination.ClaimSuccess
     is ClaimFlowStep.ClaimFailedStep -> ClaimFlowDestination.Failure
-    is ClaimFlowStep.UnknownStep -> ClaimFlowDestination.UnknownScreen
+    is ClaimFlowStep.UnknownStep -> ClaimFlowDestination.UpdateApp
   }
 }
 
@@ -247,4 +249,13 @@ internal fun FlowClaimSingleItemStepFragment.AvailableItemBrand.toItemBrand(): I
 
 private fun FlowClaimLocationStepFragment.Option.toLocationOption(): LocationOption {
   return LocationOption(value, displayName)
+}
+
+private fun CheckoutMethodFragment.toCheckoutMethod(): CheckoutMethod {
+  return when (this) {
+    is AutomaticAutogiroPayoutFragment -> {
+      CheckoutMethod.Known.AutomaticAutogiro(id, displayName, UiGuaranteedMoney.fromMoneyFragment(amount))
+    }
+    else -> CheckoutMethod.Unknown
+  }
 }
