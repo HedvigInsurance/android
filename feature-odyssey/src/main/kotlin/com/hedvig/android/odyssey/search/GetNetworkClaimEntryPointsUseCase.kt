@@ -60,5 +60,4 @@ private const val NR_OF_ENTRYPOINTS = "20"
 internal data class ClaimEntryPointDTO(
   val id: String,
   val displayName: String,
-  val path: String,
 )
