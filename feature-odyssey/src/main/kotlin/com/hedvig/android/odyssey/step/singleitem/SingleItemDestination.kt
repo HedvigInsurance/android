@@ -60,6 +60,7 @@ import com.hedvig.android.odyssey.ui.ClaimFlowScaffold
 import com.hedvig.android.odyssey.ui.DatePickerRowCard
 import com.hedvig.android.odyssey.ui.DatePickerUiState
 import com.hedvig.android.odyssey.ui.MonetaryAmountInput
+import com.hedvig.android.odyssey.ui.MultiSelectDialog
 import com.hedvig.android.odyssey.ui.SingleSelectDialog
 import hedvig.resources.R
 import octopus.type.CurrencyCode
@@ -274,7 +275,7 @@ private fun PriceOfPurchase(
       keyboardController?.show()
     },
   ) {
-    Text("Price of purchase") // todo string resource
+    Text(stringResource(R.string.claims_item_screen_purchase_price_button))
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.width(8.dp))
     CompositionLocalProvider(LocalContentColor provides LocalContentColor.current.copy(alpha = ContentAlpha.medium)) {
@@ -299,11 +300,12 @@ private fun ItemProblems(
 ) {
   var showDialog: Boolean by rememberSaveable { mutableStateOf(false) }
   if (showDialog) {
-    SingleSelectDialog(
+    MultiSelectDialog(
       title = stringResource(R.string.claims_item_screen_type_of_damage_button),
       optionsList = uiState.availableItemProblems,
       onSelected = selectProblem,
       getDisplayText = { it.displayName },
+      getIsSelected = { uiState.selectedItemProblems.contains(it) },
       getImageUrl = { null },
       getId = { it.itemProblemId },
       imageLoader = imageLoader,
@@ -317,7 +319,7 @@ private fun ItemProblems(
     enabled = enabled,
     modifier = modifier,
   ) {
-    Text("Damage") // todo string resource "Damage"
+    Text(stringResource(R.string.claims_item_screen_type_of_damage_button))
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.width(8.dp))
     CompositionLocalProvider(LocalContentColor provides LocalContentColor.current.copy(alpha = ContentAlpha.medium)) {
