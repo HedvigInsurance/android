@@ -112,9 +112,9 @@ private fun ClaimSummaryScreen(
     Spacer(Modifier.height(100.dp))
     ItemIcon(uiState.claimSummaryInfoUiState, imageLoader, sideSpacingModifier)
     Spacer(Modifier.height(20.dp))
-    uiState.claimSummaryInfoUiState.flowName?.let { flowName ->
+    uiState.claimSummaryInfoUiState.claimTypeTitle?.let { claimTypeTitle ->
       Text(
-        text = flowName,
+        text = claimTypeTitle,
         style = MaterialTheme.typography.titleLarge,
         modifier = sideSpacingModifier,
       )
@@ -276,7 +276,7 @@ private fun PreviewClaimSummaryScreen() {
         ClaimSummaryUiState(
           claimSummaryInfoUiState = ClaimSummaryInfoUiState(
             imageUrl = "https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-14-pro.jpg",
-            flowName = "TODO Broken Phone",
+            claimTypeTitle = "Broken Phone",
             dateOfIncident = LocalDate.parse("2023-03-24"),
             locationOption = LocationOption(
               value = "IN_HOME_COUNTRY",

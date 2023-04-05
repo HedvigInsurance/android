@@ -71,6 +71,7 @@ internal sealed interface ClaimFlowStep {
 
   data class ClaimSummaryStep(
     override val flowId: FlowId,
+    val claimTypeTitle: String,
     val location: String?,
     val options: List<FlowClaimLocationStepFragment.Option>,
     val dateOfOccurrence: LocalDate?,
@@ -146,6 +147,7 @@ internal fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(flowId: FlowId): 
     is ClaimFlowStepFragment.FlowClaimSummaryStepCurrentStep -> {
       ClaimFlowStep.ClaimSummaryStep(
         flowId,
+        title,
         locationStep.location,
         locationStep.options,
         dateOfOccurrenceStep.dateOfOccurrence,
@@ -205,6 +207,7 @@ internal fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
     }
     is ClaimFlowStep.ClaimSummaryStep -> {
       ClaimFlowDestination.Summary(
+        claimTypeTitle = claimTypeTitle,
         selectedLocation = location,
         locationOptions = options.map { it.toLocationOption() },
         dateOfOccurrence = dateOfOccurrence,

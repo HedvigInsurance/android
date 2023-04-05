@@ -119,7 +119,7 @@ internal data class ClaimSummaryStatusUiState(
 
 internal data class ClaimSummaryInfoUiState(
   val imageUrl: String?,
-  val flowName: String?, // e.g "Broken Phone"
+  val claimTypeTitle: String?, // e.g "Broken Phone"
   val dateOfIncident: LocalDate?,
   val locationOption: LocationOption?,
   val itemType: ItemType?,
@@ -165,7 +165,7 @@ internal data class ClaimSummaryInfoUiState(
           ?.firstOrNull { it.asKnown()?.itemModelId == summary.selectedItemModel }
           ?.asKnown()
           ?.imageUrl,
-        flowName = "TODO Broken Phone", // Maybe backend should return this in the summary response?
+        claimTypeTitle = summary.claimTypeTitle,
         dateOfIncident = summary.dateOfOccurrence,
         locationOption = summary.locationOptions.firstOrNull { it.value == summary.selectedLocation },
         itemType = ItemType.fromSummary(summary),
