@@ -1,4 +1,4 @@
-package com.hedvig.app.ui.compose.composables
+package com.hedvig.android.odyssey.step.singleitemcheckout
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
@@ -11,47 +11,39 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.designsystem.theme.progressBlue
-import com.hedvig.android.core.designsystem.theme.progressYellow
 import java.lang.Float.min
 
-@Composable
-fun TextProgressOverlay(progressText: String) {
-  BlurredFullScreenProgressOverlay {
-    Text(
-      progressText,
-      style = MaterialTheme.typography.h5,
-      modifier = Modifier.align(Alignment.Center),
-    )
-  }
-}
+private val progressBlue = Color(0xffC3CBD6)
+private val progressYellow = Color(0xffEDCDAB)
 
 @Composable
-fun BlurredFullScreenProgressOverlay(content: @Composable BoxScope.() -> Unit) {
-  Box(Modifier.fillMaxSize()) {
-    AnimatedCircles()
-    content()
+internal fun BlurredFullScreenProgressOverlay(content: @Composable BoxScope.() -> Unit) {
+  Surface(Modifier.fillMaxSize()) {
+    Box {
+      AnimatedCircles()
+      content()
+    }
   }
 }
 
 @Composable
 private fun AnimatedCircles() {
-  val transition = rememberInfiniteTransition()
+  val transition = rememberInfiniteTransition("Ball transition")
   val configuration = LocalConfiguration.current
 
   val translationX by transition.animateValue(
@@ -62,6 +54,7 @@ private fun AnimatedCircles() {
       animation = tween(durationMillis = 12000, easing = FastOutSlowInEasing),
       repeatMode = RepeatMode.Reverse,
     ),
+    label = "ball#1_x_translation",
   )
 
   val translationY by transition.animateValue(
@@ -72,6 +65,7 @@ private fun AnimatedCircles() {
       animation = tween(durationMillis = 10000, easing = FastOutSlowInEasing),
       repeatMode = RepeatMode.Reverse,
     ),
+    label = "ball#1_y_translation",
   )
 
   val translationX2 by transition.animateValue(
@@ -82,6 +76,7 @@ private fun AnimatedCircles() {
       animation = tween(durationMillis = 8000, easing = FastOutSlowInEasing),
       repeatMode = RepeatMode.Reverse,
     ),
+    label = "ball#2_x_translation",
   )
 
   val translationY2 by transition.animateValue(
@@ -92,6 +87,7 @@ private fun AnimatedCircles() {
       animation = tween(durationMillis = 15000, easing = FastOutSlowInEasing),
       repeatMode = RepeatMode.Reverse,
     ),
+    label = "ball#2_y_translation",
   )
 
   val radius by transition.animateValue(
@@ -102,6 +98,7 @@ private fun AnimatedCircles() {
       animation = tween(durationMillis = 10000, easing = FastOutSlowInEasing),
       repeatMode = RepeatMode.Reverse,
     ),
+    label = "ball#1_radius",
   )
 
   val radius2 by transition.animateValue(
@@ -112,12 +109,13 @@ private fun AnimatedCircles() {
       animation = tween(durationMillis = 16000, easing = FastOutSlowInEasing),
       repeatMode = RepeatMode.Reverse,
     ),
+    label = "ball#2_radius",
   )
 
   Canvas(
     modifier = Modifier
       .fillMaxSize()
-      .blur(80.dp, BlurredEdgeTreatment.Rectangle),
+      .blur(80.dp),
   ) {
     val screenHeight = configuration.screenHeightDp.dp.toPx()
     val screenWidth = configuration.screenWidthDp.dp.toPx()
@@ -139,10 +137,15 @@ private fun AnimatedCircles() {
 
 @HedvigPreview
 @Composable
-private fun PreviewTextProgressOverlay() {
+private fun PreviewBlurredFullScreenProgressOverlay() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
-      TextProgressOverlay(progressText = "Calculating price...")
+    Surface(color = MaterialTheme.colorScheme.background) {
+      BlurredFullScreenProgressOverlay {
+        Text(
+          text = "Calculating price...",
+          modifier = Modifier.align(Alignment.Center),
+        )
+      }
     }
   }
 }
