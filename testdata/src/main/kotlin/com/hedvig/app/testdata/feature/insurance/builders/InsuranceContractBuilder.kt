@@ -13,6 +13,7 @@ import giraffe.type.AgreementStatus
 import giraffe.type.Contract
 import giraffe.type.NorwegianTravelAgreement
 import giraffe.type.SwedishApartmentAgreement
+import giraffe.type.TypeOfContract
 import giraffe.type.TypeOfContractGradientOption
 import java.time.LocalDate
 
@@ -30,6 +31,7 @@ class InsuranceContractBuilder(
 
   fun build() = InsuranceQuery.Contract(
     __typename = Contract.type.name,
+    typeOfContract = TypeOfContract.SE_HOUSE,
     id = "120e9ac9-84b1-4e5d-add1-70a9bad340be",
     status = InsuranceQuery.Status(
       __typename = ActiveStatus.type.name,

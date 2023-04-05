@@ -16,6 +16,7 @@ import giraffe.type.IconVariants
 import giraffe.type.InsurableLimit
 import giraffe.type.SwedishApartmentAgreement
 import giraffe.type.Table
+import giraffe.type.TypeOfContract
 import giraffe.type.TypeOfContractGradientOption
 import giraffe.type.UpcomingAgreementChange
 import java.time.LocalDate
@@ -39,6 +40,7 @@ class InsuranceDataBuilder(
     contracts = contracts.map { c ->
       InsuranceQuery.Contract(
         __typename = Contract.type.name,
+        typeOfContract = TypeOfContract.SE_HOUSE,
         id = "120e9ac9-84b1-4e5d-add1-70a9bad340be",
         status = InsuranceQuery.Status(
           __typename = c.typename,
