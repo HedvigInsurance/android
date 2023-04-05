@@ -41,7 +41,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.odyssey.data.ClaimFlowStep
 import com.hedvig.android.odyssey.model.FlowId
-import com.hedvig.android.odyssey.navigation.UiGuaranteedMoney
+import com.hedvig.android.odyssey.navigation.UiMoney
 import com.hedvig.odyssey.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -169,7 +169,7 @@ private fun BoxScope.LoadingContent(show: Boolean) {
 @Composable
 private fun BoxScope.PaidOutContent(
   status: PayoutUiState.Status,
-  paidOutAmount: UiGuaranteedMoney,
+  paidOutAmount: UiMoney,
   onDoneAfterPayout: (ClaimFlowStep) -> Unit,
 ) {
   PoppingContent(
@@ -247,7 +247,7 @@ private fun PreviewPayoutScreenLoading() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       PayoutScreen(
-        PayoutUiState(UiGuaranteedMoney(1499.0, CurrencyCode.SEK), PayoutUiState.Status.Loading),
+        PayoutUiState(UiMoney(1499.0, CurrencyCode.SEK), PayoutUiState.Status.Loading),
         {},
         {},
         {},
@@ -263,7 +263,7 @@ private fun PreviewPayoutScreenError() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       PayoutScreen(
-        PayoutUiState(UiGuaranteedMoney(1499.0, CurrencyCode.SEK), PayoutUiState.Status.Error),
+        PayoutUiState(UiMoney(1499.0, CurrencyCode.SEK), PayoutUiState.Status.Error),
         {},
         {},
         {},
@@ -280,7 +280,7 @@ private fun PreviewPayoutScreenPaidOut() {
     Surface(color = MaterialTheme.colorScheme.background) {
       PayoutScreen(
         PayoutUiState(
-          UiGuaranteedMoney(1499.0, CurrencyCode.SEK),
+          UiMoney(1499.0, CurrencyCode.SEK),
           PayoutUiState.Status.PaidOut(ClaimFlowStep.UnknownStep(FlowId(""))),
         ),
         {},
@@ -296,7 +296,7 @@ private fun PreviewPayoutScreenPaidOut() {
 @Composable
 private fun PreviewPayoutScreenAnimations() {
   val uiState by produceState(
-    PayoutUiState(UiGuaranteedMoney(1499.0, CurrencyCode.SEK), PayoutUiState.Status.Loading),
+    PayoutUiState(UiMoney(1499.0, CurrencyCode.SEK), PayoutUiState.Status.Loading),
   ) {
     while (isActive) {
       delay(2.seconds)

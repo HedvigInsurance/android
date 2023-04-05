@@ -7,8 +7,8 @@ import com.hedvig.android.odyssey.navigation.ItemBrand
 import com.hedvig.android.odyssey.navigation.ItemModel
 import com.hedvig.android.odyssey.navigation.ItemProblem
 import com.hedvig.android.odyssey.navigation.LocationOption
-import com.hedvig.android.odyssey.navigation.UiGuaranteedMoney
 import com.hedvig.android.odyssey.navigation.UiMoney
+import com.hedvig.android.odyssey.navigation.UiNullableMoney
 import kotlinx.datetime.LocalDate
 import octopus.fragment.AutomaticAutogiroPayoutFragment
 import octopus.fragment.CheckoutMethodFragment
@@ -194,7 +194,7 @@ internal fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
       ClaimFlowDestination.SingleItem(
         preferredCurrency = preferredCurrency,
         purchaseDate = purchaseDate,
-        purchasePrice = UiMoney.fromMoneyFragment(purchasePrice),
+        purchasePrice = UiNullableMoney.fromMoneyFragment(purchasePrice),
         availableItemBrands = availableItemBrands?.map { it.toItemBrand() },
         selectedItemBrand = selectedItemBrand,
         availableItemModels = availableItemModels?.map { it.toItemModel() },
@@ -211,7 +211,7 @@ internal fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
         maxDate = maxDate,
         preferredCurrency = preferredCurrency,
         purchaseDate = purchaseDate,
-        purchasePrice = UiMoney.fromMoneyFragment(purchasePrice),
+        purchasePrice = UiNullableMoney.fromMoneyFragment(purchasePrice),
         availableItemBrands = availableItemBrands?.map { it.toItemBrand() },
         selectedItemBrand = selectedItemBrand,
         availableItemModels = availableItemModels?.map { it.toItemModel() },
@@ -222,10 +222,10 @@ internal fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
     }
     is ClaimFlowStep.ClaimResolutionSingleItemStep -> {
       ClaimFlowDestination.SingleItemCheckout(
-        UiGuaranteedMoney.fromMoneyFragment(price),
-        UiGuaranteedMoney.fromMoneyFragment(depreciation),
-        UiGuaranteedMoney.fromMoneyFragment(deductible),
-        UiGuaranteedMoney.fromMoneyFragment(payoutAmount),
+        UiMoney.fromMoneyFragment(price),
+        UiMoney.fromMoneyFragment(depreciation),
+        UiMoney.fromMoneyFragment(deductible),
+        UiMoney.fromMoneyFragment(payoutAmount),
         availableCheckoutMethods.map(CheckoutMethodFragment::toCheckoutMethod).filterIsInstance<CheckoutMethod.Known>(),
       )
     }
@@ -254,7 +254,7 @@ private fun FlowClaimLocationStepFragment.Option.toLocationOption(): LocationOpt
 private fun CheckoutMethodFragment.toCheckoutMethod(): CheckoutMethod {
   return when (this) {
     is AutomaticAutogiroPayoutFragment -> {
-      CheckoutMethod.Known.AutomaticAutogiro(id, displayName, UiGuaranteedMoney.fromMoneyFragment(amount))
+      CheckoutMethod.Known.AutomaticAutogiro(id, displayName, UiMoney.fromMoneyFragment(amount))
     }
     else -> CheckoutMethod.Unknown
   }

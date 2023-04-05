@@ -9,7 +9,7 @@ import com.hedvig.android.odyssey.data.ClaimFlowRepository
 import com.hedvig.android.odyssey.data.ClaimFlowStep
 import com.hedvig.android.odyssey.navigation.CheckoutMethod
 import com.hedvig.android.odyssey.navigation.ClaimFlowDestination
-import com.hedvig.android.odyssey.navigation.UiGuaranteedMoney
+import com.hedvig.android.odyssey.navigation.UiMoney
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -61,10 +61,10 @@ internal sealed interface SingleItemCheckoutUiState {
   fun asContent(): Content? = this as? Content
 
   data class Content(
-    val price: UiGuaranteedMoney,
-    val depreciation: UiGuaranteedMoney,
-    val deductible: UiGuaranteedMoney,
-    val payoutAmount: UiGuaranteedMoney,
+    val price: UiMoney,
+    val depreciation: UiMoney,
+    val deductible: UiMoney,
+    val payoutAmount: UiMoney,
     val availableCheckoutMethods: NonEmptyList<CheckoutMethod.Known>,
     val selectedCheckoutMethod: CheckoutMethod.Known,
     private val payoutStatus: PayoutUiState.Status = PayoutUiState.Status.NotStarted,
@@ -99,7 +99,7 @@ internal sealed interface SingleItemCheckoutUiState {
 }
 
 internal data class PayoutUiState(
-  val amount: UiGuaranteedMoney,
+  val amount: UiMoney,
   val status: Status,
 ) {
   val shouldRender: Boolean

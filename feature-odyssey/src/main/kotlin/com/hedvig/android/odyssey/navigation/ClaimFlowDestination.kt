@@ -51,7 +51,7 @@ internal sealed interface ClaimFlowDestination : Destination {
   data class SingleItem(
     val preferredCurrency: CurrencyCode,
     val purchaseDate: LocalDate?,
-    val purchasePrice: UiMoney?,
+    val purchasePrice: UiNullableMoney?,
     val availableItemBrands: List<ItemBrand>?,
     val selectedItemBrand: String?,
     val availableItemModels: List<ItemModel>?,
@@ -68,7 +68,7 @@ internal sealed interface ClaimFlowDestination : Destination {
     val maxDate: LocalDate,
     val preferredCurrency: CurrencyCode?,
     val purchaseDate: LocalDate?,
-    val purchasePrice: UiMoney?,
+    val purchasePrice: UiNullableMoney?,
     val availableItemBrands: List<ItemBrand>?,
     val selectedItemBrand: String?,
     val availableItemModels: List<ItemModel>?,
@@ -79,10 +79,10 @@ internal sealed interface ClaimFlowDestination : Destination {
 
   @Serializable
   data class SingleItemCheckout(
-    val price: UiGuaranteedMoney,
-    val depreciation: UiGuaranteedMoney,
-    val deductible: UiGuaranteedMoney,
-    val payoutAmount: UiGuaranteedMoney,
+    val price: UiMoney,
+    val depreciation: UiMoney,
+    val deductible: UiMoney,
+    val payoutAmount: UiMoney,
     val availableCheckoutMethods: List<CheckoutMethod.Known>,
   ) : ClaimFlowDestination
 
@@ -167,13 +167,13 @@ internal sealed interface CheckoutMethod {
   sealed interface Known : CheckoutMethod {
     val id: String
     val displayName: String
-    val uiMoney: UiGuaranteedMoney
+    val uiMoney: UiMoney
 
     @Serializable
     data class AutomaticAutogiro(
       override val id: String,
       override val displayName: String,
-      override val uiMoney: UiGuaranteedMoney,
+      override val uiMoney: UiMoney,
     ) : Known
   }
 
@@ -182,30 +182,29 @@ internal sealed interface CheckoutMethod {
 
 @Immutable
 @Serializable
-internal data class UiMoney(val amount: Double?, val currencyCode: CurrencyCode) {
+internal data class UiNullableMoney(val amount: Double?, val currencyCode: CurrencyCode) {
   override fun toString(): String {
     return "${amount ?: "-"} $currencyCode"
   }
 
   companion object {
-    fun fromMoneyFragment(fragment: MoneyFragment?): UiMoney? {
+    fun fromMoneyFragment(fragment: MoneyFragment?): UiNullableMoney? {
       fragment ?: return null
-      return UiMoney(fragment.amount, fragment.currencyCode)
+      return UiNullableMoney(fragment.amount, fragment.currencyCode)
     }
   }
 }
 
 @Immutable
 @Serializable
-// todo consider a better name
-internal data class UiGuaranteedMoney(val amount: Double, val currencyCode: CurrencyCode) {
+internal data class UiMoney(val amount: Double, val currencyCode: CurrencyCode) {
   override fun toString(): String {
     return "$amount $currencyCode"
   }
 
   companion object {
-    fun fromMoneyFragment(fragment: MoneyFragment): UiGuaranteedMoney {
-      return UiGuaranteedMoney(fragment.amount, fragment.currencyCode)
+    fun fromMoneyFragment(fragment: MoneyFragment): UiMoney {
+      return UiMoney(fragment.amount, fragment.currencyCode)
     }
   }
 }

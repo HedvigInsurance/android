@@ -12,7 +12,7 @@ import com.hedvig.android.odyssey.data.ClaimFlowStep
 import com.hedvig.android.odyssey.model.FlowId
 import com.hedvig.android.odyssey.navigation.CheckoutMethod
 import com.hedvig.android.odyssey.navigation.ClaimFlowDestination
-import com.hedvig.android.odyssey.navigation.UiGuaranteedMoney
+import com.hedvig.android.odyssey.navigation.UiMoney
 import com.hedvig.android.odyssey.step.singleitemcheckout.PayoutUiState
 import com.hedvig.android.odyssey.step.singleitemcheckout.SingleItemCheckoutUiState
 import com.hedvig.android.odyssey.step.singleitemcheckout.SingleItemCheckoutViewModel
@@ -40,13 +40,13 @@ class SingleItemCheckoutViewModelTest {
 
   @Test
   fun `providing a list of available checkout methods automatically selects the first one`() = runTest {
-    val firstCheckoutMethod = CheckoutMethod.Known.AutomaticAutogiro("#1", "", UiGuaranteedMoney(0.0, CurrencyCode.SEK))
+    val firstCheckoutMethod = CheckoutMethod.Known.AutomaticAutogiro("#1", "", UiMoney(0.0, CurrencyCode.SEK))
     val viewModel = SingleItemCheckoutViewModel(
       testSingleItemCheckout(
         availableCheckoutMethods = listOf(
           firstCheckoutMethod,
-          CheckoutMethod.Known.AutomaticAutogiro("#2", "", UiGuaranteedMoney(0.0, CurrencyCode.SEK)),
-          CheckoutMethod.Known.AutomaticAutogiro("#3", "", UiGuaranteedMoney(0.0, CurrencyCode.SEK)),
+          CheckoutMethod.Known.AutomaticAutogiro("#2", "", UiMoney(0.0, CurrencyCode.SEK)),
+          CheckoutMethod.Known.AutomaticAutogiro("#3", "", UiMoney(0.0, CurrencyCode.SEK)),
         ),
       ),
       TestClaimFlowRepository(),
@@ -62,13 +62,13 @@ class SingleItemCheckoutViewModelTest {
   @Test
   fun `not selecting a different checkout method should send the money of the first one`() = runTest {
     val claimFlowRepository = TestClaimFlowRepository()
-    val firstCheckoutMethod = CheckoutMethod.Known.AutomaticAutogiro("#1", "", UiGuaranteedMoney(1.0, CurrencyCode.SEK))
+    val firstCheckoutMethod = CheckoutMethod.Known.AutomaticAutogiro("#1", "", UiMoney(1.0, CurrencyCode.SEK))
     val viewModel = SingleItemCheckoutViewModel(
       testSingleItemCheckout(
         availableCheckoutMethods = listOf(
           firstCheckoutMethod,
-          CheckoutMethod.Known.AutomaticAutogiro("#2", "", UiGuaranteedMoney(2.0, CurrencyCode.SEK)),
-          CheckoutMethod.Known.AutomaticAutogiro("#3", "", UiGuaranteedMoney(3.0, CurrencyCode.SEK)),
+          CheckoutMethod.Known.AutomaticAutogiro("#2", "", UiMoney(2.0, CurrencyCode.SEK)),
+          CheckoutMethod.Known.AutomaticAutogiro("#3", "", UiMoney(3.0, CurrencyCode.SEK)),
         ),
       ),
       claimFlowRepository,
@@ -88,13 +88,13 @@ class SingleItemCheckoutViewModelTest {
   fun `selecting the second item, and asking for the payout sends in the right amount of money`() = runTest {
     val claimFlowRepository = TestClaimFlowRepository()
     val secondCheckoutMethod =
-      CheckoutMethod.Known.AutomaticAutogiro("#2", "", UiGuaranteedMoney(2.0, CurrencyCode.SEK))
+      CheckoutMethod.Known.AutomaticAutogiro("#2", "", UiMoney(2.0, CurrencyCode.SEK))
     val viewModel = SingleItemCheckoutViewModel(
       testSingleItemCheckout(
         availableCheckoutMethods = listOf(
-          CheckoutMethod.Known.AutomaticAutogiro("#1", "", UiGuaranteedMoney(1.0, CurrencyCode.SEK)),
+          CheckoutMethod.Known.AutomaticAutogiro("#1", "", UiMoney(1.0, CurrencyCode.SEK)),
           secondCheckoutMethod,
-          CheckoutMethod.Known.AutomaticAutogiro("#3", "", UiGuaranteedMoney(3.0, CurrencyCode.SEK)),
+          CheckoutMethod.Known.AutomaticAutogiro("#3", "", UiMoney(3.0, CurrencyCode.SEK)),
         ),
       ),
       claimFlowRepository,
@@ -116,13 +116,13 @@ class SingleItemCheckoutViewModelTest {
   fun `selecting the second item, should update the money inside payoutUiState`() = runTest {
     val claimFlowRepository = TestClaimFlowRepository()
     val secondCheckoutMethod =
-      CheckoutMethod.Known.AutomaticAutogiro("#2", "", UiGuaranteedMoney(2.0, CurrencyCode.SEK))
+      CheckoutMethod.Known.AutomaticAutogiro("#2", "", UiMoney(2.0, CurrencyCode.SEK))
     val viewModel = SingleItemCheckoutViewModel(
       testSingleItemCheckout(
         availableCheckoutMethods = listOf(
-          CheckoutMethod.Known.AutomaticAutogiro("#1", "", UiGuaranteedMoney(1.0, CurrencyCode.SEK)),
+          CheckoutMethod.Known.AutomaticAutogiro("#1", "", UiMoney(1.0, CurrencyCode.SEK)),
           secondCheckoutMethod,
-          CheckoutMethod.Known.AutomaticAutogiro("#3", "", UiGuaranteedMoney(3.0, CurrencyCode.SEK)),
+          CheckoutMethod.Known.AutomaticAutogiro("#3", "", UiMoney(3.0, CurrencyCode.SEK)),
         ),
       ),
       claimFlowRepository,
@@ -139,7 +139,7 @@ class SingleItemCheckoutViewModelTest {
   @Test
   fun `succeeding a payout updates the next step state with the returned next step`() = runTest {
     val claimFlowRepository = TestClaimFlowRepository()
-    val checkoutMethod = CheckoutMethod.Known.AutomaticAutogiro("#1", "", UiGuaranteedMoney(1.0, CurrencyCode.SEK))
+    val checkoutMethod = CheckoutMethod.Known.AutomaticAutogiro("#1", "", UiMoney(1.0, CurrencyCode.SEK))
     val viewModel = SingleItemCheckoutViewModel(
       testSingleItemCheckout(
         availableCheckoutMethods = listOf(checkoutMethod),
@@ -163,7 +163,7 @@ class SingleItemCheckoutViewModelTest {
   @Test
   fun `failing the payout network request, you can retry and succeed the second time`() = runTest {
     val claimFlowRepository = TestClaimFlowRepository()
-    val checkoutMethod = CheckoutMethod.Known.AutomaticAutogiro("#1", "", UiGuaranteedMoney(1.0, CurrencyCode.SEK))
+    val checkoutMethod = CheckoutMethod.Known.AutomaticAutogiro("#1", "", UiMoney(1.0, CurrencyCode.SEK))
     val viewModel = SingleItemCheckoutViewModel(
       testSingleItemCheckout(
         availableCheckoutMethods = listOf(checkoutMethod),
@@ -180,10 +180,10 @@ class SingleItemCheckoutViewModelTest {
   companion object {
     private fun testSingleItemCheckout(
       availableCheckoutMethods: List<CheckoutMethod.Known>,
-      price: UiGuaranteedMoney = UiGuaranteedMoney(100.0, CurrencyCode.SEK),
-      depreciation: UiGuaranteedMoney = UiGuaranteedMoney(100.0, CurrencyCode.SEK),
-      deductible: UiGuaranteedMoney = UiGuaranteedMoney(100.0, CurrencyCode.SEK),
-      payoutAmount: UiGuaranteedMoney = UiGuaranteedMoney(100.0, CurrencyCode.SEK),
+      price: UiMoney = UiMoney(100.0, CurrencyCode.SEK),
+      depreciation: UiMoney = UiMoney(100.0, CurrencyCode.SEK),
+      deductible: UiMoney = UiMoney(100.0, CurrencyCode.SEK),
+      payoutAmount: UiMoney = UiMoney(100.0, CurrencyCode.SEK),
     ) = ClaimFlowDestination.SingleItemCheckout(
       price,
       depreciation,

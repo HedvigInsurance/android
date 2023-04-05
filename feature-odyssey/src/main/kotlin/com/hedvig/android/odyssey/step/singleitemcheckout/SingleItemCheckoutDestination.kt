@@ -52,7 +52,7 @@ import com.hedvig.android.core.ui.progress.FullScreenHedvigProgress
 import com.hedvig.android.core.ui.text.HorizontalTextsWithMaximumSpaceTaken
 import com.hedvig.android.odyssey.data.ClaimFlowStep
 import com.hedvig.android.odyssey.navigation.CheckoutMethod
-import com.hedvig.android.odyssey.navigation.UiGuaranteedMoney
+import com.hedvig.android.odyssey.navigation.UiMoney
 import com.hedvig.android.odyssey.ui.ClaimFlowScaffold
 import hedvig.resources.R
 import octopus.type.CurrencyCode
@@ -160,10 +160,10 @@ private fun SingleItemCheckoutScreen(
 
 @Composable
 private fun CompensationBreakdown(
-  price: UiGuaranteedMoney,
-  depreciation: UiGuaranteedMoney,
-  deductible: UiGuaranteedMoney,
-  payoutAmount: UiGuaranteedMoney,
+  price: UiMoney,
+  depreciation: UiMoney,
+  deductible: UiMoney,
+  payoutAmount: UiMoney,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
@@ -272,22 +272,22 @@ private fun PreviewSingleItemCheckoutScreen() {
   val checkoutNr1 = CheckoutMethod.Known.AutomaticAutogiro(
     "#1",
     "Autogiro".repeat(10),
-    UiGuaranteedMoney(2499.0, CurrencyCode.SEK),
+    UiMoney(2499.0, CurrencyCode.SEK),
   )
   val checkoutNr2 = CheckoutMethod.Known.AutomaticAutogiro(
     "#2",
     "Handelsbanken".repeat(3),
-    UiGuaranteedMoney(2499.0, CurrencyCode.SEK),
+    UiMoney(2499.0, CurrencyCode.SEK),
   )
   var selected: CheckoutMethod.Known by remember { mutableStateOf(checkoutNr1) }
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       SingleItemCheckoutScreen(
         SingleItemCheckoutUiState.Content(
-          UiGuaranteedMoney(3999.0, CurrencyCode.SEK),
-          UiGuaranteedMoney(500.0, CurrencyCode.SEK),
-          UiGuaranteedMoney(1000.0, CurrencyCode.SEK),
-          UiGuaranteedMoney(2499.0, CurrencyCode.SEK),
+          UiMoney(3999.0, CurrencyCode.SEK),
+          UiMoney(500.0, CurrencyCode.SEK),
+          UiMoney(1000.0, CurrencyCode.SEK),
+          UiMoney(2499.0, CurrencyCode.SEK),
           nonEmptyListOf(
             checkoutNr1,
             checkoutNr2,

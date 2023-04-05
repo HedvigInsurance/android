@@ -10,7 +10,7 @@ import com.hedvig.android.odyssey.navigation.ItemBrand
 import com.hedvig.android.odyssey.navigation.ItemModel
 import com.hedvig.android.odyssey.navigation.ItemProblem
 import com.hedvig.android.odyssey.navigation.LocationOption
-import com.hedvig.android.odyssey.navigation.UiMoney
+import com.hedvig.android.odyssey.navigation.UiNullableMoney
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -118,14 +118,14 @@ internal data class ClaimSummaryStatusUiState(
 }
 
 internal data class ClaimSummaryInfoUiState(
-  val imageUrl: String?,
-  val flowName: String?, // e.g "Broken Phone"
-  val dateOfIncident: LocalDate?,
-  val locationOption: LocationOption?,
-  val itemType: ItemType?,
-  val dateOfPurchase: LocalDate?,
-  val priceOfPurchase: UiMoney?,
-  val itemProblems: List<ItemProblem>,
+    val imageUrl: String?,
+    val flowName: String?, // e.g "Broken Phone"
+    val dateOfIncident: LocalDate?,
+    val locationOption: LocationOption?,
+    val itemType: ItemType?,
+    val dateOfPurchase: LocalDate?,
+    val priceOfPurchase: UiNullableMoney?,
+    val itemProblems: List<ItemProblem>,
 ) {
   sealed interface ItemType {
 
