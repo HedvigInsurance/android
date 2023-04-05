@@ -41,10 +41,13 @@ data class CommonClaimsData(
   }
 }
 
-fun CommonClaimsData.isFirstVet() = id == "25" || id == "26"
+fun CommonClaimsData.isFirstVet() = id == "31" || id == "30"
 
-fun getFirstVetIntent(context: Context) = try {
-  context.packageManager.getLaunchIntentForPackage("com.firstvet.firstvet")
-} catch (e: ActivityNotFoundException) {
-  Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.firstvet.firstvet"))
+fun getFirstVetIntent(context: Context): Intent {
+  return context.packageManager.getLaunchIntentForPackage("com.firstvet.firstvet")
+    ?: try {
+      Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.firstvet.firstvet"))
+    } catch (e: ActivityNotFoundException) {
+      Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.firstvet.firstvet"))
+    }
 }
