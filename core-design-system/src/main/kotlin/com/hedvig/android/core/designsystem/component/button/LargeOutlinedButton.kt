@@ -23,7 +23,7 @@ fun LargeOutlinedTextButton(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
-  ) {
+) {
   LargeOutlinedButton(
     modifier = modifier,
     content = {
