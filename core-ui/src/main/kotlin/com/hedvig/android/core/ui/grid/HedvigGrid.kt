@@ -51,10 +51,10 @@ fun HedvigGrid(
   ) { measurables, constraints ->
     val horizontalSpacingInPx = insideGridSpace.horizontal.roundToPx()
     val width = (constraints.maxWidth / 2) - (horizontalSpacingInPx / 2)
-    val height = measurables.maxOf { it.maxIntrinsicHeight(width) }
+    val height = measurables.maxOfOrNull { it.maxIntrinsicHeight(width) }
     val itemConstraint = constraints.copy(
-      minHeight = height,
-      maxHeight = height,
+      minHeight = height ?: constraints.minHeight,
+      maxHeight = height ?: constraints.maxHeight,
       maxWidth = width,
       minWidth = width,
     )
@@ -134,6 +134,35 @@ private fun PreviewSelectActionGrid() {
           )
         }
       }
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewSelectActionGridWithCenteredItems() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colors.background) {
+      HedvigGrid(centerLastItem = true) {
+        repeat(3) { index ->
+          val normalIndex = index + 1
+          Box(
+            modifier = Modifier
+              .size((50 * normalIndex).dp)
+              .background(Color(red = 255 / normalIndex, green = 128, blue = 128)),
+          )
+        }
+      }
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewSelectActionGridWithoutItems() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colors.background) {
+      HedvigGrid {}
     }
   }
 }
