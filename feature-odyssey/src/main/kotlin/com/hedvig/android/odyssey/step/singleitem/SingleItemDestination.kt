@@ -39,6 +39,8 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
@@ -115,7 +117,7 @@ private fun SingleItemScreen(
     Spacer(Modifier.height(22.dp))
     uiState.itemBrandsUiState.asContent()?.let { itemBrandsUiState ->
       Spacer(Modifier.height(10.dp))
-      Brands(itemBrandsUiState, selectBrand, imageLoader, sideSpacingModifier)
+      Brands(itemBrandsUiState, uiState.canSubmit, selectBrand, imageLoader, sideSpacingModifier)
       Spacer(Modifier.height(10.dp))
     }
     val itemModelsUiStateContent = uiState.itemModelsUiState.asContent()
@@ -126,7 +128,7 @@ private fun SingleItemScreen(
     ) {
       Column {
         Spacer(Modifier.height(10.dp))
-        Models(itemModelsUiStateContent, selectModel, imageLoader, sideSpacingModifier)
+        Models(itemModelsUiStateContent, uiState.canSubmit, selectModel, imageLoader, sideSpacingModifier)
         Spacer(Modifier.height(10.dp))
       }
     }
@@ -141,7 +143,7 @@ private fun SingleItemScreen(
     Spacer(Modifier.height(10.dp))
     uiState.itemProblemsUiState.asContent()?.let { itemProblemsUiState ->
       Spacer(Modifier.height(10.dp))
-      ItemProblems(itemProblemsUiState, selectProblem, imageLoader, sideSpacingModifier)
+      ItemProblems(itemProblemsUiState, uiState.canSubmit, selectProblem, imageLoader, sideSpacingModifier)
       Spacer(Modifier.height(10.dp))
     }
     Spacer(Modifier.height(10.dp))
@@ -160,6 +162,7 @@ private fun SingleItemScreen(
 @Composable
 private fun Models(
   uiState: ItemModelsUiState.Content?,
+  enabled: Boolean,
   selectModel: (ItemModel) -> Unit,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
@@ -183,6 +186,7 @@ private fun Models(
 
   FormRowCard(
     onClick = { showDialog = true },
+    enabled = enabled,
     modifier = modifier,
   ) {
     Text(stringResource(R.string.claims_item_screen_model_button))
@@ -200,6 +204,7 @@ private fun Models(
 @Composable
 private fun Brands(
   uiState: ItemBrandsUiState.Content,
+  enabled: Boolean,
   selectBrand: (ItemBrand) -> Unit,
   imageLoader: ImageLoader,
   modifier: Modifier,
@@ -223,6 +228,7 @@ private fun Brands(
 
   FormRowCard(
     onClick = { showDialog = true },
+    enabled = enabled,
     modifier = modifier,
   ) {
     Text(stringResource(R.string.SINGLE_ITEM_INFO_BRAND))
@@ -286,6 +292,7 @@ private fun PriceOfPurchase(
 @Composable
 private fun ItemProblems(
   uiState: ItemProblemsUiState.Content,
+  enabled: Boolean,
   selectProblem: (ItemProblem) -> Unit,
   imageLoader: ImageLoader,
   modifier: Modifier,
@@ -307,6 +314,7 @@ private fun ItemProblems(
 
   FormRowCard(
     onClick = { showDialog = true },
+    enabled = enabled,
     modifier = modifier,
   ) {
     Text("Damage") // todo string resource "Damage"
@@ -329,7 +337,9 @@ private fun ItemProblems(
 
 @HedvigPreview
 @Composable
-private fun PreviewSingleItemScreen() {
+private fun PreviewSingleItemScreen(
+  @PreviewParameter(IsLoadingPreviewProvider::class) isLoading: Boolean,
+) {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       SingleItemScreen(
@@ -348,7 +358,7 @@ private fun PreviewSingleItemScreen() {
             nonEmptyListOf(ItemProblem("Item Problem", "")),
             listOf(ItemProblem("Item Problem", "")),
           ),
-          isLoading = false,
+          isLoading = isLoading,
           hasError = false,
           nextStep = null,
         ),
@@ -359,3 +369,5 @@ private fun PreviewSingleItemScreen() {
     }
   }
 }
+
+private class IsLoadingPreviewProvider : CollectionPreviewParameterProvider<Boolean>(listOf(false, true))
