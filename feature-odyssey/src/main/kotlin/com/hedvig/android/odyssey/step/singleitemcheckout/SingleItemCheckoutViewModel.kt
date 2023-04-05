@@ -2,6 +2,7 @@ package com.hedvig.android.odyssey.step.singleitemcheckout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.core.Either
 import arrow.core.NonEmptyList
 import arrow.core.toNonEmptyListOrNull
 import com.hedvig.android.odyssey.data.ClaimFlowRepository
@@ -24,7 +25,7 @@ internal class SingleItemCheckoutViewModel(
     MutableStateFlow(SingleItemCheckoutUiState.fromSingleItemCheckout(singleItemCheckout))
   val uiState: StateFlow<SingleItemCheckoutUiState> = _uiState.asStateFlow()
 
-  fun selectCheckoutMethod(secondCheckoutMethod: CheckoutMethod.Known.AutomaticAutogiro) {
+  fun selectCheckoutMethod(secondCheckoutMethod: CheckoutMethod.Known) {
     _uiState.update {
       it.asContent()?.copy(selectedCheckoutMethod = secondCheckoutMethod) ?: it
     }
@@ -32,31 +33,26 @@ internal class SingleItemCheckoutViewModel(
 
   fun requestPayout() {
     val uiState = _uiState.value.asContent() ?: return
-    if (uiState.canSubmit.not()) return
-    _uiState.update { uiState.copy(isLoading = true) }
+    if (uiState.canRequestPayout.not()) return
+    _uiState.update { uiState.copy(payoutStatus = PayoutUiState.Status.Loading) }
     viewModelScope.launch {
-      claimFlowRepository
-        .submitSingleItemCheckout(uiState.selectedCheckoutMethod.uiMoney.amount)
-        .fold(
-          ifLeft = {
-            _uiState.update { uiState.copy(isLoading = false, hasError = true) }
-          },
-          ifRight = { claimFlowStep ->
-            _uiState.update { uiState.copy(isLoading = false, nextStep = claimFlowStep) }
-          },
-        )
-    }
-  }
-
-  fun handledNextStepNavigation() {
-    _uiState.update {
-      it.asContent()?.copy(nextStep = null) ?: it
-    }
-  }
-
-  fun showedError() {
-    _uiState.update {
-      it.asContent()?.copy(hasError = false) ?: it
+      when (
+        val submitResult = claimFlowRepository.submitSingleItemCheckout(uiState.selectedCheckoutMethod.uiMoney.amount)
+      ) {
+        is Either.Left -> {
+          _uiState.update {
+            uiState.copy(payoutStatus = PayoutUiState.Status.Error)
+          }
+        }
+        is Either.Right -> {
+          val claimFlowStep = submitResult.value
+          _uiState.update {
+            uiState.copy(
+              payoutStatus = PayoutUiState.Status.PaidOut(claimFlowStep),
+            )
+          }
+        }
+      }
     }
   }
 }
@@ -71,11 +67,10 @@ internal sealed interface SingleItemCheckoutUiState {
     val payoutAmount: UiGuaranteedMoney,
     val availableCheckoutMethods: NonEmptyList<CheckoutMethod.Known>,
     val selectedCheckoutMethod: CheckoutMethod.Known,
-    val isLoading: Boolean = false,
-    val hasError: Boolean = false,
-    val nextStep: ClaimFlowStep? = null,
+    private val payoutStatus: PayoutUiState.Status = PayoutUiState.Status.NotStarted,
   ) : SingleItemCheckoutUiState {
-    val canSubmit: Boolean = !isLoading && !hasError && nextStep == null
+    val canRequestPayout: Boolean = payoutStatus is PayoutUiState.Status.NotStarted
+    val payoutUiState: PayoutUiState = PayoutUiState(selectedCheckoutMethod.uiMoney, payoutStatus)
   }
 
   /**
@@ -100,5 +95,23 @@ internal sealed interface SingleItemCheckoutUiState {
         initiallySelectedCheckoutMethod,
       )
     }
+  }
+}
+
+internal data class PayoutUiState(
+  val amount: UiGuaranteedMoney,
+  val status: Status,
+) {
+  val shouldRender: Boolean
+    get() = status != Status.NotStarted
+
+  sealed interface Status {
+    object NotStarted : Status // Before the member has started the payout process in the first place
+    object Loading : Status // While the network request is being handled to give the payout
+    object Error : Status // If an error has happened while processing the payout in the backend
+    data class PaidOut(
+      // Terminal state, where the payout is complete, and we can exit the flow
+      val nextStep: ClaimFlowStep,
+    ) : Status
   }
 }

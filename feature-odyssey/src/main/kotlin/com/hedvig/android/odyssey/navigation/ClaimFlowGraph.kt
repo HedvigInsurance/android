@@ -177,11 +177,12 @@ internal fun NavGraphBuilder.claimFlowGraph(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep ->
-          viewModel.handledNextStepNavigation()
           navController.navigate(claimFlowStep.toClaimFlowDestination())
         },
         navigateToAppUpdateStep = { navController.navigate(ClaimFlowDestination.UpdateApp) },
-        navigateBack = { finishClaimFlow() },
+        navigateBack = finishClaimFlow,
+        openChat = openChat,
+        exitFlow = finishClaimFlow,
       )
     }
     animatedComposable<ClaimFlowDestination.ClaimSuccess> {

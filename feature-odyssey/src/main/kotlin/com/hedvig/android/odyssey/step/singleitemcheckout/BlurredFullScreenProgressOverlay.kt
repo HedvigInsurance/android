@@ -32,8 +32,11 @@ private val progressBlue = Color(0xffC3CBD6)
 private val progressYellow = Color(0xffEDCDAB)
 
 @Composable
-internal fun BlurredFullScreenProgressOverlay(content: @Composable BoxScope.() -> Unit) {
-  Surface(Modifier.fillMaxSize()) {
+internal fun BlurredFullScreenProgressOverlay(
+  modifier: Modifier = Modifier,
+  content: @Composable BoxScope.() -> Unit,
+) {
+  Surface(modifier.fillMaxSize()) {
     Box {
       AnimatedCircles()
       content()
