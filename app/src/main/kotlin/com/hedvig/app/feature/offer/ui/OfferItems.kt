@@ -2,11 +2,11 @@ package com.hedvig.app.feature.offer.ui
 
 import androidx.compose.ui.unit.Dp
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
+import com.hedvig.android.core.ui.insurance.GradientType
 import com.hedvig.app.feature.faq.FAQItem
 import com.hedvig.app.feature.offer.model.CheckoutLabel
 import com.hedvig.app.feature.offer.model.CheckoutMethod
 import com.hedvig.app.feature.offer.model.QuoteCartId
-import com.hedvig.app.feature.offer.model.quotebundle.GradientType
 import com.hedvig.app.feature.offer.model.quotebundle.OfferStartDate
 import com.hedvig.app.feature.offer.model.quotebundle.StartDateLabel
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData

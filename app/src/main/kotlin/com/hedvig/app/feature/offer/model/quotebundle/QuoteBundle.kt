@@ -59,7 +59,7 @@ fun QuoteBundleFragment.toQuoteBundle(quoteCartId: QuoteCartId, checkoutMethods:
     quoteCartId = quoteCartId,
     quoteNames = quotes.map { it.displayName },
   ),
-  viewConfiguration = appConfiguration.toViewConfiguration(),
+  viewConfiguration = toViewConfiguration(),
   checkoutLabel = checkoutLabel(checkoutMethods),
 )
 
