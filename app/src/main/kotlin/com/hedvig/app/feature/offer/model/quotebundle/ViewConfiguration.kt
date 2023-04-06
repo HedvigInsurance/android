@@ -1,9 +1,10 @@
 package com.hedvig.app.feature.offer.model.quotebundle
 
+import com.hedvig.android.core.ui.insurance.GradientType
+import com.hedvig.app.util.extensions.gradient
 import giraffe.fragment.QuoteBundleFragment
 import giraffe.type.QuoteBundleAppConfigurationStartDateTerminology
 import giraffe.type.QuoteBundleAppConfigurationTitle
-import giraffe.type.TypeOfContractGradientOption
 
 data class ViewConfiguration(
   val showCampaignManagement: Boolean,
@@ -23,14 +24,14 @@ data class ViewConfiguration(
   }
 }
 
-fun QuoteBundleFragment.AppConfiguration.toViewConfiguration() = ViewConfiguration(
-  showCampaignManagement = showCampaignManagement,
-  showFAQ = showFAQ,
-  ignoreCampaigns = ignoreCampaigns,
-  title = title.toTitle(),
-  startDateTerminology = startDateTerminology.toStartDateTerminology(),
-  gradient = gradientOption.toGradient(),
-  postSignScreen = PostSignScreen.from(postSignStep),
+fun QuoteBundleFragment.toViewConfiguration() = ViewConfiguration(
+  showCampaignManagement = appConfiguration.showCampaignManagement,
+  showFAQ = appConfiguration.showFAQ,
+  ignoreCampaigns = appConfiguration.ignoreCampaigns,
+  title = appConfiguration.title.toTitle(),
+  startDateTerminology = appConfiguration.startDateTerminology.toStartDateTerminology(),
+  gradient = quotes.first().typeOfContract.gradient(),
+  postSignScreen = PostSignScreen.from(appConfiguration.postSignStep),
 )
 
 private fun QuoteBundleAppConfigurationTitle.toTitle() = when (this) {
@@ -43,13 +44,4 @@ private fun QuoteBundleAppConfigurationStartDateTerminology.toStartDateTerminolo
   QuoteBundleAppConfigurationStartDateTerminology.START_DATE -> ViewConfiguration.StartDateTerminology.START_DATE
   QuoteBundleAppConfigurationStartDateTerminology.ACCESS_DATE -> ViewConfiguration.StartDateTerminology.ACCESS_DATE
   QuoteBundleAppConfigurationStartDateTerminology.UNKNOWN__ -> ViewConfiguration.StartDateTerminology.UNKNOWN
-}
-
-private fun TypeOfContractGradientOption.toGradient() = when (this) {
-  TypeOfContractGradientOption.GRADIENT_ONE -> GradientType.FALL_SUNSET
-  TypeOfContractGradientOption.GRADIENT_TWO -> GradientType.SPRING_FOG
-  TypeOfContractGradientOption.GRADIENT_THREE -> GradientType.SUMMER_SKY
-  TypeOfContractGradientOption.GRADIENT_FOUR -> GradientType.PURPLE_HAZE
-  TypeOfContractGradientOption.GRADIENT_FIVE -> GradientType.YELLOW_PEACH
-  TypeOfContractGradientOption.UNKNOWN__ -> GradientType.SPRING_FOG
 }

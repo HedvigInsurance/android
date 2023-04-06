@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
+import com.hedvig.android.core.ui.insurance.toDrawable
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.BASE_MARGIN_TRIPLE
@@ -40,7 +41,6 @@ import com.hedvig.app.feature.offer.OfferRedeemCodeBottomSheet
 import com.hedvig.app.feature.offer.model.CheckoutMethod
 import com.hedvig.app.feature.offer.model.checkoutIconRes
 import com.hedvig.app.feature.offer.model.quotebundle.getString
-import com.hedvig.app.feature.offer.model.quotebundle.toDrawable
 import com.hedvig.app.feature.offer.model.quotebundle.toString
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheet
 import com.hedvig.app.feature.offer.ui.composable.insurely.InsurelyCard

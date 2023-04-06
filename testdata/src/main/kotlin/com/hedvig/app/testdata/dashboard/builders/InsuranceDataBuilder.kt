@@ -17,7 +17,6 @@ import giraffe.type.InsurableLimit
 import giraffe.type.SwedishApartmentAgreement
 import giraffe.type.Table
 import giraffe.type.TypeOfContract
-import giraffe.type.TypeOfContractGradientOption
 import giraffe.type.UpcomingAgreementChange
 import java.time.LocalDate
 
@@ -153,7 +152,6 @@ class InsuranceDataBuilder(
         ),
         statusPills = emptyList(),
         detailPills = emptyList(),
-        gradientOption = TypeOfContractGradientOption.GRADIENT_ONE,
         supportsAddressChange = supportsAddressChange,
         fragments = InsuranceQuery.Contract.Fragments(
           upcomingAgreementFragment = UpcomingAgreementFragment(

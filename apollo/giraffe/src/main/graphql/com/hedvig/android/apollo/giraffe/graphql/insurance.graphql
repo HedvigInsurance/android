@@ -36,7 +36,6 @@ query InsuranceQuery($locale: Locale!) {
     }
     statusPills(locale: $locale)
     detailPills(locale: $locale)
-    gradientOption
     supportsAddressChange
     ...UpcomingAgreementFragment
   }
