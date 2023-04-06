@@ -13,7 +13,6 @@ import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_HOUSE
 import giraffe.InsuranceQuery
 import giraffe.type.AgreementStatus
 import giraffe.type.TypeOfContract
-import giraffe.type.TypeOfContractGradientOption
 import giraffe.type.buildActiveStatus
 import giraffe.type.buildContract
 import giraffe.type.buildIcon
@@ -137,7 +136,6 @@ class InsuranceQueryParsingTest {
             displayName = "Terms and Conditions"
             url = "https://cdn.hedvig.com/info/insurance-terms-tenant-owners-2019-05.pdf"
           }
-          gradientOption = TypeOfContractGradientOption.GRADIENT_ONE
           supportsAddressChange = true
           upcomingAgreementDetailsTable = buildTable {
             title = "Title"
