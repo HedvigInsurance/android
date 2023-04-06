@@ -12,6 +12,7 @@ import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_TERMINATED
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_HOUSE
 import giraffe.InsuranceQuery
 import giraffe.type.AgreementStatus
+import giraffe.type.TypeOfContract
 import giraffe.type.TypeOfContractGradientOption
 import giraffe.type.buildActiveStatus
 import giraffe.type.buildContract
@@ -37,6 +38,7 @@ class InsuranceQueryParsingTest {
       contracts = listOf(
         buildContract {
           id = "120e9ac9-84b1-4e5d-add1-70a9bad340be"
+          typeOfContract = TypeOfContract.SE_HOUSE
           logo = buildIcon {
             variants = buildIconVariants {
               dark = buildIconVariant {
