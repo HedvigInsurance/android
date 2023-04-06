@@ -59,10 +59,10 @@ import com.hedvig.android.odyssey.step.summary.resources.HedvigDeviceUnknown
 import com.hedvig.android.odyssey.ui.ClaimFlowScaffold
 import com.hedvig.odyssey.compose.getLocale
 import hedvig.resources.R
+import java.time.format.DateTimeFormatter
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 import octopus.type.CurrencyCode
-import java.time.format.DateTimeFormatter
 
 @Composable
 internal fun ClaimSummaryDestination(
@@ -112,9 +112,9 @@ private fun ClaimSummaryScreen(
     Spacer(Modifier.height(100.dp))
     ItemIcon(uiState.claimSummaryInfoUiState, imageLoader, sideSpacingModifier)
     Spacer(Modifier.height(20.dp))
-    uiState.claimSummaryInfoUiState.flowName?.let { flowName ->
+    uiState.claimSummaryInfoUiState.claimTypeTitle?.let { claimTypeTitle ->
       Text(
-        text = flowName,
+        text = claimTypeTitle,
         style = MaterialTheme.typography.titleLarge,
         modifier = sideSpacingModifier,
       )
@@ -222,10 +222,10 @@ private fun ItemDetailsText(
 
 @Composable
 private fun formatItemDetailsText(
-    itemType: ClaimSummaryInfoUiState.ItemType?,
-    dateOfPurchase: LocalDate?,
-    priceOfPurchase: UiNullableMoney?,
-    itemProblems: List<ItemProblem>,
+  itemType: ClaimSummaryInfoUiState.ItemType?,
+  dateOfPurchase: LocalDate?,
+  priceOfPurchase: UiNullableMoney?,
+  itemProblems: List<ItemProblem>,
 ): String? {
   val purchasedAndPaidText = run {
     if (dateOfPurchase == null) return@run null
@@ -276,7 +276,7 @@ private fun PreviewClaimSummaryScreen() {
         ClaimSummaryUiState(
           claimSummaryInfoUiState = ClaimSummaryInfoUiState(
             imageUrl = "https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-14-pro.jpg",
-            flowName = "TODO Broken Phone",
+            claimTypeTitle = "Broken Phone",
             dateOfIncident = LocalDate.parse("2023-03-24"),
             locationOption = LocationOption(
               value = "IN_HOME_COUNTRY",

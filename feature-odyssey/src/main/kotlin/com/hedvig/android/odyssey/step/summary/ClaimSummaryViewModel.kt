@@ -11,6 +11,7 @@ import com.hedvig.android.odyssey.navigation.ItemModel
 import com.hedvig.android.odyssey.navigation.ItemProblem
 import com.hedvig.android.odyssey.navigation.LocationOption
 import com.hedvig.android.odyssey.navigation.UiNullableMoney
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -22,7 +23,6 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import octopus.type.FlowClaimItemBrandInput
 import octopus.type.FlowClaimItemModelInput
-import kotlin.time.Duration.Companion.seconds
 
 internal class ClaimSummaryViewModel(
   private val summary: ClaimFlowDestination.Summary,
@@ -118,14 +118,14 @@ internal data class ClaimSummaryStatusUiState(
 }
 
 internal data class ClaimSummaryInfoUiState(
-    val imageUrl: String?,
-    val flowName: String?, // e.g "Broken Phone"
-    val dateOfIncident: LocalDate?,
-    val locationOption: LocationOption?,
-    val itemType: ItemType?,
-    val dateOfPurchase: LocalDate?,
-    val priceOfPurchase: UiNullableMoney?,
-    val itemProblems: List<ItemProblem>,
+  val imageUrl: String?,
+  val claimTypeTitle: String?, // e.g "Broken Phone"
+  val dateOfIncident: LocalDate?,
+  val locationOption: LocationOption?,
+  val itemType: ItemType?,
+  val dateOfPurchase: LocalDate?,
+  val priceOfPurchase: UiNullableMoney?,
+  val itemProblems: List<ItemProblem>,
 ) {
   sealed interface ItemType {
 
@@ -165,7 +165,7 @@ internal data class ClaimSummaryInfoUiState(
           ?.firstOrNull { it.asKnown()?.itemModelId == summary.selectedItemModel }
           ?.asKnown()
           ?.imageUrl,
-        flowName = "TODO Broken Phone", // Maybe backend should return this in the summary response?
+        claimTypeTitle = summary.claimTypeTitle,
         dateOfIncident = summary.dateOfOccurrence,
         locationOption = summary.locationOptions.firstOrNull { it.value == summary.selectedLocation },
         itemType = ItemType.fromSummary(summary),

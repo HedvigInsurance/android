@@ -62,6 +62,7 @@ internal sealed interface ClaimFlowDestination : Destination {
 
   @Serializable
   data class Summary(
+    val claimTypeTitle: String,
     val selectedLocation: String?,
     val locationOptions: List<LocationOption>,
     val dateOfOccurrence: LocalDate?,
