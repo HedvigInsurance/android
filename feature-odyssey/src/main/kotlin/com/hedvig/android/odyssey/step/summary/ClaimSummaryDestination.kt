@@ -54,7 +54,7 @@ import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
 import com.hedvig.android.odyssey.data.ClaimFlowStep
 import com.hedvig.android.odyssey.navigation.ItemProblem
 import com.hedvig.android.odyssey.navigation.LocationOption
-import com.hedvig.android.odyssey.navigation.UiMoney
+import com.hedvig.android.odyssey.navigation.UiNullableMoney
 import com.hedvig.android.odyssey.step.summary.resources.HedvigDeviceUnknown
 import com.hedvig.android.odyssey.ui.ClaimFlowScaffold
 import com.hedvig.odyssey.compose.getLocale
@@ -222,10 +222,10 @@ private fun ItemDetailsText(
 
 @Composable
 private fun formatItemDetailsText(
-  itemType: ClaimSummaryInfoUiState.ItemType?,
-  dateOfPurchase: LocalDate?,
-  priceOfPurchase: UiMoney?,
-  itemProblems: List<ItemProblem>,
+    itemType: ClaimSummaryInfoUiState.ItemType?,
+    dateOfPurchase: LocalDate?,
+    priceOfPurchase: UiNullableMoney?,
+    itemProblems: List<ItemProblem>,
 ): String? {
   val purchasedAndPaidText = run {
     if (dateOfPurchase == null) return@run null
@@ -292,7 +292,7 @@ private fun PreviewClaimSummaryScreen() {
               ),
             ),
             dateOfPurchase = LocalDate.parse("2015-03-26"),
-            priceOfPurchase = UiMoney(
+            priceOfPurchase = UiNullableMoney(
               amount = 3990.0,
               currencyCode = CurrencyCode.SEK,
             ),

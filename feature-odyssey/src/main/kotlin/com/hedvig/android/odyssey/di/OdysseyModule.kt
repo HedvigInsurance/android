@@ -19,6 +19,7 @@ import com.hedvig.android.odyssey.step.dateofoccurrencepluslocation.DateOfOccurr
 import com.hedvig.android.odyssey.step.location.LocationViewModel
 import com.hedvig.android.odyssey.step.phonenumber.PhoneNumberViewModel
 import com.hedvig.android.odyssey.step.singleitem.SingleItemViewModel
+import com.hedvig.android.odyssey.step.singleitemcheckout.SingleItemCheckoutViewModel
 import com.hedvig.android.odyssey.step.start.ClaimFlowStartStepViewModel
 import com.hedvig.android.odyssey.step.summary.ClaimSummaryViewModel
 import com.hedvig.odyssey.datadog.DatadogLogger
@@ -91,6 +92,9 @@ val odysseyModule = module {
   }
   viewModel<ClaimSummaryViewModel> { (summary: ClaimFlowDestination.Summary) ->
     ClaimSummaryViewModel(summary, get<ClaimFlowRepository>())
+  }
+  viewModel<SingleItemCheckoutViewModel> { (singleItemCheckout: ClaimFlowDestination.SingleItemCheckout) ->
+    SingleItemCheckoutViewModel(singleItemCheckout, get<ClaimFlowRepository>())
   }
 
   // Retrofit

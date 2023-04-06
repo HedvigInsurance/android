@@ -26,7 +26,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.hedvig_black
 import com.hedvig.android.core.designsystem.theme.hedvig_black12percent
-import com.hedvig.app.util.compose.HorizontalTextsWithMaximumSpaceTaken
+import com.hedvig.android.core.ui.text.HorizontalTextsWithMaximumSpaceTaken
 import com.hedvig.app.util.compose.RadioButton
 
 @OptIn(ExperimentalMaterialApi::class)

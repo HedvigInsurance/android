@@ -88,7 +88,8 @@ class SingleItemViewModelTest {
       runCurrent()
       claimFlowRepository.submitSingleItemResponse.add(ClaimFlowStep.UnknownStep(FlowId("")).right())
       viewModel.submitSelections()
-      val (flowClaimItemBrandInput, flowClaimItemModelInput) = claimFlowRepository.submitSingleItemBrandAndModelInput.awaitItem()
+      val (flowClaimItemBrandInput, flowClaimItemModelInput) =
+        claimFlowRepository.submitSingleItemBrandAndModelInput.awaitItem()
       assertThat(flowClaimItemBrandInput).isNull()
       assertThat(flowClaimItemModelInput).isEqualTo(FlowClaimItemModelInput(model.itemModelId))
       cancelAndIgnoreRemainingEvents()
@@ -111,7 +112,8 @@ class SingleItemViewModelTest {
       runCurrent()
       claimFlowRepository.submitSingleItemResponse.add(ClaimFlowStep.UnknownStep(FlowId("")).right())
       viewModel.submitSelections()
-      val (flowClaimItemBrandInput, flowClaimItemModelInput) = claimFlowRepository.submitSingleItemBrandAndModelInput.awaitItem()
+      val (flowClaimItemBrandInput, flowClaimItemModelInput) =
+        claimFlowRepository.submitSingleItemBrandAndModelInput.awaitItem()
       assertThat(flowClaimItemBrandInput).isEqualTo(FlowClaimItemBrandInput(brand.itemTypeId, brand.itemBrandId))
       assertThat(flowClaimItemModelInput).isNull()
       cancelAndIgnoreRemainingEvents()
@@ -135,7 +137,8 @@ class SingleItemViewModelTest {
       runCurrent()
       claimFlowRepository.submitSingleItemResponse.add(ClaimFlowStep.UnknownStep(FlowId("")).right())
       viewModel.submitSelections()
-      val (flowClaimItemBrandInput, flowClaimItemModelInput) = claimFlowRepository.submitSingleItemBrandAndModelInput.awaitItem()
+      val (flowClaimItemBrandInput, flowClaimItemModelInput) =
+        claimFlowRepository.submitSingleItemBrandAndModelInput.awaitItem()
       assertThat(flowClaimItemBrandInput).isEqualTo(FlowClaimItemBrandInput(brand.itemTypeId, brand.itemBrandId))
       assertThat(flowClaimItemModelInput).isNull()
       cancelAndIgnoreRemainingEvents()
@@ -159,7 +162,8 @@ class SingleItemViewModelTest {
       runCurrent()
       claimFlowRepository.submitSingleItemResponse.add(ClaimFlowStep.UnknownStep(FlowId("")).right())
       viewModel.submitSelections()
-      val (flowClaimItemBrandInput, flowClaimItemModelInput) = claimFlowRepository.submitSingleItemBrandAndModelInput.awaitItem()
+      val (flowClaimItemBrandInput, flowClaimItemModelInput) =
+        claimFlowRepository.submitSingleItemBrandAndModelInput.awaitItem()
       assertThat(flowClaimItemBrandInput).isNull()
       assertThat(flowClaimItemModelInput).isNull()
       cancelAndIgnoreRemainingEvents()

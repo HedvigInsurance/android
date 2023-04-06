@@ -13,7 +13,7 @@ import com.hedvig.android.odyssey.navigation.ClaimFlowDestination
 import com.hedvig.android.odyssey.navigation.ItemBrand
 import com.hedvig.android.odyssey.navigation.ItemModel
 import com.hedvig.android.odyssey.navigation.ItemProblem
-import com.hedvig.android.odyssey.navigation.UiMoney
+import com.hedvig.android.odyssey.navigation.UiNullableMoney
 import com.hedvig.android.odyssey.ui.DatePickerUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -274,7 +274,7 @@ internal data class SingleItemUiState(
 }
 
 internal class PurchasePriceUiState(amount: Double?, preferredCurrency: CurrencyCode) {
-  var uiMoney: UiMoney by mutableStateOf(UiMoney(amount, preferredCurrency))
+  var uiMoney: UiNullableMoney by mutableStateOf(UiNullableMoney(amount, preferredCurrency))
     private set
 
   fun updateAmount(amount: String?) {
