@@ -11,7 +11,6 @@ import com.hedvig.android.odyssey.navigation.ItemModel
 import com.hedvig.android.odyssey.navigation.ItemProblem
 import com.hedvig.android.odyssey.navigation.LocationOption
 import com.hedvig.android.odyssey.navigation.UiNullableMoney
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -23,6 +22,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import octopus.type.FlowClaimItemBrandInput
 import octopus.type.FlowClaimItemModelInput
+import kotlin.time.Duration.Companion.seconds
 
 internal class ClaimSummaryViewModel(
   private val summary: ClaimFlowDestination.Summary,

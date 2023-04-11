@@ -24,7 +24,6 @@ val hAnalyticsAndroidModule = module {
       appVersionCode = get(appVersionCodeQualifier),
       appId = get(appIdQualifier),
     )
-
   }
   single<ApplicationLifecycleTracker> { ApplicationLifecycleTracker(get()) }
 }
