@@ -99,7 +99,7 @@ private fun BoxScope.ErrorContent(
       Icon(
         painter = painterResource(com.hedvig.android.core.designsystem.R.drawable.ic_warning_triangle),
         contentDescription = null,
-        Modifier.size(24.dp),
+        Modifier.size(48.dp),
       )
       Text(
         text = stringResource(hedvig.resources.R.string.something_went_wrong),
@@ -138,11 +138,11 @@ private fun BoxScope.ErrorContent(
           onClick = exitFlow,
           enabled = allowInteraction,
         ) {
-          Text(stringResource(hedvig.resources.R.string.general_exit_button))
+          Text(stringResource(hedvig.resources.R.string.general_close_button))
         }
       }
       item(span = { GridItemSpan(2) }) {
-        LargeOutlinedButton(
+        LargeContainedButton(
           onClick = retryPayout,
           enabled = allowInteraction,
         ) {

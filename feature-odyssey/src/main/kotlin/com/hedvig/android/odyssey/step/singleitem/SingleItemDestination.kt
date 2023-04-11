@@ -107,7 +107,7 @@ private fun SingleItemScreen(
 ) {
   ClaimFlowScaffold(
     windowSizeClass = windowSizeClass,
-    navigateBack = navigateBack,
+    navigateUp = navigateBack,
     topAppBarText = stringResource(R.string.claims_item_screen_title),
     isLoading = uiState.isLoading,
     errorSnackbarState = ErrorSnackbarState(

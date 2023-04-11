@@ -100,7 +100,7 @@ private fun ClaimSummaryScreen(
 ) {
   ClaimFlowScaffold(
     windowSizeClass = windowSizeClass,
-    navigateBack = navigateBack,
+    navigateUp = navigateBack,
     topAppBarText = stringResource(R.string.claims_item_screen_title),
     isLoading = uiState.claimSummaryStatusUiState.isLoading,
     errorSnackbarState = ErrorSnackbarState(
@@ -145,7 +145,7 @@ private fun ClaimSummaryScreen(
     LargeContainedTextButton(
       onClick = submitSummary,
       enabled = uiState.canSubmit,
-      text = "Confirm and proceed", // todo string resources
+      text = stringResource(R.string.CONFIRM_AND_PROCEED_BUTTON),
       modifier = sideSpacingModifier,
     )
     Spacer(Modifier.height(20.dp))

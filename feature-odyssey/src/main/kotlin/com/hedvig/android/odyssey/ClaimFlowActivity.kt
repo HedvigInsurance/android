@@ -43,6 +43,7 @@ class ClaimFlowActivity : AppCompatActivity() {
               activityNavigator.openAppSettings(this@ClaimFlowActivity)
             },
             openPlayStore = { tryOpenPlayStore() },
+            shouldShowRequestPermissionRationale = ::shouldShowRequestPermissionRationale,
             openChat = {
               onSupportNavigateUp()
               activityNavigator.navigateToChat(this@ClaimFlowActivity)

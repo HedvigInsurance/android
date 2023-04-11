@@ -20,7 +20,8 @@ import com.hedvig.android.odyssey.step.location.LocationViewModel
 import com.hedvig.android.odyssey.step.phonenumber.PhoneNumberViewModel
 import com.hedvig.android.odyssey.step.singleitem.SingleItemViewModel
 import com.hedvig.android.odyssey.step.singleitemcheckout.SingleItemCheckoutViewModel
-import com.hedvig.android.odyssey.step.start.ClaimFlowStartStepViewModel
+import com.hedvig.android.odyssey.step.honestypledge.HonestyPledgeViewModel
+import com.hedvig.android.odyssey.step.notificationpermission.NotificationPermissionViewModel
 import com.hedvig.android.odyssey.step.summary.ClaimSummaryViewModel
 import com.hedvig.odyssey.datadog.DatadogLogger
 import com.hedvig.odyssey.datadog.DatadogProvider
@@ -57,8 +58,11 @@ val odysseyModule = module {
   }
 
   // Claims
-  viewModel<ClaimFlowStartStepViewModel> { (entryPointId: String?) ->
-    ClaimFlowStartStepViewModel(entryPointId, get())
+  viewModel<HonestyPledgeViewModel> { (entryPointId: String?) ->
+    HonestyPledgeViewModel(entryPointId, get())
+  }
+  viewModel<NotificationPermissionViewModel> { (entryPointId: String?) ->
+    NotificationPermissionViewModel(entryPointId, get<ClaimFlowRepository>())
   }
   viewModel<AudioRecordingViewModel> { (flowId: FlowId) -> AudioRecordingViewModel(flowId, get()) }
   viewModel<PhoneNumberViewModel> { (initialPhoneNumber: String?) ->
