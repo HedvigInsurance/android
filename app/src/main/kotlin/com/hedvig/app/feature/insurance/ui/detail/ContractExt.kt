@@ -10,7 +10,6 @@ import com.hedvig.app.util.apollo.toUpcomingAgreementResult
 import com.hedvig.app.util.extensions.canChangeCoInsured
 import com.hedvig.app.util.extensions.gradient
 import giraffe.InsuranceQuery
-import giraffe.type.TypeOfContract
 
 fun InsuranceQuery.Contract.toContractDetailViewState(
   isTerminationFlowEnabled: Boolean,
@@ -77,5 +76,3 @@ fun InsuranceQuery.Contract.toDocumentsViewState() = ContractDetailViewState.Doc
     ),
   ),
 )
-
-

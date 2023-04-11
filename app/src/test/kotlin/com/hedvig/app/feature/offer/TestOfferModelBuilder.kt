@@ -10,7 +10,6 @@ import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.QuoteBundleVariant
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.model.quotebundle.BundleCost
-import com.hedvig.app.feature.offer.model.quotebundle.GradientType
 import com.hedvig.app.feature.offer.model.quotebundle.Inception
 import com.hedvig.app.feature.offer.model.quotebundle.OfferStartDate
 import com.hedvig.app.feature.offer.model.quotebundle.PostSignScreen
