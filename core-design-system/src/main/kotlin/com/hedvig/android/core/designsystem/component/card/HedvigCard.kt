@@ -28,15 +28,14 @@ fun HedvigCard(
   border: BorderStroke? = null,
   content: @Composable () -> Unit,
 ) {
-  Card(
+  HedvigCard(
+    onClick = null,
     modifier = modifier,
     shape = shape,
     colors = colors,
-    elevation = when (elevation) {
-      HedvigCardElevation.NoElevation -> CardDefaults.cardElevation()
-      is HedvigCardElevation.Elevated -> CardDefaults.elevatedCardElevation(elevation.elevation)
-    },
+    elevation = elevation,
     border = border,
+    enabled = true,
     content = content,
   )
 }
@@ -46,7 +45,7 @@ fun HedvigCard(
  */
 @Composable
 fun HedvigCard(
-  onClick: () -> Unit,
+  onClick: (() -> Unit)?,
   modifier: Modifier = Modifier,
   shape: Shape = CardDefaults.shape,
   colors: CardColors = CardDefaults.outlinedCardColors(),
@@ -55,19 +54,33 @@ fun HedvigCard(
   enabled: Boolean = true,
   content: @Composable () -> Unit,
 ) {
-  Card(
-    onClick = onClick,
-    enabled = enabled,
-    modifier = modifier,
-    shape = shape,
-    colors = colors,
-    elevation = when (elevation) {
-      HedvigCardElevation.NoElevation -> CardDefaults.cardElevation()
-      is HedvigCardElevation.Elevated -> CardDefaults.elevatedCardElevation(elevation.elevation)
-    },
-    border = border,
-    content = content,
-  )
+  if (onClick == null) {
+    Card(
+      modifier = modifier,
+      shape = shape,
+      colors = colors,
+      elevation = when (elevation) {
+        HedvigCardElevation.NoElevation -> CardDefaults.cardElevation()
+        is HedvigCardElevation.Elevated -> CardDefaults.elevatedCardElevation(elevation.elevation)
+      },
+      border = border,
+      content = content,
+    )
+  } else {
+    Card(
+      onClick = onClick,
+      enabled = enabled,
+      modifier = modifier,
+      shape = shape,
+      colors = colors,
+      elevation = when (elevation) {
+        HedvigCardElevation.NoElevation -> CardDefaults.cardElevation()
+        is HedvigCardElevation.Elevated -> CardDefaults.elevatedCardElevation(elevation.elevation)
+      },
+      border = border,
+      content = content,
+    )
+  }
 }
 
 sealed interface HedvigCardElevation {

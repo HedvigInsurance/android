@@ -1,0 +1,12 @@
+fragment CheckoutMethodFragment on FlowClaimCheckoutMethod {
+  id
+  ...AutomaticAutogiroPayoutFragment
+}
+
+fragment AutomaticAutogiroPayoutFragment on FlowClaimAutomaticAutogiroPayout {
+  id
+  displayName
+  amount {
+    ...MoneyFragment
+  }
+}

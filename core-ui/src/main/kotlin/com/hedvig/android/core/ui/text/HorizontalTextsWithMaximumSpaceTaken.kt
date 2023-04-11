@@ -1,4 +1,4 @@
-package com.hedvig.app.util.compose
+package com.hedvig.android.core.ui.text
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme

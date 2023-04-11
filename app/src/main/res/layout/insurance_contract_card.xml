@@ -29,13 +29,6 @@
             android:layout_height="match_parent"
             android:background="@color/hedvig_light_gray">
 
-            <ImageView
-                android:id="@+id/blur"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:contentDescription="@null"
-                app:srcCompat="@drawable/card_blur" />
-
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

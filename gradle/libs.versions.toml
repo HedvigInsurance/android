@@ -10,7 +10,7 @@ apollo = "3.7.4"
 buildTimeTracker = "0.11.0"
 cacheFix = "2.7.0"
 crashlytics = "2.9.4"
-datadogPlugin = "1.7.0"
+datadogPlugin = "1.8.0"
 doctor = "0.8.1"
 easylauncher = "6.1.0"
 googleServices = "4.3.15"
@@ -56,7 +56,7 @@ assertK = "0.25"
 coil = "2.2.2"
 coilTransformations = "2.0.2"
 concatAdapterExtension = "1.2.1"
-coreLibraryDesugaring = "2.0.2"
+coreLibraryDesugaring = "2.0.3"
 coroutines = "1.6.4"
 datadog = "1.17.2"
 dependencyAnalysis = "1.19.0"
@@ -120,6 +120,7 @@ androidx-compose-material3 = { module = "androidx.compose.material3:material3", 
 androidx-compose-material3-windowSizeClass = { module = "androidx.compose.material3:material3-window-size-class" }
 androidx-compose-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended" }
 androidx-compose-runtime = { module = "androidx.compose.runtime:runtime" }
+androidx-compose-uiCore = { module = "androidx.compose.ui:ui" }
 androidx-compose-uiTestJunit = { module = "androidx.compose.ui:ui-test-junit4" }
 androidx-compose-uiTestManifest = { module = "androidx.compose.ui:ui-test-manifest" }
 androidx-compose-uiTooling = { module = "androidx.compose.ui:ui-tooling" }
@@ -181,7 +182,7 @@ coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-androi
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 datadog-sdk = { module = "com.datadoghq:dd-sdk-android", version.ref = "datadog" }
-firebase-bom = "com.google.firebase:firebase-bom:31.2.3"
+firebase-bom = "com.google.firebase:firebase-bom:31.4.0"
 firebase-analytics = { module = "com.google.firebase:firebase-analytics-ktx" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics-ktx" }
 firebase-dynamicLinks = { module = "com.google.firebase:firebase-dynamic-links" }

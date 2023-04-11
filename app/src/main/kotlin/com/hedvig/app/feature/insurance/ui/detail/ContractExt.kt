@@ -7,7 +7,10 @@ import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoModel
 import com.hedvig.app.feature.table.intoTable
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.apollo.toUpcomingAgreementResult
+import com.hedvig.app.util.extensions.canChangeCoInsured
+import com.hedvig.app.util.extensions.gradient
 import giraffe.InsuranceQuery
+import giraffe.type.TypeOfContract
 
 fun InsuranceQuery.Contract.toContractDetailViewState(
   isTerminationFlowEnabled: Boolean,
@@ -23,7 +26,7 @@ fun InsuranceQuery.Contract.toContractCardViewState() = ContractCardViewState(
   id = id,
   firstStatusPillText = statusPills.getOrNull(0),
   secondStatusPillText = statusPills.getOrNull(1),
-  gradientOption = gradientOption,
+  gradientType = typeOfContract.gradient(),
   displayName = displayName,
   detailPills = detailPills,
   logoUrls = logo?.variants?.fragments?.iconVariantsFragment?.let { ThemedIconUrls.from(it) },
@@ -48,7 +51,7 @@ fun InsuranceQuery.Contract.toMemberDetailsViewState(
     } else {
       null
     },
-    change = YourInfoModel.Change,
+    change = if (typeOfContract.canChangeCoInsured()) YourInfoModel.Change else null,
     cancelInsurance = if (isTerminationFlowEnabled && !isContractTerminated) {
       YourInfoModel.CancelInsuranceButton(id, displayName)
     } else {
@@ -74,3 +77,5 @@ fun InsuranceQuery.Contract.toDocumentsViewState() = ContractDetailViewState.Doc
     ),
   ),
 )
+
+

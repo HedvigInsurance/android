@@ -13,7 +13,7 @@ import giraffe.type.AgreementStatus
 import giraffe.type.Contract
 import giraffe.type.NorwegianTravelAgreement
 import giraffe.type.SwedishApartmentAgreement
-import giraffe.type.TypeOfContractGradientOption
+import giraffe.type.TypeOfContract
 import java.time.LocalDate
 
 class InsuranceContractBuilder(
@@ -30,6 +30,7 @@ class InsuranceContractBuilder(
 
   fun build() = InsuranceQuery.Contract(
     __typename = Contract.type.name,
+    typeOfContract = TypeOfContract.SE_HOUSE,
     id = "120e9ac9-84b1-4e5d-add1-70a9bad340be",
     status = InsuranceQuery.Status(
       __typename = ActiveStatus.type.name,
@@ -95,7 +96,6 @@ class InsuranceContractBuilder(
     ),
     statusPills = emptyList(),
     detailPills = emptyList(),
-    gradientOption = TypeOfContractGradientOption.GRADIENT_ONE,
     supportsAddressChange = supportsAddressChange,
     fragments = InsuranceQuery.Contract.Fragments(
       upcomingAgreementFragment = UpcomingAgreementFragment(
