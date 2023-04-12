@@ -1,6 +1,14 @@
 query Referrals {
-  insuranceCost {
-    ...CostFragment
+  chargeEstimation {
+    charge {
+      ...MonetaryAmountFragment
+    }
+    discount {
+      ...MonetaryAmountFragment
+    }
+    subscription {
+      ...MonetaryAmountFragment
+    }
   }
   referralInformation {
     campaign {

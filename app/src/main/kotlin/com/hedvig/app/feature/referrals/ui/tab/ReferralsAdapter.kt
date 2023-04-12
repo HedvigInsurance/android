@@ -112,6 +112,7 @@ class ReferralsAdapter(
               loadedData.remove()
               otherDiscountBox.remove()
             }
+
             is ReferralsModel.Header.LoadedEmptyHeader -> {
               bindPiechart(data.inner, marketManager.market)
               placeholders.remove()
@@ -138,6 +139,7 @@ class ReferralsAdapter(
               nonEmptyTexts.remove()
               otherDiscountBox.remove()
             }
+
             is ReferralsModel.Header.LoadedHeader -> {
               bindPiechart(data.inner, marketManager.market)
               placeholders.remove()
@@ -170,16 +172,15 @@ class ReferralsAdapter(
                   newPrice.text = referralNet.format(languageService.getLocale())
                   otherDiscountBox.isVisible =
                     data
-                    .inner
-                    .insuranceCost
-                    ?.fragments
-                    ?.costFragment
-                    ?.monthlyNet
-                    ?.fragments
-                    ?.monetaryAmountFragment
-                    ?.toMonetaryAmount() != referralNet
+                      .inner
+                      .chargeEstimation
+                      .subscription
+                      .fragments
+                      .monetaryAmountFragment
+                      .toMonetaryAmount() != referralNet
                 }
             }
+
             else -> {
               e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
             }
@@ -194,15 +195,12 @@ class ReferralsAdapter(
           grossPrice.show()
           val grossPriceAmount =
             data
-              .referralInformation
-              .costReducedIndefiniteDiscount
-              ?.fragments
-              ?.costFragment
-              ?.monthlyGross
-              ?.fragments
-              ?.monetaryAmountFragment
-              ?.toMonetaryAmount()
-          grossPriceAmount?.let { grossPrice.text = it.format(languageService.getLocale()) }
+              .chargeEstimation
+              .subscription
+              .fragments
+              .monetaryAmountFragment
+              .toMonetaryAmount()
+          grossPrice.text = grossPriceAmount.format(languageService.getLocale())
           val potentialDiscountAmount =
             data
               .referralInformation
@@ -317,6 +315,7 @@ class ReferralsAdapter(
               code.remove()
               edit.remove()
             }
+
             is ReferralsModel.Code.LoadedCode -> {
               codePlaceholder.remove()
               code.show()
@@ -359,6 +358,7 @@ class ReferralsAdapter(
               }
               edit.show()
             }
+
             else -> {
               e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
             }
@@ -392,14 +392,17 @@ class ReferralsAdapter(
               icon.remove()
               status.remove()
             }
+
             is ReferralsModel.Referral.Referee -> {
               bindReferral(data.inner, marketManager.market)
               refereeLabel.show()
             }
+
             is ReferralsModel.Referral.LoadedReferral -> {
               bindReferral(data.inner, marketManager.market)
               refereeLabel.remove()
             }
+
             else -> {
               e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
             }

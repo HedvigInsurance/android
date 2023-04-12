@@ -1,6 +1,7 @@
 package com.hedvig.app.testdata.feature.referrals.builders
 
 import com.hedvig.app.testdata.common.builders.CostBuilder
+import giraffe.ProfileQuery
 import giraffe.ReferralsQuery
 import giraffe.fragment.CostFragment
 import giraffe.fragment.MonetaryAmountFragment
@@ -19,10 +20,24 @@ data class ReferralsDataBuilder(
   val invitations: List<ReferralFragment> = emptyList(),
 ) {
   fun build() = ReferralsQuery.Data(
-    insuranceCost = ReferralsQuery.InsuranceCost(
-      __typename = "",
-      fragments = ReferralsQuery.InsuranceCost.Fragments(
-        insuranceCost,
+    chargeEstimation = ReferralsQuery.ChargeEstimation(
+      subscription = ReferralsQuery.Subscription(
+        __typename = "",
+        fragments = ReferralsQuery.Subscription.Fragments(
+          monetaryAmountFragment = MonetaryAmountFragment("100", "SEK"),
+        ),
+      ),
+      discount = ReferralsQuery.Discount(
+        __typename = "",
+        fragments = ReferralsQuery.Discount.Fragments(
+          monetaryAmountFragment = MonetaryAmountFragment("100", "SEK"),
+        ),
+      ),
+      charge = ReferralsQuery.Charge(
+        __typename = "",
+        fragments = ReferralsQuery.Charge.Fragments(
+          monetaryAmountFragment = MonetaryAmountFragment("10", "SEK"),
+        ),
       ),
     ),
     referralInformation = ReferralsQuery.ReferralInformation(
