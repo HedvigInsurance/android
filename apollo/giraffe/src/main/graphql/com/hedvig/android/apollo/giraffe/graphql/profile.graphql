@@ -6,6 +6,17 @@ query Profile {
     email
     phoneNumber
   }
+  chargeEstimation {
+    subscription {
+      ...MonetaryAmountFragment
+    }
+    discount {
+      ...MonetaryAmountFragment
+    }
+    charge {
+      ...MonetaryAmountFragment
+    }
+  }
   insuranceCost {
     ...CostFragment
     freeUntil
