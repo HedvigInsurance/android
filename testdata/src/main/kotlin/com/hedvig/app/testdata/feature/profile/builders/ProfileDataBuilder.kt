@@ -26,13 +26,6 @@ data class ProfileDataBuilder(
       email = email,
       phoneNumber = phoneNumber,
     ),
-    insuranceCost = ProfileQuery.InsuranceCost(
-      __typename = "",
-      freeUntil = null,
-      fragments = ProfileQuery.InsuranceCost.Fragments(
-        costFragment = cost,
-      ),
-    ),
     chargeEstimation = ProfileQuery.ChargeEstimation(
       subscription = ProfileQuery.Subscription(
         __typename = "",

@@ -17,10 +17,6 @@ query Profile {
       ...MonetaryAmountFragment
     }
   }
-  insuranceCost {
-    ...CostFragment
-    freeUntil
-  }
   bankAccount {
     directDebitStatus
   }
