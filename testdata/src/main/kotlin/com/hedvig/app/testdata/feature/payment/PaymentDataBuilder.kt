@@ -78,13 +78,6 @@ data class PaymentDataBuilder(
     ),
     nextChargeDate = nextChargeDate,
     chargeHistory = chargeHistory,
-    insuranceCost = PaymentQuery.InsuranceCost(
-      __typename = "",
-      freeUntil = freeUntil,
-      fragments = PaymentQuery.InsuranceCost.Fragments(
-        costFragment = cost,
-      ),
-    ),
     redeemedCampaigns = redeemedCampaigns,
     bankAccount = if (payinType == PayinType.TRUSTLY && payinConnected) {
       PaymentQuery.BankAccount(

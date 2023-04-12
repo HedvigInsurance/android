@@ -6,9 +6,16 @@ query Profile {
     email
     phoneNumber
   }
-  insuranceCost {
-    ...CostFragment
-    freeUntil
+  chargeEstimation {
+    subscription {
+      ...MonetaryAmountFragment
+    }
+    discount {
+      ...MonetaryAmountFragment
+    }
+    charge {
+      ...MonetaryAmountFragment
+    }
   }
   bankAccount {
     directDebitStatus
