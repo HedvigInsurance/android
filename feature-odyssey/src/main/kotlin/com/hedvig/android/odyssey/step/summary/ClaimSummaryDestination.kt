@@ -227,19 +227,28 @@ private fun formatItemDetailsText(
   priceOfPurchase: UiNullableMoney?,
   itemProblems: List<ItemProblem>,
 ): String? {
-  val purchasedAndPaidText = run {
-    if (dateOfPurchase == null) return@run null
+  val paidText = run {
     if (priceOfPurchase?.amount == null) return@run null
     buildString {
       append(
         stringResource(
-          R.string.SUMMARY_PURCHASE_DESCRIPTION,
-          dateOfPurchase.toJavaLocalDate().format(DateTimeFormatter.ofPattern("dd MMM yyyy", getLocale())),
+          R.string.SUMMARY_PURCHASE_PRICE_DESCRIPTION,
           priceOfPurchase.amount.toInt(),
         ),
       )
       append(" ")
       append(priceOfPurchase.currencyCode)
+    }
+  }
+  val purchasedAtText = run {
+    if (dateOfPurchase == null) return@run null
+    buildString {
+      append(
+        stringResource(
+          R.string.SUMMARY_PURCHASE_DATE_DESCRIPTION,
+          dateOfPurchase.toJavaLocalDate().format(DateTimeFormatter.ofPattern("dd MMM yyyy", getLocale())),
+        ),
+      )
     }
   }
   val itemProblemsText = run {
@@ -249,16 +258,20 @@ private fun formatItemDetailsText(
       itemProblems.joinToString { it.displayName },
     )
   }
-  if (itemType == null && purchasedAndPaidText == null && itemProblemsText == null) return null
+  if (itemType == null && paidText == null && itemProblemsText == null) return null
   return buildString {
     if (itemType != null) {
       LocalConfiguration.current
       val resources = LocalContext.current.resources
       append(itemType.displayName(resources))
     }
-    if (purchasedAndPaidText != null) {
+    if (paidText != null) {
       appendLine()
-      append(purchasedAndPaidText)
+      append(paidText)
+    }
+    if (purchasedAtText != null) {
+      appendLine()
+      append(purchasedAtText)
     }
     if (itemProblemsText != null) {
       appendLine()
