@@ -3,6 +3,7 @@ package com.hedvig.app.feature.di
 import android.content.Context
 import androidx.startup.Initializer
 import com.hedvig.android.apollo.di.apolloClientModule
+import com.hedvig.android.auth.di.authEventModule
 import com.hedvig.android.auth.di.authModule
 import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.datastore.di.dataStoreModule

@@ -18,7 +18,6 @@ import com.hedvig.android.core.datastore.TestPreferencesDataStore
 import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager
 import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.feature.tracking.MockHAnalytics
-import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.authlib.AccessToken
 import com.hedvig.authlib.AuthAttemptResult
 import com.hedvig.authlib.AuthRepository

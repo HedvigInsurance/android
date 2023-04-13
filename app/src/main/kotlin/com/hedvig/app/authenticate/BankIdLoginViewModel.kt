@@ -6,7 +6,6 @@ import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.market.Market
 import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
-import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.authlib.AuthAttemptResult
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult
@@ -31,7 +30,6 @@ import kotlin.time.Duration.Companion.seconds
 class BankIdLoginViewModel(
   private val hAnalytics: HAnalytics,
   private val featureManager: FeatureManager,
-  private val pushTokenManager: PushTokenManager,
   private val uploadMarketAndLanguagePreferencesUseCase: UploadMarketAndLanguagePreferencesUseCase,
   private val authTokenService: AuthTokenService,
   private val authRepository: AuthRepository,
@@ -126,7 +124,6 @@ class BankIdLoginViewModel(
     featureManager.invalidateExperiments()
     uploadMarketAndLanguagePreferencesUseCase.invoke()
     hAnalytics.loggedIn()
-    runCatching { pushTokenManager.refreshToken() }
   }
 }
 

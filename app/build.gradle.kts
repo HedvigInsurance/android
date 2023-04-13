@@ -122,6 +122,7 @@ dependencies {
   implementation(projects.audioPlayer)
   implementation(projects.auth.authAndroid)
   implementation(projects.auth.authCore)
+  implementation(projects.auth.authEventCore)
   implementation(projects.coreCommon)
   implementation(projects.coreCommonAndroid)
   implementation(projects.coreDatastore)

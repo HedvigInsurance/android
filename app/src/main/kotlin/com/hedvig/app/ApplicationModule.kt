@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.os.Build
+import arrow.core.continuations.either
 import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
@@ -17,10 +18,10 @@ import com.apollographql.apollo3.cache.normalized.normalizedCache
 import com.apollographql.apollo3.interceptor.ApolloInterceptor
 import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
-import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.android.apollo.giraffe.di.giraffeClient
 import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.auth.event.AuthEventListener
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.auth.interceptor.MigrateTokenInterceptor
 import com.hedvig.android.core.common.di.LogInfoType
@@ -168,7 +169,7 @@ import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModelImpl
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
 import com.hedvig.app.service.FileService
-import com.hedvig.app.service.push.PushTokenManager
+import com.hedvig.app.service.push.RegisterPushTokenAuthEventListener
 import com.hedvig.app.service.push.senders.CrossSellNotificationSender
 import com.hedvig.app.service.push.senders.GenericNotificationSender
 import com.hedvig.app.service.push.senders.NotificationSender
@@ -183,6 +184,7 @@ import com.hedvig.app.util.extensions.startChat
 import com.hedvig.authlib.AuthEnvironment
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.NetworkAuthRepository
+import giraffe.NotificationRegisterDeviceMutation
 import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -191,6 +193,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.parameter.ParametersHolder
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import slimber.log.e
 import slimber.log.i
 import timber.log.Timber
 import java.io.File
@@ -305,7 +308,7 @@ val viewModelModule = module {
   viewModel { ClaimsViewModel(get(), get()) }
   viewModel { ChatViewModel(get(), get(), get()) }
   viewModel { (quoteCartId: QuoteCartId?) -> RedeemCodeViewModel(quoteCartId, get(), get()) }
-  viewModel { BankIdLoginViewModel(get(), get(), get(), get(), get(), get()) }
+  viewModel { BankIdLoginViewModel(get(), get(), get(), get(), get()) }
   viewModel { WelcomeViewModel(get()) }
   viewModel {
     SettingsViewModel(
@@ -555,7 +558,7 @@ val useCaseModule = module {
   single { GetUpcomingAgreementUseCase(get<ApolloClient>(giraffeClient), get()) }
   single { GetAddressChangeStoryIdUseCase(get<ApolloClient>(giraffeClient), get(), get()) }
   single { StartCheckoutUseCase(get<ApolloClient>(giraffeClient), get(), get()) }
-  single { LogoutUseCase(get(), get(), get<ApolloClient>(giraffeClient), get(), get(), get(), get(), get(), get()) }
+  single { LogoutUseCase(get(), get<ApolloClient>(giraffeClient), get(), get(), get(), get(), get(), get()) }
   single { GetContractsUseCase(get<ApolloClient>(giraffeClient), get()) }
   single { GraphQLQueryUseCase(get()) }
   single { GetCrossSellsUseCase(get<ApolloClient>(octopusClient)) }
@@ -608,7 +611,12 @@ val cacheManagerModule = module {
 }
 
 val pushTokenManagerModule = module {
-  single { PushTokenManager(FirebaseMessaging.getInstance()) }
+  single {
+    RegisterPushTokenAuthEventListener(
+      apolloClient = get<ApolloClient>(giraffeClient),
+      sharedPreferences = get(),
+    )
+  } bind AuthEventListener::class
 }
 
 val sharedPreferencesModule = module {
