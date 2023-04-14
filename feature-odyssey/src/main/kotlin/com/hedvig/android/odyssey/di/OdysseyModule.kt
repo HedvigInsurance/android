@@ -50,10 +50,7 @@ val odysseyModule = module {
 
   viewModel<SearchViewModel> { SearchViewModel(get<GetNetworkClaimEntryPointsUseCase>()) }
   single<GetNetworkClaimEntryPointsUseCase> {
-    GetNetworkClaimEntryPointsUseCase(
-      get(),
-      get(odysseyUrlQualifier),
-    )
+    GetNetworkClaimEntryPointsUseCase(get<ApolloClient>(octopusClient))
   }
 
   // Claims
