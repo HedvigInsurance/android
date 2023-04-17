@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.fragment.app.FragmentManager
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
+import com.hedvig.android.odyssey.ClaimFlowActivity
 import com.hedvig.android.odyssey.search.SearchActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
@@ -16,8 +17,12 @@ suspend fun startClaimsFlow(
   registerForResult: ((Intent) -> Unit)? = null,
   commonClaimId: String?,
 ) {
-  if (featureManager.isFeatureEnabled(Feature.USE_ODYSSEY_CLAIM_FLOW)) {
-    val intent = SearchActivity.newInstance(context, context.getString(R.string.ODYSSEY_URL))
+  if (featureManager.isFeatureEnabled(Feature.USE_NATIVE_CLAIMS_FLOW)) {
+    val intent = if (commonClaimId != null) {
+      ClaimFlowActivity.newInstance(context, commonClaimId)
+    } else {
+      SearchActivity.newInstance(context, context.getString(R.string.ODYSSEY_URL))
+    }
 
     if (registerForResult != null) {
       registerForResult(intent)
@@ -26,7 +31,7 @@ suspend fun startClaimsFlow(
     }
   } else {
     HonestyPledgeBottomSheet
-      .newInstance(registerForResult, commonClaimId)
+      .newInstance(registerForResult)
       .show(fragmentManager, HonestyPledgeBottomSheet.TAG)
   }
 }

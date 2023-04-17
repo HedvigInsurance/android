@@ -104,7 +104,7 @@ private fun SingleItemCheckoutScreen(
   Box {
     ClaimFlowScaffold(
       windowSizeClass = windowSizeClass,
-      navigateBack = navigateBack,
+      navigateUp = navigateBack,
     ) { sideSpacingModifier ->
       Box(
         contentAlignment = Alignment.BottomStart,

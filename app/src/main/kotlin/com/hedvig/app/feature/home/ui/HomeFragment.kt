@@ -123,9 +123,9 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
       startClaimsFlow(
         fragmentManager = parentFragmentManager,
         registerForResult = ::registerForResult,
-        commonClaimId = null,
         featureManager = featureManager,
         context = requireContext(),
+        commonClaimId = null,
       )
     }
   }

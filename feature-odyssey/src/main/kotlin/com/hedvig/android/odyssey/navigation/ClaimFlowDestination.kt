@@ -19,7 +19,10 @@ internal sealed interface Destinations : Destination {
 
 internal sealed interface ClaimFlowDestination : Destination {
   @Serializable
-  object StartStep : ClaimFlowDestination
+  object HonestyPledge : ClaimFlowDestination
+
+  @Serializable
+  object NotificationPermission : ClaimFlowDestination
 
   @Serializable
   data class AudioRecording(val flowId: FlowId, val questions: List<String>) : ClaimFlowDestination
