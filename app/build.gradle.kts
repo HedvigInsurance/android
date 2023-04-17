@@ -26,8 +26,6 @@ android {
   buildFeatures {
     buildConfig = true
     viewBinding = true
-    aidl = false
-    renderScript = false
   }
 
   defaultConfig {
@@ -47,7 +45,7 @@ android {
     abortOnError = false
   }
 
-  packagingOptions {
+  packaging {
     resources {
       excludes += "javamoney.properties"
       excludes += "README.txt"
