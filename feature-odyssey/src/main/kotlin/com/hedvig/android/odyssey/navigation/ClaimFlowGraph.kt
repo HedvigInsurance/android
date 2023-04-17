@@ -100,7 +100,7 @@ internal fun NavGraphBuilder.claimFlowGraph(
           viewModel.handledNextStepNavigation()
           navController.navigate(claimFlowStep.toClaimFlowDestination())
         },
-        navigateBack = { navController.navigateUp() || navigateUp() },
+        navigateUp = { navController.navigateUp() || navigateUp() },
       )
     }
     animatedComposable<ClaimFlowDestination.DateOfOccurrence> {
