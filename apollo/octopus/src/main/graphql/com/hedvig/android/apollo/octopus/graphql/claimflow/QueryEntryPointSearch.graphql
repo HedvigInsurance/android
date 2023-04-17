@@ -1,6 +1,6 @@
-query EntrypointSearch($input: EntrypointSearchInput) {
-  entrypointSearch(input: $input) {
-    displayName
+query EntrypointSearch {
+  entrypointSearch(input: { type: CLAIM, limit: 20 }) {
     id
+    displayName
   }
 }
