@@ -16,6 +16,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.CenterAlignedTopAppBar
+import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.odyssey.ClaimFlowActivity
@@ -36,6 +38,7 @@ import com.hedvig.android.odyssey.search.ui.CommonClaims
 import hedvig.resources.R
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.getViewModel
+import slimber.log.e
 
 class SearchActivity : ComponentActivity() {
 
@@ -84,10 +87,15 @@ class SearchActivity : ComponentActivity() {
 
               Spacer(modifier = Modifier.padding(8.dp))
 
-              CommonClaims(
-                selectClaim = viewModel::onSelectClaim,
-                commonClaims = viewState.commonClaims,
-              )
+              val errorMessage = viewState.errorMessage
+              if (errorMessage != null) {
+                Error(errorMessage) { viewModel.loadSearchableClaims() }
+              } else {
+                CommonClaims(
+                  selectClaim = viewModel::onSelectClaim,
+                  commonClaims = viewState.commonClaims,
+                )
+              }
             }
 
             if (viewState.isLoading) {
@@ -97,6 +105,15 @@ class SearchActivity : ComponentActivity() {
         }
       }
     }
+  }
+
+  @Composable
+  private fun Error(message: String, onRetry: () -> Unit) {
+    e { message }
+    GenericErrorScreen(
+      onRetryButtonClick = onRetry,
+      modifier = Modifier.padding(16.dp),
+    )
   }
 
   private suspend fun startClaimsFlow(viewModel: SearchViewModel, entryPointId: String?) {

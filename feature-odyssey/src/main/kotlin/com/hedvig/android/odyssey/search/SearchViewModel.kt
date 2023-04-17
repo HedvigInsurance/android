@@ -14,9 +14,20 @@ internal class SearchViewModel(
   val viewState = _viewState
 
   init {
+    loadSearchableClaims()
+  }
+
+  fun loadSearchableClaims() {
+    _viewState.update { it.copy(errorMessage = null, isLoading = true) }
     viewModelScope.launch {
       when (val result = getClaimEntryPoints.invoke()) {
-        is CommonClaimsResult.Error -> _viewState.update { it.copy(errorMessage = result.message, isLoading = false) }
+        is CommonClaimsResult.Error -> _viewState.update {
+          it.copy(
+            errorMessage = result.message,
+            isLoading = false,
+          )
+        }
+
         is CommonClaimsResult.Success -> _viewState.update {
           it.copy(
             commonClaims = result.searchableClaims,
