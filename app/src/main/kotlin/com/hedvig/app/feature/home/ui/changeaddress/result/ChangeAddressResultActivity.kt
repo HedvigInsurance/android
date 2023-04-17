@@ -8,6 +8,7 @@ import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.hedvig.android.auth.android.AuthenticatedObserver
+import com.hedvig.android.core.common.android.parcelableExtra
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressResultActivityBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -15,7 +16,6 @@ import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import kotlinx.parcelize.Parcelize
-import slimber.log.e
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -31,10 +31,8 @@ class ChangeAddressResultActivity : AppCompatActivity(R.layout.change_address_re
       startLoggedIn()
     }
 
-    val result = intent.getParcelableExtra<Result>(RESULT) ?: run {
-      e { "Programmer error: Missing argument RESULT in ${this.javaClass.name}" }
-      return
-    }
+    val result = intent.parcelableExtra<Result>(RESULT)
+      ?: error("Programmer error: Missing argument RESULT in ${this.javaClass.name}")
 
     with(binding) {
       toolbar.setNavigationOnClickListener { finish() }

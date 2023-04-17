@@ -9,6 +9,7 @@ import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.hedvig.android.core.common.android.parcelableExtra
 import com.hedvig.android.market.Market
 import com.hedvig.app.R
 import com.hedvig.app.databinding.SimpleSignAuthenticationActivityBinding
@@ -31,7 +32,7 @@ class SimpleSignAuthenticationActivity : AppCompatActivity(R.layout.simple_sign_
   private val viewModel: SimpleSignAuthenticationViewModel by viewModel { parametersOf(data) }
 
   private val data by lazy {
-    intent.getParcelableExtra<SimpleSignAuthenticationData>(DATA)
+    intent.parcelableExtra<SimpleSignAuthenticationData>(DATA)
       ?: error("Programmer error: DATA not passed to ${this.javaClass.name}")
   }
 

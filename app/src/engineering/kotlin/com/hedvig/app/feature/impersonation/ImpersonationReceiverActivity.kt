@@ -47,7 +47,7 @@ class ImpersonationReceiverActivity : AppCompatActivity() {
 
     val viewModel = getViewModel<ImpersonationReceiverViewModel> {
       val token = intent.data?.getQueryParameter("authorizationCode")
-        ?: throw IllegalArgumentException("authorizationCode not found in query parameter")
+        ?: error("authorizationCode not found in query parameter")
       parametersOf(token)
     }
 

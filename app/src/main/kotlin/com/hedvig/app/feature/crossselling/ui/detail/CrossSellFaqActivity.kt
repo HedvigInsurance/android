@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.hedvig.android.auth.android.AuthenticatedObserver
+import com.hedvig.android.core.common.android.parcelableExtra
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.crossselling.model.NavigateChat
@@ -34,8 +35,8 @@ import org.koin.core.parameter.parametersOf
 class CrossSellFaqActivity : AppCompatActivity() {
 
   private val crossSell by lazy {
-    intent.getParcelableExtra<CrossSellData>(CROSS_SELL)
-      ?: throw IllegalArgumentException("Programmer error: CROSS_SELL not passed to ${this.javaClass.name}")
+    intent.parcelableExtra<CrossSellData>(CROSS_SELL)
+      ?: error("Programmer error: CROSS_SELL not passed to ${this.javaClass.name}")
   }
 
   private val viewModel: CrossSellFaqViewModel by viewModel { parametersOf(crossSell) }

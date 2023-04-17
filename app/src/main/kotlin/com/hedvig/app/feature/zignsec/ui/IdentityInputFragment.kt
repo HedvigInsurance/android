@@ -6,6 +6,7 @@ import androidx.core.os.bundleOf
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import com.google.android.material.transition.MaterialSharedAxis
+import com.hedvig.android.core.common.android.parcelable
 import com.hedvig.android.market.Market
 import com.hedvig.app.R
 import com.hedvig.app.databinding.IdentityInputFragmentBinding
@@ -31,7 +32,7 @@ class IdentityInputFragment : Fragment(R.layout.identity_input_fragment) {
   }
 
   private val data by lazy {
-    requireArguments().getParcelable<SimpleSignAuthenticationData>(DATA)
+    requireArguments().parcelable<SimpleSignAuthenticationData>(DATA)
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

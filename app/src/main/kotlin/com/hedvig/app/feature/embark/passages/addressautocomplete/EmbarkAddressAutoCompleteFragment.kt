@@ -3,8 +3,11 @@ package com.hedvig.app.feature.embark.passages.addressautocomplete
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.withStateAtLeast
+import com.hedvig.android.core.common.android.parcelable
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentEmbarkAddressAutoCompleteActionBinding
@@ -25,6 +28,7 @@ import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.viewLifecycle
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
@@ -32,13 +36,12 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.core.parameter.parametersOf
-import kotlin.time.Duration.Companion.milliseconds
 
 class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_address_auto_complete_action) {
 
   private val data: EmbarkAddressAutoCompleteParams
-    get() = requireArguments().getParcelable(DATA)
-      ?: throw Error("Programmer error: DATA is null in ${this.javaClass.name}")
+    get() = requireArguments().parcelable(DATA)
+      ?: error("Programmer error: DATA is null in ${this.javaClass.name}")
 
   private val embarkViewModel: EmbarkViewModel by activityViewModel()
   private val viewModel: EmbarkAddressAutoCompleteViewModel by activityViewModel {
@@ -98,9 +101,11 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
 
     // We need to wait for all input views to be laid out before starting enter transition.
     // This could perhaps be handled with a callback from the inputContainer.
-    viewLifecycleScope.launchWhenCreated {
+    viewLifecycleScope.launch {
       delay(50.milliseconds)
-      startPostponedEnterTransition()
+      viewLifecycle.withStateAtLeast(Lifecycle.State.CREATED) {
+        startPostponedEnterTransition()
+      }
     }
   }
 

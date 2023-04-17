@@ -11,6 +11,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.hedvig.android.core.common.android.parcelable
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DialogChangeStartDateBinding
 import com.hedvig.app.util.extensions.epochMillisToLocalDate
@@ -26,8 +27,8 @@ import org.koin.core.parameter.parametersOf
 class ChangeDateBottomSheet : BottomSheetDialogFragment() {
   private val binding by viewBinding(DialogChangeStartDateBinding::bind)
   private val changeDateBottomSheetViewModel: ChangeDateBottomSheetViewModel by viewModel {
-    val data = requireArguments().getParcelable<ChangeDateBottomSheetData>(DATA)
-      ?: throw IllegalArgumentException("No data provided to ChangeDateBottomSheet")
+    val data = requireArguments().parcelable<ChangeDateBottomSheetData>(DATA)
+      ?: error("No data provided to ChangeDateBottomSheet")
     parametersOf(data)
   }
 

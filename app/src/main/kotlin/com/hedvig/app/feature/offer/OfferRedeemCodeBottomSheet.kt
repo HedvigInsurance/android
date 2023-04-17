@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.offer
 
 import android.os.Bundle
+import com.hedvig.android.core.common.android.parcelable
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeBottomSheet
 import giraffe.RedeemReferralCodeMutation
@@ -8,7 +9,7 @@ import giraffe.RedeemReferralCodeMutation
 class OfferRedeemCodeBottomSheet : RedeemCodeBottomSheet() {
 
   override val quoteCartId: QuoteCartId?
-    get() = arguments?.getParcelable(QUOTE_CART_ID)
+    get() = arguments?.parcelable(QUOTE_CART_ID)
 
   override fun onRedeemSuccess(data: RedeemReferralCodeMutation.Data) {
     dismiss()

@@ -39,7 +39,7 @@ class ContractDetailActivity : AppCompatActivity(R.layout.contract_detail_activi
   private val binding by viewBinding(ContractDetailActivityBinding::bind)
   private val contractId: String
     get() = intent.getStringExtra(ID)
-      ?: throw IllegalArgumentException("Programmer error: ID not provided to ${this.javaClass.name}")
+      ?: error("Programmer error: ID not provided to ${this.javaClass.name}")
   private val viewModel: ContractDetailViewModel by viewModel { parametersOf(contractId) }
   private val marketManager: MarketManager by inject()
   private val imageLoader: ImageLoader by inject()

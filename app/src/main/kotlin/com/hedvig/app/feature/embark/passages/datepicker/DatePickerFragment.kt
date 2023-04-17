@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.hedvig.android.core.common.android.parcelable
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentEmbarkDatePickerBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
@@ -22,7 +23,6 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.lang.IllegalArgumentException
 import java.time.format.DateTimeFormatter
 
 class DatePickerFragment : Fragment(R.layout.fragment_embark_date_picker) {
@@ -30,8 +30,8 @@ class DatePickerFragment : Fragment(R.layout.fragment_embark_date_picker) {
   private val datePickerViewModel: DatePickerViewModel by viewModel()
   private val binding by viewBinding(FragmentEmbarkDatePickerBinding::bind)
   private val data: DatePickerParams
-    get() = requireArguments().getParcelable(DATA)
-      ?: throw Error("Programmer error: No PARAMS provided to ${this.javaClass.name}")
+    get() = requireArguments().parcelable(DATA)
+      ?: error("Programmer error: No PARAMS provided to ${this.javaClass.name}")
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
@@ -83,7 +83,7 @@ class DatePickerFragment : Fragment(R.layout.fragment_embark_date_picker) {
 
   private suspend fun saveAndAnimate() {
     val date = datePickerViewModel.selectedDate.value?.format(DateTimeFormatter.ISO_DATE)
-      ?: throw IllegalArgumentException("No date selected when trying to continue")
+      ?: error("No date selected when trying to continue")
     val inputText = binding.dateLabel.text.toString()
     viewModel.putInStore("${data.passageName}Result", inputText)
     viewModel.putInStore(data.storeKey, date)

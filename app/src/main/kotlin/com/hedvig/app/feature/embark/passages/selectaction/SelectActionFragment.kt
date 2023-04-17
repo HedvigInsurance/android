@@ -8,6 +8,7 @@ import androidx.core.os.bundleOf
 import androidx.core.view.doOnNextLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import com.hedvig.android.core.common.android.parcelable
 import com.hedvig.android.core.common.android.whenApiVersion
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
@@ -31,7 +32,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
-import slimber.log.e
 
 class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
   private val viewModel: EmbarkViewModel by activityViewModel()
@@ -40,12 +40,8 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     postponeEnterTransition()
-    val data = requireArguments().getParcelable<SelectActionParameter>(DATA)
-
-    if (data == null) {
-      e { "Programmer error: No DATA provided to ${this.javaClass.name}" }
-      return
-    }
+    val data = requireArguments().parcelable<SelectActionParameter>(DATA)
+      ?: error("Programmer error: No DATA provided to ${this.javaClass.name}")
 
     binding.apply {
       whenApiVersion(Build.VERSION_CODES.R) {

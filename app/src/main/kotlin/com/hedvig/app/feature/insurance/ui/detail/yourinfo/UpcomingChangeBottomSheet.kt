@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.core.view.updatePadding
+import com.hedvig.android.core.common.android.parcelable
 import com.hedvig.app.feature.table.Table
 import com.hedvig.app.feature.table.TableAdapter
 import com.hedvig.app.ui.view.ExpandableBottomSheet
@@ -12,8 +13,8 @@ import com.hedvig.app.util.extensions.dp
 class UpcomingChangeBottomSheet : ExpandableBottomSheet() {
 
   private val upcomingAgreement by lazy {
-    requireArguments().getParcelable<Table>(UPCOMING_AGREEMENT)
-      ?: throw IllegalArgumentException("No argument passed to ${this.javaClass.name}")
+    requireArguments().parcelable<Table>(UPCOMING_AGREEMENT)
+      ?: error("No argument passed to ${this.javaClass.name}")
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -25,8 +26,7 @@ class UpcomingChangeBottomSheet : ExpandableBottomSheet() {
   }
 
   companion object {
-
-    val TAG = UpcomingChangeBottomSheet::class.java.name
+    val TAG: String = UpcomingChangeBottomSheet::class.java.name
     private const val UPCOMING_AGREEMENT = "UPCOMING_AGREEMENT"
 
     fun newInstance(upcomingAgreement: Table) =

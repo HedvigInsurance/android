@@ -29,6 +29,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import com.hedvig.android.core.common.android.parcelable
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.market.MarketManager
@@ -44,9 +45,7 @@ import org.koin.core.parameter.parametersOf
 
 class SwedishBankIdSignDialog : DialogFragment() {
   private val viewModel: SwedishBankIdSignViewModel by viewModel {
-    parametersOf(
-      requireArguments().getParcelable(QUOTE_CART_ID),
-    )
+    parametersOf(requireArguments().parcelable(QUOTE_CART_ID))
   }
   private val marketManager: MarketManager by inject()
 

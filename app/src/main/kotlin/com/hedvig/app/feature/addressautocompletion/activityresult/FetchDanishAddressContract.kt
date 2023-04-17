@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Parcelable
 import androidx.activity.result.contract.ActivityResultContract
+import com.hedvig.android.core.common.android.parcelable
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import com.hedvig.app.feature.addressautocompletion.ui.AddressAutoCompleteActivity
 import kotlinx.parcelize.Parcelize
@@ -19,8 +20,7 @@ class FetchDanishAddressContract : ActivityResultContract<DanishAddress?, FetchD
 
   override fun parseResult(resultCode: Int, intent: Intent?): FetchDanishAddressContractResult {
     if (resultCode != RESULT_CODE) return FetchDanishAddressContractResult.Canceled
-    return intent?.extras
-      ?.getParcelable(FETCH_DANISH_ADDRESS_CONTRACT_RESULT_KEY)
+    return intent?.extras?.parcelable(FETCH_DANISH_ADDRESS_CONTRACT_RESULT_KEY)
       ?: FetchDanishAddressContractResult.Canceled
   }
 

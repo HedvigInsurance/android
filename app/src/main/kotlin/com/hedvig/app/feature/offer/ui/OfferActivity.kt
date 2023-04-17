@@ -19,6 +19,8 @@ import com.adyen.checkout.dropin.DropInResult
 import com.carousell.concatadapterextension.ConcatItemDecoration
 import com.carousell.concatadapterextension.ConcatSpanSizeLookup
 import com.hedvig.android.auth.android.AuthenticatedObserver
+import com.hedvig.android.core.common.android.parcelableArrayListExtra
+import com.hedvig.android.core.common.android.parcelableExtra
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.MainActivity
@@ -71,11 +73,11 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
   private lateinit var concatAdapter: ConcatAdapter
 
   private val quoteCartId: QuoteCartId
-    get() = intent.getParcelableExtra(QUOTE_CART_ID)
+    get() = intent.parcelableExtra(QUOTE_CART_ID)
       ?: intent.getStringExtra(QUOTE_CART_ID)?.let { QuoteCartId(it) }
       ?: error("A quote cart ID must be passed into OfferActivity")
   private val selectedContractTypes: List<SelectedContractType>
-    get() = intent.getParcelableArrayListExtra(SELECTED_CONTRACT_TYPES) ?: emptyList()
+    get() = intent.parcelableArrayListExtra(SELECTED_CONTRACT_TYPES) ?: emptyList()
 
   private val viewModel: OfferViewModel by viewModel {
     parametersOf(quoteCartId, selectedContractTypes)

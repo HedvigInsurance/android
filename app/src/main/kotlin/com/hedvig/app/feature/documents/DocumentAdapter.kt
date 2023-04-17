@@ -19,13 +19,13 @@ class DocumentAdapter : ListAdapter<DocumentItems, DocumentAdapter.DocumentsView
   override fun getItemViewType(position: Int) = when (currentList[position]) {
     is DocumentItems.Document -> R.layout.document
     is DocumentItems.Header -> R.layout.list_subtitle_item
-    else -> throw IllegalArgumentException("Could not find item at position $position")
+    else -> error("Could not find item at position $position")
   }
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
     R.layout.document -> DocumentViewHolder(parent.inflate(viewType))
     R.layout.list_subtitle_item -> TitleViewHolder(parent.inflate(viewType))
-    else -> throw IllegalArgumentException("Could not find viewType $viewType")
+    else -> error("Could not find viewType $viewType")
   }
 
   override fun onBindViewHolder(holder: DocumentsViewHolder, position: Int) {

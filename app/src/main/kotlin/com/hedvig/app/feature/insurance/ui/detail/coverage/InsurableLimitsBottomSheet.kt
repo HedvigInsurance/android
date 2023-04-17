@@ -31,7 +31,7 @@ class InsurableLimitsBottomSheet : BottomSheetDialogFragment() {
     private const val TITLE = "TITLE"
     private const val BODY = "BODY"
 
-    val TAG = InsurableLimitsBottomSheet::class.java.name
+    val TAG: String = InsurableLimitsBottomSheet::class.java.name
 
     fun newInstance(insurableLimits: InsurableLimitsFragment) =
       InsurableLimitsBottomSheet().apply {

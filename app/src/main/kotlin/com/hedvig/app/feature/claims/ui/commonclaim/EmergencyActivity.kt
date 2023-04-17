@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.auth.android.AuthenticatedObserver
+import com.hedvig.android.core.common.android.parcelableExtra
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityEmergencyBinding
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
@@ -27,7 +28,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import slimber.log.e
 
 class EmergencyActivity : AppCompatActivity(R.layout.activity_emergency) {
   private val claimsViewModel: ClaimsViewModel by viewModel()
@@ -37,12 +37,8 @@ class EmergencyActivity : AppCompatActivity(R.layout.activity_emergency) {
     super.onCreate(savedInstanceState)
     lifecycle.addObserver(AuthenticatedObserver())
 
-    val data = intent.getParcelableExtra<EmergencyData>(EMERGENCY_DATA)
-
-    if (data == null) {
-      e { "Programmer error: No EMERGENCY_DATA passed to ${this.javaClass}" }
-      return
-    }
+    val data = intent.parcelableExtra<EmergencyData>(EMERGENCY_DATA)
+      ?: error("Programmer error: No EMERGENCY_DATA passed to ${this.javaClass}")
 
     claimsViewModel.events
       .flowWithLifecycle(lifecycle)

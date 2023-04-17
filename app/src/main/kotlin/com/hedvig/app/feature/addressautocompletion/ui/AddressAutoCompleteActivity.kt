@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import com.hedvig.android.core.common.android.parcelableExtra
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.feature.addressautocompletion.activityresult.FetchDanishAddressContract
 import com.hedvig.app.feature.addressautocompletion.activityresult.FetchDanishAddressContractResult
@@ -23,7 +24,7 @@ class AddressAutoCompleteActivity : AppCompatActivity() {
 
     window.compatSetDecorFitsSystemWindows(false)
 
-    val initialAddress: DanishAddress? = intent.getParcelableExtra(INITIAL_ADDRESS_KEY)
+    val initialAddress: DanishAddress? = intent.parcelableExtra(INITIAL_ADDRESS_KEY)
     val viewModel: AddressAutoCompleteViewModel = getViewModel { parametersOf(initialAddress) }
 
     setContent {
