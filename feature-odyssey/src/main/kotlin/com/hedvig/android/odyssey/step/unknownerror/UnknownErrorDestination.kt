@@ -48,7 +48,7 @@ private fun UnknownErrorScreen(
 ) {
   ClaimFlowScaffold(
     windowSizeClass = windowSizeClass,
-    navigateBack = navigateBack,
+    navigateUp = navigateBack,
   ) { sideSpacingModifier: Modifier ->
     Spacer(Modifier.height(60.dp))
     AppStateInformation(

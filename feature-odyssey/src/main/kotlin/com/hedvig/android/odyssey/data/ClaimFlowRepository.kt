@@ -67,7 +67,7 @@ internal class ClaimFlowRepositoryImpl(
   private val apolloClient: ApolloClient,
   private val odysseyService: OdysseyService,
 ) : ClaimFlowRepository {
-  private var claimFlowContext: Any? = null // todo clear this when leaving the of the Claim scope
+  private var claimFlowContext: Any? = null // todo clear this when leaving the Claim scope
 
   override suspend fun startClaimFlow(
     entryPointId: String?,

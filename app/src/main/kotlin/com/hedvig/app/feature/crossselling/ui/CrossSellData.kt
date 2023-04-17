@@ -16,7 +16,9 @@ data class CrossSellData(
   val action: Action,
   val backgroundUrl: String,
   val backgroundBlurHash: String,
+  // Used to display notifications, should be able to replace with id
   val crossSellType: String,
+  // Only used for analytics, should be able to replace with id
   val typeOfContract: String,
   val about: String,
   val perils: List<Peril>,

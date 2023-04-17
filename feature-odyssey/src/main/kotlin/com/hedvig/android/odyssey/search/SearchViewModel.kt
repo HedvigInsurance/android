@@ -14,6 +14,11 @@ internal class SearchViewModel(
   val viewState = _viewState
 
   init {
+    loadSearchableClaims()
+  }
+
+  fun loadSearchableClaims() {
+    _viewState.update { it.copy(errorMessage = null, isLoading = true) }
     viewModelScope.launch {
       getClaimEntryPoints.invoke().fold(
         ifLeft = { errorMessage ->

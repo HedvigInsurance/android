@@ -60,6 +60,7 @@ private fun KotlinJvmOptions.configureKotlinOptions(
     "-opt-in=androidx.compose.animation.ExperimentalAnimationApi",
     "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
     "-opt-in=androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi",
+    "-opt-in=com.google.accompanist.permissions.ExperimentalPermissionsApi",
     "-opt-in=kotlin.Experimental",
     "-opt-in=kotlin.RequiresOptIn",
     "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",

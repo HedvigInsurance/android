@@ -34,7 +34,7 @@ import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
 @Composable
 internal fun ClaimFlowScaffold(
   windowSizeClass: WindowSizeClass,
-  navigateBack: () -> Unit,
+  navigateUp: () -> Unit,
   modifier: Modifier = Modifier,
   topAppBarText: String? = null,
   isLoading: Boolean = false,
@@ -46,7 +46,7 @@ internal fun ClaimFlowScaffold(
     Column {
       val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
       TopAppBarWithBack(
-        onClick = navigateBack,
+        onClick = navigateUp,
         title = topAppBarText ?: "",
         scrollBehavior = topAppBarScrollBehavior,
       )

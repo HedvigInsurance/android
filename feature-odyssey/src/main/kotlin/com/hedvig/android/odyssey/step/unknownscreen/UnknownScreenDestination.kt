@@ -42,7 +42,7 @@ private fun UnknownScreenScreen(
 ) {
   ClaimFlowScaffold(
     windowSizeClass = windowSizeClass,
-    navigateBack = navigateBack,
+    navigateUp = navigateBack,
   ) { sideSpacingModifier ->
     Spacer(Modifier.height(20.dp))
     AppStateInformation(
