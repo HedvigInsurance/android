@@ -1,0 +1,6 @@
+query EntrypointSearch {
+  entrypointSearch(input: { type: CLAIM, limit: 20 }) {
+    id
+    displayName
+  }
+}
