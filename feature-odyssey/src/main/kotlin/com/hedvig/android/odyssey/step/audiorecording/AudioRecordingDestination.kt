@@ -15,18 +15,16 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,13 +33,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.PermissionState
-import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.core.designsystem.component.button.LargeTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation
+import com.hedvig.android.core.ui.permission.PermissionDialog
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
 import com.hedvig.android.odyssey.data.ClaimFlowStep
 import com.hedvig.android.odyssey.ui.ClaimFlowScaffold
@@ -57,6 +54,7 @@ internal fun AudioRecordingDestination(
   viewModel: AudioRecordingViewModel,
   windowSizeClass: WindowSizeClass,
   questions: List<String>,
+  shouldShowRequestPermissionRationale: (String) -> Boolean,
   openAppSettings: () -> Unit,
   navigateToNextStep: (ClaimFlowStep) -> Unit,
   navigateUp: () -> Unit,
@@ -73,6 +71,7 @@ internal fun AudioRecordingDestination(
     windowSizeClass = windowSizeClass,
     questions = questions,
     clock = viewModel.clock,
+    shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
     startRecording = viewModel::startRecording,
     stopRecording = viewModel::stopRecording,
     submitAudioFile = viewModel::submitAudioFile,
@@ -91,6 +90,7 @@ private fun AudioRecordingScreen(
   windowSizeClass: WindowSizeClass,
   questions: List<String>,
   clock: Clock,
+  shouldShowRequestPermissionRationale: (String) -> Boolean,
   startRecording: () -> Unit,
   stopRecording: () -> Unit,
   submitAudioFile: (File) -> Unit,
@@ -128,6 +128,7 @@ private fun AudioRecordingScreen(
     AudioRecordingSection(
       uiState = uiState,
       clock = clock,
+      shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
       startRecording = startRecording,
       stopRecording = stopRecording,
       submitAudioFile = submitAudioFile,
@@ -151,6 +152,7 @@ private fun AudioRecordingScreen(
 private fun AudioRecordingSection(
   uiState: AudioRecordingUiState,
   clock: Clock,
+  shouldShowRequestPermissionRationale: (String) -> Boolean,
   startRecording: () -> Unit,
   stopRecording: () -> Unit,
   submitAudioFile: (File) -> Unit,
@@ -160,41 +162,40 @@ private fun AudioRecordingSection(
   openAppSettings: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val recordAudioPermissionState = rememberPermissionState(Manifest.permission.RECORD_AUDIO)
-  var openPermissionDialog by rememberSaveable { mutableStateOf(false) }
-
-  if (openPermissionDialog) {
+  var showPermissionDialog by remember { mutableStateOf(false) }
+  val recordAudioPermissionState = rememberPermissionState(Manifest.permission.RECORD_AUDIO) { isGranted ->
+    if (isGranted) {
+      startRecording()
+    } else {
+      showPermissionDialog = true
+    }
+  }
+  if (showPermissionDialog) {
     PermissionDialog(
-      recordAudioPermissionState = recordAudioPermissionState,
-      dismiss = { openPermissionDialog = false },
+      permissionDescription = stringResource(R.string.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE),
+      isPermanentlyDeclined = !shouldShowRequestPermissionRationale(Manifest.permission.RECORD_AUDIO),
+      onDismiss = { showPermissionDialog = false },
+      okClick = recordAudioPermissionState::launchPermissionRequest,
+      openAppSettings = openAppSettings,
     )
   }
 
   AudioRecorder(
     uiState = uiState,
-    audioPermissionStatus = recordAudioPermissionState.status,
-    startRecording = {
-      when (recordAudioPermissionState.status) {
-        PermissionStatus.Granted -> startRecording()
-        is PermissionStatus.Denied -> openPermissionDialog = true
-      }
-    },
+    startRecording = recordAudioPermissionState::launchPermissionRequest,
     clock = clock,
     stopRecording = stopRecording,
     submitAudioFile = submitAudioFile,
     redo = redo,
     play = play,
     pause = pause,
-    openAppSettings = openAppSettings,
     modifier = modifier,
   )
 }
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 private fun AudioRecorder(
   uiState: AudioRecordingUiState,
-  audioPermissionStatus: PermissionStatus,
   startRecording: () -> Unit,
   clock: Clock,
   stopRecording: () -> Unit,
@@ -202,56 +203,30 @@ private fun AudioRecorder(
   redo: () -> Unit,
   play: () -> Unit,
   pause: () -> Unit,
-  openAppSettings: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  when (audioPermissionStatus) {
-    is PermissionStatus.Denied -> {
-      DeniedMicrophonePermission(modifier, openAppSettings)
-    }
-    PermissionStatus.Granted -> {
-      when (uiState) {
-        AudioRecordingUiState.NotRecording -> NotRecording(
-          startRecording = startRecording,
-          modifier = modifier,
-        )
-        is AudioRecordingUiState.Recording -> Recording(
-          uiState = uiState,
-          stopRecording = stopRecording,
-          clock = clock,
-          modifier = modifier,
-        )
-        is AudioRecordingUiState.Playback -> Playback(
-          uiState = uiState,
-          submit = {
-            val filePath = uiState.filePath
-            val audioFile = File(filePath)
-            submitAudioFile(audioFile)
-          },
-          redo = redo,
-          play = play,
-          pause = pause,
-          modifier = modifier,
-        )
-      }
-    }
-  }
-}
-
-@Composable
-private fun DeniedMicrophonePermission(
-  modifier: Modifier = Modifier,
-  openAppSettings: () -> Unit,
-) {
-  Column(
-    horizontalAlignment = Alignment.CenterHorizontally,
-    modifier = modifier.fillMaxWidth(),
-  ) {
-    Text(stringResource(R.string.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE))
-    Spacer(Modifier.height(16.dp))
-    LargeContainedTextButton(
-      text = stringResource(R.string.SETTINGS_TITLE),
-      onClick = { openAppSettings() },
+  when (uiState) {
+    AudioRecordingUiState.NotRecording -> NotRecording(
+      startRecording = startRecording,
+      modifier = modifier,
+    )
+    is AudioRecordingUiState.Recording -> Recording(
+      uiState = uiState,
+      stopRecording = stopRecording,
+      clock = clock,
+      modifier = modifier,
+    )
+    is AudioRecordingUiState.Playback -> Playback(
+      uiState = uiState,
+      submit = {
+        val filePath = uiState.filePath
+        val audioFile = File(filePath)
+        submitAudioFile(audioFile)
+      },
+      redo = redo,
+      play = play,
+      pause = pause,
+      modifier = modifier,
     )
   }
 }
@@ -366,36 +341,4 @@ private fun Playback(
       Text(stringResource(R.string.EMBARK_RECORD_AGAIN))
     }
   }
-}
-
-@OptIn(ExperimentalPermissionsApi::class)
-@Composable
-private fun PermissionDialog(
-  recordAudioPermissionState: PermissionState,
-  dismiss: () -> Unit,
-) {
-  AlertDialog(
-    onDismissRequest = dismiss,
-    title = { Text(stringResource(R.string.PERMISSION_DIALOG_TITLE)) },
-    text = { Text(stringResource(R.string.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE)) },
-    dismissButton = {
-      TextButton(
-        onClick = dismiss,
-        shape = MaterialTheme.shapes.medium,
-      ) {
-        Text(stringResource(android.R.string.cancel))
-      }
-    },
-    confirmButton = {
-      TextButton(
-        onClick = {
-          dismiss()
-          recordAudioPermissionState.launchPermissionRequest()
-        },
-        shape = MaterialTheme.shapes.medium,
-      ) {
-        Text(stringResource(android.R.string.ok))
-      }
-    },
-  )
 }

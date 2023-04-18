@@ -95,6 +95,7 @@ internal fun NavGraphBuilder.claimFlowGraph(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
         questions = questions,
+        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
         openAppSettings = openAppSettings,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
