@@ -13,12 +13,10 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,6 +38,7 @@ import com.hedvig.android.core.designsystem.component.button.LargeContainedTextB
 import com.hedvig.android.core.designsystem.component.button.LargeOutlinedTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.permission.PermissionDialog
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.odyssey.data.ClaimFlowStep
 import com.hedvig.android.odyssey.ui.ClaimFlowScaffold
@@ -95,7 +94,8 @@ private fun NotificationPermissionScreen(
       }
     }
     if (showDialog) {
-      NotificationPermissionDialog(
+      PermissionDialog(
+        permissionDescription = stringResource(R.string.CLAIMS_ACTIVATE_NOTIFICATIONS_BODY),
         isPermanentlyDeclined = !shouldShowNotificationPermissionRationale(shouldShowRequestPermissionRationale),
         onDismiss = { showDialog = false },
         okClick = notificationPermissionState::launchPermissionRequest,
@@ -173,51 +173,6 @@ private fun NotificationPermissionScreen(
     Spacer(Modifier.height(16.dp))
     Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
   }
-}
-
-@Composable
-private fun NotificationPermissionDialog(
-  isPermanentlyDeclined: Boolean,
-  onDismiss: () -> Unit,
-  okClick: () -> Unit,
-  openAppSettings: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  AlertDialog(
-    onDismissRequest = onDismiss,
-    dismissButton = {
-      TextButton(
-        onClick = onDismiss,
-        shape = MaterialTheme.shapes.medium,
-      ) {
-        Text(stringResource(android.R.string.cancel))
-      }
-    },
-    confirmButton = {
-      TextButton(
-        onClick = {
-          onDismiss()
-          if (isPermanentlyDeclined) {
-            openAppSettings()
-          } else {
-            okClick()
-          }
-        },
-        shape = MaterialTheme.shapes.medium,
-      ) {
-        Text(
-          if (isPermanentlyDeclined) {
-            stringResource(R.string.profile_appSettingsSection_title)
-          } else {
-            stringResource(android.R.string.ok)
-          },
-        )
-      }
-    },
-    title = { Text(stringResource(R.string.PERMISSION_DIALOG_TITLE)) },
-    text = { Text(stringResource(R.string.CLAIMS_ACTIVATE_NOTIFICATIONS_BODY)) },
-    modifier = modifier,
-  )
 }
 
 @OptIn(ExperimentalPermissionsApi::class)
