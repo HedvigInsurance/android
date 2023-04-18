@@ -9,7 +9,10 @@ import androidx.core.os.bundleOf
 import androidx.core.view.doOnNextLayout
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.withStateAtLeast
 import com.google.android.material.textfield.TextInputEditText
+import com.hedvig.android.core.common.android.parcelable
 import com.hedvig.android.core.common.android.whenApiVersion
 import com.hedvig.app.R
 import com.hedvig.app.databinding.EmbarkInputItemBinding
@@ -26,8 +29,10 @@ import com.hedvig.app.util.extensions.onImeAction
 import com.hedvig.app.util.extensions.showKeyboardWithDelay
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
+import com.hedvig.app.util.extensions.viewLifecycle
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
@@ -36,7 +41,6 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
-import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Used for Embark actions NumberAction and NumberActionSet
@@ -45,8 +49,8 @@ class NumberActionFragment : Fragment(R.layout.number_action_set_fragment) {
   private val viewModel: EmbarkViewModel by activityViewModel()
   private val binding by viewBinding(NumberActionSetFragmentBinding::bind)
   private val data: NumberActionParams
-    get() = requireArguments().getParcelable(PARAMS)
-      ?: throw Error("Programmer error: No PARAMS provided to ${this.javaClass.name}")
+    get() = requireArguments().parcelable(PARAMS)
+      ?: error("Programmer error: No PARAMS provided to ${this.javaClass.name}")
   private val numberActionViewModel: NumberActionViewModel by viewModel { parametersOf(data) }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -64,9 +68,10 @@ class NumberActionFragment : Fragment(R.layout.number_action_set_fragment) {
       messages.adapter = MessageAdapter(data.messages)
       val views = createInputViews()
       views.firstOrNull()?.let {
-        viewLifecycleScope.launchWhenCreated {
-          val input = it.findViewById<TextInputEditText?>(R.id.input)
-          requireContext().showKeyboardWithDelay(input, 500.milliseconds)
+        viewLifecycleScope.launch {
+          viewLifecycle.withStateAtLeast(Lifecycle.State.RESUMED) {}
+          val input: TextInputEditText? = it.findViewById(R.id.input)
+          context?.showKeyboardWithDelay(input, 500.milliseconds)
         }
       }
       inputContainer.addViews(views)

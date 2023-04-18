@@ -13,7 +13,7 @@ fun jsonObjectOf(vararg properties: Pair<String, Any?>) = JSONObject().apply {
 fun Map<*, *>.toJsonObject(): JSONObject = entries.fold(JSONObject()) { acc, entry ->
   val entryKey = entry.key
   if (entryKey !is String) {
-    throw IllegalArgumentException("Only `Map<String, Any?>` may be converted to `JSONObject`")
+    error("Only `Map<String, Any?>` may be converted to `JSONObject`")
   }
   val entryValue = entry.value
   acc.put(entryKey, convertValueToJson(entryValue))

@@ -35,7 +35,7 @@ fun QuoteBundleFragment.Inception1.getStartDate() = when {
       OfferStartDate.Multiple
     }
   }
-  else -> throw IllegalArgumentException("Could not parse inception")
+  else -> error("Could not parse inception")
 }
 
 private fun QuoteBundleFragment.Inception1.hasNoDate(): Boolean {

@@ -16,12 +16,12 @@ import com.hedvig.android.odyssey.search.SearchViewModel
 import com.hedvig.android.odyssey.step.audiorecording.AudioRecordingViewModel
 import com.hedvig.android.odyssey.step.dateofoccurrence.DateOfOccurrenceViewModel
 import com.hedvig.android.odyssey.step.dateofoccurrencepluslocation.DateOfOccurrencePlusLocationViewModel
+import com.hedvig.android.odyssey.step.honestypledge.HonestyPledgeViewModel
 import com.hedvig.android.odyssey.step.location.LocationViewModel
+import com.hedvig.android.odyssey.step.notificationpermission.NotificationPermissionViewModel
 import com.hedvig.android.odyssey.step.phonenumber.PhoneNumberViewModel
 import com.hedvig.android.odyssey.step.singleitem.SingleItemViewModel
 import com.hedvig.android.odyssey.step.singleitemcheckout.SingleItemCheckoutViewModel
-import com.hedvig.android.odyssey.step.honestypledge.HonestyPledgeViewModel
-import com.hedvig.android.odyssey.step.notificationpermission.NotificationPermissionViewModel
 import com.hedvig.android.odyssey.step.summary.ClaimSummaryViewModel
 import com.hedvig.odyssey.datadog.DatadogLogger
 import com.hedvig.odyssey.datadog.DatadogProvider

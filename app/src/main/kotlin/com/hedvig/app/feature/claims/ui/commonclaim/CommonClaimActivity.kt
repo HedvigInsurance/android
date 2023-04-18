@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import coil.ImageLoader
 import com.hedvig.android.auth.android.AuthenticatedObserver
+import com.hedvig.android.core.common.android.parcelableExtra
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityCommonClaimBinding
@@ -37,7 +38,8 @@ class CommonClaimActivity : AppCompatActivity(R.layout.activity_common_claim) {
     super.onCreate(savedInstanceState)
     lifecycle.addObserver(AuthenticatedObserver())
 
-    val data = intent.getParcelableExtra<CommonClaimsData>(CLAIMS_DATA) ?: return
+    val data = intent.parcelableExtra<CommonClaimsData>(CLAIMS_DATA)
+      ?: error("Programmer error: incorrect arguments passed to ${this.javaClass.name}")
     getViewModel<CommonClaimViewModel>()
 
     binding.apply {

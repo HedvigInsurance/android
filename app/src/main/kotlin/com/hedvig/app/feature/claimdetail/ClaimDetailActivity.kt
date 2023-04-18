@@ -33,7 +33,7 @@ class ClaimDetailActivity : AppCompatActivity() {
     window.compatSetDecorFitsSystemWindows(false)
 
     val claimId = intent.getStringExtra(CLAIM_ID)
-      ?: throw IllegalArgumentException("Programmer error: Missing claimId in ${this.javaClass.name}")
+      ?: error("Programmer error: Missing claimId in ${this.javaClass.name}")
     val viewModel: ClaimDetailViewModel by viewModel { parametersOf(claimId) }
 
     viewModel

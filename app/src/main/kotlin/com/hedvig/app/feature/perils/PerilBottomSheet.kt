@@ -4,22 +4,18 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.core.view.updatePadding
+import com.hedvig.android.core.common.android.parcelable
 import com.hedvig.app.feature.insurance.ui.detail.coverage.PerilAdapter
 import com.hedvig.app.feature.insurance.ui.detail.coverage.PerilModel
 import com.hedvig.app.ui.view.ExpandableBottomSheet
 import com.hedvig.app.util.extensions.dp
-import slimber.log.e
 
 class PerilBottomSheet : ExpandableBottomSheet() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    val peril = requireArguments().getParcelable<Peril>(PERIL)
-
-    if (peril == null) {
-      e { "Programmer error: Missing arguments in ${this@PerilBottomSheet.javaClass.name}" }
-      return
-    }
+    val peril = requireArguments().parcelable<Peril>(PERIL)
+      ?: error("Programmer error: Missing arguments in ${this@PerilBottomSheet.javaClass.name}")
 
     binding.recycler.updatePadding(bottom = binding.recycler.paddingBottom + 56.dp)
     binding.recycler.adapter = PerilAdapter().also { adapter ->
@@ -63,7 +59,7 @@ class PerilBottomSheet : ExpandableBottomSheet() {
   companion object {
     private const val PERIL = "PERIL"
 
-    val TAG = PerilBottomSheet::class.java.name
+    val TAG: String = PerilBottomSheet::class.java.name
 
     fun newInstance(peril: Peril) = PerilBottomSheet().apply {
       arguments = bundleOf(

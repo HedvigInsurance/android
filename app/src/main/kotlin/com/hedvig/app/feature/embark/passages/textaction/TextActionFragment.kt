@@ -6,7 +6,11 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.withStarted
+import androidx.lifecycle.withStateAtLeast
 import com.google.android.material.textfield.TextInputEditText
+import com.hedvig.android.core.common.android.parcelable
 import com.hedvig.android.core.common.android.whenApiVersion
 import com.hedvig.app.R
 import com.hedvig.app.databinding.EmbarkInputItemBinding
@@ -26,8 +30,11 @@ import com.hedvig.app.util.extensions.onImeAction
 import com.hedvig.app.util.extensions.showKeyboardWithDelay
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
+import com.hedvig.app.util.extensions.viewLifecycle
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import java.time.LocalDate
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
@@ -36,16 +43,14 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
-import java.time.LocalDate
-import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Used for Embark actions TextAction and TextActionSet
  */
 class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
   private val data: TextActionParameter
-    get() = requireArguments().getParcelable(DATA)
-      ?: throw Error("Programmer error: DATA is null in ${this.javaClass.name}")
+    get() = requireArguments().parcelable(DATA)
+      ?: error("Programmer error: DATA is null in ${this.javaClass.name}")
   private val textActionViewModel: TextActionViewModel by viewModel { parametersOf(data) }
   private val embarkViewModel: EmbarkViewModel by activityViewModel()
   private val binding by viewBinding(FragmentTextActionSetBinding::bind)
@@ -64,9 +69,10 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
       }
       val views = createInputViews()
       views.firstOrNull()?.let {
-        viewLifecycleScope.launchWhenCreated {
-          val input = it.findViewById<TextInputEditText?>(R.id.input)
-          requireContext().showKeyboardWithDelay(input, 500.milliseconds)
+        viewLifecycleScope.launch {
+          viewLifecycle.withStarted {}
+          val input: TextInputEditText? = it.findViewById(R.id.input)
+          context?.showKeyboardWithDelay(input, 500.milliseconds)
         }
       }
 
@@ -85,9 +91,11 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
 
       // We need to wait for all input views to be laid out before starting enter transition.
       // This could perhaps be handled with a callback from the inputContainer.
-      viewLifecycleScope.launchWhenCreated {
+      viewLifecycleScope.launch {
         delay(50.milliseconds)
-        startPostponedEnterTransition()
+        viewLifecycle.withStateAtLeast(Lifecycle.State.RESUMED) {
+          startPostponedEnterTransition()
+        }
       }
     }
   }

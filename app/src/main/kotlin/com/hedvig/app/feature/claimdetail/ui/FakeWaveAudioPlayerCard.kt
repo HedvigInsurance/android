@@ -189,7 +189,7 @@ private fun AudioPlayerActionOrLoadingIcon(
           )
         }
       }
-      is AudioPlayerState.Failed -> throw IllegalArgumentException("Impossible")
+      is AudioPlayerState.Failed -> error("Impossible")
     }
   }
 }

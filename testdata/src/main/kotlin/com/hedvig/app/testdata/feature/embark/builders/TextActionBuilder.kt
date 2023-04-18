@@ -26,7 +26,7 @@ data class TextActionBuilder(
           __typename = "",
           fragments = EmbarkStoryQuery.Link1.Fragments(
             link
-              ?: throw IllegalArgumentException("Missing required Link for single text action"),
+              ?: error("Missing required Link for single text action"),
           ),
         ),
         api = api?.let {

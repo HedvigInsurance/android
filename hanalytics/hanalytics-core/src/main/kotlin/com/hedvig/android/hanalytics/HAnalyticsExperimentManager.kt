@@ -28,7 +28,7 @@ internal class HAnalyticsExperimentManagerImpl(
 
       experimentsData[name]?.let { variant ->
         HAnalyticsExperiment(name, variant)
-      } ?: throw Exception("experiment unavailable")
+      } ?: error("experiment unavailable")
     }
   }
 

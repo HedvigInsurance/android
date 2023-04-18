@@ -7,6 +7,7 @@ import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import com.hedvig.android.auth.android.AuthenticatedObserver
+import com.hedvig.android.core.common.android.parcelableExtra
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.util.extensions.startChat
@@ -18,10 +19,8 @@ class CrossSellingResultActivity : AppCompatActivity() {
 
   private val clock: Clock by inject()
   private val crossSellingResult: CrossSellingResult
-    get() = intent.getParcelableExtra(CROSS_SELLING_RESULT)
-      ?: throw IllegalArgumentException(
-        "Programmer error: CROSS_SELLING_RESULT not provided to ${this.javaClass.name}",
-      )
+    get() = intent.parcelableExtra(CROSS_SELLING_RESULT)
+      ?: error("Programmer error: CROSS_SELLING_RESULT not provided to ${this.javaClass.name}")
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)

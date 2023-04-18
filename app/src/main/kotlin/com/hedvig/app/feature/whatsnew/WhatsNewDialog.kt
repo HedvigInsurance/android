@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.whatsnew
 
 import android.os.Bundle
+import com.hedvig.android.core.common.android.parcelableArrayList
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.feature.dismissiblepager.DismissiblePager
@@ -17,7 +18,7 @@ class WhatsNewDialog : DismissiblePager() {
   override val shouldShowLogo = true
 
   override val items: List<DismissiblePagerModel>
-    get() = requireArguments().getParcelableArrayList<DismissiblePagerModel>(PAGES).orEmpty()
+    get() = requireArguments().parcelableArrayList<DismissiblePagerModel>(PAGES).orEmpty()
 
   override fun onDismiss() {
     whatsNewViewModel.hasSeenNews(BuildConfig.VERSION_NAME)

@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.welcome
 
 import android.os.Bundle
+import com.hedvig.android.core.common.android.parcelableArrayList
 import com.hedvig.app.R
 import com.hedvig.app.feature.dismissiblepager.DismissiblePager
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
@@ -14,7 +15,7 @@ class WelcomeDialog : DismissiblePager() {
   override val shouldShowLogo = true
 
   override val items: List<DismissiblePagerModel>
-    get() = requireArguments().getParcelableArrayList<DismissiblePagerModel>(ITEMS).orEmpty()
+    get() = requireArguments().parcelableArrayList<DismissiblePagerModel>(ITEMS).orEmpty()
 
   override fun onLastPageButton() {
     dismiss()
