@@ -14,11 +14,11 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.openEmail
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.core.parameter.parametersOf
+import kotlin.time.Duration.Companion.seconds
 
 class OtpInputActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {

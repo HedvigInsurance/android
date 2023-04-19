@@ -51,8 +51,8 @@ import com.hedvig.odyssey.renderers.audiorecorder.PlaybackWaveForm
 import com.hedvig.odyssey.renderers.audiorecorder.RecordingAmplitudeIndicator
 import com.hedvig.odyssey.renderers.utils.ScreenOnFlag
 import hedvig.resources.R
-import java.io.File
 import kotlinx.datetime.Clock
+import java.io.File
 
 @Composable
 internal fun AudioRecordingDestination(

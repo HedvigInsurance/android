@@ -48,11 +48,11 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.hanalytics.engineering.R
 import com.hedvig.android.hanalytics.engineering.tracking.TrackDetailDialogFragment.Companion.show
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.getViewModel
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class TrackingLogActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {

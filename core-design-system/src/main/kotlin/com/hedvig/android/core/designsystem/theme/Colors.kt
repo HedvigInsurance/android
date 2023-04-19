@@ -65,7 +65,6 @@ val Colors.warning: Color
     warning_light
   }
 
-
 val Colors.separator: Color
   get() = if (isLight) {
     hedvig_black.copy(alpha = 0.12f)

@@ -9,13 +9,11 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
-import com.hedvig.android.core.common.android.ProgressPercentage
 import com.hedvig.android.audio.player.SignedAudioUrl
 import com.hedvig.android.audio.player.internal.getProgressPercentage
 import com.hedvig.android.audio.player.internal.hasReachedTheEnd
 import com.hedvig.android.audio.player.internal.seekToPercent
-import kotlinx.coroutines.flow.StateFlow
-import java.io.Closeable
+import com.hedvig.android.core.common.android.ProgressPercentage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitCancellation
@@ -25,6 +23,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -38,7 +37,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.yield
 import slimber.log.d
-
+import java.io.Closeable
 
 interface AudioPlayer : Closeable {
   val audioPlayerState: StateFlow<AudioPlayerState>
@@ -117,7 +116,9 @@ private class AudioPlayerImpl(
         }
         audioPlayerState
           .map { audioPlayerState -> (audioPlayerState as? AudioPlayerState.Ready)?.readyState }
-          .map { readyState: AudioPlayerState.Ready.ReadyState? -> readyState?.shouldContinuouslyUpdateProgress == true }
+          .map { readyState: AudioPlayerState.Ready.ReadyState? ->
+            readyState?.shouldContinuouslyUpdateProgress == true
+          }
           .distinctUntilChanged()
           .collectLatest { shouldContinuouslyUpdateProgress: Boolean ->
             if (shouldContinuouslyUpdateProgress) {

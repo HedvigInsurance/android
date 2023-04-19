@@ -131,7 +131,11 @@ private fun PreviewFakeWaveAudioPlayerContent() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       FakeWaveAudioPlayerContent(
-        AudioPlayerState.Ready(AudioPlayerState.Ready.ReadyState.Playing, ProgressPercentage(0.4f)), {}, {}, {}, {},
+        AudioPlayerState.Ready(AudioPlayerState.Ready.ReadyState.Playing, ProgressPercentage(0.4f)),
+        {},
+        {},
+        {},
+        {},
       )
     }
   }

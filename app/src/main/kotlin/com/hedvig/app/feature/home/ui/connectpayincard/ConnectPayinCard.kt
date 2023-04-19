@@ -24,8 +24,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.designsystem.theme.warning
 import com.hedvig.android.core.designsystem.theme.hedvigContentColorFor
+import com.hedvig.android.core.designsystem.theme.warning
 
 @Composable
 fun ConnectPayinCard(

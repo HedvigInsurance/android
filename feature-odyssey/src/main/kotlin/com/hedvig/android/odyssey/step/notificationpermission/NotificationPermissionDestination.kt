@@ -110,7 +110,10 @@ private fun NotificationPermissionScreen(
           stringResource(R.string.general_continue_button) to startClaimFlow
         }
         is PermissionStatus.Denied -> {
-          stringResource(R.string.CLAIMS_ACTIVATE_NOTIFICATIONS_CTA) to notificationPermissionState::launchPermissionRequest
+          Pair(
+            stringResource(R.string.CLAIMS_ACTIVATE_NOTIFICATIONS_CTA),
+            notificationPermissionState::launchPermissionRequest,
+          )
         }
       }
     }

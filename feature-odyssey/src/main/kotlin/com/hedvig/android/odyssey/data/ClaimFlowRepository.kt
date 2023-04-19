@@ -12,7 +12,6 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.odyssey.model.AudioUrl
 import com.hedvig.android.odyssey.model.FlowId
 import com.hedvig.android.odyssey.retrofit.toErrorMessage
-import java.io.File
 import kotlinx.datetime.LocalDate
 import octopus.FlowClaimAudioRecordingNextMutation
 import octopus.FlowClaimDateOfOccurrenceNextMutation
@@ -32,6 +31,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import slimber.log.d
 import slimber.log.e
+import java.io.File
 
 internal interface ClaimFlowRepository {
   suspend fun startClaimFlow(entryPointId: String?): Either<ErrorMessage, ClaimFlowStep>

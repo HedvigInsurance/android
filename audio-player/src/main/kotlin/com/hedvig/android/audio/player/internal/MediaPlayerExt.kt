@@ -10,7 +10,7 @@ import kotlin.coroutines.resume
  * replace it when this method is called, and set it as null right before this suspending function returns.
  */
 internal suspend fun MediaPlayer.seekToPercent(
-    percentage: ProgressPercentage,
+  percentage: ProgressPercentage,
 ) = suspendCancellableCoroutine { cont ->
   val callback = MediaPlayer.OnSeekCompleteListener {
     this.setOnSeekCompleteListener(null)

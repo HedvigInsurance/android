@@ -29,8 +29,6 @@ import giraffe.EmbarkStoryQuery
 import giraffe.fragment.ApiFragment
 import giraffe.fragment.MessageFragment
 import giraffe.type.EmbarkExternalRedirectLocation
-import java.util.Stack
-import kotlin.math.max
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -39,6 +37,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Stack
+import kotlin.math.max
 
 const val QUOTE_CART_EMBARK_STORE_ID_KEY = "quoteCartId"
 
