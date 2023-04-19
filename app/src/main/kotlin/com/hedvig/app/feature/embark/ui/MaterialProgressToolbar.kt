@@ -8,7 +8,7 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import com.google.android.material.appbar.MaterialToolbar
 import com.hedvig.app.databinding.ViewMaterialProgressToolbarBinding
-import com.hedvig.app.util.ProgressPercentage
+import com.hedvig.android.core.common.android.ProgressPercentage
 
 class MaterialProgressToolbar @JvmOverloads constructor(
   context: Context,

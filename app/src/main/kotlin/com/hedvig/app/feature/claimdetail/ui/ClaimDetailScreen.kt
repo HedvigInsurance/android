@@ -101,7 +101,7 @@ private fun ClaimDetailScreen(
     ClaimDetailCard(uiState.claimDetailCard, onChatClick)
     if (uiState.signedAudioURL != null) {
       Spacer(Modifier.height(40.dp))
-      AudioPlayBackItem(
+      ClaimDetailHedvigAudioPlayerItem(
         onPlayClick = onPlayClick,
         uiState.signedAudioURL,
       )

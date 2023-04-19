@@ -1,12 +1,16 @@
-package com.hedvig.app.feature.claimdetail.ui
+@file:Suppress("ConstPropertyName")
+
+package com.hedvig.android.audio.player.internal
 
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
@@ -20,19 +24,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
-import com.google.android.material.math.MathUtils
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.lerp
+import com.hedvig.android.audio.player.WaveInteraction
+import com.hedvig.android.core.common.android.ProgressPercentage
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.app.util.ProgressPercentage
+import com.hedvig.android.core.designsystem.theme.lavender_200
 import kotlin.math.abs
 import kotlin.math.absoluteValue
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
-private const val numberOfWaves = 50
 private const val waveWidthPercentOfSpaceAvailable = 0.5f
 
 @Composable
-fun FakeAudioWaves(
+internal fun FakeAudioWaves(
   progressPercentage: ProgressPercentage,
   playedColor: Color,
   notPlayedColor: Color,
@@ -41,6 +48,9 @@ fun FakeAudioWaves(
 ) {
   BoxWithConstraints(modifier) {
     val updatedWaveInteraction by rememberUpdatedState(waveInteraction)
+    val numberOfWaves = remember(maxWidth) {
+      (maxWidth / 5f).value.roundToInt()
+    }
     val waveWidth = remember(maxWidth) {
       (maxWidth / numberOfWaves.toFloat()) * waveWidthPercentOfSpaceAvailable
     }
@@ -49,6 +59,7 @@ fun FakeAudioWaves(
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier
         .fillMaxWidth()
+        .height(maxHeight)
         .pointerInput(Unit) {
           detectTapGestures { offset ->
             updatedWaveInteraction.onInteraction(
@@ -67,7 +78,7 @@ fun FakeAudioWaves(
         },
     ) {
       repeat(numberOfWaves) { waveIndex ->
-        FakeAudioWave(
+        FakeAudioWavePill(
           progressPercentage = progressPercentage,
           numberOfWaves = numberOfWaves,
           waveIndex = waveIndex,
@@ -85,9 +96,8 @@ private const val maxWaveHeightFractionForSideWaves = 0.1f
 private const val maxWaveHeightFraction = 1.0f
 
 @Composable
-private fun FakeAudioWave(
+private fun FakeAudioWavePill(
   progressPercentage: ProgressPercentage,
-  @Suppress("SameParameterValue")
   numberOfWaves: Int,
   waveIndex: Int,
   playedColor: Color,
@@ -99,7 +109,7 @@ private fun FakeAudioWave(
     val centerPoint = numberOfWaves / 2
     val distanceFromCenterPoint = abs(centerPoint - wavePosition)
     val percentageToCenterPoint = ((centerPoint - distanceFromCenterPoint).toFloat() / centerPoint)
-    val maxHeightFraction = MathUtils.lerp(
+    val maxHeightFraction = lerp(
       maxWaveHeightFractionForSideWaves,
       maxWaveHeightFraction,
       percentageToCenterPoint,
@@ -124,7 +134,14 @@ private fun FakeAudioWave(
 @Composable
 private fun PreviewFakeAudioWaves() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(
+      color = if (isSystemInDarkTheme()) {
+        MaterialTheme.colors.secondary
+      } else {
+        lavender_200
+      },
+      modifier = Modifier.height(150.dp),
+    ) {
       FakeAudioWaves(
         ProgressPercentage(0.2f),
         Color.Black,

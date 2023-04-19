@@ -1,6 +1,5 @@
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-@Suppress("UnstableApiUsage")
 pluginManagement {
   includeBuild("build-logic")
   includeBuild("lokalise-gradle-plugin")
@@ -37,6 +36,7 @@ include(":apollo:di")
 include(":apollo:giraffe")
 include(":apollo:octopus")
 include(":app")
+include(":audio-player")
 include(":auth:auth-android")
 include(":auth:auth-core")
 include(":auth:auth-event-core")
