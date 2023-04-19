@@ -6,8 +6,8 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.common.android.parcelableExtra
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.feature.addressautocompletion.activityresult.FetchDanishAddressContract
@@ -28,7 +28,7 @@ class AddressAutoCompleteActivity : AppCompatActivity() {
     val viewModel: AddressAutoCompleteViewModel = getViewModel { parametersOf(initialAddress) }
 
     setContent {
-      val viewState by viewModel.viewState.collectAsState()
+      val viewState by viewModel.viewState.collectAsStateWithLifecycle()
       LaunchedEffect(viewState.selectedFinalAddress) {
         val selectedFinalAddress = viewState.selectedFinalAddress ?: return@LaunchedEffect
         finishWithResult(FetchDanishAddressContractResult.Selected(selectedFinalAddress))

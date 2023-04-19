@@ -7,18 +7,18 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.openEmail
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.core.parameter.parametersOf
-import kotlin.time.Duration.Companion.seconds
 
 class OtpInputActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,13 +52,13 @@ class OtpInputActivity : AppCompatActivity() {
         }
       }
       HedvigTheme {
-        val viewState by viewModel.viewState.collectAsState()
+        val viewState by viewModel.viewState.collectAsStateWithLifecycle()
         OtpInputScreen(
           onInputChanged = viewModel::setInput,
           onOpenExternalApp = { openEmail(getString(hedvig.resources.R.string.login_bottom_sheet_view_code)) },
           onSubmitCode = viewModel::submitCode,
           onResendCode = viewModel::resendCode,
-          onBackPressed = ::onBackPressed,
+          onBackPressed = { onBackPressedDispatcher.onBackPressed() },
           inputValue = viewState.input,
           credential = viewState.credential,
           networkErrorMessage = viewState.networkErrorMessage,

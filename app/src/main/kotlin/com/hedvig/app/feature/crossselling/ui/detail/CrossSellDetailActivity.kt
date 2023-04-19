@@ -6,8 +6,8 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.common.android.parcelableExtra
@@ -39,7 +39,7 @@ class CrossSellDetailActivity : AppCompatActivity() {
     window.compatSetDecorFitsSystemWindows(false)
 
     setContent {
-      val viewState by viewModel.viewState.collectAsState()
+      val viewState by viewModel.viewState.collectAsStateWithLifecycle()
       LaunchedEffect(viewState) {
         viewState.navigateChat
           ?.navigate(this@CrossSellDetailActivity)
