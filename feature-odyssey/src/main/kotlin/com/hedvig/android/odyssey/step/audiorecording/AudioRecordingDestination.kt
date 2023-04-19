@@ -1,22 +1,15 @@
 package com.hedvig.android.odyssey.step.audiorecording
 
 import android.Manifest
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
@@ -26,30 +19,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
-import com.hedvig.android.audio.player.HedvigAudioPlayer
-import com.hedvig.android.audio.player.SignedAudioUrl
-import com.hedvig.android.audio.player.state.AudioPlayerState
-import com.hedvig.android.audio.player.state.rememberAudioPlayer
-import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
-import com.hedvig.android.core.designsystem.component.button.LargeTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation
 import com.hedvig.android.core.ui.permission.PermissionDialog
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
 import com.hedvig.android.odyssey.data.ClaimFlowStep
 import com.hedvig.android.odyssey.model.AudioUrl
+import com.hedvig.android.odyssey.step.audiorecording.ui.AudioRecorder
 import com.hedvig.android.odyssey.ui.ClaimFlowScaffold
-import com.hedvig.odyssey.renderers.audiorecorder.PlaybackWaveForm
-import com.hedvig.odyssey.renderers.audiorecorder.RecordingAmplitudeIndicator
-import com.hedvig.odyssey.renderers.utils.ScreenOnFlag
 import hedvig.resources.R
 import kotlinx.datetime.Clock
 import java.io.File
@@ -112,8 +95,8 @@ private fun AudioRecordingScreen(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     topAppBarText = stringResource(R.string.claims_incident_screen_header),
-    isLoading = false,
-    errorSnackbarState = ErrorSnackbarState(uiState.hasAudioSubmissionError, showedError),
+    isLoading = uiState.isLoading,
+    errorSnackbarState = ErrorSnackbarState(uiState.hasError, showedError),
   ) { sideSpacingModifier ->
     Spacer(Modifier.height(20.dp))
     for (question in questions) {
@@ -201,199 +184,4 @@ private fun AudioRecordingSection(
     pause = pause,
     modifier = modifier,
   )
-}
-
-@Composable
-private fun AudioRecorder(
-  uiState: AudioRecordingUiState,
-  startRecording: () -> Unit,
-  clock: Clock,
-  stopRecording: () -> Unit,
-  submitAudioFile: (File) -> Unit,
-  submitAudioUrl: (AudioUrl) -> Unit,
-  redo: () -> Unit,
-  play: () -> Unit,
-  pause: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  when (uiState) {
-    AudioRecordingUiState.NotRecording -> NotRecording(
-      startRecording = startRecording,
-      modifier = modifier,
-    )
-    is AudioRecordingUiState.Recording -> Recording(
-      uiState = uiState,
-      stopRecording = stopRecording,
-      clock = clock,
-      modifier = modifier,
-    )
-    is AudioRecordingUiState.Playback -> Playback(
-      uiState = uiState,
-      submit = {
-        val filePath = uiState.filePath
-        val audioFile = File(filePath)
-        submitAudioFile(audioFile)
-      },
-      redo = redo,
-      play = play,
-      pause = pause,
-      modifier = modifier,
-    )
-    is AudioRecordingUiState.PrerecordedWithSignedUrl -> PrerecordedPlayback(
-      uiState = uiState,
-      submitAudioUrl = {
-        submitAudioUrl(uiState.signedUrl)
-      },
-      redo = redo,
-      modifier = Modifier,
-    )
-  }
-}
-
-@Composable
-private fun NotRecording(
-  startRecording: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  Column(
-    horizontalAlignment = Alignment.CenterHorizontally,
-    modifier = modifier.fillMaxWidth(),
-  ) {
-    IconButton(
-      onClick = startRecording,
-      modifier = Modifier
-        .padding(bottom = 24.dp)
-        .then(Modifier.size(72.dp)),
-    ) {
-      Image(
-        painter = painterResource(com.hedvig.android.odyssey.R.drawable.ic_record),
-        contentDescription = stringResource(R.string.EMBARK_START_RECORDING),
-      )
-    }
-    Text(
-      text = stringResource(R.string.EMBARK_START_RECORDING),
-      style = MaterialTheme.typography.bodySmall,
-      modifier = Modifier.padding(bottom = 16.dp),
-    )
-  }
-}
-
-@Composable
-private fun Recording(
-  uiState: AudioRecordingUiState.Recording,
-  stopRecording: () -> Unit,
-  clock: Clock,
-  modifier: Modifier = Modifier,
-) {
-  ScreenOnFlag()
-  Column(
-    horizontalAlignment = Alignment.CenterHorizontally,
-    modifier = modifier.fillMaxWidth(),
-  ) {
-    Box(
-      contentAlignment = Alignment.Center,
-      modifier = Modifier
-        .padding(bottom = 24.dp),
-    ) {
-      if (uiState.amplitudes.isNotEmpty()) {
-        RecordingAmplitudeIndicator(amplitude = uiState.amplitudes.last())
-      }
-      IconButton(
-        onClick = stopRecording,
-        modifier = Modifier.size(72.dp),
-      ) {
-        Image(
-          painter = painterResource(
-            com.hedvig.android.odyssey.R.drawable.ic_record_stop,
-          ),
-          contentDescription = stringResource(R.string.EMBARK_STOP_RECORDING),
-        )
-      }
-    }
-    val diff = clock.now() - uiState.startedAt
-    val label = String.format("%02d:%02d", diff.inWholeMinutes, diff.inWholeSeconds % 60)
-    Text(
-      text = label,
-      style = MaterialTheme.typography.bodySmall,
-      modifier = Modifier.padding(bottom = 16.dp),
-    )
-  }
-}
-
-@Composable
-private fun Playback(
-  uiState: AudioRecordingUiState.Playback,
-  submit: () -> Unit,
-  redo: () -> Unit,
-  play: () -> Unit,
-  pause: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  Column(
-    horizontalAlignment = Alignment.CenterHorizontally,
-    modifier = modifier.fillMaxWidth(),
-  ) {
-    if (!uiState.isPrepared) {
-      CircularProgressIndicator()
-    } else {
-      PlaybackWaveForm(
-        isPlaying = uiState.isPlaying,
-        play = play,
-        pause = pause,
-        amplitudes = uiState.amplitudes,
-        progress = uiState.progress,
-      )
-    }
-
-    LargeContainedTextButton(
-      onClick = submit,
-      text = stringResource(R.string.general_continue_button),
-      enabled = uiState.canSubmit,
-      modifier = Modifier.padding(top = 16.dp),
-    )
-
-    LargeTextButton(
-      onClick = redo,
-      enabled = uiState.canSubmit,
-      modifier = Modifier.padding(top = 8.dp),
-    ) {
-      Text(stringResource(R.string.EMBARK_RECORD_AGAIN))
-    }
-  }
-}
-
-@Composable
-private fun PrerecordedPlayback(
-  uiState: AudioRecordingUiState.PrerecordedWithSignedUrl,
-  redo: () -> Unit,
-  submitAudioUrl: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  Column(
-    horizontalAlignment = Alignment.CenterHorizontally,
-    modifier = modifier.fillMaxWidth(),
-  ) {
-    val audioPlayer = rememberAudioPlayer(SignedAudioUrl.fromSignedAudioUrlString(uiState.signedUrl.value))
-    val audioPlayerState = audioPlayer.audioPlayerState.collectAsStateWithLifecycle().value
-    HedvigAudioPlayer(audioPlayer = audioPlayer)
-
-    if (audioPlayerState is AudioPlayerState.Ready) {
-      Spacer(Modifier.height(16.dp))
-      LargeContainedTextButton(
-        onClick = submitAudioUrl,
-        text = stringResource(R.string.general_continue_button),
-        enabled = uiState.canSubmit,
-      )
-    }
-
-    if (audioPlayerState is AudioPlayerState.Failed) {
-      Spacer(Modifier.height(16.dp))
-      LargeTextButton(
-        onClick = redo,
-        enabled = uiState.canSubmit,
-      ) {
-        Text(stringResource(R.string.EMBARK_RECORD_AGAIN))
-      }
-    }
-  }
 }
