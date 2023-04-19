@@ -95,12 +95,13 @@ internal fun NavGraphBuilder.claimFlowGraph(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
         questions = questions,
+        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
         openAppSettings = openAppSettings,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
           navController.navigate(claimFlowStep.toClaimFlowDestination())
         },
-        navigateBack = { navController.navigateUp() || navigateUp() },
+        navigateUp = { navController.navigateUp() || navigateUp() },
       )
     }
     animatedComposable<ClaimFlowDestination.DateOfOccurrence> {
