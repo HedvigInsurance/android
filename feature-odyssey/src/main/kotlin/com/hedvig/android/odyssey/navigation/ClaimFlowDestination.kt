@@ -3,6 +3,7 @@ package com.hedvig.android.odyssey.navigation
 import android.content.res.Resources
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
+import com.hedvig.android.odyssey.model.AudioUrl
 import com.hedvig.android.odyssey.model.FlowId
 import com.hedvig.android.odyssey.navigation.ItemBrand.Unknown.displayName
 import com.hedvig.android.odyssey.navigation.ItemModel.Unknown.displayName
@@ -25,7 +26,11 @@ internal sealed interface ClaimFlowDestination : Destination {
   object NotificationPermission : ClaimFlowDestination
 
   @Serializable
-  data class AudioRecording(val flowId: FlowId, val questions: List<String>) : ClaimFlowDestination
+  data class AudioRecording(
+    val flowId: FlowId,
+    val questions: List<String>,
+    val signedUrl: AudioUrl?,
+  ) : ClaimFlowDestination
 
   @Serializable
   data class DateOfOccurrence(

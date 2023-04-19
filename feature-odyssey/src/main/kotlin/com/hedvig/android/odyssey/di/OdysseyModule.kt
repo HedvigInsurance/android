@@ -3,6 +3,7 @@ package com.hedvig.android.odyssey.di
 import arrow.retrofit.adapter.either.EitherCallAdapterFactory
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.octopus.di.octopusClient
+import com.hedvig.android.odyssey.model.AudioUrl
 import com.hedvig.android.odyssey.data.ClaimFlowRepository
 import com.hedvig.android.odyssey.data.ClaimFlowRepositoryImpl
 import com.hedvig.android.odyssey.data.OdysseyService
@@ -61,7 +62,7 @@ val odysseyModule = module {
   viewModel<NotificationPermissionViewModel> { (entryPointId: String?) ->
     NotificationPermissionViewModel(entryPointId, get<ClaimFlowRepository>())
   }
-  viewModel<AudioRecordingViewModel> { (flowId: FlowId) -> AudioRecordingViewModel(flowId, get()) }
+  viewModel<AudioRecordingViewModel> { (flowId: FlowId, signedUrl: AudioUrl?) -> AudioRecordingViewModel(flowId, signedUrl, get()) }
   viewModel<PhoneNumberViewModel> { (initialPhoneNumber: String?) ->
     PhoneNumberViewModel(initialPhoneNumber, get())
   }

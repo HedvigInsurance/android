@@ -3,6 +3,7 @@ package com.hedvig.android.feature.odyssey.data
 import app.cash.turbine.Turbine
 import arrow.core.Either
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.odyssey.model.AudioUrl
 import com.hedvig.android.odyssey.data.ClaimFlowRepository
 import com.hedvig.android.odyssey.data.ClaimFlowStep
 import com.hedvig.android.odyssey.model.FlowId
@@ -17,6 +18,10 @@ internal class TestClaimFlowRepository : ClaimFlowRepository {
   }
 
   override suspend fun submitAudioRecording(flowId: FlowId, audioFile: File): Either<ErrorMessage, ClaimFlowStep> {
+    error("Not implemented")
+  }
+
+  override suspend fun submitAudioUrl(flowId: FlowId, audioUrl: AudioUrl): Either<ErrorMessage, ClaimFlowStep> {
     error("Not implemented")
   }
 

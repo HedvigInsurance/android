@@ -34,6 +34,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
+import com.hedvig.android.audio.player.HedvigAudioPlayer
+import com.hedvig.android.audio.player.SignedAudioUrl
+import com.hedvig.android.audio.player.state.AudioPlayerState
+import com.hedvig.android.audio.player.state.rememberAudioPlayer
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.core.designsystem.component.button.LargeTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
@@ -41,6 +45,7 @@ import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation
 import com.hedvig.android.core.ui.permission.PermissionDialog
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
 import com.hedvig.android.odyssey.data.ClaimFlowStep
+import com.hedvig.android.odyssey.model.AudioUrl
 import com.hedvig.android.odyssey.ui.ClaimFlowScaffold
 import com.hedvig.odyssey.renderers.audiorecorder.PlaybackWaveForm
 import com.hedvig.odyssey.renderers.audiorecorder.RecordingAmplitudeIndicator
@@ -75,6 +80,7 @@ internal fun AudioRecordingDestination(
     startRecording = viewModel::startRecording,
     stopRecording = viewModel::stopRecording,
     submitAudioFile = viewModel::submitAudioFile,
+    submitAudioUrl = viewModel::submitAudioUrl,
     redo = viewModel::redo,
     play = viewModel::play,
     pause = viewModel::pause,
@@ -94,6 +100,7 @@ private fun AudioRecordingScreen(
   startRecording: () -> Unit,
   stopRecording: () -> Unit,
   submitAudioFile: (File) -> Unit,
+  submitAudioUrl: (AudioUrl) -> Unit,
   redo: () -> Unit,
   play: () -> Unit,
   pause: () -> Unit,
@@ -132,6 +139,7 @@ private fun AudioRecordingScreen(
       startRecording = startRecording,
       stopRecording = stopRecording,
       submitAudioFile = submitAudioFile,
+      submitAudioUrl = submitAudioUrl,
       redo = redo,
       play = play,
       pause = pause,
@@ -156,6 +164,7 @@ private fun AudioRecordingSection(
   startRecording: () -> Unit,
   stopRecording: () -> Unit,
   submitAudioFile: (File) -> Unit,
+  submitAudioUrl: (AudioUrl) -> Unit,
   redo: () -> Unit,
   play: () -> Unit,
   pause: () -> Unit,
@@ -186,6 +195,7 @@ private fun AudioRecordingSection(
     clock = clock,
     stopRecording = stopRecording,
     submitAudioFile = submitAudioFile,
+    submitAudioUrl = submitAudioUrl,
     redo = redo,
     play = play,
     pause = pause,
@@ -200,6 +210,7 @@ private fun AudioRecorder(
   clock: Clock,
   stopRecording: () -> Unit,
   submitAudioFile: (File) -> Unit,
+  submitAudioUrl: (AudioUrl) -> Unit,
   redo: () -> Unit,
   play: () -> Unit,
   pause: () -> Unit,
@@ -227,6 +238,14 @@ private fun AudioRecorder(
       play = play,
       pause = pause,
       modifier = modifier,
+    )
+    is AudioRecordingUiState.PrerecordedWithSignedUrl -> PrerecordedPlayback(
+      uiState = uiState,
+      submitAudioUrl = {
+        submitAudioUrl(uiState.signedUrl)
+      },
+      redo = redo,
+      modifier = Modifier,
     )
   }
 }
@@ -339,6 +358,42 @@ private fun Playback(
       modifier = Modifier.padding(top = 8.dp),
     ) {
       Text(stringResource(R.string.EMBARK_RECORD_AGAIN))
+    }
+  }
+}
+
+@Composable
+private fun PrerecordedPlayback(
+  uiState: AudioRecordingUiState.PrerecordedWithSignedUrl,
+  redo: () -> Unit,
+  submitAudioUrl: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Column(
+    horizontalAlignment = Alignment.CenterHorizontally,
+    modifier = modifier.fillMaxWidth(),
+  ) {
+    val audioPlayer = rememberAudioPlayer(SignedAudioUrl.fromSignedAudioUrlString(uiState.signedUrl.value))
+    val audioPlayerState = audioPlayer.audioPlayerState.collectAsStateWithLifecycle().value
+    HedvigAudioPlayer(audioPlayer = audioPlayer)
+
+    if (audioPlayerState is AudioPlayerState.Ready) {
+      Spacer(Modifier.height(16.dp))
+      LargeContainedTextButton(
+        onClick = submitAudioUrl,
+        text = stringResource(R.string.general_continue_button),
+        enabled = uiState.canSubmit,
+      )
+    }
+
+    if (audioPlayerState is AudioPlayerState.Failed) {
+      Spacer(Modifier.height(16.dp))
+      LargeTextButton(
+        onClick = redo,
+        enabled = uiState.canSubmit,
+      ) {
+        Text(stringResource(R.string.EMBARK_RECORD_AGAIN))
+      }
     }
   }
 }
