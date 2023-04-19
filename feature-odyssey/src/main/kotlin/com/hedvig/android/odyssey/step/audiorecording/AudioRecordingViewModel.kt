@@ -80,11 +80,11 @@ internal class AudioRecordingViewModel(
   }
 
   fun showedError() {
-    _uiState.update {
-      if (it is AudioRecordingUiState.Playback) {
-        it.copy(hasError = false)
-      } else {
-        it
+    _uiState.update { oldUiState ->
+      when (oldUiState) {
+        is AudioRecordingUiState.Playback -> oldUiState.copy(hasError = false)
+        is AudioRecordingUiState.PrerecordedWithSignedUrl -> oldUiState.copy(hasError = false)
+        else -> oldUiState
       }
     }
   }
@@ -92,6 +92,8 @@ internal class AudioRecordingViewModel(
   fun handledNextStepNavigation() {
     val uiState = _uiState.value
     if (uiState is AudioRecordingUiState.Playback) {
+      _uiState.update { uiState.copy(nextStep = null) }
+    } else if (uiState is AudioRecordingUiState.PrerecordedWithSignedUrl) {
       _uiState.update { uiState.copy(nextStep = null) }
     }
   }
@@ -238,11 +240,18 @@ internal class AudioRecordingViewModel(
 }
 
 internal sealed interface AudioRecordingUiState {
-  val hasAudioSubmissionError: Boolean
-    get() = this is Playback && hasError
+  val hasError: Boolean
+    get() = false
 
   val canSubmit: Boolean
-    get() = this is Playback && !isPlaying && nextStep == null && !isLoading && !hasError
+    get() {
+      val playbackCanSubmit = this is Playback && !isPlaying && nextStep == null && !isLoading && !hasError
+      val prerecordedCanSubmit = this is PrerecordedWithSignedUrl && nextStep == null && !isLoading && !hasError
+      return playbackCanSubmit || prerecordedCanSubmit
+    }
+
+  val isLoading: Boolean
+    get() = false
 
   object NotRecording : AudioRecordingUiState
   data class Recording(
@@ -253,8 +262,8 @@ internal sealed interface AudioRecordingUiState {
 
   data class PrerecordedWithSignedUrl(
     val signedUrl: AudioUrl,
-    val isLoading: Boolean = false,
-    val hasError: Boolean = false,
+    override val isLoading: Boolean = false,
+    override val hasError: Boolean = false,
     val nextStep: ClaimFlowStep? = null,
   ) : AudioRecordingUiState
 
@@ -265,7 +274,7 @@ internal sealed interface AudioRecordingUiState {
     val amplitudes: List<Int>,
     val progress: Float,
     val nextStep: ClaimFlowStep?,
-    val isLoading: Boolean,
-    val hasError: Boolean,
+    override val isLoading: Boolean,
+    override val hasError: Boolean,
   ) : AudioRecordingUiState
 }
