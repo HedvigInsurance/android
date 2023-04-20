@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.app.ui.compose.theme.hedvigContentColorFor
+import com.hedvig.android.core.designsystem.theme.hedvigContentColorFor
 
 @Composable
 fun Pill(

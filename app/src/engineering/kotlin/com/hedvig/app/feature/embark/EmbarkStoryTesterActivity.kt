@@ -27,11 +27,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -68,7 +68,7 @@ class EmbarkStoryTesterActivity : AppCompatActivity() {
 
     val viewModel: EmbarkStoryTesterViewModel = getViewModel()
     setContent {
-      val viewState by viewModel.viewState.collectAsState()
+      val viewState by viewModel.viewState.collectAsStateWithLifecycle()
 
       LaunchedEffect(viewState.selectedStoryName) {
         val selectedStoryName = viewState.selectedStoryName ?: return@LaunchedEffect
@@ -84,7 +84,9 @@ class EmbarkStoryTesterActivity : AppCompatActivity() {
 
       HedvigTheme {
         Column(
-          modifier = Modifier.fillMaxSize().safeDrawingPadding(),
+          modifier = Modifier
+            .fillMaxSize()
+            .safeDrawingPadding(),
         ) {
           TopAppBar(
             title = { Text(text = "Embark tester") },

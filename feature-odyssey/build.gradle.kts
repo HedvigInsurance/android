@@ -10,6 +10,7 @@ plugins {
 dependencies {
   implementation(projects.apollo.core)
   implementation(projects.apollo.octopus)
+  implementation(projects.audioPlayer)
   implementation(projects.auth.authAndroid)
   implementation(projects.auth.authCore)
   implementation(projects.coreCommon)

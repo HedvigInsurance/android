@@ -121,6 +121,7 @@ androidx-compose-material3-windowSizeClass = { module = "androidx.compose.materi
 androidx-compose-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended" }
 androidx-compose-runtime = { module = "androidx.compose.runtime:runtime" }
 androidx-compose-uiCore = { module = "androidx.compose.ui:ui" }
+androidx-compose-uiUnit = { module = "androidx.compose.ui:ui-unit" }
 androidx-compose-uiTestJunit = { module = "androidx.compose.ui:ui-test-junit4" }
 androidx-compose-uiTestManifest = { module = "androidx.compose.ui:ui-test-manifest" }
 androidx-compose-uiTooling = { module = "androidx.compose.ui:ui-tooling" }

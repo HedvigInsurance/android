@@ -1,5 +1,6 @@
 package com.hedvig.android.odyssey.data
 
+import com.hedvig.android.odyssey.model.AudioUrl
 import com.hedvig.android.odyssey.model.FlowId
 import com.hedvig.android.odyssey.navigation.CheckoutMethod
 import com.hedvig.android.odyssey.navigation.ClaimFlowDestination
@@ -24,7 +25,11 @@ import octopus.type.CurrencyCode
 internal sealed interface ClaimFlowStep {
   val flowId: FlowId
 
-  data class ClaimAudioRecordingStep(override val flowId: FlowId, val questions: List<String>) : ClaimFlowStep
+  data class ClaimAudioRecordingStep(
+    override val flowId: FlowId,
+    val questions: List<String>,
+    val signedUrl: AudioUrl?,
+  ) : ClaimFlowStep
 
   data class ClaimDateOfOccurrenceStep(
     override val flowId: FlowId,
@@ -100,7 +105,7 @@ internal sealed interface ClaimFlowStep {
 internal fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(flowId: FlowId): ClaimFlowStep {
   return when (this) {
     is ClaimFlowStepFragment.FlowClaimAudioRecordingStepCurrentStep -> {
-      ClaimFlowStep.ClaimAudioRecordingStep(flowId, questions)
+      ClaimFlowStep.ClaimAudioRecordingStep(flowId, questions, signedUrl?.let(::AudioUrl))
     }
     is ClaimFlowStepFragment.FlowClaimDateOfOccurrenceStepCurrentStep -> {
       ClaimFlowStep.ClaimDateOfOccurrenceStep(flowId, dateOfOccurrence, maxDate)
@@ -172,7 +177,7 @@ internal fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(flowId: FlowId): 
 internal fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
   return when (this) {
     is ClaimFlowStep.ClaimAudioRecordingStep -> {
-      ClaimFlowDestination.AudioRecording(flowId, questions)
+      ClaimFlowDestination.AudioRecording(flowId, questions, signedUrl)
     }
     is ClaimFlowStep.ClaimDateOfOccurrenceStep -> {
       ClaimFlowDestination.DateOfOccurrence(dateOfOccurrence, maxDate)

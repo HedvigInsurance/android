@@ -49,8 +49,6 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.odyssey.compose.MonetaryAmountOffsetMapping
 import com.hedvig.odyssey.compose.getLocale
-import com.hedvig.odyssey.remote.components.decorators.Color
-import com.hedvig.odyssey.renderers.utils.composeColor
 import java.text.DecimalFormatSymbols
 
 /**
@@ -59,6 +57,7 @@ import java.text.DecimalFormatSymbols
 @Composable
 internal fun MonetaryAmountInput(
   value: String?,
+  canInteract: Boolean,
   onInput: (String?) -> Unit,
   currency: String,
   maximumFractionDigits: Int,
@@ -72,7 +71,7 @@ internal fun MonetaryAmountInput(
   val isError by remember { derivedStateOf { text.lastOrNull() == decimalSeparator } }
   val focusManager = LocalFocusManager.current
 
-  val cursorColor = composeColor(if (isError) Color.content.destructive else Color.button.primaryBackground)
+  val cursorColor = if (isError) MaterialTheme.colorScheme.error else LocalContentColor.current
   CompositionLocalProvider(
     LocalTextSelectionColors.provides(
       TextSelectionColors(
@@ -155,6 +154,7 @@ internal fun MonetaryAmountInput(
         BoxWithTrailingIcon(
           textField = innerTextField,
           showTrailingIcon = text.isNotEmpty(),
+          canInteract = canInteract,
           onClick = {
             text = ""
             focusManager.clearFocus()
@@ -169,6 +169,7 @@ internal fun MonetaryAmountInput(
 private fun BoxWithTrailingIcon(
   textField: @Composable () -> Unit,
   showTrailingIcon: Boolean,
+  canInteract: Boolean,
   onClick: () -> Unit,
 ) {
   Row(
@@ -181,6 +182,7 @@ private fun BoxWithTrailingIcon(
     AnimatedVisibility(showTrailingIcon) {
       IconButton(
         onClick = onClick,
+        enabled = canInteract,
         modifier = Modifier.size(20.dp),
       ) {
         Icon(Icons.Default.Clear, "Clear Selection")
@@ -198,6 +200,7 @@ private fun PreviewMonetaryAmountInput() {
     Surface(color = MaterialTheme.colorScheme.background) {
       MonetaryAmountInput(
         "1234",
+        true,
         {},
         "SEK",
         2,
