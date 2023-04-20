@@ -64,21 +64,21 @@ data class CrossSellData(
       storeUrl = data.storeUrl,
       backgroundUrl = data.imageUrl,
       backgroundBlurHash = data.blurHash,
-      perils = data.productVariants.first().perils.map {
+      perils = data.productVariants.firstOrNull()?.perils?.map {
         Peril.from(it)
-      },
-      terms = data.productVariants.first().documents.map {
+      } ?: emptyList(),
+      terms = data.productVariants.firstOrNull()?.documents?.map {
         DocumentItems.Document.from(it)
-      },
-      highlights = data.productVariants.first().highlights.map {
+      } ?: emptyList(),
+      highlights = data.productVariants.firstOrNull()?.highlights?.map {
         Highlight.from(it)
-      },
-      faq = data.productVariants.first().faq.map {
+      } ?: emptyList(),
+      faq = data.productVariants.firstOrNull()?.faq?.map {
         FAQItem.from(it)
-      },
-      insurableLimits = data.productVariants.first().insurableLimits.map {
+      } ?: emptyList(),
+      insurableLimits = data.productVariants.firstOrNull()?.insurableLimits?.map {
         InsurableLimitItem.InsurableLimit.from(it)
-      },
+      } ?: emptyList(),
     )
   }
 }
