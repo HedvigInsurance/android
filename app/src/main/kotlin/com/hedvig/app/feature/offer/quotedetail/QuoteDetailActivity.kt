@@ -12,6 +12,7 @@ import coil.ImageLoader
 import com.carousell.concatadapterextension.ConcatItemDecoration
 import com.carousell.concatadapterextension.ConcatSpanSizeLookup
 import com.hedvig.android.auth.android.AuthenticatedObserver
+import com.hedvig.android.core.common.android.parcelableArrayListExtra
 import com.hedvig.app.R
 import com.hedvig.app.databinding.QuoteDetailActivityBinding
 import com.hedvig.app.feature.documents.DocumentAdapter
@@ -36,10 +37,10 @@ class QuoteDetailActivity : AppCompatActivity(R.layout.quote_detail_activity) {
     lifecycle.addObserver(AuthenticatedObserver())
 
     val title = intent.getStringExtra(TITLE)
-    val perils: List<PerilItem>? = intent.getParcelableArrayListExtra<PerilItem.Peril>(PERILS)
+    val perils: List<PerilItem>? = intent.parcelableArrayListExtra<PerilItem.Peril>(PERILS)
     val insurableLimits: List<InsurableLimitItem>? =
-      intent.getParcelableArrayListExtra<InsurableLimitItem.InsurableLimit>(INSURABLE_LIMITS)
-    val documents = intent.getParcelableArrayListExtra<DocumentItems.Document>(DOCUMENTS)
+      intent.parcelableArrayListExtra<InsurableLimitItem.InsurableLimit>(INSURABLE_LIMITS)
+    val documents = intent.parcelableArrayListExtra<DocumentItems.Document>(DOCUMENTS)
 
     if (title == null || perils == null || insurableLimits == null || documents == null) {
       e { "Programmer error: PERILS/INSURABLE_LIMITS/DOCUMENTS not provided to ${this.javaClass.name}" }

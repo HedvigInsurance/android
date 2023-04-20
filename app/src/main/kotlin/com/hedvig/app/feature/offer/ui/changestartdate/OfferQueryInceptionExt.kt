@@ -17,10 +17,10 @@ fun QuoteBundleFragment.Inception1.toChangeDateBottomSheetData(
         currentInsurer = concurrentInception.currentInsurer?.fragments?.currentInsurerFragment?.let {
           ChangeDateBottomSheetData.CurrentInsurer(
             id = it.id
-              ?: throw IllegalArgumentException("Current insurer id not found"),
+              ?: error("Current insurer id not found"),
             displayName = it.displayName ?: "",
             switchable = it.switchable
-              ?: throw IllegalArgumentException("Current insurer switchable not found"),
+              ?: error("Current insurer switchable not found"),
           )
         },
         isConcurrent = true,
@@ -35,14 +35,14 @@ fun QuoteBundleFragment.Inception1.toChangeDateBottomSheetData(
         currentInsurer = inception.currentInsurer?.fragments?.currentInsurerFragment?.let {
           ChangeDateBottomSheetData.CurrentInsurer(
             id = it.id
-              ?: throw IllegalArgumentException("Current insurer id not found"),
+              ?: error("Current insurer id not found"),
             displayName = it.displayName ?: "",
             switchable = it.switchable
-              ?: throw IllegalArgumentException("Current insurer switchable not found"),
+              ?: error("Current insurer switchable not found"),
           )
         },
         isConcurrent = false,
       )
     }
-  } ?: throw IllegalArgumentException("Could not parse inception"),
+  } ?: error("Could not parse inception"),
 )

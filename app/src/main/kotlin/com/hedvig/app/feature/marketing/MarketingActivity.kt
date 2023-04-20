@@ -10,10 +10,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.language.LanguageService
@@ -45,8 +45,8 @@ class MarketingActivity : AppCompatActivity() {
     val imageLoader: ImageLoader = get()
     setContent {
       HedvigTheme(darkTheme = true) { // Force dark theme as the background is dark
-        val marketingBackground by viewModel.marketingBackground.collectAsState()
-        val state by viewModel.state.collectAsState()
+        val marketingBackground by viewModel.marketingBackground.collectAsStateWithLifecycle()
+        val state by viewModel.state.collectAsStateWithLifecycle()
         MarketingScreen(
           marketingBackground = marketingBackground,
           state = state,

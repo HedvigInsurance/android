@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.claimdetail.model
 
+import com.hedvig.android.audio.player.SignedAudioUrl
 import giraffe.ClaimDetailsQuery
 import giraffe.type.ClaimStatus
 import java.time.Instant

@@ -1,7 +1,6 @@
 package com.hedvig.app.testdata.feature.referrals.builders
 
 import com.hedvig.app.testdata.common.builders.CostBuilder
-import giraffe.ProfileQuery
 import giraffe.ReferralsQuery
 import giraffe.fragment.CostFragment
 import giraffe.fragment.MonetaryAmountFragment

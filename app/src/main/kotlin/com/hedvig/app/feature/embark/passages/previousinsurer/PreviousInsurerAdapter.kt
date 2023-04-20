@@ -76,7 +76,7 @@ class PreviousInsurerAdapter(
             onInsurerClicked(item)
           }
         }
-          ?: throw IllegalArgumentException(
+          ?: error(
             "Can only bind with PreviousInsurerItem.Insurer, not ${item.javaClass.name}",
           )
       }

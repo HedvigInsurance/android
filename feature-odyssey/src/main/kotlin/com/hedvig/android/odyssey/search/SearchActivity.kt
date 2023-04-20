@@ -45,7 +45,7 @@ class SearchActivity : ComponentActivity() {
   private val featureManager: FeatureManager by inject()
 
   private val odysseyUrl by lazy {
-    intent.getStringExtra(ODYSSEY_URL) ?: throw IllegalArgumentException("No url found")
+    intent.getStringExtra(ODYSSEY_URL) ?: error("No url found")
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {

@@ -90,17 +90,18 @@ internal fun NavGraphBuilder.claimFlowGraph(
     }
     animatedComposable<ClaimFlowDestination.AudioRecording> {
       // todo handle existing audio recording
-      val viewModel: AudioRecordingViewModel = koinViewModel { parametersOf(flowId) }
+      val viewModel: AudioRecordingViewModel = koinViewModel { parametersOf(flowId, signedUrl) }
       AudioRecordingDestination(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
         questions = questions,
+        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
         openAppSettings = openAppSettings,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
           navController.navigate(claimFlowStep.toClaimFlowDestination())
         },
-        navigateBack = { navController.navigateUp() || navigateUp() },
+        navigateUp = { navController.navigateUp() || navigateUp() },
       )
     }
     animatedComposable<ClaimFlowDestination.DateOfOccurrence> {

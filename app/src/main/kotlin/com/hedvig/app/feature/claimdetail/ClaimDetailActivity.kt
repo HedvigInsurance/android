@@ -5,8 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.auth.android.AuthenticatedObserver
@@ -33,7 +33,7 @@ class ClaimDetailActivity : AppCompatActivity() {
     window.compatSetDecorFitsSystemWindows(false)
 
     val claimId = intent.getStringExtra(CLAIM_ID)
-      ?: throw IllegalArgumentException("Programmer error: Missing claimId in ${this.javaClass.name}")
+      ?: error("Programmer error: Missing claimId in ${this.javaClass.name}")
     val viewModel: ClaimDetailViewModel by viewModel { parametersOf(claimId) }
 
     viewModel
@@ -51,7 +51,7 @@ class ClaimDetailActivity : AppCompatActivity() {
 
     val locale = languageService.getLocale()
     setContent {
-      val viewState by viewModel.viewState.collectAsState()
+      val viewState by viewModel.viewState.collectAsStateWithLifecycle()
 
       HedvigTheme {
         ClaimDetailScreen(

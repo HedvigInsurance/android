@@ -6,12 +6,12 @@ import android.view.View
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import coil.ImageLoader
+import com.hedvig.android.core.common.android.parcelable
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DismissiblePageNoTitleFragmentBinding
 import com.hedvig.app.ui.coil.load
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.android.ext.android.inject
-import slimber.log.e
 
 class DismissiblePageNoTitleFragment : Fragment(R.layout.dismissible_page_no_title_fragment) {
   private val imageLoader: ImageLoader by inject()
@@ -20,12 +20,8 @@ class DismissiblePageNoTitleFragment : Fragment(R.layout.dismissible_page_no_tit
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
-    val model = requireArguments().getParcelable<DismissiblePagerModel.NoTitlePage>("model")
-
-    if (model == null) {
-      e { "Programmer error: incorrect arguments passed to ${this.javaClass.name}" }
-      return
-    }
+    val model = requireArguments().parcelable<DismissiblePagerModel.NoTitlePage>("model")
+      ?: error("Programmer error: incorrect arguments passed to ${this.javaClass.name}")
 
     binding.apply {
       val url = Uri.parse(model.imageUrls.iconByTheme(requireContext()))

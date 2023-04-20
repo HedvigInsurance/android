@@ -40,7 +40,7 @@ internal fun ClaimFlowScaffold(
   isLoading: Boolean = false,
   errorSnackbarState: ErrorSnackbarState? = null,
   itemsColumnHorizontalAlignment: Alignment.Horizontal = Alignment.Start,
-  content: @Composable() (ColumnScope.(sideSpacingModifier: Modifier) -> Unit),
+  content: @Composable (ColumnScope.(sideSpacingModifier: Modifier) -> Unit),
 ) {
   Box(modifier.fillMaxSize()) {
     Column {

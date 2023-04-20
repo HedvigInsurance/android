@@ -62,7 +62,7 @@ class TableAdapter : ListAdapter<TableAdapter.UpcomingAgreementItem, TableAdapte
 
     override fun bind(item: UpcomingAgreementItem) {
       if (item !is UpcomingAgreementItem.ListItem) {
-        throw IllegalArgumentException("Wrong item ($item) in ListViewHolder")
+        error("Wrong item ($item) in ListViewHolder")
       }
 
       binding.label.text = item.label
@@ -77,7 +77,7 @@ class TableAdapter : ListAdapter<TableAdapter.UpcomingAgreementItem, TableAdapte
 
     override fun bind(item: UpcomingAgreementItem) {
       if (item !is UpcomingAgreementItem.BuildingItem) {
-        throw IllegalArgumentException("Wrong item ($item) in TwoLineListItemViewHolder")
+        error("Wrong item ($item) in TwoLineListItemViewHolder")
       }
       with(binding) {
         title.text = item.title
@@ -94,7 +94,7 @@ class TableAdapter : ListAdapter<TableAdapter.UpcomingAgreementItem, TableAdapte
 
     override fun bind(item: UpcomingAgreementItem) {
       if (item !is UpcomingAgreementItem.Header) {
-        throw IllegalArgumentException("Wrong item ($item) in HeaderViewHolder")
+        error("Wrong item ($item) in HeaderViewHolder")
       }
 
       binding.headerItem.text = item.text
@@ -108,7 +108,7 @@ class TableAdapter : ListAdapter<TableAdapter.UpcomingAgreementItem, TableAdapte
 
     override fun bind(item: UpcomingAgreementItem) {
       if (item !is UpcomingAgreementItem.CenteredHeader) {
-        throw IllegalArgumentException("Wrong item ($item) in CenteredHeaderViewHolder")
+        error("Wrong item ($item) in CenteredHeaderViewHolder")
       }
 
       binding.headerItem.text = item.text

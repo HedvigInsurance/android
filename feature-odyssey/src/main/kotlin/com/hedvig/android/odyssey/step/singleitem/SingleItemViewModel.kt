@@ -90,7 +90,9 @@ internal class SingleItemViewModel(
       }
       .toNonEmptyListOrNull()
       ?: return itemBrandsUiState to ItemModelsUiState.NotApplicable
-    if (availableItemModelsWithSelectedBrands.all { it is ItemModel.Unknown }) return itemBrandsUiState to ItemModelsUiState.NotApplicable
+    if (availableItemModelsWithSelectedBrands.all { it is ItemModel.Unknown }) {
+      return itemBrandsUiState to ItemModelsUiState.NotApplicable
+    }
 
     return itemBrandsUiState to itemModelsUiState.copy(
       availableItemModelsWithSelectedBrands,

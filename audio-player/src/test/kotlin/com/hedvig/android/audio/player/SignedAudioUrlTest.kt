@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.claimdetail.model
+package com.hedvig.android.audio.player
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo

@@ -7,6 +7,7 @@ import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.hedvig.android.core.common.android.parcelable
 import com.hedvig.android.core.common.android.whenApiVersion
 import com.hedvig.app.R
 import com.hedvig.app.databinding.PreviousOrExternalInsurerFragmentBinding
@@ -25,9 +26,8 @@ class PreviousInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
   private var insurerId: String? = null
 
   private val insurerData by lazy {
-    requireArguments()
-      .getParcelable<PreviousInsurerParameter>(DATA)
-      ?: throw IllegalArgumentException("No argument passed to ${this.javaClass.name}")
+    requireArguments().parcelable<PreviousInsurerParameter>(DATA)
+      ?: error("No argument passed to ${this.javaClass.name}")
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -1,4 +1,4 @@
-package com.hedvig.app.util
+package com.hedvig.android.core.common.android
 
 import androidx.annotation.FloatRange
 import androidx.compose.ui.unit.Dp

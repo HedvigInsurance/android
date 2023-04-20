@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
+import com.hedvig.android.core.common.android.parcelable
 import com.hedvig.android.core.ui.appbar.TopAppBarWithClose
 import com.hedvig.android.hanalytics.engineering.R
 import java.time.format.DateTimeFormatter
@@ -29,7 +30,7 @@ internal class TrackDetailDialogFragment : DialogFragment() {
     container: ViewGroup?,
     savedInstanceState: Bundle?,
   ): View {
-    val event = requireArguments().getParcelable<TrackEvent>(EVENT)
+    val event = requireArguments().parcelable<TrackEvent>(EVENT)
       ?: error("Missing EVENT in ${this.javaClass.name}")
     return ComposeView(requireContext()).apply {
       setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)

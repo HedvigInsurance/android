@@ -66,12 +66,12 @@ class EmbarkActivity : AppCompatActivity(R.layout.activity_embark) {
 
   private val storyTitle: String by lazy {
     intent.getStringExtra(STORY_TITLE)
-      ?: throw IllegalArgumentException("Programmer error: STORY_TITLE not provided to ${this.javaClass.name}")
+      ?: error("Programmer error: STORY_TITLE not provided to ${this.javaClass.name}")
   }
 
   private val storyName: String by lazy {
     intent.getStringExtra(STORY_NAME)
-      ?: throw IllegalArgumentException("Programmer error: STORY_NAME not provided to ${this.javaClass.name}")
+      ?: error("Programmer error: STORY_NAME not provided to ${this.javaClass.name}")
   }
 
   private val viewModel: EmbarkViewModel by viewModel { parametersOf(storyName) }
@@ -106,7 +106,7 @@ class EmbarkActivity : AppCompatActivity(R.layout.activity_embark) {
         progressToolbar.setProgress(viewState.passageState.progressPercentage)
 
         val passage = viewState.passageState.passage
-        actionBar?.title = passage?.name
+        supportActionBar?.title = passage?.name
 
         lifecycleScope.launch {
           transitionToNextPassage(viewState.passageState.navigationDirection, passage)
@@ -374,7 +374,7 @@ class EmbarkActivity : AppCompatActivity(R.layout.activity_embark) {
               numberActionData.label,
             )
 
-            else -> throw IllegalArgumentException(
+            else -> error(
               "Could not match $it to a component",
             )
           }

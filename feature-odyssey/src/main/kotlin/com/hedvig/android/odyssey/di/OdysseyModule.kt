@@ -6,6 +6,7 @@ import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.odyssey.data.ClaimFlowRepository
 import com.hedvig.android.odyssey.data.ClaimFlowRepositoryImpl
 import com.hedvig.android.odyssey.data.OdysseyService
+import com.hedvig.android.odyssey.model.AudioUrl
 import com.hedvig.android.odyssey.model.FlowId
 import com.hedvig.android.odyssey.navigation.ClaimFlowDestination
 import com.hedvig.android.odyssey.navigation.LocationOption
@@ -16,12 +17,12 @@ import com.hedvig.android.odyssey.search.SearchViewModel
 import com.hedvig.android.odyssey.step.audiorecording.AudioRecordingViewModel
 import com.hedvig.android.odyssey.step.dateofoccurrence.DateOfOccurrenceViewModel
 import com.hedvig.android.odyssey.step.dateofoccurrencepluslocation.DateOfOccurrencePlusLocationViewModel
+import com.hedvig.android.odyssey.step.honestypledge.HonestyPledgeViewModel
 import com.hedvig.android.odyssey.step.location.LocationViewModel
+import com.hedvig.android.odyssey.step.notificationpermission.NotificationPermissionViewModel
 import com.hedvig.android.odyssey.step.phonenumber.PhoneNumberViewModel
 import com.hedvig.android.odyssey.step.singleitem.SingleItemViewModel
 import com.hedvig.android.odyssey.step.singleitemcheckout.SingleItemCheckoutViewModel
-import com.hedvig.android.odyssey.step.honestypledge.HonestyPledgeViewModel
-import com.hedvig.android.odyssey.step.notificationpermission.NotificationPermissionViewModel
 import com.hedvig.android.odyssey.step.summary.ClaimSummaryViewModel
 import com.hedvig.odyssey.datadog.DatadogLogger
 import com.hedvig.odyssey.datadog.DatadogProvider
@@ -61,7 +62,13 @@ val odysseyModule = module {
   viewModel<NotificationPermissionViewModel> { (entryPointId: String?) ->
     NotificationPermissionViewModel(entryPointId, get<ClaimFlowRepository>())
   }
-  viewModel<AudioRecordingViewModel> { (flowId: FlowId) -> AudioRecordingViewModel(flowId, get()) }
+  viewModel<AudioRecordingViewModel> { (flowId: FlowId, signedUrl: AudioUrl?) ->
+    AudioRecordingViewModel(
+      flowId = flowId,
+      signedUrl = signedUrl,
+      claimFlowRepository = get(),
+    )
+  }
   viewModel<PhoneNumberViewModel> { (initialPhoneNumber: String?) ->
     PhoneNumberViewModel(initialPhoneNumber, get())
   }

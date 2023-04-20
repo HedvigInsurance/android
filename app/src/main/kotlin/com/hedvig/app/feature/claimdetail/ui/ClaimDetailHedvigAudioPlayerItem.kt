@@ -10,50 +10,27 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.hedvig.app.R
-import com.hedvig.app.feature.claimdetail.model.SignedAudioUrl
-import com.hedvig.app.service.audioplayer.AudioPlayer
-import com.hedvig.app.service.audioplayer.AudioPlayerImpl
-import com.hedvig.app.service.audioplayer.AudioPlayerState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.audio.player.HedvigAudioPlayer
+import com.hedvig.android.audio.player.SignedAudioUrl
+import com.hedvig.android.audio.player.state.AudioPlayerState
+import com.hedvig.android.audio.player.state.rememberAudioPlayer
 
 @Composable
-fun AudioPlayBackItem(
+fun ClaimDetailHedvigAudioPlayerItem(
   onPlayClick: () -> Unit,
   signedAudioUrl: SignedAudioUrl,
   modifier: Modifier = Modifier,
 ) {
-  val lifecycleOwner = LocalLifecycleOwner.current
-  val audioPlayer: AudioPlayer = remember(signedAudioUrl, lifecycleOwner) {
-    AudioPlayerImpl(signedAudioUrl, lifecycleOwner)
-  }
-  DisposableEffect(audioPlayer) {
-    audioPlayer.initialize()
-    onDispose {
-      audioPlayer.close()
-    }
-  }
-
   Column(modifier) {
-    val audioPlayerState by audioPlayer.audioPlayerState.collectAsState()
-    FakeWaveAudioPlayerCard(
-      audioPlayerState = audioPlayerState,
-      startPlaying = {
-        onPlayClick()
-        audioPlayer.startPlayer()
-      },
-      pause = audioPlayer::pausePlayer,
-      retryLoadingAudio = audioPlayer::retryLoadingAudio,
-      waveInteraction = audioPlayer::seekTo,
-    )
+    val audioPlayer = rememberAudioPlayer(signedAudioUrl = signedAudioUrl)
+    HedvigAudioPlayer(audioPlayer = audioPlayer, onPlayClick = onPlayClick)
     Spacer(Modifier.height(8.dp))
+    val audioPlayerState by audioPlayer.audioPlayerState.collectAsStateWithLifecycle()
     AnimatedVisibility(visible = audioPlayerState !is AudioPlayerState.Failed) {
       CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
         Text(

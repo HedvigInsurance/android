@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.claimdetail.model
+package com.hedvig.android.audio.player
 
 /**
  * A class to hold the url coming from the backend, with an overridden equals in order to return true in case we're
@@ -22,6 +22,10 @@ class SignedAudioUrl private constructor(
   }
 
   companion object {
+    fun fromSignedAudioUrlString(signedAudioUrl: String): SignedAudioUrl {
+      return SignedAudioUrl(signedAudioUrl)
+    }
+
     fun fromSignedAudioUrlStringOrNull(signedAudioUrl: String?): SignedAudioUrl? {
       if (signedAudioUrl == null) return null
       return SignedAudioUrl(signedAudioUrl)

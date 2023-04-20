@@ -1,11 +1,17 @@
 package com.hedvig.android.odyssey.step.summary.resources
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 
 /**
  * An updated version of [androidx.compose.material.icons.filled.DeviceUnknown] since the material.icons dependency is
@@ -26,36 +32,6 @@ internal val Icons.Filled.HedvigDeviceUnknown: ImageVector
       viewportHeight = 960.0f,
     ).apply {
       path(fill = SolidColor(Color(0xFF000000))) {
-        moveTo(480.0f, 672.77f)
-        quadTo(468.12f, 672.77f, 459.14f, 663.78f)
-        quadTo(450.15f, 654.8f, 450.15f, 642.64f)
-        quadTo(450.15f, 630.48f, 459.14f, 621.59f)
-        quadTo(468.12f, 612.69f, 480.0f, 612.69f)
-        quadTo(491.88f, 612.69f, 500.86f, 621.59f)
-        quadTo(509.85f, 630.48f, 509.85f, 642.64f)
-        quadTo(509.85f, 654.8f, 500.86f, 663.78f)
-        quadTo(491.88f, 672.77f, 480.0f, 672.77f)
-        close()
-        moveTo(460.0f, 552.23f)
-        quadTo(460.0f, 514.92f, 468.96f, 495.15f)
-        quadTo(477.92f, 475.39f, 503.0f, 456.62f)
-        quadTo(530.31f, 437.39f, 540.0f, 424.19f)
-        quadTo(549.69f, 411.0f, 549.69f, 383.45f)
-        quadTo(549.69f, 355.69f, 531.5f, 338.15f)
-        quadTo(513.31f, 320.62f, 479.69f, 320.62f)
-        quadTo(448.77f, 320.62f, 431.36f, 338.29f)
-        quadTo(413.96f, 355.95f, 406.77f, 375.39f)
-        lineTo(368.62f, 362.08f)
-        quadTo(383.46f, 325.08f, 410.98f, 302.96f)
-        quadTo(438.5f, 280.85f, 480.0f, 280.85f)
-        quadTo(527.31f, 280.85f, 558.69f, 308.5f)
-        quadTo(590.08f, 336.15f, 590.08f, 383.54f)
-        quadTo(590.08f, 414.46f, 578.23f, 434.23f)
-        quadTo(566.38f, 454.0f, 536.39f, 477.31f)
-        quadTo(513.46f, 495.77f, 507.11f, 508.81f)
-        quadTo(500.77f, 521.85f, 500.38f, 552.23f)
-        lineTo(460.0f, 552.23f)
-        close()
         moveTo(277.69f, 900.0f)
         quadTo(254.16f, 900.0f, 237.08f, 882.92f)
         quadTo(220.0f, 865.84f, 220.0f, 842.31f)
@@ -123,3 +99,13 @@ internal val Icons.Filled.HedvigDeviceUnknown: ImageVector
 
 @Suppress("ObjectPropertyName")
 private var _deviceUnknown: ImageVector? = null
+
+@HedvigPreview
+@Composable
+private fun PreviewHedvigDeviceUnknown() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      Icon(Icons.Default.HedvigDeviceUnknown, null)
+    }
+  }
+}

@@ -1,16 +1,19 @@
-package com.hedvig.app.service.audioplayer
+package com.hedvig.android.audio.player.state
 
 import android.media.AudioAttributes
 import android.media.MediaPlayer
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
-import com.hedvig.app.feature.claimdetail.model.SignedAudioUrl
-import com.hedvig.app.service.audioplayer.AudioPlayerState.Ready.ReadyState
-import com.hedvig.app.util.ProgressPercentage
-import com.hedvig.app.util.getProgressPercentage
-import com.hedvig.app.util.hasReachedTheEnd
-import com.hedvig.app.util.seekToPercent
+import com.hedvig.android.audio.player.SignedAudioUrl
+import com.hedvig.android.audio.player.internal.getProgressPercentage
+import com.hedvig.android.audio.player.internal.hasReachedTheEnd
+import com.hedvig.android.audio.player.internal.seekToPercent
+import com.hedvig.android.core.common.android.ProgressPercentage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitCancellation
@@ -34,10 +37,36 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.yield
 import slimber.log.d
+import java.io.Closeable
+
+interface AudioPlayer : Closeable {
+  val audioPlayerState: StateFlow<AudioPlayerState>
+
+  fun initialize()
+  fun startPlayer()
+  fun pausePlayer()
+  fun retryLoadingAudio()
+  fun seekTo(progressPercentage: ProgressPercentage)
+}
+
+@Composable
+fun rememberAudioPlayer(signedAudioUrl: SignedAudioUrl): AudioPlayer {
+  val lifecycleOwner = LocalLifecycleOwner.current
+  val audioPlayer: AudioPlayer = remember(signedAudioUrl, lifecycleOwner) {
+    AudioPlayerImpl(signedAudioUrl, lifecycleOwner)
+  }
+  DisposableEffect(audioPlayer) {
+    audioPlayer.initialize()
+    onDispose {
+      audioPlayer.close()
+    }
+  }
+  return audioPlayer
+}
 
 private const val ONE_SIXTIETH_OF_A_SECOND: Long = 1_000 / 60
 
-class AudioPlayerImpl(
+private class AudioPlayerImpl(
   private val signedAudioURL: SignedAudioUrl,
   private val lifecycleOwner: LifecycleOwner,
 ) : AudioPlayer {
@@ -62,7 +91,7 @@ class AudioPlayerImpl(
             if (mediaPlayer?.isPlaying == true) {
               mediaPlayer?.pause()
             }
-            updateAudioPlayerReadyState(ReadyState.Paused)
+            updateAudioPlayerReadyState(AudioPlayerState.Ready.ReadyState.Paused)
           }
         }
         launch {
@@ -77,17 +106,19 @@ class AudioPlayerImpl(
                   mediaPlayer.pause()
                 }
                 yield()
-                updateAudioPlayerReadyState(ReadyState.Seeking)
+                updateAudioPlayerReadyState(AudioPlayerState.Ready.ReadyState.Seeking)
                 mediaPlayer.seekToPercent(progressPercentage)
                 yield()
-                updateAudioPlayerReadyState(ReadyState.Playing)
+                updateAudioPlayerReadyState(AudioPlayerState.Ready.ReadyState.Playing)
                 mediaPlayer.start()
               }
             }
         }
         audioPlayerState
           .map { audioPlayerState -> (audioPlayerState as? AudioPlayerState.Ready)?.readyState }
-          .map { readyState: ReadyState? -> readyState?.shouldContinuouslyUpdateProgress == true }
+          .map { readyState: AudioPlayerState.Ready.ReadyState? ->
+            readyState?.shouldContinuouslyUpdateProgress == true
+          }
           .distinctUntilChanged()
           .collectLatest { shouldContinuouslyUpdateProgress: Boolean ->
             if (shouldContinuouslyUpdateProgress) {
@@ -134,7 +165,7 @@ class AudioPlayerImpl(
   private fun closeMediaPlayer() {
     try {
       mediaPlayer?.stop()
-    } catch (e: IllegalStateException) {
+    } catch (ignored: IllegalStateException) {
     }
     mediaPlayer?.release()
     mediaPlayer = null
@@ -145,7 +176,7 @@ class AudioPlayerImpl(
       mediaPlayerMutex.withLock {
         val mediaPlayer = mediaPlayer ?: return@withLock
         if (audioPlayerState.value.isPaused) return@withLock
-        updateAudioPlayerReadyState(ReadyState.Paused)
+        updateAudioPlayerReadyState(AudioPlayerState.Ready.ReadyState.Paused)
         mediaPlayer.pause()
       }
     }
@@ -168,10 +199,10 @@ class AudioPlayerImpl(
         if (mediaPlayer.isPlaying) return@withLock
         if (audioPlayerState.value.isPlayable.not()) return@withLock
         if (mediaPlayer.hasReachedTheEnd()) {
-          updateAudioPlayerReadyState(ReadyState.Seeking)
+          updateAudioPlayerReadyState(AudioPlayerState.Ready.ReadyState.Seeking)
           mediaPlayer.seekToPercent(ProgressPercentage(0f))
         }
-        updateAudioPlayerReadyState(ReadyState.Playing)
+        updateAudioPlayerReadyState(AudioPlayerState.Ready.ReadyState.Playing)
         coroutineContext.job
         ensureActive()
         mediaPlayer.start()
@@ -204,7 +235,7 @@ class AudioPlayerImpl(
     }
   }
 
-  private fun updateAudioPlayerReadyState(readyState: ReadyState) {
+  private fun updateAudioPlayerReadyState(readyState: AudioPlayerState.Ready.ReadyState) {
     _audioPlayerState.update { oldAudioPlayerState ->
       if (oldAudioPlayerState is AudioPlayerState.Ready) {
         oldAudioPlayerState.copy(readyState = readyState)

@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.claimdetail.ui
+package com.hedvig.android.audio.player.internal
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,10 +26,10 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.onWarning
-import com.hedvig.app.ui.compose.theme.warning
+import com.hedvig.android.core.designsystem.theme.warning
 
 @Composable
-fun FailedAudioPlayerCard(
+internal fun FailedAudioPlayerCard(
   tryAgain: () -> Unit,
   modifier: Modifier = Modifier,
 ) {

@@ -6,6 +6,7 @@ import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.flowWithLifecycle
+import com.hedvig.android.core.common.android.parcelable
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentEmbarkMultiActionBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
@@ -31,8 +32,8 @@ class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action) {
   private val viewModel: EmbarkViewModel by activityViewModel()
 
   private val multiActionParams: MultiActionParams by lazy {
-    requireArguments().getParcelable<MultiActionParams>(DATA)
-      ?: throw Error("Programmer error: No PARAMS provided to ${this.javaClass.name}")
+    requireArguments().parcelable(DATA)
+      ?: error("Programmer error: No PARAMS provided to ${this.javaClass.name}")
   }
 
   private val multiActionViewModel: MultiActionViewModel by activityViewModel { parametersOf(multiActionParams) }
@@ -46,7 +47,7 @@ class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action) {
 
     setFragmentResultListener(ADD_COMPONENT_REQUEST_KEY) { requestKey: String, bundle: Bundle ->
       if (requestKey == ADD_COMPONENT_REQUEST_KEY) {
-        bundle.getParcelable<MultiActionItem.Component>(AddComponentBottomSheet.RESULT)?.let {
+        bundle.parcelable<MultiActionItem.Component>(AddComponentBottomSheet.RESULT)?.let {
           multiActionViewModel.onComponentCreated(it)
         }
       }

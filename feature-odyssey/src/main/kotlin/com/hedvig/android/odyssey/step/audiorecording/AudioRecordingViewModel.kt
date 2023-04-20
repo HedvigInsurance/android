@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.odyssey.data.ClaimFlowRepository
 import com.hedvig.android.odyssey.data.ClaimFlowStep
+import com.hedvig.android.odyssey.model.AudioUrl
 import com.hedvig.android.odyssey.model.FlowId
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,6 +21,7 @@ import java.util.UUID
 
 internal class AudioRecordingViewModel(
   private val flowId: FlowId,
+  signedUrl: AudioUrl?,
   private val claimFlowRepository: ClaimFlowRepository,
   val clock: Clock = Clock.System,
 ) : ViewModel() {
@@ -28,7 +30,13 @@ internal class AudioRecordingViewModel(
   private var timer: Timer? = null
   private var player: MediaPlayer? = null
 
-  private val _uiState = MutableStateFlow<AudioRecordingUiState>(AudioRecordingUiState.NotRecording)
+  private val _uiState: MutableStateFlow<AudioRecordingUiState> = MutableStateFlow(
+    if (signedUrl != null) {
+      AudioRecordingUiState.PrerecordedWithSignedUrl(signedUrl)
+    } else {
+      AudioRecordingUiState.NotRecording
+    },
+  )
   val uiState = _uiState.asStateFlow()
 
   fun submitAudioFile(audioFile: File) {
@@ -51,12 +59,32 @@ internal class AudioRecordingViewModel(
     }
   }
 
+  fun submitAudioUrl(audioUrl: AudioUrl) {
+    val uiState = _uiState.value as? AudioRecordingUiState.PrerecordedWithSignedUrl ?: return
+    if (uiState.hasError || uiState.isLoading) return
+    _uiState.update { uiState.copy(isLoading = true) }
+    viewModelScope.launch {
+      claimFlowRepository.submitAudioUrl(flowId, audioUrl).fold(
+        ifLeft = {
+          _uiState.update {
+            uiState.copy(isLoading = false, hasError = true)
+          }
+        },
+        ifRight = { claimFlowStep ->
+          _uiState.update {
+            uiState.copy(isLoading = false, nextStep = claimFlowStep)
+          }
+        },
+      )
+    }
+  }
+
   fun showedError() {
-    _uiState.update {
-      if (it is AudioRecordingUiState.Playback) {
-        it.copy(hasError = false)
-      } else {
-        it
+    _uiState.update { oldUiState ->
+      when (oldUiState) {
+        is AudioRecordingUiState.Playback -> oldUiState.copy(hasError = false)
+        is AudioRecordingUiState.PrerecordedWithSignedUrl -> oldUiState.copy(hasError = false)
+        else -> oldUiState
       }
     }
   }
@@ -64,6 +92,8 @@ internal class AudioRecordingViewModel(
   fun handledNextStepNavigation() {
     val uiState = _uiState.value
     if (uiState is AudioRecordingUiState.Playback) {
+      _uiState.update { uiState.copy(nextStep = null) }
+    } else if (uiState is AudioRecordingUiState.PrerecordedWithSignedUrl) {
       _uiState.update { uiState.copy(nextStep = null) }
     }
   }
@@ -209,19 +239,33 @@ internal class AudioRecordingViewModel(
   }
 }
 
-internal sealed class AudioRecordingUiState {
-  val hasAudioSubmissionError: Boolean
-    get() = this is Playback && hasError
+internal sealed interface AudioRecordingUiState {
+  val hasError: Boolean
+    get() = false
 
   val canSubmit: Boolean
-    get() = this is Playback && !isPlaying && nextStep == null && !isLoading && !hasError
+    get() {
+      val playbackCanSubmit = this is Playback && !isPlaying && nextStep == null && !isLoading && !hasError
+      val prerecordedCanSubmit = this is PrerecordedWithSignedUrl && nextStep == null && !isLoading && !hasError
+      return playbackCanSubmit || prerecordedCanSubmit
+    }
 
-  object NotRecording : AudioRecordingUiState()
+  val isLoading: Boolean
+    get() = false
+
+  object NotRecording : AudioRecordingUiState
   data class Recording(
     val amplitudes: List<Int>,
     val startedAt: Instant,
     val filePath: String,
-  ) : AudioRecordingUiState()
+  ) : AudioRecordingUiState
+
+  data class PrerecordedWithSignedUrl(
+    val signedUrl: AudioUrl,
+    override val isLoading: Boolean = false,
+    override val hasError: Boolean = false,
+    val nextStep: ClaimFlowStep? = null,
+  ) : AudioRecordingUiState
 
   data class Playback(
     val filePath: String,
@@ -230,7 +274,7 @@ internal sealed class AudioRecordingUiState {
     val amplitudes: List<Int>,
     val progress: Float,
     val nextStep: ClaimFlowStep?,
-    val isLoading: Boolean,
-    val hasError: Boolean,
-  ) : AudioRecordingUiState()
+    override val isLoading: Boolean,
+    override val hasError: Boolean,
+  ) : AudioRecordingUiState
 }

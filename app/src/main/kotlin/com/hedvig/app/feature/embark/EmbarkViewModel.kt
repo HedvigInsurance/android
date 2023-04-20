@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.core.common.android.ProgressPercentage
 import com.hedvig.android.core.common.android.asMap
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.embark.extensions.api
@@ -21,7 +22,6 @@ import com.hedvig.app.feature.embark.util.getSelectedContractTypes
 import com.hedvig.app.feature.embark.util.getVariables
 import com.hedvig.app.feature.embark.util.toExpressionFragment
 import com.hedvig.app.feature.offer.model.QuoteCartId
-import com.hedvig.app.util.ProgressPercentage
 import com.hedvig.app.util.safeLet
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics

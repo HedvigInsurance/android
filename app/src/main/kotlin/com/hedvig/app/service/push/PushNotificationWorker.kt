@@ -28,7 +28,7 @@ class PushNotificationWorker(
   private val authTokenService: AuthTokenService by inject()
 
   override suspend fun doWork(): Result {
-    val pushToken = inputData.getString(PUSH_TOKEN) ?: throw Exception("No token provided")
+    val pushToken = inputData.getString(PUSH_TOKEN) ?: error("No token provided")
     if (!hasHedvigToken()) {
       return Result.retry()
     }

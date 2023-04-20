@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import com.hedvig.android.auth.android.AuthenticatedObserver
+import com.hedvig.android.core.common.android.parcelableExtra
 import com.hedvig.android.language.LanguageService
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityCheckoutBinding
@@ -33,8 +34,8 @@ import org.koin.core.parameter.parametersOf
 
 class CheckoutActivity : AppCompatActivity(R.layout.activity_checkout) {
   private val parameter by lazy {
-    intent.getParcelableExtra<CheckoutParameter>(PARAMETER)
-      ?: throw IllegalArgumentException("No parameter found for ${this.javaClass.simpleName}")
+    intent.parcelableExtra<CheckoutParameter>(PARAMETER)
+      ?: error("No parameter found for ${this.javaClass.simpleName}")
   }
   private val viewModel: CheckoutViewModel by viewModel {
     parametersOf(parameter.selectedVariantId, parameter.quoteCartId)
