@@ -22,6 +22,7 @@ import com.hedvig.app.databinding.ContractDetailCoverageHeaderBinding
 import com.hedvig.app.databinding.PerilDetailBinding
 import com.hedvig.app.ui.coil.load
 import com.hedvig.app.util.GenericDiffUtilItemCallback
+import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
 import com.hedvig.app.util.extensions.isDarkThemeActive
@@ -94,8 +95,9 @@ class PerilsAdapter(
         binding.label.text = data.inner.title
         if (data.inner.colorCode != null) {
           val shape = ShapeDrawable(OvalShape())
-          ColorDrawable()
           shape.setTint(Color.parseColor(data.inner.colorCode))
+          shape.intrinsicHeight = 16.dp
+          shape.intrinsicWidth = 16.dp
           binding.icon.setImageDrawable(shape)
         } else {
           val iconUrl = if (binding.icon.context.isDarkThemeActive) {
