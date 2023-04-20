@@ -46,6 +46,7 @@ class TestOfferModelBuilder(
       "Test description 1",
       "dark url test",
       "light url test",
+      "",
       emptyList(),
       emptyList(),
       "Test info",
