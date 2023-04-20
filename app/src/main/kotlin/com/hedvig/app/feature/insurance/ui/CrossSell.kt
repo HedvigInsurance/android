@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import coil.compose.AsyncImage
@@ -52,7 +53,7 @@ fun CrossSell(
   data: CrossSellData,
   imageLoader: ImageLoader,
   onCardClick: () -> Unit,
-  onCtaClick: (label: String) -> Unit,
+  onCtaClick: () -> Unit,
 ) {
   Card(
     border = BorderStroke(1.dp, hedvig_black12percent),
@@ -108,7 +109,7 @@ fun CrossSell(
         LocalRippleTheme provides DarkRippleTheme,
       ) {
         Button(
-          onClick = { onCtaClick(data.callToAction) },
+          onClick = { onCtaClick() },
           shape = RoundedCornerShape(6.dp),
           colors = ButtonDefaults.buttonColors(
             backgroundColor = hedvig_off_white,
@@ -117,7 +118,7 @@ fun CrossSell(
           modifier = Modifier.fillMaxWidth(),
         ) {
           Text(
-            text = data.callToAction,
+            text = stringResource(id = hedvig.resources.R.string.cross_selling_card_se_accident_cta),
           )
         }
       }
@@ -139,18 +140,16 @@ private object DarkRippleTheme : RippleTheme {
 }
 
 private val previewData = CrossSellData(
+  id = "123",
   title = "Accident Insurance",
   description = "179 kr/mo.",
-  callToAction = "Calculate price",
-  action = CrossSellData.Action.Chat,
   backgroundUrl = "https://images.unsplash.com/photo-1628996796855-0b056a464e06",
   backgroundBlurHash = "LJC6\$2-:DiWB~WxuRkayMwNGo~of",
-  crossSellType = "ACCIDENT",
-  typeOfContract = "SE_ACCIDENT",
   about = "If you or a family member is injured in an accident insurance, Hedvig is able to compensate" +
     " you for a hospital stay, rehabilitation, therapy and dental injuries. \n\n" +
     "In case of a permanent injury that affect your your quality of life and ability to work, an " +
     "accident insurance can complement the support from the social welfare system and your employer.",
+  storeUrl = "",
   perils = emptyList(),
   terms = emptyList(),
   highlights = listOf(

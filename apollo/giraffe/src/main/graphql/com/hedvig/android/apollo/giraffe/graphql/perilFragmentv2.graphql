@@ -1,4 +1,4 @@
-fragment PerilFragment on PerilV2 {
+fragment PerilFragmentV2 on PerilV2 {
   title
   description
   icon {

@@ -7,19 +7,16 @@ import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.perils.Peril
 import giraffe.fragment.CrossSellFragment
 import kotlinx.parcelize.Parcelize
+import octopus.CrossSalesQuery
 
 @Parcelize
 data class CrossSellData(
+  val id: String,
   val title: String,
   val description: String,
-  val callToAction: String,
-  val action: Action,
+  val storeUrl: String,
   val backgroundUrl: String,
   val backgroundBlurHash: String,
-  // Used to display notifications, should be able to replace with id
-  val crossSellType: String,
-  // Only used for analytics, should be able to replace with id
-  val typeOfContract: String,
   val about: String,
   val perils: List<Peril>,
   val terms: List<DocumentItems.Document>,
@@ -50,37 +47,38 @@ data class CrossSellData(
         title = data.title,
         description = data.description,
       )
+
+      fun from(data: CrossSalesQuery.Data.CurrentMember.CrossSell.ProductVariant.Highlight) = Highlight(
+        title = data.title,
+        description = data.description,
+      )
     }
   }
 
   companion object {
-    fun from(data: CrossSellFragment) = CrossSellData(
+    fun from(data: CrossSalesQuery.Data.CurrentMember.CrossSell) = CrossSellData(
+      id = data.id,
       title = data.title,
       description = data.description,
-      callToAction = data.callToAction,
-      action = when {
-        data.action.asCrossSellEmbark?.embarkStoryV2?.name != null -> {
-          val storyId = data.action.asCrossSellEmbark!!.embarkStoryV2.name
-          Action.Embark(storyId, data.title)
-        }
-        data.action.asCrossSellWeb != null -> {
-          val url = data.action.asCrossSellWeb!!.url
-          Action.Web(url)
-        }
-        else -> Action.Chat
-      },
+      about = data.about,
+      storeUrl = data.storeUrl,
       backgroundUrl = data.imageUrl,
       backgroundBlurHash = data.blurHash,
-      crossSellType = data.type.rawValue,
-      typeOfContract = data.contractType.rawValue,
-      about = data.info.aboutSection,
-      perils = data.info.contractPerils.map { Peril.from(it.fragments.perilFragment) },
-      terms = data.info.insuranceTerms.map { DocumentItems.Document.from(it.fragments.insuranceTermFragment) },
-      highlights = data.info.highlights.map(Highlight::from),
-      faq = data.info.faq.map(FAQItem::from),
-      insurableLimits = data.info.insurableLimits.map {
-        InsurableLimitItem.InsurableLimit.from(it.fragments.insurableLimitsFragment)
-      },
+      perils = data.productVariants.firstOrNull()?.perils?.map {
+        Peril.from(it)
+      } ?: emptyList(),
+      terms = data.productVariants.firstOrNull()?.documents?.map {
+        DocumentItems.Document.from(it)
+      } ?: emptyList(),
+      highlights = data.productVariants.firstOrNull()?.highlights?.map {
+        Highlight.from(it)
+      } ?: emptyList(),
+      faq = data.productVariants.firstOrNull()?.faq?.map {
+        FAQItem.from(it)
+      } ?: emptyList(),
+      insurableLimits = data.productVariants.firstOrNull()?.insurableLimits?.map {
+        InsurableLimitItem.InsurableLimit.from(it)
+      } ?: emptyList(),
     )
   }
 }

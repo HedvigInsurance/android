@@ -118,6 +118,7 @@ dependencies {
   implementation(projects.apollo.core)
   implementation(projects.apollo.di)
   implementation(projects.apollo.giraffe)
+  implementation(projects.apollo.octopus)
   implementation(projects.audioPlayer)
   implementation(projects.auth.authAndroid)
   implementation(projects.auth.authCore)

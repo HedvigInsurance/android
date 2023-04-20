@@ -71,7 +71,7 @@ private fun QuoteBundleFragment.Quote.toQuote() = QuoteBundle.Quote(
   id = id,
   currentInsurer = currentInsurer?.toCurrentInsurer(),
   detailsTable = detailsTable.fragments.tableFragment.intoTable(),
-  perils = contractPerils.map { Peril.from(it.fragments.perilFragment) },
+  perils = contractPerils.map { Peril.from(it.fragments.perilFragmentV2) },
   insurableLimits = insurableLimits.map {
     InsurableLimitItem.InsurableLimit.from(it.fragments.insurableLimitsFragment)
   },

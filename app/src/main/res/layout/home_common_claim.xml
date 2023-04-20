@@ -17,8 +17,8 @@
 
         <ImageView
             android:id="@+id/icon"
-            android:layout_width="@dimen/common_claim_icon_size"
-            android:layout_height="@dimen/common_claim_icon_size"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:contentDescription="@null"
             tools:src="@drawable/icon_failure" />
 

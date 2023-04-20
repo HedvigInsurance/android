@@ -6,13 +6,14 @@ import com.hedvig.app.feature.insurance.ui.detail.toContractCardViewState
 import giraffe.InsuranceQuery
 
 fun items(
-  data: InsuranceQuery.Data,
+  insurances: InsuranceQuery.Data,
+  crossSells: List<CrossSellData>,
   showCrossSellNotificationBadge: Boolean = false,
 ): List<InsuranceModel> = ArrayList<InsuranceModel>().apply {
   add(InsuranceModel.Header)
-  val contracts = data.contracts
+  val contracts = insurances.contracts
     .let { contractModels ->
-      if (hasNotOnlyTerminatedContracts(data.contracts)) {
+      if (hasNotOnlyTerminatedContracts(insurances.contracts)) {
         contractModels.filter {
           it.status.fragments.contractStatusFragment.asTerminatedStatus == null
         }
@@ -25,18 +26,13 @@ fun items(
 
   addAll(contracts)
 
-  val potentialCrossSells = data.activeContractBundles.flatMap { it.potentialCrossSells }
-  if (potentialCrossSells.isNotEmpty()) {
+  if (crossSells.isNotEmpty()) {
     add(InsuranceModel.CrossSellHeader(showCrossSellNotificationBadge))
-    addAll(
-      potentialCrossSells.map {
-        crossSell(it)
-      },
-    )
+    addAll(crossSells.map { InsuranceModel.CrossSellCard(it) })
   }
 
-  if (hasNotOnlyTerminatedContracts(data.contracts)) {
-    val terminatedContracts = amountOfTerminatedContracts(data.contracts)
+  if (hasNotOnlyTerminatedContracts(insurances.contracts)) {
+    val terminatedContracts = amountOfTerminatedContracts(insurances.contracts)
     add(InsuranceModel.TerminatedContractsHeader)
     add(InsuranceModel.TerminatedContracts(terminatedContracts))
   }
@@ -49,10 +45,3 @@ private fun hasNotOnlyTerminatedContracts(contracts: List<InsuranceQuery.Contrac
 
 private fun amountOfTerminatedContracts(contracts: List<InsuranceQuery.Contract>) =
   contracts.filter { it.status.fragments.contractStatusFragment.asTerminatedStatus != null }.size
-
-private fun crossSell(potentialCrossSell: InsuranceQuery.PotentialCrossSell) =
-  InsuranceModel.CrossSellCard(
-    CrossSellData.from(
-      potentialCrossSell.fragments.crossSellFragment,
-    ),
-  )

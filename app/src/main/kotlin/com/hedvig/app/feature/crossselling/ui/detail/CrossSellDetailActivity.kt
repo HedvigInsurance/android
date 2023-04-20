@@ -41,15 +41,7 @@ class CrossSellDetailActivity : AppCompatActivity() {
     setContent {
       val viewState by viewModel.viewState.collectAsStateWithLifecycle()
       LaunchedEffect(viewState) {
-        viewState.navigateChat
-          ?.navigate(this@CrossSellDetailActivity)
-          ?.also { viewModel.actionOpened() }
-
-        viewState.navigateEmbark
-          ?.navigate(this@CrossSellDetailActivity)
-          ?.also { viewModel.actionOpened() }
-
-        viewState.navigateWeb
+        viewState.storeUrl
           ?.let(::openWebBrowser)
           ?.also { viewModel.actionOpened() }
       }

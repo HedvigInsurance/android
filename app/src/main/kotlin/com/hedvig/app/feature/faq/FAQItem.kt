@@ -6,6 +6,7 @@ import com.hedvig.app.util.safeLet
 import giraffe.fragment.CrossSellFragment
 import giraffe.fragment.QuoteBundleFragment
 import kotlinx.parcelize.Parcelize
+import octopus.CrossSalesQuery
 
 @Parcelize
 data class FAQItem(
@@ -17,6 +18,11 @@ data class FAQItem(
     fun from(data: CrossSellFragment.Faq) = FAQItem(
       headline = data.headline,
       body = data.body,
+    )
+
+    fun from(data: CrossSalesQuery.Data.CurrentMember.CrossSell.ProductVariant.Faq) = FAQItem(
+      headline = data.headline,
+      body = data.body ?: "",
     )
 
     fun from(data: QuoteBundleFragment.FrequentlyAskedQuestion) =

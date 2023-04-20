@@ -19,6 +19,7 @@ import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.android.apollo.giraffe.di.giraffeClient
+import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.auth.interceptor.MigrateTokenInterceptor
@@ -223,6 +224,7 @@ val applicationModule = module {
             .newBuilder()
             .header("User-Agent", makeUserAgent(languageService.getLocale()))
             .header("Accept-Language", languageService.getLocale().toLanguageTag())
+            .header("hedvig-language", languageService.getLocale().toLanguageTag())
             .header("apollographql-client-name", BuildConfig.APPLICATION_ID)
             .header("apollographql-client-version", BuildConfig.VERSION_NAME)
             .header("X-Build-Version", BuildConfig.VERSION_CODE.toString())
@@ -328,10 +330,10 @@ val viewModelModule = module {
   }
   viewModel { AudioRecorderViewModel(get()) }
   viewModel { (crossSell: CrossSellData) ->
-    CrossSellFaqViewModel(crossSell, get(), get())
+    CrossSellFaqViewModel(crossSell, get())
   }
   viewModel { (crossSell: CrossSellData) ->
-    CrossSellDetailViewModel(crossSell.action, get(), get())
+    CrossSellDetailViewModel(crossSell.storeUrl, get())
   }
   viewModel { GenericAuthViewModel(get(), get()) }
   viewModel<OtpInputViewModel> { (verifyUrl: String, resendUrl: String, credential: String) ->
@@ -556,7 +558,7 @@ val useCaseModule = module {
   single { LogoutUseCase(get(), get(), get<ApolloClient>(giraffeClient), get(), get(), get(), get(), get(), get()) }
   single { GetContractsUseCase(get<ApolloClient>(giraffeClient), get()) }
   single { GraphQLQueryUseCase(get()) }
-  single { GetCrossSellsUseCase(get<ApolloClient>(giraffeClient), get()) }
+  single { GetCrossSellsUseCase(get<ApolloClient>(octopusClient)) }
   single { GetInsuranceProvidersUseCase(get<ApolloClient>(giraffeClient), get()) }
   single { GetClaimDetailUseCase(get<ApolloClient>(giraffeClient), get()) }
   single { GetClaimDetailUiStateFlowUseCase(get()) }

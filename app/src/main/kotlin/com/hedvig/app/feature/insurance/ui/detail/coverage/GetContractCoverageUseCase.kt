@@ -50,7 +50,7 @@ internal data class ContractCoverage(
         contractDisplayName = contract.displayName,
         contractPerils = contract.contractPerils
           .map { contractPeril ->
-            Peril.from(contractPeril.fragments.perilFragment)
+            Peril.from(contractPeril.fragments.perilFragmentV2)
           }
           .toPersistentList(),
         insurableLimits = contract.insurableLimits
