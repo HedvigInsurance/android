@@ -6,8 +6,8 @@ import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.odyssey.data.ClaimFlowRepository
 import com.hedvig.android.odyssey.data.ClaimFlowRepositoryImpl
 import com.hedvig.android.odyssey.data.OdysseyService
-import com.hedvig.android.odyssey.model.AudioUrl
 import com.hedvig.android.odyssey.model.FlowId
+import com.hedvig.android.odyssey.navigation.AudioContent
 import com.hedvig.android.odyssey.navigation.ClaimFlowDestination
 import com.hedvig.android.odyssey.navigation.LocationOption
 import com.hedvig.android.odyssey.sdui.AndroidDatadogLogger
@@ -62,10 +62,10 @@ val odysseyModule = module {
   viewModel<NotificationPermissionViewModel> { (entryPointId: String?) ->
     NotificationPermissionViewModel(entryPointId, get<ClaimFlowRepository>())
   }
-  viewModel<AudioRecordingViewModel> { (flowId: FlowId, signedUrl: AudioUrl?) ->
+  viewModel<AudioRecordingViewModel> { (flowId: FlowId, audioContent: AudioContent?) ->
     AudioRecordingViewModel(
       flowId = flowId,
-      signedUrl = signedUrl,
+      audioContent = audioContent,
       claimFlowRepository = get(),
     )
   }

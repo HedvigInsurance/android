@@ -48,7 +48,7 @@ internal fun AudioRecordingDestination(
   navigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  val claimFlowStep = (uiState as? AudioRecordingUiState.Playback)?.nextStep
+  val claimFlowStep = uiState.nextStep
   LaunchedEffect(claimFlowStep) {
     if (claimFlowStep != null) {
       navigateToNextStep(claimFlowStep)

@@ -1,0 +1,4 @@
+fragment AudioContentFragment on FlowClaimAudioContent {
+  audioUrl
+  signedUrl
+}
