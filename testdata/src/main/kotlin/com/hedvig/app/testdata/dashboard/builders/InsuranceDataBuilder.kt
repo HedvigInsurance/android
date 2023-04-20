@@ -30,7 +30,6 @@ class InsuranceDataBuilder(
   private val displayName: String = "Hemförsäkring",
   private val showUpcomingAgreement: Boolean = false,
   private val upcomingDetailsTable: TableFragment = TableFragmentBuilder().build(),
-  private val crossSells: List<InsuranceQuery.PotentialCrossSell> = emptyList(),
   private val detailsTable: TableFragment = DEFAULT_DETAILS_TABLE,
   private val supportsAddressChange: Boolean = true,
 ) {
@@ -206,15 +205,6 @@ class InsuranceDataBuilder(
           ),
         ),
       )
-    },
-    activeContractBundles = if (crossSells.isNotEmpty()) {
-      listOf(
-        InsuranceQuery.ActiveContractBundle(
-          potentialCrossSells = crossSells,
-        ),
-      )
-    } else {
-      emptyList()
     },
   )
 

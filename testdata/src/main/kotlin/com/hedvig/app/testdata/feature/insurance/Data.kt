@@ -5,33 +5,28 @@ import giraffe.InsuranceQuery
 import giraffe.type.AgreementStatus
 
 val INSURANCE_DATA_SWEDISH_APARTMENT =
-  InsuranceQuery.Data(contracts = listOf(InsuranceContractBuilder().build()), activeContractBundles = emptyList())
+  InsuranceQuery.Data(contracts = listOf(InsuranceContractBuilder().build()))
 val INSURANCE_DATA_SWEDISH_APARTMENT_NO_RENEWAL =
   InsuranceQuery.Data(
     contracts = listOf(InsuranceContractBuilder(renewal = null).build()),
-    activeContractBundles = emptyList(),
   )
 val INSURANCE_DATA_SWEDISH_HOUSE =
   InsuranceQuery.Data(
     contracts = listOf(InsuranceContractBuilder().build()),
-    activeContractBundles = emptyList(),
   )
 val INSURANCE_DATA_NORWEGIAN_TRAVEL =
   InsuranceQuery.Data(
     contracts = listOf(InsuranceContractBuilder().build()),
-    activeContractBundles = emptyList(),
   )
 val INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS =
   InsuranceQuery.Data(
     contracts = listOf(
       InsuranceContractBuilder().build(),
     ),
-    activeContractBundles = emptyList(),
   )
 val INSURANCE_DATA_DANISH_TRAVEL =
   InsuranceQuery.Data(
     contracts = listOf(InsuranceContractBuilder().build()),
-    activeContractBundles = emptyList(),
   )
 val INSURANCE_DATA_MULTIPLE_DANISH_CONTRACTS = InsuranceQuery.Data(
   contracts = listOf(
@@ -39,7 +34,6 @@ val INSURANCE_DATA_MULTIPLE_DANISH_CONTRACTS = InsuranceQuery.Data(
     InsuranceContractBuilder().build(),
     InsuranceContractBuilder().build(),
   ),
-  activeContractBundles = emptyList(),
 )
 val INSURANCE_DATA_PENDING_CONTRACT = InsuranceQuery.Data(
   contracts = listOf(
@@ -50,5 +44,4 @@ val INSURANCE_DATA_PENDING_CONTRACT = InsuranceQuery.Data(
       agreementStatus = AgreementStatus.ACTIVE,
     ).build(),
   ),
-  activeContractBundles = emptyList(),
 )

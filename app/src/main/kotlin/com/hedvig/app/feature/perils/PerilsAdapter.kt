@@ -1,8 +1,13 @@
 package com.hedvig.app.feature.perils
 
+import android.graphics.Color
 import android.graphics.Rect
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.ShapeDrawable
+import android.graphics.drawable.shapes.OvalShape
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ListAdapter
@@ -65,6 +70,7 @@ class PerilsAdapter(
                 data.displayName,
               )
             }
+
             is PerilItem.Header.Simple -> {
               data.displayName
             }
@@ -86,13 +92,20 @@ class PerilsAdapter(
         }
 
         binding.label.text = data.inner.title
-        val iconUrl = if (binding.icon.context.isDarkThemeActive) {
-          data.inner.darkUrl
+        if (data.inner.colorCode != null) {
+          val shape = ShapeDrawable(OvalShape())
+          ColorDrawable()
+          shape.setTint(Color.parseColor(data.inner.colorCode))
+          binding.icon.setImageDrawable(shape)
         } else {
-          data.inner.lightUrl
-        }
-        binding.icon.load(iconUrl, imageLoader) {
-          crossfade(true)
+          val iconUrl = if (binding.icon.context.isDarkThemeActive) {
+            data.inner.darkUrl
+          } else {
+            data.inner.lightUrl
+          }
+          binding.icon.load(iconUrl, imageLoader) {
+            crossfade(true)
+          }
         }
 
         binding.root.setHapticClickListener {
@@ -127,6 +140,7 @@ class PerilsAdapter(
               outRect.right = BASE_MARGIN_HALF
               outRect.left = BASE_MARGIN_DOUBLE
             }
+
             SPAN_RIGHT -> {
               outRect.left = BASE_MARGIN_HALF
               outRect.right = BASE_MARGIN_DOUBLE

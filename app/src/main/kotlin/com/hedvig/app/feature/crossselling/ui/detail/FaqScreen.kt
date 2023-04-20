@@ -30,7 +30,6 @@ import com.hedvig.app.feature.faq.FAQItem
 
 @Composable
 fun FaqScreen(
-  ctaLabel: String,
   onUpClick: () -> Unit,
   openSheet: (FAQItem) -> Unit,
   openChat: () -> Unit,
@@ -81,7 +80,7 @@ fun FaqScreen(
         .align(Alignment.BottomCenter)
         .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
     ) {
-      Text(text = ctaLabel)
+      Text(text = stringResource(id = hedvig.resources.R.string.cross_selling_card_se_accident_cta))
     }
   }
 }
@@ -92,7 +91,6 @@ private fun PreviewFaqScreen() {
   HedvigTheme {
     Surface {
       FaqScreen(
-        ctaLabel = "Calculate your price",
         onUpClick = {},
         openSheet = {},
         openChat = {},

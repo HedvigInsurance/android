@@ -3,7 +3,7 @@ query ContractCoverage($locale: Locale!) {
     id
     displayName
     contractPerils(locale: $locale) {
-      ...PerilFragment
+      ...PerilFragmentV2
     }
     insurableLimits(locale: $locale) {
       ...InsurableLimitsFragment

@@ -52,7 +52,6 @@ class CrossSellFaqActivity : AppCompatActivity() {
     setContent {
       HedvigTheme {
         FaqScreen(
-          ctaLabel = crossSell.callToAction,
           onUpClick = ::finish,
           openSheet = { faq ->
             FAQBottomSheet
@@ -107,7 +106,6 @@ class CrossSellFaqActivity : AppCompatActivity() {
 class CrossSellFaqViewModel(
   private val crossSell: CrossSellData,
   private val chatRepository: ChatRepository,
-  private val createQuoteCartUseCase: CreateQuoteCartUseCase,
 ) : ViewModel() {
 
   private val _viewState = MutableStateFlow(ViewState())
@@ -133,22 +131,7 @@ class CrossSellFaqViewModel(
 
   fun onCtaClick() {
     viewModelScope.launch {
-      when (val action = crossSell.action) {
-        CrossSellData.Action.Chat -> _viewState.value = ViewState(navigateChat = NavigateChat)
-        is CrossSellData.Action.Embark -> _viewState.value = action.toViewState()
-        is CrossSellData.Action.Web -> _viewState.value = ViewState(navigateWeb = Uri.parse(action.url))
-      }
-    }
-  }
-
-  private suspend fun CrossSellData.Action.Embark.toViewState(): ViewState {
-    return when (val result = createQuoteCartUseCase.invoke()) {
-      is Either.Left -> ViewState(errorMessage = result.value.message)
-      is Either.Right -> {
-        val embarkStoryId = appendQuoteCartId(embarkStoryId, result.value.id)
-        val navigateEmbark = NavigateEmbark(embarkStoryId, title)
-        ViewState(navigateEmbark = navigateEmbark)
-      }
+      Uri.parse(crossSell.storeUrl)
     }
   }
 

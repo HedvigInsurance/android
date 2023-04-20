@@ -39,47 +39,6 @@ val INSURANCE_DATA_TERMINATED = InsuranceDataBuilder(
 
 val INSURANCE_DATA_WITH_CROSS_SELL = InsuranceDataBuilder(
   contracts = listOf(ContractStatus.ACTIVE),
-  crossSells = listOf(
-    InsuranceQuery.PotentialCrossSell(
-      __typename = CrossSell.type.name,
-      fragments = InsuranceQuery.PotentialCrossSell.Fragments(
-        crossSellFragment = CrossSellFragment(
-          title = "Accident Insurance",
-          description = "179 SEK/mo.",
-          callToAction = "Calculate price",
-          type = CrossSellType.ACCIDENT,
-          contractType = TypeOfContract.SE_ACCIDENT,
-          action = CrossSellFragment.Action(
-            __typename = CrossSellEmbark.type.name,
-            asCrossSellEmbark = CrossSellFragment.AsCrossSellEmbark(
-              __typename = CrossSellEmbark.type.name,
-              embarkStoryV2 = CrossSellFragment.EmbarkStoryV2(
-                name = "123",
-              ),
-            ),
-            asCrossSellWeb = null,
-          ),
-          blurHash = "LJC6\$2-:DiWB~WxuRkayMwNGo~of",
-          imageUrl = "https://images.unsplash.com/photo-1628996796855-0b056a464e06",
-          info = CrossSellFragment.Info(
-            displayName = "Accident Insurance",
-            aboutSection = "If you or a family member is injured in an accident insurance, " +
-              "Hedvig is able to" +
-              " compensate you for a hospital stay, rehabilitation, therapy and dental injuries. \n" +
-              "\n" +
-              "In case of a permanent injury that affect your your quality of life and ability " +
-              "to work, an accident insurance can complement the support from " +
-              "the social welfare system and your employer.",
-            contractPerils = emptyList(),
-            insuranceTerms = emptyList(),
-            highlights = emptyList(),
-            faq = emptyList(),
-            insurableLimits = emptyList(),
-          ),
-        ),
-      ),
-    ),
-  ),
 ).build()
 
 val INSURANCE_DATA_UPCOMING_AGREEMENT = InsuranceDataBuilder(

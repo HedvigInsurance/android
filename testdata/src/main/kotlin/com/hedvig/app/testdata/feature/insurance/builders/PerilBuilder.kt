@@ -2,7 +2,7 @@ package com.hedvig.app.testdata.feature.insurance.builders
 
 import com.hedvig.app.util.toArrayList
 import giraffe.InsuranceQuery
-import giraffe.fragment.PerilFragment
+import giraffe.fragment.PerilFragmentV2
 import giraffe.type.PerilV2
 
 class PerilBuilder {
@@ -24,15 +24,15 @@ class PerilBuilder {
       return perilList
     }
 
-    private val PERIL_FRAGMENT = PerilFragment(
+    private val PERIL_FRAGMENT = PerilFragmentV2(
       title = "Mock",
       description = "Mock",
-      icon = PerilFragment.Icon(
-        variants = PerilFragment.Variants(
-          dark = PerilFragment.Dark(
+      icon = PerilFragmentV2.Icon(
+        variants = PerilFragmentV2.Variants(
+          dark = PerilFragmentV2.Dark(
             svgUrl = "/app-content-service/fire_dark.svg",
           ),
-          light = PerilFragment.Light(
+          light = PerilFragmentV2.Light(
             svgUrl = "/app-content-service/fire.svg",
           ),
         ),

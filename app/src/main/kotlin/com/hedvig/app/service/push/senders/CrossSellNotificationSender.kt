@@ -37,10 +37,10 @@ class CrossSellNotificationSender(
   override fun sendNotification(type: String, remoteMessage: RemoteMessage) {
     val title = remoteMessage.data[DATA_MESSAGE_TITLE]
     val body = remoteMessage.data[DATA_MESSAGE_BODY]
-    val type = remoteMessage.data[CROSS_SELL_TYPE]
+    val id = remoteMessage.data[CROSS_SELL_ID]
 
     applicationScope.launch(Dispatchers.IO) {
-      val crossSell = getCrossSell(type)
+      val crossSell = getCrossSell(id)
 
       val intent = if (crossSell != null) {
         createCrossSellIntent(context, crossSell)
@@ -120,15 +120,15 @@ class CrossSellNotificationSender(
       )
   }
 
-  private suspend fun getCrossSell(crossSellType: String?): CrossSellData? {
-    return crossSellsUseCase.invoke().firstOrNull {
-      it.crossSellType == crossSellType
+  private suspend fun getCrossSell(id: String?): CrossSellData? {
+    return crossSellsUseCase.invoke().getOrNull()?.firstOrNull {
+      it.id == id
     }
   }
 
   companion object {
     private const val CROSS_SELL_CHANNEL_ID = "hedvig-cross-sell"
-    private const val CROSS_SELL_TYPE = "CROSS_SELL_TYPE"
+    private const val CROSS_SELL_ID = "CROSS_SELL_ID"
     private const val CROSS_SELL_NOTIFICATION_ID = 11
 
     private const val NOTIFICATION_CROSS_SELL = "CROSS_SELL"

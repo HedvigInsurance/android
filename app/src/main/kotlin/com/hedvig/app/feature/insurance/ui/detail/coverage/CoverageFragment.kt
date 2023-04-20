@@ -173,7 +173,7 @@ private fun ColumnScope.PerilSection(
     perilItems.map { peril: Peril ->
       PerilGridData(
         text = peril.title,
-        iconUrl = if (isSystemInDarkTheme) peril.darkUrl else peril.lightUrl,
+        iconUrl = if (isSystemInDarkTheme) peril.darkUrl!! else peril.lightUrl!!,
         onClick = { onPerilClick(peril) },
       )
     }.toNonEmptyListOrNull()
@@ -242,7 +242,7 @@ private fun PreviewCoverageFragmentScreen() {
       CoverageFragmentScreen(
         CoverageUiState.Success(
           "Your insurance",
-          List(7) { Peril("Fire", "Descr", "", "", emptyList(), emptyList(), "Info") }.toPersistentList(),
+          List(7) { Peril("Fire", "Descr", "", "", "", emptyList(), emptyList(), "Info") }.toPersistentList(),
           List(3) { ContractCoverage.InsurableLimit("Label", "limit", "Description") }.toPersistentList(),
         ),
         rememberPreviewImageLoader(),
