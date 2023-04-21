@@ -55,7 +55,6 @@ import com.hedvig.android.odyssey.data.ClaimFlowStep
 import com.hedvig.android.odyssey.navigation.ItemProblem
 import com.hedvig.android.odyssey.navigation.LocationOption
 import com.hedvig.android.odyssey.navigation.UiNullableMoney
-import com.hedvig.android.odyssey.step.summary.resources.HedvigDeviceUnknown
 import com.hedvig.android.odyssey.ui.ClaimFlowScaffold
 import com.hedvig.odyssey.compose.getLocale
 import hedvig.resources.R
