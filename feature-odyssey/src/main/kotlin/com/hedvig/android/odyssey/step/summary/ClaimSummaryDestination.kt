@@ -181,7 +181,7 @@ private fun ItemIcon(
       ) {
         when (it) {
           is AsyncImagePainter.State.Success -> this@SubcomposeAsyncImage.SubcomposeAsyncImageContent()
-          is AsyncImagePainter.State.Error -> Icon(Icons.Default.HedvigDeviceUnknown, null)
+          is AsyncImagePainter.State.Error -> {}
           AsyncImagePainter.State.Empty,
           is AsyncImagePainter.State.Loading,
           -> {
