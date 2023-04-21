@@ -89,8 +89,7 @@ internal fun NavGraphBuilder.claimFlowGraph(
       )
     }
     animatedComposable<ClaimFlowDestination.AudioRecording> {
-      // todo handle existing audio recording
-      val viewModel: AudioRecordingViewModel = koinViewModel { parametersOf(flowId, signedUrl) }
+      val viewModel: AudioRecordingViewModel = koinViewModel { parametersOf(flowId, audioContent) }
       AudioRecordingDestination(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,

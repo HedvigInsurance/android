@@ -29,7 +29,7 @@ internal sealed interface ClaimFlowDestination : Destination {
   data class AudioRecording(
     val flowId: FlowId,
     val questions: List<String>,
-    val signedUrl: AudioUrl?,
+    val audioContent: AudioContent?,
   ) : ClaimFlowDestination
 
   @Serializable
@@ -217,3 +217,16 @@ internal data class UiMoney(val amount: Double, val currencyCode: CurrencyCode) 
     }
   }
 }
+
+@Immutable
+@Serializable
+internal data class AudioContent(
+  /**
+   * The url to be used to play back the audio file
+   */
+  val signedUrl: AudioUrl,
+  /**
+   * The url that the backend expects when trying to go to the next step of the flow
+   */
+  val audioUrl: AudioUrl,
+)
