@@ -27,7 +27,7 @@ class ChatTextInput : AppCompatEditText {
     get() = text.toString()
 
   private val sendDrawable: Drawable = compoundDrawables[2]
-    ?: throw RuntimeException("No send drawable set, right drawable must be set!")
+    ?: error("No send drawable set, right drawable must be set!")
 
   private val inputTextWatcher = object : TextWatcher {
     override fun afterTextChanged(s: Editable?) {

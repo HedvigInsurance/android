@@ -25,7 +25,7 @@ query InsuranceQuery($locale: Locale!) {
       ...TableFragment
     }
     contractPerils(locale: $locale) {
-      ...PerilFragment
+      ...PerilFragmentV2
     }
     insurableLimits(locale: $locale) {
       ...InsurableLimitsFragment
@@ -38,10 +38,5 @@ query InsuranceQuery($locale: Locale!) {
     detailPills(locale: $locale)
     supportsAddressChange
     ...UpcomingAgreementFragment
-  }
-  activeContractBundles {
-    potentialCrossSells {
-      ...CrossSellFragment
-    }
   }
 }

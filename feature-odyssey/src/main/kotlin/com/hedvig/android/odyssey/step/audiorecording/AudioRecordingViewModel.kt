@@ -6,7 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.odyssey.data.ClaimFlowRepository
 import com.hedvig.android.odyssey.data.ClaimFlowStep
+import com.hedvig.android.odyssey.model.AudioUrl
 import com.hedvig.android.odyssey.model.FlowId
+import com.hedvig.android.odyssey.navigation.AudioContent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -20,6 +22,7 @@ import java.util.UUID
 
 internal class AudioRecordingViewModel(
   private val flowId: FlowId,
+  audioContent: AudioContent?,
   private val claimFlowRepository: ClaimFlowRepository,
   val clock: Clock = Clock.System,
 ) : ViewModel() {
@@ -28,7 +31,13 @@ internal class AudioRecordingViewModel(
   private var timer: Timer? = null
   private var player: MediaPlayer? = null
 
-  private val _uiState = MutableStateFlow<AudioRecordingUiState>(AudioRecordingUiState.NotRecording)
+  private val _uiState: MutableStateFlow<AudioRecordingUiState> = MutableStateFlow(
+    if (audioContent != null) {
+      AudioRecordingUiState.PrerecordedWithAudioContent(audioContent)
+    } else {
+      AudioRecordingUiState.NotRecording
+    },
+  )
   val uiState = _uiState.asStateFlow()
 
   fun submitAudioFile(audioFile: File) {
@@ -51,12 +60,32 @@ internal class AudioRecordingViewModel(
     }
   }
 
+  fun submitAudioUrl(audioUrl: AudioUrl) {
+    val uiState = _uiState.value as? AudioRecordingUiState.PrerecordedWithAudioContent ?: return
+    if (uiState.hasError || uiState.isLoading) return
+    _uiState.update { uiState.copy(isLoading = true) }
+    viewModelScope.launch {
+      claimFlowRepository.submitAudioUrl(flowId, audioUrl).fold(
+        ifLeft = {
+          _uiState.update {
+            uiState.copy(isLoading = false, hasError = true)
+          }
+        },
+        ifRight = { claimFlowStep ->
+          _uiState.update {
+            uiState.copy(isLoading = false, nextStep = claimFlowStep)
+          }
+        },
+      )
+    }
+  }
+
   fun showedError() {
-    _uiState.update {
-      if (it is AudioRecordingUiState.Playback) {
-        it.copy(hasError = false)
-      } else {
-        it
+    _uiState.update { oldUiState ->
+      when (oldUiState) {
+        is AudioRecordingUiState.Playback -> oldUiState.copy(hasError = false)
+        is AudioRecordingUiState.PrerecordedWithAudioContent -> oldUiState.copy(hasError = false)
+        else -> oldUiState
       }
     }
   }
@@ -65,11 +94,13 @@ internal class AudioRecordingViewModel(
     val uiState = _uiState.value
     if (uiState is AudioRecordingUiState.Playback) {
       _uiState.update { uiState.copy(nextStep = null) }
+    } else if (uiState is AudioRecordingUiState.PrerecordedWithAudioContent) {
+      _uiState.update { uiState.copy(nextStep = null) }
     }
   }
 
   fun startRecording() {
-    if ((_uiState.value as? AudioRecordingUiState.Playback)?.isLoading == true) return
+    if (_uiState.value.isLoading) return
     if (recorder == null) {
       recorder = MediaRecorder().apply {
         setAudioSource(MediaRecorder.AudioSource.VOICE_RECOGNITION)
@@ -136,7 +167,7 @@ internal class AudioRecordingViewModel(
   }
 
   fun redo() {
-    if ((_uiState.value as? AudioRecordingUiState.Playback)?.isLoading == true) return
+    if (_uiState.value.isLoading) return
     cleanup()
     _uiState.value = AudioRecordingUiState.NotRecording
   }
@@ -152,11 +183,11 @@ internal class AudioRecordingViewModel(
     timer?.schedule(
       timerTask {
         val progress = player?.let { it.currentPosition.toFloat() / it.duration } ?: return@timerTask
-        _uiState.update { vs ->
-          if (vs is AudioRecordingUiState.Playback) {
-            vs.copy(progress = progress)
+        _uiState.update { uiState ->
+          if (uiState is AudioRecordingUiState.Playback) {
+            uiState.copy(progress = progress)
           } else {
-            vs
+            uiState
           }
         }
       },
@@ -209,19 +240,36 @@ internal class AudioRecordingViewModel(
   }
 }
 
-internal sealed class AudioRecordingUiState {
-  val hasAudioSubmissionError: Boolean
-    get() = this is Playback && hasError
-
+internal sealed interface AudioRecordingUiState {
   val canSubmit: Boolean
-    get() = this is Playback && !isPlaying && nextStep == null && !isLoading && !hasError
+    get() {
+      val playbackCanSubmit = this is Playback && !isPlaying && nextStep == null && !isLoading && !hasError
+      val prerecordedCanSubmit = this is PrerecordedWithAudioContent && nextStep == null && !isLoading && !hasError
+      return playbackCanSubmit || prerecordedCanSubmit
+    }
 
-  object NotRecording : AudioRecordingUiState()
+  val nextStep: ClaimFlowStep?
+    get() = null
+
+  val isLoading: Boolean
+    get() = false
+
+  val hasError: Boolean
+    get() = false
+
+  object NotRecording : AudioRecordingUiState
   data class Recording(
     val amplitudes: List<Int>,
     val startedAt: Instant,
     val filePath: String,
-  ) : AudioRecordingUiState()
+  ) : AudioRecordingUiState
+
+  data class PrerecordedWithAudioContent(
+    val audioContent: AudioContent,
+    override val nextStep: ClaimFlowStep? = null,
+    override val isLoading: Boolean = false,
+    override val hasError: Boolean = false,
+  ) : AudioRecordingUiState
 
   data class Playback(
     val filePath: String,
@@ -229,8 +277,8 @@ internal sealed class AudioRecordingUiState {
     val isPrepared: Boolean,
     val amplitudes: List<Int>,
     val progress: Float,
-    val nextStep: ClaimFlowStep?,
-    val isLoading: Boolean,
-    val hasError: Boolean,
-  ) : AudioRecordingUiState()
+    override val nextStep: ClaimFlowStep?,
+    override val isLoading: Boolean,
+    override val hasError: Boolean,
+  ) : AudioRecordingUiState
 }

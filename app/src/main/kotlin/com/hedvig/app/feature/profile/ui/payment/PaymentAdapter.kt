@@ -155,14 +155,12 @@ class PaymentAdapter(
           gross.show()
           data
             .inner
-            .insuranceCost
-            ?.fragments
-            ?.costFragment
-            ?.monthlyGross
-            ?.fragments
-            ?.monetaryAmountFragment
-            ?.toMonetaryAmount()
-            ?.format(languageService.getLocale())?.let { gross.text = it }
+            .chargeEstimation
+            .charge
+            .fragments
+            .monetaryAmountFragment
+            .toMonetaryAmount()
+            .format(languageService.getLocale()).let { gross.text = it }
         }
 
         if (isActive(data.inner.contracts)) {
@@ -244,20 +242,8 @@ class PaymentAdapter(
             campaignInformationFieldOne.text = displayName
           }
 
-          when {
-            isActive(data.inner.contracts) -> {
-              data.inner.insuranceCost?.freeUntil?.let { freeUntil ->
-                lastFreeDay.text =
-                  freeUntil.format(PaymentActivity.DATE_FORMAT)
-              }
-              lastFreeDay.show()
-              lastFreeDayLabel.show()
-            }
-            isPending(data.inner.contracts) -> {
-              willUpdateWhenStartDateIsSet.show()
-            }
-            else -> {
-            }
+          if (isPending(data.inner.contracts)) {
+            willUpdateWhenStartDateIsSet.show()
           }
         }
         incentive?.asMonthlyCostDeduction?.let { monthlyCostDeductionIncentive ->
@@ -340,6 +326,7 @@ class PaymentAdapter(
           PayinMethodStatus.ACTIVE ->
             bank.text =
               data.bankAccount.fragments.bankAccountFragment.bankName
+
           PayinMethodStatus.PENDING -> bank.setText(hedvig.resources.R.string.PAYMENTS_DIRECT_DEBIT_PENDING)
           PayinMethodStatus.NEEDS_SETUP -> bank.setText(hedvig.resources.R.string.PAYMENTS_DIRECT_DEBIT_NEEDS_SETUP)
           else -> {
@@ -407,10 +394,12 @@ class PaymentAdapter(
               start = com.hedvig.android.core.designsystem.R.drawable.ic_checkmark_in_circle,
             )
           }
+
           PayoutMethodStatus.PENDING -> {
             root.setText(hedvig.resources.R.string.payment_screen_bank_account_processing)
             root.putCompoundDrawablesRelativeWithIntrinsicBounds()
           }
+
           else -> {
             e { "Invariant detected: Rendered ${this.javaClass.name} when status was ${data.status}" }
           }
@@ -434,9 +423,11 @@ class PaymentAdapter(
           PayoutMethodStatus.ACTIVE -> root.setText(
             hedvig.resources.R.string.payment_screen_pay_out_connected_payout_footer_connected,
           )
+
           PayoutMethodStatus.NEEDS_SETUP -> {
             root.setText(hedvig.resources.R.string.payment_screen_pay_out_footer_not_connected)
           }
+
           PayoutMethodStatus.PENDING -> root.setText(hedvig.resources.R.string.payment_screen_pay_out_footer_pending)
           else -> {
             root.text = ""
@@ -463,6 +454,7 @@ class PaymentAdapter(
             is PaymentModel.Link.AdyenChangePayin -> hedvig.resources.R.string.MY_PAYMENT_CHANGE_CREDIT_CARD_BUTTON
             is PaymentModel.Link.AdyenAddPayout ->
               hedvig.resources.R.string.payment_screen_connect_pay_out_connect_payout_button
+
             PaymentModel.Link.AdyenChangePayout -> hedvig.resources.R.string.payment_screen_pay_out_change_payout_button
           },
         )
@@ -472,6 +464,7 @@ class PaymentAdapter(
             PaymentModel.Link.RedeemDiscountCode,
             is PaymentModel.Link.AdyenAddPayout,
             -> R.drawable.ic_add_circle
+
             is PaymentModel.Link.TrustlyChangePayin,
             is PaymentModel.Link.AdyenChangePayin,
             PaymentModel.Link.AdyenChangePayout,
@@ -492,6 +485,7 @@ class PaymentAdapter(
                 ),
               )
             }
+
             PaymentModel.Link.RedeemDiscountCode -> {
               RefetchingRedeemCodeBottomSheet.newInstance()
                 .show(
@@ -499,6 +493,7 @@ class PaymentAdapter(
                   RefetchingRedeemCodeBottomSheet.TAG,
                 )
             }
+
             is PaymentModel.Link.AdyenAddPayout,
             PaymentModel.Link.AdyenChangePayout,
             -> {
@@ -507,6 +502,7 @@ class PaymentAdapter(
                 root.context.startActivity(payoutActivity)
               }
             }
+
             else -> {}
           }
         }

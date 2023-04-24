@@ -1,0 +1,17 @@
+fragment PerilFragmentV2 on PerilV2 {
+  title
+  description
+  icon {
+    variants {
+      dark {
+        svgUrl
+      }
+      light {
+        svgUrl
+      }
+    }
+  }
+  covered
+  exceptions
+  info
+}

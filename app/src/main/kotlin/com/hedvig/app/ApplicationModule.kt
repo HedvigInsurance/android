@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.os.Build
+import androidx.work.WorkerParameters
 import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
@@ -17,8 +18,8 @@ import com.apollographql.apollo3.cache.normalized.normalizedCache
 import com.apollographql.apollo3.interceptor.ApolloInterceptor
 import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
-import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.android.apollo.giraffe.di.giraffeClient
+import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.auth.interceptor.MigrateTokenInterceptor
@@ -38,6 +39,7 @@ import com.hedvig.android.hanalytics.android.di.hAnalyticsUrlQualifier
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.activity.Navigator
+import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.odyssey.di.odysseyUrlQualifier
 import com.hedvig.app.authenticate.BankIdLoginViewModel
 import com.hedvig.app.authenticate.LogoutUseCase
@@ -57,6 +59,7 @@ import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.chat.service.ChatNotificationSender
+import com.hedvig.app.feature.chat.service.ReplyWorker
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.feature.checkout.CheckoutViewModel
 import com.hedvig.app.feature.checkout.EditCheckoutUseCase
@@ -167,10 +170,8 @@ import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModelImpl
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
 import com.hedvig.app.service.FileService
-import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.service.push.senders.CrossSellNotificationSender
 import com.hedvig.app.service.push.senders.GenericNotificationSender
-import com.hedvig.app.service.push.senders.NotificationSender
 import com.hedvig.app.service.push.senders.PaymentNotificationSender
 import com.hedvig.app.service.push.senders.ReferralsNotificationSender
 import com.hedvig.app.util.apollo.DeviceIdInterceptor
@@ -187,6 +188,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.androidx.workmanager.dsl.worker
 import org.koin.core.parameter.ParametersHolder
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -223,6 +225,7 @@ val applicationModule = module {
             .newBuilder()
             .header("User-Agent", makeUserAgent(languageService.getLocale()))
             .header("Accept-Language", languageService.getLocale().toLanguageTag())
+            .header("hedvig-language", languageService.getLocale().toLanguageTag())
             .header("apollographql-client-name", BuildConfig.APPLICATION_ID)
             .header("apollographql-client-version", BuildConfig.VERSION_NAME)
             .header("X-Build-Version", BuildConfig.VERSION_CODE.toString())
@@ -303,7 +306,7 @@ val viewModelModule = module {
   viewModel { ClaimsViewModel(get(), get()) }
   viewModel { ChatViewModel(get(), get(), get()) }
   viewModel { (quoteCartId: QuoteCartId?) -> RedeemCodeViewModel(quoteCartId, get(), get()) }
-  viewModel { BankIdLoginViewModel(get(), get(), get(), get(), get(), get()) }
+  viewModel { BankIdLoginViewModel(get(), get(), get(), get(), get()) }
   viewModel { WelcomeViewModel(get()) }
   viewModel {
     SettingsViewModel(
@@ -328,10 +331,10 @@ val viewModelModule = module {
   }
   viewModel { AudioRecorderViewModel(get()) }
   viewModel { (crossSell: CrossSellData) ->
-    CrossSellFaqViewModel(crossSell, get(), get())
+    CrossSellFaqViewModel(crossSell, get())
   }
   viewModel { (crossSell: CrossSellData) ->
-    CrossSellDetailViewModel(crossSell.action, get(), get())
+    CrossSellDetailViewModel(crossSell.storeUrl, get())
   }
   viewModel { GenericAuthViewModel(get(), get()) }
   viewModel<OtpInputViewModel> { (verifyUrl: String, resendUrl: String, credential: String) ->
@@ -553,10 +556,10 @@ val useCaseModule = module {
   single { GetUpcomingAgreementUseCase(get<ApolloClient>(giraffeClient), get()) }
   single { GetAddressChangeStoryIdUseCase(get<ApolloClient>(giraffeClient), get(), get()) }
   single { StartCheckoutUseCase(get<ApolloClient>(giraffeClient), get(), get()) }
-  single { LogoutUseCase(get(), get(), get<ApolloClient>(giraffeClient), get(), get(), get(), get(), get(), get()) }
+  single { LogoutUseCase(get(), get<ApolloClient>(giraffeClient), get(), get(), get(), get(), get(), get()) }
   single { GetContractsUseCase(get<ApolloClient>(giraffeClient), get()) }
   single { GraphQLQueryUseCase(get()) }
-  single { GetCrossSellsUseCase(get<ApolloClient>(giraffeClient), get()) }
+  single { GetCrossSellsUseCase(get<ApolloClient>(octopusClient)) }
   single { GetInsuranceProvidersUseCase(get<ApolloClient>(giraffeClient), get()) }
   single { GetClaimDetailUseCase(get<ApolloClient>(giraffeClient), get()) }
   single { GetClaimDetailUiStateFlowUseCase(get()) }
@@ -603,10 +606,6 @@ val useCaseModule = module {
 
 val cacheManagerModule = module {
   single { NetworkCacheManager(get<ApolloClient>(giraffeClient)) }
-}
-
-val pushTokenManagerModule = module {
-  single { PushTokenManager(FirebaseMessaging.getInstance()) }
 }
 
 val sharedPreferencesModule = module {
@@ -663,6 +662,17 @@ val authRepositoryModule = module {
         AuthEnvironment.PRODUCTION
       },
       additionalHttpHeaders = mapOf(),
+    )
+  }
+}
+
+val workManagerModule = module {
+  worker<ReplyWorker> {
+    ReplyWorker(
+      context = get<Context>(),
+      params = get<WorkerParameters>(),
+      chatRepository = get<ChatRepository>(),
+      chatNotificationSender = get<ChatNotificationSender>(),
     )
   }
 }

@@ -6,10 +6,11 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.auth.android.AuthenticatedObserver
+import com.hedvig.android.core.common.android.parcelableExtra
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.offer.quotedetail.QuoteDetailActivity
@@ -23,8 +24,8 @@ import org.koin.core.parameter.parametersOf
 class CrossSellDetailActivity : AppCompatActivity() {
 
   private val crossSell: CrossSellData
-    get() = intent.getParcelableExtra(CROSS_SELL)
-      ?: throw IllegalArgumentException("Programmer error: CROSS_SELL not passed to ${this.javaClass.name}")
+    get() = intent.parcelableExtra(CROSS_SELL)
+      ?: error("Programmer error: CROSS_SELL not passed to ${this.javaClass.name}")
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -38,17 +39,9 @@ class CrossSellDetailActivity : AppCompatActivity() {
     window.compatSetDecorFitsSystemWindows(false)
 
     setContent {
-      val viewState by viewModel.viewState.collectAsState()
+      val viewState by viewModel.viewState.collectAsStateWithLifecycle()
       LaunchedEffect(viewState) {
-        viewState.navigateChat
-          ?.navigate(this@CrossSellDetailActivity)
-          ?.also { viewModel.actionOpened() }
-
-        viewState.navigateEmbark
-          ?.navigate(this@CrossSellDetailActivity)
-          ?.also { viewModel.actionOpened() }
-
-        viewState.navigateWeb
+        viewState.storeUrl
           ?.let(::openWebBrowser)
           ?.also { viewModel.actionOpened() }
       }

@@ -8,13 +8,11 @@ import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.UserRepository
-import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.util.apollo.reconnectSubscriptions
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.launch
 
 class LogoutUseCase(
-  private val pushTokenManager: PushTokenManager,
   private val marketManager: MarketManager,
   private val apolloClient: ApolloClient,
   private val userRepository: UserRepository,
@@ -30,7 +28,6 @@ class LogoutUseCase(
     applicationScope.launch { userRepository.logout() }
     applicationScope.launch { authTokenService.logoutAndInvalidateTokens() }
     applicationScope.launch { marketManager.market = null }
-    applicationScope.launch { pushTokenManager.refreshToken() }
     applicationScope.launch { featureManager.invalidateExperiments() }
     applicationScope.launch { apolloClient.apolloStore.clearAll() }
     applicationScope.launch { chatEventStore.resetChatClosedCounter() }

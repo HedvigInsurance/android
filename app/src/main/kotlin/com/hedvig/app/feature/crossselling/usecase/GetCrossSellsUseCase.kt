@@ -1,38 +1,30 @@
 package com.hedvig.app.feature.crossselling.usecase
 
+import arrow.core.Either
+import arrow.core.continuations.either
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.language.LanguageService
+import com.hedvig.android.apollo.toEither
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
-import giraffe.CrossSellsQuery
-import slimber.log.e
+import octopus.CrossSalesQuery
 
 class GetCrossSellsUseCase(
   private val apolloClient: ApolloClient,
-  private val languageService: LanguageService,
 ) {
-  suspend operator fun invoke() = when (
-    val result = apolloClient
-      .query(CrossSellsQuery(languageService.getGraphQLLocale()))
-      .safeExecute()
-  ) {
-    is OperationResult.Success -> {
-      getCrossSellsContractTypes(result.data)
-    }
-    is OperationResult.Error -> {
-      e { "Error when loading potential cross-sells: ${result.message}" }
-      emptySet()
+  suspend fun invoke(): Either<ErrorMessage, List<CrossSellData>> {
+    return either {
+      val result = apolloClient
+        .query(CrossSalesQuery())
+        .safeExecute()
+        .toEither(::ErrorMessage)
+        .bind()
+      getCrossSellsContractTypes(result)
     }
   }
 
-  private fun getCrossSellsContractTypes(
-    crossSellData: CrossSellsQuery.Data,
-  ) = crossSellData
-    .activeContractBundles
-    .flatMap { contractBundle ->
-      contractBundle.potentialCrossSells
-    }.map {
-      CrossSellData.from(it.fragments.crossSellFragment)
-    }
+  private fun getCrossSellsContractTypes(crossSellData: CrossSalesQuery.Data) = crossSellData
+    .currentMember
+    .crossSells
+    .map { CrossSellData.from(it) }
 }

@@ -1,6 +1,8 @@
 package com.hedvig.android.odyssey.data
 
+import com.hedvig.android.odyssey.model.AudioUrl
 import com.hedvig.android.odyssey.model.FlowId
+import com.hedvig.android.odyssey.navigation.AudioContent
 import com.hedvig.android.odyssey.navigation.CheckoutMethod
 import com.hedvig.android.odyssey.navigation.ClaimFlowDestination
 import com.hedvig.android.odyssey.navigation.ItemBrand
@@ -10,6 +12,7 @@ import com.hedvig.android.odyssey.navigation.LocationOption
 import com.hedvig.android.odyssey.navigation.UiMoney
 import com.hedvig.android.odyssey.navigation.UiNullableMoney
 import kotlinx.datetime.LocalDate
+import octopus.fragment.AudioContentFragment
 import octopus.fragment.AutomaticAutogiroPayoutFragment
 import octopus.fragment.CheckoutMethodFragment
 import octopus.fragment.ClaimFlowStepFragment
@@ -24,7 +27,11 @@ import octopus.type.CurrencyCode
 internal sealed interface ClaimFlowStep {
   val flowId: FlowId
 
-  data class ClaimAudioRecordingStep(override val flowId: FlowId, val questions: List<String>) : ClaimFlowStep
+  data class ClaimAudioRecordingStep(
+    override val flowId: FlowId,
+    val questions: List<String>,
+    val audioContent: AudioContentFragment?,
+  ) : ClaimFlowStep
 
   data class ClaimDateOfOccurrenceStep(
     override val flowId: FlowId,
@@ -100,7 +107,7 @@ internal sealed interface ClaimFlowStep {
 internal fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(flowId: FlowId): ClaimFlowStep {
   return when (this) {
     is ClaimFlowStepFragment.FlowClaimAudioRecordingStepCurrentStep -> {
-      ClaimFlowStep.ClaimAudioRecordingStep(flowId, questions)
+      ClaimFlowStep.ClaimAudioRecordingStep(flowId, questions, audioContent)
     }
     is ClaimFlowStepFragment.FlowClaimDateOfOccurrenceStepCurrentStep -> {
       ClaimFlowStep.ClaimDateOfOccurrenceStep(flowId, dateOfOccurrence, maxDate)
@@ -172,7 +179,7 @@ internal fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(flowId: FlowId): 
 internal fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
   return when (this) {
     is ClaimFlowStep.ClaimAudioRecordingStep -> {
-      ClaimFlowDestination.AudioRecording(flowId, questions)
+      ClaimFlowDestination.AudioRecording(flowId, questions, audioContent?.toAudioContent())
     }
     is ClaimFlowStep.ClaimDateOfOccurrenceStep -> {
       ClaimFlowDestination.DateOfOccurrence(dateOfOccurrence, maxDate)
@@ -261,4 +268,8 @@ private fun CheckoutMethodFragment.toCheckoutMethod(): CheckoutMethod {
     }
     else -> CheckoutMethod.Unknown
   }
+}
+
+private fun AudioContentFragment.toAudioContent(): AudioContent {
+  return AudioContent(AudioUrl(signedUrl), AudioUrl(audioUrl))
 }

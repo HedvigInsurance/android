@@ -3,6 +3,7 @@ package com.hedvig.app.feature.insurablelimits
 import android.os.Parcelable
 import giraffe.fragment.InsurableLimitsFragment
 import kotlinx.parcelize.Parcelize
+import octopus.CrossSalesQuery
 
 sealed class InsurableLimitItem {
   sealed class Header : InsurableLimitItem() {
@@ -21,6 +22,14 @@ sealed class InsurableLimitItem {
         label = fragment.label,
         limit = fragment.limit,
         description = fragment.description,
+      )
+
+      fun from(
+        insurableLimit: CrossSalesQuery.Data.CurrentMember.CrossSell.ProductVariant.InsurableLimit,
+      ) = InsurableLimit(
+        label = insurableLimit.label,
+        limit = insurableLimit.limit,
+        description = insurableLimit.description,
       )
     }
   }

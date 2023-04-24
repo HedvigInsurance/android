@@ -17,8 +17,10 @@
 
         <ImageView
             android:id="@+id/icon"
-            android:layout_width="@dimen/peril_icon_size"
-            android:layout_height="@dimen/peril_icon_size"
+            android:layout_marginVertical="4dp"
+            android:layout_marginHorizontal="8dp"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
             android:contentDescription="@null"
             tools:src="@drawable/ic_active" />
 

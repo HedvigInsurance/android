@@ -8,7 +8,7 @@ import giraffe.fragment.QuoteBundleFragment
 
 fun buildPerils(quote: QuoteBundleFragment.Quote) = quote
   .contractPerils
-  .map { PerilItem.Peril(Peril.from(it.fragments.perilFragment)) }
+  .map { PerilItem.Peril(Peril.from(it.fragments.perilFragmentV2)) }
 
 fun buildInsurableLimits(quote: QuoteBundleFragment.Quote) = quote
   .insurableLimits

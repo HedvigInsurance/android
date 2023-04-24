@@ -17,6 +17,9 @@ fragment ClaimFlowStepFragment on Flow {
 fragment FlowClaimAudioRecordingStepFragment on FlowClaimAudioRecordingStep {
   id
   questions
+  audioContent {
+    ...AudioContentFragment
+  }
 }
 
 fragment FlowClaimDateOfOccurrenceStepFragment on FlowClaimDateOfOccurrenceStep {

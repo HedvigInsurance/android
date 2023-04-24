@@ -7,12 +7,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
@@ -47,7 +47,7 @@ class ImpersonationReceiverActivity : AppCompatActivity() {
 
     val viewModel = getViewModel<ImpersonationReceiverViewModel> {
       val token = intent.data?.getQueryParameter("authorizationCode")
-        ?: throw IllegalArgumentException("authorizationCode not found in query parameter")
+        ?: error("authorizationCode not found in query parameter")
       parametersOf(token)
     }
 
@@ -61,7 +61,7 @@ class ImpersonationReceiverActivity : AppCompatActivity() {
       .launchIn(lifecycleScope)
 
     setContent {
-      val state by viewModel.state.collectAsState()
+      val state by viewModel.state.collectAsStateWithLifecycle()
 
       HedvigTheme {
         Box(modifier = Modifier.fillMaxSize()) {

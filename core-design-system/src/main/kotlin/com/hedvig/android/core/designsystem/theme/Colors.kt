@@ -1,8 +1,10 @@
 package com.hedvig.android.core.designsystem.theme
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.Colors
 import androidx.compose.material3.ColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 import com.hedvig.android.core.designsystem.material3.LocalHedvigMaterial3ColorScheme
 
@@ -32,13 +34,17 @@ internal val hedvig_white = Color(0xFFFFFFFF)
 internal val hedvig_light_gray = Color(0xFFEAEAEA)
 internal val hedvig_dark_gray = Color(0xFF505050)
 internal val hedvig_off_black = Color(0xFF1B1B1B)
-internal val lavender_200 = Color(0xFFE7D6FF)
+val lavender_200 = Color(0xFFE7D6FF)
 internal val lavender_300 = Color(0xFFC9ABF5)
 internal val lavender_400 = Color(0xFFBE9BF3)
-internal val lavender_600 = Color(0xFF875EC5)
+val lavender_600 = Color(0xFF875EC5)
 internal val lavender_900 = Color(0xFF1C1724)
 internal val text_color_primary_light = Color(0xAB121212)
 internal val separator_light = Color(0x4A3C3C43)
+
+val forever_orange_500 = Color(0xFFFE9650)
+val warning_light = Color(0xFFFAE098)
+val warning_dark = Color(0xFFE3B945)
 
 val hedvig_black12percent = hedvig_black.copy(alpha = 0.12f)
 
@@ -48,6 +54,16 @@ val progressYellow = Color(0xffEDCDAB)
 @Suppress("UnusedReceiverParameter")
 val Colors.onWarning: Color
   get() = hedvig_black
+
+@Suppress("UnusedReceiverParameter")
+val Colors.warning: Color
+  @Composable
+  @ReadOnlyComposable
+  get() = if (isSystemInDarkTheme()) {
+    warning_dark
+  } else {
+    warning_light
+  }
 
 val Colors.separator: Color
   get() = if (isLight) {

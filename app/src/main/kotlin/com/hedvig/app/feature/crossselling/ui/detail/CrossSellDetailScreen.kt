@@ -80,7 +80,7 @@ fun CrossSellDetailScreen(
           .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal))
           .padding(16.dp),
       ) {
-        Text(text = data.callToAction)
+        Text(text = stringResource(id = hedvig.resources.R.string.cross_selling_card_se_accident_cta))
       }
     },
   ) { paddingValues ->
@@ -203,18 +203,16 @@ private fun PreviewCrossSellDetailScreen() {
         onFaqClick = {},
         onDismissError = {},
         data = CrossSellData(
+          id = "123",
           title = "Accident Insurance",
           description = "179 kr/mo.",
-          callToAction = "Calculate price",
-          action = CrossSellData.Action.Chat,
           backgroundUrl = "https://images.unsplash.com/photo-1628996796855-0b056a464e06",
           backgroundBlurHash = "LJC6\$2-:DiWB~WxuRkayMwNGo~of",
-          crossSellType = "ACCIDENT",
-          typeOfContract = "SE_ACCIDENT",
           about = "If you or a family member is injured in an accident insurance, Hedvig is able to compensate" +
             " you for a hospital stay, rehabilitation, therapy and dental injuries. \n\n" +
             "In case of a permanent injury that affect your your quality of life and ability to work, an " +
             "accident insurance can complement the support from the social welfare system and your employer.",
+          storeUrl = "",
           perils = emptyList(),
           terms = emptyList(),
           highlights = listOf(

@@ -7,9 +7,9 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
@@ -52,13 +52,13 @@ class OtpInputActivity : AppCompatActivity() {
         }
       }
       HedvigTheme {
-        val viewState by viewModel.viewState.collectAsState()
+        val viewState by viewModel.viewState.collectAsStateWithLifecycle()
         OtpInputScreen(
           onInputChanged = viewModel::setInput,
           onOpenExternalApp = { openEmail(getString(hedvig.resources.R.string.login_bottom_sheet_view_code)) },
           onSubmitCode = viewModel::submitCode,
           onResendCode = viewModel::resendCode,
-          onBackPressed = ::onBackPressed,
+          onBackPressed = { onBackPressedDispatcher.onBackPressed() },
           inputValue = viewState.input,
           credential = viewState.credential,
           networkErrorMessage = viewState.networkErrorMessage,

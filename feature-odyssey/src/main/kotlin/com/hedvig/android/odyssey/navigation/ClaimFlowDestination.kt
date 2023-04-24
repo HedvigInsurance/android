@@ -3,6 +3,7 @@ package com.hedvig.android.odyssey.navigation
 import android.content.res.Resources
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
+import com.hedvig.android.odyssey.model.AudioUrl
 import com.hedvig.android.odyssey.model.FlowId
 import com.hedvig.android.odyssey.navigation.ItemBrand.Unknown.displayName
 import com.hedvig.android.odyssey.navigation.ItemModel.Unknown.displayName
@@ -19,10 +20,17 @@ internal sealed interface Destinations : Destination {
 
 internal sealed interface ClaimFlowDestination : Destination {
   @Serializable
-  object StartStep : ClaimFlowDestination
+  object HonestyPledge : ClaimFlowDestination
 
   @Serializable
-  data class AudioRecording(val flowId: FlowId, val questions: List<String>) : ClaimFlowDestination
+  object NotificationPermission : ClaimFlowDestination
+
+  @Serializable
+  data class AudioRecording(
+    val flowId: FlowId,
+    val questions: List<String>,
+    val audioContent: AudioContent?,
+  ) : ClaimFlowDestination
 
   @Serializable
   data class DateOfOccurrence(
@@ -209,3 +217,16 @@ internal data class UiMoney(val amount: Double, val currencyCode: CurrencyCode) 
     }
   }
 }
+
+@Immutable
+@Serializable
+internal data class AudioContent(
+  /**
+   * The url to be used to play back the audio file
+   */
+  val signedUrl: AudioUrl,
+  /**
+   * The url that the backend expects when trying to go to the next step of the flow
+   */
+  val audioUrl: AudioUrl,
+)

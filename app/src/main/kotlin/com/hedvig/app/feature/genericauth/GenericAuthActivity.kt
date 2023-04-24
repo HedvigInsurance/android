@@ -7,9 +7,9 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.feature.genericauth.otpinput.OtpInputActivity
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
@@ -23,7 +23,7 @@ class GenericAuthActivity : AppCompatActivity() {
 
     val viewModel: GenericAuthViewModel = getViewModel()
     setContent {
-      val viewState by viewModel.viewState.collectAsState()
+      val viewState by viewModel.viewState.collectAsStateWithLifecycle()
 
       LaunchedEffect(viewState.verifyUrl) {
         val verifyUrl = viewState.verifyUrl ?: return@LaunchedEffect

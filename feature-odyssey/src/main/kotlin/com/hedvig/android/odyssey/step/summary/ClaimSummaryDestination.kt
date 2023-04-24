@@ -55,7 +55,6 @@ import com.hedvig.android.odyssey.data.ClaimFlowStep
 import com.hedvig.android.odyssey.navigation.ItemProblem
 import com.hedvig.android.odyssey.navigation.LocationOption
 import com.hedvig.android.odyssey.navigation.UiNullableMoney
-import com.hedvig.android.odyssey.step.summary.resources.HedvigDeviceUnknown
 import com.hedvig.android.odyssey.ui.ClaimFlowScaffold
 import com.hedvig.odyssey.compose.getLocale
 import hedvig.resources.R
@@ -100,7 +99,7 @@ private fun ClaimSummaryScreen(
 ) {
   ClaimFlowScaffold(
     windowSizeClass = windowSizeClass,
-    navigateBack = navigateBack,
+    navigateUp = navigateBack,
     topAppBarText = stringResource(R.string.claims_item_screen_title),
     isLoading = uiState.claimSummaryStatusUiState.isLoading,
     errorSnackbarState = ErrorSnackbarState(
@@ -145,7 +144,7 @@ private fun ClaimSummaryScreen(
     LargeContainedTextButton(
       onClick = submitSummary,
       enabled = uiState.canSubmit,
-      text = "Confirm and proceed", // todo string resources
+      text = stringResource(R.string.CONFIRM_AND_PROCEED_BUTTON),
       modifier = sideSpacingModifier,
     )
     Spacer(Modifier.height(20.dp))
@@ -181,7 +180,7 @@ private fun ItemIcon(
       ) {
         when (it) {
           is AsyncImagePainter.State.Success -> this@SubcomposeAsyncImage.SubcomposeAsyncImageContent()
-          is AsyncImagePainter.State.Error -> Icon(Icons.Default.HedvigDeviceUnknown, null)
+          is AsyncImagePainter.State.Error -> {}
           AsyncImagePainter.State.Empty,
           is AsyncImagePainter.State.Loading,
           -> {
@@ -227,19 +226,28 @@ private fun formatItemDetailsText(
   priceOfPurchase: UiNullableMoney?,
   itemProblems: List<ItemProblem>,
 ): String? {
-  val purchasedAndPaidText = run {
-    if (dateOfPurchase == null) return@run null
+  val paidText = run {
     if (priceOfPurchase?.amount == null) return@run null
     buildString {
       append(
         stringResource(
-          R.string.SUMMARY_PURCHASE_DESCRIPTION,
-          dateOfPurchase.toJavaLocalDate().format(DateTimeFormatter.ofPattern("dd MMM yyyy", getLocale())),
+          R.string.SUMMARY_PURCHASE_PRICE_DESCRIPTION,
           priceOfPurchase.amount.toInt(),
         ),
       )
       append(" ")
       append(priceOfPurchase.currencyCode)
+    }
+  }
+  val purchasedAtText = run {
+    if (dateOfPurchase == null) return@run null
+    buildString {
+      append(
+        stringResource(
+          R.string.SUMMARY_PURCHASE_DATE_DESCRIPTION,
+          dateOfPurchase.toJavaLocalDate().format(DateTimeFormatter.ofPattern("dd MMM yyyy", getLocale())),
+        ),
+      )
     }
   }
   val itemProblemsText = run {
@@ -249,16 +257,20 @@ private fun formatItemDetailsText(
       itemProblems.joinToString { it.displayName },
     )
   }
-  if (itemType == null && purchasedAndPaidText == null && itemProblemsText == null) return null
+  if (itemType == null && paidText == null && itemProblemsText == null) return null
   return buildString {
     if (itemType != null) {
       LocalConfiguration.current
       val resources = LocalContext.current.resources
       append(itemType.displayName(resources))
     }
-    if (purchasedAndPaidText != null) {
+    if (paidText != null) {
       appendLine()
-      append(purchasedAndPaidText)
+      append(paidText)
+    }
+    if (purchasedAtText != null) {
+      appendLine()
+      append(purchasedAtText)
     }
     if (itemProblemsText != null) {
       appendLine()

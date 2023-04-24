@@ -12,6 +12,7 @@ import androidx.core.view.marginTop
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.hedvig.android.core.common.android.parcelable
 import com.hedvig.app.R
 import com.hedvig.app.databinding.TooltipBottomSheetBinding
 import com.hedvig.app.feature.embark.TooltipModel
@@ -26,7 +27,6 @@ import com.hedvig.app.util.extensions.windowHeight
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import giraffe.EmbarkStoryQuery
 import org.koin.androidx.viewmodel.ext.android.getViewModel
-import slimber.log.e
 
 class TooltipBottomSheet : BottomSheetDialogFragment() {
   private val binding by viewBinding(TooltipBottomSheetBinding::bind)
@@ -39,11 +39,8 @@ class TooltipBottomSheet : BottomSheetDialogFragment() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     getViewModel<TooltipViewModel>()
-    val tooltipsParcel = requireArguments().getParcelable<TooltipsParcel>(TOOLTIPS)
-    if (tooltipsParcel == null) {
-      e { "Programmer error: no tooltips passed to ${this::class.java.name}" }
-      return
-    }
+    val tooltipsParcel = requireArguments().parcelable<TooltipsParcel>(TOOLTIPS)
+      ?: error("Programmer error: no tooltips passed to ${this::class.java.name}")
     val tooltips = tooltipsParcel.tooltips
     binding.apply {
       recycler.adapter = TooltipBottomSheetAdapter().also { adapter ->

@@ -1,11 +1,13 @@
 plugins {
-  id("hedvig.android.library")
   id("hedvig.android.ktlint")
+  id("hedvig.android.library")
+  id("hedvig.android.library.compose")
 }
 
 dependencies {
   implementation(projects.coreResources)
 
+  implementation(libs.androidx.compose.uiUnit)
   implementation(libs.androidx.other.core)
   implementation(libs.slimber)
 

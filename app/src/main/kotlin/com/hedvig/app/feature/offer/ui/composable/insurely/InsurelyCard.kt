@@ -11,17 +11,16 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.hedvigContentColorFor
 import com.hedvig.android.core.designsystem.theme.hedvig_black12percent
-import com.hedvig.app.R
+import com.hedvig.android.core.designsystem.theme.warning
 import com.hedvig.app.feature.offer.ui.OfferItems
 import com.hedvig.app.feature.offer.ui.OfferItems.InsurelyCard.FailedToRetrieve
 import com.hedvig.app.feature.offer.ui.OfferItems.InsurelyCard.Loading
 import com.hedvig.app.feature.offer.ui.OfferItems.InsurelyCard.Retrieved
-import com.hedvig.app.ui.compose.theme.hedvigContentColorFor
 import com.hedvig.app.util.compose.preview.previewData
 import java.util.Locale
 import java.util.UUID
@@ -34,10 +33,11 @@ fun InsurelyCard(
 ) {
   val backgroundColor by animateColorAsState(
     targetValue = if (data is FailedToRetrieve) {
-      colorResource(R.color.colorWarning)
+      MaterialTheme.colors.warning
     } else {
       MaterialTheme.colors.surface
     },
+    label = "backgroundColor",
   )
   Card(
     border = BorderStroke(1.dp, hedvig_black12percent),

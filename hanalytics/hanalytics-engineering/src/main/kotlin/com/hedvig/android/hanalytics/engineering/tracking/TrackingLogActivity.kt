@@ -31,7 +31,6 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -43,6 +42,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.edit
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.insets.ui.TopAppBar
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -61,7 +61,7 @@ class TrackingLogActivity : AppCompatActivity() {
     val viewModel = getViewModel<TrackingLogViewModel>()
 
     setContent {
-      val tracks by viewModel.tracks.collectAsState()
+      val tracks by viewModel.tracks.collectAsStateWithLifecycle()
       HedvigTheme {
         TrackingLogScreen(
           onNavigateUp = ::finish,

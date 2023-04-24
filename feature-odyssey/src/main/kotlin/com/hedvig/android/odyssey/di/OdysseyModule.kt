@@ -7,6 +7,7 @@ import com.hedvig.android.odyssey.data.ClaimFlowRepository
 import com.hedvig.android.odyssey.data.ClaimFlowRepositoryImpl
 import com.hedvig.android.odyssey.data.OdysseyService
 import com.hedvig.android.odyssey.model.FlowId
+import com.hedvig.android.odyssey.navigation.AudioContent
 import com.hedvig.android.odyssey.navigation.ClaimFlowDestination
 import com.hedvig.android.odyssey.navigation.LocationOption
 import com.hedvig.android.odyssey.sdui.AndroidDatadogLogger
@@ -16,11 +17,12 @@ import com.hedvig.android.odyssey.search.SearchViewModel
 import com.hedvig.android.odyssey.step.audiorecording.AudioRecordingViewModel
 import com.hedvig.android.odyssey.step.dateofoccurrence.DateOfOccurrenceViewModel
 import com.hedvig.android.odyssey.step.dateofoccurrencepluslocation.DateOfOccurrencePlusLocationViewModel
+import com.hedvig.android.odyssey.step.honestypledge.HonestyPledgeViewModel
 import com.hedvig.android.odyssey.step.location.LocationViewModel
+import com.hedvig.android.odyssey.step.notificationpermission.NotificationPermissionViewModel
 import com.hedvig.android.odyssey.step.phonenumber.PhoneNumberViewModel
 import com.hedvig.android.odyssey.step.singleitem.SingleItemViewModel
 import com.hedvig.android.odyssey.step.singleitemcheckout.SingleItemCheckoutViewModel
-import com.hedvig.android.odyssey.step.start.ClaimFlowStartStepViewModel
 import com.hedvig.android.odyssey.step.summary.ClaimSummaryViewModel
 import com.hedvig.odyssey.datadog.DatadogLogger
 import com.hedvig.odyssey.datadog.DatadogProvider
@@ -50,17 +52,23 @@ val odysseyModule = module {
 
   viewModel<SearchViewModel> { SearchViewModel(get<GetNetworkClaimEntryPointsUseCase>()) }
   single<GetNetworkClaimEntryPointsUseCase> {
-    GetNetworkClaimEntryPointsUseCase(
-      get(),
-      get(odysseyUrlQualifier),
-    )
+    GetNetworkClaimEntryPointsUseCase(get<ApolloClient>(octopusClient))
   }
 
   // Claims
-  viewModel<ClaimFlowStartStepViewModel> { (entryPointId: String?) ->
-    ClaimFlowStartStepViewModel(entryPointId, get())
+  viewModel<HonestyPledgeViewModel> { (entryPointId: String?) ->
+    HonestyPledgeViewModel(entryPointId, get())
   }
-  viewModel<AudioRecordingViewModel> { (flowId: FlowId) -> AudioRecordingViewModel(flowId, get()) }
+  viewModel<NotificationPermissionViewModel> { (entryPointId: String?) ->
+    NotificationPermissionViewModel(entryPointId, get<ClaimFlowRepository>())
+  }
+  viewModel<AudioRecordingViewModel> { (flowId: FlowId, audioContent: AudioContent?) ->
+    AudioRecordingViewModel(
+      flowId = flowId,
+      audioContent = audioContent,
+      claimFlowRepository = get(),
+    )
+  }
   viewModel<PhoneNumberViewModel> { (initialPhoneNumber: String?) ->
     PhoneNumberViewModel(initialPhoneNumber, get())
   }

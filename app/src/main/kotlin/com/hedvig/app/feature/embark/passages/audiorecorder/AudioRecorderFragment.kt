@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import com.hedvig.android.core.common.android.parcelable
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.util.extensions.hasPermissions
@@ -46,8 +47,8 @@ class AudioRecorderFragment : Fragment() {
   ) = ComposeView(requireContext()).apply {
     isTransitionGroup = true // https://issuetracker.google.com/issues/206947893
     setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-    val parameters = requireArguments().getParcelable<AudioRecorderParameters>(PARAMETERS)
-      ?: throw IllegalArgumentException("Programmer error: Missing PARAMETERS in ${this.javaClass.name}")
+    val parameters = requireArguments().parcelable<AudioRecorderParameters>(PARAMETERS)
+      ?: error("Programmer error: Missing PARAMETERS in ${this.javaClass.name}")
 
     setContent {
       HedvigTheme {

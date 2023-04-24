@@ -4,16 +4,8 @@ plugins {
   id("hedvig.android.ktlint")
 }
 
-@Suppress("UnstableApiUsage")
 android {
   namespace = "com.hedvig.android.design.showcase"
-
-  buildFeatures {
-    buildConfig = false
-    viewBinding = false
-    aidl = false
-    renderScript = false
-  }
 
   defaultConfig {
     applicationId = "com.hedvig.android.design.showcase"

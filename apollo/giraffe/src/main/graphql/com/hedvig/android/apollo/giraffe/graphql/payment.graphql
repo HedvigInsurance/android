@@ -25,10 +25,6 @@ query Payment($locale: Locale!) {
     }
     date
   }
-  insuranceCost {
-    ...CostFragment
-    freeUntil
-  }
   redeemedCampaigns {
     ...IncentiveFragment
     owner {

@@ -7,7 +7,6 @@ import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.Person
 import androidx.core.app.RemoteInput
 import androidx.core.app.TaskStackBuilder
@@ -15,11 +14,14 @@ import androidx.core.content.getSystemService
 import androidx.core.graphics.drawable.IconCompat
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.core.common.android.notification.setupNotificationChannel
+import com.hedvig.android.notification.core.NotificationSender
+import com.hedvig.android.notification.core.sendHedvigNotification
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.getMutablePendingIntentFlags
-import com.hedvig.app.service.push.senders.NotificationSender
 import com.hedvig.app.util.extensions.getStoredBoolean
+import slimber.log.e
+import slimber.log.i
 
 class ChatNotificationSender(
   private val context: Context,
@@ -35,12 +37,25 @@ class ChatNotificationSender(
 
   override fun sendNotification(type: String, remoteMessage: RemoteMessage) {
     if (context.getStoredBoolean(ChatActivity.ACTIVITY_IS_IN_FOREGROUND)) {
+      i { "ChatNotificationSender ignoring notification since chat is open" }
       return
     }
 
-    val hedvigPerson = hedvigPerson()
-    val messageText =
-      remoteMessage.data[DATA_NEW_MESSAGE_BODY] ?: return
+    val hedvigPerson = hedvigPerson.toBuilder()
+      .also { person ->
+        val overriddenTitle = remoteMessage.data.titleFromCustomerIoData()
+        if (overriddenTitle != null) {
+          person.setName(overriddenTitle)
+        }
+      }
+      .build()
+
+    val messageText = remoteMessage.data.bodyFromCustomerIoData() ?: remoteMessage.data[DATA_NEW_MESSAGE_BODY]
+    if (messageText == null) {
+      e { "GCM message came without a valid message. Data:${remoteMessage.data}" }
+      return
+    }
+
     val message = NotificationCompat.MessagingStyle.Message(
       messageText,
       System.currentTimeMillis(),
@@ -73,7 +88,7 @@ class ChatNotificationSender(
 
   private fun defaultMessagingStyle(
     message: NotificationCompat.MessagingStyle.Message,
-  ) = NotificationCompat.MessagingStyle(youPerson()).addMessage(message)
+  ) = NotificationCompat.MessagingStyle(youPerson).addMessage(message)
 
   private fun sendChatNotificationInner(
     context: Context,
@@ -134,9 +149,12 @@ class ChatNotificationSender(
       .setOnlyAlertOnce(alertOnlyOnce)
       .build()
 
-    NotificationManagerCompat
-      .from(context)
-      .notify(CHAT_NOTIFICATION_ID, notification)
+    sendHedvigNotification(
+      context = context,
+      notificationSender = this::class.simpleName,
+      notificationId = CHAT_NOTIFICATION_ID,
+      notification = notification,
+    )
   }
 
   @RequiresApi(Build.VERSION_CODES.N)
@@ -164,14 +182,14 @@ class ChatNotificationSender(
     )
   }
 
-  private fun hedvigPerson() = Person.Builder()
-    .setName(context.getString(hedvig.resources.R.string.NOTIFICATION_CHAT_TITLE))
+  private val hedvigPerson: Person = Person.Builder()
+    .setName("Stelios")
     .setImportant(true)
     .setKey(HEDVIG_PERSON_KEY)
     .setIcon(IconCompat.createWithResource(context, hedvig.resources.R.drawable.ic_hedvig_h))
     .build()
 
-  private fun youPerson() = Person.Builder()
+  private val youPerson: Person = Person.Builder()
     .setName(context.getString(hedvig.resources.R.string.notifications_chat_you))
     .setImportant(true)
     .setKey(YOU_PERSON_KEY)
@@ -190,5 +208,15 @@ class ChatNotificationSender(
     internal const val DATA_NEW_MESSAGE_BODY = "DATA_NEW_MESSAGE_BODY"
 
     private const val NOTIFICATION_TYPE_NEW_MESSAGE = "NEW_MESSAGE"
+
+    private fun Map<String, String>.bodyFromCustomerIoData(): String? {
+      // From customerIO https://www.customer.io/docs/send-push/#standard-payload
+      return get("body")
+    }
+
+    private fun Map<String, String>.titleFromCustomerIoData(): String? {
+      // From customerIO https://www.customer.io/docs/send-push/#standard-payload
+      return get("title")
+    }
   }
 }

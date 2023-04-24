@@ -66,15 +66,7 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
         with(viewState) {
           binding.swipeToRefresh.isRefreshing = viewState.loading
 
-          navigateEmbark
-            ?.navigate(requireContext())
-            ?.also { insuranceViewModel.crossSellActionOpened() }
-
-          navigateChat
-            ?.navigate(requireContext())
-            ?.also { insuranceViewModel.crossSellActionOpened() }
-
-          viewState.navigateWeb
+          viewState.storeUrl
             ?.let { activity?.openWebBrowser(it) }
             ?.also { insuranceViewModel.crossSellActionOpened() }
 

@@ -12,14 +12,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.hedvig.android.auth.android.AuthenticatedObserver
+import com.hedvig.android.core.common.android.parcelableExtra
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.crossselling.model.NavigateChat
 import com.hedvig.app.feature.crossselling.model.NavigateEmbark
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
-import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.faq.FAQBottomSheet
-import com.hedvig.app.feature.home.ui.changeaddress.appendQuoteCartId
 import com.hedvig.app.util.extensions.openWebBrowser
 import com.hedvig.app.util.extensions.showErrorDialog
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,8 +33,8 @@ import org.koin.core.parameter.parametersOf
 class CrossSellFaqActivity : AppCompatActivity() {
 
   private val crossSell by lazy {
-    intent.getParcelableExtra<CrossSellData>(CROSS_SELL)
-      ?: throw IllegalArgumentException("Programmer error: CROSS_SELL not passed to ${this.javaClass.name}")
+    intent.parcelableExtra<CrossSellData>(CROSS_SELL)
+      ?: error("Programmer error: CROSS_SELL not passed to ${this.javaClass.name}")
   }
 
   private val viewModel: CrossSellFaqViewModel by viewModel { parametersOf(crossSell) }
@@ -52,7 +51,6 @@ class CrossSellFaqActivity : AppCompatActivity() {
     setContent {
       HedvigTheme {
         FaqScreen(
-          ctaLabel = crossSell.callToAction,
           onUpClick = ::finish,
           openSheet = { faq ->
             FAQBottomSheet
@@ -107,7 +105,6 @@ class CrossSellFaqActivity : AppCompatActivity() {
 class CrossSellFaqViewModel(
   private val crossSell: CrossSellData,
   private val chatRepository: ChatRepository,
-  private val createQuoteCartUseCase: CreateQuoteCartUseCase,
 ) : ViewModel() {
 
   private val _viewState = MutableStateFlow(ViewState())
@@ -133,22 +130,7 @@ class CrossSellFaqViewModel(
 
   fun onCtaClick() {
     viewModelScope.launch {
-      when (val action = crossSell.action) {
-        CrossSellData.Action.Chat -> _viewState.value = ViewState(navigateChat = NavigateChat)
-        is CrossSellData.Action.Embark -> _viewState.value = action.toViewState()
-        is CrossSellData.Action.Web -> _viewState.value = ViewState(navigateWeb = Uri.parse(action.url))
-      }
-    }
-  }
-
-  private suspend fun CrossSellData.Action.Embark.toViewState(): ViewState {
-    return when (val result = createQuoteCartUseCase.invoke()) {
-      is Either.Left -> ViewState(errorMessage = result.value.message)
-      is Either.Right -> {
-        val embarkStoryId = appendQuoteCartId(embarkStoryId, result.value.id)
-        val navigateEmbark = NavigateEmbark(embarkStoryId, title)
-        ViewState(navigateEmbark = navigateEmbark)
-      }
+      Uri.parse(crossSell.storeUrl)
     }
   }
 

@@ -19,7 +19,7 @@ class ProfileQueryDataToProfileUiStateMapper(
   override suspend fun map(from: ProfileQuery.Data): ProfileUiState {
     val priceData = if (featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN)) {
       PaymentState.Show(
-        monetaryMonthlyNet = from.insuranceCost.formatMonetaryMonthlyNet(languageService.getLocale()),
+        monetaryMonthlyNet = from.chargeEstimation.charge.formatMonetaryMonthlyNet(languageService.getLocale()),
         priceCaptionResId = marketManager.market?.getPriceCaption(
           from.bankAccount?.directDebitStatus,
           from.activePaymentMethodsV2?.fragments?.activePaymentMethodsFragment,
@@ -36,9 +36,8 @@ class ProfileQueryDataToProfileUiStateMapper(
     )
   }
 
-  private fun ProfileQuery.InsuranceCost?.formatMonetaryMonthlyNet(locale: Locale): String {
-    if (this == null) return ""
-    val monetaryAmount = fragments.costFragment.monthlyNet.fragments.monetaryAmountFragment.toMonetaryAmount()
+  private fun ProfileQuery.Charge.formatMonetaryMonthlyNet(locale: Locale): String {
+    val monetaryAmount = fragments.monetaryAmountFragment.toMonetaryAmount()
     return monetaryAmount.format(locale)
   }
 }

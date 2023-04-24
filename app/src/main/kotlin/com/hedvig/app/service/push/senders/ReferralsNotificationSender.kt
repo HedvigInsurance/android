@@ -1,12 +1,14 @@
 package com.hedvig.app.service.push.senders
 
+import android.app.Notification
 import android.app.PendingIntent
 import android.content.Context
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.core.common.android.notification.setupNotificationChannel
+import com.hedvig.android.notification.core.NotificationSender
+import com.hedvig.android.notification.core.sendHedvigNotification
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
@@ -34,6 +36,13 @@ class ReferralsNotificationSender(
     }
   }
 
+  override fun handlesNotificationType(notificationType: String) = when (notificationType) {
+    NOTIFICATION_TYPE_REFERRAL_SUCCESS,
+    NOTIFICATION_TYPE_REFERRALS_CAMPAIGN,
+    -> true
+    else -> false
+  }
+
   internal fun sendReferralSuccessfulNotification(remoteMessage: RemoteMessage) {
     val pendingIntent: PendingIntent? = TaskStackBuilder
       .create(context)
@@ -54,24 +63,22 @@ class ReferralsNotificationSender(
 
     val contentText = referralName?.let {
       context.resources.getString(
-        hedvig.resources.R.string.NOTIFICATION_REFERRAL_COMPLETED_CONTENT_WITH_NAME,
+        R.string.NOTIFICATION_REFERRAL_COMPLETED_CONTENT_WITH_NAME,
         it,
       )
-    } ?: context.resources.getString(hedvig.resources.R.string.NOTIFICATION_REFERRAL_COMPLETED_CONTENT)
+    } ?: context.resources.getString(R.string.NOTIFICATION_REFERRAL_COMPLETED_CONTENT)
 
     val notificationBuilder = createNotificationBuilder(
       context = context,
-      title = context.resources.getString(hedvig.resources.R.string.NOTIFICATION_REFERRAL_COMPLETED_TITLE),
+      title = context.resources.getString(R.string.NOTIFICATION_REFERRAL_COMPLETED_TITLE),
       body = contentText,
       pendingIntent = pendingIntent,
     )
 
-    NotificationManagerCompat
-      .from(context)
-      .notify(REFERRAL_NOTIFICATION_ID, notificationBuilder.build())
+    sendNotificationInner(REFERRAL_NOTIFICATION_ID, notificationBuilder.build())
   }
 
-  internal fun sendReferralCampaignNotification(remoteMessage: RemoteMessage) {
+  private fun sendReferralCampaignNotification(remoteMessage: RemoteMessage) {
     val pendingIntent: PendingIntent? = TaskStackBuilder
       .create(context)
       .run {
@@ -97,16 +104,16 @@ class ReferralsNotificationSender(
       pendingIntent = pendingIntent,
     )
 
-    NotificationManagerCompat
-      .from(context)
-      .notify(REFERRALS_CAMPAIGN_ID, notificationBuilder.build())
+    sendNotificationInner(REFERRALS_CAMPAIGN_ID, notificationBuilder.build())
   }
 
-  override fun handlesNotificationType(notificationType: String) = when (notificationType) {
-    NOTIFICATION_TYPE_REFERRAL_SUCCESS,
-    NOTIFICATION_TYPE_REFERRALS_CAMPAIGN,
-    -> true
-    else -> false
+  private fun sendNotificationInner(id: Int, notification: Notification) {
+    sendHedvigNotification(
+      context = context,
+      notificationSender = this::class.simpleName,
+      notificationId = id,
+      notification = notification,
+    )
   }
 
   private fun createNotificationBuilder(
@@ -116,10 +123,10 @@ class ReferralsNotificationSender(
     pendingIntent: PendingIntent?,
   ) = NotificationCompat
     .Builder(context, REFERRAL_CHANNEL_ID)
-    .setSmallIcon(hedvig.resources.R.drawable.ic_hedvig_h)
+    .setSmallIcon(R.drawable.ic_hedvig_h)
     .setContentText(title)
     .setContentText(body)
-    .setContentTitle(context.resources.getString(hedvig.resources.R.string.NOTIFICATION_REFERRAL_COMPLETED_TITLE))
+    .setContentTitle(context.resources.getString(R.string.NOTIFICATION_REFERRAL_COMPLETED_TITLE))
     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
     .setAutoCancel(true)
     .setChannelId(REFERRAL_CHANNEL_ID)

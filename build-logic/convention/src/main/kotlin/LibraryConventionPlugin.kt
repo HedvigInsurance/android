@@ -24,9 +24,6 @@ class LibraryConventionPlugin : Plugin<Project> {
         defaultConfig.targetSdk = libs.versions.targetSdkVersion.get().toInt()
         @Suppress("UnstableApiUsage")
         buildFeatures {
-          buildConfig = false
-          aidl = false
-          renderScript = false
           resValues = false
           shaders = false
         }

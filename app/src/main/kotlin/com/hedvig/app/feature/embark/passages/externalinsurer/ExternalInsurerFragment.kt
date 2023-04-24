@@ -10,6 +10,7 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.hedvig.android.core.common.android.parcelable
 import com.hedvig.android.core.common.android.whenApiVersion
 import com.hedvig.app.R
 import com.hedvig.app.databinding.PreviousOrExternalInsurerFragmentBinding
@@ -32,9 +33,8 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
   private val viewModel: ExternalInsurerViewModel by activityViewModel()
 
   private val insurerData by lazy {
-    requireArguments()
-      .getParcelable<ExternalInsurerParameter>(DATA)
-      ?: throw IllegalArgumentException("No argument passed to ${this.javaClass.name}")
+    requireArguments().parcelable<ExternalInsurerParameter>(DATA)
+      ?: error("No argument passed to ${this.javaClass.name}")
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -102,11 +102,11 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
 
   private fun handleInsurerProviderBottomSheetResult(bundle: Bundle) {
     val id = bundle.getString(InsurerProviderBottomSheet.INSURER_ID_KEY)
-      ?: throw IllegalArgumentException("Id not found in bundle from InsurerProviderBottomSheet")
+      ?: error("Id not found in bundle from InsurerProviderBottomSheet")
     val collectionId = bundle.getString(InsurerProviderBottomSheet.INSURER_COLLECTION_ID_KEY)
-      ?: throw IllegalArgumentException("Collection Id not found in bundle from InsurerProviderBottomSheet")
+      ?: error("Collection Id not found in bundle from InsurerProviderBottomSheet")
     val name = bundle.getString(InsurerProviderBottomSheet.INSURER_NAME_KEY)
-      ?: throw IllegalArgumentException("Name not found in bundle from InsurerProviderBottomSheet")
+      ?: error("Name not found in bundle from InsurerProviderBottomSheet")
     embarkViewModel.putInStore(insurerData.storeKey, id)
     viewModel.selectInsuranceProvider(
       InsuranceProvider(

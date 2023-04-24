@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.loggedin.ui
 
 import android.animation.ArgbEvaluator
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -20,6 +19,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.github.florent37.viewtooltip.ViewTooltip
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.hedvig.android.auth.android.AuthenticatedObserver
+import com.hedvig.android.core.common.android.serializable
 import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityLoggedInBinding
@@ -69,7 +69,6 @@ class LoggedInActivity : AppCompatActivity(R.layout.activity_logged_in) {
   private val binding by viewBinding(ActivityLoggedInBinding::bind)
 
   private var lastMenuIdInflated: Int? = null
-  private var savedTab: LoggedInTabs? = null
   private var lastSelectedTab: LoggedInTabs? = null
 
   private lateinit var referralTermsUrl: String
@@ -82,8 +81,6 @@ class LoggedInActivity : AppCompatActivity(R.layout.activity_logged_in) {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     lifecycle.addObserver(AuthenticatedObserver())
-
-    savedTab = savedInstanceState?.getSerializable("tab") as? LoggedInTabs
 
     with(binding) {
       window.compatSetDecorFitsSystemWindows(false)
@@ -203,15 +200,6 @@ class LoggedInActivity : AppCompatActivity(R.layout.activity_logged_in) {
   private fun shouldShowTooltip(lastOpen: Long, currentEpochDay: Long): Boolean {
     val diff = currentEpochDay - lastOpen
     return diff >= 30
-  }
-
-  @SuppressLint("MissingSuperCall") // We *are* calling it, seems like a false positive
-  override fun onSaveInstanceState(outState: Bundle) {
-    outState.putSerializable(
-      "tab",
-      LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId),
-    )
-    super.onSaveInstanceState(outState)
   }
 
   override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -371,9 +359,7 @@ class LoggedInActivity : AppCompatActivity(R.layout.activity_logged_in) {
       bottomNavigationView.menu.clear()
       bottomNavigationView.inflateMenu(menuId)
 
-      val initialTab = savedTab
-        ?: intent.extras?.getSerializable(INITIAL_TAB) as? LoggedInTabs
-        ?: LoggedInTabs.HOME
+      val initialTab: LoggedInTabs = intent.extras?.serializable(INITIAL_TAB) ?: LoggedInTabs.HOME
       bottomNavigationView.selectedItemId = initialTab.id()
     }
     bottomNavigationView.menu.forEach { item ->

@@ -20,7 +20,7 @@ fragment CrossSellFragment on CrossSell {
     displayName
     aboutSection
     contractPerils {
-      ...PerilFragment
+      ...PerilFragmentV2
     }
     insuranceTerms {
       ...InsuranceTermFragment

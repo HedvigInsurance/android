@@ -274,7 +274,7 @@ class ChatViewModel(
 
   private fun getLastId(): String =
     messages.value?.messages?.firstOrNull()?.fragments?.chatMessageFragment?.globalId
-      ?: throw RuntimeException("Messages is not initialized!")
+      ?: error("Messages is not initialized!")
 
   override fun onCleared() {
     super.onCleared()

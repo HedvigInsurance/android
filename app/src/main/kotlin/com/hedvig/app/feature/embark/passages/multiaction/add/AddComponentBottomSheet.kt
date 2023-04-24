@@ -12,6 +12,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.setFragmentResult
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.textfield.TextInputLayout
+import com.hedvig.android.core.common.android.parcelable
 import com.hedvig.app.R
 import com.hedvig.app.databinding.AddComponentBottomSheetBinding
 import com.hedvig.app.databinding.LayoutComponentDropdownBinding
@@ -29,12 +30,12 @@ import org.koin.core.parameter.parametersOf
 class AddComponentBottomSheet : BottomSheetDialogFragment() {
 
   private val componentState: MultiActionItem.Component? by lazy {
-    requireArguments().getParcelable(COMPONENT_STATE)
+    requireArguments().parcelable(COMPONENT_STATE)
   }
 
   private val multiActionParams: MultiActionParams by lazy {
-    requireArguments().getParcelable<MultiActionParams>(MULTI_ACTION_PARAMS)
-      ?: throw Error("Programmer error: No multi action params provided to ${this.javaClass.name}")
+    requireArguments().parcelable(MULTI_ACTION_PARAMS)
+      ?: error("Programmer error: No multi action params provided to ${this.javaClass.name}")
   }
 
   private val viewModel: AddComponentViewModel by viewModel { parametersOf(componentState, multiActionParams) }

@@ -1,12 +1,11 @@
 package com.hedvig.android.odyssey.search
 
+import arrow.core.Either
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.odyssey.model.SearchableClaim
 
 internal interface GetClaimEntryPointsUseCase {
-  suspend operator fun invoke(): CommonClaimsResult
+  suspend operator fun invoke(): Either<ErrorMessage, CommonClaimsResult>
 }
 
-internal sealed interface CommonClaimsResult {
-  data class Error(val message: String) : CommonClaimsResult
-  data class Success(val searchableClaims: List<SearchableClaim>) : CommonClaimsResult
-}
+data class CommonClaimsResult(val searchableClaims: List<SearchableClaim>)

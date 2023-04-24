@@ -4,11 +4,12 @@ import android.app.Notification
 import android.app.PendingIntent
 import android.content.Context
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.android.notification.setupNotificationChannel
+import com.hedvig.android.notification.core.NotificationSender
+import com.hedvig.android.notification.core.sendHedvigNotification
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.crossselling.ui.detail.CrossSellDetailActivity
 import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsUseCase
@@ -37,10 +38,10 @@ class CrossSellNotificationSender(
   override fun sendNotification(type: String, remoteMessage: RemoteMessage) {
     val title = remoteMessage.data[DATA_MESSAGE_TITLE]
     val body = remoteMessage.data[DATA_MESSAGE_BODY]
-    val type = remoteMessage.data[CROSS_SELL_TYPE]
+    val id = remoteMessage.data[CROSS_SELL_ID]
 
     applicationScope.launch(Dispatchers.IO) {
-      val crossSell = getCrossSell(type)
+      val crossSell = getCrossSell(id)
 
       val intent = if (crossSell != null) {
         createCrossSellIntent(context, crossSell)
@@ -54,7 +55,12 @@ class CrossSellNotificationSender(
         body = body,
         pendingIntent = intent,
       )
-      notify(context, notification)
+      sendHedvigNotification(
+        context = context,
+        notificationSender = this::class.simpleName,
+        notificationId = CROSS_SELL_NOTIFICATION_ID,
+        notification = notification,
+      )
     }
   }
 
@@ -111,24 +117,15 @@ class CrossSellNotificationSender(
       .build()
   }
 
-  private fun notify(context: Context, notification: Notification) {
-    NotificationManagerCompat
-      .from(context)
-      .notify(
-        CROSS_SELL_NOTIFICATION_ID,
-        notification,
-      )
-  }
-
-  private suspend fun getCrossSell(crossSellType: String?): CrossSellData? {
-    return crossSellsUseCase.invoke().firstOrNull {
-      it.crossSellType == crossSellType
+  private suspend fun getCrossSell(id: String?): CrossSellData? {
+    return crossSellsUseCase.invoke().getOrNull()?.firstOrNull {
+      it.id == id
     }
   }
 
   companion object {
     private const val CROSS_SELL_CHANNEL_ID = "hedvig-cross-sell"
-    private const val CROSS_SELL_TYPE = "CROSS_SELL_TYPE"
+    private const val CROSS_SELL_ID = "CROSS_SELL_ID"
     private const val CROSS_SELL_NOTIFICATION_ID = 11
 
     private const val NOTIFICATION_CROSS_SELL = "CROSS_SELL"

@@ -107,7 +107,7 @@ private fun SingleItemScreen(
 ) {
   ClaimFlowScaffold(
     windowSizeClass = windowSizeClass,
-    navigateBack = navigateBack,
+    navigateUp = navigateBack,
     topAppBarText = stringResource(R.string.claims_item_screen_title),
     isLoading = uiState.isLoading,
     errorSnackbarState = ErrorSnackbarState(
@@ -138,7 +138,7 @@ private fun SingleItemScreen(
     Spacer(Modifier.height(20.dp))
     PriceOfPurchase(
       uiState = uiState.purchasePriceUiState,
-      enabled = uiState.canSubmit,
+      canInteract = uiState.canSubmit,
       modifier = sideSpacingModifier,
     )
     Spacer(Modifier.height(10.dp))
@@ -262,14 +262,14 @@ private fun DateOfPurchase(
 @Composable
 private fun PriceOfPurchase(
   uiState: PurchasePriceUiState,
-  enabled: Boolean,
+  canInteract: Boolean,
   modifier: Modifier = Modifier,
 ) {
   val focusRequester = remember { FocusRequester() }
   val keyboardController = LocalSoftwareKeyboardController.current
   FormRowCard(
     modifier = modifier,
-    enabled = enabled,
+    enabled = canInteract,
     onClick = {
       focusRequester.requestFocus()
       keyboardController?.show()
@@ -281,6 +281,7 @@ private fun PriceOfPurchase(
     CompositionLocalProvider(LocalContentColor provides LocalContentColor.current.copy(alpha = ContentAlpha.medium)) {
       MonetaryAmountInput(
         value = uiState.uiMoney.amount?.toString() ?: "",
+        canInteract = canInteract,
         onInput = { uiState.updateAmount(it) },
         currency = uiState.uiMoney.currencyCode.rawValue,
         maximumFractionDigits = 0,
