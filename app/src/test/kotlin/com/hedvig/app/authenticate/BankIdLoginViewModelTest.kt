@@ -181,7 +181,6 @@ class BankIdLoginViewModelTest {
     return BankIdLoginViewModel(
       MockHAnalytics(),
       FakeFeatureManager(loginMethod = { LoginMethod.BANK_ID_SWEDEN }),
-      mockk<PushTokenManager>(relaxed = true),
       mockk<UploadMarketAndLanguagePreferencesUseCase>(relaxed = true),
       authTokenService,
       authRepository,
