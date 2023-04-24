@@ -279,6 +279,10 @@
         <meta-data
             android:name="firebase_crashlytics_collection_enabled"
             android:value="${firebaseCrashlyticsCollectionEnabled}" />
+        <!-- Do not create a FCM token on initialization, we handle that on login/logout -->
+        <meta-data
+            android:name="firebase_messaging_auto_init_enabled"
+            android:value="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -293,7 +297,7 @@
         </provider>
 
         <service
-            android:name=".service.push.PushNotificationService"
+            android:name="com.hedvig.android.notification.firebase.PushNotificationService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -332,6 +336,12 @@
             <meta-data
                 android:name="com.hedvig.app.startup.TimberInitializer"
                 android:value="androidx.startup" />
+
+            <!-- Remove automatic WorkManager initialization as Koin does it for us  -->
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
         </provider>
     </application>
 

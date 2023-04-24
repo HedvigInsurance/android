@@ -7,6 +7,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.core.common.android.notification.setupNotificationChannel
+import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.app.MainActivity
 import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.DATA_MESSAGE_BODY

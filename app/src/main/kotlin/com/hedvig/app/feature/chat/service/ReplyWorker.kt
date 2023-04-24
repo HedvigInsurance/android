@@ -6,17 +6,14 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.hedvig.android.core.common.android.whenApiVersion
 import com.hedvig.app.feature.chat.data.ChatRepository
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import slimber.log.e
 
 class ReplyWorker(
   private val context: Context,
   params: WorkerParameters,
-) : CoroutineWorker(context, params),
-  KoinComponent {
-  private val chatRepository: ChatRepository by inject()
-  private val chatNotificationSender: ChatNotificationSender by inject()
+  private val chatRepository: ChatRepository,
+  private val chatNotificationSender: ChatNotificationSender,
+) : CoroutineWorker(context, params) {
   override suspend fun doWork(): Result {
     val replyText = inputData.getString(ChatMessageNotificationReceiver.REPLY_TEXT)
       ?: return Result.failure()

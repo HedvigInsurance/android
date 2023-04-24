@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.os.Build
-import arrow.core.continuations.either
+import androidx.work.WorkerParameters
 import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
@@ -21,7 +21,6 @@ import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.hedvig.android.apollo.giraffe.di.giraffeClient
 import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.auth.AuthTokenService
-import com.hedvig.android.auth.event.AuthEventListener
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.auth.interceptor.MigrateTokenInterceptor
 import com.hedvig.android.core.common.di.LogInfoType
@@ -40,6 +39,7 @@ import com.hedvig.android.hanalytics.android.di.hAnalyticsUrlQualifier
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.activity.Navigator
+import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.odyssey.di.odysseyUrlQualifier
 import com.hedvig.app.authenticate.BankIdLoginViewModel
 import com.hedvig.app.authenticate.LogoutUseCase
@@ -59,6 +59,7 @@ import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.chat.service.ChatNotificationSender
+import com.hedvig.app.feature.chat.service.ReplyWorker
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.feature.checkout.CheckoutViewModel
 import com.hedvig.app.feature.checkout.EditCheckoutUseCase
@@ -169,10 +170,8 @@ import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModelImpl
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
 import com.hedvig.app.service.FileService
-import com.hedvig.app.service.push.RegisterPushTokenAuthEventListener
 import com.hedvig.app.service.push.senders.CrossSellNotificationSender
 import com.hedvig.app.service.push.senders.GenericNotificationSender
-import com.hedvig.app.service.push.senders.NotificationSender
 import com.hedvig.app.service.push.senders.PaymentNotificationSender
 import com.hedvig.app.service.push.senders.ReferralsNotificationSender
 import com.hedvig.app.util.apollo.DeviceIdInterceptor
@@ -184,16 +183,15 @@ import com.hedvig.app.util.extensions.startChat
 import com.hedvig.authlib.AuthEnvironment
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.NetworkAuthRepository
-import giraffe.NotificationRegisterDeviceMutation
 import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.androidx.workmanager.dsl.worker
 import org.koin.core.parameter.ParametersHolder
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import slimber.log.e
 import slimber.log.i
 import timber.log.Timber
 import java.io.File
@@ -610,15 +608,6 @@ val cacheManagerModule = module {
   single { NetworkCacheManager(get<ApolloClient>(giraffeClient)) }
 }
 
-val pushTokenManagerModule = module {
-  single {
-    RegisterPushTokenAuthEventListener(
-      apolloClient = get<ApolloClient>(giraffeClient),
-      sharedPreferences = get(),
-    )
-  } bind AuthEventListener::class
-}
-
 val sharedPreferencesModule = module {
   single<SharedPreferences> {
     get<Context>().getSharedPreferences(
@@ -673,6 +662,17 @@ val authRepositoryModule = module {
         AuthEnvironment.PRODUCTION
       },
       additionalHttpHeaders = mapOf(),
+    )
+  }
+}
+
+val workManagerModule = module {
+  worker<ReplyWorker> {
+    ReplyWorker(
+      context = get<Context>(),
+      params = get<WorkerParameters>(),
+      chatRepository = get<ChatRepository>(),
+      chatNotificationSender = get<ChatNotificationSender>(),
     )
   }
 }

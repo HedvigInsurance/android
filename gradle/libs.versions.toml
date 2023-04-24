@@ -171,7 +171,6 @@ apollo-normalizedCache = { module = "com.apollographql.apollo3:apollo-normalized
 apollo-runtime = { module = "com.apollographql.apollo3:apollo-runtime", version.ref = "apollo" }
 apollo-testingSupport = { module = "com.apollographql.apollo3:apollo-testing-support", version.ref = "apollo" }
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
-arrow-fx = { module = "io.arrow-kt:arrow-fx-coroutines", version.ref = "arrow" }
 assertK = { module = "com.willowtreeapps.assertk:assertk-jvm", version.ref = "assertK" }
 coil-coil = { module = "io.coil-kt:coil-base", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt:coil-compose-base", version.ref = "coil" }
@@ -183,11 +182,11 @@ coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-androi
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 datadog-sdk = { module = "com.datadoghq:dd-sdk-android", version.ref = "datadog" }
-firebase-bom = "com.google.firebase:firebase-bom:31.4.0"
+firebase-bom = "com.google.firebase:firebase-bom:31.5.0"
 firebase-analytics = { module = "com.google.firebase:firebase-analytics-ktx" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics-ktx" }
 firebase-dynamicLinks = { module = "com.google.firebase:firebase-dynamic-links" }
-firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
 firebase-playServicesBase = { module = "com.google.android.gms:play-services-base" }
 flexbox = { module = "com.google.android.flexbox:flexbox", version.ref = "flexbox" }
 fragmentViewBindingDelegate = { module = "com.github.Zhuinden:fragmentviewbindingdelegate-kt", version.ref = "fragmentViewBindingDelegate" }
@@ -203,6 +202,7 @@ koin-android = { module = "io.insert-koin:koin-android", version.ref = "koinAndr
 koin-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koinCompose" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koinCore" }
 koin-test = { module = "io.insert-koin:koin-test", version.ref = "koinCore" }
+koin-workManager = { module = "io.insert-koin:koin-androidx-workmanager", version.ref = "koinCore" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlinx-immutable-collections = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxImmutableCollections" }

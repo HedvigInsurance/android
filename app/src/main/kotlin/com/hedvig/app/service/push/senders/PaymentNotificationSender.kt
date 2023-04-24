@@ -10,6 +10,7 @@ import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.android.notification.setupNotificationChannel
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.market.MarketManager
+import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity

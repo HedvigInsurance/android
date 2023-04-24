@@ -1,4 +1,4 @@
-package com.hedvig.app.service.push.senders
+package com.hedvig.android.notification.core
 
 import com.google.firebase.messaging.RemoteMessage
 
