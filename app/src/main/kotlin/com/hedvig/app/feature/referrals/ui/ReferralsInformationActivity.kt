@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.hedvig.android.auth.android.AuthenticatedObserver
+import com.hedvig.android.core.common.android.serializableExtra
 import com.hedvig.android.language.LanguageService
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityReferralsInformationBinding
@@ -33,7 +34,7 @@ class ReferralsInformationActivity : AppCompatActivity(R.layout.activity_referra
     lifecycle.addObserver(AuthenticatedObserver())
 
     val termsUrl = intent.getStringExtra(TERMS_URL)
-    val incentiveAmount = intent.getSerializableExtra(INCENTIVE_AMOUNT) as? BigDecimal
+    val incentiveAmount = intent.serializableExtra<BigDecimal>(INCENTIVE_AMOUNT)
     val incentiveCurrency = intent.getStringExtra(INCENTIVE_CURRENCY)
 
     if (termsUrl == null || incentiveAmount == null || incentiveCurrency == null) {

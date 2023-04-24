@@ -20,6 +20,9 @@
 -dontwarn org.codehaus.mojo.animal_sniffer.*
 # endregion
 
+# Adyen dependencies - https://github.com/Adyen/adyen-android/issues/1172
+-dontwarn org.slf4j.impl.StaticLoggerBinder
+
 # Crashlytics
 -keep class com.crashlytics.** { *; }
 -dontwarn com.crashlytics.**

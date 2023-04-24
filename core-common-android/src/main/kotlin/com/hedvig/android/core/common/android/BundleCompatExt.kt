@@ -15,7 +15,7 @@ inline fun <reified T : Parcelable> Bundle.parcelableArrayList(key: String): Arr
 }
 
 @BuildCompat.PrereleaseSdkCheck
-inline fun <reified T : Serializable> Bundle.serializable(key: String): T? {
+inline fun <reified T : Serializable> Bundle.serializableExtra(key: String): T? {
   return if (BuildCompat.isAtLeastU()) {
     this.getSerializable(key, T::class.java)
   } else {
