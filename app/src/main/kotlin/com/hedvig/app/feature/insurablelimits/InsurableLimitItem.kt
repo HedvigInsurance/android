@@ -24,7 +24,9 @@ sealed class InsurableLimitItem {
         description = fragment.description,
       )
 
-      fun from(insurableLimit: CrossSalesQuery.Data.CurrentMember.CrossSell.ProductVariant.InsurableLimit) = InsurableLimit(
+      fun from(
+        insurableLimit: CrossSalesQuery.Data.CurrentMember.CrossSell.ProductVariant.InsurableLimit,
+      ) = InsurableLimit(
         label = insurableLimit.label,
         limit = insurableLimit.limit,
         description = insurableLimit.description,

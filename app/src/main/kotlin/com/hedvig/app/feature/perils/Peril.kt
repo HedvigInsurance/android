@@ -38,7 +38,7 @@ data class Peril(
       info = peril.info,
       colorCode = peril.colorCode,
       darkUrl = null,
-      lightUrl = null
+      lightUrl = null,
     )
   }
 }

@@ -3,15 +3,11 @@ package com.hedvig.app.feature.crossselling.usecase
 import arrow.core.Either
 import arrow.core.continuations.either
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.language.LanguageService
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
-import giraffe.CrossSellsQuery
 import octopus.CrossSalesQuery
-import slimber.log.e
 
 class GetCrossSellsUseCase(
   private val apolloClient: ApolloClient,

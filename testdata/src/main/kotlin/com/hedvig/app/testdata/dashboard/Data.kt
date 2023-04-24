@@ -2,12 +2,6 @@ package com.hedvig.app.testdata.dashboard
 
 import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.dashboard.builders.InsuranceDataBuilder
-import giraffe.InsuranceQuery
-import giraffe.fragment.CrossSellFragment
-import giraffe.type.CrossSell
-import giraffe.type.CrossSellEmbark
-import giraffe.type.CrossSellType
-import giraffe.type.TypeOfContract
 
 val INSURANCE_DATA =
   InsuranceDataBuilder(
