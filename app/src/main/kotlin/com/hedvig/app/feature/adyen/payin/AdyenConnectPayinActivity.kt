@@ -8,6 +8,7 @@ import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.adyen.checkout.dropin.DropIn
 import com.adyen.checkout.dropin.DropInResult
 import com.hedvig.android.auth.android.AuthenticatedObserver
+import com.hedvig.android.core.common.android.serializableExtra
 import com.hedvig.android.language.LanguageService
 import com.hedvig.app.R
 import com.hedvig.app.feature.adyen.AdyenCurrency
@@ -34,7 +35,7 @@ class AdyenConnectPayinActivity : AppCompatActivity(R.layout.fragment_container_
     super.onCreate(savedInstanceState)
     lifecycle.addObserver(AuthenticatedObserver())
 
-    val c = intent.getSerializableExtra(CURRENCY) as? AdyenCurrency
+    val c = intent.serializableExtra<AdyenCurrency>(CURRENCY)
 
     if (c == null) {
       e { "Programmer error: CURRENCY not provided to ${this.javaClass.name}" }

@@ -19,7 +19,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.github.florent37.viewtooltip.ViewTooltip
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.hedvig.android.auth.android.AuthenticatedObserver
-import com.hedvig.android.core.common.android.serializable
+import com.hedvig.android.core.common.android.serializableExtra
 import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityLoggedInBinding
@@ -359,7 +359,7 @@ class LoggedInActivity : AppCompatActivity(R.layout.activity_logged_in) {
       bottomNavigationView.menu.clear()
       bottomNavigationView.inflateMenu(menuId)
 
-      val initialTab: LoggedInTabs = intent.extras?.serializable(INITIAL_TAB) ?: LoggedInTabs.HOME
+      val initialTab: LoggedInTabs = intent.extras?.serializableExtra(INITIAL_TAB) ?: LoggedInTabs.HOME
       bottomNavigationView.selectedItemId = initialTab.id()
     }
     bottomNavigationView.menu.forEach { item ->
