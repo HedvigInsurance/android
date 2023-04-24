@@ -37,6 +37,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.odyssey.R
 import com.hedvig.android.odyssey.model.AudioUrl
+import com.hedvig.android.odyssey.navigation.AudioContent
 import com.hedvig.android.odyssey.step.audiorecording.AudioRecordingUiState
 import com.hedvig.odyssey.renderers.audiorecorder.PlaybackWaveForm
 import com.hedvig.odyssey.renderers.audiorecorder.RecordingAmplitudeIndicator
@@ -82,10 +83,10 @@ internal fun AudioRecorder(
       pause = pause,
       modifier = modifier,
     )
-    is AudioRecordingUiState.PrerecordedWithSignedUrl -> PrerecordedPlayback(
+    is AudioRecordingUiState.PrerecordedWithAudioContent -> PrerecordedPlayback(
       uiState = uiState,
       submitAudioUrl = {
-        submitAudioUrl(uiState.signedUrl)
+        submitAudioUrl(uiState.audioContent.audioUrl)
       },
       redo = redo,
       modifier = modifier,
@@ -207,11 +208,13 @@ private fun Playback(
 
 @Composable
 private fun PrerecordedPlayback(
-  uiState: AudioRecordingUiState.PrerecordedWithSignedUrl,
+  uiState: AudioRecordingUiState.PrerecordedWithAudioContent,
   redo: () -> Unit,
   submitAudioUrl: () -> Unit,
   modifier: Modifier = Modifier,
-  audioPlayer: AudioPlayer = rememberAudioPlayer(SignedAudioUrl.fromSignedAudioUrlString(uiState.signedUrl.value)),
+  audioPlayer: AudioPlayer = rememberAudioPlayer(
+    SignedAudioUrl.fromSignedAudioUrlString(uiState.audioContent.signedUrl.value),
+  ),
 ) {
   Column(
     horizontalAlignment = Alignment.CenterHorizontally,
@@ -259,7 +262,7 @@ private fun PreviewPrerecordedPlayback() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       PrerecordedPlayback(
-        uiState = AudioRecordingUiState.PrerecordedWithSignedUrl(AudioUrl("")),
+        uiState = AudioRecordingUiState.PrerecordedWithAudioContent(AudioContent(AudioUrl(""), AudioUrl(""))),
         redo = {},
         submitAudioUrl = {},
         modifier = Modifier,

@@ -170,14 +170,13 @@ class ReferralsAdapter(
                 ?.toMonetaryAmount()
                 ?.let { referralNet ->
                   newPrice.text = referralNet.format(languageService.getLocale())
-                  otherDiscountBox.isVisible =
-                    data
-                      .inner
-                      .chargeEstimation
-                      .subscription
-                      .fragments
-                      .monetaryAmountFragment
-                      .toMonetaryAmount() != referralNet
+                  otherDiscountBox.isVisible = data
+                    .inner
+                    .chargeEstimation
+                    .subscription
+                    .fragments
+                    .monetaryAmountFragment
+                    .toMonetaryAmount() != referralNet
                 }
             }
 
