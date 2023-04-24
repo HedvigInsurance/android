@@ -1,13 +1,14 @@
 package com.hedvig.app.service.push.senders
 
+import android.app.Notification
 import android.app.PendingIntent
 import android.content.Context
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.core.common.android.notification.setupNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
+import com.hedvig.android.notification.core.sendHedvigNotification
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
@@ -33,6 +34,13 @@ class ReferralsNotificationSender(
       NOTIFICATION_TYPE_REFERRAL_SUCCESS -> sendReferralSuccessfulNotification(remoteMessage)
       NOTIFICATION_TYPE_REFERRALS_CAMPAIGN -> sendReferralCampaignNotification(remoteMessage)
     }
+  }
+
+  override fun handlesNotificationType(notificationType: String) = when (notificationType) {
+    NOTIFICATION_TYPE_REFERRAL_SUCCESS,
+    NOTIFICATION_TYPE_REFERRALS_CAMPAIGN,
+    -> true
+    else -> false
   }
 
   internal fun sendReferralSuccessfulNotification(remoteMessage: RemoteMessage) {
@@ -67,12 +75,10 @@ class ReferralsNotificationSender(
       pendingIntent = pendingIntent,
     )
 
-    NotificationManagerCompat
-      .from(context)
-      .notify(REFERRAL_NOTIFICATION_ID, notificationBuilder.build())
+    sendNotificationInner(REFERRAL_NOTIFICATION_ID, notificationBuilder.build())
   }
 
-  internal fun sendReferralCampaignNotification(remoteMessage: RemoteMessage) {
+  private fun sendReferralCampaignNotification(remoteMessage: RemoteMessage) {
     val pendingIntent: PendingIntent? = TaskStackBuilder
       .create(context)
       .run {
@@ -98,16 +104,16 @@ class ReferralsNotificationSender(
       pendingIntent = pendingIntent,
     )
 
-    NotificationManagerCompat
-      .from(context)
-      .notify(REFERRALS_CAMPAIGN_ID, notificationBuilder.build())
+    sendNotificationInner(REFERRALS_CAMPAIGN_ID, notificationBuilder.build())
   }
 
-  override fun handlesNotificationType(notificationType: String) = when (notificationType) {
-    NOTIFICATION_TYPE_REFERRAL_SUCCESS,
-    NOTIFICATION_TYPE_REFERRALS_CAMPAIGN,
-    -> true
-    else -> false
+  private fun sendNotificationInner(id: Int, notification: Notification) {
+    sendHedvigNotification(
+      context = context,
+      notificationSender = this::class.simpleName,
+      notificationId = id,
+      notification = notification,
+    )
   }
 
   private fun createNotificationBuilder(

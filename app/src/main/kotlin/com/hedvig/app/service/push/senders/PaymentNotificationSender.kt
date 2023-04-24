@@ -1,9 +1,9 @@
 package com.hedvig.app.service.push.senders
 
+import android.app.Notification
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.core.common.ApplicationScope
@@ -11,6 +11,7 @@ import com.hedvig.android.core.common.android.notification.setupNotificationChan
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.notification.core.NotificationSender
+import com.hedvig.android.notification.core.sendHedvigNotification
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
@@ -40,6 +41,13 @@ class PaymentNotificationSender(
       NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT -> sendConnectDirectDebitNotification()
       NOTIFICATION_TYPE_PAYMENT_FAILED -> sendPaymentFailedNotification()
     }
+  }
+
+  override fun handlesNotificationType(notificationType: String) = when (notificationType) {
+    NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT,
+    NOTIFICATION_TYPE_PAYMENT_FAILED,
+    -> true
+    else -> false
   }
 
   private fun sendConnectDirectDebitNotification() {
@@ -90,9 +98,7 @@ class PaymentNotificationSender(
         .setContentIntent(pendingIntent)
         .build()
 
-      NotificationManagerCompat
-        .from(context)
-        .notify(CONNECT_DIRECT_DEBIT_NOTIFICATION_ID, notification)
+      sendNotificationInner(CONNECT_DIRECT_DEBIT_NOTIFICATION_ID, notification)
     }
   }
 
@@ -132,16 +138,16 @@ class PaymentNotificationSender(
       .setContentIntent(pendingIntent)
       .build()
 
-    NotificationManagerCompat
-      .from(context)
-      .notify(PAYMENT_FAILED_NOTIFICATION_ID, notification)
+    sendNotificationInner(PAYMENT_FAILED_NOTIFICATION_ID, notification)
   }
 
-  override fun handlesNotificationType(notificationType: String) = when (notificationType) {
-    NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT,
-    NOTIFICATION_TYPE_PAYMENT_FAILED,
-    -> true
-    else -> false
+  private fun sendNotificationInner(id: Int, notification: Notification) {
+    sendHedvigNotification(
+      context = context,
+      notificationSender = this::class.simpleName,
+      notificationId = id,
+      notification = notification,
+    )
   }
 
   companion object {
