@@ -122,6 +122,7 @@ dependencies {
   implementation(projects.audioPlayer)
   implementation(projects.auth.authAndroid)
   implementation(projects.auth.authCore)
+  implementation(projects.auth.authEventCore)
   implementation(projects.coreCommon)
   implementation(projects.coreCommonAndroid)
   implementation(projects.coreDatastore)
@@ -138,6 +139,8 @@ dependencies {
   implementation(projects.hedvigLanguage)
   implementation(projects.hedvigMarket)
   implementation(projects.navigation.navigationActivity)
+  implementation(projects.notification.firebase)
+  implementation(projects.notification.notificationCore)
   implementation(projects.notificationBadgeData)
 
   testImplementation(projects.auth.authEventTest)
@@ -213,7 +216,6 @@ dependencies {
   testImplementation(libs.apollo.testingSupport)
 
   implementation(libs.arrow.core)
-  implementation(libs.arrow.fx)
 
   implementation(libs.materialComponents)
   implementation(libs.flexbox)
@@ -234,6 +236,7 @@ dependencies {
   implementation(libs.firebase.messaging)
 
   implementation(libs.koin.android)
+  implementation(libs.koin.workManager)
   androidTestImplementation(libs.koin.test)
 
   implementation(libs.timber)

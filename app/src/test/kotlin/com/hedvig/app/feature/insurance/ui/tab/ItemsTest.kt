@@ -23,20 +23,25 @@ class ItemsTest {
 
   @Test
   fun `when cross-sell are available, should contain cross-sell header and cross-sell`() {
-    val result = items(insurances = INSURANCE_DATA_WITH_CROSS_SELL, crossSells = listOf(CrossSellData(
-      id = "123",
-      title = "",
-      description = "",
-      storeUrl = "",
-      backgroundUrl = "",
-      backgroundBlurHash = "",
-      about = "",
-      perils = emptyList(),
-      terms = emptyList(),
-      highlights = emptyList(),
-      faq = emptyList(),
-      insurableLimits = emptyList()
-    )))
+    val result = items(
+      insurances = INSURANCE_DATA_WITH_CROSS_SELL,
+      crossSells = listOf(
+        CrossSellData(
+          id = "123",
+          title = "",
+          description = "",
+          storeUrl = "",
+          backgroundUrl = "",
+          backgroundBlurHash = "",
+          about = "",
+          perils = emptyList(),
+          terms = emptyList(),
+          highlights = emptyList(),
+          faq = emptyList(),
+          insurableLimits = emptyList(),
+        ),
+      ),
+    )
 
     assertThat(result).containsOfType<InsuranceModel.CrossSellHeader>()
     assertThat(result).containsOfType<InsuranceModel.CrossSellCard>()

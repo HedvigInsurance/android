@@ -7,6 +7,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.core.common.android.notification.setupNotificationChannel
+import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
@@ -54,14 +55,14 @@ class ReferralsNotificationSender(
 
     val contentText = referralName?.let {
       context.resources.getString(
-        hedvig.resources.R.string.NOTIFICATION_REFERRAL_COMPLETED_CONTENT_WITH_NAME,
+        R.string.NOTIFICATION_REFERRAL_COMPLETED_CONTENT_WITH_NAME,
         it,
       )
-    } ?: context.resources.getString(hedvig.resources.R.string.NOTIFICATION_REFERRAL_COMPLETED_CONTENT)
+    } ?: context.resources.getString(R.string.NOTIFICATION_REFERRAL_COMPLETED_CONTENT)
 
     val notificationBuilder = createNotificationBuilder(
       context = context,
-      title = context.resources.getString(hedvig.resources.R.string.NOTIFICATION_REFERRAL_COMPLETED_TITLE),
+      title = context.resources.getString(R.string.NOTIFICATION_REFERRAL_COMPLETED_TITLE),
       body = contentText,
       pendingIntent = pendingIntent,
     )
@@ -116,10 +117,10 @@ class ReferralsNotificationSender(
     pendingIntent: PendingIntent?,
   ) = NotificationCompat
     .Builder(context, REFERRAL_CHANNEL_ID)
-    .setSmallIcon(hedvig.resources.R.drawable.ic_hedvig_h)
+    .setSmallIcon(R.drawable.ic_hedvig_h)
     .setContentText(title)
     .setContentText(body)
-    .setContentTitle(context.resources.getString(hedvig.resources.R.string.NOTIFICATION_REFERRAL_COMPLETED_TITLE))
+    .setContentTitle(context.resources.getString(R.string.NOTIFICATION_REFERRAL_COMPLETED_TITLE))
     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
     .setAutoCancel(true)
     .setChannelId(REFERRAL_CHANNEL_ID)

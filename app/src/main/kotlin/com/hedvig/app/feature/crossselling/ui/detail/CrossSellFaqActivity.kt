@@ -18,9 +18,7 @@ import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.crossselling.model.NavigateChat
 import com.hedvig.app.feature.crossselling.model.NavigateEmbark
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
-import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.faq.FAQBottomSheet
-import com.hedvig.app.feature.home.ui.changeaddress.appendQuoteCartId
 import com.hedvig.app.util.extensions.openWebBrowser
 import com.hedvig.app.util.extensions.showErrorDialog
 import kotlinx.coroutines.flow.MutableStateFlow

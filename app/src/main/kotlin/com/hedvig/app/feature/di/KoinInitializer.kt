@@ -16,6 +16,7 @@ import com.hedvig.android.hanalytics.featureflags.di.featureManagerModule
 import com.hedvig.android.language.di.languageModule
 import com.hedvig.android.market.di.marketManagerModule
 import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
+import com.hedvig.android.notification.firebase.di.firebaseNotificationModule
 import com.hedvig.android.odyssey.di.odysseyModule
 import com.hedvig.app.adyenModule
 import com.hedvig.app.apolloClientUrlsModule
@@ -45,7 +46,6 @@ import com.hedvig.app.offerModule
 import com.hedvig.app.onboardingModule
 import com.hedvig.app.paymentModule
 import com.hedvig.app.profileModule
-import com.hedvig.app.pushTokenManagerModule
 import com.hedvig.app.referralsModule
 import com.hedvig.app.repositoriesModule
 import com.hedvig.app.serviceModule
@@ -58,16 +58,19 @@ import com.hedvig.app.useCaseModule
 import com.hedvig.app.valueStoreModule
 import com.hedvig.app.viewModelModule
 import com.hedvig.app.whatsNewModule
+import com.hedvig.app.workManagerModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
+import org.koin.androidx.workmanager.koin.workManagerFactory
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 
 class KoinInitializer : Initializer<KoinApplication> {
-  override fun create(context: Context) = startKoin {
+  override fun create(context: Context): KoinApplication = startKoin {
     androidLogger(Level.ERROR)
     androidContext(context.applicationContext)
+    workManagerFactory()
     modules(
       listOf(
         HAnalyticsEngineeringModuleImpl().getModule(),
@@ -93,6 +96,7 @@ class KoinInitializer : Initializer<KoinApplication> {
         embarkModule,
         externalInsuranceModule,
         featureManagerModule,
+        firebaseNotificationModule,
         graphQLQueryModule,
         hAnalyticsAndroidModule,
         hAnalyticsModule,
@@ -112,7 +116,6 @@ class KoinInitializer : Initializer<KoinApplication> {
         onboardingModule,
         paymentModule,
         profileModule,
-        pushTokenManagerModule,
         referralsModule,
         repositoriesModule,
         serviceModule,
@@ -125,6 +128,7 @@ class KoinInitializer : Initializer<KoinApplication> {
         valueStoreModule,
         viewModelModule,
         whatsNewModule,
+        workManagerModule,
       ),
     )
   }

@@ -1,3 +1,0 @@
-mutation RegisterPushToken($pushToken: String!) {
-  registerPushToken(pushToken: $pushToken)
-}
