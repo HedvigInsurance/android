@@ -3,11 +3,11 @@ package com.hedvig.app.service.push.senders
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.core.common.android.notification.setupNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
+import com.hedvig.android.notification.core.sendHedvigNotification
 import com.hedvig.app.MainActivity
 import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.DATA_MESSAGE_BODY
@@ -59,12 +59,12 @@ class GenericNotificationSender(
       .setContentIntent(pendingIntent)
       .build()
 
-    NotificationManagerCompat
-      .from(context)
-      .notify(
-        id.getAndIncrement(),
-        notification,
-      )
+    sendHedvigNotification(
+      context = context,
+      notificationSender = this::class.simpleName,
+      notificationId = id.getAndIncrement(),
+      notification = notification,
+    )
   }
 
   override fun handlesNotificationType(notificationType: String) =

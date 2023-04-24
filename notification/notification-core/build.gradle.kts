@@ -10,6 +10,7 @@ android {
 dependencies {
   implementation(platform(libs.firebase.bom))
 
-  implementation(libs.koin.core)
   implementation(libs.firebase.messaging)
+  implementation(libs.koin.core)
+  implementation(libs.slimber)
 }
