@@ -20,7 +20,7 @@ import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.hedvig.android.apollo.giraffe.di.giraffeClient
 import com.hedvig.android.apollo.octopus.di.octopusClient
-import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.auth.AccessTokenProvider
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.auth.interceptor.MigrateTokenInterceptor
 import com.hedvig.android.core.common.di.LogInfoType
@@ -192,6 +192,7 @@ import org.koin.androidx.workmanager.dsl.worker
 import org.koin.core.parameter.ParametersHolder
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import slimber.log.d
 import slimber.log.i
 import timber.log.Timber
 import java.io.File
@@ -253,14 +254,15 @@ val applicationModule = module {
   single<SunsettingInterceptor> { SunsettingInterceptor(get()) } bind ApolloInterceptor::class
   single<ApolloClient.Builder> {
     val interceptors = getAll<ApolloInterceptor>().distinct()
+    val accessTokenProvider = get<AccessTokenProvider>()
     ApolloClient.Builder()
       .okHttpClient(get<OkHttpClient>())
       .webSocketReopenWhen { throwable, reconnectAttempt ->
         if (throwable is ReopenSubscriptionException) {
           return@webSocketReopenWhen true
         }
-        if (reconnectAttempt < 3) {
-          delay(2.0.pow(reconnectAttempt.toDouble()).toLong()) // Retry after 1 - 2 - 4 seconds
+        if (reconnectAttempt < 5) {
+          delay(2.0.pow(reconnectAttempt.toDouble()).toLong()) // Retry after 1 - 2 - 4 - 8 - 16 seconds
           return@webSocketReopenWhen true
         }
         false
@@ -268,7 +270,14 @@ val applicationModule = module {
       .wsProtocol(
         SubscriptionWsProtocol.Factory(
           connectionPayload = {
-            mapOf("Authorization" to get<AuthTokenService>().getTokens()?.accessToken?.token)
+            val accessToken = accessTokenProvider.provide()
+            d { "Apollo-kotlin: Subscription acquired auth token: $accessToken" }
+            val authorizationHeaderValue = if (accessToken != null) {
+              "Bearer $accessToken"
+            } else {
+              null
+            }
+            mapOf("Authorization" to authorizationHeaderValue)
           },
         ),
       )
