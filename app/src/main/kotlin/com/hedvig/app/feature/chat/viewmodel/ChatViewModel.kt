@@ -23,8 +23,10 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import slimber.log.d
 import slimber.log.e
 import java.util.concurrent.TimeUnit
 
@@ -65,17 +67,23 @@ class ChatViewModel(
     viewModelScope.launch {
       chatRepository
         .subscribeToChatMessages()
+        .onStart {
+          d { "Chat: start subscription" }
+        }
         .onEach { response ->
+          d { "Chat: subscription response null?:${response.data == null}" }
           response.data?.message?.let { message ->
             if (isSubscriptionAllowedToWrite) {
               chatRepository
                 .writeNewMessage(
                   message.fragments.chatMessageFragment,
                 )
+            } else {
+              e { "Chat: subscription was not allowed to write" }
             }
           }
         }
-        .catch { e(it) }
+        .catch { e(it) { "Chat: Error on chat subscription" } }
         .launchIn(this)
     }
   }
