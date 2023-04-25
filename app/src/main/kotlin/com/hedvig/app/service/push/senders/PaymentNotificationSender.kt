@@ -144,7 +144,7 @@ class PaymentNotificationSender(
   private fun sendNotificationInner(id: Int, notification: Notification) {
     sendHedvigNotification(
       context = context,
-      notificationSender = this::class.simpleName,
+      notificationSender = "PaymentNotificationSender",
       notificationId = id,
       notification = notification,
     )

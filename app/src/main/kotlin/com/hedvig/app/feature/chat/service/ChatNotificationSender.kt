@@ -151,7 +151,7 @@ class ChatNotificationSender(
 
     sendHedvigNotification(
       context = context,
-      notificationSender = this::class.simpleName,
+      notificationSender = "ChatNotificationSender",
       notificationId = CHAT_NOTIFICATION_ID,
       notification = notification,
     )

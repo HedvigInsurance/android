@@ -61,7 +61,7 @@ class GenericNotificationSender(
 
     sendHedvigNotification(
       context = context,
-      notificationSender = this::class.simpleName,
+      notificationSender = "GenericNotificationSender",
       notificationId = id.getAndIncrement(),
       notification = notification,
     )
