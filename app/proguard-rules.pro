@@ -33,9 +33,6 @@
 # `Either` class needs to exist after minification for Retrofit to know how to adapt the response to it
 -keep,allowobfuscation,allowshrinking class arrow.core.Either
 
-# Adyen dependencies - https://github.com/Adyen/adyen-android/issues/1172
--dontwarn org.slf4j.impl.StaticLoggerBinder
-
 # Crashlytics
 -keep class com.crashlytics.** { *; }
 -dontwarn com.crashlytics.**
@@ -54,6 +51,8 @@
 -keepclassmembers public class * implements com.adyen.checkout.components.ActionComponent {
    public <init>(...);
 }
+# More Adyen - https://github.com/Adyen/adyen-android/issues/1172
+-dontwarn org.slf4j.impl.StaticLoggerBinder
 
 # Facebook Yoga
 # Odyssey components are using facebook yoga, and the components are not called from application
