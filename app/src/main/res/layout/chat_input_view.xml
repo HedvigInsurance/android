@@ -13,18 +13,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/base_margin"
+        android:gravity="bottom"
         android:orientation="horizontal"
         android:visibility="gone"
         tools:visibility="visible">
 
         <FrameLayout
             android:id="@+id/attach_file_background"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|bottom"
+            android:layout_width="@dimen/chat_attach_icon_size"
+            android:layout_height="@dimen/chat_attach_icon_size"
             android:layout_marginStart="@dimen/base_margin_half"
             android:layout_marginEnd="@dimen/base_margin_half"
-            android:layout_marginBottom="@dimen/base_margin"
+            android:layout_marginBottom="@dimen/base_margin_half"
             android:background="@drawable/ic_attach_file_background">
 
             <ImageView
@@ -32,6 +32,7 @@
                 style="?attr/selectableItemBackgroundBorderless"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:contentDescription="@string/UPLOAD_FILE_BUTTON_HINT"
                 android:src="@drawable/ic_add" />
         </FrameLayout>
@@ -41,7 +42,6 @@
             android:id="@+id/sendGif"
             android:layout_width="@dimen/chat_attach_icon_size"
             android:layout_height="@dimen/chat_attach_icon_size"
-            android:layout_gravity="center_horizontal"
             android:layout_marginStart="@dimen/base_margin_half"
             android:layout_marginEnd="@dimen/base_margin_half"
             android:layout_marginBottom="@dimen/base_margin_half"
@@ -58,25 +58,13 @@
 
         </FrameLayout>
 
-        <!--
-        Ignore RtlHardcoded
-        Can't use drawableEnd instead of drawableRight because setCompoundDrawablesRelative is not called
-        -->
         <com.hedvig.app.feature.chat.ui.ChatTextInput
             android:id="@+id/inputText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/base_margin"
-            android:layout_weight="1"
-            android:background="@drawable/chat_background_edit_text_rounded_corners"
-            android:drawableRight="@drawable/ic_send"
-            android:hint="@string/CHAT_TEXT_INPUT_HINT"
-            android:imeOptions="actionSend"
-            android:paddingStart="@dimen/base_margin_double"
-            android:paddingTop="@dimen/chat_text_input_vertical_padding"
-            android:paddingEnd="@dimen/chat_text_input_send_button_offset"
-            android:paddingBottom="@dimen/chat_text_input_vertical_padding"
-            tools:ignore="RtlHardcoded" />
+            android:layout_marginStart="@dimen/base_margin_half"
+            android:layout_marginBottom="@dimen/base_margin_half"
+            android:layout_weight="1" />
 
     </LinearLayout>
 

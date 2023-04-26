@@ -1,13 +1,11 @@
 package com.hedvig.app.feature.chat.ui
 
 import android.content.Context
-import android.text.InputType
 import android.util.AttributeSet
-import android.view.KeyEvent
 import android.view.LayoutInflater
-import android.view.inputmethod.EditorInfo
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.recyclerview.widget.RecyclerView
@@ -32,7 +30,6 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
-import giraffe.type.KeyboardType
 
 class ChatInputView : FrameLayout {
   private val binding by viewBinding(ChatInputViewBinding::bind)
@@ -73,23 +70,9 @@ class ChatInputView : FrameLayout {
   init {
     inflate(context, R.layout.chat_input_view, this)
     binding.apply {
-      inputText.sendClickListener = {
+      inputText.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+      inputText.onSendMessageListener = {
         performTextMessageSend()
-      }
-      inputText.setOnEditorActionListener { _, actionId, event ->
-        if (actionId == EditorInfo.IME_ACTION_SEND) {
-          performTextMessageSend()
-          return@setOnEditorActionListener true
-        }
-        if (
-          actionId == EditorInfo.IME_NULL &&
-          event.action == KeyEvent.ACTION_UP &&
-          event.keyCode == KeyEvent.KEYCODE_ENTER
-        ) {
-          performTextMessageSend()
-          return@setOnEditorActionListener true
-        }
-        true
       }
       attachFileBackground.setHapticClickListener {
         inputText.clearFocus()
@@ -130,7 +113,7 @@ class ChatInputView : FrameLayout {
   }
 
   fun clearInput() {
-    binding.inputText.text?.clear()
+    binding.inputText.text = ""
   }
 
   private fun fadeOutCurrent(fadeIn: () -> Unit) {
@@ -178,14 +161,8 @@ class ChatInputView : FrameLayout {
         attachFileBackground.remove()
         sendGif.remove()
       }
-      inputText.hint = input.hint ?: ""
-      inputText.inputType = when (input.keyboardType) {
-        KeyboardType.DEFAULT -> InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
-        KeyboardType.EMAIL -> InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
-        KeyboardType.PHONE -> InputType.TYPE_CLASS_PHONE
-        KeyboardType.NUMBERPAD, KeyboardType.NUMERIC -> InputType.TYPE_CLASS_NUMBER
-        KeyboardType.DECIMALPAD -> InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
-        else -> InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+      if (input.hint != null) {
+        inputText.placeholderText = input.hint
       }
       inputText.requestFocus()
     }
@@ -258,10 +235,10 @@ class ChatInputView : FrameLayout {
   }
 
   private fun performTextMessageSend() {
-    if (binding.inputText.currentMessage.isBlank()) {
+    if (binding.inputText.text.isBlank()) {
       return
     }
-    sendTextMessage(binding.inputText.currentMessage)
     dismissKeyboard()
+    sendTextMessage(binding.inputText.text)
   }
 }
