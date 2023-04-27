@@ -34,7 +34,4 @@
 
     <!-- LoggedInActivity-tags -->
     <item name="gradient_animation" type="id" />
-
-    <!-- KeepScreenOnRequest tag to toggle View.keepScreenOn. See KeepScreenOnRequest.kt -->
-    <item name="keep_screen_on_state" type="id" />
 </resources>

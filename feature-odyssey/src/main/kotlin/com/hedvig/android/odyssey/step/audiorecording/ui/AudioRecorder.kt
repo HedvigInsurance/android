@@ -35,13 +35,13 @@ import com.hedvig.android.core.designsystem.component.button.LargeContainedTextB
 import com.hedvig.android.core.designsystem.component.button.LargeTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.ScreenOnFlag
 import com.hedvig.android.odyssey.R
 import com.hedvig.android.odyssey.model.AudioUrl
 import com.hedvig.android.odyssey.navigation.AudioContent
 import com.hedvig.android.odyssey.step.audiorecording.AudioRecordingUiState
 import com.hedvig.odyssey.renderers.audiorecorder.PlaybackWaveForm
 import com.hedvig.odyssey.renderers.audiorecorder.RecordingAmplitudeIndicator
-import com.hedvig.odyssey.renderers.utils.ScreenOnFlag
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.datetime.Clock
