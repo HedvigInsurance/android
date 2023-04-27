@@ -2,6 +2,7 @@ package com.hedvig.app.util.extensions
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.LabeledIntent
 import android.content.pm.PackageManager
@@ -106,6 +107,23 @@ fun Activity.openEmail(title: String) {
     startActivity(openInChooser)
   } else {
     e { "No email app found" }
+  }
+}
+
+fun Context.composeContactSupportEmail(
+  emailAddresses: List<String> = listOf(getString(hedvig.resources.R.string.GENERAL_EMAIL)),
+  subject: String? = null,
+) {
+  val intent = Intent(Intent.ACTION_SENDTO).apply {
+    data = Uri.parse("mailto:") // only email apps should handle this
+    putExtra(Intent.EXTRA_EMAIL, emailAddresses.toTypedArray())
+    putExtra(Intent.EXTRA_SUBJECT, subject)
+  }
+  if (intent.resolveActivity(packageManager) != null) {
+    startActivity(intent)
+  } else {
+    e { "Failed to open email app through `composeEmail`" }
+    makeToast(hedvig.resources.R.string.login_open_email_app_button)
   }
 }
 

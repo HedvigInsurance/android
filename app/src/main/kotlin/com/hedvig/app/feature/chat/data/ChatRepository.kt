@@ -12,6 +12,7 @@ import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.apollographql.apollo3.cache.normalized.watch
+import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.app.service.FileService
@@ -66,14 +67,19 @@ class ChatRepository(
   suspend fun sendChatMessage(
     id: String,
     message: String,
-  ) = apolloClient.mutation(
-    SendChatTextResponseMutation(
-      ChatResponseTextInput(
-        id,
-        ChatResponseBodyTextInput(message),
-      ),
-    ),
-  ).execute()
+  ): Either<OperationResult.Error, SendChatTextResponseMutation.Data> {
+    return apolloClient
+      .mutation(
+        SendChatTextResponseMutation(
+          ChatResponseTextInput(
+            id,
+            ChatResponseBodyTextInput(message),
+          ),
+        ),
+      )
+      .safeExecute()
+      .toEither()
+  }
 
   suspend fun sendSingleSelect(
     id: String,
@@ -112,7 +118,7 @@ class ChatRepository(
   }
 
   @SuppressLint("Recycle")
-  suspend fun uploadFileFromProvider(uri: Uri): ApolloResponse<UploadFileMutation.Data> {
+  suspend fun uploadFileFromProvider(uri: Uri): Either<OperationResult.Error, UploadFileMutation.Data> {
     val mimeType = fileService.getMimeType(uri)
     val file = File(
       context.cacheDir,
@@ -125,14 +131,14 @@ class ChatRepository(
     }
   }
 
-  suspend fun uploadFile(uri: Uri): ApolloResponse<UploadFileMutation.Data> =
+  suspend fun uploadFile(uri: Uri): Either<OperationResult.Error, UploadFileMutation.Data> =
     uploadFile(File(uri.path!!), fileService.getMimeType(uri))
 
   private suspend fun uploadFile(
     file: File,
     mimeType: String,
-  ): ApolloResponse<UploadFileMutation.Data> {
-    return apolloClient.mutation(UploadFileMutation(file.toUpload(mimeType))).execute()
+  ): Either<OperationResult.Error, UploadFileMutation.Data> {
+    return apolloClient.mutation(UploadFileMutation(file.toUpload(mimeType))).safeExecute().toEither()
   }
 
   suspend fun sendFileResponse(
