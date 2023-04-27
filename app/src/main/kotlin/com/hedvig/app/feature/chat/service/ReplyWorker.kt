@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Build
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import arrow.core.Either
 import com.hedvig.android.core.common.android.whenApiVersion
 import com.hedvig.app.feature.chat.data.ChatRepository
 import slimber.log.e
@@ -30,16 +31,18 @@ class ReplyWorker(
 
     val lastChatMessage =
       idsResponse.getOrNull()?.data?.messages?.first() ?: return Result.failure()
-    val sendChatMessageResponse = runCatching {
-      chatRepository
-        .sendChatMessage(
-          lastChatMessage.globalId,
-          replyText,
-        )
-    }
+    val sendChatMessageResponse = chatRepository.sendChatMessage(
+      lastChatMessage.globalId,
+      replyText,
+    )
 
-    if (sendChatMessageResponse.isFailure) {
-      sendChatMessageResponse.exceptionOrNull()?.let { e(it) }
+    if (sendChatMessageResponse is Either.Left) {
+      val throwable = sendChatMessageResponse.value.throwable
+      if (throwable != null) {
+        e(throwable) { "Chat: Replying through ReplyWorker failed" }
+      } else {
+        e { "Chat: Replying through ReplyWorker failed. Message:${sendChatMessageResponse.value.message}" }
+      }
       return Result.failure()
     }
 

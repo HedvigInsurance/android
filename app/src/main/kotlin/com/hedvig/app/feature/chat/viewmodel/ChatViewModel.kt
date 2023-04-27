@@ -164,16 +164,26 @@ class ChatViewModel(
     }
   }
 
-  private suspend fun uploadFileInner(uri: Uri): ApolloResponse<UploadFileMutation.Data>? {
+  private suspend fun uploadFileInner(uri: Uri): UploadFileMutation.Data? {
     isSubscriptionAllowedToWrite = false
     isUploading.value = true
-    val response = runCatching { chatRepository.uploadFile(uri) }
-    if (response.isFailure) {
-      response.exceptionOrNull()?.let { e(it) }
-      return null
-    }
-    response.getOrNull()?.data?.uploadFile?.key?.let { respondWithFile(it, uri) }
-    return response.getOrNull()
+    val response = chatRepository.uploadFile(uri)
+    return response.fold(
+      ifLeft = { error ->
+        val throwable = error.throwable
+        if (throwable != null) {
+          e(throwable) { "Chat: uploadFileInner failed" }
+        } else {
+          e { "Chat: uploadFileInner failed. Message:${error.message}" }
+        }
+        _events.send(Event.Error)
+        null
+      },
+      ifRight = { data ->
+        respondWithFile(data.uploadFile.key, uri)
+        return data
+      },
+    )
   }
 
   fun uploadFileFromProvider(uri: Uri) {
@@ -181,18 +191,25 @@ class ChatViewModel(
     isSubscriptionAllowedToWrite = false
     isUploading.value = true
     viewModelScope.launch {
-      val response = runCatching { chatRepository.uploadFileFromProvider(uri) }
-      if (response.isFailure) {
-        response.exceptionOrNull()?.let { e(it) }
-        return@launch
-      }
-      response.getOrNull()?.data?.uploadFile?.key?.let { key ->
-        respondWithFile(
-          key,
-          uri,
-        )
-      }
-      response.getOrNull()?.data?.let(uploadBottomSheetResponse::postValue)
+      val response = chatRepository.uploadFileFromProvider(uri)
+      response.fold(
+        ifLeft = { error ->
+          val throwable = error.throwable
+          if (throwable != null) {
+            e(throwable) { "Chat: uploadFileFromProvider failed" }
+          } else {
+            e { "Chat: uploadFileFromProvider failed. Message:${error.message}" }
+          }
+          _events.send(Event.Error)
+        },
+        ifRight = { data ->
+          respondWithFile(
+            key = data.uploadFile.key,
+            uri = uri,
+          )
+          uploadBottomSheetResponse.postValue(data)
+        },
+      )
     }
   }
 
@@ -217,19 +234,25 @@ class ChatViewModel(
     isSendingMessage = true
     isSubscriptionAllowedToWrite = false
     viewModelScope.launch {
-      val response = runCatching {
-        chatRepository.sendChatMessage(getLastId(), message)
-      }
-      if (response.isFailure) {
-        isSendingMessage = false
-        response.exceptionOrNull()?.let { e(it) }
-        return@launch
-      }
+      val response = chatRepository.sendChatMessage(getLastId(), message)
       isSendingMessage = false
-      if (response.getOrNull()?.data?.sendChatTextResponse == true) {
-        load()
-      }
-      sendMessageResponse.postValue(response.getOrNull()?.data?.sendChatTextResponse)
+      response.fold(
+        ifLeft = { error ->
+          val throwable = error.throwable
+          if (throwable != null) {
+            e(throwable) { "Chat: Replying through ChatViewModel failed" }
+          } else {
+            e { "Chat: Replying through ChatViewModel failed. Message:${error.message}" }
+          }
+          _events.send(Event.Error)
+        },
+        ifRight = { data ->
+          if (data.sendChatTextResponse) {
+            load()
+          }
+          sendMessageResponse.postValue(data.sendChatTextResponse)
+        },
+      )
     }
   }
 
