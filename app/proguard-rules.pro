@@ -60,10 +60,6 @@
 # yoga, since those does not seem to be called from anywhere.
 -keep class com.facebook.** { *; }
 
-# Odyssey classes
-# Due to serialization and getting class names we need to keep these classes.
--keep class com.hedvig.odyssey.** { *; }
-
 # Keep `Companion` object fields of serializable classes.
 # This avoids serializer lookup through `getDeclaredClasses` as done for named companion objects.
 -if @kotlinx.serialization.Serializable class **
