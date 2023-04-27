@@ -24,6 +24,7 @@ import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.extensions.calculateNonFullscreenHeightDiff
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
+import com.hedvig.app.util.extensions.composeContactSupportEmail
 import com.hedvig.app.util.extensions.handleSingleSelectLink
 import com.hedvig.app.util.extensions.hasPermissions
 import com.hedvig.app.util.extensions.showAlert
@@ -93,12 +94,14 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
           ChatViewModel.Event.Restart -> {
             triggerRestartActivity(ChatActivity::class.java)
           }
-
           is ChatViewModel.Event.Error -> showAlert(
-            title = com.adyen.checkout.dropin.R.string.error_dialog_title,
-            message = com.adyen.checkout.dropin.R.string.component_error,
-            positiveAction = {},
-            negativeLabel = null,
+            title = hedvig.resources.R.string.something_went_wrong,
+            message = hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE,
+            positiveAction = {
+              composeContactSupportEmail()
+            },
+            positiveLabel = hedvig.resources.R.string.GENERAL_EMAIL_US,
+            negativeLabel = hedvig.resources.R.string.general_cancel_button,
           )
         }
       }
