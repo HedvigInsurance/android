@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo3.api.ApolloResponse
-import com.hedvig.app.feature.chat.FileUploadOutcome
 import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.util.LiveEvent
@@ -44,7 +43,7 @@ class ChatViewModel(
   val sendMessageResponse = MutableLiveData<Boolean>()
   val isUploading = LiveEvent<Boolean>()
   val uploadBottomSheetResponse = LiveEvent<UploadFileMutation.Data>()
-  val takePictureUploadOutcome = LiveEvent<FileUploadOutcome>()
+  val takePictureUploadFinished = LiveEvent<Unit>() // Reports that the picture upload was done, even if it failed
   val networkError = LiveEvent<Boolean>()
   val gifs = MutableLiveData<GifQuery.Data>()
 
@@ -160,8 +159,8 @@ class ChatViewModel(
   fun uploadTakenPicture(uri: Uri) {
     hAnalytics.chatRichMessageSent()
     viewModelScope.launch {
-      val data = uploadFileInner(uri) ?: return@launch
-      takePictureUploadOutcome.postValue(FileUploadOutcome(uri, !data.hasErrors()))
+      uploadFileInner(uri)
+      takePictureUploadFinished.postValue(Unit)
     }
   }
 

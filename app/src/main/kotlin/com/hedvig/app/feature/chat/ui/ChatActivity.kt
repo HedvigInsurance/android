@@ -221,7 +221,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
         binding.input.clearInput()
       }
     }
-    chatViewModel.takePictureUploadOutcome.observe(this) {
+    chatViewModel.takePictureUploadFinished.observe(this) {
       attachPickerDialog?.uploadingTakenPicture(false)
       currentPhotoPath?.let { File(it).delete() }
     }
