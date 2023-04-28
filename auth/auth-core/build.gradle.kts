@@ -12,6 +12,8 @@ dependencies {
   implementation(projects.coreDatastore)
 
   api(libs.hedvig.authlib)
+  // do not remove ktor, authlib has an old ktor version which somehow crashes. Remove when we bump authlib.
+  implementation(libs.ktor)
 
   implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.arrow.core)

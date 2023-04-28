@@ -48,6 +48,7 @@ import com.google.accompanist.placeholder.placeholder
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
@@ -56,7 +57,6 @@ import com.hedvig.android.odyssey.navigation.ItemProblem
 import com.hedvig.android.odyssey.navigation.LocationOption
 import com.hedvig.android.odyssey.navigation.UiNullableMoney
 import com.hedvig.android.odyssey.ui.ClaimFlowScaffold
-import com.hedvig.odyssey.compose.getLocale
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate

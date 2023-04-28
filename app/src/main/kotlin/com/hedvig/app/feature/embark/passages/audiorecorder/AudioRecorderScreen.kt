@@ -31,8 +31,9 @@ import com.hedvig.android.core.designsystem.component.button.LargeContainedButto
 import com.hedvig.android.core.designsystem.component.button.LargeTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.ScreenOnFlag
+import com.hedvig.android.core.ui.audiorecording.RecordingAmplitudeIndicator
 import com.hedvig.app.R
-import com.hedvig.app.util.compose.ScreenOnFlag
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant

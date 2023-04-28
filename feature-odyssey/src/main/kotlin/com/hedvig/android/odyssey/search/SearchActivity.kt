@@ -16,7 +16,6 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -30,23 +29,13 @@ import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.CenterAlignedTopAppBar
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.odyssey.ClaimFlowActivity
-import com.hedvig.android.odyssey.sdui.OdysseyClaimsFlowActivity
 import com.hedvig.android.odyssey.search.ui.CommonClaims
 import hedvig.resources.R
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import slimber.log.e
 
 class SearchActivity : ComponentActivity() {
-
-  private val featureManager: FeatureManager by inject()
-
-  private val odysseyUrl by lazy {
-    intent.getStringExtra(ODYSSEY_URL) ?: error("No url found")
-  }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -59,7 +48,8 @@ class SearchActivity : ComponentActivity() {
       val entryPointId = viewState.selectedClaim?.entryPointId
       LaunchedEffect(entryPointId) {
         if (entryPointId != null) {
-          startClaimsFlow(viewModel, entryPointId)
+          viewModel.resetState()
+          startActivity(ClaimFlowActivity.newInstance(this@SearchActivity, entryPointId))
         }
       }
 
@@ -89,7 +79,11 @@ class SearchActivity : ComponentActivity() {
 
               val errorMessage = viewState.errorMessage
               if (errorMessage != null) {
-                Error(errorMessage) { viewModel.loadSearchableClaims() }
+                LaunchedEffect(Unit) { e { "SearchActivity: errorMessage$errorMessage" } }
+                GenericErrorScreen(
+                  onRetryButtonClick = { viewModel.loadSearchableClaims() },
+                  modifier = Modifier.padding(16.dp),
+                )
               } else {
                 CommonClaims(
                   selectClaim = viewModel::onSelectClaim,
@@ -107,36 +101,7 @@ class SearchActivity : ComponentActivity() {
     }
   }
 
-  @Composable
-  private fun Error(message: String, onRetry: () -> Unit) {
-    e { message }
-    GenericErrorScreen(
-      onRetryButtonClick = onRetry,
-      modifier = Modifier.padding(16.dp),
-    )
-  }
-
-  private suspend fun startClaimsFlow(viewModel: SearchViewModel, entryPointId: String?) {
-    val intent = createClaimsFlowIntent(entryPointId)
-    startActivity(intent)
-    viewModel.resetState()
-  }
-
-  private suspend fun createClaimsFlowIntent(entryPointId: String?) =
-    if (featureManager.isFeatureEnabled(Feature.USE_NATIVE_CLAIMS_FLOW)) {
-      ClaimFlowActivity.newInstance(this, entryPointId)
-    } else {
-      OdysseyClaimsFlowActivity.newInstance(
-        context = this,
-        odysseyUrl = odysseyUrl,
-        entryPointId = entryPointId,
-      )
-    }
-
   companion object {
-    const val ODYSSEY_URL = "ODYSSEY_URL_EXTRA"
-
-    fun newInstance(context: Context, url: String) = Intent(context, SearchActivity::class.java)
-      .putExtra(ODYSSEY_URL, url)
+    fun newInstance(context: Context) = Intent(context, SearchActivity::class.java)
   }
 }

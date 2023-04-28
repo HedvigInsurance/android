@@ -23,7 +23,6 @@ internal class DevFeatureFlagProvider(
       Feature.SHOW_BUSINESS_MODEL -> !isQasaMember
       Feature.TERMINATION_FLOW -> true
       Feature.UPDATE_NECESSARY -> false
-      Feature.USE_ODYSSEY_CLAIM_FLOW -> false
       Feature.USE_NATIVE_CLAIMS_FLOW -> true
     }
   }

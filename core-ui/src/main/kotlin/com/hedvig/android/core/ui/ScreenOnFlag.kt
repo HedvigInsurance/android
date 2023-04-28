@@ -1,10 +1,10 @@
-package com.hedvig.app.util.compose
+package com.hedvig.android.core.ui
 
 import android.view.View
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalView
-import com.hedvig.app.R
+import hedvig.resources.R
 
 /**
  * While this composable is in composition the phone screen stays awake. This is automatically cleared when the

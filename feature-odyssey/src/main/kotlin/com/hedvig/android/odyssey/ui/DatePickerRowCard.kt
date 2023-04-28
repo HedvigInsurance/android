@@ -31,7 +31,7 @@ import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.odyssey.compose.getLocale
+import com.hedvig.android.core.ui.getLocale
 import hedvig.resources.R
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
