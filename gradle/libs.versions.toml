@@ -96,7 +96,7 @@ slimber = "2.0.0"
 svg = "1.4"
 timber = "5.0.1"
 tooltip = "1.2.2"
-turbine = "0.12.1"
+turbine = "0.12.3"
 zXing = "3.5.1"
 
 [libraries]
