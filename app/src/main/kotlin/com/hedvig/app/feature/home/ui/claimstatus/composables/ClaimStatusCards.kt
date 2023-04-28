@@ -1,26 +1,22 @@
 package com.hedvig.app.feature.home.ui.claimstatus.composables
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import arrow.core.NonEmptyList
 import arrow.core.nonEmptyListOf
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
-import com.google.accompanist.pager.rememberPagerState
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusCardUiState
@@ -29,7 +25,7 @@ import com.hedvig.app.ui.compose.composables.claimprogress.ClaimProgressUiState
 import com.hedvig.app.util.compose.preview.previewList
 import java.util.UUID
 
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ClaimStatusCards(
   goToDetailScreen: ((claimId: String) -> Unit)?,
@@ -37,33 +33,21 @@ fun ClaimStatusCards(
   claimStatusCardsUiState: NonEmptyList<ClaimStatusCardUiState>,
 ) {
   val pagerState = rememberPagerState()
-  val areCardsClickable = goToDetailScreen != null
   Column {
-    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     HorizontalPager(
-      count = claimStatusCardsUiState.size,
+      pageCount = claimStatusCardsUiState.size,
       state = pagerState,
-      itemSpacing = 0.dp,
+      contentPadding = PaddingValues(horizontal = 16.dp),
+      beyondBoundsPageCount = 1,
+      pageSpacing = 12.dp,
+      key = { index -> claimStatusCardsUiState[index].id },
       modifier = Modifier.fillMaxWidth(),
     ) { page: Int ->
       val claimStatusUiState = claimStatusCardsUiState[page]
-      val itemWidth = screenWidth - (16 * 2).dp
-      val itemSpacingPadding = PaddingValues(
-        start = if (page == 0) 0.dp else 6.dp,
-        end = if (page == claimStatusCardsUiState.lastIndex) 0.dp else 6.dp,
-      )
       ClaimStatusCard(
         uiState = claimStatusUiState,
-        modifier = Modifier
-          .width(itemWidth)
-          .padding(itemSpacingPadding)
-          .clickable(
-            enabled = areCardsClickable,
-            onClick = {
-              goToDetailScreen?.invoke(claimStatusUiState.id)
-            },
-          ),
-        isClickable = areCardsClickable,
+        goToDetailScreen = goToDetailScreen,
+        modifier = Modifier.fillMaxWidth(),
         onClaimCardShown = onClaimCardShown,
       )
     }
@@ -74,6 +58,7 @@ fun ClaimStatusCards(
 
       HorizontalPagerIndicator(
         pagerState = pagerState,
+        pageCount = claimStatusCardsUiState.size,
         modifier = Modifier.align(Alignment.CenterHorizontally),
       )
     }
