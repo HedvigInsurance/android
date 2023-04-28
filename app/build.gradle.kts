@@ -160,7 +160,6 @@ dependencies {
   implementation(platform(libs.firebase.bom))
 
   implementation(libs.accompanist.insetsUi)
-  implementation(libs.accompanist.pager)
   implementation(libs.accompanist.pagerIndicators)
   implementation(libs.accompanist.systemUiController)
   implementation(libs.adyen)
