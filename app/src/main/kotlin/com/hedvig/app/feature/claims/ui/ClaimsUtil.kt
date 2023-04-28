@@ -7,7 +7,6 @@ import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.odyssey.ClaimFlowActivity
 import com.hedvig.android.odyssey.search.SearchActivity
-import com.hedvig.app.R
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 
 suspend fun startClaimsFlow(
@@ -21,7 +20,7 @@ suspend fun startClaimsFlow(
     val intent = if (commonClaimId != null) {
       ClaimFlowActivity.newInstance(context, commonClaimId)
     } else {
-      SearchActivity.newInstance(context, context.getString(R.string.ODYSSEY_URL))
+      SearchActivity.newInstance(context)
     }
 
     if (registerForResult != null) {

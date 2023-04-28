@@ -20,11 +20,6 @@ internal class HAnalyticsFeatureFlagProvider(
     Feature.SHOW_BUSINESS_MODEL -> hAnalytics.showCharity()
     Feature.TERMINATION_FLOW -> hAnalytics.terminationFlow()
     Feature.UPDATE_NECESSARY -> hAnalytics.updateNecessary()
-    Feature.USE_ODYSSEY_CLAIM_FLOW -> {
-      val useOdyssey = hAnalytics.odysseyClaims()
-      hAnalytics.claimFlowType(if (useOdyssey) ClaimType.AUTOMATION else ClaimType.MANUAL)
-      useOdyssey
-    }
     Feature.USE_NATIVE_CLAIMS_FLOW -> {
       val useOdyssey = hAnalytics.claimsFlow()
       hAnalytics.claimFlowType(if (useOdyssey) ClaimType.AUTOMATION else ClaimType.MANUAL)
