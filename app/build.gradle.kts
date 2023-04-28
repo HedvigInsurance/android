@@ -16,10 +16,6 @@ plugins {
   alias(libs.plugins.serialization)
 }
 
-licenseReport {
-  copyHtmlReportToAssets = true
-}
-
 android {
   namespace = "com.hedvig.app"
 
