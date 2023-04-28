@@ -29,6 +29,7 @@ import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.SignedAudioUrl
 import com.hedvig.android.audio.player.state.AudioPlayer
 import com.hedvig.android.audio.player.state.AudioPlayerState
+import com.hedvig.android.audio.player.state.PlayableAudioSource
 import com.hedvig.android.audio.player.state.rememberAudioPlayer
 import com.hedvig.android.core.common.android.ProgressPercentage
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
@@ -36,12 +37,11 @@ import com.hedvig.android.core.designsystem.component.button.LargeTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.ScreenOnFlag
+import com.hedvig.android.core.ui.audiorecording.RecordingAmplitudeIndicator
 import com.hedvig.android.odyssey.R
 import com.hedvig.android.odyssey.model.AudioUrl
 import com.hedvig.android.odyssey.navigation.AudioContent
 import com.hedvig.android.odyssey.step.audiorecording.AudioRecordingUiState
-import com.hedvig.odyssey.renderers.audiorecorder.PlaybackWaveForm
-import com.hedvig.odyssey.renderers.audiorecorder.RecordingAmplitudeIndicator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.datetime.Clock
@@ -56,8 +56,6 @@ internal fun AudioRecorder(
   submitAudioFile: (File) -> Unit,
   submitAudioUrl: (AudioUrl) -> Unit,
   redo: () -> Unit,
-  play: () -> Unit,
-  pause: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   when (uiState) {
@@ -79,8 +77,6 @@ internal fun AudioRecorder(
         submitAudioFile(audioFile)
       },
       redo = redo,
-      play = play,
-      pause = pause,
       modifier = modifier,
     )
     is AudioRecordingUiState.PrerecordedWithAudioContent -> PrerecordedPlayback(
@@ -169,8 +165,6 @@ private fun Playback(
   uiState: AudioRecordingUiState.Playback,
   submit: () -> Unit,
   redo: () -> Unit,
-  play: () -> Unit,
-  pause: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -180,13 +174,8 @@ private fun Playback(
     if (!uiState.isPrepared) {
       CircularProgressIndicator()
     } else {
-      PlaybackWaveForm(
-        isPlaying = uiState.isPlaying,
-        play = play,
-        pause = pause,
-        amplitudes = uiState.amplitudes,
-        progress = uiState.progress,
-      )
+      val audioPlayer = rememberAudioPlayer(PlayableAudioSource.LocalFilePath(uiState.filePath))
+      HedvigAudioPlayer(audioPlayer = audioPlayer)
     }
 
     LargeContainedTextButton(
@@ -213,7 +202,7 @@ private fun PrerecordedPlayback(
   submitAudioUrl: () -> Unit,
   modifier: Modifier = Modifier,
   audioPlayer: AudioPlayer = rememberAudioPlayer(
-    SignedAudioUrl.fromSignedAudioUrlString(uiState.audioContent.signedUrl.value),
+    PlayableAudioSource.RemoteUrl(SignedAudioUrl.fromSignedAudioUrlString(uiState.audioContent.signedUrl.value)),
   ),
 ) {
   Column(

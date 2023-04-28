@@ -150,7 +150,6 @@ internal class AudioRecordingViewModel(
           isPlaying = false,
           isPrepared = true,
           amplitudes = currentState.amplitudes,
-          progress = 0f,
           nextStep = null,
           isLoading = false,
           hasError = false,
@@ -170,43 +169,6 @@ internal class AudioRecordingViewModel(
     if (_uiState.value.isLoading) return
     cleanup()
     _uiState.value = AudioRecordingUiState.NotRecording
-  }
-
-  fun play() {
-    val currentState = uiState.value
-    if (currentState !is AudioRecordingUiState.Playback) {
-      throw IllegalStateException("Must be in Playback-state to play")
-    }
-    if (currentState.isLoading) return
-    if (!currentState.isPrepared) return
-    timer = Timer()
-    timer?.schedule(
-      timerTask {
-        val progress = player?.let { it.currentPosition.toFloat() / it.duration } ?: return@timerTask
-        _uiState.update { uiState ->
-          if (uiState is AudioRecordingUiState.Playback) {
-            uiState.copy(progress = progress)
-          } else {
-            uiState
-          }
-        }
-      },
-      0,
-      1000L / 60,
-    )
-    _uiState.value = currentState.copy(isPlaying = true)
-    player?.start()
-  }
-
-  fun pause() {
-    val currentState = uiState.value as? AudioRecordingUiState.Playback
-    if (currentState?.isLoading == true) return
-    if (currentState !is AudioRecordingUiState.Playback) {
-      throw IllegalStateException("Must be in Playback-state to pause")
-    }
-    cleanupTimer()
-    player?.pause()
-    _uiState.value = currentState.copy(isPlaying = false)
   }
 
   override fun onCleared() {
@@ -276,7 +238,6 @@ internal sealed interface AudioRecordingUiState {
     val isPlaying: Boolean,
     val isPrepared: Boolean,
     val amplitudes: List<Int>,
-    val progress: Float,
     override val nextStep: ClaimFlowStep?,
     override val isLoading: Boolean,
     override val hasError: Boolean,

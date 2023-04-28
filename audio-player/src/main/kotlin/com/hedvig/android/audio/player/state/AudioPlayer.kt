@@ -49,11 +49,23 @@ interface AudioPlayer : Closeable {
   fun seekTo(progressPercentage: ProgressPercentage)
 }
 
+sealed interface PlayableAudioSource {
+  val dataSourceUrl: String
+
+  data class RemoteUrl(val signedAudioUrl: SignedAudioUrl) : PlayableAudioSource {
+    override val dataSourceUrl: String = signedAudioUrl.rawUrl
+  }
+
+  data class LocalFilePath(val audioFilePath: String) : PlayableAudioSource {
+    override val dataSourceUrl: String = audioFilePath
+  }
+}
+
 @Composable
-fun rememberAudioPlayer(signedAudioUrl: SignedAudioUrl): AudioPlayer {
+fun rememberAudioPlayer(playableAudioSource: PlayableAudioSource): AudioPlayer {
   val lifecycleOwner = LocalLifecycleOwner.current
-  val audioPlayer: AudioPlayer = remember(signedAudioUrl, lifecycleOwner) {
-    AudioPlayerImpl(signedAudioUrl, lifecycleOwner)
+  val audioPlayer: AudioPlayer = remember(playableAudioSource, lifecycleOwner) {
+    AudioPlayerImpl(playableAudioSource.dataSourceUrl, lifecycleOwner)
   }
   DisposableEffect(audioPlayer) {
     audioPlayer.initialize()
@@ -67,7 +79,7 @@ fun rememberAudioPlayer(signedAudioUrl: SignedAudioUrl): AudioPlayer {
 private const val ONE_SIXTIETH_OF_A_SECOND: Long = 1_000 / 60
 
 private class AudioPlayerImpl(
-  private val signedAudioURL: SignedAudioUrl,
+  private val dataSourceUrl: String,
   private val lifecycleOwner: LifecycleOwner,
 ) : AudioPlayer {
   private val coroutineScope = CoroutineScope(Dispatchers.Default)
@@ -150,7 +162,7 @@ private class AudioPlayerImpl(
           .setUsage(AudioAttributes.USAGE_MEDIA)
           .build(),
       )
-      setDataSource(signedAudioURL.rawUrl)
+      setDataSource(dataSourceUrl)
       setOnErrorListener { _, what, extra ->
         d { "AudioPlayer failed with code: $what and extras code: $extra" }
         _audioPlayerState.update { AudioPlayerState.Failed }
