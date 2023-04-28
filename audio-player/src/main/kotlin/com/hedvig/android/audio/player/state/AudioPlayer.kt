@@ -100,8 +100,12 @@ private class AudioPlayerImpl(
           try {
             awaitCancellation()
           } finally {
-            if (mediaPlayer?.isPlaying == true) {
-              mediaPlayer?.pause()
+            try {
+              if (mediaPlayer?.isPlaying == true) {
+                mediaPlayer?.pause()
+              }
+            } catch (ignored: IllegalStateException) {
+              // ignore if the audio player has already been disposed
             }
             updateAudioPlayerReadyState(AudioPlayerState.Ready.ReadyState.Paused)
           }
