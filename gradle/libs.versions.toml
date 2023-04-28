@@ -17,6 +17,7 @@ googleServices = "4.3.15"
 kotlin = "1.8.10"
 kotlinter = "3.13.0"
 ktlint = "0.45.2"
+ktor = "2.2.2"
 license = "0.9.0"
 
 # Other versions sorted alphabetically
@@ -65,7 +66,6 @@ flexbox = "3.0.0"
 fragmentViewBindingDelegate = "1.0.2"
 hAnalytics = "v0.281.0"
 hedvigAuthlib = "1.1"
-hedvigOdyssey = "1.4.1"
 insetter = "0.6.1"
 jsonTest = "20230227"
 junit = "4.13.2"
@@ -182,8 +182,8 @@ coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-androi
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 datadog-sdk = { module = "com.datadoghq:dd-sdk-android", version.ref = "datadog" }
-firebase-bom = "com.google.firebase:firebase-bom:31.5.0"
 firebase-analytics = { module = "com.google.firebase:firebase-analytics-ktx" }
+firebase-bom = "com.google.firebase:firebase-bom:31.5.0"
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics-ktx" }
 firebase-dynamicLinks = { module = "com.google.firebase:firebase-dynamic-links" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
@@ -192,7 +192,6 @@ flexbox = { module = "com.google.android.flexbox:flexbox", version.ref = "flexbo
 fragmentViewBindingDelegate = { module = "com.github.Zhuinden:fragmentviewbindingdelegate-kt", version.ref = "fragmentViewBindingDelegate" }
 hAnalytics = { module = "com.github.HedvigInsurance:hAnalytics", version.ref = "hAnalytics" }
 hedvig-authlib = { module = "com.hedvig.authlib:authlib", version.ref = "hedvigAuthlib" }
-hedvig-odyssey = { module = "com.hedvig.odyssey:odyssey", version.ref = "hedvigOdyssey" }
 insetter = { module = "dev.chrisbanes.insetter:insetter", version.ref = "insetter" }
 jsonTest = { module = "org.json:json", version.ref = "jsonTest" }
 junit = { module = "junit:junit", version.ref = "junit" }
@@ -208,6 +207,7 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 kotlinx-immutable-collections = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxImmutableCollections" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+ktor = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
 leakCanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakCanary" }
 markwon-core = { module = "io.noties.markwon:core", version.ref = "markwon" }
 markwon-linkify = { module = "io.noties.markwon:linkify", version.ref = "markwon" }

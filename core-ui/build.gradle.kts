@@ -19,6 +19,7 @@ dependencies {
   implementation(libs.androidx.compose.materialIconsExtended)
   implementation(libs.androidx.compose.uiUtil)
   implementation(libs.androidx.lifecycle.runtime)
+  implementation(libs.androidx.other.core)
   implementation(libs.coil.coil)
   implementation(libs.coil.compose)
   implementation(libs.slimber)
