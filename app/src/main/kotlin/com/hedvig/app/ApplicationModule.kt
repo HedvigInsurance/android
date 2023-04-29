@@ -45,7 +45,6 @@ import com.hedvig.android.hanalytics.android.di.appVersionNameQualifier
 import com.hedvig.android.hanalytics.android.di.hAnalyticsAndroidModule
 import com.hedvig.android.hanalytics.android.di.hAnalyticsUrlQualifier
 import com.hedvig.android.hanalytics.di.hAnalyticsModule
-import com.hedvig.android.hanalytics.engineering.di.HAnalyticsEngineeringModuleImpl
 import com.hedvig.android.hanalytics.featureflags.di.featureManagerModule
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.language.di.languageModule
@@ -707,7 +706,6 @@ private val workManagerModule = module {
 val applicationModule = module {
   includes(
     listOf(
-      HAnalyticsEngineeringModuleImpl().getModule(),
       adyenModule,
       apolloClientModule,
       apolloClientUrlsModule,

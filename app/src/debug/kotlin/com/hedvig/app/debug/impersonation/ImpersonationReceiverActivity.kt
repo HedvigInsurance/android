@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.impersonation
+package com.hedvig.app.debug.impersonation
 
 import android.os.Bundle
 import androidx.activity.compose.setContent

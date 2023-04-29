@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.transition.TransitionManager
 import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
+import com.hedvig.android.core.common.android.serializableExtra
 import com.hedvig.app.R
 import com.hedvig.app.databinding.TrustlyConnectFragmentBinding
 import com.hedvig.app.feature.connectpayin.ConnectPayinType
@@ -35,8 +36,7 @@ class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    val transitionType =
-      requireArguments().getSerializable(TRANSITION_TYPE) as? TransitionType ?: return
+    val transitionType = requireArguments().serializableExtra<TransitionType>(TRANSITION_TYPE) ?: return
 
     if (transitionType != TransitionType.NO_ENTER_EXIT_RIGHT) {
       enterTransition = MaterialSharedAxis(

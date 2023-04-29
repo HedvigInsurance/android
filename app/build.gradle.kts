@@ -39,6 +39,7 @@ android {
 
   lint {
     abortOnError = false
+    checkDependencies = true
   }
 
   packaging {
@@ -65,6 +66,7 @@ android {
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
 
       isMinifyEnabled = true
+      isShrinkResources = true
       setProguardFiles(
         listOf(
           getDefaultProguardFile("proguard-android.txt"),
@@ -90,13 +92,9 @@ android {
 
   sourceSets {
     named("debug") {
-      kotlin.srcDir("src/engineering/kotlin")
-      res.srcDir("src/engineering/res")
       manifest.srcFile("src/debug/AndroidManifest.xml")
     }
     named("staging") {
-      kotlin.srcDir("src/engineering/kotlin")
-      res.srcDir("src/engineering/res")
       manifest.srcFile("src/debug/AndroidManifest.xml")
     }
   }
@@ -147,11 +145,6 @@ dependencies {
   testImplementation(projects.hanalytics.hanalyticsTest)
 
   androidTestImplementation(projects.hanalytics.hanalyticsFeatureFlagsTest)
-
-  implementation(projects.hanalytics.hanalyticsEngineeringApi)
-  releaseImplementation(projects.hanalytics.hanalyticsEngineeringNoop)
-  debugImplementation(projects.hanalytics.hanalyticsEngineering)
-  "stagingImplementation"(projects.hanalytics.hanalyticsEngineering)
 
   androidTestImplementation(projects.testdata)
   testImplementation(projects.testdata)
