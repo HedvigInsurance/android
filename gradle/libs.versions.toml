@@ -6,6 +6,7 @@ minSdkVersion = "23"
 
 # gradlePlugin versions
 androidGradlePlugin = "8.0.0"
+androidRemoveUnusedResourcesPlugin = "1.4.0"
 apollo = "3.7.4"
 buildTimeTracker = "0.11.0"
 cacheFix = "2.7.1"
@@ -257,3 +258,4 @@ kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinter = { id = "org.jmailen.kotlinter", version.ref = "kotlinter" }
 license = { id = "com.jaredsburrows.license", version.ref = "license" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+androidRemoveUnusedResourcesPlugin = { id = "io.github.irgaly.remove-unused-resources", version.ref = "androidRemoveUnusedResourcesPlugin" }

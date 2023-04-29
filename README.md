@@ -40,3 +40,11 @@ Generated from `./gradlew :generateProjectDependencyGraph`*\
 
 `renovate.json` is a file which Renovate looks at in order to be able to suggest upgrading private artifacts to their latest version.
 The `username` used in there is the result of passing our jitpack username (from 1Password) through Renovate's [website](https://app.renovatebot.com/encrypt) to get the hashed version of it.
+
+## Removing unused resources
+
+The [android-remove-unused-resources-plugin](https://github.com/irgaly/android-remove-unused-resources-plugin/tree/main#usage)
+plugin is used to achieve this. This will run on CI using [this task](./.github/workflows/unused-resources.yml), but to run locally one can also just do
+`./gradlew :app:lintDebug -Prur.lint.onlyUnusedResources`
+And then
+`./gradlew :app:removeUnusedResources -Prur.lintVariant="debug"`

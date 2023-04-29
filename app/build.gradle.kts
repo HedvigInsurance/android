@@ -8,6 +8,7 @@ plugins {
   id("hedvig.android.application.compose")
   id("hedvig.android.ktlint")
   id("kotlin-parcelize")
+  alias(libs.plugins.androidRemoveUnusedResourcesPlugin)
   alias(libs.plugins.appIconBannerGenerator) // Automatically adds the "DEBUG" banner on the debug app icon
   alias(libs.plugins.crashlytics)
   alias(libs.plugins.datadog)
@@ -40,6 +41,7 @@ android {
   lint {
     abortOnError = false
     checkDependencies = true
+    checkGeneratedSources = true
   }
 
   packaging {
