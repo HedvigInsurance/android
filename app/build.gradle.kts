@@ -144,6 +144,7 @@ dependencies {
   testImplementation(projects.coreCommonTest)
   testImplementation(projects.coreDatastoreTest)
   testImplementation(projects.hanalytics.hanalyticsFeatureFlagsTest)
+  testImplementation(projects.hanalytics.hanalyticsTest)
 
   androidTestImplementation(projects.hanalytics.hanalyticsFeatureFlagsTest)
 
