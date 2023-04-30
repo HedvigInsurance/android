@@ -8,7 +8,6 @@ minSdkVersion = "23"
 androidGradlePlugin = "8.0.0"
 androidRemoveUnusedResourcesPlugin = "1.4.0"
 apollo = "3.7.4"
-buildTimeTracker = "0.11.0"
 cacheFix = "2.7.1"
 crashlytics = "2.9.5"
 datadogPlugin = "1.8.1"
@@ -246,7 +245,6 @@ androidApplication = { id = "com.android.application", version.ref = "androidGra
 androidLibrary = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 apollo = { id = "com.apollographql.apollo3", version.ref = "apollo" }
 appIconBannerGenerator = { id = "com.starter.easylauncher", version.ref = "easylauncher" }
-buildTimeTracker = { id = "net.rdrei.android.buildtimetracker", version.ref = "buildTimeTracker" }
 cacheFix = { id = "org.gradle.android.cache-fix", version.ref = "cacheFix" }
 crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
 datadog = { id = "com.datadoghq.dd-sdk-android-gradle-plugin", version.ref = "datadogPlugin" }
