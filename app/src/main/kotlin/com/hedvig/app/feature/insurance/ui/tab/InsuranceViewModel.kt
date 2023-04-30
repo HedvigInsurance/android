@@ -3,7 +3,7 @@ package com.hedvig.app.feature.insurance.ui.tab
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import arrow.core.continuations.either
+import arrow.core.raise.either
 import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeService
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsUseCase

@@ -1,12 +1,11 @@
 package com.hedvig.app.feature.checkout
 
 import arrow.core.Either
-import arrow.core.continuations.either
-import arrow.core.continuations.ensureNotNull
 import arrow.core.flatMap
 import arrow.core.left
+import arrow.core.raise.either
+import arrow.core.raise.ensureNotNull
 import arrow.core.right
-import arrow.core.sequence
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.language.LanguageService
@@ -34,11 +33,11 @@ class EditCheckoutUseCase(
     parameter: EditAndSignParameter,
   ): Either<ErrorMessage, Success> = either {
     ensureNotNull(parameter.quoteCartId) { ErrorMessage("No quote cart id found") }
-    val results = parameter.quoteIds
+    parameter
+      .quoteIds
       .map { mutateQuoteCart(parameter.quoteCartId, it, parameter.ssn, parameter.email) }
-      .sequence()
-      .bind()
-    results.first()
+      .bindAll()
+      .first()
   }
 
   private suspend fun mutateQuoteCart(
@@ -66,8 +65,7 @@ class EditCheckoutUseCase(
       variables = JSONObject(json),
       files = emptyList(),
     )
-      .toEither()
-      .mapLeft { ErrorMessage(it.message) }
+      .toEither(::ErrorMessage)
       .flatMap { jsonResponse ->
         val errorCode = try {
           jsonResponse.getJSONObject("data")

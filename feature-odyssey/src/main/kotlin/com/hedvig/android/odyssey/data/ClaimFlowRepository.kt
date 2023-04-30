@@ -1,8 +1,8 @@
 package com.hedvig.android.odyssey.data
 
 import arrow.core.Either
-import arrow.core.continuations.EffectScope
-import arrow.core.continuations.either
+import arrow.core.raise.Raise
+import arrow.core.raise.either
 import arrow.retrofit.adapter.either.networkhandling.CallError
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.Optional
@@ -253,7 +253,7 @@ internal class ClaimFlowRepositoryImpl(
     }
   }
 
-  private suspend fun EffectScope<ErrorMessage>.uploadAudioFile(flowId: String, file: File): AudioUrl {
+  private suspend fun Raise<ErrorMessage>.uploadAudioFile(flowId: String, file: File): AudioUrl {
     val result = odysseyService
       .uploadAudioRecordingFile(
         flowId = flowId,
@@ -272,7 +272,7 @@ internal class ClaimFlowRepositoryImpl(
     return AudioUrl(result.audioUrl)
   }
 
-  private suspend fun EffectScope<ErrorMessage>.nextClaimFlowStepWithAudioUrl(audioUrl: AudioUrl): ClaimFlowStep {
+  private suspend fun Raise<ErrorMessage>.nextClaimFlowStepWithAudioUrl(audioUrl: AudioUrl): ClaimFlowStep {
     val result = apolloClient
       .mutation(FlowClaimAudioRecordingNextMutation(audioUrl.value, claimFlowContext!!))
       .safeExecute()

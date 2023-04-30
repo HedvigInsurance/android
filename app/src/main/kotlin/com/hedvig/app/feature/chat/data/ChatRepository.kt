@@ -4,7 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import arrow.core.Either
-import arrow.core.continuations.either
+import arrow.core.raise.either
+import arrow.core.raise.ensure
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.api.toUpload
