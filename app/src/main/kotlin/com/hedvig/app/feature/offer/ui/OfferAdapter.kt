@@ -24,7 +24,6 @@ import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.core.ui.insurance.toDrawable
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.BASE_MARGIN_DOUBLE
-import com.hedvig.app.BASE_MARGIN_TRIPLE
 import com.hedvig.app.R
 import com.hedvig.app.databinding.InfoCardBinding
 import com.hedvig.app.databinding.OfferFactAreaBinding
@@ -371,7 +370,7 @@ class OfferAdapter(
           start = BASE_MARGIN_DOUBLE,
           top = BASE_MARGIN_DOUBLE,
           end = BASE_MARGIN_DOUBLE,
-          bottom = BASE_MARGIN_TRIPLE,
+          bottom = BASE_MARGIN * 3,
         )
       }
 
@@ -520,7 +519,7 @@ class OfferAdapter(
     }
 
     class Error(
-      val composeView: ComposeView,
+      private val composeView: ComposeView,
       private val reload: () -> Unit,
     ) : ViewHolder(composeView) {
 

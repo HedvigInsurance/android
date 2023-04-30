@@ -30,13 +30,12 @@ class QuoteCartFragmentToOfferModelMapper(
   private fun PaymentConnection?.toPaymentApiResponseOrNull(): PaymentMethodsApiResponse? {
     return this
       ?.providers
-      ?.mapNotNull { paymentProvider ->
+      ?.firstNotNullOfOrNull { paymentProvider ->
         when (paymentProvider) {
           is PaymentProvider.Adyen -> paymentProvider
           PaymentProvider.Trustly -> null
         }
       }
-      ?.firstOrNull()
       ?.availablePaymentOptions
   }
 }

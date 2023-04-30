@@ -63,7 +63,6 @@ internal class AndroidHAnalyticsService(
       .header("Content-Type", "application/json")
       .post(requestJsonObject.toString().toRequestBody())
       .build()
-    @Suppress("BlockingMethodInNonBlockingContext")
     return withContext(Dispatchers.IO) {
       try {
         val response = okHttpClient.newCall(experimentRequest).await()
@@ -84,7 +83,6 @@ internal class AndroidHAnalyticsService(
       .post(requestJsonObject.toString().toRequestBody())
       .build()
 
-    @Suppress("BlockingMethodInNonBlockingContext")
     withContext(Dispatchers.IO) {
       try {
         okHttpClient.newCall(request).await()

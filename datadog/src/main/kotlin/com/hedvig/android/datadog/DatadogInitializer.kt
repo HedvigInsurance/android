@@ -19,13 +19,12 @@ import org.koin.core.component.inject
 import slimber.log.v
 import timber.log.Timber
 
-@Suppress("unused") // Used in /app/src/main/AndroidManifest.xml
+// Used in /app/src/main/AndroidManifest.xml
 abstract class DatadogInitializer : Initializer<Unit>, KoinComponent {
 
   private val isDebug by inject<Boolean>(isDebugQualifier)
   private val isProduction by inject<Boolean>(isProductionQualifier)
 
-  @Suppress("KotlinConstantConditions")
   override fun create(context: Context) {
     val clientToken = "pub185bcba7ed324e83d068b80e25a81359"
     val applicationId = "4d7b8355-396d-406e-b543-30a073050e8f"

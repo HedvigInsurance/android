@@ -19,7 +19,6 @@ android {
   namespace = "com.hedvig.android.core.designsystem"
 
   defaultConfig {
-    @Suppress("UnstableApiUsage")
     vectorDrawables.useSupportLibrary = true
   }
 }

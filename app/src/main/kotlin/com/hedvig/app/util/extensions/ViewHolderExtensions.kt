@@ -4,4 +4,4 @@ import androidx.recyclerview.widget.RecyclerView
 import slimber.log.e
 
 inline fun <reified T> RecyclerView.ViewHolder.invalid(_data: T) =
-  e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${T::class.java.name}" }
+  e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${T::class.java.name}, value is $_data" }

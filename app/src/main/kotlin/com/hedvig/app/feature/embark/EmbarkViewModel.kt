@@ -51,7 +51,7 @@ abstract class EmbarkViewModel(
   authTokenService: AuthTokenService,
 ) : ViewModel() {
   private val _passageState = MutableLiveData<PassageState>()
-  val passageState: LiveData<PassageState> = _passageState
+  private val passageState: LiveData<PassageState> = _passageState
 
   private val loginStatus: StateFlow<AuthStatus?> = authTokenService.authStatus
 

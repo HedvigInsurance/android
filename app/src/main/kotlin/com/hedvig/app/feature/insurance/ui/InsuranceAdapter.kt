@@ -151,7 +151,7 @@ class InsuranceAdapter(
     }
 
     class Error(
-      val composeView: ComposeView,
+      private val composeView: ComposeView,
       private val retry: () -> Unit,
     ) : ViewHolder(composeView) {
       override fun bind(data: InsuranceModel) {

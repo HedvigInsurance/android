@@ -1,12 +1,12 @@
 package com.hedvig.app.feature.offer.usecase
 
 import arrow.core.Either
-import arrow.core.flatMap
-import arrow.core.left
-import arrow.core.right
+import arrow.core.raise.either
+import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.app.feature.adyen.PaymentTokenId
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import giraffe.AddPaymentTokenIdMutation
@@ -14,32 +14,22 @@ import giraffe.AddPaymentTokenIdMutation
 class AddPaymentTokenUseCase(
   private val apolloClient: ApolloClient,
 ) {
-
-  object Success
-
-  sealed class Error {
-    data class CheckoutPaymentAction(val action: String) : Error()
-    data class ErrorMessage(val message: String?) : Error()
-  }
-
-  suspend operator fun invoke(
+  suspend fun invoke(
     quoteCartId: QuoteCartId,
     paymentTokenId: PaymentTokenId,
-  ): Either<Error, Success> {
+  ): Either<ErrorMessage, Unit> {
     val mutation = AddPaymentTokenIdMutation(
       quoteCartId = quoteCartId.id,
       paymentTokenId = paymentTokenId.id,
     )
-    return apolloClient.mutation(mutation)
-      .safeExecute()
-      .toEither()
-      .mapLeft { Error.ErrorMessage(it.message) }
-      .flatMap {
-        it.quoteCart_addPaymentToken.asBasicError?.let {
-          Error.ErrorMessage(it.message).left()
-        } ?: it.quoteCart_addPaymentToken.asQuoteCart?.let {
-          Success.right()
-        } ?: Error.ErrorMessage(null).left()
+    return either {
+      val result = apolloClient.mutation(mutation).safeExecute().toEither(::ErrorMessage).bind()
+      val basicError: AddPaymentTokenIdMutation.AsBasicError? = result.quoteCart_addPaymentToken.asBasicError
+      if (basicError != null) {
+        raise(ErrorMessage(basicError.message))
       }
+      val quoteCart = result.quoteCart_addPaymentToken.asQuoteCart
+      ensureNotNull(quoteCart) { ErrorMessage() }
+    }
   }
 }

@@ -12,4 +12,3 @@ val CONTRACT_STATUS_DATA_ONE_TERMINATED_CONTRACT = ContractStatusDataBuilder(
 val WELCOME_DATA_ONE_PAGE = WelcomeDataBuilder().build()
 
 val WHATS_NEW = WhatsNewDataBuilder().build()
-val NO_WHATS_NEW = WhatsNewDataBuilder(listOf()).build()

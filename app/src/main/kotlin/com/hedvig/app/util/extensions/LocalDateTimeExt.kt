@@ -13,6 +13,4 @@ fun Long.epochMillisToLocalDate(): LocalDate {
   return epochMillisToLocalDateTime().toLocalDate()
 }
 
-fun LocalDateTime.isToday() = toLocalDate().isEqual(LocalDate.now())
-
 fun LocalDate.isToday() = isEqual(LocalDate.now())

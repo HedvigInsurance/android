@@ -208,6 +208,7 @@ dependencies {
   implementation(libs.firebase.dynamicLinks)
   implementation(libs.firebase.messaging)
   implementation(libs.firebase.playServicesBase)
+  implementation(libs.flexbox)
   implementation(libs.fragmentViewBindingDelegate)
   implementation(libs.insetter)
   implementation(libs.koin.android)

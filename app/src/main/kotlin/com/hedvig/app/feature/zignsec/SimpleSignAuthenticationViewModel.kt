@@ -50,7 +50,7 @@ class SimpleSignAuthenticationViewModel(
   val zignSecUrl: LiveData<String> = _zignSecUrl
 
   private val _statusUrl = MutableLiveData<StatusUrl>()
-  val statusUrl: LiveData<StatusUrl> = _statusUrl
+  private val statusUrl: LiveData<StatusUrl> = _statusUrl
 
   private val _events = LiveEvent<Event>()
   val events: LiveData<Event> = _events

@@ -23,7 +23,6 @@ android {
   namespace = "hedvig.resources"
 
   defaultConfig {
-    @Suppress("UnstableApiUsage")
     vectorDrawables.useSupportLibrary = true
   }
 }

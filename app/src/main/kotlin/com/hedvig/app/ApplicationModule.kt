@@ -139,7 +139,6 @@ import com.hedvig.app.feature.marketing.data.GetInitialMarketPickerValuesUseCase
 import com.hedvig.app.feature.marketing.data.GetMarketingBackgroundUseCase
 import com.hedvig.app.feature.marketing.data.UpdateApplicationLanguageUseCase
 import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
-import com.hedvig.app.feature.marketpicker.LanguageRepository
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.OfferViewModelImpl
@@ -557,7 +556,6 @@ private val repositoriesModule = module {
   single { UserRepository(get<ApolloClient>(giraffeClient)) }
   single { WhatsNewRepository(get<ApolloClient>(giraffeClient), get(), get()) }
   single { WelcomeRepository(get<ApolloClient>(giraffeClient), get()) }
-  single { LanguageRepository(get<ApolloClient>(giraffeClient)) }
   single { AdyenRepository(get<ApolloClient>(giraffeClient), get()) }
   single { EmbarkRepository(get<ApolloClient>(giraffeClient), get()) }
   single { ReferralsRepository(get<ApolloClient>(giraffeClient)) }

@@ -230,7 +230,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
     }
 
     chatViewModel.networkError.observe(this) { networkError ->
-      if (networkError == true) {
+      if (networkError) {
         showAlert(
           hedvig.resources.R.string.NETWORK_ERROR_ALERT_TITLE,
           hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE,

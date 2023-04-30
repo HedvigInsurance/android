@@ -8,6 +8,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 
+@Suppress("unused") // Used in ./lokalise-gradle-plugin/lokalise/build.gradle.kts
 class HedvigLokalisePlugin : Plugin<Project> {
   override fun apply(project: Project) {
     project.extensions.create(LokalisePluginExtension.NAME, LokalisePluginExtension::class.java, project.objects)
