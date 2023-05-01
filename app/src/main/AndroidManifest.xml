@@ -4,11 +4,7 @@
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
@@ -272,16 +268,15 @@
             android:name="firebase_messaging_auto_init_enabled"
             android:value="false" />
 
+        <!-- Context for this: https://commonsware.com/Jetpack/pages/chap-files-005.html -->
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="@string/file_provider_authority"
+            android:authorities="${applicationId}.provider"
             android:exported="false"
-            android:grantUriPermissions="true"
-            tools:replace="android:authorities">
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"
-                tools:replace="android:resource" />
+                android:resource="@xml/provider_paths" />
         </provider>
 
         <service
