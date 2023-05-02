@@ -16,18 +16,25 @@ import okio.buffer
 import okio.sink
 import okio.source
 import org.gradle.api.DefaultTask
+import org.gradle.api.file.ArchiveOperations
 import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.FileSystemOperations
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.LocalState
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 import java.io.File
 import java.net.URL
+import javax.inject.Inject
 
-abstract class DownloadStringsTask : DefaultTask() {
+abstract class DownloadStringsTask @Inject constructor(
+  private val fileSystemOperations: FileSystemOperations,
+  private val archiveOperations: ArchiveOperations,
+) : DefaultTask() {
   init {
     description = "Tasks which downloads the lokalise strings into strings.xml"
     group = "lokalise"
@@ -49,6 +56,10 @@ abstract class DownloadStringsTask : DefaultTask() {
   @get:Option(option = "downloadConfig", description = "Configuration of how to download the strings")
   abstract val downloadConfig: Property<DownloadConfig>
 
+  @get:LocalState
+  val temporaryCacheDir: File
+    get() = temporaryDir
+
   private val tag = "[Hedvig Lokalise Plugin]"
 
   @TaskAction
@@ -56,18 +67,14 @@ abstract class DownloadStringsTask : DefaultTask() {
     val dirRes = outputDirectory
     logger.debug("$tag strings will be put at path:${outputDirectory.asPath}")
 
-    val nameTempLokaliseDir = "lokalise"
-    val localBuildDir = project.file("${project.buildDir.path}${File.separator}$nameTempLokaliseDir")
-    val zipPath = "$localBuildDir${File.separator}lang-file.zip"
-
     val bucketUrl = fetchBucketUrl()
-    localBuildDir.mkdirs()
-    saveUrlContentToFile(zipPath, bucketUrl)
-    logger.debug("$tag zip file:${File(zipPath).readLines()}")
-    unzipReceivedZipFile(zipPath, dirRes)
+    val zipfile = File(temporaryCacheDir, "lang-file.zip")
+    zipfile.fillContentsByDownloadingFromUrl(bucketUrl)
+    logger.debug("$tag zip file:${zipfile.readLines()}")
+    dirRes.fillContentsByCopyingFromZipFile(zipfile)
     logger.debug("$tag dirRes:${dirRes.asFileTree.map { it.absolutePath }}")
-    localBuildDir.delete()
-    fixFrenchTranslationLintErrors(dirRes)
+    dirRes.fixFrenchTranslationLintErrors()
+    temporaryCacheDir.delete()
   }
 
   /**
@@ -76,8 +83,8 @@ abstract class DownloadStringsTask : DefaultTask() {
    * Plural strings also need when there is "one" specified for there to be a placeholder which changes depending on
    * when it's one or many. Some of our strings do not do that purposefully, so we can just ignore that.
    */
-  private fun fixFrenchTranslationLintErrors(res: ConfigurableFileCollection) {
-    val frenchStringsXmlPath: okio.Path = res.asFileTree
+  private fun ConfigurableFileCollection.fixFrenchTranslationLintErrors() {
+    val frenchStringsXmlPath: okio.Path = asFileTree
       .firstOrNull { stringXmlFile ->
         stringXmlFile.parentFile.name.contains("-fr")
       }
@@ -96,7 +103,8 @@ abstract class DownloadStringsTask : DefaultTask() {
         oldValue = """<item quantity="one">""",
         newValue = """<item quantity="one" tools:ignore="ImpliedQuantity">""",
       )
-      .replace( // This is needed on the top of the xml file for `tools:ignore` to work.
+      // This is needed on the top of the xml file for `tools:ignore` to work.
+      .replace(
         oldValue = """<resources>""",
         newValue = """<resources xmlns:tools="http://schemas.android.com/tools">""",
       )
@@ -129,18 +137,18 @@ abstract class DownloadStringsTask : DefaultTask() {
     return amazonBucketUrl.jsonPrimitive.content
   }
 
-  private fun saveUrlContentToFile(zipPath: String, bucketUrl: String) {
+  private fun File.fillContentsByDownloadingFromUrl(bucketUrl: String) {
     URL(bucketUrl).openStream().source().buffer().use { zipSource ->
-      project.file(zipPath).sink().buffer().use { localFileSink ->
+      this.sink().buffer().use { localFileSink ->
         localFileSink.writeAll(zipSource)
       }
     }
   }
 
-  private fun unzipReceivedZipFile(fullZipFilePath: String, dirForUnzipped: ConfigurableFileCollection) {
-    project.copy {
-      it.from(project.zipTree(File(fullZipFilePath)))
-      it.into(dirForUnzipped.asPath)
+  private fun ConfigurableFileCollection.fillContentsByCopyingFromZipFile(zipFile: File) {
+    fileSystemOperations.copy {
+      it.from(archiveOperations.zipTree(zipFile))
+      it.into(this.asPath)
     }
   }
 }
