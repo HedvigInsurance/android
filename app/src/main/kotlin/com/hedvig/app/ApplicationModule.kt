@@ -574,7 +574,10 @@ private val notificationModule = module {
   single { GenericNotificationSender(get()) } bind NotificationSender::class
 }
 
-private val clockModule = module { single { Clock.systemDefaultZone() } }
+private val clockModule = module {
+  single<Clock> { Clock.systemDefaultZone() }
+  single<kotlinx.datetime.Clock> { kotlinx.datetime.Clock.System }
+}
 
 private val useCaseModule = module {
   single { GetUpcomingAgreementUseCase(get<ApolloClient>(giraffeClient), get()) }
