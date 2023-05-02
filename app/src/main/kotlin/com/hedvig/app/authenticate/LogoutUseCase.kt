@@ -11,6 +11,7 @@ import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.util.apollo.reconnectSubscriptions
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.launch
+import slimber.log.d
 
 class LogoutUseCase(
   private val marketManager: MarketManager,
@@ -24,6 +25,7 @@ class LogoutUseCase(
 ) {
 
   fun invoke() {
+    d { "Logout usecase called" }
     applicationScope.launch { hAnalytics.loggedOut() }
     applicationScope.launch { userRepository.logout() }
     applicationScope.launch { authTokenService.logoutAndInvalidateTokens() }

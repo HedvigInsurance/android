@@ -9,6 +9,7 @@ import androidx.work.WorkManager
 import androidx.work.await
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.tasks.await
+import slimber.log.d
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
@@ -38,7 +39,9 @@ internal class FCMTokenManager(
   suspend fun deleteTokenLocallyAndFromFirebaseMessaging() {
     fcmTokenStorage.clearToken()
     WorkManager.getInstance(applicationContext).cancelAllWorkByTag(FIREBASE_PUSH_TOKEN_MUTATION_WORKER_TAG)
+    d { "Going to delete the FirebaseMessaging token" }
     FirebaseMessaging.getInstance().deleteToken().await()
+    d { "Did delete the FirebaseMessaging token" }
   }
 
   companion object {
