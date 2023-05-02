@@ -19,7 +19,6 @@ class RedeemReferralCodeRepository(
     return apolloClient
       .mutation(RedeemReferralCodeMutation(campaignCode.code, languageService.getGraphQLLocale()))
       .safeExecute()
-      .toEither()
-      .mapLeft { ErrorMessage(it.message) }
+      .toEither(::ErrorMessage)
   }
 }
