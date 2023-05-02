@@ -14,5 +14,5 @@ data class CreateQuoteInput(
   val numberCoInsured: Int,
   val squareMeters: Int,
   val apartmentOwnerType: ApartmentOwnerType,
-  val isStudent: Boolean
+  val isStudent: Boolean,
 )
