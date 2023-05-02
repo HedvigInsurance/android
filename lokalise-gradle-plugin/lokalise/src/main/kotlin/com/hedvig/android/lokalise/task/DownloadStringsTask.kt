@@ -22,7 +22,6 @@ import org.gradle.api.file.FileSystemOperations
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
-import org.gradle.api.tasks.LocalState
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
@@ -56,10 +55,6 @@ abstract class DownloadStringsTask @Inject constructor(
   @get:Option(option = "downloadConfig", description = "Configuration of how to download the strings")
   abstract val downloadConfig: Property<DownloadConfig>
 
-  @get:LocalState
-  val temporaryCacheDir: File
-    get() = temporaryDir
-
   private val tag = "[Hedvig Lokalise Plugin]"
 
   @TaskAction
@@ -68,13 +63,12 @@ abstract class DownloadStringsTask @Inject constructor(
     logger.debug("$tag strings will be put at path:${outputDirectory.asPath}")
 
     val bucketUrl = fetchBucketUrl()
-    val zipfile = File(temporaryCacheDir, "lang-file.zip")
+    val zipfile = File(temporaryDir, "lang-file.zip")
     zipfile.fillContentsByDownloadingFromUrl(bucketUrl)
     logger.debug("$tag zip file:${zipfile.readLines()}")
     dirRes.fillContentsByCopyingFromZipFile(zipfile)
     logger.debug("$tag dirRes:${dirRes.asFileTree.map { it.absolutePath }}")
     dirRes.fixFrenchTranslationLintErrors()
-    temporaryCacheDir.delete()
   }
 
   /**
