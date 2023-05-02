@@ -43,7 +43,7 @@ class ReferralsNotificationSender(
     else -> false
   }
 
-  internal fun sendReferralSuccessfulNotification(remoteMessage: RemoteMessage) {
+  private fun sendReferralSuccessfulNotification(remoteMessage: RemoteMessage) {
     val pendingIntent: PendingIntent? = TaskStackBuilder
       .create(context)
       .run {

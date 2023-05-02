@@ -9,12 +9,12 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.MoreOptionsRowBinding
 import com.hedvig.app.isDebug
 import com.hedvig.app.util.GenericDiffUtilItemCallback
-import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
 import com.hedvig.app.util.extensions.putCompoundDrawablesRelativeWithIntrinsicBounds
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
+import com.hedvig.app.util.extensions.viewDps
 
 class MoreOptionsAdapter(private val viewModel: MemberIdViewModel) :
   ListAdapter<MoreOptionsModel, MoreOptionsAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
@@ -58,7 +58,7 @@ class MoreOptionsAdapter(private val viewModel: MemberIdViewModel) :
         binding.apply {
           label.apply {
             setText(hedvig.resources.R.string.embark_onboarding_more_options_user_id_label)
-            compoundDrawablePadding = 16.dp
+            compoundDrawablePadding = 16.viewDps
             putCompoundDrawablesRelativeWithIntrinsicBounds(start = R.drawable.ic_contact_information)
           }
           info.text = item.id
@@ -77,12 +77,12 @@ class MoreOptionsAdapter(private val viewModel: MemberIdViewModel) :
         binding.apply {
           label.apply {
             setText(hedvig.resources.R.string.embark_onboarding_more_options_user_id_label)
-            compoundDrawablePadding = 16.dp
+            compoundDrawablePadding = 16.viewDps
             putCompoundDrawablesRelativeWithIntrinsicBounds(start = R.drawable.ic_contact_information)
           }
           info.apply {
             setText(hedvig.resources.R.string.embark_onboarding_more_options_loading_error_reload_label)
-            compoundDrawablePadding = 8.dp
+            compoundDrawablePadding = 8.viewDps
             putCompoundDrawablesRelativeWithIntrinsicBounds(end = R.drawable.ic_refresh)
             setHapticClickListener {
               viewModel.load()
@@ -98,7 +98,7 @@ class MoreOptionsAdapter(private val viewModel: MemberIdViewModel) :
         binding.apply {
           label.apply {
             setText(hedvig.resources.R.string.embark_onboarding_more_options_version_label)
-            compoundDrawablePadding = 16.dp
+            compoundDrawablePadding = 16.viewDps
             putCompoundDrawablesRelativeWithIntrinsicBounds(start = R.drawable.ic_info_more_options)
           }
           info.text = buildString {

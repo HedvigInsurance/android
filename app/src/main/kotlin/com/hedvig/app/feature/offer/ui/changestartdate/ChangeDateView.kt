@@ -5,7 +5,6 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import androidx.core.view.isVisible
-import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeDateBinding
 import com.hedvig.app.util.extensions.isToday
 import com.hedvig.app.util.extensions.view.setHapticClickListener

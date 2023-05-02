@@ -65,8 +65,6 @@ internal fun AudioRecordingDestination(
     submitAudioFile = viewModel::submitAudioFile,
     submitAudioUrl = viewModel::submitAudioUrl,
     redo = viewModel::redo,
-    play = viewModel::play,
-    pause = viewModel::pause,
     showedError = viewModel::showedError,
     openAppSettings = openAppSettings,
     navigateUp = navigateUp,
@@ -85,8 +83,6 @@ private fun AudioRecordingScreen(
   submitAudioFile: (File) -> Unit,
   submitAudioUrl: (AudioUrl) -> Unit,
   redo: () -> Unit,
-  play: () -> Unit,
-  pause: () -> Unit,
   showedError: () -> Unit,
   openAppSettings: () -> Unit,
   navigateUp: () -> Unit,
@@ -124,8 +120,6 @@ private fun AudioRecordingScreen(
       submitAudioFile = submitAudioFile,
       submitAudioUrl = submitAudioUrl,
       redo = redo,
-      play = play,
-      pause = pause,
       openAppSettings = openAppSettings,
       modifier = sideSpacingModifier,
     )
@@ -149,8 +143,6 @@ private fun AudioRecordingSection(
   submitAudioFile: (File) -> Unit,
   submitAudioUrl: (AudioUrl) -> Unit,
   redo: () -> Unit,
-  play: () -> Unit,
-  pause: () -> Unit,
   openAppSettings: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -180,8 +172,6 @@ private fun AudioRecordingSection(
     submitAudioFile = submitAudioFile,
     submitAudioUrl = submitAudioUrl,
     redo = redo,
-    play = play,
-    pause = pause,
     modifier = modifier,
   )
 }

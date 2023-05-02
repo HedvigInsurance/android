@@ -227,7 +227,7 @@ class ChatAdapter(
 
   inner class HedvigMessage(view: View) : RecyclerView.ViewHolder(view) {
     private val binding by viewBinding(ChatMessageHedvigBinding::bind)
-    fun reset() {
+    private fun reset() {
       binding.hedvigMessage.remove()
     }
 

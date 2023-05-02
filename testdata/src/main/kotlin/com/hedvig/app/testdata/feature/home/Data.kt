@@ -2,11 +2,8 @@ package com.hedvig.app.testdata.feature.home
 
 import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.feature.home.builders.HomeDataBuilder
-import com.hedvig.app.testdata.feature.home.builders.ImportantMessageBuilder
 import giraffe.type.PayinMethodStatus
 import java.time.LocalDate
-
-val HOME_DATA_TERMINATED_IN_FUTURE = HomeDataBuilder(listOf(ContractStatus.TERMINATED_IN_FUTURE)).build()
 
 val HOME_DATA_PENDING = HomeDataBuilder(listOf(ContractStatus.PENDING)).build()
 
@@ -34,36 +31,9 @@ val HOME_DATA_ACTIVE_IN_FUTURE_NO_INCEPTION = HomeDataBuilder(
 val HOME_DATA_TERMINATED =
   HomeDataBuilder(listOf(ContractStatus.TERMINATED)).build()
 
-val HOME_DATA_TERMINATED_WITH_ONGOING_CLAIMS =
-  HomeDataBuilder(
-    contracts = listOf(ContractStatus.TERMINATED),
-    withClaimStatusCards = true,
-  ).build()
-
 val HOME_DATA_ACTIVE = HomeDataBuilder(listOf(ContractStatus.ACTIVE)).build()
 
 val HOME_DATA_PAYIN_NEEDS_SETUP =
   HomeDataBuilder(listOf(ContractStatus.ACTIVE), payinMethodStatus = PayinMethodStatus.NEEDS_SETUP).build()
 
 val HOME_DATA_TERMINATED_TODAY = HomeDataBuilder(listOf(ContractStatus.TERMINATED_TODAY)).build()
-
-val HOME_DATA_ACTIVE_WITH_PSA = HomeDataBuilder(
-  listOf(ContractStatus.ACTIVE),
-  importantMessages = listOf(
-    ImportantMessageBuilder(
-      "COVID-19: Your insurance doesn’t cover trips to certain countries. See full list at UD.",
-    ).build(),
-  ),
-).build()
-
-val HOME_DATA_ACTIVE_WITH_MULTIPLE_PSA = HomeDataBuilder(
-  listOf(ContractStatus.ACTIVE),
-  importantMessages = listOf(
-    ImportantMessageBuilder(
-      "COVID-19: Your insurance doesn’t cover trips to certain countries. See full list at UD.",
-    ).build(),
-    ImportantMessageBuilder(
-      "COVID-19: Your insurance doesn’t cover trips to certain countries. See full list at UD.",
-    ).build(),
-  ),
-).build()

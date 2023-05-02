@@ -24,7 +24,6 @@ class AuthTokenServiceImpl(
   coroutineScope: CoroutineScope,
 ) : AuthTokenService {
 
-  @Suppress("NAME_SHADOWING")
   override val authStatus: StateFlow<AuthStatus?> = authTokenStorage.getTokens()
     .mapLatest { authTokens ->
       val (accessToken, refreshToken) = authTokens ?: return@mapLatest AuthStatus.LoggedOut

@@ -26,6 +26,7 @@ import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.getViewModel
+import slimber.log.d
 
 class SettingsActivity : AppCompatActivity(R.layout.activity_settings) {
   private val binding by viewBinding(ActivitySettingsBinding::bind)
@@ -83,7 +84,10 @@ class SettingsActivity : AppCompatActivity(R.layout.activity_settings) {
             hedvig.resources.R.string.SETTINGS_ALERT_CHANGE_MARKET_TEXT,
             positiveLabel = hedvig.resources.R.string.ALERT_OK,
             negativeLabel = hedvig.resources.R.string.SETTINGS_ALERT_CHANGE_MARKET_CANCEL,
-            positiveAction = { logoutUseCase.invoke() },
+            positiveAction = {
+              d { "Settings activity, changing country and therefore logging out" }
+              logoutUseCase.invoke()
+            },
           )
           true
         }

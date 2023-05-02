@@ -14,6 +14,7 @@ import com.hedvig.android.notification.firebase.FCMTokenManager
 import com.hedvig.android.notification.firebase.FCMTokenStorage
 import com.hedvig.android.notification.firebase.FCMTokenUploadWorker
 import org.koin.androidx.workmanager.dsl.worker
+import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
@@ -29,7 +30,7 @@ val firebaseNotificationModule = module {
   single<FCMTokenAuthEventListener> {
     FCMTokenAuthEventListener(get<FCMTokenManager>())
   } bind AuthEventListener::class
-  worker<FCMTokenUploadWorker> {
+  worker<FCMTokenUploadWorker>(named<FCMTokenUploadWorker>()) {
     FCMTokenUploadWorker(
       context = get<Context>(),
       params = get<WorkerParameters>(),

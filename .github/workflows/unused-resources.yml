@@ -8,38 +8,42 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+
     - name: Copy CI gradle.properties
       run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
+
     - name: Add GitHub Packages auth
       run: ./scripts/ci-github-packages-properties.sh
+
     - name: Setup JDK 17
-      uses: actions/setup-java@v3.10.0
+      uses: actions/setup-java@v3.11.0
       with:
         java-version: '17'
         distribution: 'zulu'
-        cache: 'gradle'
-    - uses: actions/cache@v3
-      with:
-        path: ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-    - uses: actions/cache@v3
-      with:
-        path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2
+
     - name: Prebuild
       run: ./scripts/ci-prebuild.sh
       env:
         LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
         LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
         ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
-    - name: Unused resources remover
-      uses: hedviginsurance/gradle-unused-resources-action@v0.1.3
+
+    - name: Run android lint
+      run: ./gradlew :app:lintDebug -Prur.lint.onlyUnusedResources
+
+    - name: Remove unused resources
+      run: ./gradlew :app:removeUnusedResources -Prur.lintVariant="debug"
+
     - name: Generate Token
       id: generate_token
       uses: tibdex/github-app-token@v1
       with:
         app_id: ${{ secrets.CI_APP_ID }}
         private_key: ${{ secrets.CI_APP_PRIVATE_KEY }}
+
     - name: Create PR
       uses: peter-evans/create-pull-request@v4
       with:

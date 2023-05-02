@@ -15,6 +15,7 @@ import com.hedvig.app.feature.offer.usecase.CampaignCode
 import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeViewModel
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import slimber.log.e
 
@@ -27,7 +28,7 @@ class ReferralsReceiverActivity : AppCompatActivity(R.layout.referrals_receiver_
     lifecycle.addObserver(AuthenticatedObserver())
 
     binding.apply {
-      lifecycleScope.launchWhenStarted {
+      lifecycleScope.launch {
         repeatOnLifecycle(Lifecycle.State.STARTED) {
           referralViewModel.viewState.collect {
             it.data?.let { startChat() }

@@ -33,6 +33,7 @@ fun RadioButton(
   val dotRadius = animateDpAsState(
     targetValue = if (selected) radioButtonDotSize / 2 else 0.dp,
     animationSpec = tween(durationMillis = RadioAnimationDuration),
+    label = "dotRadius",
   )
   val radioColor = colors.radioColor(enabled, selected)
   Canvas(

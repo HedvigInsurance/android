@@ -1,12 +1,8 @@
 package com.hedvig.app.feature.chat.ui
 
-import android.Manifest
-import android.app.Activity
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
-import android.provider.MediaStore
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
@@ -15,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
 import com.hedvig.android.auth.android.AuthenticatedObserver
+import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.databinding.ActivityChatBinding
@@ -24,10 +21,9 @@ import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.extensions.calculateNonFullscreenHeightDiff
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
+import com.hedvig.app.util.extensions.composeContactSupportEmail
 import com.hedvig.app.util.extensions.handleSingleSelectLink
-import com.hedvig.app.util.extensions.hasPermissions
 import com.hedvig.app.util.extensions.showAlert
-import com.hedvig.app.util.extensions.showPermissionExplanationDialog
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.triggerRestartActivity
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
@@ -40,9 +36,9 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import slimber.log.d
 import slimber.log.e
 import java.io.File
-import java.io.IOException
 
 class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
   private val chatViewModel: ChatViewModel by viewModel()
@@ -60,25 +56,30 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
   private var preventOpenAttachFile = false
 
   private var attachPickerDialog: AttachPickerDialog? = null
+  private var forceScrollToBottom = true
 
   private var currentPhotoPath: String? = null
 
-  private var forceScrollToBottom = true
-
-  private val cameraPermission = Manifest.permission.CAMERA
-
-  private val cameraPermissionResultLauncher = registerForActivityResult(
-    ActivityResultContracts.RequestPermission(),
-  ) { permissionGranted ->
-    if (permissionGranted) {
-      startTakePicture()
-    } else {
-      showPermissionExplanationDialog(cameraPermission)
+  val takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { didSucceed ->
+    d { "Take piture launcher result, didSucceed:$didSucceed, currentPhotoPath:$currentPhotoPath" }
+    if (didSucceed) {
+      currentPhotoPath?.let { tempFile ->
+        attachPickerDialog?.uploadingTakenPicture(true)
+        chatViewModel.uploadTakenPicture(Uri.fromFile(File(tempFile)))
+      }
     }
+  }
+
+  override fun onSaveInstanceState(outState: Bundle) {
+    super.onSaveInstanceState(outState)
+    outState.putString("photo", currentPhotoPath)
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    if (savedInstanceState != null) {
+      currentPhotoPath = savedInstanceState.getString("photo")
+    }
     lifecycle.addObserver(AuthenticatedObserver())
 
     keyboardHeight = resources.getDimensionPixelSize(R.dimen.default_attach_file_height)
@@ -93,12 +94,14 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
           ChatViewModel.Event.Restart -> {
             triggerRestartActivity(ChatActivity::class.java)
           }
-
           is ChatViewModel.Event.Error -> showAlert(
-            title = com.adyen.checkout.dropin.R.string.error_dialog_title,
-            message = com.adyen.checkout.dropin.R.string.component_error,
-            positiveAction = {},
-            negativeLabel = null,
+            title = hedvig.resources.R.string.something_went_wrong,
+            message = hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE,
+            positiveAction = {
+              composeContactSupportEmail()
+            },
+            positiveLabel = hedvig.resources.R.string.GENERAL_EMAIL_US,
+            negativeLabel = hedvig.resources.R.string.general_cancel_button,
           )
         }
       }
@@ -132,6 +135,12 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
   override fun onPause() {
     storeBoolean(ACTIVITY_IS_IN_FOREGROUND, false)
     super.onPause()
+  }
+
+  override fun finish() {
+    super.finish()
+    chatViewModel.onChatClosed()
+    overridePendingTransition(R.anim.stay_in_place, R.anim.chat_slide_down_out)
   }
 
   private fun initializeInput() {
@@ -221,13 +230,14 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
         binding.input.clearInput()
       }
     }
-    chatViewModel.takePictureUploadOutcome.observe(this) {
+    chatViewModel.takePictureUploadFinished.observe(this) {
       attachPickerDialog?.uploadingTakenPicture(false)
       currentPhotoPath?.let { File(it).delete() }
+      currentPhotoPath = null
     }
 
     chatViewModel.networkError.observe(this) { networkError ->
-      if (networkError == true) {
+      if (networkError) {
         showAlert(
           hedvig.resources.R.string.NETWORK_ERROR_ALERT_TITLE,
           hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE,
@@ -284,11 +294,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
     val attachPickerDialog = AttachPickerDialog(this)
     attachPickerDialog.initialize(
       takePhotoCallback = {
-        if (hasPermissions(cameraPermission)) {
-          startTakePicture()
-        } else {
-          cameraPermissionResultLauncher.launch(cameraPermission)
-        }
+        startTakePicture()
       },
       showUploadBottomSheetCallback = {
         ChatFileUploadBottomSheet
@@ -327,63 +333,31 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
   }
 
   private fun startTakePicture() {
-    val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-    val storageDir: File = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-      ?: run {
-        e { "Could not getExternalFilesDir" }
-        return
-      }
-
-    val tempTakenPhotoFile = try {
-      File.createTempFile(
-        "JPEG_${System.currentTimeMillis()}_",
-        ".jpg",
-        storageDir,
-      ).apply {
-        currentPhotoPath = absolutePath
-      }
-    } catch (ex: IOException) {
-      e(ex) { "Error occurred while creating the photo file" }
-      null
-    }
-
-    tempTakenPhotoFile?.also { file ->
-      val photoURI: Uri = FileProvider.getUriForFile(
-        this,
-        getString(R.string.file_provider_authority),
-        file,
+    val externalPhotosDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES) ?: run {
+      e { "Could not getExternalFilesDir(Environment.DIRECTORY_PICTURES)" }
+      showAlert(
+        title = hedvig.resources.R.string.something_went_wrong,
+        positiveLabel = hedvig.resources.R.string.GENERAL_EMAIL_US,
+        positiveAction = { composeContactSupportEmail() },
       )
-      takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-      startActivityForResult(
-        takePictureIntent,
-        TAKE_PICTURE_REQUEST_CODE,
-      )
+      return
     }
-  }
-
-  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-    super.onActivityResult(requestCode, resultCode, data)
-    when (requestCode) {
-      TAKE_PICTURE_REQUEST_CODE -> if (resultCode == Activity.RESULT_OK) {
-        currentPhotoPath?.let { tempFile ->
-          attachPickerDialog?.uploadingTakenPicture(true)
-
-          chatViewModel.uploadTakenPicture(Uri.fromFile(File(tempFile)))
-        }
-      }
+    val newPhotoFile: File = File(
+      externalPhotosDir,
+      "JPEG_${System.currentTimeMillis()}.jpg",
+    ).apply {
+      currentPhotoPath = absolutePath
     }
-  }
 
-  override fun finish() {
-    super.finish()
-    chatViewModel.onChatClosed()
-    overridePendingTransition(R.anim.stay_in_place, R.anim.chat_slide_down_out)
+    val newPhotoUri: Uri = FileProvider.getUriForFile(
+      this,
+      "${BuildConfig.APPLICATION_ID}.provider",
+      newPhotoFile,
+    )
+    takePictureLauncher.launch(newPhotoUri)
   }
 
   companion object {
-
-    private const val TAKE_PICTURE_REQUEST_CODE = 2371
-
     const val ACTIVITY_IS_IN_FOREGROUND = "chat_activity_is_in_foreground"
   }
 }

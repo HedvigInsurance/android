@@ -16,7 +16,6 @@
 
     <dimen name="background_rounded_corners_radius">20dp</dimen>
 
-    <dimen name="bottom_sheet_dialog_fragment_title_height">40dp</dimen>
 
     <dimen name="loading_spinner_width">32dp</dimen>
     <dimen name="loading_spinner_height">32dp</dimen>
@@ -24,7 +23,6 @@
     <dimen name="common_claim_first_message_bottom_margin">60dp</dimen>
 
     <dimen name="dashboard_need_set_up_background_radius">5dp</dimen>
-    <dimen name="common_claim_icon_size">32dp</dimen>
 
     <dimen name="hedvig_card_view_radius">8dp</dimen>
     <dimen name="hedvig_card_view_elevation">10dp</dimen>
@@ -47,7 +45,7 @@
     <dimen name="pager_indicator_height">32dp</dimen>
     <dimen name="news_close_button_size">28dp</dimen>
 
-    <dimen name="chat_attach_icon_size">40dp</dimen>
+    <dimen name="chat_attach_icon_size">48dp</dimen>
     <dimen name="chat_background_edit_text_rounded_corner_radius">8dp</dimen>
     <dimen name="chat_message_corner_radius">8dp</dimen>
     <dimen name="default_attach_file_height">280dp</dimen>
@@ -56,8 +54,6 @@
 
     <dimen name="camera_and_misc_button_width">120dp</dimen>
     <dimen name="camera_and_misc_button_background_stroke_width">1dp</dimen>
-    <dimen name="chat_text_input_vertical_padding">7dp</dimen>
-    <dimen name="chat_text_input_send_button_offset">12dp</dimen>
     <dimen name="bottom_sheet_handle_height">4dp</dimen>
     <dimen name="bottom_sheet_handle_width">32dp</dimen>
     <dimen name="bottom_sheet_handle_corner_radius">20dp</dimen>
@@ -81,10 +77,8 @@
     <dimen name="contract_card_logo_size">24dp</dimen>
     <dimen name="contract_card_max_width">380dp</dimen>
     <dimen name="contract_document_card">80dp</dimen>
-    <dimen name="peril_icon_size">24dp</dimen>
     <dimen name="peril_card_size">56dp</dimen>
     <dimen name="logged_in_card_elevation">1dp</dimen>
-    <dimen name="peril_bottom_sheet_icon_size">48dp</dimen>
     <dimen name="peril_bottom_sheet_close_icon_size">24dp</dimen>
     <dimen name="peril_bottom_sheet_exception_icon_size">24dp</dimen>
     <dimen name="peril_bottom_sheet_exception_item_size">56dp</dimen>

@@ -1,16 +1,47 @@
 package com.hedvig.app.feature.chat.ui
 
 import android.content.Context
-import android.graphics.Rect
-import android.graphics.drawable.Drawable
-import android.text.Editable
-import android.text.TextWatcher
+import android.os.Bundle
+import android.os.Parcelable
 import android.util.AttributeSet
-import android.view.MotionEvent
-import androidx.appcompat.widget.AppCompatEditText
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.LocalTextStyle
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.AbstractComposeView
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.unit.dp
+import androidx.core.os.bundleOf
+import com.hedvig.android.core.common.android.parcelable
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.button_background_dark
+import com.hedvig.android.core.designsystem.theme.hedvig_light_gray
 
-class ChatTextInput : AppCompatEditText {
-
+class ChatTextInput : AbstractComposeView {
   constructor(context: Context) : super(context)
   constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
   constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(
@@ -19,105 +50,88 @@ class ChatTextInput : AppCompatEditText {
     defStyleAttr,
   )
 
-  private var sendIsDisabled = true
+  var placeholderText: String by mutableStateOf(resources.getString(hedvig.resources.R.string.CHAT_TEXT_INPUT_HINT))
+  var text: String by mutableStateOf("")
+  var onSendMessageListener: (() -> Unit)? by mutableStateOf(null)
 
-  var sendClickListener: (() -> Unit)? = null
+  override fun onSaveInstanceState(): Parcelable {
+    val root = super.onSaveInstanceState()
+    return bundleOf(
+      "root" to root,
+      "text" to text,
+    )
+  }
 
-  val currentMessage: String
-    get() = text.toString()
+  override fun onRestoreInstanceState(state: Parcelable?) {
+    if (state is Bundle && state.containsKey("text")) {
+      text = state.getString("text")!!
+      val root: Parcelable? = state.parcelable("root")
+      super.onRestoreInstanceState(root)
+    } else {
+      super.onRestoreInstanceState(state)
+    }
+  }
 
-  private val sendDrawable: Drawable = compoundDrawables[2]
-    ?: error("No send drawable set, right drawable must be set!")
-
-  private val inputTextWatcher = object : TextWatcher {
-    override fun afterTextChanged(s: Editable?) {
-      if (s.isNullOrBlank()) {
-        disableSendIcon()
-      } else {
-        enableSendIcon()
+  @Composable
+  override fun Content() {
+    HedvigTheme {
+      Surface(
+        color = if (isSystemInDarkTheme()) button_background_dark else hedvig_light_gray,
+        contentColor = contentColorFor(MaterialTheme.colorScheme.surface),
+        shape = MaterialTheme.shapes.medium,
+      ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+          val showPlaceholder by remember { derivedStateOf { text.isEmpty() } }
+          BasicTextField(
+            value = text,
+            onValueChange = { text = it },
+            keyboardOptions = KeyboardOptions(
+              capitalization = KeyboardCapitalization.Sentences,
+              imeAction = ImeAction.Send,
+            ),
+            keyboardActions = KeyboardActions(
+              onSend = { onSendMessageListener?.invoke() },
+            ),
+            cursorBrush = SolidColor(LocalContentColor.current),
+            textStyle = LocalTextStyle.current.copy(
+              color = LocalContentColor.current,
+            ),
+            modifier = Modifier
+              .weight(1f)
+              .padding(
+                start = 16.dp,
+                top = 8.dp,
+                bottom = 8.dp,
+              )
+              .graphicsLayer {
+                alpha = if (showPlaceholder) {
+                  0.38f
+                } else {
+                  1f
+                }
+              },
+          ) { innerTextField ->
+            Box {
+              if (showPlaceholder) {
+                Text(placeholderText)
+              }
+              innerTextField()
+            }
+          }
+          IconButton(
+            onClick = {
+              onSendMessageListener?.invoke()
+            },
+            enabled = onSendMessageListener != null && text.isNotBlank(),
+            modifier = Modifier.align(Alignment.Bottom),
+          ) {
+            Icon(
+              painterResource(com.hedvig.app.R.drawable.ic_send),
+              stringResource(hedvig.resources.R.string.CHAT_UPLOAD_PRESS_SEND_LABEL),
+            )
+          }
+        }
       }
     }
-
-    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
-    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
-  }
-
-  init {
-    disableSendIcon()
-  }
-
-  override fun setCompoundDrawables(
-    left: Drawable?,
-    top: Drawable?,
-    right: Drawable?,
-    bottom: Drawable?,
-  ) {
-    right?.let { rightDrawable ->
-      val gravityDrawable = BottomRightCompoundDrawableWrapper(
-        rightDrawable,
-        this.paddingEnd,
-        this.paddingBottom,
-      )
-      rightDrawable.setBounds(
-        0,
-        0,
-        rightDrawable.intrinsicWidth,
-        rightDrawable.intrinsicHeight,
-      )
-      gravityDrawable.setBounds(
-        0,
-        0,
-        rightDrawable.intrinsicWidth,
-        rightDrawable.intrinsicHeight,
-      )
-
-      return super.setCompoundDrawables(left, top, gravityDrawable, bottom)
-    }
-    super.setCompoundDrawables(left, top, right, bottom)
-  }
-
-  override fun onTouchEvent(event: MotionEvent): Boolean {
-    if (!sendIsDisabled && event.action == MotionEvent.ACTION_DOWN) {
-      val tapBounds = Rect(sendDrawable.bounds)
-      tapBounds.set(
-        tapBounds.left - EXTRA_TAP_AREA,
-        tapBounds.top - EXTRA_TAP_AREA,
-        tapBounds.right + EXTRA_TAP_AREA,
-        tapBounds.bottom + EXTRA_TAP_AREA,
-      )
-
-      val offset = height - sendDrawable.bounds.height()
-      if (tapBounds.contains(width - event.x.toInt(), event.y.toInt() - offset)) {
-        sendClickListener?.invoke()
-        event.action = MotionEvent.ACTION_CANCEL
-        return false
-      }
-    }
-    return super.onTouchEvent(event)
-  }
-
-  override fun onAttachedToWindow() {
-    super.onAttachedToWindow()
-    addTextChangedListener(inputTextWatcher)
-  }
-
-  override fun onDetachedFromWindow() {
-    removeTextChangedListener(inputTextWatcher)
-    super.onDetachedFromWindow()
-  }
-
-  private fun disableSendIcon() {
-    sendDrawable.alpha = DISABLED_ALPHA
-    sendIsDisabled = true
-  }
-
-  private fun enableSendIcon() {
-    sendDrawable.alpha = 255
-    sendIsDisabled = false
-  }
-
-  companion object {
-    private const val EXTRA_TAP_AREA = 30
-    private const val DISABLED_ALPHA = 50
   }
 }

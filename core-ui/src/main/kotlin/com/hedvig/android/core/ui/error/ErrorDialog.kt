@@ -1,4 +1,4 @@
-package com.hedvig.app.ui.compose.composables
+package com.hedvig.android.core.ui.error
 
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Text

@@ -4,11 +4,7 @@
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
@@ -128,15 +124,8 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature.profile.ui.aboutapp.AboutAppActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboard|keyboardHidden"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.profile.ui.aboutapp.LicensesActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature.claims.ui.commonclaim.CommonClaimActivity"
@@ -265,11 +254,6 @@
             android:parentActivityName="com.hedvig.app.feature.loggedin.ui.LoggedInActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.hedvig.android.odyssey.sdui.OdysseyClaimsFlowActivity"
-            android:exported="true"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name="com.hedvig.android.odyssey.search.SearchActivity"
             android:windowSoftInputMode="adjustResize" />
 
@@ -284,16 +268,15 @@
             android:name="firebase_messaging_auto_init_enabled"
             android:value="false" />
 
+        <!-- Context for this: https://commonsware.com/Jetpack/pages/chap-files-005.html -->
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="@string/file_provider_authority"
+            android:authorities="${applicationId}.provider"
             android:exported="false"
-            android:grantUriPermissions="true"
-            tools:replace="android:authorities">
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"
-                tools:replace="android:resource" />
+                android:resource="@xml/provider_paths" />
         </provider>
 
         <service
@@ -326,9 +309,6 @@
             tools:node="merge">
             <meta-data
                 android:name="com.hedvig.app.feature.di.KoinInitializer"
-                android:value="androidx.startup" />
-            <meta-data
-                android:name="com.hedvig.app.feature.tracking.LaunchTrackingInitializer"
                 android:value="androidx.startup" />
             <meta-data
                 android:name="com.hedvig.app.startup.DatadogInitializerImpl"

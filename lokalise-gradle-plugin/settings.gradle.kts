@@ -4,7 +4,6 @@ dependencyResolutionManagement {
     google()
     mavenCentral()
   }
-  @Suppress("UnstableApiUsage")
   versionCatalogs {
     create("libs") {
       from(files("../gradle/libs.versions.toml"))

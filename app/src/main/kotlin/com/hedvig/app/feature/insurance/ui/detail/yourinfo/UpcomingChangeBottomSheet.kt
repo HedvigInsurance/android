@@ -8,7 +8,7 @@ import com.hedvig.android.core.common.android.parcelable
 import com.hedvig.app.feature.table.Table
 import com.hedvig.app.feature.table.TableAdapter
 import com.hedvig.app.ui.view.ExpandableBottomSheet
-import com.hedvig.app.util.extensions.dp
+import com.hedvig.app.util.extensions.viewDps
 
 class UpcomingChangeBottomSheet : ExpandableBottomSheet() {
 
@@ -20,7 +20,7 @@ class UpcomingChangeBottomSheet : ExpandableBottomSheet() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     val adapter = TableAdapter()
-    binding.recycler.updatePadding(bottom = binding.recycler.paddingBottom + 56.dp)
+    binding.recycler.updatePadding(bottom = binding.recycler.paddingBottom + 56.viewDps)
     binding.recycler.adapter = adapter
     adapter.setTable(upcomingAgreement)
   }

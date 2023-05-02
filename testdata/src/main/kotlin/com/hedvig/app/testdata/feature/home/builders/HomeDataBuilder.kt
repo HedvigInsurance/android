@@ -181,16 +181,6 @@ data class HomeDataBuilder(
   }
 }
 
-data class ImportantMessageBuilder(
-  private val body: String = "Example PSA body",
-  private val url: String = "https://www.example.com",
-) {
-  fun build() = HomeQuery.ImportantMessage(
-    message = body,
-    link = url,
-  )
-}
-
 class ClaimStatusCardsBuilder {
   fun build(): List<HomeQuery.ClaimStatusCard> {
     return List(2) { index ->

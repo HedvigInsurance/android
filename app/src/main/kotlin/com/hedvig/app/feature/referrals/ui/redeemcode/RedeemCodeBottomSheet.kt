@@ -20,6 +20,7 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import giraffe.RedeemReferralCodeMutation
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -61,7 +62,7 @@ abstract class RedeemCodeBottomSheet : BottomSheetDialogFragment() {
         }
       }
 
-      viewLifecycleScope.launchWhenStarted {
+      viewLifecycleScope.launch {
         viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
           viewModel.viewState.collect { state ->
             state.errorMessage?.let {

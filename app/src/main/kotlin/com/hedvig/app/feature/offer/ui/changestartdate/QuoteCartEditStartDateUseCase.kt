@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.offer.ui.changestartdate
 
 import arrow.core.Either
-import arrow.core.continuations.either
-import arrow.core.continuations.ensureNotNull
+import arrow.core.raise.either
+import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither

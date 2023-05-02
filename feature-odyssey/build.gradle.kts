@@ -43,7 +43,6 @@ dependencies {
   implementation(libs.coil.coil)
   implementation(libs.coil.compose)
   implementation(libs.datadog.sdk)
-  implementation(libs.hedvig.odyssey)
   implementation(libs.kiwi.navigationCompose)
   implementation(libs.koin.android)
   implementation(libs.koin.compose)

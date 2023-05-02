@@ -18,6 +18,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.SignedAudioUrl
 import com.hedvig.android.audio.player.state.AudioPlayerState
+import com.hedvig.android.audio.player.state.PlayableAudioSource
 import com.hedvig.android.audio.player.state.rememberAudioPlayer
 
 @Composable
@@ -27,7 +28,7 @@ fun ClaimDetailHedvigAudioPlayerItem(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
-    val audioPlayer = rememberAudioPlayer(signedAudioUrl = signedAudioUrl)
+    val audioPlayer = rememberAudioPlayer(playableAudioSource = PlayableAudioSource.RemoteUrl(signedAudioUrl))
     HedvigAudioPlayer(audioPlayer = audioPlayer, onPlayClick = onPlayClick)
     Spacer(Modifier.height(8.dp))
     val audioPlayerState by audioPlayer.audioPlayerState.collectAsStateWithLifecycle()

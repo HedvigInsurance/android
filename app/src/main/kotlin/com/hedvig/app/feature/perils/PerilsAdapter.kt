@@ -20,12 +20,12 @@ import com.hedvig.app.databinding.ContractDetailCoverageHeaderBinding
 import com.hedvig.app.databinding.PerilDetailBinding
 import com.hedvig.app.ui.coil.load
 import com.hedvig.app.util.GenericDiffUtilItemCallback
-import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
 import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
+import com.hedvig.app.util.extensions.viewDps
 
 class PerilsAdapter(
   private val fragmentManager: FragmentManager,
@@ -94,8 +94,8 @@ class PerilsAdapter(
         if (data.inner.colorCode != null) {
           val shape = ShapeDrawable(OvalShape())
           shape.setTint(Color.parseColor(data.inner.colorCode))
-          shape.intrinsicHeight = 16.dp
-          shape.intrinsicWidth = 16.dp
+          shape.intrinsicHeight = 16.viewDps
+          shape.intrinsicWidth = 16.viewDps
           binding.icon.setImageDrawable(shape)
         } else {
           val iconUrl = if (binding.icon.context.isDarkThemeActive) {

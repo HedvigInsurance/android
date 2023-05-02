@@ -5,8 +5,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.BASE_MARGIN_DOUBLE
-import com.hedvig.app.BASE_MARGIN_SEPTUPLE
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ContractCoverageDetailRowBinding
 import com.hedvig.app.databinding.TextHeadline6Binding
@@ -47,7 +47,7 @@ class InsurableLimitsAdapter(
       init {
         binding.root.updateMargin(
           start = BASE_MARGIN_DOUBLE,
-          top = BASE_MARGIN_SEPTUPLE,
+          top = BASE_MARGIN * 7,
           end = BASE_MARGIN_DOUBLE,
           bottom = BASE_MARGIN_DOUBLE,
         )

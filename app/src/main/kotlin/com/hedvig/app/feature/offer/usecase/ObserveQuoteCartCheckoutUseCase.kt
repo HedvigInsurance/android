@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.offer.usecase
 
 import arrow.core.Either
-import arrow.core.continuations.either
-import arrow.core.continuations.ensureNotNull
+import arrow.core.raise.either
+import arrow.core.raise.ensureNotNull
 import com.hedvig.android.apollo.OperationResult
 import com.hedvig.app.feature.offer.model.Checkout
 import com.hedvig.app.feature.offer.model.QuoteCartId

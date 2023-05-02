@@ -83,8 +83,6 @@ fun View.setHapticClickListener(onClickListener: (View) -> Unit) {
 }
 
 fun View.performOnTapHapticFeedback() = performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-fun View.performOnLongPressHapticFeedback() =
-  performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
 
 fun View.updatePadding(
   @Dimension start: Int? = null,
@@ -189,9 +187,7 @@ fun Toolbar.setupToolbar(
   }
 }
 
-fun NestedScrollView.setupToolbarScrollListener(
-  toolbar: Toolbar,
-) {
+fun NestedScrollView.setupToolbarScrollListener(toolbar: Toolbar) {
   setOnScrollChangeListener { _: NestedScrollView?, _: Int, _: Int, _: Int, _: Int ->
     val maxElevationScroll = 200
     val offset = this.computeVerticalScrollOffset().toFloat()
@@ -202,23 +198,6 @@ fun NestedScrollView.setupToolbarScrollListener(
     }
     toolbar.elevation = percentage * 10
   }
-}
-
-fun RecyclerView.setupToolbarScrollListener(onScroll: (Float) -> Unit) {
-  addOnScrollListener(
-    object : RecyclerView.OnScrollListener() {
-      override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-        val maxElevationScroll = 200
-        val offset = computeVerticalScrollOffset().toFloat()
-        val percentage = if (offset < maxElevationScroll) {
-          offset / maxElevationScroll
-        } else {
-          1f
-        }
-        onScroll(percentage)
-      }
-    },
-  )
 }
 
 fun RecyclerView.setupToolbarScrollListener(toolbar: Toolbar) {
@@ -265,18 +244,6 @@ fun View.dismissKeyboard() =
     0,
   )
 
-fun View.openKeyboard() =
-  (context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager).showSoftInput(
-    this,
-    0,
-  )
-
-val View.centerX: Int
-  get() = (x + width / 2).toInt()
-
-val View.centerY: Int
-  get() = (y + height / 2).toInt()
-
 fun View.hapticClicks(): Flow<Unit> = callbackFlow<Unit> {
   setOnClickListener {
     performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
@@ -315,12 +282,6 @@ fun View.setupInsetsForIme(root: View, vararg translatableViews: View) {
 fun View.applyStatusBarInsets() = applyInsetter {
   type(statusBars = true) {
     padding()
-  }
-}
-
-fun View.applyStatusBarInsetsMargin() = applyInsetter {
-  type(statusBars = true) {
-    margin()
   }
 }
 

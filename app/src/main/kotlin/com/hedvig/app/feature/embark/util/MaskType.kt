@@ -13,7 +13,45 @@ import com.hedvig.app.util.SWEDISH_PERSONAL_NUMBER_REGEX
 import com.hedvig.app.util.SWEDISH_POSTAL_CODE_REGEX
 import java.time.LocalDate
 
-// TODO Move masking/unmasking to view, and use androidx.compose.ui.text.input.VisualTransformation, see SwedishSSNVisualTransformation.kt
+/**
+ * TODO Move masking/unmasking to view, and use androidx.compose.ui.text.input.VisualTransformation.
+ *  like:
+ * ```kotlin
+ * class SwedishSSNVisualTransformation : VisualTransformation {
+ *   override fun filter(text: AnnotatedString): TransformedText {
+ *     // Make the string XXXXXX-XXXX
+ *     val trimmed = text.text.take(10)
+ *
+ *     var output = ""
+ *     for (i in trimmed.indices) {
+ *       output += trimmed[i]
+ *       if (i % 6 == 5 && i != 9) {
+ *         output += "-"
+ *       }
+ *     }
+ *
+ *     val swedishSSNOffsetTranslator = object : OffsetMapping {
+ *       override fun originalToTransformed(offset: Int): Int {
+ *         if (offset <= 5) return offset
+ *         if (offset <= 9) return offset + 1
+ *         return 11
+ *       }
+ *
+ *       override fun transformedToOriginal(offset: Int): Int {
+ *         if (offset <= 6) return offset
+ *         if (offset <= 11) return offset - 1
+ *         return 10
+ *       }
+ *     }
+ *
+ *     return TransformedText(
+ *       AnnotatedString(output),
+ *       swedishSSNOffsetTranslator,
+ *     )
+ *   }
+ * }
+ * ```
+ */
 enum class MaskType {
   PERSONAL_NUMBER {
     override fun mask(text: String) = StringBuilder(text).apply { insert(6, "-") }.toString()
@@ -103,7 +141,8 @@ enum class MaskType {
     override fun isValid(text: String): Boolean = ANY_REGEX.matcher(text).find()
     override fun derivedValues(text: String, key: String, currentDate: LocalDate): List<Pair<String, String>>? =
       null
-  }, ;
+  },
+  ;
 
   abstract fun mask(text: String): String
   abstract fun unMask(text: String): String

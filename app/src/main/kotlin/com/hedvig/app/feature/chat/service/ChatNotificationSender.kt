@@ -183,7 +183,7 @@ class ChatNotificationSender(
   }
 
   private val hedvigPerson: Person = Person.Builder()
-    .setName("Stelios")
+    .setName(context.getString(hedvig.resources.R.string.NOTIFICATION_CHAT_TITLE))
     .setImportant(true)
     .setKey(HEDVIG_PERSON_KEY)
     .setIcon(IconCompat.createWithResource(context, hedvig.resources.R.drawable.ic_hedvig_h))

@@ -18,11 +18,11 @@ import com.hedvig.app.databinding.TooltipBottomSheetBinding
 import com.hedvig.app.feature.embark.TooltipModel
 import com.hedvig.app.util.boundedLerp
 import com.hedvig.app.util.extensions.colorAttr
-import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.viewDps
 import com.hedvig.app.util.extensions.windowHeight
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import giraffe.EmbarkStoryQuery
@@ -73,9 +73,9 @@ class TooltipBottomSheet : BottomSheetDialogFragment() {
             recycler.measuredHeight + recycler.marginTop + recycler.marginBottom + resources.getDimension(
               R.dimen.peril_bottom_sheet_close_icon_size,
             )
-              .toInt().dp
+              .toInt().viewDps
           val shouldPeekAtContentHeight = sheetContentHeight < windowHeight
-          val defaultPeekHeight = 295.dp
+          val defaultPeekHeight = 295.viewDps
           if (shouldPeekAtContentHeight) {
             behaviour.setPeekHeight(windowHeight, true)
             chevronContainer.remove()

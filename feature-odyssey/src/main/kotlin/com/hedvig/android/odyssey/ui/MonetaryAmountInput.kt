@@ -47,8 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.odyssey.compose.MonetaryAmountOffsetMapping
-import com.hedvig.odyssey.compose.getLocale
+import com.hedvig.android.core.ui.getLocale
 import java.text.DecimalFormatSymbols
 
 /**

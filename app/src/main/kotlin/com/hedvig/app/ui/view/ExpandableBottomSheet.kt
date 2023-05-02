@@ -12,11 +12,11 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ExpandableBottomSheetBinding
 import com.hedvig.app.util.boundedLerp
 import com.hedvig.app.util.extensions.colorAttr
-import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.viewDps
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 
 private const val PEEK_HEIGHT = 380
@@ -37,7 +37,7 @@ abstract class ExpandableBottomSheet : BottomSheetDialogFragment() {
     binding.apply {
       close.alpha = 0f
       (dialog as? BottomSheetDialog)?.behavior?.let { behaviour ->
-        val peekHeight = PEEK_HEIGHT.dp
+        val peekHeight = PEEK_HEIGHT.viewDps
         behaviour.setPeekHeight(peekHeight, true)
         chevronContainer.measure(
           FrameLayout.LayoutParams.MATCH_PARENT,

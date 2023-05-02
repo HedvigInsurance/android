@@ -185,7 +185,7 @@ class HomeAdapter(
     }
 
     class ClaimStatus(
-      val composeView: ComposeView,
+      private val composeView: ComposeView,
       private val onClaimDetailCardClicked: (String) -> Unit,
       private val onClaimDetailCardShown: (String) -> Unit,
     ) : ViewHolder(composeView) {
@@ -309,7 +309,7 @@ class HomeAdapter(
     }
 
     class InfoCard(
-      val composeView: ComposeView,
+      private val composeView: ComposeView,
       private val onPaymentCardShown: () -> Unit,
       private val onPaymentCardClicked: (PaymentType) -> Unit,
     ) : ViewHolder(composeView) {
@@ -429,7 +429,7 @@ class HomeAdapter(
     }
 
     class Error(
-      val composeView: ComposeView,
+      private val composeView: ComposeView,
       private val retry: () -> Unit,
     ) : ViewHolder(composeView) {
       override fun bind(

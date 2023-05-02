@@ -10,8 +10,6 @@ import com.hedvig.android.odyssey.model.FlowId
 import com.hedvig.android.odyssey.navigation.AudioContent
 import com.hedvig.android.odyssey.navigation.ClaimFlowDestination
 import com.hedvig.android.odyssey.navigation.LocationOption
-import com.hedvig.android.odyssey.sdui.AndroidDatadogLogger
-import com.hedvig.android.odyssey.sdui.AndroidDatadogProvider
 import com.hedvig.android.odyssey.search.GetNetworkClaimEntryPointsUseCase
 import com.hedvig.android.odyssey.search.SearchViewModel
 import com.hedvig.android.odyssey.step.audiorecording.AudioRecordingViewModel
@@ -24,8 +22,6 @@ import com.hedvig.android.odyssey.step.phonenumber.PhoneNumberViewModel
 import com.hedvig.android.odyssey.step.singleitem.SingleItemViewModel
 import com.hedvig.android.odyssey.step.singleitemcheckout.SingleItemCheckoutViewModel
 import com.hedvig.android.odyssey.step.summary.ClaimSummaryViewModel
-import com.hedvig.odyssey.datadog.DatadogLogger
-import com.hedvig.odyssey.datadog.DatadogProvider
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.Json
@@ -43,9 +39,6 @@ val odysseyUrlQualifier = qualifier("odysseyUrlQualifier")
 
 @Suppress("RemoveExplicitTypeArguments")
 val odysseyModule = module {
-  single<DatadogLogger> { AndroidDatadogLogger() }
-  single<DatadogProvider> { AndroidDatadogProvider(get(), get()) }
-
   single<ClaimFlowRepository> {
     ClaimFlowRepositoryImpl(get<ApolloClient>(octopusClient), get<OdysseyService>())
   }

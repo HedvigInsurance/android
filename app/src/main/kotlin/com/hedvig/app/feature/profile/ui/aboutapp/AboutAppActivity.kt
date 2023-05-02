@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.profile.ui.aboutapp
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.flowWithLifecycle
@@ -43,7 +42,7 @@ class AboutAppActivity : AppCompatActivity(R.layout.activity_about_app) {
       }
 
       licenseAttributions.setOnClickListener {
-        startActivity(Intent(this@AboutAppActivity, LicensesActivity::class.java))
+        OpenSourceLicensesDialog().showLicenses(this@AboutAppActivity)
       }
 
       whatsNewViewModel.fetchNews(NEWS_BASE_VERSION)

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!---
+    This is used by a file provider defined in `AndroidManifest.xml` and is used by the chat.
+    The `name` value "chat_pictures" does not hold any significance in how we call this.
+    This is called from a `androidx.core.content.FileProvider` provider which also sets the
+    AUTHORITY string.
+    Then in the code, create a file targeting this place, through
+    `val file = File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "someNewFileName.jpg")`
+    Then grabbing the URI for that file using the authority
+    `val photoUri = FileProvider.getUriForFile(context, AUTHORITY, file)`
+    That directory often looks something like this
+    `/storage/emulated/0/Android/data/com.hedvig.dev.app/files/Pictures/someNewFileName.jpg.`
+    The `Pictures/` directory comes from the Environment.DIRECTORY_PICTURES just as a directory to
+    better indicate that it's a directory of pictures.
+
+    Sample code
+    ```kotlin
+    val newPhotoFile: File = File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "JPEG_${System.currentTimeMillis()}.jpg")
+    val newPhotoUri: Uri = FileProvider.getUriForFile(this@Context, "${BuildConfig.APPLICATION_ID}.provider", newPhotoFile)
+    ```
+
+    More context in all this: https://commonsware.com/Jetpack/pages/chap-files-005.html
+    -->
+    <external-path
+        name="chat_pictures"
+        path="/" />
+</paths>

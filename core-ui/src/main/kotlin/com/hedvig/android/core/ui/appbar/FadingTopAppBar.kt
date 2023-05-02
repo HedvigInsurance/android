@@ -1,4 +1,4 @@
-package com.hedvig.app.ui.compose.composables.appbar
+package com.hedvig.android.core.ui.appbar
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.MaterialTheme

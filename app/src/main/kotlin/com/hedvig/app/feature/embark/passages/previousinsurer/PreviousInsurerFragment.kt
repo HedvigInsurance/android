@@ -72,7 +72,7 @@ class PreviousInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
       MaterialAlertDialogBuilder(requireContext())
         .setTitle(getString(hedvig.resources.R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_TITLE))
         .setMessage(getString(hedvig.resources.R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_MESSAGE))
-        .setPositiveButton(getString(hedvig.resources.R.string.ALERT_OK)) { dialog, _ -> continueEmbark() }
+        .setPositiveButton(getString(hedvig.resources.R.string.ALERT_OK)) { _, _ -> continueEmbark() }
         .show()
     } else {
       insurerId?.let {

@@ -1,8 +1,5 @@
 package com.hedvig.app.util
 
-import android.view.View
-import androidx.core.util.Pair
-import androidx.core.view.ViewCompat
 import kotlin.math.abs
 
 fun boundedLerp(start: Float, stop: Float, amount: Float): Float {
@@ -32,5 +29,3 @@ fun boundedProgress(start: Float, end: Float, current: Float): Float {
     boundedCurrent / abs(end - start)
   }
 }
-
-fun transitionPair(view: View) = Pair(view, ViewCompat.getTransitionName(view)!!)

@@ -42,7 +42,6 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.odyssey.data.ClaimFlowStep
 import com.hedvig.android.odyssey.model.FlowId
 import com.hedvig.android.odyssey.navigation.UiMoney
-import com.hedvig.odyssey.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import octopus.type.CurrencyCode
@@ -179,7 +178,7 @@ private fun BoxScope.PaidOutContent(
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
       Icon(
         modifier = Modifier.size(48.dp),
-        painter = painterResource(R.drawable.ic_check_circle),
+        painter = painterResource(com.hedvig.android.odyssey.R.drawable.ic_check_circle),
         contentDescription = "Checkmark icon",
       )
       Spacer(Modifier.height(24.dp))
