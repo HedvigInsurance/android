@@ -33,7 +33,7 @@ run `./gradlew ktlintFormat` to make ktlint to format all files according to the
 
 ![Module graph](misc/images/modularization-graph.png "Image showing the module dependencies graph")
 
-Generated from `./gradlew :generateProjectDependencyGraph`*\
+Generated from `./gradlew :generateProjectDependencyGraph --no-configuration-cache`*\
 *Note that this requires `dot` from graphviz to be on your path. Run `brew install graphviz`
 
 ## Renovate
