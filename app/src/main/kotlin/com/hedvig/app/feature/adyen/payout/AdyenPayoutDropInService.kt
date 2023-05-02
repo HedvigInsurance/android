@@ -4,7 +4,6 @@ import com.adyen.checkout.components.ActionComponentData
 import com.adyen.checkout.components.PaymentComponentState
 import com.adyen.checkout.dropin.service.DropInService
 import com.adyen.checkout.dropin.service.DropInServiceResult
-import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.ConnectPayoutUseCase
 import com.hedvig.app.feature.adyen.SubmitAdditionalPaymentDetailsUseCase
 import com.hedvig.app.feature.adyen.payin.toDropInServiceResult
@@ -20,7 +19,6 @@ import org.koin.android.ext.android.inject
 import kotlin.coroutines.CoroutineContext
 
 class AdyenPayoutDropInService : DropInService(), CoroutineScope {
-  private val adyenRepository: AdyenRepository by inject()
   private val paymentRepository: PaymentRepository by inject()
   private val submitAdditionalPaymentDetailsUseCase: SubmitAdditionalPaymentDetailsUseCase by inject()
   private val connectPayoutUseCase: ConnectPayoutUseCase by inject()
@@ -28,11 +26,6 @@ class AdyenPayoutDropInService : DropInService(), CoroutineScope {
   private val coroutineJob = Job()
   override val coroutineContext: CoroutineContext
     get() = Dispatchers.IO + coroutineJob
-
-  override fun onDestroy() {
-    super.onDestroy()
-    // coroutineJob.cancel() // Cannot cancel this job due to https://github.com/Adyen/adyen-android/issues/447
-  }
 
   override fun onDetailsCallRequested(actionComponentData: ActionComponentData, actionComponentJson: JSONObject) {
     launch(coroutineContext) {

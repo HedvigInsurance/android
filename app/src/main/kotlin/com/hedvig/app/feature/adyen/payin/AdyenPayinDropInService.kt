@@ -22,11 +22,6 @@ class AdyenPayinDropInService : DropInService(), CoroutineScope {
   override val coroutineContext: CoroutineContext
     get() = Dispatchers.IO + coroutineJob
 
-  override fun onDestroy() {
-    super.onDestroy()
-    // coroutineJob.cancel() // Cannot cancel this job due to https://github.com/Adyen/adyen-android/issues/447
-  }
-
   override fun onDetailsCallRequested(
     actionComponentData: ActionComponentData,
     actionComponentJson: JSONObject,

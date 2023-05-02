@@ -43,12 +43,12 @@ import com.hedvig.android.core.designsystem.component.button.LargeContainedButto
 import com.hedvig.android.core.designsystem.component.list.SectionTitle
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.appbar.FadingTopAppBar
+import com.hedvig.android.core.ui.error.ErrorDialog
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.ui.scaffold.Scaffold
 import com.hedvig.app.R
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
-import com.hedvig.app.ui.compose.composables.ErrorDialog
-import com.hedvig.app.ui.compose.composables.appbar.FadingTopAppBar
 import com.hedvig.app.util.compose.rememberBlurHashPainter
 
 @Composable

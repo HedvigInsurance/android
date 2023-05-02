@@ -18,12 +18,15 @@ import com.apollographql.apollo3.cache.normalized.normalizedCache
 import com.apollographql.apollo3.interceptor.ApolloInterceptor
 import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
+import com.hedvig.android.apollo.di.apolloClientModule
 import com.hedvig.android.apollo.giraffe.di.giraffeClient
 import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.auth.AccessTokenProvider
+import com.hedvig.android.auth.di.authModule
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.auth.interceptor.MigrateTokenInterceptor
 import com.hedvig.android.core.common.di.LogInfoType
+import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.common.di.giraffeGraphQLUrlQualifier
 import com.hedvig.android.core.common.di.giraffeGraphQLWebSocketUrlQualifier
@@ -31,15 +34,27 @@ import com.hedvig.android.core.common.di.isDebugQualifier
 import com.hedvig.android.core.common.di.isProductionQualifier
 import com.hedvig.android.core.common.di.logInfoQualifier
 import com.hedvig.android.core.common.di.octopusGraphQLUrlQualifier
+import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.datadog.addDatadogConfiguration
+import com.hedvig.android.datadog.di.datadogModule
+import com.hedvig.android.feature.businessmodel.di.businessModelModule
+import com.hedvig.android.feature.terminateinsurance.di.terminateInsuranceModule
 import com.hedvig.android.hanalytics.android.di.appIdQualifier
 import com.hedvig.android.hanalytics.android.di.appVersionCodeQualifier
 import com.hedvig.android.hanalytics.android.di.appVersionNameQualifier
+import com.hedvig.android.hanalytics.android.di.hAnalyticsAndroidModule
 import com.hedvig.android.hanalytics.android.di.hAnalyticsUrlQualifier
+import com.hedvig.android.hanalytics.di.hAnalyticsModule
+import com.hedvig.android.hanalytics.featureflags.di.featureManagerModule
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.language.di.languageModule
 import com.hedvig.android.market.MarketManager
+import com.hedvig.android.market.di.marketManagerModule
 import com.hedvig.android.navigation.activity.Navigator
+import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.android.notification.core.NotificationSender
+import com.hedvig.android.notification.firebase.di.firebaseNotificationModule
+import com.hedvig.android.odyssey.di.odysseyModule
 import com.hedvig.android.odyssey.di.odysseyUrlQualifier
 import com.hedvig.app.authenticate.BankIdLoginViewModel
 import com.hedvig.app.authenticate.LogoutUseCase
@@ -112,6 +127,7 @@ import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase
 import com.hedvig.app.feature.insurance.data.GetContractsUseCase
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
 import com.hedvig.app.feature.insurance.ui.detail.GetContractDetailsUseCase
+import com.hedvig.app.feature.insurance.ui.detail.coverage.di.insuranceCoverageModule
 import com.hedvig.app.feature.insurance.ui.tab.InsuranceViewModel
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
@@ -123,7 +139,6 @@ import com.hedvig.app.feature.marketing.data.GetInitialMarketPickerValuesUseCase
 import com.hedvig.app.feature.marketing.data.GetMarketingBackgroundUseCase
 import com.hedvig.app.feature.marketing.data.UpdateApplicationLanguageUseCase
 import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
-import com.hedvig.app.feature.marketpicker.LanguageRepository
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.OfferViewModelImpl
@@ -190,6 +205,7 @@ import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.androidx.workmanager.dsl.worker
 import org.koin.core.parameter.ParametersHolder
+import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import slimber.log.d
@@ -206,7 +222,7 @@ fun isDebug() = BuildConfig.APPLICATION_ID == "com.hedvig.dev.app" ||
   BuildConfig.APPLICATION_ID == "com.hedvig.test.app" ||
   BuildConfig.DEBUG
 
-val applicationModule = module {
+private val networkModule = module {
   single { androidApplication() as HedvigApplication }
   single<NormalizedCacheFactory> {
     MemoryCacheFactory(maxSizeBytes = 10 * 1024 * 1024)
@@ -286,7 +302,7 @@ val applicationModule = module {
   }
 }
 
-val apolloClientUrlsModule = module {
+private val apolloClientUrlsModule = module {
   single<String>(giraffeGraphQLUrlQualifier) { get<Context>().getString(R.string.GRAPHQL_URL) }
   single<String>(giraffeGraphQLWebSocketUrlQualifier) { get<Context>().getString(R.string.WS_GRAPHQL_URL) }
   single<String>(octopusGraphQLUrlQualifier) { get<Context>().getString(R.string.OCTOPUS_GRAPHQL_URL) }
@@ -311,7 +327,7 @@ fun makeUserAgent(locale: Locale): String = buildString {
   append(")")
 }
 
-val viewModelModule = module {
+private val viewModelModule = module {
   viewModel { ClaimsViewModel(get(), get()) }
   viewModel { ChatViewModel(get(), get(), get()) }
   viewModel { (quoteCartId: QuoteCartId?) -> RedeemCodeViewModel(quoteCartId, get(), get()) }
@@ -377,26 +393,26 @@ val viewModelModule = module {
   viewModel { MarketingViewModel(get<MarketManager>().market, get(), get(), get(), get(), get()) }
 }
 
-val onboardingModule = module {
+private val onboardingModule = module {
   viewModel<MemberIdViewModel> { MemberIdViewModelImpl(get()) }
 }
 
-val loggedInModule = module {
+private val loggedInModule = module {
   viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get(), get(), get(), get(), get()) }
 }
 
-val whatsNewModule = module {
+private val whatsNewModule = module {
   viewModel<WhatsNewViewModel> { WhatsNewViewModelImpl(get()) }
 }
 
-val insuranceModule = module {
+private val insuranceModule = module {
   viewModel { InsuranceViewModel(get(), get(), get(), get()) }
   viewModel<ContractDetailViewModel> { (contractId: String) ->
     ContractDetailViewModel(contractId, get(), get())
   }
 }
 
-val offerModule = module {
+private val offerModule = module {
   single<OfferRepository> { OfferRepository(get<ApolloClient>(giraffeClient), get(), get(), get()) }
   viewModel<OfferViewModel> { parametersHolder: ParametersHolder ->
     OfferViewModelImpl(
@@ -419,22 +435,22 @@ val offerModule = module {
   single<SelectedVariantStore> { SelectedVariantStore() }
 }
 
-val profileModule = module {
+private val profileModule = module {
   single<ProfileQueryDataToProfileUiStateMapper> { ProfileQueryDataToProfileUiStateMapper(get(), get(), get()) }
   single<ProfileRepository> { ProfileRepository(get<ApolloClient>(giraffeClient)) }
   viewModel<ProfileViewModel> { ProfileViewModel(get(), get(), get()) }
 }
 
-val paymentModule = module {
+private val paymentModule = module {
   viewModel<PaymentViewModel> { PaymentViewModelImpl(get(), get(), get(), get()) }
 }
 
-val adyenModule = module {
+private val adyenModule = module {
   viewModel<AdyenConnectPayinViewModel> { AdyenConnectPayinViewModelImpl(get(), get()) }
   viewModel<AdyenConnectPayoutViewModel> { AdyenConnectPayoutViewModelImpl(get()) }
 }
 
-val embarkModule = module {
+private val embarkModule = module {
   viewModel<EmbarkViewModel> { (storyName: String) ->
     EmbarkViewModelImpl(
       embarkRepository = get(),
@@ -448,15 +464,15 @@ val embarkModule = module {
   }
 }
 
-val valueStoreModule = module {
+private val valueStoreModule = module {
   factory<ValueStore> { ValueStoreImpl() }
 }
 
-val textActionSetModule = module {
+private val textActionSetModule = module {
   viewModel { (data: TextActionParameter) -> TextActionViewModel(data) }
 }
 
-val navigatorModule = module {
+private val navigatorModule = module {
   single<Navigator> {
     Navigator(
       application = get(),
@@ -467,38 +483,38 @@ val navigatorModule = module {
   }
 }
 
-val numberActionSetModule = module {
+private val numberActionSetModule = module {
   viewModel { (data: NumberActionParams) -> NumberActionViewModel(data) }
 }
 
-val referralsModule = module {
+private val referralsModule = module {
   viewModel<ReferralsViewModel> { ReferralsViewModelImpl(get()) }
   viewModel<ReferralsActivatedViewModel> { ReferralsActivatedViewModelImpl(get()) }
   viewModel<ReferralsEditCodeViewModel> { ReferralsEditCodeViewModelImpl(get()) }
 }
 
-val homeModule = module {
+private val homeModule = module {
   single<HomeItemsBuilder> { HomeItemsBuilder(get()) }
   viewModel<HomeViewModel> { HomeViewModelImpl(get(), get(), get()) }
 }
 
-val connectPaymentModule = module {
+private val connectPaymentModule = module {
   viewModel { ConnectPaymentViewModel(get(), get(), get()) }
 }
 
-val trustlyModule = module {
+private val trustlyModule = module {
   viewModel<TrustlyViewModel> { TrustlyViewModelImpl(get(), get()) }
 }
 
-val changeAddressModule = module {
+private val changeAddressModule = module {
   viewModel<ChangeAddressViewModel> { ChangeAddressViewModelImpl(get(), get(), get(), get()) }
 }
 
-val changeDateBottomSheetModule = module {
+private val changeDateBottomSheetModule = module {
   viewModel { (data: ChangeDateBottomSheetData) -> ChangeDateBottomSheetViewModel(get(), data, get()) }
 }
 
-val stringConstantsModule = module {
+private val stringConstantsModule = module {
   single<String>(hAnalyticsUrlQualifier) { get<Context>().getString(R.string.HANALYTICS_URL) }
   single<String>(odysseyUrlQualifier) { get<Context>().getString(R.string.ODYSSEY_URL) }
   single<String>(appVersionNameQualifier) { BuildConfig.VERSION_NAME }
@@ -509,7 +525,7 @@ val stringConstantsModule = module {
   single<Boolean>(isProductionQualifier) { BuildConfig.BUILD_TYPE == "release" }
 }
 
-val checkoutModule = module {
+private val checkoutModule = module {
   viewModel { (selectedVariantId: String, quoteCartId: QuoteCartId) ->
     CheckoutViewModel(
       selectedVariantId = selectedVariantId,
@@ -524,15 +540,15 @@ val checkoutModule = module {
   }
 }
 
-val externalInsuranceModule = module {
+private val externalInsuranceModule = module {
   viewModel { ExternalInsurerViewModel(get(), get()) }
 }
 
-val serviceModule = module {
+private val serviceModule = module {
   single<FileService> { FileService(get()) }
 }
 
-val repositoriesModule = module {
+private val repositoriesModule = module {
   single { ChatRepository(get<ApolloClient>(giraffeClient), get(), get()) }
   single { PayinStatusRepository(get<ApolloClient>(giraffeClient)) }
   single { ClaimsRepository(get<ApolloClient>(giraffeClient), get()) }
@@ -540,7 +556,6 @@ val repositoriesModule = module {
   single { UserRepository(get<ApolloClient>(giraffeClient)) }
   single { WhatsNewRepository(get<ApolloClient>(giraffeClient), get(), get()) }
   single { WelcomeRepository(get<ApolloClient>(giraffeClient), get()) }
-  single { LanguageRepository(get<ApolloClient>(giraffeClient)) }
   single { AdyenRepository(get<ApolloClient>(giraffeClient), get()) }
   single { EmbarkRepository(get<ApolloClient>(giraffeClient), get()) }
   single { ReferralsRepository(get<ApolloClient>(giraffeClient)) }
@@ -551,7 +566,7 @@ val repositoriesModule = module {
   single { PaymentRepository(get<ApolloClient>(giraffeClient), get()) }
 }
 
-val notificationModule = module {
+private val notificationModule = module {
   single { PaymentNotificationSender(get(), get(), get(), get()) } bind NotificationSender::class
   single { CrossSellNotificationSender(get(), get(), get()) } bind NotificationSender::class
   single { ChatNotificationSender(get()) } bind NotificationSender::class
@@ -559,9 +574,9 @@ val notificationModule = module {
   single { GenericNotificationSender(get()) } bind NotificationSender::class
 }
 
-val clockModule = module { single { Clock.systemDefaultZone() } }
+private val clockModule = module { single { Clock.systemDefaultZone() } }
 
-val useCaseModule = module {
+private val useCaseModule = module {
   single { GetUpcomingAgreementUseCase(get<ApolloClient>(giraffeClient), get()) }
   single { GetAddressChangeStoryIdUseCase(get<ApolloClient>(giraffeClient), get(), get()) }
   single { StartCheckoutUseCase(get<ApolloClient>(giraffeClient), get(), get()) }
@@ -613,11 +628,11 @@ val useCaseModule = module {
   }
 }
 
-val cacheManagerModule = module {
+private val cacheManagerModule = module {
   single { NetworkCacheManager(get<ApolloClient>(giraffeClient)) }
 }
 
-val sharedPreferencesModule = module {
+private val sharedPreferencesModule = module {
   single<SharedPreferences> {
     get<Context>().getSharedPreferences(
       "hedvig_shared_preference",
@@ -626,20 +641,20 @@ val sharedPreferencesModule = module {
   }
 }
 
-val datastoreAndroidModule = module {
+private val datastoreAndroidModule = module {
   single<File>(datastoreFileQualifier) {
     // https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:datastore/datastore/src/main/java/androidx/datastore/DataStoreFile.kt;l=35-36
     get<Context>().applicationContext.filesDir
   }
 }
 
-val logModule = module {
+private val logModule = module {
   single<LogInfoType>(logInfoQualifier) {
     ::i
   }
 }
 
-val coilModule = module {
+private val coilModule = module {
   single<ImageLoader> {
     ImageLoader.Builder(get())
       .components {
@@ -654,15 +669,15 @@ val coilModule = module {
   }
 }
 
-val chatEventModule = module {
+private val chatEventModule = module {
   single<ChatEventStore> { ChatEventDataStore(get()) }
 }
 
-val graphQLQueryModule = module {
+private val graphQLQueryModule = module {
   single<GraphQLQueryHandler> { GraphQLQueryHandler(get(), get(), get(giraffeGraphQLUrlQualifier)) }
 }
 
-val authRepositoryModule = module {
+private val authRepositoryModule = module {
   single<AuthRepository> {
     NetworkAuthRepository(
       environment = if (isDebug()) {
@@ -675,8 +690,8 @@ val authRepositoryModule = module {
   }
 }
 
-val workManagerModule = module {
-  worker<ReplyWorker> {
+private val workManagerModule = module {
+  worker<ReplyWorker>(named<ReplyWorker>()) {
     ReplyWorker(
       context = get<Context>(),
       params = get<WorkerParameters>(),
@@ -684,4 +699,66 @@ val workManagerModule = module {
       chatNotificationSender = get<ChatNotificationSender>(),
     )
   }
+}
+
+val applicationModule = module {
+  includes(
+    listOf(
+      adyenModule,
+      apolloClientModule,
+      apolloClientUrlsModule,
+      authModule,
+      authRepositoryModule,
+      businessModelModule,
+      cacheManagerModule,
+      changeAddressModule,
+      changeDateBottomSheetModule,
+      chatEventModule,
+      checkoutModule,
+      clockModule,
+      coilModule,
+      connectPaymentModule,
+      coreCommonModule,
+      dataStoreModule,
+      datadogModule,
+      datastoreAndroidModule,
+      embarkModule,
+      externalInsuranceModule,
+      featureManagerModule,
+      firebaseNotificationModule,
+      graphQLQueryModule,
+      hAnalyticsAndroidModule,
+      hAnalyticsModule,
+      homeModule,
+      insuranceCoverageModule,
+      insuranceModule,
+      languageModule,
+      logModule,
+      loggedInModule,
+      marketManagerModule,
+      navigatorModule,
+      networkModule,
+      notificationBadgeModule,
+      notificationModule,
+      numberActionSetModule,
+      odysseyModule,
+      offerModule,
+      onboardingModule,
+      paymentModule,
+      profileModule,
+      referralsModule,
+      repositoriesModule,
+      serviceModule,
+      sharedPreferencesModule,
+      stringConstantsModule,
+      terminateInsuranceModule,
+      textActionSetModule,
+      trustlyModule,
+      useCaseModule,
+      valueStoreModule,
+      viewModelModule,
+      whatsNewModule,
+      workManagerModule,
+    ),
+  )
 }

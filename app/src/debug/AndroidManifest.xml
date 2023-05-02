@@ -1,76 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-
-    <application
-        tools:ignore="AllowBackup,GoogleAppIndexingWarning,MissingApplicationIcon"
-        tools:targetApi="28">
-
+    <application tools:ignore="MissingApplicationIcon">
         <activity
-            android:name=".DevelopmentActivity"
-            android:exported="true"
-            android:label="Engineering Mode"
-            android:theme="@style/Hedvig.Theme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
-        <activity
-            android:name=".viewgallery.ViewGalleryActivity"
-            android:label="View Gallery"
-            android:theme="@style/Hedvig.Theme" />
-
-        <activity
-            android:name=".feature.referrals.ReferralsMockActivity"
-            android:label="Referrals Mock Screen"
-            android:theme="@style/Hedvig.Theme" />
-
-        <activity android:name=".feature.genericauth.GenericAuthMockActivity" />
-
-        <activity
-            android:name=".feature.chat.ChatMockActivity"
-            android:label="Chat Mock Screen"
-            android:theme="@style/Hedvig.Theme" />
-
-        <activity
-            android:name=".feature.embark.EmbarkMockActivity"
-            android:label="Embark Mock Screen"
-            android:theme="@style/Hedvig.Theme" />
-
-        <activity android:name=".feature.embark.RecorderScaffoldActivity" />
-
-        <activity
-            android:name=".feature.home.HomeMockActivity"
-            android:label="Home Mock Screen"
-            android:theme="@style/Hedvig.Theme" />
-
-        <activity
-            android:name=".feature.loggedin.LoggedInMockActivity"
-            android:label="Logged In Mock Screen"
-            android:theme="@style/Hedvig.Theme" />
-
-        <activity
-            android:name=".feature.adyen.AdyenMockActivity"
-            android:label="Adyen Mock Screen"
-            android:theme="@style/Hedvig.Theme" />
-
-        <activity
-            android:name=".feature.trustly.TrustlyMockActivity"
-            android:label="Trustly Mock Screen"
-            android:theme="@style/Hedvig.Theme" />
-
-        <activity android:name=".feature.changeaddress.ChangeAddressMockActivity" />
-
-        <activity
-            android:name="com.hedvig.android.hanalytics.engineering.tracking.TrackingLogActivity"
-            android:launchMode="singleTop" />
-
-        <activity
-            android:name=".feature.impersonation.ImpersonationReceiverActivity"
+            android:name=".debug.impersonation.ImpersonationReceiverActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -83,28 +17,5 @@
                     android:scheme="hedvigengineering" />
             </intent-filter>
         </activity>
-
-        <activity
-            android:name=".feature.embark.EmbarkStoryTesterActivity"
-            android:windowSoftInputMode="adjustResize" />
-
-        <meta-data
-            android:name="com.mixpanel.android.MPConfig.DisableEmulatorBindingUI"
-            android:value="true" />
-
-        <provider
-            android:name="androidx.startup.InitializationProvider"
-            android:authorities="${applicationId}.androidx-startup"
-            android:exported="false"
-            tools:node="merge">
-
-            <meta-data
-                android:name="com.hedvig.app.feature.tracking.TrackingInitializer"
-                android:value="androidx.startup" />
-        </provider>
-
-        <service android:name="com.hedvig.android.hanalytics.engineering.tracking.TrackingShortcutService" />
-
     </application>
-
 </manifest>

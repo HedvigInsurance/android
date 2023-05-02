@@ -1,6 +1,7 @@
 package com.hedvig.android.core.ui.insurance
 
 import android.content.Context
+import androidx.core.content.ContextCompat
 import com.hedvig.android.core.ui.R
 
 enum class GradientType {
@@ -14,11 +15,11 @@ enum class GradientType {
 }
 
 fun GradientType.toDrawable(context: Context) = when (this) {
-  GradientType.HOME -> context.getDrawable(R.drawable.home)
-  GradientType.ACCIDENT -> context.getDrawable(R.drawable.accident)
-  GradientType.HOUSE -> context.getDrawable(R.drawable.house)
-  GradientType.TRAVEL -> context.getDrawable(R.drawable.travel)
-  GradientType.CAR -> context.getDrawable(R.drawable.car)
-  GradientType.PET -> context.getDrawable(R.drawable.pet)
-  GradientType.UNKNOWN -> context.getDrawable(R.drawable.unknown)
+  GradientType.HOME -> ContextCompat.getDrawable(context, R.drawable.home)
+  GradientType.ACCIDENT -> ContextCompat.getDrawable(context, R.drawable.accident)
+  GradientType.HOUSE -> ContextCompat.getDrawable(context, R.drawable.house)
+  GradientType.TRAVEL -> ContextCompat.getDrawable(context, R.drawable.travel)
+  GradientType.CAR -> ContextCompat.getDrawable(context, R.drawable.car)
+  GradientType.PET -> ContextCompat.getDrawable(context, R.drawable.pet)
+  GradientType.UNKNOWN -> ContextCompat.getDrawable(context, R.drawable.unknown)
 }

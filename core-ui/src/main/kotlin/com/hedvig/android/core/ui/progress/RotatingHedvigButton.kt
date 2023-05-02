@@ -24,6 +24,7 @@ internal fun RotatingHedvigButton() {
     animationSpec = infiniteRepeatable(
       animation = tween(1200, easing = LinearEasing),
     ),
+    label = "angle",
   )
 
   Icon(

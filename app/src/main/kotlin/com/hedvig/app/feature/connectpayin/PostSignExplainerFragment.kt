@@ -6,6 +6,7 @@ import androidx.activity.addCallback
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.google.android.material.transition.MaterialSharedAxis
+import com.hedvig.android.core.common.android.serializableExtra
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ConnectPaymentExplainerFragmentBinding
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -25,7 +26,7 @@ class PostSignExplainerFragment : Fragment(R.layout.connect_payment_explainer_fr
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
-    val paymentType = requireArguments().getSerializable(PAYIN_TYPE) as? ConnectPayinType
+    val paymentType = requireArguments().serializableExtra<ConnectPayinType>(PAYIN_TYPE)
     if (paymentType == null) {
       e { "Programmer error: PAYIN_TYPE not supplied to ${this.javaClass.name}" }
       return

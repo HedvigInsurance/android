@@ -123,7 +123,10 @@ private fun MarketingScreen(
   Box(Modifier.fillMaxSize()) {
     BackgroundImage(marketingBackground, imageLoader)
     val selectedMarket = state.selectedMarket
-    Crossfade(selectedMarket) { market ->
+    Crossfade(
+      targetState = selectedMarket,
+      label = "selectedMarket",
+    ) { market ->
       if (market == null) {
         PickMarketScreen(
           onSubmit = submitMarketAndLanguage,

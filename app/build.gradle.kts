@@ -8,6 +8,7 @@ plugins {
   id("hedvig.android.application.compose")
   id("hedvig.android.ktlint")
   id("kotlin-parcelize")
+  alias(libs.plugins.androidRemoveUnusedResourcesPlugin)
   alias(libs.plugins.appIconBannerGenerator) // Automatically adds the "DEBUG" banner on the debug app icon
   alias(libs.plugins.crashlytics)
   alias(libs.plugins.datadog)
@@ -39,6 +40,8 @@ android {
 
   lint {
     abortOnError = false
+    checkDependencies = true
+    checkGeneratedSources = true
   }
 
   packaging {
@@ -65,6 +68,7 @@ android {
       manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
 
       isMinifyEnabled = true
+      isShrinkResources = true
       setProguardFiles(
         listOf(
           getDefaultProguardFile("proguard-android.txt"),
@@ -90,13 +94,9 @@ android {
 
   sourceSets {
     named("debug") {
-      kotlin.srcDir("src/engineering/kotlin")
-      res.srcDir("src/engineering/res")
       manifest.srcFile("src/debug/AndroidManifest.xml")
     }
     named("staging") {
-      kotlin.srcDir("src/engineering/kotlin")
-      res.srcDir("src/engineering/res")
       manifest.srcFile("src/debug/AndroidManifest.xml")
     }
   }
@@ -144,13 +144,9 @@ dependencies {
   testImplementation(projects.coreCommonTest)
   testImplementation(projects.coreDatastoreTest)
   testImplementation(projects.hanalytics.hanalyticsFeatureFlagsTest)
+  testImplementation(projects.hanalytics.hanalyticsTest)
 
   androidTestImplementation(projects.hanalytics.hanalyticsFeatureFlagsTest)
-
-  implementation(projects.hanalytics.hanalyticsEngineeringApi)
-  releaseImplementation(projects.hanalytics.hanalyticsEngineeringNoop)
-  debugImplementation(projects.hanalytics.hanalyticsEngineering)
-  "stagingImplementation"(projects.hanalytics.hanalyticsEngineering)
 
   androidTestImplementation(projects.testdata)
   testImplementation(projects.testdata)
@@ -212,6 +208,7 @@ dependencies {
   implementation(libs.firebase.dynamicLinks)
   implementation(libs.firebase.messaging)
   implementation(libs.firebase.playServicesBase)
+  implementation(libs.flexbox)
   implementation(libs.fragmentViewBindingDelegate)
   implementation(libs.insetter)
   implementation(libs.koin.android)
@@ -246,6 +243,7 @@ dependencies {
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.jsonTest)
+  testImplementation(libs.koin.test)
   testImplementation(libs.mockk.jvm)
   testImplementation(libs.turbine)
 

@@ -6,18 +6,16 @@
     - `app/src/${debug|staging|release}/res/values/adyen.xml`
 2. Acquire Lokalise credentials (you can find them in 1Password), place in the following file:
     - `lokalise.properties`
-3. Acquire Mixpanel credentials (you can find them in 1Password), place in the following paths:
-    - `app/src/${debug|staging|release}/res/values/mixpanel.xml`
-4. Acquire gradle.properties which contain a token for Github Packages authentication. 
+3. Acquire gradle.properties which contain a token for Github Packages authentication. 
    Generate your own at GitHub > Settings > Developer Settings > PAT > Tokens (Classic) > Generate New Token > Give the read:packages permission    
    Append (or create) your global gradle.properties in:
     - `~/.gradle/gradle.properties`
    Look inside [ci-github-packages-properties](scripts/ci-github-packages-properties.sh) for inspiration.
-5. Download the schema (required to consume any changes in schema as well):
+4. Download the schema (required to consume any changes in schema as well):
     `./gradlew downloadApolloSchemasFromIntrospection`
-6. Download lokalise translations (required to consume latest translations as well):
+5. Download lokalise translations (required to consume latest translations as well):
     `./gradlew :core-resources:downloadStrings`
-7. Build and install via Android Studio
+6. Build and install via Android Studio
 
 ## Formatting
 
@@ -42,3 +40,11 @@ Generated from `./gradlew :generateProjectDependencyGraph`*\
 
 `renovate.json` is a file which Renovate looks at in order to be able to suggest upgrading private artifacts to their latest version.
 The `username` used in there is the result of passing our jitpack username (from 1Password) through Renovate's [website](https://app.renovatebot.com/encrypt) to get the hashed version of it.
+
+## Removing unused resources
+
+The [android-remove-unused-resources-plugin](https://github.com/irgaly/android-remove-unused-resources-plugin/tree/main#usage)
+plugin is used to achieve this. This will run on CI using [this task](./.github/workflows/unused-resources.yml), but to run locally one can also just do
+`./gradlew :app:lintDebug -Prur.lint.onlyUnusedResources`
+And then
+`./gradlew :app:removeUnusedResources -Prur.lintVariant="debug"`

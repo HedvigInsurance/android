@@ -55,7 +55,7 @@ class ReferralsInformationActivity : AppCompatActivity(R.layout.activity_referra
       }
 
       scrollView.applyNavigationBarInsets()
-      scrollView.setupToolbarScrollListener(toolbar)
+      scrollView.setupToolbarScrollListener(toolbar = toolbar)
 
       val incentive = Money.of(incentiveAmount, incentiveCurrency)
       body.text = getString(

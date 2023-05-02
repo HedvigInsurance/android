@@ -16,7 +16,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.language.LanguageService
-import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ReferralsCodeBinding
@@ -114,7 +113,7 @@ class ReferralsAdapter(
             }
 
             is ReferralsModel.Header.LoadedEmptyHeader -> {
-              bindPiechart(data.inner, marketManager.market)
+              bindPiechart(data.inner)
               placeholders.remove()
               data
                 .inner
@@ -141,7 +140,7 @@ class ReferralsAdapter(
             }
 
             is ReferralsModel.Header.LoadedHeader -> {
-              bindPiechart(data.inner, marketManager.market)
+              bindPiechart(data.inner)
               placeholders.remove()
               emptyTexts.remove()
               nonEmptyTexts.show()
@@ -187,7 +186,7 @@ class ReferralsAdapter(
         }
       }
 
-      private fun bindPiechart(data: ReferralsQuery.Data, market: Market?) {
+      private fun bindPiechart(data: ReferralsQuery.Data) {
         binding.apply {
           (piechart.getTag(R.id.slice_blink_animation) as? ValueAnimator)?.cancel()
           piechartPlaceholder.hideShimmer()
@@ -393,12 +392,12 @@ class ReferralsAdapter(
             }
 
             is ReferralsModel.Referral.Referee -> {
-              bindReferral(data.inner, marketManager.market)
+              bindReferral(data.inner)
               refereeLabel.show()
             }
 
             is ReferralsModel.Referral.LoadedReferral -> {
-              bindReferral(data.inner, marketManager.market)
+              bindReferral(data.inner)
               refereeLabel.remove()
             }
 
@@ -409,7 +408,7 @@ class ReferralsAdapter(
         }
       }
 
-      private fun bindReferral(data: ReferralFragment, market: Market?) {
+      private fun bindReferral(data: ReferralFragment) {
         binding.apply {
           placeholders.remove()
           texts.show()
@@ -456,7 +455,7 @@ class ReferralsAdapter(
     }
 
     class ErrorViewHolder(
-      val composeView: ComposeView,
+      private val composeView: ComposeView,
       val reload: () -> Unit,
     ) : ViewHolder(composeView) {
       override fun bind(

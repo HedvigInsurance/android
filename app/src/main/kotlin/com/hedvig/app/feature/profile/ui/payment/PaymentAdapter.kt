@@ -408,7 +408,7 @@ class PaymentAdapter(
     }
 
     class PayoutDetailsParagraph(parent: ViewGroup) :
-      PaymentAdapter.ViewHolder(parent.inflate(R.layout.payout_details_paragraph)) {
+      ViewHolder(parent.inflate(R.layout.payout_details_paragraph)) {
       private val binding by viewBinding(PayoutDetailsParagraphBinding::bind)
       override fun bind(
         data: PaymentModel,

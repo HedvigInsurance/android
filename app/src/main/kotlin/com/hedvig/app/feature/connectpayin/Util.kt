@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.connectpayin
 
 import android.content.Context
-import com.hedvig.app.R
 import com.hedvig.app.util.extensions.showAlert
 
 fun showConfirmCloseDialog(

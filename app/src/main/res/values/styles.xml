@@ -44,10 +44,6 @@
         <item name="android:windowExitAnimation">@anim/slide_out_down</item>
     </style>
 
-    <style name="BottomSheet" parent="@style/Widget.Design.BottomSheet.Modal">
-        <item name="android:background">@drawable/bottom_sheet_dialog_fragment_background</item>
-    </style>
-
     <style name="DialogNoAnimation">
         <item name="android:windowEnterAnimation">@null</item>
         <item name="android:windowExitAnimation">@null</item>

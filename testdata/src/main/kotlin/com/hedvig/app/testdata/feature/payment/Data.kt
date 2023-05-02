@@ -128,13 +128,3 @@ val PAYMENT_DATA_PAYOUT_NOT_CONNECTED =
   PaymentDataBuilder(payoutConnectionStatus = PayoutMethodStatus.NEEDS_SETUP).build()
 val PAYMENT_DATA_PAYOUT_CONNECTED = PaymentDataBuilder(payoutConnectionStatus = PayoutMethodStatus.ACTIVE).build()
 val PAYMENT_DATA_PAYOUT_PENDING = PaymentDataBuilder(payoutConnectionStatus = PayoutMethodStatus.PENDING).build()
-
-val PAYMENT_DATA_MANY_ITEMS = PaymentDataBuilder(
-  failedCharges = 3,
-  chargeHistory = listOf(
-    ChargeHistoryBuilder().build(),
-    ChargeHistoryBuilder(date = LocalDate.now() - 2.months).build(),
-  ),
-  payinType = PayinType.ADYEN,
-  payinConnected = true,
-).build()

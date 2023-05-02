@@ -180,6 +180,7 @@ class ChatViewModel(
         null
       },
       ifRight = { data ->
+        e { "Chat: uploadFileInner succeeded." }
         respondWithFile(data.uploadFile.key, uri)
         return data
       },

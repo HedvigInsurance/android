@@ -21,7 +21,6 @@ class OpenSourceLicensesDialog : DialogFragment() {
       fragmentTransaction.remove(previousFragment)
     }
     fragmentTransaction.addToBackStack(null)
-    fragmentTransaction.commit()
 
     show(fragmentManager, "dialog_licenses")
   }
@@ -35,9 +34,5 @@ class OpenSourceLicensesDialog : DialogFragment() {
       .setView(webView)
       .setPositiveButton(android.R.string.ok) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
       .create()
-  }
-
-  override fun onDismiss(dialog: DialogInterface) {
-    super.onDismiss(dialog)
   }
 }

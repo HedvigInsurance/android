@@ -36,7 +36,6 @@ import com.hedvig.app.util.boundedLerp
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
-import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.getLastOpen
 import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.setLastOpen
@@ -48,6 +47,7 @@ import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.performOnTapHapticFeedback
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
+import com.hedvig.app.util.extensions.viewDps
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
@@ -241,10 +241,10 @@ class LoggedInActivity : AppCompatActivity(R.layout.activity_logged_in) {
               .arrowTargetMargin(-20)
               .arrowSourceMargin(-20)
               .padding(
-                12.dp,
-                12.dp,
-                12.dp,
-                15.dp,
+                12.viewDps,
+                12.viewDps,
+                12.viewDps,
+                15.viewDps,
               )
               .position(ViewTooltip.Position.BOTTOM)
               .color(compatColor(R.color.colorTooltip))
@@ -367,8 +367,8 @@ class LoggedInActivity : AppCompatActivity(R.layout.activity_logged_in) {
       if (unseenTabNotifications.contains(bottomNavTab)) {
         val badge = bottomNavigationView.getOrCreateBadge(item.itemId)
         badge.isVisible = true
-        badge.horizontalOffset = 4.dp
-        badge.verticalOffset = 4.dp
+        badge.horizontalOffset = 4.viewDps
+        badge.verticalOffset = 4.viewDps
       } else {
         bottomNavigationView.removeBadge(item.itemId)
       }

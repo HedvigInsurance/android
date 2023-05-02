@@ -8,7 +8,7 @@ import com.hedvig.android.core.common.android.parcelable
 import com.hedvig.app.feature.insurance.ui.detail.coverage.PerilAdapter
 import com.hedvig.app.feature.insurance.ui.detail.coverage.PerilModel
 import com.hedvig.app.ui.view.ExpandableBottomSheet
-import com.hedvig.app.util.extensions.dp
+import com.hedvig.app.util.extensions.viewDps
 
 class PerilBottomSheet : ExpandableBottomSheet() {
 
@@ -17,7 +17,7 @@ class PerilBottomSheet : ExpandableBottomSheet() {
     val peril = requireArguments().parcelable<Peril>(PERIL)
       ?: error("Programmer error: Missing arguments in ${this@PerilBottomSheet.javaClass.name}")
 
-    binding.recycler.updatePadding(bottom = binding.recycler.paddingBottom + 56.dp)
+    binding.recycler.updatePadding(bottom = binding.recycler.paddingBottom + 56.viewDps)
     binding.recycler.adapter = PerilAdapter().also { adapter ->
       adapter.submitList(
         expandedList(
