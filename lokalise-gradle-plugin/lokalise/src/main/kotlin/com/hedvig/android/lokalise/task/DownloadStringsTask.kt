@@ -63,12 +63,13 @@ abstract class DownloadStringsTask @Inject constructor(
     logger.debug("$tag strings will be put at path:${outputDirectory.asPath}")
 
     val bucketUrl = fetchBucketUrl()
-    val zipfile = File(temporaryDir, "lang-file.zip")
-    zipfile.fillContentsByDownloadingFromUrl(bucketUrl)
-    logger.debug("$tag zip file:${zipfile.readLines()}")
-    dirRes.fillContentsByCopyingFromZipFile(zipfile)
+    val tempFileForZipFile = File.createTempFile("lang-file", ".zip")
+    tempFileForZipFile.fillContentsByDownloadingFromUrl(bucketUrl)
+    logger.debug("$tag zip file path:${tempFileForZipFile.absolutePath}")
+    dirRes.fillContentsByCopyingFromZipFile(tempFileForZipFile)
     logger.debug("$tag dirRes:${dirRes.asFileTree.map { it.absolutePath }}")
     dirRes.fixFrenchTranslationLintErrors()
+    tempFileForZipFile.delete()
   }
 
   /**
