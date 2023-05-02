@@ -6,7 +6,7 @@ enum class ApartmentOwnerType {
   RENT, OWN
 }
 
-data class MoveIntentRequestInput(
+data class CreateQuoteInput(
     val moveIntentId: MoveIntentId,
     val moveFromAddressId: AddressId,
     val address: Address,
