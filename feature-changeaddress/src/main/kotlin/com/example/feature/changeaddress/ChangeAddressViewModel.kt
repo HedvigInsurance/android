@@ -46,7 +46,7 @@ internal class ChangeAddressViewModel(
   }
 
   fun onSaveNewAddress(input: CreateQuoteInput) {
-    _uiState.update { it.copy(isLoading = false) }
+    _uiState.update { it.copy(isLoading = true) }
     viewModelScope.launch {
       changeAddressRepository.createQuotes(input).fold(
         ifLeft = { error ->
