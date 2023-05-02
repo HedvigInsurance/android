@@ -26,7 +26,7 @@ adyen = "4.11.0"
 androidx-arch-testing = "2.2.0"
 androidx-composeBom = "2023.04.01"
 #noinspection GradleDependency // alpha05 and alpha06 crash https://issuetracker.google.com/issues/269487074
-androidx-composeMaterial3 = { strictly = "1.1.0-alpha04" }
+androidx-composeMaterial3 = { strictly = "1.1.0-rc01" }
 androidx-composeCompiler = "1.4.6"
 androidx-datastore = "1.0.0"
 androidx-espresso = "3.5.1"
