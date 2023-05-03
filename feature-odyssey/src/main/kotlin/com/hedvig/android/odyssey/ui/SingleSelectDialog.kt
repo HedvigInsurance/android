@@ -113,7 +113,7 @@ private fun <T> SelectionContent(
           contentType = { "Option" },
         ) { option: T ->
           ListItem(
-            headlineText = { Text(text = getDisplayText(option)) },
+            headlineContent = { Text(text = getDisplayText(option)) },
             leadingContent = if (getImageUrl(option) != null) {
               {
                 AsyncImage(

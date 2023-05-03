@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.terminateinsurance.step.terminationdate
 
 import androidx.compose.material3.DatePickerState
+import androidx.compose.material3.DisplayMode
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
@@ -81,9 +82,14 @@ internal class TerminationDateViewModel(
 private class DatePickerConfiguration(minDate: LocalDate, maxDate: LocalDate) {
   private val minDateInMillis = minDate.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
   private val maxDateInMillis = maxDate.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
-  private val yearsRange = minDate.year..maxDate.year
+  private val yearRange = minDate.year..maxDate.year
 
-  val datePickerState = DatePickerState(null, null, yearsRange)
+  val datePickerState = DatePickerState(
+    initialSelectedDateMillis = null,
+    initialDisplayedMonthMillis = null,
+    yearRange = yearRange,
+    initialDisplayMode = DisplayMode.Picker,
+  )
   val dateValidator: (Long) -> Boolean = { selectedDateEpochMillis ->
     selectedDateEpochMillis in minDateInMillis..maxDateInMillis
   }
