@@ -1,14 +1,12 @@
 package com.hedvig.android.odyssey.ui
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerState
+import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -22,10 +20,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import com.hedvig.android.core.designsystem.component.button.FormRowCard
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
@@ -50,39 +46,32 @@ internal fun DatePickerRowCard(
 ) {
   var showDatePicker by rememberSaveable { mutableStateOf(false) }
   if (showDatePicker) {
-    Dialog(onDismissRequest = { showDatePicker = false }) {
-      Surface(
-        Modifier.clip(MaterialTheme.shapes.extraLarge),
-      ) {
-        Column {
-          HedvigDatePicker(
-            datePickerState = uiState.datePickerState,
-            dateValidator = uiState::validateDate,
-          )
-          Row(
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-          ) {
-            TextButton(
-              onClick = {
-                uiState.clearDateSelection()
-                showDatePicker = false
-              },
-              shape = MaterialTheme.shapes.medium,
-            ) {
-              Text(stringResource(R.string.GENERAL_NOT_SURE))
-            }
-            TextButton(
-              onClick = { showDatePicker = false },
-              shape = MaterialTheme.shapes.medium,
-            ) {
-              Text(stringResource(R.string.ALERT_OK))
-            }
-          }
+    DatePickerDialog(
+      onDismissRequest = { showDatePicker = false },
+      confirmButton = {
+        TextButton(
+          onClick = { showDatePicker = false },
+          shape = MaterialTheme.shapes.medium,
+        ) {
+          Text(stringResource(R.string.ALERT_OK))
         }
-      }
+      },
+      dismissButton = {
+        TextButton(
+          onClick = {
+            uiState.clearDateSelection()
+            showDatePicker = false
+          },
+          shape = MaterialTheme.shapes.medium,
+        ) {
+          Text(stringResource(R.string.GENERAL_NOT_SURE))
+        }
+      },
+    ) {
+      HedvigDatePicker(
+        datePickerState = uiState.datePickerState,
+        dateValidator = uiState::validateDate,
+      )
     }
   }
 
@@ -132,12 +121,12 @@ internal class DatePickerUiState(
   val datePickerState = DatePickerState(
     initialSelectedDateMillis = initiallySelectedDate?.atStartOfDayIn(TimeZone.UTC)?.toEpochMilliseconds(),
     initialDisplayedMonthMillis = null,
-    yearsRange = minDate.year..maxDate.year,
+    yearRange = minDate.year..maxDate.year,
+    initialDisplayMode = DisplayMode.Picker,
   )
 
   fun clearDateSelection() {
-    @Suppress("INVISIBLE_MEMBER") // Resetting the date exists in material3 1.1.0-alpha08, for now access internal code
-    datePickerState.selectedDate = null
+    datePickerState.setSelection(null)
   }
 
   fun validateDate(selectedDateEpochMillis: Long): Boolean {
