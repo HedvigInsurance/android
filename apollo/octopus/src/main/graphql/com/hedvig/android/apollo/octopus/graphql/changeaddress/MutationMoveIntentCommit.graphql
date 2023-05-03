@@ -1,0 +1,10 @@
+mutation MoveIntentCommit($intentId: ID!) {
+  moveIntentCommit(intentId: $intentId) {
+    moveIntent {
+      id
+    }
+    userError {
+      message
+    }
+  }
+}

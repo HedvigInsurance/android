@@ -1,0 +1,30 @@
+mutation MoveIntentRequest($intentId: ID!, $input: MoveIntentRequestInput!) {
+  moveIntentRequest(intentId: $intentId, input: $input) {
+    moveIntent {
+      id
+      quotes {
+        premium {
+          amount
+          currencyCode
+        }
+        termsVersion {
+          id
+        }
+        startDate
+        address {
+          id
+          street
+          postalCode
+          city
+          bbrId
+          apartmentNumber
+          floor
+        }
+        numberCoInsured
+      }
+    }
+    userError {
+      message
+    }
+  }
+}
