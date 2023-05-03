@@ -8,6 +8,6 @@ import org.koin.dsl.module
 
 
 @Suppress("RemoveExplicitTypeArguments")
-val changeAddressInsuranceModule = module {
+val changeAddressModule = module {
   single<ChangeAddressRepository> { NetworkChangeAddressRepository(get<ApolloClient>(octopusClient)) }
 }

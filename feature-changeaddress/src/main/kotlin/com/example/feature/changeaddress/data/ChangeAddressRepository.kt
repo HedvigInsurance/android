@@ -37,8 +37,8 @@ internal class NetworkChangeAddressRepository(
       val userError = result.userError
 
       when {
-        userError != null -> shift(ErrorMessage(userError.message))
         moveIntent != null -> moveIntent.toMoveIntent()
+        userError != null -> shift(ErrorMessage(userError.message))
         else -> shift(ErrorMessage("No data found in MoveIntent"))
       }
     }
