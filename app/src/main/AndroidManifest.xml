@@ -257,6 +257,11 @@
             android:name="com.hedvig.android.odyssey.search.SearchActivity"
             android:windowSoftInputMode="adjustResize" />
 
+        <activity
+            android:name="com.example.feature.changeaddress.ChangeAddressActivity"
+            android:parentActivityName="com.hedvig.app.feature.loggedin.ui.LoggedInActivity"
+            android:windowSoftInputMode="adjustResize" />
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_hedvig_h" />

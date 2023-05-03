@@ -716,7 +716,7 @@ val applicationModule = module {
       businessModelModule,
       cacheManagerModule,
       changeAddressModule,
-      changeAddressInsuranceModule,
+      com.example.feature.changeaddress.di.changeAddressModule,
       changeDateBottomSheetModule,
       chatEventModule,
       checkoutModule,

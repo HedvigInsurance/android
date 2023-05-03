@@ -59,7 +59,7 @@ internal class NetworkChangeAddressRepository(
                 apartmentNumber = Optional.absent(),
                 floor = Optional.absent(),
               ),
-              moveFromAddressId = input.address.id.id,
+              moveFromAddressId = input.moveFromAddressId.id,
               movingDate = input.movingDate,
               numberCoInsured = input.numberCoInsured,
               squareMeters = input.squareMeters,

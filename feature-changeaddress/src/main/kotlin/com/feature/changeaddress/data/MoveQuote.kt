@@ -1,7 +1,9 @@
 package com.feature.changeaddress.data
 
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class MoveQuote(
   val moveIntentId: MoveIntentId,
   val address: Address,
