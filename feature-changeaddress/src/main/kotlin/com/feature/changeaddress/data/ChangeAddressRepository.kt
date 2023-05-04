@@ -1,4 +1,4 @@
-package com.example.feature.changeaddress.data
+package com.feature.changeaddress.data
 
 import arrow.core.Either
 import arrow.core.continuations.either

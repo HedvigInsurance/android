@@ -1,9 +1,9 @@
-package com.example.feature.changeaddress
+package com.feature.changeaddress
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.feature.changeaddress.data.ChangeAddressRepository
-import com.example.feature.changeaddress.data.CreateQuoteInput
+import com.feature.changeaddress.data.ChangeAddressRepository
+import com.feature.changeaddress.data.CreateQuoteInput
 import com.hedvig.android.core.common.RetryChannel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

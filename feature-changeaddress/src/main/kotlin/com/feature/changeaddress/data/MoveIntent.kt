@@ -1,4 +1,4 @@
-package com.example.feature.changeaddress.data
+package com.feature.changeaddress.data
 
 import kotlinx.datetime.LocalDate
 

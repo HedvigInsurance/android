@@ -1,7 +1,7 @@
-package com.example.feature.changeaddress
+package com.feature.changeaddress
 
-import com.example.feature.changeaddress.data.MoveIntentId
-import com.example.feature.changeaddress.data.MoveQuote
+import com.feature.changeaddress.data.MoveIntentId
+import com.feature.changeaddress.data.MoveQuote
 import kotlinx.datetime.LocalDate
 
 data class ChangeAddressUiState(
