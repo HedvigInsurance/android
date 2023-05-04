@@ -70,6 +70,12 @@ internal fun NavGraphBuilder.changeAddressGraph(
         onChangeAddressResult = { navController.navigate(ChangeAddressDestination.AddressResult) },
       )
     }
+
+    animatedComposable<ChangeAddressDestination.AddressResult> {
+      ChangeAddressResult {
+        finish()
+      }
+    }
   }
 }
 
