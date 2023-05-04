@@ -1,13 +1,12 @@
-package com.example.feature.changeaddress.navigation
+package com.feature.changeaddress.navigation
 
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.ui.unit.Density
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import com.example.feature.changeaddress.ChangeAddressViewModel
-import com.example.feature.changeaddress.ui.AddressResult
 import com.example.feature.changeaddress.ui.EnterNewAddress
-import com.example.feature.changeaddress.ui.MoveQuotes
+import com.feature.changeaddress.ChangeAddressViewModel
+import com.feature.changeaddress.ui.MoveQuotes
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.compose.typed.animatedNavigation

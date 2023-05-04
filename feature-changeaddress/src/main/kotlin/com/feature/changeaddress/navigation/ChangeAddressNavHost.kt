@@ -1,4 +1,4 @@
-package com.example.feature.changeaddress.navigation
+package com.feature.changeaddress.navigation
 
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable

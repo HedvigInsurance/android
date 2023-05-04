@@ -27,12 +27,10 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.apollographql.apollo3.api.label
-import com.example.feature.changeaddress.ChangeAddressUiState
-import com.example.feature.changeaddress.ChangeAddressViewModel
-import com.example.feature.changeaddress.data.MoveQuote
+import com.feature.changeaddress.ChangeAddressUiState
+import com.feature.changeaddress.ChangeAddressViewModel
+import com.feature.changeaddress.data.MoveQuote
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
-import com.hedvig.android.core.designsystem.component.button.LargeOutlinedButton
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 
 @Composable

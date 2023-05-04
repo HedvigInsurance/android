@@ -1,6 +1,6 @@
-package com.example.feature.changeaddress.navigation
+package com.feature.changeaddress.navigation
 
-import com.example.feature.changeaddress.data.MoveQuote
+import com.feature.changeaddress.data.MoveQuote
 import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.serialization.Serializable
 
