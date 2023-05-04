@@ -116,7 +116,7 @@ internal class ChangeAddressViewModel(
           _uiState.update {
             it.copy(
               isLoading = false,
-              moveResult = result,
+              successfulMoveResult = result,
             )
           }
         },

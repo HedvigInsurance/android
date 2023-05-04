@@ -1,20 +1,27 @@
 package com.example.feature.changeaddress.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -25,14 +32,20 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.feature.changeaddress.ChangeAddressUiState
 import com.feature.changeaddress.ChangeAddressViewModel
+import com.feature.changeaddress.ui.AddressInfoCard
+import com.hedvig.android.core.designsystem.R
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
+import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
+import toDisplayName
 
 @Composable
 internal fun ChangeAddressEnterNewDestination(
@@ -58,6 +71,7 @@ internal fun ChangeAddressEnterNewDestination(
           onClick = navigateBack,
           title = "Ny address",
           scrollBehavior = topAppBarScrollBehavior,
+          colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
         )
         Column(
           Modifier
@@ -70,19 +84,21 @@ internal fun ChangeAddressEnterNewDestination(
           if (uiState.isLoading) {
             CircularProgressIndicator()
           }
-
+          Spacer(modifier = Modifier.padding(top = 48.dp))
           Text(
             text = "Fyll i din nya address",
             style = MaterialTheme.typography.headlineSmall,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(),
           )
-          Spacer(modifier = Modifier.padding(bottom = 154.dp))
+          Spacer(modifier = Modifier.padding(bottom = 114.dp))
           Text(
-            text = "Bostadstyp",
-            modifier = Modifier.clickable {
-              onClickHousingType()
-            },
+            text = uiState.apartmentOwnerType?.toDisplayName() ?: "Bostadstyp",
+            modifier = Modifier
+              .clickable {
+                onClickHousingType()
+              }
+              .fillMaxWidth(),
           )
           TextField(
             value = uiState.street ?: "",
@@ -90,6 +106,7 @@ internal fun ChangeAddressEnterNewDestination(
               Text(text = "Address")
             },
             onValueChange = { viewModel.onStreetChanged(it) },
+            modifier = Modifier.fillMaxWidth(),
           )
 
           TextField(
@@ -98,6 +115,7 @@ internal fun ChangeAddressEnterNewDestination(
               Text(text = "Postkod")
             },
             onValueChange = { viewModel.onPostalCodeChanged(it) },
+            modifier = Modifier.fillMaxWidth(),
           )
 
           TextField(
@@ -106,6 +124,7 @@ internal fun ChangeAddressEnterNewDestination(
               Text(text = "Boyta")
             },
             onValueChange = { viewModel.onSquareMetersChanged(it) },
+            modifier = Modifier.fillMaxWidth(),
           )
 
           TextField(
@@ -114,17 +133,18 @@ internal fun ChangeAddressEnterNewDestination(
               Text(text = "Antal personer")
             },
             onValueChange = { viewModel.onCoInsuredChanged(it.toInt()) },
+            modifier = Modifier.fillMaxWidth(),
           )
+          Spacer(modifier = Modifier.padding(top = 6.dp))
+          AddressInfoCard()
+          Spacer(modifier = Modifier.padding(top = 6.dp))
+          LargeContainedButton(
+            onClick = { viewModel.onSaveNewAddress() },
+            modifier = Modifier,
+          ) {
+            Text(text = "Spara och fortsätt")
+          }
         }
-      }
-
-      LargeContainedButton(
-        onClick = { viewModel.onSaveNewAddress() },
-        modifier = Modifier
-          .align(Alignment.BottomCenter)
-          .padding(16.dp),
-      ) {
-        Text(text = "Spara och fortsätt")
       }
     }
   }

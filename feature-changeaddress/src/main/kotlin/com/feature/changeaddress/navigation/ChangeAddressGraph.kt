@@ -17,6 +17,7 @@ import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.compose.typed.animatedNavigation
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
+import com.kiwi.navigationcompose.typed.popUpTo
 import org.koin.androidx.compose.koinViewModel
 
 internal fun NavGraphBuilder.changeAddressGraph(
@@ -55,23 +56,27 @@ internal fun NavGraphBuilder.changeAddressGraph(
         onSelectHousingType = { navController.navigateUp() },
       )
     }
+
     animatedComposable<ChangeAddressDestination.OfferDestination> {
       val viewModel = getViewModel(navController, it)
       BackHandler {
-        navController.navigateUp()
         viewModel.onQuotesCleared()
+        navController.navigateUp()
       }
       ChangeAddressOfferDestination(
         viewModel = viewModel,
         navigateBack = {
-          navController.navigateUp()
           viewModel.onQuotesCleared()
+          navController.navigateUp()
         },
         onChangeAddressResult = { navController.navigate(ChangeAddressDestination.AddressResult) },
       )
     }
 
     animatedComposable<ChangeAddressDestination.AddressResult> {
+      BackHandler {
+        finish()
+      }
       ChangeAddressResult {
         finish()
       }
