@@ -151,7 +151,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
       if (featureManager.isFeatureEnabled(Feature.NEW_MOVING_FLOW)) {
         context?.startActivity(
           Intent(
-            binding.root.context,
+            requireContext(),
             com.example.feature.changeaddress.ChangeAddressActivity::class.java,
           ),
         )

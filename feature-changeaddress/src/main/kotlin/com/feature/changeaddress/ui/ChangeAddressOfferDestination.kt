@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import com.feature.changeaddress.data.MoveQuote
 
 @Composable
-fun MoveQuotes(quotes: List<MoveQuote>) {
+fun ChangeAddressOfferDestination(quotes: List<MoveQuote>) {
   Box(Modifier.fillMaxSize()) {
     Column {
       Text(text = "Quote street:")

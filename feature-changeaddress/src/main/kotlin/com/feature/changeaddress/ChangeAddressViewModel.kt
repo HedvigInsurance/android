@@ -70,27 +70,27 @@ internal class ChangeAddressViewModel(
     }
   }
 
-  fun onStreet(street: String) {
+  fun onStreetChanged(street: String) {
     _uiState.update { it.copy(street = street) }
   }
 
-  fun onPostalCode(postalCode: String) {
+  fun onPostalCodeChanged(postalCode: String) {
     _uiState.update { it.copy(postalCode = postalCode) }
   }
 
-  fun onSquareMeters(squareMeters: String) {
+  fun onSquareMetersChanged(squareMeters: String) {
     _uiState.update { it.copy(squareMeters = squareMeters) }
   }
 
-  fun onCoInsured(coInsured: Int) {
+  fun onCoInsuredChanged(coInsured: Int) {
     _uiState.update { it.copy(numberCoInsured = coInsured) }
   }
 
-  fun onMoveDate(movingDate: LocalDate) {
+  fun onMoveDateSelected(movingDate: LocalDate) {
     _uiState.update { it.copy(movingDate = movingDate) }
   }
 
-  fun onContinue() {
+  fun onContinueClicked() {
     _uiState.update { it.copy(quotes = emptyList()) }
   }
 

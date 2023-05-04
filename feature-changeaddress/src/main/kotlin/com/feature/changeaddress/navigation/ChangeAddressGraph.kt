@@ -4,9 +4,9 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.ui.unit.Density
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import com.example.feature.changeaddress.ui.EnterNewAddress
+import com.example.feature.changeaddress.ui.ChangeAddressEnterNewDestination
 import com.feature.changeaddress.ChangeAddressViewModel
-import com.feature.changeaddress.ui.MoveQuotes
+import com.feature.changeaddress.ui.ChangeAddressOfferDestination
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.compose.typed.animatedNavigation
@@ -30,7 +30,7 @@ internal fun NavGraphBuilder.changeAddressGraph(
   ) {
     animatedComposable<ChangeAddressDestination.EnterNewAddress> {
       val viewModel: ChangeAddressViewModel = koinViewModel()
-      EnterNewAddress(
+      ChangeAddressEnterNewDestination(
         viewModel = viewModel,
         navigateBack = { navigateUp() },
         onQuotes = { quotes ->
@@ -40,7 +40,7 @@ internal fun NavGraphBuilder.changeAddressGraph(
     }
 
     animatedComposable<ChangeAddressDestination.MoveQuotes> {
-      MoveQuotes(
+      ChangeAddressOfferDestination(
         quotes,
       )
     }

@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import com.feature.changeaddress.ChangeAddressViewModel
 
 @Composable
-internal fun AddressResult(
+internal fun ChangeAddressResultDestination(
   viewModel: ChangeAddressViewModel,
   navigateBack: Unit
 ) {
