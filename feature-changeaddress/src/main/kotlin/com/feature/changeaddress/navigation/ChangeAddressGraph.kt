@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import com.example.feature.changeaddress.ui.ChangeAddressEnterNewDestination
 import com.feature.changeaddress.ChangeAddressViewModel
 import com.feature.changeaddress.ui.ChangeAddressOfferDestination
+import com.feature.changeaddress.ui.ChangeAddressSelectHousingTypeDestination
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.compose.typed.animatedNavigation
@@ -36,9 +37,20 @@ internal fun NavGraphBuilder.changeAddressGraph(
         onQuotes = { quotes ->
           navController.navigate(ChangeAddressDestination.MoveQuotes(quotes))
         },
+        onClickHousingType = {
+          navController.navigate(ChangeAddressDestination.SelectHousingType)
+        },
       )
     }
 
+    animatedComposable<ChangeAddressDestination.SelectHousingType> {
+      val viewModel: ChangeAddressViewModel = koinViewModel()
+      ChangeAddressSelectHousingTypeDestination(
+        viewModel = viewModel,
+        navigateBack = { navController.navigateUp() },
+        onSelectHousingType = { navController.navigateUp() },
+      )
+    }
     animatedComposable<ChangeAddressDestination.MoveQuotes> {
       ChangeAddressOfferDestination(
         quotes,

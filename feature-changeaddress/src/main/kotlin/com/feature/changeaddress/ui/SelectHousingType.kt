@@ -1,4 +1,4 @@
-package com.example.feature.changeaddress.ui
+package com.feature.changeaddress.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,15 +23,13 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavBackStackEntry
-import com.example.feature.changeaddress.ChangeAddressUiState
-import com.example.feature.changeaddress.ChangeAddressViewModel
-import com.example.feature.changeaddress.data.ApartmentOwnerType
+import com.feature.changeaddress.ChangeAddressUiState
+import com.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 
 @Composable
-internal fun SelectHousingType(
+internal fun ChangeAddressSelectHousingTypeDestination(
   viewModel: ChangeAddressViewModel,
   navigateBack: () -> Unit,
   onSelectHousingType: () -> Unit,

@@ -1,5 +1,6 @@
 package com.feature.changeaddress
 
+import ApartmentOwnerType
 import com.feature.changeaddress.data.AddressId
 import com.feature.changeaddress.data.MoveIntentId
 import com.feature.changeaddress.data.MoveQuote
@@ -13,6 +14,7 @@ data class ChangeAddressUiState(
   val moveRange: ClosedRange<LocalDate>? = null,
   val movingDate: LocalDate? = null,
   val numberCoInsured: Int? = null,
+  val apartmentOwnerType: ApartmentOwnerType? = null,
   val errorMessage: String? = null,
   val isLoading: Boolean = true,
   val moveFromAddressId: AddressId? = null,
