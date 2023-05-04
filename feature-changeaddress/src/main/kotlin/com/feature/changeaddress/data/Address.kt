@@ -1,4 +1,4 @@
-package com.example.feature.changeaddress.data
+package com.feature.changeaddress.data
 
 @JvmInline
 value class AddressId(val id: String)

@@ -1,4 +1,4 @@
-package com.example.feature.changeaddress.data
+package com.feature.changeaddress.data
 
 import arrow.core.Either
 import arrow.core.continuations.either
@@ -17,7 +17,7 @@ import octopus.type.MoveToApartmentInput
 
 internal interface ChangeAddressRepository {
   suspend fun createMoveIntent(): Either<ErrorMessage, MoveIntent>
-  suspend fun createQuotes(id: MoveIntentId, input: MoveIntentRequestInput): Either<ErrorMessage, List<MoveQuote>>
+  suspend fun createQuotes(input: CreateQuoteInput): Either<ErrorMessage, List<MoveQuote>>
   suspend fun commitMove(id: MoveIntentId): Either<ErrorMessage, MoveResult>
 }
 
@@ -44,15 +44,12 @@ internal class NetworkChangeAddressRepository(
     }
   }
 
-  override suspend fun createQuotes(
-    id: MoveIntentId,
-    input: MoveIntentRequestInput,
-  ): Either<ErrorMessage, List<MoveQuote>> {
+  override suspend fun createQuotes(input: CreateQuoteInput): Either<ErrorMessage, List<MoveQuote>> {
     return either {
       val result = apolloClient
         .mutation(
           MoveIntentRequestMutation(
-            intentId = id.id,
+            intentId = input.moveIntentId.id,
             input = octopus.type.MoveIntentRequestInput(
               moveToAddress = MoveToAddressInput(
                 street = input.address.street,
