@@ -1,14 +1,20 @@
 package com.feature.changeaddress
 
+import com.feature.changeaddress.data.AddressId
 import com.feature.changeaddress.data.MoveIntentId
 import com.feature.changeaddress.data.MoveQuote
 import kotlinx.datetime.LocalDate
 
 data class ChangeAddressUiState(
   val moveIntentId: MoveIntentId? = null,
+  val street: String? = null,
+  val postalCode: String? = null,
+  val squareMeters: String? = null,
   val moveRange: ClosedRange<LocalDate>? = null,
+  val movingDate: LocalDate? = null,
   val numberCoInsured: Int? = null,
   val errorMessage: String? = null,
   val isLoading: Boolean = true,
-  val quotes: List<MoveQuote> = emptyList()
+  val moveFromAddressId: AddressId? = null,
+  val quotes: List<MoveQuote> = emptyList(),
 )

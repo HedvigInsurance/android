@@ -127,6 +127,7 @@ dependencies {
   implementation(projects.coreUi)
   implementation(projects.datadog)
   implementation(projects.featureBusinessmodel)
+  implementation(projects.featureChangeaddress)
   implementation(projects.featureOdyssey)
   implementation(projects.featureTerminateInsurance)
   implementation(projects.hanalytics.hanalyticsAndroid)

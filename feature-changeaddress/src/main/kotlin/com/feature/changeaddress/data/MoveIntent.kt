@@ -1,8 +1,10 @@
 package com.feature.changeaddress.data
 
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.Serializable
 
 @JvmInline
+@Serializable
 value class MoveIntentId(val id: String)
 
 data class MoveIntent(

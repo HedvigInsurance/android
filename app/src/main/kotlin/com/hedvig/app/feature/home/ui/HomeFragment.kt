@@ -11,11 +11,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import coil.ImageLoader
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
 import com.hedvig.app.databinding.HomeFragmentBinding
 import com.hedvig.app.feature.claims.ui.startClaimsFlow
 import com.hedvig.app.feature.home.model.HomeModel
+import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.feature.payment.connectPayinIntent
@@ -66,6 +68,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
       onPaymentCardShown = viewModel::onPaymentCardShown,
       onPaymentCardClicked = ::onPaymentCardClicked,
       onStartClaimClicked = ::onStartClaimClicked,
+      onStartMovingFlow = ::onStartMovingFlow,
     )
 
     binding.swipeToRefresh.setOnRefreshListener {
@@ -141,6 +144,21 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         false,
       ),
     )
+  }
+
+  private fun onStartMovingFlow() {
+    lifecycleScope.launch {
+      if (featureManager.isFeatureEnabled(Feature.NEW_MOVING_FLOW)) {
+        context?.startActivity(
+          Intent(
+            requireContext(),
+            com.example.feature.changeaddress.ChangeAddressActivity::class.java,
+          ),
+        )
+      } else {
+        context?.startActivity(ChangeAddressActivity.newInstance(requireContext()))
+      }
+    }
   }
 
   private fun registerForResult(intent: Intent) {

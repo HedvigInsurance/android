@@ -1,59 +1,60 @@
 package com.feature.changeaddress
 
+import CreateQuoteInput
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.feature.changeaddress.data.AddressInput
 import com.feature.changeaddress.data.ChangeAddressRepository
-import com.feature.changeaddress.data.CreateQuoteInput
-import com.hedvig.android.core.common.RetryChannel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 
 internal class ChangeAddressViewModel(
   private val changeAddressRepository: ChangeAddressRepository,
 ) : ViewModel() {
 
   private val _uiState: MutableStateFlow<ChangeAddressUiState> = MutableStateFlow(ChangeAddressUiState())
-  private val retryChannel = RetryChannel()
   val uiState: StateFlow<ChangeAddressUiState> = _uiState.asStateFlow()
 
   init {
     viewModelScope.launch {
-      retryChannel.mapLatest {
-        _uiState.update { it.copy(isLoading = true) }
-        changeAddressRepository.createMoveIntent().fold(
-          ifLeft = { error ->
-            _uiState.update {
-              it.copy(
-                isLoading = false,
-                errorMessage = error.message,
-              )
-            }
-          },
-          ifRight = { moveIntent ->
-            _uiState.update {
-              it.copy(
-                isLoading = false,
-                numberCoInsured = moveIntent.numberCoInsured,
-              )
-            }
-          },
-        )
-      }
+      _uiState.update { it.copy(isLoading = true) }
+      changeAddressRepository.createMoveIntent().fold(
+        ifLeft = { error ->
+          _uiState.update {
+            it.copy(
+              isLoading = false,
+              errorMessage = error.message,
+            )
+          }
+        },
+        ifRight = { moveIntent ->
+          _uiState.update {
+            it.copy(
+              moveIntentId = moveIntent.id,
+              numberCoInsured = moveIntent.numberCoInsured,
+              moveFromAddressId = moveIntent.currentHomeAddresses.firstOrNull()?.id,
+              isLoading = false,
+            )
+          }
+        },
+      )
     }
   }
 
-  fun onSaveNewAddress(input: CreateQuoteInput) {
+  fun onSaveNewAddress() {
     _uiState.update { it.copy(isLoading = true) }
+    val input = _uiState.value.toCreateQuoteInput()
     viewModelScope.launch {
       changeAddressRepository.createQuotes(input).fold(
         ifLeft = { error ->
           _uiState.update {
             it.copy(
               isLoading = false,
-              errorMessage = error.message
+              errorMessage = error.message,
             )
           }
         },
@@ -61,11 +62,50 @@ internal class ChangeAddressViewModel(
           _uiState.update {
             it.copy(
               isLoading = false,
-              quotes = quotes
+              quotes = quotes,
             )
           }
-        }
+        },
       )
     }
   }
+
+  fun onStreetChanged(street: String) {
+    _uiState.update { it.copy(street = street) }
+  }
+
+  fun onPostalCodeChanged(postalCode: String) {
+    _uiState.update { it.copy(postalCode = postalCode) }
+  }
+
+  fun onSquareMetersChanged(squareMeters: String) {
+    _uiState.update { it.copy(squareMeters = squareMeters) }
+  }
+
+  fun onCoInsuredChanged(coInsured: Int) {
+    _uiState.update { it.copy(numberCoInsured = coInsured) }
+  }
+
+  fun onMoveDateSelected(movingDate: LocalDate) {
+    _uiState.update { it.copy(movingDate = movingDate) }
+  }
+
+  fun onContinueClicked() {
+    _uiState.update { it.copy(quotes = emptyList()) }
+  }
+
 }
+
+private fun ChangeAddressUiState.toCreateQuoteInput() = CreateQuoteInput(
+  moveIntentId = moveIntentId!!,
+  address = AddressInput(
+    street = street ?: "testersson",
+    postalCode = postalCode ?: "",
+  ),
+  moveFromAddressId = moveFromAddressId!!,
+  movingDate = movingDate ?: LocalDate.fromEpochDays(1230),
+  numberCoInsured = numberCoInsured ?: 2,
+  squareMeters = squareMeters?.toInt() ?: 32,
+  apartmentOwnerType = ApartmentOwnerType.RENT,
+  isStudent = false,
+)

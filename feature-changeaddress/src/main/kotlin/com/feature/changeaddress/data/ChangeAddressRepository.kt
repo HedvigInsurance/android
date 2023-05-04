@@ -1,5 +1,6 @@
 package com.feature.changeaddress.data
 
+import CreateQuoteInput
 import arrow.core.Either
 import arrow.core.continuations.either
 import com.apollographql.apollo3.ApolloClient
@@ -59,7 +60,7 @@ internal class NetworkChangeAddressRepository(
                 apartmentNumber = Optional.absent(),
                 floor = Optional.absent(),
               ),
-              moveFromAddressId = input.address.id.id,
+              moveFromAddressId = input.moveFromAddressId.id,
               movingDate = input.movingDate,
               numberCoInsured = input.numberCoInsured,
               squareMeters = input.squareMeters,

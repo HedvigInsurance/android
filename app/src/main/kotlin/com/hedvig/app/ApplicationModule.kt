@@ -18,7 +18,6 @@ import com.apollographql.apollo3.cache.normalized.normalizedCache
 import com.apollographql.apollo3.interceptor.ApolloInterceptor
 import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
-import com.example.feature.changeaddress.di.changeAddressInsuranceModule
 import com.hedvig.android.apollo.di.apolloClientModule
 import com.hedvig.android.apollo.giraffe.di.giraffeClient
 import com.hedvig.android.apollo.octopus.di.octopusClient
@@ -716,7 +715,7 @@ val applicationModule = module {
       businessModelModule,
       cacheManagerModule,
       changeAddressModule,
-      changeAddressInsuranceModule,
+      com.feature.changeaddress.di.changeAddressModule,
       changeDateBottomSheetModule,
       chatEventModule,
       checkoutModule,
