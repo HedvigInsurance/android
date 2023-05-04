@@ -4,6 +4,7 @@ import ApartmentOwnerType
 import com.feature.changeaddress.data.AddressId
 import com.feature.changeaddress.data.MoveIntentId
 import com.feature.changeaddress.data.MoveQuote
+import com.feature.changeaddress.data.MoveResult
 import kotlinx.datetime.LocalDate
 
 data class ChangeAddressUiState(
@@ -19,4 +20,5 @@ data class ChangeAddressUiState(
   val isLoading: Boolean = true,
   val moveFromAddressId: AddressId? = null,
   val quotes: List<MoveQuote> = emptyList(),
+  val moveResult: MoveResult? = null,
 )

@@ -1,5 +1,6 @@
 package com.feature.changeaddress.navigation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -37,8 +38,8 @@ internal fun NavGraphBuilder.changeAddressGraph(
       ChangeAddressEnterNewDestination(
         viewModel = viewModel,
         navigateBack = { navigateUp() },
-        onQuotes = { quotes ->
-          navController.navigate(ChangeAddressDestination.MoveQuotes(quotes))
+        onQuotes = {
+          navController.navigate(ChangeAddressDestination.OfferDestination)
         },
         onClickHousingType = {
           navController.navigate(ChangeAddressDestination.SelectHousingType)
@@ -54,9 +55,19 @@ internal fun NavGraphBuilder.changeAddressGraph(
         onSelectHousingType = { navController.navigateUp() },
       )
     }
-    animatedComposable<ChangeAddressDestination.MoveQuotes> {
+    animatedComposable<ChangeAddressDestination.OfferDestination> {
+      val viewModel = getViewModel(navController, it)
+      BackHandler {
+        navController.navigateUp()
+        viewModel.onQuotesCleared()
+      }
       ChangeAddressOfferDestination(
-        quotes,
+        viewModel = viewModel,
+        navigateBack = {
+          navController.navigateUp()
+          viewModel.onQuotesCleared()
+        },
+        onChangeAddressResult = { navController.navigate(ChangeAddressDestination.AddressResult) },
       )
     }
   }

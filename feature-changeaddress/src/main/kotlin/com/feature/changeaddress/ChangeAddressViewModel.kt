@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.feature.changeaddress.data.AddressInput
 import com.feature.changeaddress.data.ChangeAddressRepository
+import com.feature.changeaddress.data.MoveIntentId
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -91,12 +92,36 @@ internal class ChangeAddressViewModel(
     _uiState.update { it.copy(movingDate = movingDate) }
   }
 
-  fun onContinueClicked() {
+  fun onQuotesCleared() {
     _uiState.update { it.copy(quotes = emptyList()) }
   }
 
   fun onSelectHousingType(apartmentOwnerType: ApartmentOwnerType) {
     _uiState.update { it.copy(apartmentOwnerType = apartmentOwnerType) }
+  }
+
+  fun onAcceptQuote(id: MoveIntentId) {
+    viewModelScope.launch {
+      _uiState.update { it.copy(isLoading = true) }
+      changeAddressRepository.commitMove(id).fold(
+        ifLeft = { error ->
+          _uiState.update {
+            it.copy(
+              isLoading = false,
+              errorMessage = error.message,
+            )
+          }
+        },
+        ifRight = { result ->
+          _uiState.update {
+            it.copy(
+              isLoading = false,
+              moveResult = result,
+            )
+          }
+        },
+      )
+    }
   }
 
 }

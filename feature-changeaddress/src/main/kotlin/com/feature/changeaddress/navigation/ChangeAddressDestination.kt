@@ -1,6 +1,5 @@
 package com.feature.changeaddress.navigation
 
-import com.feature.changeaddress.data.MoveQuote
 import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.serialization.Serializable
 
@@ -14,9 +13,7 @@ internal sealed interface ChangeAddressDestination : Destination {
   object EnterNewAddress : ChangeAddressDestination
 
   @Serializable
-  data class MoveQuotes(
-    val quotes: List<MoveQuote>,
-  ) : ChangeAddressDestination
+  object OfferDestination : ChangeAddressDestination
 
   @Serializable
   object SelectHousingType : ChangeAddressDestination

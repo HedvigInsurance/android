@@ -7,6 +7,11 @@ enum class ApartmentOwnerType {
   RENT, OWN
 }
 
+fun ApartmentOwnerType.toDisplayName() = when(this) {
+  ApartmentOwnerType.RENT -> "Hyresrätt"
+  ApartmentOwnerType.OWN -> "Bostadsrätt"
+}
+
 data class CreateQuoteInput(
   val moveIntentId: MoveIntentId,
   val moveFromAddressId: AddressId,
