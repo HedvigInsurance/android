@@ -37,7 +37,7 @@ internal class ChangeAddressViewModel(
           _uiState.update {
             it.copy(
               moveIntentId = moveIntent.id,
-              numberCoInsured = moveIntent.numberCoInsured,
+              numberCoInsured = ValidatedInput(moveIntent.numberCoInsured),
               moveFromAddressId = moveIntent.currentHomeAddresses.firstOrNull()?.id,
               isLoading = false,
             )
@@ -47,57 +47,60 @@ internal class ChangeAddressViewModel(
     }
   }
 
-  fun onSaveNewAddress() {
-    _uiState.update { it.copy(isLoading = true) }
-    val input = _uiState.value.toCreateQuoteInput()
-    viewModelScope.launch {
-      changeAddressRepository.createQuotes(input).fold(
-        ifLeft = { error ->
-          _uiState.update {
-            it.copy(
-              isLoading = false,
-              errorMessage = error.message,
-            )
-          }
-        },
-        ifRight = { quotes ->
-          _uiState.update {
-            it.copy(
-              isLoading = false,
-              quotes = quotes,
-            )
-          }
-        },
-      )
-    }
-  }
-
   fun onStreetChanged(street: String) {
-    _uiState.update { it.copy(street = street) }
+    _uiState.update { it.copy(street = ValidatedInput(street)) }
   }
 
   fun onPostalCodeChanged(postalCode: String) {
-    _uiState.update { it.copy(postalCode = postalCode) }
+    _uiState.update { it.copy(postalCode = ValidatedInput(postalCode)) }
   }
 
   fun onSquareMetersChanged(squareMeters: String) {
-    _uiState.update { it.copy(squareMeters = squareMeters) }
+    _uiState.update { it.copy(squareMeters = ValidatedInput(squareMeters)) }
   }
 
   fun onCoInsuredChanged(coInsured: Int) {
-    _uiState.update { it.copy(numberCoInsured = coInsured) }
+    _uiState.update { it.copy(numberCoInsured = ValidatedInput(coInsured)) }
   }
 
   fun onMoveDateSelected(movingDate: LocalDate) {
-    _uiState.update { it.copy(movingDate = movingDate) }
+    _uiState.update { it.copy(movingDate = ValidatedInput(movingDate)) }
+  }
+
+  fun onSelectHousingType(apartmentOwnerType: ApartmentOwnerType) {
+    _uiState.update { it.copy(apartmentOwnerType = ValidatedInput(apartmentOwnerType)) }
   }
 
   fun onQuotesCleared() {
     _uiState.update { it.copy(quotes = emptyList()) }
   }
 
-  fun onSelectHousingType(apartmentOwnerType: ApartmentOwnerType) {
-    _uiState.update { it.copy(apartmentOwnerType = apartmentOwnerType) }
+  fun onSaveNewAddress() {
+    _uiState.update { it.validateInput() }
+    if (_uiState.value.isValid) {
+      val input = _uiState.value.toCreateQuoteInput()
+      _uiState.update { it.copy(isLoading = true) }
+      viewModelScope.launch {
+        changeAddressRepository.createQuotes(input).fold(
+          ifLeft = { error ->
+            _uiState.update {
+              it.copy(
+                isLoading = false,
+                errorMessage = error.message,
+              )
+            }
+          },
+          ifRight = { quotes ->
+            _uiState.update {
+              it.copy(
+                isLoading = false,
+                quotes = quotes,
+              )
+            }
+          },
+        )
+      }
+    }
   }
 
   fun onAcceptQuote(id: MoveIntentId) {
@@ -129,13 +132,13 @@ internal class ChangeAddressViewModel(
 private fun ChangeAddressUiState.toCreateQuoteInput() = CreateQuoteInput(
   moveIntentId = moveIntentId!!,
   address = AddressInput(
-    street = street ?: "testersson",
-    postalCode = postalCode ?: "",
+    street = street.input!!,
+    postalCode = postalCode.input!!,
   ),
   moveFromAddressId = moveFromAddressId!!,
-  movingDate = movingDate ?: LocalDate.fromEpochDays(1230),
-  numberCoInsured = numberCoInsured ?: 2,
-  squareMeters = squareMeters?.toInt() ?: 32,
-  apartmentOwnerType = apartmentOwnerType ?: ApartmentOwnerType.RENT,
+  movingDate = movingDate.input!!,
+  numberCoInsured = numberCoInsured.input!!,
+  squareMeters = squareMeters.input!!.toInt(),
+  apartmentOwnerType = apartmentOwnerType.input!!,
   isStudent = false,
 )

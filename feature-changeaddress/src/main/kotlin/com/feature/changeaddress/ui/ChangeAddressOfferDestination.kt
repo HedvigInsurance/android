@@ -55,7 +55,7 @@ internal fun ChangeAddressOfferDestination(
       Column(Modifier.padding(16.dp)) {
         Spacer(modifier = Modifier.padding(top = 16.dp))
         Text(
-          text = uiState.apartmentOwnerType?.toDisplayName() ?: "Okänd",
+          text = uiState.apartmentOwnerType.input?.toDisplayName() ?: "Okänd",
           style = MaterialTheme.typography.headlineSmall,
           textAlign = TextAlign.Center,
           modifier = Modifier.fillMaxWidth(),
@@ -69,7 +69,7 @@ internal fun ChangeAddressOfferDestination(
         )
         Spacer(modifier = Modifier.padding(top = 8.dp))
         Text(
-          text = uiState.movingDate?.toString() ?: "No moving date found",
+          text = uiState.movingDate.input?.toString() ?: "No moving date found",
           style = MaterialTheme.typography.headlineLarge,
           textAlign = TextAlign.Center,
           modifier = Modifier.fillMaxWidth(),
