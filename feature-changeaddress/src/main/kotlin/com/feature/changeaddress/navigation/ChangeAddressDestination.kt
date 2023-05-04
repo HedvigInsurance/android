@@ -19,6 +19,9 @@ internal sealed interface ChangeAddressDestination : Destination {
   ) : ChangeAddressDestination
 
   @Serializable
+  object SelectHousingType : ChangeAddressDestination
+
+  @Serializable
   object AddressResult : ChangeAddressDestination
 }
 

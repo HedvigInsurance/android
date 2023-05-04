@@ -1,5 +1,6 @@
 package com.feature.changeaddress
 
+import ApartmentOwnerType
 import CreateQuoteInput
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -94,6 +95,10 @@ internal class ChangeAddressViewModel(
     _uiState.update { it.copy(quotes = emptyList()) }
   }
 
+  fun onSelectHousingType(apartmentOwnerType: ApartmentOwnerType) {
+    _uiState.update { it.copy(apartmentOwnerType = apartmentOwnerType) }
+  }
+
 }
 
 private fun ChangeAddressUiState.toCreateQuoteInput() = CreateQuoteInput(
@@ -106,6 +111,6 @@ private fun ChangeAddressUiState.toCreateQuoteInput() = CreateQuoteInput(
   movingDate = movingDate ?: LocalDate.fromEpochDays(1230),
   numberCoInsured = numberCoInsured ?: 2,
   squareMeters = squareMeters?.toInt() ?: 32,
-  apartmentOwnerType = ApartmentOwnerType.RENT,
+  apartmentOwnerType = apartmentOwnerType ?: ApartmentOwnerType.RENT,
   isStudent = false,
 )

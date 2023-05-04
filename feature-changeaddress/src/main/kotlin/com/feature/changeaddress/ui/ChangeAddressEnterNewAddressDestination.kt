@@ -1,5 +1,6 @@
 package com.example.feature.changeaddress.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -39,6 +40,7 @@ internal fun ChangeAddressEnterNewDestination(
   viewModel: ChangeAddressViewModel,
   navigateBack: () -> Unit,
   onQuotes: (List<MoveQuote>) -> Unit,
+  onClickHousingType: () -> Unit,
 ) {
   val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -78,6 +80,12 @@ internal fun ChangeAddressEnterNewDestination(
             modifier = Modifier.fillMaxWidth(),
           )
           Spacer(modifier = Modifier.padding(bottom = 154.dp))
+          Text(
+            text = "Bostadstyp",
+            modifier = Modifier.clickable {
+              onClickHousingType()
+            },
+          )
           TextField(
             value = uiState.street ?: "",
             label = {
