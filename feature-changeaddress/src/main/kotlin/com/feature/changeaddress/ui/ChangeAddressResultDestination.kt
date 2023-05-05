@@ -6,7 +6,6 @@ import com.feature.changeaddress.ChangeAddressViewModel
 @Composable
 internal fun ChangeAddressResultDestination(
   viewModel: ChangeAddressViewModel,
-  navigateBack: Unit
+  navigateBack: Unit,
 ) {
-
 }

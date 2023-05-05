@@ -126,7 +126,6 @@ internal class ChangeAddressViewModel(
       )
     }
   }
-
 }
 
 private fun ChangeAddressUiState.toCreateQuoteInput() = CreateQuoteInput(

@@ -450,7 +450,9 @@ class HomeAdapter(
       }
     }
 
-    class ChangeAddress(parent: ViewGroup, val onStartMovingFlow: () -> Unit,) : ViewHolder(parent.inflate(R.layout.home_change_address_button)) {
+    class ChangeAddress(parent: ViewGroup, val onStartMovingFlow: () -> Unit) : ViewHolder(
+      parent.inflate(R.layout.home_change_address_button),
+    ) {
       private val binding by viewBinding(HomeChangeAddressButtonBinding::bind)
       override fun bind(
         data: HomeModel,

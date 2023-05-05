@@ -7,7 +7,7 @@ enum class ApartmentOwnerType {
   RENT, OWN
 }
 
-fun ApartmentOwnerType.toDisplayName() = when(this) {
+fun ApartmentOwnerType.toDisplayName() = when (this) {
   ApartmentOwnerType.RENT -> "Hyresrätt"
   ApartmentOwnerType.OWN -> "Bostadsrätt"
 }

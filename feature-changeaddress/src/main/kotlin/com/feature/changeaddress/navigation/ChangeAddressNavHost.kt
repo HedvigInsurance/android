@@ -24,7 +24,7 @@ internal fun ChangeAddressNavHost(
       density = density,
       navController = navController,
       navigateUp = navigateUp,
-      finish = finish
+      finish = finish,
     )
   }
 }
