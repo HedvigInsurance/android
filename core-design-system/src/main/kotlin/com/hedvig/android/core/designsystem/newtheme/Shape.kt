@@ -1,5 +1,6 @@
 package com.hedvig.android.core.designsystem.newtheme
 
+import android.graphics.PointF
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -34,47 +35,60 @@ val SquircleShape = object : Shape {
         min(size.height / 2, size.height / 2),
       )
       drawSquircle(size, atMostHalfSizeCornerRadius)
-      close()
     }
     return Outline.Generic(path)
   }
 
   private fun Path.drawSquircle(size: Size, cornerRadius: Float) {
-    moveTo(x = 0f, y = cornerRadius)
+    val topLeft = PointF(0f, 0f)
+    val topRight = PointF(size.width, 0f)
+    val bottomLeft = PointF(0f, size.height)
+    val bottomRight = PointF(size.width, size.height)
+
+    // The points are enumerated as a chain of points going around the shape clockwise
+    // Top side, left and right points.
+    val p0 = PointF(0f + cornerRadius, 0f)
+    val p1 = PointF(size.width - cornerRadius, 0f)
+
+    // Right side, top and bottom points.
+    val p2 = PointF(size.width, 0f + cornerRadius)
+    val p3 = PointF(size.width, size.height - cornerRadius)
+
+    // Bottom side, right and left points.
+    val p4 = PointF(size.width - cornerRadius, size.height)
+    val p5 = PointF(0f + cornerRadius, size.height)
+
+    // Right side, bottom and top points.
+    val p6 = PointF(0f, size.height - cornerRadius)
+    val p7 = PointF(0f, 0f + cornerRadius)
+
+    moveTo(p0)
+    lineTo(p1)
+    cubicTo(p2, topRight, topRight)
+    lineTo(p3)
+    cubicTo(p4, bottomRight, bottomRight)
+    lineTo(p5)
+    cubicTo(p6, bottomLeft, bottomLeft)
+    lineTo(p7)
+    cubicTo(p0, topLeft, topLeft)
+  }
+
+  private fun Path.moveTo(to: PointF) {
+    moveTo(x = to.x, y = to.y)
+  }
+
+  private fun Path.lineTo(to: PointF) {
+    lineTo(x = to.x, y = to.y)
+  }
+
+  private fun Path.cubicTo(to: PointF, controlPoint1: PointF, controlPoint2: PointF) {
     cubicTo(
-      x1 = 0f,
-      y1 = 0f,
-      x2 = 0f,
-      y2 = 0f,
-      x3 = cornerRadius,
-      y3 = 0f,
-    )
-    lineTo(x = size.width - cornerRadius, y = 0f)
-    cubicTo(
-      x1 = size.width,
-      y1 = 0f,
-      x2 = size.width,
-      y2 = 0f,
-      x3 = size.width,
-      y3 = cornerRadius,
-    )
-    lineTo(x = size.width, y = size.height - cornerRadius)
-    cubicTo(
-      x1 = size.width,
-      y1 = size.height,
-      x2 = size.width,
-      y2 = size.height,
-      x3 = size.width - cornerRadius,
-      y3 = size.height,
-    )
-    lineTo(x = cornerRadius, y = size.height)
-    cubicTo(
-      x1 = 0f,
-      y1 = size.height,
-      x2 = 0f,
-      y2 = size.height,
-      x3 = 0f,
-      y3 = size.height - cornerRadius,
+      x1 = controlPoint1.x,
+      y1 = controlPoint1.y,
+      x2 = controlPoint2.x,
+      y2 = controlPoint2.y,
+      x3 = to.x,
+      y3 = to.y,
     )
   }
 }
