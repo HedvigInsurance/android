@@ -1,4 +1,4 @@
-package com.example.feature.changeaddress
+package com.feature.changeaddress
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -22,14 +22,12 @@ class ChangeAddressActivity : AppCompatActivity() {
 
     setContent {
       HedvigTheme {
-        Box(Modifier.fillMaxSize()) {
-          ChangeAddressNavHost(
-            windowSizeClass = calculateWindowSizeClass(this@ChangeAddressActivity),
-            navController = rememberAnimatedNavController(),
-            navigateUp = { onSupportNavigateUp() },
-            finish = { finish() }
-          )
-        }
+        ChangeAddressNavHost(
+          windowSizeClass = calculateWindowSizeClass(this@ChangeAddressActivity),
+          navController = rememberAnimatedNavController(),
+          navigateUp = { onSupportNavigateUp() },
+          finish = { finish() },
+        )
       }
     }
   }

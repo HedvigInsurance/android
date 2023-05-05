@@ -20,5 +20,5 @@ data class ChangeAddressUiState(
   val isLoading: Boolean = true,
   val moveFromAddressId: AddressId? = null,
   val quotes: List<MoveQuote> = emptyList(),
-  val moveResult: MoveResult? = null,
+  val successfulMoveResult: MoveResult? = null,
 )
