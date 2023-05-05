@@ -53,7 +53,7 @@ internal fun NavGraphBuilder.changeAddressGraph(
       ChangeAddressSelectHousingTypeDestination(
         viewModel = viewModel,
         navigateBack = { navController.navigateUp() },
-        onSelectHousingType = { navController.navigateUp() },
+        onHousingTypeSelected = { navController.navigateUp() },
       )
     }
 

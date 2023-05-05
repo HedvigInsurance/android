@@ -1,6 +1,6 @@
 package com.feature.changeaddress
 
-import ApartmentOwnerType
+import HousingType
 import CreateQuoteInput
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -67,7 +67,7 @@ internal class ChangeAddressViewModel(
     _uiState.update { it.copy(movingDate = ValidatedInput(movingDate)) }
   }
 
-  fun onSelectHousingType(apartmentOwnerType: ApartmentOwnerType) {
+  fun onSelectHousingType(apartmentOwnerType: HousingType) {
     _uiState.update { it.copy(apartmentOwnerType = ValidatedInput(apartmentOwnerType)) }
   }
 

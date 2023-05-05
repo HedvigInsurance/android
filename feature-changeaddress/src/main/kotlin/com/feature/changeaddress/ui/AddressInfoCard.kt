@@ -20,6 +20,7 @@ import com.hedvig.android.core.designsystem.component.card.HedvigCard
 fun AddressInfoCard() {
   HedvigCard(
     colors = CardDefaults.cardColors(containerColor = Color(0xFFCFE5F2)),
+    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
   ) {
     Row(modifier = Modifier.padding(12.dp)) {
       Icon(
