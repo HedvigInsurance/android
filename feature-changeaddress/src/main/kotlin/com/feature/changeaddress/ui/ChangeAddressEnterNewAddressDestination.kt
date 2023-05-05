@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.feature.changeaddress.ChangeAddressUiState
 import com.feature.changeaddress.ChangeAddressViewModel
-import com.feature.changeaddress.data.MoveQuote
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 
@@ -39,7 +38,7 @@ import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 internal fun ChangeAddressEnterNewDestination(
   viewModel: ChangeAddressViewModel,
   navigateBack: () -> Unit,
-  onQuotes: (List<MoveQuote>) -> Unit,
+  onQuotes: () -> Unit,
   onClickHousingType: () -> Unit,
 ) {
   val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -47,8 +46,7 @@ internal fun ChangeAddressEnterNewDestination(
   val quotes = uiState.quotes
   LaunchedEffect(quotes) {
     if (quotes.isNotEmpty()) {
-      viewModel.onContinueClicked()
-      onQuotes(uiState.quotes)
+      onQuotes()
     }
   }
 
@@ -117,7 +115,6 @@ internal fun ChangeAddressEnterNewDestination(
             },
             onValueChange = { viewModel.onCoInsuredChanged(it.toInt()) },
           )
-
         }
       }
 
