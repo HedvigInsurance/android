@@ -64,10 +64,18 @@ internal fun ChangeAddressEnterNewDestination(
         val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
         TopAppBarWithBack(
           onClick = navigateBack,
-          title = "Ny address",
+          title = "",
           scrollBehavior = topAppBarScrollBehavior,
           colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
         )
+        Spacer(modifier = Modifier.padding(top = 48.dp))
+        Text(
+          text = "Fyll i din nya address",
+          style = MaterialTheme.typography.headlineSmall,
+          textAlign = TextAlign.Center,
+          modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(modifier = Modifier.padding(bottom = 114.dp))
         Column(
           Modifier
             .fillMaxSize()
@@ -79,14 +87,6 @@ internal fun ChangeAddressEnterNewDestination(
           if (uiState.isLoading) {
             CircularProgressIndicator()
           }
-          Spacer(modifier = Modifier.padding(top = 48.dp))
-          Text(
-            text = "Fyll i din nya address",
-            style = MaterialTheme.typography.headlineSmall,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth(),
-          )
-          Spacer(modifier = Modifier.padding(bottom = 114.dp))
           Text(
             text = uiState.apartmentOwnerType.input?.toDisplayName() ?: "Bostadstyp",
             modifier = Modifier

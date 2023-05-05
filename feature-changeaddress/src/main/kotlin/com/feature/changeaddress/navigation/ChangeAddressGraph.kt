@@ -23,6 +23,7 @@ internal fun NavGraphBuilder.changeAddressGraph(
   windowSizeClass: WindowSizeClass,
   density: Density,
   navController: NavHostController,
+  openChat: () -> Unit,
   navigateUp: () -> Boolean,
   finish: () -> Unit,
 ) {
@@ -64,6 +65,7 @@ internal fun NavGraphBuilder.changeAddressGraph(
       }
       ChangeAddressOfferDestination(
         viewModel = viewModel,
+        openChat = openChat,
         navigateBack = {
           viewModel.onQuotesCleared()
           navController.navigateUp()
