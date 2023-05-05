@@ -32,6 +32,7 @@ import com.feature.changeaddress.ChangeAddressUiState
 import com.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
+import com.hedvig.android.core.ui.error.ErrorDialog
 import toDisplayName
 
 @Composable
@@ -48,6 +49,13 @@ internal fun ChangeAddressEnterNewDestination(
     if (quotes.isNotEmpty()) {
       onQuotes()
     }
+  }
+
+  if (uiState.errorMessage != null) {
+    ErrorDialog(
+      message = uiState.errorMessage,
+      onDismiss = { viewModel.onErrorDialogDismissed() },
+    )
   }
 
   Surface(Modifier.fillMaxSize()) {

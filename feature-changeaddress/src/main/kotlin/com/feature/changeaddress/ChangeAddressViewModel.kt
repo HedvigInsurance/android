@@ -127,6 +127,10 @@ internal class ChangeAddressViewModel(
     }
   }
 
+  fun onErrorDialogDismissed() {
+    _uiState.update { it.copy(errorMessage = null) }
+  }
+
 }
 
 private fun ChangeAddressUiState.toCreateQuoteInput() = CreateQuoteInput(

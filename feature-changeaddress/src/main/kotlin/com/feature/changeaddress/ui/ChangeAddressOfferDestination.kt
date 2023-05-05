@@ -21,6 +21,7 @@ import com.hedvig.android.core.designsystem.component.button.LargeContainedButto
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
+import com.hedvig.android.core.ui.error.ErrorDialog
 import toDisplayName
 
 @Composable
@@ -39,6 +40,13 @@ internal fun ChangeAddressOfferDestination(
     if (moveResult != null) {
       onChangeAddressResult()
     }
+  }
+
+  if (uiState.errorMessage != null) {
+    ErrorDialog(
+      message = uiState.errorMessage,
+      onDismiss = { viewModel.onErrorDialogDismissed() },
+    )
   }
 
   Column(Modifier.fillMaxSize()) {
