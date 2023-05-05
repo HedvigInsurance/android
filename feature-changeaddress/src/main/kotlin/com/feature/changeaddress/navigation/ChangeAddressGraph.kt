@@ -8,7 +8,7 @@ import androidx.compose.ui.unit.Density
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import com.example.feature.changeaddress.ui.ChangeAddressEnterNewDestination
+import com.feature.changeaddress.ui.ChangeAddressEnterNewDestination
 import com.feature.changeaddress.ChangeAddressViewModel
 import com.feature.changeaddress.ui.ChangeAddressOfferDestination
 import com.feature.changeaddress.ui.ChangeAddressSelectHousingTypeDestination
@@ -17,7 +17,6 @@ import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.compose.typed.animatedNavigation
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
-import com.kiwi.navigationcompose.typed.popUpTo
 import org.koin.androidx.compose.koinViewModel
 
 internal fun NavGraphBuilder.changeAddressGraph(
