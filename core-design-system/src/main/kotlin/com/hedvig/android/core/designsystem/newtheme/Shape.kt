@@ -18,21 +18,19 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import java.lang.Float.min
 
-val SquircleShape = SquircleShape(27.dp) // 27 magic number, matches the figma file close enough
+// 27 magic number, matches the figma file close enough
+private val squircleRadius = 27.dp
 
-private fun SquircleShape(
-  cornerRadius: Dp,
-): Shape = object : Shape {
+val SquircleShape = object : Shape {
   override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
     val path = Path().apply {
       val atMostHalfSizeCornerRadius = min(
-        with(density) { cornerRadius.toPx() },
+        with(density) { squircleRadius.toPx() },
         min(size.height / 2, size.height / 2),
       )
       drawSquircle(size, atMostHalfSizeCornerRadius)
