@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.R
 import com.hedvig.android.core.designsystem.newtheme.SquircleShape
@@ -34,7 +35,7 @@ fun AddressInfoCard(modifier: Modifier) {
       )
       Spacer(modifier = Modifier.padding(start = 8.dp))
       Text(
-        text = "Hedvig täcker ditt gamla hem i 30 dagar efter att du flyttat.",
+        text = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT),
         style = MaterialTheme.typography.bodyMedium,
       )
     }

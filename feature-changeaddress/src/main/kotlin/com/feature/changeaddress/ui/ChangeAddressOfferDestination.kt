@@ -73,7 +73,7 @@ internal fun ChangeAddressOfferDestination(
     val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     TopAppBarWithBack(
       onClick = navigateBack,
-      title = "Ny address",
+      title = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_ENTER_NEW_ADDRESS_TITLE),
       scrollBehavior = topAppBarScrollBehavior,
     )
     Column(Modifier.verticalScroll(scrollState)) {
@@ -93,7 +93,9 @@ internal fun ChangeAddressOfferDestination(
           )
           Spacer(modifier = Modifier.padding(top = 16.dp))
           Text(
-            text = uiState.apartmentOwnerType.input?.toDisplayName() ?: "Okänd",
+            text = uiState.apartmentOwnerType.input?.toDisplayName()?.let {
+              stringResource(id = it)
+            } ?: "-",
             style = MaterialTheme.typography.titleMedium,
             fontSize = 18.sp,
             textAlign = TextAlign.Center,
@@ -101,14 +103,17 @@ internal fun ChangeAddressOfferDestination(
           )
           Spacer(modifier = Modifier.padding(top = 32.dp))
           Text(
-            text = quote.premium.toDisplayString() + "/mån",
+            text = stringResource(
+              id = hedvig.resources.R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL,
+              quote.premium.toDisplayString(),
+            ),
             style = MaterialTheme.typography.headlineLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(),
           )
           Spacer(modifier = Modifier.padding(top = 8.dp))
           Text(
-            text = uiState.movingDate.input?.toString() ?: "No moving date found",
+            text = uiState.movingDate.input?.toString() ?: "-",
             style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(),
@@ -117,7 +122,7 @@ internal fun ChangeAddressOfferDestination(
           LargeContainedButton(
             onClick = { viewModel.onAcceptQuote(moveIntentId) },
           ) {
-            Text(text = "Acceptera")
+            Text(text = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_ACCEPT_OFFER))
           }
         }
       }
@@ -136,29 +141,11 @@ internal fun ChangeAddressOfferDestination(
               .fillMaxWidth(),
           ) {
             Text(
-              text = "Address",
+              text = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_NEW_ADDRESS_LABEL),
               style = MaterialTheme.typography.bodyLarge,
             )
             Text(
-              text = uiState.street.input ?: "Not specified",
-              style = MaterialTheme.typography.bodyLarge,
-              color = MaterialTheme.colorScheme.secondary,
-            )
-          }
-          Divider(thickness = 1.dp, modifier = Modifier.padding(horizontal = 16.dp))
-
-          Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-              .padding(horizontal = 16.dp, vertical = 21.dp)
-              .fillMaxWidth(),
-          ) {
-            Text(
-              text = "Postal code",
-              style = MaterialTheme.typography.bodyLarge,
-            )
-            Text(
-              text = uiState.postalCode.input ?: "Not specified",
+              text = uiState.street.input ?: "-",
               style = MaterialTheme.typography.bodyLarge,
               color = MaterialTheme.colorScheme.secondary,
             )
@@ -172,7 +159,25 @@ internal fun ChangeAddressOfferDestination(
               .fillMaxWidth(),
           ) {
             Text(
-              text = "Insured people",
+              text = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL),
+              style = MaterialTheme.typography.bodyLarge,
+            )
+            Text(
+              text = uiState.postalCode.input ?: "-",
+              style = MaterialTheme.typography.bodyLarge,
+              color = MaterialTheme.colorScheme.secondary,
+            )
+          }
+          Divider(thickness = 1.dp, modifier = Modifier.padding(horizontal = 16.dp))
+
+          Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+              .padding(horizontal = 16.dp, vertical = 21.dp)
+              .fillMaxWidth(),
+          ) {
+            Text(
+              text = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_CO_INSURED_LABEL),
               style = MaterialTheme.typography.bodyLarge,
             )
             Text(
@@ -190,11 +195,13 @@ internal fun ChangeAddressOfferDestination(
               .fillMaxWidth(),
           ) {
             Text(
-              text = "Type",
+              text = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_HOUSING_TYPE_LABEL),
               style = MaterialTheme.typography.bodyLarge,
             )
             Text(
-              text = uiState.apartmentOwnerType.input?.toDisplayName() ?: "Not specified",
+              text = uiState.apartmentOwnerType.input?.toDisplayName()?.let {
+                stringResource(id = it)
+              } ?: "-",
               style = MaterialTheme.typography.bodyLarge,
               color = MaterialTheme.colorScheme.secondary,
             )
@@ -208,11 +215,11 @@ internal fun ChangeAddressOfferDestination(
               .fillMaxWidth(),
           ) {
             Text(
-              text = "Size",
+              text = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_NEW_LIVING_SPACE_LABEL),
               style = MaterialTheme.typography.bodyLarge,
             )
             Text(
-              text = uiState.squareMeters.input ?: "Not specified",
+              text = uiState.squareMeters.input ?: "-",
               style = MaterialTheme.typography.bodyLarge,
               color = MaterialTheme.colorScheme.secondary,
             )
@@ -227,7 +234,7 @@ internal fun ChangeAddressOfferDestination(
         modifier = Modifier.align(CenterHorizontally),
       ) {
         Text(
-          text = "Ändra",
+          text = stringResource(id = hedvig.resources.R.string.EDIT_BUTTON_LABEL),
           color = MaterialTheme.colorScheme.tertiary,
           style = MaterialTheme.typography.bodyLarge,
         )

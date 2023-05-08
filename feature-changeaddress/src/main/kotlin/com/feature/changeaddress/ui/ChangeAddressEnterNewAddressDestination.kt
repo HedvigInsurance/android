@@ -1,7 +1,6 @@
 package com.feature.changeaddress.ui
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -25,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -33,6 +33,7 @@ import com.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.error.ErrorDialog
+import hedvig.resources.R
 import toDisplayName
 
 @Composable
@@ -69,7 +70,7 @@ internal fun ChangeAddressEnterNewDestination(
       )
       Spacer(modifier = Modifier.padding(top = 48.dp))
       Text(
-        text = "Fyll i din nya address",
+        text = stringResource(id = R.string.CHANGE_ADDRESS_ENTER_NEW_ADDRESS_TITLE),
         style = MaterialTheme.typography.headlineSmall,
         textAlign = TextAlign.Center,
         modifier = Modifier.fillMaxWidth(),
@@ -86,7 +87,12 @@ internal fun ChangeAddressEnterNewDestination(
           CircularProgressIndicator()
         }
         Text(
-          text = uiState.apartmentOwnerType.input?.toDisplayName() ?: "Bostadstyp",
+          text = stringResource(
+            id = uiState.apartmentOwnerType
+              .input
+              ?.toDisplayName()
+              ?: R.string.CHANGE_ADDRESS_HOUSING_TYPE_LABEL,
+          ),
           modifier = Modifier
             .clickable {
               onClickHousingType()
@@ -95,14 +101,18 @@ internal fun ChangeAddressEnterNewDestination(
         )
         TextField(
           value = uiState.street.input ?: "",
-          isError = uiState.street.errorMessage != null,
+          isError = uiState.street.errorMessageRes != null,
           supportingText = {
-            if (uiState.street.errorMessage != null) {
-              Text(text = uiState.street.errorMessage ?: "")
+            if (uiState.street.errorMessageRes != null) {
+              Text(
+                text = uiState.street.errorMessageRes
+                  ?.let { stringResource(id = it) }
+                  ?: "",
+              )
             }
           },
           label = {
-            Text(text = "Address")
+            Text(text = stringResource(id = R.string.CHANGE_ADDRESS_NEW_ADDRESS_LABEL))
           },
           onValueChange = { viewModel.onStreetChanged(it) },
           modifier = Modifier.fillMaxWidth(),
@@ -110,14 +120,19 @@ internal fun ChangeAddressEnterNewDestination(
 
         TextField(
           value = uiState.postalCode.input ?: "",
-          isError = uiState.postalCode.errorMessage != null,
+          isError = uiState.postalCode.errorMessageRes != null,
           supportingText = {
-            if (uiState.postalCode.errorMessage != null) {
-              Text(text = uiState.postalCode.errorMessage ?: "")
+            if (uiState.postalCode.errorMessageRes != null) {
+              Text(
+                text = uiState.postalCode.errorMessageRes
+                  ?.let { stringResource(id = it) }
+                  ?: "",
+              )
             }
           },
           label = {
-            Text(text = "Postkod")
+            Text(text = stringResource(id = R.string.CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL))
+
           },
           onValueChange = { viewModel.onPostalCodeChanged(it) },
           modifier = Modifier.fillMaxWidth(),
@@ -125,14 +140,18 @@ internal fun ChangeAddressEnterNewDestination(
 
         TextField(
           value = uiState.squareMeters.input ?: "",
-          isError = uiState.squareMeters.errorMessage != null,
+          isError = uiState.squareMeters.errorMessageRes != null,
           supportingText = {
-            if (uiState.squareMeters.errorMessage != null) {
-              Text(text = uiState.squareMeters.errorMessage ?: "")
+            if (uiState.squareMeters.errorMessageRes != null) {
+              Text(
+                text = uiState.squareMeters.errorMessageRes
+                  ?.let { stringResource(id = it) }
+                  ?: "",
+              )
             }
           },
           label = {
-            Text(text = "Boyta")
+            Text(text = stringResource(id = R.string.CHANGE_ADDRESS_NEW_LIVING_SPACE_LABEL))
           },
           onValueChange = { viewModel.onSquareMetersChanged(it) },
           modifier = Modifier.fillMaxWidth(),
@@ -140,14 +159,18 @@ internal fun ChangeAddressEnterNewDestination(
 
         TextField(
           value = uiState.numberCoInsured.input.toString(),
-          isError = uiState.numberCoInsured.errorMessage != null,
+          isError = uiState.numberCoInsured.errorMessageRes != null,
           supportingText = {
-            if (uiState.numberCoInsured.errorMessage != null) {
-              Text(text = uiState.numberCoInsured.errorMessage ?: "")
+            if (uiState.numberCoInsured.errorMessageRes != null) {
+              Text(
+                text = uiState.numberCoInsured.errorMessageRes
+                  ?.let { stringResource(id = it) }
+                  ?: "",
+              )
             }
           },
           label = {
-            Text(text = "Antal personer")
+            Text(text = stringResource(id = R.string.CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL))
           },
           onValueChange = { viewModel.onCoInsuredChanged(it.toInt()) },
           modifier = Modifier.fillMaxWidth(),
@@ -165,7 +188,7 @@ internal fun ChangeAddressEnterNewDestination(
           onClick = { viewModel.onSaveNewAddress() },
           modifier = Modifier.padding(horizontal = 16.dp),
         ) {
-          Text(text = "Spara och fortsätt")
+          Text(text = stringResource(id = R.string.SAVE_AND_CONTINUE_BUTTON_LABEL))
         }
       }
     }

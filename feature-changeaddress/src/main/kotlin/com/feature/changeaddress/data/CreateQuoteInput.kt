@@ -3,15 +3,16 @@ import com.feature.changeaddress.data.AddressInput
 import com.feature.changeaddress.data.MoveIntentId
 import kotlinx.datetime.LocalDate
 
+
 enum class HousingType {
   APARTMENT_RENT, APARTMENT_OWN, VILLA
 }
 
 
 fun HousingType.toDisplayName() = when (this) {
-  HousingType.APARTMENT_RENT -> "Hyresrätt"
-  HousingType.APARTMENT_OWN -> "Bostadsrätt"
-  HousingType.VILLA -> "Villa"
+  HousingType.APARTMENT_RENT -> hedvig.resources.R.string.CHANGE_ADDRESS_APARTMENT_RENT_LABEL
+  HousingType.APARTMENT_OWN -> hedvig.resources.R.string.CHANGE_ADDRESS_APARTMENT_OWN_LABEL
+  HousingType.VILLA -> hedvig.resources.R.string.CHANGE_ADDRESS_VILLA_LABEL
 }
 
 data class CreateQuoteInput(

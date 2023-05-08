@@ -1,6 +1,7 @@
 package com.feature.changeaddress
 
 import HousingType
+import androidx.annotation.StringRes
 import com.feature.changeaddress.data.AddressId
 import com.feature.changeaddress.data.MoveIntentId
 import com.feature.changeaddress.data.MoveQuote
@@ -24,54 +25,54 @@ data class ChangeAddressUiState(
 ) {
   val isValid: Boolean
     get() {
-      return street.errorMessage == null &&
-        postalCode.errorMessage == null &&
-        squareMeters.errorMessage == null &&
-        movingDate.errorMessage == null &&
-        numberCoInsured.errorMessage == null &&
-        apartmentOwnerType.errorMessage == null
+      return street.errorMessageRes == null &&
+        postalCode.errorMessageRes == null &&
+        squareMeters.errorMessageRes == null &&
+        movingDate.errorMessageRes == null &&
+        numberCoInsured.errorMessageRes == null &&
+        apartmentOwnerType.errorMessageRes == null
     }
 
   fun validateInput(): ChangeAddressUiState {
     return copy(
       street = street.copy(
-        errorMessage = if (!street.isPresent || street.input?.isBlank() == true) {
-          "Please enter a street"
+        errorMessageRes = if (!street.isPresent || street.input?.isBlank() == true) {
+          hedvig.resources.R.string.CHANGE_ADDRESS_STREET_ERROR
         } else {
           null
         },
       ),
       postalCode = postalCode.copy(
-        errorMessage = if (!postalCode.isPresent || postalCode.input?.isBlank() == true) {
-          "Please enter a postal code"
+        errorMessageRes = if (!postalCode.isPresent || postalCode.input?.isBlank() == true) {
+          hedvig.resources.R.string.CHANGE_ADDRESS_POSTAL_CODE_ERROR
         } else {
           null
         },
       ),
       squareMeters = squareMeters.copy(
-        errorMessage = if (!squareMeters.isPresent || squareMeters.input?.isBlank() == true) {
-          "Please enter square meters"
+        errorMessageRes = if (!squareMeters.isPresent || squareMeters.input?.isBlank() == true) {
+          hedvig.resources.R.string.CHANGE_ADDRESS_LIVING_SPACE_ERROR
         } else {
           null
         },
       ),
       movingDate = movingDate.copy(
-        errorMessage = if (!movingDate.isPresent) {
-          "Please select a moving date"
+        errorMessageRes = if (!movingDate.isPresent) {
+          hedvig.resources.R.string.CHANGE_ADDRESS_MOVING_DATE_ERROR
         } else {
           null
         },
       ),
       numberCoInsured = numberCoInsured.copy(
-        errorMessage = if (!numberCoInsured.isPresent) {
-          "Please select number of co-insured"
+        errorMessageRes = if (!numberCoInsured.isPresent) {
+          hedvig.resources.R.string.CHANGE_ADDRESS_CO_INSURED_ERROR
         } else {
           null
         },
       ),
       apartmentOwnerType = apartmentOwnerType.copy(
-        errorMessage = if (!apartmentOwnerType.isPresent) {
-          "Please select owner type"
+        errorMessageRes = if (!apartmentOwnerType.isPresent) {
+          hedvig.resources.R.string.CHANGE_ADDRESS_HOUSING_TYPE_ERROR
         } else {
           null
         },
@@ -82,7 +83,8 @@ data class ChangeAddressUiState(
 
 data class ValidatedInput<T>(
   val input: T,
-  val errorMessage: String? = null,
+  @StringRes
+  val errorMessageRes: Int? = null,
 ) {
   val isPresent: Boolean
     get() = input != null
