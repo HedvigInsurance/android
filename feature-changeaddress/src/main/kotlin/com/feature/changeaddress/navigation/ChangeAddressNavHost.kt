@@ -26,7 +26,7 @@ internal fun ChangeAddressNavHost(
       navController = navController,
       openChat = openChat,
       navigateUp = navigateUp,
-      finish = finish
+      finish = finish,
     )
   }
 }

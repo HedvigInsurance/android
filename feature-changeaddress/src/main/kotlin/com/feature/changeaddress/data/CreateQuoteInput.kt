@@ -7,6 +7,7 @@ enum class HousingType {
   APARTMENT_RENT, APARTMENT_OWN, VILLA
 }
 
+
 fun HousingType.toDisplayName() = when (this) {
   HousingType.APARTMENT_RENT -> "Hyresrätt"
   HousingType.APARTMENT_OWN -> "Bostadsrätt"

@@ -1,7 +1,6 @@
 package com.feature.changeaddress
 
 import ApartmentOwnerType
-import androidx.annotation.NonNull
 import com.feature.changeaddress.data.AddressId
 import com.feature.changeaddress.data.MoveIntentId
 import com.feature.changeaddress.data.MoveQuote
@@ -38,32 +37,44 @@ data class ChangeAddressUiState(
       street = street.copy(
         errorMessage = if (!street.isPresent || street.input?.isBlank() == true) {
           "Please enter a street"
-        } else null,
+        } else {
+          null
+        },
       ),
       postalCode = postalCode.copy(
         errorMessage = if (!postalCode.isPresent || postalCode.input?.isBlank() == true) {
           "Please enter a postal code"
-        } else null,
+        } else {
+          null
+        },
       ),
       squareMeters = squareMeters.copy(
         errorMessage = if (!squareMeters.isPresent || squareMeters.input?.isBlank() == true) {
           "Please enter square meters"
-        } else null,
+        } else {
+          null
+        },
       ),
       movingDate = movingDate.copy(
         errorMessage = if (!movingDate.isPresent) {
           "Please select a moving date"
-        } else null,
+        } else {
+          null
+        },
       ),
       numberCoInsured = numberCoInsured.copy(
         errorMessage = if (!numberCoInsured.isPresent) {
           "Please select number of co-insured"
-        } else null,
+        } else {
+          null
+        },
       ),
       apartmentOwnerType = apartmentOwnerType.copy(
         errorMessage = if (!apartmentOwnerType.isPresent) {
           "Please select owner type"
-        } else null,
+        } else {
+          null
+        },
       ),
     )
   }

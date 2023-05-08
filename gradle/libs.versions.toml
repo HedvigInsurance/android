@@ -7,7 +7,7 @@ minSdkVersion = "23"
 # gradlePlugin versions
 androidGradlePlugin = "8.0.0"
 androidRemoveUnusedResourcesPlugin = "1.4.0"
-apollo = "3.7.4"
+apollo = "3.8.1"
 cacheFix = "2.7.1"
 crashlytics = "2.9.5"
 datadogPlugin = "1.8.1"
