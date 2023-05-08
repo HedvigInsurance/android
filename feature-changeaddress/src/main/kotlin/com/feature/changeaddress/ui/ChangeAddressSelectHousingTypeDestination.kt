@@ -35,6 +35,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.feature.changeaddress.ChangeAddressUiState
 import com.feature.changeaddress.ChangeAddressViewModel
@@ -79,11 +80,11 @@ internal fun ChangeAddressSelectHousingTypeDestination(
           .verticalScroll(rememberScrollState())
           .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
       ) {
-        HousingType.VILLA.radiobuttonRow(viewModel, selectedHousingType)
+        HousingType.VILLA.RadiobuttonRow(viewModel, selectedHousingType)
         Spacer(modifier = Modifier.padding(top = 8.dp))
-        HousingType.APARTMENT_OWN.radiobuttonRow(viewModel, selectedHousingType)
+        HousingType.APARTMENT_OWN.RadiobuttonRow(viewModel, selectedHousingType)
         Spacer(modifier = Modifier.padding(top = 8.dp))
-        HousingType.APARTMENT_RENT.radiobuttonRow(viewModel, selectedHousingType)
+        HousingType.APARTMENT_RENT.RadiobuttonRow(viewModel, selectedHousingType)
         Spacer(modifier = Modifier.padding(top = 8.dp))
         AddressInfoCard(modifier = Modifier.padding(horizontal = 16.dp))
         Spacer(modifier = Modifier.padding(top = 8.dp))
@@ -101,7 +102,7 @@ internal fun ChangeAddressSelectHousingTypeDestination(
 }
 
 @Composable
-private fun HousingType.radiobuttonRow(
+private fun HousingType.RadiobuttonRow(
   viewModel: ChangeAddressViewModel,
   selectedHousingType: ValidatedInput<HousingType?>,
 ) {
@@ -127,15 +128,16 @@ private fun HousingType.radiobuttonRow(
     )
     Spacer(modifier = Modifier.padding(12.dp))
     Text(
-      text = stringResource(this@radiobuttonRow.toDisplayName()),
+      text = stringResource(this@RadiobuttonRow.toDisplayName()),
       textAlign = TextAlign.Center,
+      fontSize = 18.sp,
       modifier = Modifier.fillMaxHeight(),
     )
     Spacer(modifier = Modifier.weight(1f))
     RadioButton(
-      selected = selectedHousingType.input == this@radiobuttonRow,
+      selected = selectedHousingType.input == this@RadiobuttonRow,
       onClick = {
-        viewModel.onSelectHousingType(this@radiobuttonRow)
+        viewModel.onSelectHousingType(this@RadiobuttonRow)
       },
     )
   }

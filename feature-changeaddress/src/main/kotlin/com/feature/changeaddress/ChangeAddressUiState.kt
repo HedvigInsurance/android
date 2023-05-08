@@ -2,6 +2,8 @@ package com.feature.changeaddress
 
 import HousingType
 import androidx.annotation.StringRes
+import androidx.compose.material3.DatePickerState
+import androidx.compose.material3.DisplayMode
 import com.feature.changeaddress.data.AddressId
 import com.feature.changeaddress.data.MoveIntentId
 import com.feature.changeaddress.data.MoveQuote
@@ -13,7 +15,7 @@ data class ChangeAddressUiState(
   val street: ValidatedInput<String?> = ValidatedInput(null),
   val postalCode: ValidatedInput<String?> = ValidatedInput(null),
   val squareMeters: ValidatedInput<String?> = ValidatedInput(null),
-  val movingDate: ValidatedInput<LocalDate?> = ValidatedInput(LocalDate(2023, 6, 1)),
+  val movingDate: ValidatedInput<LocalDate?> = ValidatedInput(null),
   val numberCoInsured: ValidatedInput<Int?> = ValidatedInput(null),
   val apartmentOwnerType: ValidatedInput<HousingType?> = ValidatedInput(null),
   val moveRange: ClosedRange<LocalDate>? = null,
@@ -23,6 +25,14 @@ data class ChangeAddressUiState(
   val quotes: List<MoveQuote> = emptyList(),
   val successfulMoveResult: MoveResult? = null,
 ) {
+
+  val datePickerState: DatePickerState = DatePickerState(
+    initialSelectedDateMillis = null,
+    initialDisplayedMonthMillis = null,
+    yearRange = 2023..2054,
+    initialDisplayMode = DisplayMode.Picker,
+  )
+
   val isValid: Boolean
     get() {
       return street.errorMessageRes == null &&
