@@ -1,5 +1,5 @@
 package com.feature.changeaddress.data
 
 data class MoveResult(
-  val addressId: AddressId
+  val addressId: AddressId,
 )

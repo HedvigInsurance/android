@@ -19,6 +19,7 @@ android {
 }
 
 apollo {
+  generateSourcesDuringGradleSync.set(false)
   service("giraffe") {
     introspection {
       endpointUrl.set("https://graphql.dev.hedvigit.com/graphql")

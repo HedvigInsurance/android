@@ -2,7 +2,7 @@ package com.feature.changeaddress.data
 
 import CreateQuoteInput
 import arrow.core.Either
-import arrow.core.continuations.either
+import arrow.core.raise.either
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.Optional
 import com.hedvig.android.apollo.safeExecute
@@ -39,8 +39,8 @@ internal class NetworkChangeAddressRepository(
 
       when {
         moveIntent != null -> moveIntent.toMoveIntent()
-        userError != null -> shift(ErrorMessage(userError.message))
-        else -> shift(ErrorMessage("No data found in MoveIntent"))
+        userError != null -> raise(ErrorMessage(userError.message))
+        else -> raise(ErrorMessage("No data found in MoveIntent"))
       }
     }
   }
@@ -85,9 +85,9 @@ internal class NetworkChangeAddressRepository(
       val userError = result.userError
 
       when {
-        userError != null -> shift(ErrorMessage(userError.message))
+        userError != null -> raise(ErrorMessage(userError.message))
         moveIntent != null -> moveIntent.toMoveQuotes()
-        else -> shift(ErrorMessage("No data found in MoveIntent"))
+        else -> raise(ErrorMessage("No data found in MoveIntent"))
       }
     }
   }
@@ -105,13 +105,12 @@ internal class NetworkChangeAddressRepository(
       val userError = result.userError
 
       when {
-        userError != null -> shift(ErrorMessage(userError.message))
+        userError != null -> raise(ErrorMessage(userError.message))
         moveIntent != null -> moveIntent.toMoveResult()
-        else -> shift(ErrorMessage("No data found in MoveIntent"))
+        else -> raise(ErrorMessage("No data found in MoveIntent"))
       }
     }
   }
-
 }
 
 private fun MoveIntentCreateMutation.Data.MoveIntentCreate.MoveIntent.toMoveIntent() = MoveIntent(

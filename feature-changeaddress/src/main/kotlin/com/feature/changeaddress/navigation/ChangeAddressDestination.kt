@@ -21,4 +21,3 @@ internal sealed interface ChangeAddressDestination : Destination {
   @Serializable
   object AddressResult : ChangeAddressDestination
 }
-
