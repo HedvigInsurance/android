@@ -140,7 +140,10 @@ private fun MoveIntentRequestMutation.Data.MoveIntentRequest.MoveIntent.toMoveQu
       street = quote.address.street,
     ),
     numberCoInsured = quote.numberCoInsured,
-    premium = quote.premium.amount,
+    premium = Premium(
+      amount = quote.premium.amount,
+      currencyCode = quote.premium.currencyCode,
+    ),
     startDate = quote.startDate,
     termsVersion = quote.termsVersion.id,
   )
