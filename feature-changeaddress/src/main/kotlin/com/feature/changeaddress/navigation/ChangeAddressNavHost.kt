@@ -11,6 +11,7 @@ import com.kiwi.navigationcompose.typed.createRoutePattern
 internal fun ChangeAddressNavHost(
   windowSizeClass: WindowSizeClass,
   navController: NavHostController,
+  openChat: () -> Unit,
   navigateUp: () -> Boolean,
   finish: () -> Unit,
 ) {
@@ -23,6 +24,7 @@ internal fun ChangeAddressNavHost(
       windowSizeClass = windowSizeClass,
       density = density,
       navController = navController,
+      openChat = openChat,
       navigateUp = navigateUp,
       finish = finish,
     )

@@ -42,7 +42,7 @@ internal fun ChangeAddressSelectHousingTypeDestination(
       val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
       TopAppBarWithBack(
         onClick = navigateBack,
-        title = "Ny address",
+        title = "",
         scrollBehavior = topAppBarScrollBehavior,
         colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
       )
