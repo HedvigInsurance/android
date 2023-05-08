@@ -1,6 +1,6 @@
 package com.feature.changeaddress
 
-import ApartmentOwnerType
+import HousingType
 import com.feature.changeaddress.data.AddressId
 import com.feature.changeaddress.data.MoveIntentId
 import com.feature.changeaddress.data.MoveQuote
@@ -14,7 +14,7 @@ data class ChangeAddressUiState(
   val squareMeters: ValidatedInput<String?> = ValidatedInput(null),
   val movingDate: ValidatedInput<LocalDate?> = ValidatedInput(LocalDate(2023, 6, 1)),
   val numberCoInsured: ValidatedInput<Int?> = ValidatedInput(null),
-  val apartmentOwnerType: ValidatedInput<ApartmentOwnerType?> = ValidatedInput(null),
+  val apartmentOwnerType: ValidatedInput<HousingType?> = ValidatedInput(null),
   val moveRange: ClosedRange<LocalDate>? = null,
   val errorMessage: String? = null,
   val isLoading: Boolean = true,
