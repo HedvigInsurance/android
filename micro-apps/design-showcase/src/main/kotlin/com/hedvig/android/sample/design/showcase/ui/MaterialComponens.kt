@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.sample.design.showcase.ui.hedviguikit.HTextField
 import com.hedvig.android.sample.design.showcase.ui.m2.components.M2Buttons
 import com.hedvig.android.sample.design.showcase.ui.m2.components.M2Cards
 import com.hedvig.android.sample.design.showcase.ui.m2.components.M2Checkbox
@@ -49,7 +50,7 @@ import com.hedvig.android.sample.design.showcase.ui.m3.components.M3TextFields
 import com.hedvig.android.sample.design.showcase.ui.m3.components.M3TopAppBars
 
 @Composable
-fun MaterialComponents(windowSizeClass: WindowSizeClass) {
+internal fun MaterialComponents(windowSizeClass: WindowSizeClass) {
   if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded) {
     BothThemes()
   } else {
@@ -73,30 +74,37 @@ private fun BothThemes() {
 
 @Composable
 private fun ThemeSelection() {
-  var isM3: Boolean? by remember { mutableStateOf(null) }
-  when (isM3) {
-    true -> {
-      BackHandler { isM3 = null }
-      M3()
-    }
-
-    false -> {
-      BackHandler { isM3 = null }
+  var showM2: Boolean by remember { mutableStateOf(false) }
+  var showM3: Boolean by remember { mutableStateOf(false) }
+  var showHedvigUiKit: Boolean by remember { mutableStateOf(true) }
+  when {
+    showM2 -> {
+      BackHandler { showM2 = false }
       M2()
     }
-
-    null -> {
+    showM3 -> {
+      BackHandler { showM3 = false }
+      M3()
+    }
+    showHedvigUiKit -> {
+      BackHandler { showHedvigUiKit = false }
+      HedvigUiKit()
+    }
+    else -> {
       Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
       ) {
         Surface {
           Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            Button(onClick = { isM3 = false }) {
+            Button(onClick = { showM2 = true }) {
               Text("M2")
             }
-            Button(onClick = { isM3 = true }) {
+            Button(onClick = { showM3 = true }) {
               Text("M3")
+            }
+            Button(onClick = { showHedvigUiKit = true }) {
+              Text("Hedvig UI Kit")
             }
           }
         }
@@ -147,7 +155,7 @@ private fun M3() {
 }
 
 @Suppress("FunctionName")
-fun LazyListScope.M2LightAndDarkItem(content: @Composable () -> Unit) {
+private fun LazyListScope.M2LightAndDarkItem(content: @Composable () -> Unit) {
   item {
     Row(Modifier.fillMaxWidth()) {
       Box(Modifier.weight(1f)) {
@@ -169,7 +177,7 @@ fun LazyListScope.M2LightAndDarkItem(content: @Composable () -> Unit) {
 }
 
 @Suppress("FunctionName")
-fun LazyListScope.LightAndDarkItem(content: @Composable () -> Unit) {
+private fun LazyListScope.LightAndDarkItem(content: @Composable () -> Unit) {
   item {
     Row(Modifier.fillMaxWidth()) {
       Box(Modifier.weight(1f)) {
@@ -188,4 +196,9 @@ fun LazyListScope.LightAndDarkItem(content: @Composable () -> Unit) {
       }
     }
   }
+}
+
+@Composable
+private fun HedvigUiKit() {
+  HTextField()
 }
