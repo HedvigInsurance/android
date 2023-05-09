@@ -49,7 +49,7 @@ internal fun ChangeAddressOfferDestination(
   onChangeAddressResult: () -> Unit,
 ) {
   val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
-  val quote = uiState.quotes.firstOrNull() ?: throw IllegalArgumentException("No quote found!")
+  val quotes = uiState.quotes
   val moveIntentId = uiState.moveIntentId ?: throw IllegalArgumentException("No moveIntentId found!")
 
   val moveResult = uiState.successfulMoveResult
@@ -73,58 +73,69 @@ internal fun ChangeAddressOfferDestination(
     val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     TopAppBarWithBack(
       onClick = navigateBack,
-      title = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_ENTER_NEW_ADDRESS_TITLE),
+      title = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_ACCEPT_OFFER),
       scrollBehavior = topAppBarScrollBehavior,
     )
+
     Column(Modifier.verticalScroll(scrollState)) {
-      Spacer(Modifier.padding(top = 38.dp))
-      HedvigCard(
-        elevation = HedvigCardElevation.Elevated(2.dp),
-        modifier = Modifier.padding(horizontal = 16.dp),
-      ) {
-        Column(Modifier.padding(16.dp)) {
-          Spacer(modifier = Modifier.padding(top = 48.dp))
-          Image(
-            painter = painterResource(id = R.drawable.ic_pillow),
-            contentDescription = "",
-            modifier = Modifier
-              .size(96.dp)
-              .align(CenterHorizontally),
-          )
-          Spacer(modifier = Modifier.padding(top = 16.dp))
-          Text(
-            text = uiState.housingType.input?.displayNameResource()?.let {
-              stringResource(id = it)
-            } ?: "-",
-            style = MaterialTheme.typography.titleMedium,
-            fontSize = 18.sp,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth(),
-          )
-          Spacer(modifier = Modifier.padding(top = 32.dp))
-          Text(
-            text = stringResource(
-              id = hedvig.resources.R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL,
-              quote.premium.toDisplayString(),
-            ),
-            style = MaterialTheme.typography.headlineLarge,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth(),
-          )
-          Spacer(modifier = Modifier.padding(top = 8.dp))
-          Text(
-            text = uiState.movingDate.input?.toString() ?: "-",
-            style = MaterialTheme.typography.headlineMedium,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth(),
-          )
-          Spacer(modifier = Modifier.padding(top = 6.dp))
-          LargeContainedButton(
-            onClick = { viewModel.onAcceptQuote(moveIntentId) },
-          ) {
-            Text(text = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_ACCEPT_OFFER))
+
+      Spacer(modifier = Modifier.padding(bottom = 58.dp))
+
+      Text(
+        text = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_ACCEPT_QUOTES_TITLE),
+        style = MaterialTheme.typography.headlineSmall,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.fillMaxWidth(),
+      )
+
+      Spacer(modifier = Modifier.padding(bottom = 64.dp))
+
+      quotes.map { quote ->
+        HedvigCard(
+          elevation = HedvigCardElevation.Elevated(2.dp),
+          modifier = Modifier.padding(horizontal = 16.dp),
+        ) {
+          Column(Modifier.padding(16.dp)) {
+            Spacer(modifier = Modifier.padding(top = 48.dp))
+            Image(
+              painter = painterResource(id = R.drawable.ic_pillow),
+              contentDescription = "",
+              modifier = Modifier
+                .size(96.dp)
+                .align(CenterHorizontally),
+            )
+            Spacer(modifier = Modifier.padding(top = 16.dp))
+            Text(
+              text = uiState.housingType.input?.displayNameResource()?.let {
+                stringResource(id = it)
+              } ?: "-",
+              style = MaterialTheme.typography.titleMedium,
+              fontSize = 18.sp,
+              textAlign = TextAlign.Center,
+              modifier = Modifier.fillMaxWidth(),
+            )
+            Spacer(modifier = Modifier.padding(top = 32.dp))
+            Text(
+              text = stringResource(
+                id = hedvig.resources.R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL,
+                quote.premium.toDisplayString(),
+              ),
+              style = MaterialTheme.typography.headlineLarge,
+              textAlign = TextAlign.Center,
+              modifier = Modifier.fillMaxWidth(),
+            )
           }
         }
+      }
+
+      Spacer(modifier = Modifier.padding(top = 14.dp))
+      AddressInfoCard(modifier = Modifier.padding(horizontal = 16.dp))
+      Spacer(modifier = Modifier.padding(bottom = 6.dp))
+      LargeContainedButton(
+        onClick = { viewModel.onAcceptQuote(moveIntentId) },
+        modifier = Modifier.padding(horizontal = 16.dp),
+      ) {
+        Text(text = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_ACCEPT_OFFER))
       }
 
       Spacer(modifier = Modifier.padding(top = 32.dp))
@@ -134,6 +145,24 @@ internal fun ChangeAddressOfferDestination(
         modifier = Modifier.padding(horizontal = 16.dp),
       ) {
         Column {
+          Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+              .padding(horizontal = 16.dp, vertical = 21.dp)
+              .fillMaxWidth(),
+          ) {
+            Text(
+              text = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_MOVING_DATE_LABEL),
+              style = MaterialTheme.typography.bodyLarge,
+            )
+            Text(
+              text = uiState.movingDate.input?.toString() ?: "-",
+              style = MaterialTheme.typography.bodyLarge,
+              color = MaterialTheme.colorScheme.secondary,
+            )
+          }
+          Divider(thickness = 1.dp, modifier = Modifier.padding(horizontal = 16.dp))
+
           Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier

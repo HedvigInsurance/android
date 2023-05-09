@@ -33,6 +33,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
@@ -255,8 +256,13 @@ private fun MovingDateButton(
     modifier = Modifier
       .padding(horizontal = 16.dp)
       .fillMaxWidth()
+      .clip(SquircleShape)
       .background(
-        color = Color(0xFFF0F0F0),
+        color = if (uiState.movingDate.errorMessageRes != null) {
+          Color(0xFFFBEDC5)
+        } else {
+          Color(0xFFF0F0F0)
+        },
         shape = SquircleShape,
       )
       .clickable {

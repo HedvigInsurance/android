@@ -38,7 +38,7 @@ internal fun NavGraphBuilder.changeAddressGraph(
       val viewModel = getViewModel(navController, it)
       ChangeAddressSelectHousingTypeDestination(
         viewModel = viewModel,
-        navigateBack = { navController.navigateUp() },
+        navigateBack = { finish() },
         onHousingTypeSelected = {
           navController.navigate(ChangeAddressDestination.EnterNewAddress)
         },
