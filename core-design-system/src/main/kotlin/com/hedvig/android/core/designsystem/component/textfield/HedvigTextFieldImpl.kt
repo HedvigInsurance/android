@@ -362,6 +362,7 @@ internal const val SupportingId = "Supporting"
 internal const val ContainerId = "Container"
 internal val ZeroConstraints = Constraints(0, 0, 0, 0)
 
+internal const val SignalAnimationDuration = 400L // TODO double check with web on animation specs
 internal const val AnimationDuration = 150
 private const val PlaceholderAnimationDuration = 83
 private const val PlaceholderAnimationDelayOrDuration = 67

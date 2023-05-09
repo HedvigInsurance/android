@@ -18,9 +18,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
@@ -32,6 +37,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.material3.toColor
 import com.hedvig.android.core.designsystem.material3.toShape
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.drop
 
 /**
  * Contains the default values used by [TextField]. For defaults used in [OutlinedTextField], see
@@ -69,6 +77,7 @@ object HedvigTextFieldDefaults {
    * it when focused. You can use it to draw a container for your custom text field based on
    * [HedvigTextFieldDefaults.DecorationBox]. [TextField] applies it automatically.
    *
+   * @param value the value of the textfield. Used to know when it changes, to animate the color changes.
    * @param enabled whether the text field is enabled
    * @param isError whether the text field's current value is in error
    * @param interactionSource the [InteractionSource] of this text field. Helps to determine if
@@ -78,6 +87,7 @@ object HedvigTextFieldDefaults {
    */
   @Composable
   fun ContainerBox(
+    value: String,
     enabled: Boolean,
     isError: Boolean,
     interactionSource: InteractionSource,
@@ -86,7 +96,7 @@ object HedvigTextFieldDefaults {
   ) {
     Box(
       Modifier
-        .background(colors.containerColor(enabled, isError, interactionSource).value, shape)
+        .background(colors.containerColor(value, enabled, isError, interactionSource).value, shape)
         .borderLine(enabled, isError, interactionSource, colors, shape),
     )
   }
@@ -239,6 +249,8 @@ object HedvigTextFieldDefaults {
     unfocusedContainerColor: Color = HedvigTextFieldTokens.ContainerColor.toColor(),
     disabledContainerColor: Color = HedvigTextFieldTokens.ContainerColor.toColor(),
     errorContainerColor: Color = HedvigTextFieldTokens.ContainerColor.toColor(),
+    typingContainerColor: Color = HedvigTextFieldTokens.TypingContainerColor.toColor(),
+    errorTypingContainerColor: Color = HedvigTextFieldTokens.ErrorTypingContainerColor.toColor(),
     cursorColor: Color = HedvigTextFieldTokens.CaretColor.toColor(),
     errorCursorColor: Color = HedvigTextFieldTokens.ErrorFocusCaretColor.toColor(),
     selectionColors: TextSelectionColors = LocalTextSelectionColors.current,
@@ -292,6 +304,8 @@ object HedvigTextFieldDefaults {
       unfocusedContainerColor = unfocusedContainerColor,
       disabledContainerColor = disabledContainerColor,
       errorContainerColor = errorContainerColor,
+      typingContainerColor = typingContainerColor,
+      errorTypingContainerColor = errorTypingContainerColor,
       cursorColor = cursorColor,
       errorCursorColor = errorCursorColor,
       textSelectionColors = selectionColors,
@@ -416,7 +430,7 @@ object HedvigTextFieldDefaults {
         contentPaddingWithLabel()
       },
     container: @Composable () -> Unit = {
-      ContainerBox(enabled, isError, interactionSource, colors, shape)
+      ContainerBox(value, enabled, isError, interactionSource, colors, shape)
     },
   ) {
     HedvigDecorationBox(
@@ -458,6 +472,8 @@ class HedvigTextFieldColors internal constructor(
   private val unfocusedContainerColor: Color,
   private val disabledContainerColor: Color,
   private val errorContainerColor: Color,
+  private val typingContainerColor: Color, // The pulsating color that the container will temporarily have on new text.
+  private val errorTypingContainerColor: Color, // The pulsating color when there's an error too
   private val cursorColor: Color,
   private val errorCursorColor: Color,
   private val textSelectionColors: TextSelectionColors,
@@ -578,6 +594,7 @@ class HedvigTextFieldColors internal constructor(
   /**
    * Represents the container color for this text field.
    *
+   * @param value the value of the textfield. Used to know when it changes, to animate the color changes.
    * @param enabled whether the text field is enabled
    * @param isError whether the text field's current value is in error
    * @param interactionSource the [InteractionSource] of this text field. Helps to determine if
@@ -585,19 +602,38 @@ class HedvigTextFieldColors internal constructor(
    */
   @Composable
   internal fun containerColor(
+    value: String,
     enabled: Boolean,
     isError: Boolean,
     interactionSource: InteractionSource,
   ): State<Color> {
+    var gotFreshValue by remember { mutableStateOf(false) }
+    val updatedValue by rememberUpdatedState(value)
+    LaunchedEffect(Unit) {
+      snapshotFlow { updatedValue }
+        .drop(1)
+        .collectLatest {
+          gotFreshValue = true
+          delay(SignalAnimationDuration)
+          gotFreshValue = false
+        }
+    }
     val focused by interactionSource.collectIsFocusedAsState()
 
     val targetValue = when {
+      gotFreshValue && isError -> errorTypingContainerColor
+      gotFreshValue -> typingContainerColor
       !enabled -> disabledContainerColor
       isError -> errorContainerColor
       focused -> focusedContainerColor
       else -> unfocusedContainerColor
     }
-    return animateColorAsState(targetValue, tween(durationMillis = AnimationDuration))
+    return animateColorAsState(
+      targetValue = targetValue,
+      animationSpec = tween(
+        durationMillis = SignalAnimationDuration.toInt(),
+      ),
+    )
   }
 
   /**
@@ -771,6 +807,8 @@ class HedvigTextFieldColors internal constructor(
     if (unfocusedContainerColor != other.unfocusedContainerColor) return false
     if (disabledContainerColor != other.disabledContainerColor) return false
     if (errorContainerColor != other.errorContainerColor) return false
+    if (typingContainerColor != other.typingContainerColor) return false
+    if (errorTypingContainerColor != other.errorTypingContainerColor) return false
     if (cursorColor != other.cursorColor) return false
     if (errorCursorColor != other.errorCursorColor) return false
     if (textSelectionColors != other.textSelectionColors) return false
@@ -819,6 +857,8 @@ class HedvigTextFieldColors internal constructor(
     result = 31 * result + unfocusedContainerColor.hashCode()
     result = 31 * result + disabledContainerColor.hashCode()
     result = 31 * result + errorContainerColor.hashCode()
+    result = 31 * result + typingContainerColor.hashCode()
+    result = 31 * result + errorTypingContainerColor.hashCode()
     result = 31 * result + cursorColor.hashCode()
     result = 31 * result + errorCursorColor.hashCode()
     result = 31 * result + textSelectionColors.hashCode()

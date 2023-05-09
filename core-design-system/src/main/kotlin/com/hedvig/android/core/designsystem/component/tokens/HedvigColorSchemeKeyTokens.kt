@@ -31,4 +31,12 @@ internal enum class HedvigColorSchemeKeyTokens {
   SurfaceVariant,
   Tertiary,
   TertiaryContainer,
+
+  WarningContainer,
+  OnWarningContainer,
+
+  TypeElement,
+  OnTypeElement,
+  TypeSignalContainer,
+  OnTypeSignalContainer,
 }
