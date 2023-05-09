@@ -37,12 +37,12 @@ internal fun HedvigMaterial2Theme(
   colorOverrides: (Colors) -> Colors = { it },
   content: @Composable () -> Unit,
 ) {
-  val colorScheme = when {
+  val colors = when {
     darkTheme -> DarkColors
     else -> LightColors
   }
   MaterialTheme(
-    colors = colorOverrides.invoke(colorScheme),
+    colors = colorOverrides.invoke(colors),
     shapes = HedvigShapes,
     typography = HedvigTypography,
   ) {
