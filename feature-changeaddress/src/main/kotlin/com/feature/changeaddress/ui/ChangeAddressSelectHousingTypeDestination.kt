@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -64,36 +65,41 @@ internal fun ChangeAddressSelectHousingTypeDestination(
   }
 
   Surface(Modifier.fillMaxSize()) {
-    Column {
-      val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-      TopAppBarWithBack(
-        onClick = navigateBack,
-        title = "",
-        scrollBehavior = topAppBarScrollBehavior,
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
-      )
-      Spacer(modifier = Modifier.padding(top = 48.dp))
-      Text(
-        text = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_SELECT_HOUSING_TYPE_TITLE),
-        style = MaterialTheme.typography.headlineSmall,
-        textAlign = TextAlign.Center,
-        modifier = Modifier.fillMaxWidth(),
-      )
-      Spacer(modifier = Modifier.padding(bottom = 114.dp))
+    Box {
+      Column {
+        val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+        TopAppBarWithBack(
+          onClick = navigateBack,
+          title = "",
+          scrollBehavior = topAppBarScrollBehavior,
+          colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
+        )
+        Spacer(modifier = Modifier.padding(top = 48.dp))
+        Text(
+          text = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_SELECT_HOUSING_TYPE_TITLE),
+          style = MaterialTheme.typography.headlineSmall,
+          textAlign = TextAlign.Center,
+          modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(modifier = Modifier.padding(bottom = 64.dp))
 
-      Column(
-        Modifier
-          .fillMaxSize()
-          .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
-          .verticalScroll(rememberScrollState())
-          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-      ) {
-        HousingType.APARTMENT_OWN.RadiobuttonRow(uiState, viewModel::onHousingTypeSelected)
-        Spacer(modifier = Modifier.padding(top = 8.dp))
-        HousingType.APARTMENT_RENT.RadiobuttonRow(uiState, viewModel::onHousingTypeSelected)
-        Spacer(modifier = Modifier.padding(top = 8.dp))
-        HousingType.VILLA.RadiobuttonRow(uiState, viewModel::onHousingTypeSelected)
-        Spacer(modifier = Modifier.padding(top = 8.dp))
+        Column(
+          Modifier
+            .fillMaxSize()
+            .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
+            .verticalScroll(rememberScrollState())
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+        ) {
+          HousingType.APARTMENT_OWN.RadiobuttonRow(uiState, viewModel::onHousingTypeSelected)
+          Spacer(modifier = Modifier.padding(top = 8.dp))
+          HousingType.APARTMENT_RENT.RadiobuttonRow(uiState, viewModel::onHousingTypeSelected)
+          Spacer(modifier = Modifier.padding(top = 8.dp))
+          HousingType.VILLA.RadiobuttonRow(uiState, viewModel::onHousingTypeSelected)
+        }
+      }
+      Column(modifier = Modifier
+        .align(Alignment.BottomCenter)
+        .padding(bottom = 52.dp)) {
         AddressInfoCard(modifier = Modifier.padding(horizontal = 16.dp))
         Spacer(modifier = Modifier.padding(top = 8.dp))
         LargeContainedButton(

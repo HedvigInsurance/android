@@ -3,6 +3,7 @@ package com.feature.changeaddress.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -78,126 +79,131 @@ internal fun ChangeAddressEnterNewDestination(
   }
 
   Surface(Modifier.fillMaxSize()) {
-    Column {
-      val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-      TopAppBarWithBack(
-        onClick = navigateBack,
-        title = "",
-        scrollBehavior = topAppBarScrollBehavior,
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
-      )
-      Column(
-        Modifier
-          .fillMaxSize()
-          .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
-          .verticalScroll(rememberScrollState())
-          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-      ) {
-
-        Spacer(modifier = Modifier.padding(top = 48.dp))
-        Text(
-          text = stringResource(id = R.string.CHANGE_ADDRESS_ENTER_NEW_ADDRESS_TITLE),
-          style = MaterialTheme.typography.headlineSmall,
-          textAlign = TextAlign.Center,
-          modifier = Modifier.fillMaxWidth(),
+    Box {
+      Column {
+        val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+        TopAppBarWithBack(
+          onClick = navigateBack,
+          title = "",
+          scrollBehavior = topAppBarScrollBehavior,
+          colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
         )
-        Spacer(modifier = Modifier.padding(bottom = 72.dp))
+        Column(
+          Modifier
+            .fillMaxSize()
+            .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
+            .verticalScroll(rememberScrollState())
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+        ) {
 
-        if (uiState.isLoading) {
-          CircularProgressIndicator()
+          Spacer(modifier = Modifier.padding(top = 48.dp))
+          Text(
+            text = stringResource(id = R.string.CHANGE_ADDRESS_ENTER_NEW_ADDRESS_TITLE),
+            style = MaterialTheme.typography.headlineSmall,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+          )
+          Spacer(modifier = Modifier.padding(bottom = 64.dp))
+
+          if (uiState.isLoading) {
+            CircularProgressIndicator()
+          }
+
+          Spacer(modifier = Modifier.padding(top = 6.dp))
+
+          TextField(
+            value = uiState.street.input ?: "",
+            isError = uiState.street.errorMessageRes != null,
+            supportingText = {
+              if (uiState.street.errorMessageRes != null) {
+                Text(
+                  text = uiState.street.errorMessageRes
+                    ?.let { stringResource(id = it) }
+                    ?: "",
+                )
+              }
+            },
+            label = {
+              Text(text = stringResource(id = R.string.CHANGE_ADDRESS_NEW_ADDRESS_LABEL))
+            },
+            onValueChange = { viewModel.onStreetChanged(it) },
+            modifier = Modifier.fillMaxWidth(),
+          )
+
+          TextField(
+            value = uiState.postalCode.input ?: "",
+            isError = uiState.postalCode.errorMessageRes != null,
+            supportingText = {
+              if (uiState.postalCode.errorMessageRes != null) {
+                Text(
+                  text = uiState.postalCode.errorMessageRes
+                    ?.let { stringResource(id = it) }
+                    ?: "",
+                )
+              }
+            },
+            label = {
+              Text(text = stringResource(id = R.string.CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL))
+
+            },
+            onValueChange = { viewModel.onPostalCodeChanged(it) },
+            modifier = Modifier.fillMaxWidth(),
+          )
+
+          TextField(
+            value = uiState.squareMeters.input ?: "",
+            isError = uiState.squareMeters.errorMessageRes != null,
+            supportingText = {
+              if (uiState.squareMeters.errorMessageRes != null) {
+                Text(
+                  text = uiState.squareMeters.errorMessageRes
+                    ?.let { stringResource(id = it) }
+                    ?: "",
+                )
+              }
+            },
+            label = {
+              Text(text = stringResource(id = R.string.CHANGE_ADDRESS_NEW_LIVING_SPACE_LABEL))
+            },
+            onValueChange = { viewModel.onSquareMetersChanged(it) },
+            modifier = Modifier.fillMaxWidth(),
+          )
+
+          TextField(
+            value = uiState.numberCoInsured.input.toString(),
+            isError = uiState.numberCoInsured.errorMessageRes != null,
+            supportingText = {
+              if (uiState.numberCoInsured.errorMessageRes != null) {
+                Text(
+                  text = uiState.numberCoInsured.errorMessageRes
+                    ?.let { stringResource(id = it) }
+                    ?: "",
+                )
+              }
+            },
+            label = {
+              Text(text = stringResource(id = R.string.CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL))
+            },
+            onValueChange = { viewModel.onCoInsuredChanged(it.toInt()) },
+            modifier = Modifier.fillMaxWidth(),
+          )
+          Spacer(modifier = Modifier.padding(top = 4.dp))
+          MovingDateButton(
+            onDateSelected = { viewModel.onMoveDateSelected(it) },
+            uiState = uiState,
+          )
         }
-
-        Spacer(modifier = Modifier.padding(top = 6.dp))
-
-        TextField(
-          value = uiState.street.input ?: "",
-          isError = uiState.street.errorMessageRes != null,
-          supportingText = {
-            if (uiState.street.errorMessageRes != null) {
-              Text(
-                text = uiState.street.errorMessageRes
-                  ?.let { stringResource(id = it) }
-                  ?: "",
-              )
-            }
-          },
-          label = {
-            Text(text = stringResource(id = R.string.CHANGE_ADDRESS_NEW_ADDRESS_LABEL))
-          },
-          onValueChange = { viewModel.onStreetChanged(it) },
-          modifier = Modifier.fillMaxWidth(),
-        )
-
-        TextField(
-          value = uiState.postalCode.input ?: "",
-          isError = uiState.postalCode.errorMessageRes != null,
-          supportingText = {
-            if (uiState.postalCode.errorMessageRes != null) {
-              Text(
-                text = uiState.postalCode.errorMessageRes
-                  ?.let { stringResource(id = it) }
-                  ?: "",
-              )
-            }
-          },
-          label = {
-            Text(text = stringResource(id = R.string.CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL))
-
-          },
-          onValueChange = { viewModel.onPostalCodeChanged(it) },
-          modifier = Modifier.fillMaxWidth(),
-        )
-
-        TextField(
-          value = uiState.squareMeters.input ?: "",
-          isError = uiState.squareMeters.errorMessageRes != null,
-          supportingText = {
-            if (uiState.squareMeters.errorMessageRes != null) {
-              Text(
-                text = uiState.squareMeters.errorMessageRes
-                  ?.let { stringResource(id = it) }
-                  ?: "",
-              )
-            }
-          },
-          label = {
-            Text(text = stringResource(id = R.string.CHANGE_ADDRESS_NEW_LIVING_SPACE_LABEL))
-          },
-          onValueChange = { viewModel.onSquareMetersChanged(it) },
-          modifier = Modifier.fillMaxWidth(),
-        )
-
-        TextField(
-          value = uiState.numberCoInsured.input.toString(),
-          isError = uiState.numberCoInsured.errorMessageRes != null,
-          supportingText = {
-            if (uiState.numberCoInsured.errorMessageRes != null) {
-              Text(
-                text = uiState.numberCoInsured.errorMessageRes
-                  ?.let { stringResource(id = it) }
-                  ?: "",
-              )
-            }
-          },
-          label = {
-            Text(text = stringResource(id = R.string.CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL))
-          },
-          onValueChange = { viewModel.onCoInsuredChanged(it.toInt()) },
-          modifier = Modifier.fillMaxWidth(),
-        )
-        Spacer(modifier = Modifier.padding(top = 4.dp))
-        MovingDateButton(
-          onDateSelected = { viewModel.onMoveDateSelected(it) },
-          uiState = uiState,
-        )
-        Spacer(modifier = Modifier.padding(top = 6.dp))
+      }
+      Column(
+        modifier = Modifier
+          .align(Alignment.BottomCenter)
+          .padding(bottom = 52.dp),
+      ) {
         AddressInfoCard(modifier = Modifier.padding(horizontal = 16.dp))
         Spacer(modifier = Modifier.padding(bottom = 6.dp))
         LargeContainedButton(
           onClick = { viewModel.onSaveNewAddress() },
-          modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .padding(bottom = 22.dp),
+          modifier = Modifier.padding(horizontal = 16.dp),
         ) {
           Text(text = stringResource(id = R.string.SAVE_AND_CONTINUE_BUTTON_LABEL))
         }
