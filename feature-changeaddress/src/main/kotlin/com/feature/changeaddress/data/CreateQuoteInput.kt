@@ -9,7 +9,7 @@ enum class HousingType {
 }
 
 
-fun HousingType.toDisplayName() = when (this) {
+fun HousingType.displayNameResource() = when (this) {
   HousingType.APARTMENT_RENT -> hedvig.resources.R.string.CHANGE_ADDRESS_APARTMENT_RENT_LABEL
   HousingType.APARTMENT_OWN -> hedvig.resources.R.string.CHANGE_ADDRESS_APARTMENT_OWN_LABEL
   HousingType.VILLA -> hedvig.resources.R.string.CHANGE_ADDRESS_VILLA_LABEL

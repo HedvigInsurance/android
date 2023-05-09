@@ -28,32 +28,33 @@ internal fun NavGraphBuilder.changeAddressGraph(
   finish: () -> Unit,
 ) {
   animatedNavigation<Destinations.ChangeAddress>(
-    startDestination = createRoutePattern<ChangeAddressDestination.EnterNewAddress>(),
+    startDestination = createRoutePattern<ChangeAddressDestination.SelectHousingType>(),
     enterTransition = { MotionDefaults.sharedXAxisEnter(density) },
     exitTransition = { MotionDefaults.sharedXAxisExit(density) },
     popEnterTransition = { MotionDefaults.sharedXAxisPopEnter(density) },
     popExitTransition = { MotionDefaults.sharedXAxisPopExit(density) },
   ) {
-    animatedComposable<ChangeAddressDestination.EnterNewAddress> {
-      val viewModel = getViewModel(navController = navController, backStackEntry = it)
-      ChangeAddressEnterNewDestination(
-        viewModel = viewModel,
-        navigateBack = { navigateUp() },
-        onQuotes = {
-          navController.navigate(ChangeAddressDestination.OfferDestination)
-        },
-        onClickHousingType = {
-          navController.navigate(ChangeAddressDestination.SelectHousingType)
-        },
-      )
-    }
-
     animatedComposable<ChangeAddressDestination.SelectHousingType> {
       val viewModel = getViewModel(navController, it)
       ChangeAddressSelectHousingTypeDestination(
         viewModel = viewModel,
         navigateBack = { navController.navigateUp() },
-        onHousingTypeSelected = { navController.navigateUp() },
+        onHousingTypeSelected = {
+          navController.navigate(ChangeAddressDestination.EnterNewAddress)
+        },
+      )
+    }
+
+    animatedComposable<ChangeAddressDestination.EnterNewAddress> {
+      val viewModel = getViewModel(navController = navController, backStackEntry = it)
+      ChangeAddressEnterNewDestination(
+        viewModel = viewModel,
+        navigateBack = {
+          navController.navigateUp()
+        },
+        onQuotes = {
+          navController.navigate(ChangeAddressDestination.OfferDestination)
+        },
       )
     }
 

@@ -39,12 +39,12 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.feature.changeaddress.ChangeAddressUiState
 import com.feature.changeaddress.ChangeAddressViewModel
-import com.feature.changeaddress.ValidatedInput
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.newtheme.SquircleShape
 import com.hedvig.android.core.ui.R
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
-import toDisplayName
+import com.hedvig.android.core.ui.error.ErrorDialog
+import displayNameResource
 
 @Composable
 internal fun ChangeAddressSelectHousingTypeDestination(
@@ -53,7 +53,14 @@ internal fun ChangeAddressSelectHousingTypeDestination(
   onHousingTypeSelected: () -> Unit,
 ) {
   val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
-  val selectedHousingType = uiState.apartmentOwnerType
+
+  uiState.housingType.errorMessageRes?.let {
+    ErrorDialog(
+      title = stringResource(id = hedvig.resources.R.string.general_error),
+      message = stringResource(id = it),
+      onDismiss = { viewModel.onHousingTypeErrorDialogDismissed() },
+    )
+  }
 
   Surface(Modifier.fillMaxSize()) {
     Column {
@@ -80,17 +87,20 @@ internal fun ChangeAddressSelectHousingTypeDestination(
           .verticalScroll(rememberScrollState())
           .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
       ) {
-        HousingType.VILLA.RadiobuttonRow(viewModel, selectedHousingType)
+        HousingType.APARTMENT_OWN.RadiobuttonRow(uiState, viewModel::onHousingTypeSelected)
         Spacer(modifier = Modifier.padding(top = 8.dp))
-        HousingType.APARTMENT_OWN.RadiobuttonRow(viewModel, selectedHousingType)
+        HousingType.APARTMENT_RENT.RadiobuttonRow(uiState, viewModel::onHousingTypeSelected)
         Spacer(modifier = Modifier.padding(top = 8.dp))
-        HousingType.APARTMENT_RENT.RadiobuttonRow(viewModel, selectedHousingType)
+        HousingType.VILLA.RadiobuttonRow(uiState, viewModel::onHousingTypeSelected)
         Spacer(modifier = Modifier.padding(top = 8.dp))
         AddressInfoCard(modifier = Modifier.padding(horizontal = 16.dp))
         Spacer(modifier = Modifier.padding(top = 8.dp))
         LargeContainedButton(
           onClick = {
-            onHousingTypeSelected()
+            viewModel.onValidateHousingType()
+            if (uiState.isHousingTypeValid) {
+              onHousingTypeSelected()
+            }
           },
           modifier = Modifier.padding(horizontal = 16.dp),
         ) {
@@ -103,8 +113,8 @@ internal fun ChangeAddressSelectHousingTypeDestination(
 
 @Composable
 private fun HousingType.RadiobuttonRow(
-  viewModel: ChangeAddressViewModel,
-  selectedHousingType: ValidatedInput<HousingType?>,
+  uiState: ChangeAddressUiState,
+  onClick: (HousingType) -> Unit,
 ) {
   Row(
     modifier = Modifier
@@ -115,7 +125,7 @@ private fun HousingType.RadiobuttonRow(
         shape = SquircleShape,
       )
       .clickable {
-        viewModel.onSelectHousingType(this)
+        onClick(this@RadiobuttonRow)
       }
       .padding(vertical = 20.dp, horizontal = 16.dp),
     horizontalArrangement = Arrangement.SpaceBetween,
@@ -128,16 +138,16 @@ private fun HousingType.RadiobuttonRow(
     )
     Spacer(modifier = Modifier.padding(12.dp))
     Text(
-      text = stringResource(this@RadiobuttonRow.toDisplayName()),
+      text = stringResource(this@RadiobuttonRow.displayNameResource()),
       textAlign = TextAlign.Center,
       fontSize = 18.sp,
       modifier = Modifier.fillMaxHeight(),
     )
     Spacer(modifier = Modifier.weight(1f))
     RadioButton(
-      selected = selectedHousingType.input == this@RadiobuttonRow,
+      selected = uiState.housingType.input == this@RadiobuttonRow,
       onClick = {
-        viewModel.onSelectHousingType(this@RadiobuttonRow)
+        onClick(this@RadiobuttonRow)
       },
     )
   }

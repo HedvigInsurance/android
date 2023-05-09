@@ -67,8 +67,8 @@ internal class ChangeAddressViewModel(
     _uiState.update { it.copy(movingDate = ValidatedInput(movingDate)) }
   }
 
-  fun onSelectHousingType(apartmentOwnerType: HousingType) {
-    _uiState.update { it.copy(apartmentOwnerType = ValidatedInput(apartmentOwnerType)) }
+  fun onHousingTypeCleared() {
+    _uiState.update { it.copy(housingType = ValidatedInput(null)) }
   }
 
   fun onQuotesCleared() {
@@ -77,7 +77,7 @@ internal class ChangeAddressViewModel(
 
   fun onSaveNewAddress() {
     _uiState.update { it.validateInput() }
-    if (_uiState.value.isValid) {
+    if (_uiState.value.isInputValid) {
       val input = _uiState.value.toCreateQuoteInput()
       _uiState.update { it.copy(isLoading = true) }
       viewModelScope.launch {
@@ -131,6 +131,35 @@ internal class ChangeAddressViewModel(
     _uiState.update { it.copy(errorMessage = null) }
   }
 
+  fun onValidateHousingType() {
+    if (_uiState.value.housingType.input == null) {
+      _uiState.update {
+        it.copy(
+          housingType = ValidatedInput(
+            input = null,
+            errorMessageRes = hedvig.resources.R.string.CHANGE_ADDRESS_HOUSING_TYPE_ERROR,
+          ),
+        )
+      }
+    } else if (_uiState.value.housingType.input == HousingType.VILLA) {
+      _uiState.update {
+        it.copy(
+          housingType = ValidatedInput(
+            input = it.housingType.input,
+            errorMessageRes = hedvig.resources.R.string.CHANGE_ADDRESS_MOVE_TO_VILLA_ERROR_TEXT,
+          ),
+        )
+      }
+    }
+  }
+
+  fun onHousingTypeSelected(housingType: HousingType) {
+    _uiState.update { it.copy(housingType = ValidatedInput(housingType)) }
+  }
+
+  fun onHousingTypeErrorDialogDismissed() {
+    _uiState.update { it.copy(housingType = ValidatedInput(it.housingType.input)) }
+  }
 }
 
 private fun ChangeAddressUiState.toCreateQuoteInput() = CreateQuoteInput(
@@ -143,6 +172,6 @@ private fun ChangeAddressUiState.toCreateQuoteInput() = CreateQuoteInput(
   movingDate = movingDate.input!!,
   numberCoInsured = numberCoInsured.input!!,
   squareMeters = squareMeters.input!!.toInt(),
-  apartmentOwnerType = apartmentOwnerType.input!!,
+  apartmentOwnerType = housingType.input!!,
   isStudent = false,
 )

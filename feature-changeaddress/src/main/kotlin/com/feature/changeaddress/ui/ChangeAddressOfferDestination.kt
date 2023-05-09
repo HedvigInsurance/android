@@ -39,7 +39,7 @@ import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation
 import com.hedvig.android.core.ui.R
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.error.ErrorDialog
-import toDisplayName
+import displayNameResource
 
 @Composable
 internal fun ChangeAddressOfferDestination(
@@ -93,7 +93,7 @@ internal fun ChangeAddressOfferDestination(
           )
           Spacer(modifier = Modifier.padding(top = 16.dp))
           Text(
-            text = uiState.apartmentOwnerType.input?.toDisplayName()?.let {
+            text = uiState.housingType.input?.displayNameResource()?.let {
               stringResource(id = it)
             } ?: "-",
             style = MaterialTheme.typography.titleMedium,
@@ -199,7 +199,7 @@ internal fun ChangeAddressOfferDestination(
               style = MaterialTheme.typography.bodyLarge,
             )
             Text(
-              text = uiState.apartmentOwnerType.input?.toDisplayName()?.let {
+              text = uiState.housingType.input?.displayNameResource()?.let {
                 stringResource(id = it)
               } ?: "-",
               style = MaterialTheme.typography.bodyLarge,

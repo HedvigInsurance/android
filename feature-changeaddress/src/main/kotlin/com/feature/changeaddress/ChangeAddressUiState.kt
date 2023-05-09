@@ -17,7 +17,7 @@ data class ChangeAddressUiState(
   val squareMeters: ValidatedInput<String?> = ValidatedInput(null),
   val movingDate: ValidatedInput<LocalDate?> = ValidatedInput(null),
   val numberCoInsured: ValidatedInput<Int?> = ValidatedInput(null),
-  val apartmentOwnerType: ValidatedInput<HousingType?> = ValidatedInput(null),
+  val housingType: ValidatedInput<HousingType?> = ValidatedInput(null),
   val moveRange: ClosedRange<LocalDate>? = null,
   val errorMessage: String? = null,
   val isLoading: Boolean = true,
@@ -33,14 +33,17 @@ data class ChangeAddressUiState(
     initialDisplayMode = DisplayMode.Picker,
   )
 
-  val isValid: Boolean
+  val isHousingTypeValid: Boolean
+    get() = housingType.input != null && housingType.input != HousingType.VILLA
+
+  val isInputValid: Boolean
     get() {
       return street.errorMessageRes == null &&
         postalCode.errorMessageRes == null &&
         squareMeters.errorMessageRes == null &&
         movingDate.errorMessageRes == null &&
         numberCoInsured.errorMessageRes == null &&
-        apartmentOwnerType.errorMessageRes == null
+        housingType.errorMessageRes == null
     }
 
   fun validateInput(): ChangeAddressUiState {
@@ -80,8 +83,8 @@ data class ChangeAddressUiState(
           null
         },
       ),
-      apartmentOwnerType = apartmentOwnerType.copy(
-        errorMessageRes = if (!apartmentOwnerType.isPresent) {
+      housingType = housingType.copy(
+        errorMessageRes = if (!housingType.isPresent) {
           hedvig.resources.R.string.CHANGE_ADDRESS_HOUSING_TYPE_ERROR
         } else {
           null

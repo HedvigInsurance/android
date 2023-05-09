@@ -18,8 +18,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DatePickerState
-import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -54,14 +52,12 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import toDisplayName
 
 @Composable
 internal fun ChangeAddressEnterNewDestination(
   viewModel: ChangeAddressViewModel,
   navigateBack: () -> Unit,
   onQuotes: () -> Unit,
-  onClickHousingType: () -> Unit,
 ) {
   val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -74,6 +70,7 @@ internal fun ChangeAddressEnterNewDestination(
 
   if (uiState.errorMessage != null) {
     ErrorDialog(
+      title = stringResource(id = R.string.general_error),
       message = uiState.errorMessage,
       onDismiss = { viewModel.onErrorDialogDismissed() },
     )
@@ -108,8 +105,6 @@ internal fun ChangeAddressEnterNewDestination(
         if (uiState.isLoading) {
           CircularProgressIndicator()
         }
-
-        HousingTypeButton(onClickHousingType, uiState)
 
         Spacer(modifier = Modifier.padding(top = 6.dp))
 
@@ -207,47 +202,6 @@ internal fun ChangeAddressEnterNewDestination(
         }
       }
     }
-  }
-}
-
-@Composable
-private fun HousingTypeButton(
-  onClickHousingType: () -> Unit,
-  uiState: ChangeAddressUiState,
-) {
-  Row(
-    modifier = Modifier
-      .padding(horizontal = 16.dp)
-      .fillMaxWidth()
-      .background(
-        color = Color(0xFFF0F0F0),
-        shape = SquircleShape,
-      )
-      .clickable { onClickHousingType() }
-      .padding(vertical = 20.dp, horizontal = 16.dp),
-    horizontalArrangement = Arrangement.SpaceBetween,
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    Text(
-      text = stringResource(
-        id = uiState.apartmentOwnerType
-          .input
-          ?.toDisplayName()
-          ?: R.string.CHANGE_ADDRESS_HOUSING_TYPE_LABEL,
-      ),
-      color = if (uiState.apartmentOwnerType.input == null) {
-        Color(0xFF727272)
-      } else {
-        MaterialTheme.colorScheme.primary
-      },
-      style = MaterialTheme.typography.headlineSmall,
-    )
-    Icon(
-      painter = painterResource(
-        id = com.hedvig.android.core.designsystem.R.drawable.ic_drop_down_indicator,
-      ),
-      contentDescription = "",
-    )
   }
 }
 
