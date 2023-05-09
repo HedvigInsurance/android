@@ -67,8 +67,9 @@ internal class NetworkChangeAddressRepository(
               apartment = Optional.present(
                 MoveToApartmentInput(
                   subType = when (input.apartmentOwnerType) {
-                    ApartmentOwnerType.RENT -> MoveApartmentSubType.RENT
-                    ApartmentOwnerType.OWN -> MoveApartmentSubType.OWN
+                    HousingType.APARTMENT_RENT -> MoveApartmentSubType.RENT
+                    HousingType.APARTMENT_OWN -> MoveApartmentSubType.OWN
+                    HousingType.VILLA -> throw IllegalArgumentException("Can not create request with villa type")
                   },
                   isStudent = input.isStudent,
                 ),

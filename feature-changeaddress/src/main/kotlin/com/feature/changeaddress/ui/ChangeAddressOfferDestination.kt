@@ -69,182 +69,180 @@ internal fun ChangeAddressOfferDestination(
 
   val scrollState = rememberScrollState()
 
-  Column(
-    Modifier
-      .fillMaxSize()
-      .verticalScroll(scrollState),
-  ) {
+  Column(Modifier.fillMaxSize()) {
     val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     TopAppBarWithBack(
       onClick = navigateBack,
       title = "Ny address",
       scrollBehavior = topAppBarScrollBehavior,
     )
-    Spacer(Modifier.padding(top = 38.dp))
-    HedvigCard(
-      elevation = HedvigCardElevation.Elevated(2.dp),
-      modifier = Modifier.padding(horizontal = 16.dp),
-    ) {
-      Column(Modifier.padding(16.dp)) {
-        Spacer(modifier = Modifier.padding(top = 48.dp))
-        Image(
-          painter = painterResource(id = R.drawable.ic_pillow),
-          contentDescription = "",
-          modifier = Modifier
-            .size(96.dp)
-            .align(CenterHorizontally),
-        )
-        Spacer(modifier = Modifier.padding(top = 16.dp))
-        Text(
-          text = uiState.apartmentOwnerType.input?.toDisplayName() ?: "Okänd",
-          style = MaterialTheme.typography.titleMedium,
-          fontSize = 18.sp,
-          textAlign = TextAlign.Center,
-          modifier = Modifier.fillMaxWidth(),
-        )
-        Spacer(modifier = Modifier.padding(top = 32.dp))
-        Text(
-          text = quote.premium.toString() + " kr/mån",
-          style = MaterialTheme.typography.headlineLarge,
-          textAlign = TextAlign.Center,
-          modifier = Modifier.fillMaxWidth(),
-        )
-        Spacer(modifier = Modifier.padding(top = 8.dp))
-        Text(
-          text = uiState.movingDate.input?.toString() ?: "No moving date found",
-          style = MaterialTheme.typography.headlineMedium,
-          textAlign = TextAlign.Center,
-          modifier = Modifier.fillMaxWidth(),
-        )
-        Spacer(modifier = Modifier.padding(top = 6.dp))
-        LargeContainedButton(
-          onClick = { viewModel.onAcceptQuote(moveIntentId) },
-        ) {
-          Text(text = "Acceptera")
+    Column(Modifier.verticalScroll(scrollState)) {
+      Spacer(Modifier.padding(top = 38.dp))
+      HedvigCard(
+        elevation = HedvigCardElevation.Elevated(2.dp),
+        modifier = Modifier.padding(horizontal = 16.dp),
+      ) {
+        Column(Modifier.padding(16.dp)) {
+          Spacer(modifier = Modifier.padding(top = 48.dp))
+          Image(
+            painter = painterResource(id = R.drawable.ic_pillow),
+            contentDescription = "",
+            modifier = Modifier
+              .size(96.dp)
+              .align(CenterHorizontally),
+          )
+          Spacer(modifier = Modifier.padding(top = 16.dp))
+          Text(
+            text = uiState.apartmentOwnerType.input?.toDisplayName() ?: "Okänd",
+            style = MaterialTheme.typography.titleMedium,
+            fontSize = 18.sp,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+          )
+          Spacer(modifier = Modifier.padding(top = 32.dp))
+          Text(
+            text = quote.premium.toString() + " kr/mån",
+            style = MaterialTheme.typography.headlineLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+          )
+          Spacer(modifier = Modifier.padding(top = 8.dp))
+          Text(
+            text = uiState.movingDate.input?.toString() ?: "No moving date found",
+            style = MaterialTheme.typography.headlineMedium,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+          )
+          Spacer(modifier = Modifier.padding(top = 6.dp))
+          LargeContainedButton(
+            onClick = { viewModel.onAcceptQuote(moveIntentId) },
+          ) {
+            Text(text = "Acceptera")
+          }
         }
       }
-    }
 
-    Spacer(modifier = Modifier.padding(top = 32.dp))
+      Spacer(modifier = Modifier.padding(top = 32.dp))
 
-    Surface(
-      shape = RoundedCornerShape(8.dp),
-      modifier = Modifier.padding(horizontal = 16.dp),
-    ) {
-      Column {
-        Row(
-          horizontalArrangement = Arrangement.SpaceBetween,
-          modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 21.dp)
-            .fillMaxWidth(),
-        ) {
-          Text(
-            text = "Address",
-            style = MaterialTheme.typography.bodyLarge,
-          )
-          Text(
-            text = uiState.street.input ?: "Not specified",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.secondary,
-          )
-        }
-        Divider(thickness = 1.dp, modifier = Modifier.padding(horizontal = 16.dp))
+      Surface(
+        shape = RoundedCornerShape(8.dp),
+        modifier = Modifier.padding(horizontal = 16.dp),
+      ) {
+        Column {
+          Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+              .padding(horizontal = 16.dp, vertical = 21.dp)
+              .fillMaxWidth(),
+          ) {
+            Text(
+              text = "Address",
+              style = MaterialTheme.typography.bodyLarge,
+            )
+            Text(
+              text = uiState.street.input ?: "Not specified",
+              style = MaterialTheme.typography.bodyLarge,
+              color = MaterialTheme.colorScheme.secondary,
+            )
+          }
+          Divider(thickness = 1.dp, modifier = Modifier.padding(horizontal = 16.dp))
 
-        Row(
-          horizontalArrangement = Arrangement.SpaceBetween,
-          modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 21.dp)
-            .fillMaxWidth(),
-        ) {
-          Text(
-            text = "Postal code",
-            style = MaterialTheme.typography.bodyLarge,
-          )
-          Text(
-            text = uiState.postalCode.input ?: "Not specified",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.secondary,
-          )
-        }
-        Divider(thickness = 1.dp, modifier = Modifier.padding(horizontal = 16.dp))
+          Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+              .padding(horizontal = 16.dp, vertical = 21.dp)
+              .fillMaxWidth(),
+          ) {
+            Text(
+              text = "Postal code",
+              style = MaterialTheme.typography.bodyLarge,
+            )
+            Text(
+              text = uiState.postalCode.input ?: "Not specified",
+              style = MaterialTheme.typography.bodyLarge,
+              color = MaterialTheme.colorScheme.secondary,
+            )
+          }
+          Divider(thickness = 1.dp, modifier = Modifier.padding(horizontal = 16.dp))
 
-        Row(
-          horizontalArrangement = Arrangement.SpaceBetween,
-          modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 21.dp)
-            .fillMaxWidth(),
-        ) {
-          Text(
-            text = "Insured people",
-            style = MaterialTheme.typography.bodyLarge,
-          )
-          Text(
-            text = uiState.numberCoInsured.input.toString(),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.secondary,
-          )
-        }
-        Divider(thickness = 1.dp, modifier = Modifier.padding(horizontal = 16.dp))
+          Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+              .padding(horizontal = 16.dp, vertical = 21.dp)
+              .fillMaxWidth(),
+          ) {
+            Text(
+              text = "Insured people",
+              style = MaterialTheme.typography.bodyLarge,
+            )
+            Text(
+              text = uiState.numberCoInsured.input.toString(),
+              style = MaterialTheme.typography.bodyLarge,
+              color = MaterialTheme.colorScheme.secondary,
+            )
+          }
+          Divider(thickness = 1.dp, modifier = Modifier.padding(horizontal = 16.dp))
 
-        Row(
-          horizontalArrangement = Arrangement.SpaceBetween,
-          modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 21.dp)
-            .fillMaxWidth(),
-        ) {
-          Text(
-            text = "Type",
-            style = MaterialTheme.typography.bodyLarge,
-          )
-          Text(
-            text = uiState.apartmentOwnerType.input?.toDisplayName() ?: "Not specified",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.secondary,
-          )
-        }
-        Divider(thickness = 1.dp, modifier = Modifier.padding(horizontal = 16.dp))
+          Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+              .padding(horizontal = 16.dp, vertical = 21.dp)
+              .fillMaxWidth(),
+          ) {
+            Text(
+              text = "Type",
+              style = MaterialTheme.typography.bodyLarge,
+            )
+            Text(
+              text = uiState.apartmentOwnerType.input?.toDisplayName() ?: "Not specified",
+              style = MaterialTheme.typography.bodyLarge,
+              color = MaterialTheme.colorScheme.secondary,
+            )
+          }
+          Divider(thickness = 1.dp, modifier = Modifier.padding(horizontal = 16.dp))
 
-        Row(
-          horizontalArrangement = Arrangement.SpaceBetween,
-          modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 21.dp)
-            .fillMaxWidth(),
-        ) {
-          Text(
-            text = "Size",
-            style = MaterialTheme.typography.bodyLarge,
-          )
-          Text(
-            text = uiState.squareMeters.input ?: "Not specified",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.secondary,
-          )
+          Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+              .padding(horizontal = 16.dp, vertical = 21.dp)
+              .fillMaxWidth(),
+          ) {
+            Text(
+              text = "Size",
+              style = MaterialTheme.typography.bodyLarge,
+            )
+            Text(
+              text = uiState.squareMeters.input ?: "Not specified",
+              style = MaterialTheme.typography.bodyLarge,
+              color = MaterialTheme.colorScheme.secondary,
+            )
+          }
         }
       }
-    }
 
-    Spacer(modifier = Modifier.padding(top = 8.dp))
+      Spacer(modifier = Modifier.padding(top = 8.dp))
 
-    TextButton(
-      onClick = { navigateBack() },
-      modifier = Modifier.align(CenterHorizontally),
-    ) {
-      Text(
-        text = "Ändra",
-        color = MaterialTheme.colorScheme.tertiary,
-        style = MaterialTheme.typography.bodyLarge,
-      )
-    }
+      TextButton(
+        onClick = { navigateBack() },
+        modifier = Modifier.align(CenterHorizontally),
+      ) {
+        Text(
+          text = "Ändra",
+          color = MaterialTheme.colorScheme.tertiary,
+          style = MaterialTheme.typography.bodyLarge,
+        )
+      }
 
-    Spacer(modifier = Modifier.padding(top = 32.dp))
+      Spacer(modifier = Modifier.padding(top = 32.dp))
 
-    LargeOutlinedButton(
-      onClick = { openChat() },
-      modifier = Modifier
-        .padding(16.dp)
-        .padding(bottom = 32.dp),
-    ) {
-      Text(text = stringResource(id = hedvig.resources.R.string.open_chat))
+      LargeOutlinedButton(
+        onClick = { openChat() },
+        modifier = Modifier
+          .padding(16.dp)
+          .padding(bottom = 32.dp),
+      ) {
+        Text(text = stringResource(id = hedvig.resources.R.string.open_chat))
+      }
     }
   }
 }

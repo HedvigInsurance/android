@@ -59,110 +59,113 @@ internal fun ChangeAddressEnterNewDestination(
   }
 
   Surface(Modifier.fillMaxSize()) {
-    Box {
-      Column {
-        val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-        TopAppBarWithBack(
-          onClick = navigateBack,
-          title = "",
-          scrollBehavior = topAppBarScrollBehavior,
-          colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
-        )
-        Spacer(modifier = Modifier.padding(top = 48.dp))
+    Column {
+      val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+      TopAppBarWithBack(
+        onClick = navigateBack,
+        title = "",
+        scrollBehavior = topAppBarScrollBehavior,
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
+      )
+      Spacer(modifier = Modifier.padding(top = 48.dp))
+      Text(
+        text = "Fyll i din nya address",
+        style = MaterialTheme.typography.headlineSmall,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.fillMaxWidth(),
+      )
+      Spacer(modifier = Modifier.padding(bottom = 114.dp))
+      Column(
+        Modifier
+          .fillMaxSize()
+          .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
+          .verticalScroll(rememberScrollState())
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+      ) {
+        if (uiState.isLoading) {
+          CircularProgressIndicator()
+        }
         Text(
-          text = "Fyll i din nya address",
-          style = MaterialTheme.typography.headlineSmall,
-          textAlign = TextAlign.Center,
+          text = uiState.apartmentOwnerType.input?.toDisplayName() ?: "Bostadstyp",
+          modifier = Modifier
+            .clickable {
+              onClickHousingType()
+            }
+            .fillMaxWidth(),
+        )
+        TextField(
+          value = uiState.street.input ?: "",
+          isError = uiState.street.errorMessage != null,
+          supportingText = {
+            if (uiState.street.errorMessage != null) {
+              Text(text = uiState.street.errorMessage ?: "")
+            }
+          },
+          label = {
+            Text(text = "Address")
+          },
+          onValueChange = { viewModel.onStreetChanged(it) },
           modifier = Modifier.fillMaxWidth(),
         )
-        Spacer(modifier = Modifier.padding(bottom = 114.dp))
-        Column(
-          Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
-            .verticalScroll(rememberScrollState())
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+
+        TextField(
+          value = uiState.postalCode.input ?: "",
+          isError = uiState.postalCode.errorMessage != null,
+          supportingText = {
+            if (uiState.postalCode.errorMessage != null) {
+              Text(text = uiState.postalCode.errorMessage ?: "")
+            }
+          },
+          label = {
+            Text(text = "Postkod")
+          },
+          onValueChange = { viewModel.onPostalCodeChanged(it) },
+          modifier = Modifier.fillMaxWidth(),
+        )
+
+        TextField(
+          value = uiState.squareMeters.input ?: "",
+          isError = uiState.squareMeters.errorMessage != null,
+          supportingText = {
+            if (uiState.squareMeters.errorMessage != null) {
+              Text(text = uiState.squareMeters.errorMessage ?: "")
+            }
+          },
+          label = {
+            Text(text = "Boyta")
+          },
+          onValueChange = { viewModel.onSquareMetersChanged(it) },
+          modifier = Modifier.fillMaxWidth(),
+        )
+
+        TextField(
+          value = uiState.numberCoInsured.input.toString(),
+          isError = uiState.numberCoInsured.errorMessage != null,
+          supportingText = {
+            if (uiState.numberCoInsured.errorMessage != null) {
+              Text(text = uiState.numberCoInsured.errorMessage ?: "")
+            }
+          },
+          label = {
+            Text(text = "Antal personer")
+          },
+          onValueChange = { viewModel.onCoInsuredChanged(it.toInt()) },
+          modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(modifier = Modifier.padding(top = 6.dp))
+        AddressInfoCard(modifier = Modifier.padding(horizontal = 16.dp))
+        Spacer(
+          modifier = Modifier.padding(
+            top = 6.dp,
+            start = 16.dp,
+            end = 16.dp,
+          ),
+        )
+        LargeContainedButton(
+          onClick = { viewModel.onSaveNewAddress() },
+          modifier = Modifier.padding(horizontal = 16.dp),
         ) {
-          if (uiState.isLoading) {
-            CircularProgressIndicator()
-          }
-          Text(
-            text = uiState.apartmentOwnerType.input?.toDisplayName() ?: "Bostadstyp",
-            modifier = Modifier
-              .clickable {
-                onClickHousingType()
-              }
-              .fillMaxWidth(),
-          )
-          TextField(
-            value = uiState.street.input ?: "",
-            isError = uiState.street.errorMessage != null,
-            supportingText = {
-              if (uiState.street.errorMessage != null) {
-                Text(text = uiState.street.errorMessage ?: "")
-              }
-            },
-            label = {
-              Text(text = "Address")
-            },
-            onValueChange = { viewModel.onStreetChanged(it) },
-            modifier = Modifier.fillMaxWidth(),
-          )
-
-          TextField(
-            value = uiState.postalCode.input ?: "",
-            isError = uiState.postalCode.errorMessage != null,
-            supportingText = {
-              if (uiState.postalCode.errorMessage != null) {
-                Text(text = uiState.postalCode.errorMessage ?: "")
-              }
-            },
-            label = {
-              Text(text = "Postkod")
-            },
-            onValueChange = { viewModel.onPostalCodeChanged(it) },
-            modifier = Modifier.fillMaxWidth(),
-          )
-
-          TextField(
-            value = uiState.squareMeters.input ?: "",
-            isError = uiState.squareMeters.errorMessage != null,
-            supportingText = {
-              if (uiState.squareMeters.errorMessage != null) {
-                Text(text = uiState.squareMeters.errorMessage ?: "")
-              }
-            },
-            label = {
-              Text(text = "Boyta")
-            },
-            onValueChange = { viewModel.onSquareMetersChanged(it) },
-            modifier = Modifier.fillMaxWidth(),
-          )
-
-          TextField(
-            value = uiState.numberCoInsured.input.toString(),
-            isError = uiState.numberCoInsured.errorMessage != null,
-            supportingText = {
-              if (uiState.numberCoInsured.errorMessage != null) {
-                Text(text = uiState.numberCoInsured.errorMessage ?: "")
-              }
-            },
-            label = {
-              Text(text = "Antal personer")
-            },
-            onValueChange = { viewModel.onCoInsuredChanged(it.toInt()) },
-            modifier = Modifier.fillMaxWidth(),
-          )
-          Spacer(modifier = Modifier.padding(top = 6.dp))
-          AddressInfoCard()
-          Spacer(modifier = Modifier.padding(top = 6.dp))
-          LargeContainedButton(
-            onClick = { viewModel.onSaveNewAddress() },
-            modifier = Modifier,
-          ) {
-            Text(text = "Spara och fortsätt")
-          }
+          Text(text = "Spara och fortsätt")
         }
       }
     }
