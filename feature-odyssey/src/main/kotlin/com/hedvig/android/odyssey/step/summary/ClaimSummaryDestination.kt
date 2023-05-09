@@ -48,6 +48,7 @@ import com.google.accompanist.placeholder.placeholder
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.UiNullableMoney
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
@@ -55,7 +56,6 @@ import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
 import com.hedvig.android.odyssey.data.ClaimFlowStep
 import com.hedvig.android.odyssey.navigation.ItemProblem
 import com.hedvig.android.odyssey.navigation.LocationOption
-import com.hedvig.android.odyssey.navigation.UiNullableMoney
 import com.hedvig.android.odyssey.ui.ClaimFlowScaffold
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate
@@ -232,7 +232,7 @@ private fun formatItemDetailsText(
       append(
         stringResource(
           R.string.SUMMARY_PURCHASE_PRICE_DESCRIPTION,
-          priceOfPurchase.amount.toInt(),
+          priceOfPurchase.amount!!.toInt(),
         ),
       )
       append(" ")

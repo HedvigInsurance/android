@@ -3,6 +3,8 @@ package com.hedvig.android.odyssey.navigation
 import android.content.res.Resources
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
+import com.hedvig.android.core.ui.UiMoney
+import com.hedvig.android.core.ui.UiNullableMoney
 import com.hedvig.android.odyssey.model.AudioUrl
 import com.hedvig.android.odyssey.model.FlowId
 import com.hedvig.android.odyssey.navigation.ItemBrand.Unknown.displayName
@@ -187,35 +189,6 @@ internal sealed interface CheckoutMethod {
   }
 
   object Unknown : CheckoutMethod
-}
-
-@Immutable
-@Serializable
-internal data class UiNullableMoney(val amount: Double?, val currencyCode: CurrencyCode) {
-  override fun toString(): String {
-    return "${amount ?: "-"} $currencyCode"
-  }
-
-  companion object {
-    fun fromMoneyFragment(fragment: MoneyFragment?): UiNullableMoney? {
-      fragment ?: return null
-      return UiNullableMoney(fragment.amount, fragment.currencyCode)
-    }
-  }
-}
-
-@Immutable
-@Serializable
-internal data class UiMoney(val amount: Double, val currencyCode: CurrencyCode) {
-  override fun toString(): String {
-    return "$amount $currencyCode"
-  }
-
-  companion object {
-    fun fromMoneyFragment(fragment: MoneyFragment): UiMoney {
-      return UiMoney(fragment.amount, fragment.currencyCode)
-    }
-  }
 }
 
 @Immutable

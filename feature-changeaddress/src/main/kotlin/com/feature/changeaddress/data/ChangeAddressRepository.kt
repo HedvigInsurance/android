@@ -8,6 +8,7 @@ import com.apollographql.apollo3.api.Optional
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.ui.UiMoney
 import octopus.MoveIntentCommitMutation
 import octopus.MoveIntentCreateMutation
 import octopus.MoveIntentRequestMutation
@@ -140,7 +141,7 @@ private fun MoveIntentRequestMutation.Data.MoveIntentRequest.MoveIntent.toMoveQu
       street = quote.address.street,
     ),
     numberCoInsured = quote.numberCoInsured,
-    premium = Premium(
+    premium = UiMoney(
       amount = quote.premium.amount,
       currencyCode = quote.premium.currencyCode,
     ),

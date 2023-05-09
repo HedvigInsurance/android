@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.feature.changeaddress.ChangeAddressUiState
 import com.feature.changeaddress.ChangeAddressViewModel
-import com.feature.changeaddress.data.toDisplayString
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.component.button.LargeOutlinedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
@@ -101,7 +100,7 @@ internal fun ChangeAddressOfferDestination(
           )
           Spacer(modifier = Modifier.padding(top = 32.dp))
           Text(
-            text = quote.premium.toDisplayString() + "/mån",
+            text = quote.premium.toString() + "/mån",
             style = MaterialTheme.typography.headlineLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(),

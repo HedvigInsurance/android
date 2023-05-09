@@ -1,5 +1,7 @@
 package com.hedvig.android.odyssey.data
 
+import com.hedvig.android.core.ui.UiMoney
+import com.hedvig.android.core.ui.UiNullableMoney
 import com.hedvig.android.odyssey.model.AudioUrl
 import com.hedvig.android.odyssey.model.FlowId
 import com.hedvig.android.odyssey.navigation.AudioContent
@@ -9,8 +11,6 @@ import com.hedvig.android.odyssey.navigation.ItemBrand
 import com.hedvig.android.odyssey.navigation.ItemModel
 import com.hedvig.android.odyssey.navigation.ItemProblem
 import com.hedvig.android.odyssey.navigation.LocationOption
-import com.hedvig.android.odyssey.navigation.UiMoney
-import com.hedvig.android.odyssey.navigation.UiNullableMoney
 import kotlinx.datetime.LocalDate
 import octopus.fragment.AudioContentFragment
 import octopus.fragment.AutomaticAutogiroPayoutFragment

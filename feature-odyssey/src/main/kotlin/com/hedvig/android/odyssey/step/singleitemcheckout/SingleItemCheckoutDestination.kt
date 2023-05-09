@@ -46,12 +46,12 @@ import com.hedvig.android.core.designsystem.component.button.LargeContainedTextB
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.UiMoney
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.progress.FullScreenHedvigProgress
 import com.hedvig.android.core.ui.text.HorizontalTextsWithMaximumSpaceTaken
 import com.hedvig.android.odyssey.data.ClaimFlowStep
 import com.hedvig.android.odyssey.navigation.CheckoutMethod
-import com.hedvig.android.odyssey.navigation.UiMoney
 import com.hedvig.android.odyssey.ui.ClaimFlowScaffold
 import hedvig.resources.R
 import octopus.type.CurrencyCode
