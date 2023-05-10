@@ -95,7 +95,6 @@ internal fun ChangeAddressEnterNewDestination(
             .verticalScroll(rememberScrollState())
             .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
         ) {
-
           Spacer(modifier = Modifier.padding(top = 48.dp))
           Text(
             text = stringResource(id = R.string.CHANGE_ADDRESS_ENTER_NEW_ADDRESS_TITLE),
@@ -144,7 +143,6 @@ internal fun ChangeAddressEnterNewDestination(
             },
             label = {
               Text(text = stringResource(id = R.string.CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL))
-
             },
             onValueChange = { viewModel.onPostalCodeChanged(it) },
             modifier = Modifier.fillMaxWidth(),

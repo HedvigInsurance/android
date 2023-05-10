@@ -1,7 +1,6 @@
 package com.feature.changeaddress.data
 
 import com.hedvig.android.core.ui.UiMoney
-import java.text.DecimalFormat
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import octopus.type.CurrencyCode

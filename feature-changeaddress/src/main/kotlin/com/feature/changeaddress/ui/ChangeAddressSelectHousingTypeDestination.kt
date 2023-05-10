@@ -97,9 +97,11 @@ internal fun ChangeAddressSelectHousingTypeDestination(
           HousingType.VILLA.RadiobuttonRow(uiState, viewModel::onHousingTypeSelected)
         }
       }
-      Column(modifier = Modifier
-        .align(Alignment.BottomCenter)
-        .padding(bottom = 52.dp)) {
+      Column(
+        modifier = Modifier
+          .align(Alignment.BottomCenter)
+          .padding(bottom = 52.dp),
+      ) {
         AddressInfoCard(modifier = Modifier.padding(horizontal = 16.dp))
         Spacer(modifier = Modifier.padding(top = 8.dp))
         LargeContainedButton(

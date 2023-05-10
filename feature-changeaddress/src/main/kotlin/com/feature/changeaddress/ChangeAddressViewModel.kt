@@ -1,7 +1,7 @@
 package com.feature.changeaddress
 
-import HousingType
 import CreateQuoteInput
+import HousingType
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.feature.changeaddress.data.AddressInput

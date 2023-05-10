@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.odyssey.ui
 
-import com.hedvig.android.odyssey.ui.MonetaryAmountOffsetMapping
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
