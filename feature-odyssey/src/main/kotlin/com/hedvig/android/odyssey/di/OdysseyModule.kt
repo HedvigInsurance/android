@@ -10,8 +10,8 @@ import com.hedvig.android.odyssey.model.FlowId
 import com.hedvig.android.odyssey.navigation.AudioContent
 import com.hedvig.android.odyssey.navigation.ClaimFlowDestination
 import com.hedvig.android.odyssey.navigation.LocationOption
-import com.hedvig.android.odyssey.search.GetNetworkClaimEntryPointsUseCase
-import com.hedvig.android.odyssey.search.SearchViewModel
+import com.hedvig.android.odyssey.search.groups.ClaimGroupsViewModel
+import com.hedvig.android.odyssey.search.groups.GetNetworkClaimEntryPointGroupsUseCase
 import com.hedvig.android.odyssey.step.audiorecording.AudioRecordingViewModel
 import com.hedvig.android.odyssey.step.dateofoccurrence.DateOfOccurrenceViewModel
 import com.hedvig.android.odyssey.step.dateofoccurrencepluslocation.DateOfOccurrencePlusLocationViewModel
@@ -43,9 +43,9 @@ val odysseyModule = module {
     ClaimFlowRepositoryImpl(get<ApolloClient>(octopusClient), get<OdysseyService>())
   }
 
-  viewModel<SearchViewModel> { SearchViewModel(get<GetNetworkClaimEntryPointsUseCase>()) }
-  single<GetNetworkClaimEntryPointsUseCase> {
-    GetNetworkClaimEntryPointsUseCase(get<ApolloClient>(octopusClient))
+  viewModel<ClaimGroupsViewModel> { ClaimGroupsViewModel(get<GetNetworkClaimEntryPointGroupsUseCase>()) }
+  single<GetNetworkClaimEntryPointGroupsUseCase> {
+    GetNetworkClaimEntryPointGroupsUseCase(get<ApolloClient>(octopusClient))
   }
 
   // Claims
