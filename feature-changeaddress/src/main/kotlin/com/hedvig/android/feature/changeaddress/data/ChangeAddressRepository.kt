@@ -1,4 +1,4 @@
-package com.feature.changeaddress.data
+package com.hedvig.android.feature.changeaddress.data
 
 import CreateQuoteInput
 import arrow.core.Either

@@ -1,10 +1,10 @@
 package com.hedvig.android.core.ui
 
 import androidx.compose.runtime.Immutable
-import java.text.DecimalFormat
 import kotlinx.serialization.Serializable
 import octopus.fragment.MoneyFragment
 import octopus.type.CurrencyCode
+import java.text.DecimalFormat
 
 @Immutable
 @Serializable

@@ -1,13 +1,13 @@
-package com.feature.changeaddress
+package com.hedvig.android.feature.changeaddress
 
 import HousingType
 import androidx.annotation.StringRes
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DisplayMode
-import com.feature.changeaddress.data.AddressId
-import com.feature.changeaddress.data.MoveIntentId
-import com.feature.changeaddress.data.MoveQuote
-import com.feature.changeaddress.data.MoveResult
+import com.hedvig.android.feature.changeaddress.data.AddressId
+import com.hedvig.android.feature.changeaddress.data.MoveIntentId
+import com.hedvig.android.feature.changeaddress.data.MoveQuote
+import com.hedvig.android.feature.changeaddress.data.MoveResult
 import kotlinx.datetime.LocalDate
 
 data class ChangeAddressUiState(

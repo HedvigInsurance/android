@@ -1,4 +1,4 @@
-package com.feature.changeaddress.ui
+package com.hedvig.android.feature.changeaddress.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -42,13 +42,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.feature.changeaddress.ChangeAddressUiState
-import com.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
 import com.hedvig.android.core.designsystem.newtheme.SquircleShape
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.error.ErrorDialog
+import com.hedvig.android.feature.changeaddress.ChangeAddressUiState
+import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import hedvig.resources.R
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -95,7 +95,6 @@ internal fun ChangeAddressEnterNewDestination(
             .verticalScroll(rememberScrollState())
             .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
         ) {
-
           Spacer(modifier = Modifier.padding(top = 48.dp))
           Text(
             text = stringResource(id = R.string.CHANGE_ADDRESS_ENTER_NEW_ADDRESS_TITLE),
@@ -144,7 +143,6 @@ internal fun ChangeAddressEnterNewDestination(
             },
             label = {
               Text(text = stringResource(id = R.string.CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL))
-
             },
             onValueChange = { viewModel.onPostalCodeChanged(it) },
             modifier = Modifier.fillMaxWidth(),
