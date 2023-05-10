@@ -78,7 +78,7 @@ internal fun NavGraphBuilder.changeAddressGraph(
       BackHandler {
         finish()
       }
-      ChangeAddressResult {
+      ChangeAddressResultDestination {
         finish()
       }
     }

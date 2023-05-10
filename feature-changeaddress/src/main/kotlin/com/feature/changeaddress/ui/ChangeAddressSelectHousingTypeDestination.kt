@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -64,7 +65,7 @@ internal fun ChangeAddressSelectHousingTypeDestination(
       )
       Spacer(modifier = Modifier.padding(top = 48.dp))
       Text(
-        text = "Välj din bostadstyp",
+        text = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_SELECT_HOUSING_TYPE_TITLE),
         style = MaterialTheme.typography.headlineSmall,
         textAlign = TextAlign.Center,
         modifier = Modifier.fillMaxWidth(),
@@ -92,7 +93,7 @@ internal fun ChangeAddressSelectHousingTypeDestination(
           },
           modifier = Modifier.padding(horizontal = 16.dp),
         ) {
-          Text(text = "Fortsätt")
+          Text(text = stringResource(id = hedvig.resources.R.string.general_continue_button))
         }
       }
     }
@@ -126,7 +127,7 @@ private fun HousingType.radiobuttonRow(
     )
     Spacer(modifier = Modifier.padding(12.dp))
     Text(
-      text = this@radiobuttonRow.toDisplayName(),
+      text = stringResource(this@radiobuttonRow.toDisplayName()),
       textAlign = TextAlign.Center,
       modifier = Modifier.fillMaxHeight(),
     )
