@@ -12,10 +12,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.material3.containedButtonContainer
+import com.hedvig.android.core.designsystem.material3.onContainedButtonContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.designsystem.theme.containedButtonContainer
-import com.hedvig.android.core.designsystem.theme.onContainedButtonContainer
 import androidx.compose.material.MaterialTheme as Material2Theme
 import androidx.compose.material.ProvideTextStyle as ProvideTextStyleM2
 import androidx.compose.material3.MaterialTheme as Material3Theme

@@ -2,11 +2,9 @@ package com.hedvig.android.core.designsystem.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.Colors
-import androidx.compose.material3.ColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
-import com.hedvig.android.core.designsystem.material3.LocalHedvigMaterial3ColorScheme
 
 // colors https://github.com/HedvigInsurance/android/blob/e86158084061de59a9f1b6d71dda3b234057883d/app/src/main/res/values/colors.xml#L2
 internal val black = Color(0xFF000000)
@@ -48,9 +46,6 @@ val warning_dark = Color(0xFFE3B945)
 
 val hedvig_black12percent = hedvig_black.copy(alpha = 0.12f)
 
-val progressBlue = Color(0xffC3CBD6)
-val progressYellow = Color(0xffEDCDAB)
-
 @Suppress("UnusedReceiverParameter")
 val Colors.onWarning: Color
   get() = hedvig_black
@@ -78,13 +73,3 @@ val Colors.textColorLink: Color
   } else {
     secondary
   }
-
-@Suppress("UnusedReceiverParameter")
-val ColorScheme.containedButtonContainer: Color
-  @Composable
-  get() = LocalHedvigMaterial3ColorScheme.current.containedButtonContainer
-
-@Suppress("UnusedReceiverParameter")
-val ColorScheme.onContainedButtonContainer: Color
-  @Composable
-  get() = LocalHedvigMaterial3ColorScheme.current.onContainedButtonContainer
