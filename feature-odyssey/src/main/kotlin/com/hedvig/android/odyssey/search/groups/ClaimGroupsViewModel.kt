@@ -32,6 +32,7 @@ internal class ClaimGroupsViewModel(
           _viewState.update {
             it.copy(
               claimGroups = result.claimGroups,
+              memberName = result.memberName,
               isLoading = false,
             )
           }

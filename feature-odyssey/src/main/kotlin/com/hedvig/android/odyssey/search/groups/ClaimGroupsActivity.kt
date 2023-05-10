@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -23,6 +24,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
@@ -71,16 +73,18 @@ class ClaimGroupsActivity : ComponentActivity() {
               )
 
               Column(Modifier.verticalScroll(rememberScrollState())) {
-                Text(
-                  text = getString(R.string.CLAIM_TRIAGING_TITLE),
-                  style = androidx.compose.material3.MaterialTheme.typography.displaySmall.copy(
-                    fontFamily = FontFamily(
-                      Font(R.font.hedvig_letters_small),
+                AnimatedVisibility(visible = viewState.memberName != null) {
+                  Text(
+                    text = stringResource(id = R.string.CLAIM_TRIAGING_ABOUT_TITILE, viewState.memberName!!),
+                    style = androidx.compose.material3.MaterialTheme.typography.displaySmall.copy(
+                      fontFamily = FontFamily(
+                        Font(R.font.hedvig_letters_small),
+                      ),
                     ),
-                  ),
-                  textAlign = TextAlign.Center,
-                  modifier = Modifier.padding(22.dp),
-                )
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(22.dp),
+                  )
+                }
 
                 Spacer(modifier = Modifier.padding(top = 28.dp))
 
