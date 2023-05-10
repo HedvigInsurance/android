@@ -1,0 +1,31 @@
+package com.hedvig.android.core.ui
+
+import androidx.compose.runtime.Immutable
+import java.text.DecimalFormat
+import kotlinx.serialization.Serializable
+import octopus.fragment.MoneyFragment
+import octopus.type.CurrencyCode
+
+@Immutable
+@Serializable
+data class UiMoney(val amount: Double, val currencyCode: CurrencyCode) {
+  @kotlinx.serialization.Transient
+  val decimalFormatter: DecimalFormat = DecimalFormat("0.#")
+
+  override fun toString(): String {
+    return buildString {
+      append(decimalFormatter.format(amount))
+      append(" ")
+      if (currencyCode == CurrencyCode.UNKNOWN__) {
+        error("Unknown currency code")
+      }
+      append(currencyCode)
+    }
+  }
+
+  companion object {
+    fun fromMoneyFragment(fragment: MoneyFragment): UiMoney {
+      return UiMoney(fragment.amount, fragment.currencyCode)
+    }
+  }
+}

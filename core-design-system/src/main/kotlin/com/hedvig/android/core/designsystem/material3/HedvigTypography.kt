@@ -6,10 +6,13 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import com.hedvig.android.core.designsystem.component.tokens.HedvigTypographyKeyTokens
 import com.hedvig.android.core.designsystem.theme.SansStandard
 
 internal val HedvigTypography: Typography
@@ -128,6 +131,32 @@ internal val HedvigTypography: Typography
  */
 private val Float.percentage: Float
   get() = this / 100
+
+private fun Typography.fromToken(value: HedvigTypographyKeyTokens): TextStyle {
+  return when (value) {
+    HedvigTypographyKeyTokens.DisplayLarge -> displayLarge
+    HedvigTypographyKeyTokens.DisplayMedium -> displayMedium
+    HedvigTypographyKeyTokens.DisplaySmall -> displaySmall
+    HedvigTypographyKeyTokens.HeadlineLarge -> headlineLarge
+    HedvigTypographyKeyTokens.HeadlineMedium -> headlineMedium
+    HedvigTypographyKeyTokens.HeadlineSmall -> headlineSmall
+    HedvigTypographyKeyTokens.TitleLarge -> titleLarge
+    HedvigTypographyKeyTokens.TitleMedium -> titleMedium
+    HedvigTypographyKeyTokens.TitleSmall -> titleSmall
+    HedvigTypographyKeyTokens.BodyLarge -> bodyLarge
+    HedvigTypographyKeyTokens.BodyMedium -> bodyMedium
+    HedvigTypographyKeyTokens.BodySmall -> bodySmall
+    HedvigTypographyKeyTokens.LabelLarge -> labelLarge
+    HedvigTypographyKeyTokens.LabelMedium -> labelMedium
+    HedvigTypographyKeyTokens.LabelSmall -> labelSmall
+  }
+}
+
+@Composable
+@ReadOnlyComposable
+internal fun HedvigTypographyKeyTokens.toTextStyle(): TextStyle {
+  return MaterialTheme.typography.fromToken(this)
+}
 
 @Preview
 @Composable
