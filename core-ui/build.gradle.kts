@@ -2,12 +2,14 @@ plugins {
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
   id("hedvig.android.ktlint")
+  alias(libs.plugins.serialization)
 }
 
 dependencies {
   implementation(projects.coreCommonAndroid)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)
+  implementation(projects.apollo.octopus)
 
   api(libs.accompanist.insetsUi)
   api(libs.androidx.compose.foundation)
@@ -22,6 +24,8 @@ dependencies {
   implementation(libs.androidx.other.core)
   implementation(libs.coil.coil)
   implementation(libs.coil.compose)
+  implementation(libs.kotlinx.serialization.core)
+  implementation(libs.kotlinx.serialization.json)
   implementation(libs.slimber)
 }
 

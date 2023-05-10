@@ -31,6 +31,7 @@ dependencies {
   implementation(libs.androidx.compose.material)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.material3.windowSizeClass)
+  implementation(libs.androidx.compose.materialIconsExtended)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.other.activityCompose)
 }

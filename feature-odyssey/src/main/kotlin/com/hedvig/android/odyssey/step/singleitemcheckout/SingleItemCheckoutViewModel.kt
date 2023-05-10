@@ -5,11 +5,11 @@ import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import arrow.core.NonEmptyList
 import arrow.core.toNonEmptyListOrNull
+import com.hedvig.android.core.ui.UiMoney
 import com.hedvig.android.odyssey.data.ClaimFlowRepository
 import com.hedvig.android.odyssey.data.ClaimFlowStep
 import com.hedvig.android.odyssey.navigation.CheckoutMethod
 import com.hedvig.android.odyssey.navigation.ClaimFlowDestination
-import com.hedvig.android.odyssey.navigation.UiMoney
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

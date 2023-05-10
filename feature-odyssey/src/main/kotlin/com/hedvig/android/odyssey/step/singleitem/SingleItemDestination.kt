@@ -49,6 +49,7 @@ import com.hedvig.android.core.designsystem.component.button.FormRowCard
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
@@ -114,6 +115,7 @@ private fun SingleItemScreen(
       error = uiState.hasError,
       showedError = showedError,
     ),
+    modifier = Modifier.clearFocusOnTap(),
   ) { sideSpacingModifier ->
     Spacer(Modifier.height(22.dp))
     uiState.itemBrandsUiState.asContent()?.let { itemBrandsUiState ->
