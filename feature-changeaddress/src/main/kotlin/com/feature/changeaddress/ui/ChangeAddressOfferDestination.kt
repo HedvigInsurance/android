@@ -21,7 +21,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -101,7 +100,7 @@ internal fun ChangeAddressOfferDestination(
           )
           Spacer(modifier = Modifier.padding(top = 32.dp))
           Text(
-            text = quote.premium.toString() + " kr/mån",
+            text = quote.premium.toString() + "/mån",
             style = MaterialTheme.typography.headlineLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(),

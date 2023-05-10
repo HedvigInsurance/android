@@ -7,12 +7,12 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.matchesPredicate
 import com.hedvig.android.core.common.test.MainCoroutineRule
+import com.hedvig.android.core.ui.UiMoney
 import com.hedvig.android.feature.odyssey.data.TestClaimFlowRepository
 import com.hedvig.android.odyssey.data.ClaimFlowStep
 import com.hedvig.android.odyssey.model.FlowId
 import com.hedvig.android.odyssey.navigation.CheckoutMethod
 import com.hedvig.android.odyssey.navigation.ClaimFlowDestination
-import com.hedvig.android.odyssey.navigation.UiMoney
 import com.hedvig.android.odyssey.step.singleitemcheckout.PayoutUiState
 import com.hedvig.android.odyssey.step.singleitemcheckout.SingleItemCheckoutUiState
 import com.hedvig.android.odyssey.step.singleitemcheckout.SingleItemCheckoutViewModel
