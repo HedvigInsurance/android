@@ -1,7 +1,9 @@
 package com.hedvig.android.feature.changeaddress.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Arrangement.Absolute.SpaceBetween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -21,8 +24,11 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -31,8 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.component.button.LargeOutlinedButton
-import com.hedvig.android.core.designsystem.component.card.HedvigCard
-import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation
+import com.hedvig.android.core.designsystem.newtheme.SquircleShape
 import com.hedvig.android.core.ui.R
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.error.ErrorDialog
@@ -89,41 +94,72 @@ internal fun ChangeAddressOfferDestination(
       Spacer(modifier = Modifier.padding(bottom = 64.dp))
 
       quotes.map { quote ->
-        HedvigCard(
-          elevation = HedvigCardElevation.Elevated(2.dp),
-          modifier = Modifier.padding(horizontal = 16.dp),
+        Column(
+          modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .background(shape = SquircleShape, color = Color(0xFFF0F0F0))
+            .padding(16.dp),
         ) {
-          Column(Modifier.padding(16.dp)) {
-            Spacer(modifier = Modifier.padding(top = 48.dp))
+          Row(verticalAlignment = CenterVertically) {
             Image(
               painter = painterResource(id = R.drawable.ic_pillow),
               contentDescription = "",
-              modifier = Modifier
-                .size(96.dp)
-                .align(CenterHorizontally),
+              modifier = Modifier.size(48.dp),
             )
-            Spacer(modifier = Modifier.padding(top = 16.dp))
+            Spacer(modifier = Modifier.padding(start = 16.dp))
+            Column {
+              Text(
+                text = "Hemförsäkring Bostadsrätt",
+                style = MaterialTheme.typography.titleMedium,
+                fontSize = 18.sp,
+              )
+              Row(verticalAlignment = CenterVertically) {
+                Text(
+                  text = "Aktiveras ${uiState.movingDate.input?.toString()}",
+                  style = MaterialTheme.typography.titleMedium,
+                  color = Color(0xFF727272),
+                  fontSize = 18.sp,
+                )
+                Spacer(modifier = Modifier.padding(start = 5.dp))
+                Icon(
+                  painter = painterResource(id = com.hedvig.android.core.designsystem.R.drawable.ic_info),
+                  tint = Color(0xFF727272),
+                  contentDescription = "",
+                )
+              }
+            }
+          }
+
+          Spacer(modifier = Modifier.padding(top = 16.dp))
+
+          Divider(
+            thickness = 1.dp,
+            color = Color(0xFFCFCFCF),
+          )
+
+          Spacer(modifier = Modifier.padding(top = 16.dp))
+
+          Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = SpaceBetween,
+          ) {
             Text(
-              text = uiState.housingType.input?.displayNameResource()?.let {
-                stringResource(id = it)
-              } ?: "-",
+              text = "Pris",
               style = MaterialTheme.typography.titleMedium,
               fontSize = 18.sp,
-              textAlign = TextAlign.Center,
-              modifier = Modifier.fillMaxWidth(),
             )
-            Spacer(modifier = Modifier.padding(top = 32.dp))
+
             Text(
               text = stringResource(
                 id = hedvig.resources.R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL,
                 quote.premium.toString(),
               ),
-              style = MaterialTheme.typography.headlineLarge,
-              textAlign = TextAlign.Center,
-              modifier = Modifier.fillMaxWidth(),
+              style = MaterialTheme.typography.titleMedium,
+              fontSize = 18.sp,
             )
           }
         }
+        Spacer(modifier = Modifier.padding(top = 16.dp))
       }
 
       Spacer(modifier = Modifier.padding(top = 14.dp))
