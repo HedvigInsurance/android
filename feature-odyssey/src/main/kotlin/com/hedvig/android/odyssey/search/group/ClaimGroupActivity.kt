@@ -5,6 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -74,62 +76,64 @@ class ClaimGroupActivity : ComponentActivity() {
               if (errorMessage != null) {
                 ErrorDialog(message = errorMessage, onDismiss = { viewModel.resetState() })
               }
-              Text(
-                text = "Vad har hänt?",
-                style = MaterialTheme.typography.displaySmall.copy(
-                  fontFamily = FontFamily(
-                    Font(R.font.hedvig_letters_small),
+              AnimatedVisibility(visible = !uiState.isLoading) {
+                Text(
+                  text = stringResource(id = R.string.CLAIM_TRIAGING_TITLE),
+                  style = MaterialTheme.typography.displaySmall.copy(
+                    fontFamily = FontFamily(
+                      Font(R.font.hedvig_letters_small),
+                    ),
                   ),
-                ),
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                  .padding(22.dp)
-                  .fillMaxWidth(),
-              )
-
-              Spacer(modifier = Modifier.padding(top = 28.dp))
-
-            }
-            Column(
-              modifier = Modifier
-                .align(Alignment.Center),
-            ) {
-
-              FlowRow(
-                modifier = Modifier
-                  .padding(horizontal = 16.dp),
-              ) {
-                uiState.searchableClaims.map {
-                  Text(
-                    text = it.displayName,
-                    modifier = Modifier
-                      .padding(4.dp)
-                      .clip(SquircleShape)
-                      .background(
-                        shape = RoundedCornerShape(corner = CornerSize(12.dp)),
-                        color = if (uiState.selectedClaim == it) {
-                          Color(0xFFE9FFC8)
-                        } else {
-                          Color(0xFFF0F0F0)
-                        },
-                      )
-                      .clickable { viewModel.onSelectSearchableClaim(it) }
-                      .padding(8.dp),
-                    textAlign = TextAlign.Center,
-                  )
-                }
+                  textAlign = TextAlign.Center,
+                  modifier = Modifier
+                    .padding(22.dp)
+                    .fillMaxWidth(),
+                )
+                Spacer(modifier = Modifier.padding(top = 28.dp))
               }
-              Spacer(modifier = Modifier.padding(top = 8.dp))
-              LargeContainedButton(
-                onClick = {
-                  uiState.selectedClaim?.let {
-                    viewModel.resetState()
-                    startActivity(ClaimFlowActivity.newInstance(this@ClaimGroupActivity, it.entryPointId))
+            }
+            AnimatedVisibility(
+              visible = !uiState.isLoading,
+              enter = fadeIn(),
+              modifier = Modifier.align(Alignment.Center),
+            ) {
+              Column {
+                FlowRow(
+                  modifier = Modifier
+                    .padding(horizontal = 16.dp),
+                ) {
+                  uiState.searchableClaims.map {
+                    Text(
+                      text = it.displayName,
+                      modifier = Modifier
+                        .padding(4.dp)
+                        .clip(SquircleShape)
+                        .background(
+                          shape = RoundedCornerShape(corner = CornerSize(12.dp)),
+                          color = if (uiState.selectedClaim == it) {
+                            Color(0xFFE9FFC8)
+                          } else {
+                            Color(0xFFF0F0F0)
+                          },
+                        )
+                        .clickable { viewModel.onSelectSearchableClaim(it) }
+                        .padding(8.dp),
+                      textAlign = TextAlign.Center,
+                    )
                   }
-                },
-                modifier = Modifier.padding(horizontal = 16.dp),
-              ) {
-                Text(text = stringResource(id = R.string.general_continue_button))
+                }
+                Spacer(modifier = Modifier.padding(top = 8.dp))
+                LargeContainedButton(
+                  onClick = {
+                    uiState.selectedClaim?.let {
+                      viewModel.resetState()
+                      startActivity(ClaimFlowActivity.newInstance(this@ClaimGroupActivity, it.entryPointId))
+                    }
+                  },
+                  modifier = Modifier.padding(horizontal = 16.dp),
+                ) {
+                  Text(text = stringResource(id = R.string.general_continue_button))
+                }
               }
             }
 
