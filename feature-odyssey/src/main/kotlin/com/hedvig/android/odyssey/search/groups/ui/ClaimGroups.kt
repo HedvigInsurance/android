@@ -23,7 +23,6 @@ import coil.request.ImageRequest
 import com.hedvig.android.core.designsystem.newtheme.SquircleShape
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.preview.PreviewImageLoader
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.odyssey.search.groups.ClaimGroup
 import java.util.*
@@ -56,7 +55,7 @@ internal fun ClaimGroups(
           .crossfade(true)
           .build(),
         contentDescription = "Icon",
-        imageLoader = imageLoader!!,
+        imageLoader = imageLoader,
         modifier = Modifier.size(48.dp),
       )
       Spacer(modifier = Modifier.padding(12.dp))
