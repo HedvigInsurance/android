@@ -3,10 +3,8 @@ package com.hedvig.android.feature.odyssey.data
 import app.cash.turbine.Turbine
 import arrow.core.Either
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.odyssey.data.ClaimFlowRepository
-import com.hedvig.android.odyssey.data.ClaimFlowStep
-import com.hedvig.android.odyssey.model.AudioUrl
-import com.hedvig.android.odyssey.model.FlowId
+import com.hedvig.android.feature.odyssey.model.AudioUrl
+import com.hedvig.android.feature.odyssey.model.FlowId
 import kotlinx.datetime.LocalDate
 import octopus.type.FlowClaimItemBrandInput
 import octopus.type.FlowClaimItemModelInput

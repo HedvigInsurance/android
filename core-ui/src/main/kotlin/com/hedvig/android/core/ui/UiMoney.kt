@@ -2,6 +2,7 @@ package com.hedvig.android.core.ui
 
 import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import octopus.fragment.MoneyFragment
 import octopus.type.CurrencyCode
 import java.text.DecimalFormat
@@ -9,7 +10,7 @@ import java.text.DecimalFormat
 @Immutable
 @Serializable
 data class UiMoney(val amount: Double, val currencyCode: CurrencyCode) {
-  @kotlinx.serialization.Transient
+  @Transient
   val decimalFormatter: DecimalFormat = DecimalFormat("0.#")
 
   override fun toString(): String {

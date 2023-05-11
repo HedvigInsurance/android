@@ -61,5 +61,5 @@ dependencies {
 }
 
 android {
-  namespace = "com.hedvig.android.odyssey"
+  namespace = "com.hedvig.android.feature.odyssey"
 }

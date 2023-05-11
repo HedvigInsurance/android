@@ -3,10 +3,10 @@ package com.hedvig.app.feature.claims.ui
 import android.content.Context
 import android.content.Intent
 import androidx.fragment.app.FragmentManager
+import com.hedvig.android.feature.odyssey.ClaimFlowActivity
+import com.hedvig.android.feature.odyssey.search.SearchActivity
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
-import com.hedvig.android.odyssey.ClaimFlowActivity
-import com.hedvig.android.odyssey.search.SearchActivity
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 
 suspend fun startClaimsFlow(
