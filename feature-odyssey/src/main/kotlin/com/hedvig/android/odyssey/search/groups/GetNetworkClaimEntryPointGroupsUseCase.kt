@@ -9,19 +9,21 @@ import com.hedvig.android.core.common.ErrorMessage
 import octopus.EntrypointGroupsQuery
 
 internal class GetNetworkClaimEntryPointGroupsUseCase(
-    private val apolloClient: ApolloClient,
+  private val apolloClient: ApolloClient,
 ) {
 
   suspend fun invoke(): Either<ErrorMessage, GroupedClaimsResult> {
     val query = EntrypointGroupsQuery()
 
     return either {
-        val data = apolloClient.query(query).safeExecute()
-            .toEither(::ErrorMessage)
-            .bind()
+      val data = apolloClient.query(query).safeExecute()
+        .toEither(::ErrorMessage)
+        .bind()
 
-        val groupedClaims = data.entrypointGroups.map { it.toClaimGroup() }
-        GroupedClaimsResult(groupedClaims)
+      GroupedClaimsResult(
+        memberName = data.currentMember.firstName,
+        claimGroups = data.entrypointGroups.map { it.toClaimGroup() },
+      )
     }
   }
 }
@@ -32,4 +34,7 @@ private fun EntrypointGroupsQuery.Data.EntrypointGroup.toClaimGroup() = ClaimGro
   iconUrl = iconUrl as String,
 )
 
-data class GroupedClaimsResult(val claimGroups: List<ClaimGroup>)
+data class GroupedClaimsResult(
+  val memberName: String,
+  val claimGroups: List<ClaimGroup>,
+)

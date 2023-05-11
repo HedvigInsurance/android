@@ -1,4 +1,7 @@
 query EntrypointGroups {
+  currentMember {
+    firstName
+  }
   entrypointGroups(type: CLAIM) {
     id
     displayName
