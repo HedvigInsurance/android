@@ -23,6 +23,8 @@ import coil.request.ImageRequest
 import com.hedvig.android.core.designsystem.newtheme.SquircleShape
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.preview.PreviewImageLoader
+import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.odyssey.search.groups.ClaimGroup
 import java.util.*
 
@@ -30,7 +32,7 @@ import java.util.*
 internal fun ClaimGroups(
   selectGroup: (ClaimGroup) -> Unit,
   claimGroups: List<ClaimGroup>,
-  imageLoader: ImageLoader? = null,
+  imageLoader: ImageLoader,
 ) {
   claimGroups.map { claim ->
     Row(
@@ -106,6 +108,7 @@ fun PreviewCommonClaims() {
           iconUrl = "",
         ),
       ),
+      imageLoader = rememberPreviewImageLoader()
     )
   }
 }
