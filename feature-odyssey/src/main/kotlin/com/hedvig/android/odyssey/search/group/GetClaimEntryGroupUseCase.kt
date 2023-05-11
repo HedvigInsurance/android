@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.odyssey.search
+package com.hedvig.android.odyssey.search.group
 
 import arrow.core.Either
 import arrow.core.raise.either

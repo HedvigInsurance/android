@@ -34,7 +34,7 @@ import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.CenterAlignedTopAppBar
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
-import com.hedvig.android.feature.odyssey.ClaimFlowActivity
+import com.hedvig.android.odyssey.search.group.ClaimGroupActivity
 import com.hedvig.android.odyssey.search.groups.ui.ClaimGroups
 import hedvig.resources.R
 import org.koin.android.ext.android.inject
@@ -57,7 +57,7 @@ class ClaimGroupsActivity : ComponentActivity() {
       LaunchedEffect(entryPointId) {
         if (entryPointId != null) {
           viewModel.resetState()
-          startActivity(ClaimFlowActivity.newInstance(this@ClaimGroupsActivity, entryPointId))
+          startActivity(ClaimGroupActivity.newInstance(this@ClaimGroupsActivity, entryPointId))
         }
       }
 
@@ -92,7 +92,7 @@ class ClaimGroupsActivity : ComponentActivity() {
                 if (errorMessage != null) {
                   LaunchedEffect(Unit) { e { "SearchActivity: errorMessage$errorMessage" } }
                   GenericErrorScreen(
-                    onRetryButtonClick = { viewModel.loadSearchableClaims() },
+                    onRetryButtonClick = { viewModel.loadClaimGroups() },
                     modifier = Modifier.padding(16.dp),
                   )
                 } else {
