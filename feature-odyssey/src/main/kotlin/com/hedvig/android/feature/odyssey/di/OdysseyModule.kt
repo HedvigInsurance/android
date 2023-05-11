@@ -10,8 +10,6 @@ import com.hedvig.android.feature.odyssey.model.FlowId
 import com.hedvig.android.feature.odyssey.navigation.AudioContent
 import com.hedvig.android.feature.odyssey.navigation.ClaimFlowDestination
 import com.hedvig.android.feature.odyssey.navigation.LocationOption
-import com.hedvig.android.feature.odyssey.search.GetNetworkClaimEntryPointsUseCase
-import com.hedvig.android.feature.odyssey.search.SearchViewModel
 import com.hedvig.android.feature.odyssey.step.audiorecording.AudioRecordingViewModel
 import com.hedvig.android.feature.odyssey.step.dateofoccurrence.DateOfOccurrenceViewModel
 import com.hedvig.android.feature.odyssey.step.dateofoccurrencepluslocation.DateOfOccurrencePlusLocationViewModel
@@ -22,6 +20,8 @@ import com.hedvig.android.feature.odyssey.step.phonenumber.PhoneNumberViewModel
 import com.hedvig.android.feature.odyssey.step.singleitem.SingleItemViewModel
 import com.hedvig.android.feature.odyssey.step.singleitemcheckout.SingleItemCheckoutViewModel
 import com.hedvig.android.feature.odyssey.step.summary.ClaimSummaryViewModel
+import com.hedvig.android.odyssey.search.groups.ClaimGroupsViewModel
+import com.hedvig.android.odyssey.search.groups.GetNetworkClaimEntryPointGroupsUseCase
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.Json
@@ -43,9 +43,9 @@ val odysseyModule = module {
     ClaimFlowRepositoryImpl(get<ApolloClient>(octopusClient), get<OdysseyService>())
   }
 
-  viewModel<SearchViewModel> { SearchViewModel(get<GetNetworkClaimEntryPointsUseCase>()) }
-  single<GetNetworkClaimEntryPointsUseCase> {
-    GetNetworkClaimEntryPointsUseCase(get<ApolloClient>(octopusClient))
+  viewModel<ClaimGroupsViewModel> { ClaimGroupsViewModel(get<GetNetworkClaimEntryPointGroupsUseCase>()) }
+  single<GetNetworkClaimEntryPointGroupsUseCase> {
+    GetNetworkClaimEntryPointGroupsUseCase(get<ApolloClient>(octopusClient))
   }
 
   // Claims

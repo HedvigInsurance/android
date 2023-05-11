@@ -8,7 +8,7 @@ import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.odyssey.model.ItemProblem
 import com.hedvig.android.feature.odyssey.model.ItemType
-import com.hedvig.android.feature.odyssey.model.SearchableClaim
+import com.hedvig.android.odyssey.search.commonclaims.SearchableClaim
 import octopus.EntrypointSearchQuery
 
 internal class GetNetworkClaimEntryPointsUseCase(

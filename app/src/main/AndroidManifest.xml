@@ -254,7 +254,7 @@
             android:parentActivityName="com.hedvig.app.feature.loggedin.ui.LoggedInActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.hedvig.android.feature.odyssey.search.SearchActivity"
+            android:name="com.hedvig.android.odyssey.search.groups.ClaimGroupsActivity"
             android:windowSoftInputMode="adjustResize" />
 
         <activity

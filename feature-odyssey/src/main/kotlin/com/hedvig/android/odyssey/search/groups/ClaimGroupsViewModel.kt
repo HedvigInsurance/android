@@ -1,16 +1,15 @@
-package com.hedvig.android.feature.odyssey.search
+package com.hedvig.android.odyssey.search.groups
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.odyssey.search.commonclaims.SearchableClaim
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal class SearchViewModel(
-  private val getClaimEntryPoints: GetNetworkClaimEntryPointsUseCase,
+internal class ClaimGroupsViewModel(
+  private val getClaimEntryPoints: GetNetworkClaimEntryPointGroupsUseCase,
 ) : ViewModel() {
-  private val _viewState = MutableStateFlow(SearchViewState())
+  private val _viewState = MutableStateFlow(ClaimGroupsViewState())
   val viewState = _viewState
 
   init {
@@ -32,7 +31,7 @@ internal class SearchViewModel(
         ifRight = { result ->
           _viewState.update {
             it.copy(
-              commonClaims = result.searchableClaims,
+              claimGroups = result.claimGroups,
               isLoading = false,
             )
           }
@@ -41,8 +40,8 @@ internal class SearchViewModel(
     }
   }
 
-  fun onSelectClaim(searchableClaim: SearchableClaim) {
-    _viewState.update { it.copy(selectedClaim = searchableClaim) }
+  fun onSelectClaimGroup(claimGroup: ClaimGroup) {
+    _viewState.update { it.copy(selectedClaim = claimGroup) }
   }
 
   fun resetState() {

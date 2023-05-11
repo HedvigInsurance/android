@@ -1,0 +1,7 @@
+query EntrypointGroups {
+  entrypointGroups(type: CLAIM) {
+    id
+    displayName
+    iconUrl
+  }
+}

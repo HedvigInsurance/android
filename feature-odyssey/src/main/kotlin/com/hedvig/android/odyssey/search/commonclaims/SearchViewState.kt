@@ -1,6 +1,4 @@
-package com.hedvig.android.feature.odyssey.search
-
-import com.hedvig.android.odyssey.search.commonclaims.SearchableClaim
+package com.hedvig.android.odyssey.search.commonclaims
 
 internal data class SearchViewState(
   val input: String? = null,

@@ -1,8 +1,8 @@
-package com.hedvig.android.feature.odyssey.search
+package com.hedvig.android.odyssey.search.commonclaims
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.odyssey.search.commonclaims.SearchableClaim
+import com.hedvig.android.feature.odyssey.search.GetNetworkClaimEntryPointsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
