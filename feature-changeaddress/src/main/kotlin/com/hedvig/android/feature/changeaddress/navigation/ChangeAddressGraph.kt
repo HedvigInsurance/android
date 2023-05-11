@@ -1,4 +1,4 @@
-package com.feature.changeaddress.navigation
+package com.hedvig.android.feature.changeaddress.navigation
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
@@ -8,11 +8,12 @@ import androidx.compose.ui.unit.Density
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import com.feature.changeaddress.ChangeAddressViewModel
-import com.feature.changeaddress.ui.ChangeAddressEnterNewDestination
-import com.feature.changeaddress.ui.ChangeAddressOfferDestination
-import com.feature.changeaddress.ui.ChangeAddressSelectHousingTypeDestination
+import com.feature.changeaddress.navigation.ChangeAddressResultDestination
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
+import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
+import com.hedvig.android.feature.changeaddress.ui.ChangeAddressEnterNewDestination
+import com.hedvig.android.feature.changeaddress.ui.ChangeAddressOfferDestination
+import com.hedvig.android.feature.changeaddress.ui.ChangeAddressSelectHousingTypeDestination
 import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.compose.typed.animatedNavigation
 import com.kiwi.navigationcompose.typed.createRoutePattern

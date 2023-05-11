@@ -12,7 +12,6 @@ import com.hedvig.android.odyssey.navigation.ItemModel.Unknown.displayName
 import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
-import octopus.fragment.MoneyFragment
 import octopus.type.CurrencyCode
 
 internal sealed interface Destinations : Destination {

@@ -1,13 +1,11 @@
-import com.feature.changeaddress.data.AddressId
-import com.feature.changeaddress.data.AddressInput
-import com.feature.changeaddress.data.MoveIntentId
+import com.hedvig.android.feature.changeaddress.data.AddressId
+import com.hedvig.android.feature.changeaddress.data.AddressInput
+import com.hedvig.android.feature.changeaddress.data.MoveIntentId
 import kotlinx.datetime.LocalDate
-
 
 enum class HousingType {
   APARTMENT_RENT, APARTMENT_OWN, VILLA
 }
-
 
 fun HousingType.displayNameResource() = when (this) {
   HousingType.APARTMENT_RENT -> hedvig.resources.R.string.CHANGE_ADDRESS_APARTMENT_RENT_LABEL

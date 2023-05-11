@@ -152,7 +152,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         context?.startActivity(
           Intent(
             requireContext(),
-            com.feature.changeaddress.ChangeAddressActivity::class.java,
+            com.hedvig.android.feature.changeaddress.ChangeAddressActivity::class.java,
           ),
         )
       } else {
