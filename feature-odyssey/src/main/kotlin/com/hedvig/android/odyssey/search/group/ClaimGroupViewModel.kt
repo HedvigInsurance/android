@@ -11,19 +11,19 @@ internal class ClaimGroupViewModel(
   private val getClaimEntryPoints: GetClaimEntryGroupUseCase,
   private val groupId: String,
 ) : ViewModel() {
-  private val _viewState = MutableStateFlow(ClaimGroupViewState())
-  val viewState = _viewState
+  private val _uiState = MutableStateFlow(ClaimGroupUiState())
+  val uiState = _uiState
 
   init {
     loadClaimGroup()
   }
 
   fun loadClaimGroup() {
-    _viewState.update { it.copy(errorMessage = null, isLoading = true) }
+    _uiState.update { it.copy(errorMessage = null, isLoading = true) }
     viewModelScope.launch {
       getClaimEntryPoints.invoke(groupId).fold(
         ifLeft = { errorMessage ->
-          _viewState.update {
+          _uiState.update {
             it.copy(
               errorMessage = errorMessage.message,
               isLoading = false,
@@ -31,9 +31,10 @@ internal class ClaimGroupViewModel(
           }
         },
         ifRight = { result ->
-          _viewState.update {
+          _uiState.update {
             it.copy(
               searchableClaims = result.searchableClaims,
+              selectedClaim = result.searchableClaims.lastOrNull(),
               isLoading = false,
             )
           }
@@ -43,10 +44,10 @@ internal class ClaimGroupViewModel(
   }
 
   fun onSelectSearchableClaim(searchableClaim: SearchableClaim) {
-    _viewState.update { it.copy(selectedClaim = searchableClaim) }
+    _uiState.update { it.copy(selectedClaim = searchableClaim) }
   }
 
   fun resetState() {
-    _viewState.update { it.copy(selectedClaim = null) }
+    _uiState.update { it.copy(selectedClaim = null) }
   }
 }

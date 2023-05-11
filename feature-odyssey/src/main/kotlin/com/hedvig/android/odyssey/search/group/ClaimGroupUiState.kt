@@ -2,7 +2,7 @@ package com.hedvig.android.odyssey.search.group
 
 import com.hedvig.android.odyssey.model.SearchableClaim
 
-internal data class ClaimGroupViewState(
+internal data class ClaimGroupUiState(
   val input: String? = null,
   val searchableClaims: List<SearchableClaim> = emptyList(),
   val selectedClaim: SearchableClaim? = null,

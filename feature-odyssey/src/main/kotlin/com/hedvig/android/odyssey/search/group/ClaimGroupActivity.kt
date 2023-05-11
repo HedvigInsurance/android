@@ -55,15 +55,7 @@ class ClaimGroupActivity : ComponentActivity() {
 
     setContent {
       val viewModel = koinViewModel<ClaimGroupViewModel> { parametersOf(intent.getStringExtra("groupId")) }
-      val viewState by viewModel.viewState.collectAsState()
-
-      val entryPointId = viewState.selectedClaim?.entryPointId
-      LaunchedEffect(entryPointId) {
-        if (entryPointId != null) {
-          viewModel.resetState()
-          startActivity(ClaimFlowActivity.newInstance(this@ClaimGroupActivity, entryPointId))
-        }
-      }
+      val uiState by viewModel.uiState.collectAsState()
 
       HedvigTheme {
         Surface(color = MaterialTheme.colorScheme.background) {
@@ -78,7 +70,7 @@ class ClaimGroupActivity : ComponentActivity() {
 
               Spacer(modifier = Modifier.padding(top = 28.dp))
 
-              val errorMessage = viewState.errorMessage
+              val errorMessage = uiState.errorMessage
               if (errorMessage != null) {
                 ErrorDialog(message = errorMessage, onDismiss = { viewModel.resetState() })
               }
@@ -107,7 +99,7 @@ class ClaimGroupActivity : ComponentActivity() {
                 modifier = Modifier
                   .padding(horizontal = 16.dp),
               ) {
-                viewState.searchableClaims.map {
+                uiState.searchableClaims.map {
                   Text(
                     text = it.displayName,
                     modifier = Modifier
@@ -115,7 +107,11 @@ class ClaimGroupActivity : ComponentActivity() {
                       .clip(SquircleShape)
                       .background(
                         shape = RoundedCornerShape(corner = CornerSize(12.dp)),
-                        color = Color(0xFFF0F0F0),
+                        color = if (uiState.selectedClaim == it) {
+                          Color(0xFFE9FFC8)
+                        } else {
+                          Color(0xFFF0F0F0)
+                        },
                       )
                       .clickable { viewModel.onSelectSearchableClaim(it) }
                       .padding(8.dp),
@@ -125,14 +121,19 @@ class ClaimGroupActivity : ComponentActivity() {
               }
               Spacer(modifier = Modifier.padding(top = 8.dp))
               LargeContainedButton(
-                onClick = {},
+                onClick = {
+                  uiState.selectedClaim?.let {
+                    viewModel.resetState()
+                    startActivity(ClaimFlowActivity.newInstance(this@ClaimGroupActivity, it.entryPointId))
+                  }
+                },
                 modifier = Modifier.padding(horizontal = 16.dp),
               ) {
                 Text(text = stringResource(id = R.string.general_continue_button))
               }
             }
 
-            if (viewState.isLoading) {
+            if (uiState.isLoading) {
               CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
           }
