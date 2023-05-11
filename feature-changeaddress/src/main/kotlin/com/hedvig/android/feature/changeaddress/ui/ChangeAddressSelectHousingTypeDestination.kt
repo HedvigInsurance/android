@@ -1,4 +1,4 @@
-package com.feature.changeaddress.ui
+package com.hedvig.android.feature.changeaddress.ui
 
 import HousingType
 import androidx.compose.foundation.Image
@@ -39,13 +39,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.feature.changeaddress.ChangeAddressUiState
-import com.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.newtheme.SquircleShape
 import com.hedvig.android.core.ui.R
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.error.ErrorDialog
+import com.hedvig.android.feature.changeaddress.ChangeAddressUiState
+import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import displayNameResource
 
 @Composable

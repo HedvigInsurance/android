@@ -715,7 +715,7 @@ val applicationModule = module {
       businessModelModule,
       cacheManagerModule,
       changeAddressModule,
-      com.feature.changeaddress.di.changeAddressModule,
+      com.hedvig.android.feature.changeaddress.di.changeAddressModule,
       changeDateBottomSheetModule,
       chatEventModule,
       checkoutModule,

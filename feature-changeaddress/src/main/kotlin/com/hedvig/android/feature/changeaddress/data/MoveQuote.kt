@@ -1,4 +1,4 @@
-package com.feature.changeaddress.data
+package com.hedvig.android.feature.changeaddress.data
 
 import com.hedvig.android.core.ui.UiMoney
 import kotlinx.datetime.LocalDate

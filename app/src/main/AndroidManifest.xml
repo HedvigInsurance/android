@@ -258,7 +258,7 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name="com.feature.changeaddress.ChangeAddressActivity"
+            android:name="com.hedvig.android.feature.changeaddress.ChangeAddressActivity"
             android:parentActivityName="com.hedvig.app.feature.loggedin.ui.LoggedInActivity"
             android:windowSoftInputMode="adjustResize" />
 

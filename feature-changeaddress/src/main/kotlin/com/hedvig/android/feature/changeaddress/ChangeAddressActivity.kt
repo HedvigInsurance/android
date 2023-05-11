@@ -1,14 +1,14 @@
-package com.feature.changeaddress
+package com.hedvig.android.feature.changeaddress
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.core.view.WindowCompat
-import com.feature.changeaddress.navigation.ChangeAddressNavHost
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.feature.changeaddress.navigation.ChangeAddressNavHost
 import com.hedvig.android.navigation.activity.Navigator
 import org.koin.android.ext.android.inject
 

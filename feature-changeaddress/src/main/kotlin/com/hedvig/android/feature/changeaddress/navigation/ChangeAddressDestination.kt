@@ -1,4 +1,4 @@
-package com.feature.changeaddress.navigation
+package com.hedvig.android.feature.changeaddress.navigation
 
 import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.serialization.Serializable

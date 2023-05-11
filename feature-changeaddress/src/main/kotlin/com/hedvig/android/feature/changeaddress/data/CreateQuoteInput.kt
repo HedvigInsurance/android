@@ -1,6 +1,6 @@
-import com.feature.changeaddress.data.AddressId
-import com.feature.changeaddress.data.AddressInput
-import com.feature.changeaddress.data.MoveIntentId
+import com.hedvig.android.feature.changeaddress.data.AddressId
+import com.hedvig.android.feature.changeaddress.data.AddressInput
+import com.hedvig.android.feature.changeaddress.data.MoveIntentId
 import kotlinx.datetime.LocalDate
 
 enum class HousingType {

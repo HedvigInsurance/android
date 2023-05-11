@@ -1,12 +1,13 @@
-package com.feature.changeaddress
+package com.hedvig.android.feature.changeaddress
 
 import CreateQuoteInput
 import HousingType
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.feature.changeaddress.data.AddressInput
-import com.feature.changeaddress.data.ChangeAddressRepository
-import com.feature.changeaddress.data.MoveIntentId
+import com.hedvig.android.feature.changeaddress.data.AddressInput
+import com.hedvig.android.feature.changeaddress.data.ChangeAddressRepository
+import com.hedvig.android.feature.changeaddress.data.MoveIntentId
+import hedvig.resources.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -137,7 +138,7 @@ internal class ChangeAddressViewModel(
         it.copy(
           housingType = ValidatedInput(
             input = null,
-            errorMessageRes = hedvig.resources.R.string.CHANGE_ADDRESS_HOUSING_TYPE_ERROR,
+            errorMessageRes = R.string.CHANGE_ADDRESS_HOUSING_TYPE_ERROR,
           ),
         )
       }
@@ -146,7 +147,7 @@ internal class ChangeAddressViewModel(
         it.copy(
           housingType = ValidatedInput(
             input = it.housingType.input,
-            errorMessageRes = hedvig.resources.R.string.CHANGE_ADDRESS_MOVE_TO_VILLA_ERROR_TEXT,
+            errorMessageRes = R.string.CHANGE_ADDRESS_MOVE_TO_VILLA_ERROR_TEXT,
           ),
         )
       }
