@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.changeaddress.ui
 
+import android.widget.Button
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -9,8 +10,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -107,22 +111,16 @@ internal fun ChangeAddressOfferDestination(
 
         Spacer(modifier = Modifier.padding(top = 24.dp))
 
-        Text(
-          text = stringResource(id = hedvig.resources.R.string.open_chat),
-          color = MaterialTheme.colorScheme.onPrimary,
-          modifier = Modifier
-            .padding(
-              horizontal = 16.dp,
-              vertical = 8.dp,
-            )
-            .clip(SquircleShape)
-            .clickable { openChat() }
-            .background(shape = SquircleShape, color = MaterialTheme.colorScheme.primary)
-            .padding(
-              horizontal = 16.dp,
-              vertical = 8.dp,
-            ),
-        )
+        TextButton(
+          shape = SquircleShape,
+          colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+          onClick = { openChat() },
+        ) {
+          Text(
+            text = stringResource(id = hedvig.resources.R.string.open_chat),
+            color = MaterialTheme.colorScheme.onPrimary,
+          )
+        }
       }
 
       Spacer(modifier = Modifier.padding(top = 32.dp))
