@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.feature.changeaddress.data.AddressInput
 import com.hedvig.android.feature.changeaddress.data.ChangeAddressRepository
 import com.hedvig.android.feature.changeaddress.data.MoveIntentId
+import com.hedvig.android.feature.changeaddress.data.MoveQuote
 import hedvig.resources.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -68,10 +69,6 @@ internal class ChangeAddressViewModel(
     _uiState.update { it.copy(movingDate = ValidatedInput(movingDate)) }
   }
 
-  fun onHousingTypeCleared() {
-    _uiState.update { it.copy(housingType = ValidatedInput(null)) }
-  }
-
   fun onQuotesCleared() {
     _uiState.update { it.copy(quotes = emptyList()) }
   }
@@ -104,7 +101,18 @@ internal class ChangeAddressViewModel(
     }
   }
 
-  fun onAcceptQuote(id: MoveIntentId) {
+  fun onExpandQuote(moveQuote: MoveQuote) {
+    _uiState.update {
+      it.copy(
+        quotes = it.quotes.replace(
+          newValue = moveQuote.copy(isExpanded = !moveQuote.isExpanded),
+          block = { it.moveIntentId == moveQuote.moveIntentId },
+        ),
+      )
+    }
+  }
+
+  fun onConfirmMove(id: MoveIntentId) {
     viewModelScope.launch {
       _uiState.update { it.copy(isLoading = true) }
       changeAddressRepository.commitMove(id).fold(
@@ -176,3 +184,9 @@ private fun ChangeAddressUiState.toCreateQuoteInput() = CreateQuoteInput(
   apartmentOwnerType = housingType.input!!,
   isStudent = false,
 )
+
+fun <T> List<T>.replace(newValue: T, block: (T) -> Boolean): List<T> {
+  return map {
+    if (block(it)) newValue else it
+  }
+}

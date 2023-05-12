@@ -26,5 +26,6 @@ internal class HAnalyticsFeatureFlagProvider(
       useOdyssey
     }
     Feature.NEW_MOVING_FLOW -> false
+    Feature.CLAIMS_TRIAGING -> false
   }
 }

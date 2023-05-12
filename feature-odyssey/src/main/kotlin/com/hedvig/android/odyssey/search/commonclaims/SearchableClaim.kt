@@ -1,4 +1,7 @@
-package com.hedvig.android.feature.odyssey.model
+package com.hedvig.android.odyssey.search.commonclaims
+
+import com.hedvig.android.feature.odyssey.model.ItemProblem
+import com.hedvig.android.feature.odyssey.model.ItemType
 
 data class SearchableClaim(
   val entryPointId: String,

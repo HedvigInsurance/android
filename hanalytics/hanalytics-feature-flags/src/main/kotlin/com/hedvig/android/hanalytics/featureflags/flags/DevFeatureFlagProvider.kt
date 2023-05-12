@@ -25,6 +25,7 @@ internal class DevFeatureFlagProvider(
       Feature.UPDATE_NECESSARY -> false
       Feature.USE_NATIVE_CLAIMS_FLOW -> true
       Feature.NEW_MOVING_FLOW -> true
+      Feature.CLAIMS_TRIAGING -> true
     }
   }
 }
