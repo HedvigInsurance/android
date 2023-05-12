@@ -79,7 +79,7 @@ fun PreviewCommonClaims() {
         ClaimGroup(
           id = UUID.randomUUID().toString(),
           displayName = "Broken phone",
-          iconUrl = ""
+          iconUrl = "",
         ),
         ClaimGroup(
           id = UUID.randomUUID().toString(),
@@ -107,7 +107,7 @@ fun PreviewCommonClaims() {
           iconUrl = "",
         ),
       ),
-      imageLoader = rememberPreviewImageLoader()
+      imageLoader = rememberPreviewImageLoader(),
     )
   }
 }

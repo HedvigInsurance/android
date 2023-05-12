@@ -13,7 +13,7 @@ data class MoveQuote(
   val premium: UiMoney,
   val startDate: LocalDate,
   val termsVersion: String,
-  val isExpanded: Boolean = false
+  val isExpanded: Boolean = false,
 )
 
 @Serializable
