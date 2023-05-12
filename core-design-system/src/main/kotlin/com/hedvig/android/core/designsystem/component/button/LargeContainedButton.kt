@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.material3.containedButtonContainer
 import com.hedvig.android.core.designsystem.material3.onContainedButtonContainer
@@ -63,13 +64,14 @@ fun LargeContainedButton(
       alpha = 0.38f,
     ),
   ),
+  shape: Shape = Material3Theme.shapes.large,
   content: @Composable RowScope.() -> Unit,
 ) {
   Button(
     onClick = onClick,
     enabled = enabled,
     modifier = modifier.fillMaxWidth(),
-    shape = Material3Theme.shapes.large,
+    shape = shape,
     contentPadding = PaddingValues(16.dp),
     colors = colors,
   ) {

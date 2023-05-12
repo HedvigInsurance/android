@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.changeaddress.ui
+package com.hedvig.android.feature.changeaddress.destination
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +38,7 @@ import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.error.ErrorDialog
 import com.hedvig.android.feature.changeaddress.ChangeAddressUiState
 import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
+import com.hedvig.android.feature.changeaddress.ui.AddressInfoCard
 import displayNameResource
 
 @Composable
