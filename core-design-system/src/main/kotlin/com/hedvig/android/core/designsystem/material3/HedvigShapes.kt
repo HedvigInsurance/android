@@ -25,6 +25,10 @@ internal val HedvigShapes: Shapes
     large = RoundedCornerShape(8.0.dp),
   )
 
+@Suppress("UnusedReceiverParameter")
+val Shapes.squircle: Shape
+  get() = SquircleShape
+
 internal fun CornerBasedShape.top(): CornerBasedShape {
   return copy(bottomStart = CornerSize(0.0.dp), bottomEnd = CornerSize(0.0.dp))
 }

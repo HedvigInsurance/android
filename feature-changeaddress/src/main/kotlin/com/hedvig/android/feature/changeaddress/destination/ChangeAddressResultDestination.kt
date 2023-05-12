@@ -10,7 +10,7 @@ import com.hedvig.android.core.designsystem.component.button.LargeContainedButto
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 
 @Composable
-fun ChangeAddressResultDestination(
+internal fun ChangeAddressResultDestination(
   onFinish: () -> Unit,
 ) {
   Surface(Modifier.fillMaxSize()) {

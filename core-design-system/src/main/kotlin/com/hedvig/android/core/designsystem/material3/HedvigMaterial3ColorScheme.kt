@@ -12,6 +12,9 @@ import com.hedvig.android.core.designsystem.component.tokens.HedvigColorSchemeKe
 import com.hedvig.android.core.designsystem.newtheme.amber_100
 import com.hedvig.android.core.designsystem.newtheme.amber_600
 import com.hedvig.android.core.designsystem.newtheme.amber_800
+import com.hedvig.android.core.designsystem.newtheme.blue_200
+import com.hedvig.android.core.designsystem.newtheme.blue_600
+import com.hedvig.android.core.designsystem.newtheme.blue_900
 import com.hedvig.android.core.designsystem.newtheme.green_100
 import com.hedvig.android.core.designsystem.newtheme.green_600
 import com.hedvig.android.core.designsystem.newtheme.green_800
@@ -35,6 +38,12 @@ class HedvigMaterial3ColorScheme(
   val onTypeElement: Color,
   val typeContainer: Color,
   val onTypeContainer: Color,
+
+  // Information related content. Like information cards and so on.
+  val infoElement: Color,
+  val onInfoElement: Color,
+  val infoContainer: Color,
+  val onInfoContainer: Color,
 )
 
 internal fun darkHedvigColorScheme(
@@ -43,7 +52,7 @@ internal fun darkHedvigColorScheme(
   containedButtonContainer = colorScheme.tertiary,
   onContainedButtonContainer = colorScheme.onTertiary,
 
-  // Dark mode doesn't have distinct colors for new UI Kit for now.
+  // Dark mode doesn't have distinct colors for new UI Kit (everything below here) for now.
   warningElement = amber_600,
   onWarningElement = greyscale_1000,
   warningContainer = amber_100,
@@ -53,6 +62,11 @@ internal fun darkHedvigColorScheme(
   onTypeElement = greyscale_1000,
   typeContainer = green_100,
   onTypeContainer = green_800,
+
+  infoElement = blue_600,
+  onInfoElement = greyscale_1000,
+  infoContainer = blue_200,
+  onInfoContainer = blue_900,
 )
 
 internal fun lightHedvigColorScheme(
@@ -70,6 +84,11 @@ internal fun lightHedvigColorScheme(
   onTypeElement = greyscale_1000,
   typeContainer = green_100,
   onTypeContainer = green_800,
+
+  infoElement = blue_600,
+  onInfoElement = greyscale_1000,
+  infoContainer = blue_200,
+  onInfoContainer = blue_900,
 )
 
 val ColorScheme.containedButtonContainer: Color
@@ -82,7 +101,7 @@ val ColorScheme.onContainedButtonContainer: Color
   @Composable
   get() = LocalHedvigMaterial3ColorScheme.current.onContainedButtonContainer
 
-// region warning
+// region warning colors
 val ColorScheme.warningElement: Color
   @ReadOnlyComposable
   @Composable
@@ -104,7 +123,7 @@ val ColorScheme.onWarningContainer: Color
   get() = LocalHedvigMaterial3ColorScheme.current.onWarningContainer
 // endregion
 
-// region typing
+// region typing colors
 val ColorScheme.typeElement: Color
   @ReadOnlyComposable
   @Composable
@@ -115,15 +134,37 @@ val ColorScheme.onTypeElement: Color
   @Composable
   get() = LocalHedvigMaterial3ColorScheme.current.onTypeElement
 
-val ColorScheme.typeSignalContainer: Color
+val ColorScheme.typeContainer: Color
   @ReadOnlyComposable
   @Composable
   get() = LocalHedvigMaterial3ColorScheme.current.typeContainer
 
-val ColorScheme.onTypeSignalContainer: Color
+val ColorScheme.onTypeContainer: Color
   @ReadOnlyComposable
   @Composable
   get() = LocalHedvigMaterial3ColorScheme.current.onTypeContainer
+// endregion
+
+// region info colors
+val ColorScheme.infoElement: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.infoElement
+
+val ColorScheme.onInfoElement: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.onInfoElement
+
+val ColorScheme.infoContainer: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.infoContainer
+
+val ColorScheme.onInfoContainer: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.onInfoContainer
 // endregion
 
 /**
