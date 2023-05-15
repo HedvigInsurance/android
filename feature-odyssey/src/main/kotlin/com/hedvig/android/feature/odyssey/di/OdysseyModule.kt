@@ -46,7 +46,12 @@ val odysseyModule = module {
   }
 
   viewModel<ClaimGroupsViewModel> { ClaimGroupsViewModel(get<GetNetworkClaimEntryPointGroupsUseCase>()) }
-  viewModel<ClaimGroupViewModel> { parametersHolder ->  ClaimGroupViewModel(get<GetClaimEntryGroupUseCase>(), parametersHolder.get()) }
+  viewModel<ClaimGroupViewModel> { parametersHolder ->
+    ClaimGroupViewModel(
+      get<GetClaimEntryGroupUseCase>(),
+      parametersHolder.get(),
+    )
+  }
 
   single<GetNetworkClaimEntryPointGroupsUseCase> {
     GetNetworkClaimEntryPointGroupsUseCase(get<ApolloClient>(octopusClient))

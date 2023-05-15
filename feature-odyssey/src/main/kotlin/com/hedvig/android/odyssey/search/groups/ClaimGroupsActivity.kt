@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,7 +16,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -51,9 +51,9 @@ class ClaimGroupsActivity : ComponentActivity() {
 
     setContent {
       val viewModel: ClaimGroupsViewModel = getViewModel()
-      val viewState by viewModel.viewState.collectAsState()
+      val uiState by viewModel.uiState.collectAsState()
 
-      val entryPointId = viewState.selectedClaim?.id
+      val entryPointId = uiState.selectedClaim?.id
       LaunchedEffect(entryPointId) {
         if (entryPointId != null) {
           viewModel.resetState()
@@ -62,51 +62,53 @@ class ClaimGroupsActivity : ComponentActivity() {
       }
 
       HedvigTheme {
-        Surface(color = MaterialTheme.colors.background) {
-          Box(modifier = Modifier.fillMaxHeight()) {
-            Column {
-              CenterAlignedTopAppBar(
-                title = "",
-                onClick = { finish() },
-                backgroundColor = MaterialTheme.colors.background,
-                icon = Icons.Filled.ArrowBack,
-              )
+        Box(modifier = Modifier.fillMaxHeight()) {
+          if (uiState.isLoading) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+          }
 
-              Column(Modifier.verticalScroll(rememberScrollState())) {
-                AnimatedVisibility(visible = viewState.memberName != null) {
-                  Text(
-                    text = stringResource(id = R.string.CLAIM_TRIAGING_ABOUT_TITILE, viewState.memberName!!),
-                    style = androidx.compose.material3.MaterialTheme.typography.displaySmall.copy(
-                      fontFamily = FontFamily(
-                        Font(R.font.hedvig_letters_small),
-                      ),
+          Column {
+            CenterAlignedTopAppBar(
+              title = "",
+              onClick = { finish() },
+              backgroundColor = MaterialTheme.colors.background,
+              icon = Icons.Filled.ArrowBack,
+            )
+
+            Column(Modifier.verticalScroll(rememberScrollState())) {
+              AnimatedVisibility(
+                visible = uiState.memberName != null,
+                enter = fadeIn(),
+              ) {
+                Text(
+                  text = stringResource(id = R.string.CLAIM_TRIAGING_ABOUT_TITILE, uiState.memberName!!),
+                  style = androidx.compose.material3.MaterialTheme.typography.displaySmall.copy(
+                    fontFamily = FontFamily(
+                      Font(R.font.hedvig_letters_small),
                     ),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(22.dp),
-                  )
-                }
-
-                Spacer(modifier = Modifier.padding(top = 28.dp))
-
-                val errorMessage = viewState.errorMessage
-                if (errorMessage != null) {
-                  LaunchedEffect(Unit) { e { "SearchActivity: errorMessage$errorMessage" } }
-                  GenericErrorScreen(
-                    onRetryButtonClick = { viewModel.loadClaimGroups() },
-                    modifier = Modifier.padding(16.dp),
-                  )
-                } else {
-                  ClaimGroups(
-                    selectGroup = viewModel::onSelectClaimGroup,
-                    claimGroups = viewState.claimGroups,
-                    imageLoader = imageLoader,
-                  )
-                }
+                  ),
+                  textAlign = TextAlign.Center,
+                  modifier = Modifier.padding(22.dp),
+                )
               }
-            }
 
-            if (viewState.isLoading) {
-              CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+              Spacer(modifier = Modifier.padding(top = 28.dp))
+
+              val errorMessage = uiState.errorMessage
+              if (errorMessage != null) {
+                LaunchedEffect(Unit) { e { "SearchActivity: errorMessage$errorMessage" } }
+                GenericErrorScreen(
+                  description = errorMessage,
+                  onRetryButtonClick = { viewModel.loadClaimGroups() },
+                  modifier = Modifier.padding(16.dp),
+                )
+              } else {
+                ClaimGroups(
+                  selectGroup = viewModel::onSelectClaimGroup,
+                  claimGroups = uiState.claimGroups,
+                  imageLoader = imageLoader,
+                )
+              }
             }
           }
         }

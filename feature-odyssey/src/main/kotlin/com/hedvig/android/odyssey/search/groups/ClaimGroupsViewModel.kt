@@ -9,19 +9,19 @@ import kotlinx.coroutines.launch
 internal class ClaimGroupsViewModel(
   private val getClaimEntryPoints: GetNetworkClaimEntryPointGroupsUseCase,
 ) : ViewModel() {
-  private val _viewState = MutableStateFlow(ClaimGroupsViewState())
-  val viewState = _viewState
+  private val _uiState = MutableStateFlow(ClaimGroupsUiState())
+  val uiState = _uiState
 
   init {
     loadClaimGroups()
   }
 
   fun loadClaimGroups() {
-    _viewState.update { it.copy(errorMessage = null, isLoading = true) }
+    _uiState.update { it.copy(errorMessage = null, isLoading = true) }
     viewModelScope.launch {
       getClaimEntryPoints.invoke().fold(
         ifLeft = { errorMessage ->
-          _viewState.update {
+          _uiState.update {
             it.copy(
               errorMessage = errorMessage.message,
               isLoading = false,
@@ -29,7 +29,7 @@ internal class ClaimGroupsViewModel(
           }
         },
         ifRight = { result ->
-          _viewState.update {
+          _uiState.update {
             it.copy(
               claimGroups = result.claimGroups,
               memberName = result.memberName,
@@ -42,10 +42,10 @@ internal class ClaimGroupsViewModel(
   }
 
   fun onSelectClaimGroup(claimGroup: ClaimGroup) {
-    _viewState.update { it.copy(selectedClaim = claimGroup) }
+    _uiState.update { it.copy(selectedClaim = claimGroup) }
   }
 
   fun resetState() {
-    _viewState.update { it.copy(selectedClaim = null) }
+    _uiState.update { it.copy(selectedClaim = null) }
   }
 }
