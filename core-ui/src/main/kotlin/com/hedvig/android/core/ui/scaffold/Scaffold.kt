@@ -44,7 +44,7 @@ fun HedvigScaffold(
     containerColor = androidx.compose.material3.MaterialTheme.colorScheme.background,
     scrolledContainerColor = androidx.compose.material3.MaterialTheme.colorScheme.surface,
   ),
-  content: @Composable (ColumnScope.() -> Unit),
+  content: @Composable ColumnScope.() -> Unit,
 ) {
   Column(modifier.fillMaxSize()) {
     val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()

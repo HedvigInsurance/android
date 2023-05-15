@@ -99,10 +99,10 @@ private fun PillAndBasicInfo(movingDate: String?) {
             text = "Aktiveras $movingDate",
             fontSize = 18.sp,
           )
-          Spacer(modifier = Modifier.padding(start = 4.dp))
+          Spacer(modifier = Modifier.width(4.dp))
           Icon(
             painter = painterResource(id = com.hedvig.android.core.designsystem.R.drawable.ic_info),
-            contentDescription = "",
+            contentDescription = null,
             modifier = Modifier.size(16.dp).padding(1.dp),
           )
         }
@@ -197,7 +197,7 @@ fun PreviewQuoteCard() {
   HedvigTheme(flipBackgroundAndSurface = true) {
     Surface(color = MaterialTheme.colorScheme.background) {
       QuoteCard(
-        movingDate = "123",
+        movingDate = "2021-01-02",
         quote = MoveQuote(
           moveIntentId = MoveIntentId(""),
           address = Address(

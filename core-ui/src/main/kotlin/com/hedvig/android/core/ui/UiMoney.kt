@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import octopus.fragment.MoneyFragment
 import octopus.type.CurrencyCode
+import java.math.BigDecimal
 import java.text.DecimalFormat
 
 @Immutable
@@ -22,6 +23,12 @@ data class UiMoney(val amount: Double, val currencyCode: CurrencyCode) {
       }
       append(currencyCode)
     }
+  }
+
+  operator fun plus(other: UiMoney): UiMoney {
+    return this.copy(
+      amount = BigDecimal(amount).add(BigDecimal(other.amount)).toDouble(),
+    )
   }
 
   companion object {
