@@ -38,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -49,7 +50,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.UiMoney
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.progress.FullScreenHedvigProgress
-import com.hedvig.android.core.ui.text.HorizontalTextsWithMaximumSpaceTaken
+import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.feature.odyssey.data.ClaimFlowStep
 import com.hedvig.android.feature.odyssey.navigation.CheckoutMethod
 import com.hedvig.android.feature.odyssey.ui.ClaimFlowScaffold
@@ -250,13 +251,13 @@ private fun CheckoutRowItem(
       .heightIn(56.dp)
       .fillMaxWidth(),
   ) {
-    HorizontalTextsWithMaximumSpaceTaken(
-      startText = { Text(startText) },
-      endText = { textAlign ->
+    HorizontalItemsWithMaximumSpaceTaken(
+      startSlot = { Text(startText) },
+      endSlot = {
         Text(
           text = endText,
           fontWeight = if (withHighEmphasis) FontWeight.Bold else LocalTextStyle.current.fontWeight,
-          textAlign = textAlign,
+          textAlign = TextAlign.End,
         )
       },
       spaceBetween = 8.dp,
