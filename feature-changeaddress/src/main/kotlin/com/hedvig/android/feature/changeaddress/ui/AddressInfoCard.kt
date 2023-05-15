@@ -19,7 +19,10 @@ import com.hedvig.android.core.designsystem.R
 import com.hedvig.android.core.designsystem.newtheme.SquircleShape
 
 @Composable
-fun AddressInfoCard(modifier: Modifier) {
+fun AddressInfoCard(
+  text: String,
+  modifier: Modifier,
+) {
   Box(
     modifier = modifier
       .background(
@@ -35,7 +38,7 @@ fun AddressInfoCard(modifier: Modifier) {
       )
       Spacer(modifier = Modifier.padding(start = 8.dp))
       Text(
-        text = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT),
+        text = text,
         style = MaterialTheme.typography.bodyMedium,
       )
     }

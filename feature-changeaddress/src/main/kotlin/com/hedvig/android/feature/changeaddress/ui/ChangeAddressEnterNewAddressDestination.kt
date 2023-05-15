@@ -197,7 +197,10 @@ internal fun ChangeAddressEnterNewDestination(
           .align(Alignment.BottomCenter)
           .padding(bottom = 52.dp),
       ) {
-        AddressInfoCard(modifier = Modifier.padding(horizontal = 16.dp))
+        AddressInfoCard(
+          text = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT),
+          modifier = Modifier.padding(horizontal = 16.dp)
+        )
         Spacer(modifier = Modifier.padding(bottom = 6.dp))
         LargeContainedButton(
           onClick = { viewModel.onSaveNewAddress() },

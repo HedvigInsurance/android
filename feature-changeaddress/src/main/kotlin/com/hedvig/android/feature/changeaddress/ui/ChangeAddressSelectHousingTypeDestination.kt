@@ -102,7 +102,10 @@ internal fun ChangeAddressSelectHousingTypeDestination(
           .align(Alignment.BottomCenter)
           .padding(bottom = 52.dp),
       ) {
-        AddressInfoCard(modifier = Modifier.padding(horizontal = 16.dp))
+        AddressInfoCard(
+          text = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT),
+          modifier = Modifier.padding(horizontal = 16.dp)
+        )
         Spacer(modifier = Modifier.padding(top = 8.dp))
         LargeContainedButton(
           onClick = {
