@@ -1,22 +1,17 @@
 package com.hedvig.android.feature.changeaddress.destination
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Warning
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.Icon
@@ -24,8 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -34,22 +27,28 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
+import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
-import com.hedvig.android.core.designsystem.newtheme.SquircleShape
-import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
+import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
+import com.hedvig.android.core.designsystem.material3.onWarningContainer
+import com.hedvig.android.core.designsystem.material3.squircle
+import com.hedvig.android.core.designsystem.material3.warningContainer
+import com.hedvig.android.core.designsystem.material3.warningElement
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.error.ErrorDialog
+import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.feature.changeaddress.ChangeAddressUiState
 import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
-import com.hedvig.android.feature.changeaddress.ui.AddressInfoCard
+import com.hedvig.android.feature.changeaddress.ValidatedInput
 import hedvig.resources.R
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -60,161 +59,213 @@ import kotlinx.datetime.toLocalDateTime
 internal fun ChangeAddressEnterNewDestination(
   viewModel: ChangeAddressViewModel,
   navigateBack: () -> Unit,
-  onQuotes: () -> Unit,
+  onQuotesReceived: () -> Unit,
 ) {
   val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
   val quotes = uiState.quotes
   LaunchedEffect(quotes) {
     if (quotes.isNotEmpty()) {
-      onQuotes()
+      onQuotesReceived()
     }
   }
+  ChangeAddressEnterNewScreen(
+    uiState = uiState,
+    navigateBack = navigateBack,
+    onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
+    onStreetChanged = viewModel::onStreetChanged,
+    onPostalCodeChanged = viewModel::onPostalCodeChanged,
+    onSquareMetersChanged = viewModel::onSquareMetersChanged,
+    onCoInsuredChanged = viewModel::onCoInsuredChanged,
+    onMoveDateSelected = viewModel::onMoveDateSelected,
+    onSaveNewAddress = viewModel::onSaveNewAddress,
+  )
+}
 
+@Composable
+private fun ChangeAddressEnterNewScreen(
+  uiState: ChangeAddressUiState,
+  navigateBack: () -> Unit,
+  onErrorDialogDismissed: () -> Unit,
+  onStreetChanged: (String) -> Unit,
+  onPostalCodeChanged: (String) -> Unit,
+  onSquareMetersChanged: (String) -> Unit,
+  onCoInsuredChanged: (Int) -> Unit,
+  onMoveDateSelected: (LocalDate) -> Unit,
+  onSaveNewAddress: () -> Unit,
+) {
   if (uiState.errorMessage != null) {
     ErrorDialog(
       title = stringResource(id = R.string.general_error),
       message = uiState.errorMessage,
-      onDismiss = { viewModel.onErrorDialogDismissed() },
+      onDismiss = onErrorDialogDismissed,
     )
   }
 
-  Surface(Modifier.fillMaxSize()) {
-    Box {
-      Column {
-        val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-        TopAppBarWithBack(
-          onClick = navigateBack,
-          title = "",
-          scrollBehavior = topAppBarScrollBehavior,
-          colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
-        )
-        Column(
-          Modifier
-            .fillMaxSize()
-            .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
-            .verticalScroll(rememberScrollState())
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-        ) {
-          Spacer(modifier = Modifier.padding(top = 48.dp))
-          Text(
-            text = stringResource(id = R.string.CHANGE_ADDRESS_ENTER_NEW_ADDRESS_TITLE),
-            style = MaterialTheme.typography.headlineSmall,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth(),
-          )
-          Spacer(modifier = Modifier.padding(bottom = 64.dp))
-
-          if (uiState.isLoading) {
-            CircularProgressIndicator()
-          }
-
-          Spacer(modifier = Modifier.padding(top = 6.dp))
-
-          TextField(
-            value = uiState.street.input ?: "",
-            isError = uiState.street.errorMessageRes != null,
-            supportingText = {
-              if (uiState.street.errorMessageRes != null) {
-                Text(
-                  text = uiState.street.errorMessageRes
-                    ?.let { stringResource(id = it) }
-                    ?: "",
-                )
-              }
-            },
-            label = {
-              Text(text = stringResource(id = R.string.CHANGE_ADDRESS_NEW_ADDRESS_LABEL))
-            },
-            onValueChange = { viewModel.onStreetChanged(it) },
-            modifier = Modifier.fillMaxWidth(),
-          )
-
-          TextField(
-            value = uiState.postalCode.input ?: "",
-            isError = uiState.postalCode.errorMessageRes != null,
-            supportingText = {
-              if (uiState.postalCode.errorMessageRes != null) {
-                Text(
-                  text = uiState.postalCode.errorMessageRes
-                    ?.let { stringResource(id = it) }
-                    ?: "",
-                )
-              }
-            },
-            label = {
-              Text(text = stringResource(id = R.string.CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL))
-            },
-            onValueChange = { viewModel.onPostalCodeChanged(it) },
-            modifier = Modifier.fillMaxWidth(),
-          )
-
-          TextField(
-            value = uiState.squareMeters.input ?: "",
-            isError = uiState.squareMeters.errorMessageRes != null,
-            supportingText = {
-              if (uiState.squareMeters.errorMessageRes != null) {
-                Text(
-                  text = uiState.squareMeters.errorMessageRes
-                    ?.let { stringResource(id = it) }
-                    ?: "",
-                )
-              }
-            },
-            label = {
-              Text(text = stringResource(id = R.string.CHANGE_ADDRESS_NEW_LIVING_SPACE_LABEL))
-            },
-            onValueChange = { viewModel.onSquareMetersChanged(it) },
-            modifier = Modifier.fillMaxWidth(),
-          )
-
-          TextField(
-            value = uiState.numberCoInsured.input.toString(),
-            isError = uiState.numberCoInsured.errorMessageRes != null,
-            supportingText = {
-              if (uiState.numberCoInsured.errorMessageRes != null) {
-                Text(
-                  text = uiState.numberCoInsured.errorMessageRes
-                    ?.let { stringResource(id = it) }
-                    ?: "",
-                )
-              }
-            },
-            label = {
-              Text(text = stringResource(id = R.string.CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL))
-            },
-            onValueChange = { viewModel.onCoInsuredChanged(it.toInt()) },
-            modifier = Modifier.fillMaxWidth(),
-          )
-          Spacer(modifier = Modifier.padding(top = 4.dp))
-          MovingDateButton(
-            onDateSelected = { viewModel.onMoveDateSelected(it) },
-            uiState = uiState,
-          )
-        }
-      }
-      Column(
-        modifier = Modifier
-          .align(Alignment.BottomCenter)
-          .padding(bottom = 52.dp),
-      ) {
-        AddressInfoCard(modifier = Modifier.padding(horizontal = 16.dp))
-        Spacer(modifier = Modifier.padding(bottom = 6.dp))
-        LargeContainedButton(
-          onClick = { viewModel.onSaveNewAddress() },
-          modifier = Modifier.padding(horizontal = 16.dp),
-        ) {
-          Text(text = stringResource(id = R.string.SAVE_AND_CONTINUE_BUTTON_LABEL))
-        }
-      }
-    }
+  if (uiState.isLoading) {
+    CircularProgressIndicator()
   }
+
+  HedvigScaffold(
+    navigateUp = navigateBack,
+    modifier = Modifier.clearFocusOnTap(),
+  ) {
+    Spacer(modifier = Modifier.height(48.dp))
+    Text(
+      text = stringResource(id = R.string.CHANGE_ADDRESS_ENTER_NEW_ADDRESS_TITLE),
+      style = MaterialTheme.typography.headlineSmall,
+      textAlign = TextAlign.Center,
+      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+    )
+    Spacer(modifier = Modifier.height(64.dp))
+    AddressTextField(
+      street = uiState.street,
+      onStreetChanged = onStreetChanged,
+      modifier = Modifier.padding(horizontal = 16.dp),
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    PostalCodeTextField(
+      postalCode = uiState.postalCode,
+      onPostalCodeChanged = onPostalCodeChanged,
+      modifier = Modifier.padding(horizontal = 16.dp),
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    LivingSpaceTextField(
+      squareMeters = uiState.squareMeters,
+      onSquareMetersChanged = onSquareMetersChanged,
+      modifier = Modifier.padding(horizontal = 16.dp),
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    NumberOfCoInsuredTextField(
+      numberCoInsured = uiState.numberCoInsured,
+      onCoInsuredChanged = onCoInsuredChanged,
+      modifier = Modifier.padding(horizontal = 16.dp),
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    MovingDateButton(
+      onDateSelected = { onMoveDateSelected(it) },
+      uiState = uiState,
+      modifier = Modifier.padding(horizontal = 16.dp),
+    )
+    Spacer(modifier = Modifier.height(32.dp))
+    Spacer(modifier = Modifier.weight(1f))
+    LargeContainedButton(
+      onClick = onSaveNewAddress,
+      shape = MaterialTheme.shapes.squircle,
+      modifier = Modifier.padding(horizontal = 16.dp),
+    ) {
+      Text(stringResource(R.string.SAVE_AND_CONTINUE_BUTTON_LABEL))
+    }
+    Spacer(Modifier.height(16.dp))
+  }
+}
+
+@Composable
+private fun AddressTextField(
+  street: ValidatedInput<String?>,
+  onStreetChanged: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  HedvigTextField(
+    value = street.input ?: "",
+    onValueChange = { onStreetChanged(it) },
+    errorText = if (street.errorMessageRes != null) {
+      stringResource(street.errorMessageRes)
+    } else {
+      null
+    },
+    label = {
+      Text(stringResource(R.string.CHANGE_ADDRESS_NEW_ADDRESS_LABEL))
+    },
+    maxLines = 1,
+    modifier = modifier.fillMaxWidth(),
+  )
+}
+
+@Composable
+private fun PostalCodeTextField(
+  postalCode: ValidatedInput<String?>,
+  onPostalCodeChanged: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  HedvigTextField(
+    value = postalCode.input ?: "",
+    onValueChange = { onPostalCodeChanged(it) },
+    errorText = if (postalCode.errorMessageRes != null) {
+      stringResource(postalCode.errorMessageRes)
+    } else {
+      null
+    },
+    label = {
+      Text(stringResource(R.string.CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL))
+    },
+    maxLines = 1,
+    keyboardOptions = KeyboardOptions(
+      keyboardType = KeyboardType.Number,
+    ),
+    modifier = modifier.fillMaxWidth(),
+  )
+}
+
+@Composable
+private fun LivingSpaceTextField(
+  squareMeters: ValidatedInput<String?>,
+  onSquareMetersChanged: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  HedvigTextField(
+    value = squareMeters.input ?: "",
+    onValueChange = { onSquareMetersChanged(it) },
+    errorText = if (squareMeters.errorMessageRes != null) {
+      stringResource(squareMeters.errorMessageRes)
+    } else {
+      null
+    },
+    label = {
+      Text(stringResource(R.string.CHANGE_ADDRESS_NEW_LIVING_SPACE_LABEL))
+    },
+    maxLines = 1,
+    keyboardOptions = KeyboardOptions(
+      keyboardType = KeyboardType.Number,
+    ),
+    modifier = modifier.fillMaxWidth(),
+  )
+}
+
+@Composable
+private fun NumberOfCoInsuredTextField(
+  numberCoInsured: ValidatedInput<Int?>,
+  onCoInsuredChanged: (Int) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  HedvigTextField(
+    value = if (numberCoInsured.input != null) {
+      numberCoInsured.input.toString()
+    } else {
+      "1"
+    },
+    onValueChange = { onCoInsuredChanged(it.toInt()) },
+    errorText = if (numberCoInsured.errorMessageRes != null) {
+      stringResource(numberCoInsured.errorMessageRes)
+    } else {
+      null
+    },
+    label = {
+      Text(stringResource(R.string.CHANGE_ADDRESS_CO_INSURED_LABEL))
+    },
+    maxLines = 1,
+    keyboardOptions = KeyboardOptions(
+      keyboardType = KeyboardType.Number,
+    ),
+    modifier = modifier.fillMaxWidth(),
+  )
 }
 
 @Composable
 private fun MovingDateButton(
   onDateSelected: (LocalDate) -> Unit,
   uiState: ChangeAddressUiState,
+  modifier: Modifier = Modifier,
 ) {
   var showDatePicker by rememberSaveable { mutableStateOf(false) }
 
@@ -252,55 +303,98 @@ private fun MovingDateButton(
     ) {
       HedvigDatePicker(
         datePickerState = uiState.datePickerState,
-        dateValidator = { true },
+        dateValidator = { true }, // TODO Only allow future dates?
       )
     }
   }
 
-  Row(
-    modifier = Modifier
-      .padding(horizontal = 16.dp)
-      .fillMaxWidth()
-      .clip(SquircleShape)
-      .background(
-        color = if (uiState.movingDate.errorMessageRes != null) {
-          Color(0xFFFBEDC5)
+  Column(modifier) {
+    val errorTextResId = if (uiState.movingDate.errorMessageRes != null) {
+      uiState.movingDate.errorMessageRes
+    } else {
+      null
+    }
+    val dateHasError = errorTextResId != null
+    HedvigCard(
+      onClick = { showDatePicker = true },
+      shape = MaterialTheme.shapes.squircle,
+      colors = CardDefaults.outlinedCardColors(
+        containerColor = if (dateHasError) {
+          MaterialTheme.colorScheme.warningContainer
         } else {
-          Color(0xFFF0F0F0)
+          MaterialTheme.colorScheme.surfaceVariant
         },
-        shape = SquircleShape,
-      )
-      .clickable {
-        showDatePicker = true
+        contentColor = if (dateHasError) {
+          MaterialTheme.colorScheme.onWarningContainer
+        } else {
+          MaterialTheme.colorScheme.onSurfaceVariant
+        },
+      ),
+      modifier = Modifier.fillMaxWidth(),
+    ) {
+      Row(
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        Column(Modifier.weight(1f)) {
+          Text(
+            text = stringResource(
+              id = R.string.CHANGE_ADDRESS_MOVING_DATE_LABEL,
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+          )
+          Spacer(modifier = Modifier.height(4.dp))
+          Text(
+            text = uiState.movingDate.input?.toString()
+              ?: stringResource(R.string.CHANGE_ADDRESS_SELECT_MOVING_DATE_LABEL),
+            style = MaterialTheme.typography.headlineSmall,
+          )
+        }
+        Spacer(Modifier.width(16.dp))
+        Icon(
+          painter = painterResource(
+            id = com.hedvig.android.core.designsystem.R.drawable.ic_drop_down_indicator,
+          ),
+          contentDescription = null,
+          modifier = Modifier.size(16.dp),
+        )
       }
-      .padding(vertical = 20.dp, horizontal = 16.dp),
-    horizontalArrangement = Arrangement.SpaceBetween,
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    Column {
-      Text(
-        text = stringResource(
-          id = R.string.CHANGE_ADDRESS_MOVING_DATE_LABEL,
+    }
+    if (errorTextResId != null) {
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        // Emulate the same design that the supporting text of the TextField has
+        modifier = Modifier.padding(
+          start = 4.dp,
+          top = 4.dp,
+          end = 4.dp,
         ),
-        color = Color(0xFF727272),
-        style = MaterialTheme.typography.bodyMedium,
-      )
-      Text(
-        text = uiState.movingDate.input?.toString()
-          ?: stringResource(id = R.string.CHANGE_ADDRESS_SELECT_MOVING_DATE_LABEL),
-        color = if (uiState.movingDate.input == null) {
-          Color(0xFF727272)
-        } else {
-          MaterialTheme.colorScheme.primary
-        },
-        style = MaterialTheme.typography.headlineSmall,
+      ) {
+        Icon(
+          imageVector = Icons.Rounded.Warning,
+          contentDescription = null,
+          modifier = Modifier.size(16.dp),
+          tint = MaterialTheme.colorScheme.warningElement,
+        )
+        Spacer(Modifier.width(6.dp))
+        Text(
+          text = stringResource(errorTextResId),
+          style = MaterialTheme.typography.bodySmall,
+        )
+      }
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewChangeAddressEnterNewScreen() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      ChangeAddressEnterNewScreen(
+        ChangeAddressUiState(),
+        {}, {}, {}, {}, {}, {}, {}, {},
       )
     }
-    Icon(
-      painter = painterResource(
-        id = com.hedvig.android.core.designsystem.R.drawable.ic_drop_down_indicator,
-      ),
-      contentDescription = "",
-    )
   }
 }

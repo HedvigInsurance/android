@@ -38,7 +38,6 @@ internal fun HTextField() {
         } else {
           null
         },
-        isError = isError,
         enabled = isEnabled,
       )
     }

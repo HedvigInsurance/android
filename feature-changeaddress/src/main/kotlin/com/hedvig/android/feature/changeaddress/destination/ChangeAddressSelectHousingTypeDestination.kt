@@ -5,16 +5,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
@@ -83,7 +78,7 @@ private fun ChangeAddressSelectHousingTypeScreen(
       text = stringResource(hedvig.resources.R.string.CHANGE_ADDRESS_SELECT_HOUSING_TYPE_TITLE),
       style = MaterialTheme.typography.headlineSmall,
       textAlign = TextAlign.Center,
-      modifier = Modifier.fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
     )
     Spacer(modifier = Modifier.height(64.dp))
     RadioButton(HousingType.APARTMENT_OWN, uiState.housingType.input, onHousingTypeSelected)
@@ -108,7 +103,6 @@ private fun ChangeAddressSelectHousingTypeScreen(
       Text(text = stringResource(id = hedvig.resources.R.string.general_continue_button))
     }
     Spacer(Modifier.height(16.dp))
-    Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
   }
 }
 

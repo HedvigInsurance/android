@@ -50,10 +50,8 @@ internal fun NavGraphBuilder.changeAddressGraph(
       val viewModel = navGraphScopedViewModel(navController, it)
       ChangeAddressEnterNewDestination(
         viewModel = viewModel,
-        navigateBack = {
-          navController.navigateUp()
-        },
-        onQuotes = {
+        navigateBack = { navController.navigateUp() },
+        onQuotesReceived = {
           navController.navigate(ChangeAddressDestination.OfferDestination)
         },
       )
