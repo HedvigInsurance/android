@@ -1,4 +1,4 @@
-package com.hedvig.android.odyssey.search.group.ui
+package com.hedvig.android.feature.odyssey.search.group.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,16 +26,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.newtheme.SquircleShape
-import com.hedvig.android.odyssey.search.group.ClaimGroupUiState
-import com.hedvig.android.odyssey.search.group.ClaimGroupViewModel
+import com.hedvig.android.feature.odyssey.search.group.ClaimGroupUiState
+import com.hedvig.android.feature.odyssey.search.group.ClaimGroupViewModel
 import hedvig.resources.R
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun ClaimGroupSelector(
-  uiState: ClaimGroupUiState,
-  viewModel: ClaimGroupViewModel,
-  onContinueClicked: (String) -> Unit,
+    uiState: ClaimGroupUiState,
+    viewModel: ClaimGroupViewModel,
+    onContinueClicked: (String) -> Unit,
 ) {
   Box(modifier = Modifier.fillMaxHeight()) {
     Column {

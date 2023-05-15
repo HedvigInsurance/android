@@ -1,4 +1,4 @@
-package com.hedvig.android.odyssey.search.groups
+package com.hedvig.android.feature.odyssey.search.groups
 
 import android.content.Context
 import android.content.Intent
@@ -34,8 +34,8 @@ import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.CenterAlignedTopAppBar
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
-import com.hedvig.android.odyssey.search.group.ClaimGroupActivity
-import com.hedvig.android.odyssey.search.groups.ui.ClaimGroups
+import com.hedvig.android.feature.odyssey.search.group.ClaimGroupActivity
+import com.hedvig.android.feature.odyssey.search.groups.ui.ClaimGroups
 import hedvig.resources.R
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.getViewModel

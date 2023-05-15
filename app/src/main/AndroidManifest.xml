@@ -254,10 +254,10 @@
             android:parentActivityName="com.hedvig.app.feature.loggedin.ui.LoggedInActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.hedvig.android.odyssey.search.groups.ClaimGroupsActivity"
+            android:name="com.hedvig.android.feature.odyssey.search.groups.ClaimGroupsActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.hedvig.android.odyssey.search.group.ClaimGroupActivity"
+            android:name="com.hedvig.android.feature.odyssey.search.group.ClaimGroupActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name="com.hedvig.android.feature.changeaddress.ChangeAddressActivity"

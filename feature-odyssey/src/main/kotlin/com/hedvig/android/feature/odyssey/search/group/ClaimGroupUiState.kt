@@ -1,6 +1,6 @@
-package com.hedvig.android.odyssey.search.group
+package com.hedvig.android.feature.odyssey.search.group
 
-import com.hedvig.android.odyssey.model.SearchableClaim
+import com.hedvig.android.feature.odyssey.search.commonclaims.SearchableClaim
 
 internal data class ClaimGroupUiState(
   val input: String? = null,

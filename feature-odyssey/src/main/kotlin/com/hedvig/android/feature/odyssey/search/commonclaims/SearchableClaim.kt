@@ -1,4 +1,4 @@
-package com.hedvig.android.odyssey.search.commonclaims
+package com.hedvig.android.feature.odyssey.search.commonclaims
 
 import com.hedvig.android.feature.odyssey.model.ItemProblem
 import com.hedvig.android.feature.odyssey.model.ItemType

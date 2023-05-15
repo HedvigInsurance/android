@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.odyssey.search
+package com.hedvig.android.feature.odyssey.search.group
 
 import arrow.core.Either
 import arrow.core.raise.either
@@ -8,14 +8,14 @@ import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.odyssey.model.ItemProblem
 import com.hedvig.android.feature.odyssey.model.ItemType
-import com.hedvig.android.odyssey.search.commonclaims.SearchableClaim
+import com.hedvig.android.feature.odyssey.search.commonclaims.SearchableClaim
 import octopus.EntrypointSearchQuery
 
 internal class GetClaimEntryGroupUseCase(
   private val apolloClient: ApolloClient,
 ) {
 
-  suspend fun invoke(groupId: String): Either<ErrorMessage, CommonClaimsResult> {
+  suspend fun invoke(groupId: String?): Either<ErrorMessage, CommonClaimsResult> {
     val query = EntrypointSearchQuery(groupId)
 
     return either {

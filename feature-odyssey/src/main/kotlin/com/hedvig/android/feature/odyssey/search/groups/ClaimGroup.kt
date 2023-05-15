@@ -1,4 +1,4 @@
-package com.hedvig.android.odyssey.search.groups
+package com.hedvig.android.feature.odyssey.search.groups
 
 data class ClaimGroup(
   val id: String,

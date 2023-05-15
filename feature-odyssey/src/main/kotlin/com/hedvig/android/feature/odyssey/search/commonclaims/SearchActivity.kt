@@ -1,4 +1,4 @@
-package com.hedvig.android.odyssey.search.commonclaims
+package com.hedvig.android.feature.odyssey.search.commonclaims
 
 import android.content.Context
 import android.content.Intent
@@ -30,6 +30,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.CenterAlignedTopAppBar
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.feature.odyssey.ClaimFlowActivity
+import com.hedvig.android.feature.odyssey.search.commonclaims.ui.CommonClaims
 import hedvig.resources.R
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import slimber.log.e

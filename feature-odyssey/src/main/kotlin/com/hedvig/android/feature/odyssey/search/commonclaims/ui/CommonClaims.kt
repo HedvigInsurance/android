@@ -1,4 +1,4 @@
-package com.hedvig.android.odyssey.search.commonclaims
+package com.hedvig.android.feature.odyssey.search.commonclaims.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.feature.odyssey.model.ItemType
+import com.hedvig.android.feature.odyssey.search.commonclaims.SearchableClaim
 import java.util.*
 
 @Composable
