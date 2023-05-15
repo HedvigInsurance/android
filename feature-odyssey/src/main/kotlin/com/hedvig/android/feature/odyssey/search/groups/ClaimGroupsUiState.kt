@@ -1,6 +1,6 @@
-package com.hedvig.android.odyssey.search.groups
+package com.hedvig.android.feature.odyssey.search.groups
 
-internal data class ClaimGroupsViewState(
+internal data class ClaimGroupsUiState(
   val input: String? = null,
   val claimGroups: List<ClaimGroup> = listOf(),
   val memberName: String? = null,
