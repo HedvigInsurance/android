@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,7 +24,7 @@ internal fun HTextField() {
     modifier = Modifier.fillMaxSize().clearFocusOnTap(),
     contentAlignment = BiasAlignment(0f, -0.2f),
   ) {
-    Column {
+    Column(Modifier.verticalScroll(rememberScrollState())) {
       var text by remember { mutableStateOf("Error!") }
       var isError by remember { mutableStateOf(false) }
       var isEnabled by remember { mutableStateOf(true) }
@@ -36,7 +38,6 @@ internal fun HTextField() {
         } else {
           null
         },
-        isError = isError,
         enabled = isEnabled,
       )
     }

@@ -1,4 +1,4 @@
-package com.hedvig.android.odyssey.search.groups.ui
+package com.hedvig.android.feature.odyssey.search.groups.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,7 +24,7 @@ import com.hedvig.android.core.designsystem.newtheme.SquircleShape
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
-import com.hedvig.android.odyssey.search.groups.ClaimGroup
+import com.hedvig.android.feature.odyssey.search.groups.ClaimGroup
 import java.util.*
 
 @Composable
@@ -79,7 +79,7 @@ fun PreviewCommonClaims() {
         ClaimGroup(
           id = UUID.randomUUID().toString(),
           displayName = "Broken phone",
-          iconUrl = ""
+          iconUrl = "",
         ),
         ClaimGroup(
           id = UUID.randomUUID().toString(),
@@ -107,7 +107,7 @@ fun PreviewCommonClaims() {
           iconUrl = "",
         ),
       ),
-      imageLoader = rememberPreviewImageLoader()
+      imageLoader = rememberPreviewImageLoader(),
     )
   }
 }

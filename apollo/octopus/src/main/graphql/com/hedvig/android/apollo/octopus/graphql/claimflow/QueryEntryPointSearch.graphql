@@ -1,5 +1,5 @@
-query EntrypointSearch {
-  entrypointSearch(input: { type: CLAIM, limit: 20 }) {
+query EntrypointSearch($groupId: ID) {
+  entrypointSearch(input: { type: CLAIM, limit: 20, entrypointGroupId: $groupId }) {
     id
     displayName
   }

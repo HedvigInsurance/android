@@ -3,6 +3,8 @@ package com.hedvig.android.feature.changeaddress
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.core.view.WindowCompat
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -22,16 +24,18 @@ class ChangeAddressActivity : AppCompatActivity() {
     WindowCompat.setDecorFitsSystemWindows(window, false)
 
     setContent {
-      HedvigTheme {
-        ChangeAddressNavHost(
-          windowSizeClass = calculateWindowSizeClass(this@ChangeAddressActivity),
-          navController = rememberAnimatedNavController(),
-          openChat = {
-            activityNavigator.navigateToChat(this@ChangeAddressActivity)
-          },
-          navigateUp = { onSupportNavigateUp() },
-          finish = { finish() },
-        )
+      HedvigTheme(flipBackgroundAndSurface = true) {
+        Surface(color = MaterialTheme.colorScheme.background) {
+          ChangeAddressNavHost(
+            windowSizeClass = calculateWindowSizeClass(this@ChangeAddressActivity),
+            navController = rememberAnimatedNavController(),
+            openChat = {
+              activityNavigator.navigateToChat(this@ChangeAddressActivity)
+            },
+            navigateUp = { onSupportNavigateUp() },
+            finish = { finish() },
+          )
+        }
       }
     }
   }

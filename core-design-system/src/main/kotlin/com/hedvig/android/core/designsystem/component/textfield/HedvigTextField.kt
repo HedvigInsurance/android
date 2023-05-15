@@ -80,7 +80,6 @@ fun HedvigTextField(
   trailingIcon: @Composable (() -> Unit)? = null,
   prefix: @Composable (() -> Unit)? = null,
   suffix: @Composable (() -> Unit)? = null,
-  isError: Boolean = false,
   visualTransformation: VisualTransformation = VisualTransformation.None,
   keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
   keyboardActions: KeyboardActions = KeyboardActions.Default,
@@ -120,7 +119,7 @@ fun HedvigTextField(
         }
       }
     },
-    isError = isError,
+    isError = errorText != null,
     visualTransformation = visualTransformation,
     keyboardOptions = keyboardOptions,
     keyboardActions = keyboardActions,
