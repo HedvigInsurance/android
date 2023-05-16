@@ -36,7 +36,7 @@ data class MoveQuote(
         premium = UiMoney(99.0 * index, CurrencyCode.SEK),
         startDate = LocalDate(2023, 5, 13),
         termsVersion = "$index",
-        isExpanded = index == 1
+        isExpanded = index == 1,
       )
     }
   }
