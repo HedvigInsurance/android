@@ -34,14 +34,8 @@ import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.R
-import com.hedvig.android.core.ui.UiMoney
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
-import com.hedvig.android.feature.changeaddress.data.Address
-import com.hedvig.android.feature.changeaddress.data.AddressId
-import com.hedvig.android.feature.changeaddress.data.MoveIntentId
 import com.hedvig.android.feature.changeaddress.data.MoveQuote
-import kotlinx.datetime.LocalDate
-import octopus.type.CurrencyCode
 
 @Composable
 internal fun QuoteCard(
@@ -198,22 +192,7 @@ fun PreviewQuoteCard() {
     Surface(color = MaterialTheme.colorScheme.background) {
       QuoteCard(
         movingDate = "2021-01-02",
-        quote = MoveQuote(
-          moveIntentId = MoveIntentId(""),
-          address = Address(
-            id = AddressId(""),
-            apartmentNumber = "12",
-            bbrId = null,
-            city = null,
-            floor = null,
-            postalCode = "124",
-            street = "Froedingsvaegen",
-          ),
-          numberCoInsured = 2,
-          premium = UiMoney(345.0, CurrencyCode.SEK),
-          startDate = LocalDate(2023, 5, 13),
-          termsVersion = "",
-        ),
+        quote = MoveQuote.PreviewData(),
         onExpandClicked = {},
         isExpanded = true,
         modifier = Modifier.padding(16.dp),
