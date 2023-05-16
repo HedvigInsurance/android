@@ -41,9 +41,3 @@ data class MoveQuote(
     }
   }
 }
-
-@Serializable
-data class Premium(
-  val amount: Double,
-  val currencyCode: CurrencyCode,
-)
