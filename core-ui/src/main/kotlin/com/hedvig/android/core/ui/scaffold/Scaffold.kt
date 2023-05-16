@@ -1,5 +1,6 @@
 package com.hedvig.android.core.ui.scaffold
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,6 +18,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.contentColorFor
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,10 +46,11 @@ fun HedvigScaffold(
     containerColor = androidx.compose.material3.MaterialTheme.colorScheme.background,
     scrolledContainerColor = androidx.compose.material3.MaterialTheme.colorScheme.surface,
   ),
+  topAppBarScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+  scrollState: ScrollState = rememberScrollState(),
   content: @Composable ColumnScope.() -> Unit,
 ) {
   Column(modifier.fillMaxSize()) {
-    val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     TopAppBarWithBack(
       onClick = navigateUp,
       title = topAppBarText ?: "",
@@ -59,7 +62,7 @@ fun HedvigScaffold(
       modifier = Modifier
         .fillMaxSize()
         .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
-        .verticalScroll(rememberScrollState())
+        .verticalScroll(scrollState)
         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
     ) {
       content()
