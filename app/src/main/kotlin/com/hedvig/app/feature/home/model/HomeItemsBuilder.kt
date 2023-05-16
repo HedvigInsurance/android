@@ -18,7 +18,7 @@ class HomeItemsBuilder(
 
   suspend fun buildItems(
     homeData: HomeQuery.Data,
-    travelCertificateData: TravelCertificate,
+    travelCertificateData: TravelCertificate?,
   ): List<HomeModel> = when {
     homeData.isActive() -> buildActiveItems(homeData, travelCertificateData)
     homeData.isSwitching() && (homeData.isPending() || homeData.isActiveInFuture()) -> buildSwitchingItems(homeData)
@@ -28,7 +28,10 @@ class HomeItemsBuilder(
     else -> listOf(HomeModel.Error)
   }
 
-  private suspend fun buildActiveItems(homeData: HomeQuery.Data, travelCertificateData: TravelCertificate): List<HomeModel> = buildList {
+  private suspend fun buildActiveItems(
+    homeData: HomeQuery.Data,
+    travelCertificateData: TravelCertificate?,
+  ): List<HomeModel> = buildList {
     addAll(listOfNotNull(*psaItems(homeData.importantMessages).toTypedArray()))
     add(HomeModel.BigText.Active(homeData.member.firstName ?: ""))
     val claimStatusCard: HomeModel.ClaimStatus? = claimStatusCardOrNull(homeData)
@@ -54,7 +57,8 @@ class HomeItemsBuilder(
             homeData.commonClaims,
             homeData.isEligibleToCreateClaim,
           ).toTypedArray(),
-        ) + HomeModel.CommonClaim.GenerateTravelCertificate(travelCertificateData.id),
+          travelCertificateData?.let { HomeModel.CommonClaim.GenerateTravelCertificate(it.id) },
+        ),
       )
     }
 

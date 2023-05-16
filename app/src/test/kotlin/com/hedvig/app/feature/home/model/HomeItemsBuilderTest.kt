@@ -28,7 +28,7 @@ class HomeItemsBuilderTest {
       )
       val builder = HomeItemsBuilder(featureManager)
 
-      val result = builder.buildItems(HOME_DATA_PAYIN_NEEDS_SETUP, travelCertificateData)
+      val result = builder.buildItems(HOME_DATA_PAYIN_NEEDS_SETUP, null)
 
       assertThat(result).containsNoneOfType<HomeModel.ConnectPayin>()
     }
@@ -47,7 +47,7 @@ class HomeItemsBuilderTest {
       )
       val builder = HomeItemsBuilder(featureManager)
 
-      val result = builder.buildItems(HOME_DATA_PAYIN_NEEDS_SETUP, travelCertificateData)
+      val result = builder.buildItems(HOME_DATA_PAYIN_NEEDS_SETUP, null)
 
       assertThat(result).containsOfType<HomeModel.ConnectPayin>()
     }
@@ -59,7 +59,7 @@ class HomeItemsBuilderTest {
     )
     val builder = HomeItemsBuilder(featureManager)
 
-    val result = builder.buildItems(HOME_DATA_ACTIVE, travelCertificateData)
+    val result = builder.buildItems(HOME_DATA_ACTIVE, null)
 
     assertThat(result).containsNoneOfType<HomeModel.CommonClaim>()
   }
@@ -71,7 +71,7 @@ class HomeItemsBuilderTest {
     )
     val builder = HomeItemsBuilder(featureManager)
 
-    val result = builder.buildItems(HOME_DATA_ACTIVE, travelCertificateData)
+    val result = builder.buildItems(HOME_DATA_ACTIVE, null)
 
     assertThat(result).containsOfType<HomeModel.CommonClaim>()
   }
