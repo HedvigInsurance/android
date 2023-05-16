@@ -100,6 +100,10 @@ sealed class HomeModel {
     data class TitleAndBulletPoints(
       val inner: CommonClaimsData,
     ) : CommonClaim()
+
+    data class GenerateTravelCertificate(
+      val id: String,
+    ) : CommonClaim()
   }
 
   data class Header(val stringRes: Int) : HomeModel()

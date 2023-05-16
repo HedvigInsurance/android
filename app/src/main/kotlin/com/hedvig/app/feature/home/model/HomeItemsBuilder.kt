@@ -3,6 +3,7 @@ package com.hedvig.app.feature.home.model
 import androidx.compose.ui.unit.dp
 import arrow.core.NonEmptyList
 import arrow.core.toNonEmptyListOrNull
+import com.hedvig.android.feature.travelcertificate.data.TravelCertificate
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
@@ -17,8 +18,9 @@ class HomeItemsBuilder(
 
   suspend fun buildItems(
     homeData: HomeQuery.Data,
+    travelCertificateData: TravelCertificate,
   ): List<HomeModel> = when {
-    homeData.isActive() -> buildActiveItems(homeData)
+    homeData.isActive() -> buildActiveItems(homeData, travelCertificateData)
     homeData.isSwitching() && (homeData.isPending() || homeData.isActiveInFuture()) -> buildSwitchingItems(homeData)
     homeData.isPending() -> buildPendingItems(homeData)
     homeData.isActiveInFuture() -> buildActiveInFutureItems(homeData)
@@ -26,7 +28,7 @@ class HomeItemsBuilder(
     else -> listOf(HomeModel.Error)
   }
 
-  private suspend fun buildActiveItems(homeData: HomeQuery.Data): List<HomeModel> = buildList {
+  private suspend fun buildActiveItems(homeData: HomeQuery.Data, travelCertificateData: TravelCertificate): List<HomeModel> = buildList {
     addAll(listOfNotNull(*psaItems(homeData.importantMessages).toTypedArray()))
     add(HomeModel.BigText.Active(homeData.member.firstName ?: ""))
     val claimStatusCard: HomeModel.ClaimStatus? = claimStatusCardOrNull(homeData)
@@ -52,7 +54,7 @@ class HomeItemsBuilder(
             homeData.commonClaims,
             homeData.isEligibleToCreateClaim,
           ).toTypedArray(),
-        ),
+        ) + HomeModel.CommonClaim.GenerateTravelCertificate(travelCertificateData.id),
       )
     }
 

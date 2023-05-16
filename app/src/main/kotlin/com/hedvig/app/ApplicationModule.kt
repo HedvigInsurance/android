@@ -41,6 +41,7 @@ import com.hedvig.android.feature.businessmodel.di.businessModelModule
 import com.hedvig.android.feature.odyssey.di.odysseyModule
 import com.hedvig.android.feature.odyssey.di.odysseyUrlQualifier
 import com.hedvig.android.feature.terminateinsurance.di.terminateInsuranceModule
+import com.hedvig.android.feature.travelcertificate.di.travelCertificateModule
 import com.hedvig.android.hanalytics.android.di.appIdQualifier
 import com.hedvig.android.hanalytics.android.di.appVersionCodeQualifier
 import com.hedvig.android.hanalytics.android.di.appVersionNameQualifier
@@ -495,7 +496,7 @@ private val referralsModule = module {
 
 private val homeModule = module {
   single<HomeItemsBuilder> { HomeItemsBuilder(get()) }
-  viewModel<HomeViewModel> { HomeViewModelImpl(get(), get(), get()) }
+  viewModel<HomeViewModel> { HomeViewModelImpl(get(), get(), get(), get()) }
 }
 
 private val connectPaymentModule = module {
@@ -757,6 +758,7 @@ val applicationModule = module {
       stringConstantsModule,
       terminateInsuranceModule,
       textActionSetModule,
+      travelCertificateModule,
       trustlyModule,
       useCaseModule,
       valueStoreModule,
