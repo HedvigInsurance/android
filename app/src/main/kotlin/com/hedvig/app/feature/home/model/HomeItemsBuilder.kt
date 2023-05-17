@@ -3,7 +3,7 @@ package com.hedvig.app.feature.home.model
 import androidx.compose.ui.unit.dp
 import arrow.core.NonEmptyList
 import arrow.core.toNonEmptyListOrNull
-import com.hedvig.android.feature.travelcertificate.data.TravelCertificate
+import com.hedvig.android.feature.travelcertificate.data.TravelCertificateResult
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
@@ -18,7 +18,7 @@ class HomeItemsBuilder(
 
   suspend fun buildItems(
     homeData: HomeQuery.Data,
-    travelCertificateData: TravelCertificate?,
+    travelCertificateData: TravelCertificateResult?,
   ): List<HomeModel> = when {
     homeData.isActive() -> buildActiveItems(homeData, travelCertificateData)
     homeData.isSwitching() && (homeData.isPending() || homeData.isActiveInFuture()) -> buildSwitchingItems(homeData)
@@ -30,7 +30,7 @@ class HomeItemsBuilder(
 
   private suspend fun buildActiveItems(
     homeData: HomeQuery.Data,
-    travelCertificateData: TravelCertificate?,
+    travelCertificateResult: TravelCertificateResult?,
   ): List<HomeModel> = buildList {
     addAll(listOfNotNull(*psaItems(homeData.importantMessages).toTypedArray()))
     add(HomeModel.BigText.Active(homeData.member.firstName ?: ""))
@@ -57,9 +57,18 @@ class HomeItemsBuilder(
             homeData.commonClaims,
             homeData.isEligibleToCreateClaim,
           ).toTypedArray(),
-          travelCertificateData?.let { HomeModel.CommonClaim.GenerateTravelCertificate(it.id) },
         ),
       )
+    }
+
+    if (featureManager.isFeatureEnabled(Feature.TRAVEL_CERTIFICATE)) {
+      when (travelCertificateResult) {
+        TravelCertificateResult.NotEligible -> {} // Do not show button
+        null -> {} // Do not show button
+        is TravelCertificateResult.TravelCertificateSpecifications -> add(
+          HomeModel.CommonClaim.GenerateTravelCertificate(travelCertificateResult),
+        )
+      }
     }
 
     add(HomeModel.Header(hedvig.resources.R.string.home_tab_editing_section_title))

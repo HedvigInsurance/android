@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import arrow.core.raise.either
 import com.hedvig.android.feature.travelcertificate.data.GetTravelCertificateUseCase
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.app.feature.home.data.GetHomeUseCase
 import com.hedvig.app.feature.home.model.HomeItemsBuilder
 import com.hedvig.app.feature.home.model.HomeModel
@@ -89,11 +88,7 @@ class HomeViewModelImpl(
     _viewState.value = ViewState.Loading
     either {
       val homeData = getHomeUseCase.invoke(forceReload).bind()
-      val travelCertificateData = if (featureManager.isFeatureEnabled(Feature.TRAVEL_CERTIFICATE)) {
-        getTravelCertificateUseCase.invoke().bind()
-      } else {
-        null
-      }
+      val travelCertificateData = getTravelCertificateUseCase.invoke().getOrNull()
 
       ViewState.Success(
         homeData = homeData,
