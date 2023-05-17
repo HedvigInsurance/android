@@ -18,15 +18,12 @@ jobs:
         with:
           java-version: '17'
           distribution: 'zulu'
-          cache: 'gradle'
-      - uses: actions/cache@v3
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
         with:
-          path: ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-      - uses: actions/cache@v3
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+          # Only write to the cache for builds on the 'develop' branch
+          cache-read-only: ${{ github.ref != 'refs/heads/develop' }}
+          gradle-home-cache-cleanup: true
       - name: Prebuild
         run: ./scripts/ci-prebuild.sh
         env:
@@ -55,15 +52,12 @@ jobs:
         with:
           java-version: '17'
           distribution: 'zulu'
-          cache: 'gradle'
-      - uses: actions/cache@v3
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
         with:
-          path: ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-      - uses: actions/cache@v3
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+          # Only write to the cache for builds on the 'develop' branch
+          cache-read-only: ${{ github.ref != 'refs/heads/develop' }}
+          gradle-home-cache-cleanup: true
       - name: Prebuild
         run: ./scripts/ci-prebuild.sh
         env:
@@ -91,15 +85,12 @@ jobs:
         with:
           java-version: '17'
           distribution: 'zulu'
-          cache: 'gradle'
-      - uses: actions/cache@v3
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
         with:
-          path: ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-      - uses: actions/cache@v3
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+          # Only write to the cache for builds on the 'develop' branch
+          cache-read-only: ${{ github.ref != 'refs/heads/develop' }}
+          gradle-home-cache-cleanup: true
       - name: Prebuild
         run: ./scripts/ci-prebuild.sh
         env:
@@ -131,19 +122,16 @@ jobs:
         with:
           java-version: '17'
           distribution: 'zulu'
-          cache: 'gradle'
-      - uses: actions/cache@v3
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
         with:
-          path: ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-      - uses: actions/cache@v3
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+          # Only write to the cache for builds on the 'develop' branch
+          cache-read-only: ${{ github.ref != 'refs/heads/develop' }}
+          gradle-home-cache-cleanup: true
       - run: echo VERSION_CODE=$(expr 4700 + ${{ github.run_number }} + ${{ github.run_attempt }} - 1) >> $GITHUB_ENV
       - uses: chkfung/android-version-actions@v1.2
         with:
-          gradlePath: app/build.gradle.kts
+          gradlePath: app/app/build.gradle.kts
           versionCode: ${{ env.VERSION_CODE }}
       - name: Prebuild
         run: ./scripts/ci-prebuild.sh
@@ -155,12 +143,12 @@ jobs:
         run: ./gradlew licenseReleaseReport --continue
         continue-on-error: true
       - name: Build
-        run: "./gradlew app:assembleDebug"
+        run: "./gradlew app:app:assembleDebug"
       - uses: r0adkll/sign-android-release@v1
         name: Sign app APK
         id: sign_app
         with:
-          releaseDirectory: app/build/outputs/apk/debug
+          releaseDirectory: app/app/build/outputs/apk/debug
           signingKeyBase64: ${{ secrets.SIGNING_KEY }}
           alias: ${{ secrets.ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}

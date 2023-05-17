@@ -3,7 +3,7 @@
 ## Develop
 
 1. Acquire Adyen credentials (you can find them in 1Password), place in the following paths:
-    - `app/src/${debug|staging|release}/res/values/adyen.xml`
+    - `app/app/src/${debug|staging|release}/res/values/adyen.xml`
 2. Acquire Lokalise credentials (you can find them in 1Password), place in the following file:
     - `lokalise.properties`
 3. Acquire gradle.properties which contain a token for Github Packages authentication. 
@@ -14,7 +14,7 @@
 4. Download the schema (required to consume any changes in schema as well):
     `./gradlew downloadApolloSchemasFromIntrospection`
 5. Download lokalise translations (required to consume latest translations as well):
-    `./gradlew :core-resources:downloadStrings`
+    `./gradlew downloadStrings`
 6. Build and install via Android Studio
 
 ## Formatting
@@ -45,6 +45,6 @@ The `username` used in there is the result of passing our jitpack username (from
 
 The [android-remove-unused-resources-plugin](https://github.com/irgaly/android-remove-unused-resources-plugin/tree/main#usage)
 plugin is used to achieve this. This will run on CI using [this task](./.github/workflows/unused-resources.yml), but to run locally one can also just do
-`./gradlew :app:lintDebug -Prur.lint.onlyUnusedResources`
+`./gradlew :app:app:lintDebug -Prur.lint.onlyUnusedResources`
 And then
-`./gradlew :app:removeUnusedResources -Prur.lintVariant="debug"`
+`./gradlew :app:app:removeUnusedResources -Prur.lintVariant="debug"`
