@@ -3,7 +3,7 @@ package com.hedvig.app.feature.home.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.raise.either
-import com.hedvig.android.feature.travelcertificate.data.GetTravelCertificateUseCase
+import com.hedvig.android.feature.travelcertificate.data.GetTravelCertificateSpecificationsUseCase
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.app.feature.home.data.GetHomeUseCase
 import com.hedvig.app.feature.home.model.HomeItemsBuilder
@@ -63,7 +63,7 @@ abstract class HomeViewModel(
 
 class HomeViewModelImpl(
   private val getHomeUseCase: GetHomeUseCase,
-  private val getTravelCertificateUseCase: GetTravelCertificateUseCase,
+  private val getTravelCertificateUseCase: GetTravelCertificateSpecificationsUseCase,
   private val homeItemsBuilder: HomeItemsBuilder,
   private val featureManager: FeatureManager,
   hAnalytics: HAnalytics,
