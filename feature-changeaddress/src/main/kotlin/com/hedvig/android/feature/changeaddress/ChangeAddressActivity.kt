@@ -24,7 +24,7 @@ class ChangeAddressActivity : AppCompatActivity() {
     WindowCompat.setDecorFitsSystemWindows(window, false)
 
     setContent {
-      HedvigTheme(flipBackgroundAndSurface = true) {
+      HedvigTheme(useNewColorScheme = true) {
         Surface(color = MaterialTheme.colorScheme.background) {
           ChangeAddressNavHost(
             windowSizeClass = calculateWindowSizeClass(this@ChangeAddressActivity),

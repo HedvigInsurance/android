@@ -41,12 +41,12 @@ fun HedvigTheme(
 @Composable
 fun HedvigTheme(
   darkTheme: Boolean = isSystemInDarkTheme(),
-  flipBackgroundAndSurface: Boolean,
+  useNewColorScheme: Boolean,
   content: @Composable () -> Unit,
 ) {
   HedvigTheme(
     darkTheme = darkTheme,
-    m3ColorOverrides = if (flipBackgroundAndSurface && !darkTheme) {
+    m3ColorOverrides = if (useNewColorScheme && !darkTheme) {
       { oldColorScheme ->
         oldColorScheme.copy(
           background = oldColorScheme.surface,

@@ -426,7 +426,7 @@ private fun Pdfs(quote: MoveQuote) {
 )
 @Composable
 private fun PreviewChangeAddressOfferScreen() {
-  HedvigTheme(flipBackgroundAndSurface = true) {
+  HedvigTheme(useNewColorScheme = true) {
     Surface(color = MaterialTheme.colorScheme.background) {
       ChangeAddressOfferScreen(
         ChangeAddressUiState(

@@ -188,7 +188,7 @@ private fun ExpandedInformation(
 @HedvigPreview
 @Composable
 fun PreviewQuoteCard() {
-  HedvigTheme(flipBackgroundAndSurface = true) {
+  HedvigTheme(useNewColorScheme = true) {
     Surface(color = MaterialTheme.colorScheme.background) {
       QuoteCard(
         movingDate = "2021-01-02",
