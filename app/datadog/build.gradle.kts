@@ -4,11 +4,11 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.apollo.core)
-  implementation(projects.apollo.giraffe)
-  implementation(projects.auth.authCore)
-  implementation(projects.auth.authEventCore)
-  implementation(projects.coreCommon)
+  implementation(projects.app.apollo.core)
+  implementation(projects.app.apollo.giraffe)
+  implementation(projects.app.auth.authCore)
+  implementation(projects.app.auth.authEventCore)
+  implementation(projects.app.coreCommon)
 
   implementation(libs.androidx.other.startup)
   implementation(libs.androidx.other.workManager)

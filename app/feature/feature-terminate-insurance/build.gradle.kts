@@ -11,16 +11,16 @@ android {
 }
 
 dependencies {
-  implementation(projects.apollo.core)
-  implementation(projects.apollo.octopus)
-  implementation(projects.auth.authAndroid)
-  implementation(projects.coreCommon)
-  implementation(projects.coreCommonAndroid)
-  implementation(projects.coreDesignSystem)
-  implementation(projects.coreResources)
-  implementation(projects.coreUi)
-  implementation(projects.navigation.navigationActivity)
-  implementation(projects.navigation.navigationComposeTyped)
+  implementation(projects.app.apollo.core)
+  implementation(projects.app.apollo.octopus)
+  implementation(projects.app.auth.authAndroid)
+  implementation(projects.app.coreCommon)
+  implementation(projects.app.coreCommonAndroid)
+  implementation(projects.app.coreDesignSystem)
+  implementation(projects.app.coreResources)
+  implementation(projects.app.coreUi)
+  implementation(projects.app.navigation.navigationActivity)
+  implementation(projects.app.navigation.navigationComposeTyped)
 
   implementation(libs.accompanist.navigationAnimation)
   implementation(libs.androidx.compose.material3)

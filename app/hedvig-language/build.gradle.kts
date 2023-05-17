@@ -4,10 +4,10 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.apollo.core)
-  implementation(projects.apollo.giraffe)
-  implementation(projects.coreCommon)
-  implementation(projects.hedvigMarket)
+  implementation(projects.app.apollo.core)
+  implementation(projects.app.apollo.giraffe)
+  implementation(projects.app.coreCommon)
+  implementation(projects.app.hedvigMarket)
 
   implementation(libs.androidx.other.appCompat)
   implementation(libs.androidx.other.preference)

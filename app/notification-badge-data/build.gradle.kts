@@ -4,11 +4,11 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.apollo.core)
-  implementation(projects.apollo.giraffe)
-  implementation(projects.coreCommon)
-  implementation(projects.hanalytics.hanalyticsFeatureFlags)
-  implementation(projects.hedvigLanguage)
+  implementation(projects.app.apollo.core)
+  implementation(projects.app.apollo.giraffe)
+  implementation(projects.app.coreCommon)
+  implementation(projects.app.hanalytics.hanalyticsFeatureFlags)
+  implementation(projects.app.hedvigLanguage)
 
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.datastore.preferencesCore)
@@ -16,7 +16,7 @@ dependencies {
   implementation(libs.koin.core)
   implementation(libs.slimber)
 
-  testImplementation(projects.hanalytics.hanalyticsFeatureFlagsTest)
+  testImplementation(projects.app.hanalytics.hanalyticsFeatureFlagsTest)
 
   testImplementation(libs.junit)
   testImplementation(libs.assertK)

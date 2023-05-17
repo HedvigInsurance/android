@@ -8,13 +8,13 @@ android {
 }
 
 dependencies {
-  implementation(projects.apollo.core)
-  implementation(projects.apollo.di)
-  implementation(projects.apollo.giraffe)
-  implementation(projects.auth.authCore)
-  implementation(projects.auth.authEventCore)
-  implementation(projects.coreCommon)
-  implementation(projects.notification.notificationCore)
+  implementation(projects.app.apollo.core)
+  implementation(projects.app.apollo.di)
+  implementation(projects.app.apollo.giraffe)
+  implementation(projects.app.auth.authCore)
+  implementation(projects.app.auth.authEventCore)
+  implementation(projects.app.coreCommon)
+  implementation(projects.app.notification.notificationCore)
 
   implementation(platform(libs.firebase.bom))
 

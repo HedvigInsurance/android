@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-  api(projects.auth.authEventCore)
+  api(projects.app.auth.authEventCore)
 
   implementation(libs.turbine)
 }

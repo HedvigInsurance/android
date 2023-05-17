@@ -4,10 +4,10 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.apollo.core)
-  implementation(projects.apollo.giraffe)
-  implementation(projects.coreCommon)
-  implementation(projects.coreResources)
+  implementation(projects.app.apollo.core)
+  implementation(projects.app.apollo.giraffe)
+  implementation(projects.app.coreCommon)
+  implementation(projects.app.coreResources)
 
   implementation(libs.androidx.other.preference)
   implementation(libs.koin.android)

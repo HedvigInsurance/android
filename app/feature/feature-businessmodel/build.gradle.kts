@@ -5,12 +5,12 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.auth.authAndroid)
-  implementation(projects.coreCommonAndroid)
-  implementation(projects.coreDesignSystem)
-  implementation(projects.coreResources)
-  implementation(projects.coreUi)
-  implementation(projects.hanalytics.hanalyticsCore)
+  implementation(projects.app.auth.authAndroid)
+  implementation(projects.app.coreCommonAndroid)
+  implementation(projects.app.coreDesignSystem)
+  implementation(projects.app.coreResources)
+  implementation(projects.app.coreUi)
+  implementation(projects.app.hanalytics.hanalyticsCore)
 
   implementation(libs.androidx.other.appCompat)
   implementation(libs.androidx.other.activityCompose)

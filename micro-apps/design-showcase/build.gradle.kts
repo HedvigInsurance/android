@@ -23,8 +23,8 @@ android {
 }
 
 dependencies {
-  implementation(projects.coreDesignSystem)
-  implementation(projects.coreUi)
+  implementation(projects.app.coreDesignSystem)
+  implementation(projects.app.coreUi)
 
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.foundationLayout)

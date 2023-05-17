@@ -6,10 +6,10 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.coreCommon)
-  implementation(projects.coreCommonAndroid)
-  implementation(projects.coreDatastore)
-  implementation(projects.hanalytics.hanalyticsCore)
+  implementation(projects.app.coreCommon)
+  implementation(projects.app.coreCommonAndroid)
+  implementation(projects.app.coreDatastore)
+  implementation(projects.app.hanalytics.hanalyticsCore)
 
   api(libs.hAnalytics)
   implementation(libs.androidx.lifecycle.common)

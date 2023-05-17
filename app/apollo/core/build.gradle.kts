@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.coreCommon)
+  implementation(projects.app.coreCommon)
 
   api(libs.apollo.api)
   api(libs.apollo.runtime)

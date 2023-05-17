@@ -4,9 +4,9 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.coreCommon)
-  implementation(projects.hanalytics.hanalyticsCore)
-  implementation(projects.hedvigMarket)
+  implementation(projects.app.coreCommon)
+  implementation(projects.app.hanalytics.hanalyticsCore)
+  implementation(projects.app.hedvigMarket)
 
   implementation(libs.koin.core)
 }

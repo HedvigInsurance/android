@@ -4,8 +4,8 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.apollo.giraffe)
-  implementation(projects.apollo.octopus)
+  implementation(projects.app.apollo.giraffe)
+  implementation(projects.app.apollo.octopus)
 
   implementation(libs.koin.core)
 }
