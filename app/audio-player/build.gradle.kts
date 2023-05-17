@@ -9,9 +9,9 @@ android {
 }
 
 dependencies {
-  implementation(projects.app.coreCommonAndroid)
-  implementation(projects.app.coreDesignSystem)
-  implementation(projects.app.coreResources)
+  implementation(projects.app.core.coreCommonAndroid)
+  implementation(projects.app.core.coreDesignSystem)
+  implementation(projects.app.core.coreResources)
 
   implementation(libs.androidx.compose.animation)
   implementation(libs.androidx.compose.foundation)

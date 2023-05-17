@@ -6,9 +6,9 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.app.coreCommon)
-  implementation(projects.app.coreCommonAndroid)
-  implementation(projects.app.coreDatastore)
+  implementation(projects.app.core.coreCommon)
+  implementation(projects.app.core.coreCommonAndroid)
+  implementation(projects.app.core.coreDatastore)
   implementation(projects.app.hanalytics.hanalyticsCore)
 
   api(libs.hAnalytics)

@@ -7,9 +7,9 @@ plugins {
 
 dependencies {
   implementation(projects.app.auth.authEventCore)
-  implementation(projects.app.coreCommon)
-  implementation(projects.app.coreCommonAndroid)
-  implementation(projects.app.coreDatastore)
+  implementation(projects.app.core.coreCommon)
+  implementation(projects.app.core.coreCommonAndroid)
+  implementation(projects.app.core.coreDatastore)
 
   api(libs.hedvig.authlib)
   // do not remove ktor, authlib has an old ktor version which somehow crashes. Remove when we bump authlib.
@@ -24,8 +24,8 @@ dependencies {
   implementation(libs.slimber)
 
   testImplementation(projects.app.auth.authTest)
-  testImplementation(projects.app.coreCommonTest)
-  testImplementation(projects.app.coreDatastoreTest)
+  testImplementation(projects.app.core.coreCommonTest)
+  testImplementation(projects.app.core.coreDatastoreTest)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)

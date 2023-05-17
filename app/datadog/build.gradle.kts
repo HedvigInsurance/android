@@ -8,7 +8,7 @@ dependencies {
   implementation(projects.app.apollo.giraffe)
   implementation(projects.app.auth.authCore)
   implementation(projects.app.auth.authEventCore)
-  implementation(projects.app.coreCommon)
+  implementation(projects.app.core.coreCommon)
 
   implementation(libs.androidx.other.startup)
   implementation(libs.androidx.other.workManager)

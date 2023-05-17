@@ -6,7 +6,7 @@ plugins {
 dependencies {
   implementation(projects.app.apollo.core)
   implementation(projects.app.apollo.giraffe)
-  implementation(projects.app.coreCommon)
+  implementation(projects.app.core.coreCommon)
   implementation(projects.app.hanalytics.hanalyticsFeatureFlags)
   implementation(projects.app.hedvigLanguage)
 

@@ -6,10 +6,10 @@ plugins {
 
 dependencies {
   implementation(projects.app.auth.authAndroid)
-  implementation(projects.app.coreCommonAndroid)
-  implementation(projects.app.coreDesignSystem)
-  implementation(projects.app.coreResources)
-  implementation(projects.app.coreUi)
+  implementation(projects.app.core.coreCommonAndroid)
+  implementation(projects.app.core.coreDesignSystem)
+  implementation(projects.app.core.coreResources)
+  implementation(projects.app.core.coreUi)
   implementation(projects.app.hanalytics.hanalyticsCore)
 
   implementation(libs.androidx.other.appCompat)
