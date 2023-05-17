@@ -34,7 +34,7 @@ jobs:
       - run: echo VERSION_CODE=$(date +%s) >> $GITHUB_ENV
       - uses: chkfung/android-version-actions@v1.2
         with:
-          gradlePath: app/build.gradle.kts
+          gradlePath: app/app/build.gradle.kts
           versionCode: ${{ env.VERSION_CODE }}
       - name: Prebuild
         run: ./scripts/ci-release-prebuild.sh
