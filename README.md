@@ -14,7 +14,7 @@
 4. Download the schema (required to consume any changes in schema as well):
     `./gradlew downloadApolloSchemasFromIntrospection`
 5. Download lokalise translations (required to consume latest translations as well):
-    `./gradlew :app:core-resources:downloadStrings`
+    `./gradlew downloadStrings`
 6. Build and install via Android Studio
 
 ## Formatting

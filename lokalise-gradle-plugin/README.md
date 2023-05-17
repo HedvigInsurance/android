@@ -1,6 +1,6 @@
 ## lokalise-gradle-plugin
 
-A plugin to provide the `./gradlew :app:core-resources:downloadStrings` task which downloads all strings
+A plugin to provide the `./gradlew downloadStrings` task which downloads all strings
 from lokalise into the path specified in `outputDirectory`
 
 An example of usage is:

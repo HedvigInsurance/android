@@ -14,4 +14,4 @@ cat <<EOT > app/src/staging/res/values/adyen.xml
 EOT
 
 ./gradlew downloadApolloSchemasFromIntrospection
-./gradlew :app:core-resources:downloadStrings
+./gradlew downloadStrings

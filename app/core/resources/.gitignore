@@ -1,2 +1,2 @@
-#Generated from `./gradlew :app:core-resources:downloadStrings` therefore ignored
+#Generated from `./gradlew downloadStrings` therefore ignored
 src/main/res/**/strings.xml
