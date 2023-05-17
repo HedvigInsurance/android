@@ -16,30 +16,30 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import kotlin.math.max
 
 /**
- * When two texts need to be laid out horizontally in a row, they can't know how much space they need to take out, which
- * more often than not results in the starting text taking up all the width it needs, squeezing the end text. This
- * layout makes sure to measure their max intrinsic width and give as much space as possible to each text, without
+ * When two items need to be laid out horizontally in a row, they can't know how much space they need to take out, which
+ * more often than not results in the starting item taking up all the width it needs, squeezing the end item. This
+ * layout makes sure to measure their max intrinsic width and give as much space as possible to each item, without
  * squeezing the other one. If both of them were to need more than half of the space, or less than half of the space,
  * they're simply given half of the width each.
  */
 @Composable
-fun HorizontalTextsWithMaximumSpaceTaken(
-  startText: @Composable () -> Unit,
-  endText: @Composable (textAlign: TextAlign) -> Unit,
+fun HorizontalItemsWithMaximumSpaceTaken(
+  startSlot: @Composable () -> Unit,
+  endSlot: @Composable () -> Unit,
   modifier: Modifier = Modifier,
   spaceBetween: Dp = 0.dp,
 ) {
   Layout(
     content = {
-      startText()
-      endText(textAlign = TextAlign.End)
+      startSlot()
+      endSlot()
     },
     modifier = modifier,
   ) { measurables, constraints ->
-    val first = measurables[0]
-    val second = measurables[1]
-    val firstWidth = first.maxIntrinsicWidth(constraints.maxHeight)
-    val secondWidth = second.maxIntrinsicWidth(constraints.maxHeight)
+    val first = measurables.getOrNull(0)
+    val second = measurables.getOrNull(1)
+    val firstWidth = first?.maxIntrinsicWidth(constraints.maxHeight) ?: 0
+    val secondWidth = second?.maxIntrinsicWidth(constraints.maxHeight) ?: 0
 
     val totalWidth = constraints.maxWidth
     val halfWidth = totalWidth / 2
@@ -49,8 +49,10 @@ fun HorizontalTextsWithMaximumSpaceTaken(
 
     val halfWidthMinusSpace = halfWidth - halfCenterSpace
 
-    val bothTakeLessThanHalfSpace = firstWidth <= halfWidthMinusSpace && secondWidth <= halfWidthMinusSpace
-    val bothTakeMoreThanHalfSpace = firstWidth > halfWidthMinusSpace && secondWidth > halfWidthMinusSpace
+    val bothTakeLessThanHalfSpace =
+      firstWidth <= halfWidthMinusSpace && secondWidth <= halfWidthMinusSpace
+    val bothTakeMoreThanHalfSpace =
+      firstWidth > halfWidthMinusSpace && secondWidth > halfWidthMinusSpace
     val textsShouldShareEqualSpace = bothTakeLessThanHalfSpace || bothTakeMoreThanHalfSpace
 
     val firstConstraints: Constraints
@@ -81,11 +83,12 @@ fun HorizontalTextsWithMaximumSpaceTaken(
         maxWidth = totalWidth - firstWidth - halfCenterSpace,
       )
     }
-    val firstPlaceable = first.measure(firstConstraints)
-    val secondPlaceable = second.measure(secondConstraints)
-    layout(constraints.maxWidth, max(firstPlaceable.height, secondPlaceable.height)) {
-      firstPlaceable.placeRelative(0, 0)
-      secondPlaceable.placeRelative(constraints.maxWidth - secondPlaceable.width, 0)
+    val firstPlaceable = first?.measure(firstConstraints)
+    val secondPlaceable = second?.measure(secondConstraints)
+    val layoutHeight = max(firstPlaceable?.height ?: 0, secondPlaceable?.height ?: 0)
+    layout(constraints.maxWidth, layoutHeight) {
+      firstPlaceable?.placeRelative(0, 0)
+      secondPlaceable?.placeRelative(constraints.maxWidth - secondPlaceable.width, 0)
     }
   }
 }
@@ -95,9 +98,9 @@ fun HorizontalTextsWithMaximumSpaceTaken(
 private fun PreviewSmallTexts() {
   HedvigTheme {
     Surface(color = MaterialTheme.colors.background) {
-      HorizontalTextsWithMaximumSpaceTaken(
-        startText = { Text(text = "Start") },
-        endText = { Text(text = "End", textAlign = it) },
+      HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = { Text(text = "Start") },
+        endSlot = { Text(text = "End", textAlign = TextAlign.End) },
         modifier = Modifier.size(width = 250.dp, height = 100.dp),
       )
     }
@@ -109,9 +112,9 @@ private fun PreviewSmallTexts() {
 private fun PreviewBigTexts() {
   HedvigTheme {
     Surface(color = MaterialTheme.colors.background) {
-      HorizontalTextsWithMaximumSpaceTaken(
-        startText = { Text(text = "Start".repeat(10)) },
-        endText = { Text(text = "End".repeat(10), textAlign = it) },
+      HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = { Text(text = "Start".repeat(10)) },
+        endSlot = { Text(text = "End".repeat(10), textAlign = TextAlign.End) },
         modifier = Modifier.size(width = 250.dp, height = 100.dp),
       )
     }
@@ -123,9 +126,9 @@ private fun PreviewBigTexts() {
 private fun PreviewBigTextsWithSpaceText() {
   HedvigTheme {
     Surface(color = MaterialTheme.colors.background) {
-      HorizontalTextsWithMaximumSpaceTaken(
-        startText = { Text(text = "Start".repeat(10)) },
-        endText = { Text(text = "End".repeat(10), textAlign = it) },
+      HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = { Text(text = "Start".repeat(10)) },
+        endSlot = { Text(text = "End".repeat(10), textAlign = TextAlign.End) },
         modifier = Modifier.size(width = 250.dp, height = 100.dp),
         spaceBetween = 30.dp,
       )
@@ -138,9 +141,9 @@ private fun PreviewBigTextsWithSpaceText() {
 private fun PreviewBigStartText() {
   HedvigTheme {
     Surface(color = MaterialTheme.colors.background) {
-      HorizontalTextsWithMaximumSpaceTaken(
-        startText = { Text(text = "Start".repeat(10)) },
-        endText = { Text(text = "End", textAlign = it) },
+      HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = { Text(text = "Start".repeat(10)) },
+        endSlot = { Text(text = "End", textAlign = TextAlign.End) },
         modifier = Modifier.size(width = 250.dp, height = 100.dp),
       )
     }
@@ -152,9 +155,9 @@ private fun PreviewBigStartText() {
 private fun PreviewBigEndText() {
   HedvigTheme {
     Surface(color = MaterialTheme.colors.background) {
-      HorizontalTextsWithMaximumSpaceTaken(
-        startText = { Text(text = "Start") },
-        endText = { Text(text = "End".repeat(10), textAlign = it) },
+      HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = { Text(text = "Start") },
+        endSlot = { Text(text = "End".repeat(10), textAlign = TextAlign.End) },
         modifier = Modifier.size(width = 250.dp, height = 100.dp),
       )
     }
@@ -166,9 +169,9 @@ private fun PreviewBigEndText() {
 private fun PreviewBigEndTextWithSpace() {
   HedvigTheme {
     Surface(color = MaterialTheme.colors.background) {
-      HorizontalTextsWithMaximumSpaceTaken(
-        startText = { Text(text = "Start") },
-        endText = { Text(text = "End".repeat(10), textAlign = it) },
+      HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = { Text(text = "Start") },
+        endSlot = { Text(text = "End".repeat(10), textAlign = TextAlign.End) },
         modifier = Modifier.size(width = 250.dp, height = 100.dp),
         spaceBetween = 32.dp,
       )

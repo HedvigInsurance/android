@@ -130,6 +130,7 @@ private fun MoveIntentCreateMutation.Data.MoveIntentCreate.MoveIntent.toMoveInte
 
 private fun MoveIntentRequestMutation.Data.MoveIntentRequest.MoveIntent.toMoveQuotes() = quotes.map { quote ->
   MoveQuote(
+    insuranceName = "TODO Olycksfallsförsäkring",
     moveIntentId = MoveIntentId(id),
     address = Address(
       id = AddressId(quote.address.id),

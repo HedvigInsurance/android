@@ -1,3 +1,4 @@
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
   id("hedvig.android.library")
   id("hedvig.android.library.compose")

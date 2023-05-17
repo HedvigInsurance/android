@@ -1,33 +1,37 @@
 package com.hedvig.android.core.designsystem.theme
 
 import androidx.compose.ui.graphics.Color
+import com.hedvig.android.core.designsystem.newtheme.hedvigTonalPalette
 
 // Light from xml | https://github.com/HedvigInsurance/android/blob/e86158084061de59a9f1b6d71dda3b234057883d/app/src/main/res/values/colors.xml#L26
-internal val light_primary = hedvig_black
-internal val light_onPrimary = hedvig_white
-internal val light_primaryVariant = hedvig_dark_gray
-internal val light_background = Color(0xFFF6F6F6)
-internal val light_onBackground = hedvig_black
-internal val light_surface = hedvig_white
-internal val light_onSurface = light_primary
-internal val light_surfaceVariant = hedvig_light_gray
-internal val light_onSurfaceVariant = light_primary
+// And slowly transitioning to the ones from the new UI Kit
+internal val light_primary = hedvigTonalPalette.neutral0
+internal val light_onPrimary = hedvigTonalPalette.neutral100
+internal val light_primaryVariant = hedvigTonalPalette.neutral20
+internal val light_background = hedvigTonalPalette.neutral95
+internal val light_onBackground = hedvigTonalPalette.neutral0
+internal val light_surface = hedvigTonalPalette.neutral100
+internal val light_onSurface = hedvigTonalPalette.neutral0
+internal val light_surfaceVariant = hedvigTonalPalette.neutral90
+internal val light_onSurfaceVariant = hedvigTonalPalette.neutral30
 internal val light_secondary = lavender_300
-internal val light_onSecondary = hedvig_black
+internal val light_onSecondary = hedvigTonalPalette.neutral0
 internal val light_error = Color(0xFFDD2727)
-internal val light_onError = hedvig_white
+internal val light_onError = hedvigTonalPalette.neutral100
+internal val light_outlineVariant = hedvigTonalPalette.neutral60
 
 // Dark from xml | https://github.com/HedvigInsurance/android/blob/e86158084061de59a9f1b6d71dda3b234057883d/app/src/main/res/values-night/colors_dark.xml#L2
-internal val dark_primary = hedvig_white
-internal val dark_onPrimary = hedvig_black
-internal val dark_primaryVariant = hedvig_off_white
-internal val dark_background = hedvig_black
-internal val dark_onBackground = hedvig_white
-internal val dark_surface = Color(0xFF252525)
-internal val dark_onSurface = dark_primary
-internal val dark_surfaceVariant = hedvig_dark_gray
-internal val dark_onSurfaceVariant = dark_primary
+internal val dark_primary = hedvigTonalPalette.neutral100
+internal val dark_onPrimary = hedvigTonalPalette.neutral0
+internal val dark_primaryVariant = hedvigTonalPalette.neutral95
+internal val dark_background = hedvigTonalPalette.neutral0
+internal val dark_onBackground = hedvigTonalPalette.neutral100
+internal val dark_surface = hedvigTonalPalette.neutral10
+internal val dark_onSurface = hedvigTonalPalette.neutral100
+internal val dark_surfaceVariant = hedvigTonalPalette.neutral30
+internal val dark_onSurfaceVariant = hedvigTonalPalette.neutral80
 internal val dark_secondary = lavender_400
-internal val dark_onSecondary = hedvig_black
+internal val dark_onSecondary = hedvigTonalPalette.neutral0
 internal val dark_error = Color(0xFFE24646)
-internal val dark_onError = hedvig_white
+internal val dark_onError = hedvigTonalPalette.neutral100
+internal val dark_outlineVariant = hedvigTonalPalette.neutral40
