@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.app.core.coreResources)
+  implementation(projects.app.core.resources)
 
   implementation(libs.androidx.compose.uiUnit)
   implementation(libs.androidx.other.core)

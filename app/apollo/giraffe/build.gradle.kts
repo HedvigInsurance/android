@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.app.core.coreCommon)
+  implementation(projects.app.core.common)
 
   api(libs.apollo.api)
   implementation(libs.adyen)

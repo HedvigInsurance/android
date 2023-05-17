@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.app.core.coreResources)
+  implementation(projects.app.core.resources)
 
   api(libs.accompanist.insetsUi)
   api(libs.androidx.compose.foundation)

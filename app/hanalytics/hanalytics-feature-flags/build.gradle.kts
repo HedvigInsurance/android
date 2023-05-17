@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.app.core.coreCommon)
+  implementation(projects.app.core.common)
   implementation(projects.app.hanalytics.hanalyticsCore)
   implementation(projects.app.hedvigMarket)
 
