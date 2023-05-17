@@ -23,6 +23,7 @@ class HomeItemsBuilderTest {
           mapOf(
             Feature.CONNECT_PAYIN_REMINDER to false,
             Feature.COMMON_CLAIMS to Random.nextBoolean(),
+            Feature.TRAVEL_CERTIFICATE to true,
           )
         },
       )
@@ -41,6 +42,7 @@ class HomeItemsBuilderTest {
           mapOf(
             Feature.CONNECT_PAYIN_REMINDER to true,
             Feature.COMMON_CLAIMS to Random.nextBoolean(),
+            Feature.TRAVEL_CERTIFICATE to true,
           )
         },
         paymentType = { enumValues<PaymentType>().random() },
@@ -55,7 +57,12 @@ class HomeItemsBuilderTest {
   @Test
   fun `when common claims-feature is disabled, should not show common claims`() = runTest {
     val featureManager: FeatureManager = FakeFeatureManager(
-      featureMap = { mapOf(Feature.COMMON_CLAIMS to false) },
+      featureMap = {
+        mapOf(
+          Feature.COMMON_CLAIMS to false,
+          Feature.TRAVEL_CERTIFICATE to true,
+        )
+      },
     )
     val builder = HomeItemsBuilder(featureManager)
 
@@ -67,7 +74,12 @@ class HomeItemsBuilderTest {
   @Test
   fun `when common claims-feature is enabled, should show common claims`() = runTest {
     val featureManager: FeatureManager = FakeFeatureManager(
-      featureMap = { mapOf(Feature.COMMON_CLAIMS to true) },
+      featureMap = {
+        mapOf(
+          Feature.COMMON_CLAIMS to true,
+          Feature.TRAVEL_CERTIFICATE to true,
+        )
+      },
     )
     val builder = HomeItemsBuilder(featureManager)
 
