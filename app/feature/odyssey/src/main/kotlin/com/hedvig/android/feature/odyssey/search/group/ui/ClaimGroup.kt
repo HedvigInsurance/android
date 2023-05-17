@@ -33,9 +33,9 @@ import hedvig.resources.R
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun ClaimGroupSelector(
-    uiState: ClaimGroupUiState,
-    viewModel: ClaimGroupViewModel,
-    onContinueClicked: (String) -> Unit,
+  uiState: ClaimGroupUiState,
+  viewModel: ClaimGroupViewModel,
+  onContinueClicked: (String) -> Unit,
 ) {
   Box(modifier = Modifier.fillMaxHeight()) {
     Column {

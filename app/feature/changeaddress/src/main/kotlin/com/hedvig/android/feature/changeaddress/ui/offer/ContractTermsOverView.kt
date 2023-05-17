@@ -15,7 +15,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -50,13 +49,13 @@ fun ContractTermsOverView(
     contractTerms.insurableLimits.mapIndexed { index, insurableLimit ->
       Spacer(modifier = Modifier.padding(4.dp))
       Row(
-        verticalAlignment = CenterVertically,
+        verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = SpaceBetween,
         modifier = Modifier.fillMaxWidth(),
       ) {
         Text(text = insurableLimit.label)
         Row(
-          verticalAlignment = CenterVertically,
+          verticalAlignment = Alignment.CenterVertically,
         ) {
           Text(text = insurableLimit.limit)
           Spacer(modifier = Modifier.padding(start = 4.dp))
@@ -78,7 +77,7 @@ fun ContractTermsOverView(
 
     contractTerms.documents.map { contractTerm ->
       Row(
-        verticalAlignment = CenterVertically,
+        verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = SpaceBetween,
         modifier = Modifier
           .background(
@@ -120,7 +119,7 @@ fun ContractTermsOverView(
 
     contractTerms.perils.map { peril ->
       Row(
-        verticalAlignment = CenterVertically,
+        verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = SpaceBetween,
         modifier = Modifier
           .background(shape = SquircleShape, color = Color(0xFFF0F0F0))
@@ -128,7 +127,6 @@ fun ContractTermsOverView(
           .padding(horizontal = 16.dp, vertical = 12.dp),
       ) {
         Row {
-
           Text(peril.title)
         }
         Icon(
