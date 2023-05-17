@@ -1,0 +1,18 @@
+mutation MoveIntentCreate($input: MoveIntentCreateInput!) {
+  moveIntentCreate(input: $input) {
+    moveIntent {
+      id
+      minMovingDate
+      maxMovingDate
+      numberCoInsured
+      currentHomeAddresses {
+        id
+        street
+        postalCode
+      }
+    }
+    userError {
+      message
+    }
+  }
+}

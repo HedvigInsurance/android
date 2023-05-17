@@ -1,0 +1,126 @@
+package com.hedvig.android.feature.odyssey.di
+
+import arrow.retrofit.adapter.either.EitherCallAdapterFactory
+import com.apollographql.apollo3.ApolloClient
+import com.hedvig.android.apollo.octopus.di.octopusClient
+import com.hedvig.android.feature.odyssey.data.ClaimFlowRepository
+import com.hedvig.android.feature.odyssey.data.ClaimFlowRepositoryImpl
+import com.hedvig.android.feature.odyssey.data.OdysseyService
+import com.hedvig.android.feature.odyssey.model.FlowId
+import com.hedvig.android.feature.odyssey.navigation.AudioContent
+import com.hedvig.android.feature.odyssey.navigation.ClaimFlowDestination
+import com.hedvig.android.feature.odyssey.navigation.LocationOption
+import com.hedvig.android.feature.odyssey.step.audiorecording.AudioRecordingViewModel
+import com.hedvig.android.feature.odyssey.step.dateofoccurrence.DateOfOccurrenceViewModel
+import com.hedvig.android.feature.odyssey.step.dateofoccurrencepluslocation.DateOfOccurrencePlusLocationViewModel
+import com.hedvig.android.feature.odyssey.step.honestypledge.HonestyPledgeViewModel
+import com.hedvig.android.feature.odyssey.step.location.LocationViewModel
+import com.hedvig.android.feature.odyssey.step.notificationpermission.NotificationPermissionViewModel
+import com.hedvig.android.feature.odyssey.step.phonenumber.PhoneNumberViewModel
+import com.hedvig.android.feature.odyssey.step.singleitem.SingleItemViewModel
+import com.hedvig.android.feature.odyssey.step.singleitemcheckout.SingleItemCheckoutViewModel
+import com.hedvig.android.feature.odyssey.step.summary.ClaimSummaryViewModel
+import com.hedvig.android.feature.odyssey.search.group.ClaimGroupViewModel
+import com.hedvig.android.feature.odyssey.search.group.GetClaimEntryGroupUseCase
+import com.hedvig.android.feature.odyssey.search.groups.ClaimGroupsViewModel
+import com.hedvig.android.feature.odyssey.search.groups.GetNetworkClaimEntryPointGroupsUseCase
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import kotlinx.datetime.LocalDate
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.qualifier.qualifier
+import org.koin.dsl.module
+import retrofit2.Retrofit
+
+/**
+ * The URL targeting odyssey backend
+ */
+val odysseyUrlQualifier = qualifier("odysseyUrlQualifier")
+
+@Suppress("RemoveExplicitTypeArguments")
+val odysseyModule = module {
+  single<ClaimFlowRepository> {
+    ClaimFlowRepositoryImpl(get<ApolloClient>(octopusClient), get<OdysseyService>())
+  }
+
+  viewModel<ClaimGroupsViewModel> { ClaimGroupsViewModel(get<GetNetworkClaimEntryPointGroupsUseCase>()) }
+  viewModel<ClaimGroupViewModel> { parametersHolder ->
+    ClaimGroupViewModel(
+      get<GetClaimEntryGroupUseCase>(),
+      parametersHolder.get(),
+    )
+  }
+
+  single<GetNetworkClaimEntryPointGroupsUseCase> {
+    GetNetworkClaimEntryPointGroupsUseCase(get<ApolloClient>(octopusClient))
+  }
+
+  single<GetClaimEntryGroupUseCase> {
+    GetClaimEntryGroupUseCase(get<ApolloClient>(octopusClient))
+  }
+
+  // Claims
+  viewModel<HonestyPledgeViewModel> { (entryPointId: String?) ->
+    HonestyPledgeViewModel(entryPointId, get())
+  }
+  viewModel<NotificationPermissionViewModel> { (entryPointId: String?) ->
+    NotificationPermissionViewModel(entryPointId, get<ClaimFlowRepository>())
+  }
+  viewModel<AudioRecordingViewModel> { (flowId: FlowId, audioContent: AudioContent?) ->
+    AudioRecordingViewModel(
+      flowId = flowId,
+      audioContent = audioContent,
+      claimFlowRepository = get(),
+    )
+  }
+  viewModel<PhoneNumberViewModel> { (initialPhoneNumber: String?) ->
+    PhoneNumberViewModel(initialPhoneNumber, get())
+  }
+  viewModel<DateOfOccurrenceViewModel> { (initialDateOfOccurrence: LocalDate?, maxDate: LocalDate) ->
+    DateOfOccurrenceViewModel(
+      initialDateOfOccurrence = initialDateOfOccurrence,
+      maxDate = maxDate,
+      claimFlowRepository = get(),
+    )
+  }
+  viewModel<LocationViewModel> { (selectedLocation: String?, locationOptions: List<LocationOption>) ->
+    LocationViewModel(selectedLocation, locationOptions, get())
+  }
+  viewModel<DateOfOccurrencePlusLocationViewModel> { parametersHolder ->
+    val dateOfOccurrence: LocalDate? = parametersHolder.getOrNull()
+    val maxDate: LocalDate = parametersHolder.get()
+    val selectedLocation: String? = parametersHolder.getOrNull()
+    val locationOptions: List<LocationOption> = parametersHolder.get()
+    DateOfOccurrencePlusLocationViewModel(
+      initialDateOfOccurrence = dateOfOccurrence,
+      maxDate = maxDate,
+      selectedLocation = selectedLocation,
+      locationOptions = locationOptions,
+      get<ClaimFlowRepository>(),
+    )
+  }
+  viewModel<SingleItemViewModel> { (singleItem: ClaimFlowDestination.SingleItem) ->
+    SingleItemViewModel(singleItem, get<ClaimFlowRepository>())
+  }
+  viewModel<ClaimSummaryViewModel> { (summary: ClaimFlowDestination.Summary) ->
+    ClaimSummaryViewModel(summary, get<ClaimFlowRepository>())
+  }
+  viewModel<SingleItemCheckoutViewModel> { (singleItemCheckout: ClaimFlowDestination.SingleItemCheckout) ->
+    SingleItemCheckoutViewModel(singleItemCheckout, get<ClaimFlowRepository>())
+  }
+
+  // Retrofit
+  single<Retrofit> {
+    Retrofit.Builder()
+      .callFactory(get<OkHttpClient>())
+      .baseUrl("${get<String>(odysseyUrlQualifier)}/api/flows/")
+      .addCallAdapterFactory(EitherCallAdapterFactory.create())
+      .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
+      .build()
+  }
+  single<OdysseyService> {
+    get<Retrofit>().create(OdysseyService::class.java)
+  }
+}

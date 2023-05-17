@@ -34,7 +34,6 @@ import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.home.model.HomeModel
-import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.feature.home.ui.claimstatus.composables.ClaimStatusCards
 import com.hedvig.app.feature.home.ui.connectpayincard.ConnectPayinCard
 import com.hedvig.app.ui.coil.load
@@ -61,6 +60,7 @@ class HomeAdapter(
   private val onPaymentCardShown: () -> Unit,
   private val onPaymentCardClicked: (PaymentType) -> Unit,
   private val onStartClaimClicked: () -> Unit,
+  private val onStartMovingFlow: () -> Unit,
 ) : ListAdapter<HomeModel, HomeAdapter.ViewHolder>(HomeModelDiffUtilItemCallback) {
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -80,8 +80,8 @@ class HomeAdapter(
     ERROR -> ViewHolder.Error(ComposeView(parent.context), retry)
     R.layout.how_claims_work_button -> ViewHolder.HowClaimsWorkButton(parent)
     R.layout.upcoming_renewal_card -> ViewHolder.UpcomingRenewal(parent)
-    R.layout.home_change_address_button -> ViewHolder.ChangeAddress(parent)
-    R.layout.change_address_pending_change_card -> ViewHolder.PendingChange(parent)
+    R.layout.home_change_address_button -> ViewHolder.ChangeAddress(parent, onStartMovingFlow)
+    R.layout.change_address_pending_change_card -> ViewHolder.PendingChange(parent, onStartMovingFlow)
     R.layout.header_item_layout -> ViewHolder.Header(parent)
     else -> throw Error("Invalid view type")
   }
@@ -450,7 +450,9 @@ class HomeAdapter(
       }
     }
 
-    class ChangeAddress(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.home_change_address_button)) {
+    class ChangeAddress(parent: ViewGroup, val onStartMovingFlow: () -> Unit) : ViewHolder(
+      parent.inflate(R.layout.home_change_address_button),
+    ) {
       private val binding by viewBinding(HomeChangeAddressButtonBinding::bind)
       override fun bind(
         data: HomeModel,
@@ -461,13 +463,13 @@ class HomeAdapter(
           invalid(data)
         } else {
           title.setHapticClickListener {
-            root.context.startActivity(ChangeAddressActivity.newInstance(root.context))
+            onStartMovingFlow()
           }
         }
       }
     }
 
-    class PendingChange(parent: ViewGroup) :
+    class PendingChange(parent: ViewGroup, val onStartMovingFlow: () -> Unit) :
       ViewHolder(parent.inflate(R.layout.change_address_pending_change_card)) {
       private val binding by viewBinding(ChangeAddressPendingChangeCardBinding::bind)
       override fun bind(
@@ -485,7 +487,7 @@ class HomeAdapter(
         )
         continueButton.text = root.context.getString(hedvig.resources.R.string.home_tab_moving_info_card_button_text)
         continueButton.setHapticClickListener {
-          root.context.startActivity(ChangeAddressActivity.newInstance(binding.root.context))
+          onStartMovingFlow()
         }
       }
     }

@@ -38,6 +38,8 @@ import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.datadog.addDatadogConfiguration
 import com.hedvig.android.datadog.di.datadogModule
 import com.hedvig.android.feature.businessmodel.di.businessModelModule
+import com.hedvig.android.feature.odyssey.di.odysseyModule
+import com.hedvig.android.feature.odyssey.di.odysseyUrlQualifier
 import com.hedvig.android.feature.terminateinsurance.di.terminateInsuranceModule
 import com.hedvig.android.hanalytics.android.di.appIdQualifier
 import com.hedvig.android.hanalytics.android.di.appVersionCodeQualifier
@@ -54,8 +56,6 @@ import com.hedvig.android.navigation.activity.Navigator
 import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.firebase.di.firebaseNotificationModule
-import com.hedvig.android.odyssey.di.odysseyModule
-import com.hedvig.android.odyssey.di.odysseyUrlQualifier
 import com.hedvig.app.authenticate.BankIdLoginViewModel
 import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.data.debit.PayinStatusRepository
@@ -715,6 +715,7 @@ val applicationModule = module {
       businessModelModule,
       cacheManagerModule,
       changeAddressModule,
+      com.hedvig.android.feature.changeaddress.di.changeAddressModule,
       changeDateBottomSheetModule,
       chatEventModule,
       checkoutModule,

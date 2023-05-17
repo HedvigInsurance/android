@@ -245,7 +245,7 @@
             android:theme="@style/Hedvig.Theme.Marketing"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.hedvig.android.odyssey.ClaimFlowActivity"
+            android:name="com.hedvig.android.feature.odyssey.ClaimFlowActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode"
             android:parentActivityName="com.hedvig.app.feature.loggedin.ui.LoggedInActivity"
             android:windowSoftInputMode="adjustResize" />
@@ -254,7 +254,14 @@
             android:parentActivityName="com.hedvig.app.feature.loggedin.ui.LoggedInActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.hedvig.android.odyssey.search.SearchActivity"
+            android:name="com.hedvig.android.feature.odyssey.search.groups.ClaimGroupsActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="com.hedvig.android.feature.odyssey.search.group.ClaimGroupActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="com.hedvig.android.feature.changeaddress.ChangeAddressActivity"
+            android:parentActivityName="com.hedvig.app.feature.loggedin.ui.LoggedInActivity"
             android:windowSoftInputMode="adjustResize" />
 
         <meta-data

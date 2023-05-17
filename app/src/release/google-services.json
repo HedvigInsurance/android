@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "510523782637-ke5rpmm3453ibn2kkaiv12lqa3val509.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hedvig.app",
+            "certificate_hash": "9eb9c7ab52d343b95f87916696e119a3f2d88b69"
+          }
+        },
+        {
           "client_id": "510523782637-bv5angsverm1vq4fv45qhaqnrs9fsfhl.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -25,15 +33,21 @@
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 2
+          "other_platform_oauth_client": [
+            {
+              "client_id": "510523782637-1o2okg1jcd2no62ffrhqp3pqcjh33g6d.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "510523782637-1ucfu1vp6nj8jott6b163is6ribkhpcr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.hedvig.app",
+                "app_store_id": "1303668531"
+              }
+            }
+          ]
         }
       }
     }

@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
+import slimber.log.d
 import slimber.log.v
 
 class AuthTokenServiceImpl(
@@ -43,7 +44,7 @@ class AuthTokenServiceImpl(
     val refreshToken = getRefreshToken() ?: return null
     return when (val result = authRepository.exchange(RefreshTokenGrant(refreshToken.token))) {
       is AuthTokenResult.Error -> {
-        v { "Refreshing token failed. Invalidating present tokens" }
+        d { "Refreshing token failed. Invalidating present tokens" }
         logoutAndInvalidateTokens()
         null
       }
@@ -72,6 +73,7 @@ class AuthTokenServiceImpl(
   override suspend fun migrateFromToken(token: String) {
     when (val result = authRepository.migrateOldToken(token)) {
       is AuthTokenResult.Error -> {
+        d { "Migrating old token failed, logging out" }
         logoutAndInvalidateTokens()
       }
       is AuthTokenResult.Success -> {

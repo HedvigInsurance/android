@@ -7,6 +7,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.MaterialTheme as Material2Theme
 import androidx.compose.material.ProvideTextStyle as ProvideTextStyleM2
@@ -18,13 +19,14 @@ fun LargeTextButton(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
+  shape: Shape = Material3Theme.shapes.large,
   content: @Composable RowScope.() -> Unit,
 ) {
   TextButton(
     onClick = onClick,
     modifier = modifier.fillMaxWidth(),
     enabled = enabled,
-    shape = Material3Theme.shapes.large,
+    shape = shape,
     contentPadding = PaddingValues(16.dp),
   ) {
     CompositionLocalProvider(

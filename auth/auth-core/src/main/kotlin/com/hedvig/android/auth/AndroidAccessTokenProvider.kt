@@ -5,6 +5,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import slimber.log.d
 import slimber.log.v
 import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
@@ -33,7 +34,7 @@ internal class AndroidAccessTokenProvider(
       }
       v { "$requestId Still an expired token at this point, try to refresh it" }
       if (authTokens.refreshToken.expiryDate.isExpired()) {
-        v { "$requestId Refresh token expired, invalidating tokens and proceeding unauthenticated" }
+        d { "$requestId Refresh token expired, invalidating tokens and proceeding unauthenticated" }
         // If refresh is also expired, consider ourselves logged out
         authTokenService.logoutAndInvalidateTokens()
         return@withLock null
