@@ -130,6 +130,7 @@ dependencies {
   implementation(projects.app.feature.changeaddress)
   implementation(projects.app.feature.odyssey)
   implementation(projects.app.feature.terminateInsurance)
+  implementation(projects.app.feature.travelCertificate)
   implementation(projects.app.hanalytics.hanalyticsAndroid)
   implementation(projects.app.hanalytics.hanalyticsCore)
   implementation(projects.app.hanalytics.hanalyticsFeatureFlags)

@@ -1,0 +1,8 @@
+mutation TravelCertificateCreate($input: TravelCertificateCreateInput!) {
+  travelCertificateCreate(input: $input) {
+    id
+    signedUrl
+    startDate
+    endDate
+  }
+}

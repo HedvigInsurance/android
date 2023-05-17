@@ -1,8 +1,10 @@
 package com.hedvig.app.feature.home.ui
 
+import android.content.Intent
 import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
+import com.hedvig.android.feature.travelcertificate.GenerateTravelCertificateActivity
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressPendingChangeCardBinding
@@ -389,6 +392,14 @@ class HomeAdapter(
                   root.context,
                   data.inner,
                 ),
+              )
+            }
+          }
+          is HomeModel.CommonClaim.GenerateTravelCertificate -> {
+            label.text = "Generate travel certificate"
+            root.setHapticClickListener {
+              root.context.startActivity(
+                Intent(root.context, GenerateTravelCertificateActivity::class.java)
               )
             }
           }

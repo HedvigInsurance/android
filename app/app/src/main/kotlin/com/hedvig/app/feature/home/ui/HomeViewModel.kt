@@ -2,7 +2,9 @@ package com.hedvig.app.feature.home.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import arrow.core.Either
+import arrow.core.raise.either
+import com.hedvig.android.feature.travelcertificate.data.GetTravelCertificateSpecificationsUseCase
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.app.feature.home.data.GetHomeUseCase
 import com.hedvig.app.feature.home.model.HomeItemsBuilder
 import com.hedvig.app.feature.home.model.HomeModel
@@ -61,7 +63,9 @@ abstract class HomeViewModel(
 
 class HomeViewModelImpl(
   private val getHomeUseCase: GetHomeUseCase,
+  private val getTravelCertificateUseCase: GetTravelCertificateSpecificationsUseCase,
   private val homeItemsBuilder: HomeItemsBuilder,
+  private val featureManager: FeatureManager,
   hAnalytics: HAnalytics,
 ) : HomeViewModel(hAnalytics) {
   init {
@@ -82,14 +86,22 @@ class HomeViewModelImpl(
 
   private suspend fun createViewState(forceReload: Boolean) {
     _viewState.value = ViewState.Loading
-    _viewState.value = when (val result = getHomeUseCase.invoke(forceReload)) {
-      is Either.Left -> ViewState.Error(result.value.message)
-      is Either.Right -> ViewState.Success(
-        homeData = result.value,
+    either {
+      val homeData = getHomeUseCase.invoke(forceReload).bind()
+      val travelCertificateData = getTravelCertificateUseCase.invoke().getOrNull()
+
+      ViewState.Success(
+        homeData = homeData,
         homeItems = homeItemsBuilder.buildItems(
-          homeData = result.value,
+          homeData = homeData,
+          travelCertificateData = travelCertificateData,
         ),
       )
     }
+      .mapLeft { ViewState.Error(it.message) }
+      .fold(
+        ifLeft = { _viewState.value = it },
+        ifRight = { _viewState.value = it },
+      )
   }
 }

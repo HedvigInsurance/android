@@ -23,12 +23,13 @@ class HomeItemsBuilderTest {
           mapOf(
             Feature.CONNECT_PAYIN_REMINDER to false,
             Feature.COMMON_CLAIMS to Random.nextBoolean(),
+            Feature.TRAVEL_CERTIFICATE to true,
           )
         },
       )
       val builder = HomeItemsBuilder(featureManager)
 
-      val result = builder.buildItems(HOME_DATA_PAYIN_NEEDS_SETUP)
+      val result = builder.buildItems(HOME_DATA_PAYIN_NEEDS_SETUP, null)
 
       assertThat(result).containsNoneOfType<HomeModel.ConnectPayin>()
     }
@@ -41,13 +42,14 @@ class HomeItemsBuilderTest {
           mapOf(
             Feature.CONNECT_PAYIN_REMINDER to true,
             Feature.COMMON_CLAIMS to Random.nextBoolean(),
+            Feature.TRAVEL_CERTIFICATE to true,
           )
         },
         paymentType = { enumValues<PaymentType>().random() },
       )
       val builder = HomeItemsBuilder(featureManager)
 
-      val result = builder.buildItems(HOME_DATA_PAYIN_NEEDS_SETUP)
+      val result = builder.buildItems(HOME_DATA_PAYIN_NEEDS_SETUP, null)
 
       assertThat(result).containsOfType<HomeModel.ConnectPayin>()
     }
@@ -55,11 +57,16 @@ class HomeItemsBuilderTest {
   @Test
   fun `when common claims-feature is disabled, should not show common claims`() = runTest {
     val featureManager: FeatureManager = FakeFeatureManager(
-      featureMap = { mapOf(Feature.COMMON_CLAIMS to false) },
+      featureMap = {
+        mapOf(
+          Feature.COMMON_CLAIMS to false,
+          Feature.TRAVEL_CERTIFICATE to true,
+        )
+      },
     )
     val builder = HomeItemsBuilder(featureManager)
 
-    val result = builder.buildItems(HOME_DATA_ACTIVE)
+    val result = builder.buildItems(HOME_DATA_ACTIVE, null)
 
     assertThat(result).containsNoneOfType<HomeModel.CommonClaim>()
   }
@@ -67,11 +74,16 @@ class HomeItemsBuilderTest {
   @Test
   fun `when common claims-feature is enabled, should show common claims`() = runTest {
     val featureManager: FeatureManager = FakeFeatureManager(
-      featureMap = { mapOf(Feature.COMMON_CLAIMS to true) },
+      featureMap = {
+        mapOf(
+          Feature.COMMON_CLAIMS to true,
+          Feature.TRAVEL_CERTIFICATE to true,
+        )
+      },
     )
     val builder = HomeItemsBuilder(featureManager)
 
-    val result = builder.buildItems(HOME_DATA_ACTIVE)
+    val result = builder.buildItems(HOME_DATA_ACTIVE, null)
 
     assertThat(result).containsOfType<HomeModel.CommonClaim>()
   }
