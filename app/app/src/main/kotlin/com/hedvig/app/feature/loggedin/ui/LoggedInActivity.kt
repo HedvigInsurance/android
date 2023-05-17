@@ -8,6 +8,7 @@ import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
 import androidx.core.view.forEach
 import androidx.dynamicanimation.animation.FloatValueHolder
 import androidx.dynamicanimation.animation.SpringAnimation
@@ -35,7 +36,6 @@ import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.boundedLerp
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatColor
-import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.getLastOpen
 import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.setLastOpen
@@ -81,9 +81,9 @@ class LoggedInActivity : AppCompatActivity(R.layout.activity_logged_in) {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     lifecycle.addObserver(AuthenticatedObserver())
+    WindowCompat.setDecorFitsSystemWindows(window, false)
 
     with(binding) {
-      window.compatSetDecorFitsSystemWindows(false)
       toolbar.applyStatusBarInsets()
       tabContent.applyStatusBarInsets()
       bottomNavigation.applyNavigationBarInsets()
