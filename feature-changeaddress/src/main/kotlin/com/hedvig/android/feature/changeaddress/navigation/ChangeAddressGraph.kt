@@ -11,9 +11,9 @@ import androidx.navigation.NavHostController
 import com.feature.changeaddress.navigation.ChangeAddressResultDestination
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
-import com.hedvig.android.feature.changeaddress.ui.ChangeAddressEnterNewDestination
-import com.hedvig.android.feature.changeaddress.ui.ChangeAddressOfferDestination
-import com.hedvig.android.feature.changeaddress.ui.ChangeAddressSelectHousingTypeDestination
+import com.hedvig.android.feature.changeaddress.destination.ChangeAddressEnterNewDestination
+import com.hedvig.android.feature.changeaddress.destination.ChangeAddressOfferDestination
+import com.hedvig.android.feature.changeaddress.destination.ChangeAddressSelectHousingTypeDestination
 import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.compose.typed.animatedNavigation
 import com.kiwi.navigationcompose.typed.createRoutePattern
@@ -36,31 +36,29 @@ internal fun NavGraphBuilder.changeAddressGraph(
     popExitTransition = { MotionDefaults.sharedXAxisPopExit(density) },
   ) {
     animatedComposable<ChangeAddressDestination.SelectHousingType> {
-      val viewModel = getViewModel(navController, it)
+      val viewModel = navGraphScopedViewModel(navController, it)
       ChangeAddressSelectHousingTypeDestination(
         viewModel = viewModel,
-        navigateBack = { finish() },
-        onHousingTypeSelected = {
+        navigateUp = { navigateUp() },
+        onHousingTypeSubmitted = {
           navController.navigate(ChangeAddressDestination.EnterNewAddress)
         },
       )
     }
 
     animatedComposable<ChangeAddressDestination.EnterNewAddress> {
-      val viewModel = getViewModel(navController = navController, backStackEntry = it)
+      val viewModel = navGraphScopedViewModel(navController, it)
       ChangeAddressEnterNewDestination(
         viewModel = viewModel,
-        navigateBack = {
-          navController.navigateUp()
-        },
-        onQuotes = {
+        navigateBack = { navController.navigateUp() },
+        onQuotesReceived = {
           navController.navigate(ChangeAddressDestination.OfferDestination)
         },
       )
     }
 
     animatedComposable<ChangeAddressDestination.OfferDestination> {
-      val viewModel = getViewModel(navController, it)
+      val viewModel = navGraphScopedViewModel(navController, it)
       BackHandler {
         viewModel.onQuotesCleared()
         navController.navigateUp()
@@ -88,7 +86,7 @@ internal fun NavGraphBuilder.changeAddressGraph(
 }
 
 @Composable
-private fun getViewModel(
+private fun navGraphScopedViewModel(
   navController: NavHostController,
   backStackEntry: NavBackStackEntry,
 ): ChangeAddressViewModel {

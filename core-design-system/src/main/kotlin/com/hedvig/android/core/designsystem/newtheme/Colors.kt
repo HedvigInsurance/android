@@ -4,7 +4,8 @@ package com.hedvig.android.core.designsystem.newtheme
 
 import androidx.compose.ui.graphics.Color
 
-internal val greyscale_25 = Color(0xFFFAFAFA)
+internal val greyscale_0 = Color(0xFFFFFFFF) // system_neutral1_0
+internal val greyscale_10 = Color(0xFFFEFDF0) // system_neutral1_10
 internal val greyscale_50 = Color(0xFFF5F5F5)
 internal val greyscale_100 = Color(0xFFF0F0F0)
 internal val greyscale_200 = Color(0xFFEAEAEA)
@@ -89,7 +90,7 @@ internal val blue_200 = Color(0xFFCFE5F2)
 internal val blue_300 = Color(0xFFBDDBED)
 internal val blue_400 = Color(0xFFA9CDE2)
 internal val blue_500 = Color(0xFF98C2DA)
-internal val blue_600 = Color(0xFFEB65B5)
+internal val blue_600 = Color(0xFF59BFFA)
 internal val blue_700 = Color(0xFF4B739B)
 internal val blue_800 = Color(0xFF30577E)
 internal val blue_900 = Color(0xFF1F3D5C)

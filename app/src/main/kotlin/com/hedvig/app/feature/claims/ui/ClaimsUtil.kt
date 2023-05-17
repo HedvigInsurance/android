@@ -4,10 +4,10 @@ import android.content.Context
 import android.content.Intent
 import androidx.fragment.app.FragmentManager
 import com.hedvig.android.feature.odyssey.ClaimFlowActivity
+import com.hedvig.android.feature.odyssey.search.commonclaims.SearchActivity
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
-import com.hedvig.android.odyssey.search.commonclaims.SearchActivity
-import com.hedvig.android.odyssey.search.groups.ClaimGroupsActivity
+import com.hedvig.android.feature.odyssey.search.groups.ClaimGroupsActivity
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 
 suspend fun startClaimsFlow(

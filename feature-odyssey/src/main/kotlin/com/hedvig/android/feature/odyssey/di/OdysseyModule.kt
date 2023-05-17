@@ -20,8 +20,10 @@ import com.hedvig.android.feature.odyssey.step.phonenumber.PhoneNumberViewModel
 import com.hedvig.android.feature.odyssey.step.singleitem.SingleItemViewModel
 import com.hedvig.android.feature.odyssey.step.singleitemcheckout.SingleItemCheckoutViewModel
 import com.hedvig.android.feature.odyssey.step.summary.ClaimSummaryViewModel
-import com.hedvig.android.odyssey.search.groups.ClaimGroupsViewModel
-import com.hedvig.android.odyssey.search.groups.GetNetworkClaimEntryPointGroupsUseCase
+import com.hedvig.android.feature.odyssey.search.group.ClaimGroupViewModel
+import com.hedvig.android.feature.odyssey.search.group.GetClaimEntryGroupUseCase
+import com.hedvig.android.feature.odyssey.search.groups.ClaimGroupsViewModel
+import com.hedvig.android.feature.odyssey.search.groups.GetNetworkClaimEntryPointGroupsUseCase
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.Json
@@ -44,8 +46,19 @@ val odysseyModule = module {
   }
 
   viewModel<ClaimGroupsViewModel> { ClaimGroupsViewModel(get<GetNetworkClaimEntryPointGroupsUseCase>()) }
+  viewModel<ClaimGroupViewModel> { parametersHolder ->
+    ClaimGroupViewModel(
+      get<GetClaimEntryGroupUseCase>(),
+      parametersHolder.get(),
+    )
+  }
+
   single<GetNetworkClaimEntryPointGroupsUseCase> {
     GetNetworkClaimEntryPointGroupsUseCase(get<ApolloClient>(octopusClient))
+  }
+
+  single<GetClaimEntryGroupUseCase> {
+    GetClaimEntryGroupUseCase(get<ApolloClient>(octopusClient))
   }
 
   // Claims

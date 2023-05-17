@@ -4,6 +4,8 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.sample.design.showcase.ui.colorscheme.HedvigColorScheme
 import com.hedvig.android.sample.design.showcase.ui.hedviguikit.HTextField
 import com.hedvig.android.sample.design.showcase.ui.m2.components.M2Buttons
 import com.hedvig.android.sample.design.showcase.ui.m2.components.M2Cards
@@ -72,11 +75,13 @@ private fun BothThemes() {
   }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ThemeSelection() {
   var showM2: Boolean by remember { mutableStateOf(false) }
   var showM3: Boolean by remember { mutableStateOf(false) }
-  var showHedvigUiKit: Boolean by remember { mutableStateOf(true) }
+  var showColorSchemes: Boolean by remember { mutableStateOf(true) }
+  var showHedvigUiKit: Boolean by remember { mutableStateOf(false) }
   when {
     showM2 -> {
       BackHandler { showM2 = false }
@@ -85,6 +90,10 @@ private fun ThemeSelection() {
     showM3 -> {
       BackHandler { showM3 = false }
       M3()
+    }
+    showColorSchemes -> {
+      BackHandler { showColorSchemes = false }
+      HedvigColorScheme()
     }
     showHedvigUiKit -> {
       BackHandler { showHedvigUiKit = false }
@@ -96,12 +105,15 @@ private fun ThemeSelection() {
         contentAlignment = Alignment.Center,
       ) {
         Surface {
-          Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+          FlowRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             Button(onClick = { showM2 = true }) {
               Text("M2")
             }
             Button(onClick = { showM3 = true }) {
               Text("M3")
+            }
+            Button(onClick = { showColorSchemes = true }) {
+              Text("ColorScheme")
             }
             Button(onClick = { showHedvigUiKit = true }) {
               Text("Hedvig UI Kit")
