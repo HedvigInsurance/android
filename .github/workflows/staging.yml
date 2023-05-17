@@ -41,7 +41,7 @@ jobs:
         run: ./gradlew licenseReleaseReport --continue
         continue-on-error: true
       - name: Build
-        run: "./gradlew app:assembleStaging"
+        run: "./gradlew app:app:assembleStaging"
       - uses: r0adkll/sign-android-release@v1
         name: Sign app APK
         id: sign_app
