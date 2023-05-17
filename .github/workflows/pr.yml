@@ -143,7 +143,7 @@ jobs:
       - run: echo VERSION_CODE=$(expr 4700 + ${{ github.run_number }} + ${{ github.run_attempt }} - 1) >> $GITHUB_ENV
       - uses: chkfung/android-version-actions@v1.2
         with:
-          gradlePath: app/build.gradle.kts
+          gradlePath: app/app/build.gradle.kts
           versionCode: ${{ env.VERSION_CODE }}
       - name: Prebuild
         run: ./scripts/ci-prebuild.sh
@@ -155,12 +155,12 @@ jobs:
         run: ./gradlew licenseReleaseReport --continue
         continue-on-error: true
       - name: Build
-        run: "./gradlew app:assembleDebug"
+        run: "./gradlew app:app:assembleDebug"
       - uses: r0adkll/sign-android-release@v1
         name: Sign app APK
         id: sign_app
         with:
-          releaseDirectory: app/build/outputs/apk/debug
+          releaseDirectory: app/app/build/outputs/apk/debug
           signingKeyBase64: ${{ secrets.SIGNING_KEY }}
           alias: ${{ secrets.ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
