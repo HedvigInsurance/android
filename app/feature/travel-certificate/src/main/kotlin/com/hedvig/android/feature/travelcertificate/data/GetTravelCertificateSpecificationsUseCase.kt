@@ -32,6 +32,7 @@ class GetTravelCertificateSpecificationsUseCase(
   }
 }
 
+// ktlint-disable max-line-length
 private fun TravelCertificateSpecificationsQuery.Data.CurrentMember.TravelCertificateSpecifications.toTravelCertificateSpecifications(
   email: String,
 ) = TravelCertificateResult.TravelCertificateSpecifications(
@@ -53,5 +54,3 @@ sealed interface TravelCertificateResult {
 
   object NotEligible : TravelCertificateResult
 }
-
-
