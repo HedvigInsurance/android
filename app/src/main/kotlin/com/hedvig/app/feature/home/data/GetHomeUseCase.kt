@@ -7,6 +7,7 @@ import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.language.LanguageService
 import giraffe.HomeQuery
 
@@ -15,14 +16,14 @@ class GetHomeUseCase(
   private val languageService: LanguageService,
 ) {
 
-  suspend operator fun invoke(forceReload: Boolean): Either<OperationResult.Error, HomeQuery.Data> {
+  suspend operator fun invoke(forceReload: Boolean): Either<ErrorMessage, HomeQuery.Data> {
     val apolloCall = apolloClient.query(homeQuery())
     if (forceReload) {
       apolloCall.fetchPolicy(FetchPolicy.NetworkOnly)
     }
     return apolloCall
       .safeExecute()
-      .toEither()
+      .toEither(::ErrorMessage)
   }
 
   private fun homeQuery() = HomeQuery(languageService.getGraphQLLocale(), languageService.getGraphQLLocale().rawValue)

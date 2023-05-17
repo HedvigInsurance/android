@@ -1,0 +1,12 @@
+query TravelCertificateSpecificationsQuery {
+  currentMember {
+    email
+    travelCertificateSpecifications {
+      contractId
+      maxDurationDays
+      maxStartDate
+      minStartDate
+      numberOfCoInsured
+    }
+  }
+}
