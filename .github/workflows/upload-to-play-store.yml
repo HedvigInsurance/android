@@ -22,15 +22,12 @@ jobs:
         with:
           java-version: '17'
           distribution: 'zulu'
-          cache: 'gradle'
-      - uses: actions/cache@v3
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
         with:
-          path: ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-      - uses: actions/cache@v3
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+          # Only write to the cache for builds on the 'develop' branch
+          cache-read-only: ${{ github.ref != 'refs/heads/develop' }}
+          gradle-home-cache-cleanup: true
       - run: echo VERSION_CODE=$(date +%s) >> $GITHUB_ENV
       - uses: chkfung/android-version-actions@v1.2
         with:
