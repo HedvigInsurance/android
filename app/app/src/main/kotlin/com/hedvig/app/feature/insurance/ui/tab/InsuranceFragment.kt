@@ -47,7 +47,7 @@ import com.hedvig.app.databinding.InsuranceContractCardBinding
 import com.hedvig.app.databinding.InsuranceTerminatedContractsBinding
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.crossselling.ui.detail.CrossSellDetailActivity
-import com.hedvig.app.feature.insurance.ui.CrossSell
+import com.hedvig.app.feature.insurance.ui.CrossSellCard
 import com.hedvig.app.feature.insurance.ui.InsuranceModel
 import com.hedvig.app.feature.insurance.ui.NotificationSubheading
 import com.hedvig.app.feature.insurance.ui.Subheading
@@ -169,7 +169,7 @@ private fun ColumnScope.InsuranceModelsRenderer(
         )
       }
       is InsuranceModel.CrossSellCard -> {
-        CrossSell(
+        CrossSellCard(
           data = insuranceModel.inner,
           imageLoader = imageLoader,
           onCardClick = {
