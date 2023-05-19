@@ -23,5 +23,5 @@ enum class Feature(
   USE_NATIVE_CLAIMS_FLOW("Whether to use the native odyssey claims flow, with odyssey backend"),
   NEW_MOVING_FLOW("Moving flow from octopus. New design."),
   CLAIMS_TRIAGING("Select claim group before starting claims flow."),
-  TRAVEL_CERTIFICATE("Let member generate travel certificate in app.")
+  TRAVEL_CERTIFICATE("Let member generate travel certificate in app."),
 }
