@@ -181,9 +181,6 @@ import com.hedvig.app.feature.trustly.TrustlyViewModel
 import com.hedvig.app.feature.trustly.TrustlyViewModelImpl
 import com.hedvig.app.feature.welcome.WelcomeRepository
 import com.hedvig.app.feature.welcome.WelcomeViewModel
-import com.hedvig.app.feature.whatsnew.WhatsNewRepository
-import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
-import com.hedvig.app.feature.whatsnew.WhatsNewViewModelImpl
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
 import com.hedvig.app.service.FileService
 import com.hedvig.app.service.push.senders.CrossSellNotificationSender
@@ -214,7 +211,7 @@ import slimber.log.i
 import timber.log.Timber
 import java.io.File
 import java.time.Clock
-import java.util.*
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.math.pow
 
@@ -402,10 +399,6 @@ private val loggedInModule = module {
   viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get(), get(), get(), get(), get()) }
 }
 
-private val whatsNewModule = module {
-  viewModel<WhatsNewViewModel> { WhatsNewViewModelImpl(get()) }
-}
-
 private val insuranceModule = module {
   viewModel { InsuranceViewModel(get(), get(), get(), get()) }
   viewModel<ContractDetailViewModel> { (contractId: String) ->
@@ -555,7 +548,6 @@ private val repositoriesModule = module {
   single { ClaimsRepository(get<ApolloClient>(giraffeClient), get()) }
   single { RedeemReferralCodeRepository(get<ApolloClient>(giraffeClient), get()) }
   single { UserRepository(get<ApolloClient>(giraffeClient)) }
-  single { WhatsNewRepository(get<ApolloClient>(giraffeClient), get(), get()) }
   single { WelcomeRepository(get<ApolloClient>(giraffeClient), get()) }
   single { AdyenRepository(get<ApolloClient>(giraffeClient), get()) }
   single { EmbarkRepository(get<ApolloClient>(giraffeClient), get()) }
@@ -763,7 +755,6 @@ val applicationModule = module {
       useCaseModule,
       valueStoreModule,
       viewModelModule,
-      whatsNewModule,
       workManagerModule,
     ),
   )
