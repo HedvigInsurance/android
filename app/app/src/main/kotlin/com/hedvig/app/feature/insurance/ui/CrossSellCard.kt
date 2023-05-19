@@ -39,7 +39,7 @@ import com.hedvig.app.util.compose.rememberBlurHashPainter
 import slimber.log.d
 
 @Composable
-fun CrossSell(
+fun CrossSellCard(
   data: CrossSellData,
   imageLoader: ImageLoader,
   onCardClick: () -> Unit,
@@ -148,7 +148,7 @@ private val previewData = CrossSellData(
 private fun PreviewCrossSellCard() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      CrossSell(
+      CrossSellCard(
         data = previewData,
         imageLoader = rememberPreviewImageLoader(),
         onCardClick = {},
