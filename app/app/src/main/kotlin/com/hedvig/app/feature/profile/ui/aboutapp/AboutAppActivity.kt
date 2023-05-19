@@ -28,9 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -45,18 +43,13 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
-import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.embark.ui.MemberIdViewModel
-import com.hedvig.app.feature.whatsnew.WhatsNewDialog
-import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.isDebug
-import com.hedvig.app.util.apollo.ThemedIconUrls
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AboutAppActivity : AppCompatActivity() {
   private val memberIdViewModel: MemberIdViewModel by viewModel()
-  private val whatsNewViewModel: WhatsNewViewModel by viewModel()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -65,31 +58,6 @@ class AboutAppActivity : AppCompatActivity() {
 
     getViewModel<AboutAppViewModel>()
 
-    var whatsNewOnClickListener: (() -> Unit)? by mutableStateOf<(() -> Unit)?>(null)
-    whatsNewViewModel.news.observe(this@AboutAppActivity) { data ->
-      whatsNewOnClickListener = {
-        WhatsNewDialog
-          .newInstance(
-            data.news.mapIndexed { index, page ->
-              DismissiblePagerModel.TitlePage(
-                ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
-                page.title,
-                page.paragraph,
-                getString(
-                  if (index == data.news.size - 1) {
-                    hedvig.resources.R.string.NEWS_DISMISS
-                  } else {
-                    hedvig.resources.R.string.NEWS_PROCEED
-                  },
-                ),
-              )
-            },
-          )
-          .show(supportFragmentManager, WhatsNewDialog.TAG)
-      }
-    }
-
-    whatsNewViewModel.fetchNews(NEWS_BASE_VERSION)
     setContent {
       val memberIdState by memberIdViewModel.state.collectAsStateWithLifecycle()
       val memberId: String? by remember {
@@ -105,7 +73,6 @@ class AboutAppActivity : AppCompatActivity() {
       }
       HedvigTheme {
         AboutAppScreen(
-          whatsNewOnClickListener = whatsNewOnClickListener,
           memberId = memberId,
           onBackPressed = onBackPressedDispatcher::onBackPressed,
           showOpenSourceLicenses = { OpenSourceLicensesDialog().showLicenses(this@AboutAppActivity) },
@@ -113,15 +80,10 @@ class AboutAppActivity : AppCompatActivity() {
       }
     }
   }
-
-  companion object {
-    private const val NEWS_BASE_VERSION = "3.0.0"
-  }
 }
 
 @Composable
 private fun AboutAppScreen(
-  whatsNewOnClickListener: (() -> Unit)?,
   memberId: String?,
   onBackPressed: () -> Unit,
   showOpenSourceLicenses: () -> Unit,
@@ -151,12 +113,6 @@ private fun AboutAppScreen(
         text = stringResource(hedvig.resources.R.string.PROFILE_ABOUT_APP_LICENSE_ATTRIBUTIONS),
         onClick = showOpenSourceLicenses,
       )
-      if (whatsNewOnClickListener != null) {
-        AboutAppRow(
-          text = stringResource(hedvig.resources.R.string.PROFILE_ABOUT_APP_OPEN_WHATS_NEW),
-          onClick = whatsNewOnClickListener,
-        )
-      }
       Spacer(Modifier.height(8.dp))
       CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
         Text(
@@ -230,7 +186,7 @@ private fun AboutAppRow(
 private fun PreviewAboutAppScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      AboutAppScreen({}, "123", {}, {})
+      AboutAppScreen("123", {}, {})
     }
   }
 }
