@@ -29,8 +29,6 @@ import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.referrals.ui.ReferralsInformationActivity
 import com.hedvig.app.feature.welcome.WelcomeDialog
 import com.hedvig.app.feature.welcome.WelcomeViewModel
-import com.hedvig.app.feature.whatsnew.WhatsNewDialog
-import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.boundedLerp
@@ -61,7 +59,6 @@ import javax.money.MonetaryAmount
 
 class LoggedInActivity : AppCompatActivity(R.layout.activity_logged_in) {
   private val claimsViewModel: ClaimsViewModel by viewModel()
-  private val whatsNewViewModel: WhatsNewViewModel by viewModel()
 
   private val welcomeViewModel: WelcomeViewModel by viewModel()
   private val loggedInViewModel: LoggedInViewModel by viewModel()
@@ -290,27 +287,6 @@ class LoggedInActivity : AppCompatActivity(R.layout.activity_logged_in) {
   }
 
   private fun bindData() {
-    whatsNewViewModel.news.observe(this) { data ->
-      if (data.news.isNotEmpty()) {
-        WhatsNewDialog.newInstance(
-          data.news.mapIndexed { index, page ->
-            DismissiblePagerModel.TitlePage(
-              ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
-              page.title,
-              page.paragraph,
-              getString(
-                if (index == data.news.size - 1) {
-                  hedvig.resources.R.string.NEWS_DISMISS
-                } else {
-                  hedvig.resources.R.string.NEWS_PROCEED
-                },
-              ),
-            )
-          },
-        ).show(supportFragmentManager, WhatsNewDialog.TAG)
-      }
-    }
-
     lifecycleScope.launch {
       lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
         loggedInViewModel
@@ -341,8 +317,6 @@ class LoggedInActivity : AppCompatActivity(R.layout.activity_logged_in) {
           }
       }
     }
-
-    whatsNewViewModel.fetchNews()
   }
 
   private fun setupBottomNav(
