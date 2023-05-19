@@ -2,26 +2,23 @@ package com.hedvig.app.feature.insurance.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Card
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.ripple.LocalRippleTheme
-import androidx.compose.material.ripple.RippleTheme
+import androidx.compose.material3.Button
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -32,22 +29,15 @@ import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.designsystem.theme.hedvig_black
 import com.hedvig.android.core.designsystem.theme.hedvig_black12percent
-import com.hedvig.android.core.designsystem.theme.hedvig_off_white
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.util.compose.rememberBlurHashPainter
+import slimber.log.d
 
-/*
- * Note: This Composable uses hardcoded colors due to difficulties with
- * declaring a particular component to be in dark theme instead of the
- * default. When we update `HedvigTheme` to be Compose-first instead of
- * XML-Theme first, we can reconfigure the theme for this composable to
- * be `dark` no matter what the system value is.
- */
 @Composable
 fun CrossSell(
   data: CrossSellData,
@@ -55,88 +45,70 @@ fun CrossSell(
   onCardClick: () -> Unit,
   onCtaClick: () -> Unit,
 ) {
-  Card(
-    border = BorderStroke(1.dp, hedvig_black12percent),
-    modifier = Modifier
-      .padding(
-        horizontal = 16.dp,
-        vertical = 8.dp,
-      )
-      .height(200.dp)
-      .clickable(
-        onClick = onCardClick,
+  HedvigTheme(darkTheme = true) {
+    HedvigCard(
+      onClick = onCardClick,
+      border = BorderStroke(1.dp, hedvig_black12percent),
+      colors = CardDefaults.outlinedCardColors(
+        containerColor = Color(0x00000000),
       ),
-  ) {
-    AsyncImage(
-      model = ImageRequest.Builder(LocalContext.current)
-        .data(data.backgroundUrl)
-        .crossfade(true)
-        .build(),
-      contentDescription = null,
-      imageLoader = imageLoader,
-      placeholder = rememberBlurHashPainter(data.backgroundBlurHash, 64, 32),
-      contentScale = ContentScale.Crop,
-      modifier = Modifier.fillMaxSize(),
-    )
-    Column(
-      verticalArrangement = Arrangement.SpaceBetween,
       modifier = Modifier
-        .fillMaxSize()
-        .background(
-          brush = Brush.verticalGradient(
-            colors = listOf(
-              Color(0x7F000000),
-              Color(0x00000000),
-            ),
-          ),
-        )
-        .padding(16.dp),
+        .padding(horizontal = 16.dp, vertical = 8.dp)
+        .fillMaxWidth()
+        .requiredHeight(200.dp),
     ) {
-      Column {
-        Text(
-          text = data.title,
-          style = MaterialTheme.typography.subtitle1,
-          color = hedvig_off_white,
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-          text = data.description,
-          style = MaterialTheme.typography.subtitle2,
-          color = hedvig_off_white,
-        )
+      LaunchedEffect(data.backgroundUrl) {
+        d { "Stelios data.backgroundUrl${data.backgroundUrl}" }
       }
-      CompositionLocalProvider(
-        LocalRippleTheme provides DarkRippleTheme,
+      Box(
+        propagateMinConstraints = true,
+        modifier = Modifier.fillMaxSize(),
       ) {
-        Button(
-          onClick = { onCtaClick() },
-          shape = RoundedCornerShape(6.dp),
-          colors = ButtonDefaults.buttonColors(
-            backgroundColor = hedvig_off_white,
-            contentColor = hedvig_black,
-          ),
-          modifier = Modifier.fillMaxWidth(),
+        AsyncImage(
+          model = ImageRequest.Builder(LocalContext.current)
+            .data(data.backgroundUrl)
+            .crossfade(true)
+            .build(),
+          contentDescription = null,
+          imageLoader = imageLoader,
+          placeholder = rememberBlurHashPainter(data.backgroundBlurHash, 64, 32),
+          contentScale = ContentScale.Crop,
+        )
+        Column(
+          verticalArrangement = Arrangement.SpaceBetween,
+          modifier = Modifier
+            .background(
+              brush = Brush.verticalGradient(
+                colors = listOf(
+                  Color(0x7F000000),
+                  Color(0x00000000),
+                ),
+              ),
+            )
+            .padding(16.dp),
         ) {
-          Text(
-            text = stringResource(id = hedvig.resources.R.string.cross_selling_card_se_accident_cta),
-          )
+          Column {
+            Text(
+              text = data.title,
+              style = MaterialTheme.typography.bodyLarge,
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+              text = data.description,
+              style = MaterialTheme.typography.bodyMedium,
+            )
+          }
+          Button(
+            onClick = onCtaClick,
+            shape = RoundedCornerShape(6.dp),
+            modifier = Modifier.fillMaxWidth(),
+          ) {
+            Text(stringResource(hedvig.resources.R.string.cross_selling_card_se_accident_cta))
+          }
         }
       }
     }
   }
-}
-
-private object DarkRippleTheme : RippleTheme {
-  // Color sourced from
-  // https://cs.android.com/android/platform/superproject/+/master:prebuilts/sdk/current/support/v7/appcompat/res/values/values.xml;l=59
-  @Composable
-  override fun defaultColor() = Color(0x1f000000)
-
-  @Composable
-  override fun rippleAlpha() = RippleTheme.defaultRippleAlpha(
-    contentColor = LocalContentColor.current,
-    lightTheme = false,
-  )
 }
 
 private val previewData = CrossSellData(
@@ -173,9 +145,9 @@ private val previewData = CrossSellData(
 
 @HedvigPreview
 @Composable
-private fun PreviewCrossSell() {
+private fun PreviewCrossSellCard() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       CrossSell(
         data = previewData,
         imageLoader = rememberPreviewImageLoader(),
