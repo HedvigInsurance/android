@@ -4,13 +4,11 @@ import android.net.Uri
 import androidx.core.view.isVisible
 import coil.ImageLoader
 import com.hedvig.android.core.ui.insurance.toDrawable
-import com.hedvig.android.market.MarketManager
 import com.hedvig.app.databinding.InsuranceContractCardBinding
 import com.hedvig.app.ui.coil.load
 
 fun ContractCardViewState.bindTo(
   binding: InsuranceContractCardBinding,
-  marketManager: MarketManager,
   imageLoader: ImageLoader,
 ) =
   binding.apply {
@@ -29,7 +27,7 @@ fun ContractCardViewState.bindTo(
     container.background = gradientType.toDrawable(root.context)
 
     contractName.text = displayName
-    contractPills.adapter = ContractPillAdapter(marketManager).also { adapter ->
+    contractPills.adapter = ContractPillAdapter().also { adapter ->
       adapter.submitList(detailPills)
     }
     // Prevent this `RecyclerView` from eating clicks in the parent `MaterialCardView`.

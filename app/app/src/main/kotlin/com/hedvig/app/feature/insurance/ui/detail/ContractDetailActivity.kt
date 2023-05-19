@@ -3,9 +3,6 @@ package com.hedvig.app.feature.insurance.ui.detail
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.transition.ChangeBounds
-import android.view.Window
-import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isInvisible
 import androidx.fragment.app.Fragment
@@ -15,7 +12,6 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import coil.ImageLoader
 import com.google.android.material.tabs.TabLayoutMediator
 import com.hedvig.android.auth.android.AuthenticatedObserver
-import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ContractDetailActivityBinding
 import com.hedvig.app.feature.insurance.ui.bindTo
@@ -41,16 +37,9 @@ class ContractDetailActivity : AppCompatActivity(R.layout.contract_detail_activi
     get() = intent.getStringExtra(ID)
       ?: error("Programmer error: ID not provided to ${this.javaClass.name}")
   private val viewModel: ContractDetailViewModel by viewModel { parametersOf(contractId) }
-  private val marketManager: MarketManager by inject()
   private val imageLoader: ImageLoader by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    postponeEnterTransition()
-    window.apply {
-      requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
-      sharedElementEnterTransition = sharedElementTransition()
-      sharedElementExitTransition = sharedElementTransition()
-    }
     super.onCreate(savedInstanceState)
     lifecycle.addObserver(AuthenticatedObserver())
     binding.apply {
@@ -78,7 +67,6 @@ class ContractDetailActivity : AppCompatActivity(R.layout.contract_detail_activi
         }
       }.attach()
       cardContainer.arrow.isInvisible = true
-      cardContainer.card.transitionName = "contract_card"
       error.onClick = { viewModel.retryLoadingContract() }
 
       viewModel
@@ -95,18 +83,12 @@ class ContractDetailActivity : AppCompatActivity(R.layout.contract_detail_activi
               content.show()
               error.remove()
               val contract = viewState.state.contractCardViewState
-              contract.bindTo(cardContainer, marketManager, imageLoader)
+              contract.bindTo(cardContainer, imageLoader)
             }
           }
-          startPostponedEnterTransition()
         }
         .launchIn(lifecycleScope)
     }
-  }
-
-  private fun sharedElementTransition() = ChangeBounds().apply {
-    duration = 200
-    interpolator = AccelerateDecelerateInterpolator()
   }
 
   companion object {
