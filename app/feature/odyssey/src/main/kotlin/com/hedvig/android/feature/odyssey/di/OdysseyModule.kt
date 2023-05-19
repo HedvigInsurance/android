@@ -10,6 +10,7 @@ import com.hedvig.android.feature.odyssey.model.FlowId
 import com.hedvig.android.feature.odyssey.navigation.AudioContent
 import com.hedvig.android.feature.odyssey.navigation.ClaimFlowDestination
 import com.hedvig.android.feature.odyssey.navigation.LocationOption
+import com.hedvig.android.feature.odyssey.search.commonclaims.SearchViewModel
 import com.hedvig.android.feature.odyssey.search.group.ClaimGroupViewModel
 import com.hedvig.android.feature.odyssey.search.group.GetClaimEntryGroupUseCase
 import com.hedvig.android.feature.odyssey.search.groups.ClaimGroupsViewModel
@@ -60,6 +61,8 @@ val odysseyModule = module {
   single<GetClaimEntryGroupUseCase> {
     GetClaimEntryGroupUseCase(get<ApolloClient>(octopusClient))
   }
+
+  viewModel<SearchViewModel> { SearchViewModel(get()) }
 
   // Claims
   viewModel<HonestyPledgeViewModel> { (entryPointId: String?) ->
