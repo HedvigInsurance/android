@@ -91,8 +91,6 @@ sealed class HomeModel {
 
   data class HowClaimsWork(val pages: List<HomeQuery.HowClaimsWork>) : HomeModel()
 
-  object Error : HomeModel()
-
   sealed class CommonClaim : HomeModel() {
     data class Emergency(
       val inner: EmergencyData,

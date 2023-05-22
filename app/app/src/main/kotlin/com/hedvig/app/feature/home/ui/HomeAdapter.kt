@@ -54,7 +54,6 @@ import java.time.temporal.ChronoUnit
 
 class HomeAdapter(
   private val fragmentManager: FragmentManager,
-  private val retry: () -> Unit,
   private val imageLoader: ImageLoader,
   private val marketManager: MarketManager,
   private val onClaimDetailCardClicked: (String) -> Unit,
@@ -79,7 +78,6 @@ class HomeAdapter(
     R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent, onStartClaimClicked)
     CONNECT_PAYIN -> ViewHolder.InfoCard(ComposeView(parent.context), onPaymentCardShown, onPaymentCardClicked)
     R.layout.home_common_claim -> ViewHolder.CommonClaim(parent, imageLoader)
-    ERROR -> ViewHolder.Error(ComposeView(parent.context), retry)
     R.layout.how_claims_work_button -> ViewHolder.HowClaimsWorkButton(parent)
     R.layout.upcoming_renewal_card -> ViewHolder.UpcomingRenewal(parent)
     R.layout.home_change_address_button -> ViewHolder.ChangeAddress(parent, onStartMovingFlow)
@@ -97,7 +95,6 @@ class HomeAdapter(
     is HomeModel.StartClaimContained -> R.layout.home_start_claim_contained
     is HomeModel.ConnectPayin -> CONNECT_PAYIN
     is HomeModel.CommonClaim -> R.layout.home_common_claim
-    HomeModel.Error -> ERROR
     is HomeModel.PSA -> R.layout.home_psa
     is HomeModel.HowClaimsWork -> R.layout.how_claims_work_button
     is HomeModel.UpcomingRenewal -> R.layout.upcoming_renewal_card
@@ -438,28 +435,6 @@ class HomeAdapter(
       }
     }
 
-    class Error(
-      private val composeView: ComposeView,
-      private val retry: () -> Unit,
-    ) : ViewHolder(composeView) {
-      override fun bind(
-        data: HomeModel,
-        fragmentManager: FragmentManager,
-        marketManager: MarketManager,
-      ) {
-        composeView.setContent {
-          HedvigTheme {
-            GenericErrorScreen(
-              onRetryButtonClick = { retry() },
-              Modifier
-                .padding(16.dp)
-                .padding(top = (80 - 16).dp),
-            )
-          }
-        }
-      }
-    }
-
     class ChangeAddress(parent: ViewGroup, val onStartMovingFlow: () -> Unit) : ViewHolder(
       parent.inflate(R.layout.home_change_address_button),
     ) {
@@ -522,7 +497,6 @@ class HomeAdapter(
     const val ACTIVE_CLAIM = 1
     const val CONNECT_PAYIN = 2
     const val SPACE = 3
-    const val ERROR = 4
 
     fun daysLeft(date: LocalDate): Int = ChronoUnit.DAYS.between(LocalDate.now(), date).toInt()
 
