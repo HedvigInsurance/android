@@ -2,9 +2,9 @@ package com.hedvig.app.feature.home.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.core.merge
 import arrow.core.raise.either
 import com.hedvig.android.feature.travelcertificate.data.GetTravelCertificateSpecificationsUseCase
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.app.feature.home.data.GetHomeUseCase
 import com.hedvig.app.feature.home.model.HomeItemsBuilder
 import com.hedvig.app.feature.home.model.HomeModel
@@ -12,26 +12,30 @@ import com.hedvig.hanalytics.HAnalytics
 import giraffe.HomeQuery
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-abstract class HomeViewModel(
+class HomeViewModel(
+  private val getHomeUseCase: GetHomeUseCase,
+  private val getTravelCertificateUseCase: GetTravelCertificateSpecificationsUseCase,
+  private val homeItemsBuilder: HomeItemsBuilder,
   private val hAnalytics: HAnalytics,
 ) : ViewModel() {
-  sealed class ViewState {
-    data class Success(
-      val homeData: HomeQuery.Data,
-      val homeItems: List<HomeModel>,
-    ) : ViewState()
 
-    data class Error(val message: String?) : ViewState()
-    object Loading : ViewState()
+  init {
+    viewModelScope.launch {
+      createViewState(forceReload = false)
+    }
   }
 
-  protected val _viewState = MutableStateFlow<ViewState>(ViewState.Loading)
-  val viewState: StateFlow<ViewState> = _viewState
+  protected val _homeUiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
+  val homeUiState: StateFlow<HomeUiState> = _homeUiState
 
-  abstract fun load()
-  abstract fun reload()
+  fun reload() {
+    viewModelScope.launch {
+      createViewState(forceReload = true)
+    }
+  }
 
   fun onClaimDetailCardClicked(claimId: String) {
     val claim = getClaimById(claimId) ?: return
@@ -46,7 +50,7 @@ abstract class HomeViewModel(
   }
 
   private fun getClaimById(claimId: String): HomeQuery.Claim? =
-    (_viewState.value as? ViewState.Success)
+    (_homeUiState.value as? HomeUiState.Success)
       ?.homeData
       ?.claimStatusCards
       ?.firstOrNull { it.id == claimId }
@@ -59,38 +63,21 @@ abstract class HomeViewModel(
   fun onPaymentCardClicked() {
     hAnalytics.homePaymentCardClick()
   }
-}
-
-class HomeViewModelImpl(
-  private val getHomeUseCase: GetHomeUseCase,
-  private val getTravelCertificateUseCase: GetTravelCertificateSpecificationsUseCase,
-  private val homeItemsBuilder: HomeItemsBuilder,
-  private val featureManager: FeatureManager,
-  hAnalytics: HAnalytics,
-) : HomeViewModel(hAnalytics) {
-  init {
-    load()
-  }
-
-  override fun load() {
-    viewModelScope.launch {
-      createViewState(forceReload = false)
-    }
-  }
-
-  override fun reload() {
-    viewModelScope.launch {
-      createViewState(forceReload = true)
-    }
-  }
 
   private suspend fun createViewState(forceReload: Boolean) {
-    _viewState.value = ViewState.Loading
-    either {
+    if (_homeUiState.value.isLoading) return
+    _homeUiState.update {
+      if (it is HomeUiState.Success) {
+        it.copy(isReloading = true)
+      } else {
+        HomeUiState.Loading
+      }
+    }
+    val newUiState = either {
       val homeData = getHomeUseCase.invoke(forceReload).bind()
       val travelCertificateData = getTravelCertificateUseCase.invoke().getOrNull()
 
-      ViewState.Success(
+      HomeUiState.Success(
         homeData = homeData,
         homeItems = homeItemsBuilder.buildItems(
           homeData = homeData,
@@ -98,10 +85,22 @@ class HomeViewModelImpl(
         ),
       )
     }
-      .mapLeft { ViewState.Error(it.message) }
-      .fold(
-        ifLeft = { _viewState.value = it },
-        ifRight = { _viewState.value = it },
-      )
+      .mapLeft { HomeUiState.Error(it.message) }
+      .merge()
+    _homeUiState.update { newUiState }
   }
+}
+
+sealed interface HomeUiState {
+  val isLoading: Boolean
+    get() = this is Loading || (this is Success && isReloading)
+
+  data class Success(
+    val homeData: HomeQuery.Data,
+    val homeItems: List<HomeModel>,
+    val isReloading: Boolean = false,
+  ) : HomeUiState
+
+  data class Error(val message: String?) : HomeUiState
+  object Loading : HomeUiState
 }

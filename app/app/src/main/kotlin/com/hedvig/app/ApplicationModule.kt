@@ -120,7 +120,6 @@ import com.hedvig.app.feature.genericauth.otpinput.OtpInputViewModel
 import com.hedvig.app.feature.home.data.GetHomeUseCase
 import com.hedvig.app.feature.home.model.HomeItemsBuilder
 import com.hedvig.app.feature.home.ui.HomeViewModel
-import com.hedvig.app.feature.home.ui.HomeViewModelImpl
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModel
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModelImpl
 import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCase
@@ -488,7 +487,7 @@ private val referralsModule = module {
 
 private val homeModule = module {
   single<HomeItemsBuilder> { HomeItemsBuilder(get()) }
-  viewModel<HomeViewModel> { HomeViewModelImpl(get(), get(), get(), get(), get()) }
+  viewModel<HomeViewModel> { HomeViewModel(get(), get(), get(), get()) }
 }
 
 private val connectPaymentModule = module {
