@@ -4,9 +4,6 @@ import giraffe.ReferralsQuery
 import giraffe.fragment.ReferralFragment
 
 sealed class ReferralsModel {
-
-  object Title : ReferralsModel()
-
   sealed class Header : ReferralsModel() {
     object LoadingHeader : Header()
     data class LoadedEmptyHeader(
@@ -38,6 +35,4 @@ sealed class ReferralsModel {
       val inner: ReferralFragment,
     ) : Referral()
   }
-
-  object Error : ReferralsModel()
 }
