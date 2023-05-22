@@ -9,6 +9,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -18,26 +22,23 @@ import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.material3.squircle
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
-import com.hedvig.android.feature.travelcertificate.TravelCertificateUiState
-import com.hedvig.android.feature.travelcertificate.data.TravelCertificateResult
+import com.hedvig.android.feature.travelcertificate.CoInsured
 import hedvig.resources.R
-import kotlinx.datetime.LocalDate
+import java.util.*
 
 @Composable
 fun AddCoInsured(
-  selectedCoInsuredId: String?,
-  uiState: TravelCertificateUiState,
+  coInsured: CoInsured?,
   navigateBack: () -> Unit,
-  onSsnChanged: (String) -> Unit,
-  onNameChanged: (String) -> Unit,
-  onRemoveClicked: (String) -> Unit,
-  onSaveClicked: () -> Unit,
+  onRemoveCoInsured: (String) -> Unit,
+  onEditCoInsured: (CoInsured) -> Unit,
+  onAddCoInsured: (CoInsured) -> Unit,
 ) {
 
-  val selectedCoInsured = uiState.coInsured.input.firstOrNull { it.id == selectedCoInsuredId }
+  var name by remember { mutableStateOf(coInsured?.name ?: "") }
+  var ssn by remember { mutableStateOf(coInsured?.ssn ?: "") }
 
   HedvigScaffold(
     navigateUp = {
@@ -54,8 +55,8 @@ fun AddCoInsured(
     )
     Spacer(modifier = Modifier.height(64.dp))
     HedvigTextField(
-      value = selectedCoInsured?.name ?: "",
-      onValueChange = { onNameChanged(it) },
+      value = name,
+      onValueChange = { name = it },
       errorText = null,
       label = {
         Text("Full name")
@@ -67,8 +68,8 @@ fun AddCoInsured(
     )
     Spacer(modifier = Modifier.height(8.dp))
     HedvigTextField(
-      value = selectedCoInsured?.ssn ?: "",
-      onValueChange = { onSsnChanged(it) },
+      value = ssn,
+      onValueChange = { ssn = it },
       errorText = null,
       label = {
         Text("YYYYMMDD-XXXX")
@@ -80,9 +81,10 @@ fun AddCoInsured(
     )
 
     Spacer(modifier = Modifier.weight(1f))
-    if (selectedCoInsuredId != null) {
+
+    if (coInsured != null) {
       TextButton(
-        onClick = { onRemoveClicked(selectedCoInsuredId) },
+        onClick = { onRemoveCoInsured(coInsured.id) },
         modifier = Modifier
           .fillMaxWidth()
           .padding(horizontal = 16.dp),
@@ -93,7 +95,22 @@ fun AddCoInsured(
     }
 
     LargeContainedButton(
-      onClick = onSaveClicked,
+      onClick = {
+        if (coInsured != null) {
+          val updatedCoInsured = coInsured.copy(
+            name = name,
+            ssn = ssn,
+          )
+          onEditCoInsured(updatedCoInsured)
+        } else {
+          val newCoInsured = CoInsured(
+            id = UUID.randomUUID().toString(),
+            name = name,
+            ssn = ssn,
+          )
+          onAddCoInsured(newCoInsured)
+        }
+      },
       shape = MaterialTheme.shapes.squircle,
       modifier = Modifier.padding(horizontal = 16.dp),
     ) {
@@ -109,25 +126,11 @@ fun AddCoInsuredPreview() {
   HedvigTheme {
     Surface {
       AddCoInsured(
-        selectedCoInsuredId = "",
-        uiState = TravelCertificateUiState(
-          email = ValidatedInput(input = null),
-          travelDate = ValidatedInput(input = null),
-          coInsured = ValidatedInput(input = listOf()),
-          includeMember = true,
-          travelCertificateSpecifications = TravelCertificateResult.TravelCertificateSpecifications(
-            contractId = "123",
-            email = "hugo@hedvig.com",
-            maxDurationDays = 3,
-            dateRange = LocalDate(2023, 5, 23)..LocalDate(2023, 7, 23),
-            numberOfCoInsured = 2,
-          ),
-        ),
-        onSsnChanged = {},
-        onNameChanged = {},
-        onRemoveClicked = {},
-        onSaveClicked = {},
+        coInsured = null,
         navigateBack = {},
+        onEditCoInsured = { coInsured -> },
+        onAddCoInsured = { coInsured -> },
+        onRemoveCoInsured = {},
       )
     }
   }

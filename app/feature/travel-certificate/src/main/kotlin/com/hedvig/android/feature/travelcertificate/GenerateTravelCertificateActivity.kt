@@ -35,10 +35,17 @@ class GenerateTravelCertificateActivity : AppCompatActivity() {
         ConfigureTransparentSystemBars()
         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
           GenerateTravelCertificateNavHost(
+            email = null,
+            travelCertificateSpecifications = TravelCertificateResult.TravelCertificateSpecifications(
+              contractId = "123",
+              email = "123@asd.com",
+              maxDurationDays = 20,
+              dateRange = LocalDate(2023, 5, 23)..LocalDate(2023, 7, 23),
+              numberOfCoInsured = 2,
+            ),
             windowSizeClass = calculateWindowSizeClass(this@GenerateTravelCertificateActivity),
             navController = rememberAnimatedNavController(),
-            navigateUp = { onSupportNavigateUp() },
-            finish = { finish() }
+            finish = { finish() },
           )
         }
       }

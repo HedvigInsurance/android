@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.travelcertificate.ui
 
+import GenerateTravelCertificateViewModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,12 +36,10 @@ import com.hedvig.android.core.designsystem.component.button.LargeContainedButto
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
-import com.hedvig.android.core.designsystem.material3.containedButtonContainer
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
 import com.hedvig.android.core.designsystem.material3.squircle
 import com.hedvig.android.core.designsystem.material3.warningContainer
 import com.hedvig.android.core.designsystem.material3.warningElement
-import com.hedvig.android.core.designsystem.newtheme.SquircleShape
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.ValidatedInput
@@ -62,7 +61,7 @@ fun GenerateTravelCertificateInput(
   navigateBack: () -> Unit,
   onErrorDialogDismissed: () -> Unit,
   onEmailChanged: (String) -> Unit,
-  onCoInsuredClicked: (String) -> Unit,
+  onCoInsuredClicked: (CoInsured) -> Unit,
   onAddCoInsuredClicked: () -> Unit,
   onIncludeMemberClicked: (Boolean) -> Unit,
   onTravelDateSelected: (LocalDate) -> Unit,
@@ -142,7 +141,7 @@ fun GenerateTravelCertificateInput(
       Spacer(modifier = Modifier.height(8.dp))
 
       LargeContainedButton(
-        onClick = { onCoInsuredClicked(coInsured.id) },
+        onClick = { onCoInsuredClicked(coInsured) },
         modifier = Modifier.padding(horizontal = 16.dp),
         shape = MaterialTheme.shapes.squircle,
         colors = ButtonDefaults.buttonColors(
@@ -332,9 +331,9 @@ fun GenerateTravelCertificateInputPreview() {
         navigateBack = {},
         onErrorDialogDismissed = {},
         onEmailChanged = {},
-        onIncludeMemberClicked = {},
         onCoInsuredClicked = {},
         onAddCoInsuredClicked = {},
+        onIncludeMemberClicked = {},
         onTravelDateSelected = {},
         onContinue = {},
       )
