@@ -30,6 +30,7 @@ import kotlinx.datetime.LocalDate
 fun AddCoInsured(
   selectedCoInsuredId: String?,
   uiState: TravelCertificateUiState,
+  navigateBack: () -> Unit,
   onSsnChanged: (String) -> Unit,
   onNameChanged: (String) -> Unit,
   onRemoveClicked: (String) -> Unit,
@@ -39,7 +40,9 @@ fun AddCoInsured(
   val selectedCoInsured = uiState.coInsured.input.firstOrNull { it.id == selectedCoInsuredId }
 
   HedvigScaffold(
-    navigateUp = {},
+    navigateUp = {
+      navigateBack()
+    },
     modifier = Modifier.clearFocusOnTap(),
   ) {
     Spacer(modifier = Modifier.height(48.dp))
@@ -53,7 +56,7 @@ fun AddCoInsured(
     HedvigTextField(
       value = selectedCoInsured?.name ?: "",
       onValueChange = { onNameChanged(it) },
-      errorText = "",
+      errorText = null,
       label = {
         Text("Full name")
       },
@@ -66,7 +69,7 @@ fun AddCoInsured(
     HedvigTextField(
       value = selectedCoInsured?.ssn ?: "",
       onValueChange = { onSsnChanged(it) },
-      errorText = "",
+      errorText = null,
       label = {
         Text("YYYYMMDD-XXXX")
       },
@@ -124,6 +127,7 @@ fun AddCoInsuredPreview() {
         onNameChanged = {},
         onRemoveClicked = {},
         onSaveClicked = {},
+        navigateBack = {},
       )
     }
   }
