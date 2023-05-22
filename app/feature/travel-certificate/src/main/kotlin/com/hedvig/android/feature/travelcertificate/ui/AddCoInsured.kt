@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -31,7 +32,8 @@ fun AddCoInsured(
   uiState: TravelCertificateUiState,
   onSsnChanged: (String) -> Unit,
   onNameChanged: (String) -> Unit,
-  onSave: () -> Unit,
+  onRemoveClicked: (String) -> Unit,
+  onSaveClicked: () -> Unit,
 ) {
 
   val selectedCoInsured = uiState.coInsured.input.firstOrNull { it.id == selectedCoInsuredId }
@@ -75,8 +77,20 @@ fun AddCoInsured(
     )
 
     Spacer(modifier = Modifier.weight(1f))
+    if (selectedCoInsuredId != null) {
+      TextButton(
+        onClick = { onRemoveClicked(selectedCoInsuredId) },
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      ) {
+        Text("Remove", color = MaterialTheme.colorScheme.error)
+      }
+      Spacer(modifier = Modifier.height(8.dp))
+    }
+
     LargeContainedButton(
-      onClick = onSave,
+      onClick = onSaveClicked,
       shape = MaterialTheme.shapes.squircle,
       modifier = Modifier.padding(horizontal = 16.dp),
     ) {
@@ -108,7 +122,8 @@ fun AddCoInsuredPreview() {
         ),
         onSsnChanged = {},
         onNameChanged = {},
-        onSave = {},
+        onRemoveClicked = {},
+        onSaveClicked = {},
       )
     }
   }
