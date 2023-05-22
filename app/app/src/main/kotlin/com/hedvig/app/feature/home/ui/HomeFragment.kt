@@ -18,8 +18,6 @@ import com.hedvig.app.databinding.HomeFragmentBinding
 import com.hedvig.app.feature.claims.ui.startClaimsFlow
 import com.hedvig.app.feature.home.model.HomeModel
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
-import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
-import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
@@ -32,14 +30,11 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class HomeFragment : Fragment(R.layout.home_fragment) {
   private val viewModel: HomeViewModel by viewModel()
-  private val loggedInViewModel: LoggedInViewModel by activityViewModel()
   private val binding by viewBinding(HomeFragmentBinding::bind)
-  private var scroll = 0
   private val imageLoader: ImageLoader by inject()
   private val marketManager: MarketManager by inject()
   private val hAnalytics: HAnalytics by inject()
@@ -50,14 +45,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
       viewModel.reload()
     }
 
-  override fun onResume() {
-    super.onResume()
-    loggedInViewModel.onScroll(scroll)
-  }
-
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    scroll = 0
-
     val homeAdapter = HomeAdapter(
       fragmentManager = parentFragmentManager,
       retry = viewModel::reload,
@@ -95,15 +83,6 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
           }
         }
       addItemDecoration(HomeItemDecoration(context))
-      addOnScrollListener(
-        ScrollPositionListener(
-          { scrollPosition ->
-            scroll = scrollPosition
-            loggedInViewModel.onScroll(scrollPosition)
-          },
-          viewLifecycleOwner,
-        ),
-      )
     }
 
     viewModel.viewState

@@ -31,7 +31,6 @@ import com.hedvig.app.feature.welcome.WelcomeDialog
 import com.hedvig.app.feature.welcome.WelcomeViewModel
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.apollo.toMonetaryAmount
-import com.hedvig.app.util.boundedLerp
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.getLastOpen
@@ -86,18 +85,6 @@ class LoggedInActivity : AppCompatActivity(R.layout.activity_logged_in) {
       bottomNavigation.applyNavigationBarInsets()
 
       toolbar.background.alpha = 0
-
-      val isDarkTheme = isDarkThemeActive
-
-      loggedInViewModel.scroll.observe(this@LoggedInActivity) { scroll ->
-        val positionInSpan = scroll.toFloat() / toolbar.measuredHeight
-        toolbar.background.alpha = boundedLerp(0, 242, positionInSpan / 2)
-        if (isDarkTheme) {
-          gradient.drawable?.alpha = boundedLerp(127, 255, positionInSpan / 5)
-        } else {
-          gradient.drawable?.alpha = boundedLerp(255 * 0.6f, 0f, positionInSpan / 5).toInt()
-        }
-      }
 
       loggedInViewModel.shouldOpenReviewDialog
         .flowWithLifecycle(lifecycle)

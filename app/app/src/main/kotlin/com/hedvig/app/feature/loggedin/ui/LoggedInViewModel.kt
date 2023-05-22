@@ -1,7 +1,5 @@
 package com.hedvig.app.feature.loggedin.ui
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
@@ -33,34 +31,13 @@ data class LoggedInViewState(
   val unseenTabNotifications: Set<LoggedInTabs>,
 )
 
-abstract class LoggedInViewModel : ViewModel() {
-  abstract val viewState: StateFlow<LoggedInViewState?>
-
-  private val _scroll = MutableLiveData<Int>()
-  val scroll: LiveData<Int> = _scroll
-
-  protected val _shouldOpenReviewDialog = MutableSharedFlow<Boolean>(
-    extraBufferCapacity = 1,
-    onBufferOverflow = BufferOverflow.DROP_OLDEST,
-  )
-  val shouldOpenReviewDialog: SharedFlow<Boolean> = _shouldOpenReviewDialog.asSharedFlow()
-
-  fun onScroll(scroll: Int) {
-    _scroll.postValue(scroll)
-  }
-
-  abstract fun onReviewByChatComplete()
-
-  abstract fun onTabVisited(tab: LoggedInTabs)
-}
-
-class LoggedInViewModelImpl(
+class LoggedInViewModel(
   private val loggedInRepository: LoggedInRepository,
   private val chatEventStore: ChatEventStore,
   private val tabNotificationBadgeService: TabNotificationBadgeService,
   private val featureManager: FeatureManager,
   private val hAnalytics: HAnalytics,
-) : LoggedInViewModel() {
+) : ViewModel() {
 
   init {
     viewModelScope.launch {
@@ -70,12 +47,18 @@ class LoggedInViewModelImpl(
     }
   }
 
+  private val _shouldOpenReviewDialog = MutableSharedFlow<Boolean>(
+    extraBufferCapacity = 1,
+    onBufferOverflow = BufferOverflow.DROP_OLDEST,
+  )
+  val shouldOpenReviewDialog: SharedFlow<Boolean> = _shouldOpenReviewDialog.asSharedFlow()
+
   private val loggedInQueryData: Flow<LoggedInQuery.Data?> = flow {
     val loggedInQueryData = loggedInRepository.loggedInData().getOrNull()
     emit(loggedInQueryData)
   }
   private val isReferralsEnabled: Flow<Boolean> = flow { emit(featureManager.isFeatureEnabled(Feature.REFERRALS)) }
-  override val viewState: StateFlow<LoggedInViewState?> = combine(
+  val viewState: StateFlow<LoggedInViewState?> = combine(
     loggedInQueryData,
     isReferralsEnabled,
     tabNotificationBadgeService.unseenTabNotificationBadges().map { bottomNavTabs: Set<BottomNavTab> ->
@@ -94,13 +77,7 @@ class LoggedInViewModelImpl(
       initialValue = null,
     )
 
-  override fun onReviewByChatComplete() {
-    viewModelScope.launch {
-      chatEventStore.resetChatClosedCounter()
-    }
-  }
-
-  override fun onTabVisited(tab: LoggedInTabs) {
+  fun onTabVisited(tab: LoggedInTabs) {
     when (tab) {
       LoggedInTabs.HOME -> hAnalytics.screenView(AppScreen.HOME)
       LoggedInTabs.INSURANCE -> hAnalytics.screenView(AppScreen.INSURANCES)

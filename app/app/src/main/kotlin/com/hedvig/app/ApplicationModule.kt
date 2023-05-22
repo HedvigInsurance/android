@@ -133,7 +133,6 @@ import com.hedvig.app.feature.insurance.ui.tab.InsuranceViewModel
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
-import com.hedvig.app.feature.loggedin.ui.LoggedInViewModelImpl
 import com.hedvig.app.feature.marketing.MarketingActivity
 import com.hedvig.app.feature.marketing.MarketingViewModel
 import com.hedvig.app.feature.marketing.data.GetInitialMarketPickerValuesUseCase
@@ -396,7 +395,7 @@ private val onboardingModule = module {
 }
 
 private val loggedInModule = module {
-  viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get(), get(), get(), get(), get()) }
+  viewModel<LoggedInViewModel> { LoggedInViewModel(get(), get(), get(), get(), get()) }
 }
 
 private val insuranceModule = module {
