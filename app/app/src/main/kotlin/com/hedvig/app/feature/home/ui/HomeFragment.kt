@@ -8,7 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -47,6 +49,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -88,6 +91,8 @@ import com.hedvig.app.feature.home.ui.claimstatus.composables.ClaimStatusCards
 import com.hedvig.app.feature.home.ui.connectpayincard.ConnectPayinCard
 import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.util.apollo.ThemedIconUrls
+import com.hedvig.app.util.extensions.canOpenUri
+import com.hedvig.app.util.extensions.openUri
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import com.hedvig.hanalytics.PaymentType
@@ -200,6 +205,11 @@ class HomeFragment : Fragment() {
                           .show(parentFragmentManager, HowClaimsWorkDialog.TAG)
                       },
                       onStartClaimClicked = ::onStartClaimClicked,
+                      onPsaClicked = { uri ->
+                        if (requireContext().canOpenUri(uri)) {
+                          requireContext().openUri(uri)
+                        }
+                      },
                     )
                   }
                 }
@@ -280,6 +290,7 @@ private fun ColumnScope.HomeScreenSuccess(
   onCommonClaimClicked: (CommonClaimsData) -> Unit,
   onHowClaimsWorkClick: (List<HomeQuery.HowClaimsWork>) -> Unit,
   onStartClaimClicked: () -> Unit,
+  onPsaClicked: (Uri) -> Unit,
 ) {
   for (homeModel in homeItems) {
     when (homeModel) {
@@ -356,7 +367,37 @@ private fun ColumnScope.HomeScreenSuccess(
           }
         }
       }
-      is HomeModel.PSA -> TODO()
+      is HomeModel.PSA -> {
+//          todo replace with warning colors once the dark theme one exists
+//          color = MaterialTheme.colorScheme.warningContainer,
+//          contentColor = MaterialTheme.colorScheme.onWarningContainer,
+        Surface(
+          onClick = { onPsaClicked(Uri.parse(homeModel.inner.link)) },
+          color = if (isSystemInDarkTheme()) {
+            Color(0xFFE3B945)
+          } else {
+            Color(0xFFFAE098)
+          },
+          contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+          modifier = Modifier.fillMaxWidth(),
+        ) {
+          Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(16.dp),
+          ) {
+            Text(
+              text = homeModel.inner.message ?: "",
+              modifier = Modifier.weight(1f),
+            )
+            Spacer(Modifier.width(16.dp))
+            Image(
+              painter = painterResource(R.drawable.ic_forward),
+              contentDescription = null,
+              modifier = Modifier.size(16.dp),
+            )
+          }
+        }
+      }
       is HomeModel.PendingAddressChange -> TODO()
       is HomeModel.Space -> {
         Spacer(Modifier.height(homeModel.height))

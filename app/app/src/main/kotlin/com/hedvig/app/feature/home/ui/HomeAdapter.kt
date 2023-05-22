@@ -42,14 +42,12 @@ class HomeAdapter(
 ) : ListAdapter<HomeModel, HomeAdapter.ViewHolder>(HomeModelDiffUtilItemCallback) {
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
-    R.layout.home_psa -> ViewHolder.PSABox(parent)
     R.layout.upcoming_renewal_card -> ViewHolder.UpcomingRenewal(parent)
     R.layout.change_address_pending_change_card -> ViewHolder.PendingChange(parent, onStartMovingFlow)
     else -> throw Error("Invalid view type")
   }
 
   override fun getItemViewType(position: Int) = when (getItem(position)) {
-    is HomeModel.PSA -> R.layout.home_psa
     is HomeModel.UpcomingRenewal -> R.layout.upcoming_renewal_card
     is HomeModel.PendingAddressChange -> R.layout.change_address_pending_change_card
   }
@@ -122,26 +120,6 @@ class HomeAdapter(
               onActionClick = { onPaymentCardClicked(data.payinType) },
               onShown = onPaymentCardShown,
             )
-          }
-        }
-      }
-    }
-
-    class PSABox(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.home_psa)) {
-      private val binding by viewBinding(HomePsaBinding::bind)
-      override fun bind(
-        data: HomeModel,
-        fragmentManager: FragmentManager,
-        marketManager: MarketManager,
-      ) = with(binding) {
-        if (data !is HomeModel.PSA) {
-          return invalid(data)
-        }
-        body.text = data.inner.message
-        val uri = Uri.parse(data.inner.link)
-        root.setHapticClickListener {
-          if (arrow.context.canOpenUri(uri)) {
-            arrow.context.openUri(uri)
           }
         }
       }
