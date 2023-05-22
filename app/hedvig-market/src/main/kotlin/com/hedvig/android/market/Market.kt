@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.annotation.StringRes
 import giraffe.fragment.ActivePaymentMethodsFragment
 import giraffe.type.DirectDebitStatus
+import giraffe.type.Locale
 
 enum class Market {
   SE,
@@ -74,7 +75,17 @@ fun Market.createOnboardingUri(baseUrl: String, language: Language): Uri {
     .scheme("https")
     .authority(baseUrl)
     .appendPath(webPath)
-    .appendPath("new-member")
+    .appendPath(
+      when (language.toLocale()) {
+        Locale.sv_SE -> "forsakringar"
+        Locale.en_SE,
+        Locale.nb_NO,
+        Locale.en_NO,
+        Locale.da_DK,
+        Locale.en_DK,
+        Locale.UNKNOWN__ -> "insurances"
+      },
+    )
     .appendQueryParameter("utm_source", "android")
     .appendQueryParameter("utm_medium", "hedvig-app")
 
