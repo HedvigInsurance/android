@@ -49,12 +49,12 @@ class HomeViewModel(
     hAnalytics.claimCardVisible(claimId, claim.status.rawValue)
   }
 
-  private fun getClaimById(claimId: String): HomeQuery.Claim? =
-    (_uiState.value as? HomeUiState.Success)
-      ?.homeData
+  private fun getClaimById(claimId: String): HomeQuery.Claim? {
+    return (_uiState.value as? HomeUiState.Success)
       ?.claimStatusCards
       ?.firstOrNull { it.id == claimId }
       ?.claim
+  }
 
   fun onPaymentCardShown() {
     hAnalytics.homePaymentCardVisible()
@@ -78,7 +78,7 @@ class HomeViewModel(
       val travelCertificateData = getTravelCertificateUseCase.invoke().getOrNull()
 
       HomeUiState.Success(
-        homeData = homeData,
+        claimStatusCards = homeData.claimStatusCards,
         homeItems = homeItemsBuilder.buildItems(
           homeData = homeData,
           travelCertificateData = travelCertificateData,
@@ -96,7 +96,7 @@ sealed interface HomeUiState {
     get() = this is Loading || (this is Success && isReloading)
 
   data class Success(
-    val homeData: HomeQuery.Data,
+    val claimStatusCards: List<HomeQuery.ClaimStatusCard>,
     val homeItems: List<HomeModel>,
     val isReloading: Boolean = false,
   ) : HomeUiState

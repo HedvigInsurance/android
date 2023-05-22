@@ -11,36 +11,38 @@ import com.hedvig.hanalytics.PaymentType
 import giraffe.HomeQuery
 import java.time.LocalDate
 
-sealed class HomeModel {
-  sealed class BigText : HomeModel() {
+sealed interface HomeModel {
+  sealed interface BigText : HomeModel {
+    val name: String
+
     data class Switching(
-      val name: String,
-    ) : BigText()
+      override val name: String,
+    ) : BigText
 
     data class Pending(
-      val name: String,
-    ) : BigText()
+      override val name: String,
+    ) : BigText
 
     data class ActiveInFuture(
-      val name: String,
+      override val name: String,
       val inception: LocalDate,
-    ) : BigText()
+    ) : BigText
 
     data class Active(
-      val name: String,
-    ) : BigText()
+      override val name: String,
+    ) : BigText
 
     data class Terminated(
-      val name: String,
-    ) : BigText()
+      override val name: String,
+    ) : BigText
   }
 
   data class UpcomingRenewal(
     val contractDisplayName: String,
     val upcomingRenewal: HomeQuery.UpcomingRenewal,
-  ) : HomeModel()
+  ) : HomeModel
 
-  sealed class BodyText : HomeModel() {
+  sealed class BodyText : HomeModel {
     object Pending : BodyText()
     object ActiveInFuture : BodyText()
     object Terminated : BodyText()
@@ -49,11 +51,11 @@ sealed class HomeModel {
 
   data class ClaimStatus(
     val claimStatusCardsUiState: NonEmptyList<ClaimStatusCardUiState>,
-  ) : HomeModel()
+  ) : HomeModel
 
-  data class Space(val height: Dp) : HomeModel()
+  data class Space(val height: Dp) : HomeModel
 
-  sealed class StartClaimOutlined : HomeModel() {
+  sealed class StartClaimOutlined : HomeModel {
     @get:StringRes
     abstract val textId: Int
 
@@ -68,7 +70,7 @@ sealed class HomeModel {
     }
   }
 
-  sealed class StartClaimContained : HomeModel() {
+  sealed class StartClaimContained : HomeModel {
     @get:StringRes
     abstract val textId: Int
 
@@ -85,13 +87,13 @@ sealed class HomeModel {
 
   data class ConnectPayin(
     val payinType: PaymentType,
-  ) : HomeModel()
+  ) : HomeModel
 
-  data class PSA(val inner: HomeQuery.ImportantMessage) : HomeModel()
+  data class PSA(val inner: HomeQuery.ImportantMessage) : HomeModel
 
-  data class HowClaimsWork(val pages: List<HomeQuery.HowClaimsWork>) : HomeModel()
+  data class HowClaimsWork(val pages: List<HomeQuery.HowClaimsWork>) : HomeModel
 
-  sealed class CommonClaim : HomeModel() {
+  sealed class CommonClaim : HomeModel {
     data class Emergency(
       val inner: EmergencyData,
     ) : CommonClaim()
@@ -105,9 +107,9 @@ sealed class HomeModel {
     ) : CommonClaim()
   }
 
-  data class Header(val stringRes: Int) : HomeModel()
+  data class Header(val stringRes: Int) : HomeModel
 
-  data class PendingAddressChange(val address: String) : HomeModel()
+  data class PendingAddressChange(val address: String) : HomeModel
 
-  object ChangeAddress : HomeModel()
+  object ChangeAddress : HomeModel
 }

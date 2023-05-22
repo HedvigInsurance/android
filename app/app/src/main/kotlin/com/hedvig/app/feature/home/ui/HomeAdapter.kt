@@ -6,24 +6,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.feature.travelcertificate.GenerateTravelCertificateActivity
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressPendingChangeCardBinding
 import com.hedvig.app.databinding.HeaderItemLayoutBinding
-import com.hedvig.app.databinding.HomeBigTextBinding
-import com.hedvig.app.databinding.HomeBodyTextBinding
 import com.hedvig.app.databinding.HomeChangeAddressButtonBinding
 import com.hedvig.app.databinding.HomeCommonClaimBinding
 import com.hedvig.app.databinding.HomePsaBinding
@@ -48,8 +43,6 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.hanalytics.PaymentType
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 import java.time.temporal.ChronoUnit
 
 class HomeAdapter(
@@ -66,8 +59,6 @@ class HomeAdapter(
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
     R.layout.home_psa -> ViewHolder.PSABox(parent)
-    R.layout.home_big_text -> ViewHolder.BigText(parent)
-    R.layout.home_body_text -> ViewHolder.BodyText(parent)
     ACTIVE_CLAIM -> ViewHolder.ClaimStatus(
       ComposeView(parent.context),
       onClaimDetailCardClicked,
@@ -87,8 +78,6 @@ class HomeAdapter(
   }
 
   override fun getItemViewType(position: Int) = when (getItem(position)) {
-    is HomeModel.BigText -> R.layout.home_big_text
-    is HomeModel.BodyText -> R.layout.home_body_text
     is HomeModel.ClaimStatus -> ACTIVE_CLAIM
     is HomeModel.Space -> SPACE
     is HomeModel.StartClaimOutlined -> R.layout.home_start_claim_outlined
@@ -117,71 +106,6 @@ class HomeAdapter(
       fragmentManager: FragmentManager,
       marketManager: MarketManager,
     )
-
-    class BigText(parent: ViewGroup) : ViewHolder(
-      parent.inflate(
-        R.layout.home_big_text,
-      ),
-    ) {
-      private val binding by viewBinding(HomeBigTextBinding::bind)
-      private val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
-      override fun bind(
-        data: HomeModel,
-        fragmentManager: FragmentManager,
-        marketManager: MarketManager,
-      ) = with(binding) {
-        if (data !is HomeModel.BigText) {
-          return invalid(data)
-        }
-
-        val textRes = when (data) {
-          is HomeModel.BigText.Pending -> root.resources.getString(
-            hedvig.resources.R.string.home_tab_pending_unknown_title,
-            data.name,
-          )
-          is HomeModel.BigText.ActiveInFuture -> root.resources.getString(
-            hedvig.resources.R.string.home_tab_active_in_future_welcome_title,
-            data.name,
-            formatter.format(data.inception),
-          )
-          is HomeModel.BigText.Active -> root.resources.getString(
-            hedvig.resources.R.string.home_tab_welcome_title,
-            data.name,
-          )
-          is HomeModel.BigText.Terminated -> root.resources.getString(
-            hedvig.resources.R.string.home_tab_terminated_welcome_title,
-            data.name,
-          )
-          is HomeModel.BigText.Switching -> root.resources.getString(
-            hedvig.resources.R.string.home_tab_pending_switchable_welcome_title,
-            data.name,
-          )
-        }
-        root.text = textRes
-      }
-    }
-
-    class BodyText(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.home_body_text)) {
-      private val binding by viewBinding(HomeBodyTextBinding::bind)
-
-      override fun bind(
-        data: HomeModel,
-        fragmentManager: FragmentManager,
-        marketManager: MarketManager,
-      ) = with(binding) {
-        if (data !is HomeModel.BodyText) {
-          return invalid(data)
-        }
-
-        val textRes = when (data) {
-          HomeModel.BodyText.Pending -> hedvig.resources.R.string.home_tab_pending_unknown_body
-          HomeModel.BodyText.ActiveInFuture -> hedvig.resources.R.string.home_tab_active_in_future_body
-          HomeModel.BodyText.Terminated -> hedvig.resources.R.string.home_tab_terminated_body
-          HomeModel.BodyText.Switching -> hedvig.resources.R.string.home_tab_pending_switchable_body
-        }
-        root.setText(textRes)
-      }
-    }
 
     class ClaimStatus(
       private val composeView: ComposeView,

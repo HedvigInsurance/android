@@ -25,7 +25,7 @@ class HomeItemsBuilder(
     homeData.isPending() -> buildPendingItems(homeData)
     homeData.isActiveInFuture() -> buildActiveInFutureItems(homeData)
     homeData.isTerminated() -> buildTerminatedItems(homeData)
-    else -> listOf(HomeModel.Error)
+    else -> emptyList()
   }
 
   private suspend fun buildActiveItems(
