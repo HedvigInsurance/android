@@ -61,6 +61,8 @@ import androidx.lifecycle.lifecycleScope
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
+import com.hedvig.android.core.designsystem.component.button.LargeOutlinedTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.SerifBookSmall
@@ -197,6 +199,7 @@ class HomeFragment : Fragment() {
                           .newInstance(howClaimsWorkData)
                           .show(parentFragmentManager, HowClaimsWorkDialog.TAG)
                       },
+                      onStartClaimClicked = ::onStartClaimClicked,
                     )
                   }
                 }
@@ -276,6 +279,7 @@ private fun ColumnScope.HomeScreenSuccess(
   onGenerateTravelCertificateClicked: () -> Unit,
   onCommonClaimClicked: (CommonClaimsData) -> Unit,
   onHowClaimsWorkClick: (List<HomeQuery.HowClaimsWork>) -> Unit,
+  onStartClaimClicked: () -> Unit,
 ) {
   for (homeModel in homeItems) {
     when (homeModel) {
@@ -357,10 +361,28 @@ private fun ColumnScope.HomeScreenSuccess(
       is HomeModel.Space -> {
         Spacer(Modifier.height(homeModel.height))
       }
-      HomeModel.StartClaimContained.FirstClaim -> TODO()
-      HomeModel.StartClaimContained.NewClaim -> TODO()
-      HomeModel.StartClaimOutlined.FirstClaim -> TODO()
-      HomeModel.StartClaimOutlined.NewClaim -> TODO()
+      is HomeModel.StartClaim -> {
+        when (homeModel) {
+          HomeModel.StartClaim.FirstClaim -> {
+            LargeContainedTextButton(
+              text = stringResource(homeModel.textId),
+              onClick = onStartClaimClicked,
+              modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .padding(top = 18.dp),
+            )
+          }
+          HomeModel.StartClaim.NewClaim -> {
+            LargeOutlinedTextButton(
+              text = stringResource(homeModel.textId),
+              onClick = onStartClaimClicked,
+              modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .padding(top = 18.dp),
+            )
+          }
+        }
+      }
       is HomeModel.UpcomingRenewal -> TODO()
     }
   }

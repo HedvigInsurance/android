@@ -37,9 +37,9 @@ class HomeItemsBuilder(
     val claimStatusCard: HomeModel.ClaimStatus? = claimStatusCardOrNull(homeData)
     if (claimStatusCard != null) {
       add(claimStatusCard)
-      add(HomeModel.StartClaimOutlined.NewClaim)
+      add(HomeModel.StartClaim.NewClaim)
     } else {
-      add(HomeModel.StartClaimContained.FirstClaim)
+      add(HomeModel.StartClaim.FirstClaim)
     }
     add(HomeModel.HowClaimsWork(homeData.howClaimsWork))
     addAll(listOfNotNull(*upcomingRenewals(homeData.contracts).toTypedArray()))
@@ -100,9 +100,9 @@ class HomeItemsBuilder(
     if (claimStatusCard != null) {
       add(HomeModel.Space(24.dp))
       add(claimStatusCard)
-      add(HomeModel.StartClaimOutlined.NewClaim)
+      add(HomeModel.StartClaim.NewClaim)
     } else {
-      add(HomeModel.StartClaimContained.FirstClaim)
+      add(HomeModel.StartClaim.FirstClaim)
     }
     add(HomeModel.HowClaimsWork(homeData.howClaimsWork))
   }

@@ -43,16 +43,12 @@ class HomeAdapter(
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
     R.layout.home_psa -> ViewHolder.PSABox(parent)
-    R.layout.home_start_claim_outlined -> ViewHolder.StartClaimOutlined(parent, onStartClaimClicked)
-    R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent, onStartClaimClicked)
     R.layout.upcoming_renewal_card -> ViewHolder.UpcomingRenewal(parent)
     R.layout.change_address_pending_change_card -> ViewHolder.PendingChange(parent, onStartMovingFlow)
     else -> throw Error("Invalid view type")
   }
 
   override fun getItemViewType(position: Int) = when (getItem(position)) {
-    is HomeModel.StartClaimOutlined -> R.layout.home_start_claim_outlined
-    is HomeModel.StartClaimContained -> R.layout.home_start_claim_contained
     is HomeModel.PSA -> R.layout.home_psa
     is HomeModel.UpcomingRenewal -> R.layout.upcoming_renewal_card
     is HomeModel.PendingAddressChange -> R.layout.change_address_pending_change_card
@@ -72,49 +68,6 @@ class HomeAdapter(
       fragmentManager: FragmentManager,
       marketManager: MarketManager,
     )
-
-    class StartClaimOutlined(
-      parent: ViewGroup,
-      private val onStartClaimClicked: () -> Unit,
-    ) : ViewHolder(parent.inflate(R.layout.home_start_claim_outlined)) {
-      private val binding by viewBinding(HomeStartClaimOutlinedBinding::bind)
-
-      override fun bind(
-        data: HomeModel,
-        fragmentManager: FragmentManager,
-        marketManager: MarketManager,
-      ) = with(binding) {
-        if (data !is HomeModel.StartClaimOutlined) {
-          return invalid(data)
-        }
-
-        binding.button.setText(data.textId)
-        root.setHapticClickListener {
-          onStartClaimClicked()
-        }
-      }
-    }
-
-    class StartClaimContained(
-      parent: ViewGroup,
-      private val onStartClaimClicked: () -> Unit,
-    ) : ViewHolder(parent.inflate(R.layout.home_start_claim_contained)) {
-      private val binding by viewBinding(HomeStartClaimContainedBinding::bind)
-      override fun bind(
-        data: HomeModel,
-        fragmentManager: FragmentManager,
-        marketManager: MarketManager,
-      ) = with(binding) {
-        if (data !is HomeModel.StartClaimContained) {
-          return invalid(data)
-        }
-
-        binding.button.setText(data.textId)
-        root.setHapticClickListener {
-          onStartClaimClicked()
-        }
-      }
-    }
 
     class UpcomingRenewal(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.upcoming_renewal_card)) {
       private val binding by viewBinding(UpcomingRenewalCardBinding::bind)
