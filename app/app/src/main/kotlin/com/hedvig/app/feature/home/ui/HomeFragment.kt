@@ -80,7 +80,7 @@ class HomeFragment : Fragment() {
             color = MaterialTheme.colorScheme.background,
             modifier = Modifier.fillMaxSize(),
           ) {
-            val uiState by viewModel.homeUiState.collectAsStateWithLifecycle()
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             val isLoading = uiState.isLoading
 
             val pullRefreshState = rememberPullRefreshState(
@@ -103,7 +103,7 @@ class HomeFragment : Fragment() {
                   is HomeUiState.Error -> {
                     GenericErrorScreen(
                       onRetryButtonClick = viewModel::reload,
-                      Modifier
+                      modifier = Modifier
                         .padding(16.dp)
                         .padding(top = (80 - 16).dp),
                     )

@@ -28,8 +28,8 @@ class HomeViewModel(
     }
   }
 
-  protected val _homeUiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
-  val homeUiState: StateFlow<HomeUiState> = _homeUiState
+  private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
+  val uiState: StateFlow<HomeUiState> = _uiState
 
   fun reload() {
     viewModelScope.launch {
@@ -50,7 +50,7 @@ class HomeViewModel(
   }
 
   private fun getClaimById(claimId: String): HomeQuery.Claim? =
-    (_homeUiState.value as? HomeUiState.Success)
+    (_uiState.value as? HomeUiState.Success)
       ?.homeData
       ?.claimStatusCards
       ?.firstOrNull { it.id == claimId }
@@ -65,8 +65,8 @@ class HomeViewModel(
   }
 
   private suspend fun createViewState(forceReload: Boolean) {
-    if (_homeUiState.value.isLoading) return
-    _homeUiState.update {
+    if (_uiState.value.isLoading) return
+    _uiState.update {
       if (it is HomeUiState.Success) {
         it.copy(isReloading = true)
       } else {
@@ -87,7 +87,7 @@ class HomeViewModel(
     }
       .mapLeft { HomeUiState.Error(it.message) }
       .merge()
-    _homeUiState.update { newUiState }
+    _uiState.update { newUiState }
   }
 }
 
