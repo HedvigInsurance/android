@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.windowInsetsTopHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
@@ -36,10 +37,13 @@ import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -74,15 +78,18 @@ import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.claims.ui.startClaimsFlow
+import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.home.model.CommonClaim
 import com.hedvig.app.feature.home.model.HomeModel
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.feature.home.ui.claimstatus.composables.ClaimStatusCards
 import com.hedvig.app.feature.home.ui.connectpayincard.ConnectPayinCard
 import com.hedvig.app.feature.payment.connectPayinIntent
+import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import com.hedvig.hanalytics.PaymentType
+import giraffe.HomeQuery
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -170,6 +177,26 @@ class HomeFragment : Fragment() {
                           ),
                         )
                       },
+                      onHowClaimsWorkClick = { howClaimsWorkList ->
+                        val howClaimsWorkData = howClaimsWorkList.mapIndexed { index, howClaimsWork ->
+                          DismissiblePagerModel.NoTitlePage(
+                            imageUrls = ThemedIconUrls.from(
+                              howClaimsWork.illustration.variants.fragments.iconVariantsFragment,
+                            ),
+                            paragraph = howClaimsWork.body,
+                            buttonText = getString(
+                              if (index == howClaimsWorkList.lastIndex) {
+                                hedvig.resources.R.string.claims_explainer_button_start_claim
+                              } else {
+                                hedvig.resources.R.string.claims_explainer_button_next
+                              },
+                            ),
+                          )
+                        }
+                        HowClaimsWorkDialog
+                          .newInstance(howClaimsWorkData)
+                          .show(parentFragmentManager, HowClaimsWorkDialog.TAG)
+                      },
                     )
                   }
                 }
@@ -248,6 +275,7 @@ private fun ColumnScope.HomeScreenSuccess(
   onEmergencyClaimClicked: (EmergencyData) -> Unit,
   onGenerateTravelCertificateClicked: () -> Unit,
   onCommonClaimClicked: (CommonClaimsData) -> Unit,
+  onHowClaimsWorkClick: (List<HomeQuery.HowClaimsWork>) -> Unit,
 ) {
   for (homeModel in homeItems) {
     when (homeModel) {
@@ -299,10 +327,31 @@ private fun ColumnScope.HomeScreenSuccess(
         Text(
           text = stringResource(homeModel.stringRes),
           style = MaterialTheme.typography.headlineSmall,
-          modifier = Modifier.padding(horizontal = 16.dp).padding(top = 48.dp, bottom = 4.dp),
+          modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .padding(top = 48.dp, bottom = 4.dp),
         )
       }
-      is HomeModel.HowClaimsWork -> TODO()
+      is HomeModel.HowClaimsWork -> {
+        TextButton(
+          onClick = { onHowClaimsWorkClick(homeModel.pages) },
+          modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentWidth(),
+        ) {
+          CompositionLocalProvider(LocalContentColor.provides(MaterialTheme.colorScheme.onSurfaceVariant)) {
+            Icon(
+              painter = painterResource(R.drawable.ic_info_claims),
+              contentDescription = null,
+              modifier = Modifier.size(16.dp),
+            )
+            Spacer(Modifier.width(4.dp))
+            Text(
+              text = stringResource(hedvig.resources.R.string.home_tab_claim_explainer_button),
+            )
+          }
+        }
+      }
       is HomeModel.PSA -> TODO()
       is HomeModel.PendingAddressChange -> TODO()
       is HomeModel.Space -> {
@@ -368,7 +417,9 @@ private fun ColumnScope.BodyTextRenderer(bigText: HomeModel.BodyText) {
   Text(
     text = stringResource(bodyTextRes),
     style = MaterialTheme.typography.bodyLarge,
-    modifier = Modifier.padding(horizontal = 24.dp).padding(top = 24.dp),
+    modifier = Modifier
+      .padding(horizontal = 24.dp)
+      .padding(top = 24.dp),
   )
 }
 
@@ -397,7 +448,9 @@ private fun CommonClaimsRenderer(
         },
       ) {
         Column(
-          Modifier.heightIn(100.dp).padding(16.dp),
+          Modifier
+            .heightIn(100.dp)
+            .padding(16.dp),
         ) {
           if (commonClaim !is CommonClaim.GenerateTravelCertificate) {
             val context = LocalContext.current

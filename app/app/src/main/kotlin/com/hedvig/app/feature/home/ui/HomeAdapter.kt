@@ -16,12 +16,9 @@ import com.hedvig.app.databinding.ChangeAddressPendingChangeCardBinding
 import com.hedvig.app.databinding.HomePsaBinding
 import com.hedvig.app.databinding.HomeStartClaimContainedBinding
 import com.hedvig.app.databinding.HomeStartClaimOutlinedBinding
-import com.hedvig.app.databinding.HowClaimsWorkButtonBinding
 import com.hedvig.app.databinding.UpcomingRenewalCardBinding
-import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.home.model.HomeModel
 import com.hedvig.app.feature.home.ui.connectpayincard.ConnectPayinCard
-import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
@@ -48,7 +45,6 @@ class HomeAdapter(
     R.layout.home_psa -> ViewHolder.PSABox(parent)
     R.layout.home_start_claim_outlined -> ViewHolder.StartClaimOutlined(parent, onStartClaimClicked)
     R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent, onStartClaimClicked)
-    R.layout.how_claims_work_button -> ViewHolder.HowClaimsWorkButton(parent)
     R.layout.upcoming_renewal_card -> ViewHolder.UpcomingRenewal(parent)
     R.layout.change_address_pending_change_card -> ViewHolder.PendingChange(parent, onStartMovingFlow)
     else -> throw Error("Invalid view type")
@@ -58,7 +54,6 @@ class HomeAdapter(
     is HomeModel.StartClaimOutlined -> R.layout.home_start_claim_outlined
     is HomeModel.StartClaimContained -> R.layout.home_start_claim_contained
     is HomeModel.PSA -> R.layout.home_psa
-    is HomeModel.HowClaimsWork -> R.layout.how_claims_work_button
     is HomeModel.UpcomingRenewal -> R.layout.upcoming_renewal_card
     is HomeModel.PendingAddressChange -> R.layout.change_address_pending_change_card
   }
@@ -199,36 +194,6 @@ class HomeAdapter(
       }
     }
 
-    class HowClaimsWorkButton(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.how_claims_work_button)) {
-      private val binding by viewBinding(HowClaimsWorkButtonBinding::bind)
-      override fun bind(
-        data: HomeModel,
-        fragmentManager: FragmentManager,
-        marketManager: MarketManager,
-      ) = with(binding) {
-        if (data !is HomeModel.HowClaimsWork) {
-          return invalid(data)
-        }
-        val howClaimsWorkData = data.pages.mapIndexed { index, page ->
-          DismissiblePagerModel.NoTitlePage(
-            ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
-            page.body,
-            button.context.getString(
-              if (index == data.pages.size - 1) {
-                hedvig.resources.R.string.claims_explainer_button_start_claim
-              } else {
-                hedvig.resources.R.string.claims_explainer_button_next
-              },
-            ),
-          )
-        }
-        button.setHapticClickListener {
-          HowClaimsWorkDialog.newInstance(howClaimsWorkData)
-            .show(fragmentManager, HowClaimsWorkDialog.TAG)
-        }
-      }
-    }
-
     class PendingChange(parent: ViewGroup, val onStartMovingFlow: () -> Unit) :
       ViewHolder(parent.inflate(R.layout.change_address_pending_change_card)) {
       private val binding by viewBinding(ChangeAddressPendingChangeCardBinding::bind)
@@ -251,6 +216,7 @@ class HomeAdapter(
         }
       }
     }
+  }
 
   companion object {
     fun daysLeft(date: LocalDate): Int = ChronoUnit.DAYS.between(LocalDate.now(), date).toInt()
