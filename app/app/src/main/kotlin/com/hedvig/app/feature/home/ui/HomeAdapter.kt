@@ -19,8 +19,6 @@ import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressPendingChangeCardBinding
 import com.hedvig.app.databinding.HeaderItemLayoutBinding
-import com.hedvig.app.databinding.HomeChangeAddressButtonBinding
-import com.hedvig.app.databinding.HomeCommonClaimBinding
 import com.hedvig.app.databinding.HomePsaBinding
 import com.hedvig.app.databinding.HomeStartClaimContainedBinding
 import com.hedvig.app.databinding.HomeStartClaimOutlinedBinding
@@ -59,36 +57,22 @@ class HomeAdapter(
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
     R.layout.home_psa -> ViewHolder.PSABox(parent)
-    ACTIVE_CLAIM -> ViewHolder.ClaimStatus(
-      ComposeView(parent.context),
-      onClaimDetailCardClicked,
-      onClaimDetailCardShown,
-    )
-    SPACE -> ViewHolder.Space(ComposeView(parent.context))
     R.layout.home_start_claim_outlined -> ViewHolder.StartClaimOutlined(parent, onStartClaimClicked)
     R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent, onStartClaimClicked)
-    CONNECT_PAYIN -> ViewHolder.InfoCard(ComposeView(parent.context), onPaymentCardShown, onPaymentCardClicked)
-    R.layout.home_common_claim -> ViewHolder.CommonClaim(parent, imageLoader)
     R.layout.how_claims_work_button -> ViewHolder.HowClaimsWorkButton(parent)
     R.layout.upcoming_renewal_card -> ViewHolder.UpcomingRenewal(parent)
-    R.layout.home_change_address_button -> ViewHolder.ChangeAddress(parent, onStartMovingFlow)
     R.layout.change_address_pending_change_card -> ViewHolder.PendingChange(parent, onStartMovingFlow)
     R.layout.header_item_layout -> ViewHolder.Header(parent)
     else -> throw Error("Invalid view type")
   }
 
   override fun getItemViewType(position: Int) = when (getItem(position)) {
-    is HomeModel.ClaimStatus -> ACTIVE_CLAIM
-    is HomeModel.Space -> SPACE
     is HomeModel.StartClaimOutlined -> R.layout.home_start_claim_outlined
     is HomeModel.StartClaimContained -> R.layout.home_start_claim_contained
-    is HomeModel.ConnectPayin -> CONNECT_PAYIN
-    is HomeModel.CommonClaim -> R.layout.home_common_claim
     is HomeModel.PSA -> R.layout.home_psa
     is HomeModel.HowClaimsWork -> R.layout.how_claims_work_button
     is HomeModel.UpcomingRenewal -> R.layout.upcoming_renewal_card
     is HomeModel.Header -> R.layout.header_item_layout
-    is HomeModel.ChangeAddress -> R.layout.home_change_address_button
     is HomeModel.PendingAddressChange -> R.layout.change_address_pending_change_card
   }
 
@@ -106,54 +90,6 @@ class HomeAdapter(
       fragmentManager: FragmentManager,
       marketManager: MarketManager,
     )
-
-    class ClaimStatus(
-      private val composeView: ComposeView,
-      private val onClaimDetailCardClicked: (String) -> Unit,
-      private val onClaimDetailCardShown: (String) -> Unit,
-    ) : ViewHolder(composeView) {
-      private fun goToClaimDetailScreen(claimId: String) {
-        onClaimDetailCardClicked(claimId)
-        composeView.context.startActivity(
-          ClaimDetailActivity.newInstance(composeView.context, claimId),
-        )
-      }
-
-      override fun bind(
-        data: HomeModel,
-        fragmentManager: FragmentManager,
-        marketManager: MarketManager,
-      ) {
-        if (data !is HomeModel.ClaimStatus) {
-          return invalid(data)
-        }
-
-        composeView.setContent {
-          HedvigTheme {
-            ClaimStatusCards(
-              goToDetailScreen = ::goToClaimDetailScreen,
-              onClaimCardShown = onClaimDetailCardShown,
-              claimStatusCardsUiState = data.claimStatusCardsUiState,
-            )
-          }
-        }
-      }
-    }
-
-    class Space(
-      private val composeView: ComposeView,
-    ) : ViewHolder(composeView) {
-      override fun bind(
-        data: HomeModel,
-        fragmentManager: FragmentManager,
-        marketManager: MarketManager,
-      ) {
-        if (data !is HomeModel.Space) return invalid(data)
-        composeView.setContent {
-          Spacer(Modifier.height(data.height))
-        }
-      }
-    }
 
     class StartClaimOutlined(
       parent: ViewGroup,
@@ -276,59 +212,6 @@ class HomeAdapter(
       }
     }
 
-    class CommonClaim(
-      parent: ViewGroup,
-      private val imageLoader: ImageLoader,
-    ) : ViewHolder(parent.inflate(R.layout.home_common_claim)) {
-      private val binding by viewBinding(HomeCommonClaimBinding::bind)
-      override fun bind(
-        data: HomeModel,
-        fragmentManager: FragmentManager,
-        marketManager: MarketManager,
-      ) = with(binding) {
-        if (data !is HomeModel.CommonClaim) {
-          return invalid(data)
-        }
-
-        when (data) {
-          is HomeModel.CommonClaim.Emergency -> {
-            label.text = data.inner.title
-            icon.load(requestUri(data.inner.iconUrls), imageLoader)
-            root.setHapticClickListener {
-              root.context.startActivity(
-                EmergencyActivity.newInstance(
-                  root.context,
-                  data.inner,
-                ),
-              )
-            }
-          }
-          is HomeModel.CommonClaim.TitleAndBulletPoints -> {
-            label.text = data.inner.title
-            icon.load(requestUri(data.inner.iconUrls), imageLoader)
-            root.setHapticClickListener {
-              root.context.startActivity(
-                CommonClaimActivity.newInstance(
-                  root.context,
-                  data.inner,
-                ),
-              )
-            }
-          }
-          is HomeModel.CommonClaim.GenerateTravelCertificate -> {
-            label.text = "Generate travel certificate"
-            root.setHapticClickListener {
-              root.context.startActivity(
-                Intent(root.context, GenerateTravelCertificateActivity::class.java),
-              )
-            }
-          }
-        }
-      }
-
-      private fun requestUri(icons: ThemedIconUrls) = Uri.parse(icons.iconByTheme(binding.root.context))
-    }
-
     class HowClaimsWorkButton(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.how_claims_work_button)) {
       private val binding by viewBinding(HowClaimsWorkButtonBinding::bind)
       override fun bind(
@@ -355,25 +238,6 @@ class HomeAdapter(
         button.setHapticClickListener {
           HowClaimsWorkDialog.newInstance(howClaimsWorkData)
             .show(fragmentManager, HowClaimsWorkDialog.TAG)
-        }
-      }
-    }
-
-    class ChangeAddress(parent: ViewGroup, val onStartMovingFlow: () -> Unit) : ViewHolder(
-      parent.inflate(R.layout.home_change_address_button),
-    ) {
-      private val binding by viewBinding(HomeChangeAddressButtonBinding::bind)
-      override fun bind(
-        data: HomeModel,
-        fragmentManager: FragmentManager,
-        marketManager: MarketManager,
-      ) = with(binding) {
-        if (data !is HomeModel.ChangeAddress) {
-          invalid(data)
-        } else {
-          title.setHapticClickListener {
-            onStartMovingFlow()
-          }
         }
       }
     }
@@ -418,10 +282,6 @@ class HomeAdapter(
   }
 
   companion object {
-    const val ACTIVE_CLAIM = 1
-    const val CONNECT_PAYIN = 2
-    const val SPACE = 3
-
     fun daysLeft(date: LocalDate): Int = ChronoUnit.DAYS.between(LocalDate.now(), date).toInt()
 
     object HomeModelDiffUtilItemCallback : DiffUtil.ItemCallback<HomeModel>() {

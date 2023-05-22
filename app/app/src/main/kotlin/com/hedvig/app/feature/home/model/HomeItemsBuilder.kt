@@ -49,14 +49,13 @@ class HomeItemsBuilder(
     ) {
       add(HomeModel.ConnectPayin(featureManager.getPaymentType()))
     }
+    val commonClaims: MutableList<CommonClaim> = mutableListOf()
     if (featureManager.isFeatureEnabled(Feature.COMMON_CLAIMS) && homeData.commonClaims.isNotEmpty()) {
       add(HomeModel.Header(hedvig.resources.R.string.home_tab_common_claims_title))
-      addAll(
-        listOfNotNull(
-          *commonClaimsItems(
-            homeData.commonClaims,
-            homeData.isEligibleToCreateClaim,
-          ).toTypedArray(),
+      commonClaims.addAll(
+        commonClaimsItems(
+          homeData.commonClaims,
+          homeData.isEligibleToCreateClaim,
         ),
       )
     }
@@ -65,11 +64,14 @@ class HomeItemsBuilder(
       when (travelCertificateResult) {
         TravelCertificateResult.NotEligible -> {} // Do not show button
         null -> {} // Do not show button
-        is TravelCertificateResult.TravelCertificateSpecifications -> add(
-          HomeModel.CommonClaim.GenerateTravelCertificate(travelCertificateResult),
-        )
+        is TravelCertificateResult.TravelCertificateSpecifications -> {
+          commonClaims.add(
+            CommonClaim.GenerateTravelCertificate(travelCertificateResult),
+          )
+        }
       }
     }
+    add(HomeModel.CommonClaims(commonClaims))
 
     add(HomeModel.Header(hedvig.resources.R.string.home_tab_editing_section_title))
     add(HomeModel.ChangeAddress)
@@ -139,19 +141,22 @@ class HomeItemsBuilder(
   private fun commonClaimsItems(
     commonClaims: List<HomeQuery.CommonClaim>,
     isEligibleToCreateClaim: Boolean,
-  ) = commonClaims.map { cc ->
-    cc.layout.asEmergency?.let {
-      EmergencyData.from(cc, isEligibleToCreateClaim)?.let { ed ->
-        return@map HomeModel.CommonClaim.Emergency(ed)
-      }
-    }
-    cc.layout.asTitleAndBulletPoints?.let {
-      CommonClaimsData.from(cc, isEligibleToCreateClaim)
-        ?.let { ccd ->
-          return@map HomeModel.CommonClaim.TitleAndBulletPoints(ccd)
+  ): List<CommonClaim> {
+    val commonClaimsResult: List<CommonClaim> = commonClaims.mapNotNull { cc ->
+      cc.layout.asEmergency?.let {
+        EmergencyData.from(cc, isEligibleToCreateClaim)?.let { ed ->
+          return@mapNotNull CommonClaim.Emergency(ed)
         }
+      }
+      cc.layout.asTitleAndBulletPoints?.let {
+        CommonClaimsData.from(cc, isEligibleToCreateClaim)
+          ?.let { ccd ->
+            return@mapNotNull CommonClaim.TitleAndBulletPoints(ccd)
+          }
+      }
+      null
     }
-    null
+    return commonClaimsResult
   }
 
   private fun HomeQuery.Data.isPending() = contracts.all { it.status.asPendingStatus != null }

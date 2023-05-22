@@ -1,24 +1,31 @@
 package com.hedvig.app.feature.home.ui
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.windowInsetsTopHeight
@@ -28,6 +35,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -36,7 +44,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -44,15 +55,30 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import coil.ImageLoader
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.SerifBookSmall
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
+import com.hedvig.android.core.ui.grid.HedvigGrid
+import com.hedvig.android.core.ui.grid.InsideGridSpace
+import com.hedvig.android.feature.travelcertificate.GenerateTravelCertificateActivity
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.market.MarketManager
+import com.hedvig.app.R
+import com.hedvig.app.feature.claimdetail.ClaimDetailActivity
+import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
+import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
+import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
+import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.claims.ui.startClaimsFlow
+import com.hedvig.app.feature.home.model.CommonClaim
 import com.hedvig.app.feature.home.model.HomeModel
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
+import com.hedvig.app.feature.home.ui.claimstatus.composables.ClaimStatusCards
+import com.hedvig.app.feature.home.ui.connectpayincard.ConnectPayinCard
 import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
@@ -114,7 +140,37 @@ class HomeFragment : Fragment() {
                     )
                   }
                   is HomeUiState.Success -> {
-                    HomeScreenSuccess(uiState.homeItems)
+                    HomeScreenSuccess(
+                      homeItems = uiState.homeItems,
+                      imageLoader = imageLoader,
+                      onStartMovingFlow = ::onStartMovingFlow,
+                      onClaimDetailCardClicked = { claimId ->
+                        viewModel.onClaimDetailCardClicked(claimId)
+                        startActivity(ClaimDetailActivity.newInstance(requireContext(), claimId))
+                      },
+                      onClaimDetailCardShown = viewModel::onClaimDetailCardShown,
+                      onPaymentCardClicked = ::onPaymentCardClicked,
+                      onPaymentCardShown = viewModel::onPaymentCardShown,
+                      onEmergencyClaimClicked = { emergencyData ->
+                        startActivity(
+                          EmergencyActivity.newInstance(
+                            context = requireContext(),
+                            data = emergencyData,
+                          ),
+                        )
+                      },
+                      onGenerateTravelCertificateClicked = {
+                        startActivity(Intent(requireContext(), GenerateTravelCertificateActivity::class.java))
+                      },
+                      onCommonClaimClicked = { commonClaimsData ->
+                        startActivity(
+                          CommonClaimActivity.newInstance(
+                            context = requireContext(),
+                            data = commonClaimsData,
+                          ),
+                        )
+                      },
+                    )
                   }
                 }
                 Spacer(Modifier.height(16.dp))
@@ -181,7 +237,18 @@ class HomeFragment : Fragment() {
 
 @Suppress("UnusedReceiverParameter")
 @Composable
-private fun ColumnScope.HomeScreenSuccess(homeItems: List<HomeModel>) {
+private fun ColumnScope.HomeScreenSuccess(
+  homeItems: List<HomeModel>,
+  imageLoader: ImageLoader,
+  onStartMovingFlow: () -> Unit,
+  onClaimDetailCardClicked: (claimId: String) -> Unit,
+  onClaimDetailCardShown: (claimId: String) -> Unit,
+  onPaymentCardClicked: (PaymentType) -> Unit,
+  onPaymentCardShown: () -> Unit,
+  onEmergencyClaimClicked: (EmergencyData) -> Unit,
+  onGenerateTravelCertificateClicked: () -> Unit,
+  onCommonClaimClicked: (CommonClaimsData) -> Unit,
+) {
   for (homeModel in homeItems) {
     when (homeModel) {
       is HomeModel.BigText -> {
@@ -190,17 +257,51 @@ private fun ColumnScope.HomeScreenSuccess(homeItems: List<HomeModel>) {
       is HomeModel.BodyText -> {
         BodyTextRenderer(homeModel)
       }
-      HomeModel.ChangeAddress -> TODO()
-      is HomeModel.ClaimStatus -> TODO()
-      is HomeModel.CommonClaim.Emergency -> TODO()
-      is HomeModel.CommonClaim.GenerateTravelCertificate -> TODO()
-      is HomeModel.CommonClaim.TitleAndBulletPoints -> TODO()
-      is HomeModel.ConnectPayin -> TODO()
+      HomeModel.ChangeAddress -> {
+        Row(
+          Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onStartMovingFlow)
+            .padding(16.dp),
+        ) {
+          Icon(
+            painter = painterResource(R.drawable.ic_apartment),
+            contentDescription = null,
+            modifier = Modifier.size(24.dp),
+          )
+          Spacer(Modifier.width(16.dp))
+          Text(stringResource(hedvig.resources.R.string.home_tab_editing_section_change_address_label))
+        }
+      }
+      is HomeModel.ClaimStatus -> {
+        ClaimStatusCards(
+          goToDetailScreen = onClaimDetailCardClicked,
+          onClaimCardShown = onClaimDetailCardShown,
+          claimStatusCardsUiState = homeModel.claimStatusCardsUiState,
+        )
+      }
+      is HomeModel.CommonClaims -> {
+        CommonClaimsRenderer(
+          homeModel = homeModel,
+          onEmergencyClaimClicked = onEmergencyClaimClicked,
+          onGenerateTravelCertificateClicked = onGenerateTravelCertificateClicked,
+          onCommonClaimClicked = onCommonClaimClicked,
+          imageLoader = imageLoader,
+        )
+      }
+      is HomeModel.ConnectPayin -> {
+        ConnectPayinCard(
+          onActionClick = { onPaymentCardClicked(homeModel.payinType) },
+          onShown = onPaymentCardShown,
+        )
+      }
       is HomeModel.Header -> TODO()
       is HomeModel.HowClaimsWork -> TODO()
       is HomeModel.PSA -> TODO()
       is HomeModel.PendingAddressChange -> TODO()
-      is HomeModel.Space -> TODO()
+      is HomeModel.Space -> {
+        Spacer(Modifier.height(homeModel.height))
+      }
       HomeModel.StartClaimContained.FirstClaim -> TODO()
       HomeModel.StartClaimContained.NewClaim -> TODO()
       HomeModel.StartClaimOutlined.FirstClaim -> TODO()
@@ -249,8 +350,9 @@ private fun BigTextRenderer(bigText: HomeModel.BigText) {
   )
 }
 
+@Suppress("UnusedReceiverParameter")
 @Composable
-private fun BodyTextRenderer(bigText: HomeModel.BodyText) {
+private fun ColumnScope.BodyTextRenderer(bigText: HomeModel.BodyText) {
   val bodyTextRes = when (bigText) {
     HomeModel.BodyText.Pending -> hedvig.resources.R.string.home_tab_pending_unknown_body
     HomeModel.BodyText.ActiveInFuture -> hedvig.resources.R.string.home_tab_active_in_future_body
@@ -262,4 +364,68 @@ private fun BodyTextRenderer(bigText: HomeModel.BodyText) {
     style = MaterialTheme.typography.bodyLarge,
     modifier = Modifier.padding(horizontal = 24.dp).padding(top = 24.dp),
   )
+}
+
+@Composable
+private fun CommonClaimsRenderer(
+  homeModel: HomeModel.CommonClaims,
+  onEmergencyClaimClicked: (EmergencyData) -> Unit,
+  onGenerateTravelCertificateClicked: () -> Unit,
+  onCommonClaimClicked: (CommonClaimsData) -> Unit,
+  imageLoader: ImageLoader,
+) {
+  HedvigGrid(
+    contentPadding = PaddingValues(horizontal = 16.dp),
+    insideGridSpace = InsideGridSpace(8.dp),
+  ) {
+    for (commonClaim in homeModel.claims) {
+      HedvigCard(
+        onClick = when (commonClaim) {
+          is CommonClaim.Emergency -> {
+            { onEmergencyClaimClicked(commonClaim.inner) }
+          }
+          is CommonClaim.GenerateTravelCertificate -> onGenerateTravelCertificateClicked
+          is CommonClaim.TitleAndBulletPoints -> {
+            { onCommonClaimClicked(commonClaim.inner) }
+          }
+        },
+      ) {
+        Column(
+          Modifier.heightIn(100.dp).padding(16.dp),
+        ) {
+          if (commonClaim !is CommonClaim.GenerateTravelCertificate) {
+            val context = LocalContext.current
+            val density = LocalDensity.current
+            AsyncImage(
+              model = ImageRequest.Builder(context)
+                .data(
+                  Uri.parse(
+                    when (commonClaim) {
+                      is CommonClaim.Emergency -> commonClaim.inner.iconUrls
+                      is CommonClaim.TitleAndBulletPoints -> commonClaim.inner.iconUrls
+                      else -> error("Impossible")
+                    }.themedIcon,
+                  ),
+                )
+                .size(with(density) { 24.dp.roundToPx() })
+                .build(),
+              contentDescription = null,
+              imageLoader = imageLoader,
+              modifier = Modifier.size(24.dp),
+            )
+            Spacer(Modifier.height(8.dp))
+          }
+          Spacer(Modifier.weight(1f))
+          Text(
+            text = when (commonClaim) {
+              is CommonClaim.Emergency -> commonClaim.inner.title
+              is CommonClaim.GenerateTravelCertificate -> "Generate travel certificate" // todo string resource
+              is CommonClaim.TitleAndBulletPoints -> commonClaim.inner.title
+            },
+            style = MaterialTheme.typography.bodyLarge,
+          )
+        }
+      }
+    }
+  }
 }

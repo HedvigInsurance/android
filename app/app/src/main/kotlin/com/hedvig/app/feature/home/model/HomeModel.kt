@@ -93,23 +93,27 @@ sealed interface HomeModel {
 
   data class HowClaimsWork(val pages: List<HomeQuery.HowClaimsWork>) : HomeModel
 
-  sealed class CommonClaim : HomeModel {
-    data class Emergency(
-      val inner: EmergencyData,
-    ) : CommonClaim()
-
-    data class TitleAndBulletPoints(
-      val inner: CommonClaimsData,
-    ) : CommonClaim()
-
-    data class GenerateTravelCertificate(
-      val travelCertificate: TravelCertificateResult.TravelCertificateSpecifications,
-    ) : CommonClaim()
-  }
+  data class CommonClaims(
+    val claims: List<CommonClaim>,
+  ) : HomeModel
 
   data class Header(val stringRes: Int) : HomeModel
 
   data class PendingAddressChange(val address: String) : HomeModel
 
   object ChangeAddress : HomeModel
+}
+
+sealed interface CommonClaim {
+  data class Emergency(
+    val inner: EmergencyData,
+  ) : CommonClaim
+
+  data class TitleAndBulletPoints(
+    val inner: CommonClaimsData,
+  ) : CommonClaim
+
+  data class GenerateTravelCertificate(
+    val travelCertificate: TravelCertificateResult.TravelCertificateSpecifications,
+  ) : CommonClaim
 }

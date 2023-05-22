@@ -5,11 +5,9 @@ import android.graphics.Canvas
 import android.graphics.Rect
 import android.view.View
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.BASE_MARGIN_DOUBLE
-import com.hedvig.app.BASE_MARGIN_HALF
 import com.hedvig.app.R
 import com.hedvig.app.feature.home.model.HomeModel
 import com.hedvig.app.util.extensions.children
@@ -25,23 +23,6 @@ class HomeItemDecoration(context: Context) : RecyclerView.ItemDecoration() {
   ) {
     val position = parent.getChildAdapterPosition(view)
     val item = (parent.adapter as? HomeAdapter)?.currentList?.getOrNull(position) ?: return
-
-    if (item is HomeModel.CommonClaim) {
-      val spanIndex =
-        (view.layoutParams as? GridLayoutManager.LayoutParams)?.spanIndex ?: return
-
-      when (spanIndex) {
-        SPAN_LEFT -> {
-          outRect.left = BASE_MARGIN_DOUBLE
-          outRect.right = BASE_MARGIN_HALF
-        }
-        SPAN_RIGHT -> {
-          outRect.left = BASE_MARGIN_HALF
-          outRect.right = BASE_MARGIN_DOUBLE
-        }
-      }
-      return
-    }
 
     if (item is HomeModel.ConnectPayin) {
       val prev = (parent.adapter as? HomeAdapter)?.currentList?.getOrNull(position - 1) ?: return
