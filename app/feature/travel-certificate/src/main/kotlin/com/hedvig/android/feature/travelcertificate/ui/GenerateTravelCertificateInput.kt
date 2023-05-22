@@ -65,8 +65,6 @@ fun GenerateTravelCertificateInput(
   onCoInsuredClicked: (String) -> Unit,
   onAddCoInsuredClicked: () -> Unit,
   onIncludeMemberClicked: (Boolean) -> Unit,
-  onCoInsuredAdded: (CoInsured) -> Unit,
-  onCoInsuredRemoved: (CoInsured) -> Unit,
   onTravelDateSelected: (LocalDate) -> Unit,
   onContinue: () -> Unit,
 ) {
@@ -133,10 +131,31 @@ fun GenerateTravelCertificateInput(
         Text("Me")
         if (uiState.includeMember) {
           Icon(
-            painter = painterResource(id = com.hedvig.android.core.designsystem.R.drawable.ic_info),
+            painter = painterResource(id = com.hedvig.android.core.designsystem.R.drawable.ic_checkmark),
             tint = MaterialTheme.colorScheme.onSurface,
             contentDescription = "include me",
           )
+        }
+      }
+    }
+    uiState.coInsured.input.map { coInsured ->
+      Spacer(modifier = Modifier.height(8.dp))
+
+      LargeContainedButton(
+        onClick = { onCoInsuredClicked(coInsured.id) },
+        modifier = Modifier.padding(horizontal = 16.dp),
+        shape = MaterialTheme.shapes.squircle,
+        colors = ButtonDefaults.buttonColors(
+          containerColor = MaterialTheme.colorScheme.surfaceVariant,
+          contentColor = MaterialTheme.colorScheme.onSurface,
+        ),
+      ) {
+        Row(
+          horizontalArrangement = Arrangement.Start,
+          verticalAlignment = Alignment.CenterVertically,
+          modifier = Modifier.fillMaxWidth(),
+        ) {
+          Text(coInsured.name)
         }
       }
     }
@@ -309,30 +328,43 @@ fun GenerateTravelCertificateInputPreview() {
   HedvigTheme {
     Surface {
       GenerateTravelCertificateInput(
-        uiState = TravelCertificateUiState(
-          email = ValidatedInput(input = null),
-          travelDate = ValidatedInput(input = null),
-          coInsured = ValidatedInput(input = listOf()),
-          includeMember = true,
-          travelCertificateSpecifications = TravelCertificateResult.TravelCertificateSpecifications(
-            contractId = "123",
-            email = "hugo@hedvig.com",
-            maxDurationDays = 3,
-            dateRange = LocalDate(2023, 5, 23)..LocalDate(2023, 7, 23),
-            numberOfCoInsured = 2,
-          ),
-        ),
+        uiState = mockUiState,
         navigateBack = {},
         onErrorDialogDismissed = {},
         onEmailChanged = {},
         onIncludeMemberClicked = {},
         onCoInsuredClicked = {},
         onAddCoInsuredClicked = {},
-        onCoInsuredAdded = {},
-        onCoInsuredRemoved = {},
         onTravelDateSelected = {},
         onContinue = {},
       )
     }
   }
 }
+
+val mockUiState = TravelCertificateUiState(
+  email = ValidatedInput(input = null),
+  travelDate = ValidatedInput(input = null),
+  coInsured = ValidatedInput(
+    input = listOf(
+      CoInsured(
+        id = "123",
+        name = "Hugo",
+        ssn = "199101131093",
+      ),
+      CoInsured(
+        id = "123",
+        name = "Stelios",
+        ssn = "199101131093",
+      ),
+    ),
+  ),
+  includeMember = true,
+  travelCertificateSpecifications = TravelCertificateResult.TravelCertificateSpecifications(
+    contractId = "123",
+    email = "hugo@hedvig.com",
+    maxDurationDays = 3,
+    dateRange = LocalDate(2023, 5, 23)..LocalDate(2023, 7, 23),
+    numberOfCoInsured = 2,
+  ),
+)
