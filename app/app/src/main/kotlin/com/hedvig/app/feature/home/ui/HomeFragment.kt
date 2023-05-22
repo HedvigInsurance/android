@@ -295,7 +295,13 @@ private fun ColumnScope.HomeScreenSuccess(
           onShown = onPaymentCardShown,
         )
       }
-      is HomeModel.Header -> TODO()
+      is HomeModel.Header -> {
+        Text(
+          text = stringResource(homeModel.stringRes),
+          style = MaterialTheme.typography.headlineSmall,
+          modifier = Modifier.padding(horizontal = 16.dp).padding(top = 48.dp, bottom = 4.dp),
+        )
+      }
       is HomeModel.HowClaimsWork -> TODO()
       is HomeModel.PSA -> TODO()
       is HomeModel.PendingAddressChange -> TODO()

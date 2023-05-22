@@ -1,12 +1,8 @@
 package com.hedvig.app.feature.home.ui
 
-import android.content.Intent
 import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
@@ -14,24 +10,17 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.feature.travelcertificate.GenerateTravelCertificateActivity
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressPendingChangeCardBinding
-import com.hedvig.app.databinding.HeaderItemLayoutBinding
 import com.hedvig.app.databinding.HomePsaBinding
 import com.hedvig.app.databinding.HomeStartClaimContainedBinding
 import com.hedvig.app.databinding.HomeStartClaimOutlinedBinding
 import com.hedvig.app.databinding.HowClaimsWorkButtonBinding
 import com.hedvig.app.databinding.UpcomingRenewalCardBinding
-import com.hedvig.app.feature.claimdetail.ClaimDetailActivity
-import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
-import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.home.model.HomeModel
-import com.hedvig.app.feature.home.ui.claimstatus.composables.ClaimStatusCards
 import com.hedvig.app.feature.home.ui.connectpayincard.ConnectPayinCard
-import com.hedvig.app.ui.coil.load
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.inflate
@@ -62,7 +51,6 @@ class HomeAdapter(
     R.layout.how_claims_work_button -> ViewHolder.HowClaimsWorkButton(parent)
     R.layout.upcoming_renewal_card -> ViewHolder.UpcomingRenewal(parent)
     R.layout.change_address_pending_change_card -> ViewHolder.PendingChange(parent, onStartMovingFlow)
-    R.layout.header_item_layout -> ViewHolder.Header(parent)
     else -> throw Error("Invalid view type")
   }
 
@@ -72,7 +60,6 @@ class HomeAdapter(
     is HomeModel.PSA -> R.layout.home_psa
     is HomeModel.HowClaimsWork -> R.layout.how_claims_work_button
     is HomeModel.UpcomingRenewal -> R.layout.upcoming_renewal_card
-    is HomeModel.Header -> R.layout.header_item_layout
     is HomeModel.PendingAddressChange -> R.layout.change_address_pending_change_card
   }
 
@@ -264,22 +251,6 @@ class HomeAdapter(
         }
       }
     }
-
-    class Header(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.header_item_layout)) {
-      private val binding by viewBinding(HeaderItemLayoutBinding::bind)
-
-      override fun bind(
-        data: HomeModel,
-        fragmentManager: FragmentManager,
-        marketManager: MarketManager,
-      ) = with(binding) {
-        if (data !is HomeModel.Header) {
-          return invalid(data)
-        }
-        binding.headerItem.text = itemView.context.getString(data.stringRes)
-      }
-    }
-  }
 
   companion object {
     fun daysLeft(date: LocalDate): Int = ChronoUnit.DAYS.between(LocalDate.now(), date).toInt()
