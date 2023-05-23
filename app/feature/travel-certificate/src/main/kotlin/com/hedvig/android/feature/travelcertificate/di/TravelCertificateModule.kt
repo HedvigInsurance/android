@@ -8,11 +8,6 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val travelCertificateModule = module {
-  viewModel { (email: String?, travelCertificateSpecifications: TravelCertificateResult.TravelCertificateSpecifications) ->
-    GenerateTravelCertificateViewModel(
-      email = email,
-      travelCertificateSpecifications = travelCertificateSpecifications,
-    )
-  }
   single { GetTravelCertificateSpecificationsUseCase(get(octopusClient)) }
+  viewModel { GenerateTravelCertificateViewModel(get()) }
 }

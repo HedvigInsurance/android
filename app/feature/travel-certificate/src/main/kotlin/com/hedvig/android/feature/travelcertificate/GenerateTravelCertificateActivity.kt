@@ -1,5 +1,8 @@
 package com.hedvig.android.feature.travelcertificate
 
+import GenerateTravelCertificateViewModel
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -13,17 +16,14 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.designsystem.theme.ConfigureTransparentSystemBars
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateResult
 import com.hedvig.android.feature.travelcertificate.navigation.GenerateTravelCertificateNavHost
-import com.hedvig.android.feature.travelcertificate.ui.GenerateTravelCertificateInput
-import com.hedvig.android.feature.travelcertificate.ui.mockUiState
-import com.hedvig.android.navigation.activity.Navigator
 import kotlinx.datetime.LocalDate
-import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+
 
 class GenerateTravelCertificateActivity : AppCompatActivity() {
-  private val activityNavigator: Navigator by inject()
+  private val viewModel: GenerateTravelCertificateViewModel by viewModel()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -50,5 +50,9 @@ class GenerateTravelCertificateActivity : AppCompatActivity() {
         }
       }
     }
+  }
+
+  companion object {
+    fun newInstance(context: Context) = Intent(context, GenerateTravelCertificateActivity::class.java)
   }
 }

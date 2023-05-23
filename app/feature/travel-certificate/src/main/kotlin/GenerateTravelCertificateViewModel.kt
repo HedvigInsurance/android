@@ -1,26 +1,65 @@
+import androidx.compose.material3.DatePickerState
+import androidx.compose.material3.DisplayMode
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.feature.travelcertificate.CoInsured
-import com.hedvig.android.feature.travelcertificate.TravelCertificateUiState
+import com.hedvig.android.feature.travelcertificate.TravelCertificateInputState
+import com.hedvig.android.feature.travelcertificate.data.GetTravelCertificateSpecificationsUseCase
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateResult
+import java.time.ZoneId
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 class GenerateTravelCertificateViewModel(
-  email: String?,
-  travelCertificateSpecifications: TravelCertificateResult.TravelCertificateSpecifications,
+  private val getTravelCertificateSpecificationsUseCase: GetTravelCertificateSpecificationsUseCase,
 ) : ViewModel() {
-  private val _uiState: MutableStateFlow<TravelCertificateUiState> = MutableStateFlow(
-    TravelCertificateUiState(
-      email = ValidatedInput(email),
-      travelCertificateSpecifications = travelCertificateSpecifications,
-    ),
-  )
+  private val _uiState: MutableStateFlow<TravelCertificateInputState> = MutableStateFlow(TravelCertificateInputState())
 
-  val uiState: StateFlow<TravelCertificateUiState> = _uiState.asStateFlow()
+  val uiState: StateFlow<TravelCertificateInputState> = _uiState.asStateFlow()
+
+  init {
+    viewModelScope.launch {
+      _uiState.update { it.copy(isLoading = true) }
+      getTravelCertificateSpecificationsUseCase
+        .invoke()
+        .fold(
+          ifLeft = { errorMessage -> _uiState.update { TravelCertificateInputState(errorMessage = errorMessage.message) } },
+          ifRight = { result -> _uiState.update { createUiState(result) } },
+        )
+    }
+  }
+
+  private fun createUiState(result: TravelCertificateResult) = when (result) {
+    TravelCertificateResult.NotEligible -> TravelCertificateInputState(errorMessage = "Not eligible")
+    is TravelCertificateResult.TravelCertificateSpecifications -> {
+      val datePickerState = DatePickerState(
+        initialSelectedDateMillis = null,
+        initialDisplayedMonthMillis = null,
+        yearRange = result.dateRange.start.year.rangeTo(result.dateRange.endInclusive.year),
+        initialDisplayMode = DisplayMode.Picker,
+      )
+
+      TravelCertificateInputState(
+        contractId = result.contractId,
+        email = ValidatedInput(result.email),
+        maximumCoInsured = result.numberOfCoInsured,
+        datePickerState = datePickerState,
+        dateValidator = { date ->
+          val selectedDate = Instant.fromEpochMilliseconds(date).toLocalDateTime(TimeZone.currentSystemDefault()).date
+          result.dateRange.contains(selectedDate)
+        },
+      )
+    }
+  }
 
   fun onErrorDialogDismissed() {
     _uiState.update { it.copy(errorMessage = null) }
@@ -70,6 +109,15 @@ class GenerateTravelCertificateViewModel(
     if (_uiState.value.isInputValid) {
       // Create travel certificate
     }
+  }
+
+  fun canAddCoInsured(): Boolean {
+    val maximumCoInsured = uiState.value.maximumCoInsured
+    return maximumCoInsured != null &&  uiState.value.coInsured.input.size < maximumCoInsured
+  }
+
+  fun onMaxCoInsureAdded() {
+    _uiState.update { it.copy(errorMessage = "Can not add more than ${uiState.value.maximumCoInsured} co-insured") }
   }
 }
 

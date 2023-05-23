@@ -11,7 +11,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
-import com.hedvig.android.feature.travelcertificate.TravelCertificateUiState
+import com.hedvig.android.feature.travelcertificate.TravelCertificateInputState
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateResult
 import com.hedvig.android.feature.travelcertificate.ui.AddCoInsured
 import com.hedvig.android.feature.travelcertificate.ui.GenerateTravelCertificateInput
@@ -45,7 +45,7 @@ internal fun NavGraphBuilder.generateTravelCertificateGraph(
         backStackEntry = it,
       )
 
-      val uiState: TravelCertificateUiState by viewModel.uiState.collectAsStateWithLifecycle()
+      val uiState: TravelCertificateInputState by viewModel.uiState.collectAsStateWithLifecycle()
       GenerateTravelCertificateInput(
         uiState = uiState,
         navigateBack = { finish() },
@@ -55,7 +55,11 @@ internal fun NavGraphBuilder.generateTravelCertificateGraph(
           navController.navigate(GenerateTravelCertificateDestination.AddCoInsured(it))
         },
         onAddCoInsuredClicked = {
-          navController.navigate(GenerateTravelCertificateDestination.AddCoInsured(null))
+          if (viewModel.canAddCoInsured()) {
+            navController.navigate(GenerateTravelCertificateDestination.AddCoInsured(null))
+          } else {
+            viewModel.onMaxCoInsureAdded()
+          }
         },
         onIncludeMemberClicked = viewModel::onIncludeMemberClicked,
         onTravelDateSelected = viewModel::onTravelDateSelected,

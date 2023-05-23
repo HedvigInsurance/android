@@ -7,22 +7,18 @@ import com.hedvig.android.feature.travelcertificate.data.TravelCertificateResult
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
-data class TravelCertificateUiState(
-  val email: ValidatedInput<String?>,
+data class TravelCertificateInputState(
+  val contractId: String? = null,
+  val email: ValidatedInput<String?> = ValidatedInput(null),
   val travelDate: ValidatedInput<LocalDate?> = ValidatedInput(null),
   val coInsured: ValidatedInput<List<CoInsured>> = ValidatedInput(emptyList()),
+  val maximumCoInsured: Int? = null,
   val includeMember: Boolean = false,
-  val travelCertificateSpecifications: TravelCertificateResult.TravelCertificateSpecifications,
+  val datePickerState: DatePickerState? = null,
+  val dateValidator: (Long) -> Boolean = { false },
   val isLoading: Boolean = false,
   val errorMessage: String? = null,
 ) {
-  val datePickerState: DatePickerState = DatePickerState(
-    initialSelectedDateMillis = null,
-    initialDisplayedMonthMillis = null,
-    yearRange = 2023..2054,
-    initialDisplayMode = DisplayMode.Picker,
-  )
-
   val isInputValid: Boolean
     get() {
       return email.errorMessageRes == null &&
@@ -30,7 +26,7 @@ data class TravelCertificateUiState(
         coInsured.errorMessageRes == null
     }
 
-  fun validateInput(): TravelCertificateUiState {
+  fun validateInput(): TravelCertificateInputState {
     return copy(
       email = email.copy(
         errorMessageRes = if (!email.isPresent || email.input?.isBlank() == true) {

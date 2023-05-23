@@ -74,6 +74,7 @@ class HomeAdapter(
       onClaimDetailCardClicked,
       onClaimDetailCardShown,
     )
+
     SPACE -> ViewHolder.Space(ComposeView(parent.context))
     R.layout.home_start_claim_outlined -> ViewHolder.StartClaimOutlined(parent, onStartClaimClicked)
     R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent, onStartClaimClicked)
@@ -142,19 +143,23 @@ class HomeAdapter(
             hedvig.resources.R.string.home_tab_pending_unknown_title,
             data.name,
           )
+
           is HomeModel.BigText.ActiveInFuture -> root.resources.getString(
             hedvig.resources.R.string.home_tab_active_in_future_welcome_title,
             data.name,
             formatter.format(data.inception),
           )
+
           is HomeModel.BigText.Active -> root.resources.getString(
             hedvig.resources.R.string.home_tab_welcome_title,
             data.name,
           )
+
           is HomeModel.BigText.Terminated -> root.resources.getString(
             hedvig.resources.R.string.home_tab_terminated_welcome_title,
             data.name,
           )
+
           is HomeModel.BigText.Switching -> root.resources.getString(
             hedvig.resources.R.string.home_tab_pending_switchable_welcome_title,
             data.name,
@@ -382,6 +387,7 @@ class HomeAdapter(
               )
             }
           }
+
           is HomeModel.CommonClaim.TitleAndBulletPoints -> {
             label.text = data.inner.title
             icon.load(requestUri(data.inner.iconUrls), imageLoader)
@@ -394,11 +400,12 @@ class HomeAdapter(
               )
             }
           }
+
           is HomeModel.CommonClaim.GenerateTravelCertificate -> {
             label.text = "Generate travel certificate"
             root.setHapticClickListener {
               root.context.startActivity(
-                Intent(root.context, GenerateTravelCertificateActivity::class.java),
+                GenerateTravelCertificateActivity.newInstance(root.context),
               )
             }
           }
