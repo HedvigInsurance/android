@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -35,7 +34,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.contentColorFor
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -46,6 +44,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -74,6 +73,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.SerifBookSmall
 import com.hedvig.android.core.designsystem.theme.lavender_200
 import com.hedvig.android.core.designsystem.theme.lavender_900
+import com.hedvig.android.core.designsystem.theme.onWarning
 import com.hedvig.android.core.designsystem.theme.warning
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.core.ui.grid.HedvigGrid
@@ -384,7 +384,7 @@ private fun ColumnScope.HomeScreenSuccess(
         Surface(
           onClick = { onPsaClicked(Uri.parse(homeModel.inner.link)) },
           color = androidx.compose.material.MaterialTheme.colors.warning,
-          contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+          contentColor = androidx.compose.material.MaterialTheme.colors.onWarning,
           modifier = Modifier.fillMaxWidth(),
         ) {
           Row(
@@ -396,7 +396,7 @@ private fun ColumnScope.HomeScreenSuccess(
               modifier = Modifier.weight(1f),
             )
             Spacer(Modifier.width(16.dp))
-            Image(
+            Icon(
               painter = painterResource(R.drawable.ic_forward),
               contentDescription = null,
               modifier = Modifier.size(16.dp),
@@ -489,11 +489,13 @@ private fun PurpleInfoCard(
           contentDescription = null,
           modifier = Modifier.size(24.dp),
         )
+        Spacer(Modifier.width(16.dp))
         Column(Modifier.weight(1f)) {
           Text(
             text = title,
             style = MaterialTheme.typography.bodyLarge,
           )
+          Spacer(Modifier.height(8.dp))
           Text(
             text = body,
             style = MaterialTheme.typography.bodyMedium,
@@ -505,9 +507,12 @@ private fun PurpleInfoCard(
         onClick = buttonAction,
         modifier = Modifier
           .align(Alignment.End)
-          .padding(horizontal = 16.dp),
+          .padding(horizontal = 16.dp, vertical = 4.dp),
       ) {
-        Text(buttonText)
+        Text(
+          text = buttonText,
+          style = MaterialTheme.typography.bodyLarge,
+        )
       }
     }
   }
