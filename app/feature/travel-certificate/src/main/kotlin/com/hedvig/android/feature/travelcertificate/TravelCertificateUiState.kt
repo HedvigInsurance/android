@@ -22,6 +22,39 @@ data class TravelCertificateUiState(
     yearRange = 2023..2054,
     initialDisplayMode = DisplayMode.Picker,
   )
+
+  val isInputValid: Boolean
+    get() {
+      return email.errorMessageRes == null &&
+        travelDate.errorMessageRes == null &&
+        coInsured.errorMessageRes == null
+    }
+
+  fun validateInput(): TravelCertificateUiState {
+    return copy(
+      email = email.copy(
+        errorMessageRes = if (!email.isPresent || email.input?.isBlank() == true) {
+          hedvig.resources.R.string.CHANGE_ADDRESS_LIVING_SPACE_ERROR
+        } else {
+          null
+        },
+      ),
+      travelDate = travelDate.copy(
+        errorMessageRes = if (!travelDate.isPresent) {
+          hedvig.resources.R.string.CHANGE_ADDRESS_LIVING_SPACE_ERROR
+        } else {
+          null
+        },
+      ),
+      coInsured = coInsured.copy(
+        errorMessageRes = if ((!coInsured.isPresent || coInsured.input.isEmpty()) && !includeMember) {
+          hedvig.resources.R.string.CHANGE_ADDRESS_LIVING_SPACE_ERROR
+        } else {
+          null
+        },
+      ),
+    )
+  }
 }
 
 @Serializable

@@ -59,7 +59,7 @@ internal fun NavGraphBuilder.generateTravelCertificateGraph(
         },
         onIncludeMemberClicked = viewModel::onIncludeMemberClicked,
         onTravelDateSelected = viewModel::onTravelDateSelected,
-        onContinue = {},
+        onContinue = viewModel::onContinue,
       )
     }
     animatedComposable<GenerateTravelCertificateDestination.AddCoInsured> {

@@ -31,7 +31,12 @@ class GenerateTravelCertificateViewModel(
   }
 
   fun onIncludeMemberClicked(includeMember: Boolean) {
-    _uiState.update { it.copy(includeMember = includeMember) }
+    _uiState.update {
+      it.copy(
+        includeMember = includeMember,
+        coInsured = it.coInsured.copy(errorMessageRes = null),
+      )
+    }
   }
 
   fun onTravelDateSelected(localDate: LocalDate) {
@@ -57,6 +62,13 @@ class GenerateTravelCertificateViewModel(
     val updatedCoInsuredList = uiState.value.coInsured.input.filterNot { it.id == coInsuredId }
     _uiState.update {
       it.copy(coInsured = ValidatedInput(updatedCoInsuredList))
+    }
+  }
+
+  fun onContinue() {
+    _uiState.update { it.validateInput() }
+    if (_uiState.value.isInputValid) {
+      // Create travel certificate
     }
   }
 }

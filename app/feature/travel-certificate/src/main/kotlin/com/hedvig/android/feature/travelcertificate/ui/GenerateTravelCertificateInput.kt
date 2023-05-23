@@ -137,6 +137,33 @@ fun GenerateTravelCertificateInput(
         }
       }
     }
+    Spacer(modifier = Modifier.height(8.dp))
+
+    uiState.coInsured.errorMessageRes?.let {
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        // Emulate the same design that the supporting text of the TextField has
+        modifier = Modifier.padding(
+          start = 16.dp,
+          top = 4.dp,
+          end = 16.dp,
+        ),
+      ) {
+        Icon(
+          imageVector = Icons.Rounded.Warning,
+          contentDescription = null,
+          modifier = Modifier.size(16.dp),
+          tint = MaterialTheme.colorScheme.warningElement,
+        )
+        Spacer(Modifier.width(6.dp))
+        Text(
+          text = "Ange vilka som täcks av certifikatet",
+          style = MaterialTheme.typography.bodySmall,
+          color = MaterialTheme.colorScheme.error,
+        )
+      }
+    }
+
     uiState.coInsured.input.map { coInsured ->
       Spacer(modifier = Modifier.height(8.dp))
 
@@ -314,6 +341,7 @@ private fun MovingDateButton(
         Text(
           text = stringResource(errorTextResId),
           style = MaterialTheme.typography.bodySmall,
+          color = MaterialTheme.colorScheme.error,
         )
       }
     }
@@ -366,5 +394,5 @@ val mockUiState = TravelCertificateUiState(
     dateRange = LocalDate(2023, 5, 23)..LocalDate(2023, 7, 23),
     numberOfCoInsured = 2,
   ),
-  isLoading = false
+  isLoading = false,
 )
