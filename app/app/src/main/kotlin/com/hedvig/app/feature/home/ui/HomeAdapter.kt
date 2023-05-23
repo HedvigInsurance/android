@@ -13,9 +13,6 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressPendingChangeCardBinding
-import com.hedvig.app.databinding.HomePsaBinding
-import com.hedvig.app.databinding.HomeStartClaimContainedBinding
-import com.hedvig.app.databinding.HomeStartClaimOutlinedBinding
 import com.hedvig.app.databinding.UpcomingRenewalCardBinding
 import com.hedvig.app.feature.home.model.HomeModel
 import com.hedvig.app.feature.home.ui.connectpayincard.ConnectPayinCard
@@ -43,13 +40,11 @@ class HomeAdapter(
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
     R.layout.upcoming_renewal_card -> ViewHolder.UpcomingRenewal(parent)
-    R.layout.change_address_pending_change_card -> ViewHolder.PendingChange(parent, onStartMovingFlow)
     else -> throw Error("Invalid view type")
   }
 
   override fun getItemViewType(position: Int) = when (getItem(position)) {
     is HomeModel.UpcomingRenewal -> R.layout.upcoming_renewal_card
-    is HomeModel.PendingAddressChange -> R.layout.change_address_pending_change_card
   }
 
   override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -124,30 +119,6 @@ class HomeAdapter(
         }
       }
     }
-
-    class PendingChange(parent: ViewGroup, val onStartMovingFlow: () -> Unit) :
-      ViewHolder(parent.inflate(R.layout.change_address_pending_change_card)) {
-      private val binding by viewBinding(ChangeAddressPendingChangeCardBinding::bind)
-      override fun bind(
-        data: HomeModel,
-        fragmentManager: FragmentManager,
-        marketManager: MarketManager,
-      ) = with(binding) {
-        if (data !is HomeModel.PendingAddressChange) {
-          return invalid(data)
-        }
-
-        paragraph.text = root.context.getString(
-          hedvig.resources.R.string.home_tab_moving_info_card_description,
-          data.address,
-        )
-        continueButton.text = root.context.getString(hedvig.resources.R.string.home_tab_moving_info_card_button_text)
-        continueButton.setHapticClickListener {
-          onStartMovingFlow()
-        }
-      }
-    }
-  }
 
   companion object {
     fun daysLeft(date: LocalDate): Int = ChronoUnit.DAYS.between(LocalDate.now(), date).toInt()

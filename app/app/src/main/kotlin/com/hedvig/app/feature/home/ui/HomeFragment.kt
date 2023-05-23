@@ -38,6 +38,8 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -69,6 +71,8 @@ import com.hedvig.android.core.designsystem.component.button.LargeOutlinedTextBu
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.SerifBookSmall
+import com.hedvig.android.core.designsystem.theme.lavender_200
+import com.hedvig.android.core.designsystem.theme.lavender_900
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.core.ui.grid.HedvigGrid
 import com.hedvig.android.core.ui.grid.InsideGridSpace
@@ -398,7 +402,51 @@ private fun ColumnScope.HomeScreenSuccess(
           }
         }
       }
-      is HomeModel.PendingAddressChange -> TODO()
+      is HomeModel.PendingAddressChange -> {
+        HedvigCard(
+          colors = CardDefaults.outlinedCardColors(
+            containerColor = if (isSystemInDarkTheme()) {
+              lavender_900
+            } else {
+              lavender_200
+            },
+          ),
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .padding(top = 16.dp),
+        ) {
+          Column {
+            Row(Modifier.padding(horizontal = 16.dp, vertical = 24.dp)) {
+              Icon(
+                painter = painterResource(R.drawable.ic_apartment),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp),
+              )
+              Column(Modifier.weight(1f)) {
+                Text(
+                  text = stringResource(hedvig.resources.R.string.home_tab_moving_info_card_title),
+                  style = MaterialTheme.typography.bodyLarge,
+                )
+                Text(
+                  text = stringResource(
+                    hedvig.resources.R.string.home_tab_moving_info_card_description,
+                    homeModel.address,
+                  ),
+                  style = MaterialTheme.typography.bodyMedium,
+                )
+              }
+            }
+            Divider()
+            TextButton(
+              onClick = onStartMovingFlow,
+              modifier = Modifier.align(Alignment.End).padding(horizontal = 16.dp),
+            ) {
+              Text(text = stringResource(hedvig.resources.R.string.home_tab_moving_info_card_button_text))
+            }
+          }
+        }
+      }
       is HomeModel.Space -> {
         Spacer(Modifier.height(homeModel.height))
       }

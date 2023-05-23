@@ -36,7 +36,7 @@ val lavender_200 = Color(0xFFE7D6FF)
 internal val lavender_300 = Color(0xFFC9ABF5)
 internal val lavender_400 = Color(0xFFBE9BF3)
 val lavender_600 = Color(0xFF875EC5)
-internal val lavender_900 = Color(0xFF1C1724)
+val lavender_900 = Color(0xFF1C1724)
 internal val text_color_primary_light = Color(0xAB121212)
 internal val separator_light = Color(0x4A3C3C43)
 
