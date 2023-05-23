@@ -4,6 +4,7 @@ import HousingType
 import androidx.annotation.StringRes
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DisplayMode
+import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.feature.changeaddress.data.AddressId
 import com.hedvig.android.feature.changeaddress.data.MoveIntentId
 import com.hedvig.android.feature.changeaddress.data.MoveQuote
@@ -92,13 +93,4 @@ data class ChangeAddressUiState(
       ),
     )
   }
-}
-
-data class ValidatedInput<T>(
-  val input: T,
-  @StringRes
-  val errorMessageRes: Int? = null,
-) {
-  val isPresent: Boolean
-    get() = input != null
 }

@@ -1,5 +1,6 @@
-package com.hedvig.android.feature.changeaddress.destination
+package com.hedvig.android.feature.travelcertificate.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -8,19 +9,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Warning
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -29,26 +29,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
+import com.hedvig.android.core.designsystem.material3.containedButtonContainer
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
 import com.hedvig.android.core.designsystem.material3.squircle
 import com.hedvig.android.core.designsystem.material3.warningContainer
 import com.hedvig.android.core.designsystem.material3.warningElement
+import com.hedvig.android.core.designsystem.newtheme.SquircleShape
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.error.ErrorDialog
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
-import com.hedvig.android.feature.changeaddress.ChangeAddressUiState
-import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
+import com.hedvig.android.feature.travelcertificate.CoInsured
+import com.hedvig.android.feature.travelcertificate.TravelCertificateUiState
+import com.hedvig.android.feature.travelcertificate.data.TravelCertificateResult
 import hedvig.resources.R
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -56,43 +57,16 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
 @Composable
-internal fun ChangeAddressEnterNewDestination(
-  viewModel: ChangeAddressViewModel,
-  navigateBack: () -> Unit,
-  onQuotesReceived: () -> Unit,
-) {
-  val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-  val quotes = uiState.quotes
-  LaunchedEffect(quotes) {
-    if (quotes.isNotEmpty()) {
-      onQuotesReceived()
-    }
-  }
-  ChangeAddressEnterNewScreen(
-    uiState = uiState,
-    navigateBack = navigateBack,
-    onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
-    onStreetChanged = viewModel::onStreetChanged,
-    onPostalCodeChanged = viewModel::onPostalCodeChanged,
-    onSquareMetersChanged = viewModel::onSquareMetersChanged,
-    onCoInsuredChanged = viewModel::onCoInsuredChanged,
-    onMoveDateSelected = viewModel::onMoveDateSelected,
-    onSaveNewAddress = viewModel::onSaveNewAddress,
-  )
-}
-
-@Composable
-private fun ChangeAddressEnterNewScreen(
-  uiState: ChangeAddressUiState,
+fun GenerateTravelCertificateInput(
+  uiState: TravelCertificateUiState,
   navigateBack: () -> Unit,
   onErrorDialogDismissed: () -> Unit,
-  onStreetChanged: (String) -> Unit,
-  onPostalCodeChanged: (String) -> Unit,
-  onSquareMetersChanged: (String) -> Unit,
-  onCoInsuredChanged: (Int) -> Unit,
-  onMoveDateSelected: (LocalDate) -> Unit,
-  onSaveNewAddress: () -> Unit,
+  onEmailChanged: (String) -> Unit,
+  onCoInsuredClicked: (String) -> Unit,
+  onAddCoInsuredClicked: () -> Unit,
+  onIncludeMemberClicked: (Boolean) -> Unit,
+  onTravelDateSelected: (LocalDate) -> Unit,
+  onContinue: () -> Unit,
 ) {
   if (uiState.errorMessage != null) {
     ErrorDialog(
@@ -112,7 +86,7 @@ private fun ChangeAddressEnterNewScreen(
   ) {
     Spacer(modifier = Modifier.height(48.dp))
     Text(
-      text = stringResource(id = R.string.CHANGE_ADDRESS_ENTER_NEW_ADDRESS_TITLE),
+      text = "Travel information",
       style = MaterialTheme.typography.headlineSmall,
       textAlign = TextAlign.Center,
       modifier = Modifier
@@ -120,39 +94,83 @@ private fun ChangeAddressEnterNewScreen(
         .padding(horizontal = 16.dp),
     )
     Spacer(modifier = Modifier.height(64.dp))
-    AddressTextField(
-      street = uiState.street,
-      onStreetChanged = onStreetChanged,
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
-    Spacer(modifier = Modifier.height(8.dp))
-    PostalCodeTextField(
-      postalCode = uiState.postalCode,
-      onPostalCodeChanged = onPostalCodeChanged,
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
-    Spacer(modifier = Modifier.height(8.dp))
-    LivingSpaceTextField(
-      squareMeters = uiState.squareMeters,
-      onSquareMetersChanged = onSquareMetersChanged,
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
-    Spacer(modifier = Modifier.height(8.dp))
-    NumberOfCoInsuredTextField(
-      numberCoInsured = uiState.numberCoInsured,
-      onCoInsuredChanged = onCoInsuredChanged,
+    EmailTextField(
+      email = uiState.email,
+      onStreetChanged = onEmailChanged,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(modifier = Modifier.height(8.dp))
     MovingDateButton(
-      onDateSelected = { onMoveDateSelected(it) },
+      onDateSelected = { onTravelDateSelected(it) },
       uiState = uiState,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
-    Spacer(modifier = Modifier.height(32.dp))
+    Spacer(modifier = Modifier.height(16.dp))
+    Text(
+      text = "Who is traveling?",
+      style = MaterialTheme.typography.bodyLarge,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    LargeContainedButton(
+      onClick = { onIncludeMemberClicked(!uiState.includeMember) },
+      modifier = Modifier.padding(horizontal = 16.dp),
+      shape = MaterialTheme.shapes.squircle,
+      colors = ButtonDefaults.buttonColors(
+        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        contentColor = MaterialTheme.colorScheme.onSurface,
+      ),
+    ) {
+      Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth(),
+      ) {
+        Text("Me")
+        if (uiState.includeMember) {
+          Icon(
+            painter = painterResource(id = com.hedvig.android.core.designsystem.R.drawable.ic_checkmark),
+            tint = MaterialTheme.colorScheme.onSurface,
+            contentDescription = "include me",
+          )
+        }
+      }
+    }
+    uiState.coInsured.input.map { coInsured ->
+      Spacer(modifier = Modifier.height(8.dp))
+
+      LargeContainedButton(
+        onClick = { onCoInsuredClicked(coInsured.id) },
+        modifier = Modifier.padding(horizontal = 16.dp),
+        shape = MaterialTheme.shapes.squircle,
+        colors = ButtonDefaults.buttonColors(
+          containerColor = MaterialTheme.colorScheme.surfaceVariant,
+          contentColor = MaterialTheme.colorScheme.onSurface,
+        ),
+      ) {
+        Row(
+          horizontalArrangement = Arrangement.Start,
+          verticalAlignment = Alignment.CenterVertically,
+          modifier = Modifier.fillMaxWidth(),
+        ) {
+          Text(coInsured.name)
+        }
+      }
+    }
+    TextButton(
+      onClick = { onAddCoInsuredClicked() },
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+    ) {
+      Text("Add")
+    }
+
     Spacer(modifier = Modifier.weight(1f))
     LargeContainedButton(
-      onClick = onSaveNewAddress,
+      onClick = onContinue,
       shape = MaterialTheme.shapes.squircle,
       modifier = Modifier.padding(horizontal = 16.dp),
     ) {
@@ -163,86 +181,19 @@ private fun ChangeAddressEnterNewScreen(
 }
 
 @Composable
-private fun AddressTextField(
-  street: ValidatedInput<String?>,
+private fun EmailTextField(
+  email: ValidatedInput<String?>,
   onStreetChanged: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   HedvigTextField(
-    value = street.input ?: "",
+    value = email.input ?: "",
     onValueChange = { onStreetChanged(it) },
-    errorText = street.errorMessageRes?.let { stringResource(it) },
+    errorText = email.errorMessageRes?.let { stringResource(it) },
     label = {
-      Text(stringResource(R.string.CHANGE_ADDRESS_NEW_ADDRESS_LABEL))
+      Text("Email")
     },
     maxLines = 1,
-    modifier = modifier.fillMaxWidth(),
-  )
-}
-
-@Composable
-private fun PostalCodeTextField(
-  postalCode: ValidatedInput<String?>,
-  onPostalCodeChanged: (String) -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  HedvigTextField(
-    value = postalCode.input ?: "",
-    onValueChange = { onPostalCodeChanged(it) },
-    errorText = postalCode.errorMessageRes?.let { stringResource(it) },
-    label = {
-      Text(stringResource(R.string.CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL))
-    },
-    maxLines = 1,
-    keyboardOptions = KeyboardOptions(
-      keyboardType = KeyboardType.Number,
-    ),
-    modifier = modifier.fillMaxWidth(),
-  )
-}
-
-@Composable
-private fun LivingSpaceTextField(
-  squareMeters: ValidatedInput<String?>,
-  onSquareMetersChanged: (String) -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  HedvigTextField(
-    value = squareMeters.input ?: "",
-    onValueChange = { onSquareMetersChanged(it) },
-    errorText = squareMeters.errorMessageRes?.let { stringResource(it) },
-    label = {
-      Text(stringResource(R.string.CHANGE_ADDRESS_NEW_LIVING_SPACE_LABEL))
-    },
-    maxLines = 1,
-    keyboardOptions = KeyboardOptions(
-      keyboardType = KeyboardType.Number,
-    ),
-    modifier = modifier.fillMaxWidth(),
-  )
-}
-
-@Composable
-private fun NumberOfCoInsuredTextField(
-  numberCoInsured: ValidatedInput<Int?>,
-  onCoInsuredChanged: (Int) -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  HedvigTextField(
-    value = if (numberCoInsured.input != null) {
-      numberCoInsured.input.toString()
-    } else {
-      "1"
-    },
-    onValueChange = { onCoInsuredChanged(it.toInt()) },
-    errorText = numberCoInsured.errorMessageRes?.let { stringResource(it) },
-    label = {
-      Text(stringResource(R.string.CHANGE_ADDRESS_CO_INSURED_LABEL))
-    },
-    maxLines = 1,
-    keyboardOptions = KeyboardOptions(
-      keyboardType = KeyboardType.Number,
-    ),
     modifier = modifier.fillMaxWidth(),
   )
 }
@@ -250,7 +201,7 @@ private fun NumberOfCoInsuredTextField(
 @Composable
 private fun MovingDateButton(
   onDateSelected: (LocalDate) -> Unit,
-  uiState: ChangeAddressUiState,
+  uiState: TravelCertificateUiState,
   modifier: Modifier = Modifier,
 ) {
   var showDatePicker by rememberSaveable { mutableStateOf(false) }
@@ -295,8 +246,8 @@ private fun MovingDateButton(
   }
 
   Column(modifier) {
-    val errorTextResId = if (uiState.movingDate.errorMessageRes != null) {
-      uiState.movingDate.errorMessageRes
+    val errorTextResId = if (uiState.travelDate.errorMessageRes != null) {
+      uiState.travelDate.errorMessageRes
     } else {
       null
     }
@@ -324,14 +275,12 @@ private fun MovingDateButton(
       ) {
         Column(Modifier.weight(1f)) {
           Text(
-            text = stringResource(
-              id = R.string.CHANGE_ADDRESS_MOVING_DATE_LABEL,
-            ),
+            text = "Travel date",
             style = MaterialTheme.typography.bodyMedium,
           )
           Spacer(modifier = Modifier.height(4.dp))
           Text(
-            text = uiState.movingDate.input?.toString()
+            text = uiState.travelDate.input?.toString()
               ?: stringResource(R.string.CHANGE_ADDRESS_SELECT_MOVING_DATE_LABEL),
             style = MaterialTheme.typography.headlineSmall,
           )
@@ -372,15 +321,50 @@ private fun MovingDateButton(
   }
 }
 
+
 @HedvigPreview
 @Composable
-private fun PreviewChangeAddressEnterNewScreen() {
+fun GenerateTravelCertificateInputPreview() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
-      ChangeAddressEnterNewScreen(
-        ChangeAddressUiState(),
-        {}, {}, {}, {}, {}, {}, {}, {},
+    Surface {
+      GenerateTravelCertificateInput(
+        uiState = mockUiState,
+        navigateBack = {},
+        onErrorDialogDismissed = {},
+        onEmailChanged = {},
+        onIncludeMemberClicked = {},
+        onCoInsuredClicked = {},
+        onAddCoInsuredClicked = {},
+        onTravelDateSelected = {},
+        onContinue = {},
       )
     }
   }
 }
+
+val mockUiState = TravelCertificateUiState(
+  email = ValidatedInput(input = null),
+  travelDate = ValidatedInput(input = null),
+  coInsured = ValidatedInput(
+    input = listOf(
+      CoInsured(
+        id = "123",
+        name = "Hugo",
+        ssn = "199101131093",
+      ),
+      CoInsured(
+        id = "123",
+        name = "Stelios",
+        ssn = "199101131093",
+      ),
+    ),
+  ),
+  includeMember = true,
+  travelCertificateSpecifications = TravelCertificateResult.TravelCertificateSpecifications(
+    contractId = "123",
+    email = "hugo@hedvig.com",
+    maxDurationDays = 3,
+    dateRange = LocalDate(2023, 5, 23)..LocalDate(2023, 7, 23),
+    numberOfCoInsured = 2,
+  ),
+)
