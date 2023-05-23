@@ -223,9 +223,9 @@ private val networkModule = module {
   single<NormalizedCacheFactory> {
     MemoryCacheFactory(maxSizeBytes = 10 * 1024 * 1024)
   }
-  single<OkHttpClient> {
+  factory<OkHttpClient.Builder> {
     val languageService = get<LanguageService>()
-    val builder = OkHttpClient.Builder()
+    val builder: OkHttpClient.Builder = OkHttpClient.Builder()
       // Temporary fix until back-end problems are handled
       .readTimeout(30, TimeUnit.SECONDS)
       .addDatadogConfiguration()
@@ -261,7 +261,11 @@ private val networkModule = module {
       logger.level = HttpLoggingInterceptor.Level.BODY
       builder.addInterceptor(logger)
     }
-    builder.build()
+    builder
+  }
+  single<OkHttpClient> {
+    val okHttpBuilder = get<OkHttpClient.Builder>()
+    okHttpBuilder.build()
   }
   single<SunsettingInterceptor> { SunsettingInterceptor(get()) } bind ApolloInterceptor::class
   single<ApolloClient.Builder> {
@@ -651,7 +655,18 @@ private val logModule = module {
 private val coilModule = module {
   single<ImageLoader> {
     ImageLoader.Builder(get())
-      .okHttpClient(get<OkHttpClient>())
+      .okHttpClient(
+        // For the OkHttp client used by Coil, we want to re-use the same configuration, but we do not want the token
+        // related interceptors to be used, since those images are not behind authentication, and actually fail when
+        // requested with an authorization token.
+        get<OkHttpClient.Builder>()
+          .apply {
+            interceptors().removeAll {
+              it is MigrateTokenInterceptor || it is AuthTokenRefreshingInterceptor
+            }
+          }
+          .build(),
+      )
       .components {
         add(SvgDecoder.Factory())
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {

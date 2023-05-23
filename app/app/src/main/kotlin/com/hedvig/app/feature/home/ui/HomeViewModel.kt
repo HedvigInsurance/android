@@ -65,7 +65,7 @@ class HomeViewModel(
   }
 
   private suspend fun createViewState(forceReload: Boolean) {
-    if (_uiState.value.isLoading) return
+    if (forceReload == true && _uiState.value.isLoading) return
     _uiState.update {
       if (it is HomeUiState.Success) {
         it.copy(isReloading = true)

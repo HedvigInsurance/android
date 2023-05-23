@@ -35,22 +35,22 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.contentColorFor
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -68,6 +68,8 @@ import coil.request.ImageRequest
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.core.designsystem.component.button.LargeOutlinedTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
+import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation
+import com.hedvig.android.core.designsystem.material3.squircle
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.SerifBookSmall
 import com.hedvig.android.core.designsystem.theme.lavender_200
@@ -128,7 +130,8 @@ class HomeFragment : Fragment() {
       setContent {
         HedvigTheme {
           Surface(
-            color = MaterialTheme.colorScheme.background,
+            color = Color.Transparent,
+            contentColor = contentColorFor(MaterialTheme.colorScheme.background),
             modifier = Modifier.fillMaxSize(),
           ) {
             val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
@@ -148,7 +151,6 @@ class HomeFragment : Fragment() {
               ) {
                 Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
                 Spacer(Modifier.height(64.dp))
-
                 when (uiState) {
                   HomeUiState.Loading -> {}
                   is HomeUiState.Error -> {
@@ -362,21 +364,20 @@ private fun ColumnScope.HomeScreenSuccess(
       is HomeModel.HowClaimsWork -> {
         TextButton(
           onClick = { onHowClaimsWorkClick(homeModel.pages) },
+          shape = MaterialTheme.shapes.squircle,
           modifier = Modifier
             .fillMaxWidth()
             .wrapContentWidth(),
         ) {
-          CompositionLocalProvider(LocalContentColor.provides(MaterialTheme.colorScheme.onSurfaceVariant)) {
-            Icon(
-              painter = painterResource(R.drawable.ic_info_claims),
-              contentDescription = null,
-              modifier = Modifier.size(16.dp),
-            )
-            Spacer(Modifier.width(4.dp))
-            Text(
-              text = stringResource(hedvig.resources.R.string.home_tab_claim_explainer_button),
-            )
-          }
+          Icon(
+            painter = painterResource(R.drawable.ic_info_claims),
+            contentDescription = null,
+            modifier = Modifier.size(16.dp),
+          )
+          Spacer(Modifier.width(4.dp))
+          Text(
+            text = stringResource(hedvig.resources.R.string.home_tab_claim_explainer_button),
+          )
         }
       }
       is HomeModel.PSA -> {
@@ -578,11 +579,12 @@ private fun CommonClaimsRenderer(
   imageLoader: ImageLoader,
 ) {
   HedvigGrid(
-    contentPadding = PaddingValues(horizontal = 16.dp),
+    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp),
     insideGridSpace = InsideGridSpace(8.dp),
   ) {
     for (commonClaim in homeModel.claims) {
       HedvigCard(
+        elevation = HedvigCardElevation.Elevated(1.dp),
         onClick = when (commonClaim) {
           is CommonClaim.Emergency -> {
             { onEmergencyClaimClicked(commonClaim.inner) }
@@ -595,8 +597,8 @@ private fun CommonClaimsRenderer(
       ) {
         Column(
           Modifier
-            .heightIn(100.dp)
-            .padding(16.dp),
+            .padding(16.dp)
+            .heightIn(100.dp),
         ) {
           if (commonClaim !is CommonClaim.GenerateTravelCertificate) {
             val context = LocalContext.current
@@ -604,13 +606,11 @@ private fun CommonClaimsRenderer(
             AsyncImage(
               model = ImageRequest.Builder(context)
                 .data(
-                  Uri.parse(
-                    when (commonClaim) {
-                      is CommonClaim.Emergency -> commonClaim.inner.iconUrls
-                      is CommonClaim.TitleAndBulletPoints -> commonClaim.inner.iconUrls
-                      else -> error("Impossible")
-                    }.themedIcon,
-                  ),
+                  when (commonClaim) {
+                    is CommonClaim.Emergency -> commonClaim.inner.iconUrls
+                    is CommonClaim.TitleAndBulletPoints -> commonClaim.inner.iconUrls
+                    else -> error("Impossible")
+                  }.themedIcon,
                 )
                 .size(with(density) { 24.dp.roundToPx() })
                 .build(),

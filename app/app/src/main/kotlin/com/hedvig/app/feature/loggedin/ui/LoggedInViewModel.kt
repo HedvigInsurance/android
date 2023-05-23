@@ -39,6 +39,12 @@ class LoggedInViewModel(
   private val hAnalytics: HAnalytics,
 ) : ViewModel() {
 
+  private val _shouldOpenReviewDialog = MutableSharedFlow<Boolean>(
+    extraBufferCapacity = 1,
+    onBufferOverflow = BufferOverflow.DROP_OLDEST,
+  )
+  val shouldOpenReviewDialog: SharedFlow<Boolean> = _shouldOpenReviewDialog.asSharedFlow()
+
   init {
     viewModelScope.launch {
       chatEventStore.observeChatClosedCounter()
@@ -46,12 +52,6 @@ class LoggedInViewModel(
         .collect(_shouldOpenReviewDialog::tryEmit)
     }
   }
-
-  private val _shouldOpenReviewDialog = MutableSharedFlow<Boolean>(
-    extraBufferCapacity = 1,
-    onBufferOverflow = BufferOverflow.DROP_OLDEST,
-  )
-  val shouldOpenReviewDialog: SharedFlow<Boolean> = _shouldOpenReviewDialog.asSharedFlow()
 
   private val loggedInQueryData: Flow<LoggedInQuery.Data?> = flow {
     val loggedInQueryData = loggedInRepository.loggedInData().getOrNull()
