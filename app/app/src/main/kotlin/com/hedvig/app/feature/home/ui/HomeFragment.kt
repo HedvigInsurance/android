@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -40,6 +41,7 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -463,62 +465,6 @@ private fun ColumnScope.HomeScreenSuccess(
 }
 
 @Composable
-private fun PurpleInfoCard(
-  title: String,
-  body: String,
-  buttonText: String,
-  buttonAction: () -> Unit,
-) {
-  HedvigCard(
-    colors = CardDefaults.outlinedCardColors(
-      containerColor = if (isSystemInDarkTheme()) {
-        lavender_900
-      } else {
-        lavender_200
-      },
-    ),
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(horizontal = 16.dp)
-      .padding(top = 16.dp),
-  ) {
-    Column {
-      Row(Modifier.padding(16.dp)) {
-        Icon(
-          painter = painterResource(R.drawable.ic_apartment),
-          contentDescription = null,
-          modifier = Modifier.size(24.dp),
-        )
-        Spacer(Modifier.width(16.dp))
-        Column(Modifier.weight(1f)) {
-          Text(
-            text = title,
-            style = MaterialTheme.typography.bodyLarge,
-          )
-          Spacer(Modifier.height(8.dp))
-          Text(
-            text = body,
-            style = MaterialTheme.typography.bodyMedium,
-          )
-        }
-      }
-      Divider()
-      TextButton(
-        onClick = buttonAction,
-        modifier = Modifier
-          .align(Alignment.End)
-          .padding(horizontal = 16.dp, vertical = 4.dp),
-      ) {
-        Text(
-          text = buttonText,
-          style = MaterialTheme.typography.bodyLarge,
-        )
-      }
-    }
-  }
-}
-
-@Composable
 private fun BigTextRenderer(bigText: HomeModel.BigText) {
   val formatter = remember { DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG) }
   val headlineText = when (bigText) {
@@ -635,6 +581,64 @@ private fun CommonClaimsRenderer(
             style = MaterialTheme.typography.bodyLarge,
           )
         }
+      }
+    }
+  }
+}
+
+@Composable
+private fun PurpleInfoCard(
+  title: String,
+  body: String,
+  buttonText: String,
+  buttonAction: () -> Unit,
+) {
+  HedvigCard(
+    colors = CardDefaults.outlinedCardColors(
+      containerColor = if (isSystemInDarkTheme()) {
+        lavender_900
+      } else {
+        lavender_200
+      },
+    ),
+    border = BorderStroke(1.dp, LocalContentColor.current.copy(alpha = 0.2f)),
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp)
+      .padding(top = 16.dp),
+  ) {
+    Column {
+      Row(Modifier.padding(16.dp)) {
+        Icon(
+          painter = painterResource(R.drawable.ic_apartment),
+          contentDescription = null,
+          modifier = Modifier.size(24.dp),
+        )
+        Spacer(Modifier.width(16.dp))
+        Column(Modifier.weight(1f)) {
+          Text(
+            text = title,
+            style = MaterialTheme.typography.bodyLarge,
+          )
+          Spacer(Modifier.height(8.dp))
+          Text(
+            text = body,
+            style = MaterialTheme.typography.bodyMedium,
+          )
+        }
+      }
+      Divider(color = LocalContentColor.current.copy(alpha = 0.2f))
+      TextButton(
+        onClick = buttonAction,
+        shape = MaterialTheme.shapes.squircle,
+        modifier = Modifier
+          .align(Alignment.End)
+          .padding(horizontal = 16.dp, vertical = 4.dp),
+      ) {
+        Text(
+          text = buttonText,
+          style = MaterialTheme.typography.bodyLarge,
+        )
       }
     }
   }
