@@ -66,7 +66,7 @@ class HomeItemsBuilder(
         TravelCertificateResult.NotEligible -> {} // Do not show button
         null -> {} // Do not show button
         is TravelCertificateResult.TravelCertificateSpecifications -> add(
-          HomeModel.CommonClaim.GenerateTravelCertificate(travelCertificateResult),
+          HomeModel.CommonClaim.GenerateTravelCertificate,
         )
       }
     }

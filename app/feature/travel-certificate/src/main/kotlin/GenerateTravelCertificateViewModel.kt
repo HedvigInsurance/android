@@ -113,11 +113,17 @@ class GenerateTravelCertificateViewModel(
 
   fun canAddCoInsured(): Boolean {
     val maximumCoInsured = uiState.value.maximumCoInsured
-    return maximumCoInsured != null &&  uiState.value.coInsured.input.size < maximumCoInsured
+    return maximumCoInsured != null && uiState.value.coInsured.input.size < maximumCoInsured
   }
 
   fun onMaxCoInsureAdded() {
-    _uiState.update { it.copy(errorMessage = "Can not add more than ${uiState.value.maximumCoInsured} co-insured") }
+    val maximumCoInsured = uiState.value.maximumCoInsured
+    val message = if (maximumCoInsured != null && maximumCoInsured > 0) {
+      "Can not add more than $maximumCoInsured co-insured"
+    } else {
+      "Can not add any co-insured"
+    }
+    _uiState.update { it.copy(errorMessage = message) }
   }
 }
 

@@ -13,7 +13,7 @@ data class TravelCertificateInputState(
   val travelDate: ValidatedInput<LocalDate?> = ValidatedInput(null),
   val coInsured: ValidatedInput<List<CoInsured>> = ValidatedInput(emptyList()),
   val maximumCoInsured: Int? = null,
-  val includeMember: Boolean = false,
+  val includeMember: Boolean = true,
   val datePickerState: DatePickerState? = null,
   val dateValidator: (Long) -> Boolean = { false },
   val isLoading: Boolean = false,
