@@ -3,11 +3,23 @@ package com.hedvig.android.feature.travelcertificate
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.designsystem.theme.ConfigureTransparentSystemBars
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.ValidatedInput
+import com.hedvig.android.feature.travelcertificate.data.TravelCertificateResult
+import com.hedvig.android.feature.travelcertificate.navigation.GenerateTravelCertificateNavHost
+import com.hedvig.android.feature.travelcertificate.ui.GenerateTravelCertificateInput
+import com.hedvig.android.feature.travelcertificate.ui.mockUiState
 import com.hedvig.android.navigation.activity.Navigator
+import kotlinx.datetime.LocalDate
 import org.koin.android.ext.android.inject
 
 class GenerateTravelCertificateActivity : AppCompatActivity() {
@@ -21,6 +33,14 @@ class GenerateTravelCertificateActivity : AppCompatActivity() {
     setContent {
       HedvigTheme {
         ConfigureTransparentSystemBars()
+        Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+          GenerateTravelCertificateNavHost(
+            windowSizeClass = calculateWindowSizeClass(this@GenerateTravelCertificateActivity),
+            navController = rememberAnimatedNavController(),
+            navigateUp = { onSupportNavigateUp() },
+            finish = { finish() }
+          )
+        }
       }
     }
   }

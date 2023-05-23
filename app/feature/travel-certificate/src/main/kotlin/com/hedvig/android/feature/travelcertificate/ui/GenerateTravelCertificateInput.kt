@@ -367,4 +367,5 @@ val mockUiState = TravelCertificateUiState(
     dateRange = LocalDate(2023, 5, 23)..LocalDate(2023, 7, 23),
     numberOfCoInsured = 2,
   ),
+  isLoading = false
 )
