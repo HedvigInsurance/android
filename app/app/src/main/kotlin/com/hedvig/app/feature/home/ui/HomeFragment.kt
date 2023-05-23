@@ -51,7 +51,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -73,6 +72,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.SerifBookSmall
 import com.hedvig.android.core.designsystem.theme.lavender_200
 import com.hedvig.android.core.designsystem.theme.lavender_900
+import com.hedvig.android.core.designsystem.theme.warning
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.core.ui.grid.HedvigGrid
 import com.hedvig.android.core.ui.grid.InsideGridSpace
@@ -104,8 +104,10 @@ import giraffe.HomeQuery
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import java.time.temporal.ChronoUnit
 
 class HomeFragment : Fragment() {
   private val viewModel: HomeViewModel by viewModel()
@@ -214,6 +216,11 @@ class HomeFragment : Fragment() {
                           requireContext().openUri(uri)
                         }
                       },
+                      onUpcomingRenewalClick = { uri ->
+                        if (requireContext().canOpenUri(uri)) {
+                          requireContext().openUri(uri)
+                        }
+                      },
                     )
                   }
                 }
@@ -295,6 +302,7 @@ private fun ColumnScope.HomeScreenSuccess(
   onHowClaimsWorkClick: (List<HomeQuery.HowClaimsWork>) -> Unit,
   onStartClaimClicked: () -> Unit,
   onPsaClicked: (Uri) -> Unit,
+  onUpcomingRenewalClick: (Uri) -> Unit,
 ) {
   for (homeModel in homeItems) {
     when (homeModel) {
@@ -372,16 +380,9 @@ private fun ColumnScope.HomeScreenSuccess(
         }
       }
       is HomeModel.PSA -> {
-//          todo replace with warning colors once the dark theme one exists
-//          color = MaterialTheme.colorScheme.warningContainer,
-//          contentColor = MaterialTheme.colorScheme.onWarningContainer,
         Surface(
           onClick = { onPsaClicked(Uri.parse(homeModel.inner.link)) },
-          color = if (isSystemInDarkTheme()) {
-            Color(0xFFE3B945)
-          } else {
-            Color(0xFFFAE098)
-          },
+          color = androidx.compose.material.MaterialTheme.colors.warning,
           contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
           modifier = Modifier.fillMaxWidth(),
         ) {
@@ -403,49 +404,15 @@ private fun ColumnScope.HomeScreenSuccess(
         }
       }
       is HomeModel.PendingAddressChange -> {
-        HedvigCard(
-          colors = CardDefaults.outlinedCardColors(
-            containerColor = if (isSystemInDarkTheme()) {
-              lavender_900
-            } else {
-              lavender_200
-            },
+        PurpleInfoCard(
+          title = stringResource(hedvig.resources.R.string.home_tab_moving_info_card_title),
+          body = stringResource(
+            hedvig.resources.R.string.home_tab_moving_info_card_description,
+            homeModel.address,
           ),
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .padding(top = 16.dp),
-        ) {
-          Column {
-            Row(Modifier.padding(horizontal = 16.dp, vertical = 24.dp)) {
-              Icon(
-                painter = painterResource(R.drawable.ic_apartment),
-                contentDescription = null,
-                modifier = Modifier.size(24.dp),
-              )
-              Column(Modifier.weight(1f)) {
-                Text(
-                  text = stringResource(hedvig.resources.R.string.home_tab_moving_info_card_title),
-                  style = MaterialTheme.typography.bodyLarge,
-                )
-                Text(
-                  text = stringResource(
-                    hedvig.resources.R.string.home_tab_moving_info_card_description,
-                    homeModel.address,
-                  ),
-                  style = MaterialTheme.typography.bodyMedium,
-                )
-              }
-            }
-            Divider()
-            TextButton(
-              onClick = onStartMovingFlow,
-              modifier = Modifier.align(Alignment.End).padding(horizontal = 16.dp),
-            ) {
-              Text(text = stringResource(hedvig.resources.R.string.home_tab_moving_info_card_button_text))
-            }
-          }
-        }
+          buttonText = stringResource(hedvig.resources.R.string.home_tab_moving_info_card_button_text),
+          buttonAction = onStartMovingFlow,
+        )
       }
       is HomeModel.Space -> {
         Spacer(Modifier.height(homeModel.height))
@@ -472,7 +439,75 @@ private fun ColumnScope.HomeScreenSuccess(
           }
         }
       }
-      is HomeModel.UpcomingRenewal -> TODO()
+      is HomeModel.UpcomingRenewal -> {
+        PurpleInfoCard(
+          title = stringResource(
+            hedvig.resources.R.string.DASHBOARD_RENEWAL_PROMPTER_TITLE,
+            homeModel.contractDisplayName,
+          ),
+          body = stringResource(
+            hedvig.resources.R.string.DASHBOARD_RENEWAL_PROMPTER_BODY,
+            ChronoUnit.DAYS
+              .between(LocalDate.now(), homeModel.upcomingRenewal.renewalDate)
+              .toInt(),
+          ),
+          buttonText = stringResource(hedvig.resources.R.string.home_tab_moving_info_card_button_text),
+          buttonAction = {
+            onUpcomingRenewalClick(Uri.parse(homeModel.upcomingRenewal.draftCertificateUrl))
+          },
+        )
+      }
+    }
+  }
+}
+
+@Composable
+private fun PurpleInfoCard(
+  title: String,
+  body: String,
+  buttonText: String,
+  buttonAction: () -> Unit,
+) {
+  HedvigCard(
+    colors = CardDefaults.outlinedCardColors(
+      containerColor = if (isSystemInDarkTheme()) {
+        lavender_900
+      } else {
+        lavender_200
+      },
+    ),
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp)
+      .padding(top = 16.dp),
+  ) {
+    Column {
+      Row(Modifier.padding(16.dp)) {
+        Icon(
+          painter = painterResource(R.drawable.ic_apartment),
+          contentDescription = null,
+          modifier = Modifier.size(24.dp),
+        )
+        Column(Modifier.weight(1f)) {
+          Text(
+            text = title,
+            style = MaterialTheme.typography.bodyLarge,
+          )
+          Text(
+            text = body,
+            style = MaterialTheme.typography.bodyMedium,
+          )
+        }
+      }
+      Divider()
+      TextButton(
+        onClick = buttonAction,
+        modifier = Modifier
+          .align(Alignment.End)
+          .padding(horizontal = 16.dp),
+      ) {
+        Text(buttonText)
+      }
     }
   }
 }
