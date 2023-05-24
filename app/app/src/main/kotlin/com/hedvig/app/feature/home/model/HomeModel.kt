@@ -77,7 +77,7 @@ sealed interface HomeModel {
   data class HowClaimsWork(val pages: List<HomeQuery.HowClaimsWork>) : HomeModel
 
   data class CommonClaims(
-    val claims: List<CommonClaim>,
+    val claims: NonEmptyList<CommonClaim>,
   ) : HomeModel
 
   data class Header(val stringRes: Int) : HomeModel

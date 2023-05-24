@@ -51,7 +51,6 @@ class HomeItemsBuilder(
     }
     val commonClaims: MutableList<CommonClaim> = mutableListOf()
     if (featureManager.isFeatureEnabled(Feature.COMMON_CLAIMS) && homeData.commonClaims.isNotEmpty()) {
-      add(HomeModel.Header(hedvig.resources.R.string.home_tab_common_claims_title))
       commonClaims.addAll(
         commonClaimsItems(
           homeData.commonClaims,
@@ -71,7 +70,11 @@ class HomeItemsBuilder(
         }
       }
     }
-    add(HomeModel.CommonClaims(commonClaims))
+    val nonEmptyCommonClaimsList = commonClaims.toNonEmptyListOrNull()
+    if (nonEmptyCommonClaimsList != null) {
+      add(HomeModel.Header(hedvig.resources.R.string.home_tab_common_claims_title))
+      add(HomeModel.CommonClaims(nonEmptyCommonClaimsList))
+    }
 
     add(HomeModel.Header(hedvig.resources.R.string.home_tab_editing_section_title))
     add(HomeModel.ChangeAddress)
