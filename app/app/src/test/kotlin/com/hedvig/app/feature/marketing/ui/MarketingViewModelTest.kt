@@ -10,6 +10,7 @@ import assertk.assertions.isTrue
 import assertk.assertions.prop
 import com.hedvig.android.core.common.test.MainCoroutineRule
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.hanalytics.test.FakeHAnalytics
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.app.feature.marketing.MarketingViewModel
@@ -30,10 +31,15 @@ class MarketingViewModelTest {
 
   private fun createMarketingViewModel(
     market: Market? = null,
-    hAnalytics: HAnalytics = mockk(relaxed = true),
+    hAnalytics: HAnalytics = FakeHAnalytics(),
     getMarketingBackgroundUseCase: GetMarketingBackgroundUseCase = mockk(relaxed = true),
     updateApplicationLanguageUseCase: UpdateApplicationLanguageUseCase = mockk(relaxed = true),
-    getInitialMarketPickerValuesUseCase: GetInitialMarketPickerValuesUseCase = mockk(relaxed = true),
+    getInitialMarketPickerValuesUseCase: GetInitialMarketPickerValuesUseCase = GetInitialMarketPickerValuesUseCase(
+      mockk(relaxed = true),
+      mockk(relaxed = true),
+      mockk(relaxed = true),
+      mockk(relaxed = true),
+    ),
     featureManager: FeatureManager = mockk(relaxed = true),
   ) = MarketingViewModel(
     market = market,
