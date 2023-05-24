@@ -5,10 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.feature.travelcertificate.CoInsured
 import com.hedvig.android.feature.travelcertificate.TravelCertificateInputState
+import com.hedvig.android.feature.travelcertificate.data.CreateTravelCertificateUseCase
 import com.hedvig.android.feature.travelcertificate.data.GetTravelCertificateSpecificationsUseCase
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateResult
-import java.time.ZoneId
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,6 +20,7 @@ import kotlinx.datetime.toLocalDateTime
 
 class GenerateTravelCertificateViewModel(
   private val getTravelCertificateSpecificationsUseCase: GetTravelCertificateSpecificationsUseCase,
+  private val createTravelCertificateUseCase: CreateTravelCertificateUseCase,
 ) : ViewModel() {
   private val _uiState: MutableStateFlow<TravelCertificateInputState> = MutableStateFlow(TravelCertificateInputState())
 
@@ -106,8 +106,20 @@ class GenerateTravelCertificateViewModel(
 
   fun onContinue() {
     _uiState.update { it.validateInput() }
+    val state = uiState.value
     if (_uiState.value.isInputValid) {
-      // Create travel certificate
+      viewModelScope.launch {
+        createTravelCertificateUseCase.invoke(
+          contractId = state.contractId!!,
+          startDate = state.travelDate.input!!,
+          isMemberIncluded = state.includeMember,
+          coInsured = state.coInsured.input,
+          email = state.email.input!!,
+        ).fold(
+          ifLeft = { errorMessage -> _uiState.update { TravelCertificateInputState(errorMessage = errorMessage.message) } },
+          ifRight = { createId -> _uiState.update { it.copy(travelCertificateUrl = createId) } },
+        )
+      }
     }
   }
 
