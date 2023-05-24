@@ -2,9 +2,12 @@ package com.hedvig.app.feature.zignsec
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.addCallback
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AppCompatActivity
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -16,7 +19,6 @@ import com.hedvig.app.databinding.SimpleSignAuthenticationActivityBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.zignsec.ui.ErrorFragment
 import com.hedvig.app.feature.zignsec.ui.IdentityInputFragment
-import com.hedvig.app.feature.zignsec.ui.ZignSecWebViewFragment
 import com.hedvig.app.util.extensions.addToBackStack
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
@@ -35,6 +37,25 @@ class SimpleSignAuthenticationActivity : AppCompatActivity(R.layout.simple_sign_
     intent.parcelableExtra<SimpleSignAuthenticationData>(DATA)
       ?: error("Programmer error: DATA not passed to ${this.javaClass.name}")
   }
+
+  private val customZignSecTabLauncher = registerForActivityResult(
+    object : ActivityResultContract<String, Int>() {
+      override fun createIntent(context: Context, input: String): Intent {
+        return CustomTabsIntent.Builder()
+          .setInitialActivityHeightPx(3000)
+          .setToolbarCornerRadiusDp(16)
+          .build()
+          .intent
+          .apply {
+            setData(Uri.parse(input))
+          }
+      }
+
+      override fun parseResult(resultCode: Int, intent: Intent?): Int {
+        return resultCode
+      }
+    },
+  ) { /* nothing to do with the result, listening to viewModel.events covers leaving this activity */ }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -66,11 +87,18 @@ class SimpleSignAuthenticationActivity : AppCompatActivity(R.layout.simple_sign_
     viewModel.events.observe(this) { event ->
       d { "Simple sign event:$event" }
       when (event) {
-        SimpleSignAuthenticationViewModel.Event.LoadWebView -> showWebView()
         SimpleSignAuthenticationViewModel.Event.Success -> goToLoggedIn()
         SimpleSignAuthenticationViewModel.Event.Error -> showError()
         SimpleSignAuthenticationViewModel.Event.CancelSignIn -> finish()
       }
+    }
+
+    viewModel.zignSecUrl.observe(this) { zignSecUrl ->
+      if (zignSecUrl.contains("failure")) {
+        d { "Url loading had \"failure\" in it. Failing authentication" }
+        viewModel.authFailed()
+      }
+      customZignSecTabLauncher.launch(zignSecUrl)
     }
   }
 
@@ -81,13 +109,6 @@ class SimpleSignAuthenticationActivity : AppCompatActivity(R.layout.simple_sign_
         withoutHistory = true,
       ),
     )
-  }
-
-  private fun showWebView() {
-    supportFragmentManager.commit {
-      replace(R.id.container, ZignSecWebViewFragment.newInstance())
-      addToBackStack()
-    }
   }
 
   private fun showError() {

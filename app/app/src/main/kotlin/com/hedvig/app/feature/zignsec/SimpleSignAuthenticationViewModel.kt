@@ -64,10 +64,6 @@ class SimpleSignAuthenticationViewModel(
       override fun toString() = "Error"
     }
 
-    object LoadWebView : Event() {
-      override fun toString() = "LoadWebView"
-    }
-
     object CancelSignIn : Event() {
       override fun toString() = "CancelSignIn"
     }
@@ -136,7 +132,6 @@ class SimpleSignAuthenticationViewModel(
       is AuthAttemptResult.ZignSecProperties -> {
         _zignSecUrl.postValue(result.redirectUrl)
         _statusUrl.postValue(result.statusUrl)
-        _events.postValue(Event.LoadWebView)
       }
     }
     _isSubmitting.postValue(false)
