@@ -184,7 +184,7 @@ class HomeFragment : Fragment() {
                         )
                       },
                       onGenerateTravelCertificateClicked = {
-                        startActivity(Intent(requireContext(), GenerateTravelCertificateActivity::class.java))
+                        startActivity(GenerateTravelCertificateActivity.newInstance(requireContext()))
                       },
                       onCommonClaimClicked = { commonClaimsData ->
                         startActivity(
