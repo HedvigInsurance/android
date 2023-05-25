@@ -7,6 +7,7 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.Serializable
 import octopus.TravelCertificateSpecificationsQuery
 import slimber.log.e
 
@@ -25,7 +26,7 @@ class GetTravelCertificateSpecificationsUseCase(
       .bind()
       .currentMember
 
-    when (val travelCertificateSpecifications = member.travelCertificateSpecifications) {
+    when (val travelCertificateSpecifications = member.travelCertificateSpecifications.firstOrNull()) {
       null -> TravelCertificateResult.NotEligible
       else -> travelCertificateSpecifications.toTravelCertificateSpecifications(member.email)
     }
@@ -33,7 +34,7 @@ class GetTravelCertificateSpecificationsUseCase(
 }
 
 // ktlint-disable max-line-length
-private fun TravelCertificateSpecificationsQuery.Data.CurrentMember.TravelCertificateSpecifications.toTravelCertificateSpecifications(
+private fun TravelCertificateSpecificationsQuery.Data.CurrentMember.TravelCertificateSpecification.toTravelCertificateSpecifications(
   email: String,
 ) = TravelCertificateResult.TravelCertificateSpecifications(
   contractId = contractId,

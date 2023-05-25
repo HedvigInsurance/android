@@ -1,9 +1,11 @@
 package com.hedvig.android.feature.travelcertificate.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -35,20 +37,19 @@ import com.hedvig.android.core.designsystem.component.button.LargeContainedButto
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
-import com.hedvig.android.core.designsystem.material3.containedButtonContainer
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
 import com.hedvig.android.core.designsystem.material3.squircle
 import com.hedvig.android.core.designsystem.material3.warningContainer
 import com.hedvig.android.core.designsystem.material3.warningElement
-import com.hedvig.android.core.designsystem.newtheme.SquircleShape
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.error.ErrorDialog
+import com.hedvig.android.core.ui.progress.FullScreenHedvigProgress
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.feature.travelcertificate.CoInsured
-import com.hedvig.android.feature.travelcertificate.TravelCertificateUiState
+import com.hedvig.android.feature.travelcertificate.TravelCertificateInputState
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateResult
 import hedvig.resources.R
 import kotlinx.datetime.Instant
@@ -58,11 +59,11 @@ import kotlinx.datetime.toLocalDateTime
 
 @Composable
 fun GenerateTravelCertificateInput(
-  uiState: TravelCertificateUiState,
+  uiState: TravelCertificateInputState,
   navigateBack: () -> Unit,
   onErrorDialogDismissed: () -> Unit,
   onEmailChanged: (String) -> Unit,
-  onCoInsuredClicked: (String) -> Unit,
+  onCoInsuredClicked: (CoInsured) -> Unit,
   onAddCoInsuredClicked: () -> Unit,
   onIncludeMemberClicked: (Boolean) -> Unit,
   onTravelDateSelected: (LocalDate) -> Unit,
@@ -77,7 +78,10 @@ fun GenerateTravelCertificateInput(
   }
 
   if (uiState.isLoading) {
-    CircularProgressIndicator()
+    Box(modifier = Modifier.fillMaxSize()) {
+      CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+    }
+    return
   }
 
   HedvigScaffold(
@@ -134,15 +138,43 @@ fun GenerateTravelCertificateInput(
             painter = painterResource(id = com.hedvig.android.core.designsystem.R.drawable.ic_checkmark),
             tint = MaterialTheme.colorScheme.onSurface,
             contentDescription = "include me",
+            modifier = Modifier.size(18.dp)
           )
         }
       }
     }
+    Spacer(modifier = Modifier.height(8.dp))
+
+    uiState.coInsured.errorMessageRes?.let {
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        // Emulate the same design that the supporting text of the TextField has
+        modifier = Modifier.padding(
+          start = 16.dp,
+          top = 4.dp,
+          end = 16.dp,
+        ),
+      ) {
+        Icon(
+          imageVector = Icons.Rounded.Warning,
+          contentDescription = null,
+          modifier = Modifier.size(16.dp),
+          tint = MaterialTheme.colorScheme.warningElement,
+        )
+        Spacer(Modifier.width(6.dp))
+        Text(
+          text = "Ange vilka som täcks av certifikatet",
+          style = MaterialTheme.typography.bodySmall,
+          color = MaterialTheme.colorScheme.error,
+        )
+      }
+    }
+
     uiState.coInsured.input.map { coInsured ->
       Spacer(modifier = Modifier.height(8.dp))
 
       LargeContainedButton(
-        onClick = { onCoInsuredClicked(coInsured.id) },
+        onClick = { onCoInsuredClicked(coInsured) },
         modifier = Modifier.padding(horizontal = 16.dp),
         shape = MaterialTheme.shapes.squircle,
         colors = ButtonDefaults.buttonColors(
@@ -160,7 +192,9 @@ fun GenerateTravelCertificateInput(
       }
     }
     TextButton(
-      onClick = { onAddCoInsuredClicked() },
+      onClick = {
+        onAddCoInsuredClicked()
+      },
       modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
@@ -201,12 +235,11 @@ private fun EmailTextField(
 @Composable
 private fun MovingDateButton(
   onDateSelected: (LocalDate) -> Unit,
-  uiState: TravelCertificateUiState,
+  uiState: TravelCertificateInputState,
   modifier: Modifier = Modifier,
 ) {
   var showDatePicker by rememberSaveable { mutableStateOf(false) }
-
-  if (showDatePicker) {
+  if (showDatePicker && uiState.datePickerState != null) {
     DatePickerDialog(
       onDismissRequest = { showDatePicker = false },
       confirmButton = {
@@ -240,7 +273,7 @@ private fun MovingDateButton(
     ) {
       HedvigDatePicker(
         datePickerState = uiState.datePickerState,
-        dateValidator = { true }, // TODO Only allow future dates?
+        dateValidator = { uiState.dateValidator(it) },
       )
     }
   }
@@ -315,6 +348,7 @@ private fun MovingDateButton(
         Text(
           text = stringResource(errorTextResId),
           style = MaterialTheme.typography.bodySmall,
+          color = MaterialTheme.colorScheme.error,
         )
       }
     }
@@ -332,9 +366,9 @@ fun GenerateTravelCertificateInputPreview() {
         navigateBack = {},
         onErrorDialogDismissed = {},
         onEmailChanged = {},
-        onIncludeMemberClicked = {},
         onCoInsuredClicked = {},
         onAddCoInsuredClicked = {},
+        onIncludeMemberClicked = {},
         onTravelDateSelected = {},
         onContinue = {},
       )
@@ -342,7 +376,7 @@ fun GenerateTravelCertificateInputPreview() {
   }
 }
 
-val mockUiState = TravelCertificateUiState(
+val mockUiState = TravelCertificateInputState(
   email = ValidatedInput(input = null),
   travelDate = ValidatedInput(input = null),
   coInsured = ValidatedInput(
@@ -360,12 +394,5 @@ val mockUiState = TravelCertificateUiState(
     ),
   ),
   includeMember = true,
-  travelCertificateSpecifications = TravelCertificateResult.TravelCertificateSpecifications(
-    contractId = "123",
-    email = "hugo@hedvig.com",
-    maxDurationDays = 3,
-    dateRange = LocalDate(2023, 5, 23)..LocalDate(2023, 7, 23),
-    numberOfCoInsured = 2,
-  ),
-  isLoading = false
+  isLoading = false,
 )

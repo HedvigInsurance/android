@@ -102,9 +102,7 @@ sealed class HomeModel {
       val inner: CommonClaimsData,
     ) : CommonClaim()
 
-    data class GenerateTravelCertificate(
-      val travelCertificate: TravelCertificateResult.TravelCertificateSpecifications,
-    ) : CommonClaim()
+    object GenerateTravelCertificate : CommonClaim()
   }
 
   data class Header(val stringRes: Int) : HomeModel()
