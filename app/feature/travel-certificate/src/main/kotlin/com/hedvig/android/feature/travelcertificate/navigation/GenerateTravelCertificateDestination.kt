@@ -20,11 +20,11 @@ internal sealed interface GenerateTravelCertificateDestination : Destination {
 
   @Serializable
   data class AddCoInsured(
-    val coInsured: CoInsured?
+    val coInsured: CoInsured?,
   ) : GenerateTravelCertificateDestination
 
   @Serializable
   data class ShowCertificate(
-    val travelCertificateUrl: TravelCertificateUrl
+    val travelCertificateUrl: TravelCertificateUrl,
   ) : GenerateTravelCertificateDestination
 }

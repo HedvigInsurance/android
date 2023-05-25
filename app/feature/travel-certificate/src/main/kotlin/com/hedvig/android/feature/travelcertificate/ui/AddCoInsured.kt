@@ -36,7 +36,6 @@ fun AddCoInsured(
   onEditCoInsured: (CoInsured) -> Unit,
   onAddCoInsured: (CoInsured) -> Unit,
 ) {
-
   var name by rememberSaveable { mutableStateOf(coInsured?.name ?: "") }
   var ssn by rememberSaveable { mutableStateOf(coInsured?.ssn ?: "") }
 

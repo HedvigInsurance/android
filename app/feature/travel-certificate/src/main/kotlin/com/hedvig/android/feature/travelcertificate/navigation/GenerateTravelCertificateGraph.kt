@@ -112,7 +112,7 @@ internal fun NavGraphBuilder.generateTravelCertificateGraph(
       }
       TravelCertificateOverView(
         travelCertificateUrl,
-        navigateBack = finish
+        navigateBack = finish,
       )
     }
   }

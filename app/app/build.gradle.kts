@@ -166,6 +166,7 @@ dependencies {
   implementation(libs.androidx.compose.material)
   implementation(libs.androidx.compose.materialIconsExtended)
   implementation(libs.androidx.compose.runtime)
+  implementation(libs.androidx.compose.runtime.livedata)
   implementation(libs.androidx.compose.uiToolingPreview)
   implementation(libs.androidx.compose.uiViewBinding)
   implementation(libs.androidx.datastore.core)

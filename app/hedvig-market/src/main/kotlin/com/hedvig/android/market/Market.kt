@@ -83,7 +83,8 @@ fun Market.createOnboardingUri(baseUrl: String, language: Language): Uri {
         Locale.en_NO,
         Locale.da_DK,
         Locale.en_DK,
-        Locale.UNKNOWN__ -> "insurances"
+        Locale.UNKNOWN__,
+        -> "insurances"
       },
     )
     .appendQueryParameter("utm_source", "android")
