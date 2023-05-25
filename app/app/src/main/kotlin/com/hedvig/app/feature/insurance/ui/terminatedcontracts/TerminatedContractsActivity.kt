@@ -3,16 +3,13 @@ package com.hedvig.app.feature.insurance.ui.terminatedcontracts
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import coil.ImageLoader
-import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.hedvig.android.auth.android.AuthenticatedObserver
-import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
 import com.hedvig.app.databinding.TerminatedContractsActivityBinding
 import com.hedvig.app.feature.insurance.data.GetContractsUseCase
@@ -35,15 +32,9 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class TerminatedContractsActivity : AppCompatActivity(R.layout.terminated_contracts_activity) {
   private val binding by viewBinding(TerminatedContractsActivityBinding::bind)
   private val viewModel: TerminatedContractsViewModel by viewModel()
-  private val marketManager: MarketManager by inject()
   private val imageLoader: ImageLoader by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    window.requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
-    window.allowEnterTransitionOverlap = true
-    window.enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
-    window.returnTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
-    postponeEnterTransition()
     super.onCreate(savedInstanceState)
     lifecycle.addObserver(AuthenticatedObserver())
 
@@ -54,7 +45,7 @@ class TerminatedContractsActivity : AppCompatActivity(R.layout.terminated_contra
       toolbar.setNavigationOnClickListener {
         onBackPressedDispatcher.onBackPressed()
       }
-      val adapter = InsuranceAdapter(marketManager, viewModel::load, {}, imageLoader, {})
+      val adapter = InsuranceAdapter(viewModel::load, imageLoader)
       recycler.adapter = adapter
       viewModel
         .viewState
@@ -66,10 +57,7 @@ class TerminatedContractsActivity : AppCompatActivity(R.layout.terminated_contra
             }
 
             is TerminatedContractsViewModel.ViewState.Success -> {
-              adapter.submitList(
-                viewState.items,
-              )
-              recycler.post { startPostponedEnterTransition() }
+              adapter.submitList(viewState.items)
             }
 
             TerminatedContractsViewModel.ViewState.Loading -> {}

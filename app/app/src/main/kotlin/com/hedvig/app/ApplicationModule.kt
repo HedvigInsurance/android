@@ -653,6 +653,7 @@ private val logModule = module {
 private val coilModule = module {
   single<ImageLoader> {
     ImageLoader.Builder(get())
+      .okHttpClient(get<OkHttpClient>())
       .components {
         add(SvgDecoder.Factory())
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {

@@ -24,26 +24,23 @@ class InsuranceViewModel(
   private val hAnalytics: HAnalytics,
 ) : ViewModel() {
 
-  data class ViewState(
-    val items: List<InsuranceModel>? = null,
-    val storeUrl: Uri? = null,
-    val hasError: Boolean = false,
-    val loading: Boolean = false,
-  )
-
-  private val _viewState = MutableStateFlow(ViewState(loading = true))
-  val viewState = _viewState.asStateFlow()
+  private val _uiState = MutableStateFlow(InsuranceUiState(loading = true))
+  val uiState = _uiState.asStateFlow()
 
   fun load() {
     viewModelScope.launch {
-      _viewState.value = ViewState(loading = true)
-      _viewState.value = either {
+      _uiState.update { it.copy(loading = true) }
+      either {
         val contracts = getContractsUseCase.invoke().bind()
         val crossSells = getCrossSellsUseCase.invoke().bind()
         createInsuranceItems(contracts, crossSells)
       }.fold(
-        ifLeft = { ViewState(hasError = true, loading = false) },
-        ifRight = { ViewState(items = it, loading = false) },
+        ifLeft = {
+          _uiState.update { it.copy(hasError = true, loading = false) }
+        },
+        ifRight = { insuranceModels ->
+          _uiState.update { it.copy(insuranceModels = insuranceModels, loading = false) }
+        },
       )
     }
   }
@@ -54,7 +51,7 @@ class InsuranceViewModel(
   ): List<InsuranceModel> {
     val showNotificationBadge = crossSellCardNotificationBadgeService.showNotification().first()
 
-    return items(
+    return buildInsuranceModelItems(
       insurances = result,
       crossSells = crossSells,
       showCrossSellNotificationBadge = showNotificationBadge,
@@ -73,13 +70,20 @@ class InsuranceViewModel(
 
   fun onClickCrossSellAction(data: CrossSellData) {
     viewModelScope.launch {
-      _viewState.value = ViewState(storeUrl = Uri.parse(data.storeUrl))
+      _uiState.update { it.copy(storeUrl = Uri.parse(data.storeUrl)) }
     }
   }
 
   fun crossSellActionOpened() {
-    _viewState.update {
+    _uiState.update {
       it.copy(storeUrl = null)
     }
   }
 }
+
+data class InsuranceUiState(
+  val insuranceModels: List<InsuranceModel>? = null,
+  val storeUrl: Uri? = null,
+  val hasError: Boolean = false,
+  val loading: Boolean = false,
+)

@@ -5,12 +5,11 @@ import com.hedvig.app.feature.insurance.ui.InsuranceModel
 import com.hedvig.app.feature.insurance.ui.detail.toContractCardViewState
 import giraffe.InsuranceQuery
 
-fun items(
+fun buildInsuranceModelItems(
   insurances: InsuranceQuery.Data,
   crossSells: List<CrossSellData>,
   showCrossSellNotificationBadge: Boolean = false,
 ): List<InsuranceModel> = ArrayList<InsuranceModel>().apply {
-  add(InsuranceModel.Header)
   val contracts = insurances.contracts
     .let { contractModels ->
       if (hasNotOnlyTerminatedContracts(insurances.contracts)) {

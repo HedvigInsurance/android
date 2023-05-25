@@ -3,8 +3,6 @@ package com.hedvig.app.feature.insurance.ui
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 
 sealed class InsuranceModel {
-  object Header : InsuranceModel()
-
   data class Contract(
     val contractCardViewState: ContractCardViewState,
   ) : InsuranceModel()
