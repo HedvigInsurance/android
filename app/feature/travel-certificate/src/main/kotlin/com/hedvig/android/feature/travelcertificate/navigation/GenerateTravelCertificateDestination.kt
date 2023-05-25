@@ -13,9 +13,10 @@ internal sealed interface Destinations : Destination {
 internal sealed interface GenerateTravelCertificateDestination : Destination {
 
   @Serializable
-  data class TravelCertificateInput(
-    val email: String?
-  ) : GenerateTravelCertificateDestination
+  object TravelCertificateInformation : GenerateTravelCertificateDestination
+
+  @Serializable
+  object TravelCertificateInput : GenerateTravelCertificateDestination
 
   @Serializable
   data class AddCoInsured(

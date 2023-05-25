@@ -25,17 +25,26 @@ class GetTravelCertificateSpecificationsUseCase(
       .bind()
       .currentMember
 
-    when (val travelCertificateSpecifications = member.travelCertificateSpecifications.firstOrNull()) {
+    when (val travelCertificateSpecifications =
+      member.travelCertificateSpecifications.contractSpecifications.firstOrNull()) {
       null -> TravelCertificateResult.NotEligible
-      else -> travelCertificateSpecifications.toTravelCertificateSpecifications(member.email)
+      else -> TravelCertificateResult.TraverlCertificateData(
+        travelCertificateSpecification = travelCertificateSpecifications.toTravelCertificateSpecification(member.email),
+        infoSections = member.travelCertificateSpecifications.infoSpecifications.map {
+          TravelCertificateResult.TraverlCertificateData.InfoSection(
+            it.title,
+            it.body,
+          )
+        },
+      )
     }
   }
 }
 
 // ktlint-disable max-line-length
-private fun TravelCertificateSpecificationsQuery.Data.CurrentMember.TravelCertificateSpecification.toTravelCertificateSpecifications(
+private fun TravelCertificateSpecificationsQuery.Data.CurrentMember.TravelCertificateSpecifications.ContractSpecification.toTravelCertificateSpecification(
   email: String,
-) = TravelCertificateResult.TravelCertificateSpecifications(
+) = TravelCertificateResult.TraverlCertificateData.TravelCertificateSpecification(
   contractId = contractId,
   email = email,
   maxDurationDays = maxDurationDays,
@@ -44,13 +53,25 @@ private fun TravelCertificateSpecificationsQuery.Data.CurrentMember.TravelCertif
 )
 
 sealed interface TravelCertificateResult {
-  data class TravelCertificateSpecifications(
-    val contractId: String,
-    val email: String,
-    val maxDurationDays: Int,
-    val dateRange: ClosedRange<LocalDate>,
-    val numberOfCoInsured: Int,
-  ) : TravelCertificateResult
+
+  data class TraverlCertificateData(
+    val travelCertificateSpecification: TravelCertificateSpecification,
+    val infoSections: List<InfoSection>,
+  ) : TravelCertificateResult {
+    data class InfoSection(
+      val title: String,
+      val body: String,
+    )
+
+    data class TravelCertificateSpecification(
+      val contractId: String,
+      val email: String,
+      val maxDurationDays: Int,
+      val dateRange: ClosedRange<LocalDate>,
+      val numberOfCoInsured: Int,
+    )
+  }
+
 
   object NotEligible : TravelCertificateResult
 }

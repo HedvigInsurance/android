@@ -23,7 +23,6 @@ class GenerateTravelCertificateViewModel(
   private val createTravelCertificateUseCase: CreateTravelCertificateUseCase,
 ) : ViewModel() {
   private val _uiState: MutableStateFlow<TravelCertificateInputState> = MutableStateFlow(TravelCertificateInputState())
-
   val uiState: StateFlow<TravelCertificateInputState> = _uiState.asStateFlow()
 
   init {
@@ -32,7 +31,11 @@ class GenerateTravelCertificateViewModel(
       getTravelCertificateSpecificationsUseCase
         .invoke()
         .fold(
-          ifLeft = { errorMessage -> _uiState.update { TravelCertificateInputState(errorMessage = errorMessage.message) } },
+          ifLeft = { errorMessage ->
+            _uiState.update {
+              TravelCertificateInputState(errorMessage = errorMessage.message)
+            }
+          },
           ifRight = { result -> _uiState.update { createUiState(result) } },
         )
     }
@@ -40,23 +43,26 @@ class GenerateTravelCertificateViewModel(
 
   private fun createUiState(result: TravelCertificateResult) = when (result) {
     TravelCertificateResult.NotEligible -> TravelCertificateInputState(errorMessage = "Not eligible")
-    is TravelCertificateResult.TravelCertificateSpecifications -> {
+    is TravelCertificateResult.TraverlCertificateData -> {
+      val travelSpecification = result.travelCertificateSpecification
+
       val datePickerState = DatePickerState(
         initialSelectedDateMillis = null,
         initialDisplayedMonthMillis = null,
-        yearRange = result.dateRange.start.year.rangeTo(result.dateRange.endInclusive.year),
+        yearRange = travelSpecification.dateRange.start.year.rangeTo(travelSpecification.dateRange.endInclusive.year),
         initialDisplayMode = DisplayMode.Picker,
       )
 
       TravelCertificateInputState(
-        contractId = result.contractId,
-        email = ValidatedInput(result.email),
-        maximumCoInsured = result.numberOfCoInsured,
+        contractId = travelSpecification.contractId,
+        email = ValidatedInput(travelSpecification.email),
+        maximumCoInsured = travelSpecification.numberOfCoInsured,
         datePickerState = datePickerState,
         dateValidator = { date ->
           val selectedDate = Instant.fromEpochMilliseconds(date).toLocalDateTime(TimeZone.currentSystemDefault()).date
-          result.dateRange.contains(selectedDate)
+          travelSpecification.dateRange.contains(selectedDate)
         },
+        infoSections = result.infoSections,
       )
     }
   }
@@ -120,8 +126,8 @@ class GenerateTravelCertificateViewModel(
           ifLeft = { errorMessage ->
             _uiState.update {
               TravelCertificateInputState(
-                errorMessage = errorMessage.message,
                 isLoading = false,
+                errorMessage = errorMessage.message,
               )
             }
           },
