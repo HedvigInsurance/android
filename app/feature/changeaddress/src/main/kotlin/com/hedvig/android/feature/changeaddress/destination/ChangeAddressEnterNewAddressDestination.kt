@@ -43,12 +43,12 @@ import com.hedvig.android.core.designsystem.material3.warningContainer
 import com.hedvig.android.core.designsystem.material3.warningElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.error.ErrorDialog
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.feature.changeaddress.ChangeAddressUiState
 import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
-import com.hedvig.android.feature.changeaddress.ValidatedInput
 import hedvig.resources.R
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -115,7 +115,9 @@ private fun ChangeAddressEnterNewScreen(
       text = stringResource(id = R.string.CHANGE_ADDRESS_ENTER_NEW_ADDRESS_TITLE),
       style = MaterialTheme.typography.headlineSmall,
       textAlign = TextAlign.Center,
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
     )
     Spacer(modifier = Modifier.height(64.dp))
     AddressTextField(
@@ -169,11 +171,7 @@ private fun AddressTextField(
   HedvigTextField(
     value = street.input ?: "",
     onValueChange = { onStreetChanged(it) },
-    errorText = if (street.errorMessageRes != null) {
-      stringResource(street.errorMessageRes)
-    } else {
-      null
-    },
+    errorText = street.errorMessageRes?.let { stringResource(it) },
     label = {
       Text(stringResource(R.string.CHANGE_ADDRESS_NEW_ADDRESS_LABEL))
     },
@@ -191,11 +189,7 @@ private fun PostalCodeTextField(
   HedvigTextField(
     value = postalCode.input ?: "",
     onValueChange = { onPostalCodeChanged(it) },
-    errorText = if (postalCode.errorMessageRes != null) {
-      stringResource(postalCode.errorMessageRes)
-    } else {
-      null
-    },
+    errorText = postalCode.errorMessageRes?.let { stringResource(it) },
     label = {
       Text(stringResource(R.string.CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL))
     },
@@ -216,11 +210,7 @@ private fun LivingSpaceTextField(
   HedvigTextField(
     value = squareMeters.input ?: "",
     onValueChange = { onSquareMetersChanged(it) },
-    errorText = if (squareMeters.errorMessageRes != null) {
-      stringResource(squareMeters.errorMessageRes)
-    } else {
-      null
-    },
+    errorText = squareMeters.errorMessageRes?.let { stringResource(it) },
     label = {
       Text(stringResource(R.string.CHANGE_ADDRESS_NEW_LIVING_SPACE_LABEL))
     },
@@ -245,11 +235,7 @@ private fun NumberOfCoInsuredTextField(
       "1"
     },
     onValueChange = { onCoInsuredChanged(it.toInt()) },
-    errorText = if (numberCoInsured.errorMessageRes != null) {
-      stringResource(numberCoInsured.errorMessageRes)
-    } else {
-      null
-    },
+    errorText = numberCoInsured.errorMessageRes?.let { stringResource(it) },
     label = {
       Text(stringResource(R.string.CHANGE_ADDRESS_CO_INSURED_LABEL))
     },

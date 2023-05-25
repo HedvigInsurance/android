@@ -140,7 +140,7 @@ fun HedvigTextField(
  * exposed version of [HedvigTextField].
  */
 @Composable
-private fun HedvigTextField(
+fun HedvigTextField(
   value: String,
   onValueChange: (String) -> Unit,
   modifier: Modifier = Modifier,

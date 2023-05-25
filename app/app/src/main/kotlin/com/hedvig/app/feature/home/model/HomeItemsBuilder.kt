@@ -63,10 +63,8 @@ class HomeItemsBuilder(
       when (travelCertificateResult) {
         TravelCertificateResult.NotEligible -> {} // Do not show button
         null -> {} // Do not show button
-        is TravelCertificateResult.TravelCertificateSpecifications -> {
-          commonClaims.add(
-            CommonClaim.GenerateTravelCertificate(travelCertificateResult),
-          )
+        is TravelCertificateResult.TraverlCertificateData -> {
+          commonClaims.add(CommonClaim.GenerateTravelCertificate)
         }
       }
     }

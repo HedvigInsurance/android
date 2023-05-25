@@ -3,7 +3,6 @@ package com.hedvig.app.feature.home.model
 import androidx.annotation.StringRes
 import androidx.compose.ui.unit.Dp
 import arrow.core.NonEmptyList
-import com.hedvig.android.feature.travelcertificate.data.TravelCertificateResult
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusCardUiState
@@ -96,7 +95,5 @@ sealed interface CommonClaim {
     val inner: CommonClaimsData,
   ) : CommonClaim
 
-  data class GenerateTravelCertificate(
-    val travelCertificate: TravelCertificateResult.TravelCertificateSpecifications,
-  ) : CommonClaim
+  object GenerateTravelCertificate : CommonClaim
 }
