@@ -274,23 +274,22 @@ private fun InputTextField(
       }
       setTextInput(newInput)
     },
-    errorText = null,
     label = {
-      Text(
-        stringResource(
-          when (zignSecMarket) {
-            ZignSecMarket.NO -> R.string.simple_sign_login_text_field_helper_text
-            ZignSecMarket.DK -> R.string.simple_sign_login_text_field_helper_text_dk
-          },
-        ),
-      )
-    },
-    placeholder = {
       Text(
         stringResource(
           when (zignSecMarket) {
             ZignSecMarket.NO -> R.string.simple_sign_login_text_field_label
             ZignSecMarket.DK -> R.string.simple_sign_login_text_field_label_dk
+          },
+        ),
+      )
+    },
+    supportingText = {
+      Text(
+        stringResource(
+          when (zignSecMarket) {
+            ZignSecMarket.NO -> R.string.simple_sign_login_text_field_helper_text
+            ZignSecMarket.DK -> R.string.simple_sign_login_text_field_helper_text_dk
           },
         ),
       )
