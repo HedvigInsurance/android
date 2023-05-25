@@ -10,36 +10,38 @@ import com.hedvig.hanalytics.PaymentType
 import giraffe.HomeQuery
 import java.time.LocalDate
 
-sealed class HomeModel {
-  sealed class BigText : HomeModel() {
+sealed interface HomeModel {
+  sealed interface BigText : HomeModel {
+    val name: String
+
     data class Switching(
-      val name: String,
-    ) : BigText()
+      override val name: String,
+    ) : BigText
 
     data class Pending(
-      val name: String,
-    ) : BigText()
+      override val name: String,
+    ) : BigText
 
     data class ActiveInFuture(
-      val name: String,
+      override val name: String,
       val inception: LocalDate,
-    ) : BigText()
+    ) : BigText
 
     data class Active(
-      val name: String,
-    ) : BigText()
+      override val name: String,
+    ) : BigText
 
     data class Terminated(
-      val name: String,
-    ) : BigText()
+      override val name: String,
+    ) : BigText
   }
 
   data class UpcomingRenewal(
     val contractDisplayName: String,
     val upcomingRenewal: HomeQuery.UpcomingRenewal,
-  ) : HomeModel()
+  ) : HomeModel
 
-  sealed class BodyText : HomeModel() {
+  sealed class BodyText : HomeModel {
     object Pending : BodyText()
     object ActiveInFuture : BodyText()
     object Terminated : BodyText()
@@ -48,65 +50,50 @@ sealed class HomeModel {
 
   data class ClaimStatus(
     val claimStatusCardsUiState: NonEmptyList<ClaimStatusCardUiState>,
-  ) : HomeModel()
+  ) : HomeModel
 
-  data class Space(val height: Dp) : HomeModel()
+  data class Space(val height: Dp) : HomeModel
 
-  sealed class StartClaimOutlined : HomeModel() {
+  sealed interface StartClaim : HomeModel {
     @get:StringRes
-    abstract val textId: Int
+    val textId: Int
 
-    object FirstClaim : StartClaimOutlined() {
-      override val textId: Int
-        get() = hedvig.resources.R.string.home_tab_claim_button_text
+    object FirstClaim : StartClaim {
+      override val textId: Int = hedvig.resources.R.string.home_tab_claim_button_text
     }
 
-    object NewClaim : StartClaimOutlined() {
-      override val textId: Int
-        get() = hedvig.resources.R.string.home_open_claim_start_new_claim_button
-    }
-  }
-
-  sealed class StartClaimContained : HomeModel() {
-    @get:StringRes
-    abstract val textId: Int
-
-    object FirstClaim : StartClaimContained() {
-      override val textId: Int
-        get() = hedvig.resources.R.string.home_tab_claim_button_text
-    }
-
-    object NewClaim : StartClaimContained() {
-      override val textId: Int
-        get() = hedvig.resources.R.string.home_open_claim_start_new_claim_button
+    object NewClaim : StartClaim {
+      override val textId: Int = hedvig.resources.R.string.home_open_claim_start_new_claim_button
     }
   }
 
   data class ConnectPayin(
     val payinType: PaymentType,
-  ) : HomeModel()
+  ) : HomeModel
 
-  data class PSA(val inner: HomeQuery.ImportantMessage) : HomeModel()
+  data class PSA(val inner: HomeQuery.ImportantMessage) : HomeModel
 
-  data class HowClaimsWork(val pages: List<HomeQuery.HowClaimsWork>) : HomeModel()
+  data class HowClaimsWork(val pages: List<HomeQuery.HowClaimsWork>) : HomeModel
 
-  object Error : HomeModel()
+  data class CommonClaims(
+    val claims: NonEmptyList<CommonClaim>,
+  ) : HomeModel
 
-  sealed class CommonClaim : HomeModel() {
-    data class Emergency(
-      val inner: EmergencyData,
-    ) : CommonClaim()
+  data class Header(val stringRes: Int) : HomeModel
 
-    data class TitleAndBulletPoints(
-      val inner: CommonClaimsData,
-    ) : CommonClaim()
+  data class PendingAddressChange(val address: String) : HomeModel
 
-    object GenerateTravelCertificate : CommonClaim()
-  }
+  object ChangeAddress : HomeModel
+}
 
-  data class Header(val stringRes: Int) : HomeModel()
+sealed interface CommonClaim {
+  data class Emergency(
+    val inner: EmergencyData,
+  ) : CommonClaim
 
-  data class PendingAddressChange(val address: String) : HomeModel()
+  data class TitleAndBulletPoints(
+    val inner: CommonClaimsData,
+  ) : CommonClaim
 
-  object ChangeAddress : HomeModel()
+  object GenerateTravelCertificate : CommonClaim
 }

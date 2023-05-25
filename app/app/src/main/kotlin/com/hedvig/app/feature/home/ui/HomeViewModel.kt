@@ -2,9 +2,10 @@ package com.hedvig.app.feature.home.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.core.merge
 import arrow.core.raise.either
 import com.hedvig.android.feature.travelcertificate.data.GetTravelCertificateSpecificationsUseCase
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.feature.travelcertificate.data.TravelCertificateResult
 import com.hedvig.app.feature.home.data.GetHomeUseCase
 import com.hedvig.app.feature.home.model.HomeItemsBuilder
 import com.hedvig.app.feature.home.model.HomeModel
@@ -12,26 +13,32 @@ import com.hedvig.hanalytics.HAnalytics
 import giraffe.HomeQuery
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 
-abstract class HomeViewModel(
+class HomeViewModel(
+  private val getHomeUseCase: GetHomeUseCase,
+  private val getTravelCertificateUseCase: GetTravelCertificateSpecificationsUseCase,
+  private val homeItemsBuilder: HomeItemsBuilder,
   private val hAnalytics: HAnalytics,
 ) : ViewModel() {
-  sealed class ViewState {
-    data class Success(
-      val homeData: HomeQuery.Data,
-      val homeItems: List<HomeModel>,
-    ) : ViewState()
 
-    data class Error(val message: String?) : ViewState()
-    object Loading : ViewState()
+  private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
+  val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
+
+  init {
+    viewModelScope.launch {
+      createViewState(forceReload = false)
+    }
   }
 
-  protected val _viewState = MutableStateFlow<ViewState>(ViewState.Loading)
-  val viewState: StateFlow<ViewState> = _viewState
-
-  abstract fun load()
-  abstract fun reload()
+  fun reload() {
+    viewModelScope.launch {
+      createViewState(forceReload = true)
+    }
+  }
 
   fun onClaimDetailCardClicked(claimId: String) {
     val claim = getClaimById(claimId) ?: return
@@ -45,12 +52,12 @@ abstract class HomeViewModel(
     hAnalytics.claimCardVisible(claimId, claim.status.rawValue)
   }
 
-  private fun getClaimById(claimId: String): HomeQuery.Claim? =
-    (_viewState.value as? ViewState.Success)
-      ?.homeData
+  private fun getClaimById(claimId: String): HomeQuery.Claim? {
+    return (_uiState.value as? HomeUiState.Success)
       ?.claimStatusCards
       ?.firstOrNull { it.id == claimId }
       ?.claim
+  }
 
   fun onPaymentCardShown() {
     hAnalytics.homePaymentCardVisible()
@@ -59,49 +66,44 @@ abstract class HomeViewModel(
   fun onPaymentCardClicked() {
     hAnalytics.homePaymentCardClick()
   }
-}
-
-class HomeViewModelImpl(
-  private val getHomeUseCase: GetHomeUseCase,
-  private val getTravelCertificateUseCase: GetTravelCertificateSpecificationsUseCase,
-  private val homeItemsBuilder: HomeItemsBuilder,
-  private val featureManager: FeatureManager,
-  hAnalytics: HAnalytics,
-) : HomeViewModel(hAnalytics) {
-  init {
-    load()
-  }
-
-  override fun load() {
-    viewModelScope.launch {
-      createViewState(forceReload = false)
-    }
-  }
-
-  override fun reload() {
-    viewModelScope.launch {
-      createViewState(forceReload = true)
-    }
-  }
 
   private suspend fun createViewState(forceReload: Boolean) {
-    _viewState.value = ViewState.Loading
-    either {
+    if (forceReload == true && _uiState.value.isLoading) return
+    _uiState.update {
+      if (it is HomeUiState.Success) {
+        it.copy(isReloading = true)
+      } else {
+        HomeUiState.Loading
+      }
+    }
+    val newUiState = either {
       val homeData = getHomeUseCase.invoke(forceReload).bind()
       val travelCertificateData = getTravelCertificateUseCase.invoke().getOrNull()
 
-      ViewState.Success(
-        homeData = homeData,
+      HomeUiState.Success(
+        claimStatusCards = homeData.claimStatusCards,
         homeItems = homeItemsBuilder.buildItems(
           homeData = homeData,
           travelCertificateData = travelCertificateData,
         ),
       )
     }
-      .mapLeft { ViewState.Error(it.message) }
-      .fold(
-        ifLeft = { _viewState.value = it },
-        ifRight = { _viewState.value = it },
-      )
+      .mapLeft { HomeUiState.Error(it.message) }
+      .merge()
+    _uiState.update { newUiState }
   }
+}
+
+sealed interface HomeUiState {
+  val isLoading: Boolean
+    get() = this is Loading || (this is Success && isReloading)
+
+  data class Success(
+    val claimStatusCards: List<HomeQuery.ClaimStatusCard>,
+    val homeItems: List<HomeModel>,
+    val isReloading: Boolean = false,
+  ) : HomeUiState
+
+  data class Error(val message: String?) : HomeUiState
+  object Loading : HomeUiState
 }

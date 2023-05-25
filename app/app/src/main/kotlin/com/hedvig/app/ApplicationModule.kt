@@ -120,7 +120,6 @@ import com.hedvig.app.feature.genericauth.otpinput.OtpInputViewModel
 import com.hedvig.app.feature.home.data.GetHomeUseCase
 import com.hedvig.app.feature.home.model.HomeItemsBuilder
 import com.hedvig.app.feature.home.ui.HomeViewModel
-import com.hedvig.app.feature.home.ui.HomeViewModelImpl
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModel
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModelImpl
 import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCase
@@ -133,7 +132,6 @@ import com.hedvig.app.feature.insurance.ui.tab.InsuranceViewModel
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
-import com.hedvig.app.feature.loggedin.ui.LoggedInViewModelImpl
 import com.hedvig.app.feature.marketing.MarketingActivity
 import com.hedvig.app.feature.marketing.MarketingViewModel
 import com.hedvig.app.feature.marketing.data.GetInitialMarketPickerValuesUseCase
@@ -225,9 +223,9 @@ private val networkModule = module {
   single<NormalizedCacheFactory> {
     MemoryCacheFactory(maxSizeBytes = 10 * 1024 * 1024)
   }
-  single<OkHttpClient> {
+  factory<OkHttpClient.Builder> {
     val languageService = get<LanguageService>()
-    val builder = OkHttpClient.Builder()
+    val builder: OkHttpClient.Builder = OkHttpClient.Builder()
       // Temporary fix until back-end problems are handled
       .readTimeout(30, TimeUnit.SECONDS)
       .addDatadogConfiguration()
@@ -263,7 +261,11 @@ private val networkModule = module {
       logger.level = HttpLoggingInterceptor.Level.BODY
       builder.addInterceptor(logger)
     }
-    builder.build()
+    builder
+  }
+  single<OkHttpClient> {
+    val okHttpBuilder = get<OkHttpClient.Builder>()
+    okHttpBuilder.build()
   }
   single<SunsettingInterceptor> { SunsettingInterceptor(get()) } bind ApolloInterceptor::class
   single<ApolloClient.Builder> {
@@ -396,7 +398,7 @@ private val onboardingModule = module {
 }
 
 private val loggedInModule = module {
-  viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get(), get(), get(), get(), get()) }
+  viewModel<LoggedInViewModel> { LoggedInViewModel(get(), get(), get(), get(), get()) }
 }
 
 private val insuranceModule = module {
@@ -489,7 +491,7 @@ private val referralsModule = module {
 
 private val homeModule = module {
   single<HomeItemsBuilder> { HomeItemsBuilder(get()) }
-  viewModel<HomeViewModel> { HomeViewModelImpl(get(), get(), get(), get(), get()) }
+  viewModel<HomeViewModel> { HomeViewModel(get(), get(), get(), get()) }
 }
 
 private val connectPaymentModule = module {
@@ -653,7 +655,18 @@ private val logModule = module {
 private val coilModule = module {
   single<ImageLoader> {
     ImageLoader.Builder(get())
-      .okHttpClient(get<OkHttpClient>())
+      .okHttpClient(
+        // For the OkHttp client used by Coil, we want to re-use the same configuration, but we do not want the token
+        // related interceptors to be used, since those images are not behind authentication, and actually fail when
+        // requested with an authorization token.
+        get<OkHttpClient.Builder>()
+          .apply {
+            interceptors().removeAll {
+              it is MigrateTokenInterceptor || it is AuthTokenRefreshingInterceptor
+            }
+          }
+          .build(),
+      )
       .components {
         add(SvgDecoder.Factory())
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {

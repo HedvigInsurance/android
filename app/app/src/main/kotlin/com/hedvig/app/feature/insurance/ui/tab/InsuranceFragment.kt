@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.rememberScrollState
@@ -127,6 +128,8 @@ class InsuranceFragment : Fragment() {
                     )
                   }
                 }
+                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
               }
               PullRefreshIndicator(
                 refreshing = isLoading,

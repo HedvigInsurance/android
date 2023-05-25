@@ -1,45 +1,120 @@
 package com.hedvig.app.feature.home.ui
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.windowInsetsTopHeight
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.contentColorFor
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.GridLayoutManager
 import coil.ImageLoader
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
+import com.hedvig.android.core.designsystem.component.button.LargeOutlinedTextButton
+import com.hedvig.android.core.designsystem.component.card.HedvigCard
+import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation
+import com.hedvig.android.core.designsystem.material3.squircle
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.SerifBookSmall
+import com.hedvig.android.core.designsystem.theme.lavender_200
+import com.hedvig.android.core.designsystem.theme.lavender_900
+import com.hedvig.android.core.designsystem.theme.onWarning
+import com.hedvig.android.core.designsystem.theme.warning
+import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
+import com.hedvig.android.core.ui.grid.HedvigGrid
+import com.hedvig.android.core.ui.grid.InsideGridSpace
+import com.hedvig.android.feature.travelcertificate.GenerateTravelCertificateActivity
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
-import com.hedvig.app.databinding.HomeFragmentBinding
+import com.hedvig.app.feature.claimdetail.ClaimDetailActivity
+import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
+import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
+import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
+import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.claims.ui.startClaimsFlow
+import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
+import com.hedvig.app.feature.home.model.CommonClaim
 import com.hedvig.app.feature.home.model.HomeModel
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
-import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
-import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
+import com.hedvig.app.feature.home.ui.claimstatus.composables.ClaimStatusCards
+import com.hedvig.app.feature.home.ui.connectpayincard.ConnectPayinCard
 import com.hedvig.app.feature.payment.connectPayinIntent
-import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
-import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
-import com.hedvig.app.util.extensions.view.applyStatusBarInsets
+import com.hedvig.app.util.apollo.ThemedIconUrls
+import com.hedvig.app.util.extensions.canOpenUri
+import com.hedvig.app.util.extensions.openUri
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import com.hedvig.hanalytics.PaymentType
-import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import giraffe.HomeQuery
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.time.temporal.ChronoUnit
 
-class HomeFragment : Fragment(R.layout.home_fragment) {
+class HomeFragment : Fragment() {
   private val viewModel: HomeViewModel by viewModel()
-  private val loggedInViewModel: LoggedInViewModel by activityViewModel()
-  private val binding by viewBinding(HomeFragmentBinding::bind)
-  private var scroll = 0
   private val imageLoader: ImageLoader by inject()
   private val marketManager: MarketManager by inject()
   private val hAnalytics: HAnalytics by inject()
@@ -50,74 +125,123 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
       viewModel.reload()
     }
 
-  override fun onResume() {
-    super.onResume()
-    loggedInViewModel.onScroll(scroll)
-  }
+  @OptIn(ExperimentalMaterialApi::class)
+  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    return ComposeView(requireContext()).apply {
+      setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+      setContent {
+        HedvigTheme {
+          Surface(
+            color = Color.Transparent,
+            contentColor = contentColorFor(MaterialTheme.colorScheme.background),
+            modifier = Modifier.fillMaxSize(),
+          ) {
+            val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+            val isLoading = uiState.isLoading
 
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    scroll = 0
-
-    val homeAdapter = HomeAdapter(
-      fragmentManager = parentFragmentManager,
-      retry = viewModel::reload,
-      imageLoader = imageLoader,
-      marketManager = marketManager,
-      onClaimDetailCardClicked = viewModel::onClaimDetailCardClicked,
-      onClaimDetailCardShown = viewModel::onClaimDetailCardShown,
-      onPaymentCardShown = viewModel::onPaymentCardShown,
-      onPaymentCardClicked = ::onPaymentCardClicked,
-      onStartClaimClicked = ::onStartClaimClicked,
-      onStartMovingFlow = ::onStartMovingFlow,
-    )
-
-    binding.swipeToRefresh.setOnRefreshListener {
-      viewModel.reload()
-    }
-
-    binding.recycler.apply {
-      applyNavigationBarInsets()
-      applyStatusBarInsets()
-
-      itemAnimator = ViewHolderReusingDefaultItemAnimator()
-      adapter = homeAdapter
-      (layoutManager as? GridLayoutManager)?.spanSizeLookup =
-        object : GridLayoutManager.SpanSizeLookup() {
-          override fun getSpanSize(position: Int): Int {
-            (binding.recycler.adapter as? HomeAdapter)?.currentList?.getOrNull(position)
-              ?.let { item ->
-                return when (item) {
-                  is HomeModel.CommonClaim -> 1
-                  else -> 2
+            val pullRefreshState = rememberPullRefreshState(
+              refreshing = isLoading,
+              onRefresh = viewModel::reload,
+            )
+            Box() {
+              Column(
+                Modifier
+                  .matchParentSize()
+                  .pullRefresh(pullRefreshState)
+                  .verticalScroll(rememberScrollState())
+                  .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+              ) {
+                Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
+                Spacer(Modifier.height(64.dp))
+                when (uiState) {
+                  HomeUiState.Loading -> {}
+                  is HomeUiState.Error -> {
+                    GenericErrorScreen(
+                      onRetryButtonClick = viewModel::reload,
+                      modifier = Modifier
+                        .padding(16.dp)
+                        .padding(top = (80 - 16).dp),
+                    )
+                  }
+                  is HomeUiState.Success -> {
+                    HomeScreenSuccess(
+                      homeItems = uiState.homeItems,
+                      imageLoader = imageLoader,
+                      onStartMovingFlow = ::onStartMovingFlow,
+                      onClaimDetailCardClicked = { claimId ->
+                        viewModel.onClaimDetailCardClicked(claimId)
+                        startActivity(ClaimDetailActivity.newInstance(requireContext(), claimId))
+                      },
+                      onClaimDetailCardShown = viewModel::onClaimDetailCardShown,
+                      onPaymentCardClicked = ::onPaymentCardClicked,
+                      onPaymentCardShown = viewModel::onPaymentCardShown,
+                      onEmergencyClaimClicked = { emergencyData ->
+                        startActivity(
+                          EmergencyActivity.newInstance(
+                            context = requireContext(),
+                            data = emergencyData,
+                          ),
+                        )
+                      },
+                      onGenerateTravelCertificateClicked = {
+                        startActivity(GenerateTravelCertificateActivity.newInstance(requireContext()))
+                      },
+                      onCommonClaimClicked = { commonClaimsData ->
+                        startActivity(
+                          CommonClaimActivity.newInstance(
+                            context = requireContext(),
+                            data = commonClaimsData,
+                          ),
+                        )
+                      },
+                      onHowClaimsWorkClick = { howClaimsWorkList ->
+                        val howClaimsWorkData = howClaimsWorkList.mapIndexed { index, howClaimsWork ->
+                          DismissiblePagerModel.NoTitlePage(
+                            imageUrls = ThemedIconUrls.from(
+                              howClaimsWork.illustration.variants.fragments.iconVariantsFragment,
+                            ),
+                            paragraph = howClaimsWork.body,
+                            buttonText = getString(
+                              if (index == howClaimsWorkList.lastIndex) {
+                                hedvig.resources.R.string.claims_explainer_button_start_claim
+                              } else {
+                                hedvig.resources.R.string.claims_explainer_button_next
+                              },
+                            ),
+                          )
+                        }
+                        HowClaimsWorkDialog
+                          .newInstance(howClaimsWorkData)
+                          .show(parentFragmentManager, HowClaimsWorkDialog.TAG)
+                      },
+                      onStartClaimClicked = ::onStartClaimClicked,
+                      onPsaClicked = { uri ->
+                        if (requireContext().canOpenUri(uri)) {
+                          requireContext().openUri(uri)
+                        }
+                      },
+                      onUpcomingRenewalClick = { uri ->
+                        if (requireContext().canOpenUri(uri)) {
+                          requireContext().openUri(uri)
+                        }
+                      },
+                    )
+                  }
                 }
+                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
               }
-            return 2
+              PullRefreshIndicator(
+                refreshing = isLoading,
+                state = pullRefreshState,
+                scale = true,
+                modifier = Modifier.align(Alignment.TopCenter),
+              )
+            }
           }
         }
-      addItemDecoration(HomeItemDecoration(context))
-      addOnScrollListener(
-        ScrollPositionListener(
-          { scrollPosition ->
-            scroll = scrollPosition
-            loggedInViewModel.onScroll(scrollPosition)
-          },
-          viewLifecycleOwner,
-        ),
-      )
-    }
-
-    viewModel.viewState
-      .flowWithLifecycle(lifecycle)
-      .onEach { viewState ->
-        binding.swipeToRefresh.isRefreshing = viewState is HomeViewModel.ViewState.Loading
-
-        when (viewState) {
-          is HomeViewModel.ViewState.Error -> homeAdapter.submitList(listOf(HomeModel.Error))
-          HomeViewModel.ViewState.Loading -> binding.swipeToRefresh.isRefreshing = true
-          is HomeViewModel.ViewState.Success -> homeAdapter.submitList(viewState.homeItems)
-        }
       }
-      .launchIn(lifecycleScope)
+    }
   }
 
   private fun onStartClaimClicked() {
@@ -163,5 +287,359 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
 
   private fun registerForResult(intent: Intent) {
     registerForActivityResult.launch(intent)
+  }
+}
+
+@Suppress("UnusedReceiverParameter")
+@Composable
+private fun ColumnScope.HomeScreenSuccess(
+  homeItems: List<HomeModel>,
+  imageLoader: ImageLoader,
+  onStartMovingFlow: () -> Unit,
+  onClaimDetailCardClicked: (claimId: String) -> Unit,
+  onClaimDetailCardShown: (claimId: String) -> Unit,
+  onPaymentCardClicked: (PaymentType) -> Unit,
+  onPaymentCardShown: () -> Unit,
+  onEmergencyClaimClicked: (EmergencyData) -> Unit,
+  onGenerateTravelCertificateClicked: () -> Unit,
+  onCommonClaimClicked: (CommonClaimsData) -> Unit,
+  onHowClaimsWorkClick: (List<HomeQuery.HowClaimsWork>) -> Unit,
+  onStartClaimClicked: () -> Unit,
+  onPsaClicked: (Uri) -> Unit,
+  onUpcomingRenewalClick: (Uri) -> Unit,
+) {
+  for (homeModel in homeItems) {
+    when (homeModel) {
+      is HomeModel.BigText -> {
+        BigTextRenderer(homeModel)
+      }
+      is HomeModel.BodyText -> {
+        BodyTextRenderer(homeModel)
+      }
+      HomeModel.ChangeAddress -> {
+        Row(
+          Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onStartMovingFlow)
+            .padding(16.dp),
+        ) {
+          Icon(
+            painter = painterResource(R.drawable.ic_apartment),
+            contentDescription = null,
+            modifier = Modifier.size(24.dp),
+          )
+          Spacer(Modifier.width(16.dp))
+          Text(stringResource(hedvig.resources.R.string.home_tab_editing_section_change_address_label))
+        }
+      }
+      is HomeModel.ClaimStatus -> {
+        ClaimStatusCards(
+          goToDetailScreen = onClaimDetailCardClicked,
+          onClaimCardShown = onClaimDetailCardShown,
+          claimStatusCardsUiState = homeModel.claimStatusCardsUiState,
+        )
+      }
+      is HomeModel.CommonClaims -> {
+        CommonClaimsRenderer(
+          homeModel = homeModel,
+          onEmergencyClaimClicked = onEmergencyClaimClicked,
+          onGenerateTravelCertificateClicked = onGenerateTravelCertificateClicked,
+          onCommonClaimClicked = onCommonClaimClicked,
+          imageLoader = imageLoader,
+        )
+      }
+      is HomeModel.ConnectPayin -> {
+        ConnectPayinCard(
+          onActionClick = { onPaymentCardClicked(homeModel.payinType) },
+          onShown = onPaymentCardShown,
+        )
+      }
+      is HomeModel.Header -> {
+        Text(
+          text = stringResource(homeModel.stringRes),
+          style = MaterialTheme.typography.headlineSmall,
+          modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .padding(top = 48.dp, bottom = 4.dp),
+        )
+      }
+      is HomeModel.HowClaimsWork -> {
+        TextButton(
+          onClick = { onHowClaimsWorkClick(homeModel.pages) },
+          shape = MaterialTheme.shapes.squircle,
+          modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentWidth(),
+        ) {
+          Icon(
+            painter = painterResource(R.drawable.ic_info_claims),
+            contentDescription = null,
+            modifier = Modifier.size(16.dp),
+          )
+          Spacer(Modifier.width(4.dp))
+          Text(
+            text = stringResource(hedvig.resources.R.string.home_tab_claim_explainer_button),
+          )
+        }
+      }
+      is HomeModel.PSA -> {
+        Surface(
+          onClick = { onPsaClicked(Uri.parse(homeModel.inner.link)) },
+          color = androidx.compose.material.MaterialTheme.colors.warning,
+          contentColor = androidx.compose.material.MaterialTheme.colors.onWarning,
+          modifier = Modifier.fillMaxWidth(),
+        ) {
+          Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(16.dp),
+          ) {
+            Text(
+              text = homeModel.inner.message ?: "",
+              modifier = Modifier.weight(1f),
+            )
+            Spacer(Modifier.width(16.dp))
+            Icon(
+              painter = painterResource(R.drawable.ic_forward),
+              contentDescription = null,
+              modifier = Modifier.size(16.dp),
+            )
+          }
+        }
+      }
+      is HomeModel.PendingAddressChange -> {
+        PurpleInfoCard(
+          title = stringResource(hedvig.resources.R.string.home_tab_moving_info_card_title),
+          body = stringResource(
+            hedvig.resources.R.string.home_tab_moving_info_card_description,
+            homeModel.address,
+          ),
+          buttonText = stringResource(hedvig.resources.R.string.home_tab_moving_info_card_button_text),
+          buttonAction = onStartMovingFlow,
+        )
+      }
+      is HomeModel.Space -> {
+        Spacer(Modifier.height(homeModel.height))
+      }
+      is HomeModel.StartClaim -> {
+        when (homeModel) {
+          HomeModel.StartClaim.FirstClaim -> {
+            LargeContainedTextButton(
+              text = stringResource(homeModel.textId),
+              onClick = onStartClaimClicked,
+              modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .padding(top = 18.dp),
+            )
+          }
+          HomeModel.StartClaim.NewClaim -> {
+            LargeOutlinedTextButton(
+              text = stringResource(homeModel.textId),
+              onClick = onStartClaimClicked,
+              modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .padding(top = 18.dp),
+            )
+          }
+        }
+      }
+      is HomeModel.UpcomingRenewal -> {
+        PurpleInfoCard(
+          title = stringResource(
+            hedvig.resources.R.string.DASHBOARD_RENEWAL_PROMPTER_TITLE,
+            homeModel.contractDisplayName,
+          ),
+          body = stringResource(
+            hedvig.resources.R.string.DASHBOARD_RENEWAL_PROMPTER_BODY,
+            ChronoUnit.DAYS
+              .between(LocalDate.now(), homeModel.upcomingRenewal.renewalDate)
+              .toInt(),
+          ),
+          buttonText = stringResource(hedvig.resources.R.string.home_tab_moving_info_card_button_text),
+          buttonAction = {
+            onUpcomingRenewalClick(Uri.parse(homeModel.upcomingRenewal.draftCertificateUrl))
+          },
+        )
+      }
+    }
+  }
+}
+
+@Composable
+private fun BigTextRenderer(bigText: HomeModel.BigText) {
+  val formatter = remember { DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG) }
+  val headlineText = when (bigText) {
+    is HomeModel.BigText.Pending -> stringResource(
+      hedvig.resources.R.string.home_tab_pending_unknown_title,
+      bigText.name,
+    )
+    is HomeModel.BigText.ActiveInFuture -> stringResource(
+      hedvig.resources.R.string.home_tab_active_in_future_welcome_title,
+      bigText.name,
+      formatter.format(bigText.inception),
+    )
+    is HomeModel.BigText.Active -> stringResource(
+      hedvig.resources.R.string.home_tab_welcome_title,
+      bigText.name,
+    )
+    is HomeModel.BigText.Terminated -> stringResource(
+      hedvig.resources.R.string.home_tab_terminated_welcome_title,
+      bigText.name,
+    )
+    is HomeModel.BigText.Switching -> stringResource(
+      hedvig.resources.R.string.home_tab_pending_switchable_welcome_title,
+      bigText.name,
+    )
+  }
+  Text(
+    text = headlineText,
+    style = MaterialTheme.typography.headlineLarge.copy(
+      fontFamily = SerifBookSmall,
+    ),
+    textAlign = TextAlign.Center,
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 24.dp)
+      .padding(top = 48.dp, bottom = 24.dp),
+  )
+}
+
+@Suppress("UnusedReceiverParameter")
+@Composable
+private fun ColumnScope.BodyTextRenderer(bigText: HomeModel.BodyText) {
+  val bodyTextRes = when (bigText) {
+    HomeModel.BodyText.Pending -> hedvig.resources.R.string.home_tab_pending_unknown_body
+    HomeModel.BodyText.ActiveInFuture -> hedvig.resources.R.string.home_tab_active_in_future_body
+    HomeModel.BodyText.Terminated -> hedvig.resources.R.string.home_tab_terminated_body
+    HomeModel.BodyText.Switching -> hedvig.resources.R.string.home_tab_pending_switchable_body
+  }
+  Text(
+    text = stringResource(bodyTextRes),
+    style = MaterialTheme.typography.bodyLarge,
+    modifier = Modifier
+      .padding(horizontal = 24.dp)
+      .padding(top = 24.dp),
+  )
+}
+
+@Composable
+private fun CommonClaimsRenderer(
+  homeModel: HomeModel.CommonClaims,
+  onEmergencyClaimClicked: (EmergencyData) -> Unit,
+  onGenerateTravelCertificateClicked: () -> Unit,
+  onCommonClaimClicked: (CommonClaimsData) -> Unit,
+  imageLoader: ImageLoader,
+) {
+  HedvigGrid(
+    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp),
+    insideGridSpace = InsideGridSpace(8.dp),
+  ) {
+    for (commonClaim in homeModel.claims) {
+      HedvigCard(
+        elevation = HedvigCardElevation.Elevated(1.dp),
+        onClick = when (commonClaim) {
+          is CommonClaim.Emergency -> {
+            { onEmergencyClaimClicked(commonClaim.inner) }
+          }
+          is CommonClaim.GenerateTravelCertificate -> onGenerateTravelCertificateClicked
+          is CommonClaim.TitleAndBulletPoints -> {
+            { onCommonClaimClicked(commonClaim.inner) }
+          }
+        },
+      ) {
+        Column(
+          Modifier
+            .padding(16.dp)
+            .heightIn(100.dp),
+        ) {
+          if (commonClaim !is CommonClaim.GenerateTravelCertificate) {
+            val context = LocalContext.current
+            val density = LocalDensity.current
+            AsyncImage(
+              model = ImageRequest.Builder(context)
+                .data(
+                  when (commonClaim) {
+                    is CommonClaim.Emergency -> commonClaim.inner.iconUrls
+                    is CommonClaim.TitleAndBulletPoints -> commonClaim.inner.iconUrls
+                    else -> error("Impossible")
+                  }.themedIcon,
+                )
+                .size(with(density) { 24.dp.roundToPx() })
+                .build(),
+              contentDescription = null,
+              imageLoader = imageLoader,
+              modifier = Modifier.size(24.dp),
+            )
+            Spacer(Modifier.height(8.dp))
+          }
+          Spacer(Modifier.weight(1f))
+          Text(
+            text = when (commonClaim) {
+              is CommonClaim.Emergency -> commonClaim.inner.title
+              is CommonClaim.GenerateTravelCertificate -> "Generate travel certificate" // todo string resource
+              is CommonClaim.TitleAndBulletPoints -> commonClaim.inner.title
+            },
+            style = MaterialTheme.typography.bodyLarge,
+          )
+        }
+      }
+    }
+  }
+}
+
+@Composable
+private fun PurpleInfoCard(
+  title: String,
+  body: String,
+  buttonText: String,
+  buttonAction: () -> Unit,
+) {
+  HedvigCard(
+    colors = CardDefaults.outlinedCardColors(
+      containerColor = if (isSystemInDarkTheme()) {
+        lavender_900
+      } else {
+        lavender_200
+      },
+    ),
+    border = BorderStroke(1.dp, LocalContentColor.current.copy(alpha = 0.2f)),
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp)
+      .padding(top = 16.dp),
+  ) {
+    Column {
+      Row(Modifier.padding(16.dp)) {
+        Icon(
+          painter = painterResource(R.drawable.ic_apartment),
+          contentDescription = null,
+          modifier = Modifier.size(24.dp),
+        )
+        Spacer(Modifier.width(16.dp))
+        Column(Modifier.weight(1f)) {
+          Text(
+            text = title,
+            style = MaterialTheme.typography.bodyLarge,
+          )
+          Spacer(Modifier.height(8.dp))
+          Text(
+            text = body,
+            style = MaterialTheme.typography.bodyMedium,
+          )
+        }
+      }
+      Divider(color = LocalContentColor.current.copy(alpha = 0.2f))
+      TextButton(
+        onClick = buttonAction,
+        shape = MaterialTheme.shapes.squircle,
+        modifier = Modifier
+          .align(Alignment.End)
+          .padding(horizontal = 16.dp, vertical = 4.dp),
+      ) {
+        Text(
+          text = buttonText,
+          style = MaterialTheme.typography.bodyLarge,
+        )
+      }
+    }
   }
 }
