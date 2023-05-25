@@ -63,10 +63,6 @@ class SimpleSignAuthenticationViewModel(
     object Error : Event() {
       override fun toString() = "Error"
     }
-
-    object CancelSignIn : Event() {
-      override fun toString() = "CancelSignIn"
-    }
   }
 
   /**
@@ -94,15 +90,11 @@ class SimpleSignAuthenticationViewModel(
     }
   }
 
-  fun setInput(text: CharSequence?) {
-    text?.toString()?.let { _input.value = it }
+  fun setInput(text: String) {
+    _input.value = text
   }
 
   fun authFailed() {
-    _events.value = Event.Error
-  }
-
-  fun invalidMarket() {
     _events.value = Event.Error
   }
 
@@ -135,10 +127,6 @@ class SimpleSignAuthenticationViewModel(
       }
     }
     _isSubmitting.postValue(false)
-  }
-
-  fun cancelSignIn() {
-    _events.value = Event.CancelSignIn
   }
 
   private suspend fun onSimpleSignSuccess(loginStatusResult: LoginStatusResult.Completed) {
