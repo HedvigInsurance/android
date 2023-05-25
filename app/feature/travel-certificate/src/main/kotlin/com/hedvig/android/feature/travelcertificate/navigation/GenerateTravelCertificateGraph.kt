@@ -14,6 +14,7 @@ import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.travelcertificate.TravelCertificateInputState
 import com.hedvig.android.feature.travelcertificate.ui.AddCoInsured
 import com.hedvig.android.feature.travelcertificate.ui.GenerateTravelCertificateInput
+import com.hedvig.android.feature.travelcertificate.ui.TravelCertificateInformation
 import com.hedvig.android.feature.travelcertificate.ui.TravelCertificateOverView
 import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.compose.typed.animatedNavigation
@@ -28,14 +29,31 @@ internal fun NavGraphBuilder.generateTravelCertificateGraph(
   finish: () -> Unit,
 ) {
   animatedNavigation<Destinations.GenerateTravelCertificate>(
-    startDestination = createRoutePattern<GenerateTravelCertificateDestination.TravelCertificateInput>(),
+    startDestination = createRoutePattern<GenerateTravelCertificateDestination.TravelCertificateInformation>(),
     enterTransition = { MotionDefaults.sharedXAxisEnter(density) },
     exitTransition = { MotionDefaults.sharedXAxisExit(density) },
     popEnterTransition = { MotionDefaults.sharedXAxisPopEnter(density) },
     popExitTransition = { MotionDefaults.sharedXAxisPopExit(density) },
   ) {
-    animatedComposable<GenerateTravelCertificateDestination.TravelCertificateInput> {
+    animatedComposable<GenerateTravelCertificateDestination.TravelCertificateInformation> {
+      val viewModel = navGraphScopedViewModel(
+        navController = navController,
+        backStackEntry = it,
+      )
+      val uiState: TravelCertificateInputState by viewModel.uiState.collectAsStateWithLifecycle()
 
+      TravelCertificateInformation(
+        isLoading = uiState.isLoading,
+        infoSections = uiState.infoSections,
+        errorMessage = uiState.errorMessage,
+        onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
+        onContinue = {
+          navController.navigate(GenerateTravelCertificateDestination.TravelCertificateInput)
+        },
+        navigateBack = { navController.navigateUp() },
+      )
+    }
+    animatedComposable<GenerateTravelCertificateDestination.TravelCertificateInput> {
       val viewModel = navGraphScopedViewModel(
         navController = navController,
         backStackEntry = it,
@@ -44,7 +62,7 @@ internal fun NavGraphBuilder.generateTravelCertificateGraph(
       val uiState: TravelCertificateInputState by viewModel.uiState.collectAsStateWithLifecycle()
       GenerateTravelCertificateInput(
         uiState = uiState,
-        navigateBack = { finish() },
+        navigateBack = { navController.navigateUp() },
         onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
         onEmailChanged = viewModel::onEmailChanged,
         onCoInsuredClicked = { coInsured ->
