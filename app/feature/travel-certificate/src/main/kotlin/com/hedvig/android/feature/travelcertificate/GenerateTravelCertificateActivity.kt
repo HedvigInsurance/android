@@ -16,7 +16,6 @@ import com.hedvig.android.core.designsystem.theme.ConfigureTransparentSystemBars
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.feature.travelcertificate.navigation.GenerateTravelCertificateNavHost
 
-
 class GenerateTravelCertificateActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {

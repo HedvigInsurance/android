@@ -361,7 +361,6 @@ private fun MovingDateButton(
   }
 }
 
-
 @HedvigPreview
 @Composable
 fun GenerateTravelCertificateInputPreview() {

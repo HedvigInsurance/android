@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.changeaddress
 
 import HousingType
-import androidx.annotation.StringRes
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DisplayMode
 import com.hedvig.android.core.ui.ValidatedInput
