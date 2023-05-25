@@ -109,6 +109,7 @@ class GenerateTravelCertificateViewModel(
     val state = uiState.value
     if (_uiState.value.isInputValid) {
       viewModelScope.launch {
+        _uiState.update { it.copy(isLoading = true) }
         createTravelCertificateUseCase.invoke(
           contractId = state.contractId!!,
           startDate = state.travelDate.input!!,
@@ -116,8 +117,17 @@ class GenerateTravelCertificateViewModel(
           coInsured = state.coInsured.input,
           email = state.email.input!!,
         ).fold(
-          ifLeft = { errorMessage -> _uiState.update { TravelCertificateInputState(errorMessage = errorMessage.message) } },
-          ifRight = { createId -> _uiState.update { it.copy(travelCertificateUrl = createId) } },
+          ifLeft = { errorMessage ->
+            _uiState.update {
+              TravelCertificateInputState(
+                errorMessage = errorMessage.message,
+                isLoading = false,
+              )
+            }
+          },
+          ifRight = { url ->
+            _uiState.update { it.copy(travelCertificateUrl = url) }
+          },
         )
       }
     }

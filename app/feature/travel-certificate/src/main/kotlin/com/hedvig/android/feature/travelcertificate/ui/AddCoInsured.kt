@@ -48,7 +48,7 @@ fun AddCoInsured(
   ) {
     Spacer(modifier = Modifier.height(48.dp))
     Text(
-      text = "Add co-insured",
+      text = stringResource(id = R.string.travel_certificate_add_member),
       style = MaterialTheme.typography.headlineSmall,
       textAlign = TextAlign.Center,
       modifier = Modifier.fillMaxWidth(),
@@ -59,7 +59,7 @@ fun AddCoInsured(
       onValueChange = { name = it },
       errorText = null,
       label = {
-        Text("Full name")
+        Text(stringResource(id = R.string.travel_certificate_full_name_label))
       },
       maxLines = 1,
       modifier = Modifier
@@ -72,7 +72,7 @@ fun AddCoInsured(
       onValueChange = { ssn = it },
       errorText = null,
       label = {
-        Text("YYYYMMDD-XXXX")
+        Text(stringResource(id = R.string.travel_certificate_ssn_label))
       },
       maxLines = 1,
       modifier = Modifier

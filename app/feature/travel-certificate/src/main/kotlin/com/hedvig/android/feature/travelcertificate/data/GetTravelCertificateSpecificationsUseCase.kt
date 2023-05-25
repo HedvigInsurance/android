@@ -7,7 +7,6 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import kotlinx.datetime.LocalDate
-import kotlinx.serialization.Serializable
 import octopus.TravelCertificateSpecificationsQuery
 import slimber.log.e
 
