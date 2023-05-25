@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -37,6 +36,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -165,32 +166,59 @@ class SimpleSignAuthenticationActivity : AppCompatActivity() {
                   .padding(top = (80 - 16).dp),
               )
             } else {
-              Spacer(Modifier.weight(1f))
-              InputTextField(
-                textInput = textInput,
-                setTextInput = { viewModel.setInput(it) },
-                onSubmit = {
-                  focusManager.clearFocus()
-                  startZignSecIfValid()
+              // A layout which makes the button and the textField always visible on top of the IME.
+              Layout(
+                modifier = Modifier.weight(1f),
+                content = {
+                  InputTextField(
+                    textInput = textInput,
+                    setTextInput = { viewModel.setInput(it) },
+                    onSubmit = {
+                      focusManager.clearFocus()
+                      startZignSecIfValid()
+                    },
+                    zignSecMarket = zignSecMarket,
+                    modifier = Modifier.layoutId(TextFieldId),
+                  )
+                  ContinueButton(
+                    onClick = {
+                      focusManager.clearFocus()
+                      startZignSecIfValid()
+                    },
+                    isValidInput = isValidInput,
+                    isSubmitting = isSubmitting,
+                    zignSecMarket = zignSecMarket,
+                    modifier = Modifier.layoutId(ContinueButtonId),
+                  )
+                  Spacer(
+                    Modifier
+                      .layoutId(BottomWindowInsetsId)
+                      .windowInsetsPadding(
+                        WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom),
+                      ),
+                  )
                 },
-                zignSecMarket = zignSecMarket,
-              )
-              Spacer(Modifier.height(16.dp))
-              ContinueButton(
-                onClick = {
-                  focusManager.clearFocus()
-                  startZignSecIfValid()
-                },
-                isValidInput = isValidInput,
-                isSubmitting = isSubmitting,
-                zignSecMarket = zignSecMarket,
-              )
-              Spacer(Modifier.height(16.dp))
-              Spacer(
-                Modifier.windowInsetsPadding(
-                  WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom),
-                ),
-              )
+              ) { measurables, constraints ->
+                val looseConstraints = constraints.copy(minWidth = 0, minHeight = 0)
+                val textFieldPlaceable = measurables.first { it.layoutId == TextFieldId }.measure(looseConstraints)
+                val buttonPlaceable = measurables.first { it.layoutId == ContinueButtonId }.measure(looseConstraints)
+                val insetsPlaceable =
+                  measurables.first { it.layoutId == BottomWindowInsetsId }.measure(looseConstraints)
+                val maxWidth = constraints.maxWidth
+                val maxHeight = constraints.maxHeight
+                val spacingHeight = 16.dp.roundToPx() // The space between the three items
+                layout(maxWidth, maxHeight) {
+                  val insetsYPosition = maxHeight - insetsPlaceable.height
+                  insetsPlaceable.place(0, insetsYPosition)
+                  val buttonYPosition = insetsYPosition - spacingHeight - buttonPlaceable.height
+                  buttonPlaceable.place(0, buttonYPosition)
+                  val textFieldYPosition = minOf(
+                    (maxHeight / 2) - (textFieldPlaceable.height / 2),
+                    buttonYPosition - spacingHeight - textFieldPlaceable.height,
+                  )
+                  textFieldPlaceable.place(0, textFieldYPosition)
+                }
+              }
             }
           }
         }
@@ -222,12 +250,17 @@ class SimpleSignAuthenticationActivity : AppCompatActivity() {
   }
 }
 
+private const val TextFieldId = "TextFieldId"
+private const val ContinueButtonId = "ContinueButtonId"
+private const val BottomWindowInsetsId = "BottomWindowInsetsId"
+
 @Composable
 private fun InputTextField(
   textInput: String,
   setTextInput: (String) -> Unit,
   onSubmit: () -> Unit,
   zignSecMarket: ZignSecMarket,
+  modifier: Modifier = Modifier,
 ) {
   HedvigTextField(
     value = textInput,
@@ -270,9 +303,9 @@ private fun InputTextField(
       onNext = { onSubmit() },
     ),
     singleLine = true,
-    modifier = Modifier
+    modifier = modifier
       .fillMaxWidth()
-      .padding(horizontal = 24.dp),
+      .padding(horizontal = 16.dp),
   )
 }
 
@@ -282,6 +315,7 @@ private fun ContinueButton(
   isValidInput: Boolean?,
   isSubmitting: Boolean?,
   zignSecMarket: ZignSecMarket,
+  modifier: Modifier = Modifier,
 ) {
   LargeContainedTextButton(
     text = stringResource(
@@ -292,7 +326,7 @@ private fun ContinueButton(
     ),
     onClick = onClick,
     enabled = isValidInput == true && isSubmitting != true,
-    modifier = Modifier.padding(horizontal = 16.dp),
+    modifier = modifier.padding(horizontal = 16.dp),
   )
 }
 
