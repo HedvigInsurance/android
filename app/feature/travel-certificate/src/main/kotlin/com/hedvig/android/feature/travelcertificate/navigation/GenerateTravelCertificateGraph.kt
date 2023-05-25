@@ -27,7 +27,6 @@ internal fun NavGraphBuilder.generateTravelCertificateGraph(
   density: Density,
   navController: NavHostController,
   finish: () -> Unit,
-  imageLoader: ImageLoader,
 ) {
   animatedNavigation<Destinations.GenerateTravelCertificate>(
     startDestination = createRoutePattern<GenerateTravelCertificateDestination.TravelCertificateInformation>(),
