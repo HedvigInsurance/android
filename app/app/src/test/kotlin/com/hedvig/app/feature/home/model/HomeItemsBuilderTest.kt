@@ -109,12 +109,15 @@ class HomeItemsBuilderTest {
 
       val result = builder.buildItems(
         HOME_DATA_ACTIVE,
-        TravelCertificateResult.TravelCertificateSpecifications(
-          "contractId",
-          "email",
-          1,
-          LocalDate.parse("1970-01-01")..LocalDate.parse("1970-01-01"),
-          1,
+        TravelCertificateResult.TraverlCertificateData(
+          TravelCertificateResult.TraverlCertificateData.TravelCertificateSpecification(
+            "contractId",
+            "email",
+            1,
+            LocalDate.parse("1970-01-01")..LocalDate.parse("1970-01-01"),
+            1,
+          ),
+          emptyList(),
         ),
       )
 
@@ -138,12 +141,15 @@ class HomeItemsBuilderTest {
 
       val result = builder.buildItems(
         HOME_DATA_ACTIVE,
-        TravelCertificateResult.TravelCertificateSpecifications(
-          "contractId",
-          "email",
-          1,
-          LocalDate.parse("1970-01-01")..LocalDate.parse("1970-01-01"),
-          1,
+        TravelCertificateResult.TraverlCertificateData(
+          TravelCertificateResult.TraverlCertificateData.TravelCertificateSpecification(
+            "contractId",
+            "email",
+            1,
+            LocalDate.parse("1970-01-01")..LocalDate.parse("1970-01-01"),
+            1,
+          ),
+          emptyList(),
         ),
       )
 
