@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -46,11 +47,10 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.error.ErrorDialog
-import com.hedvig.android.core.ui.progress.FullScreenHedvigProgress
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.feature.travelcertificate.CoInsured
 import com.hedvig.android.feature.travelcertificate.TravelCertificateInputState
-import com.hedvig.android.feature.travelcertificate.data.TravelCertificateResult
+import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import hedvig.resources.R
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -68,6 +68,7 @@ fun GenerateTravelCertificateInput(
   onIncludeMemberClicked: (Boolean) -> Unit,
   onTravelDateSelected: (LocalDate) -> Unit,
   onContinue: () -> Unit,
+  onSuccess: (TravelCertificateUrl) -> Unit,
 ) {
   if (uiState.errorMessage != null) {
     ErrorDialog(
@@ -77,104 +78,53 @@ fun GenerateTravelCertificateInput(
     )
   }
 
+  LaunchedEffect(uiState.travelCertificateUrl) {
+    uiState.travelCertificateUrl?.let {
+      onSuccess(it)
+    }
+  }
+
   if (uiState.isLoading) {
     Box(modifier = Modifier.fillMaxSize()) {
       CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
     }
-    return
-  }
-
-  HedvigScaffold(
-    navigateUp = navigateBack,
-    modifier = Modifier.clearFocusOnTap(),
-  ) {
-    Spacer(modifier = Modifier.height(48.dp))
-    Text(
-      text = "Travel information",
-      style = MaterialTheme.typography.headlineSmall,
-      textAlign = TextAlign.Center,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
-    )
-    Spacer(modifier = Modifier.height(64.dp))
-    EmailTextField(
-      email = uiState.email,
-      onStreetChanged = onEmailChanged,
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
-    Spacer(modifier = Modifier.height(8.dp))
-    MovingDateButton(
-      onDateSelected = { onTravelDateSelected(it) },
-      uiState = uiState,
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
-    Spacer(modifier = Modifier.height(16.dp))
-    Text(
-      text = "Who is traveling?",
-      style = MaterialTheme.typography.bodyLarge,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
-    )
-    Spacer(modifier = Modifier.height(8.dp))
-    LargeContainedButton(
-      onClick = { onIncludeMemberClicked(!uiState.includeMember) },
-      modifier = Modifier.padding(horizontal = 16.dp),
-      shape = MaterialTheme.shapes.squircle,
-      colors = ButtonDefaults.buttonColors(
-        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        contentColor = MaterialTheme.colorScheme.onSurface,
-      ),
+  } else {
+    HedvigScaffold(
+      navigateUp = navigateBack,
+      modifier = Modifier.clearFocusOnTap(),
     ) {
-      Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth(),
-      ) {
-        Text("Me")
-        if (uiState.includeMember) {
-          Icon(
-            painter = painterResource(id = com.hedvig.android.core.designsystem.R.drawable.ic_checkmark),
-            tint = MaterialTheme.colorScheme.onSurface,
-            contentDescription = "include me",
-            modifier = Modifier.size(18.dp)
-          )
-        }
-      }
-    }
-    Spacer(modifier = Modifier.height(8.dp))
-
-    uiState.coInsured.errorMessageRes?.let {
-      Row(
-        verticalAlignment = Alignment.CenterVertically,
-        // Emulate the same design that the supporting text of the TextField has
-        modifier = Modifier.padding(
-          start = 16.dp,
-          top = 4.dp,
-          end = 16.dp,
-        ),
-      ) {
-        Icon(
-          imageVector = Icons.Rounded.Warning,
-          contentDescription = null,
-          modifier = Modifier.size(16.dp),
-          tint = MaterialTheme.colorScheme.warningElement,
-        )
-        Spacer(Modifier.width(6.dp))
-        Text(
-          text = "Ange vilka som täcks av certifikatet",
-          style = MaterialTheme.typography.bodySmall,
-          color = MaterialTheme.colorScheme.error,
-        )
-      }
-    }
-
-    uiState.coInsured.input.map { coInsured ->
+      Spacer(modifier = Modifier.height(48.dp))
+      Text(
+        text = "Travel information",
+        style = MaterialTheme.typography.headlineSmall,
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      )
+      Spacer(modifier = Modifier.height(64.dp))
+      EmailTextField(
+        email = uiState.email,
+        onStreetChanged = onEmailChanged,
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
       Spacer(modifier = Modifier.height(8.dp))
-
+      MovingDateButton(
+        onDateSelected = { onTravelDateSelected(it) },
+        uiState = uiState,
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+      Spacer(modifier = Modifier.height(16.dp))
+      Text(
+        text = stringResource(id = R.string.travel_certificate_included_members_title),
+        style = MaterialTheme.typography.bodyLarge,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      )
+      Spacer(modifier = Modifier.height(8.dp))
       LargeContainedButton(
-        onClick = { onCoInsuredClicked(coInsured) },
+        onClick = { onIncludeMemberClicked(!uiState.includeMember) },
         modifier = Modifier.padding(horizontal = 16.dp),
         shape = MaterialTheme.shapes.squircle,
         colors = ButtonDefaults.buttonColors(
@@ -183,34 +133,90 @@ fun GenerateTravelCertificateInput(
         ),
       ) {
         Row(
-          horizontalArrangement = Arrangement.Start,
+          horizontalArrangement = Arrangement.SpaceBetween,
           verticalAlignment = Alignment.CenterVertically,
           modifier = Modifier.fillMaxWidth(),
         ) {
-          Text(coInsured.name)
+          Text(stringResource(id = R.string.travel_certificate_me))
+          if (uiState.includeMember) {
+            Icon(
+              painter = painterResource(id = com.hedvig.android.core.designsystem.R.drawable.ic_checkmark),
+              tint = MaterialTheme.colorScheme.onSurface,
+              contentDescription = "include me",
+              modifier = Modifier.size(18.dp),
+            )
+          }
         }
       }
-    }
-    TextButton(
-      onClick = {
-        onAddCoInsuredClicked()
-      },
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
-    ) {
-      Text("Add")
-    }
+      Spacer(modifier = Modifier.height(8.dp))
 
-    Spacer(modifier = Modifier.weight(1f))
-    LargeContainedButton(
-      onClick = onContinue,
-      shape = MaterialTheme.shapes.squircle,
-      modifier = Modifier.padding(horizontal = 16.dp),
-    ) {
-      Text(stringResource(R.string.SAVE_AND_CONTINUE_BUTTON_LABEL))
+      uiState.coInsured.errorMessageRes?.let {
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          // Emulate the same design that the supporting text of the TextField has
+          modifier = Modifier.padding(
+            start = 16.dp,
+            top = 4.dp,
+            end = 16.dp,
+          ),
+        ) {
+          Icon(
+            imageVector = Icons.Rounded.Warning,
+            contentDescription = null,
+            modifier = Modifier.size(16.dp),
+            tint = MaterialTheme.colorScheme.warningElement,
+          )
+          Spacer(Modifier.width(6.dp))
+          Text(
+            text = "Ange vilka som täcks av certifikatet",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.error,
+          )
+        }
+      }
+
+      uiState.coInsured.input.map { coInsured ->
+        Spacer(modifier = Modifier.height(8.dp))
+
+        LargeContainedButton(
+          onClick = { onCoInsuredClicked(coInsured) },
+          modifier = Modifier.padding(horizontal = 16.dp),
+          shape = MaterialTheme.shapes.squircle,
+          colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+          ),
+        ) {
+          Row(
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth(),
+          ) {
+            Text(coInsured.name)
+          }
+        }
+      }
+      TextButton(
+        onClick = {
+          onAddCoInsuredClicked()
+        },
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      ) {
+        Text(stringResource(id = R.string.travel_certificate_add_member))
+      }
+
+      Spacer(modifier = Modifier.weight(1f))
+      LargeContainedButton(
+        onClick = onContinue,
+        shape = MaterialTheme.shapes.squircle,
+        modifier = Modifier.padding(horizontal = 16.dp),
+      ) {
+        Text(stringResource(R.string.SAVE_AND_CONTINUE_BUTTON_LABEL))
+      }
+      Spacer(Modifier.height(16.dp))
     }
-    Spacer(Modifier.height(16.dp))
   }
 }
 
@@ -371,6 +377,7 @@ fun GenerateTravelCertificateInputPreview() {
         onIncludeMemberClicked = {},
         onTravelDateSelected = {},
         onContinue = {},
+        onSuccess = {},
       )
     }
   }

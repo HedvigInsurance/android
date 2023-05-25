@@ -1,7 +1,7 @@
 package com.hedvig.android.feature.travelcertificate.navigation
 
 import GenerateTravelCertificateViewModel
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -12,20 +12,17 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.travelcertificate.TravelCertificateInputState
-import com.hedvig.android.feature.travelcertificate.data.TravelCertificateResult
 import com.hedvig.android.feature.travelcertificate.ui.AddCoInsured
 import com.hedvig.android.feature.travelcertificate.ui.GenerateTravelCertificateInput
+import com.hedvig.android.feature.travelcertificate.ui.TravelCertificateOverView
 import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.compose.typed.animatedNavigation
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
 import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
+import org.koin.core.parameter.ParametersDefinition
 
 internal fun NavGraphBuilder.generateTravelCertificateGraph(
-  email: String?,
-  travelCertificateSpecifications: TravelCertificateResult.TravelCertificateSpecifications,
-  windowSizeClass: WindowSizeClass,
   density: Density,
   navController: NavHostController,
   finish: () -> Unit,
@@ -38,9 +35,8 @@ internal fun NavGraphBuilder.generateTravelCertificateGraph(
     popExitTransition = { MotionDefaults.sharedXAxisPopExit(density) },
   ) {
     animatedComposable<GenerateTravelCertificateDestination.TravelCertificateInput> {
+
       val viewModel = navGraphScopedViewModel(
-        email = email,
-        travelCertificateSpecifications = travelCertificateSpecifications,
         navController = navController,
         backStackEntry = it,
       )
@@ -51,8 +47,8 @@ internal fun NavGraphBuilder.generateTravelCertificateGraph(
         navigateBack = { finish() },
         onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
         onEmailChanged = viewModel::onEmailChanged,
-        onCoInsuredClicked = {
-          navController.navigate(GenerateTravelCertificateDestination.AddCoInsured(it))
+        onCoInsuredClicked = { coInsured ->
+          navController.navigate(GenerateTravelCertificateDestination.AddCoInsured(coInsured))
         },
         onAddCoInsuredClicked = {
           if (viewModel.canAddCoInsured()) {
@@ -64,12 +60,13 @@ internal fun NavGraphBuilder.generateTravelCertificateGraph(
         onIncludeMemberClicked = viewModel::onIncludeMemberClicked,
         onTravelDateSelected = viewModel::onTravelDateSelected,
         onContinue = viewModel::onContinue,
+        onSuccess = { travelCertificateUrl ->
+          navController.navigate(GenerateTravelCertificateDestination.ShowCertificate(travelCertificateUrl))
+        },
       )
     }
     animatedComposable<GenerateTravelCertificateDestination.AddCoInsured> {
       val viewModel = navGraphScopedViewModel(
-        email = email,
-        travelCertificateSpecifications = travelCertificateSpecifications,
         navController = navController,
         backStackEntry = it,
       )
@@ -91,20 +88,29 @@ internal fun NavGraphBuilder.generateTravelCertificateGraph(
         },
       )
     }
+    animatedComposable<GenerateTravelCertificateDestination.ShowCertificate> {
+      BackHandler {
+        finish()
+      }
+      TravelCertificateOverView(
+        travelCertificateUrl,
+        navigateBack = finish
+      )
+    }
   }
 }
 
 @Composable
 private fun navGraphScopedViewModel(
-  email: String?,
-  travelCertificateSpecifications: TravelCertificateResult.TravelCertificateSpecifications,
   navController: NavHostController,
   backStackEntry: NavBackStackEntry,
+  parameters: ParametersDefinition? = null,
 ): GenerateTravelCertificateViewModel {
   val parentEntry = remember(navController, backStackEntry) {
     navController.getBackStackEntry(createRoutePattern<Destinations.GenerateTravelCertificate>())
   }
-  return koinViewModel(viewModelStoreOwner = parentEntry) {
-    parametersOf(email, travelCertificateSpecifications)
-  }
+  return koinViewModel(
+    viewModelStoreOwner = parentEntry,
+    parameters = parameters,
+  )
 }

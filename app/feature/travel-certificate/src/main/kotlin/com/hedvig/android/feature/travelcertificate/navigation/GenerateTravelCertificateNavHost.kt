@@ -10,9 +10,6 @@ import com.kiwi.navigationcompose.typed.createRoutePattern
 
 @Composable
 internal fun GenerateTravelCertificateNavHost(
-  email: String?,
-  travelCertificateSpecifications: TravelCertificateResult.TravelCertificateSpecifications,
-  windowSizeClass: WindowSizeClass,
   navController: NavHostController,
   finish: () -> Unit,
 ) {
@@ -22,9 +19,6 @@ internal fun GenerateTravelCertificateNavHost(
     startDestination = createRoutePattern<Destinations.GenerateTravelCertificate>(),
   ) {
     generateTravelCertificateGraph(
-      email = email,
-      travelCertificateSpecifications = travelCertificateSpecifications,
-      windowSizeClass = windowSizeClass,
       density = density,
       navController = navController,
       finish = finish,

@@ -8,6 +8,7 @@ import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.travelcertificate.CoInsured
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.Serializable
 import octopus.TravelCertificateCreateMutation
 import octopus.type.TravelCertificateCreateCoInsured
 import octopus.type.TravelCertificateCreateInput
@@ -48,4 +49,5 @@ class CreateTravelCertificateUseCase(
 }
 
 @JvmInline
+@Serializable
 value class TravelCertificateUrl(val url: String)
