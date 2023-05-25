@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
@@ -54,6 +55,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
+import com.hedvig.android.core.ui.progress.FullScreenHedvigProgress
 import com.hedvig.android.market.Market
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import hedvig.resources.R
@@ -146,80 +148,83 @@ class SimpleSignAuthenticationActivity : AppCompatActivity() {
             .fillMaxSize()
             .clearFocusOnTap(),
         ) {
-          Column(
-            modifier = Modifier
-              .verticalScroll(rememberScrollState())
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-          ) {
-            TopAppBarWithBack(
-              onClick = { onBackPressedDispatcher.onBackPressed() },
-              title = stringResource(hedvig.resources.R.string.zignsec_login_screen_title),
-              contentPadding = WindowInsets.systemBars
-                .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
-                .asPaddingValues(),
-            )
-            if (hasErrored) {
-              GenericErrorScreen(
-                onRetryButtonClick = { finish() },
-                modifier = Modifier
-                  .padding(16.dp)
-                  .padding(top = (80 - 16).dp),
+          Box(propagateMinConstraints = true) {
+            Column(
+              modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+            ) {
+              TopAppBarWithBack(
+                onClick = { onBackPressedDispatcher.onBackPressed() },
+                title = stringResource(hedvig.resources.R.string.zignsec_login_screen_title),
+                contentPadding = WindowInsets.systemBars
+                  .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+                  .asPaddingValues(),
               )
-            } else {
-              // A layout which makes the button and the textField always visible on top of the IME.
-              Layout(
-                modifier = Modifier.weight(1f),
-                content = {
-                  InputTextField(
-                    textInput = textInput,
-                    setTextInput = { viewModel.setInput(it) },
-                    onSubmit = {
-                      focusManager.clearFocus()
-                      startZignSecIfValid()
-                    },
-                    zignSecMarket = zignSecMarket,
-                    modifier = Modifier.layoutId(TextFieldId),
-                  )
-                  ContinueButton(
-                    onClick = {
-                      focusManager.clearFocus()
-                      startZignSecIfValid()
-                    },
-                    isValidInput = isValidInput,
-                    isSubmitting = isSubmitting,
-                    zignSecMarket = zignSecMarket,
-                    modifier = Modifier.layoutId(ContinueButtonId),
-                  )
-                  Spacer(
-                    Modifier
-                      .layoutId(BottomWindowInsetsId)
-                      .windowInsetsPadding(
-                        WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom),
-                      ),
-                  )
-                },
-              ) { measurables, constraints ->
-                val looseConstraints = constraints.copy(minWidth = 0, minHeight = 0)
-                val textFieldPlaceable = measurables.first { it.layoutId == TextFieldId }.measure(looseConstraints)
-                val buttonPlaceable = measurables.first { it.layoutId == ContinueButtonId }.measure(looseConstraints)
-                val insetsPlaceable =
-                  measurables.first { it.layoutId == BottomWindowInsetsId }.measure(looseConstraints)
-                val maxWidth = constraints.maxWidth
-                val maxHeight = constraints.maxHeight
-                val spacingHeight = 16.dp.roundToPx() // The space between the three items
-                layout(maxWidth, maxHeight) {
-                  val insetsYPosition = maxHeight - insetsPlaceable.height
-                  insetsPlaceable.place(0, insetsYPosition)
-                  val buttonYPosition = insetsYPosition - spacingHeight - buttonPlaceable.height
-                  buttonPlaceable.place(0, buttonYPosition)
-                  val textFieldYPosition = minOf(
-                    (maxHeight / 2) - (textFieldPlaceable.height / 2),
-                    buttonYPosition - spacingHeight - textFieldPlaceable.height,
-                  )
-                  textFieldPlaceable.place(0, textFieldYPosition)
+              if (hasErrored) {
+                GenericErrorScreen(
+                  onRetryButtonClick = { finish() },
+                  modifier = Modifier
+                    .padding(16.dp)
+                    .padding(top = (80 - 16).dp),
+                )
+              } else {
+                // A layout which makes the button and the textField always visible on top of the IME.
+                Layout(
+                  modifier = Modifier.weight(1f),
+                  content = {
+                    InputTextField(
+                      textInput = textInput,
+                      setTextInput = { viewModel.setInput(it) },
+                      onSubmit = {
+                        focusManager.clearFocus()
+                        startZignSecIfValid()
+                      },
+                      zignSecMarket = zignSecMarket,
+                      modifier = Modifier.layoutId(TextFieldId),
+                    )
+                    ContinueButton(
+                      onClick = {
+                        focusManager.clearFocus()
+                        startZignSecIfValid()
+                      },
+                      isValidInput = isValidInput,
+                      isSubmitting = isSubmitting,
+                      zignSecMarket = zignSecMarket,
+                      modifier = Modifier.layoutId(ContinueButtonId),
+                    )
+                    Spacer(
+                      Modifier
+                        .layoutId(BottomWindowInsetsId)
+                        .windowInsetsPadding(
+                          WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom),
+                        ),
+                    )
+                  },
+                ) { measurables, constraints ->
+                  val looseConstraints = constraints.copy(minWidth = 0, minHeight = 0)
+                  val textFieldPlaceable = measurables.first { it.layoutId == TextFieldId }.measure(looseConstraints)
+                  val buttonPlaceable = measurables.first { it.layoutId == ContinueButtonId }.measure(looseConstraints)
+                  val insetsPlaceable =
+                    measurables.first { it.layoutId == BottomWindowInsetsId }.measure(looseConstraints)
+                  val maxWidth = constraints.maxWidth
+                  val maxHeight = constraints.maxHeight
+                  val spacingHeight = 16.dp.roundToPx() // The space between the three items
+                  layout(maxWidth, maxHeight) {
+                    val insetsYPosition = maxHeight - insetsPlaceable.height
+                    insetsPlaceable.place(0, insetsYPosition)
+                    val buttonYPosition = insetsYPosition - spacingHeight - buttonPlaceable.height
+                    buttonPlaceable.place(0, buttonYPosition)
+                    val textFieldYPosition = minOf(
+                      (maxHeight / 2) - (textFieldPlaceable.height / 2),
+                      buttonYPosition - spacingHeight - textFieldPlaceable.height,
+                    )
+                    textFieldPlaceable.place(0, textFieldYPosition)
+                  }
                 }
               }
             }
+            FullScreenHedvigProgress(show = isSubmitting == true)
           }
         }
       }
