@@ -1,17 +1,23 @@
 package com.hedvig.android.feature.travelcertificate.navigation
 
 import GenerateTravelCertificateViewModel
+import android.content.Context
+import android.content.Intent
+import android.os.Environment
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Density
+import androidx.core.content.FileProvider.getUriForFile
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.travelcertificate.TravelCertificateInputState
+import com.hedvig.android.feature.travelcertificate.data.CERTIFICATE_NAME
 import com.hedvig.android.feature.travelcertificate.ui.AddCoInsured
 import com.hedvig.android.feature.travelcertificate.ui.GenerateTravelCertificateInput
 import com.hedvig.android.feature.travelcertificate.ui.TravelCertificateInformation
@@ -20,8 +26,11 @@ import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.compose.typed.animatedNavigation
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
+import java.io.File
+import java.security.AccessController.getContext
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.ParametersDefinition
+
 
 internal fun NavGraphBuilder.generateTravelCertificateGraph(
   density: Density,
@@ -112,6 +121,7 @@ internal fun NavGraphBuilder.generateTravelCertificateGraph(
         backStackEntry = it,
       )
       val uiState: TravelCertificateInputState by viewModel.uiState.collectAsStateWithLifecycle()
+      val context = LocalContext.current
 
       BackHandler {
         finish()
@@ -127,9 +137,18 @@ internal fun NavGraphBuilder.generateTravelCertificateGraph(
         errorMessage = uiState.errorMessage,
         onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
         navigateBack = finish,
-        onSuccess = {
-          // Show bottom sheet
-        }
+        onShareTravelCertificate = {
+          val contentUri = getUriForFile(context, "com.hedvig.fileprovider", it.uri)
+
+          val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_STREAM, contentUri)
+            type = "application/pdf"
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+          }
+          val shareIntent = Intent.createChooser(sendIntent, "Hedvig Travel Certificate")
+          context.startActivity(shareIntent)
+        },
       )
     }
   }

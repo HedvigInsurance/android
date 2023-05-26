@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.travelcertificate.ui
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,6 +30,7 @@ import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import hedvig.resources.R
+import java.io.File
 
 
 @Composable
@@ -40,7 +42,7 @@ fun TravelCertificateOverView(
   travelCertificateUri: TravelCertificateUri?,
   errorMessage: String?,
   onErrorDialogDismissed: () -> Unit,
-  onSuccess: (TravelCertificateUri) -> Unit,
+  onShareTravelCertificate: (TravelCertificateUri) -> Unit,
 ) {
 
   if (errorMessage != null) {
@@ -53,7 +55,7 @@ fun TravelCertificateOverView(
 
   LaunchedEffect(travelCertificateUri) {
     travelCertificateUri?.let {
-      onSuccess(it)
+      onShareTravelCertificate(it)
     }
   }
 
@@ -95,13 +97,23 @@ fun TravelCertificateOverView(
       )
       Spacer(modifier = Modifier.weight(1f))
       LargeContainedButton(
-        onClick = { onDownloadCertificate(travelCertificateUrl) },
+        onClick = {
+          if (travelCertificateUri != null) {
+            onShareTravelCertificate(travelCertificateUri)
+          } else {
+            onDownloadCertificate(travelCertificateUrl)
+          }
+        },
         shape = MaterialTheme.shapes.squircle,
         modifier = Modifier
           .padding(horizontal = 16.dp)
           .padding(bottom = 32.dp),
       ) {
-        Text("Ladda ner reseintyg")
+        if (travelCertificateUri != null) {
+          Text("Dela reseintyg")
+        } else {
+          Text("Ladda ner reseintyg")
+        }
       }
     }
   }
@@ -116,10 +128,10 @@ fun TravelCertificateOverView() {
       onDownloadCertificate = {},
       navigateBack = {},
       isLoading = false,
-      travelCertificateUri = TravelCertificateUri(""),
+      travelCertificateUri = TravelCertificateUri(File("123")),
       errorMessage = null,
       onErrorDialogDismissed = {},
-      onSuccess = {},
+      onShareTravelCertificate = {},
     )
   }
 }

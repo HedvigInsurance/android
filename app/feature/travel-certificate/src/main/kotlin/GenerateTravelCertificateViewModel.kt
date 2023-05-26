@@ -169,14 +169,19 @@ class GenerateTravelCertificateViewModel(
         .fold(
           ifLeft = { errorMessage ->
             _uiState.update {
-              TravelCertificateInputState(
+              it.copy(
                 isLoading = false,
                 errorMessage = errorMessage.message,
               )
             }
           },
           ifRight = { uri ->
-            _uiState.update { it.copy(travelCertificateUri = uri) }
+            _uiState.update {
+              it.copy(
+                isLoading = false,
+                travelCertificateUri = uri,
+              )
+            }
           },
         )
     }
