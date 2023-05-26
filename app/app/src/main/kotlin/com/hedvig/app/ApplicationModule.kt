@@ -87,7 +87,6 @@ import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeViewModel
 import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.crossselling.ui.detail.CrossSellDetailViewModel
-import com.hedvig.app.feature.crossselling.ui.detail.CrossSellFaqViewModel
 import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsUseCase
 import com.hedvig.app.feature.embark.EmbarkRepository
 import com.hedvig.app.feature.embark.EmbarkViewModel
@@ -352,9 +351,6 @@ private val viewModelModule = module {
     SwedishBankIdSignViewModel(quoteCartId, get(), get())
   }
   viewModel { AudioRecorderViewModel(get()) }
-  viewModel { (crossSell: CrossSellData) ->
-    CrossSellFaqViewModel(crossSell, get())
-  }
   viewModel { (crossSell: CrossSellData) ->
     CrossSellDetailViewModel(crossSell.storeUrl, get())
   }
