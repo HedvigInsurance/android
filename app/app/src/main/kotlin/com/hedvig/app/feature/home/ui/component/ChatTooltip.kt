@@ -87,7 +87,7 @@ private fun InnerChatTooltip(
           modifier = Modifier.widthIn(max = 200.dp),
         ) {
           Text(
-            text = stringResource(R.string.home_tab_chat_hint_text).repeat(2),
+            text = stringResource(R.string.home_tab_chat_hint_text),
             modifier = Modifier.padding(12.dp).padding(top = arrowHeightDp),
           )
         }

@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -35,6 +36,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshDefaults
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -147,9 +149,13 @@ class HomeFragment : Fragment() {
             val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
             val isLoading = uiState.isLoading
 
+            val systemBarInsetTopDp = with(LocalDensity.current) {
+              WindowInsets.systemBars.getTop(this).toDp()
+            }
             val pullRefreshState = rememberPullRefreshState(
               refreshing = isLoading,
               onRefresh = viewModel::reload,
+              refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
             )
             Box() {
               Column(

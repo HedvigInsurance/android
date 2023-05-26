@@ -20,12 +20,14 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshDefaults
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -41,6 +43,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -175,9 +178,13 @@ private fun ForeverScreen(
   onShareCodeClick: (code: String, incentive: MonetaryAmount) -> Unit,
   openReferralsInformation: (String, MonetaryAmount) -> Unit,
 ) {
+  val systemBarInsetTopDp = with(LocalDensity.current) {
+    WindowInsets.systemBars.getTop(this).toDp()
+  }
   val pullRefreshState = rememberPullRefreshState(
     refreshing = uiState.isLoading,
     onRefresh = reload,
+    refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
   Box() {
     Column(
