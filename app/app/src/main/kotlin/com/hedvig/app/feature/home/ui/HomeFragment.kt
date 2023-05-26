@@ -48,6 +48,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -77,6 +79,8 @@ import com.hedvig.android.core.designsystem.theme.lavender_200
 import com.hedvig.android.core.designsystem.theme.lavender_900
 import com.hedvig.android.core.designsystem.theme.onWarning
 import com.hedvig.android.core.designsystem.theme.warning
+import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
+import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithActions
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.core.ui.grid.HedvigGrid
 import com.hedvig.android.core.ui.grid.InsideGridSpace
@@ -96,11 +100,15 @@ import com.hedvig.app.feature.home.model.CommonClaim
 import com.hedvig.app.feature.home.model.HomeModel
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.feature.home.ui.claimstatus.composables.ClaimStatusCards
+import com.hedvig.app.feature.home.ui.component.ChatTooltip
 import com.hedvig.app.feature.home.ui.connectpayincard.ConnectPayinCard
 import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.extensions.canOpenUri
+import com.hedvig.app.util.extensions.getLastEpochDayWhenChatTooltipWasShown
 import com.hedvig.app.util.extensions.openUri
+import com.hedvig.app.util.extensions.setLastEpochDayWhenChatTooltipWasShown
+import com.hedvig.app.util.extensions.startChat
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import com.hedvig.hanalytics.PaymentType
@@ -230,6 +238,28 @@ class HomeFragment : Fragment() {
                 }
                 Spacer(Modifier.height(16.dp))
                 Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+              }
+              Column {
+                TopAppBarWithActions {
+                  ToolbarChatIcon(
+                    onClick = { requireContext().startChat() },
+                  )
+                }
+                val shouldShowTooltip by produceState(false) {
+                  val currentEpochDay = LocalDate.now().toEpochDay()
+                  val lastEpochDayOpened = requireContext().getLastEpochDayWhenChatTooltipWasShown()
+                  val diff = currentEpochDay - lastEpochDayOpened
+                  value = diff >= 30
+                }
+                ChatTooltip(
+                  showTooltip = shouldShowTooltip,
+                  tooltipShown = {
+                    requireContext().setLastEpochDayWhenChatTooltipWasShown(LocalDate.now().toEpochDay())
+                  },
+                  modifier = Modifier
+                    .align(Alignment.End)
+                    .padding(horizontal = 16.dp),
+                )
               }
               PullRefreshIndicator(
                 refreshing = isLoading,

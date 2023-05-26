@@ -4,9 +4,6 @@ import android.animation.ArgbEvaluator
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.view.Menu
-import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.forEach
@@ -17,31 +14,21 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.github.florent37.viewtooltip.ViewTooltip
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.common.android.serializableExtra
-import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityLoggedInBinding
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
-import com.hedvig.app.feature.referrals.ui.ReferralsInformationActivity
 import com.hedvig.app.feature.welcome.WelcomeDialog
 import com.hedvig.app.feature.welcome.WelcomeViewModel
 import com.hedvig.app.util.apollo.ThemedIconUrls
-import com.hedvig.app.util.apollo.toMonetaryAmount
-import com.hedvig.app.util.extensions.colorAttr
-import com.hedvig.app.util.extensions.compatColor
-import com.hedvig.app.util.extensions.getLastOpen
 import com.hedvig.app.util.extensions.isDarkThemeActive
-import com.hedvig.app.util.extensions.setLastOpen
 import com.hedvig.app.util.extensions.showErrorDialog
 import com.hedvig.app.util.extensions.showReviewDialog
 import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
-import com.hedvig.app.util.extensions.view.applyStatusBarInsets
-import com.hedvig.app.util.extensions.view.performOnTapHapticFeedback
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.extensions.viewDps
@@ -53,8 +40,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import slimber.log.e
-import java.time.LocalDate
-import javax.money.MonetaryAmount
 
 class LoggedInActivity : AppCompatActivity(R.layout.activity_logged_in) {
   private val claimsViewModel: ClaimsViewModel by viewModel()
@@ -67,9 +52,6 @@ class LoggedInActivity : AppCompatActivity(R.layout.activity_logged_in) {
   private var lastMenuIdInflated: Int? = null
   private var lastSelectedTab: LoggedInTabs? = null
 
-  private lateinit var referralTermsUrl: String
-  private lateinit var referralsIncentive: MonetaryAmount
-
   private val isFromOnboarding: Boolean by lazy {
     intent.getBooleanExtra(EXTRA_IS_FROM_ONBOARDING, false)
   }
@@ -80,11 +62,7 @@ class LoggedInActivity : AppCompatActivity(R.layout.activity_logged_in) {
     WindowCompat.setDecorFitsSystemWindows(window, false)
 
     with(binding) {
-      toolbar.applyStatusBarInsets()
-      tabContent.applyStatusBarInsets()
       bottomNavigation.applyNavigationBarInsets()
-
-      toolbar.background.alpha = 0
 
       loggedInViewModel.shouldOpenReviewDialog
         .flowWithLifecycle(lifecycle)
@@ -107,7 +85,6 @@ class LoggedInActivity : AppCompatActivity(R.layout.activity_logged_in) {
         }
         .launchIn(lifecycleScope)
 
-      setSupportActionBar(toolbar)
       supportActionBar?.setDisplayShowTitleEnabled(false)
 
       bottomNavigation.itemIconTintList = null
@@ -126,7 +103,6 @@ class LoggedInActivity : AppCompatActivity(R.layout.activity_logged_in) {
           .replace(R.id.tabContent, selectedTab.fragment)
           .commitNowAllowingStateLoss()
 
-        setupToolBar()
         animateGradient(selectedTab)
         lastSelectedTab = selectedTab
         loggedInViewModel.onTabVisited(selectedTab)
@@ -138,7 +114,6 @@ class LoggedInActivity : AppCompatActivity(R.layout.activity_logged_in) {
       }
 
       bindData()
-      setupToolBar()
 
       if (intent.getBooleanExtra(SHOW_RATING_DIALOG, false)) {
         lifecycleScope.launch {
@@ -181,98 +156,6 @@ class LoggedInActivity : AppCompatActivity(R.layout.activity_logged_in) {
     showReviewDialog()
   }
 
-  private fun shouldShowTooltip(lastOpen: Long, currentEpochDay: Long): Boolean {
-    val diff = currentEpochDay - lastOpen
-    return diff >= 30
-  }
-
-  override fun onCreateOptionsMenu(menu: Menu): Boolean {
-    when (LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId)) {
-      LoggedInTabs.HOME,
-      LoggedInTabs.PROFILE,
-      LoggedInTabs.INSURANCE,
-      -> {
-        menuInflater.inflate(R.menu.base_tab_menu, menu)
-        menu.getItem(0).actionView?.setOnClickListener {
-          onOptionsItemSelected(menu.getItem(0))
-        }
-      }
-      LoggedInTabs.REFERRALS -> {
-        menuInflater.inflate(R.menu.referral_more_info_menu, menu)
-        menu.getItem(0).actionView?.setOnClickListener {
-          onOptionsItemSelected(menu.getItem(0))
-        }
-      }
-      else -> {
-        menuInflater.inflate(R.menu.base_tab_menu, menu)
-        menu.getItem(0).actionView?.setOnClickListener {
-          onOptionsItemSelected(menu.getItem(0))
-        }
-      }
-    }
-
-    val currentEpochDay = LocalDate.now().toEpochDay()
-    if (shouldShowTooltip(getLastOpen(), currentEpochDay)) {
-      if (LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId) == LoggedInTabs.HOME) {
-        Handler(mainLooper).postDelayed(
-          {
-            binding.toolbar.performOnTapHapticFeedback()
-            ViewTooltip
-              .on(binding.toolbar.menu.getItem(0).actionView)
-              .autoHide(true, 5000)
-              .clickToHide(true)
-              .corner(BASE_MARGIN_DOUBLE)
-              .arrowTargetMargin(-20)
-              .arrowSourceMargin(-20)
-              .padding(
-                12.viewDps,
-                12.viewDps,
-                12.viewDps,
-                15.viewDps,
-              )
-              .position(ViewTooltip.Position.BOTTOM)
-              .color(compatColor(R.color.colorTooltip))
-              .textColor(colorAttr(androidx.appcompat.R.attr.colorPrimary))
-              .text(hedvig.resources.R.string.home_tab_chat_hint_text)
-              .withShadow(false)
-              .onDisplay {
-                setLastOpen(currentEpochDay)
-              }
-              .show()
-          },
-          2000,
-        )
-      }
-    }
-    return super.onCreateOptionsMenu(menu)
-  }
-
-  override fun onOptionsItemSelected(item: MenuItem): Boolean {
-    when (LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId)) {
-      LoggedInTabs.HOME,
-      LoggedInTabs.PROFILE,
-      LoggedInTabs.INSURANCE,
-      -> {
-        lifecycleScope.launch {
-          claimsViewModel.triggerFreeTextChat()
-        }
-      }
-      LoggedInTabs.REFERRALS -> {
-        if (::referralTermsUrl.isInitialized && ::referralsIncentive.isInitialized) {
-          startActivity(
-            ReferralsInformationActivity.newInstance(
-              this,
-              referralTermsUrl,
-              referralsIncentive,
-            ),
-          )
-        }
-      }
-      null -> {}
-    }
-    return true
-  }
-
   private fun bindData() {
     lifecycleScope.launch {
       lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -280,27 +163,11 @@ class LoggedInActivity : AppCompatActivity(R.layout.activity_logged_in) {
           .viewState
           .filterNotNull() // Emulate LiveData behavior of doing nothing until we get valid data
           .collectLatest { viewState: LoggedInViewState ->
-            val loggedInQueryData = viewState.loggedInQueryData
             setupBottomNav(
               isReferralsEnabled = viewState.isReferralsEnabled,
               unseenTabNotifications = viewState.unseenTabNotifications,
             )
-            setupToolBar()
             binding.loggedInRoot.show()
-
-            loggedInQueryData?.referralTerms?.url?.let {
-              referralTermsUrl = it
-            }
-            loggedInQueryData
-              ?.referralInformation
-              ?.campaign
-              ?.incentive
-              ?.asMonthlyCostDeduction
-              ?.amount
-              ?.fragments
-              ?.monetaryAmountFragment
-              ?.toMonetaryAmount()
-              ?.let { referralsIncentive = it }
           }
       }
     }
@@ -335,10 +202,6 @@ class LoggedInActivity : AppCompatActivity(R.layout.activity_logged_in) {
       }
     }
     lastMenuIdInflated = menuId
-  }
-
-  private fun setupToolBar() {
-    invalidateOptionsMenu()
   }
 
   private fun animateGradient(newTab: LoggedInTabs) = with(binding) {

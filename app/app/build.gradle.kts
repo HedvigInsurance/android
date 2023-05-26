@@ -232,7 +232,6 @@ dependencies {
   implementation(libs.slimber)
   implementation(libs.svg)
   implementation(libs.timber)
-  implementation(libs.tooltip)
   implementation(libs.zXing)
 
   debugImplementation(libs.androidx.compose.uiTestManifest)

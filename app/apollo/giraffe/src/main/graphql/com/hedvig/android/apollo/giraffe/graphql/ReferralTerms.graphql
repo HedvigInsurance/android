@@ -1,0 +1,5 @@
+query ReferralTerms($locale: Locale!) {
+  referralTerms(locale: $locale) {
+    url
+  }
+}

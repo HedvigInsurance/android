@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigInfoCard
 import com.hedvig.android.core.designsystem.material3.infoElement
@@ -87,7 +86,6 @@ fun TravelCertificateInformation(
         Text(stringResource(R.string.travel_certificate_get_travel_certificate_button))
       }
     }
-
   }
 }
 

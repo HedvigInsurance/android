@@ -25,8 +25,9 @@ class GetTravelCertificateSpecificationsUseCase(
       .bind()
       .currentMember
 
-    when (val travelCertificateSpecifications =
-      member.travelCertificateSpecifications.contractSpecifications.firstOrNull()) {
+    when (
+      val travelCertificateSpecifications = member.travelCertificateSpecifications.contractSpecifications.firstOrNull()
+    ) {
       null -> TravelCertificateResult.NotEligible
       else -> TravelCertificateResult.TraverlCertificateData(
         travelCertificateSpecification = travelCertificateSpecifications.toTravelCertificateSpecification(member.email),
@@ -71,7 +72,6 @@ sealed interface TravelCertificateResult {
       val numberOfCoInsured: Int,
     )
   }
-
 
   object NotEligible : TravelCertificateResult
 }

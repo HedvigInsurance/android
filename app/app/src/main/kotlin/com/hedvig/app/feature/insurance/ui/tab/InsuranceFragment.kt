@@ -43,6 +43,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
+import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithActions
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.app.databinding.InsuranceContractCardBinding
 import com.hedvig.app.databinding.InsuranceTerminatedContractsBinding
@@ -58,6 +60,7 @@ import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContrac
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.util.extensions.getActivity
 import com.hedvig.app.util.extensions.openWebBrowser
+import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
@@ -89,10 +92,9 @@ class InsuranceFragment : Fragment() {
               refreshing = isLoading,
               onRefresh = viewModel::load,
             )
-            Box() {
+            Box {
               Column(
                 Modifier
-                  .matchParentSize()
                   .pullRefresh(pullRefreshState)
                   .verticalScroll(rememberScrollState())
                   .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
@@ -130,6 +132,11 @@ class InsuranceFragment : Fragment() {
                 }
                 Spacer(Modifier.height(16.dp))
                 Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+              }
+              TopAppBarWithActions {
+                ToolbarChatIcon(
+                  onClick = { requireContext().startChat() },
+                )
               }
               PullRefreshIndicator(
                 refreshing = isLoading,
