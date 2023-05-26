@@ -82,7 +82,6 @@ import com.hedvig.app.feature.checkout.EditCheckoutUseCase
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUiStateFlowUseCase
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUseCase
 import com.hedvig.app.feature.claimdetail.ui.ClaimDetailViewModel
-import com.hedvig.app.feature.claims.data.ClaimsRepository
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimViewModel
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeViewModel
@@ -328,7 +327,7 @@ fun makeUserAgent(locale: Locale): String = buildString {
 }
 
 private val viewModelModule = module {
-  viewModel { ClaimsViewModel(get(), get()) }
+  viewModel { ClaimsViewModel(get()) }
   viewModel { ChatViewModel(get(), get(), get()) }
   viewModel { (quoteCartId: QuoteCartId?) -> RedeemCodeViewModel(quoteCartId, get(), get()) }
   viewModel { BankIdLoginViewModel(get(), get(), get(), get(), get()) }
@@ -548,7 +547,6 @@ private val serviceModule = module {
 private val repositoriesModule = module {
   single { ChatRepository(get<ApolloClient>(giraffeClient), get(), get()) }
   single { PayinStatusRepository(get<ApolloClient>(giraffeClient)) }
-  single { ClaimsRepository(get<ApolloClient>(giraffeClient), get()) }
   single { RedeemReferralCodeRepository(get<ApolloClient>(giraffeClient), get()) }
   single { UserRepository(get<ApolloClient>(giraffeClient)) }
   single { WelcomeRepository(get<ApolloClient>(giraffeClient), get()) }
