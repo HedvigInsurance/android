@@ -4,14 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import arrow.core.Either
-import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCase.SelfChangeEligibilityResult
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 abstract class ChangeAddressViewModel(
@@ -20,22 +16,16 @@ abstract class ChangeAddressViewModel(
   protected val _viewState = MutableLiveData<ViewState>()
   abstract val viewState: LiveData<ViewState>
 
-  protected val _events = Channel<Event>(Channel.UNLIMITED)
-  val events = _events.receiveAsFlow()
-
   init {
     hAnalytics.screenView(AppScreen.MOVING_FLOW_INTRO)
   }
 
   abstract fun reload()
-
-  abstract suspend fun triggerFreeTextChat()
 }
 
 class ChangeAddressViewModelImpl(
   private val getUpcomingAgreement: GetUpcomingAgreementUseCase,
   private val addressChangeStoryId: GetAddressChangeStoryIdUseCase,
-  private val chatRepository: ChatRepository,
   hAnalytics: HAnalytics,
 ) : ChangeAddressViewModel(hAnalytics) {
 
@@ -76,16 +66,6 @@ class ChangeAddressViewModelImpl(
   override fun reload() {
     fetchDataAndCreateState()
   }
-
-  override suspend fun triggerFreeTextChat() {
-    viewModelScope.launch {
-      val event = when (chatRepository.triggerFreeTextChat()) {
-        is Either.Left -> Event.Error
-        is Either.Right -> Event.StartChat
-      }
-      _events.trySend(event)
-    }
-  }
 }
 
 sealed class ViewState {
@@ -97,9 +77,4 @@ sealed class ViewState {
   data class ChangeAddressInProgress(
     val upcomingAgreementResult: UpcomingAgreementResult.UpcomingAgreement,
   ) : ViewState()
-}
-
-sealed class Event {
-  object StartChat : Event()
-  object Error : Event()
 }
