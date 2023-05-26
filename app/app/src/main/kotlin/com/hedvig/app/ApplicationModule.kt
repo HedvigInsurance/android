@@ -445,7 +445,6 @@ private val embarkModule = module {
       embarkRepository = get(),
       authTokenService = get(),
       graphQLQueryUseCase = get(),
-      chatRepository = get(),
       valueStore = get(),
       hAnalytics = get(),
       storyName = storyName,
