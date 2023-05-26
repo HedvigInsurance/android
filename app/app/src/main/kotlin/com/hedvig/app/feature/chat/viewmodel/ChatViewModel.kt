@@ -312,17 +312,6 @@ class ChatViewModel(
     disposables.clear()
   }
 
-  fun editLastResponse() {
-    viewModelScope.launch {
-      val response = runCatching { chatRepository.editLastResponse() }
-      if (response.isFailure) {
-        response.exceptionOrNull()?.let { e(it) }
-        return@launch
-      }
-      load()
-    }
-  }
-
   fun searchGifs(query: String) {
     viewModelScope.launch {
       val response = runCatching { chatRepository.searchGifs(query) }

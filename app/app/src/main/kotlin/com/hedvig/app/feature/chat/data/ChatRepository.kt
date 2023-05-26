@@ -21,7 +21,6 @@ import com.hedvig.app.util.extensions.into
 import giraffe.ChatMessageIdQuery
 import giraffe.ChatMessageSubscription
 import giraffe.ChatMessagesQuery
-import giraffe.EditLastResponseMutation
 import giraffe.GifQuery
 import giraffe.SendChatFileResponseMutation
 import giraffe.SendChatSingleSelectResponseMutation
@@ -161,9 +160,6 @@ class ChatRepository(
 
     return apolloClient.mutation(chatFileResponse).execute()
   }
-
-  suspend fun editLastResponse(): ApolloResponse<EditLastResponseMutation.Data> =
-    apolloClient.mutation(EditLastResponseMutation()).execute()
 
   suspend fun triggerFreeTextChat(): Either<FreeTextError, FreeTextSuccess> {
     return either {

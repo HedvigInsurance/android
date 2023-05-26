@@ -178,17 +178,6 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
 
   private fun initializeMessages() {
     val adapter = ChatAdapter(
-      this,
-      onPressEdit = {
-        showAlert(
-          hedvig.resources.R.string.CHAT_EDIT_MESSAGE_TITLE,
-          positiveLabel = hedvig.resources.R.string.CHAT_EDIT_MESSAGE_SUBMIT,
-          negativeLabel = hedvig.resources.R.string.CHAT_EDIT_MESSAGE_CANCEL,
-          positiveAction = {
-            chatViewModel.editLastResponse()
-          },
-        )
-      },
       imageLoader = imageLoader,
     )
     binding.messages.adapter = adapter
