@@ -409,7 +409,6 @@ private val offerModule = module {
       selectedContractTypes = parametersHolder.get(),
       offerRepository = get(),
       startCheckoutUseCase = get(),
-      chatRepository = get(),
       editCampaignUseCase = get(),
       featureManager = get(),
       addPaymentTokenUseCase = get(),

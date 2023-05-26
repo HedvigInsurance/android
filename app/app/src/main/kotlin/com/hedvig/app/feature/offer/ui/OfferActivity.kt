@@ -63,7 +63,6 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -234,7 +233,6 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
           is OfferViewModel.Event.ApproveSuccessful -> handlePostSign(event)
           is OfferViewModel.Event.ApproveError -> handlePostSignError(event)
           OfferViewModel.Event.StartSwedishBankIdSign -> showSignDialog()
-          OfferViewModel.Event.OpenChat -> startChat()
         }
       }
       .launchIn(lifecycleScope)
@@ -349,9 +347,7 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
   }
 
   private fun openChat() {
-    lifecycleScope.launch {
-      viewModel.triggerOpenChat()
-    }
+    startChat()
   }
 
   private fun scheduleEnterAnimation() {
