@@ -6,8 +6,10 @@ import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.feature.travelcertificate.CoInsured
 import com.hedvig.android.feature.travelcertificate.TravelCertificateInputState
 import com.hedvig.android.feature.travelcertificate.data.CreateTravelCertificateUseCase
+import com.hedvig.android.feature.travelcertificate.data.DownloadTravelCertificateUseCase
 import com.hedvig.android.feature.travelcertificate.data.GetTravelCertificateSpecificationsUseCase
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateResult
+import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,6 +23,7 @@ import kotlinx.datetime.toLocalDateTime
 class GenerateTravelCertificateViewModel(
   private val getTravelCertificateSpecificationsUseCase: GetTravelCertificateSpecificationsUseCase,
   private val createTravelCertificateUseCase: CreateTravelCertificateUseCase,
+  private val downloadTravelCertificateUseCase: DownloadTravelCertificateUseCase,
 ) : ViewModel() {
   private val _uiState: MutableStateFlow<TravelCertificateInputState> = MutableStateFlow(TravelCertificateInputState())
   val uiState: StateFlow<TravelCertificateInputState> = _uiState.asStateFlow()
@@ -125,14 +128,19 @@ class GenerateTravelCertificateViewModel(
         ).fold(
           ifLeft = { errorMessage ->
             _uiState.update {
-              TravelCertificateInputState(
+              it.copy(
                 isLoading = false,
                 errorMessage = errorMessage.message,
               )
             }
           },
           ifRight = { url ->
-            _uiState.update { it.copy(travelCertificateUrl = url) }
+            _uiState.update {
+              it.copy(
+                isLoading = false,
+                travelCertificateUrl = url,
+              )
+            }
           },
         )
       }
@@ -152,6 +160,26 @@ class GenerateTravelCertificateViewModel(
       "Can not add any co-insured"
     }
     _uiState.update { it.copy(errorMessage = message) }
+  }
+
+  fun onDownloadTravelCertificate(url: TravelCertificateUrl) {
+    viewModelScope.launch {
+      _uiState.update { it.copy(isLoading = true) }
+      downloadTravelCertificateUseCase.invoke(url)
+        .fold(
+          ifLeft = { errorMessage ->
+            _uiState.update {
+              TravelCertificateInputState(
+                isLoading = false,
+                errorMessage = errorMessage.message,
+              )
+            }
+          },
+          ifRight = { uri ->
+            _uiState.update { it.copy(travelCertificateUri = uri) }
+          },
+        )
+    }
   }
 }
 

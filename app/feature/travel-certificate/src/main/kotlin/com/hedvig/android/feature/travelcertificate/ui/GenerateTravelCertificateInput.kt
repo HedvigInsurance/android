@@ -51,6 +51,7 @@ import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.feature.travelcertificate.CoInsured
 import com.hedvig.android.feature.travelcertificate.TravelCertificateInputState
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
+import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import hedvig.resources.R
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -68,7 +69,7 @@ fun GenerateTravelCertificateInput(
   onIncludeMemberClicked: (Boolean) -> Unit,
   onTravelDateSelected: (LocalDate) -> Unit,
   onContinue: () -> Unit,
-  onSuccess: (TravelCertificateUri) -> Unit,
+  onSuccess: (TravelCertificateUrl) -> Unit,
 ) {
   if (uiState.errorMessage != null) {
     ErrorDialog(
@@ -215,7 +216,7 @@ fun GenerateTravelCertificateInput(
       ) {
         Text(stringResource(R.string.SAVE_AND_CONTINUE_BUTTON_LABEL))
       }
-      Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.height(32.dp))
     }
   }
 }

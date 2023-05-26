@@ -107,12 +107,29 @@ internal fun NavGraphBuilder.generateTravelCertificateGraph(
       )
     }
     animatedComposable<GenerateTravelCertificateDestination.ShowCertificate> {
+      val viewModel = navGraphScopedViewModel(
+        navController = navController,
+        backStackEntry = it,
+      )
+      val uiState: TravelCertificateInputState by viewModel.uiState.collectAsStateWithLifecycle()
+
       BackHandler {
         finish()
       }
+
       TravelCertificateOverView(
-        travelCertificateUri,
+        travelCertificateUrl = travelCertificateUrl,
+        onDownloadCertificate = {
+          viewModel.onDownloadTravelCertificate(travelCertificateUrl)
+        },
+        travelCertificateUri = uiState.travelCertificateUri,
+        isLoading = uiState.isLoading,
+        errorMessage = uiState.errorMessage,
+        onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
         navigateBack = finish,
+        onSuccess = {
+          // Show bottom sheet
+        }
       )
     }
   }

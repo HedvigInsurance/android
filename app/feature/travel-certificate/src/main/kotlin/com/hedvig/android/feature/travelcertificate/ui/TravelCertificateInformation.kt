@@ -1,32 +1,28 @@
 package com.hedvig.android.feature.travelcertificate.ui
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
-import com.hedvig.android.core.designsystem.component.card.HedvigInfoCard
-import com.hedvig.android.core.designsystem.material3.infoElement
 import com.hedvig.android.core.designsystem.material3.squircle
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.error.ErrorDialog
+import com.hedvig.android.core.ui.infocard.DrawableInfoCard
+import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateResult
 import hedvig.resources.R
@@ -69,9 +65,15 @@ fun TravelCertificateInformation(
       )
       Spacer(modifier = Modifier.padding(top = 48.dp))
       infoSections?.map {
-        InfoCard(
+        DrawableInfoCard(
           title = it.title,
           text = it.body,
+          icon = painterResource(com.hedvig.android.core.designsystem.R.drawable.ic_info_transparent),
+          iconColor = MaterialTheme.colorScheme.primary,
+          colors = CardDefaults.outlinedCardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+          ),
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
@@ -86,42 +88,7 @@ fun TravelCertificateInformation(
       ) {
         Text(stringResource(R.string.travel_certificate_get_travel_certificate_button))
       }
-    }
-
-  }
-}
-
-@Composable
-internal fun InfoCard(
-  title: String,
-  text: String,
-  modifier: Modifier = Modifier,
-) {
-  HedvigInfoCard(
-    modifier = modifier,
-    contentPadding = PaddingValues(12.dp),
-  ) {
-    Icon(
-      imageVector = Icons.Default.Info,
-      contentDescription = "info",
-      modifier = Modifier
-        .padding(top = 2.dp)
-        .size(16.dp)
-        .padding(1.dp),
-      tint = MaterialTheme.colorScheme.infoElement,
-    )
-    Spacer(modifier = Modifier.padding(start = 8.dp))
-    Column {
-      Text(
-        text = title,
-        style = MaterialTheme.typography.bodyMedium,
-      )
-      Spacer(modifier = Modifier.padding(2.dp))
-      Text(
-        text = text,
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.secondary,
-      )
+      Spacer(Modifier.height(32.dp))
     }
   }
 }

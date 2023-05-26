@@ -4,6 +4,7 @@ import androidx.compose.material3.DatePickerState
 import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateResult
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
+import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
@@ -18,7 +19,8 @@ data class TravelCertificateInputState(
   val dateValidator: (Long) -> Boolean = { false },
   val isLoading: Boolean = false,
   val errorMessage: String? = null,
-  val travelCertificateUrl: TravelCertificateUri? = null,
+  val travelCertificateUrl: TravelCertificateUrl? = null,
+  val travelCertificateUri: TravelCertificateUri? = null,
   val infoSections: List<TravelCertificateResult.TraverlCertificateData.InfoSection>? = null,
 ) {
   val isInputValid: Boolean
