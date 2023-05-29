@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -47,7 +48,11 @@ fun AddCoInsured(
   ) {
     Spacer(modifier = Modifier.height(48.dp))
     Text(
-      text = stringResource(id = R.string.travel_certificate_add_member),
+      text = if (coInsured != null) {
+        stringResource(id = R.string.travel_certificate_edit_member_title)
+      } else {
+        stringResource(id = R.string.travel_certificate_change_member_title)
+      },
       style = MaterialTheme.typography.headlineSmall,
       textAlign = TextAlign.Center,
       modifier = Modifier.fillMaxWidth(),
@@ -115,7 +120,7 @@ fun AddCoInsured(
     ) {
       Text(stringResource(R.string.SAVE_AND_CONTINUE_BUTTON_LABEL))
     }
-    Spacer(Modifier.height(16.dp))
+    Spacer(Modifier.height(32.dp))
   }
 }
 

@@ -1,9 +1,7 @@
 package com.hedvig.android.feature.travelcertificate.navigation
 
 import GenerateTravelCertificateViewModel
-import android.content.Context
 import android.content.Intent
-import android.os.Environment
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,7 +15,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.travelcertificate.TravelCertificateInputState
-import com.hedvig.android.feature.travelcertificate.data.CERTIFICATE_NAME
 import com.hedvig.android.feature.travelcertificate.ui.AddCoInsured
 import com.hedvig.android.feature.travelcertificate.ui.GenerateTravelCertificateInput
 import com.hedvig.android.feature.travelcertificate.ui.TravelCertificateInformation
@@ -26,8 +23,6 @@ import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.compose.typed.animatedNavigation
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
-import java.io.File
-import java.security.AccessController.getContext
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.ParametersDefinition
 
@@ -83,6 +78,9 @@ internal fun NavGraphBuilder.generateTravelCertificateGraph(
           } else {
             viewModel.onMaxCoInsureAdded()
           }
+        },
+        onRemoveCoInsuredClicked = { coInsured ->
+          viewModel.onCoInsuredRemoved(coInsured.id)
         },
         onIncludeMemberClicked = viewModel::onIncludeMemberClicked,
         onTravelDateSelected = viewModel::onTravelDateSelected,
