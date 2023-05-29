@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentManager
 import coil.ImageLoader
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.hedvig.android.app.ui.HedvigAppState
+import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
@@ -32,6 +33,8 @@ internal fun HedvigNavHost(
     navController = navController,
     startDestination = createRoutePattern<TopLevelDestination.HOME>(),
     modifier = modifier,
+    enterTransition = { MotionDefaults.fadeThroughEnter },
+    exitTransition = { MotionDefaults.fadeThroughExit },
   ) {
     homeGraph(
       marketManager = marketManager,
