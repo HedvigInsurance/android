@@ -44,7 +44,6 @@ import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
-import com.hedvig.android.core.designsystem.material3.onWarningElement
 import com.hedvig.android.core.designsystem.material3.squircle
 import com.hedvig.android.core.designsystem.material3.warningContainer
 import com.hedvig.android.core.designsystem.material3.warningElement
@@ -139,6 +138,7 @@ fun GenerateTravelCertificateInput(
           .padding(horizontal = 16.dp),
       )
       Spacer(modifier = Modifier.height(8.dp))
+
       LargeContainedButton(
         onClick = { onIncludeMemberClicked(!uiState.includeMember) },
         modifier = Modifier.padding(horizontal = 16.dp),
@@ -164,7 +164,6 @@ fun GenerateTravelCertificateInput(
           }
         }
       }
-      Spacer(modifier = Modifier.height(8.dp))
 
       uiState.coInsured.input.map { coInsured ->
         Spacer(modifier = Modifier.height(8.dp))
@@ -177,14 +176,17 @@ fun GenerateTravelCertificateInput(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
             contentColor = MaterialTheme.colorScheme.onSurface,
           ),
-          contentPadding = PaddingValues(start = 16.dp, top = 12.dp, bottom = 12.dp, end = 12.dp)
+          contentPadding = PaddingValues(start = 16.dp, top = 12.dp, bottom = 12.dp, end = 12.dp),
         ) {
           Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = CenterVertically,
             modifier = Modifier.fillMaxWidth(),
           ) {
-            Text("${coInsured.name}, ${coInsured.ssn}")
+            Text(
+              text = "${coInsured.firstName()}, ${coInsured.ssn}",
+              modifier = Modifier.width(250.dp),
+            )
             Row {
               Box(
                 Modifier
@@ -204,7 +206,7 @@ fun GenerateTravelCertificateInput(
               Spacer(modifier = Modifier.padding(start = 4.dp))
               Box(
                 Modifier
-                  .size(36.dp)
+                  .size(36.dp),
               ) {
                 Icon(
                   painter = painterResource(id = com.hedvig.android.core.designsystem.R.drawable.ic_plus),
@@ -230,7 +232,7 @@ fun GenerateTravelCertificateInput(
           containerColor = MaterialTheme.colorScheme.surfaceVariant,
           contentColor = MaterialTheme.colorScheme.onSurface,
         ),
-        contentPadding = PaddingValues(start = 16.dp, top = 12.dp, bottom = 12.dp, end = 12.dp)
+        contentPadding = PaddingValues(start = 16.dp, top = 12.dp, bottom = 12.dp, end = 12.dp),
       ) {
         Row(
           horizontalArrangement = Arrangement.SpaceBetween,
@@ -487,7 +489,7 @@ val mockUiState = TravelCertificateInputState(
     input = listOf(
       CoInsured(
         id = "123",
-        name = "Hugo",
+        name = "Hugo K",
         ssn = "199101131093",
       ),
       CoInsured(
