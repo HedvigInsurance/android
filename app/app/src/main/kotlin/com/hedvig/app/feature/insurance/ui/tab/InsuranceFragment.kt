@@ -1,9 +1,5 @@
 package com.hedvig.app.feature.insurance.ui.tab
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -30,25 +26,26 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.core.app.ActivityOptionsCompat
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavGraphBuilder
 import coil.ImageLoader
 import com.google.android.material.transition.platform.MaterialSharedAxis
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.app.navigation.TopLevelDestination
 import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithActions
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
+import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.app.databinding.InsuranceContractCardBinding
 import com.hedvig.app.databinding.InsuranceTerminatedContractsBinding
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
@@ -65,107 +62,113 @@ import com.hedvig.app.util.extensions.getActivity
 import com.hedvig.app.util.extensions.openWebBrowser
 import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.activityViewModel
+import org.koin.androidx.compose.koinViewModel
 
-class InsuranceFragment : Fragment() {
-  private val viewModel: InsuranceViewModel by activityViewModel()
-  private val imageLoader: ImageLoader by inject()
-
-  @OptIn(ExperimentalMaterialApi::class)
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-    return ComposeView(requireContext()).apply {
-      setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-      setContent {
-        HedvigTheme {
-          val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-          val isLoading = uiState.loading
-          val storeUrl = uiState.storeUrl
-          LaunchedEffect(storeUrl) {
-            if (storeUrl != null) {
-              viewModel.crossSellActionOpened()
-              activity?.openWebBrowser(storeUrl)
-            }
-          }
-          Surface(
-            color = MaterialTheme.colorScheme.background,
-            modifier = Modifier.fillMaxSize(),
-          ) {
-            val systemBarInsetTopDp = with(LocalDensity.current) {
-              WindowInsets.systemBars.getTop(this).toDp()
-            }
-            val pullRefreshState = rememberPullRefreshState(
-              refreshing = isLoading,
-              onRefresh = viewModel::load,
-              refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
-            )
-            Box {
-              Column(
-                Modifier
-                  .pullRefresh(pullRefreshState)
-                  .verticalScroll(rememberScrollState())
-                  .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-              ) {
-                Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
-                Spacer(Modifier.height(64.dp))
-                Text(
-                  text = stringResource(hedvig.resources.R.string.DASHBOARD_SCREEN_TITLE),
-                  style = MaterialTheme.typography.headlineLarge,
-                  modifier = Modifier.padding(horizontal = 16.dp),
-                )
-                Spacer(Modifier.height(24.dp))
-                val insuranceModels = uiState.insuranceModels
-                when {
-                  uiState.hasError -> {
-                    GenericErrorScreen(
-                      description = stringResource(hedvig.resources.R.string.home_tab_error_body),
-                      onRetryButtonClick = viewModel::load,
-                      modifier = Modifier
-                        .padding(16.dp)
-                        .padding(top = (40 - 16).dp),
-                    )
-                  }
-                  insuranceModels != null -> {
-                    InsuranceModelsRenderer(
-                      insuranceModels = insuranceModels,
-                      imageLoader = imageLoader,
-                      onClickCrossSellCard = {
-                        viewModel.onClickCrossSellCard(it)
-                        context.startActivity(CrossSellDetailActivity.newInstance(context, it))
-                      },
-                      onClickCrossSellAction = viewModel::onClickCrossSellAction,
-                    )
-                  }
-                }
-                Spacer(Modifier.height(16.dp))
-                Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
-              }
-              TopAppBarWithActions {
-                ToolbarChatIcon(
-                  onClick = { requireContext().startChat() },
-                )
-              }
-              PullRefreshIndicator(
-                refreshing = isLoading,
-                state = pullRefreshState,
-                scale = true,
-                modifier = Modifier.align(Alignment.TopCenter),
-              )
-            }
-          }
-        }
+internal fun NavGraphBuilder.insuranceGraph(
+  imageLoader: ImageLoader,
+) {
+  animatedComposable<TopLevelDestination.INSURANCE> {
+    val viewModel: InsuranceViewModel = koinViewModel()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val storeUrl = uiState.storeUrl
+    val context = LocalContext.current
+    LaunchedEffect(storeUrl) {
+      if (storeUrl != null) {
+        viewModel.crossSellActionOpened()
+        context.openWebBrowser(storeUrl)
       }
     }
+    DisposableEffect(viewModel) {
+      onDispose {
+        viewModel.markCardCrossSellsAsSeen()
+      }
+    }
+    InsuranceDestination(
+      uiState = uiState,
+      reload = viewModel::load,
+      onClickCrossSellCard = viewModel::onClickCrossSellCard,
+      onClickCrossSellAction = viewModel::onClickCrossSellAction,
+      imageLoader = imageLoader,
+    )
   }
+}
 
-  override fun onResume() {
-    super.onResume()
-    viewModel.load()
-  }
-
-  override fun onPause() {
-    super.onPause()
-    viewModel.markCardCrossSellsAsSeen()
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun InsuranceDestination(
+  uiState: InsuranceUiState,
+  reload: () -> Unit,
+  onClickCrossSellCard: (CrossSellData) -> Unit,
+  onClickCrossSellAction: (CrossSellData) -> Unit,
+  imageLoader: ImageLoader,
+) {
+  val context = LocalContext.current
+  val isLoading = uiState.loading
+  Surface(
+    color = MaterialTheme.colorScheme.background,
+    modifier = Modifier.fillMaxSize(),
+  ) {
+    val systemBarInsetTopDp = with(LocalDensity.current) {
+      WindowInsets.systemBars.getTop(this).toDp()
+    }
+    val pullRefreshState = rememberPullRefreshState(
+      refreshing = isLoading,
+      onRefresh = reload,
+      refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
+    )
+    Box {
+      Column(
+        Modifier
+          .pullRefresh(pullRefreshState)
+          .verticalScroll(rememberScrollState())
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+      ) {
+        Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
+        Spacer(Modifier.height(64.dp))
+        Text(
+          text = stringResource(hedvig.resources.R.string.DASHBOARD_SCREEN_TITLE),
+          style = MaterialTheme.typography.headlineLarge,
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+        Spacer(Modifier.height(24.dp))
+        val insuranceModels = uiState.insuranceModels
+        when {
+          uiState.hasError -> {
+            GenericErrorScreen(
+              description = stringResource(hedvig.resources.R.string.home_tab_error_body),
+              onRetryButtonClick = reload,
+              modifier = Modifier
+                .padding(16.dp)
+                .padding(top = (40 - 16).dp),
+            )
+          }
+          insuranceModels != null -> {
+            InsuranceModelsRenderer(
+              insuranceModels = insuranceModels,
+              imageLoader = imageLoader,
+              onClickCrossSellCard = {
+                onClickCrossSellCard(it)
+                context.startActivity(CrossSellDetailActivity.newInstance(context, it))
+              },
+              onClickCrossSellAction = onClickCrossSellAction,
+            )
+          }
+        }
+        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+      }
+      TopAppBarWithActions {
+        ToolbarChatIcon(
+          onClick = { context.startChat() },
+        )
+      }
+      PullRefreshIndicator(
+        refreshing = isLoading,
+        state = pullRefreshState,
+        scale = true,
+        modifier = Modifier.align(Alignment.TopCenter),
+      )
+    }
   }
 }
 

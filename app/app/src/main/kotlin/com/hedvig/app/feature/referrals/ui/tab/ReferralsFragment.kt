@@ -3,10 +3,6 @@ package com.hedvig.app.feature.referrals.ui.tab
 import android.animation.ValueAnimator
 import android.content.Intent
 import android.net.Uri
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,25 +38,26 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.core.view.doOnDetach
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavGraphBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.hedvig.android.app.navigation.TopLevelDestination
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithActions
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.progress.FullScreenHedvigProgress
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ReferralsCodeBinding
 import com.hedvig.app.databinding.ReferralsHeaderBinding
@@ -85,86 +82,94 @@ import com.hedvig.app.util.safeLet
 import giraffe.ReferralsQuery
 import giraffe.fragment.ReferralFragment
 import org.javamoney.moneta.Money
-import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.androidx.compose.koinViewModel
 import slimber.log.e
 import java.util.Locale
 import javax.money.MonetaryAmount
 
-class ReferralsFragment : Fragment() {
-  private val referralsViewModel: ReferralsViewModel by viewModel()
-  private val languageService: LanguageService by inject()
+internal fun NavGraphBuilder.referralsGraph(
+  languageService: LanguageService,
+) {
+  animatedComposable<TopLevelDestination.REFERRALS>() {
+    val viewModel: ReferralsViewModel = koinViewModel()
+    val uiState by viewModel.data.collectAsStateWithLifecycle()
+    ReferralsDestination(
+      uiState = uiState,
+      reload = viewModel::reload,
+      languageService = languageService,
+    )
+  }
+}
 
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-    return ComposeView(requireContext()).apply {
-      setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-      setContent {
-        HedvigTheme {
-          Surface(
-            color = MaterialTheme.colorScheme.background,
-            modifier = Modifier.fillMaxSize(),
-          ) {
-            val data by referralsViewModel.data.collectAsStateWithLifecycle()
-            when (val uiState = data) {
-              is ReferralsUiState.Error -> {
-                Box {
-                  Column(Modifier.matchParentSize()) {
-                    Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
-                    Spacer(Modifier.height(64.dp))
-                    Text(
-                      text = stringResource(hedvig.resources.R.string.PROFILE_REFERRAL_TITLE),
-                      style = MaterialTheme.typography.headlineLarge,
-                      modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .padding(top = 8.dp),
-                    )
-                    GenericErrorScreen(
-                      onRetryButtonClick = { referralsViewModel.reload() },
-                      Modifier
-                        .padding(16.dp)
-                        .padding(top = (64 - 16).dp),
-                    )
-                  }
-                  FullScreenHedvigProgress(Modifier.align(Alignment.Center), uiState.isLoading)
-                }
-              }
-              else -> {
-                ForeverScreen(
-                  uiState = uiState,
-                  reload = referralsViewModel::reload,
-                  onShareCodeClick = { code, incentive ->
-                    requireContext().showShareSheet(hedvig.resources.R.string.REFERRALS_SHARE_SHEET_TITLE) { intent ->
-                      intent.putExtra(
-                        Intent.EXTRA_TEXT,
-                        getString(
-                          hedvig.resources.R.string.REFERRAL_SMS_MESSAGE,
-                          incentive.format(languageService.getLocale()),
-                          buildString {
-                            append(getString(R.string.WEB_BASE_URL))
-                            append("/")
-                            append(languageService.getGraphQLLocale().toWebLocaleTag())
-                            append("/forever/")
-                            append(Uri.encode(code))
-                          },
-                        ),
-                      )
-                      intent.type = "text/plain"
-                    }
-                  },
-                  openReferralsInformation = { referralTermsUrl: String, referralIncentive: MonetaryAmount ->
-                    startActivity(
-                      ReferralsInformationActivity.newInstance(
-                        context = requireContext(),
-                        termsUrl = referralTermsUrl,
-                        incentive = referralIncentive,
-                      ),
-                    )
-                  },
-                )
-              }
-            }
+@Composable
+private fun ReferralsDestination(
+  uiState: ReferralsUiState,
+  reload: () -> Unit,
+  languageService: LanguageService,
+) {
+  Surface(
+    color = MaterialTheme.colorScheme.background,
+    modifier = Modifier.fillMaxSize(),
+  ) {
+    LocalConfiguration.current
+    val context = LocalContext.current
+    val resources = context.resources
+    when (uiState) {
+      is ReferralsUiState.Error -> {
+        Box {
+          Column(Modifier.matchParentSize()) {
+            Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
+            Spacer(Modifier.height(64.dp))
+            Text(
+              text = stringResource(hedvig.resources.R.string.PROFILE_REFERRAL_TITLE),
+              style = MaterialTheme.typography.headlineLarge,
+              modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .padding(top = 8.dp),
+            )
+            GenericErrorScreen(
+              onRetryButtonClick = reload,
+              Modifier
+                .padding(16.dp)
+                .padding(top = (64 - 16).dp),
+            )
           }
+          FullScreenHedvigProgress(Modifier.align(Alignment.Center), uiState.isLoading)
         }
+      }
+      else -> {
+        ForeverScreen(
+          uiState = uiState,
+          reload = reload,
+          onShareCodeClick = { code, incentive ->
+            context.showShareSheet(hedvig.resources.R.string.REFERRALS_SHARE_SHEET_TITLE) { intent ->
+              intent.putExtra(
+                Intent.EXTRA_TEXT,
+                resources.getString(
+                  hedvig.resources.R.string.REFERRAL_SMS_MESSAGE,
+                  incentive.format(languageService.getLocale()),
+                  buildString {
+                    append(resources.getString(R.string.WEB_BASE_URL))
+                    append("/")
+                    append(languageService.getGraphQLLocale().toWebLocaleTag())
+                    append("/forever/")
+                    append(Uri.encode(code))
+                  },
+                ),
+              )
+              intent.type = "text/plain"
+            }
+          },
+          openReferralsInformation = { referralTermsUrl: String, referralIncentive: MonetaryAmount ->
+            context.startActivity(
+              ReferralsInformationActivity.newInstance(
+                context = context,
+                termsUrl = referralTermsUrl,
+                incentive = referralIncentive,
+              ),
+            )
+          },
+        )
       }
     }
   }
@@ -186,7 +191,8 @@ private fun ForeverScreen(
     onRefresh = reload,
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
-  Box() {
+  val incentive = uiState.incentive
+  Box {
     Column(
       Modifier
         .matchParentSize()
@@ -194,22 +200,8 @@ private fun ForeverScreen(
         .verticalScroll(rememberScrollState())
         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
     ) {
-      val incentive = uiState.incentive
-      TopAppBarWithActions {
-        if (incentive != null && uiState is ReferralsUiState.Success && uiState.referralTerms != null) {
-          IconButton(
-            onClick = { openReferralsInformation(uiState.referralTerms.url, incentive) },
-            colors = IconButtonDefaults.iconButtonColors(),
-            modifier = Modifier.size(40.dp),
-          ) {
-            Icon(
-              painter = painterResource(hedvig.resources.R.drawable.ic_info_toolbar),
-              contentDescription = stringResource(hedvig.resources.R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
-              modifier = Modifier.size(24.dp),
-            )
-          }
-        }
-      }
+      Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
+      Spacer(Modifier.height(64.dp))
       Text(
         text = stringResource(hedvig.resources.R.string.PROFILE_REFERRAL_TITLE),
         style = MaterialTheme.typography.headlineLarge,
@@ -231,6 +223,21 @@ private fun ForeverScreen(
       }
       Spacer(Modifier.height(16.dp))
       Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+    }
+    if (incentive != null && uiState is ReferralsUiState.Success && uiState.referralTerms != null) {
+      TopAppBarWithActions {
+        IconButton(
+          onClick = { openReferralsInformation(uiState.referralTerms.url, incentive) },
+          colors = IconButtonDefaults.iconButtonColors(),
+          modifier = Modifier.size(40.dp),
+        ) {
+          Icon(
+            painter = painterResource(hedvig.resources.R.drawable.ic_info_toolbar),
+            contentDescription = stringResource(hedvig.resources.R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
+            modifier = Modifier.size(24.dp),
+          )
+        }
+      }
     }
     PullRefreshIndicator(
       refreshing = uiState.isLoading,
@@ -525,7 +532,6 @@ private fun bindReferralsCodeBinding(
             hedvig.resources.R.string.referrals_active__toast_text,
             Snackbar.LENGTH_SHORT,
           )
-          .setAnchorView(R.id.bottomNavigation)
           .show()
         true
       }
