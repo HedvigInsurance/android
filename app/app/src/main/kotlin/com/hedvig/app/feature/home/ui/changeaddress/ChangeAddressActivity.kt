@@ -7,8 +7,6 @@ import android.transition.TransitionManager
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressActivityBinding
@@ -24,7 +22,6 @@ import com.hedvig.app.feature.home.ui.changeaddress.ViewState.SelfChangeError
 import com.hedvig.app.feature.home.ui.changeaddress.ViewState.UpcomingAgreementError
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
-import com.hedvig.app.util.extensions.showErrorDialog
 import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
@@ -32,9 +29,6 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ChangeAddressActivity : AppCompatActivity(R.layout.change_address_activity) {
@@ -45,16 +39,6 @@ class ChangeAddressActivity : AppCompatActivity(R.layout.change_address_activity
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     lifecycle.addObserver(AuthenticatedObserver())
-
-    viewModel.events
-      .flowWithLifecycle(lifecycle)
-      .onEach { event ->
-        when (event) {
-          Event.Error -> showErrorDialog(getString(com.adyen.checkout.dropin.R.string.component_error)) {}
-          Event.StartChat -> startChat()
-        }
-      }
-      .launchIn(lifecycleScope)
 
     with(binding) {
       window.compatSetDecorFitsSystemWindows(false)
@@ -109,11 +93,7 @@ class ChangeAddressActivity : AppCompatActivity(R.layout.change_address_activity
         subtitleText = getString(hedvig.resources.R.string.moving_intro_existing_move_description),
         buttonText = getString(hedvig.resources.R.string.moving_intro_manual_handling_button_text),
         buttonIcon = R.drawable.ic_chat_white,
-        onContinue = {
-          lifecycleScope.launch {
-            viewModel.triggerFreeTextChat()
-          }
-        },
+        onContinue = { startChat() },
         viewState.upcomingAgreementResult,
       )
       is UpcomingAgreementError -> setContent(

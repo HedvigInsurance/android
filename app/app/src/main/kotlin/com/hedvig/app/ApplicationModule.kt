@@ -82,14 +82,11 @@ import com.hedvig.app.feature.checkout.EditCheckoutUseCase
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUiStateFlowUseCase
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUseCase
 import com.hedvig.app.feature.claimdetail.ui.ClaimDetailViewModel
-import com.hedvig.app.feature.claims.data.ClaimsRepository
-import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimViewModel
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeViewModel
 import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.crossselling.ui.detail.CrossSellDetailViewModel
-import com.hedvig.app.feature.crossselling.ui.detail.CrossSellFaqViewModel
 import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsUseCase
 import com.hedvig.app.feature.embark.EmbarkRepository
 import com.hedvig.app.feature.embark.EmbarkViewModel
@@ -328,7 +325,6 @@ fun makeUserAgent(locale: Locale): String = buildString {
 }
 
 private val viewModelModule = module {
-  viewModel { ClaimsViewModel(get(), get()) }
   viewModel { ChatViewModel(get(), get(), get()) }
   viewModel { (quoteCartId: QuoteCartId?) -> RedeemCodeViewModel(quoteCartId, get(), get()) }
   viewModel { BankIdLoginViewModel(get(), get(), get(), get(), get()) }
@@ -356,9 +352,6 @@ private val viewModelModule = module {
   }
   viewModel { AudioRecorderViewModel(get()) }
   viewModel { (crossSell: CrossSellData) ->
-    CrossSellFaqViewModel(crossSell, get())
-  }
-  viewModel { (crossSell: CrossSellData) ->
     CrossSellDetailViewModel(crossSell.storeUrl, get())
   }
   viewModel { GenericAuthViewModel(get(), get()) }
@@ -384,7 +377,7 @@ private val viewModelModule = module {
       get(),
     )
   }
-  viewModel { (claimId: String) -> ClaimDetailViewModel(claimId, get(), get(), get()) }
+  viewModel { (claimId: String) -> ClaimDetailViewModel(claimId, get(), get()) }
   viewModel { HonestyPledgeViewModel(get()) }
   viewModel { CommonClaimViewModel(get()) }
   viewModel { TooltipViewModel(get()) }
@@ -416,7 +409,6 @@ private val offerModule = module {
       selectedContractTypes = parametersHolder.get(),
       offerRepository = get(),
       startCheckoutUseCase = get(),
-      chatRepository = get(),
       editCampaignUseCase = get(),
       featureManager = get(),
       addPaymentTokenUseCase = get(),
@@ -452,7 +444,6 @@ private val embarkModule = module {
       embarkRepository = get(),
       authTokenService = get(),
       graphQLQueryUseCase = get(),
-      chatRepository = get(),
       valueStore = get(),
       hAnalytics = get(),
       storyName = storyName,
@@ -504,7 +495,7 @@ private val trustlyModule = module {
 }
 
 private val changeAddressModule = module {
-  viewModel<ChangeAddressViewModel> { ChangeAddressViewModelImpl(get(), get(), get(), get()) }
+  viewModel<ChangeAddressViewModel> { ChangeAddressViewModelImpl(get(), get(), get()) }
 }
 
 private val changeDateBottomSheetModule = module {
@@ -548,7 +539,6 @@ private val serviceModule = module {
 private val repositoriesModule = module {
   single { ChatRepository(get<ApolloClient>(giraffeClient), get(), get()) }
   single { PayinStatusRepository(get<ApolloClient>(giraffeClient)) }
-  single { ClaimsRepository(get<ApolloClient>(giraffeClient), get()) }
   single { RedeemReferralCodeRepository(get<ApolloClient>(giraffeClient), get()) }
   single { UserRepository(get<ApolloClient>(giraffeClient)) }
   single { WelcomeRepository(get<ApolloClient>(giraffeClient), get()) }

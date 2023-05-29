@@ -19,15 +19,12 @@ import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.common.android.serializableExtra
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityLoggedInBinding
-import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.welcome.WelcomeDialog
 import com.hedvig.app.feature.welcome.WelcomeViewModel
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.extensions.isDarkThemeActive
-import com.hedvig.app.util.extensions.showErrorDialog
 import com.hedvig.app.util.extensions.showReviewDialog
-import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
@@ -42,8 +39,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import slimber.log.e
 
 class LoggedInActivity : AppCompatActivity(R.layout.activity_logged_in) {
-  private val claimsViewModel: ClaimsViewModel by viewModel()
-
   private val welcomeViewModel: WelcomeViewModel by viewModel()
   private val loggedInViewModel: LoggedInViewModel by viewModel()
 
@@ -72,20 +67,6 @@ class LoggedInActivity : AppCompatActivity(R.layout.activity_logged_in) {
           }
         }
         .launchIn(lifecycleScope)
-
-      claimsViewModel.events
-        .flowWithLifecycle(lifecycle)
-        .onEach { event ->
-          when (event) {
-            ClaimsViewModel.Event.Error -> {
-              showErrorDialog(getString(com.adyen.checkout.dropin.R.string.component_error)) {}
-            }
-            ClaimsViewModel.Event.StartChat -> startChat()
-          }
-        }
-        .launchIn(lifecycleScope)
-
-      supportActionBar?.setDisplayShowTitleEnabled(false)
 
       bottomNavigation.itemIconTintList = null
       bottomNavigation.setOnItemSelectedListener { menuItem ->

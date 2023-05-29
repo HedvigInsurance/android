@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import arrow.core.Either
-import arrow.core.raise.either
-import arrow.core.raise.ensure
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.api.toUpload
@@ -25,7 +23,6 @@ import giraffe.GifQuery
 import giraffe.SendChatFileResponseMutation
 import giraffe.SendChatSingleSelectResponseMutation
 import giraffe.SendChatTextResponseMutation
-import giraffe.TriggerFreeTextChatMutation
 import giraffe.UploadFileMutation
 import giraffe.fragment.ChatMessageFragment
 import giraffe.type.ChatResponseBodyFileInput
@@ -161,26 +158,6 @@ class ChatRepository(
     return apolloClient.mutation(chatFileResponse).execute()
   }
 
-  suspend fun triggerFreeTextChat(): Either<FreeTextError, FreeTextSuccess> {
-    return either {
-      val data = apolloClient
-        .mutation(TriggerFreeTextChatMutation())
-        .safeExecute()
-        .toEither { FreeTextError.NetworkError }
-        .bind()
-      val didTriggerFreeTextChat = data.triggerFreeTextChat == true
-      ensure(didTriggerFreeTextChat) { FreeTextError.CouldNotTrigger }
-      FreeTextSuccess
-    }
-  }
-
   suspend fun searchGifs(query: String): ApolloResponse<GifQuery.Data> =
     apolloClient.query(GifQuery(query)).execute()
 }
-
-sealed class FreeTextError {
-  object NetworkError : FreeTextError()
-  object CouldNotTrigger : FreeTextError()
-}
-
-object FreeTextSuccess

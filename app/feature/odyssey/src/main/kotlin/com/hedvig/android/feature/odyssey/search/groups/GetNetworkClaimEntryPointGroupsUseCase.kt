@@ -31,7 +31,7 @@ internal class GetNetworkClaimEntryPointGroupsUseCase(
 private fun EntrypointGroupsQuery.Data.EntrypointGroup.toClaimGroup() = ClaimGroup(
   id = id,
   displayName = displayName,
-  iconUrl = iconUrl as String,
+  iconUrl = iconUrl,
 )
 
 data class GroupedClaimsResult(
