@@ -79,6 +79,7 @@ private fun HedvigBottomBar(
             contentDescription = null,
             // Color is defined in the drawables themselves.
             tint = Color.Unspecified,
+            modifier = if (hasNotification) Modifier.notificationDot() else Modifier,
           )
         },
         label = { Text(stringResource(destination.titleTextId)) },
@@ -91,7 +92,6 @@ private fun HedvigBottomBar(
           selectedIconColor = MaterialTheme.colorScheme.onSurface,
           unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
         ),
-        modifier = if (hasNotification) Modifier.notificationDot() else Modifier,
       )
     }
   }
@@ -103,13 +103,10 @@ private fun Modifier.notificationDot(): Modifier = composed {
     drawContent()
     drawCircle(
       notificationColor,
-      radius = 5.dp.toPx(),
-      // This is based on the dimensions of the NavigationBar's "indicator pill";
-      // however, its parameters are private, so we must depend on them implicitly
-      // (NavigationBarTokens.ActiveIndicatorWidth = 64.dp)
+      radius = 6.dp.toPx(),
       center = center + Offset(
-        64.dp.toPx() * .45f,
-        32.dp.toPx() * -.45f - 6.dp.toPx(),
+        12.dp.toPx() - 3.dp.toPx(),
+        -12.dp.toPx() + 3.dp.toPx(),
       ),
     )
   }
@@ -138,7 +135,7 @@ private fun PreviewHedvigBottomBar() {
           TopLevelDestination.REFERRALS,
           TopLevelDestination.PROFILE,
         ),
-        destinationsWithNotifications = persistentSetOf(),
+        destinationsWithNotifications = persistentSetOf(TopLevelDestination.INSURANCE),
         onNavigateToDestination = {},
         getIsCurrentlySelected = { it == TopLevelDestination.HOME },
       )
