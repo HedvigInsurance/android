@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.home.ui
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -109,7 +110,9 @@ import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import com.hedvig.hanalytics.PaymentType
 import giraffe.HomeQuery
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.androidx.compose.koinViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -307,10 +310,8 @@ private fun HomeDestination(
         )
       }
       val shouldShowTooltip by produceState(false) {
-        val currentEpochDay = LocalDate.now().toEpochDay()
-        val lastEpochDayOpened = context.getLastEpochDayWhenChatTooltipWasShown()
-        val diff = currentEpochDay - lastEpochDayOpened
-        value = diff >= 30
+        val daysSinceLastTooltipShown = daysSinceLastTooltipShown(context)
+        value = daysSinceLastTooltipShown
       }
       ChatTooltip(
         showTooltip = shouldShowTooltip,
@@ -329,6 +330,16 @@ private fun HomeDestination(
       modifier = Modifier.align(Alignment.TopCenter),
     )
   }
+}
+
+private suspend fun daysSinceLastTooltipShown(context: Context): Boolean {
+  val currentEpochDay = LocalDate.now().toEpochDay()
+  val lastEpochDayOpened = withContext(Dispatchers.IO) {
+    context.getLastEpochDayWhenChatTooltipWasShown()
+  }
+  val diff = currentEpochDay - lastEpochDayOpened
+  val daysSinceLastTooltipShown = diff >= 30
+  return daysSinceLastTooltipShown
 }
 
 @Suppress("UnusedReceiverParameter")
