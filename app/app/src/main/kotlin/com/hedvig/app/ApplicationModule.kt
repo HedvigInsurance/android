@@ -169,8 +169,8 @@ import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedViewModel
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeViewModel
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeViewModelImpl
 import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeViewModel
+import com.hedvig.app.feature.referrals.ui.tab.GetReferralsInformationUseCase
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModel
-import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModelImpl
 import com.hedvig.app.feature.settings.ChangeLanguageUseCase
 import com.hedvig.app.feature.settings.SettingsViewModel
 import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignViewModel
@@ -484,9 +484,10 @@ private val numberActionSetModule = module {
 }
 
 private val referralsModule = module {
-  viewModel<ReferralsViewModel> { ReferralsViewModelImpl(get()) }
+  viewModel<ReferralsViewModel> { ReferralsViewModel(get(), get()) }
   viewModel<ReferralsActivatedViewModel> { ReferralsActivatedViewModelImpl(get()) }
   viewModel<ReferralsEditCodeViewModel> { ReferralsEditCodeViewModelImpl(get()) }
+  single<GetReferralsInformationUseCase> { GetReferralsInformationUseCase(get(giraffeClient), get()) }
 }
 
 private val homeModule = module {

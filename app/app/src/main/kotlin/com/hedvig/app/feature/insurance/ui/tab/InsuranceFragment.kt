@@ -15,12 +15,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshDefaults
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -33,6 +35,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -43,6 +46,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
+import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithActions
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.app.databinding.InsuranceContractCardBinding
 import com.hedvig.app.databinding.InsuranceTerminatedContractsBinding
@@ -58,6 +63,7 @@ import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContrac
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.util.extensions.getActivity
 import com.hedvig.app.util.extensions.openWebBrowser
+import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
@@ -85,14 +91,17 @@ class InsuranceFragment : Fragment() {
             color = MaterialTheme.colorScheme.background,
             modifier = Modifier.fillMaxSize(),
           ) {
+            val systemBarInsetTopDp = with(LocalDensity.current) {
+              WindowInsets.systemBars.getTop(this).toDp()
+            }
             val pullRefreshState = rememberPullRefreshState(
               refreshing = isLoading,
               onRefresh = viewModel::load,
+              refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
             )
-            Box() {
+            Box {
               Column(
                 Modifier
-                  .matchParentSize()
                   .pullRefresh(pullRefreshState)
                   .verticalScroll(rememberScrollState())
                   .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
@@ -130,6 +139,11 @@ class InsuranceFragment : Fragment() {
                 }
                 Spacer(Modifier.height(16.dp))
                 Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+              }
+              TopAppBarWithActions {
+                ToolbarChatIcon(
+                  onClick = { requireContext().startChat() },
+                )
               }
               PullRefreshIndicator(
                 refreshing = isLoading,

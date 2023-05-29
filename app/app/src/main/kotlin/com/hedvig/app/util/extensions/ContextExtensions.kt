@@ -115,10 +115,10 @@ fun Context.triggerRestartActivity(activity: Class<*> = MainActivity::class.java
   exitProcess(0)
 }
 
-fun Context.setLastOpen(date: Long) =
-  getSharedPreferences().edit().putLong(SHARED_PREFERENCE_LAST_OPEN, date).commit()
+fun Context.setLastEpochDayWhenChatTooltipWasShown(epochDay: Long) =
+  getSharedPreferences().edit().putLong(SHARED_PREFERENCE_LAST_OPEN, epochDay).commit()
 
-fun Context.getLastOpen() =
+fun Context.getLastEpochDayWhenChatTooltipWasShown() =
   getSharedPreferences().getLong(SHARED_PREFERENCE_LAST_OPEN, 0)
 
 private fun Context.getSharedPreferences() =

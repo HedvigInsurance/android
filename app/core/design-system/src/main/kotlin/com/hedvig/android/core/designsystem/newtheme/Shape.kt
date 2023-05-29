@@ -27,7 +27,7 @@ import java.lang.Float.min
 // 27 magic number, matches the figma file close enough
 private val squircleRadius = 27.dp
 
-val SquircleShape = object : Shape {
+val SquircleShape: Shape = object : Shape {
   override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
     val path = Path().apply {
       val atMostHalfSizeCornerRadius = min(

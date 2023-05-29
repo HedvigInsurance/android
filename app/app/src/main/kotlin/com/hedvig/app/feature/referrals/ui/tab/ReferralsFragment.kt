@@ -19,15 +19,21 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshDefaults
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -37,7 +43,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidViewBinding
@@ -48,13 +56,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.material.snackbar.Snackbar
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithActions
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.core.ui.getLocale
+import com.hedvig.android.core.ui.progress.FullScreenHedvigProgress
 import com.hedvig.android.language.LanguageService
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ReferralsCodeBinding
 import com.hedvig.app.databinding.ReferralsHeaderBinding
 import com.hedvig.app.databinding.ReferralsRowBinding
+import com.hedvig.app.feature.referrals.ui.ReferralsInformationActivity
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeActivity
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
@@ -96,20 +107,25 @@ class ReferralsFragment : Fragment() {
             val data by referralsViewModel.data.collectAsStateWithLifecycle()
             when (val uiState = data) {
               is ReferralsUiState.Error -> {
-                Column {
-                  Text(
-                    text = stringResource(hedvig.resources.R.string.PROFILE_REFERRAL_TITLE),
-                    style = MaterialTheme.typography.headlineLarge,
-                    modifier = Modifier
-                      .padding(horizontal = 16.dp)
-                      .padding(top = 8.dp),
-                  )
-                  GenericErrorScreen(
-                    onRetryButtonClick = { referralsViewModel.reload() },
-                    Modifier
-                      .padding(16.dp)
-                      .padding(top = (64 - 16).dp),
-                  )
+                Box {
+                  Column(Modifier.matchParentSize()) {
+                    Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
+                    Spacer(Modifier.height(64.dp))
+                    Text(
+                      text = stringResource(hedvig.resources.R.string.PROFILE_REFERRAL_TITLE),
+                      style = MaterialTheme.typography.headlineLarge,
+                      modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 8.dp),
+                    )
+                    GenericErrorScreen(
+                      onRetryButtonClick = { referralsViewModel.reload() },
+                      Modifier
+                        .padding(16.dp)
+                        .padding(top = (64 - 16).dp),
+                    )
+                  }
+                  FullScreenHedvigProgress(Modifier.align(Alignment.Center), uiState.isLoading)
                 }
               }
               else -> {
@@ -135,6 +151,15 @@ class ReferralsFragment : Fragment() {
                       intent.type = "text/plain"
                     }
                   },
+                  openReferralsInformation = { referralTermsUrl: String, referralIncentive: MonetaryAmount ->
+                    startActivity(
+                      ReferralsInformationActivity.newInstance(
+                        context = requireContext(),
+                        termsUrl = referralTermsUrl,
+                        incentive = referralIncentive,
+                      ),
+                    )
+                  },
                 )
               }
             }
@@ -151,10 +176,15 @@ private fun ForeverScreen(
   uiState: ReferralsUiState,
   reload: () -> Unit,
   onShareCodeClick: (code: String, incentive: MonetaryAmount) -> Unit,
+  openReferralsInformation: (String, MonetaryAmount) -> Unit,
 ) {
+  val systemBarInsetTopDp = with(LocalDensity.current) {
+    WindowInsets.systemBars.getTop(this).toDp()
+  }
   val pullRefreshState = rememberPullRefreshState(
     refreshing = uiState.isLoading,
     onRefresh = reload,
+    refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
   Box() {
     Column(
@@ -164,15 +194,28 @@ private fun ForeverScreen(
         .verticalScroll(rememberScrollState())
         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
     ) {
-      Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
-      Spacer(Modifier.height(64.dp))
+      val incentive = uiState.incentive
+      TopAppBarWithActions {
+        if (incentive != null && uiState is ReferralsUiState.Success && uiState.referralTerms != null) {
+          IconButton(
+            onClick = { openReferralsInformation(uiState.referralTerms.url, incentive) },
+            colors = IconButtonDefaults.iconButtonColors(),
+            modifier = Modifier.size(40.dp),
+          ) {
+            Icon(
+              painter = painterResource(hedvig.resources.R.drawable.ic_info_toolbar),
+              contentDescription = stringResource(hedvig.resources.R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
+              modifier = Modifier.size(24.dp),
+            )
+          }
+        }
+      }
       Text(
         text = stringResource(hedvig.resources.R.string.PROFILE_REFERRAL_TITLE),
         style = MaterialTheme.typography.headlineLarge,
         modifier = Modifier.padding(horizontal = 16.dp),
       )
       ReferralsContent(uiState)
-      val incentive = uiState.incentive
       if (incentive == null) {
         LaunchedEffect(incentive) {
           e { "Invariant detected: referralInformation.campaign.incentive is null" }
@@ -273,7 +316,9 @@ fun ReferralsModelRenderer(referralModel: ReferralsModel) {
       Text(
         text = stringResource(hedvig.resources.R.string.referrals_active_invited_title),
         style = MaterialTheme.typography.titleLarge,
-        modifier = Modifier.padding(top = 40.dp, bottom = 16.dp).padding(horizontal = 24.dp),
+        modifier = Modifier
+          .padding(top = 40.dp, bottom = 16.dp)
+          .padding(horizontal = 24.dp),
       )
     }
     is ReferralsModel.Referral -> {

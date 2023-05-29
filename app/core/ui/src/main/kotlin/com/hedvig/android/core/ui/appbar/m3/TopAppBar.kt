@@ -1,11 +1,15 @@
 package com.hedvig.android.core.ui.appbar.m3
 
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -14,6 +18,30 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun TopAppBarWithActions(
+  modifier: Modifier = Modifier,
+  scrollBehavior: TopAppBarScrollBehavior? = null,
+  actions: @Composable RowScope.() -> Unit = {},
+) {
+  TopAppBar(
+    title = {},
+    modifier = modifier,
+    actions = {
+      Row(Modifier.padding(horizontal = 12.dp)) {
+        actions()
+      }
+    },
+    colors = TopAppBarDefaults.topAppBarColors(
+      containerColor = Color.Transparent,
+      actionIconContentColor = LocalContentColor.current,
+    ),
+    scrollBehavior = scrollBehavior,
+  )
+}
 
 @Composable
 fun TopAppBarWithBack(

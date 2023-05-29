@@ -185,7 +185,7 @@ private fun ScrollableContent(
     )
     ClickableListItem(
       onClick = onFaqClick,
-      icon = R.drawable.ic_info_toolbar,
+      icon = hedvig.resources.R.drawable.ic_info_toolbar,
       text = stringResource(hedvig.resources.R.string.cross_sell_info_common_questions_row),
     )
   }

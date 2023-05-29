@@ -24,7 +24,6 @@ import com.hedvig.android.core.designsystem.component.button.LargeOutlinedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
-import com.hedvig.app.R
 import com.hedvig.app.feature.faq.FAQCard
 import com.hedvig.app.feature.faq.FAQItem
 
@@ -63,7 +62,7 @@ fun FaqScreen(
         Spacer(Modifier.height(16.dp))
         LargeOutlinedButton(onClick = openChat) {
           Image(
-            painter = painterResource(R.drawable.ic_chat_black),
+            painter = painterResource(hedvig.resources.R.drawable.ic_chat),
             contentDescription = null,
           )
           Spacer(Modifier.width(8.dp))

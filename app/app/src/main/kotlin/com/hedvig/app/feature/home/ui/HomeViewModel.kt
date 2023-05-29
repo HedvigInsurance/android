@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import arrow.core.merge
 import arrow.core.raise.either
 import com.hedvig.android.feature.travelcertificate.data.GetTravelCertificateSpecificationsUseCase
-import com.hedvig.android.feature.travelcertificate.data.TravelCertificateResult
 import com.hedvig.app.feature.home.data.GetHomeUseCase
 import com.hedvig.app.feature.home.model.HomeItemsBuilder
 import com.hedvig.app.feature.home.model.HomeModel
@@ -16,7 +15,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.LocalDate
 
 class HomeViewModel(
   private val getHomeUseCase: GetHomeUseCase,
