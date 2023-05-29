@@ -15,6 +15,8 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navOptions
+import arrow.core.NonEmptyList
+import arrow.core.toNonEmptyListOrNull
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.hedvig.android.app.navigation.TopLevelDestination
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
@@ -93,7 +95,7 @@ class HedvigAppState(
     @Composable
     get() = !shouldShowBottomBar
 
-  val backgroundColors: List<Color>?
+  val backgroundColors: NonEmptyList<Color>?
     @Composable
     get() {
       val isLightMode = !isSystemInDarkTheme()
@@ -127,7 +129,7 @@ class HedvigAppState(
           }
         }
         null -> null
-      }
+      }?.toNonEmptyListOrNull()
     }
 
   val topLevelDestinations: StateFlow<ImmutableSet<TopLevelDestination>> = flow {

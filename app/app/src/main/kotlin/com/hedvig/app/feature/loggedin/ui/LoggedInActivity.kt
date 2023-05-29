@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.SolidColor
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
@@ -203,7 +204,11 @@ private fun HedvigApp(
           .then(
             if (backgroundColors != null) {
               Modifier.drawWithCache {
-                val gradient = Brush.linearGradient(backgroundColors)
+                val gradient = if (backgroundColors.size == 1) {
+                  SolidColor(backgroundColors.single())
+                } else {
+                  Brush.linearGradient(backgroundColors)
+                }
                 onDrawBehind {
                   drawRect(gradient)
                 }
