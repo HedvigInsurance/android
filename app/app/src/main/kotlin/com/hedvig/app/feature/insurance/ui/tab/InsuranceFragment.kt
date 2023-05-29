@@ -29,14 +29,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.core.app.ActivityOptionsCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import coil.ImageLoader
@@ -76,6 +80,19 @@ internal fun NavGraphBuilder.insuranceGraph(
       if (storeUrl != null) {
         viewModel.crossSellActionOpened()
         context.openWebBrowser(storeUrl)
+      }
+    }
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val currentMarkCardCrossSellsAsSeen by rememberUpdatedState(viewModel::markCardCrossSellsAsSeen)
+    DisposableEffect(lifecycleOwner) {
+      val observer = LifecycleEventObserver { _, event ->
+        if (event == Lifecycle.Event.ON_PAUSE) {
+          currentMarkCardCrossSellsAsSeen()
+        }
+      }
+      lifecycleOwner.lifecycle.addObserver(observer)
+      onDispose {
+        lifecycleOwner.lifecycle.removeObserver(observer)
       }
     }
     DisposableEffect(viewModel) {
