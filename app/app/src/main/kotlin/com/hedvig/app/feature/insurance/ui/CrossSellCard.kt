@@ -18,7 +18,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -36,7 +35,6 @@ import com.hedvig.android.core.designsystem.theme.hedvig_black12percent
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.util.compose.rememberBlurHashPainter
-import slimber.log.d
 
 @Composable
 fun CrossSellCard(
@@ -57,9 +55,6 @@ fun CrossSellCard(
         .fillMaxWidth()
         .requiredHeight(200.dp),
     ) {
-      LaunchedEffect(data.backgroundUrl) {
-        d { "Stelios data.backgroundUrl${data.backgroundUrl}" }
-      }
       Box(
         propagateMinConstraints = true,
         modifier = Modifier.fillMaxSize(),

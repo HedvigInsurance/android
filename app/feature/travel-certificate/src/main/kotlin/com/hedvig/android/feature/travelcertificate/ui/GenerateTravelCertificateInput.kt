@@ -394,7 +394,7 @@ val mockUiState = TravelCertificateInputState(
       ),
       CoInsured(
         id = "123",
-        name = "Stelios",
+        name = "MockName",
         ssn = "199101131093",
       ),
     ),
