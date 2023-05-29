@@ -6,11 +6,11 @@ import android.content.Context
 import androidx.core.app.NotificationCompat
 import androidx.core.app.TaskStackBuilder
 import com.google.firebase.messaging.RemoteMessage
+import com.hedvig.android.app.navigation.TopLevelDestination
 import com.hedvig.android.core.common.android.notification.setupNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.DATA_MESSAGE_BODY
 import com.hedvig.app.service.push.DATA_MESSAGE_TITLE
@@ -50,7 +50,7 @@ class ReferralsNotificationSender(
         addNextIntentWithParentStack(
           LoggedInActivity.newInstance(
             context,
-            initialTab = LoggedInTabs.REFERRALS,
+            initialTab = TopLevelDestination.REFERRALS,
           ),
         )
         addNextIntentWithParentStack(
@@ -85,7 +85,7 @@ class ReferralsNotificationSender(
         addNextIntentWithParentStack(
           LoggedInActivity.newInstance(
             context,
-            initialTab = LoggedInTabs.REFERRALS,
+            initialTab = TopLevelDestination.REFERRALS,
           ),
         )
         addNextIntentWithParentStack(
