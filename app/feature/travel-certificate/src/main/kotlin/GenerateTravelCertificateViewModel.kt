@@ -65,6 +65,7 @@ class GenerateTravelCertificateViewModel(
           val selectedDate = Instant.fromEpochMilliseconds(date).toLocalDateTime(TimeZone.currentSystemDefault()).date
           travelSpecification.dateRange.contains(selectedDate)
         },
+        daysValid = travelSpecification.maxDurationDays,
         infoSections = result.infoSections,
       )
     }

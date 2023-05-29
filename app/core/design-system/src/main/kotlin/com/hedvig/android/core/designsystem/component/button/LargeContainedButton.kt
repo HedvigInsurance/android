@@ -65,6 +65,7 @@ fun LargeContainedButton(
     ),
   ),
   shape: Shape = Material3Theme.shapes.large,
+  contentPadding: PaddingValues = PaddingValues(16.dp),
   content: @Composable RowScope.() -> Unit,
 ) {
   Button(
@@ -72,7 +73,7 @@ fun LargeContainedButton(
     enabled = enabled,
     modifier = modifier.fillMaxWidth(),
     shape = shape,
-    contentPadding = PaddingValues(16.dp),
+    contentPadding = contentPadding,
     colors = colors,
   ) {
     CompositionLocalProvider(

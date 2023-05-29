@@ -17,6 +17,7 @@ data class TravelCertificateInputState(
   val includeMember: Boolean = true,
   val datePickerState: DatePickerState? = null,
   val dateValidator: (Long) -> Boolean = { false },
+  val daysValid: Int? = null,
   val isLoading: Boolean = false,
   val errorMessage: String? = null,
   val travelCertificateUrl: TravelCertificateUrl? = null,

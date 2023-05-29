@@ -19,6 +19,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.material3.squircle
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.error.ErrorDialog
 import com.hedvig.android.core.ui.infocard.DrawableInfoCard
@@ -55,8 +57,9 @@ fun TravelCertificateInformation(
       },
       modifier = Modifier.clearFocusOnTap(),
     ) {
+      Spacer(modifier = Modifier.padding(top = 56.dp))
       Text(
-        text = "Skaffa reseintyg",
+        text = stringResource(id = R.string.travel_certificate_description),
         style = MaterialTheme.typography.headlineSmall,
         textAlign = TextAlign.Center,
         modifier = Modifier
@@ -90,5 +93,29 @@ fun TravelCertificateInformation(
       }
       Spacer(Modifier.height(32.dp))
     }
+  }
+}
+
+@HedvigPreview
+@Composable
+fun PreviewTravelCertificateInformation() {
+  HedvigTheme {
+    TravelCertificateInformation(
+      infoSections = listOf(
+        TravelCertificateResult.TraverlCertificateData.InfoSection(
+          title = "Test1",
+          body = "Body1"
+        ),
+        TravelCertificateResult.TraverlCertificateData.InfoSection(
+          title = "Test2",
+          body = "Body2"
+        )
+      ),
+      isLoading = false,
+      errorMessage = null,
+      onErrorDialogDismissed = {},
+      onContinue = {},
+      navigateBack = {},
+    )
   }
 }

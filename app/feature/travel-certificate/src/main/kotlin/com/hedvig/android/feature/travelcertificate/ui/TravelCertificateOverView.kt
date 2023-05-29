@@ -70,7 +70,7 @@ fun TravelCertificateOverView(
     ) {
       Spacer(modifier = Modifier.padding(top = 38.dp))
       Text(
-        text = "Ha en trevlig resa!",
+        text = stringResource(id = R.string.travel_certificate_have_a_nice_tripe),
         style = MaterialTheme.typography.headlineSmall,
         textAlign = TextAlign.Center,
         modifier = Modifier
@@ -79,8 +79,8 @@ fun TravelCertificateOverView(
       )
       Spacer(modifier = Modifier.padding(top = 58.dp))
       DrawableInfoCard(
-        title = "Ditt reseintyg är nu klart",
-        text = "Vi rekommenderar att du skriver ut intyget så du lätt kan ha med dig det överallt.",
+        title = stringResource(id = R.string.travel_certificate_travel_certificate_ready),
+        text = stringResource(id = R.string.travel_certificate_travel_certificate_ready_description),
         icon = painterResource(id = com.hedvig.android.core.designsystem.R.drawable.ic_checkmark_success),
         iconColor = MaterialTheme.colorScheme.primary,
         colors = CardDefaults.outlinedCardColors(
@@ -91,8 +91,8 @@ fun TravelCertificateOverView(
       )
       Spacer(modifier = Modifier.padding(top = 8.dp))
       VectorInfoCard(
-        title = "Ditt reseintyg är nu klart",
-        text = "Vi har skickat reseintyg till din e-mail. Du kan även ladda ner beviset till din telefon via knappen nedan.",
+        title = null,
+        text = stringResource(id = R.string.travel_certificate_download_recommendation),
         modifier = Modifier.padding(horizontal = 16.dp),
       )
       Spacer(modifier = Modifier.weight(1f))
@@ -110,9 +110,9 @@ fun TravelCertificateOverView(
           .padding(bottom = 32.dp),
       ) {
         if (travelCertificateUri != null) {
-          Text("Dela reseintyg")
+          Text(stringResource(id = R.string.travel_certificate_share_travel_certificate))
         } else {
-          Text("Ladda ner reseintyg")
+          Text(stringResource(id = R.string.travel_certificate_download_travel_certificate))
         }
       }
     }
