@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -24,7 +23,7 @@ fun ToolbarChatIcon(
 ) {
   Surface(
     shape = CircleShape,
-    border = BorderStroke(Dp.Hairline, MaterialTheme.colorScheme.onSurfaceVariant),
+    border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f)),
   ) {
     IconButton(
       onClick = onClick,
