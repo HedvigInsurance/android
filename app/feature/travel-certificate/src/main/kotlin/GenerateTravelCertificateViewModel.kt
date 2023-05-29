@@ -1,5 +1,7 @@
+import android.content.res.Resources
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DisplayMode
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.core.ui.ValidatedInput
@@ -153,12 +155,12 @@ class GenerateTravelCertificateViewModel(
     return maximumCoInsured != null && uiState.value.coInsured.input.size < maximumCoInsured
   }
 
-  fun onMaxCoInsureAdded() {
+  fun onMaxCoInsureAdded(resources: Resources) {
     val maximumCoInsured = uiState.value.maximumCoInsured
     val message = if (maximumCoInsured != null && maximumCoInsured > 0) {
-      "Can not add more than $maximumCoInsured co-insured"
+      resources.getString(hedvig.resources.R.string.travel_certificate_max_coinsured_error_label, maximumCoInsured)
     } else {
-      "Can not add any co-insured"
+      resources.getString(hedvig.resources.R.string.travel_certificate_max_single_coinsured_error_label)
     }
     _uiState.update { it.copy(errorMessage = message) }
   }
