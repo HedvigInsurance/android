@@ -64,5 +64,5 @@ data class CoInsured(
   val name: String,
   val ssn: String,
 ) {
-  fun firstNameOrFullName(): String = name.split(" ").firstOrNull() ?: name
+  fun firstName(): String = name.split(" ").first()
 }

@@ -44,7 +44,6 @@ import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
-import com.hedvig.android.core.designsystem.material3.onWarningElement
 import com.hedvig.android.core.designsystem.material3.squircle
 import com.hedvig.android.core.designsystem.material3.warningContainer
 import com.hedvig.android.core.designsystem.material3.warningElement
@@ -185,7 +184,7 @@ fun GenerateTravelCertificateInput(
             modifier = Modifier.fillMaxWidth(),
           ) {
             Text(
-              text = "${coInsured.firstNameOrFullName()}, ${coInsured.ssn}",
+              text = "${coInsured.firstName()}, ${coInsured.ssn}",
               modifier = Modifier.width(250.dp),
             )
             Row {
