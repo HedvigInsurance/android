@@ -18,6 +18,7 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
@@ -220,8 +221,8 @@ private fun HedvigApp(
       )
       AnimatedVisibility(
         visible = hedvigAppState.shouldShowBottomBar,
-        enter = expandVertically(clip = false),
-        exit = shrinkVertically(clip = false),
+        enter = expandVertically(expandFrom = Alignment.Top),
+        exit = shrinkVertically(shrinkTowards = Alignment.Top),
       ) {
         val topLevelDestinations by hedvigAppState.topLevelDestinations.collectAsStateWithLifecycle()
         val destinationsWithNotifications by hedvigAppState
