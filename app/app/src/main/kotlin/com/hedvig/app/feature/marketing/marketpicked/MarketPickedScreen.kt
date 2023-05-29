@@ -25,6 +25,7 @@ import com.hedvig.android.core.designsystem.component.button.LargeOutlinedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.hedvig_off_white
+import com.hedvig.android.market.Market
 import com.hedvig.app.R
 
 @Composable
@@ -32,15 +33,17 @@ fun MarketPickedScreen(
   onClickMarket: () -> Unit,
   onClickSignUp: () -> Unit,
   onClickLogIn: () -> Unit,
-  @DrawableRes flagRes: Int,
+  market: Market,
 ) {
-  Box(modifier = Modifier.fillMaxSize().safeDrawingPadding()) {
+  Box(modifier = Modifier
+    .fillMaxSize()
+    .safeDrawingPadding()) {
     IconButton(
       onClick = onClickMarket,
       modifier = Modifier.padding(4.dp), // 4.dp from [androidx.compose.material.AppBar.AppBarHorizontalPadding].
     ) {
       Image(
-        painter = painterResource(flagRes),
+        painter = painterResource(market.flag),
         contentDescription = null,
       )
     }
@@ -56,13 +59,15 @@ fun MarketPickedScreen(
         .padding(16.dp),
       verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-      LargeContainedButton(
-        onClick = onClickSignUp,
-        colors = ButtonDefaults.buttonColors(),
-      ) {
-        Text(
-          text = stringResource(hedvig.resources.R.string.MARKETING_GET_HEDVIG),
-        )
+      if (market == Market.SE) { 
+        LargeContainedButton(
+          onClick = onClickSignUp,
+          colors = ButtonDefaults.buttonColors(),
+        ) {
+          Text(
+            text = stringResource(hedvig.resources.R.string.MARKETING_GET_HEDVIG),
+          )
+        }
       }
       LargeOutlinedButton(onClick = onClickLogIn) {
         Text(text = stringResource(hedvig.resources.R.string.MARKETING_SCREEN_LOGIN))
@@ -80,7 +85,7 @@ private fun PreviewMarketPicked() {
         onClickMarket = {},
         onClickSignUp = {},
         onClickLogIn = {},
-        flagRes = hedvig.resources.R.drawable.ic_flag_se,
+        market = Market.SE,
       )
     }
   }
