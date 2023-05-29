@@ -38,8 +38,8 @@ fun AddCoInsured(
 ) {
   var name by rememberSaveable { mutableStateOf(coInsured?.name ?: "") }
   var ssn by rememberSaveable { mutableStateOf(coInsured?.ssn ?: "") }
-  var nameError by rememberSaveable { mutableStateOf<String?>(null) }
-  var ssnError by rememberSaveable { mutableStateOf<String?>(null) }
+  var hasNameError by rememberSaveable { mutableStateOf<Boolean>(false) }
+  var hasSsnError by rememberSaveable { mutableStateOf<Boolean>(false) }
 
   HedvigScaffold(
     navigateUp = {
@@ -59,9 +59,13 @@ fun AddCoInsured(
       value = name,
       onValueChange = {
         name = it
-        nameError = null
+        hasNameError = false
       },
-      errorText = nameError,
+      errorText = if (hasNameError) {
+        stringResource(id = R.string.travel_certificate_name_error_label)
+      } else {
+        null
+      },
       label = {
         Text(stringResource(id = R.string.travel_certificate_full_name_label))
       },
@@ -75,9 +79,13 @@ fun AddCoInsured(
       value = ssn,
       onValueChange = {
         ssn = it
-        ssnError = null
+        hasSsnError = false
       },
-      errorText = ssnError,
+      errorText = if (hasSsnError) {
+        stringResource(id = R.string.travel_certificate_ssn_error_label)
+      } else {
+        null
+      },
       label = {
         Text(stringResource(id = R.string.travel_certificate_ssn_label))
       },
@@ -104,14 +112,14 @@ fun AddCoInsured(
     LargeContainedButton(
       onClick = {
         if (name.isBlank()) {
-          nameError = "Enter a name"
+          hasNameError = true
         }
 
         if (ssn.isBlank()) {
-          ssnError = "Enter a SSN"
+          hasSsnError = true
         }
 
-        if (ssnError == null && nameError == null) {
+        if (!hasSsnError && !hasNameError) {
           if (coInsured != null) {
             val updatedCoInsured = coInsured.copy(
               name = name,
