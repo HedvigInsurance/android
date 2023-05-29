@@ -6,9 +6,12 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
@@ -33,6 +36,8 @@ import coil.ImageLoader
 import com.hedvig.android.app.navigation.HedvigNavHost
 import com.hedvig.android.app.navigation.TopLevelDestination
 import com.hedvig.android.app.ui.HedvigAppState
+import com.hedvig.android.app.ui.HedvigBottomBar
+import com.hedvig.android.app.ui.HedvigNavRail
 import com.hedvig.android.app.ui.rememberHedvigAppState
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -183,56 +188,77 @@ private fun HedvigApp(
     contentColor = MaterialTheme.colorScheme.onSurface,
     modifier = Modifier.fillMaxWidth(),
   ) {
-    Column {
-      val backgroundColors = hedvigAppState.backgroundColors
-      HedvigNavHost(
-        hedvigAppState = hedvigAppState,
-        marketManager = marketManager,
-        imageLoader = imageLoader,
-        featureManager = featureManager,
-        hAnalytics = hAnalytics,
-        fragmentManager = fragmentManager,
-        languageService = languageService,
-        modifier = Modifier
-          .weight(1f)
-          .then(
-            if (hedvigAppState.shouldShowBottomBar) {
-              Modifier.consumeWindowInsets(NavigationBarDefaults.windowInsets)
-            } else {
-              Modifier
-            },
-          )
-          .then(
-            if (backgroundColors != null) {
-              Modifier.drawWithCache {
-                val gradient = if (backgroundColors.size == 1) {
-                  SolidColor(backgroundColors.single())
-                } else {
-                  Brush.linearGradient(backgroundColors)
-                }
-                onDrawBehind {
-                  drawRect(gradient)
-                }
-              }
-            } else {
-              Modifier
-            },
-          ),
-      )
+    val backgroundColors = hedvigAppState.backgroundColors
+    Row(
+      modifier = if (backgroundColors != null) {
+        Modifier.drawWithCache {
+          // todo animate colors on change. Consider making them all be a list of 3 items to help with that
+          val gradient = if (backgroundColors.size == 1) {
+            SolidColor(backgroundColors.single())
+          } else {
+            Brush.linearGradient(backgroundColors)
+          }
+          onDrawBehind {
+            drawRect(gradient)
+          }
+        }
+      } else {
+        Modifier
+      },
+    ) {
       AnimatedVisibility(
-        visible = hedvigAppState.shouldShowBottomBar,
-        enter = expandVertically(expandFrom = Alignment.Top),
-        exit = shrinkVertically(shrinkTowards = Alignment.Top),
+        visible = hedvigAppState.shouldShowNavRail,
+        enter = expandHorizontally(expandFrom = Alignment.End),
+        exit = shrinkHorizontally(shrinkTowards = Alignment.End),
       ) {
         val topLevelDestinations by hedvigAppState.topLevelDestinations.collectAsStateWithLifecycle()
         val destinationsWithNotifications by hedvigAppState
           .topLevelDestinationsWithNotifications.collectAsStateWithLifecycle()
-        HedvigBottomBar(
+        HedvigNavRail(
           destinations = topLevelDestinations,
           destinationsWithNotifications = destinationsWithNotifications,
           onNavigateToDestination = hedvigAppState::navigateToTopLevelDestination,
           currentDestination = hedvigAppState.currentDestination,
         )
+      }
+      Column(Modifier.weight(1f)) {
+        HedvigNavHost(
+          hedvigAppState = hedvigAppState,
+          marketManager = marketManager,
+          imageLoader = imageLoader,
+          featureManager = featureManager,
+          hAnalytics = hAnalytics,
+          fragmentManager = fragmentManager,
+          languageService = languageService,
+          modifier = Modifier
+            .weight(1f)
+            .then(
+              if (hedvigAppState.shouldShowBottomBar) {
+                Modifier.consumeWindowInsets(NavigationBarDefaults.windowInsets)
+              } else if (hedvigAppState.shouldShowNavRail) {
+                // todo check nav rail insets to consume here
+                Modifier.consumeWindowInsets(NavigationBarDefaults.windowInsets)
+                Modifier
+              } else {
+                Modifier
+              },
+            ),
+        )
+        AnimatedVisibility(
+          visible = hedvigAppState.shouldShowBottomBar,
+          enter = expandVertically(expandFrom = Alignment.Top),
+          exit = shrinkVertically(shrinkTowards = Alignment.Top),
+        ) {
+          val topLevelDestinations by hedvigAppState.topLevelDestinations.collectAsStateWithLifecycle()
+          val destinationsWithNotifications by hedvigAppState
+            .topLevelDestinationsWithNotifications.collectAsStateWithLifecycle()
+          HedvigBottomBar(
+            destinations = topLevelDestinations,
+            destinationsWithNotifications = destinationsWithNotifications,
+            onNavigateToDestination = hedvigAppState::navigateToTopLevelDestination,
+            currentDestination = hedvigAppState.currentDestination,
+          )
+        }
       }
     }
   }

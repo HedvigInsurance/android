@@ -31,7 +31,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -107,9 +106,9 @@ private fun ReferralsDestination(
   reload: () -> Unit,
   languageService: LanguageService,
 ) {
-  Surface(
-    color = MaterialTheme.colorScheme.background,
+  Box(
     modifier = Modifier.fillMaxSize(),
+    propagateMinConstraints = true,
   ) {
     LocalConfiguration.current
     val context = LocalContext.current

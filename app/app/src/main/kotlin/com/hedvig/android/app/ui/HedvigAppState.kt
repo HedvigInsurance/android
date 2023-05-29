@@ -87,13 +87,16 @@ class HedvigAppState(
   val shouldShowBottomBar: Boolean
     @Composable
     get() {
-      val meetsWidthRequirements = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
-      return meetsWidthRequirements && currentDestination != null
+      val bottomBarWidthRequirements = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
+      return bottomBarWidthRequirements && currentTopLevelDestination != null
     }
 
   val shouldShowNavRail: Boolean
     @Composable
-    get() = !shouldShowBottomBar
+    get() {
+      val navRailWidthRequirements = windowSizeClass.widthSizeClass != WindowWidthSizeClass.Compact
+      return navRailWidthRequirements && currentTopLevelDestination != null
+    }
 
   val backgroundColors: NonEmptyList<Color>?
     @Composable

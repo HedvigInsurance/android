@@ -23,7 +23,6 @@ import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -121,9 +120,9 @@ private fun InsuranceDestination(
 ) {
   val context = LocalContext.current
   val isLoading = uiState.loading
-  Surface(
-    color = MaterialTheme.colorScheme.background,
+  Box(
     modifier = Modifier.fillMaxSize(),
+    propagateMinConstraints = true,
   ) {
     val systemBarInsetTopDp = with(LocalDensity.current) {
       WindowInsets.systemBars.getTop(this).toDp()
