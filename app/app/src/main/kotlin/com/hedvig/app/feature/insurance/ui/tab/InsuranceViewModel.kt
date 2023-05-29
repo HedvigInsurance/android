@@ -39,7 +39,7 @@ class InsuranceViewModel(
           _uiState.update { it.copy(hasError = true, loading = false) }
         },
         ifRight = { insuranceModels ->
-          _uiState.update { it.copy(insuranceModels = insuranceModels, loading = false) }
+          _uiState.update { it.copy(insuranceModels = insuranceModels, hasError = false, loading = false) }
         },
       )
     }

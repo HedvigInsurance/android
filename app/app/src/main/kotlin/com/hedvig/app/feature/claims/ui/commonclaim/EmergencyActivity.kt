@@ -5,16 +5,12 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.common.android.parcelableExtra
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityEmergencyBinding
-import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.makeACall
-import com.hedvig.app.util.extensions.showErrorDialog
 import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
@@ -24,13 +20,8 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.viewBinding
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class EmergencyActivity : AppCompatActivity(R.layout.activity_emergency) {
-  private val claimsViewModel: ClaimsViewModel by viewModel()
   private val binding by viewBinding(ActivityEmergencyBinding::bind)
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,18 +30,6 @@ class EmergencyActivity : AppCompatActivity(R.layout.activity_emergency) {
 
     val data = intent.parcelableExtra<EmergencyData>(EMERGENCY_DATA)
       ?: error("Programmer error: No EMERGENCY_DATA passed to ${this.javaClass}")
-
-    claimsViewModel.events
-      .flowWithLifecycle(lifecycle)
-      .onEach { event ->
-        when (event) {
-          ClaimsViewModel.Event.Error -> {
-            showErrorDialog(getString(com.adyen.checkout.dropin.R.string.component_error)) {}
-          }
-          ClaimsViewModel.Event.StartChat -> startChat()
-        }
-      }
-      .launchIn(lifecycleScope)
 
     binding.apply {
       window.compatSetDecorFitsSystemWindows(false)
@@ -74,9 +53,7 @@ class EmergencyActivity : AppCompatActivity(R.layout.activity_emergency) {
       }
 
       thirdEmergencyButton.setHapticClickListener {
-        lifecycleScope.launch {
-          claimsViewModel.triggerFreeTextChat()
-        }
+        startChat()
       }
     }
   }

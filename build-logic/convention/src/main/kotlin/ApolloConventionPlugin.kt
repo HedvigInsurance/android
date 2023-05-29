@@ -13,10 +13,10 @@ class ApolloConventionPlugin : Plugin<Project> {
       }
 
       tasks.withType<com.apollographql.apollo3.gradle.internal.ApolloDownloadSchemaTask>().configureEach {
-        notCompatibleWithConfigurationCache("https://github.com/apollographql/apollo-kotlin/issues/4925")
+        val rootDirVar = rootDir
         doLast {
           val schemaPath = schema.get()
-          val schemaFile = file(schemaPath)
+          val schemaFile = rootDirVar.resolve(schemaPath)
           val schemaText = schemaFile.readText()
           val convertedSchema = schemaText.performClientSideChanges()
           schemaFile.writeText(convertedSchema)

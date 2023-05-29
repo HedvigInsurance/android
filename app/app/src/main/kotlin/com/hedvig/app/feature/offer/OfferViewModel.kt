@@ -9,7 +9,6 @@ import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.app.feature.adyen.PaymentTokenId
-import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.checkout.CheckoutParameter
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.embark.util.SelectedContractType
@@ -56,8 +55,6 @@ abstract class OfferViewModel : ViewModel() {
       val checkoutParameter: CheckoutParameter,
     ) : Event()
 
-    object OpenChat : Event()
-
     data class ApproveError(
       val postSignScreen: PostSignScreen,
     ) : Event()
@@ -76,7 +73,6 @@ abstract class OfferViewModel : ViewModel() {
   val events = _events.receiveAsFlow()
 
   abstract fun removeDiscount()
-  abstract suspend fun triggerOpenChat()
 
   data class QuoteDetailItems(
     val displayName: String,
@@ -149,7 +145,6 @@ class OfferViewModelImpl(
   selectedContractTypes: List<SelectedContractType>,
   private val offerRepository: OfferRepository,
   private val startCheckoutUseCase: StartCheckoutUseCase,
-  private val chatRepository: ChatRepository,
   private val editCampaignUseCase: EditCampaignUseCase,
   private val featureManager: FeatureManager,
   private val addPaymentTokenUseCase: AddPaymentTokenUseCase,
@@ -215,13 +210,6 @@ class OfferViewModelImpl(
       editCampaignUseCase.removeCampaignFromQuoteCart(quoteCartId)
         .onLeft { _viewState.value = ViewState.Error(null) }
     }
-  }
-
-  override suspend fun triggerOpenChat() {
-    chatRepository.triggerFreeTextChat().fold(
-      ifLeft = { _viewState.value = ViewState.Error(null) },
-      ifRight = { _events.trySend(Event.OpenChat) },
-    )
   }
 
   override fun onOpenQuoteDetails(id: String) {

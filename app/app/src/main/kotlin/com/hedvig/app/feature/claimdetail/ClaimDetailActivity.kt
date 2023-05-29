@@ -7,25 +7,17 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.language.LanguageService
+import com.hedvig.android.core.ui.getLocale
 import com.hedvig.app.feature.claimdetail.ui.ClaimDetailScreen
 import com.hedvig.app.feature.claimdetail.ui.ClaimDetailViewModel
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
-import com.hedvig.app.util.extensions.showErrorDialog
 import com.hedvig.app.util.extensions.startChat
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class ClaimDetailActivity : AppCompatActivity() {
-  private val languageService: LanguageService by inject()
-
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     lifecycle.addObserver(AuthenticatedObserver())
@@ -36,30 +28,19 @@ class ClaimDetailActivity : AppCompatActivity() {
       ?: error("Programmer error: Missing claimId in ${this.javaClass.name}")
     val viewModel: ClaimDetailViewModel by viewModel { parametersOf(claimId) }
 
-    viewModel
-      .events
-      .flowWithLifecycle(lifecycle)
-      .onEach { event ->
-        when (event) {
-          ClaimDetailViewModel.Event.StartChat -> startChat()
-          ClaimDetailViewModel.Event.Error -> showErrorDialog(
-            getString(hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE),
-          ) {}
-        }
-      }
-      .launchIn(lifecycleScope)
-
-    val locale = languageService.getLocale()
     setContent {
       val viewState by viewModel.viewState.collectAsStateWithLifecycle()
 
       HedvigTheme {
         ClaimDetailScreen(
           viewState = viewState,
-          locale = locale,
+          locale = getLocale(),
           retry = viewModel::retry,
           onUpClick = ::finish,
-          onChatClick = viewModel::onChatClick,
+          onChatClick = {
+            viewModel.onChatClick()
+            startChat()
+          },
           onPlayClick = viewModel::onPlayClick,
         )
       }
