@@ -57,7 +57,6 @@
     <dimen name="bottom_sheet_handle_corner_radius">20dp</dimen>
     <dimen name="chat_image_size">240dp</dimen>
     <dimen name="default_qr_code_size">150dp</dimen>
-    <dimen name="tab_bar_icon_size">26dp</dimen>
     <dimen name="pick_date_button_corner_radius">6dp</dimen>
     <dimen name="base_margin_sesqui">12dp</dimen>
     <dimen name="horizontal_line_height">1dp</dimen>
