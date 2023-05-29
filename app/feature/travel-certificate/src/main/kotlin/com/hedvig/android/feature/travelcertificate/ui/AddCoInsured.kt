@@ -38,6 +38,8 @@ fun AddCoInsured(
 ) {
   var name by rememberSaveable { mutableStateOf(coInsured?.name ?: "") }
   var ssn by rememberSaveable { mutableStateOf(coInsured?.ssn ?: "") }
+  var hasNameError by rememberSaveable { mutableStateOf<Boolean>(false) }
+  var hasSsnError by rememberSaveable { mutableStateOf<Boolean>(false) }
 
   HedvigScaffold(
     navigateUp = {
@@ -55,8 +57,15 @@ fun AddCoInsured(
     Spacer(modifier = Modifier.height(64.dp))
     HedvigTextField(
       value = name,
-      onValueChange = { name = it },
-      errorText = null,
+      onValueChange = {
+        name = it
+        hasNameError = false
+      },
+      errorText = if (hasNameError) {
+        stringResource(id = R.string.travel_certificate_name_error_label)
+      } else {
+        null
+      },
       label = {
         Text(stringResource(id = R.string.travel_certificate_full_name_label))
       },
@@ -68,8 +77,15 @@ fun AddCoInsured(
     Spacer(modifier = Modifier.height(8.dp))
     HedvigTextField(
       value = ssn,
-      onValueChange = { ssn = it },
-      errorText = null,
+      onValueChange = {
+        ssn = it
+        hasSsnError = false
+      },
+      errorText = if (hasSsnError) {
+        stringResource(id = R.string.travel_certificate_ssn_error_label)
+      } else {
+        null
+      },
       label = {
         Text(stringResource(id = R.string.travel_certificate_ssn_label))
       },
@@ -95,19 +111,29 @@ fun AddCoInsured(
 
     LargeContainedButton(
       onClick = {
-        if (coInsured != null) {
-          val updatedCoInsured = coInsured.copy(
-            name = name,
-            ssn = ssn,
-          )
-          onEditCoInsured(updatedCoInsured)
-        } else {
-          val newCoInsured = CoInsured(
-            id = UUID.randomUUID().toString(),
-            name = name,
-            ssn = ssn,
-          )
-          onAddCoInsured(newCoInsured)
+        if (name.isBlank()) {
+          hasNameError = true
+        }
+
+        if (ssn.isBlank()) {
+          hasSsnError = true
+        }
+
+        if (!hasSsnError && !hasNameError) {
+          if (coInsured != null) {
+            val updatedCoInsured = coInsured.copy(
+              name = name,
+              ssn = ssn,
+            )
+            onEditCoInsured(updatedCoInsured)
+          } else {
+            val newCoInsured = CoInsured(
+              id = UUID.randomUUID().toString(),
+              name = name,
+              ssn = ssn,
+            )
+            onAddCoInsured(newCoInsured)
+          }
         }
       },
       shape = MaterialTheme.shapes.squircle,
