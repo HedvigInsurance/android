@@ -1,7 +1,7 @@
 package com.hedvig.android.feature.travelcertificate.navigation
 
 import com.hedvig.android.feature.travelcertificate.CoInsured
-import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
+import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
 import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.serialization.Serializable
 
@@ -25,6 +25,6 @@ internal sealed interface GenerateTravelCertificateDestination : Destination {
 
   @Serializable
   data class ShowCertificate(
-    val travelCertificateUrl: TravelCertificateUrl,
+    val travelCertificateUri: TravelCertificateUri,
   ) : GenerateTravelCertificateDestination
 }

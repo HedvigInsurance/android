@@ -111,7 +111,7 @@ internal fun NavGraphBuilder.generateTravelCertificateGraph(
         finish()
       }
       TravelCertificateOverView(
-        travelCertificateUrl,
+        travelCertificateUri,
         navigateBack = finish,
       )
     }

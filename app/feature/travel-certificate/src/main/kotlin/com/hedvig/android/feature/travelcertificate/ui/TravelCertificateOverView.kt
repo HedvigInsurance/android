@@ -1,15 +1,15 @@
 package com.hedvig.android.feature.travelcertificate.ui
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
-import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
+import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
+
 
 @Composable
 fun TravelCertificateOverView(
-  travelCertificateUrl: TravelCertificateUrl,
+  travelCertificateUrl: TravelCertificateUri,
   navigateBack: () -> Unit,
 ) {
   HedvigScaffold(
@@ -18,6 +18,6 @@ fun TravelCertificateOverView(
     },
     modifier = Modifier.clearFocusOnTap(),
   ) {
-    Text(travelCertificateUrl.url)
+
   }
 }
