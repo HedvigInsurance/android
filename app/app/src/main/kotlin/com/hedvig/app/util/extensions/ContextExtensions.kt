@@ -31,6 +31,7 @@ import com.hedvig.app.MainActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import kotlinx.coroutines.delay
+import slimber.log.e
 import kotlin.system.exitProcess
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -278,4 +279,15 @@ fun Context.startChat() {
     )
 
   ActivityCompat.startActivity(this, intent, options.toBundle())
+}
+
+fun Context.openWebBrowser(uri: Uri) {
+  val browserIntent = Intent(Intent.ACTION_VIEW, uri)
+
+  if (browserIntent.resolveActivity(packageManager) != null) {
+    startActivity(browserIntent)
+  } else {
+    e { "Tried to launch $uri but the phone has nothing to support such an intent." }
+    makeToast(hedvig.resources.R.string.general_unknown_error)
+  }
 }
