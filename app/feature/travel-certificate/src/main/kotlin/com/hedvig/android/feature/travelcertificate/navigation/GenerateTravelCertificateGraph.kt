@@ -45,7 +45,6 @@ internal fun NavGraphBuilder.generateTravelCertificateGraph(
         backStackEntry = it,
       )
       val uiState: TravelCertificateInputState by viewModel.uiState.collectAsStateWithLifecycle()
-
       TravelCertificateInformation(
         isLoading = uiState.isLoading,
         infoSections = uiState.infoSections,
@@ -54,7 +53,7 @@ internal fun NavGraphBuilder.generateTravelCertificateGraph(
         onContinue = {
           navController.navigate(GenerateTravelCertificateDestination.TravelCertificateInput)
         },
-        navigateBack = { navController.navigateUp() },
+        navigateBack = { finish() },
       )
     }
     animatedComposable<GenerateTravelCertificateDestination.TravelCertificateInput> {
@@ -64,6 +63,8 @@ internal fun NavGraphBuilder.generateTravelCertificateGraph(
       )
 
       val uiState: TravelCertificateInputState by viewModel.uiState.collectAsStateWithLifecycle()
+      val resources = LocalContext.current.resources
+
       GenerateTravelCertificateInput(
         uiState = uiState,
         navigateBack = { navController.navigateUp() },
@@ -76,7 +77,7 @@ internal fun NavGraphBuilder.generateTravelCertificateGraph(
           if (viewModel.canAddCoInsured()) {
             navController.navigate(GenerateTravelCertificateDestination.AddCoInsured(null))
           } else {
-            viewModel.onMaxCoInsureAdded()
+            viewModel.onMaxCoInsureAdded(resources)
           }
         },
         onRemoveCoInsuredClicked = { coInsured ->
