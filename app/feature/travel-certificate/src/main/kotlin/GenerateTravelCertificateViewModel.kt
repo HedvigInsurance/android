@@ -11,6 +11,8 @@ import com.hedvig.android.feature.travelcertificate.data.DownloadTravelCertifica
 import com.hedvig.android.feature.travelcertificate.data.GetTravelCertificateSpecificationsUseCase
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateResult
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
+import java.time.Clock
+import java.time.ZoneId
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -90,7 +92,7 @@ class GenerateTravelCertificateViewModel(
   }
 
   fun onTravelDateSelected(localDate: LocalDate) {
-    _uiState.update { it.copy(travelDate = ValidatedInput(localDate)) }
+    _uiState.update { it.copy(travelDate = localDate) }
   }
 
   fun onAddCoInsured(coInsured: CoInsured) {
@@ -123,7 +125,7 @@ class GenerateTravelCertificateViewModel(
         _uiState.update { it.copy(isLoading = true) }
         createTravelCertificateUseCase.invoke(
           contractId = state.contractId!!,
-          startDate = state.travelDate.input!!,
+          startDate = state.travelDate,
           isMemberIncluded = state.includeMember,
           coInsured = state.coInsured.input,
           email = state.email.input!!,
@@ -152,16 +154,6 @@ class GenerateTravelCertificateViewModel(
   fun canAddCoInsured(): Boolean {
     val maximumCoInsured = uiState.value.maximumCoInsured
     return maximumCoInsured != null && uiState.value.coInsured.input.size < maximumCoInsured
-  }
-
-  fun onMaxCoInsureAdded(resources: Resources) {
-    val maximumCoInsured = uiState.value.maximumCoInsured
-    val message = if (maximumCoInsured != null && maximumCoInsured > 0) {
-      resources.getString(hedvig.resources.R.string.travel_certificate_max_coinsured_error_label, maximumCoInsured)
-    } else {
-      resources.getString(hedvig.resources.R.string.travel_certificate_max_single_coinsured_error_label)
-    }
-    _uiState.update { it.copy(errorMessage = message) }
   }
 
   fun onDownloadTravelCertificate(url: TravelCertificateUrl) {

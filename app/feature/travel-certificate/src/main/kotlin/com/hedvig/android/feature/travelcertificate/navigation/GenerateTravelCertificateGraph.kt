@@ -2,6 +2,7 @@ package com.hedvig.android.feature.travelcertificate.navigation
 
 import GenerateTravelCertificateViewModel
 import android.content.Intent
+import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -62,7 +63,6 @@ internal fun NavGraphBuilder.generateTravelCertificateGraph(
       )
 
       val uiState: TravelCertificateInputState by viewModel.uiState.collectAsStateWithLifecycle()
-      val resources = LocalContext.current.resources
 
       GenerateTravelCertificateInput(
         uiState = uiState,
@@ -73,14 +73,7 @@ internal fun NavGraphBuilder.generateTravelCertificateGraph(
           navController.navigate(GenerateTravelCertificateDestination.AddCoInsured(coInsured))
         },
         onAddCoInsuredClicked = {
-          if (viewModel.canAddCoInsured()) {
-            navController.navigate(GenerateTravelCertificateDestination.AddCoInsured(null))
-          } else {
-            viewModel.onMaxCoInsureAdded(resources)
-          }
-        },
-        onRemoveCoInsuredClicked = { coInsured ->
-          viewModel.onCoInsuredRemoved(coInsured.id)
+          navController.navigate(GenerateTravelCertificateDestination.AddCoInsured(null))
         },
         onIncludeMemberClicked = viewModel::onIncludeMemberClicked,
         onTravelDateSelected = viewModel::onTravelDateSelected,
@@ -139,9 +132,8 @@ internal fun NavGraphBuilder.generateTravelCertificateGraph(
           val contentUri = getUriForFile(context, "com.hedvig.fileprovider", it.uri)
 
           val sendIntent: Intent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_STREAM, contentUri)
-            type = "application/pdf"
+            action = Intent.ACTION_VIEW
+            setDataAndType(contentUri, "application/pdf")
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
           }
           val shareIntent = Intent.createChooser(sendIntent, "Hedvig Travel Certificate")

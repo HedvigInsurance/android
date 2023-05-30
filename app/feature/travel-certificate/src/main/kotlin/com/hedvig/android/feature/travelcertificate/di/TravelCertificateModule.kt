@@ -11,7 +11,7 @@ import org.koin.dsl.module
 val travelCertificateModule = module {
   single { GetTravelCertificateSpecificationsUseCase(get(octopusClient)) }
   single { CreateTravelCertificateUseCase(get(octopusClient)) }
-  single { DownloadTravelCertificateUseCase() }
+  single { DownloadTravelCertificateUseCase(get()) }
 
   viewModel { GenerateTravelCertificateViewModel(get(), get(), get()) }
 }

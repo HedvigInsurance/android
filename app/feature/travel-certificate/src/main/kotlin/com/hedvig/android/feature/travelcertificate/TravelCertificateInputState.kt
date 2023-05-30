@@ -5,13 +5,17 @@ import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateResult
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
+import java.time.Clock
+import java.time.LocalDateTime
+import java.time.ZoneId
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toKotlinLocalDate
 import kotlinx.serialization.Serializable
 
 data class TravelCertificateInputState(
   val contractId: String? = null,
   val email: ValidatedInput<String?> = ValidatedInput(null),
-  val travelDate: ValidatedInput<LocalDate?> = ValidatedInput(null),
+  val travelDate: LocalDate = LocalDateTime.now().toLocalDate().toKotlinLocalDate(),
   val coInsured: ValidatedInput<List<CoInsured>> = ValidatedInput(emptyList()),
   val maximumCoInsured: Int? = null,
   val includeMember: Boolean = true,
@@ -27,7 +31,6 @@ data class TravelCertificateInputState(
   val isInputValid: Boolean
     get() {
       return email.errorMessageRes == null &&
-        travelDate.errorMessageRes == null &&
         coInsured.errorMessageRes == null
     }
 
@@ -35,13 +38,6 @@ data class TravelCertificateInputState(
     return copy(
       email = email.copy(
         errorMessageRes = if (!email.isPresent || email.input?.isBlank() == true) {
-          hedvig.resources.R.string.CHANGE_ADDRESS_LIVING_SPACE_ERROR
-        } else {
-          null
-        },
-      ),
-      travelDate = travelDate.copy(
-        errorMessageRes = if (!travelDate.isPresent) {
           hedvig.resources.R.string.CHANGE_ADDRESS_LIVING_SPACE_ERROR
         } else {
           null
