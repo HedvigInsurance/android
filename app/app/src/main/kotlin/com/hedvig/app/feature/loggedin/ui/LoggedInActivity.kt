@@ -28,6 +28,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -100,15 +101,19 @@ class LoggedInActivity : AppCompatActivity() {
       }
     }
 
-    // todo use initialTab and clear it immediatelly, then trigger an initial navigation event
-    val initialTab: TopLevelDestination? = intent.extras?.getString(INITIAL_TAB)?.let {
-      TopLevelDestination.fromName(it)
-    }
-
     setContent {
       HedvigTheme {
         HedvigApp(
           windowSizeClass = calculateWindowSizeClass(this),
+          getInitialTab = {
+            intent.extras?.getString(INITIAL_TAB)?.let {
+              TopLevelDestination.fromName(it)
+            }.also {
+            }
+          },
+          clearInitialTab = {
+            intent.removeExtra(INITIAL_TAB)
+          },
           tabNotificationBadgeService = tabNotificationBadgeService,
           marketManager = marketManager,
           imageLoader = imageLoader,
@@ -178,6 +183,8 @@ class LoggedInActivity : AppCompatActivity() {
 @Composable
 private fun HedvigApp(
   windowSizeClass: WindowSizeClass,
+  getInitialTab: () -> TopLevelDestination?,
+  clearInitialTab: () -> Unit,
   tabNotificationBadgeService: TabNotificationBadgeService,
   marketManager: MarketManager,
   imageLoader: ImageLoader,
@@ -192,6 +199,11 @@ private fun HedvigApp(
     hAnalytics = hAnalytics,
   ),
 ) {
+  LaunchedEffect(getInitialTab, clearInitialTab, hedvigAppState) {
+    val initialTab: TopLevelDestination = getInitialTab() ?: return@LaunchedEffect
+    clearInitialTab()
+    hedvigAppState.navigateToTopLevelDestination(initialTab)
+  }
   Surface(
     color = MaterialTheme.colorScheme.surface,
     contentColor = MaterialTheme.colorScheme.onSurface,
