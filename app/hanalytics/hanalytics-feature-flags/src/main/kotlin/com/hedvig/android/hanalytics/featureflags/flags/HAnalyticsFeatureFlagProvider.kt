@@ -27,6 +27,6 @@ internal class HAnalyticsFeatureFlagProvider(
     }
     Feature.NEW_MOVING_FLOW -> false
     Feature.CLAIMS_TRIAGING -> false
-    Feature.TRAVEL_CERTIFICATE -> false
+    Feature.TRAVEL_CERTIFICATE -> hAnalytics.travelInsurance()
   }
 }

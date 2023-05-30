@@ -611,7 +611,7 @@ private fun CommonClaimsRenderer(
           Text(
             text = when (commonClaim) {
               is CommonClaim.Emergency -> commonClaim.inner.title
-              is CommonClaim.GenerateTravelCertificate -> "Generate travel certificate" // todo string resource
+              is CommonClaim.GenerateTravelCertificate -> stringResource(id = hedvig.resources.R.string.travel_certificate_card_title)
               is CommonClaim.TitleAndBulletPoints -> commonClaim.inner.title
             },
             style = MaterialTheme.typography.bodyLarge,
