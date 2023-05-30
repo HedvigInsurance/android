@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.travelcertificate.ui
 
-import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,7 +31,6 @@ import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import hedvig.resources.R
 import java.io.File
 
-
 @Composable
 fun TravelCertificateOverView(
   travelCertificateUrl: TravelCertificateUrl,
@@ -44,7 +42,6 @@ fun TravelCertificateOverView(
   onErrorDialogDismissed: () -> Unit,
   onShareTravelCertificate: (TravelCertificateUri) -> Unit,
 ) {
-
   if (errorMessage != null) {
     ErrorDialog(
       title = stringResource(id = R.string.general_error),

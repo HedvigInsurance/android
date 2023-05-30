@@ -1,7 +1,6 @@
 import android.content.res.Resources
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DisplayMode
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.core.ui.ValidatedInput

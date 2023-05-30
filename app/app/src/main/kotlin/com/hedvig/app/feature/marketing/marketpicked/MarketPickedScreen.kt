@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.marketing.marketpicked
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,9 +34,11 @@ fun MarketPickedScreen(
   onClickLogIn: () -> Unit,
   market: Market,
 ) {
-  Box(modifier = Modifier
-    .fillMaxSize()
-    .safeDrawingPadding()) {
+  Box(
+    modifier = Modifier
+      .fillMaxSize()
+      .safeDrawingPadding(),
+  ) {
     IconButton(
       onClick = onClickMarket,
       modifier = Modifier.padding(4.dp), // 4.dp from [androidx.compose.material.AppBar.AppBarHorizontalPadding].
@@ -59,7 +60,7 @@ fun MarketPickedScreen(
         .padding(16.dp),
       verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-      if (market == Market.SE) { 
+      if (market == Market.SE) {
         LargeContainedButton(
           onClick = onClickSignUp,
           colors = ButtonDefaults.buttonColors(),

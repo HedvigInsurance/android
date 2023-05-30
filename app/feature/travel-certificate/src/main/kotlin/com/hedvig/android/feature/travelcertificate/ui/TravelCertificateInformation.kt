@@ -24,7 +24,6 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.error.ErrorDialog
 import com.hedvig.android.core.ui.infocard.DrawableInfoCard
-import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateResult
 import hedvig.resources.R
@@ -104,12 +103,12 @@ fun PreviewTravelCertificateInformation() {
       infoSections = listOf(
         TravelCertificateResult.TraverlCertificateData.InfoSection(
           title = "Test1",
-          body = "Body1"
+          body = "Body1",
         ),
         TravelCertificateResult.TraverlCertificateData.InfoSection(
           title = "Test2",
-          body = "Body2"
-        )
+          body = "Body2",
+        ),
       ),
       isLoading = false,
       errorMessage = null,

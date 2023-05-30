@@ -1,15 +1,10 @@
 package com.hedvig.android.feature.travelcertificate.data
 
-import android.content.Context
 import android.os.Environment
 import arrow.core.Either
 import arrow.core.raise.either
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.await
-import java.io.File
-import java.io.IOException
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -17,7 +12,10 @@ import okhttp3.Request
 import okio.buffer
 import okio.sink
 import slimber.log.e
-
+import java.io.File
+import java.io.IOException
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 const val CERTIFICATE_NAME = "hedvigTravelCertificate_"
 private const val FILE_EXT = ".pdf"

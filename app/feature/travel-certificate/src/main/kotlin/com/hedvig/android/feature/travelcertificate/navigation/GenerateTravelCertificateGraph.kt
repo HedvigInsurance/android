@@ -26,7 +26,6 @@ import com.kiwi.navigationcompose.typed.navigate
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.ParametersDefinition
 
-
 internal fun NavGraphBuilder.generateTravelCertificateGraph(
   density: Density,
   navController: NavHostController,
