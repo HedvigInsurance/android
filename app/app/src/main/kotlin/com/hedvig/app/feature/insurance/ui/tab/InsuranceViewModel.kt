@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import slimber.log.e
 import kotlin.time.Duration.Companion.seconds
 
 class InsuranceViewModel(
@@ -42,6 +43,7 @@ class InsuranceViewModel(
       createInsuranceItems(contracts, crossSells)
     }.fold(
       ifLeft = {
+        e { "Insurance items failed to load: ${it.message}" }
         emit(null)
       },
       ifRight = { insuranceModels ->
