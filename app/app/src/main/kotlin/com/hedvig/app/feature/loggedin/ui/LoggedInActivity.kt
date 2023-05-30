@@ -6,16 +6,24 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
@@ -23,9 +31,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.SolidColor
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
@@ -35,6 +43,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import coil.ImageLoader
 import com.hedvig.android.app.navigation.HedvigNavHost
 import com.hedvig.android.app.navigation.TopLevelDestination
+import com.hedvig.android.app.ui.GradientColors
 import com.hedvig.android.app.ui.HedvigAppState
 import com.hedvig.android.app.ui.HedvigBottomBar
 import com.hedvig.android.app.ui.HedvigNavRail
@@ -186,42 +195,32 @@ private fun HedvigApp(
   Surface(
     color = MaterialTheme.colorScheme.surface,
     contentColor = MaterialTheme.colorScheme.onSurface,
-    modifier = Modifier.fillMaxWidth(),
+    modifier = Modifier.fillMaxSize(),
   ) {
     val backgroundColors = hedvigAppState.backgroundColors
-    Row(
+    Column(
       modifier = if (backgroundColors != null) {
-        Modifier.drawWithCache {
-          // todo animate colors on change. Consider making them all be a list of 3 items to help with that
-          val gradient = if (backgroundColors.size == 1) {
-            SolidColor(backgroundColors.single())
-          } else {
-            Brush.linearGradient(backgroundColors)
-          }
-          onDrawBehind {
-            drawRect(gradient)
-          }
-        }
+        Modifier.drawBackgroundGradient(backgroundColors)
       } else {
         Modifier
       },
     ) {
-      AnimatedVisibility(
-        visible = hedvigAppState.shouldShowNavRail,
-        enter = expandHorizontally(expandFrom = Alignment.End),
-        exit = shrinkHorizontally(shrinkTowards = Alignment.End),
-      ) {
-        val topLevelDestinations by hedvigAppState.topLevelDestinations.collectAsStateWithLifecycle()
-        val destinationsWithNotifications by hedvigAppState
-          .topLevelDestinationsWithNotifications.collectAsStateWithLifecycle()
-        HedvigNavRail(
-          destinations = topLevelDestinations,
-          destinationsWithNotifications = destinationsWithNotifications,
-          onNavigateToDestination = hedvigAppState::navigateToTopLevelDestination,
-          currentDestination = hedvigAppState.currentDestination,
-        )
-      }
-      Column(Modifier.weight(1f)) {
+      Row(Modifier.weight(1f).fillMaxWidth()) {
+        AnimatedVisibility(
+          visible = hedvigAppState.shouldShowNavRail,
+          enter = expandHorizontally(expandFrom = Alignment.End),
+          exit = shrinkHorizontally(shrinkTowards = Alignment.End),
+        ) {
+          val topLevelDestinations by hedvigAppState.topLevelDestinations.collectAsStateWithLifecycle()
+          val destinationsWithNotifications by hedvigAppState
+            .topLevelDestinationsWithNotifications.collectAsStateWithLifecycle()
+          HedvigNavRail(
+            destinations = topLevelDestinations,
+            destinationsWithNotifications = destinationsWithNotifications,
+            onNavigateToDestination = hedvigAppState::navigateToTopLevelDestination,
+            currentDestination = hedvigAppState.currentDestination,
+          )
+        }
         HedvigNavHost(
           hedvigAppState = hedvigAppState,
           marketManager = marketManager,
@@ -231,35 +230,46 @@ private fun HedvigApp(
           fragmentManager = fragmentManager,
           languageService = languageService,
           modifier = Modifier
+            .fillMaxHeight()
             .weight(1f)
             .then(
               if (hedvigAppState.shouldShowBottomBar) {
-                Modifier.consumeWindowInsets(NavigationBarDefaults.windowInsets)
+                Modifier.consumeWindowInsets(WindowInsets.systemBars.only(WindowInsetsSides.Bottom))
               } else if (hedvigAppState.shouldShowNavRail) {
-                // todo check nav rail insets to consume here
-                Modifier.consumeWindowInsets(NavigationBarDefaults.windowInsets)
-                Modifier
+                Modifier.consumeWindowInsets(WindowInsets.systemBars.only(WindowInsetsSides.Start))
               } else {
                 Modifier
               },
             ),
         )
-        AnimatedVisibility(
-          visible = hedvigAppState.shouldShowBottomBar,
-          enter = expandVertically(expandFrom = Alignment.Top),
-          exit = shrinkVertically(shrinkTowards = Alignment.Top),
-        ) {
-          val topLevelDestinations by hedvigAppState.topLevelDestinations.collectAsStateWithLifecycle()
-          val destinationsWithNotifications by hedvigAppState
-            .topLevelDestinationsWithNotifications.collectAsStateWithLifecycle()
-          HedvigBottomBar(
-            destinations = topLevelDestinations,
-            destinationsWithNotifications = destinationsWithNotifications,
-            onNavigateToDestination = hedvigAppState::navigateToTopLevelDestination,
-            currentDestination = hedvigAppState.currentDestination,
-          )
-        }
       }
+      AnimatedVisibility(
+        visible = hedvigAppState.shouldShowBottomBar,
+        enter = expandVertically(expandFrom = Alignment.Top),
+        exit = shrinkVertically(shrinkTowards = Alignment.Top),
+      ) {
+        val topLevelDestinations by hedvigAppState.topLevelDestinations.collectAsStateWithLifecycle()
+        val destinationsWithNotifications by hedvigAppState
+          .topLevelDestinationsWithNotifications.collectAsStateWithLifecycle()
+        HedvigBottomBar(
+          destinations = topLevelDestinations,
+          destinationsWithNotifications = destinationsWithNotifications,
+          onNavigateToDestination = hedvigAppState::navigateToTopLevelDestination,
+          currentDestination = hedvigAppState.currentDestination,
+        )
+      }
+    }
+  }
+}
+
+private fun Modifier.drawBackgroundGradient(backgroundColors: GradientColors): Modifier = composed {
+  val color1 by animateColorAsState(backgroundColors.color1, spring(stiffness = Spring.StiffnessVeryLow))
+  val color2 by animateColorAsState(backgroundColors.color2, spring(stiffness = Spring.StiffnessVeryLow))
+  val color3 by animateColorAsState(backgroundColors.color3, spring(stiffness = Spring.StiffnessVeryLow))
+  Modifier.drawWithCache {
+    val gradient = Brush.linearGradient(listOf(color1, color2, color3))
+    onDrawBehind {
+      drawRect(gradient)
     }
   }
 }
