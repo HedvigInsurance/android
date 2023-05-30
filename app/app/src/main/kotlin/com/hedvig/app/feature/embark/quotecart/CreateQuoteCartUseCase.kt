@@ -26,7 +26,7 @@ class CreateQuoteCartUseCase(
     return apolloClient
       .mutation(mutation())
       .safeExecute()
-      .toEither { ErrorMessage(it) }
+      .toEither(::ErrorMessage)
       .map { QuoteCartId(it.onboardingQuoteCart_create.id) }
   }
 

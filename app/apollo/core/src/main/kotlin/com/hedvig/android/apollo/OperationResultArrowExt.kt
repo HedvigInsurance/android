@@ -7,6 +7,13 @@ fun <T> OperationResult<T>.toEither(): Either<OperationResult.Error, T> = when (
   is OperationResult.Success -> Either.Right(this.data)
 }
 
+fun <ErrorType, T> OperationResult<T>.toEither(
+  ifEmpty: ErrorType,
+): Either<ErrorType, T> = when (this) {
+  is OperationResult.Error -> Either.Left(ifEmpty)
+  is OperationResult.Success -> Either.Right(this.data)
+}
+
 inline fun <ErrorType, T> OperationResult<T>.toEither(
   ifEmpty: (message: String?, throwable: Throwable?) -> ErrorType,
 ): Either<ErrorType, T> = when (this) {

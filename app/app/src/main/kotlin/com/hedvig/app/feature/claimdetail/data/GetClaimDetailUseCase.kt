@@ -28,7 +28,7 @@ class GetClaimDetailUseCase(
 
   suspend operator fun invoke(claimId: String): Either<Error, ClaimDetailsQuery.ClaimDetail> {
     return either {
-      val data = queryCall.safeExecute().toEither { Error.NetworkError }.bind()
+      val data = queryCall.safeExecute().toEither(Error.NetworkError).bind()
       val claimDetail = data.claimDetails.firstOrNull { it.id == claimId }
       ensureNotNull(claimDetail) { Error.NoClaimFound }
     }

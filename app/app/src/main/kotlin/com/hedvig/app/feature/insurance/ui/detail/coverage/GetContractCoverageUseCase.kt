@@ -24,7 +24,7 @@ internal class GetContractCoverageUseCase(
       val data = apolloClient
         .query(ContractCoverageQuery(languageService.getGraphQLLocale()))
         .safeExecute()
-        .toEither { ErrorMessage(it) }
+        .toEither(::ErrorMessage)
         .bind()
       val contract = data.contracts.firstOrNull { it.id == contractId }
       ensureNotNull(contract) { ErrorMessage("Contract not found") }
