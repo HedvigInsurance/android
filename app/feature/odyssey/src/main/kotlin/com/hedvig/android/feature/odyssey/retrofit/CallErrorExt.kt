@@ -9,10 +9,15 @@ import com.hedvig.android.core.common.ErrorMessage
 internal fun CallError.toErrorMessage(): ErrorMessage {
   val callError = this
   return ErrorMessage(
-    when (callError) {
+    message = when (callError) {
       is HttpError -> "Code:${callError.code}. Message:${callError.message} Body:${callError.body}"
       is IOError -> callError.cause.localizedMessage
       is UnexpectedCallError -> callError.cause.localizedMessage
+    },
+    throwable = when (callError) {
+      is HttpError -> null
+      is IOError -> callError.cause
+      is UnexpectedCallError -> callError.cause
     },
   )
 }
