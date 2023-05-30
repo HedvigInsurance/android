@@ -11,10 +11,12 @@
             <name>android.widget.GridLayout.Alignment</name>
             <name>android.view.RoundedCorner</name>
             <name>android.view.Surface</name>
+            <name>com.google.errorprone.annotations.Modifier</name>
             <name>java.lang.reflect.Modifier</name>
             <name>java.nio.file.WatchEvent.Modifier</name>
             <name>java.time.format.TextStyle</name>
             <name>org.w3c.dom.Text</name>
+
 
             <!-- Uncomment when we ensure we use kiwi typed navigation everywhere -->
             <!-- <name>androidx.navigation.compose.composable</name> -->

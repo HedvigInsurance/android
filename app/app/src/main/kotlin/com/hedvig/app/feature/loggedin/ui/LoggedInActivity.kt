@@ -1,110 +1,132 @@
 package com.hedvig.app.feature.loggedin.ui
 
-import android.animation.ArgbEvaluator
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.graphics.Brush
 import androidx.core.view.WindowCompat
-import androidx.core.view.forEach
-import androidx.dynamicanimation.animation.FloatValueHolder
-import androidx.dynamicanimation.animation.SpringAnimation
-import androidx.dynamicanimation.animation.SpringForce
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import coil.ImageLoader
+import com.hedvig.android.app.navigation.HedvigNavHost
+import com.hedvig.android.app.navigation.TopLevelDestination
+import com.hedvig.android.app.ui.GradientColors
+import com.hedvig.android.app.ui.HedvigAppState
+import com.hedvig.android.app.ui.HedvigBottomBar
+import com.hedvig.android.app.ui.HedvigNavRail
+import com.hedvig.android.app.ui.rememberHedvigAppState
 import com.hedvig.android.auth.android.AuthenticatedObserver
-import com.hedvig.android.core.common.android.serializableExtra
-import com.hedvig.app.R
-import com.hedvig.app.databinding.ActivityLoggedInBinding
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.language.LanguageService
+import com.hedvig.android.market.MarketManager
+import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.welcome.WelcomeDialog
 import com.hedvig.app.feature.welcome.WelcomeViewModel
 import com.hedvig.app.util.apollo.ThemedIconUrls
-import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.showReviewDialog
-import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
-import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.viewBinding
-import com.hedvig.app.util.extensions.viewDps
+import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import slimber.log.e
 
-class LoggedInActivity : AppCompatActivity(R.layout.activity_logged_in) {
+class LoggedInActivity : AppCompatActivity() {
   private val welcomeViewModel: WelcomeViewModel by viewModel()
-  private val loggedInViewModel: LoggedInViewModel by viewModel()
+  private val reviewDialogViewModel: ReviewDialogViewModel by viewModel()
 
-  private val binding by viewBinding(ActivityLoggedInBinding::bind)
-
-  private var lastMenuIdInflated: Int? = null
-  private var lastSelectedTab: LoggedInTabs? = null
-
-  private val isFromOnboarding: Boolean by lazy {
-    intent.getBooleanExtra(EXTRA_IS_FROM_ONBOARDING, false)
-  }
+  val tabNotificationBadgeService: TabNotificationBadgeService by inject()
+  val marketManager: MarketManager by inject()
+  val imageLoader: ImageLoader by inject()
+  val featureManager: FeatureManager by inject()
+  val hAnalytics: HAnalytics by inject()
+  val languageService: LanguageService by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     lifecycle.addObserver(AuthenticatedObserver())
     WindowCompat.setDecorFitsSystemWindows(window, false)
 
-    with(binding) {
-      bottomNavigation.applyNavigationBarInsets()
-
-      loggedInViewModel.shouldOpenReviewDialog
-        .flowWithLifecycle(lifecycle)
-        .onEach { shouldOpenReviewDialog ->
+    if (intent.getBooleanExtra(EXTRA_IS_FROM_ONBOARDING, false)) {
+      fetchAndShowWelcomeDialog()
+    }
+    lifecycleScope.launch {
+      lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+        reviewDialogViewModel.shouldOpenReviewDialog.collect { shouldOpenReviewDialog ->
           if (shouldOpenReviewDialog) {
             showReviewWithDelay()
           }
         }
-        .launchIn(lifecycleScope)
-
-      bottomNavigation.itemIconTintList = null
-      bottomNavigation.setOnItemSelectedListener { menuItem ->
-        val selectedTab = LoggedInTabs.fromId(menuItem.itemId)
-        if (selectedTab == null) {
-          e { "Programmer error: Invalid menu item chosen" }
-          return@setOnItemSelectedListener false
-        }
-
-        if (selectedTab == lastSelectedTab) {
-          return@setOnItemSelectedListener false
-        }
-        supportFragmentManager
-          .beginTransaction()
-          .replace(R.id.tabContent, selectedTab.fragment)
-          .commitNowAllowingStateLoss()
-
-        animateGradient(selectedTab)
-        lastSelectedTab = selectedTab
-        loggedInViewModel.onTabVisited(selectedTab)
-        true
       }
+    }
 
-      if (isFromOnboarding) {
-        fetchAndShowWelcomeDialog(binding)
+    if (intent.getBooleanExtra(SHOW_RATING_DIALOG, false)) {
+      lifecycleScope.launch {
+        showReviewWithDelay()
       }
+    }
 
-      bindData()
-
-      if (intent.getBooleanExtra(SHOW_RATING_DIALOG, false)) {
-        lifecycleScope.launch {
-          showReviewWithDelay()
-        }
+    setContent {
+      HedvigTheme {
+        HedvigApp(
+          windowSizeClass = calculateWindowSizeClass(this),
+          getInitialTab = {
+            intent.extras?.getString(INITIAL_TAB)?.let {
+              TopLevelDestination.fromName(it)
+            }.also {
+            }
+          },
+          clearInitialTab = {
+            intent.removeExtra(INITIAL_TAB)
+          },
+          tabNotificationBadgeService = tabNotificationBadgeService,
+          marketManager = marketManager,
+          imageLoader = imageLoader,
+          featureManager = featureManager,
+          hAnalytics = hAnalytics,
+          fragmentManager = supportFragmentManager,
+          languageService = languageService,
+        )
       }
     }
   }
 
-  private fun fetchAndShowWelcomeDialog(binding: ActivityLoggedInBinding) {
+  private fun fetchAndShowWelcomeDialog() {
     welcomeViewModel.fetch()
     welcomeViewModel.data.observe(this@LoggedInActivity) { data ->
       WelcomeDialog.newInstance(
@@ -124,10 +146,6 @@ class LoggedInActivity : AppCompatActivity(R.layout.activity_logged_in) {
         },
       )
         .show(supportFragmentManager, WelcomeDialog.TAG)
-      binding.loggedInRoot.postDelayed(
-        { binding.loggedInRoot.show() },
-        resources.getInteger(R.integer.slide_in_animation_duration).toLong(),
-      )
     }
     intent.removeExtra(EXTRA_IS_FROM_ONBOARDING)
   }
@@ -137,117 +155,17 @@ class LoggedInActivity : AppCompatActivity(R.layout.activity_logged_in) {
     showReviewDialog()
   }
 
-  private fun bindData() {
-    lifecycleScope.launch {
-      lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-        loggedInViewModel
-          .viewState
-          .filterNotNull() // Emulate LiveData behavior of doing nothing until we get valid data
-          .collectLatest { viewState: LoggedInViewState ->
-            setupBottomNav(
-              isReferralsEnabled = viewState.isReferralsEnabled,
-              unseenTabNotifications = viewState.unseenTabNotifications,
-            )
-            binding.loggedInRoot.show()
-          }
-      }
-    }
-  }
-
-  private fun setupBottomNav(
-    isReferralsEnabled: Boolean,
-    unseenTabNotifications: Set<LoggedInTabs>,
-  ) {
-    val menuId = if (isReferralsEnabled) {
-      R.menu.logged_in_menu_referrals
-    } else {
-      R.menu.logged_in_menu_no_referrals
-    }
-    val bottomNavigationView: BottomNavigationView = binding.bottomNavigation
-    if (lastMenuIdInflated == null || lastMenuIdInflated != menuId) {
-      bottomNavigationView.menu.clear()
-      bottomNavigationView.inflateMenu(menuId)
-
-      val initialTab: LoggedInTabs = intent.extras?.serializableExtra(INITIAL_TAB) ?: LoggedInTabs.HOME
-      bottomNavigationView.selectedItemId = initialTab.id()
-    }
-    bottomNavigationView.menu.forEach { item ->
-      val bottomNavTab = LoggedInTabs.fromId(item.itemId) ?: return@forEach
-      if (unseenTabNotifications.contains(bottomNavTab)) {
-        val badge = bottomNavigationView.getOrCreateBadge(item.itemId)
-        badge.isVisible = true
-        badge.horizontalOffset = 4.viewDps
-        badge.verticalOffset = 4.viewDps
-      } else {
-        bottomNavigationView.removeBadge(item.itemId)
-      }
-    }
-    lastMenuIdInflated = menuId
-  }
-
-  private fun animateGradient(newTab: LoggedInTabs) = with(binding) {
-    if (gradient.drawable == null) {
-      gradient.setImageDrawable(
-        GradientDrawableWrapper().apply {
-          mutate()
-          colors = newTab.backgroundGradient(resources)
-        },
-      )
-      if (gradient.context.isDarkThemeActive) {
-        gradient.drawable.alpha = 127
-      }
-    } else {
-      val initialGradientComponents =
-        (gradient.drawable as? GradientDrawableWrapper)?.getColorsLowerApi() ?: return@with
-      val newGradientComponents = newTab.backgroundGradient(resources)
-      (gradient.getTag(R.id.gradient_animation) as? SpringAnimation)?.cancel()
-
-      val animation = SpringAnimation(FloatValueHolder())
-        .apply {
-          spring = SpringForce().apply {
-            stiffness = SpringForce.STIFFNESS_LOW
-            dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
-          }
-          addUpdateListener { _, value, _ ->
-            val progress = value / 100
-            val first = evaluator.evaluate(
-              progress,
-              initialGradientComponents[0],
-              newGradientComponents[0],
-            ) as Int
-            val second = evaluator.evaluate(
-              progress,
-              initialGradientComponents[1],
-              newGradientComponents[1],
-            ) as Int
-            val third = evaluator.evaluate(
-              progress,
-              initialGradientComponents[2],
-              newGradientComponents[2],
-            ) as Int
-
-            (gradient.drawable.mutate() as? GradientDrawableWrapper)
-              ?.colors = intArrayOf(first, second, third)
-          }
-          animateToFinalPosition(100f)
-        }
-
-      gradient.setTag(R.id.gradient_animation, animation)
-    }
-  }
-
   companion object {
     const val EXTRA_IS_FROM_ONBOARDING = "extra_is_from_onboarding"
 
     private const val INITIAL_TAB = "INITIAL_TAB"
     private const val SHOW_RATING_DIALOG = "SHOW_RATING_DIALOG"
     private const val REVIEW_DIALOG_DELAY_MILLIS = 2000L
-    private val evaluator = ArgbEvaluator()
 
     fun newInstance(
       context: Context,
       withoutHistory: Boolean = false,
-      initialTab: LoggedInTabs = LoggedInTabs.HOME,
+      initialTab: TopLevelDestination = TopLevelDestination.HOME,
       isFromOnboarding: Boolean = false,
       showRatingDialog: Boolean = false,
     ) = Intent(context, LoggedInActivity::class.java).apply {
@@ -255,9 +173,115 @@ class LoggedInActivity : AppCompatActivity(R.layout.activity_logged_in) {
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
       }
-      putExtra(INITIAL_TAB, initialTab)
+      putExtra(INITIAL_TAB, initialTab.toName())
       putExtra(EXTRA_IS_FROM_ONBOARDING, isFromOnboarding)
       putExtra(SHOW_RATING_DIALOG, showRatingDialog)
+    }
+  }
+}
+
+@Composable
+private fun HedvigApp(
+  windowSizeClass: WindowSizeClass,
+  getInitialTab: () -> TopLevelDestination?,
+  clearInitialTab: () -> Unit,
+  tabNotificationBadgeService: TabNotificationBadgeService,
+  marketManager: MarketManager,
+  imageLoader: ImageLoader,
+  featureManager: FeatureManager,
+  hAnalytics: HAnalytics,
+  fragmentManager: FragmentManager,
+  languageService: LanguageService,
+  hedvigAppState: HedvigAppState = rememberHedvigAppState(
+    windowSizeClass = windowSizeClass,
+    tabNotificationBadgeService = tabNotificationBadgeService,
+    featureManager = featureManager,
+    hAnalytics = hAnalytics,
+  ),
+) {
+  LaunchedEffect(getInitialTab, clearInitialTab, hedvigAppState) {
+    val initialTab: TopLevelDestination = getInitialTab() ?: return@LaunchedEffect
+    clearInitialTab()
+    hedvigAppState.navigateToTopLevelDestination(initialTab)
+  }
+  Surface(
+    color = MaterialTheme.colorScheme.surface,
+    contentColor = MaterialTheme.colorScheme.onSurface,
+    modifier = Modifier.fillMaxSize(),
+  ) {
+    val backgroundColors = hedvigAppState.backgroundColors
+    Column(
+      modifier = if (backgroundColors != null) {
+        Modifier.drawBackgroundGradient(backgroundColors)
+      } else {
+        Modifier
+      },
+    ) {
+      Row(Modifier.weight(1f).fillMaxWidth()) {
+        AnimatedVisibility(
+          visible = hedvigAppState.shouldShowNavRail,
+          enter = expandHorizontally(expandFrom = Alignment.End),
+          exit = shrinkHorizontally(shrinkTowards = Alignment.End),
+        ) {
+          val topLevelDestinations by hedvigAppState.topLevelDestinations.collectAsStateWithLifecycle()
+          val destinationsWithNotifications by hedvigAppState
+            .topLevelDestinationsWithNotifications.collectAsStateWithLifecycle()
+          HedvigNavRail(
+            destinations = topLevelDestinations,
+            destinationsWithNotifications = destinationsWithNotifications,
+            onNavigateToDestination = hedvigAppState::navigateToTopLevelDestination,
+            currentDestination = hedvigAppState.currentDestination,
+          )
+        }
+        HedvigNavHost(
+          hedvigAppState = hedvigAppState,
+          marketManager = marketManager,
+          imageLoader = imageLoader,
+          featureManager = featureManager,
+          hAnalytics = hAnalytics,
+          fragmentManager = fragmentManager,
+          languageService = languageService,
+          modifier = Modifier
+            .fillMaxHeight()
+            .weight(1f)
+            .then(
+              if (hedvigAppState.shouldShowBottomBar) {
+                Modifier.consumeWindowInsets(WindowInsets.systemBars.only(WindowInsetsSides.Bottom))
+              } else if (hedvigAppState.shouldShowNavRail) {
+                Modifier.consumeWindowInsets(WindowInsets.systemBars.only(WindowInsetsSides.Start))
+              } else {
+                Modifier
+              },
+            ),
+        )
+      }
+      AnimatedVisibility(
+        visible = hedvigAppState.shouldShowBottomBar,
+        enter = expandVertically(expandFrom = Alignment.Top),
+        exit = shrinkVertically(shrinkTowards = Alignment.Top),
+      ) {
+        val topLevelDestinations by hedvigAppState.topLevelDestinations.collectAsStateWithLifecycle()
+        val destinationsWithNotifications by hedvigAppState
+          .topLevelDestinationsWithNotifications.collectAsStateWithLifecycle()
+        HedvigBottomBar(
+          destinations = topLevelDestinations,
+          destinationsWithNotifications = destinationsWithNotifications,
+          onNavigateToDestination = hedvigAppState::navigateToTopLevelDestination,
+          currentDestination = hedvigAppState.currentDestination,
+        )
+      }
+    }
+  }
+}
+
+private fun Modifier.drawBackgroundGradient(backgroundColors: GradientColors): Modifier = composed {
+  val color1 by animateColorAsState(backgroundColors.color1, spring(stiffness = Spring.StiffnessVeryLow))
+  val color2 by animateColorAsState(backgroundColors.color2, spring(stiffness = Spring.StiffnessVeryLow))
+  val color3 by animateColorAsState(backgroundColors.color3, spring(stiffness = Spring.StiffnessVeryLow))
+  Modifier.drawWithCache {
+    val gradient = Brush.linearGradient(listOf(color1, color2, color3))
+    onDrawBehind {
+      drawRect(gradient)
     }
   }
 }

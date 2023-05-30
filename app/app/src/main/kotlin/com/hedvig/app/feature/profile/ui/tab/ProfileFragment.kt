@@ -1,10 +1,6 @@
 package com.hedvig.app.feature.profile.ui.tab
 
 import android.content.Intent
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -28,22 +25,23 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import androidx.navigation.NavGraphBuilder
+import com.hedvig.android.app.navigation.TopLevelDestination
 import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithActions
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.core.ui.progress.FullScreenHedvigProgress
 import com.hedvig.android.feature.businessmodel.BusinessModelActivity
+import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.app.R
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
@@ -51,44 +49,52 @@ import com.hedvig.app.feature.profile.ui.myinfo.MyInfoActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.extensions.startChat
-import org.koin.androidx.viewmodel.ext.android.activityViewModel
+import org.koin.androidx.compose.koinViewModel
 
-class ProfileFragment : Fragment() {
-  private val viewModel: ProfileViewModel by activityViewModel()
+internal fun NavGraphBuilder.profileGraph() {
+  animatedComposable<TopLevelDestination.PROFILE> {
+    val viewModel: ProfileViewModel = koinViewModel()
+    val uiState by viewModel.data.collectAsStateWithLifecycle()
+    ProfileDestination(
+      uiState = uiState,
+      reload = viewModel::reload,
+      onLogout = viewModel::onLogout,
+    )
+  }
+}
 
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-    return ComposeView(requireContext()).apply {
-      setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-      setContent {
-        HedvigTheme {
-          val uiState = viewModel.data.collectAsStateWithLifecycle().value
-          when (uiState) {
-            ProfileViewModel.ViewState.Loading -> {
-              FullScreenHedvigProgress()
-            }
-            ProfileViewModel.ViewState.Error -> {
-              GenericErrorScreen(
-                onRetryButtonClick = viewModel::reload,
-                modifier = Modifier
-                  .padding(16.dp)
-                  .padding(top = (110 - 16).dp),
-              )
-            }
-            is ProfileViewModel.ViewState.Success -> {
-              val profileUiState = uiState.profileUiState
-              ProfileSuccessScreen(
-                profileUiState = profileUiState,
-                showMyInfo = { startActivity(Intent(requireContext(), MyInfoActivity::class.java)) },
-                showBusinessModel = { startActivity(Intent(requireContext(), BusinessModelActivity::class.java)) },
-                showPaymentInfo = { startActivity(PaymentActivity.newInstance(requireContext())) },
-                showSettings = { startActivity(SettingsActivity.newInstance(requireContext())) },
-                showAboutApp = { startActivity(Intent(requireContext(), AboutAppActivity::class.java)) },
-                openChat = { requireContext().startChat() },
-                logout = { viewModel.onLogout() },
-              )
-            }
-          }
-        }
+@Composable
+private fun ProfileDestination(
+  uiState: ProfileViewModel.ViewState,
+  reload: () -> Unit,
+  onLogout: () -> Unit,
+) {
+  val context = LocalContext.current
+  Box(Modifier.fillMaxSize(), propagateMinConstraints = true) {
+    when (uiState) {
+      ProfileViewModel.ViewState.Loading -> {
+        FullScreenHedvigProgress()
+      }
+      ProfileViewModel.ViewState.Error -> {
+        GenericErrorScreen(
+          onRetryButtonClick = reload,
+          modifier = Modifier
+            .padding(16.dp)
+            .padding(top = (110 - 16).dp),
+        )
+      }
+      is ProfileViewModel.ViewState.Success -> {
+        val profileUiState = uiState.profileUiState
+        ProfileSuccessScreen(
+          profileUiState = profileUiState,
+          showMyInfo = { context.startActivity(Intent(context, MyInfoActivity::class.java)) },
+          showBusinessModel = { context.startActivity(Intent(context, BusinessModelActivity::class.java)) },
+          showPaymentInfo = { context.startActivity(PaymentActivity.newInstance(context)) },
+          showSettings = { context.startActivity(SettingsActivity.newInstance(context)) },
+          showAboutApp = { context.startActivity(Intent(context, AboutAppActivity::class.java)) },
+          openChat = { context.startChat() },
+          logout = onLogout,
+        )
       }
     }
   }

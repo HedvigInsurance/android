@@ -96,7 +96,6 @@
             android:name=".feature.loggedin.ui.LoggedInActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme.LoggedIn"
             android:windowSoftInputMode="adjustResize" />
         <activity

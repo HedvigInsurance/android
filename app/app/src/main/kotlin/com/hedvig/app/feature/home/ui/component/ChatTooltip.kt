@@ -50,9 +50,9 @@ internal fun ChatTooltip(
     if (!showTooltip) return@LaunchedEffect
     delay(1.seconds)
     transientShowTooltip = showTooltip
+    tooltipShown()
     delay(5.seconds)
     transientShowTooltip = false
-    tooltipShown()
   }
   InnerChatTooltip(
     show = transientShowTooltip,

@@ -187,14 +187,3 @@ fun Activity.showReviewDialog(
     }
   }
 }
-
-fun Activity.openWebBrowser(uri: Uri) {
-  val browserIntent = Intent(Intent.ACTION_VIEW, uri)
-
-  if (browserIntent.resolveActivity(packageManager) != null) {
-    startActivity(browserIntent)
-  } else {
-    e { "Tried to launch $uri but the phone has nothing to support such an intent." }
-    makeToast(hedvig.resources.R.string.general_unknown_error)
-  }
-}

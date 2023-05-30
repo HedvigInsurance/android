@@ -1,12 +1,9 @@
 package com.hedvig.app.feature.home.ui
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
@@ -48,34 +45,32 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavGraphBuilder
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.hedvig.android.app.navigation.TopLevelDestination
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.core.designsystem.component.button.LargeOutlinedTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation
 import com.hedvig.android.core.designsystem.material3.squircle
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.SerifBookSmall
 import com.hedvig.android.core.designsystem.theme.lavender_200
 import com.hedvig.android.core.designsystem.theme.lavender_900
@@ -86,10 +81,12 @@ import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithActions
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.core.ui.grid.HedvigGrid
 import com.hedvig.android.core.ui.grid.InsideGridSpace
+import com.hedvig.android.feature.changeaddress.ChangeAddressActivity
 import com.hedvig.android.feature.travelcertificate.GenerateTravelCertificateActivity
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.market.MarketManager
+import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.app.R
 import com.hedvig.app.feature.claimdetail.ClaimDetailActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
@@ -100,7 +97,6 @@ import com.hedvig.app.feature.claims.ui.startClaimsFlow
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.home.model.CommonClaim
 import com.hedvig.app.feature.home.model.HomeModel
-import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.feature.home.ui.claimstatus.composables.ClaimStatusCards
 import com.hedvig.app.feature.home.ui.component.ChatTooltip
 import com.hedvig.app.feature.home.ui.connectpayincard.ConnectPayinCard
@@ -115,215 +111,236 @@ import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import com.hedvig.hanalytics.PaymentType
 import giraffe.HomeQuery
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import kotlinx.coroutines.withContext
+import org.koin.androidx.compose.koinViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.time.temporal.ChronoUnit
 
-class HomeFragment : Fragment() {
-  private val viewModel: HomeViewModel by viewModel()
-  private val imageLoader: ImageLoader by inject()
-  private val marketManager: MarketManager by inject()
-  private val hAnalytics: HAnalytics by inject()
-  private val featureManager: FeatureManager by inject()
-
-  private val registerForActivityResult: ActivityResultLauncher<Intent> =
-    registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-      viewModel.reload()
-    }
-
-  @OptIn(ExperimentalMaterialApi::class)
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-    return ComposeView(requireContext()).apply {
-      setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-      setContent {
-        HedvigTheme {
-          Surface(
-            color = Color.Transparent,
-            contentColor = contentColorFor(MaterialTheme.colorScheme.background),
-            modifier = Modifier.fillMaxSize(),
-          ) {
-            val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
-            val isLoading = uiState.isLoading
-
-            val systemBarInsetTopDp = with(LocalDensity.current) {
-              WindowInsets.systemBars.getTop(this).toDp()
-            }
-            val pullRefreshState = rememberPullRefreshState(
-              refreshing = isLoading,
-              onRefresh = viewModel::reload,
-              refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
-            )
-            Box() {
-              Column(
-                Modifier
-                  .matchParentSize()
-                  .pullRefresh(pullRefreshState)
-                  .verticalScroll(rememberScrollState())
-                  .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-              ) {
-                Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
-                Spacer(Modifier.height(64.dp))
-                when (uiState) {
-                  HomeUiState.Loading -> {}
-                  is HomeUiState.Error -> {
-                    GenericErrorScreen(
-                      onRetryButtonClick = viewModel::reload,
-                      modifier = Modifier
-                        .padding(16.dp)
-                        .padding(top = (80 - 16).dp),
-                    )
-                  }
-                  is HomeUiState.Success -> {
-                    HomeScreenSuccess(
-                      homeItems = uiState.homeItems,
-                      imageLoader = imageLoader,
-                      onStartMovingFlow = ::onStartMovingFlow,
-                      onClaimDetailCardClicked = { claimId ->
-                        viewModel.onClaimDetailCardClicked(claimId)
-                        startActivity(ClaimDetailActivity.newInstance(requireContext(), claimId))
-                      },
-                      onClaimDetailCardShown = viewModel::onClaimDetailCardShown,
-                      onPaymentCardClicked = ::onPaymentCardClicked,
-                      onPaymentCardShown = viewModel::onPaymentCardShown,
-                      onEmergencyClaimClicked = { emergencyData ->
-                        startActivity(
-                          EmergencyActivity.newInstance(
-                            context = requireContext(),
-                            data = emergencyData,
-                          ),
-                        )
-                      },
-                      onGenerateTravelCertificateClicked = {
-                        startActivity(GenerateTravelCertificateActivity.newInstance(requireContext()))
-                      },
-                      onCommonClaimClicked = { commonClaimsData ->
-                        startActivity(
-                          CommonClaimActivity.newInstance(
-                            context = requireContext(),
-                            data = commonClaimsData,
-                          ),
-                        )
-                      },
-                      onHowClaimsWorkClick = { howClaimsWorkList ->
-                        val howClaimsWorkData = howClaimsWorkList.mapIndexed { index, howClaimsWork ->
-                          DismissiblePagerModel.NoTitlePage(
-                            imageUrls = ThemedIconUrls.from(
-                              howClaimsWork.illustration.variants.fragments.iconVariantsFragment,
-                            ),
-                            paragraph = howClaimsWork.body,
-                            buttonText = getString(
-                              if (index == howClaimsWorkList.lastIndex) {
-                                hedvig.resources.R.string.claims_explainer_button_start_claim
-                              } else {
-                                hedvig.resources.R.string.claims_explainer_button_next
-                              },
-                            ),
-                          )
-                        }
-                        HowClaimsWorkDialog
-                          .newInstance(howClaimsWorkData)
-                          .show(parentFragmentManager, HowClaimsWorkDialog.TAG)
-                      },
-                      onStartClaimClicked = ::onStartClaimClicked,
-                      onPsaClicked = { uri ->
-                        if (requireContext().canOpenUri(uri)) {
-                          requireContext().openUri(uri)
-                        }
-                      },
-                      onUpcomingRenewalClick = { uri ->
-                        if (requireContext().canOpenUri(uri)) {
-                          requireContext().openUri(uri)
-                        }
-                      },
-                    )
-                  }
-                }
-                Spacer(Modifier.height(16.dp))
-                Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
-              }
-              Column {
-                TopAppBarWithActions {
-                  ToolbarChatIcon(
-                    onClick = { requireContext().startChat() },
-                  )
-                }
-                val shouldShowTooltip by produceState(false) {
-                  val currentEpochDay = LocalDate.now().toEpochDay()
-                  val lastEpochDayOpened = requireContext().getLastEpochDayWhenChatTooltipWasShown()
-                  val diff = currentEpochDay - lastEpochDayOpened
-                  value = diff >= 30
-                }
-                ChatTooltip(
-                  showTooltip = shouldShowTooltip,
-                  tooltipShown = {
-                    requireContext().setLastEpochDayWhenChatTooltipWasShown(LocalDate.now().toEpochDay())
-                  },
-                  modifier = Modifier
-                    .align(Alignment.End)
-                    .padding(horizontal = 16.dp),
-                )
-              }
-              PullRefreshIndicator(
-                refreshing = isLoading,
-                state = pullRefreshState,
-                scale = true,
-                modifier = Modifier.align(Alignment.TopCenter),
-              )
-            }
-          }
-        }
-      }
-    }
-  }
-
-  private fun onStartClaimClicked() {
-    lifecycleScope.launch {
-      hAnalytics.beginClaim(AppScreen.HOME)
-      startClaimsFlow(
-        fragmentManager = parentFragmentManager,
-        registerForResult = ::registerForResult,
-        featureManager = featureManager,
-        context = requireContext(),
-        commonClaimId = null,
-      )
-    }
-  }
-
-  private fun onPaymentCardClicked(paymentType: PaymentType) {
-    viewModel.onPaymentCardClicked()
-    val market = marketManager.market ?: return
-    startActivity(
-      connectPayinIntent(
-        requireContext(),
-        paymentType,
-        market,
-        false,
-      ),
-    )
-  }
-
-  private fun onStartMovingFlow() {
-    lifecycleScope.launch {
-      if (featureManager.isFeatureEnabled(Feature.NEW_MOVING_FLOW)) {
-        context?.startActivity(
-          Intent(
-            requireContext(),
-            com.hedvig.android.feature.changeaddress.ChangeAddressActivity::class.java,
+internal fun NavGraphBuilder.homeGraph(
+  marketManager: MarketManager,
+  imageLoader: ImageLoader,
+  featureManager: FeatureManager,
+  hAnalytics: HAnalytics,
+  fragmentManager: FragmentManager,
+) {
+  animatedComposable<TopLevelDestination.HOME> {
+    val viewModel: HomeViewModel = koinViewModel()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    HomeDestination(
+      uiState = uiState,
+      reload = viewModel::reload,
+      onClaimDetailCardClicked = viewModel::onClaimDetailCardClicked,
+      onClaimDetailCardShown = viewModel::onClaimDetailCardShown,
+      onPaymentCardClicked = onPaymentCardClicked@{ paymentType ->
+        viewModel.onPaymentCardClicked()
+        val market = marketManager.market ?: return@onPaymentCardClicked
+        context.startActivity(
+          connectPayinIntent(
+            context,
+            paymentType,
+            market,
+            false,
           ),
         )
-      } else {
-        context?.startActivity(ChangeAddressActivity.newInstance(requireContext()))
-      }
-    }
+      },
+      onPaymentCardShown = viewModel::onPaymentCardShown,
+      imageLoader = imageLoader,
+      featureManager = featureManager,
+      hAnalytics = hAnalytics,
+      fragmentManager = fragmentManager,
+    )
+  }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun HomeDestination(
+  uiState: HomeUiState,
+  reload: () -> Unit,
+  onClaimDetailCardClicked: (String) -> Unit,
+  onClaimDetailCardShown: (String) -> Unit,
+  onPaymentCardClicked: (PaymentType) -> Unit,
+  onPaymentCardShown: () -> Unit,
+  imageLoader: ImageLoader,
+  featureManager: FeatureManager,
+  hAnalytics: HAnalytics,
+  fragmentManager: FragmentManager,
+) {
+  LocalConfiguration.current
+  val context = LocalContext.current
+  val resources = context.resources
+  val coroutineScope = rememberCoroutineScope()
+  val registerForActivityResult = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+    reload()
   }
 
-  private fun registerForResult(intent: Intent) {
-    registerForActivityResult.launch(intent)
+  val isLoading = uiState.isLoading
+  val systemBarInsetTopDp = with(LocalDensity.current) {
+    WindowInsets.systemBars.getTop(this).toDp()
   }
+  val pullRefreshState = rememberPullRefreshState(
+    refreshing = isLoading,
+    onRefresh = reload,
+    refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
+  )
+  Box(Modifier.fillMaxSize()) {
+    Column(
+      Modifier
+        .matchParentSize()
+        .pullRefresh(pullRefreshState)
+        .verticalScroll(rememberScrollState())
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+    ) {
+      Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
+      Spacer(Modifier.height(64.dp))
+      when (uiState) {
+        HomeUiState.Loading -> {}
+        is HomeUiState.Error -> {
+          GenericErrorScreen(
+            onRetryButtonClick = reload,
+            modifier = Modifier
+              .padding(16.dp)
+              .padding(top = (80 - 16).dp),
+          )
+        }
+        is HomeUiState.Success -> {
+          HomeScreenSuccess(
+            homeItems = uiState.homeItems,
+            imageLoader = imageLoader,
+            onStartMovingFlow = {
+              coroutineScope.launch {
+                if (featureManager.isFeatureEnabled(Feature.NEW_MOVING_FLOW)) {
+                  context.startActivity(
+                    Intent(
+                      context,
+                      ChangeAddressActivity::class.java,
+                    ),
+                  )
+                } else {
+                  context.startActivity(
+                    com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity.newInstance(context),
+                  )
+                }
+              }
+            },
+            onClaimDetailCardClicked = { claimId ->
+              onClaimDetailCardClicked(claimId)
+              context.startActivity(ClaimDetailActivity.newInstance(context, claimId))
+            },
+            onClaimDetailCardShown = onClaimDetailCardShown,
+            onPaymentCardClicked = onPaymentCardClicked,
+            onPaymentCardShown = onPaymentCardShown,
+            onEmergencyClaimClicked = { emergencyData ->
+              context.startActivity(
+                EmergencyActivity.newInstance(
+                  context = context,
+                  data = emergencyData,
+                ),
+              )
+            },
+            onGenerateTravelCertificateClicked = {
+              context.startActivity(GenerateTravelCertificateActivity.newInstance(context))
+            },
+            onCommonClaimClicked = { commonClaimsData ->
+              context.startActivity(
+                CommonClaimActivity.newInstance(
+                  context = context,
+                  data = commonClaimsData,
+                ),
+              )
+            },
+            onHowClaimsWorkClick = { howClaimsWorkList ->
+              val howClaimsWorkData = howClaimsWorkList.mapIndexed { index, howClaimsWork ->
+                DismissiblePagerModel.NoTitlePage(
+                  imageUrls = ThemedIconUrls.from(
+                    howClaimsWork.illustration.variants.fragments.iconVariantsFragment,
+                  ),
+                  paragraph = howClaimsWork.body,
+                  buttonText = resources.getString(
+                    if (index == howClaimsWorkList.lastIndex) {
+                      hedvig.resources.R.string.claims_explainer_button_start_claim
+                    } else {
+                      hedvig.resources.R.string.claims_explainer_button_next
+                    },
+                  ),
+                )
+              }
+              HowClaimsWorkDialog
+                .newInstance(howClaimsWorkData)
+                .show(fragmentManager, HowClaimsWorkDialog.TAG)
+            },
+            onStartClaimClicked = {
+              coroutineScope.launch {
+                hAnalytics.beginClaim(AppScreen.HOME)
+                startClaimsFlow(
+                  fragmentManager = fragmentManager,
+                  registerForResult = { intent ->
+                    registerForActivityResult.launch(intent)
+                  },
+                  featureManager = featureManager,
+                  context = context,
+                  commonClaimId = null,
+                )
+              }
+            },
+            onPsaClicked = { uri ->
+              if (context.canOpenUri(uri)) {
+                context.openUri(uri)
+              }
+            },
+            onUpcomingRenewalClick = { uri ->
+              if (context.canOpenUri(uri)) {
+                context.openUri(uri)
+              }
+            },
+          )
+        }
+      }
+      Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+    }
+    Column {
+      TopAppBarWithActions {
+        ToolbarChatIcon(
+          onClick = { context.startChat() },
+        )
+      }
+      val shouldShowTooltip by produceState(false) {
+        val daysSinceLastTooltipShown = daysSinceLastTooltipShown(context)
+        value = daysSinceLastTooltipShown
+      }
+      ChatTooltip(
+        showTooltip = shouldShowTooltip,
+        tooltipShown = {
+          context.setLastEpochDayWhenChatTooltipWasShown(LocalDate.now().toEpochDay())
+        },
+        modifier = Modifier
+          .align(Alignment.End)
+          .padding(horizontal = 16.dp),
+      )
+    }
+    PullRefreshIndicator(
+      refreshing = isLoading,
+      state = pullRefreshState,
+      scale = true,
+      modifier = Modifier.align(Alignment.TopCenter),
+    )
+  }
+}
+
+private suspend fun daysSinceLastTooltipShown(context: Context): Boolean {
+  val currentEpochDay = LocalDate.now().toEpochDay()
+  val lastEpochDayOpened = withContext(Dispatchers.IO) {
+    context.getLastEpochDayWhenChatTooltipWasShown()
+  }
+  val diff = currentEpochDay - lastEpochDayOpened
+  val daysSinceLastTooltipShown = diff >= 30
+  return daysSinceLastTooltipShown
 }
 
 @Suppress("UnusedReceiverParameter")
