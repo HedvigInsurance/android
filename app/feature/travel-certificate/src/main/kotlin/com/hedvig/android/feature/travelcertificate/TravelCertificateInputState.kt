@@ -1,25 +1,20 @@
 package com.hedvig.android.feature.travelcertificate
 
-import android.os.SystemClock
 import androidx.compose.material3.DatePickerState
 import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateResult
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
-import java.time.Clock
-import java.time.LocalDateTime
-import java.time.ZoneId
-import kotlinx.datetime.Clock.*
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toKotlinLocalDate
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
 
 data class TravelCertificateInputState(
   val contractId: String? = null,
   val email: ValidatedInput<String?> = ValidatedInput(null),
-  val travelDate: LocalDate = System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
+  val travelDate: LocalDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
   val coInsured: ValidatedInput<List<CoInsured>> = ValidatedInput(emptyList()),
   val maximumCoInsured: Int? = null,
   val includeMember: Boolean = true,

@@ -1,4 +1,4 @@
-import android.content.res.Resources
+
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DisplayMode
 import androidx.lifecycle.ViewModel
@@ -11,8 +11,6 @@ import com.hedvig.android.feature.travelcertificate.data.DownloadTravelCertifica
 import com.hedvig.android.feature.travelcertificate.data.GetTravelCertificateSpecificationsUseCase
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateResult
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
-import java.time.Clock
-import java.time.ZoneId
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

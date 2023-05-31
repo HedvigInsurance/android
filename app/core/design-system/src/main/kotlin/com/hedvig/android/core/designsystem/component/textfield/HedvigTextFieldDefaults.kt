@@ -95,7 +95,7 @@ object HedvigTextFieldDefaults {
     shape: Shape = HedvigTextFieldDefaults.shape,
   ) {
     Box(
-      Modifier.background(colors.containerColor(value, enabled, isError, interactionSource).value, shape)
+      Modifier.background(colors.containerColor(value, enabled, isError, interactionSource).value, shape),
     )
   }
 

@@ -2,7 +2,6 @@ package com.hedvig.android.feature.travelcertificate.navigation
 
 import GenerateTravelCertificateViewModel
 import android.content.Intent
-import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue

@@ -1,6 +1,5 @@
 package com.hedvig.android.core.ui.infocard
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -25,7 +24,6 @@ import com.hedvig.android.core.designsystem.component.card.HedvigInfoCard
 import com.hedvig.android.core.designsystem.material3.infoContainer
 import com.hedvig.android.core.designsystem.material3.infoElement
 import com.hedvig.android.core.designsystem.material3.onInfoContainer
-import com.hedvig.android.core.designsystem.material3.onInfoElement
 
 @Composable
 fun VectorInfoCard(

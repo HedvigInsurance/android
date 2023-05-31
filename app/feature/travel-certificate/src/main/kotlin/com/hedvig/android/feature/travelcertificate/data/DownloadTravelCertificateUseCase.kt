@@ -22,7 +22,7 @@ private const val CERTIFICATE_NAME = "hedvigTravelCertificate_"
 private const val FILE_EXT = ".pdf"
 
 class DownloadTravelCertificateUseCase(
-  private val context: Context
+  private val context: Context,
 ) {
 
   suspend fun invoke(travelCertificateUri: TravelCertificateUrl): Either<ErrorMessage, TravelCertificateUri> =
