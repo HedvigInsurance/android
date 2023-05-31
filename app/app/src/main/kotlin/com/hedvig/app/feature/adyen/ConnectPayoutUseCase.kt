@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.adyen
 
 import android.content.Context
+import arrow.core.Either
 import arrow.core.flatMap
 import arrow.core.left
 import arrow.core.right
@@ -27,10 +28,10 @@ class ConnectPayoutUseCase(
     data class ErrorMessage(val message: String?) : Error
   }
 
-  suspend fun connectPayout(data: JSONObject) = apolloClient
+  suspend fun connectPayout(data: JSONObject): Either<Error, PayOutResult> = apolloClient
     .mutation(createTokenizePayoutDetailsMutation(data))
     .safeExecute()
-    .toEither { Error.ErrorMessage(it) }
+    .toEither { message, _ -> Error.ErrorMessage(message) }
     .flatMap {
       it.tokenizePayoutDetails?.asTokenizationResponseAction?.let {
         Error.CheckoutPaymentAction(it.action).left()

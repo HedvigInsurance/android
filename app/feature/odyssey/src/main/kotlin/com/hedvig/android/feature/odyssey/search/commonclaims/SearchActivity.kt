@@ -33,7 +33,6 @@ import com.hedvig.android.feature.odyssey.ClaimFlowActivity
 import com.hedvig.android.feature.odyssey.search.commonclaims.ui.CommonClaims
 import hedvig.resources.R
 import org.koin.androidx.viewmodel.ext.android.getViewModel
-import slimber.log.e
 
 class SearchActivity : ComponentActivity() {
 
@@ -81,7 +80,6 @@ class SearchActivity : ComponentActivity() {
 
               val errorMessage = viewState.errorMessage
               if (errorMessage != null) {
-                LaunchedEffect(Unit) { e { "SearchActivity: errorMessage$errorMessage" } }
                 GenericErrorScreen(
                   onRetryButtonClick = { viewModel.loadSearchableClaims() },
                   modifier = Modifier.padding(16.dp),
