@@ -59,7 +59,6 @@ fun HedvigScaffold(
       colors = topAppBarColors,
       scrollBehavior = topAppBarScrollBehavior,
       actionType = topAppBarActionType,
-      windowInsets = TopAppBarDefaults.windowInsets,
     )
     Column(
       horizontalAlignment = itemsColumnHorizontalAlignment,

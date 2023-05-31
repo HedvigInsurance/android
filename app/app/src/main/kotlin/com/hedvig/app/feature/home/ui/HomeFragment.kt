@@ -640,7 +640,7 @@ private fun CommonClaimsRenderer(
             imageLoader = imageLoader,
             modifier = Modifier.size(24.dp),
           )
-
+          Spacer(Modifier.height(8.dp))
           Spacer(Modifier.weight(1f))
           Text(
             text = when (commonClaim) {

@@ -59,14 +59,12 @@ fun VectorInfoCard(
         Text(
           text = title,
           style = MaterialTheme.typography.bodyMedium,
-          color = MaterialTheme.colorScheme.onInfoElement,
         )
         Spacer(modifier = Modifier.padding(2.dp))
       }
       Text(
         text = text,
         style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onInfoElement,
       )
     }
   }

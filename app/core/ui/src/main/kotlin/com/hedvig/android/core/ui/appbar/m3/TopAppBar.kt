@@ -99,7 +99,7 @@ inline fun TopAppBar(
   title: String,
   crossinline onClick: () -> Unit,
   actionType: TopAppBarActionType,
-  windowInsets: WindowInsets,
+  windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
   colors: TopAppBarColors,
   scrollBehavior: TopAppBarScrollBehavior,
   modifier: Modifier = Modifier,

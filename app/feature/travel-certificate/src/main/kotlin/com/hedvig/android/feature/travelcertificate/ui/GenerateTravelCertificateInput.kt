@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -33,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.Alignment.Companion.Start
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -178,20 +180,13 @@ fun GenerateTravelCertificateInput(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
             contentColor = MaterialTheme.colorScheme.onSurface,
           ),
-          contentPadding = PaddingValues(start = 16.dp, top = 12.dp, bottom = 12.dp, end = 12.dp),
+          contentPadding = PaddingValues(start = 16.dp, top = 16.dp, bottom = 16.dp, end = 12.dp),
         ) {
-          Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = CenterVertically,
-            modifier = Modifier
-              .fillMaxWidth()
-              .height(32.dp),
-          ) {
-            Text(
-              text = "${coInsured.firstName()}, ${coInsured.ssn}",
-              color = MaterialTheme.colorScheme.onInfoElement,
-            )
-          }
+          Text(
+            text = "${coInsured.firstName()}, ${coInsured.ssn}",
+            textAlign = TextAlign.Start,
+            modifier = Modifier.fillMaxWidth(),
+          )
         }
       }
 
