@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.travelcertificate.data
 
+import android.content.Context
 import android.os.Environment
 import arrow.core.Either
 import arrow.core.raise.either
@@ -17,10 +18,12 @@ import java.io.IOException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-const val CERTIFICATE_NAME = "hedvigTravelCertificate_"
+private const val CERTIFICATE_NAME = "hedvigTravelCertificate_"
 private const val FILE_EXT = ".pdf"
 
-class DownloadTravelCertificateUseCase {
+class DownloadTravelCertificateUseCase(
+  private val context: Context
+) {
 
   suspend fun invoke(travelCertificateUri: TravelCertificateUrl): Either<ErrorMessage, TravelCertificateUri> =
     withContext(Dispatchers.IO) {
@@ -30,7 +33,7 @@ class DownloadTravelCertificateUseCase {
           .build()
 
         val downloadedFile = File(
-          Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+          context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
           CERTIFICATE_NAME + LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE) + FILE_EXT,
         )
 

@@ -25,7 +25,7 @@ fun Highlight(
 ) {
   Row(modifier = modifier) {
     Image(
-      painter = painterResource(R.drawable.ic_checkmark),
+      painter = painterResource(com.hedvig.android.core.designsystem.R.drawable.ic_checkmark),
       contentDescription = null,
     )
     Spacer(Modifier.width(16.dp))

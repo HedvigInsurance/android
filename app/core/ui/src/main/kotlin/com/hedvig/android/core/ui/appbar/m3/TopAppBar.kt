@@ -90,16 +90,16 @@ fun TopAppBarWithClose(
   )
 }
 
-private enum class TopAppBarActionType {
+enum class TopAppBarActionType {
   BACK, CLOSE
 }
 
 @Composable
-private inline fun TopAppBar(
+inline fun TopAppBar(
   title: String,
   crossinline onClick: () -> Unit,
   actionType: TopAppBarActionType,
-  windowInsets: WindowInsets,
+  windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
   colors: TopAppBarColors,
   scrollBehavior: TopAppBarScrollBehavior,
   modifier: Modifier = Modifier,

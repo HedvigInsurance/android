@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,7 +32,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.Alignment.Companion.Start
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -43,6 +46,8 @@ import com.hedvig.android.core.designsystem.component.button.LargeContainedButto
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
+import com.hedvig.android.core.designsystem.material3.onInfoContainer
+import com.hedvig.android.core.designsystem.material3.onInfoElement
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
 import com.hedvig.android.core.designsystem.material3.squircle
 import com.hedvig.android.core.designsystem.material3.warningContainer
@@ -72,7 +77,6 @@ fun GenerateTravelCertificateInput(
   onEmailChanged: (String) -> Unit,
   onCoInsuredClicked: (CoInsured) -> Unit,
   onAddCoInsuredClicked: () -> Unit,
-  onRemoveCoInsuredClicked: (CoInsured) -> Unit,
   onIncludeMemberClicked: (Boolean) -> Unit,
   onTravelDateSelected: (LocalDate) -> Unit,
   onContinue: () -> Unit,
@@ -176,102 +180,24 @@ fun GenerateTravelCertificateInput(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
             contentColor = MaterialTheme.colorScheme.onSurface,
           ),
-          contentPadding = PaddingValues(start = 16.dp, top = 12.dp, bottom = 12.dp, end = 12.dp),
+          contentPadding = PaddingValues(start = 16.dp, top = 16.dp, bottom = 16.dp, end = 12.dp),
         ) {
-          Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = CenterVertically,
+          Text(
+            text = "${coInsured.firstName()}, ${coInsured.ssn}",
+            textAlign = TextAlign.Start,
             modifier = Modifier.fillMaxWidth(),
-          ) {
-            Text(
-              text = "${coInsured.firstName()}, ${coInsured.ssn}",
-              modifier = Modifier.width(250.dp),
-            )
-            Row {
-              Box(
-                Modifier
-                  .size(36.dp)
-                  .clip(SquircleShape)
-                  .clickable { onRemoveCoInsuredClicked(coInsured) },
-              ) {
-                Icon(
-                  painter = painterResource(id = com.hedvig.android.core.designsystem.R.drawable.ic_minus),
-                  tint = MaterialTheme.colorScheme.onSurface,
-                  contentDescription = "remove",
-                  modifier = Modifier
-                    .size(18.dp)
-                    .align(Center),
-                )
-              }
-              Spacer(modifier = Modifier.padding(start = 4.dp))
-              Box(
-                Modifier
-                  .size(36.dp),
-              ) {
-                Icon(
-                  painter = painterResource(id = com.hedvig.android.core.designsystem.R.drawable.ic_plus),
-                  tint = MaterialTheme.colorScheme.outlineVariant,
-                  contentDescription = "add",
-                  modifier = Modifier
-                    .size(18.dp)
-                    .align(Center),
-                )
-              }
-            }
-          }
+          )
         }
       }
 
       Spacer(modifier = Modifier.height(8.dp))
 
-      LargeContainedButton(
-        onClick = { onAddCoInsuredClicked() },
-        modifier = Modifier.padding(horizontal = 16.dp),
-        shape = MaterialTheme.shapes.squircle,
-        colors = ButtonDefaults.buttonColors(
-          containerColor = MaterialTheme.colorScheme.surfaceVariant,
-          contentColor = MaterialTheme.colorScheme.onSurface,
-        ),
-        contentPadding = PaddingValues(start = 16.dp, top = 12.dp, bottom = 12.dp, end = 12.dp),
-      ) {
-        Row(
-          horizontalArrangement = Arrangement.SpaceBetween,
-          verticalAlignment = CenterVertically,
-          modifier = Modifier.fillMaxWidth(),
+      if (uiState.coInsured.input.size < (uiState.maximumCoInsured ?: 0)) {
+        TextButton(
+          onClick = { onAddCoInsuredClicked() },
+          modifier = Modifier.align(CenterHorizontally),
         ) {
           Text(stringResource(id = R.string.travel_certificate_change_member_title))
-          Row {
-            Box(
-              Modifier
-                .size(36.dp)
-                .clip(SquircleShape),
-            ) {
-              Icon(
-                painter = painterResource(id = com.hedvig.android.core.designsystem.R.drawable.ic_minus),
-                tint = MaterialTheme.colorScheme.outlineVariant,
-                contentDescription = "remove",
-                modifier = Modifier
-                  .size(18.dp)
-                  .align(Center),
-              )
-            }
-            Spacer(modifier = Modifier.padding(start = 4.dp))
-            Box(
-              Modifier
-                .size(36.dp)
-                .clip(SquircleShape)
-                .clickable { onAddCoInsuredClicked() },
-            ) {
-              Icon(
-                painter = painterResource(id = com.hedvig.android.core.designsystem.R.drawable.ic_plus),
-                tint = MaterialTheme.colorScheme.onSurface,
-                contentDescription = "add",
-                modifier = Modifier
-                  .size(18.dp)
-                  .align(Center),
-              )
-            }
-          }
         }
       }
 
@@ -380,26 +306,12 @@ private fun MovingDateButton(
   }
 
   Column(modifier) {
-    val errorTextResId = if (uiState.travelDate.errorMessageRes != null) {
-      uiState.travelDate.errorMessageRes
-    } else {
-      null
-    }
-    val dateHasError = errorTextResId != null
     HedvigCard(
       onClick = { showDatePicker = true },
       shape = MaterialTheme.shapes.squircle,
       colors = CardDefaults.outlinedCardColors(
-        containerColor = if (dateHasError) {
-          MaterialTheme.colorScheme.warningContainer
-        } else {
-          MaterialTheme.colorScheme.surfaceVariant
-        },
-        contentColor = if (dateHasError) {
-          MaterialTheme.colorScheme.onWarningContainer
-        } else {
-          MaterialTheme.colorScheme.onSurfaceVariant
-        },
+        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
       ),
       modifier = Modifier.fillMaxWidth(),
     ) {
@@ -409,18 +321,13 @@ private fun MovingDateButton(
       ) {
         Column(Modifier.weight(1f)) {
           Text(
-            text = "Travel date",
+            text = stringResource(id = R.string.travel_certificate_start_date_title),
             style = MaterialTheme.typography.bodySmall,
           )
           Spacer(modifier = Modifier.height(4.dp))
           Text(
-            text = uiState.travelDate.input?.toString()
-              ?: stringResource(R.string.CHANGE_ADDRESS_SELECT_MOVING_DATE_LABEL),
-            color = if (uiState.travelDate.input != null) {
-              MaterialTheme.colorScheme.primary
-            } else {
-              Color.Unspecified
-            },
+            text = uiState.travelDate.toString(),
+            color = MaterialTheme.colorScheme.onInfoElement,
           )
         }
         Spacer(Modifier.width(16.dp))
@@ -428,32 +335,9 @@ private fun MovingDateButton(
           painter = painterResource(
             id = com.hedvig.android.core.designsystem.R.drawable.ic_drop_down_indicator,
           ),
+          tint = MaterialTheme.colorScheme.onInfoElement,
           contentDescription = null,
           modifier = Modifier.size(16.dp),
-        )
-      }
-    }
-    if (errorTextResId != null) {
-      Row(
-        verticalAlignment = CenterVertically,
-        // Emulate the same design that the supporting text of the TextField has
-        modifier = Modifier.padding(
-          start = 4.dp,
-          top = 4.dp,
-          end = 4.dp,
-        ),
-      ) {
-        Icon(
-          imageVector = Icons.Rounded.Warning,
-          contentDescription = null,
-          modifier = Modifier.size(16.dp),
-          tint = MaterialTheme.colorScheme.warningElement,
-        )
-        Spacer(Modifier.width(6.dp))
-        Text(
-          text = stringResource(errorTextResId),
-          style = MaterialTheme.typography.bodySmall,
-          color = MaterialTheme.colorScheme.onWarningContainer,
         )
       }
     }
@@ -472,7 +356,6 @@ fun GenerateTravelCertificateInputPreview() {
         onEmailChanged = {},
         onCoInsuredClicked = {},
         onAddCoInsuredClicked = {},
-        onRemoveCoInsuredClicked = {},
         onIncludeMemberClicked = {},
         onTravelDateSelected = {},
         onContinue = {},
@@ -484,7 +367,6 @@ fun GenerateTravelCertificateInputPreview() {
 
 val mockUiState = TravelCertificateInputState(
   email = ValidatedInput(input = null),
-  travelDate = ValidatedInput(input = null),
   coInsured = ValidatedInput(
     input = listOf(
       CoInsured(
@@ -501,4 +383,5 @@ val mockUiState = TravelCertificateInputState(
   ),
   includeMember = true,
   isLoading = false,
+  maximumCoInsured = 3,
 )

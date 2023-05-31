@@ -208,6 +208,7 @@ private fun HomeDestination(
               .padding(top = (80 - 16).dp),
           )
         }
+
         is HomeUiState.Success -> {
           HomeScreenSuccess(
             homeItems = uiState.homeItems,
@@ -366,9 +367,11 @@ private fun ColumnScope.HomeScreenSuccess(
       is HomeModel.BigText -> {
         BigTextRenderer(homeModel)
       }
+
       is HomeModel.BodyText -> {
         BodyTextRenderer(homeModel)
       }
+
       HomeModel.ChangeAddress -> {
         Row(
           Modifier
@@ -385,6 +388,7 @@ private fun ColumnScope.HomeScreenSuccess(
           Text(stringResource(hedvig.resources.R.string.home_tab_editing_section_change_address_label))
         }
       }
+
       is HomeModel.ClaimStatus -> {
         ClaimStatusCards(
           goToDetailScreen = onClaimDetailCardClicked,
@@ -392,6 +396,7 @@ private fun ColumnScope.HomeScreenSuccess(
           claimStatusCardsUiState = homeModel.claimStatusCardsUiState,
         )
       }
+
       is HomeModel.CommonClaims -> {
         CommonClaimsRenderer(
           homeModel = homeModel,
@@ -401,12 +406,14 @@ private fun ColumnScope.HomeScreenSuccess(
           imageLoader = imageLoader,
         )
       }
+
       is HomeModel.ConnectPayin -> {
         ConnectPayinCard(
           onActionClick = { onPaymentCardClicked(homeModel.payinType) },
           onShown = onPaymentCardShown,
         )
       }
+
       is HomeModel.Header -> {
         Text(
           text = stringResource(homeModel.stringRes),
@@ -416,6 +423,7 @@ private fun ColumnScope.HomeScreenSuccess(
             .padding(top = 48.dp, bottom = 4.dp),
         )
       }
+
       is HomeModel.HowClaimsWork -> {
         TextButton(
           onClick = { onHowClaimsWorkClick(homeModel.pages) },
@@ -435,6 +443,7 @@ private fun ColumnScope.HomeScreenSuccess(
           )
         }
       }
+
       is HomeModel.PSA -> {
         Surface(
           onClick = { onPsaClicked(Uri.parse(homeModel.inner.link)) },
@@ -459,6 +468,7 @@ private fun ColumnScope.HomeScreenSuccess(
           }
         }
       }
+
       is HomeModel.PendingAddressChange -> {
         PurpleInfoCard(
           title = stringResource(hedvig.resources.R.string.home_tab_moving_info_card_title),
@@ -470,9 +480,11 @@ private fun ColumnScope.HomeScreenSuccess(
           buttonAction = onStartMovingFlow,
         )
       }
+
       is HomeModel.Space -> {
         Spacer(Modifier.height(homeModel.height))
       }
+
       is HomeModel.StartClaim -> {
         when (homeModel) {
           HomeModel.StartClaim.FirstClaim -> {
@@ -484,6 +496,7 @@ private fun ColumnScope.HomeScreenSuccess(
                 .padding(top = 18.dp),
             )
           }
+
           HomeModel.StartClaim.NewClaim -> {
             LargeOutlinedTextButton(
               text = stringResource(homeModel.textId),
@@ -495,6 +508,7 @@ private fun ColumnScope.HomeScreenSuccess(
           }
         }
       }
+
       is HomeModel.UpcomingRenewal -> {
         PurpleInfoCard(
           title = stringResource(
@@ -525,19 +539,23 @@ private fun BigTextRenderer(bigText: HomeModel.BigText) {
       hedvig.resources.R.string.home_tab_pending_unknown_title,
       bigText.name,
     )
+
     is HomeModel.BigText.ActiveInFuture -> stringResource(
       hedvig.resources.R.string.home_tab_active_in_future_welcome_title,
       bigText.name,
       formatter.format(bigText.inception),
     )
+
     is HomeModel.BigText.Active -> stringResource(
       hedvig.resources.R.string.home_tab_welcome_title,
       bigText.name,
     )
+
     is HomeModel.BigText.Terminated -> stringResource(
       hedvig.resources.R.string.home_tab_terminated_welcome_title,
       bigText.name,
     )
+
     is HomeModel.BigText.Switching -> stringResource(
       hedvig.resources.R.string.home_tab_pending_switchable_welcome_title,
       bigText.name,
@@ -593,6 +611,7 @@ private fun CommonClaimsRenderer(
           is CommonClaim.Emergency -> {
             { onEmergencyClaimClicked(commonClaim.inner) }
           }
+
           is CommonClaim.GenerateTravelCertificate -> onGenerateTravelCertificateClicked
           is CommonClaim.TitleAndBulletPoints -> {
             { onCommonClaimClicked(commonClaim.inner) }
@@ -604,26 +623,24 @@ private fun CommonClaimsRenderer(
             .padding(16.dp)
             .heightIn(100.dp),
         ) {
-          if (commonClaim !is CommonClaim.GenerateTravelCertificate) {
-            val context = LocalContext.current
-            val density = LocalDensity.current
-            AsyncImage(
-              model = ImageRequest.Builder(context)
-                .data(
-                  when (commonClaim) {
-                    is CommonClaim.Emergency -> commonClaim.inner.iconUrls
-                    is CommonClaim.TitleAndBulletPoints -> commonClaim.inner.iconUrls
-                    else -> error("Impossible")
-                  }.themedIcon,
-                )
-                .size(with(density) { 24.dp.roundToPx() })
-                .build(),
-              contentDescription = null,
-              imageLoader = imageLoader,
-              modifier = Modifier.size(24.dp),
-            )
-            Spacer(Modifier.height(8.dp))
-          }
+          val context = LocalContext.current
+          val density = LocalDensity.current
+          AsyncImage(
+            model = ImageRequest.Builder(context)
+              .data(
+                when (commonClaim) {
+                  is CommonClaim.Emergency -> commonClaim.inner.iconUrls.themedIcon
+                  is CommonClaim.TitleAndBulletPoints -> commonClaim.inner.iconUrls.themedIcon
+                  is CommonClaim.GenerateTravelCertificate -> R.drawable.ic_travel_certificate
+                },
+              )
+              .size(with(density) { 24.dp.roundToPx() })
+              .build(),
+            contentDescription = null,
+            imageLoader = imageLoader,
+            modifier = Modifier.size(24.dp),
+          )
+          Spacer(Modifier.height(8.dp))
           Spacer(Modifier.weight(1f))
           Text(
             text = when (commonClaim) {
@@ -631,6 +648,7 @@ private fun CommonClaimsRenderer(
               is CommonClaim.GenerateTravelCertificate -> stringResource(
                 id = hedvig.resources.R.string.travel_certificate_card_title,
               )
+
               is CommonClaim.TitleAndBulletPoints -> commonClaim.inner.title
             },
             style = MaterialTheme.typography.bodyLarge,

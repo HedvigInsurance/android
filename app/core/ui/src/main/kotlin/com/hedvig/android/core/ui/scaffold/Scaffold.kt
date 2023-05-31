@@ -28,7 +28,8 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.util.fastMaxBy
-import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
+import com.hedvig.android.core.ui.appbar.m3.TopAppBar
+import com.hedvig.android.core.ui.appbar.m3.TopAppBarActionType
 
 /**
  * A custom scaffold, with a built-in top app bar which is pinned to the top and changes colors according to
@@ -41,6 +42,7 @@ fun HedvigScaffold(
   navigateUp: () -> Unit,
   modifier: Modifier = Modifier,
   topAppBarText: String? = null,
+  topAppBarActionType: TopAppBarActionType = TopAppBarActionType.BACK,
   itemsColumnHorizontalAlignment: Alignment.Horizontal = Alignment.Start,
   topAppBarColors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(
     containerColor = androidx.compose.material3.MaterialTheme.colorScheme.background,
@@ -51,11 +53,12 @@ fun HedvigScaffold(
   content: @Composable ColumnScope.() -> Unit,
 ) {
   Column(modifier.fillMaxSize()) {
-    TopAppBarWithBack(
+    TopAppBar(
       onClick = navigateUp,
       title = topAppBarText ?: "",
       colors = topAppBarColors,
       scrollBehavior = topAppBarScrollBehavior,
+      actionType = topAppBarActionType,
     )
     Column(
       horizontalAlignment = itemsColumnHorizontalAlignment,

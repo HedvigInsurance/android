@@ -21,6 +21,7 @@ import com.hedvig.android.core.designsystem.component.button.LargeContainedButto
 import com.hedvig.android.core.designsystem.material3.squircle
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.appbar.m3.TopAppBarActionType
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.error.ErrorDialog
 import com.hedvig.android.core.ui.infocard.DrawableInfoCard
@@ -63,6 +64,7 @@ fun TravelCertificateOverView(
   } else {
     HedvigScaffold(
       navigateUp = { navigateBack() },
+      topAppBarActionType = TopAppBarActionType.CLOSE,
       modifier = Modifier.clearFocusOnTap(),
     ) {
       Spacer(modifier = Modifier.padding(top = 38.dp))
@@ -86,13 +88,13 @@ fun TravelCertificateOverView(
         ),
         modifier = Modifier.padding(horizontal = 16.dp),
       )
-      Spacer(modifier = Modifier.padding(top = 8.dp))
+      Spacer(modifier = Modifier.weight(1f))
       VectorInfoCard(
         title = null,
         text = stringResource(id = R.string.travel_certificate_download_recommendation),
         modifier = Modifier.padding(horizontal = 16.dp),
       )
-      Spacer(modifier = Modifier.weight(1f))
+      Spacer(modifier = Modifier.padding(top = 8.dp))
       LargeContainedButton(
         onClick = {
           if (travelCertificateUri != null) {
