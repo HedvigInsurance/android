@@ -20,6 +20,7 @@ import com.hedvig.app.service.getDynamicLinkFromFirebase
 import com.hedvig.app.service.startActivity
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch

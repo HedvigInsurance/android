@@ -5,33 +5,31 @@ targetSdkVersion = "33"
 minSdkVersion = "23"
 
 # gradlePlugin versions
-androidGradlePlugin = "8.0.1"
+androidGradlePlugin = "8.0.2"
 androidRemoveUnusedResourcesPlugin = "1.4.1"
-apollo = "3.8.1"
+apollo = "3.8.2"
 cacheFix = "2.7.1"
 crashlytics = "2.9.5"
-datadogPlugin = "1.8.1"
+datadogPlugin = "1.9.0"
 doctor = "0.8.1"
-easylauncher = "6.1.0"
+easylauncher = "6.2.0"
 googleServices = "4.3.15"
-kotlin = "1.8.20"
-kotlinter = "3.13.0"
-ktlint = "0.45.2"
+kotlin = "1.8.21"
+kotlinter = "3.15.0"
 ktor = "2.2.2"
 license = "0.9.2"
 
 # Other versions sorted alphabetically
 accompanist = "0.30.1"
-adyen = "4.11.0"
+adyen = "4.12.0"
 androidx-arch-testing = "2.2.0"
-androidx-composeBom = "2023.04.01"
-androidx-composeMaterial3 = { strictly = "1.1.0-rc01" }
-androidx-composeCompiler = "1.4.6"
+androidx-composeBom = "2023.05.01"
+androidx-composeCompiler = "1.4.7"
 androidx-datastore = "1.0.0"
 androidx-espresso = "3.5.1"
 androidx-lifecycle = "2.6.1"
 androidx-navigation = "2.5.3"
-androidx-other-activityCompose = "1.7.1"
+androidx-other-activityCompose = "1.7.2"
 androidx-other-appCompat = "1.6.1"
 androidx-other-browser = "1.5.0"
 androidx-other-constraintLayout = "2.1.4"
@@ -54,11 +52,10 @@ androidx-test-runner = "1.5.2"
 arrow = "1.2.0-RC"
 assertK = "0.25"
 coil = "2.4.0"
-coilTransformations = "2.0.2"
 concatAdapterExtension = "1.2.1"
 coreLibraryDesugaring = "2.0.3"
-coroutines = "1.6.4"
-datadog = "1.19.0"
+coroutines = "1.7.1"
+datadog = "1.19.1"
 dependencyAnalysis = "1.20.0"
 firebase = "28.4.2"
 flexbox = "3.0.0"
@@ -69,21 +66,21 @@ insetter = "0.6.1"
 jsonTest = "20230227"
 junit = "4.13.2"
 kaspresso = "1.5.2"
-kiwi-navigationCompose = "0.6.1"
-koinAndroid = "3.4.0"
-koinCompose = "3.4.3"
-koinCore = "3.4.0"
-kotlinx-serialization = "1.5.0"
+kiwi-navigationCompose = "0.6.2"
+koinAndroid = "3.4.1"
+koinCompose = "3.4.4"
+koinCore = "3.4.1"
+kotlinx-serialization = "1.5.1"
 kotlinxDatetime = "0.4.0"
 kotlinxImmutableCollections = "0.3.5"
-leakCanary = "2.10"
+leakCanary = "2.11"
 markwon = "4.6.2"
-materialComponents = "1.8.0"
+materialComponents = "1.9.0"
 mockk = "1.13.5"
 moneta = "1.4.2"
 okhttp = "4.11.0"
 okio = "3.3.0"
-playKtx = "1.8.1"
+playReview = "2.0.1"
 reactiveX-Android = "2.1.1"
 reactiveX-Kotlin = "2.4.0"
 retrofit = "2.9.0"
@@ -93,7 +90,7 @@ shimmer = "0.5.0"
 slimber = "2.0.0"
 svg = "1.4"
 timber = "5.0.1"
-turbine = "0.12.3"
+turbine = "0.13.0"
 zXing = "3.5.1"
 
 [libraries]
@@ -112,7 +109,7 @@ androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = 
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation" }
 androidx-compose-foundationLayout = { module = "androidx.compose.foundation:foundation-layout" }
 androidx-compose-material = { module = "androidx.compose.material:material" }
-androidx-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "androidx-composeMaterial3" }
+androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
 androidx-compose-material3-windowSizeClass = { module = "androidx.compose.material3:material3-window-size-class" }
 androidx-compose-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended" }
 androidx-compose-runtime = { module = "androidx.compose.runtime:runtime" }
@@ -168,6 +165,7 @@ apollo-normalizedCache = { module = "com.apollographql.apollo3:apollo-normalized
 apollo-runtime = { module = "com.apollographql.apollo3:apollo-runtime", version.ref = "apollo" }
 apollo-testingSupport = { module = "com.apollographql.apollo3:apollo-testing-support", version.ref = "apollo" }
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
+arrow-fx = { module = "io.arrow-kt:arrow-fx-coroutines", version.ref = "arrow" }
 assertK = { module = "com.willowtreeapps.assertk:assertk-jvm", version.ref = "assertK" }
 coil-coil = { module = "io.coil-kt:coil-base", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt:coil-compose-base", version.ref = "coil" }
@@ -180,7 +178,7 @@ coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", ve
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 datadog-sdk = { module = "com.datadoghq:dd-sdk-android", version.ref = "datadog" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics-ktx" }
-firebase-bom = "com.google.firebase:firebase-bom:31.5.0"
+firebase-bom = "com.google.firebase:firebase-bom:32.1.0"
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics-ktx" }
 firebase-dynamicLinks = { module = "com.google.firebase:firebase-dynamic-links" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
@@ -216,7 +214,7 @@ okhttp-core = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-loggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
 okhttp-mockWebServer = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
-playKtx = { module = "com.google.android.play:core-ktx", version.ref = "playKtx" }
+playReview = { module = "com.google.android.play:review-ktx", version.ref = "playReview" }
 reactiveX-android = { module = "io.reactivex.rxjava2:rxandroid", version.ref = "reactiveX-Android" }
 reactiveX-kotlin = { module = "io.reactivex.rxjava2:rxkotlin", version.ref = "reactiveX-Kotlin" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
