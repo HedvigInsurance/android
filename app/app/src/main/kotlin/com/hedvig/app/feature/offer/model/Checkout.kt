@@ -15,7 +15,6 @@ data class Checkout(
     PENDING,
     SIGNED,
     UNKNOWN,
-    ;
   }
 }
 
