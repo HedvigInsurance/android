@@ -192,7 +192,6 @@ dependencies {
   implementation(libs.androidx.other.core)
   implementation(libs.androidx.other.dynamicAnimation)
   implementation(libs.androidx.other.fragment)
-  implementation(libs.androidx.other.media)
   implementation(libs.androidx.other.preference)
   implementation(libs.androidx.other.recyclerView)
   implementation(libs.androidx.other.splashscreen)
@@ -202,7 +201,6 @@ dependencies {
   implementation(libs.androidx.other.viewPager2)
   implementation(libs.androidx.other.workManager)
   implementation(libs.androidx.profileInstaller)
-  implementation(libs.apollo.adapters)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.arrow.core)
   implementation(libs.arrow.fx)
@@ -240,7 +238,6 @@ dependencies {
   implementation(libs.reactiveX.kotlin)
   implementation(libs.shimmer)
   implementation(libs.slimber)
-  implementation(libs.svg)
   implementation(libs.timber)
   implementation(libs.zXing)
 
