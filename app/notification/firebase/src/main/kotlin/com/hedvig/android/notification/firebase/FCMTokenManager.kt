@@ -10,6 +10,8 @@ import androidx.work.await
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.tasks.await
 import slimber.log.d
+import slimber.log.e
+import java.io.IOException
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
@@ -40,8 +42,12 @@ internal class FCMTokenManager(
     fcmTokenStorage.clearToken()
     WorkManager.getInstance(applicationContext).cancelAllWorkByTag(FIREBASE_PUSH_TOKEN_MUTATION_WORKER_TAG)
     d { "Going to delete the FirebaseMessaging token" }
-    FirebaseMessaging.getInstance().deleteToken().await()
-    d { "Did delete the FirebaseMessaging token" }
+    try {
+      FirebaseMessaging.getInstance().deleteToken().await()
+      d { "Did delete the FirebaseMessaging token" }
+    } catch (e: IOException) {
+      e(e) { "Did not delete the FirebaseMessaging token, failed with exception" }
+    }
   }
 
   companion object {
