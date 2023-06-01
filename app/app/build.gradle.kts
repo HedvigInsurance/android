@@ -205,6 +205,7 @@ dependencies {
   implementation(libs.apollo.adapters)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.arrow.core)
+  implementation(libs.arrow.fx)
   implementation(libs.coil.coil)
   implementation(libs.coil.compose)
   implementation(libs.coil.gif)

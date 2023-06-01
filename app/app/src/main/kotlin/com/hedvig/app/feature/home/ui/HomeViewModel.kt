@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.merge
 import arrow.core.raise.either
+import arrow.fx.coroutines.parZip
 import com.hedvig.android.feature.travelcertificate.data.GetTravelCertificateSpecificationsUseCase
 import com.hedvig.app.feature.home.data.GetHomeUseCase
 import com.hedvig.app.feature.home.model.HomeItemsBuilder
@@ -75,16 +76,18 @@ class HomeViewModel(
       }
     }
     val newUiState = either {
-      val homeData = getHomeUseCase.invoke(forceReload).bind()
-      val travelCertificateData = getTravelCertificateUseCase.invoke().getOrNull()
-
-      HomeUiState.Success(
-        claimStatusCards = homeData.claimStatusCards,
-        homeItems = homeItemsBuilder.buildItems(
-          homeData = homeData,
-          travelCertificateData = travelCertificateData,
-        ),
-      )
+      parZip(
+        { getHomeUseCase.invoke(forceReload).bind() },
+        { getTravelCertificateUseCase.invoke().getOrNull() },
+      ) { homeData, travelCertificateData ->
+        HomeUiState.Success(
+          claimStatusCards = homeData.claimStatusCards,
+          homeItems = homeItemsBuilder.buildItems(
+            homeData = homeData,
+            travelCertificateData = travelCertificateData,
+          ),
+        )
+      }
     }
       .mapLeft { HomeUiState.Error(it.message) }
       .merge()
