@@ -3,13 +3,13 @@
 
     <style name="Hedvig.Button" parent="Widget.MaterialComponents.Button">
         <item name="backgroundTint">@color/hedvig_button_state</item>
-        <item name="android:paddingTop">@dimen/base_margin</item>
-        <item name="android:paddingBottom">@dimen/base_margin</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
     </style>
 
     <style name="Hedvig.Button.Large">
         <item name="backgroundTint">@color/hedvig_large_button_state</item>
-        <item name="android:padding">@dimen/base_margin_double</item>
+        <item name="android:padding">16dp</item>
         <item name="shapeAppearance">?shapeAppearanceLargeComponent</item>
     </style>
 
@@ -22,7 +22,7 @@
     </style>
 
     <style name="Hedvig.Button.Outlined.Large">
-        <item name="android:padding">@dimen/base_margin_double</item>
+        <item name="android:padding">16dp</item>
         <item name="shapeAppearance">?shapeAppearanceLargeComponent</item>
         <item name="strokeColor">?colorPrimary</item>
     </style>

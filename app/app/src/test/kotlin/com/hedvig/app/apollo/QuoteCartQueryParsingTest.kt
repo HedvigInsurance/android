@@ -8,6 +8,7 @@ import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.apollographql.apollo3.annotations.ApolloExperimental
 import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.mockserver.enqueue
+import com.hedvig.android.apollo.giraffe.test.GiraffeFakeResolver
 import giraffe.QuoteCartQuery
 import giraffe.type.Locale
 import giraffe.type.buildAdyen
@@ -87,7 +88,7 @@ class QuoteCartQueryParsingTest {
   @Test
   fun `apollo parses an quote cart query with availablePaymentMethods being a string`() =
     runApolloTest { mockServer, apolloClient ->
-      val jsonData = QuoteCartQuery.Data(TestFakeResolver) {
+      val jsonData = QuoteCartQuery.Data(GiraffeFakeResolver) {
         quoteCart = buildQuoteCart {
           paymentConnection = buildPaymentConnection {
             providers = listOf(

@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.offer.ui.changestartdate
 
-import com.hedvig.app.feature.offer.model.QuoteCartId
+import com.hedvig.android.core.common.android.QuoteCartId
 import giraffe.fragment.QuoteBundleFragment
 
 fun QuoteBundleFragment.Inception1.toChangeDateBottomSheetData(

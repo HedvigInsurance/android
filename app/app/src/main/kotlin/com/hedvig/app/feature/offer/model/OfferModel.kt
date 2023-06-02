@@ -1,12 +1,7 @@
 package com.hedvig.app.feature.offer.model
 
-import android.os.Parcelable
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
-import kotlinx.parcelize.Parcelize
-
-@JvmInline
-@Parcelize
-value class QuoteCartId(val id: String) : Parcelable
+import com.hedvig.android.core.common.android.QuoteCartId
 
 data class OfferModel(
   val id: QuoteCartId?,

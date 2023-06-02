@@ -7,6 +7,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.common.android.serializableExtra
+import com.hedvig.android.core.common.android.setupToolbarScrollListener
 import com.hedvig.android.language.LanguageService
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityReferralsInformationBinding
@@ -17,7 +18,6 @@ import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.viewBinding
 import org.javamoney.moneta.Money
 import org.koin.android.ext.android.inject

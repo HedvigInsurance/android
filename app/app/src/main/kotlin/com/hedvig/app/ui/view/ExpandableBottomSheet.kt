@@ -8,14 +8,14 @@ import android.widget.FrameLayout
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.hedvig.android.core.common.android.isDarkThemeActive
+import com.hedvig.android.core.common.android.remove
+import com.hedvig.android.core.common.android.show
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ExpandableBottomSheetBinding
 import com.hedvig.app.util.boundedLerp
 import com.hedvig.app.util.extensions.colorAttr
-import com.hedvig.app.util.extensions.isDarkThemeActive
-import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewDps
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 

@@ -371,7 +371,7 @@ private fun PickerRow(
     }
     Spacer(Modifier.weight(1f))
     Icon(
-      painter = painterResource(R.drawable.ic_arrow_forward),
+      painter = painterResource(hedvig.resources.R.drawable.ic_arrow_forward),
       contentDescription = null,
     )
   }

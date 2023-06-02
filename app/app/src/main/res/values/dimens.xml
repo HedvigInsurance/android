@@ -1,26 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <dimen name="base_margin_half">4dp</dimen>
-    <dimen name="base_margin">8dp</dimen>
-    <dimen name="base_margin_and_a_half">12dp</dimen>
-    <dimen name="base_margin_double">16dp</dimen>
-    <dimen name="base_margin_triple">24dp</dimen>
-    <dimen name="base_margin_quadruple">32dp</dimen>
-    <dimen name="base_margin_quintuple">40dp</dimen>
-    <dimen name="base_margin_sextuple">48dp</dimen>
-    <dimen name="base_margin_septuple">56dp</dimen>
-    <dimen name="base_margin_octuple">64dp</dimen>
-    <dimen name="base_margin_undecuple">88dp</dimen>
-    <dimen name="base_margin_tredecuple">104dp</dimen>
-
     <dimen name="background_rounded_corners_radius">20dp</dimen>
-
 
     <dimen name="loading_spinner_width">32dp</dimen>
     <dimen name="loading_spinner_height">32dp</dimen>
-    <dimen name="claim_bullet_point_row_icon">24dp</dimen>
-    <dimen name="common_claim_first_message_bottom_margin">60dp</dimen>
 
     <dimen name="dashboard_need_set_up_background_radius">5dp</dimen>
 
@@ -58,7 +42,6 @@
     <dimen name="chat_image_size">240dp</dimen>
     <dimen name="default_qr_code_size">150dp</dimen>
     <dimen name="pick_date_button_corner_radius">6dp</dimen>
-    <dimen name="base_margin_sesqui">12dp</dimen>
     <dimen name="horizontal_line_height">1dp</dimen>
     <dimen name="premium_box_campaign_header_height">30dp</dimen>
     <dimen name="connect_payment_result_icon_size">56dp</dimen>
@@ -79,7 +62,6 @@
     <dimen name="peril_bottom_sheet_close_icon_size">24dp</dimen>
     <dimen name="peril_bottom_sheet_exception_icon_size">24dp</dimen>
     <dimen name="peril_bottom_sheet_exception_item_size">56dp</dimen>
-    <dimen name="embark_select_action_min_height">80dp</dimen>
     <dimen name="embark_chat_bubble_max_width">250dp</dimen>
     <dimen name="more_options_list_item_height">48dp</dimen>
     <dimen name="member_id_min_length">80dp</dimen>

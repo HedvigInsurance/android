@@ -6,8 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingTop="@dimen/base_margin"
-    android:paddingBottom="@dimen/base_margin_double">
+    android:paddingTop="8dp"
+    android:paddingBottom="16dp">
 
     <ImageView
         android:layout_width="wrap_content"
@@ -20,17 +20,17 @@
         android:id="@+id/gifSearchField"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin"
-        android:layout_marginTop="@dimen/base_margin_double"
-        android:layout_marginEnd="@dimen/base_margin"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
         android:background="@drawable/chat_background_edit_text_rounded_corners"
         android:hint="@string/SEARCH_BAR_GIF"
         android:importantForAutofill="no"
         android:inputType="text"
-        android:paddingStart="@dimen/base_margin_double"
-        android:paddingTop="@dimen/base_margin"
-        android:paddingEnd="@dimen/base_margin_double"
-        android:paddingBottom="@dimen/base_margin"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp"
         tools:targetApi="O" />
 
     <TextView
@@ -44,7 +44,7 @@
         android:id="@+id/gifRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin_double"
+        android:layout_marginTop="16dp"
         android:orientation="horizontal"
         android:visibility="gone"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"

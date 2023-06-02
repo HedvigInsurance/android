@@ -29,12 +29,12 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import com.hedvig.android.core.common.android.QuoteCartId
 import com.hedvig.android.core.common.android.parcelable
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
-import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.viewLifecycleScope

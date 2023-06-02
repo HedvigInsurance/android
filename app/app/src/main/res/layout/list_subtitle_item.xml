@@ -3,8 +3,8 @@
     android:id="@+id/text"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/base_margin_quintuple"
-    android:layout_marginBottom="@dimen/base_margin_double"
-    android:layout_marginHorizontal="@dimen/base_margin_double"
+    android:layout_marginTop="40dp"
+    android:layout_marginBottom="16dp"
+    android:layout_marginHorizontal="16dp"
     tools:text="List subtitle item"
     android:textAppearance="?textAppearanceHeadline6" />

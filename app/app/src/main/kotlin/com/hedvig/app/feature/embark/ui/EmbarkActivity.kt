@@ -17,6 +17,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
 import com.hedvig.android.auth.android.AuthenticatedObserver
+import com.hedvig.android.core.common.android.hide
+import com.hedvig.android.core.common.android.remove
 import com.hedvig.android.core.common.android.whenApiVersion
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
@@ -49,8 +51,6 @@ import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
-import com.hedvig.app.util.extensions.view.hide
-import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.navigation.openAuth
 import giraffe.EmbarkStoryQuery
@@ -420,7 +420,7 @@ class EmbarkActivity : AppCompatActivity(R.layout.activity_embark) {
     internal val PASSAGE_ANIMATION_DELAY_DURATION = 150.milliseconds
     internal val KEYBOARD_HIDE_DELAY_DURATION = 450.milliseconds
 
-    fun newInstance(context: Context, storyName: String, storyTitle: String) =
+    fun newInstance(context: Context, storyName: String, storyTitle: String): Intent =
       Intent(context, EmbarkActivity::class.java).apply {
         putExtra(STORY_NAME, storyName)
         putExtra(STORY_TITLE, storyTitle)

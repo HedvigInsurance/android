@@ -1,13 +1,13 @@
 package com.hedvig.app.feature.offer.model.quotebundle
 
+import com.hedvig.android.core.common.android.QuoteCartId
+import com.hedvig.android.core.common.android.table.Table
+import com.hedvig.android.core.common.android.table.intoTable
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.offer.model.CheckoutLabel
-import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.ui.checkoutLabel
 import com.hedvig.app.feature.perils.Peril
-import com.hedvig.app.feature.table.Table
-import com.hedvig.app.feature.table.intoTable
 import giraffe.fragment.QuoteBundleFragment
 import giraffe.type.CheckoutMethod
 import java.time.LocalDate

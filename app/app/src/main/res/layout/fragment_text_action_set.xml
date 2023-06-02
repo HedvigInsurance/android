@@ -17,11 +17,11 @@
 
     <include
         android:id="@+id/responseContainer"
-        android:layout_marginTop="@dimen/base_margin_double"
+        android:layout_marginTop="16dp"
         layout="@layout/embark_response"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/base_margin_double"
+        android:layout_marginHorizontal="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/messages"
         app:layout_constraintWidth_max="@dimen/embark_chat_bubble_max_width" />
@@ -30,9 +30,9 @@
         android:id="@+id/input_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_double"
-        android:layout_marginEnd="@dimen/base_margin_double"
-        android:layout_marginBottom="@dimen/base_margin_double"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toTopOf="@id/textActionSubmit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -42,7 +42,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:padding="@dimen/base_margin_double" />
+            android:padding="16dp" />
 
     </com.google.android.material.card.MaterialCardView>
 
@@ -51,7 +51,7 @@
         style="?materialButtonContainedLargeStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/base_margin_double"
+        android:layout_margin="16dp"
         android:enabled="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

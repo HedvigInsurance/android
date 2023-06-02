@@ -13,18 +13,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination
-import com.hedvig.android.app.navigation.TopLevelDestination
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.kiwi.navigationcompose.typed.createRoutePattern
+import com.hedvig.android.navigation.core.TopLevelGraph
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
 internal fun HedvigNavRail(
-  destinations: ImmutableSet<TopLevelDestination>,
-  destinationsWithNotifications: ImmutableSet<TopLevelDestination>,
-  onNavigateToDestination: (TopLevelDestination) -> Unit,
+  destinations: ImmutableSet<TopLevelGraph>,
+  destinationsWithNotifications: ImmutableSet<TopLevelGraph>,
+  onNavigateToDestination: (TopLevelGraph) -> Unit,
   currentDestination: NavDestination?,
   modifier: Modifier = Modifier,
 ) {
@@ -32,15 +31,13 @@ internal fun HedvigNavRail(
     destinations = destinations,
     destinationsWithNotifications = destinationsWithNotifications,
     onNavigateToDestination = onNavigateToDestination,
-    getIsCurrentlySelected = { destination: TopLevelDestination ->
-      currentDestination.isTopLevelDestinationInHierarchy(
-        when (destination) {
-          TopLevelDestination.HOME -> createRoutePattern<TopLevelDestination.HOME>()
-          TopLevelDestination.INSURANCE -> createRoutePattern<TopLevelDestination.INSURANCE>()
-          TopLevelDestination.PROFILE -> createRoutePattern<TopLevelDestination.PROFILE>()
-          TopLevelDestination.REFERRALS -> createRoutePattern<TopLevelDestination.REFERRALS>()
-        },
-      )
+    getIsCurrentlySelected = { destination: TopLevelGraph ->
+      when (destination) {
+        TopLevelGraph.HOME -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.HOME>()
+        TopLevelGraph.INSURANCE -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.INSURANCE>()
+        TopLevelGraph.PROFILE -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.PROFILE>()
+        TopLevelGraph.REFERRALS -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.REFERRALS>()
+      }
     },
     modifier = modifier,
   )
@@ -48,10 +45,10 @@ internal fun HedvigNavRail(
 
 @Composable
 private fun HedvigNavRail(
-  destinations: ImmutableSet<TopLevelDestination>,
-  destinationsWithNotifications: ImmutableSet<TopLevelDestination>,
-  onNavigateToDestination: (TopLevelDestination) -> Unit,
-  getIsCurrentlySelected: (TopLevelDestination) -> Boolean,
+  destinations: ImmutableSet<TopLevelGraph>,
+  destinationsWithNotifications: ImmutableSet<TopLevelGraph>,
+  onNavigateToDestination: (TopLevelGraph) -> Unit,
+  getIsCurrentlySelected: (TopLevelGraph) -> Boolean,
   modifier: Modifier = Modifier,
 ) {
   NavigationRail(
@@ -97,14 +94,14 @@ private fun PreviewHedvigNavRail() {
     Surface(color = MaterialTheme.colorScheme.background) {
       HedvigNavRail(
         destinations = persistentSetOf(
-          TopLevelDestination.HOME,
-          TopLevelDestination.INSURANCE,
-          TopLevelDestination.REFERRALS,
-          TopLevelDestination.PROFILE,
+          TopLevelGraph.HOME,
+          TopLevelGraph.INSURANCE,
+          TopLevelGraph.REFERRALS,
+          TopLevelGraph.PROFILE,
         ),
-        destinationsWithNotifications = persistentSetOf(TopLevelDestination.INSURANCE),
+        destinationsWithNotifications = persistentSetOf(TopLevelGraph.INSURANCE),
         onNavigateToDestination = {},
-        getIsCurrentlySelected = { it == TopLevelDestination.HOME },
+        getIsCurrentlySelected = { it == TopLevelGraph.HOME },
       )
     }
   }

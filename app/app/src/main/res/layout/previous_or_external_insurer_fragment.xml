@@ -28,9 +28,9 @@
         android:id="@+id/response"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_double"
-        android:layout_marginTop="@dimen/base_margin_half"
-        android:layout_marginEnd="@dimen/base_margin_double"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
         android:alpha="0"
         android:textAppearance="?textAppearanceSubtitle1"
         android:theme="@style/ThemeOverlay.Hedvig.Embark.Chat.Self"
@@ -43,9 +43,9 @@
         android:id="@+id/currentInsurerContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_double"
-        android:layout_marginEnd="@dimen/base_margin_double"
-        android:layout_marginBottom="@dimen/base_margin_double"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toTopOf="@id/continueButton">
 
         <LinearLayout
@@ -57,10 +57,10 @@
                 android:id="@+id/currentInsurerLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin_quadruple"
-                android:layout_marginTop="@dimen/base_margin_triple"
-                android:layout_marginEnd="@dimen/base_margin_quadruple"
-                android:layout_marginBottom="@dimen/base_margin_double"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="16dp"
                 android:text="@string/onboarding_norway_current_insurer.bottom_sheet_title"
                 android:textAppearance="?textAppearanceBody1"
                 app:drawableEndCompat="@drawable/ic_chevron_down" />
@@ -68,9 +68,9 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginStart="@dimen/base_margin_double"
-                android:layout_marginEnd="@dimen/base_margin_double"
-                android:layout_marginBottom="@dimen/base_margin_double"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
                 android:background="@drawable/divider" />
         </LinearLayout>
 
@@ -81,7 +81,7 @@
         style="?attr/materialButtonContainedLargeStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/base_margin_double"
+        android:layout_margin="16dp"
         android:enabled="false"
         android:text="@string/onboarding_norway_current_insurer.bottom_sheet_continue_button"
         app:layout_constraintBottom_toBottomOf="parent" />

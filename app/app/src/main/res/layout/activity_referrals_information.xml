@@ -27,7 +27,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="@dimen/base_margin_quintuple"
+                android:layout_marginTop="40dp"
                 android:contentDescription="@null"
                 app:srcCompat="@drawable/illustration_forever" />
 
@@ -35,9 +35,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginStart="@dimen/base_margin_double"
-                android:layout_marginTop="@dimen/base_margin_quintuple"
-                android:layout_marginEnd="@dimen/base_margin_double"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="40dp"
+                android:layout_marginEnd="16dp"
                 android:text="@string/referrals_info_sheet.headline"
                 android:textAppearance="?textAppearanceHeadline5" />
 
@@ -46,9 +46,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginStart="@dimen/base_margin_double"
-                android:layout_marginTop="@dimen/base_margin_double"
-                android:layout_marginEnd="@dimen/base_margin_double"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
                 android:textAlignment="center"
                 android:textAppearance="?textAppearanceBody1"
                 tools:text="@string/referrals_info_sheet.body" />
@@ -59,9 +59,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginStart="@dimen/base_margin_double"
-                android:layout_marginTop="@dimen/base_margin_quintuple"
-                android:layout_marginEnd="@dimen/base_margin_double"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="40dp"
+                android:layout_marginEnd="16dp"
                 android:text="@string/referrals_info_sheet.full_terms_and_conditions" />
 
         </LinearLayout>

@@ -25,7 +25,7 @@ import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.error.ErrorDialog
 import com.hedvig.android.core.ui.infocard.DrawableInfoCard
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
-import com.hedvig.android.feature.travelcertificate.data.TravelCertificateResult
+import com.hedvig.android.data.travelcertificate.TravelCertificateResult
 import hedvig.resources.R
 
 @Composable

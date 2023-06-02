@@ -5,6 +5,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import com.apollographql.apollo3.annotations.ApolloExperimental
 import com.apollographql.apollo3.mockserver.enqueue
+import com.hedvig.android.apollo.giraffe.test.GiraffeFakeResolver
 import com.hedvig.app.testdata.feature.changeaddress.UPCOMING_AGREEMENT_NONE
 import giraffe.UpcomingAgreementQuery
 import giraffe.fragment.TableFragment
@@ -85,7 +86,7 @@ class UpcomingAgreementQueryParsing {
 
   @Suppress("PrivatePropertyName")
   private val UPCOMING_AGREEMENT_SWEDISH_APARTMENT_from_test_builder by lazy {
-    UpcomingAgreementQuery.Data(TestFakeResolver) {
+    UpcomingAgreementQuery.Data(GiraffeFakeResolver) {
       contracts = listOf(
         buildContract {
           upcomingAgreementDetailsTable = buildTable {

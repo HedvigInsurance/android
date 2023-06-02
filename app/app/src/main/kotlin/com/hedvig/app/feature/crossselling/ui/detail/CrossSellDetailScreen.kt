@@ -47,7 +47,6 @@ import com.hedvig.android.core.ui.appbar.FadingTopAppBar
 import com.hedvig.android.core.ui.error.ErrorDialog
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.ui.scaffold.Scaffold
-import com.hedvig.app.R
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.util.compose.rememberBlurHashPainter
 
@@ -180,7 +179,7 @@ private fun ScrollableContent(
     }
     ClickableListItem(
       onClick = onCoverageClick,
-      icon = R.drawable.ic_insurance,
+      icon = hedvig.resources.R.drawable.ic_insurance,
       text = stringResource(hedvig.resources.R.string.cross_sell_info_full_coverage_row),
     )
     ClickableListItem(

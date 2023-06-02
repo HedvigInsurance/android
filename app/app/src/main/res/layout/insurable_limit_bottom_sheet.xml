@@ -4,10 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingTop="@dimen/base_margin"
-    android:paddingStart="@dimen/base_margin_double"
-    android:paddingEnd="@dimen/base_margin_double"
-    android:paddingBottom="@dimen/base_margin_triple">
+    android:paddingTop="8dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="24dp">
 
     <ImageView
         android:layout_width="wrap_content"
@@ -20,7 +20,7 @@
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin_triple"
+        android:layout_marginTop="24dp"
         android:textAlignment="center"
         android:textAppearance="?textAppearanceHeadline5"
         tools:text="Header" />
@@ -29,7 +29,7 @@
         android:id="@+id/body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin_double"
+        android:layout_marginTop="16dp"
         android:textAppearance="?textAppearanceBody1"
         tools:text="Description" />
 </LinearLayout>

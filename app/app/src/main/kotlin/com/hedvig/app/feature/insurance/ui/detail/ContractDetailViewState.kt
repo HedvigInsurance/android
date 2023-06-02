@@ -1,9 +1,9 @@
 package com.hedvig.app.feature.insurance.ui.detail
 
+import com.hedvig.android.core.common.android.table.Table
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurance.ui.ContractCardViewState
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoModel
-import com.hedvig.app.feature.table.Table
 
 data class ContractDetailViewState(
   val contractCardViewState: ContractCardViewState,

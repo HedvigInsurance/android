@@ -5,13 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/base_margin_triple">
+    android:paddingBottom="24dp">
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/base_margin"
+        android:layout_marginTop="8dp"
         android:contentDescription="@null"
         app:srcCompat="@drawable/bottom_sheet_handle" />
 
@@ -19,8 +19,8 @@
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/base_margin_triple"
-        android:layout_marginTop="@dimen/base_margin_triple"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="24dp"
         android:textAlignment="center"
         android:textAppearance="?textAppearanceHeadline6"
         tools:text="What is included in my home insurance?" />
@@ -29,8 +29,8 @@
         android:id="@+id/body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/base_margin_triple"
-        android:layout_marginTop="@dimen/base_margin_double"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="16dp"
         android:textAppearance="?textAppearanceBody1"
         tools:text="Your home insurance covers you, your things and your home. All risk and travel insurance is always included. Accident and health insurance is not included. Don’t hesitate to ask us if you want more information about your coverage!" />
 

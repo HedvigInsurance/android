@@ -166,12 +166,6 @@ fun AppCompatActivity.handleSingleSelectLink(
   }
 }
 
-fun Activity.makeACall(uri: Uri) {
-  val intent = Intent(Intent.ACTION_DIAL)
-  intent.data = uri
-  startActivity(intent)
-}
-
 fun Activity.showReviewDialog(
   onComplete: () -> Unit = {},
 ) {

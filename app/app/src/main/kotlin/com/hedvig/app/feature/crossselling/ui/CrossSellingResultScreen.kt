@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.crossselling.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -125,7 +125,7 @@ private fun InformationSection(
   Column(
     modifier = modifier,
   ) {
-    Image(
+    Icon(
       painter = icon,
       contentDescription = null,
       modifier = Modifier.size(32.dp),
@@ -159,7 +159,7 @@ private fun ButtonsSection(
         LargeContainedButton(
           onClick = openChat,
         ) {
-          Image(
+          Icon(
             painter = painterResource(R.drawable.ic_chat_on_primary),
             contentDescription = null,
           )

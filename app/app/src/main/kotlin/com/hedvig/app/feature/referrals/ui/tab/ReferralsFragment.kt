@@ -49,14 +49,20 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import com.google.android.material.snackbar.Snackbar
-import com.hedvig.android.app.navigation.TopLevelDestination
+import com.hedvig.android.core.common.android.hide
+import com.hedvig.android.core.common.android.remove
+import com.hedvig.android.core.common.android.show
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
+import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithActions
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.progress.FullScreenHedvigProgress
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.compose.typed.animatedComposable
+import com.hedvig.android.navigation.compose.typed.animatedNavigation
+import com.hedvig.android.navigation.core.AppDestination
+import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ReferralsCodeBinding
 import com.hedvig.app.databinding.ReferralsHeaderBinding
@@ -73,11 +79,9 @@ import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetTint
 import com.hedvig.app.util.extensions.copyToClipboard
 import com.hedvig.app.util.extensions.showShareSheet
-import com.hedvig.app.util.extensions.view.hide
-import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.safeLet
+import com.kiwi.navigationcompose.typed.createRoutePattern
 import giraffe.ReferralsQuery
 import giraffe.fragment.ReferralFragment
 import org.javamoney.moneta.Money
@@ -89,19 +93,37 @@ import javax.money.MonetaryAmount
 internal fun NavGraphBuilder.referralsGraph(
   languageService: LanguageService,
 ) {
-  animatedComposable<TopLevelDestination.REFERRALS>() {
-    val viewModel: ReferralsViewModel = koinViewModel()
-    val uiState by viewModel.data.collectAsStateWithLifecycle()
-    ReferralsDestination(
-      uiState = uiState,
-      reload = viewModel::reload,
-      languageService = languageService,
-    )
+  animatedNavigation<TopLevelGraph.REFERRALS>(
+    startDestination = createRoutePattern<AppDestination.TopLevelDestination.Referrals>(),
+  ) {
+    animatedComposable<AppDestination.TopLevelDestination.Referrals>(
+      enterTransition = { MotionDefaults.fadeThroughEnter },
+      exitTransition = { MotionDefaults.fadeThroughExit },
+    ) {
+      val viewModel: ReferralsViewModel = koinViewModel()
+      ReferralsDestination(
+        viewModel = viewModel,
+        languageService = languageService,
+      )
+    }
   }
 }
 
 @Composable
 private fun ReferralsDestination(
+  viewModel: ReferralsViewModel,
+  languageService: LanguageService,
+) {
+  val uiState by viewModel.data.collectAsStateWithLifecycle()
+  ReferralsScreen(
+    uiState = uiState,
+    reload = viewModel::reload,
+    languageService = languageService,
+  )
+}
+
+@Composable
+private fun ReferralsScreen(
   uiState: ReferralsUiState,
   reload: () -> Unit,
   languageService: LanguageService,

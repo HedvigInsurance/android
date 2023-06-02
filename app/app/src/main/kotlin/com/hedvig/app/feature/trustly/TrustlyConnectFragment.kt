@@ -81,7 +81,7 @@ class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
           }
         }
       } else {
-        setNavigationIcon(R.drawable.ic_close)
+        setNavigationIcon(hedvig.resources.R.drawable.ic_close)
         setNavigationOnClickListener {
           connectPaymentViewModel.close()
         }

@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.offer.model
 
+import com.hedvig.android.core.common.android.QuoteCartId
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import com.hedvig.app.feature.offer.model.quotebundle.toQuoteBundle
 import giraffe.fragment.QuoteCartFragment

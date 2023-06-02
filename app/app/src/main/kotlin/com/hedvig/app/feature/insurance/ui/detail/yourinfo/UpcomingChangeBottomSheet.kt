@@ -5,7 +5,7 @@ import android.view.View
 import androidx.core.os.bundleOf
 import androidx.core.view.updatePadding
 import com.hedvig.android.core.common.android.parcelable
-import com.hedvig.app.feature.table.Table
+import com.hedvig.android.core.common.android.table.Table
 import com.hedvig.app.feature.table.TableAdapter
 import com.hedvig.app.ui.view.ExpandableBottomSheet
 import com.hedvig.app.util.extensions.viewDps

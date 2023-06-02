@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.travelcertificate.navigation
 
-import GenerateTravelCertificateViewModel
 import android.content.Intent
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
@@ -14,6 +13,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
+import com.hedvig.android.feature.travelcertificate.GenerateTravelCertificateViewModel
 import com.hedvig.android.feature.travelcertificate.TravelCertificateInputState
 import com.hedvig.android.feature.travelcertificate.ui.AddCoInsured
 import com.hedvig.android.feature.travelcertificate.ui.GenerateTravelCertificateInput
@@ -56,7 +56,7 @@ internal fun NavGraphBuilder.generateTravelCertificateGraph(
       )
     }
     animatedComposable<GenerateTravelCertificateDestination.TravelCertificateInput> {
-      val viewModel = navGraphScopedViewModel(
+      val viewModel: GenerateTravelCertificateViewModel = navGraphScopedViewModel(
         navController = navController,
         backStackEntry = it,
       )

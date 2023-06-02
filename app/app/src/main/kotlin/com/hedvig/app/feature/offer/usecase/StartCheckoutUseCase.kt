@@ -8,7 +8,7 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.app.feature.offer.model.QuoteCartId
+import com.hedvig.android.core.common.android.QuoteCartId
 import com.hedvig.app.util.apollo.NetworkCacheManager
 import com.hedvig.hanalytics.HAnalytics
 import giraffe.QuoteCartStartCheckoutMutation

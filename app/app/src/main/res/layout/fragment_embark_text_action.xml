@@ -19,9 +19,9 @@
         android:id="@+id/response"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_double"
-        android:layout_marginTop="@dimen/base_margin_half"
-        android:layout_marginEnd="@dimen/base_margin_double"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
         android:alpha="0"
         android:textAppearance="?textAppearanceSubtitle1"
         android:theme="@style/ThemeOverlay.Hedvig.Embark.Chat.Self"
@@ -34,9 +34,9 @@
         android:id="@+id/input_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_double"
-        android:layout_marginEnd="@dimen/base_margin_double"
-        android:layout_marginBottom="@dimen/base_margin_double"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toTopOf="@id/textActionSubmit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -44,7 +44,7 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="@dimen/base_margin_double">
+            android:padding="16dp">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/filledTextField"
@@ -69,9 +69,9 @@
         style="?materialButtonContainedLargeStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_double"
-        android:layout_marginEnd="@dimen/base_margin_double"
-        android:layout_marginBottom="@dimen/base_margin_double"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:enabled="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

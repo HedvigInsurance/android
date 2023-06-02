@@ -20,7 +20,7 @@
         android:id="@+id/info"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginStart="16dp"
         android:gravity="end"
         android:textAppearance="?textAppearanceBody1"
         app:drawableTint="?android:textColorPrimary"

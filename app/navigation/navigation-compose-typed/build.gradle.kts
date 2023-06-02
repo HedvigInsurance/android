@@ -16,5 +16,6 @@ dependencies {
   implementation(libs.accompanist.navigationAnimation)
   implementation(libs.androidx.compose.animation)
   implementation(libs.androidx.compose.runtime)
+  implementation(libs.koin.compose)
   implementation(libs.kotlinx.serialization.core)
 }

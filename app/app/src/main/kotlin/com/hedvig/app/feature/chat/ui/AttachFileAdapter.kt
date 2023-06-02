@@ -4,10 +4,10 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.recyclerview.widget.RecyclerView
+import com.hedvig.android.core.common.android.remove
+import com.hedvig.android.core.common.android.show
 import com.hedvig.app.databinding.CameraAndMiscItemBinding
-import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.show
 
 class AttachFileAdapter(
   private val takePhoto: () -> Unit,

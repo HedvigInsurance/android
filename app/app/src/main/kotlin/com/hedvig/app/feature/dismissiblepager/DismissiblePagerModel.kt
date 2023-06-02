@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.dismissiblepager
 
 import android.os.Parcelable
-import com.hedvig.app.util.apollo.ThemedIconUrls
+import com.hedvig.android.core.common.android.ThemedIconUrls
 import kotlinx.parcelize.Parcelize
 
 sealed class DismissiblePagerModel : Parcelable {

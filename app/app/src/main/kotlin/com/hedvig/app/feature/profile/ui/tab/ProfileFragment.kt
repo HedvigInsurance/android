@@ -35,13 +35,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
-import com.hedvig.android.app.navigation.TopLevelDestination
+import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithActions
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.core.ui.progress.FullScreenHedvigProgress
 import com.hedvig.android.feature.businessmodel.BusinessModelActivity
 import com.hedvig.android.navigation.compose.typed.animatedComposable
+import com.hedvig.android.navigation.compose.typed.animatedNavigation
+import com.hedvig.android.navigation.core.AppDestination
+import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.app.R
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
@@ -49,22 +52,39 @@ import com.hedvig.app.feature.profile.ui.myinfo.MyInfoActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.extensions.startChat
+import com.kiwi.navigationcompose.typed.createRoutePattern
 import org.koin.androidx.compose.koinViewModel
 
 internal fun NavGraphBuilder.profileGraph() {
-  animatedComposable<TopLevelDestination.PROFILE> {
-    val viewModel: ProfileViewModel = koinViewModel()
-    val uiState by viewModel.data.collectAsStateWithLifecycle()
-    ProfileDestination(
-      uiState = uiState,
-      reload = viewModel::reload,
-      onLogout = viewModel::onLogout,
-    )
+  animatedNavigation<TopLevelGraph.PROFILE>(
+    startDestination = createRoutePattern<AppDestination.TopLevelDestination.Profile>(),
+  ) {
+    animatedComposable<AppDestination.TopLevelDestination.Profile>(
+      enterTransition = { MotionDefaults.fadeThroughEnter },
+      exitTransition = { MotionDefaults.fadeThroughExit },
+    ) {
+      val viewModel: ProfileViewModel = koinViewModel()
+      ProfileDestination(
+        viewModel = viewModel,
+      )
+    }
   }
 }
 
 @Composable
 private fun ProfileDestination(
+  viewModel: ProfileViewModel,
+) {
+  val uiState by viewModel.data.collectAsStateWithLifecycle()
+  ProfileScreen(
+    uiState = uiState,
+    reload = viewModel::reload,
+    onLogout = viewModel::onLogout,
+  )
+}
+
+@Composable
+private fun ProfileScreen(
   uiState: ProfileViewModel.ViewState,
   reload: () -> Unit,
   onLogout: () -> Unit,
@@ -238,7 +258,7 @@ private fun ProfileRow(
     }
     Spacer(Modifier.width(16.dp))
     Icon(
-      painter = painterResource(R.drawable.ic_arrow_forward),
+      painter = painterResource(hedvig.resources.R.drawable.ic_arrow_forward),
       contentDescription = null,
       modifier = Modifier.size(24.dp),
     )

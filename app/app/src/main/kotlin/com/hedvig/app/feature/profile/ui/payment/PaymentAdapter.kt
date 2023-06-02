@@ -6,6 +6,9 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.hedvig.android.core.common.android.GenericDiffUtilItemCallback
+import com.hedvig.android.core.common.android.hide
+import com.hedvig.android.core.common.android.show
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.R
@@ -22,7 +25,6 @@ import com.hedvig.app.databinding.PayoutDetailsParagraphBinding
 import com.hedvig.app.databinding.TrustlyPayinDetailsBinding
 import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.referrals.ui.redeemcode.RefetchingRedeemCodeBottomSheet
-import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.colorAttr
@@ -32,9 +34,7 @@ import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
 import com.hedvig.app.util.extensions.putCompoundDrawablesRelativeWithIntrinsicBounds
 import com.hedvig.app.util.extensions.setStrikethrough
-import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.navigation.getConnectPayoutActivity
 import giraffe.PaymentQuery

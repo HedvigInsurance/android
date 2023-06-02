@@ -23,7 +23,7 @@
         android:id="@+id/paragraph"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/base_margin_triple"
+        android:layout_marginHorizontal="24dp"
         android:gravity="center_horizontal"
         android:textAppearance="?textAppearanceHeadline6"
         app:layout_constraintBottom_toBottomOf="parent"

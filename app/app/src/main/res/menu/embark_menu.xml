@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/login"
-        android:icon="@drawable/ic_profile"
+        android:icon="@drawable/ic_navigation_profile"
         android:title="@string/common_signin_button_text"
         app:showAsAction="never" />
     <item

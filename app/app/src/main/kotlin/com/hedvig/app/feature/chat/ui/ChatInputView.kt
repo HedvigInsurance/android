@@ -9,6 +9,8 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.recyclerview.widget.RecyclerView
+import com.hedvig.android.core.common.android.remove
+import com.hedvig.android.core.common.android.show
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChatInputViewBinding
 import com.hedvig.app.feature.chat.Audio
@@ -26,9 +28,7 @@ import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.view.dismissKeyboard
 import com.hedvig.app.util.extensions.view.fadeIn
 import com.hedvig.app.util.extensions.view.fadeOut
-import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 
 class ChatInputView : FrameLayout {

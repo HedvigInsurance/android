@@ -8,6 +8,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
+import com.hedvig.android.navigation.core.TopLevelGraph
+import com.kiwi.navigationcompose.typed.createRoutePattern
 
 internal fun Modifier.notificationDot(): Modifier = composed {
   val notificationColor = MaterialTheme.colorScheme.error
@@ -25,13 +27,11 @@ internal fun Modifier.notificationDot(): Modifier = composed {
   }
 }
 
-internal fun NavDestination?.isTopLevelDestinationInHierarchy(
-  destinationRoute: String,
-): Boolean {
+/**
+ * Checks if the [TopLevelGraph] [T] is part of the hiararchy of [this]
+ */
+internal inline fun <reified T : TopLevelGraph> NavDestination?.isTopLevelGraphInHierarchy(): Boolean {
   return this?.hierarchy?.any {
-    it.route?.contains(
-      destinationRoute,
-      true,
-    ) ?: false
+    it.route?.contains(createRoutePattern<T>(), true) ?: false
   } ?: false
 }

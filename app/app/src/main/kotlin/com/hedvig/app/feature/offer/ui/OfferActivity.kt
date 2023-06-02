@@ -19,8 +19,12 @@ import com.adyen.checkout.dropin.DropInResult
 import com.carousell.concatadapterextension.ConcatItemDecoration
 import com.carousell.concatadapterextension.ConcatSpanSizeLookup
 import com.hedvig.android.auth.android.AuthenticatedObserver
+import com.hedvig.android.core.common.android.QuoteCartId
+import com.hedvig.android.core.common.android.hide
 import com.hedvig.android.core.common.android.parcelableArrayListExtra
 import com.hedvig.android.core.common.android.parcelableExtra
+import com.hedvig.android.core.common.android.show
+import com.hedvig.android.feature.home.legacychangeaddress.result.ChangeAddressResultActivity
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.MainActivity
@@ -34,12 +38,10 @@ import com.hedvig.app.feature.crossselling.ui.CrossSellingResultActivity
 import com.hedvig.app.feature.documents.DocumentAdapter
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.feature.embark.util.SelectedContractType
-import com.hedvig.app.feature.home.ui.changeaddress.result.ChangeAddressResultActivity
 import com.hedvig.app.feature.insurablelimits.InsurableLimitsAdapter
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.model.CheckoutLabel
 import com.hedvig.app.feature.offer.model.CheckoutMethod
-import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.model.checkoutIconRes
 import com.hedvig.app.feature.offer.model.quotebundle.PostSignScreen
 import com.hedvig.app.feature.offer.model.quotebundle.ViewConfiguration
@@ -57,9 +59,7 @@ import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.toArrayList
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
-import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach

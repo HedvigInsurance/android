@@ -7,7 +7,7 @@
     android:background="@drawable/background_rounded_corners"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="@dimen/base_margin_double">
+    android:padding="16dp">
 
     <androidx.core.widget.ContentLoadingProgressBar
         android:id="@+id/progress"
@@ -19,11 +19,11 @@
         android:id="@+id/authTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin"
-        android:layout_marginTop="@dimen/base_margin_double"
-        android:layout_marginEnd="@dimen/base_margin"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
         android:gravity="center"
-        android:paddingBottom="@dimen/base_margin_double"
+        android:paddingBottom="16dp"
         android:text="@string/BANK_ID_AUTH_TITLE_INITIATED"
         android:textAppearance="?textAppearanceSubtitle1"
         tools:text="@string/BANK_ID_NOT_INSTALLED" />
@@ -39,10 +39,10 @@
         android:id="@+id/authImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin"
-        android:layout_marginTop="@dimen/base_margin"
-        android:layout_marginEnd="@dimen/base_margin"
-        android:layout_marginBottom="@dimen/base_margin_double"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
         android:contentDescription="@null"
         app:srcCompat="@drawable/ic_bank_id" />
 

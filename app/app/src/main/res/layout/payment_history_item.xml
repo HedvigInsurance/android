@@ -4,14 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingTop="@dimen/base_margin_double"
-    android:paddingBottom="@dimen/base_margin_double">
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp">
 
     <TextView
         android:id="@+id/date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginStart="16dp"
         android:textAppearance="?textAppearanceBody2"
         tools:text="26 juli" />
 
@@ -19,8 +19,8 @@
         android:id="@+id/amount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_double"
-        android:layout_marginTop="@dimen/base_margin"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:textAppearance="?textAppearanceSubtitle1"
         tools:text="179 kr" />
 

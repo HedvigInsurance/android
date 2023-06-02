@@ -12,9 +12,9 @@
         android:id="@+id/topContainer"
         android:layout_width="match_parent"
         android:layout_height="@dimen/peril_bottom_sheet_close_icon_size"
-        android:layout_marginTop="@dimen/base_margin_double"
-        android:paddingStart="@dimen/base_margin_triple"
-        android:paddingEnd="@dimen/base_margin_triple">
+        android:layout_marginTop="16dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp">
 
         <ImageView
             android:id="@+id/close"
@@ -43,11 +43,11 @@
         android:id="@+id/recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="@dimen/base_margin_double"
-        android:layout_marginTop="@dimen/base_margin_sextuple"
-        android:layout_marginEnd="@dimen/base_margin_double"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="16dp"
         android:clipToPadding="false"
-        android:paddingBottom="@dimen/base_margin_quintuple"
+        android:paddingBottom="40dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/tooltip_with_title" />
 

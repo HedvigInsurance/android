@@ -2,7 +2,7 @@ package com.hedvig.android.feature.travelcertificate
 
 import androidx.compose.material3.DatePickerState
 import com.hedvig.android.core.ui.ValidatedInput
-import com.hedvig.android.feature.travelcertificate.data.TravelCertificateResult
+import com.hedvig.android.data.travelcertificate.TravelCertificateResult
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import kotlinx.datetime.Clock

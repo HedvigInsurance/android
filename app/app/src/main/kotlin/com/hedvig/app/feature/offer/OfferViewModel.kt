@@ -7,6 +7,7 @@ import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.android.QuoteCartId
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.app.feature.adyen.PaymentTokenId
 import com.hedvig.app.feature.checkout.CheckoutParameter
@@ -16,7 +17,6 @@ import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.offer.model.Checkout
 import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.QuoteBundleVariant
-import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.model.quotebundle.OfferStartDate
 import com.hedvig.app.feature.offer.model.quotebundle.PostSignScreen
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle

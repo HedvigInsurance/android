@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePaddingRelative
 import androidx.dynamicanimation.animation.DynamicAnimation
+import com.hedvig.android.core.common.android.show
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.BASE_MARGIN_HALF
 import com.hedvig.app.R
@@ -13,7 +14,6 @@ import com.hedvig.app.databinding.TextBody1Binding
 import com.hedvig.app.databinding.TextBody2Binding
 import com.hedvig.app.feature.embark.Response
 import com.hedvig.app.util.boundedProgress
-import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.spring
 import kotlinx.coroutines.suspendCancellableCoroutine
 

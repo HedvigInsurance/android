@@ -1,12 +1,12 @@
 package com.hedvig.app.feature.insurance.ui.detail
 
 import android.net.Uri
+import com.hedvig.android.core.common.android.ThemedIconUrls
+import com.hedvig.android.core.common.android.table.intoTable
+import com.hedvig.android.feature.home.legacychangeaddress.toUpcomingAgreementResult
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurance.ui.ContractCardViewState
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoModel
-import com.hedvig.app.feature.table.intoTable
-import com.hedvig.app.util.apollo.ThemedIconUrls
-import com.hedvig.app.util.apollo.toUpcomingAgreementResult
 import com.hedvig.app.util.extensions.canChangeCoInsured
 import com.hedvig.app.util.extensions.gradient
 import giraffe.InsuranceQuery

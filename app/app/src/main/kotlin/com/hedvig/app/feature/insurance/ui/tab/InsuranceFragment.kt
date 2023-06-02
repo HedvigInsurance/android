@@ -23,6 +23,7 @@ import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -44,15 +45,23 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import coil.ImageLoader
 import com.google.android.material.transition.platform.MaterialSharedAxis
-import com.hedvig.android.app.navigation.TopLevelDestination
+import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithActions
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
+import com.hedvig.android.core.ui.insurance.GradientType
+import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.navigation.compose.typed.animatedComposable
+import com.hedvig.android.navigation.compose.typed.animatedNavigation
+import com.hedvig.android.navigation.core.AppDestination
+import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.app.databinding.InsuranceContractCardBinding
 import com.hedvig.app.databinding.InsuranceTerminatedContractsBinding
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.crossselling.ui.detail.CrossSellDetailActivity
+import com.hedvig.app.feature.insurance.ui.ContractCardViewState
 import com.hedvig.app.feature.insurance.ui.CrossSellCard
 import com.hedvig.app.feature.insurance.ui.InsuranceModel
 import com.hedvig.app.feature.insurance.ui.NotificationSubheading
@@ -65,53 +74,72 @@ import com.hedvig.app.util.extensions.getActivity
 import com.hedvig.app.util.extensions.openWebBrowser
 import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.kiwi.navigationcompose.typed.createRoutePattern
 import org.koin.androidx.compose.koinViewModel
 
 internal fun NavGraphBuilder.insuranceGraph(
   imageLoader: ImageLoader,
 ) {
-  animatedComposable<TopLevelDestination.INSURANCE> {
-    val viewModel: InsuranceViewModel = koinViewModel()
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val storeUrl = uiState.storeUrl
-    val context = LocalContext.current
-    LaunchedEffect(storeUrl) {
-      if (storeUrl != null) {
-        viewModel.crossSellActionOpened()
-        context.openWebBrowser(storeUrl)
-      }
+  animatedNavigation<TopLevelGraph.INSURANCE>(
+    startDestination = createRoutePattern<AppDestination.TopLevelDestination.Insurance>(),
+  ) {
+    animatedComposable<AppDestination.TopLevelDestination.Insurance>(
+      enterTransition = { MotionDefaults.fadeThroughEnter },
+      exitTransition = { MotionDefaults.fadeThroughExit },
+    ) {
+      val viewModel: InsuranceViewModel = koinViewModel()
+      InsuranceDestination(
+        viewModel = viewModel,
+        imageLoader = imageLoader,
+      )
     }
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val currentMarkCardCrossSellsAsSeen by rememberUpdatedState(viewModel::markCardCrossSellsAsSeen)
-    DisposableEffect(lifecycleOwner) {
-      val observer = LifecycleEventObserver { _, event ->
-        if (event == Lifecycle.Event.ON_PAUSE) {
-          currentMarkCardCrossSellsAsSeen()
-        }
-      }
-      lifecycleOwner.lifecycle.addObserver(observer)
-      onDispose {
-        lifecycleOwner.lifecycle.removeObserver(observer)
-      }
-    }
-    DisposableEffect(viewModel) {
-      onDispose {
-        viewModel.markCardCrossSellsAsSeen()
-      }
-    }
-    InsuranceDestination(
-      uiState = uiState,
-      reload = viewModel::load,
-      onClickCrossSellCard = viewModel::onClickCrossSellCard,
-      onClickCrossSellAction = viewModel::onClickCrossSellAction,
-      imageLoader = imageLoader,
-    )
   }
+}
+
+@Composable
+private fun InsuranceDestination(
+  viewModel: InsuranceViewModel,
+  imageLoader: ImageLoader,
+) {
+  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  val storeUrl = uiState.storeUrl
+  val context = LocalContext.current
+  LaunchedEffect(storeUrl) {
+    if (storeUrl != null) {
+      viewModel.crossSellActionOpened()
+      context.openWebBrowser(storeUrl)
+    }
+  }
+  val lifecycleOwner = LocalLifecycleOwner.current
+  val currentMarkCardCrossSellsAsSeen by rememberUpdatedState(viewModel::markCardCrossSellsAsSeen)
+  DisposableEffect(lifecycleOwner) {
+    val observer = LifecycleEventObserver { _, event ->
+      if (event == Lifecycle.Event.ON_PAUSE) {
+        currentMarkCardCrossSellsAsSeen()
+      }
+    }
+    lifecycleOwner.lifecycle.addObserver(observer)
+    onDispose {
+      lifecycleOwner.lifecycle.removeObserver(observer)
+    }
+  }
+  DisposableEffect(viewModel) {
+    onDispose {
+      viewModel.markCardCrossSellsAsSeen()
+    }
+  }
+  InsuranceScreen(
+    uiState = uiState,
+    reload = viewModel::load,
+    onClickCrossSellCard = viewModel::onClickCrossSellCard,
+    onClickCrossSellAction = viewModel::onClickCrossSellAction,
+    imageLoader = imageLoader,
+  )
 }
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun InsuranceDestination(
+private fun InsuranceScreen(
   uiState: InsuranceUiState,
   reload: () -> Unit,
   onClickCrossSellCard: (CrossSellData) -> Unit,
@@ -272,6 +300,55 @@ private fun bindInsuranceTerminatedContracts(
       root.context.startActivity(
         TerminatedContractsActivity.newInstance(root.context),
         ActivityOptionsCompat.makeSceneTransitionAnimation(activity).toBundle(),
+      )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewInsuranceScreen() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      InsuranceScreen(
+        InsuranceUiState(
+          listOf(
+            InsuranceModel.Contract(
+              ContractCardViewState(
+                id = "id",
+                firstStatusPillText = "firstStatusPillText",
+                secondStatusPillText = "secondStatusPillText",
+                gradientType = GradientType.HOME,
+                displayName = "displayName",
+                detailPills = listOf("Detail pill #1", "Detail pill #2"),
+                logoUrls = null,
+              ),
+            ),
+            InsuranceModel.CrossSellHeader(),
+            InsuranceModel.CrossSellCard(
+              CrossSellData(
+                id = "id",
+                title = "title",
+                description = "description",
+                storeUrl = "storeUrl",
+                backgroundUrl = "backgroundUrl",
+                backgroundBlurHash = "backgroundBlurHash",
+                about = "about",
+                perils = emptyList(),
+                terms = emptyList(),
+                highlights = emptyList(),
+                faq = emptyList(),
+                insurableLimits = emptyList(),
+              ),
+            ),
+            InsuranceModel.TerminatedContractsHeader,
+            InsuranceModel.TerminatedContracts(2),
+          ),
+        ),
+        {},
+        {},
+        {},
+        rememberPreviewImageLoader(),
       )
     }
   }

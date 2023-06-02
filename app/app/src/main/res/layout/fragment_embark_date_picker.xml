@@ -17,11 +17,11 @@
 
     <include
         android:id="@+id/responseContainer"
-        android:layout_marginTop="@dimen/base_margin_double"
+        android:layout_marginTop="16dp"
         layout="@layout/embark_response"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/base_margin_double"
+        android:layout_marginHorizontal="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/messages"
         app:layout_constraintWidth_max="@dimen/embark_chat_bubble_max_width" />
@@ -30,9 +30,9 @@
         android:id="@+id/dateContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_double"
-        android:layout_marginEnd="@dimen/base_margin_double"
-        android:layout_marginBottom="@dimen/base_margin_double"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toTopOf="@id/continueButton">
 
         <LinearLayout
@@ -44,10 +44,10 @@
                 android:id="@+id/dateLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/base_margin_quadruple"
-                android:layout_marginTop="@dimen/base_margin_triple"
-                android:layout_marginEnd="@dimen/base_margin_quadruple"
-                android:layout_marginBottom="@dimen/base_margin_double"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="16dp"
                 android:textAppearance="?textAppearanceBody1"
                 app:drawableEndCompat="@drawable/ic_chevron_down"
                 tools:text="Access date" />
@@ -55,9 +55,9 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginStart="@dimen/base_margin_double"
-                android:layout_marginEnd="@dimen/base_margin_double"
-                android:layout_marginBottom="@dimen/base_margin_double"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
                 android:background="@drawable/divider" />
         </LinearLayout>
 
@@ -68,9 +68,9 @@
         style="?materialButtonContainedLargeStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_double"
-        android:layout_marginEnd="@dimen/base_margin_double"
-        android:layout_marginBottom="@dimen/base_margin_double"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:enabled="false"
         android:text="@string/continue_button"
         app:layout_constraintBottom_toBottomOf="parent"

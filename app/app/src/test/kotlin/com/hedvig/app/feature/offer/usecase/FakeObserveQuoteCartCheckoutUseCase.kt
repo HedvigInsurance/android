@@ -3,8 +3,8 @@ package com.hedvig.app.feature.offer.usecase
 import app.cash.turbine.Turbine
 import arrow.core.Either
 import com.hedvig.android.apollo.OperationResult
+import com.hedvig.android.core.common.android.QuoteCartId
 import com.hedvig.app.feature.offer.model.Checkout
-import com.hedvig.app.feature.offer.model.QuoteCartId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 

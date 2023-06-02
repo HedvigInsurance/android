@@ -6,9 +6,9 @@ import android.os.Bundle
 import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import com.hedvig.android.app.navigation.TopLevelDestination
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.common.android.parcelableExtra
+import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.util.extensions.startChat
 import org.koin.android.ext.android.inject
@@ -30,7 +30,7 @@ class CrossSellingResultActivity : AppCompatActivity() {
         LoggedInActivity.newInstance(
           context = this@CrossSellingResultActivity,
           withoutHistory = true,
-          initialTab = TopLevelDestination.INSURANCE,
+          initialTab = TopLevelGraph.INSURANCE,
         ),
       )
     }

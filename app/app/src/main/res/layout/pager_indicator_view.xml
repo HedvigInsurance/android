@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/base_margin_half"
+    android:layout_margin="4dp"
     android:contentDescription="@null"
     app:srcCompat="@drawable/pager_indicator_sphere"
     tools:layout_gravity="center"

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/base_margin_double">
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/label"
@@ -21,7 +21,7 @@
         android:id="@+id/content"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/base_margin"
+        android:layout_marginEnd="8dp"
         android:textAlignment="textEnd"
         android:textAppearance="?textAppearanceBody1"
         app:layout_constraintBottom_toBottomOf="parent"

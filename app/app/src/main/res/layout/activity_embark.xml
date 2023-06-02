@@ -17,7 +17,7 @@
         app:layout_constraintTop_toBottomOf="@id/progressToolbar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="@dimen/base_margin_quintuple"
+        android:layout_marginTop="40dp"
         android:layout_width="@dimen/loading_spinner_width"
         android:layout_height="@dimen/loading_spinner_height"
         android:layout_gravity="center"
@@ -46,7 +46,7 @@
         android:background="@color/colorBackground">
 
         <include
-            android:layout_marginTop="@dimen/base_margin_quintuple"
+            android:layout_marginTop="40dp"
             android:layout_width="@dimen/loading_spinner_width"
             android:layout_height="@dimen/loading_spinner_height"
             android:layout_gravity="center"

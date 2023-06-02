@@ -6,9 +6,9 @@
     android:layout_height="match_parent"
     android:background="@drawable/bottom_sheet_dialog_no_title_fragment_background"
     android:orientation="vertical"
-    android:paddingHorizontal="@dimen/base_margin_double"
-    android:paddingTop="@dimen/base_margin"
-    android:paddingBottom="@dimen/base_margin"
+    android:paddingHorizontal="16dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
     tools:context=".feature.offer.ui.changestartdate.ChangeDateBottomSheet">
 
     <ImageView
@@ -30,7 +30,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/base_margin_triple"
+                android:layout_marginTop="24dp"
                 android:gravity="center"
                 android:text="@string/OFFER_SET_START_DATE"
                 android:textAppearance="?textAppearanceHeadline5" />
@@ -47,7 +47,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="@dimen/base_margin_double"
+                android:layout_marginTop="16dp"
                 android:text="@string/general_save_button" />
 
         </LinearLayout>

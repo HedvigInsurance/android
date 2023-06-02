@@ -35,6 +35,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
@@ -43,22 +45,22 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import coil.ImageLoader
 import com.hedvig.android.app.navigation.HedvigNavHost
-import com.hedvig.android.app.navigation.TopLevelDestination
 import com.hedvig.android.app.ui.GradientColors
 import com.hedvig.android.app.ui.HedvigAppState
 import com.hedvig.android.app.ui.HedvigBottomBar
 import com.hedvig.android.app.ui.HedvigNavRail
 import com.hedvig.android.app.ui.rememberHedvigAppState
 import com.hedvig.android.auth.android.AuthenticatedObserver
+import com.hedvig.android.core.common.android.ThemedIconUrls
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
+import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.welcome.WelcomeDialog
 import com.hedvig.app.feature.welcome.WelcomeViewModel
-import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.extensions.showReviewDialog
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.delay
@@ -107,7 +109,7 @@ class LoggedInActivity : AppCompatActivity() {
           windowSizeClass = calculateWindowSizeClass(this),
           getInitialTab = {
             intent.extras?.getString(INITIAL_TAB)?.let {
-              TopLevelDestination.fromName(it)
+              TopLevelGraph.fromName(it)
             }.also {
             }
           },
@@ -165,10 +167,10 @@ class LoggedInActivity : AppCompatActivity() {
     fun newInstance(
       context: Context,
       withoutHistory: Boolean = false,
-      initialTab: TopLevelDestination = TopLevelDestination.HOME,
+      initialTab: TopLevelGraph = TopLevelGraph.HOME,
       isFromOnboarding: Boolean = false,
       showRatingDialog: Boolean = false,
-    ) = Intent(context, LoggedInActivity::class.java).apply {
+    ): Intent = Intent(context, LoggedInActivity::class.java).apply {
       if (withoutHistory) {
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -183,7 +185,7 @@ class LoggedInActivity : AppCompatActivity() {
 @Composable
 private fun HedvigApp(
   windowSizeClass: WindowSizeClass,
-  getInitialTab: () -> TopLevelDestination?,
+  getInitialTab: () -> TopLevelGraph?,
   clearInitialTab: () -> Unit,
   tabNotificationBadgeService: TabNotificationBadgeService,
   marketManager: MarketManager,
@@ -200,22 +202,20 @@ private fun HedvigApp(
   ),
 ) {
   LaunchedEffect(getInitialTab, clearInitialTab, hedvigAppState) {
-    val initialTab: TopLevelDestination = getInitialTab() ?: return@LaunchedEffect
+    val initialTab: TopLevelGraph = getInitialTab() ?: return@LaunchedEffect
     clearInitialTab()
-    hedvigAppState.navigateToTopLevelDestination(initialTab)
+    hedvigAppState.navigateToTopLevelGraph(initialTab)
   }
   Surface(
-    color = MaterialTheme.colorScheme.surface,
-    contentColor = MaterialTheme.colorScheme.onSurface,
+    color = MaterialTheme.colorScheme.background,
+    contentColor = MaterialTheme.colorScheme.onBackground,
     modifier = Modifier.fillMaxSize(),
   ) {
-    val backgroundColors = hedvigAppState.backgroundColors
     Column(
-      modifier = if (backgroundColors != null) {
-        Modifier.drawBackgroundGradient(backgroundColors)
-      } else {
-        Modifier
-      },
+      modifier = Modifier.drawBackgroundGradient(
+        colorBehindBackgroundGradient = MaterialTheme.colorScheme.background,
+        backgroundColors = hedvigAppState.backgroundColors,
+      ),
     ) {
       Row(Modifier.weight(1f).fillMaxWidth()) {
         AnimatedVisibility(
@@ -223,18 +223,19 @@ private fun HedvigApp(
           enter = expandHorizontally(expandFrom = Alignment.End),
           exit = shrinkHorizontally(shrinkTowards = Alignment.End),
         ) {
-          val topLevelDestinations by hedvigAppState.topLevelDestinations.collectAsStateWithLifecycle()
+          val topLevelGraphs by hedvigAppState.topLevelGraphs.collectAsStateWithLifecycle()
           val destinationsWithNotifications by hedvigAppState
-            .topLevelDestinationsWithNotifications.collectAsStateWithLifecycle()
+            .topLevelGraphsWithNotifications.collectAsStateWithLifecycle()
           HedvigNavRail(
-            destinations = topLevelDestinations,
+            destinations = topLevelGraphs,
             destinationsWithNotifications = destinationsWithNotifications,
-            onNavigateToDestination = hedvigAppState::navigateToTopLevelDestination,
+            onNavigateToDestination = hedvigAppState::navigateToTopLevelGraph,
             currentDestination = hedvigAppState.currentDestination,
           )
         }
         HedvigNavHost(
           hedvigAppState = hedvigAppState,
+          windowSizeClass = windowSizeClass,
           marketManager = marketManager,
           imageLoader = imageLoader,
           featureManager = featureManager,
@@ -260,13 +261,13 @@ private fun HedvigApp(
         enter = expandVertically(expandFrom = Alignment.Top),
         exit = shrinkVertically(shrinkTowards = Alignment.Top),
       ) {
-        val topLevelDestinations by hedvigAppState.topLevelDestinations.collectAsStateWithLifecycle()
+        val topLevelGraphs by hedvigAppState.topLevelGraphs.collectAsStateWithLifecycle()
         val destinationsWithNotifications by hedvigAppState
-          .topLevelDestinationsWithNotifications.collectAsStateWithLifecycle()
+          .topLevelGraphsWithNotifications.collectAsStateWithLifecycle()
         HedvigBottomBar(
-          destinations = topLevelDestinations,
+          destinations = topLevelGraphs,
           destinationsWithNotifications = destinationsWithNotifications,
-          onNavigateToDestination = hedvigAppState::navigateToTopLevelDestination,
+          onNavigateToDestination = hedvigAppState::navigateToTopLevelGraph,
           currentDestination = hedvigAppState.currentDestination,
         )
       }
@@ -274,10 +275,22 @@ private fun HedvigApp(
   }
 }
 
-private fun Modifier.drawBackgroundGradient(backgroundColors: GradientColors): Modifier = composed {
-  val color1 by animateColorAsState(backgroundColors.color1, spring(stiffness = Spring.StiffnessVeryLow))
-  val color2 by animateColorAsState(backgroundColors.color2, spring(stiffness = Spring.StiffnessVeryLow))
-  val color3 by animateColorAsState(backgroundColors.color3, spring(stiffness = Spring.StiffnessVeryLow))
+private fun Modifier.drawBackgroundGradient(
+  colorBehindBackgroundGradient: Color,
+  backgroundColors: GradientColors,
+): Modifier = composed {
+  val color1 by animateColorAsState(
+    backgroundColors.color1.compositeOver(colorBehindBackgroundGradient),
+    spring(stiffness = Spring.StiffnessVeryLow),
+  )
+  val color2 by animateColorAsState(
+    backgroundColors.color2.compositeOver(colorBehindBackgroundGradient),
+    spring(stiffness = Spring.StiffnessVeryLow),
+  )
+  val color3 by animateColorAsState(
+    backgroundColors.color3.compositeOver(colorBehindBackgroundGradient),
+    spring(stiffness = Spring.StiffnessVeryLow),
+  )
   Modifier.drawWithCache {
     val gradient = Brush.linearGradient(listOf(color1, color2, color3))
     onDrawBehind {

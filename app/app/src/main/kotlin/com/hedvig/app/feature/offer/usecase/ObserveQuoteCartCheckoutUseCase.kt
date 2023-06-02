@@ -4,8 +4,8 @@ import arrow.core.Either
 import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
 import com.hedvig.android.apollo.OperationResult
+import com.hedvig.android.core.common.android.QuoteCartId
 import com.hedvig.app.feature.offer.model.Checkout
-import com.hedvig.app.feature.offer.model.QuoteCartId
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow

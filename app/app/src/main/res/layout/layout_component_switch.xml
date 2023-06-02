@@ -4,8 +4,8 @@
     android:id="@+id/componentSwitch"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="@dimen/base_margin_double"
-    android:layout_marginTop="@dimen/base_margin_double"
-    android:padding="@dimen/base_margin"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginTop="16dp"
+    android:padding="8dp"
     android:textAppearance="?textAppearanceSubtitle1"
     tools:text="Water" />

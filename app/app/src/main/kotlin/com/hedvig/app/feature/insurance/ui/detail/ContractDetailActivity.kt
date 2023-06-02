@@ -12,6 +12,8 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import coil.ImageLoader
 import com.google.android.material.tabs.TabLayoutMediator
 import com.hedvig.android.auth.android.AuthenticatedObserver
+import com.hedvig.android.core.common.android.remove
+import com.hedvig.android.core.common.android.show
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ContractDetailActivityBinding
 import com.hedvig.app.feature.insurance.ui.bindTo
@@ -20,8 +22,6 @@ import com.hedvig.app.feature.insurance.ui.detail.documents.DocumentsFragment
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoFragment
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
-import com.hedvig.app.util.extensions.view.remove
-import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach

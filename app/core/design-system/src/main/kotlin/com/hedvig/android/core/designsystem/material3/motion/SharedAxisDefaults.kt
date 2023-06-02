@@ -22,7 +22,7 @@ object SharedAxisDefaults {
   private const val SharedAxisDuration = MotionTokens.DurationMedium2.toInt()
 
   private val sharedAxisSlideAnimationSpec = tween<IntOffset>(
-    durationMillis = MotionTokens.DurationMedium2.toInt(),
+    durationMillis = SharedAxisDuration,
     delayMillis = 0,
     easing = MotionTokens.EasingStandardCubicBezier,
   )

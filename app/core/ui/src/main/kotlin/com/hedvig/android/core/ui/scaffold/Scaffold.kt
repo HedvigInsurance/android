@@ -41,6 +41,7 @@ import com.hedvig.android.core.ui.appbar.m3.TopAppBarActionType
 fun HedvigScaffold(
   navigateUp: () -> Unit,
   modifier: Modifier = Modifier,
+  color: Color = MaterialTheme.colors.background,
   topAppBarText: String? = null,
   topAppBarActionType: TopAppBarActionType = TopAppBarActionType.BACK,
   itemsColumnHorizontalAlignment: Alignment.Horizontal = Alignment.Start,
@@ -52,24 +53,26 @@ fun HedvigScaffold(
   scrollState: ScrollState = rememberScrollState(),
   content: @Composable ColumnScope.() -> Unit,
 ) {
-  Column(modifier.fillMaxSize()) {
-    TopAppBar(
-      onClick = navigateUp,
-      title = topAppBarText ?: "",
-      colors = topAppBarColors,
-      scrollBehavior = topAppBarScrollBehavior,
-      actionType = topAppBarActionType,
-    )
-    Column(
-      horizontalAlignment = itemsColumnHorizontalAlignment,
-      modifier = Modifier
-        .fillMaxSize()
-        .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
-        .verticalScroll(scrollState)
-        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-    ) {
-      content()
-      Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
+  Surface(color = color) {
+    Column(modifier.fillMaxSize()) {
+      TopAppBar(
+        onClick = navigateUp,
+        title = topAppBarText ?: "",
+        colors = topAppBarColors,
+        scrollBehavior = topAppBarScrollBehavior,
+        actionType = topAppBarActionType,
+      )
+      Column(
+        horizontalAlignment = itemsColumnHorizontalAlignment,
+        modifier = Modifier
+          .fillMaxSize()
+          .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
+          .verticalScroll(scrollState)
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+      ) {
+        content()
+        Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
+      }
     }
   }
 }
