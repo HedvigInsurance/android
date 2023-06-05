@@ -24,7 +24,6 @@ fun NavGraphBuilder.changeAddressGraph(
   density: Density,
   navController: NavHostController,
   openChat: () -> Unit,
-  navigateUp: () -> Boolean,
 ) {
   animatedNavigation<AppDestination.ChangeAddress>(
     startDestination = createRoutePattern<ChangeAddressDestination.SelectHousingType>(),
@@ -40,7 +39,7 @@ fun NavGraphBuilder.changeAddressGraph(
       )
       ChangeAddressSelectHousingTypeDestination(
         viewModel = viewModel,
-        navigateUp = { navigateUp() },
+        navigateUp = navController::navigateUp,
         onHousingTypeSubmitted = {
           navController.navigate(ChangeAddressDestination.EnterNewAddress)
         },

@@ -73,7 +73,6 @@ internal fun HedvigNavHost(
           density = density,
           navController = navController,
           openChat = context::startChat,
-          navigateUp = navController::navigateUp,
         )
         generateTravelCertificateGraph(
           density = density,
