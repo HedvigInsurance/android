@@ -4,12 +4,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.hedvig.android.core.common.android.GenericDiffUtilItemCallback
+import com.hedvig.android.core.common.android.table.Table
+import com.hedvig.android.core.ui.databinding.ListTextItemBinding
 import com.hedvig.app.R
 import com.hedvig.app.databinding.BottomSheetHeaderItemLayoutBinding
 import com.hedvig.app.databinding.HeaderCenteredItemLayoutBinding
-import com.hedvig.app.databinding.ListTextItemBinding
 import com.hedvig.app.databinding.ListTextItemTwoLineBinding
-import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.viewBinding
 
@@ -34,14 +35,14 @@ class TableAdapter : ListAdapter<TableAdapter.UpcomingAgreementItem, TableAdapte
   }
 
   override fun getItemViewType(position: Int) = when (currentList[position]) {
-    is UpcomingAgreementItem.ListItem -> R.layout.list_text_item
+    is UpcomingAgreementItem.ListItem -> com.hedvig.android.core.ui.R.layout.list_text_item
     is UpcomingAgreementItem.BuildingItem -> R.layout.list_text_item_two_line
     is UpcomingAgreementItem.Header -> R.layout.bottom_sheet_header_item_layout
     is UpcomingAgreementItem.CenteredHeader -> R.layout.header_centered_item_layout
   }
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
-    R.layout.list_text_item -> ListItemViewHolder(parent)
+    com.hedvig.android.core.ui.R.layout.list_text_item -> ListItemViewHolder(parent)
     R.layout.list_text_item_two_line -> TwoLineListItemViewHolder(parent)
     R.layout.bottom_sheet_header_item_layout -> HeaderViewHolder(parent)
     R.layout.header_centered_item_layout -> CenteredHeaderViewHolder(parent)
@@ -56,7 +57,9 @@ class TableAdapter : ListAdapter<TableAdapter.UpcomingAgreementItem, TableAdapte
     abstract fun bind(item: UpcomingAgreementItem)
   }
 
-  class ListItemViewHolder(parent: ViewGroup) : UpcomingAgreementViewHolder(parent.inflate(R.layout.list_text_item)) {
+  class ListItemViewHolder(
+    parent: ViewGroup,
+  ) : UpcomingAgreementViewHolder(parent.inflate(com.hedvig.android.core.ui.R.layout.list_text_item)) {
 
     private val binding by viewBinding(ListTextItemBinding::bind)
 

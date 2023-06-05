@@ -6,12 +6,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import arrow.core.Either
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.common.android.ProgressPercentage
+import com.hedvig.android.core.common.android.QuoteCartId
 import com.hedvig.android.core.common.android.asMap
-import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.embark.extensions.api
 import com.hedvig.app.feature.embark.extensions.getComputedValues
 import com.hedvig.app.feature.embark.util.SelectedContractType
@@ -21,7 +20,6 @@ import com.hedvig.app.feature.embark.util.getOfferKeyOrNull
 import com.hedvig.app.feature.embark.util.getSelectedContractTypes
 import com.hedvig.app.feature.embark.util.getVariables
 import com.hedvig.app.feature.embark.util.toExpressionFragment
-import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.safeLet
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
@@ -45,7 +43,6 @@ const val QUOTE_CART_EMBARK_STORE_ID_KEY = "quoteCartId"
 abstract class EmbarkViewModel(
   private val valueStore: ValueStore,
   private val graphQLQueryUseCase: GraphQLQueryUseCase,
-  private val chatRepository: ChatRepository,
   private val hAnalytics: HAnalytics,
   val storyName: String,
   authTokenService: AuthTokenService,
@@ -255,7 +252,7 @@ abstract class EmbarkViewModel(
     viewModelScope.launch {
       val event = when (location) {
         EmbarkExternalRedirectLocation.Offer -> createOfferEvent()
-        EmbarkExternalRedirectLocation.Chat -> createChatEvent()
+        EmbarkExternalRedirectLocation.Chat -> Event.Chat
         EmbarkExternalRedirectLocation.Close -> Event.Close
         else -> null
       }
@@ -273,11 +270,6 @@ abstract class EmbarkViewModel(
     } else {
       Event.Error()
     }
-  }
-
-  private suspend fun createChatEvent(): Event = when (chatRepository.triggerFreeTextChat()) {
-    is Either.Left -> Event.Error()
-    is Either.Right -> Event.Chat
   }
 
   private fun getRedirectPassageAndPutInStore(redirects: List<EmbarkStoryQuery.Redirect>?): String? {
@@ -520,14 +512,12 @@ class EmbarkViewModelImpl(
   private val embarkRepository: EmbarkRepository,
   authTokenService: AuthTokenService,
   graphQLQueryUseCase: GraphQLQueryUseCase,
-  chatRepository: ChatRepository,
   valueStore: ValueStore,
   hAnalytics: HAnalytics,
   storyName: String,
 ) : EmbarkViewModel(
   valueStore,
   graphQLQueryUseCase,
-  chatRepository,
   hAnalytics,
   storyName,
   authTokenService,

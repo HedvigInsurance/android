@@ -135,12 +135,9 @@ fun HedvigTextField(
 /**
  * The raw HedvigTextField, with the same API as the [androidx.compose.material3.TextField], with our HedvigSpecific
  * HedvigTextFieldDefaults.
- *
- * May be public API soon if we find a use case for a text field which needs a separate supporting text than the other
- * exposed version of [HedvigTextField].
  */
 @Composable
-private fun HedvigTextField(
+fun HedvigTextField(
   value: String,
   onValueChange: (String) -> Unit,
   modifier: Modifier = Modifier,

@@ -1,5 +1,5 @@
 mutation FlowClaimStart($entrypointId: ID) {
-  flowClaimStart(input: { entrypointId: $entrypointId }, context: null) {
+  flowClaimStart(input: { entrypointId: $entrypointId, entrypointOptionId: null }, context: null) {
     id
     context
     ...ClaimFlowStepFragment

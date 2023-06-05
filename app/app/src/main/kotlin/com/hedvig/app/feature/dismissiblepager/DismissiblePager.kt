@@ -10,6 +10,7 @@ import androidx.annotation.StringRes
 import androidx.annotation.StyleRes
 import androidx.fragment.app.DialogFragment
 import androidx.viewpager2.widget.ViewPager2
+import com.hedvig.android.core.common.android.show
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentDismissablePagerBinding
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
@@ -17,7 +18,6 @@ import com.hedvig.app.util.extensions.screenWidth
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.show
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 
 abstract class DismissiblePager : DialogFragment() {

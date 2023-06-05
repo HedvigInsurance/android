@@ -10,11 +10,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.hedvig.android.core.common.android.remove
+import com.hedvig.android.core.common.android.show
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FileUploadDialogBinding
-import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.show
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 
 abstract class FileUploadBottomSheet : BottomSheetDialogFragment() {

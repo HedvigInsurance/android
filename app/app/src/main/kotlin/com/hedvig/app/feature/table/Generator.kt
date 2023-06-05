@@ -2,10 +2,11 @@ package com.hedvig.app.feature.table
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import com.hedvig.android.core.common.android.table.Table
+import com.hedvig.android.core.ui.databinding.ListTextItemBinding
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.databinding.BottomSheetHeaderItemLayoutBinding
 import com.hedvig.app.databinding.HeaderItemLayoutBinding
-import com.hedvig.app.databinding.ListTextItemBinding
 import com.hedvig.app.databinding.ListTextItemTwoLineBinding
 import com.hedvig.app.util.extensions.view.updateMargin
 

@@ -1,4 +1,18 @@
 package com.hedvig.android.core.common
 
-@JvmInline
-value class ErrorMessage(val message: String? = null)
+interface ErrorMessage {
+  abstract val message: String?
+  abstract val throwable: Throwable?
+}
+
+fun ErrorMessage(
+  message: String? = null,
+  throwable: Throwable? = null,
+): ErrorMessage = object : ErrorMessage {
+  override val message = message
+  override val throwable = throwable
+
+  override fun toString(): String {
+    return "ErrorMessage(message=$message, throwable=$throwable)"
+  }
+}

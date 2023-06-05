@@ -95,9 +95,7 @@ object HedvigTextFieldDefaults {
     shape: Shape = HedvigTextFieldDefaults.shape,
   ) {
     Box(
-      Modifier
-        .background(colors.containerColor(value, enabled, isError, interactionSource).value, shape)
-        .borderLine(enabled, isError, interactionSource, colors, shape),
+      Modifier.background(colors.containerColor(value, enabled, isError, interactionSource).value, shape),
     )
   }
 
@@ -248,9 +246,9 @@ object HedvigTextFieldDefaults {
     focusedContainerColor: Color = HedvigTextFieldTokens.ContainerColor.toColor(),
     unfocusedContainerColor: Color = HedvigTextFieldTokens.ContainerColor.toColor(),
     disabledContainerColor: Color = HedvigTextFieldTokens.ContainerColor.toColor(),
-    errorContainerColor: Color = HedvigTextFieldTokens.ContainerColor.toColor(),
-    typingContainerColor: Color = HedvigTextFieldTokens.TypingContainerColor.toColor(),
-    errorTypingContainerColor: Color = HedvigTextFieldTokens.ErrorTypingContainerColor.toColor(),
+    errorContainerColor: Color = HedvigTextFieldTokens.ErrorTypeContainerColor.toColor(),
+    typingContainerColor: Color = HedvigTextFieldTokens.TypeContainerColor.toColor(),
+    errorTypingContainerColor: Color = HedvigTextFieldTokens.ErrorTypeContainerColor.toColor(),
     cursorColor: Color = HedvigTextFieldTokens.CaretColor.toColor(),
     errorCursorColor: Color = HedvigTextFieldTokens.ErrorFocusCaretColor.toColor(),
     selectionColors: TextSelectionColors = LocalTextSelectionColors.current,

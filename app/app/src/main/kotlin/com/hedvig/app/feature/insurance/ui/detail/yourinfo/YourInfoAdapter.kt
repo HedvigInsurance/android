@@ -15,14 +15,14 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.hedvig.android.core.common.android.GenericDiffUtilItemCallback
 import com.hedvig.android.core.designsystem.component.button.LargeTextButton
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.feature.home.legacychangeaddress.LegacyChangeAddressActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressButtonBinding
 import com.hedvig.app.databinding.ChangeAddressPendingChangeCardBinding
 import com.hedvig.app.databinding.YourInfoChangeBinding
-import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
-import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
 import com.hedvig.app.util.extensions.startChat
@@ -73,7 +73,8 @@ class YourInfoAdapter(
       private val binding by viewBinding(ChangeAddressButtonBinding::bind)
       override fun bind(data: YourInfoModel, fragmentManager: FragmentManager) {
         binding.root.setHapticClickListener {
-          binding.root.context.startActivity(ChangeAddressActivity.newInstance(binding.root.context))
+          // todo check moving flow feature flag before triggering this when we enable new moving flow
+          binding.root.context.startActivity(LegacyChangeAddressActivity.newInstance(binding.root.context))
         }
       }
     }

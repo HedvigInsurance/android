@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
 import com.hedvig.android.auth.android.AuthenticatedObserver
+import com.hedvig.android.core.common.android.show
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.LogoutUseCase
@@ -28,7 +29,6 @@ import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.triggerRestartActivity
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.applyInsetter
 import giraffe.ChatMessagesQuery
@@ -178,17 +178,6 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
 
   private fun initializeMessages() {
     val adapter = ChatAdapter(
-      this,
-      onPressEdit = {
-        showAlert(
-          hedvig.resources.R.string.CHAT_EDIT_MESSAGE_TITLE,
-          positiveLabel = hedvig.resources.R.string.CHAT_EDIT_MESSAGE_SUBMIT,
-          negativeLabel = hedvig.resources.R.string.CHAT_EDIT_MESSAGE_CANCEL,
-          positiveAction = {
-            chatViewModel.editLastResponse()
-          },
-        )
-      },
       imageLoader = imageLoader,
     )
     binding.messages.adapter = adapter

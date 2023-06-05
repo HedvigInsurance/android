@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.offer.ui.changestartdate
 
 import android.os.Parcelable
-import com.hedvig.app.feature.offer.model.QuoteCartId
+import com.hedvig.android.core.common.android.QuoteCartId
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDate

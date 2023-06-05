@@ -11,6 +11,8 @@ class Navigator(
   private val loggedOutActivityClass: Class<*>,
   private val buildConfigApplicationId: String,
   private val navigateToChat: Context.() -> Unit,
+  private val navigateToEmbark: Context.(storyName: String, storyTitle: String) -> Unit,
+  private val navigateToLoggedInActivity: Context.(clearBackstack: Boolean) -> Unit,
 ) {
   fun navigateToMarketingActivity() {
     application.startActivity(
@@ -35,5 +37,20 @@ class Navigator(
       return
     }
     context.startActivity(Intent(Intent(Settings.ACTION_SETTINGS)))
+  }
+
+  fun navigateToEmbark(
+    context: Context,
+    storyName: String,
+    storyTitle: String,
+  ) {
+    context.navigateToEmbark(storyName, storyTitle)
+  }
+
+  fun navigateToLoggedInScreen(
+    context: Context,
+    clearBackstack: Boolean = true,
+  ) {
+    context.navigateToLoggedInActivity(clearBackstack)
   }
 }

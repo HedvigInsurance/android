@@ -3,6 +3,7 @@
 def font = "Helvetica"
 
 task generateProjectDependencyGraph {
+    notCompatibleWithConfigurationCache("Uses project inside `doLast`. Might look into this https://github.com/apollographql/apollo-kotlin/issues/4925 to fix it in a similar way")
     doLast {
         def dot = new File(rootProject.buildDir, 'reports/dependency-graph/project.dot')
         dot.parentFile.mkdirs()

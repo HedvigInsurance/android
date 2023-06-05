@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.insurance.ui
 
+import com.hedvig.android.core.common.android.ThemedIconUrls
 import com.hedvig.android.core.ui.insurance.GradientType
-import com.hedvig.app.util.apollo.ThemedIconUrls
 
 data class ContractCardViewState(
   val id: String,

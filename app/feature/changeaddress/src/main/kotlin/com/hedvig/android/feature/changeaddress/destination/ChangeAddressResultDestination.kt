@@ -11,17 +11,18 @@ import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 
 @Composable
 internal fun ChangeAddressResultDestination(
-  onFinish: () -> Unit,
+  navigateUp: () -> Unit,
+  popBackstack: () -> Unit,
 ) {
   Surface(Modifier.fillMaxSize()) {
     Column {
       TopAppBarWithBack(
-        onClick = onFinish,
+        onClick = navigateUp,
         title = "Ny address",
       )
       Text("Address changed successfully!")
       LargeContainedButton(
-        onClick = { onFinish() },
+        onClick = popBackstack,
       ) {
         Text(text = "Stäng")
       }

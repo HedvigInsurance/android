@@ -93,7 +93,7 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
       // This could perhaps be handled with a callback from the inputContainer.
       viewLifecycleScope.launch {
         delay(50.milliseconds)
-        viewLifecycle.withStateAtLeast(Lifecycle.State.RESUMED) {
+        viewLifecycle.withStateAtLeast(Lifecycle.State.CREATED) {
           startPostponedEnterTransition()
         }
       }

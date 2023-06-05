@@ -9,10 +9,10 @@
         android:id="@+id/card"
         android:layout_width="0dp"
         android:layout_height="@dimen/contract_card_height"
-        android:layout_marginStart="@dimen/base_margin_double"
-        android:layout_marginTop="@dimen/base_margin_half"
-        android:layout_marginEnd="@dimen/base_margin_double"
-        android:layout_marginBottom="@dimen/base_margin_half"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="4dp"
         android:theme="@style/ThemeOverlay.Hedvig.InsuranceCard"
         app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -32,7 +32,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="@dimen/base_margin_double">
+                android:padding="16dp">
 
                 <TextView
                     android:id="@+id/firstStatusPill"
@@ -51,7 +51,7 @@
                     android:id="@+id/secondStatusPill"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/base_margin"
+                    android:layout_marginTop="8dp"
                     android:background="@drawable/background_pill"
                     android:backgroundTint="@color/yellow"
                     android:theme="@style/ThemeOverlay.Hedvig.InsuranceCard.StatusPill"
@@ -75,7 +75,7 @@
                     android:id="@+id/contractName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/base_margin"
+                    android:layout_marginBottom="8dp"
                     android:textAppearance="?textAppearanceHeadline6"
                     app:layout_constraintBottom_toTopOf="@id/contractPills"
                     app:layout_constraintStart_toStartOf="parent"
@@ -85,7 +85,7 @@
                     android:id="@+id/contractPills"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/base_margin"
+                    android:layout_marginEnd="8dp"
                     android:orientation="horizontal"
                     android:overScrollMode="never"
                     app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"

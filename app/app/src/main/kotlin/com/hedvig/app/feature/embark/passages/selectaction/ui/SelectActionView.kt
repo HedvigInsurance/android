@@ -13,7 +13,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -22,7 +21,6 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.grid.HedvigGrid
 import com.hedvig.android.core.ui.grid.InsideGridSpace
-import com.hedvig.app.R
 import com.hedvig.app.feature.embark.passages.selectaction.SelectActionParameter
 import com.hedvig.app.ui.compose.composables.CenteredContentWithTopBadge
 
@@ -60,10 +58,10 @@ private fun SelectActionCard(
 ) {
   Card(
     onClick = onClick,
-    modifier = modifier.heightIn(min = dimensionResource(R.dimen.embark_select_action_min_height)),
+    modifier = modifier.heightIn(min = 80.dp),
   ) {
     CenteredContentWithTopBadge(
-      modifier = Modifier.padding(dimensionResource(R.dimen.base_margin)),
+      modifier = Modifier.padding(8.dp),
       centeredContent = {
         Text(
           text = text,

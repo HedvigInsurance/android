@@ -5,9 +5,9 @@
     android:id="@+id/failedPaymentsCard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="@dimen/base_margin_double"
-    android:layout_marginTop="@dimen/base_margin_double"
-    android:layout_marginEnd="@dimen/base_margin_double"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="16dp"
+    android:layout_marginEnd="16dp"
     android:theme="@style/ThemeOverlay.Hedvig.WarningCard"
     style="@style/Hedvig.Theme.InfoCard">
 
@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="@dimen/base_margin_double">
+        android:padding="16dp">
 
         <ImageView
             android:id="@+id/icon"
@@ -30,7 +30,7 @@
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/base_margin_double"
+            android:layout_marginStart="16dp"
             android:textAppearance="?textAppearanceSubtitle1"
             app:layout_constraintStart_toEndOf="@id/icon"
             app:layout_constraintTop_toTopOf="@id/icon"
@@ -40,7 +40,7 @@
             android:id="@+id/paragraph"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/base_margin"
+            android:layout_marginTop="8dp"
             android:textAppearance="?textAppearanceBody2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/title"

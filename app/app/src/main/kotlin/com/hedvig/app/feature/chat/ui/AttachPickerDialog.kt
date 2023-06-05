@@ -10,11 +10,11 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils.loadAnimation
+import com.hedvig.android.core.common.android.remove
 import com.hedvig.android.core.common.android.whenApiVersion
 import com.hedvig.app.R
 import com.hedvig.app.databinding.AttachPickerDialogBinding
 import com.hedvig.app.util.extensions.view.fadeIn
-import com.hedvig.app.util.extensions.view.remove
 
 class AttachPickerDialog(context: Context) : Dialog(context, R.style.TransparentDialog) {
 

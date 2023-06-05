@@ -25,4 +25,8 @@ object MotionDefaults {
     val offsetPixels = with(density) { SharedAxisDefaults.SharedAxisOffset.dp.roundToPx() }
     return SharedAxisDefaults.sharedXAxisExitTransition(offsetPixels)
   }
+
+  val fadeThroughEnter: EnterTransition = FadeThroughDefaults.fadeThroughEnterTransition
+
+  val fadeThroughExit: ExitTransition = FadeThroughDefaults.fadeThroughExitTransition
 }

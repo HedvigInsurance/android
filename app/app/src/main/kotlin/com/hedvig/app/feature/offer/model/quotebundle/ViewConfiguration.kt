@@ -16,7 +16,7 @@ data class ViewConfiguration(
   val postSignScreen: PostSignScreen,
 ) {
   enum class Title {
-    LOGO, UPDATE, UNKNOWN;
+    LOGO, UPDATE, UNKNOWN
   }
 
   enum class StartDateTerminology {

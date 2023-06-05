@@ -1,11 +1,11 @@
 package com.hedvig.app.feature.crossselling.ui.detail
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -15,7 +15,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.app.R
 
 @Composable
 fun Highlight(
@@ -24,8 +23,8 @@ fun Highlight(
   modifier: Modifier = Modifier,
 ) {
   Row(modifier = modifier) {
-    Image(
-      painter = painterResource(R.drawable.ic_checkmark),
+    Icon(
+      painter = painterResource(com.hedvig.android.core.designsystem.R.drawable.ic_checkmark),
       contentDescription = null,
     )
     Spacer(Modifier.width(16.dp))

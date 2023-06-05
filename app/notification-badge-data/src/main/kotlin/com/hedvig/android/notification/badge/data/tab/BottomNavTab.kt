@@ -5,5 +5,4 @@ enum class BottomNavTab {
   INSURANCE,
   REFERRALS,
   PROFILE,
-  ;
 }

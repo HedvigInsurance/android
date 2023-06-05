@@ -4,10 +4,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.hedvig.android.core.common.android.GenericDiffUtilItemCallback
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ViewMultiActionAddBinding
 import com.hedvig.app.databinding.ViewMultiActionComponentBinding
-import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
 import com.hedvig.app.util.extensions.view.increaseTouchableArea

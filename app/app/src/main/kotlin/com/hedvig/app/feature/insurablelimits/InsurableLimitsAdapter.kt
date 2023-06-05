@@ -5,13 +5,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.hedvig.android.core.common.android.GenericDiffUtilItemCallback
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ContractCoverageDetailRowBinding
 import com.hedvig.app.databinding.TextHeadline6Binding
 import com.hedvig.app.feature.insurance.ui.detail.coverage.InsurableLimitsBottomSheet
-import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
 import com.hedvig.app.util.extensions.view.setHapticClickListener

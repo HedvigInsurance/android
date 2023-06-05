@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:clipToPadding="false"
     android:id="@+id/recycler"
-    android:paddingTop="@dimen/base_margin_quintuple"
+    android:paddingTop="40dp"
     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
     tools:context=".feature.insurance.ui.detail.documents.DocumentsFragment"
     tools:itemCount="2"

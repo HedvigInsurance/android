@@ -96,7 +96,6 @@
             android:name=".feature.loggedin.ui.LoggedInActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme.LoggedIn"
             android:windowSoftInputMode="adjustResize" />
         <activity
@@ -128,13 +127,7 @@
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".feature.claims.ui.commonclaim.CommonClaimActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.claims.ui.commonclaim.EmergencyActivity"
+            android:name="com.hedvig.android.feature.home.claims.commonclaim.EmergencyActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
@@ -210,7 +203,7 @@
             android:name=".feature.adyen.payout.AdyenConnectPayoutActivity"
             android:launchMode="singleTask" />
         <activity
-            android:name=".feature.home.ui.changeaddress.ChangeAddressActivity"
+            android:name=".feature.home.ui.changeaddress.LegacyChangeAddressActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize" />
@@ -258,13 +251,6 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name="com.hedvig.android.feature.odyssey.search.group.ClaimGroupActivity"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name="com.hedvig.android.feature.changeaddress.ChangeAddressActivity"
-            android:parentActivityName="com.hedvig.app.feature.loggedin.ui.LoggedInActivity"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name="com.hedvig.android.feature.travelcertificate.GenerateTravelCertificateActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name="com.hedvig.android.feature.odyssey.search.commonclaims.SearchActivity"

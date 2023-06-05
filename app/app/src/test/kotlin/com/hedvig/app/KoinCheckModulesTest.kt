@@ -3,8 +3,8 @@ package com.hedvig.app
 import android.app.Application
 import android.content.Context
 import androidx.work.WorkerParameters
+import com.hedvig.android.core.common.android.QuoteCartId
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionParams
-import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import kotlinx.coroutines.CoroutineScope
 import org.junit.Ignore

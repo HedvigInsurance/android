@@ -5,8 +5,8 @@ import android.content.Intent
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
+import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.marketing.MarketingActivity
 import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
@@ -35,13 +35,13 @@ suspend inline fun DynamicLink.startActivity(
     DynamicLink.Forever -> context.startActivity(
       LoggedInActivity.newInstance(
         context,
-        initialTab = LoggedInTabs.REFERRALS,
+        initialTab = TopLevelGraph.REFERRALS,
       ),
     )
     DynamicLink.Insurance -> context.startActivity(
       LoggedInActivity.newInstance(
         context,
-        initialTab = LoggedInTabs.INSURANCE,
+        initialTab = TopLevelGraph.INSURANCE,
       ),
     )
     is DynamicLink.Referrals -> {

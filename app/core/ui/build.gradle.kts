@@ -6,6 +6,14 @@ plugins {
   alias(libs.plugins.serialization)
 }
 
+android {
+  namespace = "com.hedvig.android.core.ui"
+
+  buildFeatures {
+    viewBinding = true
+  }
+}
+
 dependencies {
   implementation(projects.app.core.commonAndroid)
   implementation(projects.app.core.designSystem)
@@ -28,8 +36,4 @@ dependencies {
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.slimber)
-}
-
-android {
-  namespace = "com.hedvig.android.core.ui"
 }

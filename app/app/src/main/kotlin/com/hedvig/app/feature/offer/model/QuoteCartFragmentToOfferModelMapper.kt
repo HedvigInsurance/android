@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.offer.model
 
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
+import com.hedvig.android.core.common.android.QuoteCartId
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.app.common.Mapper

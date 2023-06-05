@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.checkout
 
 import android.os.Parcelable
-import com.hedvig.app.feature.offer.model.QuoteCartId
+import com.hedvig.android.core.common.android.QuoteCartId
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

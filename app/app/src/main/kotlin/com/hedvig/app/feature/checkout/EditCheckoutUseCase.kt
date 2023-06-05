@@ -8,8 +8,8 @@ import arrow.core.raise.ensureNotNull
 import arrow.core.right
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.android.QuoteCartId
 import com.hedvig.android.language.LanguageService
-import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import giraffe.QuoteCartEditQuoteMutation
 import kotlinx.serialization.json.buildJsonObject

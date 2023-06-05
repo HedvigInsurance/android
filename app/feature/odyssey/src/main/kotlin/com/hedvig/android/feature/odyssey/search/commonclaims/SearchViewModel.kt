@@ -6,6 +6,7 @@ import com.hedvig.android.feature.odyssey.search.group.GetClaimEntryGroupUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import slimber.log.e
 
 internal class SearchViewModel(
   private val getClaimEntryPoints: GetClaimEntryGroupUseCase,
@@ -22,6 +23,7 @@ internal class SearchViewModel(
     viewModelScope.launch {
       getClaimEntryPoints.invoke(null).fold(
         ifLeft = { errorMessage ->
+          e { "getClaimEntryPoints failed: $errorMessage" }
           _viewState.update {
             it.copy(
               errorMessage = errorMessage.message,

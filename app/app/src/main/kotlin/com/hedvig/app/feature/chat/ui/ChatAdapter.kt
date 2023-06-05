@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.chat.ui
 
-import android.content.Context
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +7,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
+import com.hedvig.android.core.common.android.remove
+import com.hedvig.android.core.common.android.show
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChatMessageFileUploadBinding
 import com.hedvig.app.databinding.ChatMessageHedvigBinding
@@ -17,23 +18,15 @@ import com.hedvig.app.databinding.ChatMessageUserImageBinding
 import com.hedvig.app.ui.coil.dispose
 import com.hedvig.app.ui.coil.load
 import com.hedvig.app.util.extensions.openUri
-import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
 import giraffe.ChatMessagesQuery
 import giraffe.fragment.ChatMessageFragment
 import slimber.log.e
 
 class ChatAdapter(
-  context: Context,
-  private val onPressEdit: () -> Unit,
   private val imageLoader: ImageLoader,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
-  private val doubleMargin = context.resources.getDimensionPixelSize(R.dimen.base_margin_double)
-  private val baseMargin = context.resources.getDimensionPixelSize(R.dimen.base_margin)
 
   var messages: List<ChatMessagesQuery.Message> = listOf()
     set(value) {
@@ -178,7 +171,6 @@ class ChatAdapter(
             messages[position].fragments.chatMessageFragment.body.asMessageBodyCore?.text,
             position,
             messages[position].fragments.chatMessageFragment.header.statusMessage,
-            messages[position].fragments.chatMessageFragment.header.editAllowed,
           )
         }
       }
@@ -252,7 +244,7 @@ class ChatAdapter(
 
   inner class UserMessage(view: View) : RecyclerView.ViewHolder(view) {
     private val binding by viewBinding(ChatMessageUserBinding::bind)
-    fun bind(text: String?, position: Int, statusText: String?, editAllowed: Boolean) {
+    fun bind(text: String?, position: Int, statusText: String?) {
       binding.apply {
         userMessage.text = text
         if (statusText != null && position == 1) {
@@ -261,16 +253,6 @@ class ChatAdapter(
         } else {
           statusMessage.text = ""
           statusMessage.remove()
-        }
-        if (editAllowed) {
-          editMessage.show()
-          editMessage.setHapticClickListener {
-            onPressEdit()
-          }
-          userMessage.updateMargin(end = baseMargin)
-        } else {
-          editMessage.remove()
-          userMessage.updateMargin(end = doubleMargin)
         }
       }
     }

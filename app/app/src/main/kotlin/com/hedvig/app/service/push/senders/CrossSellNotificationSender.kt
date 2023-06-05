@@ -8,13 +8,13 @@ import androidx.core.app.TaskStackBuilder
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.android.notification.setupNotificationChannel
+import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.crossselling.ui.detail.CrossSellDetailActivity
 import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsUseCase
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.DATA_MESSAGE_BODY
 import com.hedvig.app.service.push.DATA_MESSAGE_TITLE
@@ -86,7 +86,7 @@ class CrossSellNotificationSender(
     val builder = TaskStackBuilder.create(context)
     val intent = LoggedInActivity.newInstance(
       context = context,
-      initialTab = LoggedInTabs.INSURANCE,
+      initialTab = TopLevelGraph.INSURANCE,
       withoutHistory = true,
     )
     builder.addNextIntentWithParentStack(intent)

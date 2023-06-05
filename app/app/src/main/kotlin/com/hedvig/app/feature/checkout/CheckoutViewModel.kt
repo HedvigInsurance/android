@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import arrow.core.raise.either
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.android.QuoteCartId
 import com.hedvig.android.core.common.android.validation.ValidationResult
 import com.hedvig.android.core.common.android.validation.validateEmail
 import com.hedvig.android.market.Market
@@ -14,7 +15,6 @@ import com.hedvig.app.feature.offer.SelectedVariantStore
 import com.hedvig.app.feature.offer.model.Checkout
 import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.QuoteBundleVariant
-import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import com.hedvig.app.feature.offer.usecase.ObserveOfferStateUseCase
 import com.hedvig.app.feature.offer.usecase.OfferState

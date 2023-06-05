@@ -10,14 +10,20 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import com.hedvig.android.core.designsystem.component.tokens.HedvigColorSchemeKeyTokens
 import com.hedvig.android.core.designsystem.newtheme.amber_100
+import com.hedvig.android.core.designsystem.newtheme.amber_400
 import com.hedvig.android.core.designsystem.newtheme.amber_600
 import com.hedvig.android.core.designsystem.newtheme.amber_800
+import com.hedvig.android.core.designsystem.newtheme.blue_100
 import com.hedvig.android.core.designsystem.newtheme.blue_200
+import com.hedvig.android.core.designsystem.newtheme.blue_400
 import com.hedvig.android.core.designsystem.newtheme.blue_600
+import com.hedvig.android.core.designsystem.newtheme.blue_800
 import com.hedvig.android.core.designsystem.newtheme.blue_900
 import com.hedvig.android.core.designsystem.newtheme.green_100
+import com.hedvig.android.core.designsystem.newtheme.green_400
 import com.hedvig.android.core.designsystem.newtheme.green_600
 import com.hedvig.android.core.designsystem.newtheme.green_800
+import com.hedvig.android.core.designsystem.newtheme.greyscale_0
 import com.hedvig.android.core.designsystem.newtheme.greyscale_1000
 
 internal val LocalHedvigMaterial3ColorScheme = staticCompositionLocalOf<HedvigMaterial3ColorScheme> {
@@ -52,21 +58,21 @@ internal fun darkHedvigColorScheme(
   containedButtonContainer = colorScheme.tertiary,
   onContainedButtonContainer = colorScheme.onTertiary,
 
-  // Dark mode doesn't have distinct colors for new UI Kit (everything below here) for now.
-  warningElement = amber_600,
-  onWarningElement = greyscale_1000,
-  warningContainer = amber_100,
-  onWarningContainer = amber_800,
+  // In the comments are the light mode colors, showing the equivalent and how it was chosen
+  warningElement = amber_400, // amber_600,
+  onWarningElement = greyscale_0, // greyscale_1000,
+  warningContainer = amber_800, // amber_100,
+  onWarningContainer = amber_100, // amber_800,
 
-  typeElement = green_600,
-  onTypeElement = greyscale_1000,
-  typeContainer = green_100,
-  onTypeContainer = green_800,
+  typeElement = green_400, // green_600,
+  onTypeElement = greyscale_0, // greyscale_1000,
+  typeContainer = green_800, // green_100,
+  onTypeContainer = green_100, // green_800,
 
-  infoElement = blue_600,
-  onInfoElement = greyscale_1000,
-  infoContainer = blue_200,
-  onInfoContainer = blue_900,
+  infoElement = blue_400, // blue_600,
+  onInfoElement = greyscale_0, // greyscale_1000,
+  infoContainer = blue_800, // blue_200,
+  onInfoContainer = blue_100, // blue_900,
 )
 
 internal fun lightHedvigColorScheme(
@@ -209,8 +215,8 @@ internal fun HedvigMaterial3ColorScheme.fromToken(value: HedvigColorSchemeKeyTok
 
     HedvigColorSchemeKeyTokens.TypeElement -> typeElement
     HedvigColorSchemeKeyTokens.OnTypeElement -> onTypeElement
-    HedvigColorSchemeKeyTokens.TypeSignalContainer -> typeContainer
-    HedvigColorSchemeKeyTokens.OnTypeSignalContainer -> onTypeContainer
+    HedvigColorSchemeKeyTokens.TypeContainer -> typeContainer
+    HedvigColorSchemeKeyTokens.OnTypeContainer -> onTypeContainer
   }
 }
 

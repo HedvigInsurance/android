@@ -7,6 +7,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import com.apollographql.apollo3.annotations.ApolloExperimental
 import com.apollographql.apollo3.mockserver.enqueue
+import com.hedvig.android.apollo.giraffe.test.GiraffeFakeResolver
 import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_MUTATION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_MUTATION_AND_SINGLE_VARIABLE
@@ -201,7 +202,7 @@ class EmbarkStoryQueryParsingTest {
   @Test
   fun `apollo parses a story which contains a JSONString scalar`() = runApolloTest { mockServer, apolloClient ->
     mockServer.enqueue(
-      EmbarkStoryQuery.Data(TestFakeResolver) {
+      EmbarkStoryQuery.Data(GiraffeFakeResolver) {
         embarkStory = buildEmbarkStory {
           passages = listOf(
             buildEmbarkPassage {
@@ -249,7 +250,7 @@ class EmbarkStoryQueryParsingTest {
   fun `apollo parses a story which contains a JSONString scalar which is minified`() =
     runApolloTest { mockServer, apolloClient ->
       mockServer.enqueue(
-        EmbarkStoryQuery.Data(TestFakeResolver) {
+        EmbarkStoryQuery.Data(GiraffeFakeResolver) {
           embarkStory = buildEmbarkStory {
             passages = listOf(
               buildEmbarkPassage {

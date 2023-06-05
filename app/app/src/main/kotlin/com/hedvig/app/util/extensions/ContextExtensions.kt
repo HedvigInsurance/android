@@ -9,7 +9,6 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.Configuration
 import android.net.Uri
 import android.util.TypedValue
 import android.view.View
@@ -27,19 +26,18 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.hedvig.android.core.common.android.SHARED_PREFERENCE_NAME
 import com.hedvig.app.MainActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import kotlinx.coroutines.delay
+import slimber.log.e
 import kotlin.system.exitProcess
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
-private const val SHARED_PREFERENCE_NAME = "hedvig_shared_preference"
-
 const val SHARED_PREFERENCE_ASKED_FOR_PERMISSION_PREFIX_KEY =
   "shared_preference_asked_for_permission_prefix"
-private const val SHARED_PREFERENCE_LAST_OPEN = "shared_preference_last_open"
 
 fun Context.compatColor(@ColorRes color: Int) = ContextCompat.getColor(this, color)
 
@@ -114,12 +112,6 @@ fun Context.triggerRestartActivity(activity: Class<*> = MainActivity::class.java
   mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, pendingIntent)
   exitProcess(0)
 }
-
-fun Context.setLastOpen(date: Long) =
-  getSharedPreferences().edit().putLong(SHARED_PREFERENCE_LAST_OPEN, date).commit()
-
-fun Context.getLastOpen() =
-  getSharedPreferences().getLong(SHARED_PREFERENCE_LAST_OPEN, 0)
 
 private fun Context.getSharedPreferences() =
   this.getSharedPreferences(SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE)
@@ -239,9 +231,6 @@ fun Context.hasPermissions(vararg permissions: String): Boolean {
 fun Context.canOpenUri(uri: Uri) =
   Intent(Intent.ACTION_VIEW, uri).resolveActivity(packageManager) != null
 
-val Context.isDarkThemeActive: Boolean
-  get() = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
-
 tailrec fun Context?.getActivity(): Activity? = when (this) {
   is Activity -> this
   else -> (this as? ContextWrapper)?.baseContext?.getActivity()
@@ -278,4 +267,15 @@ fun Context.startChat() {
     )
 
   ActivityCompat.startActivity(this, intent, options.toBundle())
+}
+
+fun Context.openWebBrowser(uri: Uri) {
+  val browserIntent = Intent(Intent.ACTION_VIEW, uri)
+
+  if (browserIntent.resolveActivity(packageManager) != null) {
+    startActivity(browserIntent)
+  } else {
+    e { "Tried to launch $uri but the phone has nothing to support such an intent." }
+    makeToast(hedvig.resources.R.string.general_unknown_error)
+  }
 }

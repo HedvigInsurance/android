@@ -9,7 +9,7 @@
         android:id="@+id/grossPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin_sextuple"
+        android:layout_marginTop="48dp"
         android:textAppearance="?textAppearanceCaption"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
@@ -29,8 +29,8 @@
             android:id="@+id/piechart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/base_margin_undecuple"
-            android:layout_marginTop="@dimen/base_margin"/>
+            android:layout_marginHorizontal="88dp"
+            android:layout_marginTop="8dp"/>
 
     </com.facebook.shimmer.ShimmerFrameLayout>
 
@@ -45,9 +45,9 @@
         android:id="@+id/emptyHeadline"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_triple"
-        android:layout_marginTop="@dimen/base_margin_triple"
-        android:layout_marginEnd="@dimen/base_margin_triple"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="24dp"
         android:text="@string/referrals_empty.headline"
         android:textAlignment="center"
         android:textAppearance="?textAppearanceHeadline5"
@@ -59,9 +59,9 @@
         android:id="@+id/emptyBody"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_triple"
-        android:layout_marginTop="@dimen/base_margin_double"
-        android:layout_marginEnd="@dimen/base_margin_triple"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
         android:textAlignment="center"
         android:textAppearance="?textAppearanceBody1"
         app:layout_constraintEnd_toEndOf="parent"
@@ -94,8 +94,8 @@
         android:id="@+id/discountPerMonthLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_triple"
-        android:layout_marginTop="@dimen/base_margin_triple"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
         android:text="@string/referrals_active.discount.per.month.title"
         android:textAppearance="?textAppearanceBody2"
         app:layout_constraintStart_toStartOf="parent"
@@ -105,7 +105,7 @@
         android:id="@+id/discountPerMonth"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin"
+        android:layout_marginTop="8dp"
         android:textAppearance="?textAppearanceHeadline5"
         app:layout_constraintStart_toStartOf="@id/discountPerMonthLabel"
         app:layout_constraintTop_toBottomOf="@id/discountPerMonthLabel"
@@ -121,7 +121,7 @@
         <ImageView
             android:layout_width="@dimen/headline_5_placeholder_width"
             android:layout_height="@dimen/headline_5_placeholder_height"
-            android:layout_marginTop="@dimen/base_margin"
+            android:layout_marginTop="8dp"
             android:contentDescription="@null"
             app:srcCompat="@drawable/placeholder_rectangle" />
 
@@ -131,7 +131,7 @@
         android:id="@+id/newPriceLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/base_margin_triple"
+        android:layout_marginEnd="24dp"
         android:text="@string/referrals_active.your.new.price.title"
         android:textAppearance="?textAppearanceBody2"
         app:layout_constraintEnd_toEndOf="parent"
@@ -141,7 +141,7 @@
         android:id="@+id/newPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin"
+        android:layout_marginTop="8dp"
         android:textAppearance="?textAppearanceHeadline5"
         app:layout_constraintEnd_toEndOf="@id/newPriceLabel"
         app:layout_constraintTop_toBottomOf="@id/newPriceLabel"
@@ -157,7 +157,7 @@
         <ImageView
             android:layout_width="@dimen/headline_5_placeholder_width"
             android:layout_height="@dimen/headline_5_placeholder_height"
-            android:layout_marginTop="@dimen/base_margin"
+            android:layout_marginTop="8dp"
             android:contentDescription="@null"
             app:srcCompat="@drawable/placeholder_rectangle" />
 
@@ -167,9 +167,9 @@
         android:id="@+id/otherDiscountBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_double"
-        android:layout_marginTop="@dimen/base_margin_double"
-        android:layout_marginEnd="@dimen/base_margin_double"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
         android:theme="@style/ThemeOverlay.Hedvig.InfoCard"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
@@ -180,7 +180,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/base_margin_double"
+            android:layout_margin="16dp"
             android:text="@string/referrals_another_discount_message"
             android:textAlignment="center"
             android:textAppearance="?textAppearanceBody2" />

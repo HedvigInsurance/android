@@ -17,18 +17,18 @@
             android:id="@+id/close"
             android:layout_width="@dimen/news_close_button_size"
             android:layout_height="@dimen/news_close_button_size"
-            android:layout_marginStart="@dimen/base_margin_double"
-            android:layout_marginTop="@dimen/base_margin_double"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/NEWS_CLOSE_DESCRIPTION"
-            android:padding="@dimen/base_margin_half"
+            android:padding="4dp"
             app:srcCompat="@drawable/ic_close" />
 
         <TextView
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/base_margin_double"
+            android:layout_marginTop="16dp"
             android:gravity="center"
             android:textAppearance="?textAppearanceSubtitle1"
             android:visibility="gone"
@@ -52,9 +52,9 @@
         style="?materialButtonContainedLargeStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_double"
-        android:layout_marginEnd="@dimen/base_margin_double"
-        android:layout_marginBottom="@dimen/base_margin_double"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         tools:text="Nästa" />
 
 </LinearLayout>

@@ -4,6 +4,7 @@ import CreateQuoteInput
 import HousingType
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.feature.changeaddress.data.AddressInput
 import com.hedvig.android.feature.changeaddress.data.ChangeAddressRepository
 import com.hedvig.android.feature.changeaddress.data.MoveIntentId

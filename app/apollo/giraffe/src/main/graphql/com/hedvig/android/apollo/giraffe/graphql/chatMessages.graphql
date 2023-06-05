@@ -16,7 +16,6 @@ fragment ChatMessageFragment on Message {
   header {
     fromMyself
     statusMessage
-    editAllowed
     pollingInterval
     richTextChatCompatible
   }

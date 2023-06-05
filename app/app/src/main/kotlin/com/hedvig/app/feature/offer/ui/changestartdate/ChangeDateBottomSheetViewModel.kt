@@ -3,8 +3,8 @@ package com.hedvig.app.feature.offer.ui.changestartdate
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.sequence
+import com.hedvig.android.core.common.android.QuoteCartId
 import com.hedvig.app.feature.offer.OfferRepository
-import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.extensions.epochMillisToLocalDate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

@@ -9,7 +9,6 @@ enum class CheckoutMethod {
   SIMPLE_SIGN,
   APPROVE_ONLY,
   UNKNOWN,
-  ;
 }
 
 fun CheckoutMethod.checkoutIconRes() = when (this) {

@@ -25,7 +25,7 @@ class GetContractDetailsUseCase(
       .query(InsuranceQuery(languageService.getGraphQLLocale()))
       .fetchPolicy(FetchPolicy.CacheAndNetwork)
       .safeFlow()
-      .map { it.toEither { ContractDetailError.NetworkError } }
+      .map { it.toEither(ContractDetailError.NetworkError) }
       .map { result ->
         either {
           val data = result.bind()

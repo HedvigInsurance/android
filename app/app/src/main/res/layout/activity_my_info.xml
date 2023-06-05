@@ -40,8 +40,8 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/base_margin_double"
-                    android:layout_marginTop="@dimen/base_margin_triple"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="24dp"
                     android:text="@string/MY_INFO_CONTACT_DETAILS_TITLE"
                     android:textAppearance="?textAppearanceSubtitle1" />
 

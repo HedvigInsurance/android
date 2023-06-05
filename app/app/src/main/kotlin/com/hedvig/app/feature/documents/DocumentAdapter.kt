@@ -5,10 +5,10 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.hedvig.android.core.common.android.GenericDiffUtilItemCallback
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DocumentBinding
 import com.hedvig.app.databinding.ListSubtitleItemBinding
-import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.tryOpenUri
 import com.hedvig.app.util.extensions.view.setHapticClickListener

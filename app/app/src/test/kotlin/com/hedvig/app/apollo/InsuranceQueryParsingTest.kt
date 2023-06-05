@@ -7,6 +7,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import com.apollographql.apollo3.annotations.ApolloExperimental
 import com.apollographql.apollo3.mockserver.enqueue
+import com.hedvig.android.apollo.giraffe.test.GiraffeFakeResolver
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_TERMINATED
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_HOUSE
@@ -33,7 +34,7 @@ class InsuranceQueryParsingTest {
 
   @Suppress("PrivatePropertyName")
   private val INSURANCE_DATA_from_test_builder by lazy {
-    InsuranceQuery.Data(TestFakeResolver) {
+    InsuranceQuery.Data(GiraffeFakeResolver) {
       contracts = listOf(
         buildContract {
           id = "120e9ac9-84b1-4e5d-add1-70a9bad340be"

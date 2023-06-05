@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.offer
 
 import android.os.Bundle
+import com.hedvig.android.core.common.android.QuoteCartId
 import com.hedvig.android.core.common.android.parcelable
-import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeBottomSheet
 import giraffe.RedeemReferralCodeMutation
 

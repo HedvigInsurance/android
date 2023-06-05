@@ -63,14 +63,6 @@ class SimpleSignAuthenticationViewModel(
     object Error : Event() {
       override fun toString() = "Error"
     }
-
-    object LoadWebView : Event() {
-      override fun toString() = "LoadWebView"
-    }
-
-    object CancelSignIn : Event() {
-      override fun toString() = "CancelSignIn"
-    }
   }
 
   /**
@@ -98,15 +90,11 @@ class SimpleSignAuthenticationViewModel(
     }
   }
 
-  fun setInput(text: CharSequence?) {
-    text?.toString()?.let { _input.value = it }
+  fun setInput(text: String) {
+    _input.value = text
   }
 
   fun authFailed() {
-    _events.value = Event.Error
-  }
-
-  fun invalidMarket() {
     _events.value = Event.Error
   }
 
@@ -136,14 +124,9 @@ class SimpleSignAuthenticationViewModel(
       is AuthAttemptResult.ZignSecProperties -> {
         _zignSecUrl.postValue(result.redirectUrl)
         _statusUrl.postValue(result.statusUrl)
-        _events.postValue(Event.LoadWebView)
       }
     }
     _isSubmitting.postValue(false)
-  }
-
-  fun cancelSignIn() {
-    _events.value = Event.CancelSignIn
   }
 
   private suspend fun onSimpleSignSuccess(loginStatusResult: LoginStatusResult.Completed) {

@@ -6,13 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import coil.ImageLoader
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.hedvig.android.core.common.android.remove
+import com.hedvig.android.core.common.android.show
 import com.hedvig.app.R
 import com.hedvig.app.databinding.SendGifDialogBinding
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.util.extensions.makeKeyboardAware
 import com.hedvig.app.util.extensions.onChange
-import com.hedvig.app.util.extensions.view.remove
-import com.hedvig.app.util.extensions.view.show
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable

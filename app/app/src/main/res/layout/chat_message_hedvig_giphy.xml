@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginStart="@dimen/base_margin_double"
-    android:layout_marginTop="@dimen/base_margin"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="8dp"
     android:background="@drawable/chat_message_hedvig"
     android:orientation="vertical">
 
@@ -22,15 +22,15 @@
         android:id="@+id/giphy"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin"
-        android:layout_marginEnd="@dimen/base_margin"
-        android:layout_marginBottom="@dimen/base_margin"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         tools:ignore="UseCompoundDrawables">
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/base_margin"
+            android:layout_marginStart="8dp"
             android:contentDescription="@null"
             app:srcCompat="@drawable/ic_giphy" />
 
@@ -38,7 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="@dimen/base_margin"
+            android:layout_marginStart="8dp"
             android:text="@string/CHAT_GIPHY_TITLE"
             android:textAppearance="?textAppearanceCaption" />
 

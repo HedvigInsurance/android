@@ -8,11 +8,11 @@ import android.widget.FrameLayout
 import androidx.core.view.updatePadding
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
+import com.hedvig.android.core.common.android.show
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DatePickLayoutBinding
 import com.hedvig.app.util.extensions.colorAttr
-import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.spring
 

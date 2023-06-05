@@ -28,7 +28,8 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.util.fastMaxBy
-import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
+import com.hedvig.android.core.ui.appbar.m3.TopAppBar
+import com.hedvig.android.core.ui.appbar.m3.TopAppBarActionType
 
 /**
  * A custom scaffold, with a built-in top app bar which is pinned to the top and changes colors according to
@@ -40,7 +41,9 @@ import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 fun HedvigScaffold(
   navigateUp: () -> Unit,
   modifier: Modifier = Modifier,
+  color: Color = MaterialTheme.colors.background,
   topAppBarText: String? = null,
+  topAppBarActionType: TopAppBarActionType = TopAppBarActionType.BACK,
   itemsColumnHorizontalAlignment: Alignment.Horizontal = Alignment.Start,
   topAppBarColors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(
     containerColor = androidx.compose.material3.MaterialTheme.colorScheme.background,
@@ -50,23 +53,26 @@ fun HedvigScaffold(
   scrollState: ScrollState = rememberScrollState(),
   content: @Composable ColumnScope.() -> Unit,
 ) {
-  Column(modifier.fillMaxSize()) {
-    TopAppBarWithBack(
-      onClick = navigateUp,
-      title = topAppBarText ?: "",
-      colors = topAppBarColors,
-      scrollBehavior = topAppBarScrollBehavior,
-    )
-    Column(
-      horizontalAlignment = itemsColumnHorizontalAlignment,
-      modifier = Modifier
-        .fillMaxSize()
-        .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
-        .verticalScroll(scrollState)
-        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-    ) {
-      content()
-      Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
+  Surface(color = color) {
+    Column(modifier.fillMaxSize()) {
+      TopAppBar(
+        title = topAppBarText ?: "",
+        onClick = navigateUp,
+        actionType = topAppBarActionType,
+        colors = topAppBarColors,
+        scrollBehavior = topAppBarScrollBehavior,
+      )
+      Column(
+        horizontalAlignment = itemsColumnHorizontalAlignment,
+        modifier = Modifier
+          .fillMaxSize()
+          .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
+          .verticalScroll(scrollState)
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+      ) {
+        content()
+        Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
+      }
     }
   }
 }

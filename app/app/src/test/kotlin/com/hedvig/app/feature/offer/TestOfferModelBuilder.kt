@@ -1,5 +1,7 @@
 package com.hedvig.app.feature.offer
 
+import com.hedvig.android.core.common.android.QuoteCartId
+import com.hedvig.android.core.common.android.table.Table
 import com.hedvig.android.core.ui.insurance.GradientType
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
@@ -8,7 +10,6 @@ import com.hedvig.app.feature.offer.model.CheckoutLabel
 import com.hedvig.app.feature.offer.model.CheckoutMethod
 import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.QuoteBundleVariant
-import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.model.quotebundle.BundleCost
 import com.hedvig.app.feature.offer.model.quotebundle.Inception
 import com.hedvig.app.feature.offer.model.quotebundle.OfferStartDate
@@ -18,7 +19,6 @@ import com.hedvig.app.feature.offer.model.quotebundle.StartDateLabel
 import com.hedvig.app.feature.offer.model.quotebundle.ViewConfiguration
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import com.hedvig.app.feature.perils.Peril
-import com.hedvig.app.feature.table.Table
 import org.javamoney.moneta.Money
 import java.time.LocalDate
 import javax.money.MonetaryAmount

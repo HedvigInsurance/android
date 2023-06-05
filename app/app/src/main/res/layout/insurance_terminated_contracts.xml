@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?selectableItemBackground"
-    android:padding="@dimen/base_margin_double">
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/title"
@@ -23,7 +23,7 @@
         android:id="@+id/caption"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin_half"
+        android:layout_marginTop="4dp"
         android:textAppearance="?textAppearanceCaption"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/navigate"

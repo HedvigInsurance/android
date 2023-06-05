@@ -9,11 +9,20 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.ui.unit.IntOffset
 
+private const val ProgressThreshold = 0.3f
+
+private val Int.ForOutgoing: Int
+  get() = (this * ProgressThreshold).toInt()
+
+private val Int.ForIncoming: Int
+  get() = this - this.ForOutgoing
+
 object SharedAxisDefaults {
   const val SharedAxisOffset = 30.0
+  private const val SharedAxisDuration = MotionTokens.DurationMedium2.toInt()
 
   private val sharedAxisSlideAnimationSpec = tween<IntOffset>(
-    durationMillis = MotionTokens.DurationMedium2.toInt(),
+    durationMillis = SharedAxisDuration,
     delayMillis = 0,
     easing = MotionTokens.EasingStandardCubicBezier,
   )
@@ -27,8 +36,8 @@ object SharedAxisDefaults {
     )
     val fade = fadeIn(
       tween(
-        durationMillis = (MotionTokens.DurationMedium2 * 0.7).toInt(),
-        delayMillis = (MotionTokens.DurationMedium2 * 0.3).toInt(),
+        durationMillis = SharedAxisDuration.ForIncoming,
+        delayMillis = SharedAxisDuration.ForOutgoing,
         easing = MotionTokens.EasingStandardDecelerateCubicBezier,
       ),
     )
@@ -44,7 +53,7 @@ object SharedAxisDefaults {
     )
     val fade = fadeOut(
       tween(
-        durationMillis = (MotionTokens.DurationMedium2 * 0.3).toInt(),
+        durationMillis = SharedAxisDuration.ForOutgoing,
         delayMillis = 0,
         easing = MotionTokens.EasingStandardAccelerateCubicBezier,
       ),

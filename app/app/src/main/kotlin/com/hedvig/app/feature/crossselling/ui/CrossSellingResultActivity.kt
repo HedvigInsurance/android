@@ -8,8 +8,8 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.common.android.parcelableExtra
+import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.util.extensions.startChat
 import org.koin.android.ext.android.inject
 import java.time.Clock
@@ -30,7 +30,7 @@ class CrossSellingResultActivity : AppCompatActivity() {
         LoggedInActivity.newInstance(
           context = this@CrossSellingResultActivity,
           withoutHistory = true,
-          initialTab = LoggedInTabs.INSURANCE,
+          initialTab = TopLevelGraph.INSURANCE,
         ),
       )
     }

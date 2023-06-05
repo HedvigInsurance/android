@@ -42,7 +42,6 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.app.BuildConfig
-import com.hedvig.app.R
 import com.hedvig.app.feature.embark.ui.MemberIdViewModel
 import com.hedvig.app.isDebug
 import org.koin.androidx.viewmodel.ext.android.getViewModel
@@ -174,7 +173,7 @@ private fun AboutAppRow(
   ) {
     Text(text = text, modifier = Modifier.weight(1f, true))
     Icon(
-      painter = painterResource(R.drawable.ic_arrow_forward),
+      painter = painterResource(hedvig.resources.R.drawable.ic_arrow_forward),
       contentDescription = null,
       modifier = Modifier.size(24.dp),
     )

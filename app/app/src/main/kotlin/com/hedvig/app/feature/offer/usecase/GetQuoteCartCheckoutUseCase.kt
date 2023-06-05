@@ -8,8 +8,8 @@ import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
+import com.hedvig.android.core.common.android.QuoteCartId
 import com.hedvig.app.feature.offer.model.Checkout
-import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.model.toCheckout
 import giraffe.QuoteCartCheckoutStatusQuery
 

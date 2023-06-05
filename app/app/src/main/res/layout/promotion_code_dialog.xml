@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/bottom_sheet_dialog_no_title_fragment_background"
     android:orientation="vertical"
-    android:padding="@dimen/base_margin_double">
+    android:padding="16dp">
 
     <ImageView
         android:layout_width="wrap_content"
@@ -18,10 +18,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="@dimen/base_margin_triple"
-        android:layout_marginBottom="@dimen/base_margin_triple"
-        android:paddingStart="@dimen/base_margin_quadruple"
-        android:paddingEnd="@dimen/base_margin_quadruple"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="24dp"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp"
         android:text="@string/REFERRAL_ADDCOUPON_HEADLINE"
         android:textAppearance="?textAppearanceHeadline5" />
 
@@ -47,10 +47,10 @@
         android:id="@+id/bottomSheetPromotionCodeTermsAndCondition"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin_double"
+        android:layout_marginTop="16dp"
         android:gravity="center"
-        android:paddingStart="@dimen/base_margin_quadruple"
-        android:paddingEnd="@dimen/base_margin_quadruple"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp"
         android:text="@string/REFERRAL_ADDCOUPON_TC_EXPLANATION_ANDROID"
         android:textAppearance="?textAppearanceBody2" />
 
@@ -59,7 +59,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="@dimen/base_margin"
+        android:layout_marginTop="8dp"
         android:gravity="center"
         android:text="@string/REFERRAL_ADDCOUPON_TC_LINK"
         android:textColor="?android:textColorLink" />
@@ -70,7 +70,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="@dimen/base_margin_quadruple"
+        android:layout_marginTop="32dp"
         android:text="@string/REFERRAL_ADDCOUPON_BTN_SUBMIT" />
 
 </LinearLayout>

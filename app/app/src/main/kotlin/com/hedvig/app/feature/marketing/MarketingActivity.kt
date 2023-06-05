@@ -142,7 +142,7 @@ private fun MarketingScreen(
           onClickMarket = onFlagClick,
           onClickSignUp = { onClickSignUp(market) },
           onClickLogIn = { onClickLogIn(market) },
-          flagRes = market.flag,
+          market = market,
         )
       }
     }

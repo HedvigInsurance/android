@@ -9,14 +9,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/base_margin_triple"
+        android:layout_margin="24dp"
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/base_margin"
+            android:layout_marginTop="8dp"
             android:contentDescription="@string/HEDVIG_LOGO_ACCESSIBILITY"
             app:srcCompat="@drawable/ic_hedvig_wordmark"
             app:tint="?colorPrimary" />
@@ -24,7 +24,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/base_margin_double"
+            android:layout_marginTop="16dp"
             android:contentDescription="@null"
             app:srcCompat="@drawable/illustration_invite_success" />
 
@@ -32,7 +32,7 @@
             android:id="@+id/referralsReceiverTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/base_margin_double"
+            android:layout_marginTop="16dp"
             android:gravity="center"
             android:textAppearance="?textAppearanceHeadline5"
             tools:text="@string/REFERRAL_STARTSCREEN_HEADLINE" />
@@ -41,7 +41,7 @@
             android:id="@+id/referralsReceiverBody"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/base_margin"
+            android:layout_marginTop="8dp"
             android:gravity="center"
             android:textAppearance="?textAppearanceBody1"
             android:text="@string/REFERRAL_STARTSCREEN_BODY" />
@@ -50,7 +50,7 @@
             android:id="@+id/referralReceiverContinueButton"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/referral_receiver_continue_button_height"
-            android:layout_marginTop="@dimen/base_margin_triple"
+            android:layout_marginTop="24dp"
             android:paddingLeft="@dimen/referral_receiver_continue_button_padding_edge"
             android:paddingRight="@dimen/referral_receiver_continue_button_padding_edge"
             android:text="@string/REFERRAL_STARTSCREEN_BTN_CTA"
@@ -64,8 +64,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/base_margin_double"
-            android:layout_marginBottom="@dimen/base_margin_quadruple"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="32dp"
             android:paddingLeft="@dimen/referral_receiver_continue_without_button_padding_edge"
             android:paddingRight="@dimen/referral_receiver_continue_without_button_padding_edge"
             android:text="@string/REFERRAL_STARTSCREEN_BTN_SKIP" />
