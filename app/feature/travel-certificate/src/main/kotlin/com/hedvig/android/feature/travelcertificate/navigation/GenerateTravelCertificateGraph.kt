@@ -53,7 +53,7 @@ fun NavGraphBuilder.generateTravelCertificateGraph(
         onContinue = {
           navController.navigate(GenerateTravelCertificateDestination.TravelCertificateInput)
         },
-        navigateBack = { finish() },
+        navigateUp = navController::navigateUp,
       )
     }
     animatedComposable<GenerateTravelCertificateDestination.TravelCertificateInput> { navBackStackEntry ->
@@ -93,7 +93,7 @@ fun NavGraphBuilder.generateTravelCertificateGraph(
 
       AddCoInsured(
         coInsured = coInsured,
-        navigateBack = { navController.navigateUp() },
+        navigateUp = navController::navigateUp,
         onRemoveCoInsured = { coInsuredId ->
           navController.navigateUp()
           viewModel.onCoInsuredRemoved(coInsuredId)

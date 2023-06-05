@@ -31,7 +31,7 @@ import java.util.*
 @Composable
 fun AddCoInsured(
   coInsured: CoInsured?,
-  navigateBack: () -> Unit,
+  navigateUp: () -> Unit,
   onRemoveCoInsured: (String) -> Unit,
   onEditCoInsured: (CoInsured) -> Unit,
   onAddCoInsured: (CoInsured) -> Unit,
@@ -42,9 +42,7 @@ fun AddCoInsured(
   var hasSsnError by rememberSaveable { mutableStateOf<Boolean>(false) }
 
   HedvigScaffold(
-    navigateUp = {
-      navigateBack()
-    },
+    navigateUp = navigateUp,
     modifier = Modifier.clearFocusOnTap(),
   ) {
     Spacer(modifier = Modifier.height(48.dp))
@@ -156,7 +154,7 @@ fun AddCoInsuredPreview() {
     Surface {
       AddCoInsured(
         coInsured = null,
-        navigateBack = {},
+        navigateUp = {},
         onEditCoInsured = { coInsured -> },
         onAddCoInsured = { coInsured -> },
         onRemoveCoInsured = {},

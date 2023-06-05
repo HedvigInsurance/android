@@ -35,7 +35,7 @@ fun TravelCertificateInformation(
   errorMessage: String?,
   onErrorDialogDismissed: () -> Unit,
   onContinue: () -> Unit,
-  navigateBack: () -> Unit,
+  navigateUp: () -> Unit,
 ) {
   if (errorMessage != null) {
     ErrorDialog(
@@ -51,9 +51,7 @@ fun TravelCertificateInformation(
     }
   } else {
     HedvigScaffold(
-      navigateUp = {
-        navigateBack()
-      },
+      navigateUp = navigateUp,
       modifier = Modifier.clearFocusOnTap(),
     ) {
       Spacer(modifier = Modifier.padding(top = 56.dp))
@@ -114,7 +112,7 @@ fun PreviewTravelCertificateInformation() {
       errorMessage = null,
       onErrorDialogDismissed = {},
       onContinue = {},
-      navigateBack = {},
+      navigateUp = {},
     )
   }
 }
