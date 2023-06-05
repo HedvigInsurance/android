@@ -41,6 +41,15 @@ class HomeItemsBuilderTest {
     payinMethodStatus = PayinMethodStatus.NEEDS_SETUP
   }
 
+  private val homeDataPayinAlreadySetup = HomeQuery.Data(GiraffeFakeResolver) {
+    contracts = listOf(
+      buildContract {
+        status = buildActiveStatus({})
+      },
+    )
+    payinMethodStatus = PayinMethodStatus.ACTIVE
+  }
+
   @Test
   fun `when connect payin card-feature is disabled and payin is not connected, should not show connect payin`() {
     runTest {
@@ -49,7 +58,6 @@ class HomeItemsBuilderTest {
           mapOf(
             Feature.CONNECT_PAYIN_REMINDER to false,
             Feature.COMMON_CLAIMS to Random.nextBoolean(),
-            Feature.TRAVEL_CERTIFICATE to true,
           )
         },
       )
@@ -72,7 +80,6 @@ class HomeItemsBuilderTest {
           mapOf(
             Feature.CONNECT_PAYIN_REMINDER to true,
             Feature.COMMON_CLAIMS to Random.nextBoolean(),
-            Feature.TRAVEL_CERTIFICATE to true,
           )
         },
         paymentType = { enumValues<PaymentType>().random() },
@@ -85,13 +92,29 @@ class HomeItemsBuilderTest {
     }
 
   @Test
+  fun `when connect payin card-feature is enabled and payin is connected already, should not show connect payin`() =
+    runTest {
+      val featureManager: FeatureManager = FakeFeatureManager(
+        featureMap = {
+          mapOf(
+            Feature.CONNECT_PAYIN_REMINDER to true,
+            Feature.COMMON_CLAIMS to Random.nextBoolean(),
+          )
+        },
+        paymentType = { enumValues<PaymentType>().random() },
+      )
+      val builder = HomeItemsBuilder(featureManager)
+
+      val result = builder.buildItems(homeDataPayinAlreadySetup, false)
+
+      assertThat(result.filterIsInstance<HomeModel.ConnectPayin>()).isEmpty()
+    }
+
+  @Test
   fun `when common claims-feature is enabled, should show common claims`() = runTest {
     val featureManager: FeatureManager = FakeFeatureManager(
       featureMap = {
-        mapOf(
-          Feature.COMMON_CLAIMS to true,
-          Feature.TRAVEL_CERTIFICATE to true,
-        )
+        mapOf(Feature.COMMON_CLAIMS to true)
       },
     )
     val builder = HomeItemsBuilder(featureManager)
@@ -109,10 +132,7 @@ class HomeItemsBuilderTest {
     runTest {
       val featureManager: FeatureManager = FakeFeatureManager(
         featureMap = {
-          mapOf(
-            Feature.COMMON_CLAIMS to false,
-            Feature.TRAVEL_CERTIFICATE to true,
-          )
+          mapOf(Feature.COMMON_CLAIMS to false)
         },
       )
       val builder = HomeItemsBuilder(featureManager)
@@ -131,10 +151,7 @@ class HomeItemsBuilderTest {
     runTest {
       val featureManager: FeatureManager = FakeFeatureManager(
         featureMap = {
-          mapOf(
-            Feature.COMMON_CLAIMS to false,
-            Feature.TRAVEL_CERTIFICATE to true,
-          )
+          mapOf(Feature.COMMON_CLAIMS to false)
         },
       )
       val builder = HomeItemsBuilder(featureManager)
@@ -150,21 +167,18 @@ class HomeItemsBuilderTest {
 
   // ktlint-disable max-line-length
   @Test
-  fun `when common claims-feature and travel certificate feature is disabled, and there are travel certificates, should not show common claims`() =
+  fun `when common claims-feature is disabled, and there are no travel certificates, should not show common claims`() =
     runTest {
       val featureManager: FeatureManager = FakeFeatureManager(
         featureMap = {
-          mapOf(
-            Feature.COMMON_CLAIMS to false,
-            Feature.TRAVEL_CERTIFICATE to false,
-          )
+          mapOf(Feature.COMMON_CLAIMS to false)
         },
       )
       val builder = HomeItemsBuilder(featureManager)
 
       val result = builder.buildItems(
         homeData = homeDataActiveWithCommonClaim,
-        showTravelCertificate = true,
+        showTravelCertificate = false,
       )
 
       assertThat(result.filterIsInstance<HomeModel.CommonClaims>()).isEmpty()

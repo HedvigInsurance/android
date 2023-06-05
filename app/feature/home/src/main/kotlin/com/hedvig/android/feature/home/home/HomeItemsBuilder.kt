@@ -16,7 +16,6 @@ import giraffe.type.PayinMethodStatus
 internal class HomeItemsBuilder(
   private val featureManager: FeatureManager,
 ) {
-
   suspend fun buildItems(
     homeData: HomeQuery.Data,
     showTravelCertificate: Boolean,
@@ -60,7 +59,7 @@ internal class HomeItemsBuilder(
       )
     }
 
-    if (featureManager.isFeatureEnabled(Feature.TRAVEL_CERTIFICATE) && showTravelCertificate) {
+    if (showTravelCertificate) {
       commonClaims.add(CommonClaim.GenerateTravelCertificate)
     }
     val nonEmptyCommonClaimsList = commonClaims.toNonEmptyListOrNull()
