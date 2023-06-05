@@ -56,11 +56,11 @@ fun HedvigScaffold(
   Surface(color = color) {
     Column(modifier.fillMaxSize()) {
       TopAppBar(
-        onClick = navigateUp,
         title = topAppBarText ?: "",
+        onClick = navigateUp,
+        actionType = topAppBarActionType,
         colors = topAppBarColors,
         scrollBehavior = topAppBarScrollBehavior,
-        actionType = topAppBarActionType,
       )
       Column(
         horizontalAlignment = itemsColumnHorizontalAlignment,

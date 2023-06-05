@@ -65,10 +65,10 @@ fun TopAppBarWithBack(
     title = title,
     onClick = onClick,
     actionType = TopAppBarActionType.BACK,
-    windowInsets = windowInsets,
     colors = colors,
     scrollBehavior = scrollBehavior,
     modifier = modifier,
+    windowInsets = windowInsets,
   )
 }
 
@@ -89,10 +89,10 @@ fun TopAppBarWithClose(
     title = title,
     onClick = onClick,
     actionType = TopAppBarActionType.CLOSE,
-    windowInsets = windowInsets,
     colors = colors,
     scrollBehavior = scrollBehavior,
     modifier = modifier,
+    windowInsets = windowInsets,
   )
 }
 
@@ -105,10 +105,10 @@ inline fun TopAppBar(
   title: String,
   crossinline onClick: () -> Unit,
   actionType: TopAppBarActionType,
-  windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
   colors: TopAppBarColors,
   scrollBehavior: TopAppBarScrollBehavior,
   modifier: Modifier = Modifier,
+  windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
 ) {
   TopAppBar(
     modifier = modifier,
