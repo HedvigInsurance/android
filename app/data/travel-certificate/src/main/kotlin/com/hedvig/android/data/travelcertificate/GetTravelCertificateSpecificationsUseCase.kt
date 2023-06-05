@@ -2,10 +2,14 @@ package com.hedvig.android.data.travelcertificate
 
 import arrow.core.Either
 import arrow.core.raise.either
+import arrow.core.raise.ensure
+import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import kotlinx.datetime.LocalDate
 import octopus.TravelCertificateSpecificationsQuery
 import slimber.log.ifPlanted
@@ -13,27 +17,33 @@ import timber.log.Timber
 
 class GetTravelCertificateSpecificationsUseCase(
   private val apolloClient: ApolloClient,
+  private val featureManager: FeatureManager,
 ) {
 
   private val query = TravelCertificateSpecificationsQuery()
 
-  suspend fun invoke(): Either<ErrorMessage, TravelCertificateResult> = either {
-    val member = apolloClient
-      .query(query)
-      .safeExecute()
-      .toEither(::ErrorMessage)
-      .onLeft { ifPlanted { Timber.e(it.throwable, it.message ?: "Could not fetch travel certificate") } }
-      .bind()
-      .currentMember
+  suspend fun invoke(): Either<TravelCertificateError, TravelCertificateData> {
+    return either {
+      ensure(featureManager.isFeatureEnabled(Feature.TRAVEL_CERTIFICATE) == false) {
+        TravelCertificateError.NotEligible
+      }
+      val member = apolloClient
+        .query(query)
+        .safeExecute()
+        .toEither(::ErrorMessage)
+        .mapLeft(TravelCertificateError::Error)
+        .onLeft { ifPlanted { Timber.e(it.throwable, it.message ?: "Could not fetch travel certificate") } }
+        .bind()
+        .currentMember
 
-    when (
       val travelCertificateSpecifications = member.travelCertificateSpecifications.contractSpecifications.firstOrNull()
-    ) {
-      null -> TravelCertificateResult.NotEligible
-      else -> TravelCertificateResult.TraverlCertificateData(
-        travelCertificateSpecification = travelCertificateSpecifications.toTravelCertificateSpecification(member.email),
+      ensureNotNull(travelCertificateSpecifications) { TravelCertificateError.NotEligible }
+      TravelCertificateData(
+        travelCertificateSpecification = travelCertificateSpecifications.toTravelCertificateSpecification(
+          member.email,
+        ),
         infoSections = member.travelCertificateSpecifications.infoSpecifications.map {
-          TravelCertificateResult.TraverlCertificateData.InfoSection(
+          TravelCertificateData.InfoSection(
             it.title,
             it.body,
           )
@@ -46,7 +56,7 @@ class GetTravelCertificateSpecificationsUseCase(
 // ktlint-disable max-line-length
 private fun TravelCertificateSpecificationsQuery.Data.CurrentMember.TravelCertificateSpecifications.ContractSpecification.toTravelCertificateSpecification(
   email: String,
-) = TravelCertificateResult.TraverlCertificateData.TravelCertificateSpecification(
+) = TravelCertificateData.TravelCertificateSpecification(
   contractId = contractId,
   email = email,
   maxDurationDays = maxDurationDays,
@@ -54,25 +64,28 @@ private fun TravelCertificateSpecificationsQuery.Data.CurrentMember.TravelCertif
   numberOfCoInsured = numberOfCoInsured,
 )
 
-sealed interface TravelCertificateResult {
+sealed interface TravelCertificateError {
+  data class Error(
+    val errorMessage: ErrorMessage,
+  ) : TravelCertificateError, ErrorMessage by errorMessage
 
-  data class TraverlCertificateData(
-    val travelCertificateSpecification: TravelCertificateSpecification,
-    val infoSections: List<InfoSection>,
-  ) : TravelCertificateResult {
-    data class InfoSection(
-      val title: String,
-      val body: String,
-    )
+  object NotEligible : TravelCertificateError
+}
 
-    data class TravelCertificateSpecification(
-      val contractId: String,
-      val email: String,
-      val maxDurationDays: Int,
-      val dateRange: ClosedRange<LocalDate>,
-      val numberOfCoInsured: Int,
-    )
-  }
+data class TravelCertificateData(
+  val travelCertificateSpecification: TravelCertificateSpecification,
+  val infoSections: List<InfoSection>,
+) {
+  data class InfoSection(
+    val title: String,
+    val body: String,
+  )
 
-  object NotEligible : TravelCertificateResult
+  data class TravelCertificateSpecification(
+    val contractId: String,
+    val email: String,
+    val maxDurationDays: Int,
+    val dateRange: ClosedRange<LocalDate>,
+    val numberOfCoInsured: Int,
+  )
 }

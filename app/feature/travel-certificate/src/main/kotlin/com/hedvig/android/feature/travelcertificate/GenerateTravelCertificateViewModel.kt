@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.data.travelcertificate.GetTravelCertificateSpecificationsUseCase
-import com.hedvig.android.data.travelcertificate.TravelCertificateResult
+import com.hedvig.android.data.travelcertificate.TravelCertificateError
 import com.hedvig.android.feature.travelcertificate.data.CreateTravelCertificateUseCase
 import com.hedvig.android.feature.travelcertificate.data.DownloadTravelCertificateUseCase
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
@@ -34,40 +34,43 @@ internal class GenerateTravelCertificateViewModel(
       getTravelCertificateSpecificationsUseCase
         .invoke()
         .fold(
-          ifLeft = { errorMessage ->
+          ifLeft = { travelCertificateError ->
             _uiState.update {
-              TravelCertificateInputState(errorMessage = errorMessage.message)
+              when (travelCertificateError) {
+                is TravelCertificateError.Error -> {
+                  TravelCertificateInputState(errorMessage = travelCertificateError.message)
+                }
+                TravelCertificateError.NotEligible -> {
+                  TravelCertificateInputState(errorMessage = "Not eligible")
+                }
+              }
             }
           },
-          ifRight = { result -> _uiState.update { createUiState(result) } },
+          ifRight = { travelCertificateData ->
+            _uiState.update {
+              val travelSpecification = travelCertificateData.travelCertificateSpecification
+              val datePickerState = DatePickerState(
+                initialSelectedDateMillis = null,
+                initialDisplayedMonthMillis = null,
+                yearRange = travelSpecification.dateRange.start.year..travelSpecification.dateRange.endInclusive.year,
+                initialDisplayMode = DisplayMode.Picker,
+              )
+              TravelCertificateInputState(
+                contractId = travelSpecification.contractId,
+                email = ValidatedInput(travelSpecification.email),
+                maximumCoInsured = travelSpecification.numberOfCoInsured,
+                datePickerState = datePickerState,
+                dateValidator = { date ->
+                  val selectedDate =
+                    Instant.fromEpochMilliseconds(date).toLocalDateTime(TimeZone.currentSystemDefault()).date
+                  travelSpecification.dateRange.contains(selectedDate)
+                },
+                daysValid = travelSpecification.maxDurationDays,
+                infoSections = travelCertificateData.infoSections,
+              )
+            }
+          },
         )
-    }
-  }
-
-  private fun createUiState(result: TravelCertificateResult) = when (result) {
-    TravelCertificateResult.NotEligible -> TravelCertificateInputState(errorMessage = "Not eligible")
-    is TravelCertificateResult.TraverlCertificateData -> {
-      val travelSpecification = result.travelCertificateSpecification
-
-      val datePickerState = DatePickerState(
-        initialSelectedDateMillis = null,
-        initialDisplayedMonthMillis = null,
-        yearRange = travelSpecification.dateRange.start.year.rangeTo(travelSpecification.dateRange.endInclusive.year),
-        initialDisplayMode = DisplayMode.Picker,
-      )
-
-      TravelCertificateInputState(
-        contractId = travelSpecification.contractId,
-        email = ValidatedInput(travelSpecification.email),
-        maximumCoInsured = travelSpecification.numberOfCoInsured,
-        datePickerState = datePickerState,
-        dateValidator = { date ->
-          val selectedDate = Instant.fromEpochMilliseconds(date).toLocalDateTime(TimeZone.currentSystemDefault()).date
-          travelSpecification.dateRange.contains(selectedDate)
-        },
-        daysValid = travelSpecification.maxDurationDays,
-        infoSections = result.infoSections,
-      )
     }
   }
 

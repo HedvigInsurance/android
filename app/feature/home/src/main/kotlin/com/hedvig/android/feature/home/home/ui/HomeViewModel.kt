@@ -6,7 +6,6 @@ import arrow.core.merge
 import arrow.core.raise.either
 import arrow.fx.coroutines.parZip
 import com.hedvig.android.data.travelcertificate.GetTravelCertificateSpecificationsUseCase
-import com.hedvig.android.data.travelcertificate.TravelCertificateResult
 import com.hedvig.android.feature.home.data.GetHomeUseCase
 import com.hedvig.android.feature.home.home.HomeItemsBuilder
 import com.hedvig.app.feature.home.model.HomeModel
@@ -85,8 +84,7 @@ internal class HomeViewModel(
           claimStatusCards = homeData.claimStatusCards,
           homeItems = homeItemsBuilder.buildItems(
             homeData = homeData,
-            showTravelCertificate = travelCertificateData != null &&
-              travelCertificateData is TravelCertificateResult.TraverlCertificateData,
+            showTravelCertificate = travelCertificateData != null,
           ),
         )
       }

@@ -25,12 +25,12 @@ import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.error.ErrorDialog
 import com.hedvig.android.core.ui.infocard.DrawableInfoCard
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
-import com.hedvig.android.data.travelcertificate.TravelCertificateResult
+import com.hedvig.android.data.travelcertificate.TravelCertificateData
 import hedvig.resources.R
 
 @Composable
 internal fun TravelCertificateInformation(
-  infoSections: List<TravelCertificateResult.TraverlCertificateData.InfoSection>?,
+  infoSections: List<TravelCertificateData.InfoSection>?,
   isLoading: Boolean,
   errorMessage: String?,
   onErrorDialogDismissed: () -> Unit,
@@ -99,11 +99,11 @@ private fun PreviewTravelCertificateInformation() {
   HedvigTheme {
     TravelCertificateInformation(
       infoSections = listOf(
-        TravelCertificateResult.TraverlCertificateData.InfoSection(
+        TravelCertificateData.InfoSection(
           title = "Test1",
           body = "Body1",
         ),
-        TravelCertificateResult.TraverlCertificateData.InfoSection(
+        TravelCertificateData.InfoSection(
           title = "Test2",
           body = "Body2",
         ),
