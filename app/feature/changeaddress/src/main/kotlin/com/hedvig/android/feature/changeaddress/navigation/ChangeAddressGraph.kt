@@ -34,7 +34,7 @@ fun NavGraphBuilder.changeAddressGraph(
     popExitTransition = { MotionDefaults.sharedXAxisPopExit(density) },
   ) {
     animatedComposable<ChangeAddressDestination.SelectHousingType> { navBackStackEntry ->
-      val viewModel = destinationScopedViewModel<AppDestination.ChangeAddress, ChangeAddressViewModel>(
+      val viewModel: ChangeAddressViewModel = destinationScopedViewModel<AppDestination.ChangeAddress, _>(
         navController = navController,
         backStackEntry = navBackStackEntry,
       )
@@ -48,7 +48,7 @@ fun NavGraphBuilder.changeAddressGraph(
     }
 
     animatedComposable<ChangeAddressDestination.EnterNewAddress> { navBackStackEntry ->
-      val viewModel = destinationScopedViewModel<AppDestination.ChangeAddress, ChangeAddressViewModel>(
+      val viewModel: ChangeAddressViewModel = destinationScopedViewModel<AppDestination.ChangeAddress, _>(
         navController = navController,
         backStackEntry = navBackStackEntry,
       )
@@ -62,7 +62,7 @@ fun NavGraphBuilder.changeAddressGraph(
     }
 
     animatedComposable<ChangeAddressDestination.OfferDestination> { navBackStackEntry ->
-      val viewModel = destinationScopedViewModel<AppDestination.ChangeAddress, ChangeAddressViewModel>(
+      val viewModel: ChangeAddressViewModel = destinationScopedViewModel<AppDestination.ChangeAddress, _>(
         navController = navController,
         backStackEntry = navBackStackEntry,
       )
