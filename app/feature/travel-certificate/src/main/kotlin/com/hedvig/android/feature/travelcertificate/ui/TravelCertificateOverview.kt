@@ -33,7 +33,7 @@ import hedvig.resources.R
 import java.io.File
 
 @Composable
-fun TravelCertificateOverView(
+internal fun TravelCertificateOverview(
   travelCertificateUrl: TravelCertificateUrl,
   onDownloadCertificate: (TravelCertificateUrl) -> Unit,
   navigateBack: () -> Unit,
@@ -120,9 +120,9 @@ fun TravelCertificateOverView(
 
 @HedvigPreview
 @Composable
-fun TravelCertificateOverView() {
+private fun PreviewTravelCertificateOverview() {
   HedvigTheme {
-    TravelCertificateOverView(
+    TravelCertificateOverview(
       travelCertificateUrl = TravelCertificateUrl(""),
       onDownloadCertificate = {},
       navigateBack = {},

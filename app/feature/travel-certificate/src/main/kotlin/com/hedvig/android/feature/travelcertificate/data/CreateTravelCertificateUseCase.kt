@@ -16,10 +16,9 @@ import octopus.type.TravelCertificateCreateCoInsured
 import octopus.type.TravelCertificateCreateInput
 import slimber.log.e
 
-class CreateTravelCertificateUseCase(
+internal class CreateTravelCertificateUseCase(
   private val apolloClient: ApolloClient,
 ) {
-
   suspend fun invoke(
     contractId: String,
     startDate: LocalDate,
@@ -54,4 +53,4 @@ class CreateTravelCertificateUseCase(
 
 @JvmInline
 @Serializable
-value class TravelCertificateUrl(val uri: String)
+internal value class TravelCertificateUrl(val uri: String)

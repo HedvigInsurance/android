@@ -15,7 +15,7 @@ import com.hedvig.android.feature.travelcertificate.TravelCertificateInputState
 import com.hedvig.android.feature.travelcertificate.ui.AddCoInsured
 import com.hedvig.android.feature.travelcertificate.ui.GenerateTravelCertificateInput
 import com.hedvig.android.feature.travelcertificate.ui.TravelCertificateInformation
-import com.hedvig.android.feature.travelcertificate.ui.TravelCertificateOverView
+import com.hedvig.android.feature.travelcertificate.ui.TravelCertificateOverview
 import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.compose.typed.animatedNavigation
 import com.hedvig.android.navigation.compose.typed.destinationScopedViewModel
@@ -121,7 +121,7 @@ fun NavGraphBuilder.generateTravelCertificateGraph(
         finish()
       }
 
-      TravelCertificateOverView(
+      TravelCertificateOverview(
         travelCertificateUrl = travelCertificateUrl,
         onDownloadCertificate = {
           viewModel.onDownloadTravelCertificate(travelCertificateUrl)

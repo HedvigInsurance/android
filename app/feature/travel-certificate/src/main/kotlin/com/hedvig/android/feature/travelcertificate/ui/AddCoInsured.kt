@@ -29,7 +29,7 @@ import hedvig.resources.R
 import java.util.*
 
 @Composable
-fun AddCoInsured(
+internal fun AddCoInsured(
   coInsured: CoInsured?,
   navigateUp: () -> Unit,
   onRemoveCoInsured: (String) -> Unit,
@@ -149,7 +149,7 @@ fun AddCoInsured(
 
 @HedvigPreview
 @Composable
-fun AddCoInsuredPreview() {
+private fun PreviewAddCoInsured() {
   HedvigTheme {
     Surface {
       AddCoInsured(

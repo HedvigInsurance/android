@@ -62,7 +62,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
 @Composable
-fun GenerateTravelCertificateInput(
+internal fun GenerateTravelCertificateInput(
   uiState: TravelCertificateInputState,
   navigateBack: () -> Unit,
   onErrorDialogDismissed: () -> Unit,
@@ -340,7 +340,28 @@ private fun MovingDateButton(
 
 @HedvigPreview
 @Composable
-fun GenerateTravelCertificateInputPreview() {
+private fun PreviewGenerateTravelCertificateInput() {
+  val mockUiState = TravelCertificateInputState(
+    email = ValidatedInput(input = null),
+    coInsured = ValidatedInput(
+      input = listOf(
+        CoInsured(
+          id = "123",
+          name = "Hugo K",
+          ssn = "199101131093",
+        ),
+        CoInsured(
+          id = "123",
+          name = "MockName",
+          ssn = "199101131093",
+        ),
+      ),
+    ),
+    includeMember = true,
+    isLoading = false,
+    maximumCoInsured = 3,
+  )
+
   HedvigTheme {
     Surface {
       GenerateTravelCertificateInput(
@@ -358,24 +379,3 @@ fun GenerateTravelCertificateInputPreview() {
     }
   }
 }
-
-val mockUiState = TravelCertificateInputState(
-  email = ValidatedInput(input = null),
-  coInsured = ValidatedInput(
-    input = listOf(
-      CoInsured(
-        id = "123",
-        name = "Hugo K",
-        ssn = "199101131093",
-      ),
-      CoInsured(
-        id = "123",
-        name = "MockName",
-        ssn = "199101131093",
-      ),
-    ),
-  ),
-  includeMember = true,
-  isLoading = false,
-  maximumCoInsured = 3,
-)

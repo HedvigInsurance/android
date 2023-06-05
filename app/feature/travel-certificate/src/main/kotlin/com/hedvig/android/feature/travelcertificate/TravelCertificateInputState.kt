@@ -11,7 +11,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
 
-data class TravelCertificateInputState(
+internal data class TravelCertificateInputState(
   val contractId: String? = null,
   val email: ValidatedInput<String?> = ValidatedInput(null),
   val travelDate: LocalDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
@@ -54,7 +54,7 @@ data class TravelCertificateInputState(
 }
 
 @Serializable
-data class CoInsured(
+internal data class CoInsured(
   val id: String,
   val name: String,
   val ssn: String,

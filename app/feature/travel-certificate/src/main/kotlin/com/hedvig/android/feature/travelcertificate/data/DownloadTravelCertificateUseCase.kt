@@ -21,7 +21,7 @@ import java.time.format.DateTimeFormatter
 private const val CERTIFICATE_NAME = "hedvigTravelCertificate_"
 private const val FILE_EXT = ".pdf"
 
-class DownloadTravelCertificateUseCase(
+internal class DownloadTravelCertificateUseCase(
   private val context: Context,
 ) {
 
@@ -53,4 +53,4 @@ class DownloadTravelCertificateUseCase(
 }
 
 @JvmInline
-value class TravelCertificateUri(val uri: File)
+internal value class TravelCertificateUri(val uri: File)

@@ -29,7 +29,7 @@ import com.hedvig.android.data.travelcertificate.TravelCertificateResult
 import hedvig.resources.R
 
 @Composable
-fun TravelCertificateInformation(
+internal fun TravelCertificateInformation(
   infoSections: List<TravelCertificateResult.TraverlCertificateData.InfoSection>?,
   isLoading: Boolean,
   errorMessage: String?,
@@ -95,7 +95,7 @@ fun TravelCertificateInformation(
 
 @HedvigPreview
 @Composable
-fun PreviewTravelCertificateInformation() {
+private fun PreviewTravelCertificateInformation() {
   HedvigTheme {
     TravelCertificateInformation(
       infoSections = listOf(
