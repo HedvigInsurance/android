@@ -36,7 +36,9 @@ class ApolloConventionPlugin : Plugin<Project> {
 }
 
 private fun String.performClientSideChanges(): String {
-  return this.withoutDoubleLineBreaks()
+  return this
+    .withoutDoubleLineBreaks()
+    .replaceUuidWithBuiltInId()
 }
 
 /**
@@ -44,4 +46,14 @@ private fun String.performClientSideChanges(): String {
  */
 private fun String.withoutDoubleLineBreaks(): String {
   return replace("\n\n", "\n")
+}
+
+/**
+ * UUID was used temporarily but it was decided to go with the ID scalar instead. Both of these are just a String on
+ * the wire so we can safely just use ID instead.
+ */
+private fun String.replaceUuidWithBuiltInId(): String {
+  return this
+    .replace("scalar UUID", "")
+    .replace("UUID", "ID")
 }

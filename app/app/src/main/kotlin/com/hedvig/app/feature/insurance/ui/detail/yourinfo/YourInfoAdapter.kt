@@ -73,7 +73,8 @@ class YourInfoAdapter(
       private val binding by viewBinding(ChangeAddressButtonBinding::bind)
       override fun bind(data: YourInfoModel, fragmentManager: FragmentManager) {
         binding.root.setHapticClickListener {
-          binding.root.context.startActivity(ChangeAddressActivity.newInstance(binding.root.context))
+          // todo check moving flow feature flag before triggering this when we enable new moving flow
+          binding.root.context.startActivity(LegacyChangeAddressActivity.newInstance(binding.root.context))
         }
       }
     }

@@ -1,4 +1,4 @@
-mutation FlowClaimAudioRecordingNext($audioUrl: String!, $context: FlowContext!) {
+mutation FlowClaimAudioRecordingNext($audioUrl: Url!, $context: FlowContext!) {
   flowClaimAudioRecordingNext(input: { audioUrl: $audioUrl }, context: $context) {
     id
     context
