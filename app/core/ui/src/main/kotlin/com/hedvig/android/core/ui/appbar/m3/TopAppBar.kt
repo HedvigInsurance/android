@@ -1,15 +1,21 @@
 package com.hedvig.android.core.ui.appbar.m3
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -17,30 +23,30 @@ import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
+/**
+ * Just the layout and placing of the top app bar, without the background, drag handling and so on. Can be used to
+ * simply place the actions in the right spot, without interfering in other ways like swallowing the touch events on it.
+ */
 @Composable
-fun TopAppBarWithActions(
+fun TopAppBarLayoutForActions(
   modifier: Modifier = Modifier,
-  scrollBehavior: TopAppBarScrollBehavior? = null,
   actions: @Composable RowScope.() -> Unit = {},
 ) {
-  TopAppBar(
-    title = {},
-    modifier = modifier,
-    actions = {
-      Row(Modifier.padding(horizontal = 12.dp)) {
-        actions()
-      }
-    },
-    colors = TopAppBarDefaults.topAppBarColors(
-      containerColor = Color.Transparent,
-      actionIconContentColor = LocalContentColor.current,
-    ),
-    scrollBehavior = scrollBehavior,
-  )
+  Row(
+    horizontalArrangement = Arrangement.End,
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = modifier
+      .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top))
+      .height(64.dp)
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp),
+  ) {
+    actions()
+  }
 }
 
 @Composable

@@ -54,7 +54,7 @@ import com.hedvig.android.core.common.android.remove
 import com.hedvig.android.core.common.android.show
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
-import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithActions
+import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.progress.FullScreenHedvigProgress
@@ -246,7 +246,7 @@ private fun ForeverScreen(
       Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     }
     if (incentive != null && uiState is ReferralsUiState.Success && uiState.referralTerms != null) {
-      TopAppBarWithActions {
+      TopAppBarLayoutForActions {
         IconButton(
           onClick = { openReferralsInformation(uiState.referralTerms.url, incentive) },
           colors = IconButtonDefaults.iconButtonColors(),

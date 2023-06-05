@@ -69,7 +69,7 @@ import com.hedvig.android.core.designsystem.theme.lavender_900
 import com.hedvig.android.core.designsystem.theme.onWarning
 import com.hedvig.android.core.designsystem.theme.warning
 import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
-import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithActions
+import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.core.ui.grid.HedvigGrid
 import com.hedvig.android.core.ui.grid.InsideGridSpace
@@ -172,7 +172,7 @@ internal fun HomeDestination(
       Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     }
     Column {
-      TopAppBarWithActions {
+      TopAppBarLayoutForActions {
         ToolbarChatIcon(
           onClick = onStartChat,
         )

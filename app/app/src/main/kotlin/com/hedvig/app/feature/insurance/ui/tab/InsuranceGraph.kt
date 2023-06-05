@@ -49,7 +49,7 @@ import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
-import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithActions
+import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.core.ui.insurance.GradientType
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
@@ -201,7 +201,7 @@ private fun InsuranceScreen(
         Spacer(Modifier.height(16.dp))
         Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
       }
-      TopAppBarWithActions {
+      TopAppBarLayoutForActions {
         ToolbarChatIcon(
           onClick = { context.startChat() },
         )

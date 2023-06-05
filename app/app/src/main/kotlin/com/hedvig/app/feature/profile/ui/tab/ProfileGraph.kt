@@ -37,7 +37,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
-import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithActions
+import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.core.ui.progress.FullScreenHedvigProgress
 import com.hedvig.android.feature.businessmodel.BusinessModelActivity
@@ -205,7 +205,7 @@ private fun ProfileSuccessScreen(
       }
       Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     }
-    TopAppBarWithActions {
+    TopAppBarLayoutForActions {
       ToolbarChatIcon(
         onClick = openChat,
       )
