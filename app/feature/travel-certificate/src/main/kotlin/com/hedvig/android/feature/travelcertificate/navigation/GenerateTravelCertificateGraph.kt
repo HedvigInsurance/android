@@ -21,17 +21,21 @@ import com.hedvig.android.feature.travelcertificate.ui.TravelCertificateInformat
 import com.hedvig.android.feature.travelcertificate.ui.TravelCertificateOverView
 import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.compose.typed.animatedNavigation
+import com.hedvig.android.navigation.core.AppDestination
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
+import com.kiwi.navigationcompose.typed.popBackStack
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.ParametersDefinition
 
-internal fun NavGraphBuilder.generateTravelCertificateGraph(
+fun NavGraphBuilder.generateTravelCertificateGraph(
   density: Density,
   navController: NavHostController,
-  finish: () -> Unit,
+  finish: () -> Unit = {
+    navController.popBackStack<AppDestination.GenerateTravelCertificate>(true)
+  },
 ) {
-  animatedNavigation<Destinations.GenerateTravelCertificate>(
+  animatedNavigation<AppDestination.GenerateTravelCertificate>(
     startDestination = createRoutePattern<GenerateTravelCertificateDestination.TravelCertificateInformation>(),
     enterTransition = { MotionDefaults.sharedXAxisEnter(density) },
     exitTransition = { MotionDefaults.sharedXAxisExit(density) },
@@ -150,7 +154,7 @@ private fun navGraphScopedViewModel(
   parameters: ParametersDefinition? = null,
 ): GenerateTravelCertificateViewModel {
   val parentEntry = remember(navController, backStackEntry) {
-    navController.getBackStackEntry(createRoutePattern<Destinations.GenerateTravelCertificate>())
+    navController.getBackStackEntry(createRoutePattern<AppDestination.GenerateTravelCertificate>())
   }
   return koinViewModel(
     viewModelStoreOwner = parentEntry,

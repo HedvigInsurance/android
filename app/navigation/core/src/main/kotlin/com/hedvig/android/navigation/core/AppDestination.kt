@@ -20,4 +20,7 @@ sealed interface AppDestination : Destination {
 
   @Serializable
   object ChangeAddress : AppDestination
+
+  @Serializable
+  object GenerateTravelCertificate : AppDestination
 }

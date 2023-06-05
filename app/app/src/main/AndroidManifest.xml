@@ -253,9 +253,6 @@
             android:name="com.hedvig.android.feature.odyssey.search.group.ClaimGroupActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.hedvig.android.feature.travelcertificate.GenerateTravelCertificateActivity"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name="com.hedvig.android.feature.odyssey.search.commonclaims.SearchActivity"
             android:windowSoftInputMode="adjustResize" />
 

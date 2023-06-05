@@ -16,7 +16,7 @@ import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.changeaddress.navigation.changeAddressGraph
 import com.hedvig.android.feature.home.home.navigation.homeGraph
 import com.hedvig.android.feature.home.legacychangeaddress.LegacyChangeAddressActivity
-import com.hedvig.android.feature.travelcertificate.GenerateTravelCertificateActivity
+import com.hedvig.android.feature.travelcertificate.navigation.generateTravelCertificateGraph
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.language.LanguageService
@@ -75,6 +75,10 @@ internal fun HedvigNavHost(
           openChat = context::startChat,
           navigateUp = navController::navigateUp,
         )
+        generateTravelCertificateGraph(
+          density = density,
+          navController = navController,
+        )
       },
       onStartChat = { context.startChat() },
       onStartClaim = {
@@ -120,7 +124,7 @@ internal fun HedvigNavHost(
           .show(fragmentManager, HowClaimsWorkDialog.TAG)
       },
       onGenerateTravelCertificateClicked = {
-        context.startActivity(GenerateTravelCertificateActivity.newInstance(context))
+        navController.navigate(AppDestination.GenerateTravelCertificate)
       },
       navigateToPayinScreen = navigateToPayinScreen@{ paymentType ->
         val market = marketManager.market ?: return@navigateToPayinScreen

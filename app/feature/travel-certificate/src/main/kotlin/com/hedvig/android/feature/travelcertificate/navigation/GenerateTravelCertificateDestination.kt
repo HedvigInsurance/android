@@ -5,11 +5,6 @@ import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.serialization.Serializable
 
-internal sealed interface Destinations : Destination {
-  @Serializable
-  object GenerateTravelCertificate : Destinations
-}
-
 internal sealed interface GenerateTravelCertificateDestination : Destination {
 
   @Serializable

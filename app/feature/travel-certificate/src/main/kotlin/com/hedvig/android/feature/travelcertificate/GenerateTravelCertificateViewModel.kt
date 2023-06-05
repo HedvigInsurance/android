@@ -20,7 +20,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
-class GenerateTravelCertificateViewModel(
+internal class GenerateTravelCertificateViewModel(
   private val getTravelCertificateSpecificationsUseCase: GetTravelCertificateSpecificationsUseCase,
   private val createTravelCertificateUseCase: CreateTravelCertificateUseCase,
   private val downloadTravelCertificateUseCase: DownloadTravelCertificateUseCase,
