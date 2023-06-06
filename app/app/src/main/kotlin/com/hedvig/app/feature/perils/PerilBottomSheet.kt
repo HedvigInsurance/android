@@ -8,7 +8,7 @@ import com.hedvig.android.core.common.android.parcelable
 import com.hedvig.app.feature.insurance.ui.detail.coverage.PerilAdapter
 import com.hedvig.app.feature.insurance.ui.detail.coverage.PerilModel
 import com.hedvig.app.ui.view.ExpandableBottomSheet
-import com.hedvig.app.util.extensions.viewDps
+import com.hedvig.android.core.ui.view.viewDps
 
 class PerilBottomSheet : ExpandableBottomSheet() {
 

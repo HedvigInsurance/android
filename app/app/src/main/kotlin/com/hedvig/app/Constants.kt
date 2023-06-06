@@ -1,6 +1,6 @@
 package com.hedvig.app
 
-import com.hedvig.app.util.extensions.viewDps
+import com.hedvig.android.core.ui.view.viewDps
 
 val BASE_MARGIN = 8.viewDps
 val BASE_MARGIN_HALF = BASE_MARGIN / 2

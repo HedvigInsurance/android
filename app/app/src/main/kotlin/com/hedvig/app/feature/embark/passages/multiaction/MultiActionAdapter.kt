@@ -13,7 +13,7 @@ import com.hedvig.app.util.extensions.invalid
 import com.hedvig.app.util.extensions.view.increaseTouchableArea
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
-import com.hedvig.app.util.extensions.viewDps
+import com.hedvig.android.core.ui.view.viewDps
 
 class MultiActionAdapter(
   private val onComponentClick: (Long) -> Unit,

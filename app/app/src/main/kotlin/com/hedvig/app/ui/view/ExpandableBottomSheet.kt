@@ -16,7 +16,7 @@ import com.hedvig.app.databinding.ExpandableBottomSheetBinding
 import com.hedvig.app.util.boundedLerp
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.viewDps
+import com.hedvig.android.core.ui.view.viewDps
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 
 private const val PEEK_HEIGHT = 380

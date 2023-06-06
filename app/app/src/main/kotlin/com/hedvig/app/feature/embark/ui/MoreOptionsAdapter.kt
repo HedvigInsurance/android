@@ -14,7 +14,7 @@ import com.hedvig.app.util.extensions.invalid
 import com.hedvig.app.util.extensions.putCompoundDrawablesRelativeWithIntrinsicBounds
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
-import com.hedvig.app.util.extensions.viewDps
+import com.hedvig.android.core.ui.view.viewDps
 
 class MoreOptionsAdapter(private val viewModel: MemberIdViewModel) :
   ListAdapter<MoreOptionsModel, MoreOptionsAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {

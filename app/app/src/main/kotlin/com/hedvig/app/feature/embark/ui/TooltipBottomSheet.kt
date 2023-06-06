@@ -22,7 +22,7 @@ import com.hedvig.app.feature.embark.TooltipModel
 import com.hedvig.app.util.boundedLerp
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.viewDps
+import com.hedvig.android.core.ui.view.viewDps
 import com.hedvig.app.util.extensions.windowHeight
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import giraffe.EmbarkStoryQuery
