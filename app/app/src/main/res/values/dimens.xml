@@ -8,12 +8,6 @@
 
     <dimen name="dashboard_need_set_up_background_radius">5dp</dimen>
 
-    <dimen name="hedvig_card_view_radius">8dp</dimen>
-    <dimen name="hedvig_card_view_elevation">10dp</dimen>
-    <dimen name="hedvig_card_view_inset_horizontal">16dp</dimen>
-    <dimen name="hedvig_card_view_inset_top">16dp</dimen>
-    <dimen name="hedvig_card_view_inset_bottom">12dp</dimen>
-
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="chat_top_bar_button_size">32dp</dimen>
     <dimen name="hedvig_logo_margin_top">2dp</dimen>

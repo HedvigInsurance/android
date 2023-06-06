@@ -114,6 +114,8 @@ fun Toolbar.setupToolbar(
         root.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
           val dy = oldScrollY - scrollY
           val toolbarHeight = this.height.toFloat()
+
+          @Suppress("RestrictedApi")
           val offset = root.computeVerticalScrollOffset().toFloat()
           val percentage = if (offset < toolbarHeight) {
             offset / toolbarHeight
@@ -135,6 +137,8 @@ fun Toolbar.setupToolbar(
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
               super.onScrolled(recyclerView, dx, dy)
               val toolbarHeight = toolbar.height.toFloat()
+
+              @Suppress("RestrictedApi")
               val offset = root.computeVerticalScrollOffset().toFloat()
               val percentage = if (offset < toolbarHeight) {
                 offset / toolbarHeight
@@ -161,6 +165,8 @@ fun RecyclerView.setupToolbarScrollListener(toolbar: Toolbar) {
     object : RecyclerView.OnScrollListener() {
       override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
         val maxElevationScroll = 200
+
+        @Suppress("RestrictedApi")
         val offset = computeVerticalScrollOffset().toFloat()
         val percentage = if (offset < maxElevationScroll) {
           offset / maxElevationScroll

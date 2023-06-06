@@ -212,7 +212,7 @@
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".feature.home.ui.changeaddress.result.ChangeAddressResultActivity" />
+        <activity android:name="com.hedvig.android.feature.home.legacychangeaddress.result.ChangeAddressResultActivity" />
         <activity android:name=".feature.offer.quotedetail.QuoteDetailActivity" />
         <activity
             android:name=".feature.crossselling.ui.detail.CrossSellDetailActivity"
@@ -228,9 +228,6 @@
         <activity
             android:name=".feature.genericauth.otpinput.OtpInputActivity"
             android:exported="true"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.claimdetail.ClaimDetailActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".feature.tracking.NotificationOpenedTrackingActivity" />
         <activity

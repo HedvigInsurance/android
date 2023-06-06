@@ -163,7 +163,7 @@
 
     </com.facebook.shimmer.ShimmerFrameLayout>
 
-    <com.hedvig.app.ui.view.HedvigCardView
+    <com.hedvig.android.core.ui.view.HedvigCardView
         android:id="@+id/otherDiscountBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -185,6 +185,6 @@
             android:textAlignment="center"
             android:textAppearance="?textAppearanceBody2" />
 
-    </com.hedvig.app.ui.view.HedvigCardView>
+    </com.hedvig.android.core.ui.view.HedvigCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

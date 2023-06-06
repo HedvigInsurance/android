@@ -15,6 +15,7 @@ import com.carousell.concatadapterextension.ItemDecorationOwner
 import com.carousell.concatadapterextension.SpanSizeLookupOwner
 import com.hedvig.android.core.common.android.GenericDiffUtilItemCallback
 import com.hedvig.android.core.common.android.isDarkThemeActive
+import com.hedvig.android.core.ui.view.viewDps
 import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.BASE_MARGIN_HALF
 import com.hedvig.app.R
@@ -25,7 +26,6 @@ import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
-import com.hedvig.app.util.extensions.viewDps
 
 class PerilsAdapter(
   private val fragmentManager: FragmentManager,

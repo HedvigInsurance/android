@@ -67,7 +67,7 @@ internal fun M3TextFields() {
 
 @Composable
 private fun TextFieldErrorMessage() {
-  val startPadding = TextFieldDefaults.textFieldWithoutLabelPadding()
+  val startPadding = TextFieldDefaults.contentPaddingWithoutLabel()
     .calculateStartPadding(layoutDirection = LocalLayoutDirection.current)
 
   Text(
