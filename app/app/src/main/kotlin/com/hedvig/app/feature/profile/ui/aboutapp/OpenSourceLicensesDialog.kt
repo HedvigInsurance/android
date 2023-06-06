@@ -15,6 +15,8 @@ class OpenSourceLicensesDialog : DialogFragment() {
 
   fun showLicenses(activity: AppCompatActivity) {
     val fragmentManager = activity.supportFragmentManager
+
+    @SuppressWarnings("CommitTransaction")
     val fragmentTransaction = fragmentManager.beginTransaction()
     val previousFragment = fragmentManager.findFragmentByTag("dialog_licenses")
     if (previousFragment != null) {

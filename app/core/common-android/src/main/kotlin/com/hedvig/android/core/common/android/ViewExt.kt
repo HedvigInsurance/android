@@ -38,6 +38,8 @@ fun View.remove(): View {
 fun NestedScrollView.setupToolbarScrollListener(toolbar: Toolbar) {
   setOnScrollChangeListener { _: NestedScrollView?, _: Int, _: Int, _: Int, _: Int ->
     val maxElevationScroll = 200
+
+    @Suppress("RestrictedApi")
     val offset = this.computeVerticalScrollOffset().toFloat()
     val percentage = if (offset < maxElevationScroll) {
       offset / maxElevationScroll
