@@ -203,7 +203,7 @@
             android:name=".feature.adyen.payout.AdyenConnectPayoutActivity"
             android:launchMode="singleTask" />
         <activity
-            android:name=".feature.home.ui.changeaddress.LegacyChangeAddressActivity"
+            android:name="com.hedvig.android.feature.home.legacychangeaddress.LegacyChangeAddressActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize" />

@@ -29,7 +29,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "11.2.0"
+    versionName = "11.2.1"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -295,4 +295,8 @@ easylauncher {
       ),
     )
   }
+}
+
+licenseReport {
+  copyHtmlReportToAssets = true
 }
