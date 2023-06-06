@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.core.common.android.GenericDiffUtilItemCallback
+import com.hedvig.android.core.ui.view.viewDps
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ViewMultiActionAddBinding
 import com.hedvig.app.databinding.ViewMultiActionComponentBinding
@@ -13,7 +14,6 @@ import com.hedvig.app.util.extensions.invalid
 import com.hedvig.app.util.extensions.view.increaseTouchableArea
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
-import com.hedvig.android.core.ui.view.viewDps
 
 class MultiActionAdapter(
   private val onComponentClick: (Long) -> Unit,

@@ -16,13 +16,13 @@ import com.hedvig.android.core.common.android.isDarkThemeActive
 import com.hedvig.android.core.common.android.parcelable
 import com.hedvig.android.core.common.android.remove
 import com.hedvig.android.core.common.android.show
+import com.hedvig.android.core.ui.view.viewDps
 import com.hedvig.app.R
 import com.hedvig.app.databinding.TooltipBottomSheetBinding
 import com.hedvig.app.feature.embark.TooltipModel
 import com.hedvig.app.util.boundedLerp
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.android.core.ui.view.viewDps
 import com.hedvig.app.util.extensions.windowHeight
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import giraffe.EmbarkStoryQuery
