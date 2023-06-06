@@ -296,3 +296,7 @@ easylauncher {
     )
   }
 }
+
+licenseReport {
+  copyHtmlReportToAssets = true
+}
