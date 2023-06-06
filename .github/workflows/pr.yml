@@ -140,7 +140,7 @@ jobs:
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
           ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
       - name: Run license release report
-        run: ./gradlew licenseReleaseReport --continue
+        run: ./gradlew licenseReleaseReport --no-configuration-cache --continue
         continue-on-error: true
       - name: Build
         run: "./gradlew app:app:assembleDebug"
