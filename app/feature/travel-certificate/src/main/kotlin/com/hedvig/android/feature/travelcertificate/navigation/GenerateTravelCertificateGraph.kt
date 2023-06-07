@@ -27,6 +27,7 @@ import com.kiwi.navigationcompose.typed.popBackStack
 fun NavGraphBuilder.generateTravelCertificateGraph(
   density: Density,
   navController: NavHostController,
+  applicationId: String,
   finish: () -> Unit = {
     navController.popBackStack<AppDestination.GenerateTravelCertificate>(true)
   },
@@ -132,7 +133,7 @@ fun NavGraphBuilder.generateTravelCertificateGraph(
         onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
         navigateBack = finish,
         onShareTravelCertificate = {
-          val contentUri = getUriForFile(context, "com.hedvig.fileprovider", it.uri)
+          val contentUri = getUriForFile(context, "$applicationId.fileprovider", it.uri)
 
           val sendIntent: Intent = Intent().apply {
             action = Intent.ACTION_VIEW

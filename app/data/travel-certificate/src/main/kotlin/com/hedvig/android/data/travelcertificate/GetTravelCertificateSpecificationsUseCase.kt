@@ -24,7 +24,7 @@ class GetTravelCertificateSpecificationsUseCase(
 
   suspend fun invoke(): Either<TravelCertificateError, TravelCertificateData> {
     return either {
-      ensure(featureManager.isFeatureEnabled(Feature.TRAVEL_CERTIFICATE) == false) {
+      ensure(featureManager.isFeatureEnabled(Feature.TRAVEL_CERTIFICATE)) {
         TravelCertificateError.NotEligible
       }
       val member = apolloClient
