@@ -8,7 +8,9 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import slimber.log.d
 
 class ReviewDialogViewModel(
   private val chatEventStore: ChatEventStore,
@@ -17,13 +19,17 @@ class ReviewDialogViewModel(
   private val _shouldOpenReviewDialog = MutableSharedFlow<Boolean>(
     extraBufferCapacity = 1,
     onBufferOverflow = BufferOverflow.DROP_OLDEST,
-  )
+  ).also {
+    it.onEach {
+      d { "Will try to show the review dialog" }
+    }
+  }
   val shouldOpenReviewDialog: SharedFlow<Boolean> = _shouldOpenReviewDialog.asSharedFlow()
 
   init {
     viewModelScope.launch {
       chatEventStore.observeChatClosedCounter()
-        .map { it == 3 }
+        .map { it % 3 == 0 }
         .collect(_shouldOpenReviewDialog::tryEmit)
     }
   }

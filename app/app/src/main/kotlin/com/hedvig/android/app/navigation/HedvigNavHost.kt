@@ -23,6 +23,7 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.TopLevelGraph
+import com.hedvig.app.BuildConfig
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.home.ui.HowClaimsWorkDialog
 import com.hedvig.app.feature.insurance.ui.tab.insuranceGraph
@@ -77,6 +78,7 @@ internal fun HedvigNavHost(
         generateTravelCertificateGraph(
           density = density,
           navController = navController,
+          applicationId = BuildConfig.APPLICATION_ID,
         )
       },
       onStartChat = { context.startChat() },
