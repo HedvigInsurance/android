@@ -26,7 +26,6 @@ import com.hedvig.android.feature.odyssey.step.singleitem.SingleItemViewModel
 import com.hedvig.android.feature.odyssey.step.singleitemcheckout.SingleItemCheckoutViewModel
 import com.hedvig.android.feature.odyssey.step.summary.ClaimSummaryViewModel
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -81,10 +80,9 @@ val odysseyModule = module {
   viewModel<PhoneNumberViewModel> { (initialPhoneNumber: String?) ->
     PhoneNumberViewModel(initialPhoneNumber, get())
   }
-  viewModel<DateOfOccurrenceViewModel> { (initialDateOfOccurrence: LocalDate?, maxDate: LocalDate) ->
+  viewModel<DateOfOccurrenceViewModel> { (dateOfOccurrence: ClaimFlowDestination.DateOfOccurrence) ->
     DateOfOccurrenceViewModel(
-      initialDateOfOccurrence = initialDateOfOccurrence,
-      maxDate = maxDate,
+      dateOfOccurrence = dateOfOccurrence,
       claimFlowRepository = get(),
     )
   }
@@ -92,16 +90,10 @@ val odysseyModule = module {
     LocationViewModel(selectedLocation, locationOptions, get())
   }
   viewModel<DateOfOccurrencePlusLocationViewModel> { parametersHolder ->
-    val dateOfOccurrence: LocalDate? = parametersHolder.getOrNull()
-    val maxDate: LocalDate = parametersHolder.get()
-    val selectedLocation: String? = parametersHolder.getOrNull()
-    val locationOptions: List<LocationOption> = parametersHolder.get()
+    val dateOfOccurrencePlusLocation: ClaimFlowDestination.DateOfOccurrencePlusLocation = parametersHolder.get()
     DateOfOccurrencePlusLocationViewModel(
-      initialDateOfOccurrence = dateOfOccurrence,
-      maxDate = maxDate,
-      selectedLocation = selectedLocation,
-      locationOptions = locationOptions,
-      get<ClaimFlowRepository>(),
+      dateOfOccurrencePlusLocation = dateOfOccurrencePlusLocation,
+      claimFlowRepository = get<ClaimFlowRepository>(),
     )
   }
   viewModel<SingleItemViewModel> { (singleItem: ClaimFlowDestination.SingleItem) ->

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.feature.odyssey.data.ClaimFlowRepository
 import com.hedvig.android.feature.odyssey.data.ClaimFlowStep
+import com.hedvig.android.feature.odyssey.navigation.ClaimFlowDestination
 import com.hedvig.android.feature.odyssey.ui.DatePickerUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,18 +14,19 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
 internal class DateOfOccurrenceViewModel(
-  initialDateOfOccurrence: LocalDate?,
-  maxDate: LocalDate,
+  dateOfOccurrence: ClaimFlowDestination.DateOfOccurrence,
   private val claimFlowRepository: ClaimFlowRepository,
 ) : ViewModel() {
   private val _uiState: MutableStateFlow<DateOfOccurrenceUiState> = MutableStateFlow(
     DateOfOccurrenceUiState(
-      datePickerUiState = DatePickerUiState(initiallySelectedDate = initialDateOfOccurrence, maxDate = maxDate),
+      datePickerUiState = DatePickerUiState(
+        initiallySelectedDate = dateOfOccurrence.dateOfOccurrence,
+        maxDate = dateOfOccurrence.maxDate,
+      ),
       dateSubmissionError = false,
       nextStep = null,
       isLoading = false,

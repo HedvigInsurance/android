@@ -104,7 +104,8 @@ internal fun NavGraphBuilder.claimFlowGraph(
       )
     }
     animatedComposable<ClaimFlowDestination.DateOfOccurrence> {
-      val viewModel: DateOfOccurrenceViewModel = koinViewModel { parametersOf(dateOfOccurrence, maxDate) }
+      val dateOfOccurrence: ClaimFlowDestination.DateOfOccurrence = this
+      val viewModel: DateOfOccurrenceViewModel = koinViewModel { parametersOf(dateOfOccurrence) }
       DateOfOccurrenceDestination(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
@@ -116,8 +117,9 @@ internal fun NavGraphBuilder.claimFlowGraph(
       )
     }
     animatedComposable<ClaimFlowDestination.DateOfOccurrencePlusLocation> {
+      val dateOfOccurencePlusLocation: ClaimFlowDestination.DateOfOccurrencePlusLocation = this
       val viewModel: DateOfOccurrencePlusLocationViewModel = koinViewModel {
-        parametersOf(dateOfOccurrence, maxDate, selectedLocation, locationOptions)
+        parametersOf(dateOfOccurencePlusLocation)
       }
       DateOfOccurrencePlusLocationDestination(
         viewModel = viewModel,

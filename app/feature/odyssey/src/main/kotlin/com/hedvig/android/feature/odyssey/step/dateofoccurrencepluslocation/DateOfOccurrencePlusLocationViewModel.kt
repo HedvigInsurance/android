@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.feature.odyssey.data.ClaimFlowRepository
 import com.hedvig.android.feature.odyssey.data.ClaimFlowStep
+import com.hedvig.android.feature.odyssey.navigation.ClaimFlowDestination
 import com.hedvig.android.feature.odyssey.navigation.LocationOption
 import com.hedvig.android.feature.odyssey.ui.DatePickerUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,33 +12,29 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
 internal class DateOfOccurrencePlusLocationViewModel(
-  initialDateOfOccurrence: LocalDate?,
-  maxDate: LocalDate,
-  val selectedLocation: String?,
-  val locationOptions: List<LocationOption>,
+  private val dateOfOccurrencePlusLocation: ClaimFlowDestination.DateOfOccurrencePlusLocation,
   private val claimFlowRepository: ClaimFlowRepository,
 ) : ViewModel() {
 
   private val _uiState = MutableStateFlow(
     DateOfOccurrencePlusLocationUiState.fromInitialSelection(
       DatePickerUiState(
-        initiallySelectedDate = initialDateOfOccurrence,
-        maxDate = maxDate,
+        initiallySelectedDate = dateOfOccurrencePlusLocation.dateOfOccurrence,
+        maxDate = dateOfOccurrencePlusLocation.maxDate,
       ),
-      selectedLocation,
-      locationOptions,
+      dateOfOccurrencePlusLocation.selectedLocation,
+      dateOfOccurrencePlusLocation.locationOptions,
     ),
   )
   val uiState = _uiState.asStateFlow()
 
   fun selectLocationOption(selectedLocationOption: LocationOption) {
     _uiState.update { oldUiState ->
-      val selectedValueExistsInOptions = selectedLocationOption in locationOptions
+      val selectedValueExistsInOptions = selectedLocationOption in dateOfOccurrencePlusLocation.locationOptions
       val locationIsAlreadySelected = oldUiState.selectedLocation == selectedLocationOption
       if (locationIsAlreadySelected || !selectedValueExistsInOptions) {
         oldUiState.copy(selectedLocation = null)
