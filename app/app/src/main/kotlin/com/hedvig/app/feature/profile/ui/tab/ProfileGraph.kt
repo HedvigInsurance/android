@@ -85,17 +85,17 @@ private fun ProfileDestination(
 
 @Composable
 private fun ProfileScreen(
-  uiState: ProfileViewModel.ViewState,
+  uiState: ProfileViewModel.UiState,
   reload: () -> Unit,
   onLogout: () -> Unit,
 ) {
   val context = LocalContext.current
   Box(Modifier.fillMaxSize(), propagateMinConstraints = true) {
     when (uiState) {
-      ProfileViewModel.ViewState.Loading -> {
+      ProfileViewModel.UiState.Loading -> {
         FullScreenHedvigProgress()
       }
-      ProfileViewModel.ViewState.Error -> {
+      ProfileViewModel.UiState.Error -> {
         GenericErrorScreen(
           onRetryButtonClick = reload,
           modifier = Modifier
@@ -103,7 +103,7 @@ private fun ProfileScreen(
             .padding(top = (110 - 16).dp),
         )
       }
-      is ProfileViewModel.ViewState.Success -> {
+      is ProfileViewModel.UiState.Success -> {
         val profileUiState = uiState.profileUiState
         ProfileSuccessScreen(
           profileUiState = profileUiState,

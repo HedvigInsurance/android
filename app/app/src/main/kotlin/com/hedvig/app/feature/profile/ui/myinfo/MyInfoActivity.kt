@@ -14,7 +14,6 @@ import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.common.android.validation.validateEmail
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityMyInfoBinding
-import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.setupToolbar
@@ -24,11 +23,10 @@ import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.validatePhoneNumber
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MyInfoActivity : AppCompatActivity(R.layout.activity_my_info) {
-  private val profileViewModel: ProfileViewModel by viewModel()
+  private val viewModel: MyInfoViewModel by viewModel()
 
   private var emailTextWatcher: TextWatcher? = null
   private var phoneNumberTextWatcher: TextWatcher? = null
@@ -38,8 +36,6 @@ class MyInfoActivity : AppCompatActivity(R.layout.activity_my_info) {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     lifecycle.addObserver(AuthenticatedObserver())
-
-    getViewModel<MyInfoViewModel>()
 
     binding.apply {
       window.compatSetDecorFitsSystemWindows(false)
@@ -58,7 +54,7 @@ class MyInfoActivity : AppCompatActivity(R.layout.activity_my_info) {
   }
 
   override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-    val dirty = profileViewModel.dirty.value
+    val dirty = viewModel.dirty.value
     if (dirty == null || !dirty) {
       menu.removeItem(R.id.save)
     }
@@ -66,9 +62,9 @@ class MyInfoActivity : AppCompatActivity(R.layout.activity_my_info) {
   }
 
   override fun onOptionsItemSelected(item: MenuItem): Boolean {
-    val prevEmail = (profileViewModel.data.value as? ProfileViewModel.ViewState.Success)
+    val prevEmail = (viewModel.data.value as? MyInfoUiState.Success)
       ?.profileUiState?.member?.email ?: ""
-    val prevPhoneNumber = (profileViewModel.data.value as? ProfileViewModel.ViewState.Success)
+    val prevPhoneNumber = (viewModel.data.value as? MyInfoUiState.Success)
       ?.profileUiState?.member?.phoneNumber ?: ""
 
     binding.apply {
@@ -95,7 +91,7 @@ class MyInfoActivity : AppCompatActivity(R.layout.activity_my_info) {
         return true
       }
 
-      profileViewModel.saveInputs(
+      viewModel.saveInputs(
         emailInput.text.toString(),
         phoneNumberInput.text.toString(),
       )
@@ -114,22 +110,22 @@ class MyInfoActivity : AppCompatActivity(R.layout.activity_my_info) {
     findViewById<ActionMenuItemView>(R.id.save)?.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
 
   private fun loadData() {
-    profileViewModel
+    viewModel
       .data
       .flowWithLifecycle(lifecycle)
       .onEach { viewState ->
         binding.apply {
-          spinner.loadingSpinner.isVisible = viewState is ProfileViewModel.ViewState.Loading
-          contactDetailsContainer.isVisible = viewState !is ProfileViewModel.ViewState.Loading
+          spinner.loadingSpinner.isVisible = viewState is MyInfoUiState.Loading
+          contactDetailsContainer.isVisible = viewState !is MyInfoUiState.Loading
 
-          if (viewState is ProfileViewModel.ViewState.Success) {
+          if (viewState is MyInfoUiState.Success) {
             setupEmailInput(viewState.profileUiState.member.email ?: "")
             setupPhoneNumberInput(viewState.profileUiState.member.phoneNumber ?: "")
           }
         }
       }
       .launchIn(lifecycleScope)
-    profileViewModel.dirty.observe(this) {
+    viewModel.dirty.observe(this) {
       invalidateOptionsMenu()
     }
   }
@@ -140,7 +136,7 @@ class MyInfoActivity : AppCompatActivity(R.layout.activity_my_info) {
       emailInput.setText(prefilledEmail)
 
       emailTextWatcher = emailInput.onChange { value ->
-        profileViewModel.emailChanged(value)
+        viewModel.emailChanged(value)
         if (emailInputContainer.isErrorEnabled) {
           val validationResult = validateEmail(value)
           if (validationResult.isSuccessful) {
@@ -168,7 +164,7 @@ class MyInfoActivity : AppCompatActivity(R.layout.activity_my_info) {
       phoneNumberInput.setText(prefilledPhoneNumber)
 
       phoneNumberTextWatcher = phoneNumberInput.onChange { value ->
-        profileViewModel.phoneNumberChanged(value)
+        viewModel.phoneNumberChanged(value)
         if (phoneNumberInputContainer.isErrorEnabled) {
           val validationResult = validatePhoneNumber(value)
           if (validationResult.isSuccessful) {
