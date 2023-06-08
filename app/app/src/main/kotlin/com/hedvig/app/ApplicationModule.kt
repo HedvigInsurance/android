@@ -369,7 +369,7 @@ private val viewModelModule = module {
     )
   }
   viewModel { TooltipViewModel(get()) }
-  viewModel { MyInfoViewModel(get(), get(), get()) }
+  viewModel { MyInfoViewModel(get(), get()) }
   viewModel { AboutAppViewModel(get()) }
   viewModel { MarketingViewModel(get<MarketManager>().market, get(), get(), get(), get(), get()) }
   viewModel<ReviewDialogViewModel> { ReviewDialogViewModel(get()) }

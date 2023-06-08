@@ -62,10 +62,8 @@ class MyInfoActivity : AppCompatActivity(R.layout.activity_my_info) {
   }
 
   override fun onOptionsItemSelected(item: MenuItem): Boolean {
-    val prevEmail = (viewModel.data.value as? MyInfoUiState.Success)
-      ?.profileUiState?.member?.email ?: ""
-    val prevPhoneNumber = (viewModel.data.value as? MyInfoUiState.Success)
-      ?.profileUiState?.member?.phoneNumber ?: ""
+    val prevEmail = (viewModel.data.value as? MyInfoUiState.Success)?.member?.email ?: ""
+    val prevPhoneNumber = (viewModel.data.value as? MyInfoUiState.Success)?.member?.phoneNumber ?: ""
 
     binding.apply {
       val newEmail = emailInput.text.toString()
@@ -119,8 +117,8 @@ class MyInfoActivity : AppCompatActivity(R.layout.activity_my_info) {
           contactDetailsContainer.isVisible = viewState !is MyInfoUiState.Loading
 
           if (viewState is MyInfoUiState.Success) {
-            setupEmailInput(viewState.profileUiState.member.email ?: "")
-            setupPhoneNumberInput(viewState.profileUiState.member.phoneNumber ?: "")
+            setupEmailInput(viewState.member.email ?: "")
+            setupPhoneNumberInput(viewState.member.phoneNumber ?: "")
           }
         }
       }

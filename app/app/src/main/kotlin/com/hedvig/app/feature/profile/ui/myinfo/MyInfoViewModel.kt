@@ -5,8 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.hedvig.app.feature.profile.data.ProfileRepository
-import com.hedvig.app.feature.profile.ui.tab.ProfileQueryDataToProfileUiStateMapper
-import com.hedvig.app.feature.profile.ui.tab.ProfileUiState
+import com.hedvig.app.feature.profile.ui.tab.Member
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,19 +20,20 @@ import kotlin.time.Duration.Companion.seconds
 class MyInfoViewModel(
   private val hAnalytics: HAnalytics,
   private val profileRepository: ProfileRepository,
-  private val profileQueryDataToProfileUiStateMapper: ProfileQueryDataToProfileUiStateMapper,
 ) : ViewModel() {
   val data: StateFlow<MyInfoUiState> = profileRepository.profile()
     .mapLatest { profileQueryDataResult ->
-      profileQueryDataResult.map { profileQueryDataToProfileUiStateMapper.map(it) }
+      profileQueryDataResult.map { profileQueryData ->
+        Member.fromDto(profileQueryData.member)
+      }
     }
-    .mapLatest { profileUiStateResult ->
-      when (profileUiStateResult) {
+    .mapLatest { memberResult ->
+      when (memberResult) {
         is Either.Left -> {
           MyInfoUiState.Error
         }
         is Either.Right -> {
-          MyInfoUiState.Success(profileUiStateResult.value)
+          MyInfoUiState.Success(memberResult.value)
         }
       }
     }
@@ -53,7 +53,7 @@ class MyInfoViewModel(
     phoneNumberInput: String,
   ) {
     var (email, phoneNumber) = (data.value as? MyInfoUiState.Success)
-      ?.profileUiState
+
       ?.member
       ?.let { Pair(it.email, it.phoneNumber) } ?: Pair(null, null)
     viewModelScope.launch {
@@ -87,7 +87,7 @@ class MyInfoViewModel(
   }
 
   private fun currentEmailOrEmpty(): String {
-    return (data.value as? MyInfoUiState.Success)?.profileUiState?.member?.email ?: ""
+    return (data.value as? MyInfoUiState.Success)?.member?.email ?: ""
   }
 
   fun emailChanged(email: String) {
@@ -97,7 +97,7 @@ class MyInfoViewModel(
   }
 
   private fun currentPhoneNumberOrEmpty(): String {
-    return (data.value as? MyInfoUiState.Success)?.profileUiState?.member?.phoneNumber ?: ""
+    return (data.value as? MyInfoUiState.Success)?.member?.phoneNumber ?: ""
   }
 
   fun phoneNumberChanged(newPhoneNumber: String) {
@@ -108,7 +108,7 @@ class MyInfoViewModel(
 }
 
 sealed interface MyInfoUiState {
-  data class Success(val profileUiState: ProfileUiState) : MyInfoUiState
+  data class Success(val member: Member) : MyInfoUiState
   object Error : MyInfoUiState
   object Loading : MyInfoUiState
 }
