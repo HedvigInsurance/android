@@ -10,7 +10,7 @@ import com.hedvig.app.util.apollo.toMonetaryAmount
 import giraffe.ProfileQuery
 import java.util.Locale
 
-class ProfileQueryDataToProfileUiStateMapper(
+internal class ProfileQueryDataToProfileUiStateMapper(
   private val featureManager: FeatureManager,
   private val marketManager: MarketManager,
   private val languageService: LanguageService,

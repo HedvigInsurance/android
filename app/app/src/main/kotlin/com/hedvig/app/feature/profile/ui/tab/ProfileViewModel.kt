@@ -1,13 +1,13 @@
-package com.hedvig.app.feature.profile.ui
+package com.hedvig.app.feature.profile.ui.tab
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.hedvig.android.core.common.RetryChannel
 import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.feature.profile.data.ProfileRepository
-import com.hedvig.app.feature.profile.ui.tab.ProfileQueryDataToProfileUiStateMapper
-import com.hedvig.app.feature.profile.ui.tab.ProfileUiState
+import giraffe.ProfileQuery
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
@@ -15,19 +15,14 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlin.time.Duration.Companion.seconds
 
-class ProfileViewModel(
+internal class ProfileViewModel(
   private val profileRepository: ProfileRepository,
   private val logoutUseCase: LogoutUseCase,
   private val profileQueryDataToProfileUiStateMapper: ProfileQueryDataToProfileUiStateMapper,
 ) : ViewModel() {
-  sealed interface UiState {
-    data class Success(val profileUiState: ProfileUiState) : UiState
-    object Error : UiState
-    object Loading : UiState
-  }
 
   private val observeProfileRetryChannel = RetryChannel()
-  val data: StateFlow<UiState> = observeProfileRetryChannel
+  val data: StateFlow<ProfileUiState> = observeProfileRetryChannel
     .flatMapLatest {
       profileRepository
         .profile()
@@ -37,10 +32,10 @@ class ProfileViewModel(
         .mapLatest { profileUiStateResult ->
           when (profileUiStateResult) {
             is Either.Left -> {
-              UiState.Error
+              ProfileUiState.Error
             }
             is Either.Right -> {
-              UiState.Success(profileUiStateResult.value)
+              ProfileUiState.Success(profileUiStateResult.value)
             }
           }
         }
@@ -58,4 +53,34 @@ class ProfileViewModel(
   fun onLogout() {
     logoutUseCase.invoke()
   }
+}
+
+internal data class ProfileUiState(
+  val member: Member,
+  val contactInfoName: String,
+  val showBusinessModel: Boolean,
+  val paymentState: PaymentState,
+)
+
+internal data class Member(
+  val email: String?,
+  val phoneNumber: String?,
+) {
+  companion object {
+    fun fromDto(dto: ProfileQuery.Member): Member {
+      return Member(
+        email = dto.email,
+        phoneNumber = dto.phoneNumber,
+      )
+    }
+  }
+}
+
+internal sealed interface PaymentState {
+  data class Show(
+    val monetaryMonthlyNet: String,
+    @StringRes val priceCaptionResId: Int?,
+  ) : PaymentState
+
+  object DontShow : PaymentState
 }

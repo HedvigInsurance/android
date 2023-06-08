@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.hedvig.app.feature.profile.data.ProfileRepository
-import com.hedvig.app.feature.profile.ui.tab.Member
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,14 +16,14 @@ import kotlinx.coroutines.launch
 import slimber.log.e
 import kotlin.time.Duration.Companion.seconds
 
-class MyInfoViewModel(
+internal class MyInfoViewModel(
   private val hAnalytics: HAnalytics,
   private val profileRepository: ProfileRepository,
 ) : ViewModel() {
   val data: StateFlow<MyInfoUiState> = profileRepository.profile()
     .mapLatest { profileQueryDataResult ->
       profileQueryDataResult.map { profileQueryData ->
-        Member.fromDto(profileQueryData.member)
+        MyInfoMember(profileQueryData.member.email, profileQueryData.member.phoneNumber)
       }
     }
     .mapLatest { memberResult ->
@@ -107,8 +106,13 @@ class MyInfoViewModel(
   }
 }
 
-sealed interface MyInfoUiState {
-  data class Success(val member: Member) : MyInfoUiState
+internal sealed interface MyInfoUiState {
+  data class Success(val member: MyInfoMember) : MyInfoUiState
   object Error : MyInfoUiState
   object Loading : MyInfoUiState
 }
+
+internal data class MyInfoMember(
+  val email: String?,
+  val phoneNumber: String?,
+)
