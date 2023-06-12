@@ -6,7 +6,7 @@ plugins {
 dependencies {
   implementation(projects.app.core.common)
   implementation(projects.app.hanalytics.hanalyticsCore)
-  implementation(projects.app.hedvigMarket)
+  implementation(projects.app.market.marketCore)
 
   implementation(libs.koin.core)
 }
