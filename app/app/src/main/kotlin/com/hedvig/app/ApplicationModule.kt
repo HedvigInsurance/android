@@ -151,8 +151,8 @@ import com.hedvig.app.feature.profile.ui.payment.PaymentRepository
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModelImpl
 import com.hedvig.app.feature.profile.ui.tab.GetEuroBonusStatusUseCase
+import com.hedvig.app.feature.profile.ui.tab.NetworkGetEuroBonusStatusUseCase
 import com.hedvig.app.feature.profile.ui.tab.ProfileViewModel
-import com.hedvig.app.feature.profile.ui.tab.TemporaryGetEuroBonusStatusUseCase
 import com.hedvig.app.feature.referrals.data.RedeemReferralCodeRepository
 import com.hedvig.app.feature.referrals.data.ReferralsRepository
 import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedViewModel
@@ -413,7 +413,7 @@ private val offerModule = module {
 
 private val profileModule = module {
   single<ProfileRepository> { ProfileRepositoryImpl(get<ApolloClient>(giraffeClient)) }
-  single<GetEuroBonusStatusUseCase> { TemporaryGetEuroBonusStatusUseCase() }
+  single<GetEuroBonusStatusUseCase> { NetworkGetEuroBonusStatusUseCase(get<ApolloClient>(octopusClient)) }
   viewModel<ProfileViewModel> { ProfileViewModel(get(), get(), get(), get(), get()) }
 }
 

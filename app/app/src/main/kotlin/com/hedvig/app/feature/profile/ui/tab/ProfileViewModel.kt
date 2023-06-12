@@ -52,7 +52,6 @@ internal class ProfileViewModel(
 
   private val euroBonus: StateFlow<EuroBonus?> = retryChannel.transformLatest {
     euroBonusLoading.update { true }
-    d { "Stelios, reloading;" }
     emit(
       getEuroBonusStatusUseCase.invoke()
         .onLeft { error -> d { "Euro bonus not showing because: $error" } }

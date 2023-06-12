@@ -1,27 +1,36 @@
 package com.hedvig.app.feature.profile.ui.tab
 
 import arrow.core.Either
-import arrow.core.left
-import arrow.core.right
+import arrow.core.raise.either
+import arrow.core.raise.ensure
+import com.apollographql.apollo3.ApolloClient
+import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
-import kotlinx.coroutines.delay
-import kotlin.time.Duration.Companion.seconds
+import octopus.EurobonusDataQuery
+import octopus.fragment.PartnerDataFragment
 
 internal interface GetEuroBonusStatusUseCase {
   suspend fun invoke(): Either<GetEuroBonusError, EuroBonus>
 }
 
-// todo replace with real backend call when we can fetch this data
-internal class TemporaryGetEuroBonusStatusUseCase() : GetEuroBonusStatusUseCase {
-  var last = true
+internal class NetworkGetEuroBonusStatusUseCase(
+  private val apolloClient: ApolloClient,
+) : GetEuroBonusStatusUseCase {
   override suspend fun invoke(): Either<GetEuroBonusError, EuroBonus> {
-    delay(3.seconds) // todo()
-    return if (last) {
-      GetEuroBonusError.EuroBonusNotApplicable.left()
-    } else {
-      EuroBonus("1234").right()
-    }.also {
-      last = !last
+    return either {
+      val result: PartnerDataFragment.PartnerData.Sas? = apolloClient.query(EurobonusDataQuery())
+        .safeExecute()
+        .toEither(::ErrorMessage)
+        .mapLeft(GetEuroBonusError::Error)
+        .bind()
+        .currentMember
+        .partnerData
+        ?.sas
+      ensure(result != null && result.eligible) {
+        GetEuroBonusError.EuroBonusNotApplicable
+      }
+      EuroBonus(result.eurobonusNumber)
     }
   }
 }

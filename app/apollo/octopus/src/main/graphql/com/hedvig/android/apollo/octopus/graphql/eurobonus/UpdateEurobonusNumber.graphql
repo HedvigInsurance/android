@@ -1,0 +1,10 @@
+mutation UpdateEurobonusNumber($input: MemberUpdateEurobonusNumberInput!) {
+  memberUpdateEurobonusNumber(input: $input) {
+    userError {
+      message
+    }
+    member {
+      ...PartnerDataFragment
+    }
+  }
+}
