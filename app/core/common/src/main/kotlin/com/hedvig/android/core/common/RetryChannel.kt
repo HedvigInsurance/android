@@ -1,12 +1,12 @@
 package com.hedvig.android.core.common
 
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.transformLatest
 import kotlin.experimental.ExperimentalTypeInference
 
@@ -38,11 +38,17 @@ class RetryChannel {
 
   /**
    * For a retry, we only care for latest values we wouldn't want to keep track of how many retries we need
-   * to do, therefore a conflated Channel is what we need. This creates a
-   * [kotlinx.coroutines.channels.ConflatedChannel] which also comes with the benefit of [Channel.send] never
-   * suspending and [Channel.trySend] always succeeding.
+   * to do, therefore a conflated Channel is what we need.
+   * This creates a [kotlinx.coroutines.flow.MutableSharedFlow] with a replay of 1 so that all new observers start
+   * doing work immediatelly. Dropping the last emission on buffer overflow means that all calls on
+   * [MutableSharedFlow.emit] never suspend and [Channel.trySend] always succeed.
    */
-  private val channel: Channel<Unit> = Channel(Channel.CONFLATED)
+  private val channel: MutableSharedFlow<Unit> = MutableSharedFlow<Unit>(
+    replay = 1,
+    onBufferOverflow = BufferOverflow.DROP_OLDEST,
+  ).apply {
+    tryEmit(Unit)
+  }
 
   /**
    * From the [ConflatedChannel][kotlinx.coroutines.channels.ConflatedChannel] documentation:
@@ -50,7 +56,7 @@ class RetryChannel {
    * Sender to this channel never suspends and [Channel.trySend] always succeeds
    */
   fun retry() {
-    channel.trySend(Unit)
+    channel.tryEmit(Unit)
   }
 
   /**
@@ -68,10 +74,7 @@ class RetryChannel {
    * ```
    */
   fun <R> transformLatest(@BuilderInference transform: suspend FlowCollector<R>.(value: Unit) -> Unit): Flow<R> {
-    return channel
-      .receiveAsFlow()
-      .onStart { emit(Unit) }
-      .transformLatest(transform)
+    return channel.transformLatest(transform)
   }
 
   /**
@@ -99,16 +102,10 @@ class RetryChannel {
    * ```
    */
   fun <R> flatMapLatest(@BuilderInference transform: suspend (value: Unit) -> Flow<R>): Flow<R> {
-    return channel
-      .receiveAsFlow()
-      .onStart { emit(Unit) }
-      .flatMapLatest(transform)
+    return channel.flatMapLatest(transform)
   }
 
   fun <R> mapLatest(@BuilderInference transform: suspend (value: Unit) -> R): Flow<R> {
-    return channel
-      .receiveAsFlow()
-      .onStart { emit(Unit) }
-      .mapLatest(transform)
+    return channel.mapLatest(transform)
   }
 }
