@@ -12,10 +12,19 @@ import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import java.util.Locale
 
-class LanguageService(
+interface LanguageService {
+  @MainThread
+  fun setLanguage(language: Language)
+  fun getLanguage(): Language
+  fun getLocale(): Locale
+  fun getGraphQLLocale(): giraffe.type.Locale
+  fun performOnLaunchLanguageCheck()
+}
+
+class AndroidLanguageService(
   private val context: Context,
   private val marketManager: MarketManager,
-) {
+) : LanguageService {
   private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
 
   /**
@@ -23,15 +32,15 @@ class LanguageService(
    * Only safe to call from the Main Thread.
    */
   @MainThread
-  fun setLanguage(language: Language) {
+  override fun setLanguage(language: Language) {
     AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(language.toString()))
   }
 
-  fun getLanguage(): Language {
+  override fun getLanguage(): Language {
     return Language.from(getLocale().toLanguageTag())
   }
 
-  fun getLocale(): Locale {
+  override fun getLocale(): Locale {
     val localeList = AppCompatDelegate.getApplicationLocales()
     if (localeList.isEmpty) {
       return Locale("en", "SE")
@@ -39,7 +48,7 @@ class LanguageService(
     return localeList[0]!!
   }
 
-  fun getGraphQLLocale(): giraffe.type.Locale {
+  override fun getGraphQLLocale(): giraffe.type.Locale {
     return when (getLocale().toString()) {
       "en_NO" -> giraffe.type.Locale.en_NO
       "nb_NO" -> giraffe.type.Locale.nb_NO
@@ -51,7 +60,7 @@ class LanguageService(
     }
   }
 
-  fun performOnLaunchLanguageCheck() {
+  override fun performOnLaunchLanguageCheck() {
     performOneTimeLanguageMigration()
     val currentLanguage = AppCompatDelegate.getApplicationLocales()
     // Always default to English, Sweden, if nothing else is set

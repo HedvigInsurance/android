@@ -19,7 +19,7 @@ dependencies {
   implementation(projects.app.core.resources)
   implementation(projects.app.core.ui)
   implementation(projects.app.hanalytics.hanalyticsFeatureFlags)
-  implementation(projects.app.hedvigLanguage)
+  implementation(projects.app.language.languageCore)
   implementation(projects.app.navigation.navigationActivity)
   implementation(projects.app.navigation.navigationComposeTyped)
 

@@ -2,6 +2,7 @@ package com.hedvig.app.feature.profile.data
 
 import arrow.core.Either
 import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.safeWatch
@@ -12,23 +13,30 @@ import giraffe.UpdatePhoneNumberMutation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class ProfileRepository(
+internal interface ProfileRepository {
+  fun profile(): Flow<Either<OperationResult.Error, ProfileQuery.Data>>
+  suspend fun updateEmail(input: String): ApolloResponse<UpdateEmailMutation.Data>
+  suspend fun updatePhoneNumber(input: String): ApolloResponse<UpdatePhoneNumberMutation.Data>
+  suspend fun writeEmailAndPhoneNumberInCache(email: String?, phoneNumber: String?)
+}
+
+internal class ProfileRepositoryImpl(
   private val apolloClient: ApolloClient,
-) {
+) : ProfileRepository {
   private val profileQuery = ProfileQuery()
 
-  fun profile(): Flow<Either<OperationResult.Error, ProfileQuery.Data>> = apolloClient
+  override fun profile(): Flow<Either<OperationResult.Error, ProfileQuery.Data>> = apolloClient
     .query(profileQuery)
     .safeWatch()
     .map(OperationResult<ProfileQuery.Data>::toEither)
 
-  suspend fun updateEmail(input: String) =
+  override suspend fun updateEmail(input: String) =
     apolloClient.mutation(UpdateEmailMutation(input)).execute()
 
-  suspend fun updatePhoneNumber(input: String) =
+  override suspend fun updatePhoneNumber(input: String) =
     apolloClient.mutation(UpdatePhoneNumberMutation(input)).execute()
 
-  suspend fun writeEmailAndPhoneNumberInCache(email: String?, phoneNumber: String?) {
+  override suspend fun writeEmailAndPhoneNumberInCache(email: String?, phoneNumber: String?) {
     val cachedData = apolloClient
       .apolloStore
       .readOperation(profileQuery)

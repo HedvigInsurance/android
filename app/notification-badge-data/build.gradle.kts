@@ -8,7 +8,7 @@ dependencies {
   implementation(projects.app.apollo.giraffe)
   implementation(projects.app.core.common)
   implementation(projects.app.hanalytics.hanalyticsFeatureFlags)
-  implementation(projects.app.hedvigLanguage)
+  implementation(projects.app.language.languageCore)
 
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.datastore.preferencesCore)

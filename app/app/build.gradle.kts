@@ -29,7 +29,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "11.2.3"
+    versionName = "11.3.0"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -136,8 +136,8 @@ dependencies {
   implementation(projects.app.hanalytics.hanalyticsAndroid)
   implementation(projects.app.hanalytics.hanalyticsCore)
   implementation(projects.app.hanalytics.hanalyticsFeatureFlags)
-  implementation(projects.app.hedvigLanguage)
-  implementation(projects.app.hedvigMarket)
+  implementation(projects.app.language.languageCore)
+  implementation(projects.app.market.marketCore)
   implementation(projects.app.navigation.core)
   implementation(projects.app.navigation.navigationActivity)
   implementation(projects.app.navigation.navigationComposeTyped)
@@ -152,6 +152,8 @@ dependencies {
   testImplementation(projects.app.core.datastoreTest)
   testImplementation(projects.app.hanalytics.hanalyticsFeatureFlagsTest)
   testImplementation(projects.app.hanalytics.hanalyticsTest)
+  testImplementation(projects.app.language.languageTest)
+  testImplementation(projects.app.market.marketTest)
 
   androidTestImplementation(projects.app.hanalytics.hanalyticsFeatureFlagsTest)
 

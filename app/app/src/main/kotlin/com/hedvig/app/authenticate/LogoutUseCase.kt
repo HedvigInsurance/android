@@ -13,7 +13,11 @@ import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.launch
 import slimber.log.d
 
-class LogoutUseCase(
+internal interface LogoutUseCase {
+  fun invoke()
+}
+
+internal class LogoutUseCaseImpl(
   private val marketManager: MarketManager,
   private val apolloClient: ApolloClient,
   private val userRepository: UserRepository,
@@ -22,9 +26,8 @@ class LogoutUseCase(
   private val featureManager: FeatureManager,
   private val hAnalytics: HAnalytics,
   private val applicationScope: ApplicationScope,
-) {
-
-  fun invoke() {
+) : LogoutUseCase {
+  override fun invoke() {
     d { "Logout usecase called" }
     applicationScope.launch { hAnalytics.loggedOut() }
     applicationScope.launch { userRepository.logout() }

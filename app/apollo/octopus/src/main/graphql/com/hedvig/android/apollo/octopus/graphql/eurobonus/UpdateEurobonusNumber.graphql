@@ -1,0 +1,10 @@
+mutation UpdateEurobonusNumber($input: String!) {
+  memberUpdateEurobonusNumber(input: {eurobonusNumber: $input}) {
+    userError {
+      message
+    }
+    member {
+      ...PartnerDataFragment
+    }
+  }
+}

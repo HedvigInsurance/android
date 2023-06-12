@@ -1,5 +1,6 @@
 package com.hedvig.app.util.apollo
 
+import android.icu.util.CurrencyAmount
 import giraffe.fragment.MonetaryAmountFragment
 import giraffe.type.Locale
 import org.javamoney.moneta.Money
@@ -30,6 +31,14 @@ fun Locale.toWebLocaleTag() = when (this) {
 
 fun MonetaryAmountFragment.toMonetaryAmount(): MonetaryAmount =
   Money.of(amount.toBigDecimal(), currency)
+
+fun MonetaryAmountFragment.format(locale: java.util.Locale, minimumDecimals: Int = 0): String {
+  val currencyAmount = CurrencyAmount(this.amount.toDouble(), android.icu.util.Currency.getInstance(this.currency))
+  return NumberFormat.getCurrencyInstance(locale).also {
+    it.currency = currencyAmount.currency.toJavaCurrency()
+    it.minimumFractionDigits = minimumDecimals
+  }.format(currencyAmount.number)
+}
 
 fun MonetaryAmount.format(locale: java.util.Locale, minimumDecimals: Int = 0): String =
   NumberFormat.getCurrencyInstance(locale).also {
