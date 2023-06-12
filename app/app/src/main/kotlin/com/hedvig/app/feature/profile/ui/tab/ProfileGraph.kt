@@ -54,6 +54,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -68,16 +69,21 @@ import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.app.R
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
+import com.hedvig.app.feature.profile.ui.eurobonus.EurobonusDestination
+import com.hedvig.app.feature.profile.ui.eurobonus.EurobonusViewModel
 import com.hedvig.app.feature.profile.ui.myinfo.MyInfoActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.extensions.startChat
 import com.kiwi.navigationcompose.typed.createRoutePattern
+import com.kiwi.navigationcompose.typed.navigate
 import giraffe.fragment.MonetaryAmountFragment
 import org.koin.androidx.compose.koinViewModel
 
-internal fun NavGraphBuilder.profileGraph() {
+internal fun NavGraphBuilder.profileGraph(
+  navController: NavController,
+) {
   animatedNavigation<TopLevelGraph.PROFILE>(
     startDestination = createRoutePattern<AppDestination.TopLevelDestination.Profile>(),
   ) {
@@ -87,14 +93,20 @@ internal fun NavGraphBuilder.profileGraph() {
     ) {
       val viewModel: ProfileViewModel = koinViewModel()
       ProfileDestination(
+        navController = navController,
         viewModel = viewModel,
       )
+    }
+    animatedComposable<AppDestination.EuroBonus> {
+      val viewModel: EurobonusViewModel = koinViewModel()
+      EurobonusDestination(viewModel)
     }
   }
 }
 
 @Composable
 private fun ProfileDestination(
+  navController: NavController,
   viewModel: ProfileViewModel,
 ) {
   val uiState by viewModel.data.collectAsStateWithLifecycle()
@@ -102,6 +114,9 @@ private fun ProfileDestination(
   ProfileScreen(
     uiState = uiState,
     isLoading = isLoading,
+    navigateToEurobonus = {
+      navController.navigate(AppDestination.EuroBonus)
+    },
     reload = viewModel::reload,
     onLogout = viewModel::onLogout,
   )
@@ -112,6 +127,7 @@ private fun ProfileDestination(
 private fun ProfileScreen(
   uiState: ProfileUiState,
   isLoading: Boolean,
+  navigateToEurobonus: () -> Unit,
   reload: () -> Unit,
   onLogout: () -> Unit,
 ) {
@@ -150,6 +166,7 @@ private fun ProfileScreen(
           showPaymentInfo = { context.startActivity(PaymentActivity.newInstance(context)) },
           showSettings = { context.startActivity(SettingsActivity.newInstance(context)) },
           showAboutApp = { context.startActivity(Intent(context, AboutAppActivity::class.java)) },
+          navigateToEurobonus = navigateToEurobonus,
           logout = onLogout,
         )
         Spacer(Modifier.height(16.dp))
@@ -180,6 +197,7 @@ private fun ColumnScope.ProfileItemRows(
   showPaymentInfo: () -> Unit,
   showSettings: () -> Unit,
   showAboutApp: () -> Unit,
+  navigateToEurobonus: () -> Unit,
   logout: () -> Unit,
 ) {
   ProfileRow(
@@ -225,7 +243,7 @@ private fun ColumnScope.ProfileItemRows(
         }
         else -> painterResource(com.hedvig.android.core.designsystem.R.drawable.ic_info)
       },
-      onClick = showBusinessModel,
+      onClick = navigateToEurobonus,
     )
   }
 
@@ -371,6 +389,7 @@ private fun PreviewProfileSuccessScreen() {
           showBusinessModel = true,
         ),
         isLoading = false,
+        navigateToEurobonus = {},
         reload = {},
         onLogout = {},
       )

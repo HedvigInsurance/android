@@ -23,4 +23,7 @@ sealed interface AppDestination : Destination {
 
   @Serializable
   object GenerateTravelCertificate : AppDestination
+
+  @Serializable
+  object EuroBonus : AppDestination
 }

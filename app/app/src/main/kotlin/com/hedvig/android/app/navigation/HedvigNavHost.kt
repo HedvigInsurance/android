@@ -148,6 +148,6 @@ internal fun HedvigNavHost(
     )
     insuranceGraph(imageLoader = imageLoader)
     referralsGraph(languageService = languageService)
-    profileGraph()
+    profileGraph(navController = navController)
   }
 }
