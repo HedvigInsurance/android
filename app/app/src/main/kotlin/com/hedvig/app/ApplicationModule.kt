@@ -57,6 +57,7 @@ import com.hedvig.android.language.di.languageModule
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.market.di.marketManagerModule
 import com.hedvig.android.navigation.activity.Navigator
+import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.firebase.di.firebaseNotificationModule
@@ -146,6 +147,7 @@ import com.hedvig.app.feature.offer.usecase.StartCheckoutUseCase
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.feature.profile.data.ProfileRepositoryImpl
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppViewModel
+import com.hedvig.app.feature.profile.ui.eurobonus.EurobonusViewModel
 import com.hedvig.app.feature.profile.ui.myinfo.MyInfoViewModel
 import com.hedvig.app.feature.profile.ui.payment.PaymentRepository
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel
@@ -415,6 +417,9 @@ private val profileModule = module {
   single<ProfileRepository> { ProfileRepositoryImpl(get<ApolloClient>(giraffeClient)) }
   single<GetEuroBonusStatusUseCase> { NetworkGetEuroBonusStatusUseCase(get<ApolloClient>(octopusClient)) }
   viewModel<ProfileViewModel> { ProfileViewModel(get(), get(), get(), get(), get()) }
+  viewModel<EurobonusViewModel> { (eurobonus: AppDestination.Eurobonus) ->
+    EurobonusViewModel(eurobonus, get<ApolloClient>(octopusClient))
+  }
 }
 
 private val paymentModule = module {

@@ -25,5 +25,7 @@ sealed interface AppDestination : Destination {
   object GenerateTravelCertificate : AppDestination
 
   @Serializable
-  object EuroBonus : AppDestination
+  data class Eurobonus(
+    val eurobonusNumber: String?,
+  ) : AppDestination
 }

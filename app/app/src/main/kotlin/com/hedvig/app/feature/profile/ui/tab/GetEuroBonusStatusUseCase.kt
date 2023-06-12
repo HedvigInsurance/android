@@ -4,6 +4,8 @@ import arrow.core.Either
 import arrow.core.raise.either
 import arrow.core.raise.ensure
 import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.cache.normalized.FetchPolicy
+import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
@@ -20,6 +22,7 @@ internal class NetworkGetEuroBonusStatusUseCase(
   override suspend fun invoke(): Either<GetEuroBonusError, EuroBonus> {
     return either {
       val result: PartnerDataFragment.PartnerData.Sas? = apolloClient.query(EurobonusDataQuery())
+        .fetchPolicy(FetchPolicy.NetworkFirst)
         .safeExecute()
         .toEither(::ErrorMessage)
         .mapLeft(GetEuroBonusError::Error)

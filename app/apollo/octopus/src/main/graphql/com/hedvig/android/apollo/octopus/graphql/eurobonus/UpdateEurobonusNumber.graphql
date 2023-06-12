@@ -1,5 +1,5 @@
-mutation UpdateEurobonusNumber($input: MemberUpdateEurobonusNumberInput!) {
-  memberUpdateEurobonusNumber(input: $input) {
+mutation UpdateEurobonusNumber($input: String!) {
+  memberUpdateEurobonusNumber(input: {eurobonusNumber: $input}) {
     userError {
       message
     }

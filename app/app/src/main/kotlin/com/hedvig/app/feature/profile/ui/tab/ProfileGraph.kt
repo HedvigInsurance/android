@@ -40,6 +40,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -80,6 +81,7 @@ import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
 import giraffe.fragment.MonetaryAmountFragment
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 internal fun NavGraphBuilder.profileGraph(
   navController: NavController,
@@ -97,9 +99,13 @@ internal fun NavGraphBuilder.profileGraph(
         viewModel = viewModel,
       )
     }
-    animatedComposable<AppDestination.EuroBonus> {
-      val viewModel: EurobonusViewModel = koinViewModel()
-      EurobonusDestination(viewModel)
+    animatedComposable<AppDestination.Eurobonus> {
+      val euroBonus = this
+      val viewModel: EurobonusViewModel = koinViewModel { parametersOf(euroBonus) }
+      EurobonusDestination(
+        viewModel = viewModel,
+        navigateUp = navController::navigateUp,
+      )
     }
   }
 }
@@ -111,11 +117,14 @@ private fun ProfileDestination(
 ) {
   val uiState by viewModel.data.collectAsStateWithLifecycle()
   val isLoading by viewModel.loading.collectAsStateWithLifecycle()
+  LaunchedEffect(viewModel) {
+    viewModel.reload()
+  }
   ProfileScreen(
     uiState = uiState,
     isLoading = isLoading,
     navigateToEurobonus = {
-      navController.navigate(AppDestination.EuroBonus)
+      navController.navigate(AppDestination.Eurobonus(uiState.euroBonus?.code))
     },
     reload = viewModel::reload,
     onLogout = viewModel::onLogout,
