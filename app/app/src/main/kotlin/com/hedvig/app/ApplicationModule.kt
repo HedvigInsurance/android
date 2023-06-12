@@ -62,6 +62,7 @@ import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.firebase.di.firebaseNotificationModule
 import com.hedvig.app.authenticate.BankIdLoginViewModel
 import com.hedvig.app.authenticate.LogoutUseCase
+import com.hedvig.app.authenticate.LogoutUseCaseImpl
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.addressautocompletion.data.GetDanishAddressAutoCompletionUseCase
 import com.hedvig.app.feature.addressautocompletion.data.GetFinalDanishAddressSelectionUseCase
@@ -143,13 +144,15 @@ import com.hedvig.app.feature.offer.usecase.ObserveQuoteCartCheckoutUseCase
 import com.hedvig.app.feature.offer.usecase.ObserveQuoteCartCheckoutUseCaseImpl
 import com.hedvig.app.feature.offer.usecase.StartCheckoutUseCase
 import com.hedvig.app.feature.profile.data.ProfileRepository
+import com.hedvig.app.feature.profile.data.ProfileRepositoryImpl
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppViewModel
 import com.hedvig.app.feature.profile.ui.myinfo.MyInfoViewModel
 import com.hedvig.app.feature.profile.ui.payment.PaymentRepository
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModelImpl
-import com.hedvig.app.feature.profile.ui.tab.ProfileQueryDataToProfileUiStateMapper
+import com.hedvig.app.feature.profile.ui.tab.GetEuroBonusStatusUseCase
 import com.hedvig.app.feature.profile.ui.tab.ProfileViewModel
+import com.hedvig.app.feature.profile.ui.tab.TemporaryGetEuroBonusStatusUseCase
 import com.hedvig.app.feature.referrals.data.RedeemReferralCodeRepository
 import com.hedvig.app.feature.referrals.data.ReferralsRepository
 import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedViewModel
@@ -409,9 +412,9 @@ private val offerModule = module {
 }
 
 private val profileModule = module {
-  single<ProfileQueryDataToProfileUiStateMapper> { ProfileQueryDataToProfileUiStateMapper(get(), get(), get()) }
-  single<ProfileRepository> { ProfileRepository(get<ApolloClient>(giraffeClient)) }
-  viewModel<ProfileViewModel> { ProfileViewModel(get(), get(), get()) }
+  single<ProfileRepository> { ProfileRepositoryImpl(get<ApolloClient>(giraffeClient)) }
+  single<GetEuroBonusStatusUseCase> { TemporaryGetEuroBonusStatusUseCase() }
+  viewModel<ProfileViewModel> { ProfileViewModel(get(), get(), get(), get(), get()) }
 }
 
 private val paymentModule = module {
@@ -556,7 +559,9 @@ private val clockModule = module {
 
 private val useCaseModule = module {
   single { StartCheckoutUseCase(get<ApolloClient>(giraffeClient), get(), get()) }
-  single { LogoutUseCase(get(), get<ApolloClient>(giraffeClient), get(), get(), get(), get(), get(), get()) }
+  single<LogoutUseCase> {
+    LogoutUseCaseImpl(get(), get<ApolloClient>(giraffeClient), get(), get(), get(), get(), get(), get())
+  }
   single { GetContractsUseCase(get<ApolloClient>(giraffeClient), get()) }
   single { GraphQLQueryUseCase(get()) }
   single { GetCrossSellsUseCase(get<ApolloClient>(octopusClient)) }
