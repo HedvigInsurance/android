@@ -29,9 +29,6 @@ import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.CheckCircle
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.pullrefresh.PullRefreshDefaults
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -51,7 +48,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -189,7 +185,7 @@ private fun ColumnScope.ProfileItemRows(
   ProfileRow(
     title = stringResource(hedvig.resources.R.string.PROFILE_MY_INFO_ROW_TITLE),
     caption = profileUiState.contactInfoName,
-    icon = painterResource(R.drawable.ic_contact_information),
+    iconPainter = painterResource(R.drawable.ic_contact_information),
     onClick = showMyInfo,
   )
   AnimatedVisibility(
@@ -204,7 +200,7 @@ private fun ColumnScope.ProfileItemRows(
     ProfileRow(
       title = stringResource(hedvig.resources.R.string.PROFILE_ROW_PAYMENT_TITLE),
       caption = paymentCaption,
-      icon = painterResource(R.drawable.ic_payment),
+      iconPainter = painterResource(R.drawable.ic_payment),
       onClick = showPaymentInfo,
     )
   }
@@ -219,13 +215,15 @@ private fun ColumnScope.ProfileItemRows(
       title = stringResource(hedvig.resources.R.string.sas_integration_connect_your_number),
       caption = when {
         profileUiState.euroBonus == null -> ""
-        profileUiState.euroBonus.code == null -> profileUiState.euroBonus.code
+        profileUiState.euroBonus.code != null -> profileUiState.euroBonus.code
         else -> stringResource(hedvig.resources.R.string.sas_integration_connect_your_number)
       },
-      icon = when {
+      iconPainter = when {
         profileUiState.euroBonus == null -> ColorPainter(Color.Transparent)
-        profileUiState.euroBonus.code == null -> rememberVectorPainter(Icons.Outlined.Info)
-        else -> rememberVectorPainter(Icons.Outlined.CheckCircle)
+        profileUiState.euroBonus.code != null -> {
+          painterResource(com.hedvig.android.core.designsystem.R.drawable.ic_checkmark_in_circle)
+        }
+        else -> painterResource(com.hedvig.android.core.designsystem.R.drawable.ic_info)
       },
       onClick = showBusinessModel,
     )
@@ -240,7 +238,7 @@ private fun ColumnScope.ProfileItemRows(
     ProfileRow(
       title = stringResource(hedvig.resources.R.string.BUSINESS_MODEL_PROFILE_ROW),
       caption = null,
-      icon = painterResource(R.drawable.ic_profile_business_model),
+      iconPainter = painterResource(R.drawable.ic_profile_business_model),
       onClick = showBusinessModel,
     )
   }
@@ -254,13 +252,13 @@ private fun ColumnScope.ProfileItemRows(
   ProfileRow(
     title = stringResource(hedvig.resources.R.string.profile_appSettingsSection_row_headline),
     caption = stringResource(hedvig.resources.R.string.profile_appSettingsSection_row_subheadline),
-    icon = painterResource(R.drawable.ic_profile_settings),
+    iconPainter = painterResource(R.drawable.ic_profile_settings),
     onClick = showSettings,
   )
   ProfileRow(
     title = stringResource(hedvig.resources.R.string.PROFILE_ABOUT_ROW),
     caption = stringResource(hedvig.resources.R.string.profile_tab_about_row_subtitle),
-    icon = painterResource(hedvig.resources.R.drawable.ic_info_toolbar),
+    iconPainter = painterResource(hedvig.resources.R.drawable.ic_info_toolbar),
     onClick = showAboutApp,
   )
   CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.error) {
@@ -298,7 +296,7 @@ private fun getPriceCaption(paymentInfo: PaymentInfo): String? {
 private fun ProfileRow(
   title: String,
   caption: String?,
-  icon: Painter,
+  iconPainter: Painter,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -310,7 +308,7 @@ private fun ProfileRow(
       .padding(16.dp),
   ) {
     Icon(
-      painter = icon,
+      painter = iconPainter,
       contentDescription = null,
       modifier = Modifier.size(24.dp),
     )
