@@ -91,6 +91,7 @@ private fun EurobonusScreen(
             setEurobonusText(newInput)
           }
         },
+        enabled = uiState.canEditText,
         label = {
           Text(
             buildString {
@@ -145,6 +146,6 @@ private fun EurobonusScreen(
       )
       Spacer(Modifier.height(16.dp))
     }
-    FullScreenHedvigProgress(show = uiState.isSubmitting)
+    FullScreenHedvigProgress(show = uiState.isLoading)
   }
 }

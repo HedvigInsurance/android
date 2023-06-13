@@ -10,7 +10,6 @@ import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
-import com.hedvig.android.navigation.core.AppDestination
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -21,19 +20,30 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import octopus.EurobonusDataQuery
 import octopus.UpdateEurobonusNumberMutation
 import kotlin.time.Duration.Companion.seconds
 
 internal class EurobonusViewModel(
-  private val eurobonus: AppDestination.Eurobonus,
   private val apolloClient: ApolloClient,
 ) : ViewModel() {
 
-  var eurobonusText: String by mutableStateOf(eurobonus.eurobonusNumber ?: "")
+  var eurobonusText: String by mutableStateOf("")
     private set
 
   init {
     viewModelScope.launch {
+      apolloClient.query(EurobonusDataQuery())
+        .safeExecute()
+        .toEither()
+        .onRight { data ->
+          data.currentMember.partnerData?.sas?.eurobonusNumber?.let { existingEurobonusNumber ->
+            Snapshot.withMutableSnapshot {
+              eurobonusText = existingEurobonusNumber
+            }
+          }
+        }
+      isLoadingInitialEurobonusValue.update { false }
       snapshotFlow { eurobonusText }.drop(1).collectLatest {
         hasError.update { false }
         isDirty.update { true }
@@ -41,6 +51,7 @@ internal class EurobonusViewModel(
     }
   }
 
+  private val isLoadingInitialEurobonusValue = MutableStateFlow(true)
   private val isDirty = MutableStateFlow(false)
   private val isSubmitting = MutableStateFlow(false)
   private val hasError = MutableStateFlow(false)
@@ -51,11 +62,16 @@ internal class EurobonusViewModel(
       isDirty,
       isSubmitting,
       hasError,
-    ) { eurobonusText, isDirty, isSubmitting, hasError ->
-      val canSubmit = eurobonusText.isNotBlank() && isDirty && !isSubmitting && !hasError
+      isLoadingInitialEurobonusValue,
+    ) { eurobonusText, isDirty, isSubmitting, hasError, isLoadingInitialEurobonusValue ->
+      val canSubmit =
+        eurobonusText.isNotBlank() && isDirty && !isSubmitting && !hasError && !isLoadingInitialEurobonusValue
+      val isLoading = isSubmitting || isLoadingInitialEurobonusValue
+      val canEditText = !isLoading
       EurobonusUiState(
         canSubmit = canSubmit,
-        isSubmitting = isSubmitting,
+        isLoading = isLoading,
+        canEditText = canEditText,
         hasError = hasError,
       )
     }
@@ -64,7 +80,8 @@ internal class EurobonusViewModel(
         SharingStarted.WhileSubscribed(5.seconds),
         EurobonusUiState(
           canSubmit = false,
-          isSubmitting = false,
+          isLoading = false,
+          canEditText = false,
           hasError = false,
         ),
       )
@@ -102,6 +119,7 @@ internal class EurobonusViewModel(
 
 data class EurobonusUiState(
   val canSubmit: Boolean,
-  val isSubmitting: Boolean,
+  val isLoading: Boolean,
+  val canEditText: Boolean,
   val hasError: Boolean?,
 )

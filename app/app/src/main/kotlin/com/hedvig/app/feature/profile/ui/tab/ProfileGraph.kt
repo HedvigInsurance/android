@@ -124,7 +124,7 @@ private fun ProfileDestination(
     uiState = uiState,
     isLoading = isLoading,
     navigateToEurobonus = {
-      navController.navigate(AppDestination.Eurobonus(uiState.euroBonus?.code))
+      navController.navigate(AppDestination.Eurobonus)
     },
     reload = viewModel::reload,
     onLogout = viewModel::onLogout,
