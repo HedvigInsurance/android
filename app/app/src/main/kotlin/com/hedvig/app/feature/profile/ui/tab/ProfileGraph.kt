@@ -11,7 +11,6 @@ import com.hedvig.app.feature.profile.ui.eurobonus.EurobonusDestination
 import com.hedvig.app.feature.profile.ui.eurobonus.EurobonusViewModel
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 internal fun NavGraphBuilder.profileGraph(
   navController: NavController,
@@ -30,8 +29,7 @@ internal fun NavGraphBuilder.profileGraph(
       )
     }
     animatedComposable<AppDestination.Eurobonus> {
-      val euroBonus = this
-      val viewModel: EurobonusViewModel = koinViewModel { parametersOf(euroBonus) }
+      val viewModel: EurobonusViewModel = koinViewModel()
       EurobonusDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
