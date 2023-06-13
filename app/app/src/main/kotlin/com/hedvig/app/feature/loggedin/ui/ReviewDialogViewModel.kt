@@ -29,7 +29,7 @@ class ReviewDialogViewModel(
   init {
     viewModelScope.launch {
       chatEventStore.observeChatClosedCounter()
-        .map { it % 3 == 0 }
+        .map { it % 3 == 0 && it != 0 }
         .collect(_shouldOpenReviewDialog::tryEmit)
     }
   }
