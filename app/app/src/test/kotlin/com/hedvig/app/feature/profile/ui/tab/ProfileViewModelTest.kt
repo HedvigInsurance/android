@@ -53,7 +53,7 @@ class ProfileViewModelTest {
 
       val viewModel = ProfileViewModel(
         fakeProfileRepository,
-        FakeGetEuroBonusStatusUseCase(),
+        FakeGetEurobonusStatusUseCase(),
         FakeFeatureManager(
           featureMap = {
             mapOf(
@@ -83,7 +83,7 @@ class ProfileViewModelTest {
 
     val viewModel = ProfileViewModel(
       fakeProfileRepository,
-      FakeGetEuroBonusStatusUseCase(),
+      FakeGetEurobonusStatusUseCase(),
       FakeFeatureManager(
         featureMap = {
           mapOf(
@@ -112,7 +112,7 @@ class ProfileViewModelTest {
 
     val viewModel = ProfileViewModel(
       fakeProfileRepository,
-      FakeGetEuroBonusStatusUseCase(),
+      FakeGetEurobonusStatusUseCase(),
       FakeFeatureManager(
         featureMap = {
           mapOf(
@@ -139,7 +139,7 @@ class ProfileViewModelTest {
   fun `when business-model-feature is deactivated, should not show business-model-data`() = runTest {
     val viewModel = ProfileViewModel(
       FakeProfileRepository(),
-      FakeGetEuroBonusStatusUseCase(),
+      FakeGetEurobonusStatusUseCase(),
       FakeFeatureManager(
         featureMap = {
           mapOf(
@@ -165,7 +165,7 @@ class ProfileViewModelTest {
   fun `when business-model-feature is activated, should show business-model-data`() = runTest {
     val viewModel = ProfileViewModel(
       FakeProfileRepository(),
-      FakeGetEuroBonusStatusUseCase(),
+      FakeGetEurobonusStatusUseCase(),
       FakeFeatureManager(
         featureMap = {
           mapOf(
@@ -191,8 +191,8 @@ class ProfileViewModelTest {
   fun `when euro bonus does not exist, should not show the EuroBonus status`() = runTest {
     val viewModel = ProfileViewModel(
       FakeProfileRepository(),
-      FakeGetEuroBonusStatusUseCase {
-        add(GetEuroBonusError.EuroBonusNotApplicable.left())
+      FakeGetEurobonusStatusUseCase {
+        add(GetEurobonusError.EurobonusNotApplicable.left())
       },
       FakeFeatureManager(noopFeatureManager = true),
       FakeMarketManager(Market.SE),
@@ -212,7 +212,7 @@ class ProfileViewModelTest {
   fun `when euro bonus exists, should show the EuroBonus status`() = runTest {
     val viewModel = ProfileViewModel(
       FakeProfileRepository(),
-      FakeGetEuroBonusStatusUseCase {
+      FakeGetEurobonusStatusUseCase {
         add(EuroBonus("code1234").right())
       },
       FakeFeatureManager(noopFeatureManager = true),
@@ -235,7 +235,7 @@ class ProfileViewModelTest {
       fixedMap = mapOf(Feature.PAYMENT_SCREEN to true),
     )
     val profileRepository = FakeProfileRepository(addDefaultFailedResponse = false)
-    val euroBonusStatusUseCase = FakeGetEuroBonusStatusUseCase {}
+    val euroBonusStatusUseCase = FakeGetEurobonusStatusUseCase {}
 
     val viewModel = ProfileViewModel(
       profileRepository,
@@ -269,14 +269,14 @@ class ProfileViewModelTest {
   }
 }
 
-private class FakeGetEuroBonusStatusUseCase(
-  block: Turbine<Either<GetEuroBonusError, EuroBonus>>.() -> Unit = {
-    add(GetEuroBonusError.EuroBonusNotApplicable.left())
+private class FakeGetEurobonusStatusUseCase(
+  block: Turbine<Either<GetEurobonusError, EuroBonus>>.() -> Unit = {
+    add(GetEurobonusError.EurobonusNotApplicable.left())
   },
-) : GetEuroBonusStatusUseCase {
-  val responseTurbine = Turbine<Either<GetEuroBonusError, EuroBonus>>(name = "EurobonusResponse").apply(block)
+) : GetEurobonusStatusUseCase {
+  val responseTurbine = Turbine<Either<GetEurobonusError, EuroBonus>>(name = "EurobonusResponse").apply(block)
 
-  override suspend fun invoke(): Either<GetEuroBonusError, EuroBonus> {
+  override suspend fun invoke(): Either<GetEurobonusError, EuroBonus> {
     return responseTurbine.awaitItem()
   }
 }

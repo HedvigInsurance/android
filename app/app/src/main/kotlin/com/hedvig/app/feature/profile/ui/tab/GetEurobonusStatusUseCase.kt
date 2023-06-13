@@ -12,37 +12,37 @@ import com.hedvig.android.core.common.ErrorMessage
 import octopus.EurobonusDataQuery
 import octopus.fragment.PartnerDataFragment
 
-internal interface GetEuroBonusStatusUseCase {
-  suspend fun invoke(): Either<GetEuroBonusError, EuroBonus>
+internal interface GetEurobonusStatusUseCase {
+  suspend fun invoke(): Either<GetEurobonusError, EuroBonus>
 }
 
-internal class NetworkGetEuroBonusStatusUseCase(
+internal class NetworkGetEurobonusStatusUseCase(
   private val apolloClient: ApolloClient,
-) : GetEuroBonusStatusUseCase {
-  override suspend fun invoke(): Either<GetEuroBonusError, EuroBonus> {
+) : GetEurobonusStatusUseCase {
+  override suspend fun invoke(): Either<GetEurobonusError, EuroBonus> {
     return either {
       val result: PartnerDataFragment.PartnerData.Sas? = apolloClient.query(EurobonusDataQuery())
         .fetchPolicy(FetchPolicy.NetworkFirst)
         .safeExecute()
         .toEither(::ErrorMessage)
-        .mapLeft(GetEuroBonusError::Error)
+        .mapLeft(GetEurobonusError::Error)
         .bind()
         .currentMember
         .partnerData
         ?.sas
       ensure(result != null && result.eligible) {
-        GetEuroBonusError.EuroBonusNotApplicable
+        GetEurobonusError.EurobonusNotApplicable
       }
       EuroBonus(result.eurobonusNumber)
     }
   }
 }
 
-internal sealed interface GetEuroBonusError {
-  object EuroBonusNotApplicable : GetEuroBonusError
+internal sealed interface GetEurobonusError {
+  object EurobonusNotApplicable : GetEurobonusError
   data class Error(
     val errorMessage: ErrorMessage,
-  ) : GetEuroBonusError, ErrorMessage by errorMessage
+  ) : GetEurobonusError, ErrorMessage by errorMessage
 }
 
 internal data class EuroBonus(
