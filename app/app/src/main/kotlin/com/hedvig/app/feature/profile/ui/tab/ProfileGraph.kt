@@ -149,52 +149,47 @@ private fun ProfileScreen(
     onRefresh = reload,
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
-  Surface(
-    color = MaterialTheme.colorScheme.background,
-    modifier = Modifier.fillMaxSize(),
-  ) {
-    Box {
-      Column(
-        Modifier
-          .matchParentSize()
-          .pullRefresh(pullRefreshState)
-          .verticalScroll(rememberScrollState())
-          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-      ) {
-        Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
-        Spacer(Modifier.height(64.dp))
-        Text(
-          text = stringResource(hedvig.resources.R.string.PROFILE_TITLE),
-          style = MaterialTheme.typography.headlineLarge,
-          modifier = Modifier.padding(horizontal = 16.dp),
-        )
-        ProfileItemRows(
-          profileUiState = uiState,
-          showMyInfo = { context.startActivity(Intent(context, MyInfoActivity::class.java)) },
-          showBusinessModel = { context.startActivity(Intent(context, BusinessModelActivity::class.java)) },
-          showPaymentInfo = { context.startActivity(PaymentActivity.newInstance(context)) },
-          showSettings = { context.startActivity(SettingsActivity.newInstance(context)) },
-          showAboutApp = { context.startActivity(Intent(context, AboutAppActivity::class.java)) },
-          navigateToEurobonus = navigateToEurobonus,
-          logout = onLogout,
-        )
-        Spacer(Modifier.height(16.dp))
-        Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
-      }
-      TopAppBarLayoutForActions {
-        ToolbarChatIcon(
-          onClick = {
-            context.startChat()
-          },
-        )
-      }
-      PullRefreshIndicator(
-        refreshing = isLoading,
-        state = pullRefreshState,
-        scale = true,
-        modifier = Modifier.align(Alignment.TopCenter),
+  Box(Modifier.fillMaxSize()) {
+    Column(
+      Modifier
+        .matchParentSize()
+        .pullRefresh(pullRefreshState)
+        .verticalScroll(rememberScrollState())
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+    ) {
+      Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
+      Spacer(Modifier.height(64.dp))
+      Text(
+        text = stringResource(hedvig.resources.R.string.PROFILE_TITLE),
+        style = MaterialTheme.typography.headlineLarge,
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+      ProfileItemRows(
+        profileUiState = uiState,
+        showMyInfo = { context.startActivity(Intent(context, MyInfoActivity::class.java)) },
+        showBusinessModel = { context.startActivity(Intent(context, BusinessModelActivity::class.java)) },
+        showPaymentInfo = { context.startActivity(PaymentActivity.newInstance(context)) },
+        showSettings = { context.startActivity(SettingsActivity.newInstance(context)) },
+        showAboutApp = { context.startActivity(Intent(context, AboutAppActivity::class.java)) },
+        navigateToEurobonus = navigateToEurobonus,
+        logout = onLogout,
+      )
+      Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+    }
+    TopAppBarLayoutForActions {
+      ToolbarChatIcon(
+        onClick = {
+          context.startChat()
+        },
       )
     }
+    PullRefreshIndicator(
+      refreshing = isLoading,
+      state = pullRefreshState,
+      scale = true,
+      modifier = Modifier.align(Alignment.TopCenter),
+    )
   }
 }
 
