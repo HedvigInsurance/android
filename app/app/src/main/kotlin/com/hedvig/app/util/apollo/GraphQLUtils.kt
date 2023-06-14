@@ -8,6 +8,7 @@ import java.text.NumberFormat
 import java.util.Currency
 import javax.money.MonetaryAmount
 
+@Suppress("unused")
 fun Locale.toLocaleString() = when (this) {
   Locale.en_SE -> "en_SE"
   Locale.sv_SE -> "sv_SE"

@@ -39,7 +39,10 @@ internal class NetworkGetEurobonusStatusUseCase(
 }
 
 internal sealed interface GetEurobonusError {
-  object EurobonusNotApplicable : GetEurobonusError
+  object EurobonusNotApplicable : GetEurobonusError {
+    override fun toString() = "EurobonusNotApplicable"
+  }
+
   data class Error(
     val errorMessage: ErrorMessage,
   ) : GetEurobonusError, ErrorMessage by errorMessage
