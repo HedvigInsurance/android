@@ -69,6 +69,7 @@ import com.hedvig.app.feature.profile.ui.myinfo.MyInfoActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.apollo.format
+import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.startChat
 import com.kiwi.navigationcompose.typed.navigate
 import giraffe.fragment.MonetaryAmountFragment
@@ -273,7 +274,8 @@ private fun ColumnScope.ProfileItemRows(
 private fun getPriceCaption(paymentInfo: PaymentInfo): String? {
   paymentInfo.priceCaptionResId ?: return null
   val locale = getLocale()
-  val localizedAmount = paymentInfo.monetaryMonthlyNet.format(locale)
+  val monetaryMonthlyNet = paymentInfo.monetaryMonthlyNet.toMonetaryAmount()
+  val localizedAmount = monetaryMonthlyNet.format(locale)
   return stringResource(paymentInfo.priceCaptionResId, localizedAmount)
 }
 
