@@ -33,7 +33,6 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -86,7 +85,6 @@ import giraffe.ReferralsQuery
 import giraffe.fragment.ReferralFragment
 import org.javamoney.moneta.Money
 import org.koin.androidx.compose.koinViewModel
-import slimber.log.e
 import java.util.Locale
 import javax.money.MonetaryAmount
 
@@ -229,11 +227,7 @@ private fun ForeverScreen(
         modifier = Modifier.padding(horizontal = 16.dp),
       )
       ReferralsContent(uiState)
-      if (incentive == null) {
-        LaunchedEffect(incentive) {
-          e { "Invariant detected: referralInformation.campaign.incentive is null" }
-        }
-      } else if (uiState is ReferralsUiState.Success) {
+      if (incentive != null && uiState is ReferralsUiState.Success) {
         val code: String = uiState.data.referralInformation.campaign.code
         LargeContainedTextButton(
           text = stringResource(hedvig.resources.R.string.referrals_empty_share_code_button),
