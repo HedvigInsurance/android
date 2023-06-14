@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,6 +32,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.material3.warningElement
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.progress.FullScreenHedvigProgress
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
@@ -138,6 +141,12 @@ private fun EurobonusScreen(
           .padding(horizontal = 16.dp),
       )
       Spacer(Modifier.height(16.dp))
+      Text(
+        text = stringResource(hedvig.resources.R.string.sas_integration_info),
+        style = MaterialTheme.typography.bodyMedium,
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+      Spacer(Modifier.height(16.dp))
       LargeContainedTextButton(
         text = stringResource(hedvig.resources.R.string.general_save_button),
         enabled = uiState.canSubmit,
@@ -147,5 +156,26 @@ private fun EurobonusScreen(
       Spacer(Modifier.height(16.dp))
     }
     FullScreenHedvigProgress(show = uiState.isLoading)
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewEurobonusScreen() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      EurobonusScreen(
+        "ABC-123",
+        {},
+        EurobonusUiState(
+          canSubmit = true,
+          isLoading = true,
+          canEditText = true,
+          hasError = false,
+        ),
+        {},
+        {},
+      )
+    }
   }
 }
