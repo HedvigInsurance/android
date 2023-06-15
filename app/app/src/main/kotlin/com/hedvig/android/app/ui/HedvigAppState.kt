@@ -62,10 +62,10 @@ internal fun rememberHedvigAppState(
   ) {
     HedvigAppState(
       navController,
+      windowSizeClass,
       coroutineScope,
       tabNotificationBadgeService,
       featureManager,
-      windowSizeClass,
     )
   }
 }
@@ -73,10 +73,10 @@ internal fun rememberHedvigAppState(
 @Stable
 internal class HedvigAppState(
   val navController: NavHostController,
+  val windowSizeClass: WindowSizeClass,
   private val coroutineScope: CoroutineScope,
   private val tabNotificationBadgeService: TabNotificationBadgeService,
   private val featureManager: FeatureManager,
-  private val windowSizeClass: WindowSizeClass,
 ) {
   val currentDestination: NavDestination?
     @Composable get() = navController.currentBackStackEntryAsState().value?.destination

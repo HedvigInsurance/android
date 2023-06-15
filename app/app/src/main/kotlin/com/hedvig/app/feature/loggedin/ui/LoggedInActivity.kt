@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -105,8 +104,8 @@ class LoggedInActivity : AppCompatActivity() {
 
     setContent {
       HedvigTheme {
+        val windowSizeClass = calculateWindowSizeClass(this)
         HedvigApp(
-          windowSizeClass = calculateWindowSizeClass(this),
           getInitialTab = {
             intent.extras?.getString(INITIAL_TAB)?.let {
               TopLevelGraph.fromName(it)
@@ -116,13 +115,18 @@ class LoggedInActivity : AppCompatActivity() {
           clearInitialTab = {
             intent.removeExtra(INITIAL_TAB)
           },
-          tabNotificationBadgeService = tabNotificationBadgeService,
           marketManager = marketManager,
           imageLoader = imageLoader,
           featureManager = featureManager,
           hAnalytics = hAnalytics,
           fragmentManager = supportFragmentManager,
           languageService = languageService,
+          hedvigAppState = rememberHedvigAppState(
+            windowSizeClass = windowSizeClass,
+            tabNotificationBadgeService = tabNotificationBadgeService,
+            featureManager = featureManager,
+            hAnalytics = hAnalytics,
+          ),
         )
       }
     }
@@ -184,22 +188,15 @@ class LoggedInActivity : AppCompatActivity() {
 
 @Composable
 private fun HedvigApp(
-  windowSizeClass: WindowSizeClass,
   getInitialTab: () -> TopLevelGraph?,
   clearInitialTab: () -> Unit,
-  tabNotificationBadgeService: TabNotificationBadgeService,
   marketManager: MarketManager,
   imageLoader: ImageLoader,
   featureManager: FeatureManager,
   hAnalytics: HAnalytics,
   fragmentManager: FragmentManager,
   languageService: LanguageService,
-  hedvigAppState: HedvigAppState = rememberHedvigAppState(
-    windowSizeClass = windowSizeClass,
-    tabNotificationBadgeService = tabNotificationBadgeService,
-    featureManager = featureManager,
-    hAnalytics = hAnalytics,
-  ),
+  hedvigAppState: HedvigAppState,
 ) {
   LaunchedEffect(getInitialTab, clearInitialTab, hedvigAppState) {
     val initialTab: TopLevelGraph = getInitialTab() ?: return@LaunchedEffect
@@ -235,7 +232,6 @@ private fun HedvigApp(
         }
         HedvigNavHost(
           hedvigAppState = hedvigAppState,
-          windowSizeClass = windowSizeClass,
           marketManager = marketManager,
           imageLoader = imageLoader,
           featureManager = featureManager,

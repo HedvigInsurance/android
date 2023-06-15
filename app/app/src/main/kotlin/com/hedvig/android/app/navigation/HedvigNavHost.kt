@@ -1,6 +1,5 @@
 package com.hedvig.android.app.navigation
 
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -42,7 +41,6 @@ import kotlinx.coroutines.launch
 @Composable
 internal fun HedvigNavHost(
   hedvigAppState: HedvigAppState,
-  windowSizeClass: WindowSizeClass,
   marketManager: MarketManager,
   imageLoader: ImageLoader,
   featureManager: FeatureManager,
@@ -70,7 +68,7 @@ internal fun HedvigNavHost(
       navController = navController,
       nestedGraphs = {
         changeAddressGraph(
-          windowSizeClass = windowSizeClass,
+          windowSizeClass = hedvigAppState.windowSizeClass,
           density = density,
           navController = navController,
           openChat = context::startChat,
