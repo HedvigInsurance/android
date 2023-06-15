@@ -6,17 +6,24 @@ import com.hedvig.hanalytics.HAnalytics
 
 class ApplicationLifecycleTracker(
   private val hAnalytics: HAnalytics,
+  private val isProduction: Boolean,
 ) : DefaultLifecycleObserver {
 
   override fun onCreate(owner: LifecycleOwner) {
-    hAnalytics.appStarted()
+    if (isProduction) {
+      hAnalytics.appStarted()
+    }
   }
 
   override fun onStart(owner: LifecycleOwner) {
-    hAnalytics.appResumed()
+    if (isProduction) {
+      hAnalytics.appResumed()
+    }
   }
 
   override fun onStop(owner: LifecycleOwner) {
-    hAnalytics.appBackground()
+    if (isProduction) {
+      hAnalytics.appBackground()
+    }
   }
 }

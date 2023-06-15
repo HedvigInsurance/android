@@ -1,5 +1,6 @@
 package com.hedvig.android.hanalytics.android.di
 
+import com.hedvig.android.core.common.di.isProductionQualifier
 import com.hedvig.android.hanalytics.AndroidHAnalyticsService
 import com.hedvig.android.hanalytics.HAnalyticsService
 import com.hedvig.android.hanalytics.android.tracking.ApplicationLifecycleTracker
@@ -25,5 +26,5 @@ val hAnalyticsAndroidModule = module {
       appId = get(appIdQualifier),
     )
   }
-  single<ApplicationLifecycleTracker> { ApplicationLifecycleTracker(get()) }
+  single<ApplicationLifecycleTracker> { ApplicationLifecycleTracker(get(), get(isProductionQualifier)) }
 }
