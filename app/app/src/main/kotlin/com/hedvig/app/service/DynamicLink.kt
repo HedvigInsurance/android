@@ -3,6 +3,7 @@ package com.hedvig.app.service
 import android.content.Intent
 import android.net.Uri
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
+import com.google.firebase.dynamiclinks.PendingDynamicLinkData
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
@@ -26,7 +27,7 @@ sealed class DynamicLink(
 suspend fun getDynamicLinkFromFirebase(intent: Intent): DynamicLink = suspendCancellableCoroutine { cont ->
   FirebaseDynamicLinks.getInstance()
     .getDynamicLink(intent)
-    .addOnSuccessListener { linkData ->
+    .addOnSuccessListener { linkData: PendingDynamicLinkData? ->
       // This can be null despite the "@RecentlyNonNull" annotation in addOnSuccessListener
       if (linkData != null) {
         val link = createDynamicLinkFromUri(linkData.link)
