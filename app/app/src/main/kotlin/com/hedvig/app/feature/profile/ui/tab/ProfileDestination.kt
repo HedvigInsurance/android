@@ -198,7 +198,7 @@ private fun ColumnScope.ProfileItemRows(
     label = "Eurobonus",
   ) {
     ProfileRow(
-      title = stringResource(hedvig.resources.R.string.sas_integration_connect_your_number),
+      title = stringResource(hedvig.resources.R.string.sas_integration_title),
       caption = when {
         profileUiState.euroBonus == null -> ""
         profileUiState.euroBonus.code != null -> profileUiState.euroBonus.code
