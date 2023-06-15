@@ -1,8 +1,6 @@
 package com.hedvig.app.util.extensions
 
 import android.app.Activity
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -27,12 +25,10 @@ import androidx.core.content.getSystemService
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.android.core.common.android.SHARED_PREFERENCE_NAME
-import com.hedvig.app.MainActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import kotlinx.coroutines.delay
 import slimber.log.e
-import kotlin.system.exitProcess
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -91,26 +87,6 @@ suspend fun Context.showKeyboardWithDelay(inputView: View?, delayDuration: Durat
     delay(delayDuration)
     showKeyboard(inputView)
   }
-}
-
-fun Context.triggerRestartActivity(activity: Class<*> = MainActivity::class.java) {
-  val startActivity = Intent(this, activity)
-  startActivity.flags =
-    Intent.FLAG_ACTIVITY_NEW_TASK or
-    Intent.FLAG_ACTIVITY_CLEAR_TASK or
-    Intent.FLAG_ACTIVITY_CLEAR_TOP or
-    Intent.FLAG_ACTIVITY_SINGLE_TOP
-  val pendingIntentId = 56665 // Randomly chosen identifier, this number has no significance.
-  val pendingIntent =
-    PendingIntent.getActivity(
-      this.applicationContext,
-      pendingIntentId,
-      startActivity,
-      PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-    )
-  val mgr = this.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-  mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, pendingIntent)
-  exitProcess(0)
 }
 
 private fun Context.getSharedPreferences() =

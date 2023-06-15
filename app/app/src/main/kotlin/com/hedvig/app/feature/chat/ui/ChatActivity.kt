@@ -26,7 +26,6 @@ import com.hedvig.app.util.extensions.composeContactSupportEmail
 import com.hedvig.app.util.extensions.handleSingleSelectLink
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.storeBoolean
-import com.hedvig.app.util.extensions.triggerRestartActivity
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
@@ -91,9 +90,6 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
       .flowWithLifecycle(lifecycle)
       .onEach { event ->
         when (event) {
-          ChatViewModel.Event.Restart -> {
-            triggerRestartActivity(ChatActivity::class.java)
-          }
           is ChatViewModel.Event.Error -> showAlert(
             title = hedvig.resources.R.string.something_went_wrong,
             message = hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE,
