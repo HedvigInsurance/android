@@ -8,21 +8,23 @@ import androidx.compose.runtime.snapshots.Snapshot
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.cache.normalized.FetchPolicy
+import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.WhileSubscribed
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import octopus.EurobonusDataQuery
 import octopus.UpdateEurobonusNumberMutation
-import kotlin.time.Duration.Companion.seconds
 
 internal class EurobonusViewModel(
   private val apolloClient: ApolloClient,
@@ -31,34 +33,46 @@ internal class EurobonusViewModel(
   var eurobonusText: String by mutableStateOf("")
     private set
 
-  init {
-    viewModelScope.launch {
-      apolloClient.query(EurobonusDataQuery())
-        .safeExecute()
-        .toEither()
-        .onRight { data ->
-          data.currentMember.partnerData?.sas?.eurobonusNumber?.let { existingEurobonusNumber ->
-            Snapshot.withMutableSnapshot {
-              eurobonusText = existingEurobonusNumber
-            }
-          }
-        }
-      isLoadingInitialEurobonusValue.update { false }
-      snapshotFlow { eurobonusText }.drop(1).collectLatest {
-        hasError.update { false }
-        isDirty.update { true }
-      }
-    }
-  }
-
   private val isLoadingInitialEurobonusValue = MutableStateFlow(true)
   private val isDirty = MutableStateFlow(false)
   private val isSubmitting = MutableStateFlow(false)
   private val hasError = MutableStateFlow(false)
 
+  // If member isn't eligible for eurbonus, should exit this screen immediatelly.
+  val _isEligibleForEurobonus: MutableStateFlow<Boolean> = MutableStateFlow(true)
+  val isEligibleForEurobonus: StateFlow<Boolean> = _isEligibleForEurobonus.asStateFlow()
+
   val uiState: StateFlow<EurobonusUiState> =
     combine(
-      snapshotFlow { eurobonusText },
+      combine(
+        flow<Unit> {
+          emit(Unit)
+          apolloClient.query(EurobonusDataQuery())
+            .fetchPolicy(FetchPolicy.NetworkOnly)
+            .safeExecute()
+            .toEither()
+            .onRight { data ->
+              data.currentMember.partnerData?.sas?.eligible?.let { eligible ->
+                if (!eligible) {
+                  _isEligibleForEurobonus.update { false }
+                }
+              }
+              data.currentMember.partnerData?.sas?.eurobonusNumber?.let { existingEurobonusNumber ->
+                Snapshot.withMutableSnapshot {
+                  eurobonusText = existingEurobonusNumber
+                }
+              }
+            }
+          isLoadingInitialEurobonusValue.update { false }
+          snapshotFlow { eurobonusText }
+            .drop(1)
+            .collectLatest {
+              hasError.update { false }
+              isDirty.update { true }
+            }
+        },
+        snapshotFlow { eurobonusText },
+      ) { _, eurobonusText -> eurobonusText },
       isDirty,
       isSubmitting,
       hasError,
@@ -77,7 +91,7 @@ internal class EurobonusViewModel(
     }
       .stateIn(
         viewModelScope,
-        SharingStarted.WhileSubscribed(5.seconds),
+        SharingStarted.WhileSubscribed(),
         EurobonusUiState(
           canSubmit = false,
           isLoading = false,
