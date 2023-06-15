@@ -166,18 +166,13 @@ fun AppCompatActivity.handleSingleSelectLink(
   }
 }
 
-fun Activity.showReviewDialog(
-  onComplete: () -> Unit = {},
-) {
+fun Activity.showReviewDialog() {
   val manager = ReviewManagerFactory.create(this)
   val request = manager.requestReviewFlow()
   request.addOnCompleteListener { task ->
     if (task.isSuccessful) {
       val reviewInfo = task.result
-      val flow = manager.launchReviewFlow(this, reviewInfo)
-      flow.addOnCompleteListener {
-        onComplete()
-      }
+      manager.launchReviewFlow(this, reviewInfo)
     }
   }
 }
