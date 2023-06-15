@@ -21,6 +21,7 @@ import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.core.AppDestination
+import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
@@ -41,6 +42,7 @@ import kotlinx.coroutines.launch
 @Composable
 internal fun HedvigNavHost(
   hedvigAppState: HedvigAppState,
+  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   marketManager: MarketManager,
   imageLoader: ImageLoader,
   featureManager: FeatureManager,
@@ -58,6 +60,7 @@ internal fun HedvigNavHost(
   AnimatedNavHost(
     navController = navController,
     startDestination = createRoutePattern<TopLevelGraph.HOME>(),
+    route = "root",
     modifier = modifier,
     enterTransition = { MotionDefaults.sharedXAxisEnter(density) },
     exitTransition = { MotionDefaults.sharedXAxisExit(density) },
@@ -66,6 +69,7 @@ internal fun HedvigNavHost(
   ) {
     homeGraph(
       navController = navController,
+      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       nestedGraphs = {
         changeAddressGraph(
           windowSizeClass = hedvigAppState.windowSizeClass,
@@ -144,8 +148,17 @@ internal fun HedvigNavHost(
       imageLoader = imageLoader,
       hAnalytics = hAnalytics,
     )
-    insuranceGraph(imageLoader = imageLoader)
-    referralsGraph(languageService = languageService)
-    profileGraph(navController = navController)
+    insuranceGraph(
+      imageLoader = imageLoader,
+      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+    )
+    referralsGraph(
+      languageService = languageService,
+      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+    )
+    profileGraph(
+      navController = navController,
+      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+    )
   }
 }

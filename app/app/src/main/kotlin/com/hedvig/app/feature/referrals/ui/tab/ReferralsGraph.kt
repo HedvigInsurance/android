@@ -47,6 +47,7 @@ import androidx.core.view.doOnDetach
 import androidx.core.view.isVisible
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.navDeepLink
 import com.google.android.material.snackbar.Snackbar
 import com.hedvig.android.core.common.android.hide
 import com.hedvig.android.core.common.android.remove
@@ -61,6 +62,7 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.compose.typed.animatedNavigation
 import com.hedvig.android.navigation.core.AppDestination
+import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ReferralsCodeBinding
@@ -90,9 +92,13 @@ import javax.money.MonetaryAmount
 
 internal fun NavGraphBuilder.referralsGraph(
   languageService: LanguageService,
+  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
 ) {
   animatedNavigation<TopLevelGraph.REFERRALS>(
     startDestination = createRoutePattern<AppDestination.TopLevelDestination.Referrals>(),
+    deepLinks = listOf(
+      navDeepLink { uriPattern = hedvigDeepLinkContainer.forever },
+    ),
   ) {
     animatedComposable<AppDestination.TopLevelDestination.Referrals>(
       enterTransition = { MotionDefaults.fadeThroughEnter },

@@ -2,10 +2,12 @@ package com.hedvig.app.feature.profile.ui.tab
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.navDeepLink
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.compose.typed.animatedNavigation
 import com.hedvig.android.navigation.core.AppDestination
+import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.app.feature.profile.ui.eurobonus.EurobonusDestination
 import com.hedvig.app.feature.profile.ui.eurobonus.EurobonusViewModel
@@ -14,6 +16,7 @@ import org.koin.androidx.compose.koinViewModel
 
 internal fun NavGraphBuilder.profileGraph(
   navController: NavController,
+  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
 ) {
   animatedNavigation<TopLevelGraph.PROFILE>(
     startDestination = createRoutePattern<AppDestination.TopLevelDestination.Profile>(),
@@ -28,7 +31,11 @@ internal fun NavGraphBuilder.profileGraph(
         viewModel = viewModel,
       )
     }
-    animatedComposable<AppDestination.Eurobonus> {
+    animatedComposable<AppDestination.Eurobonus>(
+      deepLinks = listOf(
+        navDeepLink { uriPattern = hedvigDeepLinkContainer.eurobonus },
+      ),
+    ) {
       val viewModel: EurobonusViewModel = koinViewModel()
       EurobonusDestination(
         viewModel = viewModel,

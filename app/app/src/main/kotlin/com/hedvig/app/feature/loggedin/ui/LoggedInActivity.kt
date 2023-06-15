@@ -55,6 +55,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
+import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
@@ -77,6 +78,7 @@ class LoggedInActivity : AppCompatActivity() {
   val featureManager: FeatureManager by inject()
   val hAnalytics: HAnalytics by inject()
   val languageService: LanguageService by inject()
+  val hedvigDeepLinkContainer: HedvigDeepLinkContainer by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -106,6 +108,13 @@ class LoggedInActivity : AppCompatActivity() {
       HedvigTheme {
         val windowSizeClass = calculateWindowSizeClass(this)
         HedvigApp(
+          hedvigAppState = rememberHedvigAppState(
+            windowSizeClass = windowSizeClass,
+            tabNotificationBadgeService = tabNotificationBadgeService,
+            featureManager = featureManager,
+            hAnalytics = hAnalytics,
+          ),
+          hedvigDeepLinkContainer = hedvigDeepLinkContainer,
           getInitialTab = {
             intent.extras?.getString(INITIAL_TAB)?.let {
               TopLevelGraph.fromName(it)
@@ -121,12 +130,6 @@ class LoggedInActivity : AppCompatActivity() {
           hAnalytics = hAnalytics,
           fragmentManager = supportFragmentManager,
           languageService = languageService,
-          hedvigAppState = rememberHedvigAppState(
-            windowSizeClass = windowSizeClass,
-            tabNotificationBadgeService = tabNotificationBadgeService,
-            featureManager = featureManager,
-            hAnalytics = hAnalytics,
-          ),
         )
       }
     }
@@ -188,6 +191,8 @@ class LoggedInActivity : AppCompatActivity() {
 
 @Composable
 private fun HedvigApp(
+  hedvigAppState: HedvigAppState,
+  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   getInitialTab: () -> TopLevelGraph?,
   clearInitialTab: () -> Unit,
   marketManager: MarketManager,
@@ -196,7 +201,6 @@ private fun HedvigApp(
   hAnalytics: HAnalytics,
   fragmentManager: FragmentManager,
   languageService: LanguageService,
-  hedvigAppState: HedvigAppState,
 ) {
   LaunchedEffect(getInitialTab, clearInitialTab, hedvigAppState) {
     val initialTab: TopLevelGraph = getInitialTab() ?: return@LaunchedEffect
@@ -232,6 +236,7 @@ private fun HedvigApp(
         }
         HedvigNavHost(
           hedvigAppState = hedvigAppState,
+          hedvigDeepLinkContainer = hedvigDeepLinkContainer,
           marketManager = marketManager,
           imageLoader = imageLoader,
           featureManager = featureManager,
