@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -42,37 +43,34 @@ internal class EurobonusViewModel(
   val _isEligibleForEurobonus: MutableStateFlow<Boolean> = MutableStateFlow(true)
   val isEligibleForEurobonus: StateFlow<Boolean> = _isEligibleForEurobonus.asStateFlow()
 
-  val uiState: StateFlow<EurobonusUiState> =
+  val uiState: StateFlow<EurobonusUiState> = merge(
+    flow {
+      apolloClient.query(EurobonusDataQuery())
+        .fetchPolicy(FetchPolicy.NetworkOnly)
+        .safeExecute()
+        .toEither()
+        .onRight { data ->
+          data.currentMember.partnerData?.sas?.eligible?.let { eligible ->
+            if (!eligible) {
+              _isEligibleForEurobonus.update { false }
+            }
+          }
+          data.currentMember.partnerData?.sas?.eurobonusNumber?.let { existingEurobonusNumber ->
+            Snapshot.withMutableSnapshot {
+              eurobonusText = existingEurobonusNumber
+            }
+          }
+        }
+      isLoadingInitialEurobonusValue.update { false }
+      snapshotFlow { eurobonusText }
+        .drop(1)
+        .collectLatest {
+          hasError.update { false }
+          isDirty.update { true }
+        }
+    },
     combine(
-      combine(
-        flow<Unit> {
-          emit(Unit)
-          apolloClient.query(EurobonusDataQuery())
-            .fetchPolicy(FetchPolicy.NetworkOnly)
-            .safeExecute()
-            .toEither()
-            .onRight { data ->
-              data.currentMember.partnerData?.sas?.eligible?.let { eligible ->
-                if (!eligible) {
-                  _isEligibleForEurobonus.update { false }
-                }
-              }
-              data.currentMember.partnerData?.sas?.eurobonusNumber?.let { existingEurobonusNumber ->
-                Snapshot.withMutableSnapshot {
-                  eurobonusText = existingEurobonusNumber
-                }
-              }
-            }
-          isLoadingInitialEurobonusValue.update { false }
-          snapshotFlow { eurobonusText }
-            .drop(1)
-            .collectLatest {
-              hasError.update { false }
-              isDirty.update { true }
-            }
-        },
-        snapshotFlow { eurobonusText },
-      ) { _, eurobonusText -> eurobonusText },
+      snapshotFlow { eurobonusText },
       isDirty,
       isSubmitting,
       hasError,
@@ -88,17 +86,17 @@ internal class EurobonusViewModel(
         canEditText = canEditText,
         hasError = hasError,
       )
-    }
-      .stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(),
-        EurobonusUiState(
-          canSubmit = false,
-          isLoading = false,
-          canEditText = false,
-          hasError = false,
-        ),
-      )
+    },
+  ).stateIn(
+    viewModelScope,
+    SharingStarted.WhileSubscribed(),
+    EurobonusUiState(
+      canSubmit = false,
+      isLoading = false,
+      canEditText = false,
+      hasError = false,
+    ),
+  )
 
   fun updateEurobonusValue(newEurobonusValue: String) {
     if (isSubmitting.value) {
