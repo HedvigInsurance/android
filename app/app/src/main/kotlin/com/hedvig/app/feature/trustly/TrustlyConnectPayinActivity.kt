@@ -68,7 +68,6 @@ class TrustlyConnectPayinActivity : AppCompatActivity(R.layout.fragment_containe
             LoggedInActivity.newInstance(
               this,
               withoutHistory = true,
-              isFromOnboarding = true,
             ),
           )
           return@observe

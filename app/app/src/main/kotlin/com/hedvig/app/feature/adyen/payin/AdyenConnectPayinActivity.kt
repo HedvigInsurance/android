@@ -81,7 +81,6 @@ class AdyenConnectPayinActivity : AppCompatActivity(R.layout.fragment_container_
             LoggedInActivity.newInstance(
               this,
               withoutHistory = true,
-              isFromOnboarding = true,
             ),
           )
           return@observe

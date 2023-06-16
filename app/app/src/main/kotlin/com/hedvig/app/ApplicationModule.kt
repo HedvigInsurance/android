@@ -170,8 +170,6 @@ import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignViewModel
 import com.hedvig.app.feature.trustly.TrustlyRepository
 import com.hedvig.app.feature.trustly.TrustlyViewModel
 import com.hedvig.app.feature.trustly.TrustlyViewModelImpl
-import com.hedvig.app.feature.welcome.WelcomeRepository
-import com.hedvig.app.feature.welcome.WelcomeViewModel
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
 import com.hedvig.app.service.FileService
 import com.hedvig.app.service.push.senders.CrossSellNotificationSender
@@ -324,7 +322,6 @@ private val viewModelModule = module {
   viewModel { ChatViewModel(get(), get(), get()) }
   viewModel { (quoteCartId: QuoteCartId?) -> RedeemCodeViewModel(quoteCartId, get(), get()) }
   viewModel { BankIdLoginViewModel(get(), get(), get(), get(), get()) }
-  viewModel { WelcomeViewModel(get()) }
   viewModel {
     SettingsViewModel(
       hAnalytics = get(),
@@ -537,7 +534,6 @@ private val repositoriesModule = module {
   single { PayinStatusRepository(get<ApolloClient>(giraffeClient)) }
   single { RedeemReferralCodeRepository(get<ApolloClient>(giraffeClient), get()) }
   single { UserRepository(get<ApolloClient>(giraffeClient)) }
-  single { WelcomeRepository(get<ApolloClient>(giraffeClient), get()) }
   single { AdyenRepository(get<ApolloClient>(giraffeClient), get()) }
   single { EmbarkRepository(get<ApolloClient>(giraffeClient), get()) }
   single { ReferralsRepository(get<ApolloClient>(giraffeClient)) }

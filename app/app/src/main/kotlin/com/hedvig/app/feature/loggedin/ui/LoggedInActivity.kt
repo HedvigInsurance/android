@@ -53,7 +53,6 @@ import com.hedvig.android.app.ui.HedvigNavRail
 import com.hedvig.android.app.ui.rememberHedvigAppState
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
-import com.hedvig.android.core.common.android.ThemedIconUrls
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
@@ -64,11 +63,8 @@ import com.hedvig.android.navigation.activity.Navigator
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
-import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
-import com.hedvig.app.feature.welcome.WelcomeDialog
-import com.hedvig.app.feature.welcome.WelcomeViewModel
 import com.hedvig.app.service.DynamicLink
 import com.hedvig.app.util.extensions.showReviewDialog
 import com.hedvig.hanalytics.HAnalytics
@@ -86,7 +82,6 @@ import slimber.log.e
 import slimber.log.i
 
 class LoggedInActivity : AppCompatActivity() {
-  private val welcomeViewModel: WelcomeViewModel by viewModel()
   private val reviewDialogViewModel: ReviewDialogViewModel by viewModel()
 
   private val authTokenService: AuthTokenService by inject()
@@ -121,21 +116,26 @@ class LoggedInActivity : AppCompatActivity() {
 
     val intent: Intent = intent
     val uri: Uri? = intent.data
-    d { "Stelios: segments:${uri?.pathSegments?.joinToString(",") ?: "null"}" }
     lifecycleScope.launch {
       if (featureManager.isFeatureEnabled(Feature.UPDATE_NECESSARY).also { d { "Stelios: was true? $it" } }) {
         applicationContext.startActivity(ForceUpgradeActivity.newInstance(applicationContext))
         finish()
         return@launch
       }
+      if (intent.getBooleanExtra(SHOW_RATING_DIALOG, false)) {
+        lifecycleScope.launch {
+          showReviewWithDelay()
+        }
+      }
       if (uri != null) {
+        val pathSegments = uri.pathSegments
         val dynamicLink: DynamicLink = when {
-          uri.pathSegments.contains("direct-debit") -> DynamicLink.DirectDebit
-          uri.pathSegments.contains("connect-payment") -> DynamicLink.DirectDebit
-          uri.pathSegments.isEmpty() -> DynamicLink.None
+          pathSegments.contains("direct-debit") -> DynamicLink.DirectDebit
+          pathSegments.contains("connect-payment") -> DynamicLink.DirectDebit
+          pathSegments.isEmpty() -> DynamicLink.None
           else -> DynamicLink.Unknown
         }
-        i { "Deep link was found:$dynamicLink" }
+        i { "Deep link was found:$dynamicLink, with segments: ${pathSegments.joinToString(",")}" }
         if (dynamicLink is DynamicLink.DirectDebit) {
           hAnalytics.deepLinkOpened(dynamicLink.type)
           val market = marketManager.market
@@ -157,7 +157,15 @@ class LoggedInActivity : AppCompatActivity() {
           d { "Deep link $dynamicLink did not open some specific activity" }
         }
       }
-      d { "Stelios: Before auth check" }
+      launch {
+        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+          reviewDialogViewModel.shouldOpenReviewDialog.collect { shouldOpenReviewDialog ->
+            if (shouldOpenReviewDialog) {
+              showReviewWithDelay()
+            }
+          }
+        }
+      }
       lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
         d { "Stelios: Gonna start auth check" }
         authTokenService.authStatus
@@ -187,25 +195,6 @@ class LoggedInActivity : AppCompatActivity() {
           .filterIsInstance<AuthStatus.LoggedOut>()
           .first()
         navigator.navigateToMarketingActivity()
-      }
-    }
-
-    if (intent.getBooleanExtra(EXTRA_IS_FROM_ONBOARDING, false)) {
-      fetchAndShowWelcomeDialog()
-    }
-    lifecycleScope.launch {
-      lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-        reviewDialogViewModel.shouldOpenReviewDialog.collect { shouldOpenReviewDialog ->
-          if (shouldOpenReviewDialog) {
-            showReviewWithDelay()
-          }
-        }
-      }
-    }
-
-    if (intent.getBooleanExtra(SHOW_RATING_DIALOG, false)) {
-      lifecycleScope.launch {
-        showReviewWithDelay()
       }
     }
 
@@ -239,38 +228,12 @@ class LoggedInActivity : AppCompatActivity() {
     }
   }
 
-  private fun fetchAndShowWelcomeDialog() {
-    welcomeViewModel.fetch()
-    welcomeViewModel.data.observe(this@LoggedInActivity) { data ->
-      WelcomeDialog.newInstance(
-        data.welcome.mapIndexed { index, page ->
-          DismissiblePagerModel.TitlePage(
-            ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
-            page.title,
-            page.paragraph,
-            getString(
-              if (index == data.welcome.size - 1) {
-                hedvig.resources.R.string.NEWS_DISMISS
-              } else {
-                hedvig.resources.R.string.NEWS_PROCEED
-              },
-            ),
-          )
-        },
-      )
-        .show(supportFragmentManager, WelcomeDialog.TAG)
-    }
-    intent.removeExtra(EXTRA_IS_FROM_ONBOARDING)
-  }
-
   private suspend fun showReviewWithDelay() {
     delay(REVIEW_DIALOG_DELAY_MILLIS)
     showReviewDialog()
   }
 
   companion object {
-    const val EXTRA_IS_FROM_ONBOARDING = "extra_is_from_onboarding"
-
     private const val INITIAL_TAB = "INITIAL_TAB"
     private const val SHOW_RATING_DIALOG = "SHOW_RATING_DIALOG"
     private const val REVIEW_DIALOG_DELAY_MILLIS = 2000L
@@ -279,7 +242,6 @@ class LoggedInActivity : AppCompatActivity() {
       context: Context,
       withoutHistory: Boolean = false,
       initialTab: TopLevelGraph = TopLevelGraph.HOME,
-      isFromOnboarding: Boolean = false,
       showRatingDialog: Boolean = false,
     ): Intent = Intent(context, LoggedInActivity::class.java).apply {
       if (withoutHistory) {
@@ -287,7 +249,6 @@ class LoggedInActivity : AppCompatActivity() {
         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
       }
       putExtra(INITIAL_TAB, initialTab.toName())
-      putExtra(EXTRA_IS_FROM_ONBOARDING, isFromOnboarding)
       putExtra(SHOW_RATING_DIALOG, showRatingDialog)
     }
   }

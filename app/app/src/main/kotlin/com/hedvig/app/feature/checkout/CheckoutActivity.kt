@@ -161,7 +161,6 @@ class CheckoutActivity : AppCompatActivity(R.layout.activity_checkout) {
       CheckoutViewModel.Event.CheckoutSuccess -> startActivity(
         LoggedInActivity.newInstance(
           context = this,
-          isFromOnboarding = true,
           withoutHistory = true,
         ),
       )
