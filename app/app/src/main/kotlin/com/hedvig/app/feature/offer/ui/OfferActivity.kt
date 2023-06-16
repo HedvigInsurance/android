@@ -27,7 +27,6 @@ import com.hedvig.android.core.common.android.show
 import com.hedvig.android.feature.home.legacychangeaddress.result.ChangeAddressResultActivity
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
-import com.hedvig.app.MainActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityOfferBinding
 import com.hedvig.app.feature.adyen.PaymentTokenId
@@ -39,6 +38,7 @@ import com.hedvig.app.feature.documents.DocumentAdapter
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.feature.embark.util.SelectedContractType
 import com.hedvig.app.feature.insurablelimits.InsurableLimitsAdapter
+import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.model.CheckoutLabel
 import com.hedvig.app.feature.offer.model.CheckoutMethod
@@ -257,7 +257,7 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
   }
 
   private fun startMainActivity() {
-    startActivity(Intent(this@OfferActivity, MainActivity::class.java))
+    startActivity(Intent(this@OfferActivity, LoggedInActivity::class.java))
   }
 
   private fun handlePostSignError(event: OfferViewModel.Event.ApproveError) {

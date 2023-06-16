@@ -2,6 +2,7 @@ package com.hedvig.app.feature.loggedin.ui
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -36,6 +37,7 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
@@ -49,41 +51,146 @@ import com.hedvig.android.app.ui.HedvigAppState
 import com.hedvig.android.app.ui.HedvigBottomBar
 import com.hedvig.android.app.ui.HedvigNavRail
 import com.hedvig.android.app.ui.rememberHedvigAppState
-import com.hedvig.android.auth.android.AuthenticatedObserver
+import com.hedvig.android.auth.AuthStatus
+import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.common.android.ThemedIconUrls
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
+import com.hedvig.android.navigation.activity.Navigator
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
+import com.hedvig.app.feature.payment.connectPayinIntent
+import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
 import com.hedvig.app.feature.welcome.WelcomeDialog
 import com.hedvig.app.feature.welcome.WelcomeViewModel
+import com.hedvig.app.service.DynamicLink
 import com.hedvig.app.util.extensions.showReviewDialog
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import slimber.log.d
+import slimber.log.e
+import slimber.log.i
 
 class LoggedInActivity : AppCompatActivity() {
   private val welcomeViewModel: WelcomeViewModel by viewModel()
   private val reviewDialogViewModel: ReviewDialogViewModel by viewModel()
 
-  val tabNotificationBadgeService: TabNotificationBadgeService by inject()
-  val marketManager: MarketManager by inject()
-  val imageLoader: ImageLoader by inject()
-  val featureManager: FeatureManager by inject()
-  val hAnalytics: HAnalytics by inject()
-  val languageService: LanguageService by inject()
-  val hedvigDeepLinkContainer: HedvigDeepLinkContainer by inject()
+  private val authTokenService: AuthTokenService by inject()
+  private val tabNotificationBadgeService: TabNotificationBadgeService by inject()
+  private val marketManager: MarketManager by inject()
+  private val imageLoader: ImageLoader by inject()
+  private val featureManager: FeatureManager by inject()
+  private val hAnalytics: HAnalytics by inject()
+  private val languageService: LanguageService by inject()
+  private val hedvigDeepLinkContainer: HedvigDeepLinkContainer by inject()
+
+  private val navigator: Navigator by inject()
+
+  private val showSplash = MutableStateFlow(true)
 
   override fun onCreate(savedInstanceState: Bundle?) {
+    installSplashScreen().setKeepOnScreenCondition { showSplash.value == true }
     super.onCreate(savedInstanceState)
-    lifecycle.addObserver(AuthenticatedObserver())
     WindowCompat.setDecorFitsSystemWindows(window, false)
+
+    // check DK login by pressing app in home screen after login
+//    val isBringingToFront = intent.flags and Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT != 0
+//    val resetTaskIfNeeded = intent.flags and Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED != 0
+//    if (isBringingToFront && resetTaskIfNeeded) {
+//      // We've started the app from the home screen after it was put there by pressing the home button, and not going
+//      // back from the start destination. In this case, do not override the existing backstack.
+//      // And since `MainActivity` is added at the top of the backstack, we need to simply pop it out and we're good.
+//      // This fixes the bug in DK where exiting the app, entering the auth info, and clicking on the app in the home
+//      // screen to come back to the app fails by navigating to the marketing screen again, and failing authentication.
+//      onBackPressedDispatcher.onBackPressed()
+//    }
+
+    val intent: Intent = intent
+    val uri: Uri? = intent.data
+    d { "Stelios: segments:${uri?.pathSegments?.joinToString(",") ?: "null"}" }
+    if (uri != null) {
+      val dynamicLink: DynamicLink = when {
+        uri.pathSegments.contains("direct-debit") -> DynamicLink.DirectDebit
+        uri.pathSegments.contains("connect-payment") -> DynamicLink.DirectDebit
+        uri.pathSegments.isEmpty() -> DynamicLink.None
+        else -> DynamicLink.Unknown
+      }
+      i { "Deep link was found:$dynamicLink" }
+      if (dynamicLink is DynamicLink.DirectDebit) {
+        hAnalytics.deepLinkOpened(dynamicLink.type)
+        val market = marketManager.market
+        if (market == null) {
+          e { "Tried to open DirectDebit deep link, but market was null. Aborting and continuing to normal flow" }
+        } else {
+          lifecycleScope.launch {
+            this@LoggedInActivity.startActivity(
+              connectPayinIntent(
+                this@LoggedInActivity,
+                featureManager.getPaymentType(),
+                market,
+                false,
+              ),
+            )
+          }
+        }
+      } else {
+        d { "Deep link $dynamicLink did not open some specific activity" }
+      }
+    }
+    d { "Stelios: before launch" }
+    lifecycleScope.launch {
+      d { "Stelios: Before update check" }
+      if (featureManager.isFeatureEnabled(Feature.UPDATE_NECESSARY)) {
+        applicationContext.startActivity(ForceUpgradeActivity.newInstance(applicationContext))
+        finish()
+        return@launch
+      }
+      d { "Stelios: Before auth check" }
+      lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+        d { "Stelios: Gonna start auth check" }
+        authTokenService.authStatus
+          .onEach { authStatus ->
+            d {
+              buildString {
+                append("Owner: LoggedInActivity | Received authStatus: ")
+                append(
+                  when (authStatus) {
+                    is AuthStatus.LoggedIn -> "LoggedIn"
+                    AuthStatus.LoggedOut -> "LoggedOut"
+                    null -> "null"
+                  },
+                )
+              }
+            }
+          }
+          .onEach { authStatus ->
+            if (authStatus is AuthStatus.LoggedIn) {
+              showSplash.update { false }
+              if (marketManager.market != null) {
+                // Upcast everyone that were logged in before Norway launch to be in the Swedish market
+                marketManager.market = Market.SE
+              }
+            }
+          }
+          .filterIsInstance<AuthStatus.LoggedOut>()
+          .first()
+        navigator.navigateToMarketingActivity()
+      }
+    }
 
     if (intent.getBooleanExtra(EXTRA_IS_FROM_ONBOARDING, false)) {
       fetchAndShowWelcomeDialog()
@@ -118,7 +225,6 @@ class LoggedInActivity : AppCompatActivity() {
           getInitialTab = {
             intent.extras?.getString(INITIAL_TAB)?.let {
               TopLevelGraph.fromName(it)
-            }.also {
             }
           },
           clearInitialTab = {
