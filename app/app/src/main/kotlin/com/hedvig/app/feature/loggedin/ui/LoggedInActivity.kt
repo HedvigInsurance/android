@@ -122,42 +122,40 @@ class LoggedInActivity : AppCompatActivity() {
     val intent: Intent = intent
     val uri: Uri? = intent.data
     d { "Stelios: segments:${uri?.pathSegments?.joinToString(",") ?: "null"}" }
-    if (uri != null) {
-      val dynamicLink: DynamicLink = when {
-        uri.pathSegments.contains("direct-debit") -> DynamicLink.DirectDebit
-        uri.pathSegments.contains("connect-payment") -> DynamicLink.DirectDebit
-        uri.pathSegments.isEmpty() -> DynamicLink.None
-        else -> DynamicLink.Unknown
-      }
-      i { "Deep link was found:$dynamicLink" }
-      if (dynamicLink is DynamicLink.DirectDebit) {
-        hAnalytics.deepLinkOpened(dynamicLink.type)
-        val market = marketManager.market
-        if (market == null) {
-          e { "Tried to open DirectDebit deep link, but market was null. Aborting and continuing to normal flow" }
-        } else {
-          lifecycleScope.launch {
-            this@LoggedInActivity.startActivity(
-              connectPayinIntent(
-                this@LoggedInActivity,
-                featureManager.getPaymentType(),
-                market,
-                false,
-              ),
-            )
-          }
-        }
-      } else {
-        d { "Deep link $dynamicLink did not open some specific activity" }
-      }
-    }
-    d { "Stelios: before launch" }
     lifecycleScope.launch {
-      d { "Stelios: Before update check" }
-      if (featureManager.isFeatureEnabled(Feature.UPDATE_NECESSARY)) {
+      if (featureManager.isFeatureEnabled(Feature.UPDATE_NECESSARY).also { d { "Stelios: was true? $it" } }) {
         applicationContext.startActivity(ForceUpgradeActivity.newInstance(applicationContext))
         finish()
         return@launch
+      }
+      if (uri != null) {
+        val dynamicLink: DynamicLink = when {
+          uri.pathSegments.contains("direct-debit") -> DynamicLink.DirectDebit
+          uri.pathSegments.contains("connect-payment") -> DynamicLink.DirectDebit
+          uri.pathSegments.isEmpty() -> DynamicLink.None
+          else -> DynamicLink.Unknown
+        }
+        i { "Deep link was found:$dynamicLink" }
+        if (dynamicLink is DynamicLink.DirectDebit) {
+          hAnalytics.deepLinkOpened(dynamicLink.type)
+          val market = marketManager.market
+          if (market == null) {
+            e { "Tried to open DirectDebit deep link, but market was null. Aborting and continuing to normal flow" }
+          } else {
+            lifecycleScope.launch {
+              this@LoggedInActivity.startActivity(
+                connectPayinIntent(
+                  this@LoggedInActivity,
+                  featureManager.getPaymentType(),
+                  market,
+                  false,
+                ),
+              )
+            }
+          }
+        } else {
+          d { "Deep link $dynamicLink did not open some specific activity" }
+        }
       }
       d { "Stelios: Before auth check" }
       lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
