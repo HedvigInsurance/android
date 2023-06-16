@@ -70,6 +70,7 @@ import com.hedvig.app.util.extensions.showReviewDialog
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
@@ -117,7 +118,7 @@ class LoggedInActivity : AppCompatActivity() {
     val intent: Intent = intent
     val uri: Uri? = intent.data
     lifecycleScope.launch {
-      if (featureManager.isFeatureEnabled(Feature.UPDATE_NECESSARY).also { d { "Stelios: was true? $it" } }) {
+      if (featureManager.isFeatureEnabled(Feature.UPDATE_NECESSARY)) {
         applicationContext.startActivity(ForceUpgradeActivity.newInstance(applicationContext))
         finish()
         return@launch
@@ -125,36 +126,6 @@ class LoggedInActivity : AppCompatActivity() {
       if (intent.getBooleanExtra(SHOW_RATING_DIALOG, false)) {
         lifecycleScope.launch {
           showReviewWithDelay()
-        }
-      }
-      if (uri != null) {
-        val pathSegments = uri.pathSegments
-        val dynamicLink: DynamicLink = when {
-          pathSegments.contains("direct-debit") -> DynamicLink.DirectDebit
-          pathSegments.contains("connect-payment") -> DynamicLink.DirectDebit
-          pathSegments.isEmpty() -> DynamicLink.None
-          else -> DynamicLink.Unknown
-        }
-        i { "Deep link was found:$dynamicLink, with segments: ${pathSegments.joinToString(",")}" }
-        if (dynamicLink is DynamicLink.DirectDebit) {
-          hAnalytics.deepLinkOpened(dynamicLink.type)
-          val market = marketManager.market
-          if (market == null) {
-            e { "Tried to open DirectDebit deep link, but market was null. Aborting and continuing to normal flow" }
-          } else {
-            lifecycleScope.launch {
-              this@LoggedInActivity.startActivity(
-                connectPayinIntent(
-                  this@LoggedInActivity,
-                  featureManager.getPaymentType(),
-                  market,
-                  false,
-                ),
-              )
-            }
-          }
-        } else {
-          d { "Deep link $dynamicLink did not open some specific activity" }
         }
       }
       launch {
@@ -166,8 +137,42 @@ class LoggedInActivity : AppCompatActivity() {
           }
         }
       }
+      launch {
+        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+          showSplash.filter { it == false }.first()
+          if (uri != null) {
+            val pathSegments = uri.pathSegments
+            val dynamicLink: DynamicLink = when {
+              pathSegments.contains("direct-debit") -> DynamicLink.DirectDebit
+              pathSegments.contains("connect-payment") -> DynamicLink.DirectDebit
+              pathSegments.isEmpty() -> DynamicLink.None
+              else -> DynamicLink.Unknown
+            }
+            i { "Deep link was found:$dynamicLink, with segments: ${pathSegments.joinToString(",")}" }
+            if (dynamicLink is DynamicLink.DirectDebit) {
+              hAnalytics.deepLinkOpened(dynamicLink.type)
+              val market = marketManager.market
+              if (market == null) {
+                e { "Tried to open DirectDebit deep link, but market was null. Aborting and continuing to normal flow" }
+              } else {
+                lifecycleScope.launch {
+                  this@LoggedInActivity.startActivity(
+                    connectPayinIntent(
+                      this@LoggedInActivity,
+                      featureManager.getPaymentType(),
+                      market,
+                      false,
+                    ),
+                  )
+                }
+              }
+            } else {
+              d { "Deep link $dynamicLink did not open some specific activity" }
+            }
+          }
+        }
+      }
       lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-        d { "Stelios: Gonna start auth check" }
         authTokenService.authStatus
           .onEach { authStatus ->
             d {
@@ -195,6 +200,7 @@ class LoggedInActivity : AppCompatActivity() {
           .filterIsInstance<AuthStatus.LoggedOut>()
           .first()
         navigator.navigateToMarketingActivity()
+        finish()
       }
     }
 
