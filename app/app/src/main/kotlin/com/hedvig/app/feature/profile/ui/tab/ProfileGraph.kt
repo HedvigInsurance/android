@@ -20,6 +20,9 @@ internal fun NavGraphBuilder.profileGraph(
 ) {
   animatedNavigation<TopLevelGraph.PROFILE>(
     startDestination = createRoutePattern<AppDestination.TopLevelDestination.Profile>(),
+    deepLinks = listOf(
+      navDeepLink { uriPattern = hedvigDeepLinkContainer.profile },
+    ),
   ) {
     animatedComposable<AppDestination.TopLevelDestination.Profile>(
       enterTransition = { MotionDefaults.fadeThroughEnter },
