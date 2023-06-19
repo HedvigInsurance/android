@@ -48,6 +48,8 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.hedvig.android.auth.AuthStatus
+import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.common.android.parcelableExtra
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
@@ -60,12 +62,14 @@ import com.hedvig.android.market.Market
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import hedvig.resources.R
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import slimber.log.d
 
 class SimpleSignAuthenticationActivity : AppCompatActivity() {
   private val viewModel: SimpleSignAuthenticationViewModel by viewModel { parametersOf(data) }
+  private val authTokenService: AuthTokenService by inject()
 
   private val data by lazy {
     intent.parcelableExtra<SimpleSignAuthenticationData>(DATA)
@@ -115,12 +119,20 @@ class SimpleSignAuthenticationActivity : AppCompatActivity() {
         viewModel.subscribeToAuthSuccessEvent()
       }
     }
+    lifecycleScope.launch {
+      lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
+        authTokenService.authStatus.collect { authStatus ->
+          if (authStatus != null && authStatus is AuthStatus.LoggedIn) {
+            goToLoggedIn()
+          }
+        }
+      }
+    }
 
     var hasErrored by mutableStateOf(false)
     viewModel.events.observe(this) { event ->
       d { "Simple sign event:$event" }
       when (event) {
-        SimpleSignAuthenticationViewModel.Event.Success -> goToLoggedIn()
         SimpleSignAuthenticationViewModel.Event.Error -> {
           hasErrored = true
         }
