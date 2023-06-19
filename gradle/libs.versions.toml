@@ -177,7 +177,7 @@ coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", ve
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 datadog-sdk = { module = "com.datadoghq:dd-sdk-android", version.ref = "datadog" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics-ktx" }
-firebase-bom = "com.google.firebase:firebase-bom:32.1.0"
+firebase-bom = "com.google.firebase:firebase-bom:32.1.1"
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics-ktx" }
 firebase-dynamicLinks = { module = "com.google.firebase:firebase-dynamic-links" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
