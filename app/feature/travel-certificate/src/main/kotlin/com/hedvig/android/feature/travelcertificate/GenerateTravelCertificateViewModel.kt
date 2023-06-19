@@ -19,6 +19,8 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import slimber.log.e
+import slimber.log.i
 
 internal class GenerateTravelCertificateViewModel(
   private val getTravelCertificateSpecificationsUseCase: GetTravelCertificateSpecificationsUseCase,
@@ -159,9 +161,11 @@ internal class GenerateTravelCertificateViewModel(
   fun onDownloadTravelCertificate(url: TravelCertificateUrl) {
     viewModelScope.launch {
       _uiState.update { it.copy(isLoading = true) }
+      i { "Downloading travel certificate with url:${url.uri}" }
       downloadTravelCertificateUseCase.invoke(url)
         .fold(
           ifLeft = { errorMessage ->
+            e { "Downloading travel certificate failed:$errorMessage" }
             _uiState.update {
               it.copy(
                 isLoading = false,
@@ -170,6 +174,7 @@ internal class GenerateTravelCertificateViewModel(
             }
           },
           ifRight = { uri ->
+            i { "Downloading travel certificate succeeded. Result uri:${uri.uri.absolutePath}" }
             _uiState.update {
               it.copy(
                 isLoading = false,
