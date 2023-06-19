@@ -57,7 +57,6 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.language.LanguageService
-import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.activity.Navigator
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
@@ -70,7 +69,6 @@ import com.hedvig.app.util.extensions.showReviewDialog
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
@@ -96,6 +94,7 @@ class LoggedInActivity : AppCompatActivity() {
 
   private val navigator: Navigator by inject()
 
+  // Shows the splash screen as long as the auth status is still undetermined, that's the only condition.
   private val showSplash = MutableStateFlow(true)
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -111,13 +110,15 @@ class LoggedInActivity : AppCompatActivity() {
         finish()
         return@launch
       }
-      if (intent.getBooleanExtra(SHOW_RATING_DIALOG, false)) {
-        lifecycleScope.launch {
-          showReviewWithDelay()
+      launch {
+        lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
+          authTokenService.authStatus.first { it != null }
+          showSplash.update { false }
         }
       }
       launch {
         lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+          authTokenService.authStatus.first { it is AuthStatus.LoggedIn }
           reviewDialogViewModel.shouldOpenReviewDialog.collect { shouldOpenReviewDialog ->
             if (shouldOpenReviewDialog) {
               showReviewWithDelay()
@@ -125,10 +126,16 @@ class LoggedInActivity : AppCompatActivity() {
           }
         }
       }
-      launch {
-        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-          showSplash.filter { it == false }.first()
-          if (uri != null) {
+      if (intent.getBooleanExtra(SHOW_RATING_DIALOG, false)) {
+        launch {
+          authTokenService.authStatus.first { it is AuthStatus.LoggedIn }
+          showReviewWithDelay()
+        }
+      }
+      if (uri != null) {
+        launch {
+          lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            authTokenService.authStatus.first { it is AuthStatus.LoggedIn }
             val pathSegments = uri.pathSegments
             val dynamicLink: DynamicLink = when {
               pathSegments.contains("direct-debit") -> DynamicLink.DirectDebit
@@ -173,15 +180,6 @@ class LoggedInActivity : AppCompatActivity() {
                     null -> "null"
                   },
                 )
-              }
-            }
-          }
-          .onEach { authStatus ->
-            if (authStatus is AuthStatus.LoggedIn) {
-              showSplash.update { false }
-              if (marketManager.market != null) {
-                // Upcast everyone that were logged in before Norway launch to be in the Swedish market
-                marketManager.market = Market.SE
               }
             }
           }
@@ -242,7 +240,9 @@ class LoggedInActivity : AppCompatActivity() {
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
       }
-      putExtra(INITIAL_TAB, initialTab.toName())
+      if (initialTab != TopLevelGraph.HOME) {
+        putExtra(INITIAL_TAB, initialTab.toName())
+      }
       putExtra(SHOW_RATING_DIALOG, showRatingDialog)
     }
   }
