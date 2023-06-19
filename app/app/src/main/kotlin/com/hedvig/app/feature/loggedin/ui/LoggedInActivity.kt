@@ -236,6 +236,7 @@ class LoggedInActivity : AppCompatActivity() {
       initialTab: TopLevelGraph = TopLevelGraph.HOME,
       showRatingDialog: Boolean = false,
     ): Intent = Intent(context, LoggedInActivity::class.java).apply {
+      i { "LoggedInActivity.newInstance was called. withoutHistory:$withoutHistory" }
       if (withoutHistory) {
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)

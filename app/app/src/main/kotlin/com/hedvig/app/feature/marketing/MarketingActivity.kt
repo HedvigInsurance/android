@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -33,14 +34,14 @@ import com.hedvig.hanalytics.LoginMethod
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.getViewModel
+import slimber.log.i
 
 class MarketingActivity : AppCompatActivity() {
   private val languageService: LanguageService by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-
-    window.compatSetDecorFitsSystemWindows(false)
+    WindowCompat.setDecorFitsSystemWindows(window, false)
     val viewModel = getViewModel<MarketingViewModel>()
     val imageLoader: ImageLoader = get()
     setContent {
@@ -61,6 +62,7 @@ class MarketingActivity : AppCompatActivity() {
           },
           onClickLogIn = { market ->
             viewModel.onClickLogIn()
+            i { "Start login with market:$market" }
             onClickLogin(state, market)
           },
         )

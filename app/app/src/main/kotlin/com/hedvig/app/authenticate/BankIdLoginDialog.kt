@@ -21,6 +21,7 @@ import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import hedvig.resources.R
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import slimber.log.i
 
 class BankIdLoginDialog : DialogFragment(com.hedvig.app.R.layout.dialog_authenticate) {
 
@@ -37,9 +38,11 @@ class BankIdLoginDialog : DialogFragment(com.hedvig.app.R.layout.dialog_authenti
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
+    i { "BankIdLoginDialog started" }
     binding.authTitle.setText(R.string.BANK_ID_AUTH_TITLE_INITIATED)
 
     binding.login.setOnClickListener {
+      i { "Login with OTP clicked" }
       requireActivity().startActivity(GenericAuthActivity.newInstance(requireActivity()))
     }
     lifecycleScope.launch {
@@ -52,6 +55,7 @@ class BankIdLoginDialog : DialogFragment(com.hedvig.app.R.layout.dialog_authenti
   }
 
   private fun bindViewState(viewState: BankIdLoginViewState) {
+    i { "BankIdLoginDialog viewState updated to:$viewState" }
     when (viewState) {
       is BankIdLoginViewState.Error -> {
         binding.authTitle.text = getString(R.string.NETWORK_ERROR_ALERT_MESSAGE)
@@ -91,11 +95,13 @@ class BankIdLoginDialog : DialogFragment(com.hedvig.app.R.layout.dialog_authenti
           bankIdUri,
         ),
       )
+      i { "Openned BankID to handle login" }
     } else {
       QR
         .with(requireContext())
         .load(autoStartUrl)
         .into(binding.qrCode)
+      i { "BankID not found, showing QR code instead" }
     }
   }
 

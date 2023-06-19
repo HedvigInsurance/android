@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import slimber.log.e
 import kotlin.time.Duration.Companion.seconds
+import slimber.log.i
 
 class BankIdLoginViewModel(
   private val hAnalytics: HAnalytics,
@@ -46,7 +47,7 @@ class BankIdLoginViewModel(
         if (loginStatusResult is LoginStatusResult.Completed) {
           when (val authTokenResult = authRepository.exchange(loginStatusResult.authorizationCode)) {
             is AuthTokenResult.Error -> {
-              e { authTokenResult.message }
+              e { "Login failed, with error: ${authTokenResult.message}" }
               return@map LoginStatusResult.Failed(authTokenResult.message)
             }
             is AuthTokenResult.Success -> {
@@ -124,12 +125,17 @@ class BankIdLoginViewModel(
     featureManager.invalidateExperiments()
     uploadMarketAndLanguagePreferencesUseCase.invoke()
     hAnalytics.loggedIn()
+    i { "Logged in!" }
   }
 }
 
 sealed interface BankIdLoginViewState {
-  object Loading : BankIdLoginViewState
-  object Error : BankIdLoginViewState
+  object Loading : BankIdLoginViewState {
+    override fun toString(): String = "Loading"
+  }
+  object Error : BankIdLoginViewState {
+    override fun toString(): String = "Error"
+  }
   data class HandlingBankId(
     val autoStartToken: String,
     val processedAutoStartToken: Boolean,
