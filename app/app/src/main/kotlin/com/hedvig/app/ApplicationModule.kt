@@ -201,10 +201,8 @@ import timber.log.Timber
 import java.io.File
 import java.time.Clock
 import java.util.Locale
-import java.util.concurrent.TimeUnit
 import kotlin.math.pow
 
-@Suppress("KotlinConstantConditions")
 fun isDebug() = BuildConfig.APPLICATION_ID == "com.hedvig.dev.app" ||
   BuildConfig.APPLICATION_ID == "com.hedvig.test.app" ||
   BuildConfig.DEBUG
@@ -217,8 +215,6 @@ private val networkModule = module {
   factory<OkHttpClient.Builder> {
     val languageService = get<LanguageService>()
     val builder: OkHttpClient.Builder = OkHttpClient.Builder()
-      // Temporary fix until back-end problems are handled
-      .readTimeout(30, TimeUnit.SECONDS)
       .addDatadogConfiguration()
       .addInterceptor(get<MigrateTokenInterceptor>())
       .addInterceptor(get<AuthTokenRefreshingInterceptor>())
@@ -241,7 +237,7 @@ private val networkModule = module {
         )
       }
       .addInterceptor(DeviceIdInterceptor(get(), get()))
-    if (isDebug()) {
+    if (!get<Boolean>(isProductionQualifier)) {
       val logger = HttpLoggingInterceptor { message ->
         if (message.contains("Content-Disposition")) {
           Timber.tag("OkHttp").v("File upload omitted from log")
@@ -502,8 +498,9 @@ private val stringConstantsModule = module {
   single<String>(appVersionCodeQualifier) { BuildConfig.VERSION_CODE.toString() }
   single<String>(appIdQualifier) { BuildConfig.APPLICATION_ID }
   single<Boolean>(isDebugQualifier) { BuildConfig.DEBUG }
-  @Suppress("KotlinConstantConditions")
-  single<Boolean>(isProductionQualifier) { BuildConfig.BUILD_TYPE == "release" }
+  single<Boolean>(isProductionQualifier) {
+    BuildConfig.BUILD_TYPE == "release" && BuildConfig.APPLICATION_ID == "com.hedvig.app"
+  }
 }
 
 private val checkoutModule = module {
@@ -564,7 +561,7 @@ private val useCaseModule = module {
   single { GetContractsUseCase(get<ApolloClient>(giraffeClient), get()) }
   single { GraphQLQueryUseCase(get()) }
   single { GetCrossSellsUseCase(get<ApolloClient>(octopusClient)) }
-  single { GetInsuranceProvidersUseCase(get<ApolloClient>(giraffeClient), get()) }
+  single { GetInsuranceProvidersUseCase(get<ApolloClient>(giraffeClient), get(), get(isProductionQualifier)) }
   single { GetContractDetailsUseCase(get<ApolloClient>(giraffeClient), get(), get()) }
   single<GetDanishAddressAutoCompletionUseCase> {
     GetDanishAddressAutoCompletionUseCase(get<ApolloClient>(giraffeClient))
@@ -669,10 +666,10 @@ private val graphQLQueryModule = module {
 private val authRepositoryModule = module {
   single<AuthRepository> {
     NetworkAuthRepository(
-      environment = if (isDebug()) {
-        AuthEnvironment.STAGING
-      } else {
+      environment = if (get(isProductionQualifier)) {
         AuthEnvironment.PRODUCTION
+      } else {
+        AuthEnvironment.STAGING
       },
       additionalHttpHeaders = mapOf(),
     )
