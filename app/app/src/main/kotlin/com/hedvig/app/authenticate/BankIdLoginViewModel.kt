@@ -25,8 +25,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import slimber.log.e
-import kotlin.time.Duration.Companion.seconds
 import slimber.log.i
+import kotlin.time.Duration.Companion.seconds
 
 class BankIdLoginViewModel(
   private val hAnalytics: HAnalytics,
