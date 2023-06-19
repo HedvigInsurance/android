@@ -11,9 +11,13 @@ import com.datadog.android.rum.GlobalRum
 import com.datadog.android.rum.RumMonitor
 import com.datadog.android.rum.tracking.ActivityViewTrackingStrategy
 import com.datadog.android.tracing.AndroidTracer
+import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.di.isDebugQualifier
 import com.hedvig.android.core.common.di.isProductionQualifier
+import com.hedvig.android.core.datastore.DeviceIdDataStore
 import io.opentracing.util.GlobalTracer
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import slimber.log.v
@@ -24,6 +28,8 @@ abstract class DatadogInitializer : Initializer<Unit>, KoinComponent {
 
   private val isDebug by inject<Boolean>(isDebugQualifier)
   private val isProduction by inject<Boolean>(isProductionQualifier)
+  private val deviceIdDataStore by inject<DeviceIdDataStore>()
+  private val applicationScope by inject<ApplicationScope>()
 
   override fun create(context: Context) {
     val clientToken = "pub185bcba7ed324e83d068b80e25a81359"
@@ -62,7 +68,14 @@ abstract class DatadogInitializer : Initializer<Unit>, KoinComponent {
       AndroidTracer.Builder().build()
     }
     v { "Datadog Global Tracer registering succeeded: $didRegisterGlobalTracer" }
+    applicationScope.launch {
+      val deviceId = deviceIdDataStore.observeDeviceId().first()
+      Datadog.addUserExtraInfo(mapOf(DEVICE_ID_KEY to deviceId))
+      GlobalRum.addAttribute(DEVICE_ID_KEY, deviceId)
+    }
 
     Timber.plant(DatadogLoggingTree())
   }
 }
+
+private const val DEVICE_ID_KEY = "device_id"
