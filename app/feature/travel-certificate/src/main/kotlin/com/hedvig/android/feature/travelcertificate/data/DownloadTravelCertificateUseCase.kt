@@ -45,7 +45,7 @@ internal class DownloadTravelCertificateUseCase(
 
           TravelCertificateUri(downloadedFile)
         } catch (exception: IOException) {
-          e(exception)
+          e(exception) { "Could not download travel certificate" }
           raise(ErrorMessage("Could not download travel certificate"))
         }
       }
