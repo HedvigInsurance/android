@@ -43,7 +43,6 @@
             android:name=".feature.loggedin.ui.LoggedInActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:exported="true"
-            android:launchMode="standard"
             android:theme="@style/Hedvig.Theme.Splash"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
@@ -173,7 +172,6 @@
         <activity
             android:name=".feature.zignsec.SimpleSignAuthenticationActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name="com.hedvig.android.feature.home.legacychangeaddress.result.ChangeAddressResultActivity" />
         <activity android:name=".feature.offer.quotedetail.QuoteDetailActivity" />

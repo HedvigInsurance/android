@@ -103,18 +103,6 @@ class LoggedInActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     WindowCompat.setDecorFitsSystemWindows(window, false)
 
-    // check DK login by pressing app in home screen after login
-//    val isBringingToFront = intent.flags and Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT != 0
-//    val resetTaskIfNeeded = intent.flags and Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED != 0
-//    if (isBringingToFront && resetTaskIfNeeded) {
-//      // We've started the app from the home screen after it was put there by pressing the home button, and not going
-//      // back from the start destination. In this case, do not override the existing backstack.
-//      // And since `MainActivity` is added at the top of the backstack, we need to simply pop it out and we're good.
-//      // This fixes the bug in DK where exiting the app, entering the auth info, and clicking on the app in the home
-//      // screen to come back to the app fails by navigating to the marketing screen again, and failing authentication.
-//      onBackPressedDispatcher.onBackPressed()
-//    }
-
     val intent: Intent = intent
     val uri: Uri? = intent.data
     lifecycleScope.launch {
