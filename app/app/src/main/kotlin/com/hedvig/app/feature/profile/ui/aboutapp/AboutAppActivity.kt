@@ -38,17 +38,19 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.auth.android.AuthenticatedObserver
+import com.hedvig.android.core.common.di.isProductionQualifier
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.feature.embark.ui.MemberIdViewModel
-import com.hedvig.app.isDebug
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AboutAppActivity : AppCompatActivity() {
   private val memberIdViewModel: MemberIdViewModel by viewModel()
+  private val isProduction: Boolean by inject(isProductionQualifier)
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -75,6 +77,7 @@ class AboutAppActivity : AppCompatActivity() {
           memberId = memberId,
           onBackPressed = onBackPressedDispatcher::onBackPressed,
           showOpenSourceLicenses = { OpenSourceLicensesDialog().showLicenses(this@AboutAppActivity) },
+          isProduction = isProduction,
         )
       }
     }
@@ -86,6 +89,7 @@ private fun AboutAppScreen(
   memberId: String?,
   onBackPressed: () -> Unit,
   showOpenSourceLicenses: () -> Unit,
+  isProduction: Boolean,
 ) {
   Surface(
     color = MaterialTheme.colorScheme.background,
@@ -122,7 +126,7 @@ private fun AboutAppScreen(
                 BuildConfig.VERSION_NAME,
               ),
             )
-            if (isDebug()) {
+            if (!isProduction) {
               append(" (")
               append(BuildConfig.VERSION_CODE)
               append(")")
@@ -185,7 +189,7 @@ private fun AboutAppRow(
 private fun PreviewAboutAppScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      AboutAppScreen("123", {}, {})
+      AboutAppScreen("123", {}, {}, false)
     }
   }
 }

@@ -40,11 +40,9 @@
             android:theme="@style/Hedvig.Theme.Chat"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".MainActivity"
+            android:name=".feature.loggedin.ui.LoggedInActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:exported="true"
-            android:launchMode="singleTask"
-            android:noHistory="true"
             android:theme="@style/Hedvig.Theme.Splash"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
@@ -52,34 +50,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="@string/APP_SCHEME" />
-            </intent-filter>
-            <intent-filter android:autoVerify="true">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="hedvig.app.link"
-                    android:scheme="https" />
-            </intent-filter>
-            <intent-filter android:autoVerify="true">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="app.hedvig.com"
-                    android:scheme="https" />
             </intent-filter>
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
@@ -92,12 +62,6 @@
                     android:scheme="https" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".feature.loggedin.ui.LoggedInActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:theme="@style/Hedvig.Theme.LoggedIn"
-            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name="com.hedvig.android.feature.businessmodel.BusinessModelActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
@@ -181,12 +145,10 @@
         <activity
             android:name=".feature.adyen.payin.AdyenConnectPayinActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature.trustly.TrustlyConnectPayinActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature.insurance.ui.terminatedcontracts.TerminatedContractsActivity"
@@ -210,7 +172,6 @@
         <activity
             android:name=".feature.zignsec.SimpleSignAuthenticationActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name="com.hedvig.android.feature.home.legacychangeaddress.result.ChangeAddressResultActivity" />
         <activity android:name=".feature.offer.quotedetail.QuoteDetailActivity" />

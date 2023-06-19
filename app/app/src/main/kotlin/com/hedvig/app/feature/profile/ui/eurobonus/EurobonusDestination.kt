@@ -3,24 +3,23 @@ package com.hedvig.app.feature.profile.ui.eurobonus
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,6 +33,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.material3.warningElement
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.progress.FullScreenHedvigProgress
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
@@ -45,6 +46,12 @@ internal fun EurobonusDestination(
 ) {
   val eurobonusText = viewModel.eurobonusText
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  val isEligibleForEurobonus by viewModel.isEligibleForEurobonus.collectAsStateWithLifecycle()
+  LaunchedEffect(isEligibleForEurobonus) {
+    if (!isEligibleForEurobonus) {
+      navigateUp()
+    }
+  }
   val focusManager = LocalFocusManager.current
   EurobonusScreen(
     eurobonusText = eurobonusText,
@@ -94,6 +101,7 @@ private fun EurobonusScreen(
             setEurobonusText(newInput)
           }
         },
+        enabled = uiState.canEditText,
         label = {
           Text(
             buildString {
@@ -140,6 +148,12 @@ private fun EurobonusScreen(
           .padding(horizontal = 16.dp),
       )
       Spacer(Modifier.height(16.dp))
+      Text(
+        text = stringResource(hedvig.resources.R.string.sas_integration_info),
+        style = MaterialTheme.typography.bodyMedium,
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+      Spacer(Modifier.height(16.dp))
       LargeContainedTextButton(
         text = stringResource(hedvig.resources.R.string.general_save_button),
         enabled = uiState.canSubmit,
@@ -147,8 +161,28 @@ private fun EurobonusScreen(
         modifier = Modifier.padding(horizontal = 16.dp),
       )
       Spacer(Modifier.height(16.dp))
-      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     }
-    FullScreenHedvigProgress(show = uiState.isSubmitting)
+    FullScreenHedvigProgress(show = uiState.isLoading)
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewEurobonusScreen() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      EurobonusScreen(
+        "ABC-123",
+        {},
+        EurobonusUiState(
+          canSubmit = true,
+          isLoading = true,
+          canEditText = true,
+          hasError = false,
+        ),
+        {},
+        {},
+      )
+    }
   }
 }

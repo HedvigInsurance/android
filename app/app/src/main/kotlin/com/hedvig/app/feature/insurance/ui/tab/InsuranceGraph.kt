@@ -43,6 +43,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.navDeepLink
 import coil.ImageLoader
 import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
@@ -56,6 +57,7 @@ import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.compose.typed.animatedNavigation
 import com.hedvig.android.navigation.core.AppDestination
+import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.app.databinding.InsuranceContractCardBinding
 import com.hedvig.app.databinding.InsuranceTerminatedContractsBinding
@@ -79,9 +81,13 @@ import org.koin.androidx.compose.koinViewModel
 
 internal fun NavGraphBuilder.insuranceGraph(
   imageLoader: ImageLoader,
+  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
 ) {
   animatedNavigation<TopLevelGraph.INSURANCE>(
     startDestination = createRoutePattern<AppDestination.TopLevelDestination.Insurance>(),
+    deepLinks = listOf(
+      navDeepLink { uriPattern = hedvigDeepLinkContainer.insurances },
+    ),
   ) {
     animatedComposable<AppDestination.TopLevelDestination.Insurance>(
       enterTransition = { MotionDefaults.fadeThroughEnter },

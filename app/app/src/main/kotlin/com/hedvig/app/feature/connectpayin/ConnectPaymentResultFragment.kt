@@ -6,6 +6,7 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.google.android.material.transition.MaterialSharedAxis
+import com.hedvig.android.core.common.android.serializableExtra
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ConnectPaymentResultFragmentBinding
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -28,7 +29,7 @@ class ConnectPaymentResultFragment : Fragment(R.layout.connect_payment_result_fr
     binding.apply {
       val success = requireArguments().getBoolean(SUCCESS)
 
-      val payinType = requireArguments().getSerializable(PAYIN_TYPE) as? ConnectPayinType
+      val payinType = requireArguments().serializableExtra<ConnectPayinType>(PAYIN_TYPE)
 
       if (payinType == null) {
         e { "Programmer error: PAYIN_TYPE not supplied to ${this.javaClass.name}" }

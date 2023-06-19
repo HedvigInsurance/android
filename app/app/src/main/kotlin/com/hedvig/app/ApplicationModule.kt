@@ -57,7 +57,7 @@ import com.hedvig.android.language.di.languageModule
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.market.di.marketManagerModule
 import com.hedvig.android.navigation.activity.Navigator
-import com.hedvig.android.navigation.core.AppDestination
+import com.hedvig.android.navigation.core.di.deepLinkModule
 import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.firebase.di.firebaseNotificationModule
@@ -152,8 +152,8 @@ import com.hedvig.app.feature.profile.ui.myinfo.MyInfoViewModel
 import com.hedvig.app.feature.profile.ui.payment.PaymentRepository
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModelImpl
-import com.hedvig.app.feature.profile.ui.tab.GetEuroBonusStatusUseCase
-import com.hedvig.app.feature.profile.ui.tab.NetworkGetEuroBonusStatusUseCase
+import com.hedvig.app.feature.profile.ui.tab.GetEurobonusStatusUseCase
+import com.hedvig.app.feature.profile.ui.tab.NetworkGetEurobonusStatusUseCase
 import com.hedvig.app.feature.profile.ui.tab.ProfileViewModel
 import com.hedvig.app.feature.referrals.data.RedeemReferralCodeRepository
 import com.hedvig.app.feature.referrals.data.ReferralsRepository
@@ -170,8 +170,6 @@ import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignViewModel
 import com.hedvig.app.feature.trustly.TrustlyRepository
 import com.hedvig.app.feature.trustly.TrustlyViewModel
 import com.hedvig.app.feature.trustly.TrustlyViewModelImpl
-import com.hedvig.app.feature.welcome.WelcomeRepository
-import com.hedvig.app.feature.welcome.WelcomeViewModel
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
 import com.hedvig.app.service.FileService
 import com.hedvig.app.service.push.senders.CrossSellNotificationSender
@@ -203,10 +201,8 @@ import timber.log.Timber
 import java.io.File
 import java.time.Clock
 import java.util.Locale
-import java.util.concurrent.TimeUnit
 import kotlin.math.pow
 
-@Suppress("KotlinConstantConditions")
 fun isDebug() = BuildConfig.APPLICATION_ID == "com.hedvig.dev.app" ||
   BuildConfig.APPLICATION_ID == "com.hedvig.test.app" ||
   BuildConfig.DEBUG
@@ -219,8 +215,6 @@ private val networkModule = module {
   factory<OkHttpClient.Builder> {
     val languageService = get<LanguageService>()
     val builder: OkHttpClient.Builder = OkHttpClient.Builder()
-      // Temporary fix until back-end problems are handled
-      .readTimeout(30, TimeUnit.SECONDS)
       .addDatadogConfiguration()
       .addInterceptor(get<MigrateTokenInterceptor>())
       .addInterceptor(get<AuthTokenRefreshingInterceptor>())
@@ -243,7 +237,7 @@ private val networkModule = module {
         )
       }
       .addInterceptor(DeviceIdInterceptor(get(), get()))
-    if (isDebug()) {
+    if (!get<Boolean>(isProductionQualifier)) {
       val logger = HttpLoggingInterceptor { message ->
         if (message.contains("Content-Disposition")) {
           Timber.tag("OkHttp").v("File upload omitted from log")
@@ -324,7 +318,6 @@ private val viewModelModule = module {
   viewModel { ChatViewModel(get(), get(), get()) }
   viewModel { (quoteCartId: QuoteCartId?) -> RedeemCodeViewModel(quoteCartId, get(), get()) }
   viewModel { BankIdLoginViewModel(get(), get(), get(), get(), get()) }
-  viewModel { WelcomeViewModel(get()) }
   viewModel {
     SettingsViewModel(
       hAnalytics = get(),
@@ -415,11 +408,9 @@ private val offerModule = module {
 
 private val profileModule = module {
   single<ProfileRepository> { ProfileRepositoryImpl(get<ApolloClient>(giraffeClient)) }
-  single<GetEuroBonusStatusUseCase> { NetworkGetEuroBonusStatusUseCase(get<ApolloClient>(octopusClient)) }
+  single<GetEurobonusStatusUseCase> { NetworkGetEurobonusStatusUseCase(get<ApolloClient>(octopusClient)) }
   viewModel<ProfileViewModel> { ProfileViewModel(get(), get(), get(), get(), get()) }
-  viewModel<EurobonusViewModel> { (eurobonus: AppDestination.Eurobonus) ->
-    EurobonusViewModel(eurobonus, get<ApolloClient>(octopusClient))
-  }
+  viewModel<EurobonusViewModel> { EurobonusViewModel(get<ApolloClient>(octopusClient)) }
 }
 
 private val paymentModule = module {
@@ -507,8 +498,9 @@ private val stringConstantsModule = module {
   single<String>(appVersionCodeQualifier) { BuildConfig.VERSION_CODE.toString() }
   single<String>(appIdQualifier) { BuildConfig.APPLICATION_ID }
   single<Boolean>(isDebugQualifier) { BuildConfig.DEBUG }
-  @Suppress("KotlinConstantConditions")
-  single<Boolean>(isProductionQualifier) { BuildConfig.BUILD_TYPE == "release" }
+  single<Boolean>(isProductionQualifier) {
+    BuildConfig.BUILD_TYPE == "release" && BuildConfig.APPLICATION_ID == "com.hedvig.app"
+  }
 }
 
 private val checkoutModule = module {
@@ -539,7 +531,6 @@ private val repositoriesModule = module {
   single { PayinStatusRepository(get<ApolloClient>(giraffeClient)) }
   single { RedeemReferralCodeRepository(get<ApolloClient>(giraffeClient), get()) }
   single { UserRepository(get<ApolloClient>(giraffeClient)) }
-  single { WelcomeRepository(get<ApolloClient>(giraffeClient), get()) }
   single { AdyenRepository(get<ApolloClient>(giraffeClient), get()) }
   single { EmbarkRepository(get<ApolloClient>(giraffeClient), get()) }
   single { ReferralsRepository(get<ApolloClient>(giraffeClient)) }
@@ -570,7 +561,7 @@ private val useCaseModule = module {
   single { GetContractsUseCase(get<ApolloClient>(giraffeClient), get()) }
   single { GraphQLQueryUseCase(get()) }
   single { GetCrossSellsUseCase(get<ApolloClient>(octopusClient)) }
-  single { GetInsuranceProvidersUseCase(get<ApolloClient>(giraffeClient), get()) }
+  single { GetInsuranceProvidersUseCase(get<ApolloClient>(giraffeClient), get(), get(isProductionQualifier)) }
   single { GetContractDetailsUseCase(get<ApolloClient>(giraffeClient), get(), get()) }
   single<GetDanishAddressAutoCompletionUseCase> {
     GetDanishAddressAutoCompletionUseCase(get<ApolloClient>(giraffeClient))
@@ -675,10 +666,10 @@ private val graphQLQueryModule = module {
 private val authRepositoryModule = module {
   single<AuthRepository> {
     NetworkAuthRepository(
-      environment = if (isDebug()) {
-        AuthEnvironment.STAGING
-      } else {
+      environment = if (get(isProductionQualifier)) {
         AuthEnvironment.PRODUCTION
+      } else {
+        AuthEnvironment.STAGING
       },
       additionalHttpHeaders = mapOf(),
     )
@@ -717,6 +708,7 @@ val applicationModule = module {
       dataStoreModule,
       datadogModule,
       datastoreAndroidModule,
+      deepLinkModule,
       embarkModule,
       externalInsuranceModule,
       featureManagerModule,

@@ -58,7 +58,6 @@ class ChatViewModel(
   val events = _events.receiveAsFlow()
 
   sealed class Event {
-    object Restart : Event()
     object Error : Event()
   }
 

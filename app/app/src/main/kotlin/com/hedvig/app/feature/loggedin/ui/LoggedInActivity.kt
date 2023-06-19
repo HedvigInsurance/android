@@ -2,6 +2,7 @@ package com.hedvig.app.feature.loggedin.ui
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -25,7 +26,6 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,6 +37,7 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
@@ -50,73 +51,164 @@ import com.hedvig.android.app.ui.HedvigAppState
 import com.hedvig.android.app.ui.HedvigBottomBar
 import com.hedvig.android.app.ui.HedvigNavRail
 import com.hedvig.android.app.ui.rememberHedvigAppState
-import com.hedvig.android.auth.android.AuthenticatedObserver
-import com.hedvig.android.core.common.android.ThemedIconUrls
+import com.hedvig.android.auth.AuthStatus
+import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
+import com.hedvig.android.navigation.activity.Navigator
+import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
-import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
-import com.hedvig.app.feature.welcome.WelcomeDialog
-import com.hedvig.app.feature.welcome.WelcomeViewModel
+import com.hedvig.app.feature.payment.connectPayinIntent
+import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
+import com.hedvig.app.service.DynamicLink
 import com.hedvig.app.util.extensions.showReviewDialog
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import slimber.log.d
+import slimber.log.e
+import slimber.log.i
 
 class LoggedInActivity : AppCompatActivity() {
-  private val welcomeViewModel: WelcomeViewModel by viewModel()
   private val reviewDialogViewModel: ReviewDialogViewModel by viewModel()
 
-  val tabNotificationBadgeService: TabNotificationBadgeService by inject()
-  val marketManager: MarketManager by inject()
-  val imageLoader: ImageLoader by inject()
-  val featureManager: FeatureManager by inject()
-  val hAnalytics: HAnalytics by inject()
-  val languageService: LanguageService by inject()
+  private val authTokenService: AuthTokenService by inject()
+  private val tabNotificationBadgeService: TabNotificationBadgeService by inject()
+  private val marketManager: MarketManager by inject()
+  private val imageLoader: ImageLoader by inject()
+  private val featureManager: FeatureManager by inject()
+  private val hAnalytics: HAnalytics by inject()
+  private val languageService: LanguageService by inject()
+  private val hedvigDeepLinkContainer: HedvigDeepLinkContainer by inject()
+
+  private val navigator: Navigator by inject()
+
+  // Shows the splash screen as long as the auth status is still undetermined, that's the only condition.
+  private val showSplash = MutableStateFlow(true)
 
   override fun onCreate(savedInstanceState: Bundle?) {
+    installSplashScreen().setKeepOnScreenCondition { showSplash.value == true }
     super.onCreate(savedInstanceState)
-    lifecycle.addObserver(AuthenticatedObserver())
     WindowCompat.setDecorFitsSystemWindows(window, false)
 
-    if (intent.getBooleanExtra(EXTRA_IS_FROM_ONBOARDING, false)) {
-      fetchAndShowWelcomeDialog()
-    }
+    val intent: Intent = intent
+    val uri: Uri? = intent.data
     lifecycleScope.launch {
-      lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-        reviewDialogViewModel.shouldOpenReviewDialog.collect { shouldOpenReviewDialog ->
-          if (shouldOpenReviewDialog) {
-            showReviewWithDelay()
+      if (featureManager.isFeatureEnabled(Feature.UPDATE_NECESSARY)) {
+        applicationContext.startActivity(ForceUpgradeActivity.newInstance(applicationContext))
+        finish()
+        return@launch
+      }
+      launch {
+        lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
+          authTokenService.authStatus.first { it != null }
+          showSplash.update { false }
+        }
+      }
+      launch {
+        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+          authTokenService.authStatus.first { it is AuthStatus.LoggedIn }
+          reviewDialogViewModel.shouldOpenReviewDialog.collect { shouldOpenReviewDialog ->
+            if (shouldOpenReviewDialog) {
+              showReviewWithDelay()
+            }
           }
         }
       }
-    }
-
-    if (intent.getBooleanExtra(SHOW_RATING_DIALOG, false)) {
-      lifecycleScope.launch {
-        showReviewWithDelay()
+      if (intent.getBooleanExtra(SHOW_RATING_DIALOG, false)) {
+        launch {
+          authTokenService.authStatus.first { it is AuthStatus.LoggedIn }
+          showReviewWithDelay()
+        }
+      }
+      if (uri != null) {
+        launch {
+          lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            authTokenService.authStatus.first { it is AuthStatus.LoggedIn }
+            val pathSegments = uri.pathSegments
+            val dynamicLink: DynamicLink = when {
+              pathSegments.contains("direct-debit") -> DynamicLink.DirectDebit
+              pathSegments.contains("connect-payment") -> DynamicLink.DirectDebit
+              pathSegments.isEmpty() -> DynamicLink.None
+              else -> DynamicLink.Unknown
+            }
+            i { "Deep link was found:$dynamicLink, with segments: ${pathSegments.joinToString(",")}" }
+            if (dynamicLink is DynamicLink.DirectDebit) {
+              hAnalytics.deepLinkOpened(dynamicLink.type)
+              val market = marketManager.market
+              if (market == null) {
+                e { "Tried to open DirectDebit deep link, but market was null. Aborting and continuing to normal flow" }
+              } else {
+                lifecycleScope.launch {
+                  this@LoggedInActivity.startActivity(
+                    connectPayinIntent(
+                      this@LoggedInActivity,
+                      featureManager.getPaymentType(),
+                      market,
+                      false,
+                    ),
+                  )
+                }
+              }
+            } else {
+              d { "Deep link $dynamicLink did not open some specific activity" }
+            }
+          }
+        }
+      }
+      lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+        authTokenService.authStatus
+          .onEach { authStatus ->
+            d {
+              buildString {
+                append("Owner: LoggedInActivity | Received authStatus: ")
+                append(
+                  when (authStatus) {
+                    is AuthStatus.LoggedIn -> "LoggedIn"
+                    AuthStatus.LoggedOut -> "LoggedOut"
+                    null -> "null"
+                  },
+                )
+              }
+            }
+          }
+          .filterIsInstance<AuthStatus.LoggedOut>()
+          .first()
+        navigator.navigateToMarketingActivity()
+        finish()
       }
     }
 
     setContent {
       HedvigTheme {
+        val windowSizeClass = calculateWindowSizeClass(this)
         HedvigApp(
-          windowSizeClass = calculateWindowSizeClass(this),
+          hedvigAppState = rememberHedvigAppState(
+            windowSizeClass = windowSizeClass,
+            tabNotificationBadgeService = tabNotificationBadgeService,
+            featureManager = featureManager,
+            hAnalytics = hAnalytics,
+          ),
+          hedvigDeepLinkContainer = hedvigDeepLinkContainer,
           getInitialTab = {
             intent.extras?.getString(INITIAL_TAB)?.let {
               TopLevelGraph.fromName(it)
-            }.also {
             }
           },
           clearInitialTab = {
             intent.removeExtra(INITIAL_TAB)
           },
-          tabNotificationBadgeService = tabNotificationBadgeService,
           marketManager = marketManager,
           imageLoader = imageLoader,
           featureManager = featureManager,
@@ -128,38 +220,12 @@ class LoggedInActivity : AppCompatActivity() {
     }
   }
 
-  private fun fetchAndShowWelcomeDialog() {
-    welcomeViewModel.fetch()
-    welcomeViewModel.data.observe(this@LoggedInActivity) { data ->
-      WelcomeDialog.newInstance(
-        data.welcome.mapIndexed { index, page ->
-          DismissiblePagerModel.TitlePage(
-            ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
-            page.title,
-            page.paragraph,
-            getString(
-              if (index == data.welcome.size - 1) {
-                hedvig.resources.R.string.NEWS_DISMISS
-              } else {
-                hedvig.resources.R.string.NEWS_PROCEED
-              },
-            ),
-          )
-        },
-      )
-        .show(supportFragmentManager, WelcomeDialog.TAG)
-    }
-    intent.removeExtra(EXTRA_IS_FROM_ONBOARDING)
-  }
-
   private suspend fun showReviewWithDelay() {
     delay(REVIEW_DIALOG_DELAY_MILLIS)
     showReviewDialog()
   }
 
   companion object {
-    const val EXTRA_IS_FROM_ONBOARDING = "extra_is_from_onboarding"
-
     private const val INITIAL_TAB = "INITIAL_TAB"
     private const val SHOW_RATING_DIALOG = "SHOW_RATING_DIALOG"
     private const val REVIEW_DIALOG_DELAY_MILLIS = 2000L
@@ -168,15 +234,16 @@ class LoggedInActivity : AppCompatActivity() {
       context: Context,
       withoutHistory: Boolean = false,
       initialTab: TopLevelGraph = TopLevelGraph.HOME,
-      isFromOnboarding: Boolean = false,
       showRatingDialog: Boolean = false,
     ): Intent = Intent(context, LoggedInActivity::class.java).apply {
+      i { "LoggedInActivity.newInstance was called. withoutHistory:$withoutHistory" }
       if (withoutHistory) {
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
       }
-      putExtra(INITIAL_TAB, initialTab.toName())
-      putExtra(EXTRA_IS_FROM_ONBOARDING, isFromOnboarding)
+      if (initialTab != TopLevelGraph.HOME) {
+        putExtra(INITIAL_TAB, initialTab.toName())
+      }
       putExtra(SHOW_RATING_DIALOG, showRatingDialog)
     }
   }
@@ -184,22 +251,16 @@ class LoggedInActivity : AppCompatActivity() {
 
 @Composable
 private fun HedvigApp(
-  windowSizeClass: WindowSizeClass,
+  hedvigAppState: HedvigAppState,
+  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   getInitialTab: () -> TopLevelGraph?,
   clearInitialTab: () -> Unit,
-  tabNotificationBadgeService: TabNotificationBadgeService,
   marketManager: MarketManager,
   imageLoader: ImageLoader,
   featureManager: FeatureManager,
   hAnalytics: HAnalytics,
   fragmentManager: FragmentManager,
   languageService: LanguageService,
-  hedvigAppState: HedvigAppState = rememberHedvigAppState(
-    windowSizeClass = windowSizeClass,
-    tabNotificationBadgeService = tabNotificationBadgeService,
-    featureManager = featureManager,
-    hAnalytics = hAnalytics,
-  ),
 ) {
   LaunchedEffect(getInitialTab, clearInitialTab, hedvigAppState) {
     val initialTab: TopLevelGraph = getInitialTab() ?: return@LaunchedEffect
@@ -235,7 +296,7 @@ private fun HedvigApp(
         }
         HedvigNavHost(
           hedvigAppState = hedvigAppState,
-          windowSizeClass = windowSizeClass,
+          hedvigDeepLinkContainer = hedvigDeepLinkContainer,
           marketManager = marketManager,
           imageLoader = imageLoader,
           featureManager = featureManager,

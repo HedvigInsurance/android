@@ -55,11 +55,7 @@ class SimpleSignAuthenticationViewModel(
   private val _events = LiveEvent<Event>()
   val events: LiveData<Event> = _events
 
-  sealed class Event { // toStrings overwritten for logging purposes. todo change to `data object` in Kotlin 1.9.
-    object Success : Event() {
-      override fun toString() = "Success"
-    }
-
+  sealed class Event {
     object Error : Event() {
       override fun toString() = "Error"
     }
@@ -80,7 +76,6 @@ class SimpleSignAuthenticationViewModel(
           when (loginStatusResult) {
             is LoginStatusResult.Completed -> {
               onSimpleSignSuccess(loginStatusResult)
-              _events.postValue(Event.Success)
             }
 
             is LoginStatusResult.Failed -> _events.postValue(Event.Error)
@@ -134,11 +129,11 @@ class SimpleSignAuthenticationViewModel(
     when (val result = authRepository.exchange(loginStatusResult.authorizationCode)) {
       is AuthTokenResult.Error -> {
         _events.postValue(Event.Error)
-        e { "Exchange error:$result" }
+        e { "Login exchange error:$result" }
       }
 
       is AuthTokenResult.Success -> {
-        d { "Exchange success:$result" }
+        d { "Login exchange success:$result" }
         hAnalytics.loggedIn()
         featureManager.invalidateExperiments()
         authTokenService.loginWithTokens(result.accessToken, result.refreshToken)

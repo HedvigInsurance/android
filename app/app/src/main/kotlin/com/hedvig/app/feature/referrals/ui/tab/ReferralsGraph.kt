@@ -33,7 +33,6 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,6 +47,7 @@ import androidx.core.view.doOnDetach
 import androidx.core.view.isVisible
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.navDeepLink
 import com.google.android.material.snackbar.Snackbar
 import com.hedvig.android.core.common.android.hide
 import com.hedvig.android.core.common.android.remove
@@ -62,6 +62,7 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.compose.typed.animatedNavigation
 import com.hedvig.android.navigation.core.AppDestination
+import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ReferralsCodeBinding
@@ -86,15 +87,18 @@ import giraffe.ReferralsQuery
 import giraffe.fragment.ReferralFragment
 import org.javamoney.moneta.Money
 import org.koin.androidx.compose.koinViewModel
-import slimber.log.e
 import java.util.Locale
 import javax.money.MonetaryAmount
 
 internal fun NavGraphBuilder.referralsGraph(
   languageService: LanguageService,
+  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
 ) {
   animatedNavigation<TopLevelGraph.REFERRALS>(
     startDestination = createRoutePattern<AppDestination.TopLevelDestination.Referrals>(),
+    deepLinks = listOf(
+      navDeepLink { uriPattern = hedvigDeepLinkContainer.forever },
+    ),
   ) {
     animatedComposable<AppDestination.TopLevelDestination.Referrals>(
       enterTransition = { MotionDefaults.fadeThroughEnter },
@@ -229,11 +233,7 @@ private fun ForeverScreen(
         modifier = Modifier.padding(horizontal = 16.dp),
       )
       ReferralsContent(uiState)
-      if (incentive == null) {
-        LaunchedEffect(incentive) {
-          e { "Invariant detected: referralInformation.campaign.incentive is null" }
-        }
-      } else if (uiState is ReferralsUiState.Success) {
+      if (incentive != null && uiState is ReferralsUiState.Success) {
         val code: String = uiState.data.referralInformation.campaign.code
         LargeContainedTextButton(
           text = stringResource(hedvig.resources.R.string.referrals_empty_share_code_button),

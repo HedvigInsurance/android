@@ -4,7 +4,6 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.language.LanguageService
-import com.hedvig.app.isDebug
 import giraffe.InsuranceProvidersQuery
 
 sealed class InsuranceProvidersResult {
@@ -23,6 +22,7 @@ data class InsuranceProvider(
 class GetInsuranceProvidersUseCase(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,
+  private val isProduction: Boolean,
 ) {
   suspend fun getInsuranceProviders(): InsuranceProvidersResult {
     val insuranceProviders = InsuranceProvidersQuery(languageService.getGraphQLLocale())
@@ -35,19 +35,19 @@ class GetInsuranceProvidersUseCase(
   private fun createSuccessResult(
     result: OperationResult.Success<InsuranceProvidersQuery.Data>,
   ): InsuranceProvidersResult.Success {
-    var providers = result.data.insuranceProviders.map {
-      InsuranceProvider(
-        it.id,
-        it.name,
-        it.externalCollectionId,
+    val providers = buildList {
+      addAll(
+        result.data.insuranceProviders.map {
+          InsuranceProvider(
+            it.id,
+            it.name,
+            it.externalCollectionId,
+          )
+        },
       )
-    }
-    if (isDebug()) {
-      providers = providers + InsuranceProvider(
-        "se-demo",
-        "Demo",
-        "se-demo",
-      )
+      if (!isProduction) {
+        add(InsuranceProvider("se-demo", "Demo", "se-demo"))
+      }
     }
     return InsuranceProvidersResult.Success(providers)
   }

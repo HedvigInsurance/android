@@ -27,7 +27,7 @@ import kotlin.time.Duration.Companion.seconds
 
 internal class ProfileViewModel(
   private val profileRepository: ProfileRepository,
-  private val getEuroBonusStatusUseCase: GetEuroBonusStatusUseCase,
+  private val getEuroBonusStatusUseCase: GetEurobonusStatusUseCase,
   private val featureManager: FeatureManager,
   private val marketManager: MarketManager,
   private val logoutUseCase: LogoutUseCase,
