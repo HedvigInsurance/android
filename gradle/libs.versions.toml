@@ -9,7 +9,7 @@ androidGradlePlugin = "8.0.2"
 androidRemoveUnusedResourcesPlugin = "1.4.1"
 apollo = "3.8.2"
 cacheFix = "2.7.1"
-crashlytics = "2.9.5"
+crashlytics = "2.9.6"
 datadogPlugin = "1.9.0"
 doctor = "0.8.1"
 easylauncher = "6.2.0"
@@ -55,7 +55,7 @@ coil = "2.4.0"
 concatAdapterExtension = "1.2.1"
 coreLibraryDesugaring = "2.0.3"
 coroutines = "1.7.1"
-datadog = "1.19.1"
+datadog = "1.19.2"
 dependencyAnalysis = "1.20.0"
 firebase = "28.4.2"
 flexbox = "3.0.0"
@@ -63,7 +63,7 @@ fragmentViewBindingDelegate = "1.0.2"
 hAnalytics = "v0.300.0"
 hedvigAuthlib = "1.1"
 insetter = "0.6.1"
-jsonTest = "20230227"
+jsonTest = "20230618"
 junit = "4.13.2"
 kaspresso = "1.5.2"
 kiwi-navigationCompose = "0.6.2"
@@ -177,7 +177,7 @@ coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", ve
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 datadog-sdk = { module = "com.datadoghq:dd-sdk-android", version.ref = "datadog" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics-ktx" }
-firebase-bom = "com.google.firebase:firebase-bom:32.1.0"
+firebase-bom = "com.google.firebase:firebase-bom:32.1.1"
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics-ktx" }
 firebase-dynamicLinks = { module = "com.google.firebase:firebase-dynamic-links" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }

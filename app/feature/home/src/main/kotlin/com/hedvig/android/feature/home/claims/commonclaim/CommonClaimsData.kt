@@ -1,9 +1,5 @@
 package com.hedvig.android.feature.home.claims.commonclaim
 
-import android.content.ActivityNotFoundException
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.os.Parcelable
 import com.hedvig.android.core.common.android.ThemedIconUrls
 import giraffe.HomeQuery
@@ -44,12 +40,3 @@ data class CommonClaimsData(
 }
 
 fun CommonClaimsData.isFirstVet() = id == "31" || id == "30"
-
-fun getFirstVetIntent(context: Context): Intent {
-  return context.packageManager.getLaunchIntentForPackage("com.firstvet.firstvet")
-    ?: try {
-      Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.firstvet.firstvet"))
-    } catch (e: ActivityNotFoundException) {
-      Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.firstvet.firstvet"))
-    }
-}

@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.home.claims.commonclaim
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -38,9 +40,9 @@ fun NavGraphBuilder.commonClaimGraph(
   startClaimsFlow: () -> Unit,
 ) {
   animatedComposable<HomeDestinations.CommonClaimDestination> {
+    @Suppress("UNUSED_VARIABLE")
     val viewModel = koinViewModel<CommonClaimViewModel>()
     CommonClaimDestination(
-      viewModel = viewModel,
       commonClaimsData = claimsData,
       imageLoader = imageLoader,
       hAnalytics = hAnalytics,
@@ -52,7 +54,6 @@ fun NavGraphBuilder.commonClaimGraph(
 
 @Composable
 private fun CommonClaimDestination(
-  viewModel: CommonClaimViewModel,
   commonClaimsData: CommonClaimsData,
   imageLoader: ImageLoader,
   hAnalytics: HAnalytics,
@@ -86,7 +87,9 @@ private fun CommonClaimDestination(
         if (commonClaimsData.isFirstVet()) {
           firstMessage.commonClaimCreateClaimButton.enable()
           firstMessage.commonClaimCreateClaimButton.setOnClickListener {
-            context.startActivity(getFirstVetIntent(context))
+            context.startActivity(
+              Intent(Intent.ACTION_VIEW, Uri.parse("https://app.adjust.com/11u5tuxu")),
+            )
           }
         } else if (commonClaimsData.eligibleToClaim) {
           firstMessage.commonClaimCreateClaimButton.enable()
