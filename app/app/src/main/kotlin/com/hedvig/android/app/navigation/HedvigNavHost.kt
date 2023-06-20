@@ -13,8 +13,11 @@ import com.hedvig.android.app.ui.HedvigAppState
 import com.hedvig.android.core.common.android.ThemedIconUrls
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.changeaddress.navigation.changeAddressGraph
+import com.hedvig.android.feature.home.claims.pledge.HonestyPledgeBottomSheet
 import com.hedvig.android.feature.home.home.navigation.homeGraph
 import com.hedvig.android.feature.home.legacychangeaddress.LegacyChangeAddressActivity
+import com.hedvig.android.feature.odyssey.search.commonclaims.SearchActivity
+import com.hedvig.android.feature.odyssey.search.groups.ClaimGroupsActivity
 import com.hedvig.android.feature.travelcertificate.navigation.generateTravelCertificateGraph
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
@@ -25,6 +28,7 @@ import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
+import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.home.ui.HowClaimsWorkDialog
 import com.hedvig.app.feature.insurance.ui.tab.insuranceGraph
 import com.hedvig.app.feature.payment.connectPayinIntent
@@ -37,6 +41,7 @@ import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
+import hedvig.resources.R
 import kotlinx.coroutines.launch
 
 @Composable
@@ -87,12 +92,25 @@ internal fun HedvigNavHost(
       onStartClaim = {
         coroutineScope.launch {
           hAnalytics.beginClaim(AppScreen.HOME)
-          startClaimsFlow(
-            fragmentManager = fragmentManager,
-            featureManager = featureManager,
-            context = context,
-            commonClaimId = null,
-          )
+          if (featureManager.isFeatureEnabled(Feature.USE_NATIVE_CLAIMS_FLOW)) {
+            val intent = if (featureManager.isFeatureEnabled(Feature.CLAIMS_TRIAGING)) {
+              ClaimGroupsActivity.newInstance(context = context)
+            } else {
+              SearchActivity.newInstance(context = context)
+            }
+
+            context.startActivity(intent)
+          } else {
+            HonestyPledgeBottomSheet
+              .newInstance(
+                embarkClaimsFlowIntent = EmbarkActivity.newInstance(
+                  context = context,
+                  storyName = "claims",
+                  storyTitle = context.getString(R.string.CLAIMS_HONESTY_PLEDGE_BOTTOM_SHEET_BUTTON_LABEL),
+                ),
+              )
+              .show(fragmentManager, HonestyPledgeBottomSheet.TAG)
+          }
         }
       },
       startMovingFlow = {
