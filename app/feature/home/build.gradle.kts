@@ -53,7 +53,6 @@ dependencies {
   implementation(libs.coil.compose)
   implementation(libs.fragmentViewBindingDelegate)
   implementation(libs.insetter)
-  implementation(libs.kiwi.navigationCompose)
   implementation(libs.koin.compose)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)

@@ -3,7 +3,7 @@ package com.hedvig.android.feature.claimtriaging.claimgroups
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.data.claimtriaging.ClaimGroup
-import com.hedvig.android.data.claimtriaging.GetEntryPointGroupsUseCase
+import com.hedvig.android.feature.claimtriaging.GetEntryPointGroupsUseCase
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow

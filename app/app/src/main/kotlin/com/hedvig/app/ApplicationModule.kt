@@ -36,7 +36,6 @@ import com.hedvig.android.core.common.di.isProductionQualifier
 import com.hedvig.android.core.common.di.logInfoQualifier
 import com.hedvig.android.core.common.di.octopusGraphQLUrlQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
-import com.hedvig.android.data.claimtriaging.di.claimTriagingDataModule
 import com.hedvig.android.data.travelcertificate.di.travelCertificateDataModule
 import com.hedvig.android.datadog.addDatadogConfiguration
 import com.hedvig.android.datadog.di.datadogModule
@@ -706,7 +705,6 @@ val applicationModule = module {
       changeDateBottomSheetModule,
       chatEventModule,
       checkoutModule,
-      claimTriagingDataModule,
       claimTriagingModule,
       clockModule,
       coilModule,

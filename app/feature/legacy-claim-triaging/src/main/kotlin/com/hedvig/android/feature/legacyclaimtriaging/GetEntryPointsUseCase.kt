@@ -1,4 +1,4 @@
-package com.hedvig.android.data.claimtriaging
+package com.hedvig.android.feature.legacyclaimtriaging
 
 import arrow.core.Either
 import arrow.core.raise.either
@@ -8,11 +8,15 @@ import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.data.claimtriaging.ClaimGroupId
+import com.hedvig.android.data.claimtriaging.EntryPoint
+import com.hedvig.android.data.claimtriaging.EntryPointId
+import com.hedvig.android.data.claimtriaging.toEntryPointOptions
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import octopus.EntrypointSearchQuery
 
-class GetEntryPointsUseCase(
+internal class GetEntryPointsUseCase(
   private val apolloClient: ApolloClient,
 ) {
   suspend fun invoke(claimGroupId: ClaimGroupId?): Either<ErrorMessage, ImmutableList<EntryPoint>> {

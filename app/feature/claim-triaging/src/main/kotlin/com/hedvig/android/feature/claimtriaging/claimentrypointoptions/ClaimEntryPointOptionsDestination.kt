@@ -26,7 +26,6 @@ import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.data.claimtriaging.EntryPointOption
 import com.hedvig.android.data.claimtriaging.EntryPointOptionId
 import com.hedvig.android.feature.claimtriaging.OptionChipsFlowRow
-import hedvig.resources.R
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
@@ -62,7 +61,7 @@ private fun ClaimEntryPointOptionsScreen(
     ) {
       Spacer(Modifier.height(16.dp))
       Text(
-        text = stringResource(R.string.CLAIMS_TRIAGING_WHAT_HAPPENED_TITLE),
+        text = stringResource(hedvig.resources.R.string.CLAIMS_TRIAGING_WHAT_ITEM_TITLE),
         style = MaterialTheme.typography.headlineMedium.copy(
           fontFamily = SerifBookSmall,
           lineBreak = LineBreak.Heading,
@@ -72,7 +71,7 @@ private fun ClaimEntryPointOptionsScreen(
           .fillMaxWidth()
           .padding(horizontal = 16.dp),
       )
-      Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.height(32.dp))
       Spacer(Modifier.weight(1f))
       OptionChipsFlowRow(
         items = uiState.entryPointOptions,
@@ -83,7 +82,7 @@ private fun ClaimEntryPointOptionsScreen(
       )
       Spacer(Modifier.height(8.dp))
       HedvigContainedButton(
-        text = stringResource(R.string.claims_continue_button),
+        text = stringResource(hedvig.resources.R.string.claims_continue_button),
         onClick = onContinue,
         contentPadding = PaddingValues(16.dp),
         enabled = uiState.canContinue,

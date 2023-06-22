@@ -37,7 +37,7 @@ import slimber.log.e
 @Composable
 internal fun ClaimGroupsDestination(
   viewModel: ClaimGroupsViewModel,
-  onClaimGroupSubmit: (ClaimGroupId) -> Unit,
+  onClaimGroupWithEntryPointsSubmit: (ClaimGroup) -> Unit,
   startClaimFlow: () -> Unit,
   navigateUp: () -> Unit,
 ) {
@@ -51,7 +51,7 @@ internal fun ClaimGroupsDestination(
         if (claimGroup.entryPoints.isEmpty()) {
           startClaimFlow()
         } else {
-          onClaimGroupSubmit(claimGroup.id)
+          onClaimGroupWithEntryPointsSubmit(claimGroup)
         }
       }
     },

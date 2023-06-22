@@ -229,7 +229,6 @@ dependencies {
   implementation(libs.flexbox)
   implementation(libs.fragmentViewBindingDelegate)
   implementation(libs.insetter)
-  implementation(libs.kiwi.navigationCompose)
   implementation(libs.koin.android)
   implementation(libs.koin.compose)
   implementation(libs.koin.workManager)

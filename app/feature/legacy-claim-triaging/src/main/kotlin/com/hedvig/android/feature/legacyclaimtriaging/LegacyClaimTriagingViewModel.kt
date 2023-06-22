@@ -3,7 +3,6 @@ package com.hedvig.android.feature.legacyclaimtriaging
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.data.claimtriaging.EntryPoint
-import com.hedvig.android.data.claimtriaging.GetEntryPointsUseCase
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +22,6 @@ internal class LegacyClaimTriagingViewModel(
   }
 
   fun loadSearchableClaims() {
-    _uiState.update { it.copy(errorMessage = null, isLoading = true) }
     viewModelScope.launch {
       getClaimEntryPoints.invoke(claimGroupId = null).fold(
         ifLeft = { errorMessage ->
@@ -45,6 +43,7 @@ internal class LegacyClaimTriagingViewModel(
         },
       )
     }
+    _uiState.update { it.copy(errorMessage = null, isLoading = true) }
   }
 
   fun onSelectClaim(entryPoint: EntryPoint) {

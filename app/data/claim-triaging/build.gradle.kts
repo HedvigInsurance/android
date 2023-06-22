@@ -12,6 +12,7 @@ dependencies {
   implementation(projects.app.apollo.core)
   implementation(projects.app.apollo.octopus)
   implementation(projects.app.core.common)
+  implementation(projects.app.navigation.navigationComposeTyped)
 
   implementation(libs.apollo.normalizedCache)
   implementation(libs.koin.core)
