@@ -3,6 +3,7 @@ package com.hedvig.android.feature.odyssey.di
 import arrow.retrofit.adapter.either.EitherCallAdapterFactory
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.octopus.di.octopusClient
+import com.hedvig.android.data.claimtriaging.EntryPointId
 import com.hedvig.android.feature.odyssey.data.ClaimFlowRepository
 import com.hedvig.android.feature.odyssey.data.ClaimFlowRepositoryImpl
 import com.hedvig.android.feature.odyssey.data.OdysseyService
@@ -10,11 +11,6 @@ import com.hedvig.android.feature.odyssey.model.FlowId
 import com.hedvig.android.feature.odyssey.navigation.AudioContent
 import com.hedvig.android.feature.odyssey.navigation.ClaimFlowDestination
 import com.hedvig.android.feature.odyssey.navigation.LocationOption
-import com.hedvig.android.feature.odyssey.search.commonclaims.SearchViewModel
-import com.hedvig.android.feature.odyssey.search.group.ClaimGroupViewModel
-import com.hedvig.android.feature.odyssey.search.group.GetClaimEntryGroupUseCase
-import com.hedvig.android.feature.odyssey.search.groups.ClaimGroupsViewModel
-import com.hedvig.android.feature.odyssey.search.groups.GetNetworkClaimEntryPointGroupsUseCase
 import com.hedvig.android.feature.odyssey.step.audiorecording.AudioRecordingViewModel
 import com.hedvig.android.feature.odyssey.step.dateofoccurrence.DateOfOccurrenceViewModel
 import com.hedvig.android.feature.odyssey.step.dateofoccurrencepluslocation.DateOfOccurrencePlusLocationViewModel
@@ -45,29 +41,11 @@ val odysseyModule = module {
     ClaimFlowRepositoryImpl(get<ApolloClient>(octopusClient), get<OdysseyService>())
   }
 
-  viewModel<ClaimGroupsViewModel> { ClaimGroupsViewModel(get<GetNetworkClaimEntryPointGroupsUseCase>()) }
-  viewModel<ClaimGroupViewModel> { parametersHolder ->
-    ClaimGroupViewModel(
-      get<GetClaimEntryGroupUseCase>(),
-      parametersHolder.get(),
-    )
-  }
-
-  single<GetNetworkClaimEntryPointGroupsUseCase> {
-    GetNetworkClaimEntryPointGroupsUseCase(get<ApolloClient>(octopusClient))
-  }
-
-  single<GetClaimEntryGroupUseCase> {
-    GetClaimEntryGroupUseCase(get<ApolloClient>(octopusClient))
-  }
-
-  viewModel<SearchViewModel> { SearchViewModel(get()) }
-
   // Claims
-  viewModel<HonestyPledgeViewModel> { (entryPointId: String?) ->
+  viewModel<HonestyPledgeViewModel> { (entryPointId: EntryPointId?) ->
     HonestyPledgeViewModel(entryPointId, get())
   }
-  viewModel<NotificationPermissionViewModel> { (entryPointId: String?) ->
+  viewModel<NotificationPermissionViewModel> { (entryPointId: EntryPointId?) ->
     NotificationPermissionViewModel(entryPointId, get<ClaimFlowRepository>())
   }
   viewModel<AudioRecordingViewModel> { (flowId: FlowId, audioContent: AudioContent?) ->

@@ -2,11 +2,10 @@ package com.hedvig.android.feature.odyssey.navigation
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.compose.ui.unit.Density
+import androidx.compose.runtime.remember
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
 import coil.ImageLoader
-import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.odyssey.data.ClaimFlowStep
 import com.hedvig.android.feature.odyssey.data.toClaimFlowDestination
 import com.hedvig.android.feature.odyssey.step.audiorecording.AudioRecordingDestination
@@ -34,46 +33,58 @@ import com.hedvig.android.feature.odyssey.step.unknownerror.UnknownErrorDestinat
 import com.hedvig.android.feature.odyssey.step.unknownscreen.UnknownScreenDestination
 import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.compose.typed.animatedNavigation
+import com.hedvig.android.navigation.core.AppDestination
+import com.hedvig.android.navigation.core.Navigator
 import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.navigate
+import com.kiwi.navigationcompose.typed.decodeArguments
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-internal fun NavGraphBuilder.claimFlowGraph(
+fun NavGraphBuilder.claimFlowGraph(
   windowSizeClass: WindowSizeClass,
-  density: Density,
-  navController: NavHostController,
+  navController: NavController,
+  navigator: Navigator,
   imageLoader: ImageLoader,
-  entryPointId: String?,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openAppSettings: () -> Unit,
   openPlayStore: () -> Unit,
-  navigateUp: () -> Boolean,
   openChat: () -> Unit,
   finishClaimFlow: () -> Unit,
 ) {
-  animatedNavigation<Destinations.ClaimFlow>(
+  animatedNavigation<AppDestination.ClaimsFlow>(
     startDestination = createRoutePattern<ClaimFlowDestination.HonestyPledge>(),
-    enterTransition = { MotionDefaults.sharedXAxisEnter(density) },
-    exitTransition = { MotionDefaults.sharedXAxisExit(density) },
-    popEnterTransition = { MotionDefaults.sharedXAxisPopEnter(density) },
-    popExitTransition = { MotionDefaults.sharedXAxisPopExit(density) },
   ) {
-    animatedComposable<ClaimFlowDestination.HonestyPledge> {
+    animatedComposable<ClaimFlowDestination.HonestyPledge> { backStackEntry ->
+      val entryPointId = remember(navController, backStackEntry) {
+        val claimsFlow: AppDestination.ClaimsFlow = decodeArguments(
+          AppDestination.ClaimsFlow.serializer(),
+          navController.getBackStackEntry(createRoutePattern<AppDestination.ClaimsFlow>()),
+        )
+        claimsFlow.entryPointId
+      }
       val viewModel: HonestyPledgeViewModel = koinViewModel { parametersOf(entryPointId) }
       HonestyPledgeDestination(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
-        openNotificationPermissionStep = { navController.navigate(ClaimFlowDestination.NotificationPermission) },
+        openNotificationPermissionStep = {
+          with(navigator) { backStackEntry.navigate(ClaimFlowDestination.NotificationPermission) }
+        },
         startClaimFlow = { viewModel.startClaimFlow() },
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navController.navigate(claimFlowStep.toClaimFlowDestination())
+          with(navigator) { backStackEntry.navigate(claimFlowStep.toClaimFlowDestination()) }
         },
-        navigateUp = { navigateUp() },
+        navigateUp = navigator::navigateUp,
       )
     }
-    animatedComposable<ClaimFlowDestination.NotificationPermission> {
+    animatedComposable<ClaimFlowDestination.NotificationPermission> { backStackEntry ->
+      val entryPointId = remember(navController, backStackEntry) {
+        val claimsFlow: AppDestination.ClaimsFlow = decodeArguments(
+          AppDestination.ClaimsFlow.serializer(),
+          navController.getBackStackEntry(createRoutePattern<AppDestination.ClaimsFlow>()),
+        )
+        claimsFlow.entryPointId
+      }
       val viewModel: NotificationPermissionViewModel = koinViewModel { parametersOf(entryPointId) }
       NotificationPermissionDestination(
         viewModel = viewModel,
@@ -83,12 +94,12 @@ internal fun NavGraphBuilder.claimFlowGraph(
         openAppSettings = openAppSettings,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navController.navigate(claimFlowStep.toClaimFlowDestination())
+          with(navigator) { backStackEntry.navigate(claimFlowStep.toClaimFlowDestination()) }
         },
-        navigateUp = { navigateUp() },
+        navigateUp = navigator::navigateUp,
       )
     }
-    animatedComposable<ClaimFlowDestination.AudioRecording> {
+    animatedComposable<ClaimFlowDestination.AudioRecording> { backStackEntry ->
       val viewModel: AudioRecordingViewModel = koinViewModel { parametersOf(flowId, audioContent) }
       AudioRecordingDestination(
         viewModel = viewModel,
@@ -98,12 +109,12 @@ internal fun NavGraphBuilder.claimFlowGraph(
         openAppSettings = openAppSettings,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navController.navigate(claimFlowStep.toClaimFlowDestination())
+          with(navigator) { backStackEntry.navigate(claimFlowStep.toClaimFlowDestination()) }
         },
-        navigateUp = { navController.navigateUp() || navigateUp() },
+        navigateUp = navigator::navigateUp,
       )
     }
-    animatedComposable<ClaimFlowDestination.DateOfOccurrence> {
+    animatedComposable<ClaimFlowDestination.DateOfOccurrence> { backStackEntry ->
       val dateOfOccurrence: ClaimFlowDestination.DateOfOccurrence = this
       val viewModel: DateOfOccurrenceViewModel = koinViewModel { parametersOf(dateOfOccurrence) }
       DateOfOccurrenceDestination(
@@ -111,12 +122,12 @@ internal fun NavGraphBuilder.claimFlowGraph(
         windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep: ClaimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navController.navigate(claimFlowStep.toClaimFlowDestination())
+          with(navigator) { backStackEntry.navigate(claimFlowStep.toClaimFlowDestination()) }
         },
-        navigateBack = { navController.navigateUp() || navigateUp() },
+        navigateBack = navigator::navigateUp,
       )
     }
-    animatedComposable<ClaimFlowDestination.DateOfOccurrencePlusLocation> {
+    animatedComposable<ClaimFlowDestination.DateOfOccurrencePlusLocation> { backStackEntry ->
       val dateOfOccurencePlusLocation: ClaimFlowDestination.DateOfOccurrencePlusLocation = this
       val viewModel: DateOfOccurrencePlusLocationViewModel = koinViewModel {
         parametersOf(dateOfOccurencePlusLocation)
@@ -127,36 +138,36 @@ internal fun NavGraphBuilder.claimFlowGraph(
         imageLoader = imageLoader,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navController.navigate(claimFlowStep.toClaimFlowDestination())
+          with(navigator) { backStackEntry.navigate(claimFlowStep.toClaimFlowDestination()) }
         },
-        navigateBack = { navController.navigateUp() || navigateUp() },
+        navigateBack = navigator::navigateUp,
       )
     }
-    animatedComposable<ClaimFlowDestination.Location> {
+    animatedComposable<ClaimFlowDestination.Location> { backStackEntry ->
       val viewModel: LocationViewModel = koinViewModel { parametersOf(selectedLocation, locationOptions) }
       LocationDestination(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navController.navigate(claimFlowStep.toClaimFlowDestination())
+          with(navigator) { backStackEntry.navigate(claimFlowStep.toClaimFlowDestination()) }
         },
-        navigateBack = { navController.navigateUp() || navigateUp() },
+        navigateBack = navigator::navigateUp,
       )
     }
-    animatedComposable<ClaimFlowDestination.PhoneNumber> {
+    animatedComposable<ClaimFlowDestination.PhoneNumber> { backStackEntry ->
       val viewModel: PhoneNumberViewModel = koinViewModel { parametersOf(phoneNumber) }
       PhoneNumberDestination(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navController.navigate(claimFlowStep.toClaimFlowDestination())
+          with(navigator) { backStackEntry.navigate(claimFlowStep.toClaimFlowDestination()) }
         },
-        navigateBack = { navController.navigateUp() || navigateUp() },
+        navigateBack = navigator::navigateUp,
       )
     }
-    animatedComposable<ClaimFlowDestination.SingleItem> {
+    animatedComposable<ClaimFlowDestination.SingleItem> { backStackEntry ->
       val singleItem: ClaimFlowDestination.SingleItem = this
       val viewModel: SingleItemViewModel = koinViewModel { parametersOf(singleItem) }
       SingleItemDestination(
@@ -165,12 +176,12 @@ internal fun NavGraphBuilder.claimFlowGraph(
         imageLoader = imageLoader,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navController.navigate(claimFlowStep.toClaimFlowDestination())
+          with(navigator) { backStackEntry.navigate(claimFlowStep.toClaimFlowDestination()) }
         },
-        navigateBack = { navController.navigateUp() || navigateUp() },
+        navigateBack = navigator::navigateUp,
       )
     }
-    animatedComposable<ClaimFlowDestination.Summary> {
+    animatedComposable<ClaimFlowDestination.Summary> { backStackEntry ->
       val summary: ClaimFlowDestination.Summary = this
       val viewModel: ClaimSummaryViewModel = koinViewModel { parametersOf(summary) }
       ClaimSummaryDestination(
@@ -179,12 +190,12 @@ internal fun NavGraphBuilder.claimFlowGraph(
         imageLoader = imageLoader,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navController.navigate(claimFlowStep.toClaimFlowDestination())
+          with(navigator) { backStackEntry.navigate(claimFlowStep.toClaimFlowDestination()) }
         },
-        navigateBack = { navController.navigateUp() || navigateUp() },
+        navigateBack = navigator::navigateUp,
       )
     }
-    animatedComposable<ClaimFlowDestination.SingleItemCheckout> {
+    animatedComposable<ClaimFlowDestination.SingleItemCheckout> { backStackEntry ->
       val singleItemCheckout = this
       val viewModel: SingleItemCheckoutViewModel = koinViewModel { parametersOf(singleItemCheckout) }
       BackHandler { finishClaimFlow() }
@@ -192,9 +203,11 @@ internal fun NavGraphBuilder.claimFlowGraph(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep ->
-          navController.navigate(claimFlowStep.toClaimFlowDestination())
+          with(navigator) { backStackEntry.navigate(claimFlowStep.toClaimFlowDestination()) }
         },
-        navigateToAppUpdateStep = { navController.navigate(ClaimFlowDestination.UpdateApp) },
+        navigateToAppUpdateStep = {
+          with(navigator) { backStackEntry.navigate(ClaimFlowDestination.UpdateApp) }
+        },
         navigateBack = finishClaimFlow,
         openChat = openChat,
         exitFlow = finishClaimFlow,
@@ -222,7 +235,7 @@ internal fun NavGraphBuilder.claimFlowGraph(
         windowSizeClass = windowSizeClass,
         openChat = openChat,
         finishClaimFlow = finishClaimFlow,
-        navigateBack = { navController.navigateUp() || navigateUp() },
+        navigateBack = navigator::navigateUp,
       )
     }
   }

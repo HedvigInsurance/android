@@ -9,10 +9,10 @@ dependencies {
 
   api(libs.accompanist.insetsUi)
   api(libs.androidx.compose.foundation)
-  api(libs.androidx.compose.material)
   api(libs.androidx.compose.material3)
 
   implementation(libs.accompanist.systemUiController)
+  implementation(libs.androidx.compose.material)
 }
 
 android {

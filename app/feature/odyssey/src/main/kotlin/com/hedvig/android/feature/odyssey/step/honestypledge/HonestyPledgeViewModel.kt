@@ -2,6 +2,7 @@ package com.hedvig.android.feature.odyssey.step.honestypledge
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.data.claimtriaging.EntryPointId
 import com.hedvig.android.feature.odyssey.data.ClaimFlowRepository
 import com.hedvig.android.feature.odyssey.data.ClaimFlowStep
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,7 +12,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class HonestyPledgeViewModel(
-  private val entryPointId: String?,
+  private val entryPointId: EntryPointId?,
   private val claimFlowRepository: ClaimFlowRepository,
 ) : ViewModel() {
   private val _uiState: MutableStateFlow<HonestyPledgeUiState> = MutableStateFlow(HonestyPledgeUiState())

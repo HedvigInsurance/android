@@ -16,7 +16,7 @@ import com.hedvig.android.core.common.android.show
 import com.hedvig.android.core.ui.databinding.ListTextItemBinding
 import com.hedvig.android.feature.home.R
 import com.hedvig.android.feature.home.databinding.LegacyChangeAddressActivityBinding
-import com.hedvig.android.navigation.activity.Navigator
+import com.hedvig.android.navigation.activity.ActivityNavigator
 import dev.chrisbanes.insetter.applyInsetter
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -26,7 +26,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
  */
 class LegacyChangeAddressActivity : AppCompatActivity(R.layout.legacy_change_address_activity) {
 
-  private val activityNavigator: Navigator by inject()
+  private val activityNavigator: ActivityNavigator by inject()
   private val viewModel: LegacyChangeAddressViewModel by viewModel()
 
   override fun onCreate(savedInstanceState: Bundle?) {

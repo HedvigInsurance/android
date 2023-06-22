@@ -58,7 +58,7 @@ import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
-import com.hedvig.android.navigation.activity.Navigator
+import com.hedvig.android.navigation.activity.ActivityNavigator
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
@@ -92,7 +92,7 @@ class LoggedInActivity : AppCompatActivity() {
   private val languageService: LanguageService by inject()
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer by inject()
 
-  private val navigator: Navigator by inject()
+  private val activityNavigator: ActivityNavigator by inject()
 
   // Shows the splash screen as long as the auth status is still undetermined, that's the only condition.
   private val showSplash = MutableStateFlow(true)
@@ -185,7 +185,7 @@ class LoggedInActivity : AppCompatActivity() {
           }
           .filterIsInstance<AuthStatus.LoggedOut>()
           .first()
-        navigator.navigateToMarketingActivity()
+        activityNavigator.navigateToMarketingActivity()
         finish()
       }
     }
@@ -201,6 +201,7 @@ class LoggedInActivity : AppCompatActivity() {
             hAnalytics = hAnalytics,
           ),
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+          activityNavigator = activityNavigator,
           getInitialTab = {
             intent.extras?.getString(INITIAL_TAB)?.let {
               TopLevelGraph.fromName(it)
@@ -209,6 +210,7 @@ class LoggedInActivity : AppCompatActivity() {
           clearInitialTab = {
             intent.removeExtra(INITIAL_TAB)
           },
+          shouldShowRequestPermissionRationale = ::shouldShowRequestPermissionRationale,
           marketManager = marketManager,
           imageLoader = imageLoader,
           featureManager = featureManager,
@@ -253,8 +255,10 @@ class LoggedInActivity : AppCompatActivity() {
 private fun HedvigApp(
   hedvigAppState: HedvigAppState,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
+  activityNavigator: ActivityNavigator,
   getInitialTab: () -> TopLevelGraph?,
   clearInitialTab: () -> Unit,
+  shouldShowRequestPermissionRationale: (String) -> Boolean,
   marketManager: MarketManager,
   imageLoader: ImageLoader,
   featureManager: FeatureManager,
@@ -297,8 +301,10 @@ private fun HedvigApp(
         HedvigNavHost(
           hedvigAppState = hedvigAppState,
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-          marketManager = marketManager,
+          activityNavigator = activityNavigator,
+          shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           imageLoader = imageLoader,
+          marketManager = marketManager,
           featureManager = featureManager,
           hAnalytics = hAnalytics,
           fragmentManager = fragmentManager,

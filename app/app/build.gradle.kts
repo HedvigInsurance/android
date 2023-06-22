@@ -29,7 +29,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "11.3.4"
+    versionName = "11.4.0"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -125,11 +125,14 @@ dependencies {
   implementation(projects.app.core.designSystem)
   implementation(projects.app.core.resources)
   implementation(projects.app.core.ui)
+  implementation(projects.app.data.claimTriaging)
   implementation(projects.app.data.travelCertificate)
   implementation(projects.app.datadog)
   implementation(projects.app.feature.businessmodel)
   implementation(projects.app.feature.changeaddress)
+  implementation(projects.app.feature.claimTriaging)
   implementation(projects.app.feature.home)
+  implementation(projects.app.feature.legacyClaimTriaging)
   implementation(projects.app.feature.odyssey)
   implementation(projects.app.feature.terminateInsurance)
   implementation(projects.app.feature.travelCertificate)

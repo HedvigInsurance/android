@@ -41,7 +41,7 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature.loggedin.ui.LoggedInActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout"
             android:exported="true"
             android:theme="@style/Hedvig.Theme.Splash"
             android:windowSoftInputMode="adjustResize">
@@ -196,24 +196,9 @@
             android:theme="@style/Hedvig.Theme.Marketing"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.hedvig.android.feature.odyssey.ClaimFlowActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode"
-            android:parentActivityName="com.hedvig.app.feature.loggedin.ui.LoggedInActivity"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name="com.hedvig.android.feature.terminateinsurance.TerminateInsuranceActivity"
             android:parentActivityName="com.hedvig.app.feature.loggedin.ui.LoggedInActivity"
             android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name="com.hedvig.android.feature.odyssey.search.groups.ClaimGroupsActivity"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name="com.hedvig.android.feature.odyssey.search.group.ClaimGroupActivity"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name="com.hedvig.android.feature.odyssey.search.commonclaims.SearchActivity"
-            android:windowSoftInputMode="adjustResize" />
-
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_hedvig_h" />

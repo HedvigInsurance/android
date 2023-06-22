@@ -5,12 +5,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.common.android.parcelable
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.feature.embark.EmbarkViewModel
@@ -52,7 +52,7 @@ class AudioRecorderFragment : Fragment() {
 
     setContent {
       HedvigTheme {
-        val state by viewModel.viewState.collectAsState()
+        val state by viewModel.viewState.collectAsStateWithLifecycle()
         AudioRecorderScreen(
           parameters = parameters,
           viewState = state,

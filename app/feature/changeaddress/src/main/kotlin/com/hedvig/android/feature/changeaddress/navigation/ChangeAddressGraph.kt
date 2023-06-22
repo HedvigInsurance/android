@@ -3,8 +3,8 @@ package com.hedvig.android.feature.changeaddress.navigation
 import androidx.activity.compose.BackHandler
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.ui.unit.Density
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
 import com.feature.changeaddress.navigation.ChangeAddressResultDestination
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
@@ -22,7 +22,7 @@ import com.kiwi.navigationcompose.typed.popUpTo
 fun NavGraphBuilder.changeAddressGraph(
   windowSizeClass: WindowSizeClass,
   density: Density,
-  navController: NavHostController,
+  navController: NavController,
   openChat: () -> Unit,
 ) {
   animatedNavigation<AppDestination.ChangeAddress>(

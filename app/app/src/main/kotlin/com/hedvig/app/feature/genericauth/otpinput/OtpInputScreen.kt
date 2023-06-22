@@ -52,7 +52,7 @@ import com.hedvig.android.core.designsystem.component.button.LargeContainedButto
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
-import com.hedvig.android.core.ui.progress.FullScreenProgressOverlay
+import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgressOverlay
 import com.hedvig.app.R
 import kotlinx.coroutines.isActive
 
@@ -97,7 +97,7 @@ fun OtpInputScreen(
         Modifier.padding(paddingValues),
       )
     }
-    FullScreenProgressOverlay(show = loadingCode)
+    HedvigFullScreenCenterAlignedProgressOverlay(show = loadingCode)
   }
 }
 

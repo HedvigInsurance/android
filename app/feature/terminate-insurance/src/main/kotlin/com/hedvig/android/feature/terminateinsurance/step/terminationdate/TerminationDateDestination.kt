@@ -41,7 +41,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.core.ui.progress.FullScreenHedvigProgress
+import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbar
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 
@@ -124,7 +124,7 @@ private fun TerminationDateScreen(
         )
       }
     }
-    FullScreenHedvigProgress(show = uiState.isLoading)
+    HedvigFullScreenCenterAlignedProgress(show = uiState.isLoading)
     ErrorSnackbar(
       hasError = uiState.dateSubmissionError,
       showedError = showedError,

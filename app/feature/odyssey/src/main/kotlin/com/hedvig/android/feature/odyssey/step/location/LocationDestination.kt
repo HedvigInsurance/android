@@ -39,7 +39,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
-import com.hedvig.android.core.ui.progress.FullScreenHedvigProgress
+import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbar
 import com.hedvig.android.feature.odyssey.data.ClaimFlowStep
 import hedvig.resources.R
@@ -147,7 +147,7 @@ private fun LocationScreen(
         )
       }
     }
-    FullScreenHedvigProgress(show = uiState.isLoading)
+    HedvigFullScreenCenterAlignedProgress(show = uiState.isLoading)
     ErrorSnackbar(
       hasError = uiState.error,
       showedError = showedError,

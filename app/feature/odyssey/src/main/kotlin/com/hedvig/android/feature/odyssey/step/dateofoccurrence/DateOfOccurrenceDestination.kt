@@ -34,7 +34,7 @@ import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation
 import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
-import com.hedvig.android.core.ui.progress.FullScreenHedvigProgress
+import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbar
 import com.hedvig.android.feature.odyssey.data.ClaimFlowStep
 import hedvig.resources.R
@@ -127,7 +127,7 @@ private fun DateOfOccurrenceScreen(
         )
       }
     }
-    FullScreenHedvigProgress(show = uiState.isLoading)
+    HedvigFullScreenCenterAlignedProgress(show = uiState.isLoading)
     ErrorSnackbar(
       hasError = uiState.dateSubmissionError,
       showedError = showedError,

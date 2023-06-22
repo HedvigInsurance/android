@@ -5,7 +5,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
-import com.hedvig.android.navigation.activity.Navigator
+import com.hedvig.android.navigation.activity.ActivityNavigator
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
@@ -17,7 +17,7 @@ import slimber.log.d
 class AuthenticatedObserver : DefaultLifecycleObserver {
 
   private val authTokenService: AuthTokenService by inject(AuthTokenService::class.java)
-  private val navigator: Navigator by inject(Navigator::class.java)
+  private val activityNavigator: ActivityNavigator by inject(ActivityNavigator::class.java)
 
   private var authObservingJob: Job? = null
 
@@ -40,7 +40,7 @@ class AuthenticatedObserver : DefaultLifecycleObserver {
         }
         .filterIsInstance<AuthStatus.LoggedOut>()
         .first()
-      navigator.navigateToMarketingActivity()
+      activityNavigator.navigateToMarketingActivity()
     }
   }
 

@@ -7,7 +7,6 @@ import androidx.compose.ui.text.font.FontFamily
  * Used in specific places instead of setting it to a particular font size.
  * Particularly, now used in the Home screen as the big header.
  */
-@Suppress("unused")
 val SerifBookSmall = FontFamily(
   Font(hedvig.resources.R.font.hedvig_letters_small),
 )

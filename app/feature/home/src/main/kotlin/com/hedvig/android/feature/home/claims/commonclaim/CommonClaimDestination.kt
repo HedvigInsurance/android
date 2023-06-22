@@ -18,6 +18,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidViewBinding
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import coil.ImageLoader
@@ -37,16 +38,16 @@ fun NavGraphBuilder.commonClaimGraph(
   navController: NavController,
   imageLoader: ImageLoader,
   hAnalytics: HAnalytics,
-  startClaimsFlow: () -> Unit,
+  startClaimsFlow: (NavBackStackEntry) -> Unit,
 ) {
-  animatedComposable<HomeDestinations.CommonClaimDestination> {
+  animatedComposable<HomeDestinations.CommonClaimDestination> { backStackEntry ->
     @Suppress("UNUSED_VARIABLE")
     val viewModel = koinViewModel<CommonClaimViewModel>()
     CommonClaimDestination(
       commonClaimsData = claimsData,
       imageLoader = imageLoader,
       hAnalytics = hAnalytics,
-      startClaimsFlow = startClaimsFlow,
+      startClaimsFlow = { startClaimsFlow(backStackEntry) },
       navigateUp = navController::navigateUp,
     )
   }

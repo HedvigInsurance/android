@@ -57,7 +57,7 @@ import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.core.ui.getLocale
-import com.hedvig.android.core.ui.progress.FullScreenHedvigProgress
+import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.compose.typed.animatedNavigation
@@ -159,7 +159,7 @@ private fun ReferralsScreen(
                 .padding(top = (64 - 16).dp),
             )
           }
-          FullScreenHedvigProgress(Modifier.align(Alignment.Center), uiState.isLoading)
+          HedvigFullScreenCenterAlignedProgress(Modifier.align(Alignment.Center), uiState.isLoading)
         }
       }
       else -> {

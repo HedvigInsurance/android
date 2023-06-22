@@ -3,6 +3,7 @@ package com.hedvig.android.feature.home.home.navigation
 import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
@@ -29,7 +30,7 @@ fun NavGraphBuilder.homeGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   nestedGraphs: NavGraphBuilder.() -> Unit,
   onStartChat: () -> Unit,
-  onStartClaim: () -> Unit,
+  onStartClaim: (NavBackStackEntry) -> Unit,
   startMovingFlow: () -> Unit,
   onHowClaimsWorkClick: (List<HomeQuery.HowClaimsWork>) -> Unit,
   onGenerateTravelCertificateClicked: () -> Unit,
@@ -47,7 +48,7 @@ fun NavGraphBuilder.homeGraph(
     animatedComposable<AppDestination.TopLevelDestination.Home>(
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
-    ) {
+    ) { backStackEntry ->
       val viewModel: HomeViewModel = koinViewModel()
       val uiState by viewModel.uiState.collectAsStateWithLifecycle()
       HomeDestination(
@@ -65,7 +66,7 @@ fun NavGraphBuilder.homeGraph(
         },
         onPaymentCardShown = viewModel::onPaymentCardShown,
         onHowClaimsWorkClick = onHowClaimsWorkClick,
-        onStartClaim = onStartClaim,
+        onStartClaim = { onStartClaim(backStackEntry) },
         onStartMovingFlow = startMovingFlow,
         onGenerateTravelCertificateClicked = onGenerateTravelCertificateClicked,
         onOpenCommonClaim = { commonClaimsData ->

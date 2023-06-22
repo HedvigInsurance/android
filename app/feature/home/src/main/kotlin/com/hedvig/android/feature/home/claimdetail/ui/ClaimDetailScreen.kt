@@ -23,7 +23,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
-import com.hedvig.android.core.ui.progress.FullScreenHedvigProgress
+import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.feature.home.claimdetail.model.ClaimDetailResult
 import com.hedvig.android.feature.home.claimdetail.model.ClaimDetailUiState
 import java.util.Locale
@@ -69,7 +69,7 @@ internal fun ClaimDetailScreen(
             ),
         )
         ClaimDetailViewState.Loading -> {
-          FullScreenHedvigProgress()
+          HedvigFullScreenCenterAlignedProgress()
         }
       }
     }
