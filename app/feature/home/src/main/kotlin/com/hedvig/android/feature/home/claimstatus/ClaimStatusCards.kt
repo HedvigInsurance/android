@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.systemGestureExclusion
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
@@ -41,7 +42,7 @@ internal fun ClaimStatusCards(
       beyondBoundsPageCount = 1,
       pageSpacing = 12.dp,
       key = { index -> claimStatusCardsUiState[index].id },
-      modifier = Modifier.fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth().systemGestureExclusion(),
     ) { page: Int ->
       val claimStatusUiState = claimStatusCardsUiState[page]
       ClaimStatusCard(
