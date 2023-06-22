@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
-import com.hedvig.android.core.ui.progress.FullScreenHedvigProgress
+import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbar
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
 
@@ -69,7 +69,7 @@ internal fun ClaimFlowScaffold(
         content(sideSpacingModifier)
       }
     }
-    FullScreenHedvigProgress(show = isLoading)
+    HedvigFullScreenCenterAlignedProgress(show = isLoading)
     if (errorSnackbarState != null) {
       ErrorSnackbar(
         errorSnackbarState = errorSnackbarState,

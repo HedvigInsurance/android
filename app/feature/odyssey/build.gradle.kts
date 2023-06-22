@@ -18,8 +18,10 @@ dependencies {
   implementation(projects.app.core.designSystem)
   implementation(projects.app.core.resources)
   implementation(projects.app.core.ui)
+  implementation(projects.app.data.claimTriaging)
   implementation(projects.app.hanalytics.hanalyticsFeatureFlags)
   implementation(projects.app.language.languageCore)
+  implementation(projects.app.navigation.core)
   implementation(projects.app.navigation.navigationActivity)
   implementation(projects.app.navigation.navigationComposeTyped)
 

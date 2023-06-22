@@ -12,7 +12,7 @@ import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.common.android.parcelableExtra
 import com.hedvig.android.feature.home.R
 import com.hedvig.android.feature.home.databinding.ChangeAddressResultActivityBinding
-import com.hedvig.android.navigation.activity.Navigator
+import com.hedvig.android.navigation.activity.ActivityNavigator
 import kotlinx.parcelize.Parcelize
 import org.koin.android.ext.android.inject
 import java.time.LocalDate
@@ -21,7 +21,7 @@ import java.time.format.FormatStyle
 
 class ChangeAddressResultActivity : AppCompatActivity(R.layout.change_address_result_activity) {
 
-  private val activityNavigator: Navigator by inject()
+  private val activityNavigator: ActivityNavigator by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)

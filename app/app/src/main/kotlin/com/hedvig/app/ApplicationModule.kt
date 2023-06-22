@@ -36,11 +36,15 @@ import com.hedvig.android.core.common.di.isProductionQualifier
 import com.hedvig.android.core.common.di.logInfoQualifier
 import com.hedvig.android.core.common.di.octopusGraphQLUrlQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
+import com.hedvig.android.data.claimtriaging.di.claimTriagingDataModule
 import com.hedvig.android.data.travelcertificate.di.travelCertificateDataModule
 import com.hedvig.android.datadog.addDatadogConfiguration
 import com.hedvig.android.datadog.di.datadogModule
 import com.hedvig.android.feature.businessmodel.di.businessModelModule
+import com.hedvig.android.feature.changeaddress.di.changeAddressModule
+import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
 import com.hedvig.android.feature.home.di.homeModule
+import com.hedvig.android.feature.legacyclaimtriaging.di.legacyClaimTriagingModule
 import com.hedvig.android.feature.odyssey.di.odysseyModule
 import com.hedvig.android.feature.odyssey.di.odysseyUrlQualifier
 import com.hedvig.android.feature.terminateinsurance.di.terminateInsuranceModule
@@ -56,7 +60,7 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.language.di.languageModule
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.market.di.marketManagerModule
-import com.hedvig.android.navigation.activity.Navigator
+import com.hedvig.android.navigation.activity.ActivityNavigator
 import com.hedvig.android.navigation.core.di.deepLinkModule
 import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.android.notification.core.NotificationSender
@@ -443,9 +447,9 @@ private val textActionSetModule = module {
   viewModel { (data: TextActionParameter) -> TextActionViewModel(data) }
 }
 
-private val navigatorModule = module {
-  single<Navigator> {
-    Navigator(
+private val activityNavigatorModule = module {
+  single<ActivityNavigator> {
+    ActivityNavigator(
       application = get(),
       loggedOutActivityClass = MarketingActivity::class.java,
       buildConfigApplicationId = BuildConfig.APPLICATION_ID,
@@ -690,6 +694,7 @@ private val workManagerModule = module {
 val applicationModule = module {
   includes(
     listOf(
+      activityNavigatorModule,
       adyenModule,
       apolloClientModule,
       apolloClientUrlsModule,
@@ -697,10 +702,12 @@ val applicationModule = module {
       authRepositoryModule,
       businessModelModule,
       cacheManagerModule,
-      com.hedvig.android.feature.changeaddress.di.changeAddressModule,
+      changeAddressModule,
       changeDateBottomSheetModule,
       chatEventModule,
       checkoutModule,
+      claimTriagingDataModule,
+      claimTriagingModule,
       clockModule,
       coilModule,
       connectPaymentModule,
@@ -720,9 +727,9 @@ val applicationModule = module {
       insuranceCoverageModule,
       insuranceModule,
       languageModule,
+      legacyClaimTriagingModule,
       logModule,
       marketManagerModule,
-      navigatorModule,
       networkModule,
       notificationBadgeModule,
       notificationModule,

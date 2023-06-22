@@ -57,7 +57,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
-import com.hedvig.android.core.ui.progress.FullScreenHedvigProgress
+import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.market.Market
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import hedvig.resources.R
@@ -236,7 +236,7 @@ class SimpleSignAuthenticationActivity : AppCompatActivity() {
                 }
               }
             }
-            FullScreenHedvigProgress(show = isSubmitting == true)
+            HedvigFullScreenCenterAlignedProgress(show = isSubmitting == true)
           }
         }
       }

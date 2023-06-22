@@ -8,5 +8,5 @@ android {
 }
 
 dependencies {
-  implementation(libs.koin.core)
+  implementation(projects.app.core.commonAndroid)
 }

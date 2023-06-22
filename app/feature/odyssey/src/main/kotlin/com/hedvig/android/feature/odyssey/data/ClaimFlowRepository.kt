@@ -9,6 +9,7 @@ import com.apollographql.apollo3.api.Optional
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.data.claimtriaging.EntryPointId
 import com.hedvig.android.feature.odyssey.model.AudioUrl
 import com.hedvig.android.feature.odyssey.model.FlowId
 import com.hedvig.android.feature.odyssey.retrofit.toErrorMessage
@@ -34,7 +35,7 @@ import slimber.log.e
 import java.io.File
 
 internal interface ClaimFlowRepository {
-  suspend fun startClaimFlow(entryPointId: String?): Either<ErrorMessage, ClaimFlowStep>
+  suspend fun startClaimFlow(entryPointId: EntryPointId?): Either<ErrorMessage, ClaimFlowStep>
   suspend fun submitAudioRecording(flowId: FlowId, audioFile: File): Either<ErrorMessage, ClaimFlowStep>
 
   /**
@@ -77,11 +78,11 @@ internal class ClaimFlowRepositoryImpl(
   private var claimFlowContext: Any? = null // todo clear this when leaving the Claim scope
 
   override suspend fun startClaimFlow(
-    entryPointId: String?,
+    entryPointId: EntryPointId?,
   ): Either<ErrorMessage, ClaimFlowStep> {
     return either {
       val result = apolloClient
-        .mutation(FlowClaimStartMutation(entryPointId))
+        .mutation(FlowClaimStartMutation(entryPointId?.id))
         .safeExecute()
         .toEither(::ErrorMessage)
         .bind()

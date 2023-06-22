@@ -14,11 +14,6 @@ import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import octopus.type.CurrencyCode
 
-internal sealed interface Destinations : Destination {
-  @Serializable
-  object ClaimFlow : Destinations
-}
-
 internal sealed interface ClaimFlowDestination : Destination {
   @Serializable
   object HonestyPledge : ClaimFlowDestination

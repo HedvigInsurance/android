@@ -13,12 +13,12 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.contentColorFor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,7 +41,7 @@ import com.hedvig.android.core.ui.appbar.m3.TopAppBarActionType
 fun HedvigScaffold(
   navigateUp: () -> Unit,
   modifier: Modifier = Modifier,
-  color: Color = MaterialTheme.colors.background,
+  color: Color = MaterialTheme.colorScheme.background,
   topAppBarText: String? = null,
   topAppBarActionType: TopAppBarActionType = TopAppBarActionType.BACK,
   itemsColumnHorizontalAlignment: Alignment.Horizontal = Alignment.Start,
@@ -84,7 +84,7 @@ fun HedvigScaffold(
 fun Scaffold(
   bottomBar: @Composable () -> Unit,
   modifier: Modifier = Modifier,
-  backgroundColor: Color = MaterialTheme.colors.background,
+  backgroundColor: Color = MaterialTheme.colorScheme.background,
   contentColor: Color = contentColorFor(backgroundColor),
   content: @Composable (PaddingValues) -> Unit,
 ) {

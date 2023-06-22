@@ -49,7 +49,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.UiMoney
 import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.core.ui.progress.FullScreenHedvigProgress
+import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.feature.odyssey.data.ClaimFlowStep
 import com.hedvig.android.feature.odyssey.navigation.CheckoutMethod
@@ -73,7 +73,7 @@ internal fun SingleItemCheckoutDestination(
       LaunchedEffect(state) {
         navigateToAppUpdateStep()
       }
-      FullScreenHedvigProgress()
+      HedvigFullScreenCenterAlignedProgress()
     }
     is SingleItemCheckoutUiState.Content -> {
       SingleItemCheckoutScreen(

@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavHostController
+import androidx.navigation.NavController
 import com.kiwi.navigationcompose.typed.Destination
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import org.koin.androidx.compose.koinViewModel
@@ -15,7 +15,7 @@ import org.koin.androidx.compose.koinViewModel
  */
 @Composable
 inline fun <reified Dest : Destination, reified VM : ViewModel> destinationScopedViewModel(
-  navController: NavHostController,
+  navController: NavController,
   backStackEntry: NavBackStackEntry,
 ): VM {
   val parentEntry = remember(navController, backStackEntry) {

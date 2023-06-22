@@ -22,10 +22,10 @@ dependencies {
 
   api(libs.accompanist.insetsUi)
   api(libs.androidx.compose.foundation)
-  api(libs.androidx.compose.material)
   api(libs.androidx.compose.material3)
   api(libs.arrow.core)
 
+  implementation(libs.androidx.compose.material)
   implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.compose.materialIconsExtended)
   implementation(libs.androidx.compose.uiUtil)

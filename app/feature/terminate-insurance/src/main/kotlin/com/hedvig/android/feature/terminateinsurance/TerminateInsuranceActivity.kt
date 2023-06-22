@@ -18,12 +18,12 @@ import com.hedvig.android.core.common.android.tryOpenPlayStore
 import com.hedvig.android.core.designsystem.theme.ConfigureTransparentSystemBars
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceNavHost
-import com.hedvig.android.navigation.activity.Navigator
+import com.hedvig.android.navigation.activity.ActivityNavigator
 import org.koin.android.ext.android.inject
 
 class TerminateInsuranceActivity : AppCompatActivity() {
 
-  private val activityNavigator: Navigator by inject()
+  private val activityNavigator: ActivityNavigator by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)

@@ -38,7 +38,7 @@ import com.hedvig.android.core.designsystem.component.button.LargeContainedTextB
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
-import com.hedvig.android.core.ui.progress.FullScreenHedvigProgress
+import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbar
 import com.hedvig.android.feature.odyssey.data.ClaimFlowStep
 import hedvig.resources.R
@@ -148,7 +148,7 @@ private fun PhoneNumberScreen(
         )
       }
     }
-    FullScreenHedvigProgress(show = uiState.status == PhoneNumberUiState.Status.LOADING)
+    HedvigFullScreenCenterAlignedProgress(show = uiState.status == PhoneNumberUiState.Status.LOADING)
     ErrorSnackbar(
       hasError = uiState.status == PhoneNumberUiState.Status.ERROR,
       showedError = showedError,

@@ -3,6 +3,7 @@ package com.hedvig.android.feature.odyssey.data
 import app.cash.turbine.Turbine
 import arrow.core.Either
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.data.claimtriaging.EntryPointId
 import com.hedvig.android.feature.odyssey.model.AudioUrl
 import com.hedvig.android.feature.odyssey.model.FlowId
 import kotlinx.datetime.LocalDate
@@ -11,7 +12,7 @@ import octopus.type.FlowClaimItemModelInput
 import java.io.File
 
 internal class TestClaimFlowRepository : ClaimFlowRepository {
-  override suspend fun startClaimFlow(entryPointId: String?): Either<ErrorMessage, ClaimFlowStep> {
+  override suspend fun startClaimFlow(entryPointId: EntryPointId?): Either<ErrorMessage, ClaimFlowStep> {
     error("Not implemented")
   }
 
