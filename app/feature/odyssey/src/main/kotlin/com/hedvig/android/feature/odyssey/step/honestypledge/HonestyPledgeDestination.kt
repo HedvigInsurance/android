@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -135,7 +136,8 @@ private fun HonestyPledgeScreen(
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 private fun rememberNotificationPermissionStatus(): Boolean {
-  return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+  val isPreview = LocalInspectionMode.current
+  return if (!isPreview && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
     rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS).status.isGranted
   } else {
     true
