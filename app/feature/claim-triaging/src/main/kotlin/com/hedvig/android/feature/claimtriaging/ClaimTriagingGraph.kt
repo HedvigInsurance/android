@@ -14,6 +14,7 @@ import com.hedvig.android.feature.claimtriaging.claimentrypoints.ClaimEntryPoint
 import com.hedvig.android.feature.claimtriaging.claimgroups.ClaimGroupsDestination
 import com.hedvig.android.feature.claimtriaging.claimgroups.ClaimGroupsViewModel
 import com.hedvig.android.navigation.compose.typed.ImmutableListSerializer
+ import com.hedvig.android.navigation.compose.typed.SerializableImmutableList
 import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.compose.typed.animatedNavigation
 import com.hedvig.android.navigation.core.AppDestination
@@ -31,15 +32,13 @@ internal sealed interface ClaimTriagingDestination : Destination {
 
   @Serializable
   data class ClaimEntryPoints(
-    @Serializable(ImmutableListSerializer::class)
-    val entryPoints: ImmutableList<EntryPoint>,
+    val entryPoints: SerializableImmutableList<EntryPoint>,
   ) : ClaimTriagingDestination
 
   @Serializable
   data class ClaimEntryPointOptions(
     val entryPointId: EntryPointId,
-    @Serializable(ImmutableListSerializer::class)
-    val entryPointOptions: ImmutableList<EntryPointOption>,
+    val entryPointOptions: SerializableImmutableList<EntryPointOption>,
   ) : ClaimTriagingDestination
 }
 
