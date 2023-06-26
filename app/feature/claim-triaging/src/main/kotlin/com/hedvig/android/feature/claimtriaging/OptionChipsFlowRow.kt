@@ -2,6 +2,8 @@ package com.hedvig.android.feature.claimtriaging
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import arrow.core.identity
@@ -37,8 +40,11 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlin.random.Random
+import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -55,11 +61,27 @@ internal fun <T> OptionChipsFlowRow(
   ) {
     for (item in items) {
       key(item) {
-        val interactionSource = remember { MutableInteractionSource() }
-        val scale = remember { Animatable(1f) }
+        val isPreview = LocalInspectionMode.current
+        val showChipAnimatable = remember {
+          Animatable(if (isPreview) 1.0f else 0.0f)
+        }
+        LaunchedEffect(Unit) {
+          delay(Random.nextDouble(0.3, 0.6).seconds)
+          showChipAnimatable.animateTo(
+            1.0f,
+            animationSpec = spring(
+              dampingRatio = Spring.DampingRatioLowBouncy,
+              stiffness = Spring.StiffnessLow,
+            ),
+          )
+        }
         Box(
           // TODO replace with space on the flow row itself https://kotlinlang.slack.com/archives/CJLTWPH7S/p1687442185827989?thread_ts=1679515354.462029&cid=CJLTWPH7S
-          modifier = Modifier.padding(bottom = 8.dp),
+          modifier = Modifier.padding(bottom = 8.dp)
+            .graphicsLayer {
+              scaleX = showChipAnimatable.value
+              scaleY = showChipAnimatable.value
+            },
         ) {
           val surfaceColor by animateColorAsState(
             if (selectedItem == item) {
@@ -75,18 +97,26 @@ internal fun <T> OptionChipsFlowRow(
               MaterialTheme.colorScheme.onSurface
             },
           )
+          val backgroundScale = remember { Animatable(1f) }
+          val interactionSource = remember { MutableInteractionSource() }
           LaunchedEffect(interactionSource) {
             interactionSource
               .interactions
               .filterIsInstance<PressInteraction.Release>()
               .collectLatest {
-                scale.animateTo(
+                backgroundScale.animateTo(
                   targetValue = 1.05f,
-                  animationSpec = tween(durationMillis = 150, easing = MotionTokens.EasingStandardCubicBezier),
+                  animationSpec = tween(
+                    durationMillis = MotionTokens.DurationShort3.toInt(),
+                    easing = MotionTokens.EasingStandardCubicBezier,
+                  ),
                 )
-                scale.animateTo(
+                backgroundScale.animateTo(
                   targetValue = 1f,
-                  animationSpec = tween(durationMillis = 150, easing = MotionTokens.EasingStandardCubicBezier),
+                  animationSpec = tween(
+                    durationMillis = MotionTokens.DurationShort3.toInt(),
+                    easing = MotionTokens.EasingStandardCubicBezier,
+                  ),
                 )
               }
           }
@@ -94,8 +124,8 @@ internal fun <T> OptionChipsFlowRow(
             modifier = Modifier
               .matchParentSize()
               .graphicsLayer {
-                scaleX = scale.value
-                scaleY = scale.value
+                scaleX = backgroundScale.value
+                scaleY = backgroundScale.value
               }
               .clip(MaterialTheme.shapes.squircle)
               .background(surfaceColor, MaterialTheme.shapes.squircle)
