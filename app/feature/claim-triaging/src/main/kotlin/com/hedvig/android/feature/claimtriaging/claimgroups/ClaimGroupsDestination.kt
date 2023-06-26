@@ -97,7 +97,6 @@ private fun ClaimGroupsScreen(
           HedvigContainedButton(
             text = stringResource(hedvig.resources.R.string.claims_continue_button),
             onClick = onContinue,
-            contentPadding = PaddingValues(16.dp),
             enabled = uiState.canContinue,
             modifier = Modifier.padding(horizontal = 16.dp),
           )
