@@ -16,7 +16,6 @@ android {
 
 dependencies {
   implementation(projects.app.apollo.core)
-  implementation(projects.app.apollo.di)
   implementation(projects.app.apollo.giraffe)
   implementation(projects.app.audioPlayer)
   implementation(projects.app.auth.authAndroid)
