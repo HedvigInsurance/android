@@ -10,6 +10,7 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineBreak
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
@@ -55,6 +56,7 @@ internal val HedvigTypography: Typography
       lineHeight = 36.sp,
       letterSpacing = 0f.em,
       lineBreak = LineBreak.Heading,
+      textAlign = TextAlign.Center,
     ),
     headlineSmall = MaterialTheme.typography.headlineSmall.copy(
       fontFamily = SansStandard,

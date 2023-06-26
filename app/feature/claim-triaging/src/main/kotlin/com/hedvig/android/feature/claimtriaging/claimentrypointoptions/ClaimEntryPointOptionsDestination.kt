@@ -13,7 +13,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
@@ -60,7 +59,6 @@ private fun ClaimEntryPointOptionsScreen(
       Text(
         text = stringResource(hedvig.resources.R.string.CLAIMS_TRIAGING_WHAT_ITEM_TITLE),
         style = MaterialTheme.typography.headlineMedium,
-        textAlign = TextAlign.Center,
         modifier = Modifier
           .fillMaxWidth()
           .padding(horizontal = 16.dp),
