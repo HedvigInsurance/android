@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.claimtriaging.claimgroups
 
+import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.data.claimtriaging.ClaimGroup
@@ -51,6 +52,7 @@ internal class ClaimGroupsViewModel(
   }
 }
 
+@Immutable
 internal data class ClaimGroupsUiState(
   val claimGroups: ImmutableList<ClaimGroup> = persistentListOf(),
   val selectedClaimGroup: ClaimGroup? = null,
