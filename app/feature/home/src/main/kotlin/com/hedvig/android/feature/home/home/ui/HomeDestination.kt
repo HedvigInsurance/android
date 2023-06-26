@@ -54,15 +54,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import arrow.core.toNonEmptyListOrNull
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.hedvig.android.core.common.android.SHARED_PREFERENCE_NAME
+import com.hedvig.android.core.common.android.ThemedIconUrls
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.core.designsystem.component.button.LargeOutlinedTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation
 import com.hedvig.android.core.designsystem.material3.squircle
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.SerifBookSmall
 import com.hedvig.android.core.designsystem.theme.lavender_200
 import com.hedvig.android.core.designsystem.theme.lavender_900
@@ -73,6 +77,7 @@ import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.core.ui.grid.HedvigGrid
 import com.hedvig.android.core.ui.grid.InsideGridSpace
+import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimsData
 import com.hedvig.android.feature.home.claims.commonclaim.EmergencyActivity
 import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
@@ -83,6 +88,7 @@ import com.hedvig.app.feature.home.model.CommonClaim
 import com.hedvig.app.feature.home.model.HomeModel
 import com.hedvig.hanalytics.PaymentType
 import giraffe.HomeQuery
+import giraffe.type.HedvigColor
 import hedvig.resources.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -473,6 +479,7 @@ private fun CommonClaimsRenderer(
     for (commonClaim in homeModel.claims) {
       HedvigCard(
         elevation = HedvigCardElevation.Elevated(1.dp),
+        shape = MaterialTheme.shapes.squircle,
         onClick = when (commonClaim) {
           is CommonClaim.Emergency -> {
             { onEmergencyClaimClicked(commonClaim.inner) }
@@ -486,8 +493,8 @@ private fun CommonClaimsRenderer(
       ) {
         Column(
           Modifier
-            .padding(16.dp)
-            .heightIn(100.dp),
+            .heightIn(100.dp)
+            .padding(16.dp),
         ) {
           val context = LocalContext.current
           val density = LocalDensity.current
@@ -601,3 +608,36 @@ private fun Context.getLastEpochDayWhenChatTooltipWasShown() =
 
 private fun Context.getSharedPreferences() =
   this.getSharedPreferences(SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE)
+
+@HedvigPreview
+@Composable
+private fun PreviewCommonClaimsRenderer() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      CommonClaimsRenderer(
+        HomeModel.CommonClaims(
+          claims = List(4) { CommonClaim.GenerateTravelCertificate }
+            .plus(
+              CommonClaim.TitleAndBulletPoints(
+                CommonClaimsData(
+                  "",
+                  ThemedIconUrls("", ""),
+                  "Some title which gets quite long sometimes",
+                  HedvigColor.DarkPurple,
+                  "",
+                  "",
+                  true,
+                  emptyList(),
+                ),
+              ),
+            )
+            .toNonEmptyListOrNull()!!,
+        ),
+        {},
+        {},
+        {},
+        rememberPreviewImageLoader(),
+      )
+    }
+  }
+}
