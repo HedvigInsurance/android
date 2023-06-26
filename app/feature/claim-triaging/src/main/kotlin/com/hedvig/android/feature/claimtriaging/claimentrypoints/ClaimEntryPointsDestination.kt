@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.claimtriaging.claimentrypoints
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,14 +13,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.designsystem.theme.SerifBookSmall
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.data.claimtriaging.EntryPoint
 import com.hedvig.android.data.claimtriaging.EntryPointId
@@ -72,10 +69,7 @@ private fun ClaimEntryPointsScreen(
       Spacer(Modifier.height(16.dp))
       Text(
         text = stringResource(R.string.CLAIMS_TRIAGING_WHAT_HAPPENED_TITLE),
-        style = MaterialTheme.typography.headlineMedium.copy(
-          fontFamily = SerifBookSmall,
-          lineBreak = LineBreak.Heading,
-        ),
+        style = MaterialTheme.typography.headlineMedium,
         textAlign = TextAlign.Center,
         modifier = Modifier
           .fillMaxWidth()

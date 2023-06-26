@@ -23,13 +23,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.designsystem.theme.SerifBookSmall
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
@@ -76,10 +74,7 @@ private fun LegacyClaimTriagingScreen(
       Spacer(Modifier.height(16.dp))
       Text(
         text = stringResource(hedvig.resources.R.string.CLAIM_TRIAGING_TITLE),
-        style = MaterialTheme.typography.headlineMedium.copy(
-          fontFamily = SerifBookSmall,
-          lineBreak = LineBreak.Heading,
-        ),
+        style = MaterialTheme.typography.headlineMedium,
         textAlign = TextAlign.Center,
         modifier = Modifier
           .fillMaxWidth()
