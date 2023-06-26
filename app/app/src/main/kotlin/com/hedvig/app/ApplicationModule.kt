@@ -187,6 +187,7 @@ import com.hedvig.app.util.apollo.SunsettingInterceptor
 import com.hedvig.app.util.extensions.startChat
 import com.hedvig.authlib.AuthEnvironment
 import com.hedvig.authlib.AuthRepository
+import com.hedvig.authlib.Callbacks
 import com.hedvig.authlib.NetworkAuthRepository
 import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
@@ -675,6 +676,7 @@ private val authRepositoryModule = module {
         AuthEnvironment.STAGING
       },
       additionalHttpHeaders = mapOf(),
+      callbacks = Callbacks("", ""), // Not used
     )
   }
 }

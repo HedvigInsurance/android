@@ -36,7 +36,7 @@ class BankIdLoginViewModel(
   private val authRepository: AuthRepository,
 ) : ViewModel() {
 
-  private val startLoginAttemptFailed: MutableStateFlow<Boolean> = MutableStateFlow(false)
+  private val startLoginAttemptFailed: MutableStateFlow<String?> = MutableStateFlow(null)
   private val bankIdProperties: MutableStateFlow<AuthAttemptResult.BankIdProperties?> = MutableStateFlow(null)
   private val processedAutoStartToken: MutableStateFlow<Boolean> = MutableStateFlow(false)
   private val processedNavigationToLoggedIn: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -50,6 +50,7 @@ class BankIdLoginViewModel(
               e { "Login failed, with error: ${authTokenResult.message}" }
               return@map LoginStatusResult.Failed(authTokenResult.message)
             }
+
             is AuthTokenResult.Success -> {
               login(authTokenResult)
             }
@@ -68,12 +69,20 @@ class BankIdLoginViewModel(
 
       when (result) {
         is AuthAttemptResult.BankIdProperties -> bankIdProperties.update { result }
-        is AuthAttemptResult.Error -> e { "Got Error when signing in with BankId ${result.message}" }
-        is AuthAttemptResult.ZignSecProperties -> e { "Got ZignSec properties when signing in with BankId" }
-        is AuthAttemptResult.OtpProperties -> e { "Got Otp properties when signing in with BankId" }
-      }
-      if (result !is AuthAttemptResult.BankIdProperties) {
-        startLoginAttemptFailed.update { true }
+        is AuthAttemptResult.Error -> {
+          e { "Got Error when signing in with BankId ${result.message}" }
+          startLoginAttemptFailed.update { "Got Error when signing in with BankId ${result.message}" }
+        }
+
+        is AuthAttemptResult.ZignSecProperties -> {
+          e { "Got ZignSec properties when signing in with BankId" }
+          startLoginAttemptFailed.update { "Got ZignSec properties when signing in with BankId" }
+        }
+
+        is AuthAttemptResult.OtpProperties -> {
+          e { "Got Otp properties when signing in with BankId" }
+          startLoginAttemptFailed.update { "Got Otp properties when signing in with BankId" }
+        }
       }
     }
   }
@@ -85,17 +94,17 @@ class BankIdLoginViewModel(
     loginStatusResult,
     processedNavigationToLoggedIn,
   ) {
-      startLoginAttemptFailed, bankIdProperties, processedAutoStartToken, loginStatusResult,
+      startLoginAttemptFailedMessage, bankIdProperties, processedAutoStartToken, loginStatusResult,
       processedNavigationToLoggedIn,
     ->
-    if (startLoginAttemptFailed) {
-      return@combine BankIdLoginViewState.Error
+    if (startLoginAttemptFailedMessage != null) {
+      return@combine BankIdLoginViewState.Error(startLoginAttemptFailedMessage)
     }
     if (bankIdProperties == null || loginStatusResult == null) {
       return@combine BankIdLoginViewState.Loading
     }
     if (loginStatusResult is LoginStatusResult.Failed) {
-      return@combine BankIdLoginViewState.Error
+      return@combine BankIdLoginViewState.Error(loginStatusResult.message)
     }
     BankIdLoginViewState.HandlingBankId(
       bankIdProperties.autoStartToken,
@@ -133,9 +142,11 @@ sealed interface BankIdLoginViewState {
   object Loading : BankIdLoginViewState {
     override fun toString(): String = "Loading"
   }
-  object Error : BankIdLoginViewState {
+
+  data class Error(val message: String) : BankIdLoginViewState {
     override fun toString(): String = "Error"
   }
+
   data class HandlingBankId(
     val autoStartToken: String,
     val processedAutoStartToken: Boolean,

@@ -51,10 +51,10 @@ class BankIdLoginViewModelTest {
     val viewModel: BankIdLoginViewModel = testBankIdLoginViewModel(authRepository)
     backgroundScope.launch { viewModel.viewState.collect() } // Start a subscriber since we're using WhileSubscribed
 
-    authRepository.authAttemptResponse.add(AuthAttemptResult.Error(""))
+    authRepository.authAttemptResponse.add(AuthAttemptResult.Error("error"))
     assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Loading)
     runCurrent()
-    assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Error)
+    assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Error("error"))
   }
 
   @Test
@@ -118,15 +118,15 @@ class BankIdLoginViewModelTest {
     authRepository.authAttemptResponse.add(
       AuthAttemptResult.BankIdProperties("", StatusUrl(""), ""),
     )
-    authRepository.loginStatusResponse.add(LoginStatusResult.Pending(null))
+    authRepository.loginStatusResponse.add(LoginStatusResult.Pending("test"))
     runCurrent()
     assertThat((viewModel.viewState.value as BankIdLoginViewState.HandlingBankId).authStatus)
-      .isEqualTo(LoginStatusResult.Pending(null))
+      .isEqualTo(LoginStatusResult.Pending("pending"))
     authRepository.loginStatusResponse.add(LoginStatusResult.Completed(AuthorizationCodeGrant("grant")))
     // Exchange fails
-    authRepository.exchangeResponse.add(AuthTokenResult.Error(""))
+    authRepository.exchangeResponse.add(AuthTokenResult.Error("failed"))
     runCurrent()
-    assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Error)
+    assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Error("failed"))
     assertThat(authTokenService.getTokens()).isNull()
   }
 
@@ -141,13 +141,13 @@ class BankIdLoginViewModelTest {
     authRepository.authAttemptResponse.add(
       AuthAttemptResult.BankIdProperties("", StatusUrl(""), ""),
     )
-    authRepository.loginStatusResponse.add(LoginStatusResult.Pending(null))
+    authRepository.loginStatusResponse.add(LoginStatusResult.Pending("pending"))
     runCurrent()
     assertThat((viewModel.viewState.value as BankIdLoginViewState.HandlingBankId).authStatus)
-      .isEqualTo(LoginStatusResult.Pending(null))
-    authRepository.loginStatusResponse.add(LoginStatusResult.Failed(""))
+      .isEqualTo(LoginStatusResult.Pending("pending"))
+    authRepository.loginStatusResponse.add(LoginStatusResult.Failed("failed"))
     runCurrent()
-    assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Error)
+    assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Error("failed"))
     assertThat(authTokenService.getTokens()).isNull()
   }
 
