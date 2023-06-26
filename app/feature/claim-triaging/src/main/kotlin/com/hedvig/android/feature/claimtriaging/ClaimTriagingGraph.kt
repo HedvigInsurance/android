@@ -13,8 +13,7 @@ import com.hedvig.android.feature.claimtriaging.claimentrypoints.ClaimEntryPoint
 import com.hedvig.android.feature.claimtriaging.claimentrypoints.ClaimEntryPointsViewModel
 import com.hedvig.android.feature.claimtriaging.claimgroups.ClaimGroupsDestination
 import com.hedvig.android.feature.claimtriaging.claimgroups.ClaimGroupsViewModel
-import com.hedvig.android.navigation.compose.typed.ImmutableListSerializer
- import com.hedvig.android.navigation.compose.typed.SerializableImmutableList
+import com.hedvig.android.navigation.compose.typed.SerializableImmutableList
 import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.compose.typed.animatedNavigation
 import com.hedvig.android.navigation.core.AppDestination
