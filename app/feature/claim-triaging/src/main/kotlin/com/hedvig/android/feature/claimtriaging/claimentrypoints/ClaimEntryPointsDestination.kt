@@ -46,7 +46,7 @@ internal fun ClaimEntryPointsDestination(
     onContinue = {
       uiState.selectedEntryPoint?.let { entryPoint ->
         val entryPointOptions = entryPoint.entryPointOptions
-        if (entryPointOptions?.isNullOrEmpty() == true) {
+        if (entryPointOptions.isNullOrEmpty()) {
           startClaimFlow(entryPoint.id)
         } else {
           onEntryPointWithOptionsSubmit(entryPoint.id, entryPointOptions)
