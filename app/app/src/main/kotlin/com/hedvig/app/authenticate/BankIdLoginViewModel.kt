@@ -70,8 +70,8 @@ class BankIdLoginViewModel(
       when (result) {
         is AuthAttemptResult.BankIdProperties -> bankIdProperties.update { result }
         is AuthAttemptResult.Error -> {
-          e { "Got Error when signing in with BankId ${result.message}" }
-          startLoginAttemptFailed.update { "Got Error when signing in with BankId ${result.message}" }
+          e { "Got Error when signing in with BankId: ${result.message}" }
+          startLoginAttemptFailed.update { "Got Error when signing in with BankId: ${result.message}" }
         }
 
         is AuthAttemptResult.ZignSecProperties -> {
@@ -104,6 +104,10 @@ class BankIdLoginViewModel(
       return@combine BankIdLoginViewState.Loading
     }
     if (loginStatusResult is LoginStatusResult.Failed) {
+      return@combine BankIdLoginViewState.Error(loginStatusResult.message)
+    }
+    if (loginStatusResult is LoginStatusResult.Exception) {
+      e { "Got exception for login status: ${loginStatusResult.message}" }
       return@combine BankIdLoginViewState.Error(loginStatusResult.message)
     }
     BankIdLoginViewState.HandlingBankId(
@@ -144,7 +148,7 @@ sealed interface BankIdLoginViewState {
   }
 
   data class Error(val message: String) : BankIdLoginViewState {
-    override fun toString(): String = "Error"
+    override fun toString(): String = "Error: $message"
   }
 
   data class HandlingBankId(

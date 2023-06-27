@@ -51,10 +51,10 @@ class BankIdLoginViewModelTest {
     val viewModel: BankIdLoginViewModel = testBankIdLoginViewModel(authRepository)
     backgroundScope.launch { viewModel.viewState.collect() } // Start a subscriber since we're using WhileSubscribed
 
-    authRepository.authAttemptResponse.add(AuthAttemptResult.Error("error"))
+    authRepository.authAttemptResponse.add(AuthAttemptResult.Error("test error"))
     assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Loading)
     runCurrent()
-    assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Error("error"))
+    assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Error("Got Error when signing in with BankId: test error"))
   }
 
   @Test
@@ -121,7 +121,7 @@ class BankIdLoginViewModelTest {
     authRepository.loginStatusResponse.add(LoginStatusResult.Pending("test"))
     runCurrent()
     assertThat((viewModel.viewState.value as BankIdLoginViewState.HandlingBankId).authStatus)
-      .isEqualTo(LoginStatusResult.Pending("pending"))
+      .isEqualTo(LoginStatusResult.Pending("test"))
     authRepository.loginStatusResponse.add(LoginStatusResult.Completed(AuthorizationCodeGrant("grant")))
     // Exchange fails
     authRepository.exchangeResponse.add(AuthTokenResult.Error("failed"))

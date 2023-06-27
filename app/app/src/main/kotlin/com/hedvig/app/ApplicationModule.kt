@@ -676,7 +676,7 @@ private val authRepositoryModule = module {
         AuthEnvironment.STAGING
       },
       additionalHttpHeaders = mapOf(),
-      callbacks = Callbacks("", ""), // Not used
+      callbacks = Callbacks("https://hedvig.com?q=success", "https://hedvig.com?q=failure)", // Not used
     )
   }
 }
