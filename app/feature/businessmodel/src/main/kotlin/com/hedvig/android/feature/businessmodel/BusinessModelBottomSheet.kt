@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.businessmodel.ui
+package com.hedvig.android.feature.businessmodel
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column

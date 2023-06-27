@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.businessmodel.ui
+package com.hedvig.android.feature.businessmodel
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
@@ -17,20 +17,21 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
@@ -39,25 +40,37 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.material3.squircle
 import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.designsystem.theme.textColorLink
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
+import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 internal fun BusinessModelScreen(
-  navigateBack: () -> Unit,
+  navigateUp: () -> Unit,
   windowSizeClass: WindowSizeClass,
 ) {
-  val coroutineScope = rememberCoroutineScope()
-  val sheetState = rememberModalBottomSheetState(
+  val sheetState: ModalBottomSheetState = rememberModalBottomSheetState(
     initialValue = ModalBottomSheetValue.Hidden,
     skipHalfExpanded = true,
   )
+  BusinessModelScreen(sheetState = sheetState, navigateUp = navigateUp, windowSizeClass = windowSizeClass)
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun BusinessModelScreen(
+  sheetState: ModalBottomSheetState,
+  navigateUp: () -> Unit,
+  windowSizeClass: WindowSizeClass,
+) {
+  val coroutineScope = rememberCoroutineScope()
   ModalBottomSheetLayout(
     sheetState = sheetState,
     sheetContent = {
@@ -66,11 +79,12 @@ internal fun BusinessModelScreen(
         isShowing = sheetState.isVisible,
       )
     },
+    sheetShape = MaterialTheme.shapes.large.copy(bottomStart = CornerSize(0), bottomEnd = CornerSize(0)),
     modifier = Modifier.fillMaxSize(),
   ) {
     ScreenContent(
       showSheet = { coroutineScope.launch { sheetState.show() } },
-      navigateBack = navigateBack,
+      navigateUp = navigateUp,
       windowSizeClass = windowSizeClass,
     )
   }
@@ -79,13 +93,14 @@ internal fun BusinessModelScreen(
 @Composable
 private fun ScreenContent(
   showSheet: () -> Unit,
-  navigateBack: () -> Unit,
+  navigateUp: () -> Unit,
   windowSizeClass: WindowSizeClass,
+  modifier: Modifier = Modifier,
 ) {
-  Box(Modifier.fillMaxSize()) {
+  Box(modifier.fillMaxSize()) {
     Column {
       TopAppBarWithBack(
-        onClick = navigateBack,
+        onClick = navigateUp,
         modifier = Modifier.windowInsetsPadding(
           WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top),
         ),
@@ -114,7 +129,7 @@ private fun ColumnScope.BusinessModelContent(
 ) {
   Text(
     text = stringResource(hedvig.resources.R.string.BUSINESS_MODEL_TITLE),
-    style = MaterialTheme.typography.h4,
+    style = MaterialTheme.typography.headlineLarge,
   )
   Spacer(Modifier.height(24.dp))
   BusinessModelImage(
@@ -127,12 +142,12 @@ private fun ColumnScope.BusinessModelContent(
     Column(Modifier.padding(16.dp)) {
       Text(
         text = stringResource(hedvig.resources.R.string.BUSINESS_MODEL_CARD_TITLE),
-        style = MaterialTheme.typography.subtitle1,
+        style = MaterialTheme.typography.bodyLarge,
       )
       Spacer(Modifier.height(8.dp))
       Text(
         text = stringResource(hedvig.resources.R.string.BUSINESS_MODEL_CARD_TEXT),
-        style = MaterialTheme.typography.body2,
+        style = MaterialTheme.typography.bodyMedium,
       )
     }
   }
@@ -141,15 +156,12 @@ private fun ColumnScope.BusinessModelContent(
     onClick = {
       openBusinessModelInfo()
     },
-    colors = ButtonDefaults.textButtonColors(
-      contentColor = MaterialTheme.colors.textColorLink,
-    ),
+    shape = MaterialTheme.shapes.squircle,
     modifier = Modifier.align(Alignment.CenterHorizontally),
   ) {
     Icon(
       imageVector = Icons.Outlined.Info,
       contentDescription = null,
-      tint = MaterialTheme.colors.textColorLink,
     )
     Spacer(Modifier.width(8.dp))
     Text(
@@ -173,13 +185,17 @@ private fun BusinessModelImage(
   )
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @HedvigMultiScreenPreview
 @Composable
-private fun PreviewBusinessModelScreen() {
+private fun PreviewBusinessModelScreen(
+  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) showSheet: Boolean,
+) {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       BusinessModelScreen(
-        navigateBack = {},
+        ModalBottomSheetState(if (showSheet) ModalBottomSheetValue.Expanded else ModalBottomSheetValue.Hidden),
+        navigateUp = {},
         windowSizeClass = WindowSizeClass.calculateForPreview(),
       )
     }

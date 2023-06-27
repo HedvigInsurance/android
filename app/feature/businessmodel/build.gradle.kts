@@ -11,6 +11,8 @@ dependencies {
   implementation(projects.app.core.resources)
   implementation(projects.app.core.ui)
   implementation(projects.app.hanalytics.hanalyticsCore)
+  implementation(projects.app.navigation.core)
+  implementation(projects.app.navigation.navigationComposeTyped)
 
   implementation(libs.androidx.other.appCompat)
   implementation(libs.androidx.other.activityCompose)

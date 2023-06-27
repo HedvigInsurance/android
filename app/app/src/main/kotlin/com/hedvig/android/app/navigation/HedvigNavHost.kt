@@ -255,8 +255,9 @@ internal fun HedvigNavHost(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     )
     profileGraph(
-      navController = hedvigAppState.navController,
+      navigator = navigator,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+      windowSizeClass = hedvigAppState.windowSizeClass,
     )
   }
 }
