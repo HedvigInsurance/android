@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
@@ -20,17 +21,24 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionState
+import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.permission.PermissionDialog
+import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
 import com.hedvig.android.feature.odyssey.data.ClaimFlowStep
 import com.hedvig.android.feature.odyssey.model.AudioUrl
+import com.hedvig.android.feature.odyssey.navigation.AudioContent
 import com.hedvig.android.feature.odyssey.step.audiorecording.ui.AudioRecorder
 import com.hedvig.android.feature.odyssey.ui.ClaimFlowScaffold
 import hedvig.resources.R
@@ -147,11 +155,19 @@ private fun AudioRecordingSection(
   modifier: Modifier = Modifier,
 ) {
   var showPermissionDialog by remember { mutableStateOf(false) }
-  val recordAudioPermissionState = rememberPermissionState(Manifest.permission.RECORD_AUDIO) { isGranted ->
-    if (isGranted) {
-      startRecording()
-    } else {
-      showPermissionDialog = true
+  val recordAudioPermissionState = if (LocalInspectionMode.current) {
+    object : PermissionState {
+      override val permission: String = ""
+      override val status: PermissionStatus = PermissionStatus.Granted
+      override fun launchPermissionRequest() {}
+    }
+  } else {
+    rememberPermissionState(Manifest.permission.RECORD_AUDIO) { isGranted ->
+      if (isGranted) {
+        startRecording()
+      } else {
+        showPermissionDialog = true
+      }
     }
   }
   if (showPermissionDialog) {
@@ -174,4 +190,31 @@ private fun AudioRecordingSection(
     redo = redo,
     modifier = modifier,
   )
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewAudioRecordingScreen() {
+  HedvigTheme {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      AudioRecordingScreen(
+        AudioRecordingUiState.NotRecording,
+        WindowSizeClass.calculateForPreview(),
+        listOf(
+          "#1 ? ".repeat(15),
+          "#2 ?",
+        ),
+        Clock.System,
+        { false },
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+      )
+    }
+  }
 }
