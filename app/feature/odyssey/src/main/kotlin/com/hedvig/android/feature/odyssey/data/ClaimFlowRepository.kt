@@ -74,9 +74,8 @@ internal interface ClaimFlowRepository {
 internal class ClaimFlowRepositoryImpl(
   private val apolloClient: ApolloClient,
   private val odysseyService: OdysseyService,
+  private val claimFlowContextStorage: ClaimFlowContextStorage,
 ) : ClaimFlowRepository {
-  private var claimFlowContext: Any? = null // todo clear this when leaving the Claim scope
-
   override suspend fun startClaimFlow(
     entryPointId: EntryPointId?,
   ): Either<ErrorMessage, ClaimFlowStep> {
@@ -87,7 +86,7 @@ internal class ClaimFlowRepositoryImpl(
         .toEither(::ErrorMessage)
         .bind()
         .flowClaimStart
-      claimFlowContext = result.context
+      claimFlowContextStorage.saveContext(result.context)
       result.currentStep.toClaimFlowStep(FlowId(result.id))
     }
   }
@@ -112,12 +111,12 @@ internal class ClaimFlowRepositoryImpl(
   ): Either<ErrorMessage, ClaimFlowStep> {
     return either {
       val result = apolloClient
-        .mutation(FlowClaimDateOfOccurrenceNextMutation(dateOfOccurrence, claimFlowContext!!))
+        .mutation(FlowClaimDateOfOccurrenceNextMutation(dateOfOccurrence, claimFlowContextStorage.getContext()))
         .safeExecute()
         .toEither(::ErrorMessage)
         .bind()
         .flowClaimDateOfOccurrenceNext
-      claimFlowContext = result.context
+      claimFlowContextStorage.saveContext(result.context)
       result.currentStep.toClaimFlowStep(FlowId(result.id))
     }
   }
@@ -127,12 +126,12 @@ internal class ClaimFlowRepositoryImpl(
   ): Either<ErrorMessage, ClaimFlowStep> {
     return either {
       val result = apolloClient
-        .mutation(FlowClaimLocationNextMutation(location, claimFlowContext!!))
+        .mutation(FlowClaimLocationNextMutation(location, claimFlowContextStorage.getContext()))
         .safeExecute()
         .toEither(::ErrorMessage)
         .bind()
         .flowClaimLocationNext
-      claimFlowContext = result.context
+      claimFlowContextStorage.saveContext(result.context)
       result.currentStep.toClaimFlowStep(FlowId(result.id))
     }
   }
@@ -143,12 +142,18 @@ internal class ClaimFlowRepositoryImpl(
   ): Either<ErrorMessage, ClaimFlowStep> {
     return either {
       val result = apolloClient
-        .mutation(FlowClaimDateOfOccurrencePlusLocationNextMutation(dateOfOccurrence, location, claimFlowContext!!))
+        .mutation(
+          FlowClaimDateOfOccurrencePlusLocationNextMutation(
+            dateOfOccurrence,
+            location,
+            claimFlowContextStorage.getContext(),
+          ),
+        )
         .safeExecute()
         .toEither(::ErrorMessage)
         .bind()
         .flowClaimDateOfOccurrencePlusLocationNext
-      claimFlowContext = result.context
+      claimFlowContextStorage.saveContext(result.context)
       result.currentStep.toClaimFlowStep(FlowId(result.id))
     }
   }
@@ -158,12 +163,12 @@ internal class ClaimFlowRepositoryImpl(
   ): Either<ErrorMessage, ClaimFlowStep> {
     return either {
       val result = apolloClient
-        .mutation(FlowClaimPhoneNumberNextMutation(phoneNumber, claimFlowContext!!))
+        .mutation(FlowClaimPhoneNumberNextMutation(phoneNumber, claimFlowContextStorage.getContext()))
         .safeExecute()
         .toEither(::ErrorMessage)
         .bind()
         .flowClaimPhoneNumberNext
-      claimFlowContext = result.context
+      claimFlowContextStorage.saveContext(result.context)
       result.currentStep.toClaimFlowStep(FlowId(result.id))
     }
   }
@@ -187,14 +192,14 @@ internal class ClaimFlowRepositoryImpl(
               purchaseDate = Optional.presentIfNotNull(purchaseDate),
               purchasePrice = Optional.presentIfNotNull(purchasePrice),
             ),
-            claimFlowContext!!,
+            claimFlowContextStorage.getContext(),
           ),
         )
         .safeExecute()
         .toEither(::ErrorMessage)
         .bind()
         .flowClaimSingleItemNext
-      claimFlowContext = result.context
+      claimFlowContextStorage.saveContext(result.context)
       result.currentStep.toClaimFlowStep(FlowId(result.id))
     }
   }
@@ -207,14 +212,14 @@ internal class ClaimFlowRepositoryImpl(
         .mutation(
           FlowClaimSingleItemCheckoutNextMutation(
             amount,
-            claimFlowContext!!,
+            claimFlowContextStorage.getContext(),
           ),
         )
         .safeExecute()
         .toEither(::ErrorMessage)
         .bind()
         .flowClaimSingleItemCheckoutNext
-      claimFlowContext = result.context
+      claimFlowContextStorage.saveContext(result.context)
       result.currentStep.toClaimFlowStep(FlowId(result.id))
     }
   }
@@ -242,14 +247,14 @@ internal class ClaimFlowRepositoryImpl(
               purchaseDate = Optional.presentIfNotNull(purchaseDate),
               purchasePrice = Optional.presentIfNotNull(purchasePrice),
             ),
-            claimFlowContext!!,
+            claimFlowContextStorage.getContext(),
           ),
         )
         .safeExecute()
         .toEither(::ErrorMessage)
         .bind()
         .flowClaimSummaryNext
-      claimFlowContext = result.context
+      claimFlowContextStorage.saveContext(result.context)
       result.currentStep.toClaimFlowStep(FlowId(result.id))
     }
   }
@@ -275,13 +280,13 @@ internal class ClaimFlowRepositoryImpl(
 
   private suspend fun Raise<ErrorMessage>.nextClaimFlowStepWithAudioUrl(audioUrl: AudioUrl): ClaimFlowStep {
     val result = apolloClient
-      .mutation(FlowClaimAudioRecordingNextMutation(audioUrl.value, claimFlowContext!!))
+      .mutation(FlowClaimAudioRecordingNextMutation(audioUrl.value, claimFlowContextStorage.getContext()))
       .safeExecute()
       .toEither(::ErrorMessage)
       .bind()
       .flowClaimAudioRecordingNext
     d { "Submitted audio file to GQL with URL $audioUrl" }
-    claimFlowContext = result.context
+    claimFlowContextStorage.saveContext(result.context)
     return result.currentStep.toClaimFlowStep(FlowId(result.id))
   }
 }

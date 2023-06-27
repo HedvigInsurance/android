@@ -1,9 +1,12 @@
 package com.hedvig.android.feature.odyssey.di
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import arrow.retrofit.adapter.either.EitherCallAdapterFactory
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.data.claimtriaging.EntryPointId
+import com.hedvig.android.feature.odyssey.data.ClaimFlowContextStorage
 import com.hedvig.android.feature.odyssey.data.ClaimFlowRepository
 import com.hedvig.android.feature.odyssey.data.ClaimFlowRepositoryImpl
 import com.hedvig.android.feature.odyssey.data.OdysseyService
@@ -38,8 +41,9 @@ val odysseyUrlQualifier = qualifier("odysseyUrlQualifier")
 @Suppress("RemoveExplicitTypeArguments")
 val odysseyModule = module {
   single<ClaimFlowRepository> {
-    ClaimFlowRepositoryImpl(get<ApolloClient>(octopusClient), get<OdysseyService>())
+    ClaimFlowRepositoryImpl(get<ApolloClient>(octopusClient), get<OdysseyService>(), get<ClaimFlowContextStorage>())
   }
+  single<ClaimFlowContextStorage> { ClaimFlowContextStorage(get<DataStore<Preferences>>()) }
 
   // Claims
   viewModel<HonestyPledgeViewModel> { (entryPointId: EntryPointId?) ->
