@@ -4,9 +4,6 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.app.apollo.core)
-  implementation(projects.app.apollo.giraffe)
-  implementation(projects.app.auth.authCore)
   implementation(projects.app.auth.authEventCore)
   implementation(projects.app.core.common)
   implementation(projects.app.core.datastore)

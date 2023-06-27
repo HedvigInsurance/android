@@ -105,7 +105,6 @@ internal fun HedvigNavHost(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       nestedGraphs = {
         changeAddressGraph(
-          windowSizeClass = hedvigAppState.windowSizeClass,
           density = density,
           navController = hedvigAppState.navController,
           openChat = context::startChat,

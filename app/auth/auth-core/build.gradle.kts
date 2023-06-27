@@ -16,7 +16,6 @@ dependencies {
   implementation(libs.ktor)
 
   implementation(libs.androidx.datastore.preferencesCore)
-  implementation(libs.arrow.core)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.json)

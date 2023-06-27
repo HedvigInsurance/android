@@ -3,8 +3,8 @@ package com.hedvig.android.feature.terminateinsurance.navigation
 import androidx.activity.compose.BackHandler
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.ui.unit.Density
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
@@ -28,7 +28,7 @@ import org.koin.core.parameter.parametersOf
 internal fun NavGraphBuilder.terminateInsuranceGraph(
   windowSizeClass: WindowSizeClass,
   density: Density,
-  navController: NavHostController,
+  navController: NavController,
   insuranceId: InsuranceId,
   insuranceDisplayName: String,
   navigateUp: () -> Boolean,

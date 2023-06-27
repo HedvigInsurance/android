@@ -137,6 +137,7 @@ androidx-lifecycle-viewModel = { module = "androidx.lifecycle:lifecycle-viewmode
 androidx-lifecycle-viewmodelCompose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 androidx-navigation-common = { module = "androidx.navigation:navigation-common", version.ref = "androidx-navigation" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
+androidx-navigation-runtime = { module = "androidx.navigation:navigation-runtime", version.ref = "androidx-navigation" }
 androidx-other-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-other-activityCompose" }
 androidx-other-appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-other-appCompat" }
 androidx-other-browser = { module = "androidx.browser:browser", version.ref = "androidx-other-browser" }

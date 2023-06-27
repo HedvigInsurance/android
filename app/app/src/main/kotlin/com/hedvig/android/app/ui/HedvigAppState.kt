@@ -195,7 +195,7 @@ internal class HedvigAppState(
 }
 
 @Composable
-private fun NavigationTrackingSideEffect(navController: NavHostController) {
+private fun NavigationTrackingSideEffect(navController: NavController) {
   DisposableEffect(navController) {
     val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
       d { "Navigated to route:${destination.route}" }
@@ -209,7 +209,7 @@ private fun NavigationTrackingSideEffect(navController: NavHostController) {
 
 @Composable
 private fun TopLevelDestinationNavigationSideEffect(
-  navController: NavHostController,
+  navController: NavController,
   hAnalytics: HAnalytics,
   tabNotificationBadgeService: TabNotificationBadgeService,
   coroutineScope: CoroutineScope,

@@ -15,6 +15,6 @@ dependencies {
 
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
-  implementation(libs.koin.compose)
+  implementation(libs.koin.core)
   implementation(libs.slimber)
 }

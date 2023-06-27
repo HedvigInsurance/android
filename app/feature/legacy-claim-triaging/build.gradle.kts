@@ -20,10 +20,8 @@ dependencies {
   implementation(projects.app.navigation.core)
   implementation(projects.app.navigation.navigationComposeTyped)
 
-  implementation(libs.accompanist.navigationAnimation)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.lifecycle.compose)
-  implementation(libs.androidx.navigation.compose)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.arrow.core)
   implementation(libs.koin.android)

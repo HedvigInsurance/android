@@ -13,9 +13,9 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,13 +52,13 @@ internal fun BusinessModelBottomSheet(
       Spacer(Modifier.height(8.dp))
       Text(
         text = stringResource(hedvig.resources.R.string.BUSINESS_MODEL_INFO_DIALOG_TITLE),
-        style = MaterialTheme.typography.subtitle1,
+        style = MaterialTheme.typography.bodyLarge,
         modifier = Modifier.align(Alignment.CenterHorizontally),
       )
       Spacer(Modifier.height(24.dp))
       Text(
         text = stringResource(hedvig.resources.R.string.BUSINESS_MODEL_INFO_DIALOG_TEXT),
-        style = MaterialTheme.typography.body2,
+        style = MaterialTheme.typography.bodyMedium,
       )
       Spacer(Modifier.height(24.dp))
     }
@@ -69,7 +69,7 @@ internal fun BusinessModelBottomSheet(
 @Composable
 private fun PreviewBusinessModelBottomSheet() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       BusinessModelBottomSheet({}, true)
     }
   }
