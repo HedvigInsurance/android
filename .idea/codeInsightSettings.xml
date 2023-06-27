@@ -15,6 +15,7 @@
             <name>java.lang.reflect.Modifier</name>
             <name>java.nio.file.WatchEvent.Modifier</name>
             <name>java.time.format.TextStyle</name>
+            <name>java.util.prefs.Preferences</name>
             <name>org.w3c.dom.Text</name>
 
 
