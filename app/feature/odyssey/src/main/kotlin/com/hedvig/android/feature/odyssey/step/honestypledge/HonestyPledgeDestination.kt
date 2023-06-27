@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
@@ -32,7 +33,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.hedvig.android.core.designsystem.R
-import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.preview.calculateForPreview
@@ -77,7 +78,7 @@ private fun HonestyPledgeScreen(
     navigateUp = navigateUp,
     isLoading = uiState.isLoading,
   ) { sideSpacingModifier ->
-    Spacer(Modifier.height(40.dp))
+    Spacer(Modifier.height(16.dp))
     Crossfade(
       targetState = uiState.hasError,
       label = "Pledge or error crossfade",
@@ -103,16 +104,17 @@ private fun HonestyPledgeScreen(
         } else {
           Text(
             text = stringResource(hedvig.resources.R.string.HONESTY_PLEDGE_TITLE),
-            style = MaterialTheme.typography.headlineSmall,
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.fillMaxWidth(),
           )
-          Spacer(Modifier.height(16.dp))
+          Spacer(Modifier.height(32.dp))
           Text(stringResource(hedvig.resources.R.string.HONESTY_PLEDGE_DESCRIPTION))
         }
       }
     }
-    Spacer(Modifier.height(16.dp))
+    Spacer(Modifier.height(32.dp))
     val hasNotificationPermission = rememberNotificationPermissionStatus()
-    LargeContainedTextButton(
+    HedvigContainedButton(
       onClick = {
         if (hasNotificationPermission) {
           startClaimFlow()
