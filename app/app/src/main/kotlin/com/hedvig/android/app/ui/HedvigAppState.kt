@@ -84,18 +84,24 @@ internal class HedvigAppState(
   private val currentTopLevelAppDestination: AppDestination.TopLevelDestination?
     @Composable get() = currentDestination?.toTopLevelAppDestination()
 
+  private val shouldShowNavBars: Boolean
+    @Composable get() {
+      if (currentTopLevelAppDestination != null) return true
+      return currentDestination.isInListOfNonTopLevelNavBarPermittedDestinations()
+    }
+
   val shouldShowBottomBar: Boolean
     @Composable
     get() {
       val bottomBarWidthRequirements = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
-      return bottomBarWidthRequirements && currentTopLevelAppDestination != null
+      return bottomBarWidthRequirements && shouldShowNavBars
     }
 
   val shouldShowNavRail: Boolean
     @Composable
     get() {
       val navRailWidthRequirements = windowSizeClass.widthSizeClass != WindowWidthSizeClass.Compact
-      return navRailWidthRequirements && currentTopLevelAppDestination != null
+      return navRailWidthRequirements && shouldShowNavBars
     }
 
   val backgroundColors: GradientColors
@@ -264,5 +270,16 @@ private fun NavDestination?.toTopLevelAppDestination(): AppDestination.TopLevelD
     createRoutePattern<AppDestination.TopLevelDestination.Referrals>() -> AppDestination.TopLevelDestination.Referrals
     createRoutePattern<AppDestination.TopLevelDestination.Profile>() -> AppDestination.TopLevelDestination.Profile
     else -> null
+  }
+}
+
+/**
+ * Special routes, which despite not being top level should still show the navigation bars.
+ */
+private fun NavDestination?.isInListOfNonTopLevelNavBarPermittedDestinations(): Boolean {
+  return when (this?.route) {
+    createRoutePattern<AppDestination.BusinessModel>() -> true
+    createRoutePattern<AppDestination.Eurobonus>() -> true
+    else -> false
   }
 }
