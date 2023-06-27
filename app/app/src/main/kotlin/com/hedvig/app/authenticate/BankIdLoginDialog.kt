@@ -58,7 +58,7 @@ class BankIdLoginDialog : DialogFragment(com.hedvig.app.R.layout.dialog_authenti
     i { "BankIdLoginDialog viewState updated to:$viewState" }
     when (viewState) {
       is BankIdLoginViewState.Error -> {
-        binding.authTitle.text = getString(R.string.NETWORK_ERROR_ALERT_MESSAGE)
+        binding.authTitle.text = viewState.message
         dialog?.setCanceledOnTouchOutside(true)
       }
       BankIdLoginViewState.Loading -> {}
@@ -79,6 +79,10 @@ class BankIdLoginDialog : DialogFragment(com.hedvig.app.R.layout.dialog_authenti
               viewModel.didNavigateToLoginScreen()
               startLoggedInActivity()
             }
+          }
+          is LoginStatusResult.Exception -> {
+            binding.authTitle.text = authStatus.message
+            dialog?.setCanceledOnTouchOutside(true)
           }
         }
       }
