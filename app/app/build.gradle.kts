@@ -29,7 +29,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "11.4.0"
+    versionName = "11.4.1"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -229,7 +229,6 @@ dependencies {
   implementation(libs.flexbox)
   implementation(libs.fragmentViewBindingDelegate)
   implementation(libs.insetter)
-  implementation(libs.kiwi.navigationCompose)
   implementation(libs.koin.android)
   implementation(libs.koin.compose)
   implementation(libs.koin.workManager)

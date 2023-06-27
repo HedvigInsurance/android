@@ -16,7 +16,6 @@ android {
 
 dependencies {
   implementation(projects.app.apollo.core)
-  implementation(projects.app.apollo.di)
   implementation(projects.app.apollo.giraffe)
   implementation(projects.app.audioPlayer)
   implementation(projects.app.auth.authAndroid)
@@ -53,7 +52,6 @@ dependencies {
   implementation(libs.coil.compose)
   implementation(libs.fragmentViewBindingDelegate)
   implementation(libs.insetter)
-  implementation(libs.kiwi.navigationCompose)
   implementation(libs.koin.compose)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)

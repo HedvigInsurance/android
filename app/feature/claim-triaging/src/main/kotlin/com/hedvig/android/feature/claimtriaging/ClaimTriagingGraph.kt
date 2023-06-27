@@ -2,7 +2,8 @@ package com.hedvig.android.feature.claimtriaging
 
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
-import com.hedvig.android.data.claimtriaging.ClaimGroupId
+import com.hedvig.android.data.claimtriaging.ClaimGroup
+import com.hedvig.android.data.claimtriaging.EntryPoint
 import com.hedvig.android.data.claimtriaging.EntryPointId
 import com.hedvig.android.data.claimtriaging.EntryPointOption
 import com.hedvig.android.data.claimtriaging.EntryPointOptionId
@@ -12,6 +13,7 @@ import com.hedvig.android.feature.claimtriaging.claimentrypoints.ClaimEntryPoint
 import com.hedvig.android.feature.claimtriaging.claimentrypoints.ClaimEntryPointsViewModel
 import com.hedvig.android.feature.claimtriaging.claimgroups.ClaimGroupsDestination
 import com.hedvig.android.feature.claimtriaging.claimgroups.ClaimGroupsViewModel
+import com.hedvig.android.navigation.compose.typed.SerializableImmutableList
 import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.compose.typed.animatedNavigation
 import com.hedvig.android.navigation.core.AppDestination
@@ -29,13 +31,13 @@ internal sealed interface ClaimTriagingDestination : Destination {
 
   @Serializable
   data class ClaimEntryPoints(
-    val claimGroupId: ClaimGroupId,
+    val entryPoints: SerializableImmutableList<EntryPoint>,
   ) : ClaimTriagingDestination
 
   @Serializable
   data class ClaimEntryPointOptions(
     val entryPointId: EntryPointId,
-    val entryPointOptions: ImmutableList<EntryPointOption>,
+    val entryPointOptions: SerializableImmutableList<EntryPointOption>,
   ) : ClaimTriagingDestination
 }
 
@@ -50,9 +52,9 @@ fun NavGraphBuilder.claimTriagingGraph(
       val viewModel: ClaimGroupsViewModel = koinViewModel()
       ClaimGroupsDestination(
         viewModel = viewModel,
-        onClaimGroupSubmit = { claimGroupId: ClaimGroupId ->
+        onClaimGroupWithEntryPointsSubmit = { claimGroup: ClaimGroup ->
           with(navigator) {
-            backStackEntry.navigate(ClaimTriagingDestination.ClaimEntryPoints(claimGroupId)) // use claimGroupId
+            backStackEntry.navigate(ClaimTriagingDestination.ClaimEntryPoints(claimGroup.entryPoints))
           }
         },
         startClaimFlow = { startClaimFlow(backStackEntry, null, null) },
@@ -60,11 +62,11 @@ fun NavGraphBuilder.claimTriagingGraph(
       )
     }
     animatedComposable<ClaimTriagingDestination.ClaimEntryPoints> { backStackEntry ->
-      val claimGroupId = this.claimGroupId
-      val viewModel: ClaimEntryPointsViewModel = koinViewModel { parametersOf(claimGroupId) }
+      val entryPoints: ImmutableList<EntryPoint> = this.entryPoints
+      val viewModel: ClaimEntryPointsViewModel = koinViewModel { parametersOf(entryPoints) }
       ClaimEntryPointsDestination(
         viewModel = viewModel,
-        onEntryPointSubmit = { entryPointId, entryPointOptions ->
+        onEntryPointWithOptionsSubmit = { entryPointId, entryPointOptions ->
           with(navigator) {
             backStackEntry.navigate(ClaimTriagingDestination.ClaimEntryPointOptions(entryPointId, entryPointOptions))
           }
@@ -74,7 +76,7 @@ fun NavGraphBuilder.claimTriagingGraph(
       )
     }
     animatedComposable<ClaimTriagingDestination.ClaimEntryPointOptions> { backStackEntry ->
-      val entryPointOptions = this.entryPointOptions
+      val entryPointOptions: ImmutableList<EntryPointOption> = this.entryPointOptions
       val viewModel: ClaimEntryPointOptionsViewModel = koinViewModel { parametersOf(entryPointOptions) }
       ClaimEntryPointOptionsDestination(
         viewModel = viewModel,

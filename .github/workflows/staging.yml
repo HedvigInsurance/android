@@ -54,7 +54,7 @@ jobs:
           keyPassword: ${{ secrets.KEY_PASSWORD }}
         env:
           BUILD_TOOLS_VERSION: "30.0.2"
-      - uses: wzieba/Firebase-Distribution-Github-Action@v1.5.0
+      - uses: wzieba/Firebase-Distribution-Github-Action@v1.5.1
         with:
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_CREDENTIALS_FILE_CONTENT }}
           appId: ${{ secrets.FIREBASE_STAGING_APP_ID }}

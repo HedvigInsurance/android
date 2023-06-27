@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.claimtriaging.claimentrypointoptions
 
+import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import com.hedvig.android.data.claimtriaging.EntryPointOption
 import kotlinx.collections.immutable.ImmutableList
@@ -18,6 +19,7 @@ internal class ClaimEntryPointOptionsViewModel(
   }
 }
 
+@Immutable
 internal data class ClaimEntryPointOptionsUiState(
   val entryPointOptions: ImmutableList<EntryPointOption>,
   val selectedEntryPointOption: EntryPointOption? = null,

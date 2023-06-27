@@ -36,7 +36,6 @@ import com.hedvig.android.core.common.di.isProductionQualifier
 import com.hedvig.android.core.common.di.logInfoQualifier
 import com.hedvig.android.core.common.di.octopusGraphQLUrlQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
-import com.hedvig.android.data.claimtriaging.di.claimTriagingDataModule
 import com.hedvig.android.data.travelcertificate.di.travelCertificateDataModule
 import com.hedvig.android.datadog.addDatadogConfiguration
 import com.hedvig.android.datadog.di.datadogModule
@@ -188,6 +187,7 @@ import com.hedvig.app.util.apollo.SunsettingInterceptor
 import com.hedvig.app.util.extensions.startChat
 import com.hedvig.authlib.AuthEnvironment
 import com.hedvig.authlib.AuthRepository
+import com.hedvig.authlib.Callbacks
 import com.hedvig.authlib.NetworkAuthRepository
 import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
@@ -676,6 +676,7 @@ private val authRepositoryModule = module {
         AuthEnvironment.STAGING
       },
       additionalHttpHeaders = mapOf(),
+      callbacks = Callbacks("https://hedvig.com?q=success", "https://hedvig.com?q=failure)") // Not used
     )
   }
 }
@@ -706,7 +707,6 @@ val applicationModule = module {
       changeDateBottomSheetModule,
       chatEventModule,
       checkoutModule,
-      claimTriagingDataModule,
       claimTriagingModule,
       clockModule,
       coilModule,

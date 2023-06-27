@@ -80,6 +80,7 @@ class SimpleSignAuthenticationViewModel(
 
             is LoginStatusResult.Failed -> _events.postValue(Event.Error)
             is LoginStatusResult.Pending -> {}
+            is LoginStatusResult.Exception -> _events.postValue(Event.Error)
           }
         }
     }

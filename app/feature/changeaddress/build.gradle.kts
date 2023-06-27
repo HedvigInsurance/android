@@ -33,7 +33,6 @@ dependencies {
   implementation(libs.androidx.other.activityCompose)
   implementation(libs.arrow.core)
   implementation(libs.coroutines.core)
-  implementation(libs.kiwi.navigationCompose)
   implementation(libs.koin.android)
   implementation(libs.koin.compose)
   implementation(libs.kotlinx.datetime)
