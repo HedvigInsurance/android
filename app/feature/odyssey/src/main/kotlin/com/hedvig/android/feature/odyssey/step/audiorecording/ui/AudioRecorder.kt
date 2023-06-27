@@ -1,11 +1,22 @@
 package com.hedvig.android.feature.odyssey.step.audiorecording.ui
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.Image
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.with
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,16 +24,24 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.audio.player.HedvigAudioPlayer
@@ -34,17 +53,19 @@ import com.hedvig.android.audio.player.state.rememberAudioPlayer
 import com.hedvig.android.core.common.android.ProgressPercentage
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.core.designsystem.component.button.LargeTextButton
+import com.hedvig.android.core.designsystem.material3.motion.MotionTokens
+import com.hedvig.android.core.designsystem.newtheme.red_600
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.ScreenOnFlag
 import com.hedvig.android.core.ui.audiorecording.RecordingAmplitudeIndicator
-import com.hedvig.android.feature.odyssey.R
 import com.hedvig.android.feature.odyssey.model.AudioUrl
 import com.hedvig.android.feature.odyssey.navigation.AudioContent
 import com.hedvig.android.feature.odyssey.step.audiorecording.AudioRecordingUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import java.io.File
 
 @Composable
@@ -59,16 +80,6 @@ internal fun AudioRecorder(
   modifier: Modifier = Modifier,
 ) {
   when (uiState) {
-    AudioRecordingUiState.NotRecording -> NotRecording(
-      startRecording = startRecording,
-      modifier = modifier,
-    )
-    is AudioRecordingUiState.Recording -> Recording(
-      uiState = uiState,
-      stopRecording = stopRecording,
-      clock = clock,
-      modifier = modifier,
-    )
     is AudioRecordingUiState.Playback -> Playback(
       uiState = uiState,
       submit = {
@@ -87,76 +98,100 @@ internal fun AudioRecorder(
       redo = redo,
       modifier = modifier,
     )
-  }
-}
-
-@Composable
-private fun NotRecording(
-  startRecording: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  Column(
-    horizontalAlignment = Alignment.CenterHorizontally,
-    modifier = modifier.fillMaxWidth(),
-  ) {
-    IconButton(
-      onClick = startRecording,
-      modifier = Modifier
-        .padding(bottom = 24.dp)
-        .then(Modifier.size(72.dp)),
-    ) {
-      Image(
-        painter = painterResource(R.drawable.ic_record),
-        contentDescription = stringResource(hedvig.resources.R.string.EMBARK_START_RECORDING),
-      )
-    }
-    Text(
-      text = stringResource(hedvig.resources.R.string.EMBARK_START_RECORDING),
-      style = MaterialTheme.typography.bodySmall,
-      modifier = Modifier.padding(bottom = 16.dp),
-    )
-  }
-}
-
-@Composable
-private fun Recording(
-  uiState: AudioRecordingUiState.Recording,
-  stopRecording: () -> Unit,
-  clock: Clock,
-  modifier: Modifier = Modifier,
-) {
-  ScreenOnFlag()
-  Column(
-    horizontalAlignment = Alignment.CenterHorizontally,
-    modifier = modifier.fillMaxWidth(),
-  ) {
-    Box(
-      contentAlignment = Alignment.Center,
-      modifier = Modifier
-        .padding(bottom = 24.dp),
-    ) {
-      if (uiState.amplitudes.isNotEmpty()) {
-        RecordingAmplitudeIndicator(amplitude = uiState.amplitudes.last())
+    else -> {
+      val isRecording = uiState is AudioRecordingUiState.Recording
+      val isRecordingTransition = updateTransition(isRecording)
+      if (isRecording) {
+        ScreenOnFlag()
       }
-      IconButton(
-        onClick = stopRecording,
-        modifier = Modifier.size(72.dp),
+
+      Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier.fillMaxWidth(),
       ) {
-        Image(
-          painter = painterResource(
-            R.drawable.ic_record_stop,
-          ),
-          contentDescription = stringResource(hedvig.resources.R.string.EMBARK_STOP_RECORDING),
-        )
+        Box(
+          contentAlignment = Alignment.Center,
+        ) {
+          if (uiState is AudioRecordingUiState.Recording && uiState.amplitudes.isNotEmpty()) {
+            RecordingAmplitudeIndicator(amplitude = uiState.amplitudes.last())
+          }
+          Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+              .shadow(10.dp, CircleShape)
+              .size(72.dp)
+              .background(Color.White, CircleShape)
+              .clickable {
+                if (isRecording) {
+                  stopRecording()
+                } else {
+                  startRecording()
+                }
+              },
+          ) {
+            val size by isRecordingTransition.animateDp(label = "sizeAnimation") { isRecording ->
+              if (isRecording) 18.dp else 32.dp
+            }
+            val color by isRecordingTransition.animateColor(label = "colorAnimation") { isRecording ->
+              if (isRecording) Color.Black else red_600
+            }
+            val cornerRadius by isRecordingTransition.animateDp(label = "cornerRadiusAnimation") { isRecording ->
+              if (isRecording) 2.dp else 16.dp
+            }
+            Box(
+              Modifier
+                .size(size)
+                .background(color, RoundedCornerShape(cornerRadius)),
+            )
+          }
+        }
+        Spacer(Modifier.height(24.dp))
+        val startedRecordingAt by remember {
+          mutableStateOf<Instant?>(null)
+        }.apply {
+          if (uiState is AudioRecordingUiState.Recording) {
+            value = uiState.startedAt
+          }
+        }
+        isRecordingTransition.AnimatedContent(
+          transitionSpec = {
+            val animationSpec = tween<IntOffset>(MotionTokens.DurationLong1.toInt())
+            val animationSpecFade = tween<Float>(MotionTokens.DurationMedium1.toInt())
+            val animationSpecFloat = tween<Float>(MotionTokens.DurationLong1.toInt())
+            val scale = 0.6f
+            val enterTransition =
+              slideInVertically(animationSpec) +
+                fadeIn(animationSpecFade) +
+                scaleIn(animationSpecFloat, initialScale = scale)
+            val exitTransition =
+              slideOutVertically(animationSpec) +
+                fadeOut(animationSpecFade) +
+                scaleOut(animationSpecFloat, targetScale = scale)
+            enterTransition with exitTransition
+          },
+          contentAlignment = Alignment.Center,
+          modifier = Modifier.fillMaxWidth(),
+        ) { isRecording ->
+          if (isRecording) {
+            val diff = clock.now() - (startedRecordingAt ?: clock.now())
+            val label = String.format("%02d:%02d", diff.inWholeMinutes, diff.inWholeSeconds % 60)
+            Text(
+              text = label,
+              style = MaterialTheme.typography.bodySmall,
+              textAlign = TextAlign.Center,
+              modifier = Modifier.padding(bottom = 16.dp),
+            )
+          } else {
+            Text(
+              text = stringResource(hedvig.resources.R.string.EMBARK_START_RECORDING),
+              style = MaterialTheme.typography.bodySmall,
+              textAlign = TextAlign.Center,
+              modifier = Modifier.padding(bottom = 16.dp),
+            )
+          }
+        }
       }
     }
-    val diff = clock.now() - uiState.startedAt
-    val label = String.format("%02d:%02d", diff.inWholeMinutes, diff.inWholeSeconds % 60)
-    Text(
-      text = label,
-      style = MaterialTheme.typography.bodySmall,
-      modifier = Modifier.padding(bottom = 16.dp),
-    )
   }
 }
 
@@ -241,6 +276,42 @@ private fun PrerecordedPlayback(
           Text(stringResource(hedvig.resources.R.string.EMBARK_RECORD_AGAIN))
         }
       }
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewNotRecording() {
+  HedvigTheme(useNewColorScheme = true) {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      AudioRecorder(
+        uiState = AudioRecordingUiState.NotRecording,
+        startRecording = { },
+        clock = Clock.System,
+        stopRecording = { },
+        submitAudioFile = {},
+        submitAudioUrl = {},
+        redo = { },
+      )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewRecording() {
+  HedvigTheme(useNewColorScheme = true) {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      AudioRecorder(
+        uiState = AudioRecordingUiState.Recording(listOf(70), Clock.System.now(), ""),
+        startRecording = { },
+        clock = Clock.System,
+        stopRecording = { },
+        submitAudioFile = {},
+        submitAudioUrl = {},
+        redo = { },
+      )
     }
   }
 }
