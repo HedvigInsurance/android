@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -22,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbar
@@ -42,41 +45,48 @@ internal fun ClaimFlowScaffold(
   itemsColumnHorizontalAlignment: Alignment.Horizontal = Alignment.Start,
   content: @Composable (ColumnScope.(sideSpacingModifier: Modifier) -> Unit),
 ) {
-  Box(modifier.fillMaxSize()) {
-    Column {
-      val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-      TopAppBarWithBack(
-        onClick = navigateUp,
-        title = topAppBarText ?: "",
-        scrollBehavior = topAppBarScrollBehavior,
-      )
-      Column(
-        horizontalAlignment = itemsColumnHorizontalAlignment,
-        modifier = Modifier
-          .fillMaxSize()
-          .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
-          .verticalScroll(rememberScrollState())
-          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-      ) {
-        val sideSpacingModifier = if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded) {
-          Modifier
-            .fillMaxWidth(0.8f)
-            .wrapContentWidth(Alignment.Start)
-            .align(Alignment.CenterHorizontally)
-        } else {
-          Modifier.padding(horizontal = 16.dp)
+  HedvigTheme(useNewColorScheme = true) {
+    Surface(
+      color = MaterialTheme.colorScheme.background,
+      modifier = modifier.fillMaxSize(),
+    ) {
+      Box {
+        Column {
+          val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+          TopAppBarWithBack(
+            onClick = navigateUp,
+            title = topAppBarText ?: "",
+            scrollBehavior = topAppBarScrollBehavior,
+          )
+          Column(
+            horizontalAlignment = itemsColumnHorizontalAlignment,
+            modifier = Modifier
+              .fillMaxSize()
+              .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
+              .verticalScroll(rememberScrollState())
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+          ) {
+            val sideSpacingModifier = if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded) {
+              Modifier
+                .fillMaxWidth(0.8f)
+                .wrapContentWidth(Alignment.Start)
+                .align(Alignment.CenterHorizontally)
+            } else {
+              Modifier.padding(horizontal = 16.dp)
+            }
+            content(sideSpacingModifier)
+          }
         }
-        content(sideSpacingModifier)
+        HedvigFullScreenCenterAlignedProgress(show = isLoading)
+        if (errorSnackbarState != null) {
+          ErrorSnackbar(
+            errorSnackbarState = errorSnackbarState,
+            modifier = Modifier
+              .align(Alignment.BottomCenter)
+              .windowInsetsPadding(WindowInsets.safeDrawing),
+          )
+        }
       }
-    }
-    HedvigFullScreenCenterAlignedProgress(show = isLoading)
-    if (errorSnackbarState != null) {
-      ErrorSnackbar(
-        errorSnackbarState = errorSnackbarState,
-        modifier = Modifier
-          .align(Alignment.BottomCenter)
-          .windowInsetsPadding(WindowInsets.safeDrawing),
-      )
     }
   }
 }
