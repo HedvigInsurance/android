@@ -74,11 +74,9 @@ private fun LegacyClaimTriagingScreen(
       Text(
         text = stringResource(hedvig.resources.R.string.CLAIM_TRIAGING_TITLE),
         style = MaterialTheme.typography.headlineMedium,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 24.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
       )
-      Spacer(Modifier.height(24.dp))
+      Spacer(Modifier.height(32.dp))
       val errorMessage = uiState.errorMessage
       if (errorMessage != null) {
         GenericErrorScreen(

@@ -6,6 +6,7 @@ import com.hedvig.android.feature.odyssey.data.ClaimFlowRepository
 import com.hedvig.android.feature.odyssey.data.ClaimFlowStep
 import com.hedvig.android.feature.odyssey.navigation.LocationOption
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -18,16 +19,16 @@ internal class LocationViewModel(
 
   private val _uiState =
     MutableStateFlow(LocationUiState.fromInitialSelection(initialSelectedLocation, locationOptions))
-  val uiState = _uiState.asStateFlow()
+  val uiState: StateFlow<LocationUiState> = _uiState.asStateFlow()
 
-  fun selectLocationOption(selectedLocationValue: String) {
+  fun selectLocationOption(selectedLocation: LocationOption) {
     _uiState.update { oldUiState ->
-      val selectedValueExistsInOptions = selectedLocationValue in locationOptions.map { it.value }
-      val locationIsAlreadySelected = oldUiState.selectedLocation == selectedLocationValue
+      val selectedValueExistsInOptions = selectedLocation in locationOptions
+      val locationIsAlreadySelected = oldUiState.selectedLocation == selectedLocation
       if (locationIsAlreadySelected || !selectedValueExistsInOptions) {
         oldUiState.copy(selectedLocation = null)
       } else {
-        oldUiState.copy(selectedLocation = selectedLocationValue)
+        oldUiState.copy(selectedLocation = selectedLocation)
       }
     }
   }
@@ -41,10 +42,10 @@ internal class LocationViewModel(
   fun submitLocation() {
     val uiState = _uiState.value
     val selectedLocation = uiState.selectedLocation
-    if (!uiState.canSubmit) return
+    if (selectedLocation == null || !uiState.canSubmit) return
     _uiState.update { it.copy(isLoading = true) }
     viewModelScope.launch {
-      claimFlowRepository.submitLocation(selectedLocation).fold(
+      claimFlowRepository.submitLocation(selectedLocation.value).fold(
         ifLeft = {
           _uiState.update {
             it.copy(isLoading = false, error = true)
@@ -66,7 +67,7 @@ internal class LocationViewModel(
 
 internal data class LocationUiState(
   val locationOptions: List<LocationOption>,
-  val selectedLocation: String?,
+  val selectedLocation: LocationOption?,
   val isLoading: Boolean = false,
   val error: Boolean = false,
   val nextStep: ClaimFlowStep? = null,
@@ -80,7 +81,6 @@ internal data class LocationUiState(
     ): LocationUiState {
       val selectedLocation = locationOptions
         .firstOrNull { it.value == initialSelectedLocation }
-        ?.value
       return LocationUiState(
         locationOptions,
         selectedLocation,

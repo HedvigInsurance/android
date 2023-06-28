@@ -70,7 +70,7 @@ internal fun ClaimSummaryDestination(
   windowSizeClass: WindowSizeClass,
   imageLoader: ImageLoader,
   navigateToNextStep: (ClaimFlowStep) -> Unit,
-  navigateBack: () -> Unit,
+  navigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val claimFlowStep = uiState.claimSummaryStatusUiState.nextStep
@@ -85,7 +85,7 @@ internal fun ClaimSummaryDestination(
     imageLoader = imageLoader,
     showedError = viewModel::showedError,
     submitSummary = viewModel::submitSummary,
-    navigateBack = navigateBack,
+    navigateUp = navigateUp,
   )
 }
 
@@ -96,11 +96,11 @@ private fun ClaimSummaryScreen(
   imageLoader: ImageLoader,
   showedError: () -> Unit,
   submitSummary: () -> Unit,
-  navigateBack: () -> Unit,
+  navigateUp: () -> Unit,
 ) {
   ClaimFlowScaffold(
     windowSizeClass = windowSizeClass,
-    navigateUp = navigateBack,
+    navigateUp = navigateUp,
     topAppBarText = stringResource(R.string.claims_item_screen_title),
     isLoading = uiState.claimSummaryStatusUiState.isLoading,
     errorSnackbarState = ErrorSnackbarState(

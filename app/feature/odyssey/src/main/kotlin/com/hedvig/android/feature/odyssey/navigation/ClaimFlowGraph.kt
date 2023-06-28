@@ -148,11 +148,12 @@ fun NavGraphBuilder.claimFlowGraph(
       LocationDestination(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
+        imageLoader = imageLoader,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
           with(navigator) { backStackEntry.navigate(claimFlowStep.toClaimFlowDestination()) }
         },
-        navigateBack = navigator::navigateUp,
+        navigateUp = navigator::navigateUp,
       )
     }
     animatedComposable<ClaimFlowDestination.PhoneNumber> { backStackEntry ->
@@ -164,13 +165,13 @@ fun NavGraphBuilder.claimFlowGraph(
           viewModel.handledNextStepNavigation()
           with(navigator) { backStackEntry.navigate(claimFlowStep.toClaimFlowDestination()) }
         },
-        navigateBack = navigator::navigateUp,
+        navigateUp = navigator::navigateUp,
       )
     }
     animatedComposable<ClaimFlowDestination.SingleItem> { backStackEntry ->
       val singleItem: ClaimFlowDestination.SingleItem = this
       val viewModel: SingleItemViewModel = koinViewModel { parametersOf(singleItem) }
-      SingleItemDestination(
+      SingleItemDestination( // todo PriceOfPurchase input text field
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
         imageLoader = imageLoader,
@@ -178,13 +179,13 @@ fun NavGraphBuilder.claimFlowGraph(
           viewModel.handledNextStepNavigation()
           with(navigator) { backStackEntry.navigate(claimFlowStep.toClaimFlowDestination()) }
         },
-        navigateBack = navigator::navigateUp,
+        navigateUp = navigator::navigateUp,
       )
     }
     animatedComposable<ClaimFlowDestination.Summary> { backStackEntry ->
       val summary: ClaimFlowDestination.Summary = this
       val viewModel: ClaimSummaryViewModel = koinViewModel { parametersOf(summary) }
-      ClaimSummaryDestination(
+      ClaimSummaryDestination( // todo many changes
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
         imageLoader = imageLoader,
@@ -192,14 +193,14 @@ fun NavGraphBuilder.claimFlowGraph(
           viewModel.handledNextStepNavigation()
           with(navigator) { backStackEntry.navigate(claimFlowStep.toClaimFlowDestination()) }
         },
-        navigateBack = navigator::navigateUp,
+        navigateUp = navigator::navigateUp,
       )
     }
     animatedComposable<ClaimFlowDestination.SingleItemCheckout> { backStackEntry ->
       val singleItemCheckout = this
       val viewModel: SingleItemCheckoutViewModel = koinViewModel { parametersOf(singleItemCheckout) }
       BackHandler { finishClaimFlow() }
-      SingleItemCheckoutDestination(
+      SingleItemCheckoutDestination( // todo many changes here too
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep ->

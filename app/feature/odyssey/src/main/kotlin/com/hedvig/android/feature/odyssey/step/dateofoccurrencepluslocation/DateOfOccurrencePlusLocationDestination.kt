@@ -1,58 +1,39 @@
 package com.hedvig.android.feature.odyssey.step.dateofoccurrencepluslocation
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
-import com.hedvig.android.core.designsystem.component.button.FormRowCard
-import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
+import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
+import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
-import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.core.ui.snackbar.ErrorSnackbar
+import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
 import com.hedvig.android.feature.odyssey.data.ClaimFlowStep
 import com.hedvig.android.feature.odyssey.navigation.LocationOption
-import com.hedvig.android.feature.odyssey.ui.DatePickerRowCard
+import com.hedvig.android.feature.odyssey.ui.ClaimFlowScaffold
 import com.hedvig.android.feature.odyssey.ui.DatePickerUiState
-import com.hedvig.android.feature.odyssey.ui.SingleSelectDialog
+import com.hedvig.android.feature.odyssey.ui.DatePickerWithDialog
+import com.hedvig.android.feature.odyssey.ui.LocationWithDialog
 import hedvig.resources.R
 
 @Composable
@@ -77,7 +58,7 @@ internal fun DateOfOccurrencePlusLocationDestination(
     selectLocationOption = viewModel::selectLocationOption,
     submitDateOfOccurrenceAndLocation = viewModel::submitDateOfOccurrenceAndLocation,
     showedError = viewModel::showedError,
-    navigateBack = navigateBack,
+    navigateUp = navigateBack,
   )
 }
 
@@ -89,59 +70,42 @@ private fun DateOfOccurrencePlusLocationScreen(
   selectLocationOption: (LocationOption) -> Unit,
   submitDateOfOccurrenceAndLocation: () -> Unit,
   showedError: () -> Unit,
-  navigateBack: () -> Unit,
+  navigateUp: () -> Unit,
 ) {
-  Box(Modifier.fillMaxSize()) {
-    Column {
-      val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-      TopAppBarWithBack(
-        onClick = navigateBack,
-        title = stringResource(R.string.claims_incident_screen_header),
-        scrollBehavior = topAppBarScrollBehavior,
-      )
-      Column(
-        Modifier
-          .fillMaxSize()
-          .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
-          .verticalScroll(rememberScrollState())
-          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-      ) {
-        val sideSpacingModifier = if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded) {
-          Modifier
-            .fillMaxWidth(0.8f)
-            .wrapContentWidth(Alignment.Start)
-            .align(Alignment.CenterHorizontally)
-        } else {
-          Modifier.padding(horizontal = 16.dp)
-        }
-        Spacer(Modifier.height(32.dp))
-        DateOfIncident(uiState.datePickerUiState, !uiState.isLoading, sideSpacingModifier)
-        Spacer(Modifier.height(20.dp))
-        Location(uiState, selectLocationOption, imageLoader, sideSpacingModifier)
-        Spacer(Modifier.weight(1f))
-        Spacer(Modifier.height(20.dp))
-        LargeContainedTextButton(
-          text = stringResource(R.string.general_continue_button),
-          onClick = submitDateOfOccurrenceAndLocation,
-          enabled = uiState.canSubmit,
-          modifier = sideSpacingModifier,
-        )
-        Spacer(Modifier.height(16.dp))
-        Spacer(
-          Modifier.windowInsetsPadding(
-            WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom),
-          ),
-        )
-      }
-    }
-    HedvigFullScreenCenterAlignedProgress(show = uiState.isLoading)
-    ErrorSnackbar(
-      hasError = uiState.error,
+  ClaimFlowScaffold(
+    windowSizeClass = windowSizeClass,
+    navigateUp = navigateUp,
+    isLoading = uiState.isLoading,
+    errorSnackbarState = ErrorSnackbarState(
+      error = uiState.error,
       showedError = showedError,
-      modifier = Modifier
-        .align(Alignment.BottomCenter)
-        .windowInsetsPadding(WindowInsets.safeDrawing),
+    ),
+  ) { sideSpacingModifier ->
+    Spacer(Modifier.height(16.dp))
+    Text(
+      text = stringResource(R.string.CLAIMS_LOCATON_OCCURANCE_TITLE),
+      style = MaterialTheme.typography.headlineMedium,
+      modifier = sideSpacingModifier.fillMaxWidth(),
     )
+    Spacer(Modifier.height(32.dp))
+    Spacer(Modifier.weight(1f))
+    DateOfIncident(uiState.datePickerUiState, !uiState.isLoading, sideSpacingModifier.fillMaxWidth())
+    Spacer(Modifier.height(16.dp))
+    Location(uiState, selectLocationOption, imageLoader, sideSpacingModifier.fillMaxWidth())
+    Spacer(Modifier.height(16.dp))
+    VectorInfoCard(
+      text = stringResource(hedvig.resources.R.string.CLAIMS_DATE_NOT_SURE_NOTICE_LABEL),
+      modifier = sideSpacingModifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(16.dp))
+    HedvigContainedButton(
+      text = stringResource(R.string.general_continue_button),
+      onClick = submitDateOfOccurrenceAndLocation,
+      enabled = uiState.canSubmit,
+      modifier = sideSpacingModifier,
+    )
+    Spacer(Modifier.height(16.dp))
+    Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
   }
 }
 
@@ -151,7 +115,7 @@ private fun DateOfIncident(
   canInteract: Boolean,
   modifier: Modifier = Modifier,
 ) {
-  DatePickerRowCard(
+  DatePickerWithDialog(
     uiState = uiState,
     canInteract = canInteract,
     startText = stringResource(R.string.claims_item_screen_date_of_incident_button),
@@ -166,35 +130,17 @@ private fun Location(
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
 ) {
-  var showLocationPickerDialog by rememberSaveable { mutableStateOf(false) }
-  if (showLocationPickerDialog) {
-    SingleSelectDialog(
-      title = stringResource(R.string.claims_location_screen_title),
-      optionsList = uiState.locationOptions,
-      onSelected = selectLocationOption,
-      getDisplayText = { it.displayName },
-      getImageUrl = { null },
-      getId = { it.displayName },
-      imageLoader = imageLoader,
-      onDismissRequest = { showLocationPickerDialog = false },
-    )
-  }
-
-  FormRowCard(
+  LocationWithDialog(
+    locationOptions = uiState.locationOptions,
+    selectedLocation = uiState.selectedLocation,
+    selectLocationOption = selectLocationOption,
     enabled = !uiState.isLoading,
-    onClick = { showLocationPickerDialog = true },
+    imageLoader = imageLoader,
     modifier = modifier,
-  ) {
-    Text(stringResource(R.string.claims_location_screen_title))
-    Spacer(Modifier.weight(1f))
-    Spacer(Modifier.width(8.dp))
-    Text(uiState.selectedLocation?.displayName ?: stringResource(R.string.payments_history_select_button))
-    Spacer(Modifier.width(12.dp))
-    Icon(Icons.Default.ArrowForward, null)
-  }
+  )
 }
 
-@HedvigPreview
+@HedvigMultiScreenPreview
 @Composable
 private fun PreviewDateOfOccurrencePlusLocationScreen() {
   HedvigTheme {
@@ -210,7 +156,7 @@ private fun PreviewDateOfOccurrencePlusLocationScreen() {
         selectLocationOption = {},
         submitDateOfOccurrenceAndLocation = {},
         showedError = {},
-        navigateBack = {},
+        navigateUp = {},
       )
     }
   }

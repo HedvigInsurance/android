@@ -74,7 +74,7 @@ private fun ClaimGroupsScreen(
           style = MaterialTheme.typography.headlineMedium,
           modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
         )
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(32.dp))
         if (uiState.errorMessage != null) {
           LaunchedEffect(Unit) { e { "ClaimGroupsScreen: errorMessage${uiState.errorMessage}" } }
           GenericErrorScreen(

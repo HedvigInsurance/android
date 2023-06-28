@@ -59,9 +59,7 @@ private fun ClaimEntryPointOptionsScreen(
       Text(
         text = stringResource(hedvig.resources.R.string.CLAIMS_TRIAGING_WHAT_ITEM_TITLE),
         style = MaterialTheme.typography.headlineMedium,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
       )
       Spacer(Modifier.height(32.dp))
       Spacer(Modifier.weight(1f))

@@ -200,8 +200,9 @@ private fun PreviewAudioRecordingScreen() {
         AudioRecordingUiState.NotRecording,
         WindowSizeClass.calculateForPreview(),
         listOf(
-          "#1 ? ".repeat(15),
-          "#2 ?",
+          "Perfect, now you need to make a voice recording. Try and answer the questions with as much detail as",
+          "What happened?",
+          "How did it happen?",
         ),
         Clock.System,
         { false },
