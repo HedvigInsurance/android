@@ -199,7 +199,7 @@ fun NavGraphBuilder.claimFlowGraph(
       val singleItemCheckout = this
       val viewModel: SingleItemCheckoutViewModel = koinViewModel { parametersOf(singleItemCheckout) }
       BackHandler { finishClaimFlow() }
-      SingleItemCheckoutDestination( // todo many changes here too
+      SingleItemCheckoutDestination(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep ->
