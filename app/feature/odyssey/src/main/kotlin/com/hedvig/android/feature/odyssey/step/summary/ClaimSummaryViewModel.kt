@@ -11,17 +11,21 @@ import com.hedvig.android.feature.odyssey.navigation.ItemBrand
 import com.hedvig.android.feature.odyssey.navigation.ItemModel
 import com.hedvig.android.feature.odyssey.navigation.ItemProblem
 import com.hedvig.android.feature.odyssey.navigation.LocationOption
+import hedvig.resources.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toJavaLocalDate
 import octopus.type.FlowClaimItemBrandInput
 import octopus.type.FlowClaimItemModelInput
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 import kotlin.time.Duration.Companion.seconds
 
 internal class ClaimSummaryViewModel(
@@ -29,16 +33,15 @@ internal class ClaimSummaryViewModel(
   private val claimFlowRepository: ClaimFlowRepository,
 ) : ViewModel() {
 
-  private val infoUiState: MutableStateFlow<ClaimSummaryInfoUiState> =
-    MutableStateFlow(ClaimSummaryInfoUiState.fromSummary(summary))
+  private val infoUiState: ClaimSummaryInfoUiState = ClaimSummaryInfoUiState.fromSummary(summary)
   private val statusUiState: MutableStateFlow<ClaimSummaryStatusUiState> = MutableStateFlow(ClaimSummaryStatusUiState())
 
-  val uiState: StateFlow<ClaimSummaryUiState> = combine(infoUiState, statusUiState) { infoUiState, statusUiState ->
+  val uiState: StateFlow<ClaimSummaryUiState> = statusUiState.map { statusUiState ->
     ClaimSummaryUiState(infoUiState, statusUiState)
   }.stateIn(
     viewModelScope,
     SharingStarted.WhileSubscribed(5.seconds),
-    ClaimSummaryUiState(infoUiState.value, statusUiState.value),
+    ClaimSummaryUiState(infoUiState, statusUiState.value),
   )
 
   fun submitSummary() {
@@ -127,6 +130,58 @@ internal data class ClaimSummaryInfoUiState(
   val priceOfPurchase: UiNullableMoney?,
   val itemProblems: List<ItemProblem>,
 ) {
+  fun itemDetailPairs(resources: Resources, locale: Locale): List<Pair<String, String>> {
+    return buildList {
+      // Ärende
+      if (claimTypeTitle != null) {
+        add(resources.getString(R.string.CLAIMS_CASE) to claimTypeTitle)
+      }
+      // Skadetyp
+      val incidentTypeText = if (itemProblems.isNotEmpty()) {
+        itemProblems.joinToString { it.displayName }
+      } else {
+        "-"
+      }
+      add(resources.getString(R.string.CLAIMS_DAMAGES) to incidentTypeText)
+      // Skadedatum
+      val incidentDateText = if (dateOfIncident != null) {
+        dateOfIncident.toJavaLocalDate().format(DateTimeFormatter.ofPattern("dd MMM yyyy", locale))
+      } else {
+        "-"
+      }
+      add(resources.getString(R.string.claims_item_screen_date_of_incident_button) to incidentDateText)
+      // Plats
+      val locationText = if (locationOption != null) {
+        locationOption.displayName
+      } else {
+        "-"
+      }
+      add(resources.getString(R.string.claims_location_screen_title) to locationText)
+      // Modell
+      if (itemType != null) {
+        val isKnownBrand = (itemType as? ItemType.Brand)?.itemBrand?.asKnown() != null
+        val isKnownModel = (itemType as? ItemType.Model)?.itemModel?.asKnown() != null
+        if (isKnownBrand || isKnownModel) {
+          add(resources.getString(R.string.claims_item_screen_model_button) to itemType.displayName(resources))
+        }
+      }
+      // Inköpsdatum
+      val purchaseDateText = if (dateOfPurchase != null) {
+        dateOfPurchase.toJavaLocalDate().format(DateTimeFormatter.ofPattern("dd MMM yyyy", locale))
+      } else {
+        "-"
+      }
+      add(resources.getString(R.string.claims_item_screen_date_of_purchase_button) to purchaseDateText)
+      // Inköpspris
+      val purchasePriceText = if (priceOfPurchase?.amount != null) {
+        "${priceOfPurchase.amount!!.toInt()} ${priceOfPurchase.currencyCode}"
+      } else {
+        "-"
+      }
+      add(resources.getString(R.string.claims_payout_purchase_price) to purchasePriceText)
+    }
+  }
+
   sealed interface ItemType {
 
     fun displayName(resources: Resources): String {

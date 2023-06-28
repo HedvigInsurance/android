@@ -185,10 +185,9 @@ fun NavGraphBuilder.claimFlowGraph(
     animatedComposable<ClaimFlowDestination.Summary> { backStackEntry ->
       val summary: ClaimFlowDestination.Summary = this
       val viewModel: ClaimSummaryViewModel = koinViewModel { parametersOf(summary) }
-      ClaimSummaryDestination( // todo many changes
+      ClaimSummaryDestination(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
-        imageLoader = imageLoader,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
           with(navigator) { backStackEntry.navigate(claimFlowStep.toClaimFlowDestination()) }

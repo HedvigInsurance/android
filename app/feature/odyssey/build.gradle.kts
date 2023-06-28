@@ -24,7 +24,6 @@ dependencies {
   testImplementation(projects.app.core.commonTest)
 
   implementation(libs.accompanist.permissions)
-  implementation(libs.accompanist.placeholder)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material)
   implementation(libs.androidx.compose.material3)
