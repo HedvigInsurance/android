@@ -121,7 +121,7 @@ internal fun HedvigNavHost(
               backStackEntry.navigate(
                 destination = AppDestination.ClaimsFlow(entryPointId, entryPointOptionId),
                 navOptions = navOptions {
-                  popUpTo<AppDestination.LegacyClaimsTriaging> {
+                  popUpTo<AppDestination.ClaimsTriaging> {
                     inclusive = true
                   }
                 },
