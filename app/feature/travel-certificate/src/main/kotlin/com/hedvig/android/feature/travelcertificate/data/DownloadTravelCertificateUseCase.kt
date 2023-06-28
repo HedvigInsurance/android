@@ -33,7 +33,7 @@ internal class DownloadTravelCertificateUseCase(
           .build()
 
         val downloadedFile = File(
-          context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
+          context.filesDir,
           CERTIFICATE_NAME + LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE) + FILE_EXT,
         )
 
