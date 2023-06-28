@@ -89,7 +89,7 @@ internal val HedvigTypography: Typography
     bodyLarge = MaterialTheme.typography.bodyLarge.copy(
       fontFamily = SansStandard,
       fontWeight = FontWeight.Normal,
-      fontSize = 16.sp,
+      fontSize = 18.sp, // Changed from 16.sp for the new design system, which isn't refrlected in Android UI Kit
       lineHeight = 24.sp,
       letterSpacing = 0.15f.percentage.em,
     ),
