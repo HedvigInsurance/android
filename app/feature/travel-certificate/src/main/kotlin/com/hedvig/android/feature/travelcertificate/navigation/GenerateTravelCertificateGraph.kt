@@ -133,7 +133,7 @@ fun NavGraphBuilder.generateTravelCertificateGraph(
         onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
         navigateBack = finish,
         onShareTravelCertificate = {
-          val contentUri = getUriForFile(context, "$applicationId.fileprovider", it.uri)
+          val contentUri = getUriForFile(context, "$applicationId.provider", it.uri)
 
           val sendIntent: Intent = Intent().apply {
             action = Intent.ACTION_VIEW

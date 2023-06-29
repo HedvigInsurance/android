@@ -25,4 +25,7 @@
     <external-path
         name="chat_pictures"
         path="/" />
+    <files-path
+        name="travelcert"
+        path="/" />
 </paths>
