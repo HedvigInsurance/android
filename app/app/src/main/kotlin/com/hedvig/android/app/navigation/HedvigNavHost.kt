@@ -136,10 +136,9 @@ internal fun HedvigNavHost(
           hAnalytics.beginClaim(AppScreen.HOME)
           val useNonEmbarkClaimsFlow = featureManager.isFeatureEnabled(Feature.USE_NATIVE_CLAIMS_FLOW)
           val useNewClaimTriaging = featureManager.isFeatureEnabled(Feature.CLAIMS_TRIAGING)
+          // Legacy triage was killed, so if we turn off new triage, we turn off the entire odyssey claim flow
           if (useNonEmbarkClaimsFlow && useNewClaimTriaging) {
-            with(navigator) {
-              backStackEntry.navigate(AppDestination.ClaimsFlow)
-            }
+            with(navigator) { backStackEntry.navigate(AppDestination.ClaimsFlow) }
           } else {
             HonestyPledgeBottomSheet
               .newInstance(
@@ -279,20 +278,4 @@ private fun NavGraphBuilder.nestedHomeGraphs(
       activityNavigator.navigateToChat(context)
     },
   )
-  // todo consider removing legacy claim triaging completely
-//  legacyClaimTriagingGraph(
-//    startClaimFlow = { backStackEntry, entryPointId ->
-//      with(navigator) {
-//        backStackEntry.navigate(
-//          destination = AppDestination.ClaimsFlow(entryPointId, null),
-//          navOptions = navOptions {
-//            popUpTo<AppDestination.LegacyClaimsTriaging> {
-//              inclusive = true
-//            }
-//          },
-//        )
-//      }
-//    },
-//    navigateUp = navigator::navigateUp,
-//  )
 }

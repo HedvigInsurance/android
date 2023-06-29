@@ -45,7 +45,6 @@ import com.hedvig.android.feature.businessmodel.di.businessModelModule
 import com.hedvig.android.feature.changeaddress.di.changeAddressModule
 import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
 import com.hedvig.android.feature.home.di.homeModule
-import com.hedvig.android.feature.legacyclaimtriaging.di.legacyClaimTriagingModule
 import com.hedvig.android.feature.odyssey.di.odysseyModule
 import com.hedvig.android.feature.terminateinsurance.di.terminateInsuranceModule
 import com.hedvig.android.feature.travelcertificate.di.travelCertificateModule
@@ -729,7 +728,6 @@ val applicationModule = module {
       insuranceCoverageModule,
       insuranceModule,
       languageModule,
-      legacyClaimTriagingModule,
       logModule,
       marketManagerModule,
       networkModule,
