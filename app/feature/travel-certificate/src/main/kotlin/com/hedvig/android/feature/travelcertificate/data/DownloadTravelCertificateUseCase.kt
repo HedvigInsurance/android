@@ -15,8 +15,14 @@ import okio.sink
 import slimber.log.e
 import java.io.File
 import java.io.IOException
+import java.time.Instant
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toJavaLocalDateTime
+import kotlinx.datetime.toLocalDateTime
 
 private const val CERTIFICATE_NAME = "hedvigTravelCertificate_"
 private const val FILE_EXT = ".pdf"
@@ -32,10 +38,13 @@ internal class DownloadTravelCertificateUseCase(
           .url(travelCertificateUri.uri)
           .build()
 
-        val downloadedFile = File(
-          context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
-          CERTIFICATE_NAME + LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE) + FILE_EXT,
+        val now = DateTimeFormatter.ISO_DATE_TIME.format(
+          Clock.System.now()
+            .toLocalDateTime(TimeZone.UTC)
+            .toJavaLocalDateTime(),
         )
+
+        val downloadedFile = File(context.filesDir, CERTIFICATE_NAME + now + FILE_EXT)
 
         try {
           val response = OkHttpClient().newCall(request).await()
