@@ -58,8 +58,8 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.ScreenOnFlag
 import com.hedvig.android.core.ui.audiorecording.RecordingAmplitudeIndicator
-import com.hedvig.android.feature.odyssey.model.AudioUrl
-import com.hedvig.android.feature.odyssey.navigation.AudioContent
+import com.hedvig.android.data.claimflow.AudioContent
+import com.hedvig.android.data.claimflow.model.AudioUrl
 import com.hedvig.android.feature.odyssey.step.audiorecording.AudioRecordingUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

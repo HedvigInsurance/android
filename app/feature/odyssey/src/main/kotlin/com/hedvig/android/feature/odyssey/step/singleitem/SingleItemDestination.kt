@@ -53,10 +53,10 @@ import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
-import com.hedvig.android.feature.odyssey.data.ClaimFlowStep
-import com.hedvig.android.feature.odyssey.navigation.ItemBrand
-import com.hedvig.android.feature.odyssey.navigation.ItemModel
-import com.hedvig.android.feature.odyssey.navigation.ItemProblem
+import com.hedvig.android.data.claimflow.ClaimFlowStep
+import com.hedvig.android.data.claimflow.ItemBrand
+import com.hedvig.android.data.claimflow.ItemModel
+import com.hedvig.android.data.claimflow.ItemProblem
 import com.hedvig.android.feature.odyssey.ui.ClaimFlowScaffold
 import com.hedvig.android.feature.odyssey.ui.DatePickerUiState
 import com.hedvig.android.feature.odyssey.ui.DatePickerWithDialog

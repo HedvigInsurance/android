@@ -6,12 +6,12 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
 import com.hedvig.android.core.common.test.MainCoroutineRule
-import com.hedvig.android.feature.odyssey.data.ClaimFlowStep
+import com.hedvig.android.data.claimflow.ClaimFlowDestination
+import com.hedvig.android.data.claimflow.ClaimFlowStep
+import com.hedvig.android.data.claimflow.ItemBrand
+import com.hedvig.android.data.claimflow.ItemModel
+import com.hedvig.android.data.claimflow.model.FlowId
 import com.hedvig.android.feature.odyssey.data.TestClaimFlowRepository
-import com.hedvig.android.feature.odyssey.model.FlowId
-import com.hedvig.android.feature.odyssey.navigation.ClaimFlowDestination
-import com.hedvig.android.feature.odyssey.navigation.ItemBrand
-import com.hedvig.android.feature.odyssey.navigation.ItemModel
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import octopus.type.CurrencyCode

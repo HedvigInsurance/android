@@ -2,8 +2,8 @@ package com.hedvig.android.feature.odyssey.step.phonenumber
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.feature.odyssey.data.ClaimFlowRepository
-import com.hedvig.android.feature.odyssey.data.ClaimFlowStep
+import com.hedvig.android.data.claimflow.ClaimFlowRepository
+import com.hedvig.android.data.claimflow.ClaimFlowStep
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

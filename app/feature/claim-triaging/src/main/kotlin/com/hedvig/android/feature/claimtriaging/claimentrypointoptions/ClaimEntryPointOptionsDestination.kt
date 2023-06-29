@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -18,27 +19,33 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.error.ErrorDialog
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
+import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimtriaging.EntryPointOption
 import com.hedvig.android.data.claimtriaging.EntryPointOptionId
 import com.hedvig.android.feature.claimtriaging.OptionChipsFlowRow
+import hedvig.resources.R
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 internal fun ClaimEntryPointOptionsDestination(
   viewModel: ClaimEntryPointOptionsViewModel,
-  startClaimFlow: (EntryPointOptionId) -> Unit,
+  startClaimFlow: (ClaimFlowStep) -> Unit,
   navigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  LaunchedEffect(uiState.nextStep) {
+    val nextStep = uiState.nextStep
+    if (nextStep != null) {
+      startClaimFlow(nextStep)
+    }
+  }
   ClaimEntryPointOptionsScreen(
     uiState = uiState,
     onSelectEntryPointOption = viewModel::onSelectEntryPoint,
-    onContinue = {
-      uiState.selectedEntryPointOption?.let { entryPointOption ->
-        startClaimFlow(entryPointOption.id)
-      }
-    },
+    onContinue = viewModel::startClaimFlow,
+    showedStartClaimError = viewModel::showedStartClaimError,
     navigateUp = navigateUp,
   )
 }
@@ -48,8 +55,16 @@ private fun ClaimEntryPointOptionsScreen(
   uiState: ClaimEntryPointOptionsUiState,
   onSelectEntryPointOption: (EntryPointOption) -> Unit,
   onContinue: () -> Unit,
+  showedStartClaimError: () -> Unit,
   navigateUp: () -> Unit,
 ) {
+  if (uiState.startClaimErrorMessage != null) {
+    ErrorDialog(
+      title = stringResource(R.string.something_went_wrong),
+      message = stringResource(R.string.GENERAL_ERROR_BODY),
+      onDismiss = showedStartClaimError,
+    )
+  }
   HedvigTheme(useNewColorScheme = true) {
     HedvigScaffold(
       navigateUp = navigateUp,
@@ -98,9 +113,10 @@ private fun PreviewClaimEntryPointOptionsScreen() {
           entryPointOptions = entryPointOptions,
           selectedEntryPointOption = entryPointOptions[3],
         ),
-        {},
-        {},
-        {},
+        onSelectEntryPointOption = {},
+        onContinue = {},
+        showedStartClaimError = {},
+        navigateUp = {},
       )
     }
   }

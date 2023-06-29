@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.odyssey.data
+package com.hedvig.android.data.claimflow
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences

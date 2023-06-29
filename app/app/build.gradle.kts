@@ -125,6 +125,7 @@ dependencies {
   implementation(projects.app.core.designSystem)
   implementation(projects.app.core.resources)
   implementation(projects.app.core.ui)
+  implementation(projects.app.data.claimFlow)
   implementation(projects.app.data.claimTriaging)
   implementation(projects.app.data.travelCertificate)
   implementation(projects.app.datadog)

@@ -24,7 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.feature.odyssey.ui.ClaimFlowScaffold
@@ -34,12 +34,14 @@ import hedvig.resources.R
 internal fun ClaimSuccessDestination(
   windowSizeClass: WindowSizeClass,
   openChat: () -> Unit,
-  navigateBack: () -> Unit,
+  navigateUp: () -> Unit,
+  closeSuccessScreen: () -> Unit,
 ) {
   ClaimSuccessScreen(
     windowSizeClass = windowSizeClass,
     openChat = openChat,
-    navigateBack = navigateBack,
+    navigateUp = navigateUp,
+    closeSuccessScreen = closeSuccessScreen,
   )
 }
 
@@ -47,11 +49,12 @@ internal fun ClaimSuccessDestination(
 private fun ClaimSuccessScreen(
   windowSizeClass: WindowSizeClass,
   openChat: () -> Unit,
-  navigateBack: () -> Unit,
+  navigateUp: () -> Unit,
+  closeSuccessScreen: () -> Unit,
 ) {
   ClaimFlowScaffold(
     windowSizeClass = windowSizeClass,
-    navigateUp = navigateBack,
+    navigateUp = navigateUp,
   ) { sideSpacingModifier ->
     Spacer(Modifier.height(16.dp))
     Box(
@@ -84,7 +87,7 @@ private fun ClaimSuccessScreen(
     )
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
-      onClick = navigateBack,
+      onClick = closeSuccessScreen,
       text = stringResource(R.string.general_close_button),
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
@@ -93,12 +96,12 @@ private fun ClaimSuccessScreen(
   }
 }
 
-@HedvigMultiScreenPreview
+@HedvigPreview
 @Composable
 fun PreviewClaimSuccessScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      ClaimSuccessScreen(WindowSizeClass.calculateForPreview(), {}, {})
+      ClaimSuccessScreen(WindowSizeClass.calculateForPreview(), {}, {}, {})
     }
   }
 }

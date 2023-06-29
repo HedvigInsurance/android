@@ -37,7 +37,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -47,12 +46,12 @@ import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.material3.squircle
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.UiMoney
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.feature.odyssey.data.ClaimFlowStep
-import com.hedvig.android.feature.odyssey.navigation.CheckoutMethod
+import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.claimflow.CheckoutMethod
+import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.feature.odyssey.ui.ClaimFlowScaffold
 import hedvig.resources.R
 import octopus.type.CurrencyCode
@@ -63,9 +62,9 @@ internal fun SingleItemCheckoutDestination(
   windowSizeClass: WindowSizeClass,
   navigateToNextStep: (ClaimFlowStep) -> Unit,
   navigateToAppUpdateStep: () -> Unit,
-  navigateBack: () -> Unit,
+  navigateUp: () -> Unit,
   openChat: () -> Unit,
-  exitFlow: () -> Unit,
+  closePayoutScreen: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   when (val state = uiState) {
@@ -82,9 +81,9 @@ internal fun SingleItemCheckoutDestination(
         selectCheckoutMethod = viewModel::selectCheckoutMethod,
         onDoneAfterPayout = navigateToNextStep,
         submitSelections = viewModel::requestPayout,
-        navigateBack = navigateBack,
+        navigateUp = navigateUp,
         openChat = openChat,
-        exitFlow = exitFlow,
+        closePayoutScreen = closePayoutScreen,
       )
     }
   }
@@ -97,15 +96,15 @@ private fun SingleItemCheckoutScreen(
   selectCheckoutMethod: (CheckoutMethod.Known) -> Unit,
   onDoneAfterPayout: (ClaimFlowStep) -> Unit,
   submitSelections: () -> Unit,
-  navigateBack: () -> Unit,
+  navigateUp: () -> Unit,
   openChat: () -> Unit,
-  exitFlow: () -> Unit,
+  closePayoutScreen: () -> Unit,
 ) {
   Box {
     ClaimFlowScaffold(
       topAppBarText = stringResource(R.string.claims_payout_payout_label),
       windowSizeClass = windowSizeClass,
-      navigateUp = navigateBack,
+      navigateUp = navigateUp,
     ) { sideSpacingModifier ->
       Spacer(Modifier.height(16.dp))
       Text(
@@ -169,7 +168,7 @@ private fun SingleItemCheckoutScreen(
       HedvigContainedButton(
         onClick = submitSelections,
         enabled = uiState.canRequestPayout,
-        text = stringResource(R.string.claims_payout_button_label, "· ${uiState.payoutAmount}"),
+        text = stringResource(R.string.claims_payout_button_label, uiState.payoutAmount.toString()),
         modifier = sideSpacingModifier,
       )
       Spacer(Modifier.height(16.dp))
@@ -182,7 +181,7 @@ private fun SingleItemCheckoutScreen(
     ) {
       PayoutScreen(
         uiState = uiState.payoutUiState,
-        exitFlow = exitFlow,
+        closePayoutScreen = closePayoutScreen,
         onDoneAfterPayout = onDoneAfterPayout,
         retryPayout = submitSelections,
         openChat = openChat,
@@ -224,8 +223,6 @@ private fun ColumnScope.CheckoutMethods(
       ) {
         Text(
           text = checkoutMethod.displayName,
-          overflow = TextOverflow.Ellipsis,
-          maxLines = 1,
           style = MaterialTheme.typography.headlineSmall,
           modifier = Modifier.weight(1f),
         )
@@ -244,12 +241,12 @@ private fun ColumnScope.CheckoutMethods(
 private fun PreviewSingleItemCheckoutScreen() {
   val checkoutNr1 = CheckoutMethod.Known.AutomaticAutogiro(
     "#1",
-    "Autogiro".repeat(10),
+    "Autogiro".repeat(4),
     UiMoney(2499.0, CurrencyCode.SEK),
   )
   val checkoutNr2 = CheckoutMethod.Known.AutomaticAutogiro(
     "#2",
-    "Handelsbanken".repeat(3),
+    "Bankenbanken",
     UiMoney(2499.0, CurrencyCode.SEK),
   )
   var selected: CheckoutMethod.Known by remember { mutableStateOf(checkoutNr1) }

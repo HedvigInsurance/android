@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.odyssey.data
+package com.hedvig.android.data.claimflow
 
 import arrow.core.Either
 import arrow.core.raise.Raise
@@ -9,10 +9,11 @@ import com.apollographql.apollo3.api.Optional
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.data.claimflow.model.AudioUrl
+import com.hedvig.android.data.claimflow.model.FlowId
+import com.hedvig.android.data.claimflow.retrofit.toErrorMessage
 import com.hedvig.android.data.claimtriaging.EntryPointId
-import com.hedvig.android.feature.odyssey.model.AudioUrl
-import com.hedvig.android.feature.odyssey.model.FlowId
-import com.hedvig.android.feature.odyssey.retrofit.toErrorMessage
+import com.hedvig.android.data.claimtriaging.EntryPointOptionId
 import kotlinx.datetime.LocalDate
 import octopus.FlowClaimAudioRecordingNextMutation
 import octopus.FlowClaimDateOfOccurrenceNextMutation
@@ -34,8 +35,11 @@ import slimber.log.d
 import slimber.log.e
 import java.io.File
 
-internal interface ClaimFlowRepository {
-  suspend fun startClaimFlow(entryPointId: EntryPointId?): Either<ErrorMessage, ClaimFlowStep>
+interface ClaimFlowRepository {
+  suspend fun startClaimFlow(
+    entryPointId: EntryPointId?,
+    entryPointOptionId: EntryPointOptionId?,
+  ): Either<ErrorMessage, ClaimFlowStep>
   suspend fun submitAudioRecording(flowId: FlowId, audioFile: File): Either<ErrorMessage, ClaimFlowStep>
 
   /**
@@ -78,10 +82,11 @@ internal class ClaimFlowRepositoryImpl(
 ) : ClaimFlowRepository {
   override suspend fun startClaimFlow(
     entryPointId: EntryPointId?,
+    entryPointOptionId: EntryPointOptionId?,
   ): Either<ErrorMessage, ClaimFlowStep> {
     return either {
       val result = apolloClient
-        .mutation(FlowClaimStartMutation(entryPointId?.id))
+        .mutation(FlowClaimStartMutation(entryPointId?.id, entryPointOptionId?.id))
         .safeExecute()
         .toEither(::ErrorMessage)
         .bind()

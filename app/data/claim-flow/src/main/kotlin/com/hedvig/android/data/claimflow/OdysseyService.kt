@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.odyssey.data
+package com.hedvig.android.data.claimflow
 
 import arrow.core.Either
 import arrow.retrofit.adapter.either.networkhandling.CallError

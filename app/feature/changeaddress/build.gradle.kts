@@ -17,6 +17,7 @@ dependencies {
   implementation(projects.app.core.designSystem)
   implementation(projects.app.core.resources)
   implementation(projects.app.core.ui)
+  implementation(projects.app.core.uiData)
   implementation(projects.app.navigation.core)
   implementation(projects.app.navigation.navigationComposeTyped)
 

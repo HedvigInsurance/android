@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.odyssey.retrofit
+package com.hedvig.android.data.claimflow.retrofit
 
 import arrow.retrofit.adapter.either.networkhandling.CallError
 import arrow.retrofit.adapter.either.networkhandling.HttpError

@@ -1,7 +1,5 @@
 package com.hedvig.android.navigation.core
 
-import com.hedvig.android.data.claimtriaging.EntryPointId
-import com.hedvig.android.data.claimtriaging.EntryPointOptionId
 import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.serialization.Serializable
 
@@ -32,17 +30,9 @@ sealed interface AppDestination : Destination {
   @Serializable
   object BusinessModel : AppDestination
 
-  // region claims
   @Serializable
-  object ClaimsTriaging : AppDestination
+  object ClaimsFlow : AppDestination
 
-  @Serializable
-  object LegacyClaimsTriaging : AppDestination
-
-  @Serializable
-  data class ClaimsFlow(
-    val entryPointId: EntryPointId?,
-    val entryPointOptionId: EntryPointOptionId?,
-  ) : AppDestination
-  //endregion
+//  @Serializable
+//  object LegacyClaimsTriaging : AppDestination
 }

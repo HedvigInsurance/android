@@ -7,13 +7,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.NonEmptyList
 import arrow.core.toNonEmptyListOrNull
-import com.hedvig.android.core.ui.UiNullableMoney
-import com.hedvig.android.feature.odyssey.data.ClaimFlowRepository
-import com.hedvig.android.feature.odyssey.data.ClaimFlowStep
-import com.hedvig.android.feature.odyssey.navigation.ClaimFlowDestination
-import com.hedvig.android.feature.odyssey.navigation.ItemBrand
-import com.hedvig.android.feature.odyssey.navigation.ItemModel
-import com.hedvig.android.feature.odyssey.navigation.ItemProblem
+import com.hedvig.android.core.uidata.UiNullableMoney
+import com.hedvig.android.data.claimflow.ClaimFlowDestination
+import com.hedvig.android.data.claimflow.ClaimFlowRepository
+import com.hedvig.android.data.claimflow.ClaimFlowStep
+import com.hedvig.android.data.claimflow.ItemBrand
+import com.hedvig.android.data.claimflow.ItemModel
+import com.hedvig.android.data.claimflow.ItemProblem
 import com.hedvig.android.feature.odyssey.ui.DatePickerUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -353,13 +353,11 @@ internal sealed interface ItemProblemsUiState {
     fun fromSingleItem(singleItem: ClaimFlowDestination.SingleItem): ItemProblemsUiState {
       val availableItemProblems: NonEmptyList<ItemProblem> =
         singleItem.availableItemProblems?.toNonEmptyListOrNull() ?: return NotApplicable
-      val selectedItemProblems: List<ItemProblem> = if (singleItem.selectedItemProblems == null) {
-        emptyList()
-      } else {
-        singleItem.selectedItemProblems.mapNotNull { selectedItemProblemId ->
+      val selectedItemProblems: List<ItemProblem> = singleItem.selectedItemProblems
+        .orEmpty()
+        .mapNotNull { selectedItemProblemId ->
           availableItemProblems.firstOrNull { it.itemProblemId == selectedItemProblemId }
         }
-      }
       return Content(
         availableItemProblems,
         selectedItemProblems,

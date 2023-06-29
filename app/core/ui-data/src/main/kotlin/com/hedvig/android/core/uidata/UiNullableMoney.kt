@@ -1,4 +1,4 @@
-package com.hedvig.android.core.ui
+package com.hedvig.android.core.uidata
 
 import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable

@@ -1,20 +1,18 @@
-package com.hedvig.android.feature.odyssey.navigation
+package com.hedvig.android.data.claimflow
 
 import android.content.res.Resources
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
-import com.hedvig.android.core.ui.UiMoney
-import com.hedvig.android.core.ui.UiNullableMoney
-import com.hedvig.android.feature.odyssey.model.AudioUrl
-import com.hedvig.android.feature.odyssey.model.FlowId
-import com.hedvig.android.feature.odyssey.navigation.ItemBrand.Unknown.displayName
-import com.hedvig.android.feature.odyssey.navigation.ItemModel.Unknown.displayName
+import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.core.uidata.UiNullableMoney
+import com.hedvig.android.data.claimflow.model.AudioUrl
+import com.hedvig.android.data.claimflow.model.FlowId
 import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import octopus.type.CurrencyCode
 
-internal sealed interface ClaimFlowDestination : Destination {
+sealed interface ClaimFlowDestination : Destination {
   @Serializable
   object HonestyPledge : ClaimFlowDestination
 
@@ -102,13 +100,13 @@ internal sealed interface ClaimFlowDestination : Destination {
 }
 
 @Serializable
-internal data class LocationOption(
+data class LocationOption(
   val value: String,
   val displayName: String,
 )
 
 @Serializable
-internal sealed interface ItemBrand {
+sealed interface ItemBrand {
   fun asKnown(): Known? = this as? Known
 
   fun displayName(resources: Resources): String {
@@ -133,7 +131,7 @@ internal sealed interface ItemBrand {
 }
 
 @Serializable
-internal sealed interface ItemModel {
+sealed interface ItemModel {
   fun asKnown(): Known? = this as? Known
 
   fun displayName(resources: Resources): String {
@@ -160,13 +158,13 @@ internal sealed interface ItemModel {
 }
 
 @Serializable
-internal data class ItemProblem(
+data class ItemProblem(
   val displayName: String,
   val itemProblemId: String,
 )
 
 @Serializable
-internal sealed interface CheckoutMethod {
+sealed interface CheckoutMethod {
 
   @Serializable
   sealed interface Known : CheckoutMethod {
@@ -187,7 +185,7 @@ internal sealed interface CheckoutMethod {
 
 @Immutable
 @Serializable
-internal data class AudioContent(
+data class AudioContent(
   /**
    * The url to be used to play back the audio file
    */

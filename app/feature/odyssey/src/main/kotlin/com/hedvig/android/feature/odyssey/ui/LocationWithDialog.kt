@@ -16,7 +16,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
-import com.hedvig.android.feature.odyssey.navigation.LocationOption
+import com.hedvig.android.data.claimflow.LocationOption
 import hedvig.resources.R
 
 @Composable

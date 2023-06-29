@@ -4,11 +4,11 @@ import android.media.MediaPlayer
 import android.media.MediaRecorder
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.feature.odyssey.data.ClaimFlowRepository
-import com.hedvig.android.feature.odyssey.data.ClaimFlowStep
-import com.hedvig.android.feature.odyssey.model.AudioUrl
-import com.hedvig.android.feature.odyssey.model.FlowId
-import com.hedvig.android.feature.odyssey.navigation.AudioContent
+import com.hedvig.android.data.claimflow.AudioContent
+import com.hedvig.android.data.claimflow.ClaimFlowRepository
+import com.hedvig.android.data.claimflow.ClaimFlowStep
+import com.hedvig.android.data.claimflow.model.AudioUrl
+import com.hedvig.android.data.claimflow.model.FlowId
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
