@@ -131,11 +131,7 @@ private fun AudioRecordingScreen(
       modifier = sideSpacingModifier,
     )
     Spacer(Modifier.height(16.dp))
-    Spacer(
-      Modifier.windowInsetsPadding(
-        WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom),
-      ),
-    )
+    Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
   }
 }
 

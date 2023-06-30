@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.ProvideTextStyle
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -74,16 +76,20 @@ fun HedvigBigCard(
         .padding(horizontal = 16.dp, vertical = 10.dp),
     ) {
       if (inputText == null) {
-        Text(
-          text = hintText,
-          style = MaterialTheme.typography.headlineSmall,
-        )
-      } else {
-        Column {
+        ProvideTextStyle(value = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)) {
           Text(
             text = hintText,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.headlineSmall,
           )
+        }
+      } else {
+        Column {
+          ProvideTextStyle(value = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)) {
+            Text(
+              text = hintText,
+              style = MaterialTheme.typography.bodyMedium,
+            )
+          }
           Text(
             text = inputText,
             style = MaterialTheme.typography.headlineSmall,

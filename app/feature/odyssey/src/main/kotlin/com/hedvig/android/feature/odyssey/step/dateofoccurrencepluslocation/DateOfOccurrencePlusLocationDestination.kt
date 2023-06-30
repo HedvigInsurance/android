@@ -89,9 +89,9 @@ private fun DateOfOccurrencePlusLocationScreen(
     )
     Spacer(Modifier.height(32.dp))
     Spacer(Modifier.weight(1f))
-    DateOfIncident(uiState.datePickerUiState, !uiState.isLoading, sideSpacingModifier.fillMaxWidth())
-    Spacer(Modifier.height(16.dp))
     Location(uiState, selectLocationOption, imageLoader, sideSpacingModifier.fillMaxWidth())
+    Spacer(Modifier.height(4.dp))
+    DateOfIncident(uiState.datePickerUiState, !uiState.isLoading, sideSpacingModifier.fillMaxWidth())
     Spacer(Modifier.height(16.dp))
     VectorInfoCard(
       text = stringResource(hedvig.resources.R.string.CLAIMS_DATE_NOT_SURE_NOTICE_LABEL),

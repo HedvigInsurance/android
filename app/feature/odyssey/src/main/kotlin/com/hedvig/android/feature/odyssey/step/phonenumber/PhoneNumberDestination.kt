@@ -83,7 +83,7 @@ private fun PhoneNumberScreen(
     )
     Spacer(Modifier.height(32.dp))
     Spacer(Modifier.weight(1f))
-    HedvigTextField(
+    HedvigTextField( // todo(claims) Use the new card dimensions + text styles.
       value = uiState.phoneNumber,
       onValueChange = updatePhoneNumber,
       label = {

@@ -214,7 +214,7 @@ private fun Playback(
 
     LargeContainedTextButton(
       onClick = submit,
-      text = stringResource(hedvig.resources.R.string.general_continue_button),
+      text = stringResource(hedvig.resources.R.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
       enabled = uiState.canSubmit,
       modifier = Modifier.padding(top = 16.dp),
     )

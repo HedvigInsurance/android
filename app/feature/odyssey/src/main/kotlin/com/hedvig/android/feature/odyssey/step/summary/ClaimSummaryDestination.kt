@@ -117,7 +117,7 @@ private fun ClaimSummaryScreen(
     HedvigContainedButton(
       onClick = submitSummary,
       enabled = uiState.canSubmit,
-      text = stringResource(R.string.CONFIRM_AND_PROCEED_BUTTON),
+      text = stringResource(R.string.EMBARK_SUBMIT_CLAIM),
       modifier = sideSpacingModifier,
     )
     Spacer(Modifier.height(16.dp))
