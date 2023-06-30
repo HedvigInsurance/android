@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.claimtriaging.claimentrypointoptions
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,6 +21,7 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedButt
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.error.ErrorDialog
+import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimtriaging.EntryPointOption
@@ -66,33 +68,38 @@ private fun ClaimEntryPointOptionsScreen(
     )
   }
   HedvigTheme(useNewColorScheme = true) {
-    HedvigScaffold(
-      navigateUp = navigateUp,
-      modifier = Modifier.fillMaxSize(),
-    ) {
-      Spacer(Modifier.height(16.dp))
-      Text(
-        text = stringResource(hedvig.resources.R.string.CLAIMS_TRIAGING_WHAT_ITEM_TITLE),
-        style = MaterialTheme.typography.headlineMedium,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-      )
-      Spacer(Modifier.height(32.dp))
-      Spacer(Modifier.weight(1f))
-      OptionChipsFlowRow(
-        items = uiState.entryPointOptions,
-        itemDisplayName = EntryPointOption::displayName,
-        selectedItem = uiState.selectedEntryPointOption,
-        onItemClick = { entryPointOption -> onSelectEntryPointOption(entryPointOption) },
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
-      Spacer(Modifier.height(8.dp))
-      HedvigContainedButton(
-        text = stringResource(hedvig.resources.R.string.claims_continue_button),
-        onClick = onContinue,
-        enabled = uiState.canContinue,
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
-      Spacer(modifier = Modifier.height(16.dp))
+    Box(Modifier.fillMaxWidth(), propagateMinConstraints = true) {
+      HedvigScaffold(
+        navigateUp = navigateUp,
+        modifier = Modifier.fillMaxSize(),
+      ) {
+        Spacer(Modifier.height(16.dp))
+        Text(
+          text = stringResource(R.string.CLAIMS_TRIAGING_WHAT_ITEM_TITLE),
+          style = MaterialTheme.typography.headlineMedium,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        )
+        Spacer(Modifier.height(32.dp))
+        Spacer(Modifier.weight(1f))
+        OptionChipsFlowRow(
+          items = uiState.entryPointOptions,
+          itemDisplayName = EntryPointOption::displayName,
+          selectedItem = uiState.selectedEntryPointOption,
+          onItemClick = { entryPointOption -> onSelectEntryPointOption(entryPointOption) },
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+        Spacer(Modifier.height(8.dp))
+        HedvigContainedButton(
+          text = stringResource(R.string.claims_continue_button),
+          onClick = onContinue,
+          enabled = uiState.canContinue,
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+      }
+      HedvigFullScreenCenterAlignedProgress(show = uiState.isLoading)
     }
   }
 }
