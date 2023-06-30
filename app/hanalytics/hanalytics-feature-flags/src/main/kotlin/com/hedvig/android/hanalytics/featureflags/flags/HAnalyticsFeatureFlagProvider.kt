@@ -26,7 +26,7 @@ internal class HAnalyticsFeatureFlagProvider(
       useOdyssey
     }
     Feature.NEW_MOVING_FLOW -> false
-    Feature.CLAIMS_TRIAGING -> false
+    Feature.CLAIMS_TRIAGING -> hAnalytics.claimsTriaging()
     Feature.TRAVEL_CERTIFICATE -> hAnalytics.travelInsurance()
   }
 }
