@@ -17,7 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import com.hedvig.android.core.designsystem.component.card.HedvigCardButton
+import com.hedvig.android.core.designsystem.component.card.HedvigBigCard
 import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -83,7 +83,7 @@ internal fun DatePickerWithDialog(
         .format(DateTimeFormatter.ofPattern("dd MMM yyyy", locale))
     }
   }
-  HedvigCardButton(
+  HedvigBigCard(
     onClick = { showDatePicker = true },
     hintText = startText,
     inputText = selectedDateText,

@@ -13,10 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -35,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -43,9 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
 import coil.ImageLoader
-import com.hedvig.android.core.designsystem.component.button.FormRowCard
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.card.HedvigCardButton
+import com.hedvig.android.core.designsystem.component.card.HedvigBigCard
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.clearFocusOnTap
@@ -210,7 +206,7 @@ private fun Models(
     }
   }
 
-  HedvigCardButton(
+  HedvigBigCard(
     onClick = { showDialog = true },
     hintText = stringResource(hedvig.resources.R.string.claims_item_screen_model_button),
     inputText = uiState?.selectedItemModel?.displayName(resources),
@@ -244,7 +240,7 @@ private fun Brands(
     }
   }
 
-  HedvigCardButton(
+  HedvigBigCard(
     onClick = { showDialog = true },
     hintText = stringResource(hedvig.resources.R.string.SINGLE_ITEM_INFO_BRAND),
     inputText = uiState.selectedItemBrand?.displayName(resources),
@@ -275,21 +271,11 @@ private fun PriceOfPurchase(
   modifier: Modifier = Modifier,
 ) {
   val focusRequester = remember { FocusRequester() }
-  val keyboardController = LocalSoftwareKeyboardController.current
-  FormRowCard(
-    modifier = modifier,
-    enabled = canInteract,
-    onClick = {
-      focusRequester.requestFocus()
-      keyboardController?.show()
-    },
-  ) {
-    Text(stringResource(hedvig.resources.R.string.claims_item_screen_purchase_price_button))
-    Spacer(Modifier.weight(1f))
-    Spacer(Modifier.width(8.dp))
-    CompositionLocalProvider(LocalContentColor provides LocalContentColor.current.copy(alpha = ContentAlpha.medium)) {
+  HedvigBigCard(modifier = modifier) {
+    CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.headlineSmall) {
       MonetaryAmountInput(
         value = uiState.uiMoney.amount?.toString() ?: "",
+        hintText = stringResource(hedvig.resources.R.string.claims_payout_purchase_price),
         canInteract = canInteract,
         onInput = { uiState.updateAmount(it) },
         currency = uiState.uiMoney.currencyCode.rawValue,
@@ -324,7 +310,7 @@ private fun ItemProblems(
     }
   }
 
-  HedvigCardButton(
+  HedvigBigCard(
     onClick = { showDialog = true },
     hintText = stringResource(hedvig.resources.R.string.claims_item_screen_type_of_damage_button),
     inputText = when {
@@ -340,14 +326,15 @@ private fun ItemProblems(
 @HedvigPreview
 @Composable
 private fun PreviewSingleItemScreen(
-  @PreviewParameter(IsLoadingPreviewProvider::class) isLoading: Boolean,
+  @PreviewParameter(SingleItemScreenStatePreviewProvider::class) state: Pair<Boolean, Boolean>,
 ) {
+  val (isLoading: Boolean, hasPriceInput: Boolean) = state
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       SingleItemScreen(
         SingleItemUiState(
           datePickerUiState = remember { DatePickerUiState(null) },
-          purchasePriceUiState = PurchasePriceUiState(299.90, CurrencyCode.SEK),
+          purchasePriceUiState = PurchasePriceUiState(if (hasPriceInput) 299.90 else null, CurrencyCode.SEK),
           itemBrandsUiState = ItemBrandsUiState.Content(
             nonEmptyListOf(ItemBrand.Known("Item Brand", "", "")),
             ItemBrand.Known("Item Brand #1", "", ""),
@@ -372,4 +359,10 @@ private fun PreviewSingleItemScreen(
   }
 }
 
-private class IsLoadingPreviewProvider : CollectionPreviewParameterProvider<Boolean>(listOf(false, true))
+private class SingleItemScreenStatePreviewProvider : CollectionPreviewParameterProvider<Pair<Boolean, Boolean>>(
+  listOf(
+    false to true,
+    true to false,
+    true to true,
+  ),
+)

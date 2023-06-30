@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import coil.ImageLoader
-import com.hedvig.android.core.designsystem.component.card.HedvigCardButton
+import com.hedvig.android.core.designsystem.component.card.HedvigBigCard
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
@@ -42,7 +42,7 @@ internal fun LocationWithDialog(
     )
   }
 
-  HedvigCardButton(
+  HedvigBigCard(
     onClick = { showLocationPickerDialog = true },
     hintText = stringResource(R.string.claims_location_screen_title),
     inputText = selectedLocation?.displayName,
