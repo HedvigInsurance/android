@@ -82,9 +82,7 @@ private fun ClaimGroupsScreen(
   }
   HedvigTheme(useNewColorScheme = true) {
     Box(modifier = Modifier.fillMaxSize(), propagateMinConstraints = true) {
-      HedvigScaffold(
-        navigateUp = navigateUp,
-      ) {
+      HedvigScaffold(navigateUp = navigateUp) {
         Spacer(Modifier.height(16.dp))
         Text(
           text = stringResource(hedvig.resources.R.string.CLAIM_TRIAGING_NAVIGATION_TITLE),
