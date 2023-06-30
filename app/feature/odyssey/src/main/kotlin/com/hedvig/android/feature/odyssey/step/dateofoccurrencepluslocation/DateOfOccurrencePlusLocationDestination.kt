@@ -20,13 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.ImageLoader
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.LocationOption
@@ -40,7 +38,6 @@ import hedvig.resources.R
 internal fun DateOfOccurrencePlusLocationDestination(
   viewModel: DateOfOccurrencePlusLocationViewModel,
   windowSizeClass: WindowSizeClass,
-  imageLoader: ImageLoader,
   navigateToNextStep: (ClaimFlowStep) -> Unit,
   navigateBack: () -> Unit,
 ) {
@@ -54,7 +51,6 @@ internal fun DateOfOccurrencePlusLocationDestination(
   DateOfOccurrencePlusLocationScreen(
     uiState = uiState,
     windowSizeClass = windowSizeClass,
-    imageLoader = imageLoader,
     selectLocationOption = viewModel::selectLocationOption,
     submitDateOfOccurrenceAndLocation = viewModel::submitDateOfOccurrenceAndLocation,
     showedError = viewModel::showedError,
@@ -66,7 +62,6 @@ internal fun DateOfOccurrencePlusLocationDestination(
 private fun DateOfOccurrencePlusLocationScreen(
   uiState: DateOfOccurrencePlusLocationUiState,
   windowSizeClass: WindowSizeClass,
-  imageLoader: ImageLoader,
   selectLocationOption: (LocationOption) -> Unit,
   submitDateOfOccurrenceAndLocation: () -> Unit,
   showedError: () -> Unit,
@@ -89,7 +84,7 @@ private fun DateOfOccurrencePlusLocationScreen(
     )
     Spacer(Modifier.height(32.dp))
     Spacer(Modifier.weight(1f))
-    Location(uiState, selectLocationOption, imageLoader, sideSpacingModifier.fillMaxWidth())
+    Location(uiState, selectLocationOption, sideSpacingModifier.fillMaxWidth())
     Spacer(Modifier.height(4.dp))
     DateOfIncident(uiState.datePickerUiState, !uiState.isLoading, sideSpacingModifier.fillMaxWidth())
     Spacer(Modifier.height(16.dp))
@@ -127,7 +122,6 @@ private fun DateOfIncident(
 private fun Location(
   uiState: DateOfOccurrencePlusLocationUiState,
   selectLocationOption: (LocationOption) -> Unit,
-  imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
 ) {
   LocationWithDialog(
@@ -135,7 +129,6 @@ private fun Location(
     selectedLocation = uiState.selectedLocation,
     selectLocationOption = selectLocationOption,
     enabled = !uiState.isLoading,
-    imageLoader = imageLoader,
     modifier = modifier,
   )
 }
@@ -152,7 +145,6 @@ private fun PreviewDateOfOccurrencePlusLocationScreen() {
           selectedLocation = null,
         ),
         windowSizeClass = WindowSizeClass.calculateForPreview(),
-        imageLoader = rememberPreviewImageLoader(),
         selectLocationOption = {},
         submitDateOfOccurrenceAndLocation = {},
         showedError = {},

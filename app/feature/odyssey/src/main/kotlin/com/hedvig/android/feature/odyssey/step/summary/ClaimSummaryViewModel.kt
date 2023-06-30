@@ -121,7 +121,6 @@ internal data class ClaimSummaryStatusUiState(
 }
 
 internal data class ClaimSummaryInfoUiState(
-  val imageUrl: String?,
   val claimTypeTitle: String?, // e.g "Broken Phone"
   val dateOfIncident: LocalDate?,
   val locationOption: LocationOption?,
@@ -216,10 +215,6 @@ internal data class ClaimSummaryInfoUiState(
       summary: ClaimFlowDestination.Summary,
     ): ClaimSummaryInfoUiState {
       return ClaimSummaryInfoUiState(
-        imageUrl = summary.availableItemModels
-          ?.firstOrNull { it.asKnown()?.itemModelId == summary.selectedItemModel }
-          ?.asKnown()
-          ?.imageUrl,
         claimTypeTitle = summary.claimTypeTitle,
         dateOfIncident = summary.dateOfOccurrence,
         locationOption = summary.locationOptions.firstOrNull { it.value == summary.selectedLocation },

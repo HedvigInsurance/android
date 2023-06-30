@@ -19,12 +19,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.ImageLoader
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.LocationOption
@@ -36,7 +34,6 @@ import hedvig.resources.R
 internal fun LocationDestination(
   viewModel: LocationViewModel,
   windowSizeClass: WindowSizeClass,
-  imageLoader: ImageLoader,
   navigateToNextStep: (ClaimFlowStep) -> Unit,
   navigateUp: () -> Unit,
 ) {
@@ -50,7 +47,6 @@ internal fun LocationDestination(
   LocationScreen(
     uiState = uiState,
     windowSizeClass = windowSizeClass,
-    imageLoader = imageLoader,
     selectLocation = viewModel::selectLocationOption,
     submitLocation = viewModel::submitLocation,
     showedError = viewModel::showedError,
@@ -62,7 +58,6 @@ internal fun LocationDestination(
 private fun LocationScreen(
   uiState: LocationUiState,
   windowSizeClass: WindowSizeClass,
-  imageLoader: ImageLoader,
   selectLocation: (LocationOption) -> Unit,
   submitLocation: () -> Unit,
   showedError: () -> Unit,
@@ -90,7 +85,6 @@ private fun LocationScreen(
       selectedLocation = uiState.selectedLocation,
       selectLocationOption = selectLocation,
       enabled = !uiState.isLoading,
-      imageLoader = imageLoader,
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
@@ -118,7 +112,6 @@ private fun PreviewLocationScreen() {
           selectedLocation = LocationOption("#1", "Location #1"),
         ),
         windowSizeClass = WindowSizeClass.calculateForPreview(),
-        imageLoader = rememberPreviewImageLoader(),
         selectLocation = {},
         submitLocation = {},
         showedError = {},

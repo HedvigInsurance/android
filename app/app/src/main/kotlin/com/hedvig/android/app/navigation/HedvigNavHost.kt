@@ -123,7 +123,6 @@ internal fun HedvigNavHost(
           hedvigAppState = hedvigAppState,
           context = context,
           navigator = navigator,
-          imageLoader = imageLoader,
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           activityNavigator = activityNavigator,
         )
@@ -228,7 +227,6 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   hedvigAppState: HedvigAppState,
   context: Context,
   navigator: Navigator,
-  imageLoader: ImageLoader,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   activityNavigator: ActivityNavigator,
 ) {
@@ -245,7 +243,6 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   claimFlowGraph(
     windowSizeClass = hedvigAppState.windowSizeClass,
     navigator = navigator,
-    imageLoader = imageLoader,
     shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
     navigateToTriaging = { backStackEntry ->
       if (backStackEntry != null) {

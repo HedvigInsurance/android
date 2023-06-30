@@ -134,7 +134,6 @@ private fun PreviewClaimSummaryScreen() {
       ClaimSummaryScreen(
         ClaimSummaryUiState(
           claimSummaryInfoUiState = ClaimSummaryInfoUiState(
-            imageUrl = "https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-14-pro.jpg",
             claimTypeTitle = "Broken Phone",
             dateOfIncident = LocalDate.parse("2023-03-24"),
             locationOption = LocationOption(
@@ -144,7 +143,6 @@ private fun PreviewClaimSummaryScreen() {
             itemType = ClaimSummaryInfoUiState.ItemType.Model(
               itemModel = ItemModel.Known(
                 displayName = "Apple iPhone 14 Pro Super Omega New Model",
-                imageUrl = "https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-14-pro.jpg",
                 itemTypeId = "PHONE",
                 itemBrandId = "APPLE_IPHONE",
                 itemModelId = "",

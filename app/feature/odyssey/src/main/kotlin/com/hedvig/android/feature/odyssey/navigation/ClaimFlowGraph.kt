@@ -4,7 +4,6 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navOptions
-import coil.ImageLoader
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.toClaimFlowDestination
@@ -41,7 +40,6 @@ import org.koin.core.parameter.parametersOf
 fun NavGraphBuilder.claimFlowGraph(
   windowSizeClass: WindowSizeClass,
   navigator: Navigator,
-  imageLoader: ImageLoader,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   navigateToTriaging: (NavBackStackEntry?) -> Unit,
   openAppSettings: () -> Unit,
@@ -112,7 +110,6 @@ fun NavGraphBuilder.claimFlowGraph(
       DateOfOccurrencePlusLocationDestination(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
-        imageLoader = imageLoader,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
           navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
@@ -125,7 +122,6 @@ fun NavGraphBuilder.claimFlowGraph(
       LocationDestination(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
-        imageLoader = imageLoader,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
           navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
@@ -149,10 +145,8 @@ fun NavGraphBuilder.claimFlowGraph(
       val singleItem: ClaimFlowDestination.SingleItem = this
       val viewModel: SingleItemViewModel = koinViewModel { parametersOf(singleItem) }
       SingleItemDestination(
-        // todo PriceOfPurchase input text field
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
-        imageLoader = imageLoader,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
           navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())

@@ -144,7 +144,6 @@ sealed interface ItemModel {
   @Serializable
   data class Known(
     val displayName: String,
-    val imageUrl: String?,
     val itemTypeId: String,
     val itemBrandId: String,
     val itemModelId: String,

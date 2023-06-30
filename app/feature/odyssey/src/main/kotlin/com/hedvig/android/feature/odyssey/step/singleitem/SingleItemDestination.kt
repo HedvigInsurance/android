@@ -39,7 +39,6 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
-import coil.ImageLoader
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigBigCard
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -47,7 +46,6 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.ItemBrand
@@ -65,7 +63,6 @@ import octopus.type.CurrencyCode
 internal fun SingleItemDestination(
   viewModel: SingleItemViewModel,
   windowSizeClass: WindowSizeClass,
-  imageLoader: ImageLoader,
   navigateToNextStep: (ClaimFlowStep) -> Unit,
   navigateUp: () -> Unit,
 ) {
@@ -79,7 +76,6 @@ internal fun SingleItemDestination(
   SingleItemScreen(
     uiState = uiState,
     windowSizeClass = windowSizeClass,
-    imageLoader = imageLoader,
     submitSelections = viewModel::submitSelections,
     selectBrand = viewModel::selectBrand,
     selectModel = viewModel::selectModel,
@@ -93,7 +89,6 @@ internal fun SingleItemDestination(
 private fun SingleItemScreen(
   uiState: SingleItemUiState,
   windowSizeClass: WindowSizeClass,
-  imageLoader: ImageLoader,
   submitSelections: () -> Unit,
   selectBrand: (ItemBrand) -> Unit,
   selectModel: (ItemModel) -> Unit,
@@ -123,7 +118,7 @@ private fun SingleItemScreen(
 
     uiState.itemBrandsUiState.asContent()?.let { itemBrandsUiState ->
       Spacer(Modifier.height(2.dp))
-      Brands(itemBrandsUiState, uiState.canSubmit, selectBrand, imageLoader, sideSpacingModifier.fillMaxWidth())
+      Brands(itemBrandsUiState, uiState.canSubmit, selectBrand, sideSpacingModifier.fillMaxWidth())
       Spacer(Modifier.height(2.dp))
     }
     val itemModelsUiStateContent = uiState.itemModelsUiState.asContent()
@@ -138,7 +133,6 @@ private fun SingleItemScreen(
           uiState = itemModelsUiStateContent,
           enabled = uiState.canSubmit,
           selectModel = selectModel,
-          imageLoader = imageLoader,
           modifier = sideSpacingModifier.fillMaxWidth(),
         )
         Spacer(Modifier.height(2.dp))
@@ -159,7 +153,6 @@ private fun SingleItemScreen(
         uiState = itemProblemsUiState,
         enabled = uiState.canSubmit,
         selectProblem = selectProblem,
-        imageLoader = imageLoader,
         modifier = sideSpacingModifier.fillMaxWidth(),
       )
       Spacer(Modifier.height(2.dp))
@@ -186,7 +179,6 @@ private fun Models(
   uiState: ItemModelsUiState.Content?,
   enabled: Boolean,
   selectModel: (ItemModel) -> Unit,
-  imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
 ) {
   LocalConfiguration.current
@@ -198,9 +190,7 @@ private fun Models(
       optionsList = uiState.availableItemModels,
       onSelected = selectModel,
       getDisplayText = { it.displayName(resources) },
-      getImageUrl = { it.asKnown()?.imageUrl },
       getId = { it.asKnown()?.itemModelId ?: "id" },
-      imageLoader = imageLoader,
     ) {
       showDialog = false
     }
@@ -220,7 +210,6 @@ private fun Brands(
   uiState: ItemBrandsUiState.Content,
   enabled: Boolean,
   selectBrand: (ItemBrand) -> Unit,
-  imageLoader: ImageLoader,
   modifier: Modifier,
 ) {
   LocalConfiguration.current
@@ -232,9 +221,7 @@ private fun Brands(
       optionsList = uiState.availableItemBrands,
       onSelected = selectBrand,
       getDisplayText = { it.displayName(resources) },
-      getImageUrl = { null },
       getId = { it.asKnown()?.itemBrandId ?: "id" },
-      imageLoader = imageLoader,
     ) {
       showDialog = false
     }
@@ -291,7 +278,6 @@ private fun ItemProblems(
   uiState: ItemProblemsUiState.Content,
   enabled: Boolean,
   selectProblem: (ItemProblem) -> Unit,
-  imageLoader: ImageLoader,
   modifier: Modifier,
 ) {
   var showDialog: Boolean by rememberSaveable { mutableStateOf(false) }
@@ -302,9 +288,7 @@ private fun ItemProblems(
       onSelected = selectProblem,
       getDisplayText = { it.displayName },
       getIsSelected = { uiState.selectedItemProblems.contains(it) },
-      getImageUrl = { null },
       getId = { it.itemProblemId },
-      imageLoader = imageLoader,
     ) {
       showDialog = false
     }
@@ -340,8 +324,8 @@ private fun PreviewSingleItemScreen(
             ItemBrand.Known("Item Brand #1", "", ""),
           ),
           itemModelsUiState = ItemModelsUiState.Content(
-            nonEmptyListOf(ItemModel.Known("Item Model", null, "", "", "")),
-            ItemModel.Known("Item Model #2", null, "", "", ""),
+            nonEmptyListOf(ItemModel.Known("Item Model", "", "", "")),
+            ItemModel.Known("Item Model #2", "", "", ""),
           ),
           itemProblemsUiState = ItemProblemsUiState.Content(
             nonEmptyListOf(ItemProblem("Item Problem", "")),
@@ -352,8 +336,12 @@ private fun PreviewSingleItemScreen(
           nextStep = null,
         ),
         WindowSizeClass.calculateForPreview(),
-        rememberPreviewImageLoader(),
-        {}, {}, {}, {}, {}, {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
       )
     }
   }
