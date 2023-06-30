@@ -1,5 +1,0 @@
-query EntrypointSearch($groupId: ID) {
-  entrypointSearch(input: { type: CLAIM, limit: 20, entrypointGroupId: $groupId }) {
-    ...EntryPoint
-  }
-}

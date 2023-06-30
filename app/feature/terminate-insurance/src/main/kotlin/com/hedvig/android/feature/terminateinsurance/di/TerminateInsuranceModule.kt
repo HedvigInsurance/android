@@ -1,9 +1,12 @@
 package com.hedvig.android.feature.terminateinsurance.di
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
+import com.hedvig.android.feature.terminateinsurance.data.TerminationFlowContextStorage
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
 import com.hedvig.android.feature.terminateinsurance.step.deletion.InsuranceDeletionViewModel
 import com.hedvig.android.feature.terminateinsurance.step.start.TerminationStartStepViewModel
@@ -23,5 +26,6 @@ val terminateInsuranceModule = module {
   viewModel<InsuranceDeletionViewModel> { (insuranceDeletion: TerminateInsuranceDestination.InsuranceDeletion) ->
     InsuranceDeletionViewModel(insuranceDeletion, get<TerminateInsuranceRepository>())
   }
-  single<TerminateInsuranceRepository> { TerminateInsuranceRepository(get<ApolloClient>(octopusClient)) }
+  single<TerminateInsuranceRepository> { TerminateInsuranceRepository(get<ApolloClient>(octopusClient), get()) }
+  single<TerminationFlowContextStorage> { TerminationFlowContextStorage(get<DataStore<Preferences>>()) }
 }

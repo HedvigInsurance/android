@@ -7,7 +7,6 @@ dependencies {
   implementation(projects.app.auth.authCore)
   implementation(projects.app.navigation.navigationActivity)
 
-  implementation(libs.androidx.other.appCompat)
   implementation(libs.koin.android)
   implementation(libs.slimber)
 }

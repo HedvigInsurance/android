@@ -7,8 +7,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Density
 import androidx.core.content.FileProvider.getUriForFile
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.travelcertificate.GenerateTravelCertificateViewModel
 import com.hedvig.android.feature.travelcertificate.TravelCertificateInputState
@@ -26,7 +26,7 @@ import com.kiwi.navigationcompose.typed.popBackStack
 
 fun NavGraphBuilder.generateTravelCertificateGraph(
   density: Density,
-  navController: NavHostController,
+  navController: NavController,
   applicationId: String,
   finish: () -> Unit = {
     navController.popBackStack<AppDestination.GenerateTravelCertificate>(true)

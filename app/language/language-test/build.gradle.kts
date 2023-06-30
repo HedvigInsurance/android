@@ -5,8 +5,6 @@ plugins {
 
 dependencies {
   implementation(projects.app.language.languageCore)
-
-  implementation(libs.turbine)
 }
 
 android {

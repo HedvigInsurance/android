@@ -14,7 +14,6 @@ import com.hedvig.android.core.designsystem.newtheme.amber_400
 import com.hedvig.android.core.designsystem.newtheme.amber_600
 import com.hedvig.android.core.designsystem.newtheme.amber_800
 import com.hedvig.android.core.designsystem.newtheme.blue_100
-import com.hedvig.android.core.designsystem.newtheme.blue_200
 import com.hedvig.android.core.designsystem.newtheme.blue_400
 import com.hedvig.android.core.designsystem.newtheme.blue_600
 import com.hedvig.android.core.designsystem.newtheme.blue_800
@@ -71,7 +70,7 @@ internal fun darkHedvigColorScheme(
 
   infoElement = blue_400, // blue_600,
   onInfoElement = greyscale_0, // greyscale_1000,
-  infoContainer = blue_800, // blue_200,
+  infoContainer = blue_800, // blue_100,
   onInfoContainer = blue_100, // blue_900,
 )
 
@@ -93,7 +92,7 @@ internal fun lightHedvigColorScheme(
 
   infoElement = blue_600,
   onInfoElement = greyscale_1000,
-  infoContainer = blue_200,
+  infoContainer = blue_100,
   onInfoContainer = blue_900,
 )
 
@@ -230,4 +229,4 @@ internal fun HedvigColorSchemeKeyTokens.toColor(): Color {
 /**
  * A low level of alpha used to represent disabled components, such as text in a disabled Button.
  */
-internal const val DisabledAlpha = 0.38f
+const val DisabledAlpha = 0.38f

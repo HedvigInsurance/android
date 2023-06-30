@@ -19,5 +19,4 @@ dependencies {
   implementation(libs.koin.compose)
   implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
-  implementation(libs.kotlinx.serialization.json)
 }

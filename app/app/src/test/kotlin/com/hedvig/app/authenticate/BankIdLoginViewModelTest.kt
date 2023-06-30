@@ -54,7 +54,9 @@ class BankIdLoginViewModelTest {
     authRepository.authAttemptResponse.add(AuthAttemptResult.Error("test error"))
     assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Loading)
     runCurrent()
-    assertThat(viewModel.viewState.value).isEqualTo(BankIdLoginViewState.Error("Got Error when signing in with BankId: test error"))
+    assertThat(viewModel.viewState.value).isEqualTo(
+      BankIdLoginViewState.Error("Got Error when signing in with BankId: test error"),
+    )
   }
 
   @Test

@@ -1,5 +1,6 @@
 package com.hedvig.android.app.navigation
 
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -7,23 +8,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
-import androidx.navigation.navOptions
 import coil.ImageLoader
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.hedvig.android.app.ui.HedvigAppState
 import com.hedvig.android.core.common.android.ThemedIconUrls
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
+import com.hedvig.android.data.claimflow.ClaimFlowStep
+import com.hedvig.android.data.claimflow.toClaimFlowDestination
 import com.hedvig.android.feature.changeaddress.navigation.changeAddressGraph
-import com.hedvig.android.feature.claimtriaging.claimTriagingGraph
+import com.hedvig.android.feature.claimtriaging.ClaimTriagingDestination
+import com.hedvig.android.feature.claimtriaging.claimTriagingDestinations
 import com.hedvig.android.feature.home.claims.pledge.HonestyPledgeBottomSheet
 import com.hedvig.android.feature.home.home.navigation.homeGraph
 import com.hedvig.android.feature.home.legacychangeaddress.LegacyChangeAddressActivity
-import com.hedvig.android.feature.legacyclaimtriaging.legacyClaimTriagingGraph
 import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
+import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
+import com.hedvig.android.feature.odyssey.navigation.terminalClaimFlowStepDestinations
 import com.hedvig.android.feature.travelcertificate.navigation.generateTravelCertificateGraph
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
@@ -50,8 +56,6 @@ import com.hedvig.hanalytics.HAnalytics
 import com.kiwi.navigationcompose.typed.Destination
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
-import com.kiwi.navigationcompose.typed.popBackStack
-import com.kiwi.navigationcompose.typed.popUpTo
 import kotlinx.coroutines.launch
 
 @Composable
@@ -81,12 +85,24 @@ internal fun HedvigNavHost(
         navigatorExtras: androidx.navigation.Navigator.Extras?,
       ) {
         if (lifecycle.currentState == Lifecycle.State.RESUMED) {
-          hedvigAppState.navController.navigate(destination, navOptions, navigatorExtras)
+          navigateUnsafe(destination, navOptions, navigatorExtras)
         }
+      }
+
+      override fun navigateUnsafe(
+        destination: Destination,
+        navOptions: NavOptions?,
+        navigatorExtras: androidx.navigation.Navigator.Extras?,
+      ) {
+        hedvigAppState.navController.navigate(destination, navOptions, navigatorExtras)
       }
 
       override fun navigateUp() {
         hedvigAppState.navController.navigateUp()
+      }
+
+      override fun popBackStack() {
+        hedvigAppState.navController.popBackStack()
       }
     }
   }
@@ -101,83 +117,28 @@ internal fun HedvigNavHost(
     popExitTransition = { MotionDefaults.sharedXAxisPopExit(density) },
   ) {
     homeGraph(
-      navController = hedvigAppState.navController,
-      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       nestedGraphs = {
-        changeAddressGraph(
-          windowSizeClass = hedvigAppState.windowSizeClass,
+        nestedHomeGraphs(
           density = density,
-          navController = hedvigAppState.navController,
-          openChat = context::startChat,
-        )
-        generateTravelCertificateGraph(
-          density = density,
-          navController = hedvigAppState.navController,
-          applicationId = BuildConfig.APPLICATION_ID,
-        )
-        claimTriagingGraph(
-          navigator = navigator,
-          startClaimFlow = { backStackEntry, entryPointId, entryPointOptionId ->
-            with(navigator) {
-              backStackEntry.navigate(
-                destination = AppDestination.ClaimsFlow(entryPointId, entryPointOptionId),
-                navOptions = navOptions {
-                  popUpTo<AppDestination.LegacyClaimsTriaging> {
-                    inclusive = true
-                  }
-                },
-              )
-            }
-          },
-        )
-        legacyClaimTriagingGraph(
-          startClaimFlow = { backStackEntry, entryPointId ->
-            with(navigator) {
-              backStackEntry.navigate(
-                destination = AppDestination.ClaimsFlow(entryPointId, null),
-                navOptions = navOptions {
-                  popUpTo<AppDestination.LegacyClaimsTriaging> {
-                    inclusive = true
-                  }
-                },
-              )
-            }
-          },
-          navigateUp = navigator::navigateUp,
-        )
-        claimFlowGraph(
-          windowSizeClass = hedvigAppState.windowSizeClass,
-          navController = hedvigAppState.navController,
+          hedvigAppState = hedvigAppState,
+          context = context,
           navigator = navigator,
           imageLoader = imageLoader,
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-          openAppSettings = {
-            activityNavigator.openAppSettings(context)
-          },
-          openPlayStore = {
-            activityNavigator.tryOpenPlayStore(context)
-          },
-          openChat = {
-            hedvigAppState.navController.popBackStack<AppDestination.ClaimsFlow>(inclusive = true)
-            activityNavigator.navigateToChat(context)
-          },
-          finishClaimFlow = {
-            hedvigAppState.navController.popBackStack<AppDestination.ClaimsFlow>(inclusive = true)
-          },
+          activityNavigator = activityNavigator,
         )
       },
+      navController = hedvigAppState.navController,
+      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       onStartChat = { context.startChat() },
       onStartClaim = { backStackEntry ->
         coroutineScope.launch {
           hAnalytics.beginClaim(AppScreen.HOME)
-          if (featureManager.isFeatureEnabled(Feature.USE_NATIVE_CLAIMS_FLOW)) {
-            with(navigator) {
-              if (featureManager.isFeatureEnabled(Feature.CLAIMS_TRIAGING)) {
-                backStackEntry.navigate(AppDestination.ClaimsTriaging)
-              } else {
-                backStackEntry.navigate(AppDestination.LegacyClaimsTriaging)
-              }
-            }
+          val useNonEmbarkClaimsFlow = featureManager.isFeatureEnabled(Feature.USE_NATIVE_CLAIMS_FLOW)
+          val useNewClaimTriaging = featureManager.isFeatureEnabled(Feature.CLAIMS_TRIAGING)
+          // Legacy triage was killed, so if we turn off new triage, we turn off the entire odyssey claim flow
+          if (useNonEmbarkClaimsFlow && useNewClaimTriaging) {
+            with(navigator) { backStackEntry.navigate(AppDestination.ClaimsFlow) }
           } else {
             HonestyPledgeBottomSheet
               .newInstance(
@@ -255,8 +216,66 @@ internal fun HedvigNavHost(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     )
     profileGraph(
-      navController = hedvigAppState.navController,
+      navigator = navigator,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+      windowSizeClass = hedvigAppState.windowSizeClass,
     )
   }
+}
+
+private fun NavGraphBuilder.nestedHomeGraphs(
+  density: Density,
+  hedvigAppState: HedvigAppState,
+  context: Context,
+  navigator: Navigator,
+  imageLoader: ImageLoader,
+  shouldShowRequestPermissionRationale: (String) -> Boolean,
+  activityNavigator: ActivityNavigator,
+) {
+  changeAddressGraph(
+    density = density,
+    navController = hedvigAppState.navController,
+    openChat = context::startChat,
+  )
+  generateTravelCertificateGraph(
+    density = density,
+    navController = hedvigAppState.navController,
+    applicationId = BuildConfig.APPLICATION_ID,
+  )
+  claimFlowGraph(
+    windowSizeClass = hedvigAppState.windowSizeClass,
+    navigator = navigator,
+    imageLoader = imageLoader,
+    shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+    navigateToTriaging = { backStackEntry ->
+      if (backStackEntry != null) {
+        with(navigator) { backStackEntry.navigate(ClaimTriagingDestination.ClaimGroups) }
+      } else {
+        navigator.navigateUnsafe(ClaimTriagingDestination.ClaimGroups)
+      }
+    },
+    openAppSettings = {
+      activityNavigator.openAppSettings(context)
+    },
+    nestedGraphs = {
+      claimTriagingDestinations(
+        navigator = navigator,
+        startClaimFlow = { backStackEntry, claimFlowStep: ClaimFlowStep ->
+          navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
+        },
+      )
+    },
+  )
+  terminalClaimFlowStepDestinations(
+    windowSizeClass = hedvigAppState.windowSizeClass,
+    navigator = navigator,
+    openPlayStore = {
+      navigator.popBackStack()
+      activityNavigator.tryOpenPlayStore(context)
+    },
+    openChat = {
+      navigator.popBackStack()
+      activityNavigator.navigateToChat(context)
+    },
+  )
 }

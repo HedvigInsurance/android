@@ -9,11 +9,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineBreak
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.hedvig.android.core.designsystem.component.tokens.HedvigTypographyKeyTokens
 import com.hedvig.android.core.designsystem.theme.SansStandard
+import com.hedvig.android.core.designsystem.theme.SerifBookSmall
 
 internal val HedvigTypography: Typography
   @Composable
@@ -47,11 +50,13 @@ internal val HedvigTypography: Typography
       letterSpacing = (-0.25f).percentage.em,
     ),
     headlineMedium = MaterialTheme.typography.headlineMedium.copy(
-      fontFamily = SansStandard,
+      fontFamily = SerifBookSmall,
       fontWeight = FontWeight.Normal,
       fontSize = 28.sp,
       lineHeight = 36.sp,
       letterSpacing = 0f.em,
+      lineBreak = LineBreak.Heading,
+      textAlign = TextAlign.Center,
     ),
     headlineSmall = MaterialTheme.typography.headlineSmall.copy(
       fontFamily = SansStandard,
@@ -84,7 +89,7 @@ internal val HedvigTypography: Typography
     bodyLarge = MaterialTheme.typography.bodyLarge.copy(
       fontFamily = SansStandard,
       fontWeight = FontWeight.Normal,
-      fontSize = 16.sp,
+      fontSize = 18.sp, // Changed from 16.sp for the new design system, which isn't reflected in Android UI Kit
       lineHeight = 24.sp,
       letterSpacing = 0.15f.percentage.em,
     ),

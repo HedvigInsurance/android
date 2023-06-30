@@ -35,13 +35,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.LargeOutlinedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.UiMoney
-import com.hedvig.android.feature.odyssey.data.ClaimFlowStep
-import com.hedvig.android.feature.odyssey.model.FlowId
+import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.claimflow.ClaimFlowStep
+import com.hedvig.android.data.claimflow.model.FlowId
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import octopus.type.CurrencyCode
@@ -50,7 +50,7 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 internal fun PayoutScreen(
   uiState: PayoutUiState,
-  exitFlow: () -> Unit,
+  closePayoutScreen: () -> Unit,
   onDoneAfterPayout: (ClaimFlowStep) -> Unit,
   retryPayout: () -> Unit,
   openChat: () -> Unit,
@@ -66,7 +66,7 @@ internal fun PayoutScreen(
       ErrorContent(
         show = uiState.status is PayoutUiState.Status.Error,
         allowInteraction = uiState.status is PayoutUiState.Status.Error,
-        exitFlow = exitFlow,
+        exitFlow = closePayoutScreen,
         retryPayout = retryPayout,
         openChat = openChat,
       )
@@ -141,12 +141,11 @@ private fun BoxScope.ErrorContent(
         }
       }
       item(span = { GridItemSpan(2) }) {
-        LargeContainedButton(
+        HedvigContainedButton(
+          text = stringResource(hedvig.resources.R.string.NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION),
           onClick = retryPayout,
           enabled = allowInteraction,
-        ) {
-          Text(stringResource(hedvig.resources.R.string.NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION))
-        }
+        )
       }
     }
   }
@@ -202,16 +201,15 @@ private fun BoxScope.PaidOutContent(
     exit = fadeOut(),
     modifier = Modifier.align(Alignment.BottomCenter),
   ) {
-    LargeContainedButton(
+    HedvigContainedButton(
+      text = stringResource(hedvig.resources.R.string.claims_payout_done_label),
       onClick = {
         if (status is PayoutUiState.Status.PaidOut) {
           onDoneAfterPayout(status.nextStep)
         }
       },
       enabled = status is PayoutUiState.Status.PaidOut,
-    ) {
-      Text(stringResource(hedvig.resources.R.string.claims_payout_done_label))
-    }
+    )
   }
 }
 

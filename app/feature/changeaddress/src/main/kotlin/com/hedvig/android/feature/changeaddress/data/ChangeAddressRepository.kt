@@ -8,7 +8,7 @@ import com.apollographql.apollo3.api.Optional
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.ui.UiMoney
+import com.hedvig.android.core.uidata.UiMoney
 import octopus.MoveIntentCommitMutation
 import octopus.MoveIntentCreateMutation
 import octopus.MoveIntentRequestMutation

@@ -16,6 +16,7 @@ dependencies {
   implementation(projects.app.auth.authAndroid)
   implementation(projects.app.core.common)
   implementation(projects.app.core.commonAndroid)
+  implementation(projects.app.core.datastore)
   implementation(projects.app.core.designSystem)
   implementation(projects.app.core.resources)
   implementation(projects.app.core.ui)

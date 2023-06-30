@@ -21,8 +21,8 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 fun HedvigContainedButton(
   text: String,
   onClick: () -> Unit,
-  contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
+  contentPadding: PaddingValues = PaddingValues(16.dp),
   enabled: Boolean = true,
   colors: ButtonColors = ButtonDefaults.buttonColors(
     containerColor = MaterialTheme.colorScheme.primary,
@@ -50,7 +50,7 @@ fun HedvigContainedButton(
 private fun PreviewHedvigContainedButton() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      HedvigContainedButton("Hello there", {}, PaddingValues(16.dp), Modifier.padding(24.dp))
+      HedvigContainedButton("Hello there", {}, Modifier.padding(24.dp))
     }
   }
 }

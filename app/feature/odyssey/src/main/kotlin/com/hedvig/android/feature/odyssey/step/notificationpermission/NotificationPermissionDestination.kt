@@ -3,68 +3,53 @@ package com.hedvig.android.feature.odyssey.step.notificationpermission
 import android.Manifest
 import android.os.Build
 import androidx.annotation.ChecksSdkIntAtLeast
-import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
-import com.hedvig.android.core.designsystem.component.button.LargeOutlinedTextButton
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
+import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.permission.PermissionDialog
 import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.feature.odyssey.data.ClaimFlowStep
 import com.hedvig.android.feature.odyssey.ui.ClaimFlowScaffold
 import hedvig.resources.R
 
 @Composable
 internal fun NotificationPermissionDestination(
-  viewModel: NotificationPermissionViewModel,
   windowSizeClass: WindowSizeClass,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
-  startClaimFlow: () -> Unit,
+  onNotificationPermissionDecided: () -> Unit,
   openAppSettings: () -> Unit,
-  navigateToNextStep: (ClaimFlowStep) -> Unit,
   navigateUp: () -> Unit,
 ) {
-  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  val claimFlowStep = uiState.nextStep
-  LaunchedEffect(claimFlowStep) {
-    if (claimFlowStep != null) {
-      navigateToNextStep(claimFlowStep)
-    }
-  }
   NotificationPermissionScreen(
-    uiState = uiState,
     windowSizeClass = windowSizeClass,
-    startClaimFlow = startClaimFlow,
+    onNotificationPermissionDecided = onNotificationPermissionDecided,
     openAppSettings = openAppSettings,
     shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
     navigateUp = navigateUp,
@@ -73,103 +58,95 @@ internal fun NotificationPermissionDestination(
 
 @Composable
 private fun NotificationPermissionScreen(
-  uiState: NotificationPermissionUiState,
   windowSizeClass: WindowSizeClass,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
-  startClaimFlow: () -> Unit,
+  onNotificationPermissionDecided: () -> Unit,
+  openAppSettings: () -> Unit,
+  navigateUp: () -> Unit,
+) {
+  var showDialog by remember { mutableStateOf(false) }
+  val notificationPermissionState: PermissionState = rememberNotificationPermissionState { isGranted ->
+    if (isGranted) {
+      onNotificationPermissionDecided()
+    } else {
+      showDialog = true
+    }
+  }
+  NotificationPermissionScreen(
+    windowSizeClass = windowSizeClass,
+    notificationPermissionState = notificationPermissionState,
+    showDialog = showDialog,
+    hideDialog = { showDialog = false },
+    shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+    onNotificationPermissionDecided = onNotificationPermissionDecided,
+    openAppSettings = openAppSettings,
+    navigateUp = navigateUp,
+  )
+}
+
+@Composable
+private fun NotificationPermissionScreen(
+  windowSizeClass: WindowSizeClass,
+  notificationPermissionState: PermissionState,
+  showDialog: Boolean,
+  hideDialog: () -> Unit,
+  shouldShowRequestPermissionRationale: (String) -> Boolean,
+  onNotificationPermissionDecided: () -> Unit,
   openAppSettings: () -> Unit,
   navigateUp: () -> Unit,
 ) {
   ClaimFlowScaffold(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
-    isLoading = uiState.isLoading,
   ) { sideSpacingModifier ->
-    var showDialog by remember { mutableStateOf(false) }
-    val notificationPermissionState: PermissionState = rememberNotificationPermissionState { isGranted ->
-      if (isGranted) {
-        startClaimFlow()
-      } else {
-        showDialog = true
-      }
-    }
     if (showDialog) {
       PermissionDialog(
         permissionDescription = stringResource(R.string.CLAIMS_ACTIVATE_NOTIFICATIONS_BODY),
         isPermanentlyDeclined = !shouldShowNotificationPermissionRationale(shouldShowRequestPermissionRationale),
-        onDismiss = { showDialog = false },
+        onDismiss = { hideDialog() },
         okClick = notificationPermissionState::launchPermissionRequest,
         openAppSettings = openAppSettings,
       )
     }
 
-    val bottomButton: Pair<String, () -> Unit> = when {
-      uiState.hasError -> stringResource(R.string.NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION) to startClaimFlow
-      else -> when (notificationPermissionState.status) {
-        is PermissionStatus.Granted -> {
-          stringResource(R.string.general_continue_button) to startClaimFlow
-        }
-        is PermissionStatus.Denied -> {
-          Pair(
-            stringResource(R.string.CLAIMS_ACTIVATE_NOTIFICATIONS_CTA),
-            notificationPermissionState::launchPermissionRequest,
-          )
-        }
-      }
-    }
-
-    Spacer(Modifier.height(40.dp))
-    Crossfade(
-      targetState = uiState.hasError,
-      label = "Notification or error crossfade",
-      modifier = sideSpacingModifier.weight(1f),
-    ) { hasError ->
-      Column {
-        if (hasError) {
-          Icon(
-            painter = painterResource(com.hedvig.android.core.designsystem.R.drawable.ic_warning_triangle),
-            contentDescription = null,
-            Modifier.size(24.dp),
-          )
-          Spacer(Modifier.height(16.dp))
-          Text(
-            text = stringResource(R.string.something_went_wrong),
-            style = MaterialTheme.typography.headlineSmall,
-          )
-          Spacer(Modifier.height(16.dp))
-          Text(
-            text = stringResource(R.string.NETWORK_ERROR_ALERT_MESSAGE),
-            style = androidx.compose.material.MaterialTheme.typography.body1,
-          )
-        } else {
-          Text(
-            text = stringResource(R.string.CLAIMS_ACTIVATE_NOTIFICATIONS_CTA),
-            style = MaterialTheme.typography.headlineSmall,
-          )
-          Spacer(Modifier.height(16.dp))
-          Text(
-            text = if (notificationPermissionState.status.isGranted) {
-              stringResource(R.string.CLAIMS_NOTIFICATIONS_ACTIVATED)
-            } else {
-              stringResource(R.string.CLAIMS_ACTIVATE_NOTIFICATIONS_BODY)
-            },
-          )
-        }
-      }
-    }
+    Spacer(Modifier.height(16.dp))
+    Text(
+      text = stringResource(R.string.CLAIMS_ACTIVATE_NOTIFICATIONS_CTA),
+      style = MaterialTheme.typography.headlineMedium,
+      modifier = sideSpacingModifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(32.dp))
+    Text(
+      text = if (notificationPermissionState.status.isGranted) {
+        stringResource(R.string.CLAIMS_NOTIFICATIONS_ACTIVATED)
+      } else {
+        stringResource(R.string.CLAIMS_ACTIVATE_NOTIFICATIONS_BODY)
+      },
+      modifier = sideSpacingModifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(16.dp))
+    Spacer(Modifier.weight(1f))
     if (notificationPermissionState.status.isGranted.not()) {
-      Spacer(Modifier.height(16.dp))
-      LargeOutlinedTextButton(
-        onClick = startClaimFlow,
-        enabled = !uiState.isLoading,
+      HedvigTextButton(
+        onClick = onNotificationPermissionDecided,
         text = stringResource(R.string.ONBOARDING_ACTIVATE_NOTIFICATIONS_DISMISS),
         modifier = sideSpacingModifier,
       )
+      Spacer(Modifier.height(16.dp))
     }
-    Spacer(Modifier.height(16.dp))
-    LargeContainedTextButton(
+    val bottomButton: Pair<String, () -> Unit> = when (notificationPermissionState.status) {
+      is PermissionStatus.Granted -> {
+        stringResource(R.string.general_continue_button) to onNotificationPermissionDecided
+      }
+      is PermissionStatus.Denied -> {
+        Pair(
+          stringResource(R.string.CLAIMS_ACTIVATE_NOTIFICATIONS_CTA),
+          notificationPermissionState::launchPermissionRequest,
+        )
+      }
+    }
+    HedvigContainedButton(
       onClick = bottomButton.second,
-      enabled = !uiState.isLoading,
       text = bottomButton.first,
       modifier = sideSpacingModifier,
     )
@@ -209,12 +186,18 @@ private fun shouldShowNotificationPermissionRationale(
 
 @HedvigPreview
 @Composable
-private fun PreviewNotificationPermissionScreen() {
+private fun PreviewNotificationPermissionScreen(
+  @PreviewParameter(PermissionStateParameterProvider::class) previewStatus: Pair<Boolean, PermissionState>,
+) {
+  val showDialog = previewStatus.first
+  val permissionState = previewStatus.second
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       NotificationPermissionScreen(
-        NotificationPermissionUiState(),
         WindowSizeClass.calculateForPreview(),
+        permissionState,
+        showDialog,
+        {},
         { true },
         {},
         {},
@@ -223,3 +206,23 @@ private fun PreviewNotificationPermissionScreen() {
     }
   }
 }
+
+private class PermissionStateParameterProvider : CollectionPreviewParameterProvider<Pair<Boolean, PermissionState>>(
+  listOf(
+    false to object : PermissionState {
+      override val permission: String = ""
+      override val status: PermissionStatus = PermissionStatus.Granted
+      override fun launchPermissionRequest() {}
+    },
+    false to object : PermissionState {
+      override val permission: String = ""
+      override val status: PermissionStatus = PermissionStatus.Denied(false)
+      override fun launchPermissionRequest() {}
+    },
+    true to object : PermissionState {
+      override val permission: String = ""
+      override val status: PermissionStatus = PermissionStatus.Denied(false)
+      override fun launchPermissionRequest() {}
+    },
+  ),
+)

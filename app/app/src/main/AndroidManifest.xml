@@ -63,11 +63,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.hedvig.android.feature.businessmodel.BusinessModelActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name=".feature.profile.ui.myinfo.MyInfoActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"

@@ -36,6 +36,8 @@ import com.hedvig.android.core.common.di.isProductionQualifier
 import com.hedvig.android.core.common.di.logInfoQualifier
 import com.hedvig.android.core.common.di.octopusGraphQLUrlQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
+import com.hedvig.android.data.travelcertificate.di.claimFlowDataModule
+import com.hedvig.android.data.travelcertificate.di.odysseyUrlQualifier
 import com.hedvig.android.data.travelcertificate.di.travelCertificateDataModule
 import com.hedvig.android.datadog.addDatadogConfiguration
 import com.hedvig.android.datadog.di.datadogModule
@@ -43,9 +45,7 @@ import com.hedvig.android.feature.businessmodel.di.businessModelModule
 import com.hedvig.android.feature.changeaddress.di.changeAddressModule
 import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
 import com.hedvig.android.feature.home.di.homeModule
-import com.hedvig.android.feature.legacyclaimtriaging.di.legacyClaimTriagingModule
 import com.hedvig.android.feature.odyssey.di.odysseyModule
-import com.hedvig.android.feature.odyssey.di.odysseyUrlQualifier
 import com.hedvig.android.feature.terminateinsurance.di.terminateInsuranceModule
 import com.hedvig.android.feature.travelcertificate.di.travelCertificateModule
 import com.hedvig.android.hanalytics.android.di.appIdQualifier
@@ -676,7 +676,7 @@ private val authRepositoryModule = module {
         AuthEnvironment.STAGING
       },
       additionalHttpHeaders = mapOf(),
-      callbacks = Callbacks("https://hedvig.com?q=success", "https://hedvig.com?q=failure)") // Not used
+      callbacks = Callbacks("https://hedvig.com?q=success", "https://hedvig.com?q=failure)"), // Not used
     )
   }
 }
@@ -707,6 +707,7 @@ val applicationModule = module {
       changeDateBottomSheetModule,
       chatEventModule,
       checkoutModule,
+      claimFlowDataModule,
       claimTriagingModule,
       clockModule,
       coilModule,
@@ -727,7 +728,6 @@ val applicationModule = module {
       insuranceCoverageModule,
       insuranceModule,
       languageModule,
-      legacyClaimTriagingModule,
       logModule,
       marketManagerModule,
       networkModule,

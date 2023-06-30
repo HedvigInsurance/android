@@ -97,8 +97,6 @@ zXing = "3.5.1"
 accompanist-insetsUi = { module = "com.google.accompanist:accompanist-insets-ui", version.ref = "accompanist" }
 accompanist-navigationAnimation = { module = "com.google.accompanist:accompanist-navigation-animation", version.ref = "accompanist" }
 accompanist-pagerIndicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanist" }
-accompanist-placeholder = { module = "com.google.accompanist:accompanist-placeholder-material", version.ref = "accompanist" }
-accompanist-placeholderM3 = { module = "com.google.accompanist:accompanist-placeholder-material3", version.ref = "accompanist" }
 accompanist-systemUiController = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
 adyen = { module = "com.adyen.checkout:drop-in", version.ref = "adyen" }
@@ -137,6 +135,7 @@ androidx-lifecycle-viewModel = { module = "androidx.lifecycle:lifecycle-viewmode
 androidx-lifecycle-viewmodelCompose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 androidx-navigation-common = { module = "androidx.navigation:navigation-common", version.ref = "androidx-navigation" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
+androidx-navigation-runtime = { module = "androidx.navigation:navigation-runtime", version.ref = "androidx-navigation" }
 androidx-other-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-other-activityCompose" }
 androidx-other-appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-other-appCompat" }
 androidx-other-browser = { module = "androidx.browser:browser", version.ref = "androidx-other-browser" }

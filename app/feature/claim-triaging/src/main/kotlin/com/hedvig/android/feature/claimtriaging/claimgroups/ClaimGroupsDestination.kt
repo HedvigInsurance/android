@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.claimtriaging.claimgroups
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,32 +15,37 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.LineBreak
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.designsystem.theme.SerifBookSmall
-import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
+import com.hedvig.android.core.ui.error.ErrorDialog
+import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
+import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimtriaging.ClaimGroup
 import com.hedvig.android.data.claimtriaging.ClaimGroupId
 import com.hedvig.android.feature.claimtriaging.OptionChipsFlowRow
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-import slimber.log.e
 
 @Composable
 internal fun ClaimGroupsDestination(
   viewModel: ClaimGroupsViewModel,
   onClaimGroupWithEntryPointsSubmit: (ClaimGroup) -> Unit,
-  startClaimFlow: () -> Unit,
+  startClaimFlow: (ClaimFlowStep) -> Unit,
   navigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  LaunchedEffect(uiState.nextStep) {
+    val nextStep = uiState.nextStep
+    if (nextStep != null) {
+      startClaimFlow(nextStep)
+    }
+  }
   ClaimGroupsScreen(
     uiState = uiState,
     loadClaimGroups = viewModel::loadClaimGroups,
@@ -49,12 +53,13 @@ internal fun ClaimGroupsDestination(
     onContinue = {
       uiState.selectedClaimGroup?.let { claimGroup ->
         if (claimGroup.entryPoints.isEmpty()) {
-          startClaimFlow()
+          viewModel.startClaimFlow()
         } else {
           onClaimGroupWithEntryPointsSubmit(claimGroup)
         }
       }
     },
+    showedStartClaimError = viewModel::showedStartClaimError,
     navigateUp = navigateUp,
   )
 }
@@ -65,33 +70,46 @@ private fun ClaimGroupsScreen(
   loadClaimGroups: () -> Unit,
   onSelectClaimGroup: (claimGroup: ClaimGroup) -> Unit,
   onContinue: () -> Unit,
+  showedStartClaimError: () -> Unit,
   navigateUp: () -> Unit,
 ) {
+  if (uiState.startClaimErrorMessage != null) {
+    ErrorDialog(
+      title = stringResource(hedvig.resources.R.string.something_went_wrong),
+      message = stringResource(hedvig.resources.R.string.GENERAL_ERROR_BODY),
+      onDismiss = showedStartClaimError,
+    )
+  }
   HedvigTheme(useNewColorScheme = true) {
     Box(modifier = Modifier.fillMaxSize(), propagateMinConstraints = true) {
-      HedvigScaffold(
-        navigateUp = navigateUp,
-      ) {
+      HedvigScaffold(navigateUp = navigateUp) {
         Spacer(Modifier.height(16.dp))
         Text(
           text = stringResource(hedvig.resources.R.string.CLAIM_TRIAGING_NAVIGATION_TITLE),
-          style = MaterialTheme.typography.headlineMedium.copy(
-            fontFamily = SerifBookSmall,
-            lineBreak = LineBreak.Heading,
-          ),
-          textAlign = TextAlign.Center,
+          style = MaterialTheme.typography.headlineMedium,
           modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
         )
-        Spacer(Modifier.height(16.dp))
-        if (uiState.errorMessage != null) {
-          LaunchedEffect(Unit) { e { "ClaimGroupsScreen: errorMessage${uiState.errorMessage}" } }
-          GenericErrorScreen(
-            description = uiState.errorMessage,
-            onRetryButtonClick = loadClaimGroups,
-            modifier = Modifier.padding(16.dp),
+        Spacer(Modifier.height(32.dp))
+        Spacer(Modifier.weight(1f))
+        if (uiState.chipLoadingErrorMessage != null) {
+          Text(
+            text = stringResource(hedvig.resources.R.string.something_went_wrong),
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+          )
+          Spacer(Modifier.height(16.dp))
+          Text(
+            text = stringResource(hedvig.resources.R.string.GENERAL_ERROR_BODY),
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+          )
+          Spacer(Modifier.height(24.dp))
+          HedvigContainedButton(
+            text = stringResource(hedvig.resources.R.string.GENERAL_RETRY),
+            onClick = loadClaimGroups,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
           )
         } else {
-          Spacer(Modifier.weight(1f))
           OptionChipsFlowRow(
             items = uiState.claimGroups,
             itemDisplayName = ClaimGroup::displayName,
@@ -103,12 +121,11 @@ private fun ClaimGroupsScreen(
           HedvigContainedButton(
             text = stringResource(hedvig.resources.R.string.claims_continue_button),
             onClick = onContinue,
-            contentPadding = PaddingValues(16.dp),
             enabled = uiState.canContinue,
             modifier = Modifier.padding(horizontal = 16.dp),
           )
-          Spacer(modifier = Modifier.height(16.dp))
         }
+        Spacer(modifier = Modifier.height(16.dp))
       }
       HedvigFullScreenCenterAlignedProgress(show = uiState.isLoading)
     }
@@ -117,7 +134,9 @@ private fun ClaimGroupsScreen(
 
 @HedvigPreview
 @Composable
-private fun PreviewClaimGroupsScreen() {
+private fun PreviewClaimGroupsScreen(
+  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) hasError: Boolean,
+) {
   HedvigTheme(useNewColorScheme = true) {
     Surface(color = MaterialTheme.colorScheme.background) {
       val claimGroups = remember {
@@ -130,12 +149,13 @@ private fun PreviewClaimGroupsScreen() {
         uiState = ClaimGroupsUiState(
           claimGroups = claimGroups,
           selectedClaimGroup = claimGroups[3],
-          errorMessage = null,
+          chipLoadingErrorMessage = if (hasError) "" else null,
           isLoading = false,
         ),
         loadClaimGroups = {},
         onSelectClaimGroup = {},
         onContinue = {},
+        showedStartClaimError = {},
         navigateUp = {},
       )
     }
