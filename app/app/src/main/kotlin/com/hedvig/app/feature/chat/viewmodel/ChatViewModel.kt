@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo3.api.ApolloResponse
+import com.hedvig.android.core.common.android.e
 import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.util.LiveEvent
@@ -27,6 +28,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import slimber.log.d
 import slimber.log.e
+import slimber.log.w
 import java.util.concurrent.TimeUnit
 
 class ChatViewModel(
@@ -77,7 +79,7 @@ class ChatViewModel(
                   message.fragments.chatMessageFragment,
                 )
             } else {
-              e { "Chat: subscription was not allowed to write" }
+              w { "Chat: subscription was not allowed to write" }
             }
           }
         }
@@ -239,11 +241,7 @@ class ChatViewModel(
       response.fold(
         ifLeft = { error ->
           val throwable = error.throwable
-          if (throwable != null) {
-            e(throwable) { "Chat: Replying through ChatViewModel failed" }
-          } else {
-            e { "Chat: Replying through ChatViewModel failed. Message:${error.message}" }
-          }
+          e(throwable) { "Chat: Replying through ChatViewModel failed:${error.message}" }
           _events.send(Event.Error)
         },
         ifRight = { data ->

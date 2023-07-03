@@ -5,6 +5,7 @@ import android.os.Build
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import arrow.core.Either
+import com.hedvig.android.core.common.android.e
 import com.hedvig.android.core.common.android.whenApiVersion
 import com.hedvig.app.feature.chat.data.ChatRepository
 import slimber.log.e
@@ -37,11 +38,14 @@ class ReplyWorker(
     )
 
     if (sendChatMessageResponse is Either.Left) {
-      val throwable = sendChatMessageResponse.value.throwable
-      if (throwable != null) {
-        e(throwable) { "Chat: Replying through ReplyWorker failed" }
-      } else {
-        e { "Chat: Replying through ReplyWorker failed. Message:${sendChatMessageResponse.value.message}" }
+      val error = sendChatMessageResponse.value
+      e(error.throwable) {
+        buildString {
+          append("Chat: Replying through ReplyWorker failed")
+          if (error.message != null) {
+            append(". Message:${error.message}")
+          }
+        }
       }
       return Result.failure()
     }
