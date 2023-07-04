@@ -190,10 +190,11 @@ private fun Models(
       optionsList = uiState.availableItemModels,
       onSelected = selectModel,
       getDisplayText = { it.displayName(resources) },
+      getIsSelected = { it: ItemModel -> it == uiState.selectedItemModel },
       getId = { it.asKnown()?.itemModelId ?: "id" },
-    ) {
-      showDialog = false
-    }
+      onDismissRequest = { showDialog = false },
+      smallSelectionItems = true,
+    )
   }
 
   HedvigBigCard(
@@ -222,9 +223,10 @@ private fun Brands(
       onSelected = selectBrand,
       getDisplayText = { it.displayName(resources) },
       getId = { it.asKnown()?.itemBrandId ?: "id" },
-    ) {
-      showDialog = false
-    }
+      getIsSelected = { it: ItemBrand -> it == uiState.selectedItemBrand },
+      onDismissRequest = { showDialog = false },
+      smallSelectionItems = true,
+    )
   }
 
   HedvigBigCard(

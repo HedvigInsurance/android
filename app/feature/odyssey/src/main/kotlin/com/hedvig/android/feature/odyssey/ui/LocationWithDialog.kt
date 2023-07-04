@@ -32,6 +32,7 @@ internal fun LocationWithDialog(
       optionsList = locationOptions,
       onSelected = selectLocationOption,
       getDisplayText = { it.displayName },
+      getIsSelected = { selectedLocation == it },
       getId = { it.displayName },
       onDismissRequest = { showLocationPickerDialog = false },
     )

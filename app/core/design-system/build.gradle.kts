@@ -13,6 +13,7 @@ dependencies {
   implementation(libs.accompanist.systemUiController)
   implementation(libs.androidx.compose.material)
   implementation(libs.kotlinx.datetime)
+  implementation(libs.slimber)
 }
 
 android {

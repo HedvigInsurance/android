@@ -27,6 +27,7 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedButt
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
 import com.hedvig.android.data.claimflow.ClaimFlowStep
@@ -74,6 +75,7 @@ private fun PhoneNumberScreen(
       error = uiState.status == PhoneNumberUiState.Status.ERROR,
       showedError = showedError,
     ),
+    modifier = Modifier.clearFocusOnTap(),
   ) { sideSpacingModifier ->
     Spacer(Modifier.height(16.dp))
     Text(
@@ -83,14 +85,14 @@ private fun PhoneNumberScreen(
     )
     Spacer(Modifier.height(32.dp))
     Spacer(Modifier.weight(1f))
-    HedvigTextField( // todo(claims) Use the new card dimensions + text styles.
+    HedvigTextField(
       value = uiState.phoneNumber,
       onValueChange = updatePhoneNumber,
       label = {
         Text(stringResource(R.string.ODYSSEY_PHONE_NUMBER_LABEL))
       },
+      withNewDesign = true,
       enabled = uiState.status != PhoneNumberUiState.Status.LOADING,
-      placeholder = { Text("070000000") },
       keyboardOptions = KeyboardOptions(
         autoCorrect = false,
         keyboardType = KeyboardType.Phone,
@@ -99,7 +101,6 @@ private fun PhoneNumberScreen(
       keyboardActions = KeyboardActions(
         onDone = { submitPhoneNumber() },
       ),
-      singleLine = true,
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
