@@ -295,8 +295,7 @@ private fun ItemProblems(
     hintText = stringResource(hedvig.resources.R.string.claims_item_screen_type_of_damage_button),
     inputText = when {
       uiState.selectedItemProblems.isEmpty() -> null
-      uiState.selectedItemProblems.size == 1 -> uiState.selectedItemProblems.first().displayName
-      else -> stringResource(hedvig.resources.R.string.OFFER_START_DATE_MULTIPLE)
+      else -> uiState.selectedItemProblems.map(ItemProblem::displayName).joinToString()
     },
     modifier = modifier,
     enabled = enabled,
