@@ -156,7 +156,7 @@ internal fun HedvigDecorationBox(
           Box(Modifier.alpha(prefixSuffixAlphaProgress)) {
             Decoration(
               contentColor = suffixColor,
-              typography = smallTypography,
+              typography = bigTypography, // Hedvig adjusted to big typography
               content = suffix,
             )
           }
