@@ -39,4 +39,4 @@ data class CommonClaimsData(
   }
 }
 
-fun CommonClaimsData.isFirstVet() = id == "31" || id == "30"
+fun CommonClaimsData.isFirstVet() = id == "32" || id == "31" || id == "30"
