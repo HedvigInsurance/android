@@ -116,7 +116,7 @@ private fun <T> SelectionContent(
         textAlign = TextAlign.Center,
         modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
       )
-      Spacer(modifier = Modifier.height(32.dp))
+      Spacer(Modifier.height((if (smallSelectionItems) 32 else 16).dp))
       val density = LocalDensity.current
       val lazyColumnContentPadding = 16.dp
       val showTopBorder by remember {
