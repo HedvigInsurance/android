@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import arrow.core.NonEmptyList
 import arrow.core.nonEmptyListOf
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
@@ -147,20 +148,18 @@ private fun SingleItemCheckoutScreen(
       }
       Spacer(Modifier.height(16.dp))
       Divider(sideSpacingModifier)
-      if (uiState.availableCheckoutMethods.isNotEmpty()) {
-        Spacer(Modifier.height(16.dp))
-        Text(
-          text = stringResource(R.string.PAYMENTS_SUBTITLE_PAYMENT_METHOD),
-          modifier = sideSpacingModifier,
-        )
-        CheckoutMethods(
-          availableCheckoutMethods = uiState.availableCheckoutMethods,
-          selectedCheckoutMethod = uiState.selectedCheckoutMethod,
-          selectCheckoutMethod = selectCheckoutMethod,
-          enabled = uiState.canRequestPayout,
-          modifier = sideSpacingModifier,
-        )
-      }
+      Spacer(Modifier.height(16.dp))
+      Text(
+        text = stringResource(R.string.PAYMENTS_SUBTITLE_PAYMENT_METHOD),
+        modifier = sideSpacingModifier,
+      )
+      CheckoutMethods(
+        availableCheckoutMethods = uiState.availableCheckoutMethods,
+        selectedCheckoutMethod = uiState.selectedCheckoutMethod,
+        selectCheckoutMethod = selectCheckoutMethod,
+        enabled = uiState.canRequestPayout,
+        modifier = sideSpacingModifier,
+      )
       Spacer(Modifier.height(16.dp))
       Spacer(Modifier.weight(1f))
       VectorInfoCard(stringResource(R.string.CLAIMS_CHECKOUT_NOTICE), sideSpacingModifier)
@@ -193,7 +192,7 @@ private fun SingleItemCheckoutScreen(
 @Suppress("UnusedReceiverParameter")
 @Composable
 private fun ColumnScope.CheckoutMethods(
-  availableCheckoutMethods: List<CheckoutMethod.Known>,
+  availableCheckoutMethods: NonEmptyList<CheckoutMethod.Known>,
   selectedCheckoutMethod: CheckoutMethod.Known,
   selectCheckoutMethod: (CheckoutMethod.Known) -> Unit,
   modifier: Modifier = Modifier,
