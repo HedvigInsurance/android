@@ -23,6 +23,8 @@ import com.hedvig.android.feature.odyssey.step.singleitem.SingleItemDestination
 import com.hedvig.android.feature.odyssey.step.singleitem.SingleItemViewModel
 import com.hedvig.android.feature.odyssey.step.singleitemcheckout.SingleItemCheckoutDestination
 import com.hedvig.android.feature.odyssey.step.singleitemcheckout.SingleItemCheckoutViewModel
+import com.hedvig.android.feature.odyssey.step.singleitempayout.SingleItemPayoutDestination
+import com.hedvig.android.feature.odyssey.step.singleitempayout.SingleItemPayoutViewModel
 import com.hedvig.android.feature.odyssey.step.success.ClaimSuccessDestination
 import com.hedvig.android.feature.odyssey.step.summary.ClaimSummaryDestination
 import com.hedvig.android.feature.odyssey.step.summary.ClaimSummaryViewModel
@@ -167,6 +169,24 @@ fun NavGraphBuilder.claimFlowGraph(
         navigateUp = navigator::navigateUp,
       )
     }
+    animatedComposable<ClaimFlowDestination.SingleItemCheckout> { backStackEntry ->
+      val singleItemCheckout = this
+      val viewModel: SingleItemCheckoutViewModel = koinViewModel { parametersOf(singleItemCheckout) }
+      SingleItemCheckoutDestination(
+        viewModel = viewModel,
+        windowSizeClass = windowSizeClass,
+        navigateToAppUpdateStep = {
+          navigator.navigateToClaimFlowDestination(backStackEntry, ClaimFlowDestination.UpdateApp)
+        },
+        navigateToPayoutStep = { checkoutMethod ->
+          navigator.navigateToClaimFlowDestination(
+            backStackEntry = backStackEntry,
+            destination = ClaimFlowDestination.SingleItemPayout(checkoutMethod = checkoutMethod),
+          )
+        },
+        navigateUp = navigator::navigateUp,
+      )
+    }
   }
 }
 
@@ -180,6 +200,27 @@ fun NavGraphBuilder.terminalClaimFlowStepDestinations(
   openPlayStore: () -> Unit,
   openChat: () -> Unit,
 ) {
+  animatedComposable<ClaimFlowDestination.SingleItemPayout> { backStackEntry ->
+    val singleItemPayout = this
+    val viewModel: SingleItemPayoutViewModel = koinViewModel { parametersOf(singleItemPayout) }
+    SingleItemPayoutDestination(
+      viewModel = viewModel,
+      navigateToNextStep = { claimFlowStep ->
+        with(navigator) {
+          backStackEntry.navigate(
+            claimFlowStep.toClaimFlowDestination(),
+            navOptions {
+              popUpTo<ClaimFlowDestination.SingleItemPayout> {
+                inclusive = true
+              }
+            },
+          )
+        }
+      },
+      openChat = openChat,
+      closePayoutScreen = navigator::popBackStack,
+    )
+  }
   animatedComposable<ClaimFlowDestination.ClaimSuccess> {
     ClaimSuccessDestination(
       windowSizeClass = windowSizeClass,
@@ -204,23 +245,6 @@ fun NavGraphBuilder.terminalClaimFlowStepDestinations(
       closeFailureScreenDestination = navigator::popBackStack,
     )
   }
-  animatedComposable<ClaimFlowDestination.SingleItemCheckout> { backStackEntry ->
-    val singleItemCheckout = this
-    val viewModel: SingleItemCheckoutViewModel = koinViewModel { parametersOf(singleItemCheckout) }
-    SingleItemCheckoutDestination(
-      viewModel = viewModel,
-      windowSizeClass = windowSizeClass,
-      navigateToNextStep = { claimFlowStep ->
-        navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
-      },
-      navigateToAppUpdateStep = {
-        with(navigator) { backStackEntry.navigate(ClaimFlowDestination.UpdateApp) }
-      },
-      navigateUp = navigator::navigateUp,
-      openChat = openChat,
-      closePayoutScreen = navigator::popBackStack,
-    )
-  }
 }
 
 /**
@@ -235,7 +259,7 @@ fun <T : ClaimFlowDestination> Navigator.navigateToClaimFlowDestination(
       destination is ClaimFlowDestination.ClaimSuccess ||
         destination is ClaimFlowDestination.UpdateApp ||
         destination is ClaimFlowDestination.Failure ||
-        destination is ClaimFlowDestination.SingleItemCheckout -> {
+        destination is ClaimFlowDestination.SingleItemPayout -> {
         popUpTo<AppDestination.ClaimsFlow> {
           inclusive = true
         }

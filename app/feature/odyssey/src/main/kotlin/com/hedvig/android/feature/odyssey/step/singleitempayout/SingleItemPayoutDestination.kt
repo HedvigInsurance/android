@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.odyssey.step.singleitemcheckout
+package com.hedvig.android.feature.odyssey.step.singleitempayout
 
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.AnimatedVisibility
@@ -15,14 +15,14 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -31,11 +31,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
+import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.button.LargeOutlinedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -48,14 +51,31 @@ import octopus.type.CurrencyCode
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
-internal fun PayoutScreen(
-  uiState: PayoutUiState,
-  closePayoutScreen: () -> Unit,
-  onDoneAfterPayout: (ClaimFlowStep) -> Unit,
-  retryPayout: () -> Unit,
+internal fun SingleItemPayoutDestination(
+  viewModel: SingleItemPayoutViewModel,
+  navigateToNextStep: (ClaimFlowStep) -> Unit,
   openChat: () -> Unit,
+  closePayoutScreen: () -> Unit,
 ) {
-  BlurredFullScreenProgressOverlay {
+  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  SingleItemPayoutScreen(
+    uiState = uiState,
+    retryPayout = viewModel::requestPayout,
+    onDoneAfterPayout = navigateToNextStep,
+    openChat = openChat,
+    closePayoutScreen = closePayoutScreen,
+  )
+}
+
+@Composable
+private fun SingleItemPayoutScreen(
+  uiState: PayoutUiState,
+  retryPayout: () -> Unit,
+  onDoneAfterPayout: (ClaimFlowStep) -> Unit,
+  openChat: () -> Unit,
+  closePayoutScreen: () -> Unit,
+) {
+  BlurredCirclesFullScreenProgressOverlay {
     Box(
       modifier = Modifier
         .fillMaxSize()
@@ -95,11 +115,6 @@ private fun BoxScope.ErrorContent(
       verticalArrangement = Arrangement.spacedBy(16.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-      Icon(
-        painter = painterResource(com.hedvig.android.core.designsystem.R.drawable.ic_warning_triangle),
-        contentDescription = null,
-        Modifier.size(48.dp),
-      )
       Text(
         text = stringResource(hedvig.resources.R.string.something_went_wrong),
         textAlign = TextAlign.Center,
@@ -108,7 +123,7 @@ private fun BoxScope.ErrorContent(
       Text(
         text = stringResource(hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE),
         textAlign = TextAlign.Center,
-        style = androidx.compose.material.MaterialTheme.typography.body1,
+        style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
       )
     }
   }
@@ -157,10 +172,18 @@ private fun BoxScope.LoadingContent(show: Boolean) {
     show = show,
     modifier = Modifier.align(Alignment.Center),
   ) {
-    Text(
-      text = stringResource(hedvig.resources.R.string.claims_payout_progress_title),
-      style = MaterialTheme.typography.titleLarge,
-    )
+    Column(
+      verticalArrangement = Arrangement.Center,
+    ) {
+      Text(
+        text = stringResource(hedvig.resources.R.string.claims_payout_progress_title),
+        style = MaterialTheme.typography.headlineSmall,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.fillMaxWidth(),
+      )
+      Spacer(Modifier.height(24.dp))
+      LinearProgressIndicator(Modifier.padding(horizontal = 48.dp))
+    }
   }
 }
 
@@ -175,22 +198,16 @@ private fun BoxScope.PaidOutContent(
     modifier = Modifier.align(Alignment.Center),
   ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-      Icon(
-        modifier = Modifier.size(48.dp),
-        painter = painterResource(com.hedvig.android.feature.odyssey.R.drawable.ic_check_circle),
-        contentDescription = "Checkmark icon",
-      )
-      Spacer(Modifier.height(24.dp))
       Text(
         text = paidOutAmount.toString(),
         textAlign = TextAlign.Center,
-        style = MaterialTheme.typography.displaySmall,
+        style = MaterialTheme.typography.displayMedium,
       )
       Spacer(Modifier.height(16.dp))
       Text(
         text = stringResource(hedvig.resources.R.string.claims_payout_success_message),
         textAlign = TextAlign.Center,
-        style = MaterialTheme.typography.titleSmall,
+        style = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
       )
     }
   }
@@ -201,7 +218,7 @@ private fun BoxScope.PaidOutContent(
     exit = fadeOut(),
     modifier = Modifier.align(Alignment.BottomCenter),
   ) {
-    HedvigContainedButton(
+    HedvigTextButton(
       text = stringResource(hedvig.resources.R.string.claims_payout_done_label),
       onClick = {
         if (status is PayoutUiState.Status.PaidOut) {
@@ -219,7 +236,11 @@ private fun BoxScope.PaidOutContent(
  * And scale the content up and fade it out as it exits the UI
  */
 @Composable
-private fun PoppingContent(show: Boolean, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+private fun PoppingContent(
+  show: Boolean,
+  modifier: Modifier = Modifier,
+  content: @Composable () -> Unit,
+) {
   AnimatedVisibility(
     visible = show,
     enter = fadeIn(tween(300, 300, FastOutSlowInEasing))
@@ -236,15 +257,15 @@ private val OvershootEasing: Easing = Easing { fraction ->
   OvershootInterpolator().getInterpolation(fraction)
 }
 
-// region Previews
-
 @HedvigPreview
 @Composable
-private fun PreviewPayoutScreenLoading() {
-  HedvigTheme {
+private fun PreviewPayoutScreenLoading(
+  @PreviewParameter(PayoutUiStatePreviewProvider::class) payoutUiState: PayoutUiState,
+) {
+  HedvigTheme(useNewColorScheme = true) {
     Surface(color = MaterialTheme.colorScheme.background) {
-      PayoutScreen(
-        PayoutUiState(UiMoney(1499.0, CurrencyCode.SEK), PayoutUiState.Status.Loading),
+      SingleItemPayoutScreen(
+        payoutUiState,
         {},
         {},
         {},
@@ -254,40 +275,17 @@ private fun PreviewPayoutScreenLoading() {
   }
 }
 
-@HedvigPreview
-@Composable
-private fun PreviewPayoutScreenError() {
-  HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
-      PayoutScreen(
-        PayoutUiState(UiMoney(1499.0, CurrencyCode.SEK), PayoutUiState.Status.Error),
-        {},
-        {},
-        {},
-        {},
-      )
-    }
-  }
-}
-
-@HedvigPreview
-@Composable
-private fun PreviewPayoutScreenPaidOut() {
-  HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
-      PayoutScreen(
-        PayoutUiState(
-          UiMoney(1499.0, CurrencyCode.SEK),
-          PayoutUiState.Status.PaidOut(ClaimFlowStep.UnknownStep(FlowId(""))),
-        ),
-        {},
-        {},
-        {},
-        {},
-      )
-    }
-  }
-}
+private class PayoutUiStatePreviewProvider() : CollectionPreviewParameterProvider<PayoutUiState>(
+  listOf(
+    PayoutUiState(UiMoney(1499.0, CurrencyCode.SEK), PayoutUiState.Status.NotStarted),
+    PayoutUiState(UiMoney(1499.0, CurrencyCode.SEK), PayoutUiState.Status.Loading),
+    PayoutUiState(UiMoney(1499.0, CurrencyCode.SEK), PayoutUiState.Status.Error),
+    PayoutUiState(
+      UiMoney(1499.0, CurrencyCode.SEK),
+      PayoutUiState.Status.PaidOut(ClaimFlowStep.UnknownStep(FlowId(""))),
+    ),
+  ),
+)
 
 @HedvigPreview
 @Composable
@@ -299,18 +297,14 @@ private fun PreviewPayoutScreenAnimations() {
       delay(2.seconds)
       value = value.copy(status = PayoutUiState.Status.PaidOut(ClaimFlowStep.UnknownStep(FlowId(""))))
       delay(2.seconds)
-      value = value.copy(status = PayoutUiState.Status.Loading)
-      delay(2.seconds)
       value = value.copy(status = PayoutUiState.Status.Error)
       delay(2.seconds)
       value = value.copy(status = PayoutUiState.Status.Loading)
     }
   }
-  HedvigTheme {
+  HedvigTheme(useNewColorScheme = true) {
     Surface(color = MaterialTheme.colorScheme.background) {
-      PayoutScreen(uiState, {}, {}, {}, {})
+      SingleItemPayoutScreen(uiState, {}, {}, {}, {})
     }
   }
 }
-
-// endregion

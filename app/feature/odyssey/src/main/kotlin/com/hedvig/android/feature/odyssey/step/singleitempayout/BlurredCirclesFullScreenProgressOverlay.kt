@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.odyssey.step.singleitemcheckout
+package com.hedvig.android.feature.odyssey.step.singleitempayout
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
@@ -28,11 +28,11 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import java.lang.Float.min
 
-private val progressBlue = Color(0xffC3CBD6)
-private val progressYellow = Color(0xffEDCDAB)
+private val progressBlue = Color(0xFFC3CBD6)
+private val progressYellow = Color(0xFFEDCDAB)
 
 @Composable
-internal fun BlurredFullScreenProgressOverlay(
+internal fun BlurredCirclesFullScreenProgressOverlay(
   modifier: Modifier = Modifier,
   content: @Composable BoxScope.() -> Unit,
 ) {
@@ -141,9 +141,9 @@ private fun AnimatedCircles() {
 @HedvigPreview
 @Composable
 private fun PreviewBlurredFullScreenProgressOverlay() {
-  HedvigTheme {
+  HedvigTheme(useNewColorScheme = true) {
     Surface(color = MaterialTheme.colorScheme.background) {
-      BlurredFullScreenProgressOverlay {
+      BlurredCirclesFullScreenProgressOverlay {
         Text(
           text = "Calculating price...",
           modifier = Modifier.align(Alignment.Center),
