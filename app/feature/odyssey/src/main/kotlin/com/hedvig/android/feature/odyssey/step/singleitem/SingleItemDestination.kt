@@ -14,13 +14,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -99,7 +97,6 @@ private fun SingleItemScreen(
   ClaimFlowScaffold(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
-    topAppBarText = stringResource(hedvig.resources.R.string.claims_item_screen_title),
     isLoading = uiState.isLoading,
     errorSnackbarState = ErrorSnackbarState(
       error = uiState.hasError,
@@ -144,7 +141,7 @@ private fun SingleItemScreen(
     PriceOfPurchase(
       uiState = uiState.purchasePriceUiState,
       canInteract = uiState.canSubmit,
-      modifier = sideSpacingModifier,
+      modifier = sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(2.dp))
     uiState.itemProblemsUiState.asContent()?.let { itemProblemsUiState ->
@@ -260,19 +257,16 @@ private fun PriceOfPurchase(
   modifier: Modifier = Modifier,
 ) {
   val focusRequester = remember { FocusRequester() }
-  HedvigBigCard(modifier = modifier) {
-    CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.headlineSmall) {
-      MonetaryAmountInput(
-        value = uiState.uiMoney.amount?.toString() ?: "",
-        hintText = stringResource(hedvig.resources.R.string.claims_payout_purchase_price),
-        canInteract = canInteract,
-        onInput = { uiState.updateAmount(it) },
-        currency = uiState.uiMoney.currencyCode.rawValue,
-        maximumFractionDigits = 0,
-        focusRequester = focusRequester,
-      )
-    }
-  }
+  MonetaryAmountInput(
+    value = uiState.uiMoney.amount?.toString() ?: "",
+    hintText = stringResource(hedvig.resources.R.string.claims_payout_purchase_price),
+    canInteract = canInteract,
+    onInput = { uiState.updateAmount(it) },
+    currency = uiState.uiMoney.currencyCode.rawValue,
+    maximumFractionDigits = 0,
+    focusRequester = focusRequester,
+    modifier = modifier,
+  )
 }
 
 @Composable
