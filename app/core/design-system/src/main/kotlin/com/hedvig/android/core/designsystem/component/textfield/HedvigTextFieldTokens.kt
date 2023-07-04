@@ -10,7 +10,7 @@ internal object HedvigTextFieldTokens {
   val ActiveIndicatorColor = HedvigColorSchemeKeyTokens.OnSurfaceVariant
   val ActiveIndicatorHeight = 1.0.dp
   val CaretColor = HedvigColorSchemeKeyTokens.Primary
-  val ContainerColor = HedvigColorSchemeKeyTokens.SurfaceVariant
+  val ContainerColor = HedvigColorSchemeKeyTokens.Surface // HedvigColorSchemeKeyTokens.SurfaceVariant Hedvig adjusted
   val ContainerHeight = 56.0.dp
   val TypeContainerColor = HedvigColorSchemeKeyTokens.TypeContainer
   val ErrorTypeContainerColor = HedvigColorSchemeKeyTokens.WarningContainer
