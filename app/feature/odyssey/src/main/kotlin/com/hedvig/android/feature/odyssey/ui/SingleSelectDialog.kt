@@ -1,7 +1,5 @@
 package com.hedvig.android.feature.odyssey.ui
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,14 +10,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -31,7 +27,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -42,6 +37,7 @@ import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.material3.squircle
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.SelectIndicationCircle
 import com.hedvig.android.core.ui.preview.DoubleBooleanCollectionPreviewParameterProvider
 
 @Composable
@@ -164,18 +160,7 @@ private fun <T> SelectionContent(
               )
               if (getIsSelected != null) {
                 Spacer(Modifier.width(8.dp))
-                Spacer(
-                  Modifier
-                    .size(24.dp)
-                    .clip(CircleShape)
-                    .then(
-                      if (getIsSelected.invoke(option) == true) {
-                        Modifier.background(MaterialTheme.colorScheme.primary)
-                      } else {
-                        Modifier.border(2.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape)
-                      },
-                    ),
-                )
+                SelectIndicationCircle(getIsSelected(option))
               }
             }
           }
