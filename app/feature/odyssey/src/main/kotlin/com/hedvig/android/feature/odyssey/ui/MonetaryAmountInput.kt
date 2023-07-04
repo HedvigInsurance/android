@@ -1,21 +1,9 @@
 package com.hedvig.android.feature.odyssey.ui
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -30,11 +18,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.AnnotatedString
@@ -43,8 +29,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
+import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.material3.DisabledAlpha
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -90,7 +76,7 @@ internal fun MonetaryAmountInput(
     ),
   ) {
     ProvideTextStyle(LocalTextStyle.current.copy(color = LocalContentColor.current)) {
-      BasicTextField(
+      HedvigTextField(
         value = text,
         onValueChange = onValueChange@{ newValue ->
           if (newValue.length > 10) return@onValueChange
@@ -108,10 +94,12 @@ internal fun MonetaryAmountInput(
             onInput(newValue.ifBlank { null })
           }
         },
-        modifier = modifier
-          .fillMaxWidth()
-          .focusRequester(focusRequester),
+        withNewDesign = true,
+        modifier = modifier.focusRequester(focusRequester),
+        enabled = canInteract,
         textStyle = LocalTextStyle.current,
+        label = { Text(hintText) },
+        suffix = { Text(currency) },
         keyboardOptions = KeyboardOptions(
           autoCorrect = false,
           keyboardType = if (allowsDecimals(maximumFractionDigits)) KeyboardType.Number else KeyboardType.Decimal,
@@ -122,8 +110,6 @@ internal fun MonetaryAmountInput(
             focusManager.clearFocus()
           },
         ),
-        enabled = canInteract,
-        singleLine = true,
         visualTransformation = visualTransformation@{ annotatedString: AnnotatedString ->
           val transformedString = buildAnnotatedString {
             val numbersBeforeDecimal = annotatedString.split(decimalSeparator).first()
@@ -151,61 +137,7 @@ internal fun MonetaryAmountInput(
             MonetaryAmountOffsetMapping(annotatedString.text, decimalSeparator),
           )
         },
-        cursorBrush = SolidColor(cursorColor),
-        decorationBox = { innerTextField ->
-          DecoratingBox(
-            textField = innerTextField,
-            text = text,
-            hintText = hintText,
-            currencyCode = currency,
-            showTrailingIcon = text.isNotEmpty(),
-            canInteract = canInteract,
-            onClick = {
-              text = ""
-              focusManager.clearFocus()
-            },
-          )
-        },
       )
-    }
-  }
-}
-
-@Composable
-private fun DecoratingBox(
-  textField: @Composable () -> Unit,
-  text: String?,
-  hintText: String,
-  currencyCode: String,
-  showTrailingIcon: Boolean,
-  canInteract: Boolean,
-  onClick: () -> Unit,
-) {
-  Row(
-    verticalAlignment = Alignment.CenterVertically,
-    modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp, horizontal = 16.dp),
-  ) {
-    Box {
-      if (text.isNullOrEmpty()) {
-        Text(text = hintText, modifier = Modifier.matchParentSize())
-      }
-      textField()
-    }
-    Spacer(modifier = Modifier.weight(1f))
-    Spacer(modifier = Modifier.width(8.dp))
-    AnimatedVisibility(text.isNullOrEmpty() == false) {
-      Row {
-        Text(text = currencyCode)
-        Spacer(modifier = Modifier.width(8.dp))
-      }
-    }
-    AnimatedVisibility(showTrailingIcon) {
-      IconButton(
-        onClick = onClick,
-        enabled = canInteract,
-      ) {
-        Icon(Icons.Default.Clear, "Clear Selection")
-      }
     }
   }
 }
@@ -223,7 +155,7 @@ private fun PreviewMonetaryAmountInput(
       Surface(color = MaterialTheme.colorScheme.background) {
         MonetaryAmountInput(
           value = if (hasInput) "1234" else "",
-          hintText = "Hint",
+          hintText = "Purchase price",
           canInteract = canInteract,
           onInput = {},
           currency = "SEK",
