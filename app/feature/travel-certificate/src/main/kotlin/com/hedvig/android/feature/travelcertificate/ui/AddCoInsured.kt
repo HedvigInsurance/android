@@ -71,7 +71,6 @@ internal fun AddCoInsured(
       label = {
         Text(stringResource(id = R.string.travel_certificate_full_name_label))
       },
-      maxLines = 1,
       modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
@@ -91,7 +90,6 @@ internal fun AddCoInsured(
       label = {
         Text(stringResource(id = R.string.travel_certificate_ssn_label))
       },
-      maxLines = 1,
       modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp),

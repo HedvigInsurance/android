@@ -248,7 +248,6 @@ private fun EmailTextField(
     label = {
       Text("Email")
     },
-    maxLines = 1,
     modifier = modifier.fillMaxWidth(),
   )
 }
