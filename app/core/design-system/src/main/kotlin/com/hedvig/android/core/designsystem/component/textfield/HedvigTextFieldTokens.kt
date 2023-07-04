@@ -52,7 +52,8 @@ internal object HedvigTextFieldTokens {
   val FocusActiveIndicatorColor = HedvigColorSchemeKeyTokens.Primary
   val FocusActiveIndicatorHeight = 2.0.dp
   val FocusInputColor = HedvigColorSchemeKeyTokens.OnSurface
-  val FocusLabelColor = HedvigColorSchemeKeyTokens.Primary
+  val FocusLabelColor =
+    HedvigColorSchemeKeyTokens.OnSurfaceVariant // HedvigColorSchemeKeyTokens.Primary Hedvig adjusted
   val FocusLeadingIconColor = HedvigColorSchemeKeyTokens.OnSurfaceVariant
   val FocusSupportingColor = HedvigColorSchemeKeyTokens.OnSurfaceVariant
   val FocusTrailingIconColor = HedvigColorSchemeKeyTokens.OnSurfaceVariant

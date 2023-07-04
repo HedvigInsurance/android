@@ -87,17 +87,13 @@ internal fun HedvigDecorationBox(
     typography.bodyLarge
   }
 
-  val shouldOverrideTextStyleColor =
-    (smallTypography.color == Color.Unspecified && bigTypography.color != Color.Unspecified) ||
-      (smallTypography.color != Color.Unspecified && bigTypography.color == Color.Unspecified)
-
   TextFieldTransitionScope.Transition(
     inputState = inputState,
     focusedTextStyleColor = with(smallTypography.color) {
-      if (shouldOverrideTextStyleColor) this.takeOrElse { labelColor(inputState) } else this
+      this.takeOrElse { labelColor(inputState) }
     },
     unfocusedTextStyleColor = with(bigTypography.color) {
-      if (shouldOverrideTextStyleColor) this.takeOrElse { labelColor(inputState) } else this
+      this.takeOrElse { labelColor(inputState) }
     },
     contentColor = labelColor,
     showLabel = label != null,
@@ -109,7 +105,7 @@ internal fun HedvigDecorationBox(
           stop = smallTypography,
           fraction = labelProgress,
         ).let {
-          if (shouldOverrideTextStyleColor) it.copy(color = labelTextStyleColor) else it
+          it.copy(color = labelTextStyleColor)
         }
         Decoration(labelContentColor, labelTextStyle, it)
       }
