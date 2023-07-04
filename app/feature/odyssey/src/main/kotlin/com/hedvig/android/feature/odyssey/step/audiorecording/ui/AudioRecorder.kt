@@ -50,7 +50,7 @@ import com.hedvig.android.audio.player.state.AudioPlayerState
 import com.hedvig.android.audio.player.state.PlayableAudioSource
 import com.hedvig.android.audio.player.state.rememberAudioPlayer
 import com.hedvig.android.core.common.android.ProgressPercentage
-import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.LargeTextButton
 import com.hedvig.android.core.designsystem.material3.motion.MotionTokens
 import com.hedvig.android.core.designsystem.newtheme.red_600
@@ -212,7 +212,7 @@ private fun Playback(
       HedvigAudioPlayer(audioPlayer = audioPlayer)
     }
 
-    LargeContainedTextButton(
+    HedvigContainedButton(
       onClick = submit,
       text = stringResource(hedvig.resources.R.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
       enabled = uiState.canSubmit,
@@ -253,7 +253,7 @@ private fun PrerecordedPlayback(
     ) {
       Column {
         Spacer(Modifier.height(16.dp))
-        LargeContainedTextButton(
+        HedvigContainedButton(
           onClick = submitAudioUrl,
           text = stringResource(hedvig.resources.R.string.general_continue_button),
           enabled = uiState.canSubmit,

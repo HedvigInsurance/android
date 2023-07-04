@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -86,7 +86,7 @@ private fun DateOfOccurrenceScreen(
       )
     }
     Spacer(Modifier.height(16.dp))
-    LargeContainedTextButton(
+    HedvigContainedButton(
       text = stringResource(R.string.general_continue_button),
       onClick = submitSelectedDate,
       enabled = uiState.canSubmit,
