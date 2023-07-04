@@ -25,7 +25,6 @@ import kotlinx.datetime.toJavaLocalDate
 import octopus.type.FlowClaimItemBrandInput
 import octopus.type.FlowClaimItemModelInput
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 import kotlin.time.Duration.Companion.seconds
 
 internal class ClaimSummaryViewModel(
@@ -129,7 +128,7 @@ internal data class ClaimSummaryInfoUiState(
   val priceOfPurchase: UiNullableMoney?,
   val itemProblems: List<ItemProblem>,
 ) {
-  fun itemDetailPairs(resources: Resources, locale: Locale): List<Pair<String, String>> {
+  fun itemDetailPairs(resources: Resources): List<Pair<String, String>> {
     return buildList {
       // Ärende
       if (claimTypeTitle != null) {
@@ -144,7 +143,7 @@ internal data class ClaimSummaryInfoUiState(
       add(resources.getString(R.string.CLAIMS_DAMAGES) to incidentTypeText)
       // Skadedatum
       val incidentDateText = if (dateOfIncident != null) {
-        dateOfIncident.toJavaLocalDate().format(DateTimeFormatter.ofPattern("dd MMM yyyy", locale))
+        dateOfIncident.toJavaLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE)
       } else {
         "-"
       }
@@ -166,7 +165,7 @@ internal data class ClaimSummaryInfoUiState(
       }
       // Inköpsdatum
       val purchaseDateText = if (dateOfPurchase != null) {
-        dateOfPurchase.toJavaLocalDate().format(DateTimeFormatter.ofPattern("dd MMM yyyy", locale))
+        dateOfPurchase.toJavaLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE)
       } else {
         "-"
       }
