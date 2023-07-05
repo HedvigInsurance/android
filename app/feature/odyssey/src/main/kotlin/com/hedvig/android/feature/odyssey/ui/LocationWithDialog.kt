@@ -28,7 +28,7 @@ internal fun LocationWithDialog(
   var showLocationPickerDialog by rememberSaveable { mutableStateOf(false) }
   if (showLocationPickerDialog) {
     SingleSelectDialog(
-      title = stringResource(R.string.claims_location_screen_title),
+      title = stringResource(R.string.claims_incident_screen_location),
       optionsList = locationOptions,
       onSelected = selectLocationOption,
       getDisplayText = { it.displayName },
