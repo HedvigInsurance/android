@@ -31,6 +31,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
@@ -91,7 +92,7 @@ private fun ClaimSummaryScreen(
     Spacer(Modifier.height(16.dp))
     Text(stringResource(hedvig.resources.R.string.moving_summary_scroll_Details), sideSpacingModifier.fillMaxWidth())
     Spacer(Modifier.height(8.dp))
-    val detailPairs: List<Pair<String, String>> = uiState.claimSummaryInfoUiState.itemDetailPairs(resources)
+    val detailPairs = uiState.claimSummaryInfoUiState.itemDetailPairs(resources, getLocale())
     CompositionLocalProvider(
       LocalTextStyle provides MaterialTheme.typography.bodyLarge.copy(
         MaterialTheme.colorScheme.onSurfaceVariant,
