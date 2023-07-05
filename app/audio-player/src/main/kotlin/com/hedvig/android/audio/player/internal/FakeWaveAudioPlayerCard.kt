@@ -3,10 +3,9 @@ package com.hedvig.android.audio.player.internal
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,9 +19,9 @@ import com.hedvig.android.audio.player.WaveInteraction
 import com.hedvig.android.audio.player.state.AudioPlayerState
 import com.hedvig.android.audio.player.state.AudioPlayerState.Ready.ReadyState
 import com.hedvig.android.core.common.android.ProgressPercentage
+import com.hedvig.android.core.designsystem.material3.squircle
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.designsystem.theme.lavender_200
 import com.hedvig.android.core.designsystem.theme.onWarning
 import com.hedvig.android.core.designsystem.theme.warning
 
@@ -47,7 +46,7 @@ internal fun FakeWaveAudioPlayerCard(
   )
   Surface(
     modifier = modifier.fillMaxWidth(),
-    shape = MaterialTheme.shapes.medium,
+    shape = MaterialTheme.shapes.squircle,
     color = color,
     contentColor = contentColor,
   ) {
@@ -63,16 +62,14 @@ internal fun FakeWaveAudioPlayerCard(
 
 @Composable
 private fun cardColorForState(audioPlayerState: AudioPlayerState): Color = when {
-  audioPlayerState.isFailed -> MaterialTheme.colors.warning
-  isSystemInDarkTheme() -> MaterialTheme.colors.secondary
-  else -> lavender_200
+  audioPlayerState.isFailed -> androidx.compose.material.MaterialTheme.colors.warning
+  else -> MaterialTheme.colorScheme.surface
 }
 
 @Composable
 private fun cardContentColorForState(audioPlayerState: AudioPlayerState): Color = when {
-  audioPlayerState.isFailed -> MaterialTheme.colors.onWarning
-  isSystemInDarkTheme() -> lavender_200
-  else -> MaterialTheme.colors.secondary
+  audioPlayerState.isFailed -> androidx.compose.material.MaterialTheme.colors.onWarning
+  else -> androidx.compose.material3.MaterialTheme.colorScheme.onSurface
 }
 
 @HedvigPreview
@@ -81,7 +78,7 @@ private fun PreviewFakeWaveAudioPlayerCard(
   @PreviewParameter(AudioPlayerStateProvider::class) audioPlayerState: AudioPlayerState,
 ) {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       FakeWaveAudioPlayerCard(audioPlayerState, {}, {}, {}, {})
     }
   }
@@ -99,7 +96,7 @@ private class AudioPlayerStateProvider : CollectionPreviewParameterProvider<Audi
 @Composable
 private fun PreviewFakeWaveAudioPlayerCardAnimation() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       var audioPlayerState: AudioPlayerState by remember {
         mutableStateOf(AudioPlayerState.Preparing)
       }

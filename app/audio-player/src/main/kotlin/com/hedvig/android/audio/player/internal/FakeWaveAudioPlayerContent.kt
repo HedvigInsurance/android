@@ -3,7 +3,6 @@ package com.hedvig.android.audio.player.internal
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,26 +10,26 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.LocalContentColor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.audio.player.WaveInteraction
 import com.hedvig.android.audio.player.state.AudioPlayerState
 import com.hedvig.android.core.common.android.ProgressPercentage
+import com.hedvig.android.core.designsystem.material3.DisabledAlpha
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.designsystem.theme.hedvig_off_white
-import com.hedvig.android.core.designsystem.theme.lavender_600
 
 @Composable
 internal fun FakeWaveAudioPlayerContent(
@@ -67,12 +66,9 @@ internal fun FakeWaveAudioPlayerContent(
           if (audioPlayerState is AudioPlayerState.Ready) {
             FakeAudioWaves(
               progressPercentage = audioPlayerState.progressPercentage,
-              playedColor = if (isSystemInDarkTheme()) {
-                hedvig_off_white
-              } else {
-                lavender_600
-              },
-              notPlayedColor = LocalContentColor.current,
+              playedColor = LocalContentColor.current,
+              notPlayedColor = LocalContentColor.current.copy(DisabledAlpha)
+                .compositeOver(MaterialTheme.colorScheme.surface),
               waveInteraction = waveInteraction,
               modifier = Modifier.weight(1f),
             )
