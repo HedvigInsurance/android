@@ -45,7 +45,6 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.claimflow.ClaimFlowStep
-import com.hedvig.android.data.claimflow.model.FlowId
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import octopus.type.CurrencyCode
@@ -54,7 +53,7 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 internal fun SingleItemPayoutDestination(
   viewModel: SingleItemPayoutViewModel,
-  navigateToNextStep: (ClaimFlowStep) -> Unit,
+  onDoneAfterPayout: () -> Unit,
   openChat: () -> Unit,
   closePayoutScreen: () -> Unit,
 ) {
@@ -62,7 +61,7 @@ internal fun SingleItemPayoutDestination(
   SingleItemPayoutScreen(
     uiState = uiState,
     retryPayout = viewModel::requestPayout,
-    onDoneAfterPayout = navigateToNextStep,
+    onDoneAfterPayout = onDoneAfterPayout,
     openChat = openChat,
     closePayoutScreen = closePayoutScreen,
   )
@@ -72,7 +71,7 @@ internal fun SingleItemPayoutDestination(
 private fun SingleItemPayoutScreen(
   uiState: PayoutUiState,
   retryPayout: () -> Unit,
-  onDoneAfterPayout: (ClaimFlowStep) -> Unit,
+  onDoneAfterPayout: () -> Unit,
   openChat: () -> Unit,
   closePayoutScreen: () -> Unit,
 ) {
@@ -192,7 +191,7 @@ private fun BoxScope.LoadingContent(show: Boolean) {
 private fun BoxScope.PaidOutContent(
   status: PayoutUiState.Status,
   paidOutAmount: UiMoney,
-  onDoneAfterPayout: (ClaimFlowStep) -> Unit,
+  onDoneAfterPayout: () -> Unit,
 ) {
   PoppingContent(
     show = status is PayoutUiState.Status.PaidOut,
@@ -224,11 +223,7 @@ private fun BoxScope.PaidOutContent(
   ) {
     HedvigTextButton(
       text = stringResource(hedvig.resources.R.string.general_close_button),
-      onClick = {
-        if (status is PayoutUiState.Status.PaidOut) {
-          onDoneAfterPayout(status.nextStep)
-        }
-      },
+      onClick = onDoneAfterPayout,
       enabled = status is PayoutUiState.Status.PaidOut,
     )
   }
@@ -286,7 +281,7 @@ private class PayoutUiStatePreviewProvider() : CollectionPreviewParameterProvide
     PayoutUiState(UiMoney(1499.0, CurrencyCode.SEK), PayoutUiState.Status.Error),
     PayoutUiState(
       UiMoney(1499.0, CurrencyCode.SEK),
-      PayoutUiState.Status.PaidOut(ClaimFlowStep.UnknownStep(FlowId(""))),
+      PayoutUiState.Status.PaidOut,
     ),
   ),
 )
@@ -299,7 +294,7 @@ private fun PreviewPayoutScreenAnimations() {
   ) {
     while (isActive) {
       delay(2.seconds)
-      value = value.copy(status = PayoutUiState.Status.PaidOut(ClaimFlowStep.UnknownStep(FlowId(""))))
+      value = value.copy(status = PayoutUiState.Status.PaidOut)
       delay(2.seconds)
       value = value.copy(status = PayoutUiState.Status.Error)
       delay(2.seconds)

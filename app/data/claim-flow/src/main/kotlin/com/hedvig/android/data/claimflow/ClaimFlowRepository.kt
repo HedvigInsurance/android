@@ -62,7 +62,7 @@ interface ClaimFlowRepository {
     purchasePrice: Double?,
   ): Either<ErrorMessage, ClaimFlowStep>
 
-  suspend fun submitSingleItemCheckout(amount: Double): Either<ErrorMessage, ClaimFlowStep>
+  suspend fun submitSingleItemCheckout(amount: Double): Either<ErrorMessage, Unit>
 
   suspend fun submitSummary(
     dateOfOccurrence: LocalDate?,
@@ -211,7 +211,7 @@ internal class ClaimFlowRepositoryImpl(
 
   override suspend fun submitSingleItemCheckout(
     amount: Double,
-  ): Either<ErrorMessage, ClaimFlowStep> {
+  ): Either<ErrorMessage, Unit> {
     return either {
       val result = apolloClient
         .mutation(
@@ -225,7 +225,7 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimSingleItemCheckoutNext
       claimFlowContextStorage.saveContext(result.context)
-      result.currentStep.toClaimFlowStep(FlowId(result.id))
+      Unit
     }
   }
 

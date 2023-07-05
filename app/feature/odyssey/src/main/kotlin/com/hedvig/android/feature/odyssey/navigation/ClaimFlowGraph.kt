@@ -205,18 +205,7 @@ fun NavGraphBuilder.terminalClaimFlowStepDestinations(
     val viewModel: SingleItemPayoutViewModel = koinViewModel { parametersOf(singleItemPayout) }
     SingleItemPayoutDestination(
       viewModel = viewModel,
-      navigateToNextStep = { claimFlowStep ->
-        with(navigator) {
-          backStackEntry.navigate(
-            claimFlowStep.toClaimFlowDestination(),
-            navOptions {
-              popUpTo<ClaimFlowDestination.SingleItemPayout> {
-                inclusive = true
-              }
-            },
-          )
-        }
-      },
+      onDoneAfterPayout = navigator::popBackStack,
       openChat = openChat,
       closePayoutScreen = navigator::popBackStack,
     )
