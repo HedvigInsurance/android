@@ -58,6 +58,7 @@ internal fun SingleItemCheckoutDestination(
   navigateToAppUpdateStep: () -> Unit,
   navigateToPayoutStep: (CheckoutMethod.Known) -> Unit,
   navigateUp: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   when (val state = uiState) {
@@ -74,6 +75,7 @@ internal fun SingleItemCheckoutDestination(
         selectCheckoutMethod = viewModel::selectCheckoutMethod,
         submitSelectedCheckoutMethod = navigateToPayoutStep,
         navigateUp = navigateUp,
+        closeClaimFlow = closeClaimFlow,
       )
     }
   }
@@ -86,11 +88,13 @@ private fun SingleItemCheckoutScreen(
   selectCheckoutMethod: (CheckoutMethod.Known) -> Unit,
   submitSelectedCheckoutMethod: (CheckoutMethod.Known) -> Unit,
   navigateUp: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   ClaimFlowScaffold(
     topAppBarText = stringResource(R.string.claims_payout_payout_label),
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
+    closeClaimFlow = closeClaimFlow,
   ) { sideSpacingModifier ->
     Spacer(Modifier.height(16.dp))
     Text(
@@ -237,6 +241,7 @@ private fun PreviewSingleItemCheckoutScreen(
         ),
         WindowSizeClass.calculateForPreview(),
         { selected = it },
+        {},
         {},
         {},
       )

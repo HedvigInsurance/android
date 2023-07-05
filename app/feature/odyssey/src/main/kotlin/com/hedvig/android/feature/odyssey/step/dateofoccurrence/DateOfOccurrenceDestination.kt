@@ -37,6 +37,7 @@ internal fun DateOfOccurrenceDestination(
   windowSizeClass: WindowSizeClass,
   navigateToNextStep: (ClaimFlowStep) -> Unit,
   navigateBack: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val nextStep = uiState.nextStep
@@ -51,6 +52,7 @@ internal fun DateOfOccurrenceDestination(
     submitSelectedDate = viewModel::submitSelectedDate,
     showedError = viewModel::showedError,
     navigateUp = navigateBack,
+    closeClaimFlow = closeClaimFlow,
   )
 }
 
@@ -61,10 +63,12 @@ private fun DateOfOccurrenceScreen(
   submitSelectedDate: () -> Unit,
   showedError: () -> Unit,
   navigateUp: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   ClaimFlowScaffold(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
+    closeClaimFlow = closeClaimFlow,
     isLoading = uiState.isLoading,
     errorSnackbarState = ErrorSnackbarState(
       error = uiState.dateSubmissionError,
@@ -118,6 +122,7 @@ private fun PreviewDateOfOccurrenceScreen() {
         submitSelectedDate = {},
         showedError = {},
         navigateUp = {},
+        closeClaimFlow = {},
       )
     }
   }

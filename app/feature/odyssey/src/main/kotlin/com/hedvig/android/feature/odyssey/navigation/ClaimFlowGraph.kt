@@ -45,6 +45,7 @@ fun NavGraphBuilder.claimFlowGraph(
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   navigateToTriaging: (NavBackStackEntry?) -> Unit,
   openAppSettings: () -> Unit,
+  closeClaimFlow: () -> Unit,
   nestedGraphs: NavGraphBuilder.() -> Unit,
 ) {
   animatedNavigation<AppDestination.ClaimsFlow>(
@@ -61,6 +62,7 @@ fun NavGraphBuilder.claimFlowGraph(
           navigateToTriaging(backStackEntry)
         },
         navigateUp = navigator::navigateUp,
+        closeClaimFlow = closeClaimFlow,
       )
     }
     animatedComposable<ClaimFlowDestination.NotificationPermission> {
@@ -74,6 +76,7 @@ fun NavGraphBuilder.claimFlowGraph(
         },
         openAppSettings = openAppSettings,
         navigateUp = navigator::navigateUp,
+        closeClaimFlow = closeClaimFlow,
       )
     }
     animatedComposable<ClaimFlowDestination.AudioRecording> { backStackEntry ->
@@ -89,6 +92,7 @@ fun NavGraphBuilder.claimFlowGraph(
           navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
         },
         navigateUp = navigator::navigateUp,
+        closeClaimFlow = closeClaimFlow,
       )
     }
     animatedComposable<ClaimFlowDestination.DateOfOccurrence> { backStackEntry ->
@@ -102,6 +106,7 @@ fun NavGraphBuilder.claimFlowGraph(
           navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
         },
         navigateBack = navigator::navigateUp,
+        closeClaimFlow = closeClaimFlow,
       )
     }
     animatedComposable<ClaimFlowDestination.DateOfOccurrencePlusLocation> { backStackEntry ->
@@ -117,6 +122,7 @@ fun NavGraphBuilder.claimFlowGraph(
           navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
         },
         navigateBack = navigator::navigateUp,
+        closeClaimFlow = closeClaimFlow,
       )
     }
     animatedComposable<ClaimFlowDestination.Location> { backStackEntry ->
@@ -129,6 +135,7 @@ fun NavGraphBuilder.claimFlowGraph(
           navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
         },
         navigateUp = navigator::navigateUp,
+        closeClaimFlow = closeClaimFlow,
       )
     }
     animatedComposable<ClaimFlowDestination.PhoneNumber> { backStackEntry ->
@@ -141,6 +148,7 @@ fun NavGraphBuilder.claimFlowGraph(
           navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
         },
         navigateUp = navigator::navigateUp,
+        closeClaimFlow = closeClaimFlow,
       )
     }
     animatedComposable<ClaimFlowDestination.SingleItem> { backStackEntry ->
@@ -154,6 +162,7 @@ fun NavGraphBuilder.claimFlowGraph(
           navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
         },
         navigateUp = navigator::navigateUp,
+        closeClaimFlow = closeClaimFlow,
       )
     }
     animatedComposable<ClaimFlowDestination.Summary> { backStackEntry ->
@@ -167,6 +176,7 @@ fun NavGraphBuilder.claimFlowGraph(
           navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
         },
         navigateUp = navigator::navigateUp,
+        closeClaimFlow = closeClaimFlow,
       )
     }
     animatedComposable<ClaimFlowDestination.SingleItemCheckout> { backStackEntry ->
@@ -185,6 +195,7 @@ fun NavGraphBuilder.claimFlowGraph(
           )
         },
         navigateUp = navigator::navigateUp,
+        closeClaimFlow = closeClaimFlow,
       )
     }
   }
@@ -195,12 +206,11 @@ fun NavGraphBuilder.claimFlowGraph(
  * NavGraphBuilder function so that they're not under the AppDestination.ClaimsFlow parent graph.
  */
 fun NavGraphBuilder.terminalClaimFlowStepDestinations(
-  windowSizeClass: WindowSizeClass,
   navigator: Navigator,
   openPlayStore: () -> Unit,
   openChat: () -> Unit,
 ) {
-  animatedComposable<ClaimFlowDestination.SingleItemPayout> { backStackEntry ->
+  animatedComposable<ClaimFlowDestination.SingleItemPayout> {
     val singleItemPayout = this
     val viewModel: SingleItemPayoutViewModel = koinViewModel { parametersOf(singleItemPayout) }
     SingleItemPayoutDestination(
@@ -212,25 +222,19 @@ fun NavGraphBuilder.terminalClaimFlowStepDestinations(
   }
   animatedComposable<ClaimFlowDestination.ClaimSuccess> {
     ClaimSuccessDestination(
-      windowSizeClass = windowSizeClass,
       openChat = openChat,
-      navigateUp = navigator::navigateUp,
       closeSuccessScreen = navigator::popBackStack,
     )
   }
   animatedComposable<ClaimFlowDestination.UpdateApp> {
     UnknownScreenDestination(
-      windowSizeClass = windowSizeClass,
       openPlayStore = openPlayStore,
-      navigateUp = navigator::navigateUp,
       closeUnknownScreenDestination = navigator::popBackStack,
     )
   }
   animatedComposable<ClaimFlowDestination.Failure> {
     UnknownErrorDestination(
-      windowSizeClass = windowSizeClass,
       openChat = openChat,
-      navigateUp = navigator::navigateUp,
       closeFailureScreenDestination = navigator::popBackStack,
     )
   }

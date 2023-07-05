@@ -36,6 +36,7 @@ internal fun LocationDestination(
   windowSizeClass: WindowSizeClass,
   navigateToNextStep: (ClaimFlowStep) -> Unit,
   navigateUp: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val claimFlowStep = uiState.nextStep
@@ -51,6 +52,7 @@ internal fun LocationDestination(
     submitLocation = viewModel::submitLocation,
     showedError = viewModel::showedError,
     navigateUp = navigateUp,
+    closeClaimFlow = closeClaimFlow,
   )
 }
 
@@ -62,10 +64,12 @@ private fun LocationScreen(
   submitLocation: () -> Unit,
   showedError: () -> Unit,
   navigateUp: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   ClaimFlowScaffold(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
+    closeClaimFlow = closeClaimFlow,
     isLoading = uiState.isLoading,
     errorSnackbarState = ErrorSnackbarState(
       error = uiState.error,
@@ -116,6 +120,7 @@ private fun PreviewLocationScreen() {
         submitLocation = {},
         showedError = {},
         navigateUp = {},
+        closeClaimFlow = {},
       )
     }
   }

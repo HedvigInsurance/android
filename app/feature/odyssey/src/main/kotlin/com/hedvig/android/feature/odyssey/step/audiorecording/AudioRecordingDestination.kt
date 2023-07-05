@@ -53,6 +53,7 @@ internal fun AudioRecordingDestination(
   openAppSettings: () -> Unit,
   navigateToNextStep: (ClaimFlowStep) -> Unit,
   navigateUp: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val claimFlowStep = uiState.nextStep
@@ -75,6 +76,7 @@ internal fun AudioRecordingDestination(
     showedError = viewModel::showedError,
     openAppSettings = openAppSettings,
     navigateUp = navigateUp,
+    closeClaimFlow = closeClaimFlow,
   )
 }
 
@@ -93,10 +95,12 @@ private fun AudioRecordingScreen(
   showedError: () -> Unit,
   openAppSettings: () -> Unit,
   navigateUp: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   ClaimFlowScaffold(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
+    closeClaimFlow = closeClaimFlow,
     isLoading = uiState.isLoading,
     errorSnackbarState = ErrorSnackbarState(uiState.hasError, showedError),
   ) { sideSpacingModifier ->
@@ -201,6 +205,7 @@ private fun PreviewAudioRecordingScreen() {
         ),
         Clock.System,
         { false },
+        {},
         {},
         {},
         {},

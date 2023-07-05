@@ -34,12 +34,14 @@ internal fun HonestyPledgeDestination(
   openNotificationPermissionStep: () -> Unit,
   pledgeAccepted: () -> Unit,
   navigateUp: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   HonestyPledgeScreen(
     windowSizeClass = windowSizeClass,
     openNotificationPermissionStep = openNotificationPermissionStep,
     pledgeAccepted = pledgeAccepted,
     navigateUp = navigateUp,
+    closeClaimFlow = closeClaimFlow,
   )
 }
 
@@ -49,11 +51,13 @@ private fun HonestyPledgeScreen(
   openNotificationPermissionStep: () -> Unit,
   pledgeAccepted: () -> Unit,
   navigateUp: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   val hasNotificationPermission = rememberNotificationPermissionStatus()
   ClaimFlowScaffold(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
+    closeClaimFlow = closeClaimFlow,
   ) { sideSpacingModifier ->
     Spacer(Modifier.height(16.dp))
     Text(
@@ -100,7 +104,7 @@ private fun rememberNotificationPermissionStatus(): Boolean {
 private fun PreviewHonestyPledgeScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      HonestyPledgeScreen(WindowSizeClass.calculateForPreview(), {}, {}, {})
+      HonestyPledgeScreen(WindowSizeClass.calculateForPreview(), {}, {}, {}, {})
     }
   }
 }

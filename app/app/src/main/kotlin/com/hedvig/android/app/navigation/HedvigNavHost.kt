@@ -56,6 +56,7 @@ import com.hedvig.hanalytics.HAnalytics
 import com.kiwi.navigationcompose.typed.Destination
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
+import com.kiwi.navigationcompose.typed.popBackStack
 import kotlinx.coroutines.launch
 
 @Composable
@@ -254,6 +255,9 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     openAppSettings = {
       activityNavigator.openAppSettings(context)
     },
+    closeClaimFlow = {
+      hedvigAppState.navController.popBackStack<AppDestination.ClaimsFlow>(inclusive = true)
+    },
     nestedGraphs = {
       claimTriagingDestinations(
         navigator = navigator,
@@ -264,7 +268,6 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     },
   )
   terminalClaimFlowStepDestinations(
-    windowSizeClass = hedvigAppState.windowSizeClass,
     navigator = navigator,
     openPlayStore = {
       navigator.popBackStack()

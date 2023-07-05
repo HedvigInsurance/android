@@ -40,6 +40,7 @@ internal fun PhoneNumberDestination(
   windowSizeClass: WindowSizeClass,
   navigateToNextStep: (ClaimFlowStep) -> Unit,
   navigateUp: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   val uiState: PhoneNumberUiState by viewModel.uiState.collectAsStateWithLifecycle()
   val claimFlowStep = uiState.nextStep
@@ -55,6 +56,7 @@ internal fun PhoneNumberDestination(
     submitPhoneNumber = viewModel::submitPhoneNumber,
     showedError = viewModel::showedError,
     navigateUp = navigateUp,
+    closeClaimFlow = closeClaimFlow,
   )
 }
 
@@ -66,10 +68,12 @@ private fun PhoneNumberScreen(
   submitPhoneNumber: () -> Unit,
   showedError: () -> Unit,
   navigateUp: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   ClaimFlowScaffold(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
+    closeClaimFlow = closeClaimFlow,
     isLoading = uiState.status == PhoneNumberUiState.Status.LOADING,
     errorSnackbarState = ErrorSnackbarState(
       error = uiState.status == PhoneNumberUiState.Status.ERROR,
@@ -130,6 +134,7 @@ private fun PreviewPhoneNumberScreen() {
         submitPhoneNumber = {},
         showedError = {},
         navigateUp = {},
+        closeClaimFlow = {},
       )
     }
   }

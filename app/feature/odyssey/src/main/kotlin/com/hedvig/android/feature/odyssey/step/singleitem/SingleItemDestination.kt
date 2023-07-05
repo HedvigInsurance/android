@@ -63,6 +63,7 @@ internal fun SingleItemDestination(
   windowSizeClass: WindowSizeClass,
   navigateToNextStep: (ClaimFlowStep) -> Unit,
   navigateUp: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val nextStep = uiState.nextStep
@@ -80,6 +81,7 @@ internal fun SingleItemDestination(
     selectProblem = viewModel::selectProblem,
     showedError = viewModel::showedError,
     navigateUp = navigateUp,
+    closeClaimFlow = closeClaimFlow,
   )
 }
 
@@ -93,10 +95,12 @@ private fun SingleItemScreen(
   selectProblem: (ItemProblem) -> Unit,
   showedError: () -> Unit,
   navigateUp: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   ClaimFlowScaffold(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
+    closeClaimFlow = closeClaimFlow,
     isLoading = uiState.isLoading,
     errorSnackbarState = ErrorSnackbarState(
       error = uiState.hasError,
@@ -331,6 +335,7 @@ private fun PreviewSingleItemScreen(
           nextStep = null,
         ),
         WindowSizeClass.calculateForPreview(),
+        {},
         {},
         {},
         {},

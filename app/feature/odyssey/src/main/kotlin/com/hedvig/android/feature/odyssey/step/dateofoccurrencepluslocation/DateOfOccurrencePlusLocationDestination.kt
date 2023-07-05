@@ -40,6 +40,7 @@ internal fun DateOfOccurrencePlusLocationDestination(
   windowSizeClass: WindowSizeClass,
   navigateToNextStep: (ClaimFlowStep) -> Unit,
   navigateBack: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val claimFlowStep = uiState.nextStep
@@ -55,6 +56,7 @@ internal fun DateOfOccurrencePlusLocationDestination(
     submitDateOfOccurrenceAndLocation = viewModel::submitDateOfOccurrenceAndLocation,
     showedError = viewModel::showedError,
     navigateUp = navigateBack,
+    closeClaimFlow = closeClaimFlow,
   )
 }
 
@@ -66,10 +68,12 @@ private fun DateOfOccurrencePlusLocationScreen(
   submitDateOfOccurrenceAndLocation: () -> Unit,
   showedError: () -> Unit,
   navigateUp: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   ClaimFlowScaffold(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
+    closeClaimFlow = closeClaimFlow,
     isLoading = uiState.isLoading,
     errorSnackbarState = ErrorSnackbarState(
       error = uiState.error,
@@ -149,6 +153,7 @@ private fun PreviewDateOfOccurrencePlusLocationScreen() {
         submitDateOfOccurrenceAndLocation = {},
         showedError = {},
         navigateUp = {},
+        closeClaimFlow = {},
       )
     }
   }
