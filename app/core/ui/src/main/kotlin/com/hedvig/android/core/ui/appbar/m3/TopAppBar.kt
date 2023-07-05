@@ -137,3 +137,52 @@ inline fun TopAppBar(
     scrollBehavior = scrollBehavior,
   )
 }
+
+@Composable
+fun TopAppBarWithBackAndClose(
+  title: String,
+  onNavigateUp: () -> Unit,
+  onClose: () -> Unit,
+  modifier: Modifier = Modifier,
+  windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
+  colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(
+    containerColor = MaterialTheme.colorScheme.background,
+    scrolledContainerColor = MaterialTheme.colorScheme.surface,
+  ),
+  scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+) {
+  TopAppBar(
+    modifier = modifier,
+    title = {
+      Text(
+        text = title,
+        style = MaterialTheme.typography.titleLarge,
+      )
+    },
+    navigationIcon = {
+      IconButton(
+        onClick = onNavigateUp,
+        content = {
+          Icon(
+            imageVector = Icons.Filled.ArrowBack,
+            contentDescription = null,
+          )
+        },
+      )
+    },
+    actions = {
+      IconButton(
+        onClick = onClose,
+        content = {
+          Icon(
+            imageVector = Icons.Filled.Close,
+            contentDescription = null,
+          )
+        },
+      )
+    },
+    windowInsets = windowInsets,
+    colors = colors,
+    scrollBehavior = scrollBehavior,
+  )
+}
