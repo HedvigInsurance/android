@@ -97,7 +97,6 @@ private fun AudioRecordingScreen(
   ClaimFlowScaffold(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
-    topAppBarText = stringResource(R.string.claims_incident_screen_header),
     isLoading = uiState.isLoading,
     errorSnackbarState = ErrorSnackbarState(uiState.hasError, showedError),
   ) { sideSpacingModifier ->
