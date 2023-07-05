@@ -32,6 +32,7 @@ import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -205,9 +206,12 @@ private fun BoxScope.PaidOutContent(
       )
       Spacer(Modifier.height(16.dp))
       Text(
-        text = stringResource(hedvig.resources.R.string.claims_payout_success_message),
-        textAlign = TextAlign.Center,
-        style = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+        text = stringResource(hedvig.resources.R.string.CLAIMS_PAYOUT_SUCCESS_LABEL),
+        style = MaterialTheme.typography.bodyLarge.copy(
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          textAlign = TextAlign.Center,
+          lineBreak = LineBreak.Heading,
+        ),
       )
     }
   }
@@ -219,7 +223,7 @@ private fun BoxScope.PaidOutContent(
     modifier = Modifier.align(Alignment.BottomCenter),
   ) {
     HedvigTextButton(
-      text = stringResource(hedvig.resources.R.string.claims_payout_done_label),
+      text = stringResource(hedvig.resources.R.string.general_close_button),
       onClick = {
         if (status is PayoutUiState.Status.PaidOut) {
           onDoneAfterPayout(status.nextStep)
