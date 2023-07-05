@@ -22,7 +22,7 @@ import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicke
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.getLocale
-import com.hedvig.android.core.ui.hedvigDateTimeFormatter
+import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import hedvig.resources.R
 import kotlinx.datetime.Instant
@@ -72,7 +72,7 @@ internal fun DatePickerWithDialog(
 
   val selectedDateMillis: Long? = uiState.datePickerState.selectedDateMillis
   val locale = getLocale()
-  val hedvigDateTimeFormatter = hedvigDateTimeFormatter()
+  val hedvigDateTimeFormatter = rememberHedvigDateTimeFormatter()
   val selectedDateText: String? = remember(locale, selectedDateMillis, hedvigDateTimeFormatter) {
     if (selectedDateMillis == null) {
       null

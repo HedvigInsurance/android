@@ -1,7 +1,7 @@
 package com.hedvig.android.core.ui
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.remember
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
 import java.time.format.SignStyle
@@ -23,8 +23,7 @@ fun hedvigDateTimeFormatter(locale: Locale): DateTimeFormatter {
 }
 
 @Composable
-@ReadOnlyComposable
-fun hedvigDateTimeFormatter(): DateTimeFormatter {
+fun rememberHedvigDateTimeFormatter(): DateTimeFormatter {
   val locale = getLocale()
-  return hedvigDateTimeFormatter(locale)
+  return remember(locale) { hedvigDateTimeFormatter(locale) }
 }
