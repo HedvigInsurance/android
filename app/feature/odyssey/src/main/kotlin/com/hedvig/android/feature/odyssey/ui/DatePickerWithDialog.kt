@@ -48,7 +48,7 @@ internal fun DatePickerWithDialog(
           onClick = { showDatePicker = false },
           shape = MaterialTheme.shapes.medium,
         ) {
-          Text(stringResource(R.string.ALERT_OK))
+          Text(stringResource(R.string.general_save_button))
         }
       },
       dismissButton = {
