@@ -77,10 +77,7 @@ private fun SingleItemPayoutScreen(
   HedvigTheme(useNewColorScheme = true) {
     Surface(
       color = MaterialTheme.colorScheme.background,
-      modifier = Modifier
-        .fillMaxSize()
-        .safeDrawingPadding()
-        .padding(16.dp),
+      modifier = Modifier.fillMaxSize().safeDrawingPadding(),
     ) {
       Box {
         LoadingContent(uiState.status is PayoutUiState.Status.Loading)
@@ -116,6 +113,7 @@ private fun BoxScope.ErrorContent(
     Column(
       verticalArrangement = Arrangement.spacedBy(16.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
+      modifier = Modifier.padding(16.dp),
     ) {
       Text(
         text = stringResource(hedvig.resources.R.string.something_went_wrong),
@@ -134,7 +132,7 @@ private fun BoxScope.ErrorContent(
     visible = show,
     enter = fadeIn(tween(600, 1_000, FastOutSlowInEasing)),
     exit = fadeOut(),
-    modifier = Modifier.align(Alignment.BottomCenter),
+    modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp),
   ) {
     LazyVerticalGrid(
       columns = GridCells.Fixed(2),
@@ -176,6 +174,7 @@ private fun BoxScope.LoadingContent(show: Boolean) {
   ) {
     Column(
       verticalArrangement = Arrangement.Center,
+      modifier = Modifier.padding(16.dp),
     ) {
       Text(
         text = stringResource(hedvig.resources.R.string.claims_payout_progress_title),
@@ -199,7 +198,10 @@ private fun BoxScope.PaidOutContent(
     show = status is PayoutUiState.Status.PaidOut,
     modifier = Modifier.align(Alignment.Center),
   ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+      horizontalAlignment = Alignment.CenterHorizontally,
+      modifier = Modifier.padding(16.dp),
+    ) {
       Text(
         text = paidOutAmount.toString(),
         textAlign = TextAlign.Center,
@@ -221,7 +223,7 @@ private fun BoxScope.PaidOutContent(
     visible = status is PayoutUiState.Status.PaidOut,
     enter = fadeIn(tween(600, 1_000, FastOutSlowInEasing)),
     exit = fadeOut(),
-    modifier = Modifier.align(Alignment.BottomCenter),
+    modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp),
   ) {
     HedvigTextButton(
       text = stringResource(hedvig.resources.R.string.general_close_button),
