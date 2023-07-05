@@ -5,14 +5,11 @@ import arrow.core.left
 import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import assertk.assertions.isInstanceOf
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.test.MainCoroutineRule
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.claimflow.CheckoutMethod
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
-import com.hedvig.android.data.claimflow.ClaimFlowStep
-import com.hedvig.android.data.claimflow.model.FlowId
 import com.hedvig.android.feature.odyssey.data.TestClaimFlowRepository
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
