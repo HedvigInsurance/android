@@ -1,6 +1,7 @@
 package com.hedvig.android.notification.core
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.content.Context
 import android.content.pm.PackageManager
@@ -8,6 +9,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
 import slimber.log.d
 
+@SuppressLint("MissingPermission")
 fun sendHedvigNotification(
   context: Context,
   notificationSender: String?,
