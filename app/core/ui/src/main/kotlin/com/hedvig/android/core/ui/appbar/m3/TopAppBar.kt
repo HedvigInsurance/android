@@ -101,14 +101,15 @@ enum class TopAppBarActionType {
 }
 
 @Composable
-inline fun TopAppBar(
+fun TopAppBar(
   title: String,
-  crossinline onClick: () -> Unit,
+  onClick: () -> Unit,
   actionType: TopAppBarActionType,
   colors: TopAppBarColors,
   scrollBehavior: TopAppBarScrollBehavior,
   modifier: Modifier = Modifier,
   windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
+  actions: @Composable RowScope.() -> Unit = {},
 ) {
   TopAppBar(
     modifier = modifier,
@@ -135,6 +136,7 @@ inline fun TopAppBar(
     windowInsets = windowInsets,
     colors = colors,
     scrollBehavior = scrollBehavior,
+    actions = actions,
   )
 }
 

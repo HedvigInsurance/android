@@ -6,6 +6,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -38,6 +42,7 @@ internal fun ClaimGroupsDestination(
   onClaimGroupWithEntryPointsSubmit: (ClaimGroup) -> Unit,
   startClaimFlow: (ClaimFlowStep) -> Unit,
   navigateUp: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   LaunchedEffect(uiState.nextStep) {
@@ -61,6 +66,7 @@ internal fun ClaimGroupsDestination(
     },
     showedStartClaimError = viewModel::showedStartClaimError,
     navigateUp = navigateUp,
+    closeClaimFlow = closeClaimFlow,
   )
 }
 
@@ -72,6 +78,7 @@ private fun ClaimGroupsScreen(
   onContinue: () -> Unit,
   showedStartClaimError: () -> Unit,
   navigateUp: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   if (uiState.startClaimErrorMessage != null) {
     ErrorDialog(
@@ -82,7 +89,15 @@ private fun ClaimGroupsScreen(
   }
   HedvigTheme(useNewColorScheme = true) {
     Box(modifier = Modifier.fillMaxSize(), propagateMinConstraints = true) {
-      HedvigScaffold(navigateUp = navigateUp) {
+      HedvigScaffold(
+        navigateUp = navigateUp,
+        topAppBarActions = {
+          IconButton(
+            onClick = closeClaimFlow,
+            content = { Icon(imageVector = Icons.Filled.Close, contentDescription = null) },
+          )
+        },
+      ) {
         Spacer(Modifier.height(16.dp))
         Text(
           text = stringResource(hedvig.resources.R.string.CLAIM_TRIAGING_NAVIGATION_TITLE),
@@ -157,6 +172,7 @@ private fun PreviewClaimGroupsScreen(
         onContinue = {},
         showedStartClaimError = {},
         navigateUp = {},
+        closeClaimFlow = {},
       )
     }
   }

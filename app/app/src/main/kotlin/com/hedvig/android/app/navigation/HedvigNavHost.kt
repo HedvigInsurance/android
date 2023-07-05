@@ -264,6 +264,9 @@ private fun NavGraphBuilder.nestedHomeGraphs(
         startClaimFlow = { backStackEntry, claimFlowStep: ClaimFlowStep ->
           navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
         },
+        closeClaimFlow = {
+          hedvigAppState.navController.popBackStack<AppDestination.ClaimsFlow>(inclusive = true)
+        },
       )
     },
   )

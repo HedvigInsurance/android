@@ -2,10 +2,13 @@ package com.hedvig.android.feature.claimtriaging.claimentrypointoptions
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -35,6 +38,7 @@ internal fun ClaimEntryPointOptionsDestination(
   viewModel: ClaimEntryPointOptionsViewModel,
   startClaimFlow: (ClaimFlowStep) -> Unit,
   navigateUp: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   LaunchedEffect(uiState.nextStep) {
@@ -49,6 +53,7 @@ internal fun ClaimEntryPointOptionsDestination(
     onContinue = viewModel::startClaimFlow,
     showedStartClaimError = viewModel::showedStartClaimError,
     navigateUp = navigateUp,
+    closeClaimFlow = closeClaimFlow,
   )
 }
 
@@ -59,6 +64,7 @@ private fun ClaimEntryPointOptionsScreen(
   onContinue: () -> Unit,
   showedStartClaimError: () -> Unit,
   navigateUp: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   if (uiState.startClaimErrorMessage != null) {
     ErrorDialog(
@@ -71,7 +77,12 @@ private fun ClaimEntryPointOptionsScreen(
     Box(Modifier.fillMaxWidth(), propagateMinConstraints = true) {
       HedvigScaffold(
         navigateUp = navigateUp,
-        modifier = Modifier.fillMaxSize(),
+        topAppBarActions = {
+          IconButton(
+            onClick = closeClaimFlow,
+            content = { Icon(imageVector = Icons.Filled.Close, contentDescription = null) },
+          )
+        },
       ) {
         Spacer(Modifier.height(16.dp))
         Text(
@@ -124,6 +135,7 @@ private fun PreviewClaimEntryPointOptionsScreen() {
         onContinue = {},
         showedStartClaimError = {},
         navigateUp = {},
+        closeClaimFlow = {},
       )
     }
   }
