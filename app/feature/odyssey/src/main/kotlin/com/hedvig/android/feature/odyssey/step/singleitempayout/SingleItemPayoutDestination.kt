@@ -44,7 +44,6 @@ import com.hedvig.android.core.designsystem.component.button.LargeOutlinedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.data.claimflow.ClaimFlowStep
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import octopus.type.CurrencyCode
@@ -75,26 +74,29 @@ private fun SingleItemPayoutScreen(
   openChat: () -> Unit,
   closePayoutScreen: () -> Unit,
 ) {
-  BlurredCirclesFullScreenProgressOverlay {
-    Box(
+  HedvigTheme(useNewColorScheme = true) {
+    Surface(
+      color = MaterialTheme.colorScheme.background,
       modifier = Modifier
         .fillMaxSize()
         .safeDrawingPadding()
         .padding(16.dp),
     ) {
-      LoadingContent(uiState.status is PayoutUiState.Status.Loading)
-      ErrorContent(
-        show = uiState.status is PayoutUiState.Status.Error,
-        allowInteraction = uiState.status is PayoutUiState.Status.Error,
-        exitFlow = closePayoutScreen,
-        retryPayout = retryPayout,
-        openChat = openChat,
-      )
-      PaidOutContent(
-        status = uiState.status,
-        paidOutAmount = uiState.amount,
-        onDoneAfterPayout = onDoneAfterPayout,
-      )
+      Box {
+        LoadingContent(uiState.status is PayoutUiState.Status.Loading)
+        ErrorContent(
+          show = uiState.status is PayoutUiState.Status.Error,
+          allowInteraction = uiState.status is PayoutUiState.Status.Error,
+          exitFlow = closePayoutScreen,
+          retryPayout = retryPayout,
+          openChat = openChat,
+        )
+        PaidOutContent(
+          status = uiState.status,
+          paidOutAmount = uiState.amount,
+          onDoneAfterPayout = onDoneAfterPayout,
+        )
+      }
     }
   }
 }
