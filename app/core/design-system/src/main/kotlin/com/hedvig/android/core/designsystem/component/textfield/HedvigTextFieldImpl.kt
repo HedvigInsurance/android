@@ -49,6 +49,7 @@ internal fun HedvigDecorationBox(
   prefix: @Composable (() -> Unit)? = null,
   suffix: @Composable (() -> Unit)? = null,
   supportingText: @Composable (() -> Unit)? = null,
+  withNewDesign: Boolean = false, // Adapts the TextField to have the big card size and the bigger text size.
   singleLine: Boolean = false,
   enabled: Boolean = true,
   isError: Boolean = false,
@@ -73,35 +74,38 @@ internal fun HedvigDecorationBox(
   }
 
   val typography = MaterialTheme.typography
-  val bodyLarge = typography.bodyLarge
-  val bodySmall = typography.bodySmall
-  val shouldOverrideTextStyleColor =
-    (bodyLarge.color == Color.Unspecified && bodySmall.color != Color.Unspecified) ||
-      (bodyLarge.color != Color.Unspecified && bodySmall.color == Color.Unspecified)
+  // Used for the "small" letters, like when the label shows when the text field is focused.
+  val smallTypography = if (withNewDesign) {
+    typography.bodyMedium
+  } else {
+    typography.bodySmall
+  }
+  // Used for the "big" letters, like when there is any actual input.
+  val bigTypography = if (withNewDesign) {
+    typography.headlineSmall
+  } else {
+    typography.bodyLarge
+  }
 
   TextFieldTransitionScope.Transition(
     inputState = inputState,
-    focusedTextStyleColor = with(MaterialTheme.typography.bodySmall.color) {
-      if (shouldOverrideTextStyleColor) this.takeOrElse { labelColor(inputState) } else this
+    focusedTextStyleColor = with(smallTypography.color) {
+      this.takeOrElse { labelColor(inputState) }
     },
-    unfocusedTextStyleColor = with(MaterialTheme.typography.bodyLarge.color) {
-      if (shouldOverrideTextStyleColor) this.takeOrElse { labelColor(inputState) } else this
+    unfocusedTextStyleColor = with(bigTypography.color) {
+      this.takeOrElse { labelColor(inputState) }
     },
     contentColor = labelColor,
     showLabel = label != null,
-  ) {
-      labelProgress, labelTextStyleColor, labelContentColor, placeholderAlphaProgress,
-      prefixSuffixAlphaProgress,
-    ->
-
+  ) { labelProgress, labelTextStyleColor, labelContentColor, placeholderAlphaProgress, prefixSuffixAlphaProgress ->
     val decoratedLabel: @Composable (() -> Unit)? = label?.let {
       @Composable {
         val labelTextStyle = lerp(
-          MaterialTheme.typography.bodyLarge,
-          MaterialTheme.typography.bodySmall,
-          labelProgress,
+          start = bigTypography,
+          stop = smallTypography,
+          fraction = labelProgress,
         ).let {
-          if (shouldOverrideTextStyleColor) it.copy(color = labelTextStyleColor) else it
+          it.copy(color = labelTextStyleColor)
         }
         Decoration(labelContentColor, labelTextStyle, it)
       }
@@ -115,9 +119,8 @@ internal fun HedvigDecorationBox(
         @Composable { modifier ->
           Box(modifier.alpha(placeholderAlphaProgress)) {
             Decoration(
-              contentColor =
-              colors.placeholderColor(enabled, isError, interactionSource).value,
-              typography = MaterialTheme.typography.bodyLarge,
+              contentColor = colors.placeholderColor(enabled, isError, interactionSource).value,
+              typography = smallTypography,
               content = placeholder,
             )
           }
@@ -133,7 +136,7 @@ internal fun HedvigDecorationBox(
           Box(Modifier.alpha(prefixSuffixAlphaProgress)) {
             Decoration(
               contentColor = prefixColor,
-              typography = bodyLarge,
+              typography = smallTypography,
               content = prefix,
             )
           }
@@ -149,7 +152,7 @@ internal fun HedvigDecorationBox(
           Box(Modifier.alpha(prefixSuffixAlphaProgress)) {
             Decoration(
               contentColor = suffixColor,
-              typography = bodyLarge,
+              typography = bigTypography, // Hedvig adjusted to big typography
               content = suffix,
             )
           }

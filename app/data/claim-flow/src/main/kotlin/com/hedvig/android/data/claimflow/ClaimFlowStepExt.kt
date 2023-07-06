@@ -79,7 +79,7 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
 }
 
 internal fun FlowClaimSingleItemStepFragment.AvailableItemModel.toItemModel(): ItemModel {
-  return ItemModel.Known(displayName, imageUrl, itemTypeId, itemBrandId, itemModelId)
+  return ItemModel.Known(displayName, itemTypeId, itemBrandId, itemModelId)
 }
 
 internal fun FlowClaimSingleItemStepFragment.AvailableItemProblem.toItemProblem(): ItemProblem {

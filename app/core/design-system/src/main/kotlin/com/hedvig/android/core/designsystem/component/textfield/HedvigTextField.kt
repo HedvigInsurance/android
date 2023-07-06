@@ -83,9 +83,6 @@ fun HedvigTextField(
   visualTransformation: VisualTransformation = VisualTransformation.None,
   keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
   keyboardActions: KeyboardActions = KeyboardActions.Default,
-  singleLine: Boolean = false,
-  maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
-  minLines: Int = 1,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   shape: Shape = HedvigTextFieldDefaults.shape,
   colors: HedvigTextFieldColors = HedvigTextFieldDefaults.colors(),
@@ -123,9 +120,6 @@ fun HedvigTextField(
     visualTransformation = visualTransformation,
     keyboardOptions = keyboardOptions,
     keyboardActions = keyboardActions,
-    singleLine = singleLine,
-    maxLines = maxLines,
-    minLines = minLines,
     interactionSource = interactionSource,
     shape = shape,
     colors = colors,
@@ -141,6 +135,7 @@ fun HedvigTextField(
   value: String,
   onValueChange: (String) -> Unit,
   modifier: Modifier = Modifier,
+  withNewDesign: Boolean = false, // Adapts the TextField to have the big card size and the bigger text size.
   enabled: Boolean = true,
   readOnly: Boolean = false,
   textStyle: TextStyle = LocalTextStyle.current,
@@ -155,9 +150,6 @@ fun HedvigTextField(
   visualTransformation: VisualTransformation = VisualTransformation.None,
   keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
   keyboardActions: KeyboardActions = KeyboardActions.Default,
-  singleLine: Boolean = false,
-  maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
-  minLines: Int = 1,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   shape: Shape = HedvigTextFieldDefaults.shape,
   colors: HedvigTextFieldColors = HedvigTextFieldDefaults.colors(),
@@ -166,7 +158,11 @@ fun HedvigTextField(
   val textColor = textStyle.color.takeOrElse {
     colors.textColor(enabled, isError, interactionSource).value
   }
-  val mergedTextStyle = textStyle.merge(TextStyle(color = textColor))
+  val mergedTextStyle = if (withNewDesign) {
+    textStyle.merge(MaterialTheme.typography.headlineSmall.copy(color = textColor))
+  } else {
+    textStyle.merge(MaterialTheme.typography.bodyLarge.copy(color = textColor))
+  }
 
   CompositionLocalProvider(LocalTextSelectionColors provides colors.selectionColors) {
     BasicTextField(
@@ -175,6 +171,13 @@ fun HedvigTextField(
         .defaultMinSize(
           minWidth = HedvigTextFieldDefaults.MinWidth,
           minHeight = HedvigTextFieldDefaults.MinHeight,
+        )
+        .then(
+          if (withNewDesign) {
+            Modifier.heightIn(72.dp) // Hedvig adjusted, matches the new design system card height.
+          } else {
+            Modifier
+          },
         ),
       onValueChange = onValueChange,
       enabled = enabled,
@@ -185,13 +188,12 @@ fun HedvigTextField(
       keyboardOptions = keyboardOptions,
       keyboardActions = keyboardActions,
       interactionSource = interactionSource,
-      singleLine = singleLine,
-      maxLines = maxLines,
-      minLines = minLines,
+      singleLine = true,
       decorationBox = @Composable { innerTextField ->
         // places leading icon, text field with label and placeholder, trailing icon
         HedvigTextFieldDefaults.DecorationBox(
           value = value,
+          withNewDesign = withNewDesign,
           visualTransformation = visualTransformation,
           innerTextField = innerTextField,
           placeholder = placeholder,
@@ -202,7 +204,7 @@ fun HedvigTextField(
           suffix = suffix,
           supportingText = supportingText,
           shape = shape,
-          singleLine = singleLine,
+          singleLine = true,
           enabled = enabled,
           isError = isError,
           interactionSource = interactionSource,
@@ -698,6 +700,7 @@ private fun calculateHeight(
  * Places the provided text field, placeholder, and label in the TextField given the PaddingValues
  * when there is a label. When there is no label, [placeWithoutLabel] is used instead.
  */
+@Suppress("NAME_SHADOWING")
 private fun Placeable.PlacementScope.placeWithLabel(
   width: Int,
   totalHeight: Int,
@@ -723,6 +726,16 @@ private fun Placeable.PlacementScope.placeWithLabel(
   // the supporting text on bottom
   val height = totalHeight - heightOrZero(supportingPlaceable)
 
+  // Hedvig adjustment so that singleLine also makes it so that the text+label are center aligned in the container
+  // height. This allows for the height to grow while not making the text field look like it's off-centered.
+  val (textPosition, labelEndPosition) = if (singleLine) {
+    val labelHeight = heightOrZero(labelPlaceable)
+    val labelPlusTextFieldHeight = labelHeight + textfieldPlaceable.height
+    val topYPosition = Alignment.CenterVertically.align(labelPlusTextFieldHeight, height)
+    (topYPosition + labelHeight) to topYPosition
+  } else {
+    textPosition to labelEndPosition
+  }
   leadingPlaceable?.placeRelative(
     0,
     Alignment.CenterVertically.align(leadingPlaceable.height, height),

@@ -41,6 +41,7 @@ sealed interface ClaimTriagingDestination : Destination {
 fun NavGraphBuilder.claimTriagingDestinations(
   navigator: Navigator,
   startClaimFlow: (NavBackStackEntry, ClaimFlowStep) -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   animatedComposable<ClaimTriagingDestination.ClaimGroups> { backStackEntry ->
     val viewModel: ClaimGroupsViewModel = koinViewModel()
@@ -56,6 +57,7 @@ fun NavGraphBuilder.claimTriagingDestinations(
         startClaimFlow(backStackEntry, claimFlowStep)
       },
       navigateUp = navigator::navigateUp,
+      closeClaimFlow = closeClaimFlow,
     )
   }
   animatedComposable<ClaimTriagingDestination.ClaimEntryPoints> { backStackEntry ->
@@ -73,6 +75,7 @@ fun NavGraphBuilder.claimTriagingDestinations(
         startClaimFlow(backStackEntry, claimFlowStep)
       },
       navigateUp = navigator::navigateUp,
+      closeClaimFlow = closeClaimFlow,
     )
   }
   animatedComposable<ClaimTriagingDestination.ClaimEntryPointOptions> { backStackEntry ->
@@ -86,6 +89,7 @@ fun NavGraphBuilder.claimTriagingDestinations(
         startClaimFlow(backStackEntry, claimFlowStep)
       },
       navigateUp = navigator::navigateUp,
+      closeClaimFlow = closeClaimFlow,
     )
   }
 }

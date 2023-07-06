@@ -46,6 +46,7 @@ internal fun NotificationPermissionDestination(
   onNotificationPermissionDecided: () -> Unit,
   openAppSettings: () -> Unit,
   navigateUp: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   NotificationPermissionScreen(
     windowSizeClass = windowSizeClass,
@@ -53,6 +54,7 @@ internal fun NotificationPermissionDestination(
     openAppSettings = openAppSettings,
     shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
     navigateUp = navigateUp,
+    closeClaimFlow = closeClaimFlow,
   )
 }
 
@@ -63,6 +65,7 @@ private fun NotificationPermissionScreen(
   onNotificationPermissionDecided: () -> Unit,
   openAppSettings: () -> Unit,
   navigateUp: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   var showDialog by remember { mutableStateOf(false) }
   val notificationPermissionState: PermissionState = rememberNotificationPermissionState { isGranted ->
@@ -81,6 +84,7 @@ private fun NotificationPermissionScreen(
     onNotificationPermissionDecided = onNotificationPermissionDecided,
     openAppSettings = openAppSettings,
     navigateUp = navigateUp,
+    closeClaimFlow = closeClaimFlow,
   )
 }
 
@@ -94,10 +98,12 @@ private fun NotificationPermissionScreen(
   onNotificationPermissionDecided: () -> Unit,
   openAppSettings: () -> Unit,
   navigateUp: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   ClaimFlowScaffold(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
+    closeClaimFlow = closeClaimFlow,
   ) { sideSpacingModifier ->
     if (showDialog) {
       PermissionDialog(
@@ -199,6 +205,7 @@ private fun PreviewNotificationPermissionScreen(
         showDialog,
         {},
         { true },
+        {},
         {},
         {},
         {},

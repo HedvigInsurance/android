@@ -4,7 +4,6 @@ package com.hedvig.android.audio.player.internal
 
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
@@ -13,8 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -22,15 +22,16 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.hedvig.android.audio.player.WaveInteraction
 import com.hedvig.android.core.common.android.ProgressPercentage
+import com.hedvig.android.core.designsystem.material3.DisabledAlpha
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.designsystem.theme.lavender_200
 import kotlin.math.abs
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
@@ -133,19 +134,15 @@ private fun FakeAudioWavePill(
 @HedvigPreview
 @Composable
 private fun PreviewFakeAudioWaves() {
-  HedvigTheme {
+  HedvigTheme(useNewColorScheme = true) {
     Surface(
-      color = if (isSystemInDarkTheme()) {
-        MaterialTheme.colors.secondary
-      } else {
-        lavender_200
-      },
+      color = MaterialTheme.colorScheme.surface,
       modifier = Modifier.height(150.dp),
     ) {
       FakeAudioWaves(
         ProgressPercentage(0.2f),
-        Color.Black,
-        Color.Black.copy(alpha = 0.12f),
+        LocalContentColor.current,
+        LocalContentColor.current.copy(DisabledAlpha).compositeOver(MaterialTheme.colorScheme.surface),
         {},
       )
     }

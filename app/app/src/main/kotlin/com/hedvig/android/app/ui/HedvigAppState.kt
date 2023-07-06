@@ -1,5 +1,6 @@
 package com.hedvig.android.app.ui
 
+import android.os.Bundle
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -197,8 +198,16 @@ internal class HedvigAppState(
 @Composable
 private fun NavigationTrackingSideEffect(navController: NavController) {
   DisposableEffect(navController) {
-    val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
-      d { "Navigated to route:${destination.route}" }
+    val listener = NavController.OnDestinationChangedListener { _, destination: NavDestination, bundle: Bundle? ->
+      d {
+        buildString {
+          append("Navigated to route:${destination.route}")
+          if (bundle != null) {
+            append(" | ")
+            append("With bundle:$bundle")
+          }
+        }
+      }
     }
     navController.addOnDestinationChangedListener(listener)
     onDispose {

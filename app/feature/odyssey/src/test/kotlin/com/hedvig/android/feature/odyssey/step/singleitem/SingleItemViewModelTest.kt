@@ -31,7 +31,6 @@ class SingleItemViewModelTest {
   )
   private val model = ItemModel.Known(
     displayName = "",
-    imageUrl = null,
     itemTypeId = "",
     itemBrandId = "brand#1",
     itemModelId = "model#1",
@@ -219,8 +218,8 @@ class SingleItemViewModelTest {
       testSingleItem(
         itemBrands = listOf(brandWithId2),
         itemModels = buildList {
-          addAll(List(3) { ItemModel.Known("", null, "", "brand#1", "") })
-          addAll(List(2) { ItemModel.Known("", null, "", "brand#2", "") })
+          addAll(List(3) { ItemModel.Known("", "", "brand#1", "") })
+          addAll(List(2) { ItemModel.Known("", "", "brand#2", "") })
         },
       ),
       claimFlowRepository,

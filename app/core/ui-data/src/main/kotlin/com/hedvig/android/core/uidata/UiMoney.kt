@@ -12,16 +12,20 @@ import java.text.DecimalFormat
 @Serializable
 data class UiMoney(val amount: Double, val currencyCode: CurrencyCode) {
   @Transient
-  val decimalFormatter: DecimalFormat = DecimalFormat("0.#")
+  val decimalFormatter: DecimalFormat = DecimalFormat("#")
 
   override fun toString(): String {
     return buildString {
       append(decimalFormatter.format(amount))
       append(" ")
-      if (currencyCode == CurrencyCode.UNKNOWN__) {
-        error("Unknown currency code")
-      }
-      append(currencyCode)
+      append(
+        when (currencyCode) {
+          CurrencyCode.SEK -> "kr"
+          CurrencyCode.DKK -> currencyCode.toString()
+          CurrencyCode.NOK -> currencyCode.toString()
+          CurrencyCode.UNKNOWN__ -> error("Unknown currency code")
+        },
+      )
     }
   }
 

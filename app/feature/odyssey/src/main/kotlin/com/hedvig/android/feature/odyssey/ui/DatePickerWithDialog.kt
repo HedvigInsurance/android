@@ -23,6 +23,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
+import com.hedvig.android.core.ui.rememberHedvigDateTimeFormatter
 import hedvig.resources.R
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -30,7 +31,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
-import java.time.format.DateTimeFormatter
 
 @Composable
 internal fun DatePickerWithDialog(
@@ -48,7 +48,7 @@ internal fun DatePickerWithDialog(
           onClick = { showDatePicker = false },
           shape = MaterialTheme.shapes.medium,
         ) {
-          Text(stringResource(R.string.ALERT_OK))
+          Text(stringResource(R.string.general_save_button))
         }
       },
       dismissButton = {
@@ -72,7 +72,8 @@ internal fun DatePickerWithDialog(
 
   val selectedDateMillis: Long? = uiState.datePickerState.selectedDateMillis
   val locale = getLocale()
-  val selectedDateText: String? = remember(locale, selectedDateMillis) {
+  val hedvigDateTimeFormatter = rememberHedvigDateTimeFormatter()
+  val selectedDateText: String? = remember(locale, selectedDateMillis, hedvigDateTimeFormatter) {
     if (selectedDateMillis == null) {
       null
     } else {
@@ -80,7 +81,7 @@ internal fun DatePickerWithDialog(
         .toLocalDateTime(TimeZone.UTC)
         .date
         .toJavaLocalDate()
-        .format(DateTimeFormatter.ofPattern("dd MMM yyyy", locale))
+        .format(hedvigDateTimeFormatter)
     }
   }
   HedvigBigCard(

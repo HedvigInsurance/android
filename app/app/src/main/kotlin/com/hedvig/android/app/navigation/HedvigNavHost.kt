@@ -56,6 +56,7 @@ import com.hedvig.hanalytics.HAnalytics
 import com.kiwi.navigationcompose.typed.Destination
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
+import com.kiwi.navigationcompose.typed.popBackStack
 import kotlinx.coroutines.launch
 
 @Composable
@@ -123,7 +124,6 @@ internal fun HedvigNavHost(
           hedvigAppState = hedvigAppState,
           context = context,
           navigator = navigator,
-          imageLoader = imageLoader,
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           activityNavigator = activityNavigator,
         )
@@ -228,7 +228,6 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   hedvigAppState: HedvigAppState,
   context: Context,
   navigator: Navigator,
-  imageLoader: ImageLoader,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   activityNavigator: ActivityNavigator,
 ) {
@@ -245,7 +244,6 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   claimFlowGraph(
     windowSizeClass = hedvigAppState.windowSizeClass,
     navigator = navigator,
-    imageLoader = imageLoader,
     shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
     navigateToTriaging = { backStackEntry ->
       if (backStackEntry != null) {
@@ -257,17 +255,22 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     openAppSettings = {
       activityNavigator.openAppSettings(context)
     },
+    closeClaimFlow = {
+      hedvigAppState.navController.popBackStack<AppDestination.ClaimsFlow>(inclusive = true)
+    },
     nestedGraphs = {
       claimTriagingDestinations(
         navigator = navigator,
         startClaimFlow = { backStackEntry, claimFlowStep: ClaimFlowStep ->
           navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
         },
+        closeClaimFlow = {
+          hedvigAppState.navController.popBackStack<AppDestination.ClaimsFlow>(inclusive = true)
+        },
       )
     },
   )
   terminalClaimFlowStepDestinations(
-    windowSizeClass = hedvigAppState.windowSizeClass,
     navigator = navigator,
     openPlayStore = {
       navigator.popBackStack()

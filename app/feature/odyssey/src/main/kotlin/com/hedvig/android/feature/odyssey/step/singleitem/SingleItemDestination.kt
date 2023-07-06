@@ -14,13 +14,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,7 +37,6 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
-import coil.ImageLoader
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigBigCard
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -47,7 +44,6 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.ItemBrand
@@ -65,9 +61,9 @@ import octopus.type.CurrencyCode
 internal fun SingleItemDestination(
   viewModel: SingleItemViewModel,
   windowSizeClass: WindowSizeClass,
-  imageLoader: ImageLoader,
   navigateToNextStep: (ClaimFlowStep) -> Unit,
   navigateUp: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val nextStep = uiState.nextStep
@@ -79,13 +75,13 @@ internal fun SingleItemDestination(
   SingleItemScreen(
     uiState = uiState,
     windowSizeClass = windowSizeClass,
-    imageLoader = imageLoader,
     submitSelections = viewModel::submitSelections,
     selectBrand = viewModel::selectBrand,
     selectModel = viewModel::selectModel,
     selectProblem = viewModel::selectProblem,
     showedError = viewModel::showedError,
     navigateUp = navigateUp,
+    closeClaimFlow = closeClaimFlow,
   )
 }
 
@@ -93,19 +89,18 @@ internal fun SingleItemDestination(
 private fun SingleItemScreen(
   uiState: SingleItemUiState,
   windowSizeClass: WindowSizeClass,
-  imageLoader: ImageLoader,
   submitSelections: () -> Unit,
   selectBrand: (ItemBrand) -> Unit,
   selectModel: (ItemModel) -> Unit,
   selectProblem: (ItemProblem) -> Unit,
   showedError: () -> Unit,
   navigateUp: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   ClaimFlowScaffold(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
-    topAppBarText = stringResource(hedvig.resources.R.string.claims_item_screen_title),
-    isLoading = uiState.isLoading,
+    closeClaimFlow = closeClaimFlow,
     errorSnackbarState = ErrorSnackbarState(
       error = uiState.hasError,
       showedError = showedError,
@@ -123,7 +118,7 @@ private fun SingleItemScreen(
 
     uiState.itemBrandsUiState.asContent()?.let { itemBrandsUiState ->
       Spacer(Modifier.height(2.dp))
-      Brands(itemBrandsUiState, uiState.canSubmit, selectBrand, imageLoader, sideSpacingModifier.fillMaxWidth())
+      Brands(itemBrandsUiState, uiState.canSubmit, selectBrand, sideSpacingModifier.fillMaxWidth())
       Spacer(Modifier.height(2.dp))
     }
     val itemModelsUiStateContent = uiState.itemModelsUiState.asContent()
@@ -138,7 +133,6 @@ private fun SingleItemScreen(
           uiState = itemModelsUiStateContent,
           enabled = uiState.canSubmit,
           selectModel = selectModel,
-          imageLoader = imageLoader,
           modifier = sideSpacingModifier.fillMaxWidth(),
         )
         Spacer(Modifier.height(2.dp))
@@ -150,7 +144,7 @@ private fun SingleItemScreen(
     PriceOfPurchase(
       uiState = uiState.purchasePriceUiState,
       canInteract = uiState.canSubmit,
-      modifier = sideSpacingModifier,
+      modifier = sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(2.dp))
     uiState.itemProblemsUiState.asContent()?.let { itemProblemsUiState ->
@@ -159,7 +153,6 @@ private fun SingleItemScreen(
         uiState = itemProblemsUiState,
         enabled = uiState.canSubmit,
         selectProblem = selectProblem,
-        imageLoader = imageLoader,
         modifier = sideSpacingModifier.fillMaxWidth(),
       )
       Spacer(Modifier.height(2.dp))
@@ -171,9 +164,10 @@ private fun SingleItemScreen(
     )
     Spacer(Modifier.height(16.dp))
     HedvigContainedButton(
-      onClick = submitSelections,
-      enabled = uiState.canSubmit,
       text = stringResource(hedvig.resources.R.string.general_continue_button),
+      onClick = submitSelections,
+      isLoading = uiState.isLoading,
+      enabled = uiState.canSubmit,
       modifier = sideSpacingModifier,
     )
     Spacer(Modifier.height(16.dp))
@@ -186,7 +180,6 @@ private fun Models(
   uiState: ItemModelsUiState.Content?,
   enabled: Boolean,
   selectModel: (ItemModel) -> Unit,
-  imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
 ) {
   LocalConfiguration.current
@@ -198,12 +191,11 @@ private fun Models(
       optionsList = uiState.availableItemModels,
       onSelected = selectModel,
       getDisplayText = { it.displayName(resources) },
-      getImageUrl = { it.asKnown()?.imageUrl },
+      getIsSelected = { it: ItemModel -> it == uiState.selectedItemModel },
       getId = { it.asKnown()?.itemModelId ?: "id" },
-      imageLoader = imageLoader,
-    ) {
-      showDialog = false
-    }
+      onDismissRequest = { showDialog = false },
+      smallSelectionItems = true,
+    )
   }
 
   HedvigBigCard(
@@ -220,7 +212,6 @@ private fun Brands(
   uiState: ItemBrandsUiState.Content,
   enabled: Boolean,
   selectBrand: (ItemBrand) -> Unit,
-  imageLoader: ImageLoader,
   modifier: Modifier,
 ) {
   LocalConfiguration.current
@@ -232,12 +223,11 @@ private fun Brands(
       optionsList = uiState.availableItemBrands,
       onSelected = selectBrand,
       getDisplayText = { it.displayName(resources) },
-      getImageUrl = { null },
       getId = { it.asKnown()?.itemBrandId ?: "id" },
-      imageLoader = imageLoader,
-    ) {
-      showDialog = false
-    }
+      getIsSelected = { it: ItemBrand -> it == uiState.selectedItemBrand },
+      onDismissRequest = { showDialog = false },
+      smallSelectionItems = true,
+    )
   }
 
   HedvigBigCard(
@@ -271,19 +261,16 @@ private fun PriceOfPurchase(
   modifier: Modifier = Modifier,
 ) {
   val focusRequester = remember { FocusRequester() }
-  HedvigBigCard(modifier = modifier) {
-    CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.headlineSmall) {
-      MonetaryAmountInput(
-        value = uiState.uiMoney.amount?.toString() ?: "",
-        hintText = stringResource(hedvig.resources.R.string.claims_payout_purchase_price),
-        canInteract = canInteract,
-        onInput = { uiState.updateAmount(it) },
-        currency = uiState.uiMoney.currencyCode.rawValue,
-        maximumFractionDigits = 0,
-        focusRequester = focusRequester,
-      )
-    }
-  }
+  MonetaryAmountInput(
+    value = uiState.uiMoney.amount?.toString() ?: "",
+    hintText = stringResource(hedvig.resources.R.string.claims_payout_purchase_price),
+    canInteract = canInteract,
+    onInput = { uiState.updateAmount(it) },
+    currency = uiState.uiMoney.currencyCode.rawValue,
+    maximumFractionDigits = 0,
+    focusRequester = focusRequester,
+    modifier = modifier,
+  )
 }
 
 @Composable
@@ -291,7 +278,6 @@ private fun ItemProblems(
   uiState: ItemProblemsUiState.Content,
   enabled: Boolean,
   selectProblem: (ItemProblem) -> Unit,
-  imageLoader: ImageLoader,
   modifier: Modifier,
 ) {
   var showDialog: Boolean by rememberSaveable { mutableStateOf(false) }
@@ -302,9 +288,7 @@ private fun ItemProblems(
       onSelected = selectProblem,
       getDisplayText = { it.displayName },
       getIsSelected = { uiState.selectedItemProblems.contains(it) },
-      getImageUrl = { null },
       getId = { it.itemProblemId },
-      imageLoader = imageLoader,
     ) {
       showDialog = false
     }
@@ -315,8 +299,7 @@ private fun ItemProblems(
     hintText = stringResource(hedvig.resources.R.string.claims_item_screen_type_of_damage_button),
     inputText = when {
       uiState.selectedItemProblems.isEmpty() -> null
-      uiState.selectedItemProblems.size == 1 -> uiState.selectedItemProblems.first().displayName
-      else -> stringResource(hedvig.resources.R.string.OFFER_START_DATE_MULTIPLE)
+      else -> uiState.selectedItemProblems.map(ItemProblem::displayName).joinToString()
     },
     modifier = modifier,
     enabled = enabled,
@@ -340,8 +323,8 @@ private fun PreviewSingleItemScreen(
             ItemBrand.Known("Item Brand #1", "", ""),
           ),
           itemModelsUiState = ItemModelsUiState.Content(
-            nonEmptyListOf(ItemModel.Known("Item Model", null, "", "", "")),
-            ItemModel.Known("Item Model #2", null, "", "", ""),
+            nonEmptyListOf(ItemModel.Known("Item Model", "", "", "")),
+            ItemModel.Known("Item Model #2", "", "", ""),
           ),
           itemProblemsUiState = ItemProblemsUiState.Content(
             nonEmptyListOf(ItemProblem("Item Problem", "")),
@@ -352,8 +335,13 @@ private fun PreviewSingleItemScreen(
           nextStep = null,
         ),
         WindowSizeClass.calculateForPreview(),
-        rememberPreviewImageLoader(),
-        {}, {}, {}, {}, {}, {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
       )
     }
   }

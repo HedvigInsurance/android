@@ -52,8 +52,17 @@ internal class ClaimGroupsViewModel(
     }
   }
 
+  fun continueWithoutSelection() {
+    _uiState.update { it.copy(haveTriedContinuingWithoutSelection = true) }
+  }
+
   fun onSelectClaimGroup(claimGroup: ClaimGroup) {
-    _uiState.update { it.copy(selectedClaimGroup = claimGroup) }
+    _uiState.update {
+      it.copy(
+        selectedClaimGroup = claimGroup,
+        haveTriedContinuingWithoutSelection = false,
+      )
+    }
   }
 
   fun startClaimFlow() {
@@ -84,15 +93,15 @@ internal class ClaimGroupsViewModel(
 internal data class ClaimGroupsUiState(
   val claimGroups: ImmutableList<ClaimGroup> = persistentListOf(),
   val selectedClaimGroup: ClaimGroup? = null,
+  val haveTriedContinuingWithoutSelection: Boolean = false,
   val chipLoadingErrorMessage: String? = null,
   val startClaimErrorMessage: String? = null,
   val isLoading: Boolean = true,
   val nextStep: ClaimFlowStep? = null,
 ) {
   val canContinue: Boolean
-    get() = selectedClaimGroup != null &&
-      isLoading == false &&
-      nextStep == null &&
+    get() = isLoading == false &&
       chipLoadingErrorMessage == null &&
-      startClaimErrorMessage == null
+      startClaimErrorMessage == null &&
+      nextStep == null
 }

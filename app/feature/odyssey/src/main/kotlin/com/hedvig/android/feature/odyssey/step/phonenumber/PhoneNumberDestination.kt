@@ -27,6 +27,7 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedButt
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
 import com.hedvig.android.data.claimflow.ClaimFlowStep
@@ -39,6 +40,7 @@ internal fun PhoneNumberDestination(
   windowSizeClass: WindowSizeClass,
   navigateToNextStep: (ClaimFlowStep) -> Unit,
   navigateUp: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   val uiState: PhoneNumberUiState by viewModel.uiState.collectAsStateWithLifecycle()
   val claimFlowStep = uiState.nextStep
@@ -54,6 +56,7 @@ internal fun PhoneNumberDestination(
     submitPhoneNumber = viewModel::submitPhoneNumber,
     showedError = viewModel::showedError,
     navigateUp = navigateUp,
+    closeClaimFlow = closeClaimFlow,
   )
 }
 
@@ -65,15 +68,17 @@ private fun PhoneNumberScreen(
   submitPhoneNumber: () -> Unit,
   showedError: () -> Unit,
   navigateUp: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   ClaimFlowScaffold(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
-    isLoading = uiState.status == PhoneNumberUiState.Status.LOADING,
+    closeClaimFlow = closeClaimFlow,
     errorSnackbarState = ErrorSnackbarState(
       error = uiState.status == PhoneNumberUiState.Status.ERROR,
       showedError = showedError,
     ),
+    modifier = Modifier.clearFocusOnTap(),
   ) { sideSpacingModifier ->
     Spacer(Modifier.height(16.dp))
     Text(
@@ -83,14 +88,14 @@ private fun PhoneNumberScreen(
     )
     Spacer(Modifier.height(32.dp))
     Spacer(Modifier.weight(1f))
-    HedvigTextField( // todo(claims) Use the new card dimensions + text styles.
+    HedvigTextField(
       value = uiState.phoneNumber,
       onValueChange = updatePhoneNumber,
       label = {
         Text(stringResource(R.string.ODYSSEY_PHONE_NUMBER_LABEL))
       },
+      withNewDesign = true,
       enabled = uiState.status != PhoneNumberUiState.Status.LOADING,
-      placeholder = { Text("070000000") },
       keyboardOptions = KeyboardOptions(
         autoCorrect = false,
         keyboardType = KeyboardType.Phone,
@@ -99,13 +104,13 @@ private fun PhoneNumberScreen(
       keyboardActions = KeyboardActions(
         onDone = { submitPhoneNumber() },
       ),
-      singleLine = true,
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
     HedvigContainedButton(
       text = stringResource(R.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
       onClick = submitPhoneNumber,
+      isLoading = uiState.status == PhoneNumberUiState.Status.LOADING,
       enabled = uiState.canSubmit,
       modifier = sideSpacingModifier,
     )
@@ -129,6 +134,7 @@ private fun PreviewPhoneNumberScreen() {
         submitPhoneNumber = {},
         showedError = {},
         navigateUp = {},
+        closeClaimFlow = {},
       )
     }
   }

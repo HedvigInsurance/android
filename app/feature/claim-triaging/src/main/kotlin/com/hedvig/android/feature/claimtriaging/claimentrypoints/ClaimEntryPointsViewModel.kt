@@ -19,8 +19,17 @@ internal class ClaimEntryPointsViewModel(
   private val _uiState = MutableStateFlow(ClaimEntryPointsUiState(entryPoints))
   val uiState = _uiState.asStateFlow()
 
+  fun continueWithoutSelection() {
+    _uiState.update { it.copy(haveTriedContinuingWithoutSelection = true) }
+  }
+
   fun onSelectEntryPoint(entryPoint: EntryPoint) {
-    _uiState.update { it.copy(selectedEntryPoint = entryPoint) }
+    _uiState.update {
+      it.copy(
+        selectedEntryPoint = entryPoint,
+        haveTriedContinuingWithoutSelection = false,
+      )
+    }
   }
 
   fun startClaimFlow() {
@@ -53,13 +62,13 @@ internal class ClaimEntryPointsViewModel(
 internal data class ClaimEntryPointsUiState(
   val entryPoints: ImmutableList<EntryPoint>,
   val selectedEntryPoint: EntryPoint? = null,
+  val haveTriedContinuingWithoutSelection: Boolean = false,
   val isLoading: Boolean = false,
   val startClaimErrorMessage: String? = null,
   val nextStep: ClaimFlowStep? = null,
 ) {
   val canContinue: Boolean
-    get() = selectedEntryPoint != null &&
-      isLoading == false &&
+    get() = isLoading == false &&
       startClaimErrorMessage == null &&
       nextStep == null
 }

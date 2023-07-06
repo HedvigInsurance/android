@@ -8,16 +8,23 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.AnimationVector4D
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.TwoWayConverter
+import androidx.compose.animation.core.animateValueAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,6 +44,9 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.FragmentManager
@@ -53,6 +63,7 @@ import com.hedvig.android.app.ui.HedvigNavRail
 import com.hedvig.android.app.ui.rememberHedvigAppState
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.core.designsystem.material3.motion.MotionTokens
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
@@ -312,15 +323,7 @@ private fun HedvigApp(
           modifier = Modifier
             .fillMaxHeight()
             .weight(1f)
-            .then(
-              if (hedvigAppState.shouldShowBottomBar) {
-                Modifier.consumeWindowInsets(WindowInsets.systemBars.only(WindowInsetsSides.Bottom))
-              } else if (hedvigAppState.shouldShowNavRail) {
-                Modifier.consumeWindowInsets(WindowInsets.systemBars.only(WindowInsetsSides.Start))
-              } else {
-                Modifier
-              },
-            ),
+            .animatedNavigationBarInsetsConsumption(hedvigAppState),
         )
       }
       AnimatedVisibility(
@@ -364,4 +367,54 @@ private fun Modifier.drawBackgroundGradient(
       drawRect(gradient)
     }
   }
+}
+
+/**
+ * Animates how we consume the insets, so that when we leave a screen which does not consume any insets, and we enter a
+ * screen which does (by showing the bottom nav for example) then we don't want the outgoing screen to have its
+ * contents snap to the bounds of the new insets immediately. This animation makes this visual effect look much more
+ * fluid.
+ */
+@OptIn(ExperimentalLayoutApi::class)
+private fun Modifier.animatedNavigationBarInsetsConsumption(
+  hedvigAppState: HedvigAppState,
+) = composed {
+  val density = LocalDensity.current
+  val insetsToConsume = if (hedvigAppState.shouldShowBottomBar) {
+    WindowInsets.systemBars.only(WindowInsetsSides.Bottom).asPaddingValues(density)
+  } else if (hedvigAppState.shouldShowNavRail) {
+    WindowInsets.systemBars.only(WindowInsetsSides.Left).asPaddingValues(density)
+  } else {
+    PaddingValues(0.dp)
+  }
+
+  val paddingValuesVectorConverter: TwoWayConverter<PaddingValues, AnimationVector4D> = TwoWayConverter(
+    convertToVector = { paddingValues ->
+      AnimationVector4D(
+        paddingValues.calculateLeftPadding(LayoutDirection.Ltr).value,
+        paddingValues.calculateRightPadding(LayoutDirection.Ltr).value,
+        paddingValues.calculateTopPadding().value,
+        paddingValues.calculateBottomPadding().value,
+      )
+    },
+    convertFromVector = { animationVector4d ->
+      val leftPadding = animationVector4d.v1
+      val rightPadding = animationVector4d.v2
+      val topPadding = animationVector4d.v3
+      val bottomPadding = animationVector4d.v4
+      PaddingValues(
+        start = leftPadding.dp,
+        end = rightPadding.dp,
+        top = topPadding.dp,
+        bottom = bottomPadding.dp,
+      )
+    },
+  )
+  val animatedInsetsToConsume: PaddingValues by animateValueAsState(
+    targetValue = insetsToConsume,
+    typeConverter = paddingValuesVectorConverter,
+    animationSpec = tween(MotionTokens.DurationMedium2.toInt()),
+    label = "Padding values inset animation",
+  )
+  Modifier.consumeWindowInsets(animatedInsetsToConsume)
 }

@@ -5,6 +5,8 @@ import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.core.uidata.UiNullableMoney
+import com.hedvig.android.data.claimflow.ItemBrand.Unknown.displayName
+import com.hedvig.android.data.claimflow.ItemModel.Unknown.displayName
 import com.hedvig.android.data.claimflow.model.AudioUrl
 import com.hedvig.android.data.claimflow.model.FlowId
 import com.kiwi.navigationcompose.typed.Destination
@@ -89,6 +91,12 @@ sealed interface ClaimFlowDestination : Destination {
     val availableCheckoutMethods: List<CheckoutMethod.Known>,
   ) : ClaimFlowDestination
 
+  // Local-only destination, not matching to a flow step, used to handle payout logic
+  @Serializable
+  data class SingleItemPayout(
+    val checkoutMethod: CheckoutMethod.Known,
+  ) : ClaimFlowDestination
+
   @Serializable
   object ClaimSuccess : ClaimFlowDestination
 
@@ -144,7 +152,6 @@ sealed interface ItemModel {
   @Serializable
   data class Known(
     val displayName: String,
-    val imageUrl: String?,
     val itemTypeId: String,
     val itemBrandId: String,
     val itemModelId: String,

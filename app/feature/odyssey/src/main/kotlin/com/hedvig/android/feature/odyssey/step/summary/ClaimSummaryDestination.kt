@@ -51,6 +51,7 @@ internal fun ClaimSummaryDestination(
   windowSizeClass: WindowSizeClass,
   navigateToNextStep: (ClaimFlowStep) -> Unit,
   navigateUp: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val claimFlowStep = uiState.claimSummaryStatusUiState.nextStep
@@ -65,6 +66,7 @@ internal fun ClaimSummaryDestination(
     showedError = viewModel::showedError,
     submitSummary = viewModel::submitSummary,
     navigateUp = navigateUp,
+    closeClaimFlow = closeClaimFlow,
   )
 }
 
@@ -75,14 +77,15 @@ private fun ClaimSummaryScreen(
   showedError: () -> Unit,
   submitSummary: () -> Unit,
   navigateUp: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   LocalConfiguration.current
   val resources = LocalContext.current.resources
   ClaimFlowScaffold(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
+    closeClaimFlow = closeClaimFlow,
     topAppBarText = stringResource(R.string.claims_summary_screen_title),
-    isLoading = uiState.claimSummaryStatusUiState.isLoading,
     errorSnackbarState = ErrorSnackbarState(
       uiState.claimSummaryStatusUiState.hasError,
       showedError,
@@ -92,10 +95,7 @@ private fun ClaimSummaryScreen(
     Spacer(Modifier.height(16.dp))
     Text(stringResource(hedvig.resources.R.string.moving_summary_scroll_Details), sideSpacingModifier.fillMaxWidth())
     Spacer(Modifier.height(8.dp))
-    val detailPairs: List<Pair<String, String>> = uiState.claimSummaryInfoUiState.itemDetailPairs(
-      resources,
-      getLocale(),
-    )
+    val detailPairs = uiState.claimSummaryInfoUiState.itemDetailPairs(resources, getLocale())
     CompositionLocalProvider(
       LocalTextStyle provides MaterialTheme.typography.bodyLarge.copy(
         MaterialTheme.colorScheme.onSurfaceVariant,
@@ -115,9 +115,10 @@ private fun ClaimSummaryScreen(
     VectorInfoCard(stringResource(hedvig.resources.R.string.CLAIMS_COMPLEMENT__CLAIM), sideSpacingModifier)
     Spacer(Modifier.height(16.dp))
     HedvigContainedButton(
-      onClick = submitSummary,
-      enabled = uiState.canSubmit,
       text = stringResource(R.string.EMBARK_SUBMIT_CLAIM),
+      onClick = submitSummary,
+      isLoading = uiState.claimSummaryStatusUiState.isLoading,
+      enabled = uiState.canSubmit,
       modifier = sideSpacingModifier,
     )
     Spacer(Modifier.height(16.dp))
@@ -134,7 +135,6 @@ private fun PreviewClaimSummaryScreen() {
       ClaimSummaryScreen(
         ClaimSummaryUiState(
           claimSummaryInfoUiState = ClaimSummaryInfoUiState(
-            imageUrl = "https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-14-pro.jpg",
             claimTypeTitle = "Broken Phone",
             dateOfIncident = LocalDate.parse("2023-03-24"),
             locationOption = LocationOption(
@@ -144,7 +144,6 @@ private fun PreviewClaimSummaryScreen() {
             itemType = ClaimSummaryInfoUiState.ItemType.Model(
               itemModel = ItemModel.Known(
                 displayName = "Apple iPhone 14 Pro Super Omega New Model",
-                imageUrl = "https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-14-pro.jpg",
                 itemTypeId = "PHONE",
                 itemBrandId = "APPLE_IPHONE",
                 itemModelId = "",
@@ -167,6 +166,7 @@ private fun PreviewClaimSummaryScreen() {
           ),
         ),
         WindowSizeClass.calculateForPreview(),
+        {},
         {},
         {},
         {},

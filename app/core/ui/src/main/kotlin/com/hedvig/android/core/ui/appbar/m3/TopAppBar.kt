@@ -101,14 +101,15 @@ enum class TopAppBarActionType {
 }
 
 @Composable
-inline fun TopAppBar(
+fun TopAppBar(
   title: String,
-  crossinline onClick: () -> Unit,
+  onClick: () -> Unit,
   actionType: TopAppBarActionType,
   colors: TopAppBarColors,
   scrollBehavior: TopAppBarScrollBehavior,
   modifier: Modifier = Modifier,
   windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
+  actions: @Composable RowScope.() -> Unit = {},
 ) {
   TopAppBar(
     modifier = modifier,
@@ -127,6 +128,56 @@ inline fun TopAppBar(
               TopAppBarActionType.BACK -> Icons.Filled.ArrowBack
               TopAppBarActionType.CLOSE -> Icons.Filled.Close
             },
+            contentDescription = null,
+          )
+        },
+      )
+    },
+    windowInsets = windowInsets,
+    colors = colors,
+    scrollBehavior = scrollBehavior,
+    actions = actions,
+  )
+}
+
+@Composable
+fun TopAppBarWithBackAndClose(
+  title: String,
+  onNavigateUp: () -> Unit,
+  onClose: () -> Unit,
+  modifier: Modifier = Modifier,
+  windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
+  colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(
+    containerColor = MaterialTheme.colorScheme.background,
+    scrolledContainerColor = MaterialTheme.colorScheme.surface,
+  ),
+  scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+) {
+  TopAppBar(
+    modifier = modifier,
+    title = {
+      Text(
+        text = title,
+        style = MaterialTheme.typography.titleLarge,
+      )
+    },
+    navigationIcon = {
+      IconButton(
+        onClick = onNavigateUp,
+        content = {
+          Icon(
+            imageVector = Icons.Filled.ArrowBack,
+            contentDescription = null,
+          )
+        },
+      )
+    },
+    actions = {
+      IconButton(
+        onClick = onClose,
+        content = {
+          Icon(
+            imageVector = Icons.Filled.Close,
             contentDescription = null,
           )
         },

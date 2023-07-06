@@ -19,12 +19,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.ImageLoader
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.LocationOption
@@ -36,9 +34,9 @@ import hedvig.resources.R
 internal fun LocationDestination(
   viewModel: LocationViewModel,
   windowSizeClass: WindowSizeClass,
-  imageLoader: ImageLoader,
   navigateToNextStep: (ClaimFlowStep) -> Unit,
   navigateUp: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val claimFlowStep = uiState.nextStep
@@ -50,11 +48,11 @@ internal fun LocationDestination(
   LocationScreen(
     uiState = uiState,
     windowSizeClass = windowSizeClass,
-    imageLoader = imageLoader,
     selectLocation = viewModel::selectLocationOption,
     submitLocation = viewModel::submitLocation,
     showedError = viewModel::showedError,
     navigateUp = navigateUp,
+    closeClaimFlow = closeClaimFlow,
   )
 }
 
@@ -62,16 +60,16 @@ internal fun LocationDestination(
 private fun LocationScreen(
   uiState: LocationUiState,
   windowSizeClass: WindowSizeClass,
-  imageLoader: ImageLoader,
   selectLocation: (LocationOption) -> Unit,
   submitLocation: () -> Unit,
   showedError: () -> Unit,
   navigateUp: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   ClaimFlowScaffold(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
-    isLoading = uiState.isLoading,
+    closeClaimFlow = closeClaimFlow,
     errorSnackbarState = ErrorSnackbarState(
       error = uiState.error,
       showedError = showedError,
@@ -90,13 +88,13 @@ private fun LocationScreen(
       selectedLocation = uiState.selectedLocation,
       selectLocationOption = selectLocation,
       enabled = !uiState.isLoading,
-      imageLoader = imageLoader,
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
     HedvigContainedButton(
       text = stringResource(R.string.general_continue_button),
       onClick = submitLocation,
+      isLoading = uiState.isLoading,
       enabled = uiState.canSubmit,
       modifier = sideSpacingModifier,
     )
@@ -118,11 +116,11 @@ private fun PreviewLocationScreen() {
           selectedLocation = LocationOption("#1", "Location #1"),
         ),
         windowSizeClass = WindowSizeClass.calculateForPreview(),
-        imageLoader = rememberPreviewImageLoader(),
         selectLocation = {},
         submitLocation = {},
         showedError = {},
         navigateUp = {},
+        closeClaimFlow = {},
       )
     }
   }

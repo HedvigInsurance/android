@@ -1,9 +1,5 @@
 package com.hedvig.android.feature.odyssey.step.singleitemcheckout
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -17,10 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -37,21 +30,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import arrow.core.nonEmptyListOf
+import arrow.core.NonEmptyList
+import arrow.core.toNonEmptyListOrNull
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.material3.squircle
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.SelectIndicationCircle
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
+import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.claimflow.CheckoutMethod
-import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.feature.odyssey.ui.ClaimFlowScaffold
 import hedvig.resources.R
 import octopus.type.CurrencyCode
@@ -60,11 +55,10 @@ import octopus.type.CurrencyCode
 internal fun SingleItemCheckoutDestination(
   viewModel: SingleItemCheckoutViewModel,
   windowSizeClass: WindowSizeClass,
-  navigateToNextStep: (ClaimFlowStep) -> Unit,
   navigateToAppUpdateStep: () -> Unit,
+  navigateToPayoutStep: (CheckoutMethod.Known) -> Unit,
   navigateUp: () -> Unit,
-  openChat: () -> Unit,
-  closePayoutScreen: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   when (val state = uiState) {
@@ -79,11 +73,9 @@ internal fun SingleItemCheckoutDestination(
         uiState = state,
         windowSizeClass = windowSizeClass,
         selectCheckoutMethod = viewModel::selectCheckoutMethod,
-        onDoneAfterPayout = navigateToNextStep,
-        submitSelections = viewModel::requestPayout,
+        submitSelectedCheckoutMethod = navigateToPayoutStep,
         navigateUp = navigateUp,
-        openChat = openChat,
-        closePayoutScreen = closePayoutScreen,
+        closeClaimFlow = closeClaimFlow,
       )
     }
   }
@@ -94,106 +86,86 @@ private fun SingleItemCheckoutScreen(
   uiState: SingleItemCheckoutUiState.Content,
   windowSizeClass: WindowSizeClass,
   selectCheckoutMethod: (CheckoutMethod.Known) -> Unit,
-  onDoneAfterPayout: (ClaimFlowStep) -> Unit,
-  submitSelections: () -> Unit,
+  submitSelectedCheckoutMethod: (CheckoutMethod.Known) -> Unit,
   navigateUp: () -> Unit,
-  openChat: () -> Unit,
-  closePayoutScreen: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
-  Box {
-    ClaimFlowScaffold(
-      topAppBarText = stringResource(R.string.claims_payout_payout_label),
-      windowSizeClass = windowSizeClass,
-      navigateUp = navigateUp,
-    ) { sideSpacingModifier ->
-      Spacer(Modifier.height(16.dp))
+  ClaimFlowScaffold(
+    topAppBarText = stringResource(R.string.claims_payout_payout_label),
+    windowSizeClass = windowSizeClass,
+    navigateUp = navigateUp,
+    closeClaimFlow = closeClaimFlow,
+  ) { sideSpacingModifier ->
+    Spacer(Modifier.height(16.dp))
+    Text(
+      text = stringResource(R.string.claims_payout_summary_subtitle),
+      style = MaterialTheme.typography.bodyLarge,
+      modifier = sideSpacingModifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
+    HedvigCard(
+      shape = MaterialTheme.shapes.squircle,
+      modifier = sideSpacingModifier,
+    ) {
       Text(
-        text = stringResource(R.string.claims_payout_summary_subtitle),
-        style = MaterialTheme.typography.bodyLarge,
-        modifier = sideSpacingModifier.fillMaxWidth(),
+        text = uiState.payoutAmount.toString(),
+        style = MaterialTheme.typography.displayMedium,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.fillMaxWidth().padding(6.dp),
       )
-      Spacer(Modifier.height(8.dp))
-      HedvigCard(
-        shape = MaterialTheme.shapes.squircle,
-        modifier = sideSpacingModifier,
-      ) {
-        Text(
-          text = uiState.payoutAmount.toString(),
-          style = MaterialTheme.typography.displayMedium,
-          textAlign = TextAlign.Center,
-          modifier = Modifier.fillMaxWidth().padding(6.dp),
+    }
+    Spacer(Modifier.height(24.dp))
+    Text(
+      text = stringResource(R.string.CLAIMS_CHECKOUT_COUNT_TITLE),
+      modifier = sideSpacingModifier,
+    )
+    Spacer(Modifier.height(8.dp))
+    CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
+      Column(sideSpacingModifier) {
+        val pairs = listOf(
+          stringResource(R.string.KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE) to uiState.price.toString(),
+          stringResource(R.string.claims_payout_age_deduction) to "-" + uiState.depreciation.toString(),
+          stringResource(R.string.claims_payout_age_deductable) to "-" + uiState.deductible.toString(),
         )
-      }
-      Spacer(Modifier.height(24.dp))
-      Text(
-        text = stringResource(R.string.CLAIMS_CHECKOUT_COUNT_TITLE),
-        modifier = sideSpacingModifier,
-      )
-      Spacer(Modifier.height(8.dp))
-      CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
-        Column(sideSpacingModifier) {
-          val pairs = listOf(
-            stringResource(R.string.KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE) to uiState.price.toString(),
-            stringResource(R.string.claims_payout_age_deduction) to "-" + uiState.depreciation.toString(),
-            stringResource(R.string.claims_payout_age_deductable) to "-" + uiState.deductible.toString(),
-          )
-          for ((left, right) in pairs) {
-            Row {
-              Text(left, Modifier.weight(1f))
-              Text(right, Modifier.weight(1f), textAlign = TextAlign.End)
-            }
+        for ((left, right) in pairs) {
+          Row {
+            Text(left, Modifier.weight(1f))
+            Text(right, Modifier.weight(1f), textAlign = TextAlign.End)
           }
         }
       }
-      Spacer(Modifier.height(16.dp))
-      Divider(sideSpacingModifier)
-      if (uiState.availableCheckoutMethods.isNotEmpty()) {
-        Spacer(Modifier.height(16.dp))
-        Text(
-          text = stringResource(R.string.PAYMENTS_SUBTITLE_PAYMENT_METHOD),
-          modifier = sideSpacingModifier,
-        )
-        CheckoutMethods(
-          availableCheckoutMethods = uiState.availableCheckoutMethods,
-          selectedCheckoutMethod = uiState.selectedCheckoutMethod,
-          selectCheckoutMethod = selectCheckoutMethod,
-          enabled = uiState.canRequestPayout,
-          modifier = sideSpacingModifier,
-        )
-      }
-      Spacer(Modifier.height(16.dp))
-      Spacer(Modifier.weight(1f))
-      VectorInfoCard(stringResource(R.string.CLAIMS_CHECKOUT_NOTICE), sideSpacingModifier)
-      Spacer(Modifier.height(16.dp))
-      HedvigContainedButton(
-        onClick = submitSelections,
-        enabled = uiState.canRequestPayout,
-        text = stringResource(R.string.claims_payout_button_label, uiState.payoutAmount.toString()),
-        modifier = sideSpacingModifier,
-      )
-      Spacer(Modifier.height(16.dp))
-      Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
     }
-    AnimatedVisibility(
-      visible = uiState.payoutUiState.shouldRender,
-      enter = fadeIn(),
-      exit = fadeOut(),
-    ) {
-      PayoutScreen(
-        uiState = uiState.payoutUiState,
-        closePayoutScreen = closePayoutScreen,
-        onDoneAfterPayout = onDoneAfterPayout,
-        retryPayout = submitSelections,
-        openChat = openChat,
-      )
-    }
+    Spacer(Modifier.height(16.dp))
+    Divider(sideSpacingModifier)
+    Spacer(Modifier.height(16.dp))
+    Text(
+      text = stringResource(R.string.PAYMENTS_SUBTITLE_PAYMENT_METHOD),
+      modifier = sideSpacingModifier,
+    )
+    CheckoutMethods(
+      availableCheckoutMethods = uiState.availableCheckoutMethods,
+      selectedCheckoutMethod = uiState.selectedCheckoutMethod,
+      selectCheckoutMethod = selectCheckoutMethod,
+      modifier = sideSpacingModifier,
+    )
+    Spacer(Modifier.height(16.dp))
+    Spacer(Modifier.weight(1f))
+    VectorInfoCard(stringResource(R.string.CLAIMS_CHECKOUT_NOTICE), sideSpacingModifier)
+    Spacer(Modifier.height(16.dp))
+    HedvigContainedButton(
+      onClick = { submitSelectedCheckoutMethod(uiState.selectedCheckoutMethod) },
+      text = stringResource(R.string.claims_payout_button_label, uiState.payoutAmount.toString()),
+      modifier = sideSpacingModifier,
+    )
+    Spacer(Modifier.height(16.dp))
+    Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
   }
 }
 
 @Suppress("UnusedReceiverParameter")
 @Composable
 private fun ColumnScope.CheckoutMethods(
-  availableCheckoutMethods: List<CheckoutMethod.Known>,
+  availableCheckoutMethods: NonEmptyList<CheckoutMethod.Known>,
   selectedCheckoutMethod: CheckoutMethod.Known,
   selectCheckoutMethod: (CheckoutMethod.Known) -> Unit,
   modifier: Modifier = Modifier,
@@ -226,19 +198,20 @@ private fun ColumnScope.CheckoutMethods(
           style = MaterialTheme.typography.headlineSmall,
           modifier = Modifier.weight(1f),
         )
-        if (isSelected && allowSelectingCheckoutMethod) {
+        if (allowSelectingCheckoutMethod) {
           Spacer(Modifier.width(16.dp))
-          Icon(Icons.Default.CheckCircle, null)
+          SelectIndicationCircle(selected = isSelected)
         }
       }
     }
   }
 }
 
-@Preview(locale = "sv")
 @HedvigPreview
 @Composable
-private fun PreviewSingleItemCheckoutScreen() {
+private fun PreviewSingleItemCheckoutScreen(
+  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) withMultiplePayoutMethods: Boolean,
+) {
   val checkoutNr1 = CheckoutMethod.Known.AutomaticAutogiro(
     "#1",
     "Autogiro".repeat(4),
@@ -258,16 +231,16 @@ private fun PreviewSingleItemCheckoutScreen() {
           UiMoney(500.0, CurrencyCode.SEK),
           UiMoney(1000.0, CurrencyCode.SEK),
           UiMoney(2499.0, CurrencyCode.SEK),
-          nonEmptyListOf(
-            checkoutNr1,
-            checkoutNr2,
-          ),
+          buildList {
+            add(checkoutNr1)
+            if (withMultiplePayoutMethods) {
+              add(checkoutNr2)
+            }
+          }.toNonEmptyListOrNull()!!,
           selected,
         ),
         WindowSizeClass.calculateForPreview(),
         { selected = it },
-        {},
-        {},
         {},
         {},
         {},

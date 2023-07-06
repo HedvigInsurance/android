@@ -1,34 +1,44 @@
 package com.hedvig.android.feature.odyssey.ui
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import coil.ImageLoader
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import arrow.core.identity
+import com.hedvig.android.core.designsystem.component.card.HedvigCard
+import com.hedvig.android.core.designsystem.material3.squircle
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
+import com.hedvig.android.core.ui.SelectIndicationCircle
+import com.hedvig.android.core.ui.preview.DoubleBooleanCollectionPreviewParameterProvider
 
 @Composable
 internal fun <T> SingleSelectDialog(
@@ -36,10 +46,10 @@ internal fun <T> SingleSelectDialog(
   optionsList: List<T>,
   onSelected: (T) -> Unit,
   getDisplayText: (T) -> String,
-  getImageUrl: (T) -> String?,
+  getIsSelected: ((T) -> Boolean)?,
   getId: (T) -> String,
-  imageLoader: ImageLoader,
   onDismissRequest: () -> Unit,
+  smallSelectionItems: Boolean = false, // True will not force the bigger min height that most of the design system has.
 ) {
   Dialog(onDismissRequest = { onDismissRequest.invoke() }) {
     SelectionContent(
@@ -47,13 +57,12 @@ internal fun <T> SingleSelectDialog(
       optionsList = optionsList,
       getId = getId,
       getDisplayText = getDisplayText,
-      getIsSelected = null,
-      getImageUrl = getImageUrl,
-      imageLoader = imageLoader,
+      getIsSelected = getIsSelected,
       onSelected = {
         onDismissRequest()
         onSelected(it)
       },
+      smallSelectionItems = smallSelectionItems,
     )
   }
 }
@@ -65,9 +74,7 @@ internal fun <T> MultiSelectDialog(
   onSelected: (T) -> Unit,
   getDisplayText: (T) -> String,
   getIsSelected: (T) -> Boolean,
-  getImageUrl: (T) -> String?,
   getId: (T) -> String,
-  imageLoader: ImageLoader,
   onDismissRequest: () -> Unit,
 ) {
   Dialog(onDismissRequest = { onDismissRequest.invoke() }) {
@@ -77,8 +84,6 @@ internal fun <T> MultiSelectDialog(
       getId = getId,
       getDisplayText = getDisplayText,
       getIsSelected = getIsSelected,
-      getImageUrl = getImageUrl,
-      imageLoader = imageLoader,
       onSelected = onSelected,
     )
   }
@@ -91,55 +96,74 @@ private fun <T> SelectionContent(
   getId: (T) -> String,
   getDisplayText: (T) -> String,
   getIsSelected: ((T) -> Boolean)?,
-  getImageUrl: (T) -> String?,
-  imageLoader: ImageLoader,
   onSelected: (T) -> Unit,
+  smallSelectionItems: Boolean = false,
+  lazyListState: LazyListState = rememberLazyListState(),
 ) {
-  Surface(shape = MaterialTheme.shapes.large) {
+  Surface(
+    color = MaterialTheme.colorScheme.background,
+    shape = MaterialTheme.shapes.squircle,
+  ) {
     Column {
-      Spacer(modifier = Modifier.height(24.dp))
+      Spacer(modifier = Modifier.height(32.dp))
       Text(
         text = title,
-        style = MaterialTheme.typography.titleLarge,
-        modifier = Modifier.padding(horizontal = 24.dp),
+        style = MaterialTheme.typography.bodyLarge,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
       )
-      Spacer(modifier = Modifier.height(12.dp))
+      Spacer(Modifier.height((if (smallSelectionItems) 32 else 16).dp))
+      val density = LocalDensity.current
+      val lazyColumnContentPadding = 16.dp
+      val showTopBorder by remember {
+        derivedStateOf {
+          lazyListState.firstVisibleItemIndex != 0 ||
+            (lazyListState.firstVisibleItemScrollOffset > with(density) { lazyColumnContentPadding.roundToPx() })
+        }
+      }
+      if (showTopBorder) {
+        Box(Modifier.fillMaxWidth().height(0.dp).wrapContentHeight(align = Alignment.Bottom, unbounded = true)) {
+          Divider()
+        }
+      }
       LazyColumn(
-        contentPadding = PaddingValues(bottom = 12.dp),
+        state = lazyListState,
+        verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.Top),
+        contentPadding = PaddingValues(lazyColumnContentPadding),
       ) {
         items(
           items = optionsList,
           key = { option: T -> getId(option) },
           contentType = { "Option" },
         ) { option: T ->
-          ListItem(
-            headlineContent = { Text(text = getDisplayText(option)) },
-            leadingContent = if (getImageUrl(option) != null) {
-              {
-                AsyncImage(
-                  model = ImageRequest.Builder(LocalContext.current)
-                    .data(getImageUrl(option))
-                    .crossfade(true)
-                    .build(),
-                  contentDescription = "Icon",
-                  imageLoader = imageLoader,
-                  modifier = Modifier
-                    .width(20.dp)
-                    .height(34.dp),
+          HedvigCard(
+            onClick = { onSelected(option) },
+            shape = MaterialTheme.shapes.squircle,
+          ) {
+            Row(
+              verticalAlignment = Alignment.CenterVertically,
+              modifier = Modifier
+                .then(
+                  if (smallSelectionItems) {
+                    Modifier
+                  } else {
+                    Modifier.heightIn(72.dp)
+                  },
                 )
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 10.dp),
+            ) {
+              Text(
+                text = getDisplayText(option),
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.weight(1f),
+              )
+              if (getIsSelected != null) {
+                Spacer(Modifier.width(8.dp))
+                SelectIndicationCircle(getIsSelected(option))
               }
-            } else {
-              null
-            },
-            trailingContent = {
-              if (getIsSelected?.invoke(option) == true) {
-                Icon(Icons.Default.Check, null)
-              }
-            },
-            modifier = Modifier
-              .clickable { onSelected(option) }
-              .padding(horizontal = 12.dp),
-          )
+            }
+          }
         }
       }
     }
@@ -148,19 +172,31 @@ private fun <T> SelectionContent(
 
 @HedvigPreview
 @Composable
-private fun PreviewSelectionContent() {
-  val selectedOptions = remember { mutableStateListOf(0, 5) }
-  HedvigTheme {
+private fun PreviewSelectionContent(
+  @PreviewParameter(DoubleBooleanCollectionPreviewParameterProvider::class) input: Pair<Boolean, Boolean>,
+) {
+  val (isScrolled, smallSelectionItems) = input
+  val selectedOptions = remember { mutableStateListOf("Front", "Water") }
+  val density = LocalDensity.current
+  HedvigTheme(useNewColorScheme = true) {
     Surface(color = MaterialTheme.colorScheme.background) {
       SelectionContent(
-        title = "Title",
-        optionsList = List(10) { it },
-        getId = Int::toString,
-        getDisplayText = Int::toString,
+        title = "Type of damage",
+        optionsList = listOf("Front".repeat(12), "Back", "Water", "Other"),
+        getId = ::identity,
+        getDisplayText = ::identity,
         getIsSelected = { selectedOptions.contains(it) },
-        getImageUrl = { null },
-        imageLoader = rememberPreviewImageLoader(),
         onSelected = { selectedOptions.add(it) },
+        smallSelectionItems = smallSelectionItems,
+        lazyListState = rememberLazyListState(
+          initialFirstVisibleItemScrollOffset = if (isScrolled) {
+            with(density) {
+              16.dp.roundToPx() + 1
+            }
+          } else {
+            0
+          },
+        ),
       )
     }
   }

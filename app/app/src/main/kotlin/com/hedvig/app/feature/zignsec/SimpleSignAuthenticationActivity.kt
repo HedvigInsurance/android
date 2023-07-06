@@ -318,7 +318,6 @@ private fun InputTextField(
     keyboardActions = KeyboardActions(
       onNext = { onSubmit() },
     ),
-    singleLine = true,
     modifier = modifier
       .fillMaxWidth()
       .padding(horizontal = 16.dp),

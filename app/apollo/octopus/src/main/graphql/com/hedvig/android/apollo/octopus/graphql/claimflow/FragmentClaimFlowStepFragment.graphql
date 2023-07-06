@@ -73,7 +73,6 @@ fragment FlowClaimSingleItemStepFragment on FlowClaimSingleItemStep {
   selectedItemModel
   availableItemModels {
     displayName
-    imageUrl
     itemTypeId
     itemBrandId
     itemModelId

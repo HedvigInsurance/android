@@ -64,9 +64,9 @@ internal class TestClaimFlowRepository : ClaimFlowRepository {
   }
 
   val submitSingleItemCheckoutInput = Turbine<Double>()
-  val submitSingleItemCheckoutResponse = Turbine<Either<ErrorMessage, ClaimFlowStep>>()
+  val submitSingleItemCheckoutResponse = Turbine<Either<ErrorMessage, Unit>>()
 
-  override suspend fun submitSingleItemCheckout(amount: Double): Either<ErrorMessage, ClaimFlowStep> {
+  override suspend fun submitSingleItemCheckout(amount: Double): Either<ErrorMessage, Unit> {
     submitSingleItemCheckoutInput.add(amount)
     return submitSingleItemCheckoutResponse.awaitItem()
   }

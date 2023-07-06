@@ -12,6 +12,7 @@ import com.hedvig.android.feature.odyssey.step.location.LocationViewModel
 import com.hedvig.android.feature.odyssey.step.phonenumber.PhoneNumberViewModel
 import com.hedvig.android.feature.odyssey.step.singleitem.SingleItemViewModel
 import com.hedvig.android.feature.odyssey.step.singleitemcheckout.SingleItemCheckoutViewModel
+import com.hedvig.android.feature.odyssey.step.singleitempayout.SingleItemPayoutViewModel
 import com.hedvig.android.feature.odyssey.step.summary.ClaimSummaryViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -51,6 +52,9 @@ val odysseyModule = module {
     ClaimSummaryViewModel(summary, get<ClaimFlowRepository>())
   }
   viewModel<SingleItemCheckoutViewModel> { (singleItemCheckout: ClaimFlowDestination.SingleItemCheckout) ->
-    SingleItemCheckoutViewModel(singleItemCheckout, get<ClaimFlowRepository>())
+    SingleItemCheckoutViewModel(singleItemCheckout)
+  }
+  viewModel<SingleItemPayoutViewModel> { (singleItemPayout: ClaimFlowDestination.SingleItemPayout) ->
+    SingleItemPayoutViewModel(singleItemPayout, get<ClaimFlowRepository>())
   }
 }

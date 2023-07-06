@@ -19,16 +19,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
-import com.hedvig.android.core.designsystem.component.card.HedvigCard
-import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.feature.odyssey.ui.ClaimFlowScaffold
 import com.hedvig.android.feature.odyssey.ui.DatePickerUiState
+import com.hedvig.android.feature.odyssey.ui.DatePickerWithDialog
 import hedvig.resources.R
 
 @Composable
@@ -37,6 +37,7 @@ internal fun DateOfOccurrenceDestination(
   windowSizeClass: WindowSizeClass,
   navigateToNextStep: (ClaimFlowStep) -> Unit,
   navigateBack: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val nextStep = uiState.nextStep
@@ -51,6 +52,7 @@ internal fun DateOfOccurrenceDestination(
     submitSelectedDate = viewModel::submitSelectedDate,
     showedError = viewModel::showedError,
     navigateUp = navigateBack,
+    closeClaimFlow = closeClaimFlow,
   )
 }
 
@@ -61,11 +63,12 @@ private fun DateOfOccurrenceScreen(
   submitSelectedDate: () -> Unit,
   showedError: () -> Unit,
   navigateUp: () -> Unit,
+  closeClaimFlow: () -> Unit,
 ) {
   ClaimFlowScaffold(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
-    isLoading = uiState.isLoading,
+    closeClaimFlow = closeClaimFlow,
     errorSnackbarState = ErrorSnackbarState(
       error = uiState.dateSubmissionError,
       showedError = showedError,
@@ -79,16 +82,22 @@ private fun DateOfOccurrenceScreen(
     )
     Spacer(Modifier.height(32.dp))
     Spacer(Modifier.weight(1f))
-    HedvigCard(modifier = sideSpacingModifier.fillMaxWidth()) {
-      HedvigDatePicker(
-        datePickerState = uiState.datePickerUiState.datePickerState,
-        dateValidator = uiState.datePickerUiState::validateDate,
-      )
-    }
+    DatePickerWithDialog(
+      uiState = uiState.datePickerUiState,
+      canInteract = uiState.canSubmit,
+      startText = stringResource(R.string.claims_item_screen_date_of_incident_button),
+      modifier = sideSpacingModifier.fillMaxWidth(),
+    )
     Spacer(Modifier.height(16.dp))
-    LargeContainedTextButton(
+    VectorInfoCard(
+      text = stringResource(R.string.CLAIMS_DATE_NOT_SURE_NOTICE_LABEL),
+      modifier = sideSpacingModifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(16.dp))
+    HedvigContainedButton(
       text = stringResource(R.string.general_continue_button),
       onClick = submitSelectedDate,
+      isLoading = uiState.isLoading,
       enabled = uiState.canSubmit,
       modifier = sideSpacingModifier,
     )
@@ -113,6 +122,7 @@ private fun PreviewDateOfOccurrenceScreen() {
         submitSelectedDate = {},
         showedError = {},
         navigateUp = {},
+        closeClaimFlow = {},
       )
     }
   }

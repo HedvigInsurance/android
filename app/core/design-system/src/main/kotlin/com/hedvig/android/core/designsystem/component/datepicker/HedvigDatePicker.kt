@@ -12,8 +12,12 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import com.hedvig.android.core.designsystem.material3.onTypeContainer
+import com.hedvig.android.core.designsystem.material3.typeContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import kotlinx.datetime.Clock
+import kotlin.time.Duration.Companion.days
 
 /**
  * Renders the M3 DatePicker but after cutting a bit from the top and the bottom to match our design. Particularly, we
@@ -30,8 +34,9 @@ fun HedvigDatePicker(
   dateFormatter: DatePickerFormatter = remember { DatePickerFormatter() },
   dateValidator: (Long) -> Boolean = { true },
   colors: DatePickerColors = DatePickerDefaults.colors(
-    selectedDayContainerColor = MaterialTheme.colorScheme.tertiary,
-    selectedDayContentColor = MaterialTheme.colorScheme.onTertiary,
+    selectedDayContainerColor = MaterialTheme.colorScheme.typeContainer,
+    selectedDayContentColor = MaterialTheme.colorScheme.onTypeContainer,
+    todayDateBorderColor = MaterialTheme.colorScheme.onTypeContainer,
   ),
 ) {
   DatePicker(
@@ -49,7 +54,7 @@ private fun PreviewHedvigDatePickerSimple() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       HedvigDatePicker(
-        rememberDatePickerState(),
+        rememberDatePickerState(initialSelectedDateMillis = Clock.System.now().minus(1.days).toEpochMilliseconds()),
       )
     }
   }

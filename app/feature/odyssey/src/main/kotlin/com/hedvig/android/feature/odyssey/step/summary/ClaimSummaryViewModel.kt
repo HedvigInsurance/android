@@ -3,6 +3,7 @@ package com.hedvig.android.feature.odyssey.step.summary
 import android.content.res.Resources
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.core.ui.hedvigDateTimeFormatter
 import com.hedvig.android.core.uidata.UiNullableMoney
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.data.claimflow.ClaimFlowRepository
@@ -24,7 +25,6 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 import octopus.type.FlowClaimItemBrandInput
 import octopus.type.FlowClaimItemModelInput
-import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlin.time.Duration.Companion.seconds
 
@@ -121,7 +121,6 @@ internal data class ClaimSummaryStatusUiState(
 }
 
 internal data class ClaimSummaryInfoUiState(
-  val imageUrl: String?,
   val claimTypeTitle: String?, // e.g "Broken Phone"
   val dateOfIncident: LocalDate?,
   val locationOption: LocationOption?,
@@ -145,7 +144,7 @@ internal data class ClaimSummaryInfoUiState(
       add(resources.getString(R.string.CLAIMS_DAMAGES) to incidentTypeText)
       // Skadedatum
       val incidentDateText = if (dateOfIncident != null) {
-        dateOfIncident.toJavaLocalDate().format(DateTimeFormatter.ofPattern("dd MMM yyyy", locale))
+        dateOfIncident.toJavaLocalDate().format(hedvigDateTimeFormatter(locale))
       } else {
         "-"
       }
@@ -167,7 +166,7 @@ internal data class ClaimSummaryInfoUiState(
       }
       // Inköpsdatum
       val purchaseDateText = if (dateOfPurchase != null) {
-        dateOfPurchase.toJavaLocalDate().format(DateTimeFormatter.ofPattern("dd MMM yyyy", locale))
+        dateOfPurchase.toJavaLocalDate().format(hedvigDateTimeFormatter(locale))
       } else {
         "-"
       }
@@ -216,10 +215,6 @@ internal data class ClaimSummaryInfoUiState(
       summary: ClaimFlowDestination.Summary,
     ): ClaimSummaryInfoUiState {
       return ClaimSummaryInfoUiState(
-        imageUrl = summary.availableItemModels
-          ?.firstOrNull { it.asKnown()?.itemModelId == summary.selectedItemModel }
-          ?.asKnown()
-          ?.imageUrl,
         claimTypeTitle = summary.claimTypeTitle,
         dateOfIncident = summary.dateOfOccurrence,
         locationOption = summary.locationOptions.firstOrNull { it.value == summary.selectedLocation },
