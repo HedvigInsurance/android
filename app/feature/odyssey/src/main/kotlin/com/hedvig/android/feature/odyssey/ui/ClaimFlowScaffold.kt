@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBackAndClose
 import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
-import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbar
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
 import hedvig.resources.R
@@ -48,7 +47,6 @@ internal fun ClaimFlowScaffold(
   closeClaimFlow: () -> Unit,
   modifier: Modifier = Modifier,
   topAppBarText: String? = null,
-  isLoading: Boolean = false,
   errorSnackbarState: ErrorSnackbarState? = null,
   itemsColumnHorizontalAlignment: Alignment.Horizontal = Alignment.Start,
   content: @Composable (ColumnScope.(sideSpacingModifier: Modifier) -> Unit),
@@ -96,7 +94,6 @@ internal fun ClaimFlowScaffold(
             content(sideSpacingModifier)
           }
         }
-        HedvigFullScreenCenterAlignedProgress(show = isLoading)
         if (errorSnackbarState != null) {
           ErrorSnackbar(
             errorSnackbarState = errorSnackbarState,

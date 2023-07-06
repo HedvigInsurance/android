@@ -70,7 +70,6 @@ private fun LocationScreen(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
-    isLoading = uiState.isLoading,
     errorSnackbarState = ErrorSnackbarState(
       error = uiState.error,
       showedError = showedError,
@@ -95,6 +94,7 @@ private fun LocationScreen(
     HedvigContainedButton(
       text = stringResource(R.string.general_continue_button),
       onClick = submitLocation,
+      isLoading = uiState.isLoading,
       enabled = uiState.canSubmit,
       modifier = sideSpacingModifier,
     )

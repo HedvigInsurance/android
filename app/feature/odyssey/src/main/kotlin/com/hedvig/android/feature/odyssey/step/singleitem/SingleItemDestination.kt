@@ -101,7 +101,6 @@ private fun SingleItemScreen(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
-    isLoading = uiState.isLoading,
     errorSnackbarState = ErrorSnackbarState(
       error = uiState.hasError,
       showedError = showedError,
@@ -165,9 +164,10 @@ private fun SingleItemScreen(
     )
     Spacer(Modifier.height(16.dp))
     HedvigContainedButton(
-      onClick = submitSelections,
-      enabled = uiState.canSubmit,
       text = stringResource(hedvig.resources.R.string.general_continue_button),
+      onClick = submitSelections,
+      isLoading = uiState.isLoading,
+      enabled = uiState.canSubmit,
       modifier = sideSpacingModifier,
     )
     Spacer(Modifier.height(16.dp))

@@ -101,7 +101,6 @@ private fun AudioRecordingScreen(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
-    isLoading = uiState.isLoading,
     errorSnackbarState = ErrorSnackbarState(uiState.hasError, showedError),
   ) { sideSpacingModifier ->
     Spacer(Modifier.height(20.dp))

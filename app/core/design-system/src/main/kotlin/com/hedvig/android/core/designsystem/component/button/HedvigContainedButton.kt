@@ -48,7 +48,7 @@ fun HedvigContainedButton(
     contentPadding = contentPadding,
     colors = colors,
   ) {
-    ButtonText(text, Modifier.alpha(0f))
+    ButtonText(text)
   }
 }
 
@@ -68,8 +68,11 @@ fun HedvigContainedButton(
   ),
 ) {
   HedvigContainedButton(
-    onClick = onClick,
-    enabled = enabled,
+    onClick = {
+      if (enabled && !isLoading) {
+        onClick()
+      }
+    },
     modifier = modifier,
     contentPadding = contentPadding,
     colors = colors,

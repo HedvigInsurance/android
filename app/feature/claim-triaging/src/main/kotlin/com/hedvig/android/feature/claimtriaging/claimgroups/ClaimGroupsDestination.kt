@@ -1,11 +1,14 @@
 package com.hedvig.android.feature.claimtriaging.claimgroups
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
@@ -27,12 +30,12 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
-import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimtriaging.ClaimGroup
 import com.hedvig.android.data.claimtriaging.ClaimGroupId
 import com.hedvig.android.feature.claimtriaging.OptionChipsFlowRow
+import com.hedvig.android.feature.claimtriaging.TriageItemNotPickedError
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
@@ -56,12 +59,15 @@ internal fun ClaimGroupsDestination(
     loadClaimGroups = viewModel::loadClaimGroups,
     onSelectClaimGroup = viewModel::onSelectClaimGroup,
     onContinue = {
-      uiState.selectedClaimGroup?.let { claimGroup ->
-        if (claimGroup.entryPoints.isEmpty()) {
+      val selectedClaimGroup = uiState.selectedClaimGroup
+      if (selectedClaimGroup != null) {
+        if (selectedClaimGroup.entryPoints.isEmpty()) {
           viewModel.startClaimFlow()
         } else {
-          onClaimGroupWithEntryPointsSubmit(claimGroup)
+          onClaimGroupWithEntryPointsSubmit(selectedClaimGroup)
         }
+      } else {
+        viewModel.continueWithoutSelection()
       }
     },
     showedStartClaimError = viewModel::showedStartClaimError,
@@ -88,61 +94,70 @@ private fun ClaimGroupsScreen(
     )
   }
   HedvigTheme(useNewColorScheme = true) {
-    Box(modifier = Modifier.fillMaxSize(), propagateMinConstraints = true) {
-      HedvigScaffold(
-        navigateUp = navigateUp,
-        topAppBarActions = {
-          IconButton(
-            onClick = closeClaimFlow,
-            content = { Icon(imageVector = Icons.Filled.Close, contentDescription = null) },
-          )
-        },
-      ) {
-        Spacer(Modifier.height(16.dp))
+    HedvigScaffold(
+      navigateUp = navigateUp,
+      topAppBarActions = {
+        IconButton(
+          onClick = closeClaimFlow,
+          content = { Icon(imageVector = Icons.Filled.Close, contentDescription = null) },
+        )
+      },
+      modifier = Modifier.fillMaxWidth(),
+    ) {
+      Spacer(Modifier.height(16.dp))
+      Text(
+        text = stringResource(hedvig.resources.R.string.CLAIM_TRIAGING_NAVIGATION_TITLE),
+        style = MaterialTheme.typography.headlineMedium,
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+      )
+      Spacer(Modifier.height(32.dp))
+      Spacer(Modifier.weight(1f))
+      if (uiState.chipLoadingErrorMessage != null) {
         Text(
-          text = stringResource(hedvig.resources.R.string.CLAIM_TRIAGING_NAVIGATION_TITLE),
-          style = MaterialTheme.typography.headlineMedium,
+          text = stringResource(hedvig.resources.R.string.something_went_wrong),
+          style = MaterialTheme.typography.titleLarge,
           modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
         )
-        Spacer(Modifier.height(32.dp))
-        Spacer(Modifier.weight(1f))
-        if (uiState.chipLoadingErrorMessage != null) {
-          Text(
-            text = stringResource(hedvig.resources.R.string.something_went_wrong),
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-          )
-          Spacer(Modifier.height(16.dp))
-          Text(
-            text = stringResource(hedvig.resources.R.string.GENERAL_ERROR_BODY),
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-          )
-          Spacer(Modifier.height(24.dp))
-          HedvigContainedButton(
-            text = stringResource(hedvig.resources.R.string.GENERAL_RETRY),
-            onClick = loadClaimGroups,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-          )
-        } else {
-          OptionChipsFlowRow(
-            items = uiState.claimGroups,
-            itemDisplayName = ClaimGroup::displayName,
-            selectedItem = uiState.selectedClaimGroup,
-            onItemClick = { claimGroup -> onSelectClaimGroup(claimGroup) },
-            modifier = Modifier.padding(horizontal = 16.dp),
-          )
-          Spacer(Modifier.height(8.dp))
-          HedvigContainedButton(
-            text = stringResource(hedvig.resources.R.string.claims_continue_button),
-            onClick = onContinue,
-            enabled = uiState.canContinue,
-            modifier = Modifier.padding(horizontal = 16.dp),
-          )
+        Spacer(Modifier.height(16.dp))
+        Text(
+          text = stringResource(hedvig.resources.R.string.GENERAL_ERROR_BODY),
+          style = MaterialTheme.typography.bodyLarge,
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        )
+        Spacer(Modifier.height(24.dp))
+        HedvigContainedButton(
+          text = stringResource(hedvig.resources.R.string.GENERAL_RETRY),
+          onClick = loadClaimGroups,
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        )
+      } else {
+        AnimatedVisibility(
+          visible = uiState.haveTriedContinuingWithoutSelection,
+          enter = fadeIn(),
+          exit = fadeOut(),
+        ) {
+          Column {
+            TriageItemNotPickedError(Modifier.padding(horizontal = 16.dp).fillMaxWidth().wrapContentWidth())
+            Spacer(Modifier.height(16.dp))
+          }
         }
-        Spacer(modifier = Modifier.height(16.dp))
+        OptionChipsFlowRow(
+          items = uiState.claimGroups,
+          itemDisplayName = ClaimGroup::displayName,
+          selectedItem = uiState.selectedClaimGroup,
+          onItemClick = { claimGroup -> onSelectClaimGroup(claimGroup) },
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+        Spacer(Modifier.height(8.dp))
+        HedvigContainedButton(
+          text = stringResource(hedvig.resources.R.string.claims_continue_button),
+          onClick = onContinue,
+          isLoading = uiState.isLoading,
+          enabled = uiState.canContinue,
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
       }
-      HedvigFullScreenCenterAlignedProgress(show = uiState.isLoading)
+      Spacer(modifier = Modifier.height(16.dp))
     }
   }
 }
@@ -164,6 +179,7 @@ private fun PreviewClaimGroupsScreen(
         uiState = ClaimGroupsUiState(
           claimGroups = claimGroups,
           selectedClaimGroup = claimGroups[3],
+          haveTriedContinuingWithoutSelection = true,
           chipLoadingErrorMessage = if (hasError) "" else null,
           isLoading = false,
         ),

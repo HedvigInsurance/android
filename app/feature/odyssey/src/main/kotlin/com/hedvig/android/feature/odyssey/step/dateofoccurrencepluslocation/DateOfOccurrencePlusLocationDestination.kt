@@ -74,7 +74,6 @@ private fun DateOfOccurrencePlusLocationScreen(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
-    isLoading = uiState.isLoading,
     errorSnackbarState = ErrorSnackbarState(
       error = uiState.error,
       showedError = showedError,
@@ -100,6 +99,7 @@ private fun DateOfOccurrencePlusLocationScreen(
     HedvigContainedButton(
       text = stringResource(R.string.general_continue_button),
       onClick = submitDateOfOccurrenceAndLocation,
+      isLoading = uiState.isLoading,
       enabled = uiState.canSubmit,
       modifier = sideSpacingModifier,
     )

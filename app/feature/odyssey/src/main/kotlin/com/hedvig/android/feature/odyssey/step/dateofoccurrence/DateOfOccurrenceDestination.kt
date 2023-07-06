@@ -69,7 +69,6 @@ private fun DateOfOccurrenceScreen(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
-    isLoading = uiState.isLoading,
     errorSnackbarState = ErrorSnackbarState(
       error = uiState.dateSubmissionError,
       showedError = showedError,
@@ -98,6 +97,7 @@ private fun DateOfOccurrenceScreen(
     HedvigContainedButton(
       text = stringResource(R.string.general_continue_button),
       onClick = submitSelectedDate,
+      isLoading = uiState.isLoading,
       enabled = uiState.canSubmit,
       modifier = sideSpacingModifier,
     )

@@ -72,13 +72,13 @@ private fun LoadingDot(
 ) {
   val transition = rememberInfiniteTransition()
   val color by transition.animateColor(
-    initialValue = Color.Transparent, // ignored since the keyFrames DSL overrides it
-    targetValue = Color.Transparent, // ignored since the keyFrames DSL overrides it
+    initialValue = stableColor, // ignored since the keyFrames DSL overrides it
+    targetValue = stableColor, // ignored since the keyFrames DSL overrides it
     animationSpec = dotInfiniteRepeatableSpec(stableColor, temporaryColor, startDelay),
   )
   val scale by transition.animateFloat(
-    initialValue = 0f, // ignored since the keyFrames DSL overrides it
-    targetValue = 0f, // ignored since the keyFrames DSL overrides it
+    initialValue = 1f, // ignored since the keyFrames DSL overrides it
+    targetValue = 1f, // ignored since the keyFrames DSL overrides it
     animationSpec = dotInfiniteRepeatableSpec(stableScale, temporaryScale, startDelay),
   )
   Box(

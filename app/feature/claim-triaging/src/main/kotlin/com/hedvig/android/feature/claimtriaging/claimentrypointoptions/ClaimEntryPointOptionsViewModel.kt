@@ -21,8 +21,17 @@ internal class ClaimEntryPointOptionsViewModel(
   private val _uiState = MutableStateFlow(ClaimEntryPointOptionsUiState(entryPointOptions))
   val uiState = _uiState.asStateFlow()
 
+  fun continueWithoutSelection() {
+    _uiState.update { it.copy(haveTriedContinuingWithoutSelection = true) }
+  }
+
   fun onSelectEntryPoint(entryPointOption: EntryPointOption) {
-    _uiState.update { it.copy(selectedEntryPointOption = entryPointOption) }
+    _uiState.update {
+      it.copy(
+        selectedEntryPointOption = entryPointOption,
+        haveTriedContinuingWithoutSelection = false,
+      )
+    }
   }
 
   fun startClaimFlow() {
@@ -54,13 +63,13 @@ internal class ClaimEntryPointOptionsViewModel(
 internal data class ClaimEntryPointOptionsUiState(
   val entryPointOptions: ImmutableList<EntryPointOption>,
   val selectedEntryPointOption: EntryPointOption? = null,
+  val haveTriedContinuingWithoutSelection: Boolean = false,
   val isLoading: Boolean = false,
   val startClaimErrorMessage: String? = null,
   val nextStep: ClaimFlowStep? = null,
 ) {
   val canContinue: Boolean
-    get() = selectedEntryPointOption != null &&
-      isLoading == false &&
+    get() = isLoading == false &&
       startClaimErrorMessage == null &&
       nextStep == null
 }

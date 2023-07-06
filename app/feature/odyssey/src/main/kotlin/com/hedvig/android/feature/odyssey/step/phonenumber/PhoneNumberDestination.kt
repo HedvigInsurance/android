@@ -74,7 +74,6 @@ private fun PhoneNumberScreen(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
-    isLoading = uiState.status == PhoneNumberUiState.Status.LOADING,
     errorSnackbarState = ErrorSnackbarState(
       error = uiState.status == PhoneNumberUiState.Status.ERROR,
       showedError = showedError,
@@ -111,6 +110,7 @@ private fun PhoneNumberScreen(
     HedvigContainedButton(
       text = stringResource(R.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
       onClick = submitPhoneNumber,
+      isLoading = uiState.status == PhoneNumberUiState.Status.LOADING,
       enabled = uiState.canSubmit,
       modifier = sideSpacingModifier,
     )

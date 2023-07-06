@@ -215,6 +215,7 @@ private fun Playback(
     HedvigContainedButton(
       onClick = submit,
       text = stringResource(hedvig.resources.R.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
+      isLoading = uiState.isLoading,
       enabled = uiState.canSubmit,
       modifier = Modifier.padding(top = 16.dp),
     )
@@ -256,6 +257,7 @@ private fun PrerecordedPlayback(
         HedvigContainedButton(
           onClick = submitAudioUrl,
           text = stringResource(hedvig.resources.R.string.general_continue_button),
+          isLoading = uiState.isLoading,
           enabled = uiState.canSubmit,
         )
       }
