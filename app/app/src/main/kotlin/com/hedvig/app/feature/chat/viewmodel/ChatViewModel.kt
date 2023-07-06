@@ -28,7 +28,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import slimber.log.d
 import slimber.log.e
-import slimber.log.w
+import slimber.log.i
 import java.util.concurrent.TimeUnit
 
 class ChatViewModel(
@@ -79,7 +79,7 @@ class ChatViewModel(
                   message.fragments.chatMessageFragment,
                 )
             } else {
-              w { "Chat: subscription was not allowed to write" }
+              i { "Chat: subscription was not allowed to write" }
             }
           }
         }
