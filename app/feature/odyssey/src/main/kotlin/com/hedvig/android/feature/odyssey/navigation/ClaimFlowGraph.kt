@@ -1,13 +1,12 @@
 package com.hedvig.android.feature.odyssey.navigation
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.compose.runtime.remember
-import androidx.navigation.NavController
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
-import coil.ImageLoader
-import com.hedvig.android.feature.odyssey.data.ClaimFlowStep
-import com.hedvig.android.feature.odyssey.data.toClaimFlowDestination
+import androidx.navigation.navOptions
+import com.hedvig.android.data.claimflow.ClaimFlowDestination
+import com.hedvig.android.data.claimflow.ClaimFlowStep
+import com.hedvig.android.data.claimflow.toClaimFlowDestination
 import com.hedvig.android.feature.odyssey.step.audiorecording.AudioRecordingDestination
 import com.hedvig.android.feature.odyssey.step.audiorecording.AudioRecordingViewModel
 import com.hedvig.android.feature.odyssey.step.dateofoccurrence.DateOfOccurrenceDestination
@@ -15,17 +14,17 @@ import com.hedvig.android.feature.odyssey.step.dateofoccurrence.DateOfOccurrence
 import com.hedvig.android.feature.odyssey.step.dateofoccurrencepluslocation.DateOfOccurrencePlusLocationDestination
 import com.hedvig.android.feature.odyssey.step.dateofoccurrencepluslocation.DateOfOccurrencePlusLocationViewModel
 import com.hedvig.android.feature.odyssey.step.honestypledge.HonestyPledgeDestination
-import com.hedvig.android.feature.odyssey.step.honestypledge.HonestyPledgeViewModel
 import com.hedvig.android.feature.odyssey.step.location.LocationDestination
 import com.hedvig.android.feature.odyssey.step.location.LocationViewModel
 import com.hedvig.android.feature.odyssey.step.notificationpermission.NotificationPermissionDestination
-import com.hedvig.android.feature.odyssey.step.notificationpermission.NotificationPermissionViewModel
 import com.hedvig.android.feature.odyssey.step.phonenumber.PhoneNumberDestination
 import com.hedvig.android.feature.odyssey.step.phonenumber.PhoneNumberViewModel
 import com.hedvig.android.feature.odyssey.step.singleitem.SingleItemDestination
 import com.hedvig.android.feature.odyssey.step.singleitem.SingleItemViewModel
 import com.hedvig.android.feature.odyssey.step.singleitemcheckout.SingleItemCheckoutDestination
 import com.hedvig.android.feature.odyssey.step.singleitemcheckout.SingleItemCheckoutViewModel
+import com.hedvig.android.feature.odyssey.step.singleitempayout.SingleItemPayoutDestination
+import com.hedvig.android.feature.odyssey.step.singleitempayout.SingleItemPayoutViewModel
 import com.hedvig.android.feature.odyssey.step.success.ClaimSuccessDestination
 import com.hedvig.android.feature.odyssey.step.summary.ClaimSummaryDestination
 import com.hedvig.android.feature.odyssey.step.summary.ClaimSummaryViewModel
@@ -36,67 +35,48 @@ import com.hedvig.android.navigation.compose.typed.animatedNavigation
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.Navigator
 import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.decodeArguments
+import com.kiwi.navigationcompose.typed.popUpTo
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.claimFlowGraph(
   windowSizeClass: WindowSizeClass,
-  navController: NavController,
   navigator: Navigator,
-  imageLoader: ImageLoader,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
+  navigateToTriaging: (NavBackStackEntry?) -> Unit,
   openAppSettings: () -> Unit,
-  openPlayStore: () -> Unit,
-  openChat: () -> Unit,
-  finishClaimFlow: () -> Unit,
+  closeClaimFlow: () -> Unit,
+  nestedGraphs: NavGraphBuilder.() -> Unit,
 ) {
   animatedNavigation<AppDestination.ClaimsFlow>(
     startDestination = createRoutePattern<ClaimFlowDestination.HonestyPledge>(),
   ) {
+    nestedGraphs()
     animatedComposable<ClaimFlowDestination.HonestyPledge> { backStackEntry ->
-      val entryPointId = remember(navController, backStackEntry) {
-        val claimsFlow: AppDestination.ClaimsFlow = decodeArguments(
-          AppDestination.ClaimsFlow.serializer(),
-          navController.getBackStackEntry(createRoutePattern<AppDestination.ClaimsFlow>()),
-        )
-        claimsFlow.entryPointId
-      }
-      val viewModel: HonestyPledgeViewModel = koinViewModel { parametersOf(entryPointId) }
       HonestyPledgeDestination(
-        viewModel = viewModel,
         windowSizeClass = windowSizeClass,
         openNotificationPermissionStep = {
           with(navigator) { backStackEntry.navigate(ClaimFlowDestination.NotificationPermission) }
         },
-        startClaimFlow = { viewModel.startClaimFlow() },
-        navigateToNextStep = { claimFlowStep ->
-          viewModel.handledNextStepNavigation()
-          with(navigator) { backStackEntry.navigate(claimFlowStep.toClaimFlowDestination()) }
+        pledgeAccepted = {
+          navigateToTriaging(backStackEntry)
         },
         navigateUp = navigator::navigateUp,
+        closeClaimFlow = closeClaimFlow,
       )
     }
-    animatedComposable<ClaimFlowDestination.NotificationPermission> { backStackEntry ->
-      val entryPointId = remember(navController, backStackEntry) {
-        val claimsFlow: AppDestination.ClaimsFlow = decodeArguments(
-          AppDestination.ClaimsFlow.serializer(),
-          navController.getBackStackEntry(createRoutePattern<AppDestination.ClaimsFlow>()),
-        )
-        claimsFlow.entryPointId
-      }
-      val viewModel: NotificationPermissionViewModel = koinViewModel { parametersOf(entryPointId) }
+    animatedComposable<ClaimFlowDestination.NotificationPermission> {
       NotificationPermissionDestination(
-        viewModel = viewModel,
         windowSizeClass = windowSizeClass,
         shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-        startClaimFlow = { viewModel.startClaimFlow() },
-        openAppSettings = openAppSettings,
-        navigateToNextStep = { claimFlowStep ->
-          viewModel.handledNextStepNavigation()
-          with(navigator) { backStackEntry.navigate(claimFlowStep.toClaimFlowDestination()) }
+        onNotificationPermissionDecided = {
+          // We need to navigate without checking lifecycle, since we want to navigate after accepting the permission.
+          // That dialog showing means that the app is not Resumed and would otherwise make us not navigate.
+          navigateToTriaging(null)
         },
+        openAppSettings = openAppSettings,
         navigateUp = navigator::navigateUp,
+        closeClaimFlow = closeClaimFlow,
       )
     }
     animatedComposable<ClaimFlowDestination.AudioRecording> { backStackEntry ->
@@ -109,9 +89,10 @@ fun NavGraphBuilder.claimFlowGraph(
         openAppSettings = openAppSettings,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          with(navigator) { backStackEntry.navigate(claimFlowStep.toClaimFlowDestination()) }
+          navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
         },
         navigateUp = navigator::navigateUp,
+        closeClaimFlow = closeClaimFlow,
       )
     }
     animatedComposable<ClaimFlowDestination.DateOfOccurrence> { backStackEntry ->
@@ -122,9 +103,10 @@ fun NavGraphBuilder.claimFlowGraph(
         windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep: ClaimFlowStep ->
           viewModel.handledNextStepNavigation()
-          with(navigator) { backStackEntry.navigate(claimFlowStep.toClaimFlowDestination()) }
+          navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
         },
         navigateBack = navigator::navigateUp,
+        closeClaimFlow = closeClaimFlow,
       )
     }
     animatedComposable<ClaimFlowDestination.DateOfOccurrencePlusLocation> { backStackEntry ->
@@ -135,12 +117,12 @@ fun NavGraphBuilder.claimFlowGraph(
       DateOfOccurrencePlusLocationDestination(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
-        imageLoader = imageLoader,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          with(navigator) { backStackEntry.navigate(claimFlowStep.toClaimFlowDestination()) }
+          navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
         },
         navigateBack = navigator::navigateUp,
+        closeClaimFlow = closeClaimFlow,
       )
     }
     animatedComposable<ClaimFlowDestination.Location> { backStackEntry ->
@@ -150,9 +132,10 @@ fun NavGraphBuilder.claimFlowGraph(
         windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          with(navigator) { backStackEntry.navigate(claimFlowStep.toClaimFlowDestination()) }
+          navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
         },
-        navigateBack = navigator::navigateUp,
+        navigateUp = navigator::navigateUp,
+        closeClaimFlow = closeClaimFlow,
       )
     }
     animatedComposable<ClaimFlowDestination.PhoneNumber> { backStackEntry ->
@@ -162,9 +145,10 @@ fun NavGraphBuilder.claimFlowGraph(
         windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          with(navigator) { backStackEntry.navigate(claimFlowStep.toClaimFlowDestination()) }
+          navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
         },
-        navigateBack = navigator::navigateUp,
+        navigateUp = navigator::navigateUp,
+        closeClaimFlow = closeClaimFlow,
       )
     }
     animatedComposable<ClaimFlowDestination.SingleItem> { backStackEntry ->
@@ -173,12 +157,12 @@ fun NavGraphBuilder.claimFlowGraph(
       SingleItemDestination(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
-        imageLoader = imageLoader,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          with(navigator) { backStackEntry.navigate(claimFlowStep.toClaimFlowDestination()) }
+          navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
         },
-        navigateBack = navigator::navigateUp,
+        navigateUp = navigator::navigateUp,
+        closeClaimFlow = closeClaimFlow,
       )
     }
     animatedComposable<ClaimFlowDestination.Summary> { backStackEntry ->
@@ -187,56 +171,94 @@ fun NavGraphBuilder.claimFlowGraph(
       ClaimSummaryDestination(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
-        imageLoader = imageLoader,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          with(navigator) { backStackEntry.navigate(claimFlowStep.toClaimFlowDestination()) }
+          navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
         },
-        navigateBack = navigator::navigateUp,
+        navigateUp = navigator::navigateUp,
+        closeClaimFlow = closeClaimFlow,
       )
     }
     animatedComposable<ClaimFlowDestination.SingleItemCheckout> { backStackEntry ->
       val singleItemCheckout = this
       val viewModel: SingleItemCheckoutViewModel = koinViewModel { parametersOf(singleItemCheckout) }
-      BackHandler { finishClaimFlow() }
       SingleItemCheckoutDestination(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
-        navigateToNextStep = { claimFlowStep ->
-          with(navigator) { backStackEntry.navigate(claimFlowStep.toClaimFlowDestination()) }
-        },
         navigateToAppUpdateStep = {
-          with(navigator) { backStackEntry.navigate(ClaimFlowDestination.UpdateApp) }
+          navigator.navigateToClaimFlowDestination(backStackEntry, ClaimFlowDestination.UpdateApp)
         },
-        navigateBack = finishClaimFlow,
-        openChat = openChat,
-        exitFlow = finishClaimFlow,
-      )
-    }
-    animatedComposable<ClaimFlowDestination.ClaimSuccess> {
-      BackHandler { finishClaimFlow() }
-      ClaimSuccessDestination(
-        windowSizeClass = windowSizeClass,
-        openChat = openChat,
-        navigateBack = { finishClaimFlow() },
-      )
-    }
-    animatedComposable<ClaimFlowDestination.UpdateApp> {
-      BackHandler { finishClaimFlow() }
-      UnknownScreenDestination(
-        windowSizeClass = windowSizeClass,
-        openPlayStore = openPlayStore,
-        navigateBack = finishClaimFlow,
-      )
-    }
-    animatedComposable<ClaimFlowDestination.Failure> {
-      BackHandler { finishClaimFlow() } // todo remove if failing becomes a recoverable situation
-      UnknownErrorDestination(
-        windowSizeClass = windowSizeClass,
-        openChat = openChat,
-        finishClaimFlow = finishClaimFlow,
-        navigateBack = navigator::navigateUp,
+        navigateToPayoutStep = { checkoutMethod ->
+          navigator.navigateToClaimFlowDestination(
+            backStackEntry = backStackEntry,
+            destination = ClaimFlowDestination.SingleItemPayout(checkoutMethod = checkoutMethod),
+          )
+        },
+        navigateUp = navigator::navigateUp,
+        closeClaimFlow = closeClaimFlow,
       )
     }
   }
+}
+
+/**
+ * The list of destinations that are terminal, where the claims flow is already finished. Split in a separate
+ * NavGraphBuilder function so that they're not under the AppDestination.ClaimsFlow parent graph.
+ */
+fun NavGraphBuilder.terminalClaimFlowStepDestinations(
+  navigator: Navigator,
+  openPlayStore: () -> Unit,
+  openChat: () -> Unit,
+) {
+  animatedComposable<ClaimFlowDestination.SingleItemPayout> {
+    val singleItemPayout = this
+    val viewModel: SingleItemPayoutViewModel = koinViewModel { parametersOf(singleItemPayout) }
+    SingleItemPayoutDestination(
+      viewModel = viewModel,
+      onDoneAfterPayout = navigator::popBackStack,
+      openChat = openChat,
+      closePayoutScreen = navigator::popBackStack,
+    )
+  }
+  animatedComposable<ClaimFlowDestination.ClaimSuccess> {
+    ClaimSuccessDestination(
+      openChat = openChat,
+      closeSuccessScreen = navigator::popBackStack,
+    )
+  }
+  animatedComposable<ClaimFlowDestination.UpdateApp> {
+    UnknownScreenDestination(
+      openPlayStore = openPlayStore,
+      closeUnknownScreenDestination = navigator::popBackStack,
+    )
+  }
+  animatedComposable<ClaimFlowDestination.Failure> {
+    UnknownErrorDestination(
+      openChat = openChat,
+      closeFailureScreenDestination = navigator::popBackStack,
+    )
+  }
+}
+
+/**
+ * If we're going to a terminal destination, pop the claims flow backstack completely before going there.
+ */
+fun <T : ClaimFlowDestination> Navigator.navigateToClaimFlowDestination(
+  backStackEntry: NavBackStackEntry,
+  destination: T,
+) {
+  val navOptions = navOptions {
+    when {
+      destination is ClaimFlowDestination.ClaimSuccess ||
+        destination is ClaimFlowDestination.UpdateApp ||
+        destination is ClaimFlowDestination.Failure ||
+        destination is ClaimFlowDestination.SingleItemPayout -> {
+        popUpTo<AppDestination.ClaimsFlow> {
+          inclusive = true
+        }
+      }
+      else -> {}
+    }
+  }
+  backStackEntry.navigate(destination, navOptions)
 }

@@ -11,9 +11,11 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.R
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -28,12 +30,16 @@ fun AppStateInformation(
   title: String,
   description: String,
   modifier: Modifier = Modifier,
+  horizontalAlignment: Alignment.Horizontal = Alignment.Start,
+  textAlign: TextAlign = TextAlign.Start,
 ) {
   AppStateInformation(
     iconPainter = type.icon(),
     title = title,
     description = description,
     modifier = modifier,
+    horizontalAlignment = horizontalAlignment,
+    textAlign = textAlign,
   )
 }
 
@@ -58,15 +64,18 @@ private fun AppStateInformation(
   title: String,
   description: String,
   modifier: Modifier = Modifier,
+  horizontalAlignment: Alignment.Horizontal,
+  textAlign: TextAlign = TextAlign.Start,
 ) {
   Column(
     modifier = modifier,
     verticalArrangement = Arrangement.spacedBy(16.dp),
+    horizontalAlignment = horizontalAlignment,
   ) {
     Icon(painter = iconPainter, contentDescription = null, Modifier.size(24.dp))
-    Text(text = title, style = MaterialTheme.typography.h5)
+    Text(text = title, style = MaterialTheme.typography.h5, textAlign = textAlign)
     CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-      Text(text = description, style = MaterialTheme.typography.body1)
+      Text(text = description, style = MaterialTheme.typography.body1, textAlign = textAlign)
     }
   }
 }

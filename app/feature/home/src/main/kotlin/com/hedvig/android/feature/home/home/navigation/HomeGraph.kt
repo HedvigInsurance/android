@@ -26,9 +26,9 @@ import giraffe.HomeQuery
 import org.koin.androidx.compose.koinViewModel
 
 fun NavGraphBuilder.homeGraph(
+  nestedGraphs: NavGraphBuilder.() -> Unit,
   navController: NavController,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-  nestedGraphs: NavGraphBuilder.() -> Unit,
   onStartChat: () -> Unit,
   onStartClaim: (NavBackStackEntry) -> Unit,
   startMovingFlow: () -> Unit,

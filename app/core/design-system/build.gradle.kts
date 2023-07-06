@@ -7,12 +7,13 @@ plugins {
 dependencies {
   implementation(projects.app.core.resources)
 
-  api(libs.accompanist.insetsUi)
   api(libs.androidx.compose.foundation)
   api(libs.androidx.compose.material3)
 
   implementation(libs.accompanist.systemUiController)
   implementation(libs.androidx.compose.material)
+  implementation(libs.kotlinx.datetime)
+  implementation(libs.slimber)
 }
 
 android {

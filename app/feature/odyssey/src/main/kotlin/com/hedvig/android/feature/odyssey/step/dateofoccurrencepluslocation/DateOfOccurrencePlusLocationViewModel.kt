@@ -2,10 +2,10 @@ package com.hedvig.android.feature.odyssey.step.dateofoccurrencepluslocation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.feature.odyssey.data.ClaimFlowRepository
-import com.hedvig.android.feature.odyssey.data.ClaimFlowStep
-import com.hedvig.android.feature.odyssey.navigation.ClaimFlowDestination
-import com.hedvig.android.feature.odyssey.navigation.LocationOption
+import com.hedvig.android.data.claimflow.ClaimFlowDestination
+import com.hedvig.android.data.claimflow.ClaimFlowRepository
+import com.hedvig.android.data.claimflow.ClaimFlowStep
+import com.hedvig.android.data.claimflow.LocationOption
 import com.hedvig.android.feature.odyssey.ui.DatePickerUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

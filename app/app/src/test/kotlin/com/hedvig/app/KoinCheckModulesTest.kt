@@ -17,8 +17,8 @@ import java.net.URI
 class KoinCheckModulesTest : KoinTest {
   @OptIn(KoinExperimentalAPI::class)
   @Test
-  // TODO check if koin provides some way to work around the issue of not being able to ignore classes from inside
-  //  submodules which are marked as internal
+  // Wait for for Koin to provide some way to work around the issue of not being able to ignore classes from inside
+  // submodules which are marked as internal
   @Ignore
   fun checkAllModules() {
     applicationModule.verify(

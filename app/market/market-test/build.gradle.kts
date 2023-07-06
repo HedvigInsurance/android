@@ -5,8 +5,6 @@ plugins {
 
 dependencies {
   implementation(projects.app.market.marketCore)
-
-  implementation(libs.turbine)
 }
 
 android {

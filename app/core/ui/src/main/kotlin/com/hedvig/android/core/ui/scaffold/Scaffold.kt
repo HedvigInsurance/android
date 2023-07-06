@@ -4,6 +4,7 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -51,6 +52,7 @@ fun HedvigScaffold(
   ),
   topAppBarScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
   scrollState: ScrollState = rememberScrollState(),
+  topAppBarActions: @Composable RowScope.() -> Unit = {},
   content: @Composable ColumnScope.() -> Unit,
 ) {
   Surface(color = color) {
@@ -61,6 +63,7 @@ fun HedvigScaffold(
         actionType = topAppBarActionType,
         colors = topAppBarColors,
         scrollBehavior = topAppBarScrollBehavior,
+        actions = topAppBarActions,
       )
       Column(
         horizontalAlignment = itemsColumnHorizontalAlignment,

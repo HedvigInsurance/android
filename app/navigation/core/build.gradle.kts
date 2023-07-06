@@ -12,10 +12,10 @@ dependencies {
   implementation(projects.app.core.common)
   implementation(projects.app.core.resources)
   implementation(projects.app.data.claimTriaging)
-  implementation(projects.app.navigation.navigationComposeTyped)
 
   implementation(libs.androidx.annotation)
   implementation(libs.androidx.navigation.common)
+  implementation(libs.kiwi.navigationCompose)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)
 }

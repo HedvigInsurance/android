@@ -411,6 +411,7 @@ object HedvigTextFieldDefaults {
     singleLine: Boolean,
     visualTransformation: VisualTransformation,
     interactionSource: InteractionSource,
+    withNewDesign: Boolean = false, // Adapts the TextField to have the big card size and the bigger text size.
     isError: Boolean = false,
     label: @Composable (() -> Unit)? = null,
     placeholder: @Composable (() -> Unit)? = null,
@@ -442,6 +443,7 @@ object HedvigTextFieldDefaults {
       prefix = prefix,
       suffix = suffix,
       supportingText = supportingText,
+      withNewDesign = withNewDesign,
       singleLine = singleLine,
       enabled = enabled,
       isError = isError,

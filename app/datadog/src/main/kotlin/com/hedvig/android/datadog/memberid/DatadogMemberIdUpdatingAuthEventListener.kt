@@ -28,7 +28,7 @@ class DatadogMemberIdUpdatingAuthEventListener : AuthEventListener {
       return
     }
     i { "Appending to global RUM attribute:$MEMBER_ID_TRACKING_KEY = $memberId" }
-    Datadog.addUserExtraInfo(mapOf(MEMBER_ID_TRACKING_KEY to "unknown"))
+    Datadog.addUserExtraInfo(mapOf(MEMBER_ID_TRACKING_KEY to memberId))
     GlobalRum.addAttribute(MEMBER_ID_TRACKING_KEY, memberId)
   }
 

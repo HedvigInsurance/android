@@ -18,7 +18,7 @@ inline fun <reified Dest : Destination, reified VM : ViewModel> destinationScope
   navController: NavController,
   backStackEntry: NavBackStackEntry,
 ): VM {
-  val parentEntry = remember(navController, backStackEntry) {
+  val parentEntry: NavBackStackEntry = remember(navController, backStackEntry) {
     navController.getBackStackEntry(createRoutePattern<Dest>())
   }
   return koinViewModel(viewModelStoreOwner = parentEntry)

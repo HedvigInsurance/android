@@ -55,14 +55,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
 import com.hedvig.android.core.ui.getLocale
-import com.hedvig.android.feature.businessmodel.BusinessModelActivity
-import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.app.R
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
 import com.hedvig.app.feature.profile.ui.myinfo.MyInfoActivity
@@ -71,12 +68,12 @@ import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.startChat
-import com.kiwi.navigationcompose.typed.navigate
 import giraffe.fragment.MonetaryAmountFragment
 
 @Composable
 internal fun ProfileDestination(
-  navController: NavController,
+  navigateToEurobonus: () -> Unit,
+  navigateToBusinessModel: () -> Unit,
   viewModel: ProfileViewModel,
 ) {
   val uiState by viewModel.data.collectAsStateWithLifecycle()
@@ -87,9 +84,8 @@ internal fun ProfileDestination(
   ProfileScreen(
     uiState = uiState,
     isLoading = isLoading,
-    navigateToEurobonus = {
-      navController.navigate(AppDestination.Eurobonus)
-    },
+    navigateToEurobonus = navigateToEurobonus,
+    navigateToBusinessModel = navigateToBusinessModel,
     reload = viewModel::reload,
     onLogout = viewModel::onLogout,
   )
@@ -101,6 +97,7 @@ private fun ProfileScreen(
   uiState: ProfileUiState,
   isLoading: Boolean,
   navigateToEurobonus: () -> Unit,
+  navigateToBusinessModel: () -> Unit,
   reload: () -> Unit,
   onLogout: () -> Unit,
 ) {
@@ -131,7 +128,7 @@ private fun ProfileScreen(
       ProfileItemRows(
         profileUiState = uiState,
         showMyInfo = { context.startActivity(Intent(context, MyInfoActivity::class.java)) },
-        showBusinessModel = { context.startActivity(Intent(context, BusinessModelActivity::class.java)) },
+        showBusinessModel = navigateToBusinessModel,
         showPaymentInfo = { context.startActivity(PaymentActivity.newInstance(context)) },
         showSettings = { context.startActivity(SettingsActivity.newInstance(context)) },
         showAboutApp = { context.startActivity(Intent(context, AboutAppActivity::class.java)) },
@@ -359,6 +356,7 @@ private fun PreviewProfileSuccessScreen() {
         ),
         isLoading = false,
         navigateToEurobonus = {},
+        navigateToBusinessModel = {},
         reload = {},
         onLogout = {},
       )

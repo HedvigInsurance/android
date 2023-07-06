@@ -4,7 +4,6 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.app.apollo.core)
   implementation(projects.app.apollo.giraffe)
   implementation(libs.adyen)
 }

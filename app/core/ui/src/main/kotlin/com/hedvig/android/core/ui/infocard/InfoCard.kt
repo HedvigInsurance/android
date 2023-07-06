@@ -27,9 +27,9 @@ import com.hedvig.android.core.designsystem.material3.onInfoContainer
 
 @Composable
 fun VectorInfoCard(
-  modifier: Modifier = Modifier,
-  title: String?,
   text: String,
+  modifier: Modifier = Modifier,
+  title: String? = null,
   icon: ImageVector = Icons.Default.Info,
   iconColor: Color = MaterialTheme.colorScheme.infoElement,
   colors: CardColors = CardDefaults.outlinedCardColors(

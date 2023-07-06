@@ -30,7 +30,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.material3.warningElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -142,7 +142,6 @@ private fun EurobonusScreen(
             }
           },
         ),
-        singleLine = true,
         modifier = Modifier
           .fillMaxWidth()
           .padding(horizontal = 16.dp),
@@ -154,7 +153,7 @@ private fun EurobonusScreen(
         modifier = Modifier.padding(horizontal = 16.dp),
       )
       Spacer(Modifier.height(16.dp))
-      LargeContainedTextButton(
+      HedvigContainedButton(
         text = stringResource(hedvig.resources.R.string.general_save_button),
         enabled = uiState.canSubmit,
         onClick = { onSubmitEurobonus(eurobonusText) },

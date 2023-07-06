@@ -45,7 +45,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.core.ui.clearFocusOnTap
-import com.hedvig.android.core.ui.error.ErrorDialog
+import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.feature.changeaddress.ChangeAddressUiState
 import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
@@ -175,7 +175,6 @@ private fun AddressTextField(
     label = {
       Text(stringResource(R.string.CHANGE_ADDRESS_NEW_ADDRESS_LABEL))
     },
-    maxLines = 1,
     modifier = modifier.fillMaxWidth(),
   )
 }
@@ -193,7 +192,6 @@ private fun PostalCodeTextField(
     label = {
       Text(stringResource(R.string.CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL))
     },
-    maxLines = 1,
     keyboardOptions = KeyboardOptions(
       keyboardType = KeyboardType.Number,
     ),
@@ -214,7 +212,6 @@ private fun LivingSpaceTextField(
     label = {
       Text(stringResource(R.string.CHANGE_ADDRESS_NEW_LIVING_SPACE_LABEL))
     },
-    maxLines = 1,
     keyboardOptions = KeyboardOptions(
       keyboardType = KeyboardType.Number,
     ),
@@ -239,7 +236,6 @@ private fun NumberOfCoInsuredTextField(
     label = {
       Text(stringResource(R.string.CHANGE_ADDRESS_CO_INSURED_LABEL))
     },
-    maxLines = 1,
     keyboardOptions = KeyboardOptions(
       keyboardType = KeyboardType.Number,
     ),

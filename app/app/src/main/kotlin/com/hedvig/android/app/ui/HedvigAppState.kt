@@ -1,5 +1,6 @@
 package com.hedvig.android.app.ui
 
+import android.os.Bundle
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -84,18 +85,24 @@ internal class HedvigAppState(
   private val currentTopLevelAppDestination: AppDestination.TopLevelDestination?
     @Composable get() = currentDestination?.toTopLevelAppDestination()
 
+  private val shouldShowNavBars: Boolean
+    @Composable get() {
+      if (currentTopLevelAppDestination != null) return true
+      return currentDestination.isInListOfNonTopLevelNavBarPermittedDestinations()
+    }
+
   val shouldShowBottomBar: Boolean
     @Composable
     get() {
       val bottomBarWidthRequirements = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
-      return bottomBarWidthRequirements && currentTopLevelAppDestination != null
+      return bottomBarWidthRequirements && shouldShowNavBars
     }
 
   val shouldShowNavRail: Boolean
     @Composable
     get() {
       val navRailWidthRequirements = windowSizeClass.widthSizeClass != WindowWidthSizeClass.Compact
-      return navRailWidthRequirements && currentTopLevelAppDestination != null
+      return navRailWidthRequirements && shouldShowNavBars
     }
 
   val backgroundColors: GradientColors
@@ -189,10 +196,18 @@ internal class HedvigAppState(
 }
 
 @Composable
-private fun NavigationTrackingSideEffect(navController: NavHostController) {
+private fun NavigationTrackingSideEffect(navController: NavController) {
   DisposableEffect(navController) {
-    val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
-      d { "Navigated to route:${destination.route}" }
+    val listener = NavController.OnDestinationChangedListener { _, destination: NavDestination, bundle: Bundle? ->
+      d {
+        buildString {
+          append("Navigated to route:${destination.route}")
+          if (bundle != null) {
+            append(" | ")
+            append("With bundle:$bundle")
+          }
+        }
+      }
     }
     navController.addOnDestinationChangedListener(listener)
     onDispose {
@@ -203,7 +218,7 @@ private fun NavigationTrackingSideEffect(navController: NavHostController) {
 
 @Composable
 private fun TopLevelDestinationNavigationSideEffect(
-  navController: NavHostController,
+  navController: NavController,
   hAnalytics: HAnalytics,
   tabNotificationBadgeService: TabNotificationBadgeService,
   coroutineScope: CoroutineScope,
@@ -264,5 +279,16 @@ private fun NavDestination?.toTopLevelAppDestination(): AppDestination.TopLevelD
     createRoutePattern<AppDestination.TopLevelDestination.Referrals>() -> AppDestination.TopLevelDestination.Referrals
     createRoutePattern<AppDestination.TopLevelDestination.Profile>() -> AppDestination.TopLevelDestination.Profile
     else -> null
+  }
+}
+
+/**
+ * Special routes, which despite not being top level should still show the navigation bars.
+ */
+private fun NavDestination?.isInListOfNonTopLevelNavBarPermittedDestinations(): Boolean {
+  return when (this?.route) {
+    createRoutePattern<AppDestination.BusinessModel>() -> true
+    createRoutePattern<AppDestination.Eurobonus>() -> true
+    else -> false
   }
 }

@@ -12,7 +12,6 @@ dependencies {
   implementation(projects.app.apollo.giraffe)
   implementation(projects.app.auth.authCore)
   implementation(projects.app.auth.authEventCore)
-  implementation(projects.app.core.common)
   implementation(projects.app.notification.notificationCore)
 
   implementation(platform(libs.firebase.bom))
