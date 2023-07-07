@@ -1,0 +1,10 @@
+mutation MemberUpdateEmail($input: MemberUpdateEmailInput!) {
+  memberUpdateEmail(input: $input) {
+    userError {
+      message
+    }
+    member {
+      ...MemberDataFragment
+    }
+  }
+}

@@ -2,8 +2,6 @@ package com.hedvig.android.market
 
 import android.net.Uri
 import androidx.annotation.StringRes
-import giraffe.fragment.ActivePaymentMethodsFragment
-import giraffe.type.DirectDebitStatus
 import giraffe.type.Locale
 
 enum class Market {
@@ -28,34 +26,6 @@ enum class Market {
       DK -> hedvig.resources.R.string.market_denmark
       FR -> hedvig.resources.R.string.market_france
     }
-
-  @StringRes
-  fun getPriceCaption(
-    directDebitStatus: DirectDebitStatus?,
-    activePaymentMethodsFragment: ActivePaymentMethodsFragment?,
-  ): Int = when (this) {
-    SE -> when (directDebitStatus) {
-      DirectDebitStatus.ACTIVE -> hedvig.resources.R.string.Direct_Debit_Connected
-      DirectDebitStatus.NEEDS_SETUP,
-      DirectDebitStatus.PENDING,
-      DirectDebitStatus.UNKNOWN__,
-      null,
-      -> hedvig.resources.R.string.Direct_Debit_Not_Connected
-    }
-    DK,
-    NO,
-    -> when {
-      activePaymentMethodsFragment?.asStoredCardDetails != null -> {
-        hedvig.resources.R.string.Card_Connected
-      }
-      activePaymentMethodsFragment?.asStoredThirdPartyDetails != null -> {
-        hedvig.resources.R.string.Third_Party_Connected
-      }
-      activePaymentMethodsFragment == null -> hedvig.resources.R.string.Card_Not_Connected
-      else -> hedvig.resources.R.string.Card_Not_Connected
-    }
-    FR -> TODO()
-  }
 
   fun defaultLanguage() = when (this) {
     SE -> Language.EN_SE

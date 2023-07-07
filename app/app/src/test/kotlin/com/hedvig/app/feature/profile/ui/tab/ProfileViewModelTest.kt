@@ -288,7 +288,7 @@ private class FakeProfileRepository(addDefaultFailedResponse: Boolean = true) : 
     }
   }
 
-  override fun profile(): Flow<Either<OperationResult.Error, ProfileQuery.Data>> {
+  override suspend fun profile(): Flow<Either<OperationResult.Error, ProfileQuery.Data>> {
     return profileTurbine.asChannel().consumeAsFlow()
   }
 
