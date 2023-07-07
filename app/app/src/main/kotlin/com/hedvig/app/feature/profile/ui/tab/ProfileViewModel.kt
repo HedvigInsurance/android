@@ -30,17 +30,24 @@ internal class ProfileViewModel(
   val data: StateFlow<ProfileUiState> = _data
 
   init {
+
     viewModelScope.launch {
+      val showPaymentScreen = featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN)
+      val showBusinessModel = featureManager.isFeatureEnabled(Feature.SHOW_BUSINESS_MODEL)
+
       profileRepository.profile().fold(
         ifLeft = { _data.update { it.copy(errorMessage = it.errorMessage) } },
         ifRight = { profile ->
           _data.update {
             it.copy(
               contactInfoName = "${profile.member.firstName} ${profile.member.lastName}",
-              paymentInfo = PaymentInfo(
-                monetaryMonthlyNet = profile.chargeEstimation.charge,
-                priceCaptionResId = marketManager.market?.let(profile::getPriceCaption)
-              )
+              paymentInfo = if (showPaymentScreen) {
+                PaymentInfo(
+                  monetaryMonthlyNet = profile.chargeEstimation.charge,
+                  priceCaptionResId = marketManager.market?.let(profile::getPriceCaption),
+                )
+              } else null,
+              showBusinessModel = showBusinessModel,
             )
           }
         },
@@ -51,7 +58,6 @@ internal class ProfileViewModel(
         ifRight = { euroBonus -> _data.update { it.copy(euroBonus = euroBonus) } },
       )
 
-      _data.update { it.copy(showBusinessModel = featureManager.isFeatureEnabled(Feature.SHOW_BUSINESS_MODEL)) }
     }
   }
 
@@ -70,7 +76,7 @@ internal data class ProfileUiState(
   val euroBonus: EuroBonus? = null,
   val showBusinessModel: Boolean = false,
   val errorMessage: String? = null,
-  val isLoading: Boolean = false
+  val isLoading: Boolean = false,
 )
 
 @Immutable

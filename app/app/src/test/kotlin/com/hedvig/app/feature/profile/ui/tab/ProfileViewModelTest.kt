@@ -4,6 +4,7 @@ import app.cash.turbine.Turbine
 import app.cash.turbine.test
 import arrow.core.Either
 import arrow.core.left
+import arrow.core.raise.either
 import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEqualTo
@@ -21,10 +22,12 @@ import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager2
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.test.FakeMarketManager
 import com.hedvig.app.authenticate.LogoutUseCase
+import com.hedvig.app.feature.profile.data.ChargeEstimation
+import com.hedvig.app.feature.profile.data.Member
+import com.hedvig.app.feature.profile.data.ProfileData
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import giraffe.ProfileQuery
-import giraffe.UpdateEmailMutation
-import giraffe.UpdatePhoneNumberMutation
+import java.math.BigDecimal
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.test.runCurrent
@@ -32,6 +35,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import kotlin.random.Random
+import org.javamoney.moneta.Money
 
 class ProfileViewModelTest {
 
@@ -46,10 +50,27 @@ class ProfileViewModelTest {
     }
   }
 
+  private val mockedProfile: Either<OperationResult.Error, ProfileData> = either {
+    ProfileData(
+      member = Member(id = "", firstName = "", lastName = "", email = "", phoneNumber = ""),
+      chargeEstimation = ChargeEstimation(
+        subscription = Money.of(BigDecimal(100), "SEK"),
+        discount = Money.of(BigDecimal(100), "SEK"),
+        charge = Money.of(BigDecimal(100), "SEK"),
+      ),
+      directDebitStatus = null,
+      activePaymentMethods = null,
+    )
+  }
+
+  private val mockedError: Either<OperationResult.Error, ProfileData> = either {
+    raise(OperationResult.Error.NetworkError(message = "test"))
+  }
+
   @Test
   fun `when payment-feature is not activated, should not show payment-data`() {
     runTest {
-      val fakeProfileRepository = FakeProfileRepository(addDefaultFailedResponse = false)
+      val fakeProfileRepository = FakeProfileRepository(mockedProfile)
 
       val viewModel = ProfileViewModel(
         fakeProfileRepository,
@@ -62,13 +83,12 @@ class ProfileViewModelTest {
             )
           },
         ),
-        FakeMarketManager(Market.FR),
+        FakeMarketManager(Market.SE),
         noopLogoutUseCase,
       )
 
       viewModel.data.test {
         assertThat(viewModel.data.value).isEqualTo(ProfileUiState())
-        fakeProfileRepository.profileTurbine.add(successfulProfileQueryData.right())
         runCurrent()
         val profileUiState: ProfileUiState = viewModel.data.value
         assertThat(profileUiState.paymentInfo).isNull()
@@ -79,7 +99,7 @@ class ProfileViewModelTest {
 
   @Test
   fun `when payment-feature is activated, should show payment data`() = runTest {
-    val fakeProfileRepository = FakeProfileRepository(addDefaultFailedResponse = false)
+    val fakeProfileRepository = FakeProfileRepository(mockedProfile)
 
     val viewModel = ProfileViewModel(
       fakeProfileRepository,
@@ -98,7 +118,6 @@ class ProfileViewModelTest {
 
     viewModel.data.test {
       assertThat(viewModel.data.value).isEqualTo(ProfileUiState())
-      fakeProfileRepository.profileTurbine.add(successfulProfileQueryData.right())
       runCurrent()
       val profileUiState: ProfileUiState = viewModel.data.value
       assertThat(profileUiState.paymentInfo).isNotNull()
@@ -108,7 +127,7 @@ class ProfileViewModelTest {
 
   @Test
   fun `when payment-feature is activated, but response fails, should not show payment data`() = runTest {
-    val fakeProfileRepository = FakeProfileRepository(addDefaultFailedResponse = false)
+    val fakeProfileRepository = FakeProfileRepository(mockedError)
 
     val viewModel = ProfileViewModel(
       fakeProfileRepository,
@@ -127,7 +146,6 @@ class ProfileViewModelTest {
 
     viewModel.data.test {
       assertThat(viewModel.data.value).isEqualTo(ProfileUiState())
-      fakeProfileRepository.profileTurbine.add(failedProfileQueryData.left())
       runCurrent()
       val profileUiState: ProfileUiState = viewModel.data.value
       assertThat(profileUiState.paymentInfo).isNull()
@@ -138,7 +156,7 @@ class ProfileViewModelTest {
   @Test
   fun `when business-model-feature is deactivated, should not show business-model-data`() = runTest {
     val viewModel = ProfileViewModel(
-      FakeProfileRepository(),
+      FakeProfileRepository(mockedProfile),
       FakeGetEurobonusStatusUseCase(),
       FakeFeatureManager(
         featureMap = {
@@ -164,7 +182,7 @@ class ProfileViewModelTest {
   @Test
   fun `when business-model-feature is activated, should show business-model-data`() = runTest {
     val viewModel = ProfileViewModel(
-      FakeProfileRepository(),
+      FakeProfileRepository(mockedProfile),
       FakeGetEurobonusStatusUseCase(),
       FakeFeatureManager(
         featureMap = {
@@ -190,7 +208,7 @@ class ProfileViewModelTest {
   @Test
   fun `when euro bonus does not exist, should not show the EuroBonus status`() = runTest {
     val viewModel = ProfileViewModel(
-      FakeProfileRepository(),
+      FakeProfileRepository(mockedProfile),
       FakeGetEurobonusStatusUseCase {
         add(GetEurobonusError.EurobonusNotApplicable.left())
       },
@@ -211,7 +229,7 @@ class ProfileViewModelTest {
   @Test
   fun `when euro bonus exists, should show the EuroBonus status`() = runTest {
     val viewModel = ProfileViewModel(
-      FakeProfileRepository(),
+      FakeProfileRepository(mockedProfile),
       FakeGetEurobonusStatusUseCase {
         add(EuroBonus("code1234").right())
       },
@@ -232,9 +250,9 @@ class ProfileViewModelTest {
   @Test
   fun `Initially all optional items are off, and as they come in, they show one by one`() = runTest {
     val featureManager = FakeFeatureManager2(
-      fixedMap = mapOf(Feature.PAYMENT_SCREEN to true),
+      fixedMap = mapOf(Feature.PAYMENT_SCREEN to true, Feature.SHOW_BUSINESS_MODEL to true),
     )
-    val profileRepository = FakeProfileRepository(addDefaultFailedResponse = false)
+    val profileRepository = FakeProfileRepository(mockedProfile)
     val euroBonusStatusUseCase = FakeGetEurobonusStatusUseCase {}
 
     val viewModel = ProfileViewModel(
@@ -249,19 +267,10 @@ class ProfileViewModelTest {
       assertThat(viewModel.data.value).isEqualTo(ProfileUiState())
       runCurrent()
 
-      assertThat(viewModel.data.value.showBusinessModel).isFalse()
-      featureManager.featureTurbine.add(Feature.SHOW_BUSINESS_MODEL to true)
-      runCurrent()
-      assertThat(viewModel.data.value.showBusinessModel).isTrue()
-
       assertThat(viewModel.data.value.euroBonus).isNull()
       euroBonusStatusUseCase.responseTurbine.add(EuroBonus("1234").right())
       runCurrent()
       assertThat(viewModel.data.value.euroBonus).isEqualTo(EuroBonus("1234"))
-
-      assertThat(viewModel.data.value.paymentInfo).isNull()
-      profileRepository.profileTurbine.add(successfulProfileQueryData.right())
-      runCurrent()
       assertThat(viewModel.data.value.paymentInfo).isNotNull()
 
       cancelAndIgnoreRemainingEvents()
@@ -281,26 +290,17 @@ private class FakeGetEurobonusStatusUseCase(
   }
 }
 
-private class FakeProfileRepository(addDefaultFailedResponse: Boolean = true) : ProfileRepository {
-  val profileTurbine = Turbine<Either<OperationResult.Error, ProfileQuery.Data>>(name = "profileTurbine").apply {
-    if (addDefaultFailedResponse) {
-      add(OperationResult.Error.GeneralError("").left())
-    }
+private class FakeProfileRepository(val mockedProfile: Either<OperationResult.Error, ProfileData>) : ProfileRepository {
+
+  override suspend fun profile(): Either<OperationResult.Error, ProfileData> {
+    return mockedProfile
   }
 
-  override suspend fun profile(): Flow<Either<OperationResult.Error, ProfileQuery.Data>> {
-    return profileTurbine.asChannel().consumeAsFlow()
-  }
-
-  override suspend fun updateEmail(input: String): ApolloResponse<UpdateEmailMutation.Data> {
+  override suspend fun updateEmail(input: String): Either<OperationResult.Error, Member> {
     TODO("Not implemented")
   }
 
-  override suspend fun updatePhoneNumber(input: String): ApolloResponse<UpdatePhoneNumberMutation.Data> {
-    TODO("Not implemented")
-  }
-
-  override suspend fun writeEmailAndPhoneNumberInCache(email: String?, phoneNumber: String?) {
+  override suspend fun updatePhoneNumber(input: String): Either<OperationResult.Error, Member> {
     TODO("Not implemented")
   }
 }
