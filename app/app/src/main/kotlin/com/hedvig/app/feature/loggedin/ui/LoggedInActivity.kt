@@ -109,7 +109,13 @@ class LoggedInActivity : AppCompatActivity() {
   private val showSplash = MutableStateFlow(true)
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    installSplashScreen().setKeepOnScreenCondition { showSplash.value == true }
+    installSplashScreen().apply {
+      setKeepOnScreenCondition { showSplash.value == true }
+      setOnExitAnimationListener {
+        i { "Splash screen will be removed" }
+        it.remove()
+      }
+    }
     super.onCreate(savedInstanceState)
     WindowCompat.setDecorFitsSystemWindows(window, false)
 
