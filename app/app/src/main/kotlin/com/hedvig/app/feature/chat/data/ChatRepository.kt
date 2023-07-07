@@ -14,6 +14,7 @@ import com.apollographql.apollo3.cache.normalized.watch
 import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
+import com.hedvig.android.core.common.android.e
 import com.hedvig.app.service.FileService
 import com.hedvig.app.util.extensions.into
 import giraffe.ChatMessageIdQuery
@@ -76,6 +77,9 @@ class ChatRepository(
       )
       .safeExecute()
       .toEither()
+      .onLeft { error ->
+        e(error.throwable) { "Chat: Replying through ChatViewModel (chat message) failed. Message:${error.message}" }
+      }
   }
 
   suspend fun sendSingleSelect(
@@ -124,12 +128,21 @@ class ChatRepository(
     ) // I hate this but it seems there's no other way
     return withContext(Dispatchers.IO) {
       context.contentResolver.openInputStream(uri)?.into(file)
-      return@withContext uploadFile(file, mimeType)
+      return@withContext uploadFile(file, mimeType).onLeft { error ->
+        e(error.throwable) { "Chat: uploadFileFromProvider (image/file chosen) failed. Message:${error.message}" }
+      }
     }
   }
 
-  suspend fun uploadFile(uri: Uri): Either<OperationResult.Error, UploadFileMutation.Data> =
-    uploadFile(File(uri.path!!), fileService.getMimeType(uri))
+  suspend fun uploadFile(uri: Uri): Either<OperationResult.Error, UploadFileMutation.Data> {
+    return uploadFile(File(uri.path!!), fileService.getMimeType(uri))
+      .onRight {
+        slimber.log.e { "Chat: uploadFileInner (picture taken) succeeded." }
+      }
+      .onLeft { error ->
+        e(error.throwable) { "Chat: uploadFileInner (picture taken) failed. Message:${error.message}" }
+      }
+  }
 
   private suspend fun uploadFile(
     file: File,
