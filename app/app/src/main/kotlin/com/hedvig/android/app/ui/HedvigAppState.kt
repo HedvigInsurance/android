@@ -17,6 +17,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navOptions
+import com.datadog.android.rum.GlobalRum
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
@@ -208,6 +209,10 @@ private fun NavigationTrackingSideEffect(navController: NavController) {
           }
         }
       }
+      GlobalRum.get().startView(
+        key = destination,
+        name = destination.route ?: destination.displayName,
+      )
     }
     navController.addOnDestinationChangedListener(listener)
     onDispose {
