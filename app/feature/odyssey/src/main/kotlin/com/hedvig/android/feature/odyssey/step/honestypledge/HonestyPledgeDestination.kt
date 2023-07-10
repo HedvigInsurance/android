@@ -8,13 +8,17 @@ import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.systemGestureExclusion
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
@@ -22,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
+import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.preview.calculateForPreview
@@ -72,15 +76,26 @@ private fun HonestyPledgeScreen(
     )
     Spacer(Modifier.height(16.dp))
     Spacer(Modifier.weight(1f))
-    HedvigContainedButton(
-      onClick = {
+    PledgeAcceptingSlider(
+      onAccepted = {
         if (hasNotificationPermission) {
           pledgeAccepted()
         } else {
           openNotificationPermissionStep()
         }
       },
-      text = stringResource(hedvig.resources.R.string.CLAIMS_HONESTY_PLEDGE_BOTTOM_SHEET_BUTTON_LABEL),
+      text = stringResource(hedvig.resources.R.string.CLAIMS_PLEDGE_SLIDE_LABEL),
+      modifier = Modifier
+        .widthIn(max = 450.dp)
+        .fillMaxWidth()
+        .systemGestureExclusion()
+        .padding(horizontal = 16.dp)
+        .align(Alignment.CenterHorizontally),
+    )
+    Spacer(Modifier.height(8.dp))
+    HedvigTextButton(
+      onClick = closeClaimFlow,
+      text = stringResource(hedvig.resources.R.string.general_cancel_button),
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
