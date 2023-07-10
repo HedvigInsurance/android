@@ -87,7 +87,8 @@ private fun ThemeSelection() {
   var showM2: Boolean by remember { mutableStateOf(false) }
   var showM3: Boolean by remember { mutableStateOf(false) }
   var showColorSchemes: Boolean by remember { mutableStateOf(false) }
-  var showHedvigUiKit: Boolean by remember { mutableStateOf(true) }
+  var showHedvigUiKit: Boolean by remember { mutableStateOf(false) }
+  var showIcons: Boolean by remember { mutableStateOf(false) }
   when {
     showM2 -> {
       BackHandler { showM2 = false }
@@ -104,6 +105,9 @@ private fun ThemeSelection() {
     showHedvigUiKit -> {
       BackHandler { showHedvigUiKit = false }
       HedvigUiKit()
+    }
+    showIcons -> {
+      BackHandler { showIcons = false }
     }
     else -> {
       Box(
@@ -123,6 +127,9 @@ private fun ThemeSelection() {
             }
             Button(onClick = { showHedvigUiKit = true }) {
               Text("Hedvig UI Kit")
+            }
+            Button(onClick = { showIcons = true }) {
+              Text("New design Icons")
             }
           }
         }
