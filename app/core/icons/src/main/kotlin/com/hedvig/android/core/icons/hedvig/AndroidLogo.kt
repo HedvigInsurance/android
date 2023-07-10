@@ -3,7 +3,6 @@ package com.hedvig.android.core.icons.hedvig
 import androidx.compose.material.icons.materialIcon
 import androidx.compose.material.icons.materialPath
 import androidx.compose.ui.graphics.PathFillType
-import androidx.compose.ui.graphics.vector.DefaultFillType
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.hedvig.android.core.icons.Hedvig
 
