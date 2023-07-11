@@ -1,4 +1,4 @@
-package com.hedvig.android.core.icons.hedvig.flag.hedvig
+package com.hedvig.android.core.icons.hedvig.flag
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathFillType.Companion.NonZero
@@ -27,11 +27,8 @@ public val Hedvig.FlagNorway: ImageVector
     ).apply {
       path(
         fill = SolidColor(Color(0xFFFF513A)),
-        stroke = null,
-        strokeLineWidth = 0.0f,
         strokeLineCap = StrokeCap.Butt,
         strokeLineJoin = StrokeJoin.Miter,
-        strokeLineMiter = 4.0f,
         pathFillType = NonZero,
       ) {
         moveTo(2.0f, 4.0f)
@@ -49,10 +46,8 @@ public val Hedvig.FlagNorway: ImageVector
         fill = SolidColor(Color(0x00000000)),
         stroke = SolidColor(Color(0xFF121212)),
         strokeAlpha = 0.07f,
-        strokeLineWidth = 0.5f,
         strokeLineCap = StrokeCap.Butt,
         strokeLineJoin = StrokeJoin.Miter,
-        strokeLineMiter = 4.0f,
         pathFillType = NonZero,
       ) {
         moveTo(2.0f, 4.25f)
@@ -68,11 +63,8 @@ public val Hedvig.FlagNorway: ImageVector
       }
       path(
         fill = SolidColor(Color(0xFFFAFAFA)),
-        stroke = null,
-        strokeLineWidth = 0.0f,
         strokeLineCap = StrokeCap.Butt,
         strokeLineJoin = StrokeJoin.Miter,
-        strokeLineMiter = 4.0f,
         pathFillType = NonZero,
       ) {
         moveTo(0.0f, 10.5f)
@@ -85,12 +77,9 @@ public val Hedvig.FlagNorway: ImageVector
       group {
         path(
           fill = SolidColor(Color(0xFF121212)),
-          stroke = null,
           fillAlpha = 0.07f,
-          strokeLineWidth = 0.0f,
           strokeLineCap = StrokeCap.Butt,
           strokeLineJoin = StrokeJoin.Miter,
-          strokeLineMiter = 4.0f,
           pathFillType = NonZero,
         ) {
           moveTo(23.5f, 10.5f)
@@ -108,11 +97,8 @@ public val Hedvig.FlagNorway: ImageVector
         }
         path(
           fill = SolidColor(Color(0xFFFAFAFA)),
-          stroke = null,
-          strokeLineWidth = 0.0f,
           strokeLineCap = StrokeCap.Butt,
           strokeLineJoin = StrokeJoin.Miter,
-          strokeLineMiter = 4.0f,
           pathFillType = NonZero,
         ) {
           moveTo(8.0f, 4.0f)
@@ -126,12 +112,9 @@ public val Hedvig.FlagNorway: ImageVector
       group {
         path(
           fill = SolidColor(Color(0xFF121212)),
-          stroke = null,
           fillAlpha = 0.07f,
-          strokeLineWidth = 0.0f,
           strokeLineCap = StrokeCap.Butt,
           strokeLineJoin = StrokeJoin.Miter,
-          strokeLineMiter = 4.0f,
           pathFillType = NonZero,
         ) {
           moveTo(8.0f, 4.5f)
@@ -149,11 +132,8 @@ public val Hedvig.FlagNorway: ImageVector
         }
         path(
           fill = SolidColor(Color(0xFF30577E)),
-          stroke = null,
-          strokeLineWidth = 0.0f,
           strokeLineCap = StrokeCap.Butt,
           strokeLineJoin = StrokeJoin.Miter,
-          strokeLineMiter = 4.0f,
           pathFillType = NonZero,
         ) {
           moveTo(9.0f, 4.0f)
@@ -167,12 +147,9 @@ public val Hedvig.FlagNorway: ImageVector
       group {
         path(
           fill = SolidColor(Color(0xFF121212)),
-          stroke = null,
           fillAlpha = 0.07f,
-          strokeLineWidth = 0.0f,
           strokeLineCap = StrokeCap.Butt,
           strokeLineJoin = StrokeJoin.Miter,
-          strokeLineMiter = 4.0f,
           pathFillType = NonZero,
         ) {
           moveTo(9.0f, 4.5f)
@@ -190,11 +167,8 @@ public val Hedvig.FlagNorway: ImageVector
         }
         path(
           fill = SolidColor(Color(0xFF30577E)),
-          stroke = null,
-          strokeLineWidth = 0.0f,
           strokeLineCap = StrokeCap.Butt,
           strokeLineJoin = StrokeJoin.Miter,
-          strokeLineMiter = 4.0f,
           pathFillType = NonZero,
         ) {
           moveTo(0.0f, 11.5f)
@@ -208,12 +182,9 @@ public val Hedvig.FlagNorway: ImageVector
       group {
         path(
           fill = SolidColor(Color(0xFF121212)),
-          stroke = null,
           fillAlpha = 0.07f,
-          strokeLineWidth = 0.0f,
           strokeLineCap = StrokeCap.Butt,
           strokeLineJoin = StrokeJoin.Miter,
-          strokeLineMiter = 4.0f,
           pathFillType = NonZero,
         ) {
           moveTo(23.5f, 11.5f)
