@@ -26,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
@@ -34,7 +33,9 @@ import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.input.pointer.util.VelocityTracker
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -61,7 +62,7 @@ internal fun PledgeAcceptingSlider(
       .requiredHeight(circleDiameter)
       .clip(CircleShape)
       .background(MaterialTheme.colorScheme.outlineVariant, CircleShape)
-      .animatingSliderModifier(offsetX, onAccepted),
+      .animatingSliderModifier(offsetX, LocalDensity.current, onAccepted),
   ) {
     Text(
       text = text,
@@ -100,19 +101,21 @@ internal fun PledgeAcceptingSlider(
 @SuppressLint("ReturnFromAwaitPointerEventScope", "MultipleAwaitPointerEventScopes")
 private fun Modifier.animatingSliderModifier(
   offsetX: Animatable<Float, AnimationVector1D>,
+  density: Density,
   onAccepted: () -> Unit,
-): Modifier = composed {
-  pointerInput(LocalConfiguration.current) {
+): Modifier = onPlaced {
+  offsetX.updateBounds(
+    lowerBound = 0f,
+    upperBound = it.size.width - with(density) { circleDiameter.toPx() },
+  )
+}
+  .pointerInput(Unit) {
     val decay = splineBasedDecay<Float>(this)
-    val endPoint = this.size.width - circleDiameter.toPx()
     val halfCircleSize = (circleDiameter / 2).roundToPx()
+    val getEndPoint = { this.size.width - circleDiameter.toPx() }
     val hasOffsetSlidedToTheEnd = {
-      offsetX.value >= endPoint
+      offsetX.value >= getEndPoint()
     }
-    offsetX.updateBounds(
-      lowerBound = 0f,
-      upperBound = endPoint,
-    )
     coroutineScope {
       while (isActive) {
         val velocityTracker = VelocityTracker()
@@ -146,7 +149,7 @@ private fun Modifier.animatingSliderModifier(
         val velocity: Float = velocityTracker.calculateVelocity().x
         val targetOffsetXAfterFlingEnd = decay.calculateTargetValue(offsetX.value, velocity)
         launch {
-          if (targetOffsetXAfterFlingEnd <= endPoint) {
+          if (targetOffsetXAfterFlingEnd <= getEndPoint()) {
             // Not enough velocity; Slide back to the default position.
             offsetX.animateTo(
               targetValue = 0f,
@@ -165,7 +168,6 @@ private fun Modifier.animatingSliderModifier(
       }
     }
   }
-}
 
 @HedvigPreview
 @Composable
