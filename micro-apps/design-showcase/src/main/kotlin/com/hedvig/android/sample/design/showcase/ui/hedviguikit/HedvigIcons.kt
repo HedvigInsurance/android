@@ -14,6 +14,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.colored.hedvig.Chat
+import com.hedvig.android.core.icons.hedvig.colored.hedvig.ColoredCircleWithCampaign
+import com.hedvig.android.core.icons.hedvig.colored.hedvig.FirstVet
+import com.hedvig.android.core.icons.hedvig.compose.notificationCircle
+import com.hedvig.android.core.icons.hedvig.compose.notificationCircleWithSubtractingPadding
 import com.hedvig.android.core.icons.hedvig.flag.FlagDenmark
 import com.hedvig.android.core.icons.hedvig.flag.FlagNorway
 import com.hedvig.android.core.icons.hedvig.flag.FlagSweden
@@ -98,10 +103,16 @@ internal fun HedvigIcons() {
       FlowRow() {
         for (icon in iconsGroup) {
           val modifier = Modifier
-          if (index == 0) { // #0 is the flag list, which can not be tinted
+          if (index <= 1) { // #0 and #1 are the flags and colored icons which should not be tinted
             Image(icon, null, modifier)
+            if (index == 1) {
+              Image(icon, null, modifier.notificationCircle())
+            }
           } else {
             Icon(icon, null, modifier)
+            if (index == 2) {
+              Icon(icon, null, modifier.notificationCircleWithSubtractingPadding())
+            }
           }
         }
       }
@@ -121,6 +132,22 @@ private val Hedvig.AllHedvigIcons: List<List<ImageVector>>
         FlagDenmark,
         FlagNorway,
         FlagSweden,
+      ),
+      listOf(
+        ColoredCircleWithCampaign,
+        Chat,
+        FirstVet,
+      ),
+      // Nav icons
+      listOf(
+        Forever,
+        ForeverFilled,
+        Home,
+        HomeFilled,
+        Insurance,
+        InsuranceFilled,
+        Profile,
+        ProfileFilled,
       ),
       listOf(
         AndroidLogo,
@@ -190,16 +217,6 @@ private val Hedvig.AllHedvigIcons: List<List<ImageVector>>
         Plus,
         Sound,
         SquircleWithCheckmark,
-      ),
-      listOf(
-        Forever,
-        ForeverFilled,
-        Home,
-        HomeFilled,
-        Insurance,
-        InsuranceFilled,
-        Profile,
-        ProfileFilled,
       ),
     )
     return __AllHedvigIcons!!
