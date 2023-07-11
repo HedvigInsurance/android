@@ -170,18 +170,11 @@ class ChatViewModel(
     isUploading.value = true
     val response = chatRepository.uploadFile(uri)
     return response.fold(
-      ifLeft = { error ->
-        val throwable = error.throwable
-        if (throwable != null) {
-          e(throwable) { "Chat: uploadFileInner failed" }
-        } else {
-          e { "Chat: uploadFileInner failed. Message:${error.message}" }
-        }
+      ifLeft = {
         _events.send(Event.Error)
         null
       },
       ifRight = { data ->
-        e { "Chat: uploadFileInner succeeded." }
         respondWithFile(data.uploadFile.key, uri)
         return data
       },
@@ -195,13 +188,7 @@ class ChatViewModel(
     viewModelScope.launch {
       val response = chatRepository.uploadFileFromProvider(uri)
       response.fold(
-        ifLeft = { error ->
-          val throwable = error.throwable
-          if (throwable != null) {
-            e(throwable) { "Chat: uploadFileFromProvider failed" }
-          } else {
-            e { "Chat: uploadFileFromProvider failed. Message:${error.message}" }
-          }
+        ifLeft = {
           _events.send(Event.Error)
         },
         ifRight = { data ->
@@ -239,9 +226,7 @@ class ChatViewModel(
       val response = chatRepository.sendChatMessage(getLastId(), message)
       isSendingMessage = false
       response.fold(
-        ifLeft = { error ->
-          val throwable = error.throwable
-          e(throwable) { "Chat: Replying through ChatViewModel failed:${error.message}" }
+        ifLeft = {
           _events.send(Event.Error)
         },
         ifRight = { data ->

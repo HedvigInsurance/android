@@ -22,7 +22,7 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.BiasAlignment
@@ -32,6 +32,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.sample.design.showcase.ui.colorscheme.HedvigColorScheme
 import com.hedvig.android.sample.design.showcase.ui.hedviguikit.HTextField
+import com.hedvig.android.sample.design.showcase.ui.hedviguikit.HedvigIcons
 import com.hedvig.android.sample.design.showcase.ui.hedviguikit.InfoCard
 import com.hedvig.android.sample.design.showcase.ui.hedviguikit.WarningCard
 import com.hedvig.android.sample.design.showcase.ui.m2.components.M2Buttons
@@ -84,10 +85,11 @@ private fun BothThemes() {
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ThemeSelection() {
-  var showM2: Boolean by remember { mutableStateOf(false) }
-  var showM3: Boolean by remember { mutableStateOf(false) }
-  var showColorSchemes: Boolean by remember { mutableStateOf(false) }
-  var showHedvigUiKit: Boolean by remember { mutableStateOf(true) }
+  var showM2: Boolean by rememberSaveable { mutableStateOf(false) }
+  var showM3: Boolean by rememberSaveable { mutableStateOf(false) }
+  var showColorSchemes: Boolean by rememberSaveable { mutableStateOf(false) }
+  var showHedvigUiKit: Boolean by rememberSaveable { mutableStateOf(false) }
+  var showIcons: Boolean by rememberSaveable { mutableStateOf(false) }
   when {
     showM2 -> {
       BackHandler { showM2 = false }
@@ -104,6 +106,10 @@ private fun ThemeSelection() {
     showHedvigUiKit -> {
       BackHandler { showHedvigUiKit = false }
       HedvigUiKit()
+    }
+    showIcons -> {
+      BackHandler { showIcons = false }
+      HedvigIcons()
     }
     else -> {
       Box(
@@ -123,6 +129,9 @@ private fun ThemeSelection() {
             }
             Button(onClick = { showHedvigUiKit = true }) {
               Text("Hedvig UI Kit")
+            }
+            Button(onClick = { showIcons = true }) {
+              Text("New design Icons")
             }
           }
         }

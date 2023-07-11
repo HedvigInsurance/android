@@ -17,6 +17,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navOptions
+import com.datadog.android.rum.GlobalRum
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
@@ -75,8 +76,8 @@ internal fun rememberHedvigAppState(
 internal class HedvigAppState(
   val navController: NavHostController,
   val windowSizeClass: WindowSizeClass,
-  private val coroutineScope: CoroutineScope,
-  private val tabNotificationBadgeService: TabNotificationBadgeService,
+  coroutineScope: CoroutineScope,
+  tabNotificationBadgeService: TabNotificationBadgeService,
   private val featureManager: FeatureManager,
 ) {
   val currentDestination: NavDestination?
@@ -208,6 +209,10 @@ private fun NavigationTrackingSideEffect(navController: NavController) {
           }
         }
       }
+      GlobalRum.get().startView(
+        key = destination,
+        name = destination.route ?: "Unknown route",
+      )
     }
     navController.addOnDestinationChangedListener(listener)
     onDispose {
