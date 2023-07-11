@@ -76,8 +76,8 @@ internal fun rememberHedvigAppState(
 internal class HedvigAppState(
   val navController: NavHostController,
   val windowSizeClass: WindowSizeClass,
-  private val coroutineScope: CoroutineScope,
-  private val tabNotificationBadgeService: TabNotificationBadgeService,
+  coroutineScope: CoroutineScope,
+  tabNotificationBadgeService: TabNotificationBadgeService,
   private val featureManager: FeatureManager,
 ) {
   val currentDestination: NavDestination?
@@ -211,7 +211,7 @@ private fun NavigationTrackingSideEffect(navController: NavController) {
       }
       GlobalRum.get().startView(
         key = destination,
-        name = destination.route ?: destination.displayName,
+        name = destination.route ?: "Unknown route",
       )
     }
     navController.addOnDestinationChangedListener(listener)
