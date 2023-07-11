@@ -7,12 +7,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.hedvig.android.core.icons.Hedvig
 
 @Suppress("UnusedReceiverParameter")
-public val Hedvig.CheckmarkInCircleFilled: ImageVector
+public val Hedvig.CircleWithCheckmarkFilled: ImageVector
   get() {
-    if (_checkmarkInCircleFilled != null) {
-      return _checkmarkInCircleFilled!!
+    if (_circleWithCheckmarkFilled != null) {
+      return _circleWithCheckmarkFilled!!
     }
-    _checkmarkInCircleFilled = materialIcon(name = "Checkmark in circle filled") {
+    _circleWithCheckmarkFilled = materialIcon(name = "Circle with checkmark filled") {
       materialPath(pathFillType = PathFillType.EvenOdd) {
         moveTo(12.0f, 2.25f)
         curveTo(6.6152f, 2.25f, 2.25f, 6.6152f, 2.25f, 12.0f)
@@ -34,7 +34,7 @@ public val Hedvig.CheckmarkInCircleFilled: ImageVector
         close()
       }
     }
-    return _checkmarkInCircleFilled!!
+    return _circleWithCheckmarkFilled!!
   }
 
-private var _checkmarkInCircleFilled: ImageVector? = null
+private var _circleWithCheckmarkFilled: ImageVector? = null

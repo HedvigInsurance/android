@@ -7,12 +7,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.hedvig.android.core.icons.Hedvig
 
 @Suppress("UnusedReceiverParameter")
-public val Hedvig.PlusInCircle: ImageVector
+public val Hedvig.CircleWithPlus: ImageVector
   get() {
-    if (_plusInCircle != null) {
-      return _plusInCircle!!
+    if (_circleWithPlus != null) {
+      return _circleWithPlus!!
     }
-    _plusInCircle = materialIcon(name = "Plus in circle") {
+    _circleWithPlus = materialIcon(name = "Circle with plus") {
       materialPath(pathFillType = PathFillType.EvenOdd) {
         moveTo(12.0f, 3.75f)
         curveTo(7.4436f, 3.75f, 3.75f, 7.4436f, 3.75f, 12.0f)
@@ -46,7 +46,7 @@ public val Hedvig.PlusInCircle: ImageVector
         close()
       }
     }
-    return _plusInCircle!!
+    return _circleWithPlus!!
   }
 
-private var _plusInCircle: ImageVector? = null
+private var _circleWithPlus: ImageVector? = null

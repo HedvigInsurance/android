@@ -7,12 +7,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.hedvig.android.core.icons.Hedvig
 
 @Suppress("UnusedReceiverParameter")
-public val Hedvig.XInCircleFilled: ImageVector // todo get right filled icon frmo figma when it exists
+public val Hedvig.CircleWithXFilled: ImageVector // todo get right filled icon frmo figma when it exists
   get() {
-    if (_xInCircleFilled != null) {
-      return _xInCircleFilled!!
+    if (_circleWithXFilled != null) {
+      return _circleWithXFilled!!
     }
-    _xInCircleFilled = materialIcon(name = "X in circle filled") {
+    _circleWithXFilled = materialIcon(name = "Circle with X filled") {
       materialPath(pathFillType = PathFillType.EvenOdd) {
         moveTo(12.0f, 3.75f)
         curveTo(7.4436f, 3.75f, 3.75f, 7.4436f, 3.75f, 12.0f)
@@ -48,7 +48,7 @@ public val Hedvig.XInCircleFilled: ImageVector // todo get right filled icon frm
         close()
       }
     }
-    return _xInCircleFilled!!
+    return _circleWithXFilled!!
   }
 
-private var _xInCircleFilled: ImageVector? = null
+private var _circleWithXFilled: ImageVector? = null

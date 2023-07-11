@@ -21,12 +21,15 @@ import com.hedvig.android.core.icons.hedvig.Basketball
 import com.hedvig.android.core.icons.hedvig.Calendar
 import com.hedvig.android.core.icons.hedvig.Camera
 import com.hedvig.android.core.icons.hedvig.Certificate
-import com.hedvig.android.core.icons.hedvig.CheckmarkInCircle
-import com.hedvig.android.core.icons.hedvig.CheckmarkInCircleFilled
 import com.hedvig.android.core.icons.hedvig.ChevronDown
 import com.hedvig.android.core.icons.hedvig.ChevronLeft
 import com.hedvig.android.core.icons.hedvig.ChevronRight
 import com.hedvig.android.core.icons.hedvig.ChevronUp
+import com.hedvig.android.core.icons.hedvig.CircleWithCheckmark
+import com.hedvig.android.core.icons.hedvig.CircleWithCheckmarkFilled
+import com.hedvig.android.core.icons.hedvig.CircleWithPlus
+import com.hedvig.android.core.icons.hedvig.CircleWithX
+import com.hedvig.android.core.icons.hedvig.CircleWithXFilled
 import com.hedvig.android.core.icons.hedvig.ContactInformation
 import com.hedvig.android.core.icons.hedvig.Copy
 import com.hedvig.android.core.icons.hedvig.Deductible
@@ -48,7 +51,6 @@ import com.hedvig.android.core.icons.hedvig.Pause
 import com.hedvig.android.core.icons.hedvig.Payments
 import com.hedvig.android.core.icons.hedvig.Pictures
 import com.hedvig.android.core.icons.hedvig.Play
-import com.hedvig.android.core.icons.hedvig.PlusInCircle
 import com.hedvig.android.core.icons.hedvig.Reciept
 import com.hedvig.android.core.icons.hedvig.RestartOneArrow
 import com.hedvig.android.core.icons.hedvig.RestartTwoArrows
@@ -61,8 +63,6 @@ import com.hedvig.android.core.icons.hedvig.Warning
 import com.hedvig.android.core.icons.hedvig.WarningFilled
 import com.hedvig.android.core.icons.hedvig.Watch
 import com.hedvig.android.core.icons.hedvig.X
-import com.hedvig.android.core.icons.hedvig.XInCircle
-import com.hedvig.android.core.icons.hedvig.XInCircleFilled
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -95,26 +95,25 @@ private val Hedvig.AllHedvigIcons: List<ImageVector>
       Calendar,
       Camera,
       Certificate,
-      XInCircle,
-      CheckmarkInCircle,
-      XInCircleFilled,
-      CheckmarkInCircleFilled,
-      ChevronUp,
       ChevronDown,
       ChevronLeft,
       ChevronRight,
+      ChevronUp,
+      CircleWithCheckmark,
+      CircleWithCheckmarkFilled,
+      CircleWithPlus,
+      CircleWithX,
+      CircleWithXFilled,
       ContactInformation,
       Copy,
-      StopSignFilled,
-      StopSign,
       Deductible,
       Document,
       Edit,
       Eurobonus,
       Heart,
       House,
-      InfoFilled,
       Info,
+      InfoFilled,
       Language,
       Logout,
       Mail,
@@ -126,15 +125,16 @@ private val Hedvig.AllHedvigIcons: List<ImageVector>
       Payments,
       Pictures,
       Play,
-      PlusInCircle,
       Reciept,
-      RestartTwoArrows,
       RestartOneArrow,
+      RestartTwoArrows,
       Search,
       Settings,
+      StopSign,
+      StopSignFilled,
       Waiting,
-      WarningFilled,
       Warning,
+      WarningFilled,
       Watch,
       X,
     )
