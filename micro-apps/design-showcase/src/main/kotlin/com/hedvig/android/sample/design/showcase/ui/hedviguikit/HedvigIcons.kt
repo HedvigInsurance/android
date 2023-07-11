@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -14,11 +13,18 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.flag.FlagDenmark
 import com.hedvig.android.core.icons.hedvig.flag.FlagNorway
 import com.hedvig.android.core.icons.hedvig.flag.FlagSweden
+import com.hedvig.android.core.icons.hedvig.nav.hedvig.Forever
+import com.hedvig.android.core.icons.hedvig.nav.hedvig.ForeverFilled
+import com.hedvig.android.core.icons.hedvig.nav.hedvig.Home
+import com.hedvig.android.core.icons.hedvig.nav.hedvig.HomeFilled
+import com.hedvig.android.core.icons.hedvig.nav.hedvig.Insurance
+import com.hedvig.android.core.icons.hedvig.nav.hedvig.InsuranceFilled
+import com.hedvig.android.core.icons.hedvig.nav.hedvig.Profile
+import com.hedvig.android.core.icons.hedvig.nav.hedvig.ProfileFilled
 import com.hedvig.android.core.icons.hedvig.normal.AndroidLogo
 import com.hedvig.android.core.icons.hedvig.normal.Apartment
 import com.hedvig.android.core.icons.hedvig.normal.AppleLogo
@@ -91,7 +97,7 @@ internal fun HedvigIcons() {
     for ((index, iconsGroup) in Icons.Hedvig.AllHedvigIcons.withIndex()) {
       FlowRow() {
         for (icon in iconsGroup) {
-          val modifier = Modifier.size(128.dp)
+          val modifier = Modifier
           if (index == 0) { // #0 is the flag list, which can not be tinted
             Image(icon, null, modifier)
           } else {
@@ -184,6 +190,16 @@ private val Hedvig.AllHedvigIcons: List<List<ImageVector>>
         Plus,
         Sound,
         SquircleWithCheckmark,
+      ),
+      listOf(
+        Forever,
+        ForeverFilled,
+        Home,
+        HomeFilled,
+        Insurance,
+        InsuranceFilled,
+        Profile,
+        ProfileFilled,
       ),
     )
     return __AllHedvigIcons!!
