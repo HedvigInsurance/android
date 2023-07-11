@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -35,7 +36,7 @@ fun DocumentRow(
     modifier = modifier
       .background(
         shape = SquircleShape,
-        color = Color(0xFFF0F0F0),
+        color = MaterialTheme.colorScheme.background
       )
       .fillMaxWidth()
       .padding(horizontal = 16.dp, vertical = 12.dp)
@@ -47,13 +48,12 @@ fun DocumentRow(
         Spacer(modifier = Modifier.padding(1.dp))
         Text("PDF", fontSize = 11.sp)
       }
-      Text(subTitle, color = Color(0xFF727272))
+      Text(subTitle, color = MaterialTheme.colorScheme.secondary)
     }
 
     Icon(
       imageVector = Hedvig.ArrowNorthEast,
       contentDescription = "link",
-      tint = Color(0xFF121212),
     )
   }
 }
