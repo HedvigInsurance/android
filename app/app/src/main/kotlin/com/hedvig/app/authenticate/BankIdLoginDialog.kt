@@ -1,6 +1,7 @@
 package com.hedvig.app.authenticate
 
 import android.app.Dialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -11,6 +12,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.datadog.android.rum.GlobalRum
 import com.hedvig.app.databinding.DialogAuthenticateBinding
 import com.hedvig.app.feature.genericauth.GenericAuthActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -22,6 +24,9 @@ import hedvig.resources.R
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import slimber.log.i
+
+private const val VIEW_KEY = "BankIdErrorDialog"
+private const val VIEW_NAME = "BankId Error"
 
 class BankIdLoginDialog : DialogFragment(com.hedvig.app.R.layout.dialog_authenticate) {
 
@@ -59,6 +64,7 @@ class BankIdLoginDialog : DialogFragment(com.hedvig.app.R.layout.dialog_authenti
     when (viewState) {
       is BankIdLoginViewState.Error -> {
         binding.authTitle.text = viewState.message
+        logErrorView()
         dialog?.setCanceledOnTouchOutside(true)
       }
       BankIdLoginViewState.Loading -> {}
@@ -71,6 +77,7 @@ class BankIdLoginDialog : DialogFragment(com.hedvig.app.R.layout.dialog_authenti
           is LoginStatusResult.Pending -> binding.authTitle.text = authStatus.statusMessage
           is LoginStatusResult.Failed -> {
             binding.authTitle.text = authStatus.message
+            logErrorView()
             dialog?.setCanceledOnTouchOutside(true)
           }
           is LoginStatusResult.Completed -> {
@@ -82,6 +89,7 @@ class BankIdLoginDialog : DialogFragment(com.hedvig.app.R.layout.dialog_authenti
           }
           is LoginStatusResult.Exception -> {
             binding.authTitle.text = authStatus.message
+            logErrorView()
             dialog?.setCanceledOnTouchOutside(true)
           }
         }
@@ -107,6 +115,15 @@ class BankIdLoginDialog : DialogFragment(com.hedvig.app.R.layout.dialog_authenti
         .into(binding.qrCode)
       i { "BankID not found, showing QR code instead" }
     }
+  }
+
+  private fun logErrorView() {
+    GlobalRum.get().startView(VIEW_KEY, VIEW_NAME)
+  }
+
+  override fun onDetach() {
+    GlobalRum.get().stopView(VIEW_KEY)
+    super.onDetach()
   }
 
   private fun startLoggedInActivity() {
