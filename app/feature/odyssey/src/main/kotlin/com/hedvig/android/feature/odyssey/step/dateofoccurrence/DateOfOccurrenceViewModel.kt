@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -37,9 +38,11 @@ internal class DateOfOccurrenceViewModel(
   fun submitSelectedDate() {
     val uiState = _uiState.value
     if (!uiState.canSubmitSelectedDate()) return
-    val selectedDateMillis = uiState.datePickerUiState.datePickerState.selectedDateMillis ?: return
     _uiState.update { it.copy(isLoading = true) }
-    val selectedDate = Instant.fromEpochMilliseconds(selectedDateMillis).toLocalDateTime(TimeZone.UTC).date
+    val selectedDateMillis: Long? = uiState.datePickerUiState.datePickerState.selectedDateMillis
+    val selectedDate: LocalDate? = selectedDateMillis?.let {
+      Instant.fromEpochMilliseconds(selectedDateMillis).toLocalDateTime(TimeZone.UTC).date
+    }
     viewModelScope.launch {
       claimFlowRepository.submitDateOfOccurrence(selectedDate).fold(
         ifLeft = {
@@ -84,7 +87,6 @@ internal data class DateOfOccurrenceUiState(
   val canSubmit: Boolean
     @Composable
     get() = remember(
-      datePickerUiState.datePickerState.selectedDateMillis,
       dateSubmissionError,
       nextStep,
       isLoading,
@@ -92,8 +94,7 @@ internal data class DateOfOccurrenceUiState(
 }
 
 private fun DateOfOccurrenceUiState.canSubmitSelectedDate(): Boolean {
-  return datePickerUiState.datePickerState.selectedDateMillis != null &&
-    !dateSubmissionError &&
+  return !dateSubmissionError &&
     nextStep == null &&
     !isLoading
 }
