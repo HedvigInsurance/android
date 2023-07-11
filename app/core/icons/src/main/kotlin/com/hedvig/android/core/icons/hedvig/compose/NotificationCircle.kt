@@ -1,6 +1,5 @@
 package com.hedvig.android.core.icons.hedvig.compose
 
-import android.util.Log
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
@@ -18,9 +17,6 @@ fun Modifier.notificationCircle(
     // The red circle takes up ~34% of the icon's size
     val circleDiameter = size.minDimension * 0.34375f
     val circleRadius = circleDiameter / 2
-    Log.d("Stelios", "size.minDimension:${size.minDimension.toDp()}")
-    Log.d("Stelios", "circleDiameter:${circleDiameter.toDp()}")
-    Log.d("Stelios", "circleRadius:${circleRadius.toDp()}")
     drawCircle(
       color = Color(0xFFFF513A),
       radius = circleRadius,
