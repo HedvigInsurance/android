@@ -1,9 +1,12 @@
 package com.hedvig.android.sample.design.showcase.ui.hedviguikit
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -63,80 +66,109 @@ import com.hedvig.android.core.icons.hedvig.Warning
 import com.hedvig.android.core.icons.hedvig.WarningFilled
 import com.hedvig.android.core.icons.hedvig.Watch
 import com.hedvig.android.core.icons.hedvig.X
+import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
+import com.hedvig.android.core.icons.hedvig.small.hedvig.BankId
+import com.hedvig.android.core.icons.hedvig.small.hedvig.Campaign
+import com.hedvig.android.core.icons.hedvig.small.hedvig.Checkmark
+import com.hedvig.android.core.icons.hedvig.small.hedvig.CircleFilled
+import com.hedvig.android.core.icons.hedvig.small.hedvig.CircleWithOutline
+import com.hedvig.android.core.icons.hedvig.small.hedvig.Lock
+import com.hedvig.android.core.icons.hedvig.small.hedvig.Minus
+import com.hedvig.android.core.icons.hedvig.small.hedvig.Plus
+import com.hedvig.android.core.icons.hedvig.small.hedvig.Sound
+import com.hedvig.android.core.icons.hedvig.small.hedvig.SquircleWithCheckmark
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun HedvigIcons() {
-  FlowRow(
-    Modifier.fillMaxSize().safeContentPadding(),
-  ) {
-    for (icon in Icons.Hedvig.AllHedvigIcons) {
-      Icon(icon, null)
+  Column(Modifier.fillMaxSize().safeContentPadding().verticalScroll(rememberScrollState())) {
+    for (iconsGroup in Icons.Hedvig.AllHedvigIcons) {
+      FlowRow() {
+        for (icon in iconsGroup) {
+          Icon(icon, null)
+        }
+      }
     }
   }
 }
 
-private var __AllHedvigIcons: List<ImageVector>? = null
+private var __AllHedvigIcons: List<List<ImageVector>>? = null
 
-private val Hedvig.AllHedvigIcons: List<ImageVector>
+private val Hedvig.AllHedvigIcons: List<List<ImageVector>>
   get() {
     if (__AllHedvigIcons != null) {
       return __AllHedvigIcons!!
     }
     __AllHedvigIcons = listOf(
-      AndroidLogo,
-      Apartment,
-      AppleLogo,
-      ArrowBack,
-      ArrowDown,
-      ArrowForward,
-      ArrowUp,
-      Basketball,
-      Calendar,
-      Camera,
-      Certificate,
-      ChevronDown,
-      ChevronLeft,
-      ChevronRight,
-      ChevronUp,
-      CircleWithCheckmark,
-      CircleWithCheckmarkFilled,
-      CircleWithPlus,
-      CircleWithX,
-      CircleWithXFilled,
-      ContactInformation,
-      Copy,
-      Deductible,
-      Document,
-      Edit,
-      Eurobonus,
-      Heart,
-      House,
-      Info,
-      InfoFilled,
-      Language,
-      Logout,
-      Mail,
-      MinusInCircle,
-      MoreIos,
-      MultipleDocuments,
-      Other,
-      Pause,
-      Payments,
-      Pictures,
-      Play,
-      Reciept,
-      RestartOneArrow,
-      RestartTwoArrows,
-      Search,
-      Settings,
-      StopSign,
-      StopSignFilled,
-      Waiting,
-      Warning,
-      WarningFilled,
-      Watch,
-      X,
+      listOf(
+        AndroidLogo,
+        Apartment,
+        AppleLogo,
+        ArrowBack,
+        ArrowDown,
+        ArrowForward,
+        ArrowUp,
+        Basketball,
+        Calendar,
+        Camera,
+        Certificate,
+        ChevronDown,
+        ChevronLeft,
+        ChevronRight,
+        ChevronUp,
+        CircleWithCheckmark,
+        CircleWithCheckmarkFilled,
+        CircleWithPlus,
+        CircleWithX,
+        CircleWithXFilled,
+        ContactInformation,
+        Copy,
+        Deductible,
+        Document,
+        Edit,
+        Eurobonus,
+        Heart,
+        House,
+        Info,
+        InfoFilled,
+        Language,
+        Logout,
+        Mail,
+        MinusInCircle,
+        MoreIos,
+        MultipleDocuments,
+        Other,
+        Pause,
+        Payments,
+        Pictures,
+        Play,
+        Reciept,
+        RestartOneArrow,
+        RestartTwoArrows,
+        Search,
+        Settings,
+        StopSign,
+        StopSignFilled,
+        Waiting,
+        Warning,
+        WarningFilled,
+        Watch,
+        X,
+      ),
+      // Small icons
+      listOf(
+        ArrowNorthEast,
+        BankId,
+        Campaign,
+        Checkmark,
+        CircleFilled,
+        CircleWithOutline,
+        Lock,
+        Minus,
+        Plus,
+        Sound,
+        SquircleWithCheckmark,
+      ),
     )
     return __AllHedvigIcons!!
   }
