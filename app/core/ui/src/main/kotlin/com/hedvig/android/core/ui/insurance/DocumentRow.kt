@@ -1,23 +1,25 @@
 package com.hedvig.android.core.ui.insurance
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.BaselineShift
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.hedvig.android.core.designsystem.newtheme.SquircleShape
+import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
@@ -30,42 +32,51 @@ fun DocumentRow(
   subTitle: String,
   onClick: () -> Unit,
 ) {
-  Row(
-    verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.SpaceBetween,
-    modifier = modifier
-      .background(
-        shape = SquircleShape,
-        color = MaterialTheme.colorScheme.background
-      )
-      .fillMaxWidth()
-      .padding(horizontal = 16.dp, vertical = 12.dp)
-      .clickable { onClick() },
+  HedvigCard(
+    onClick = onClick,
+    modifier = modifier,
   ) {
-    Column {
-      Row {
-        Text(title)
-        Spacer(modifier = Modifier.padding(1.dp))
-        Text("PDF", fontSize = 11.sp)
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+    ) {
+      Column(Modifier.weight(1f, true)) {
+        Text(
+          text = buildAnnotatedString {
+            append(title)
+            withStyle(
+              SpanStyle(
+                baselineShift = BaselineShift(0.3f),
+                fontSize = 10.sp,
+              ),
+            ) {
+              append(" PDF")
+            }
+          },
+          fontSize = 18.sp,
+        )
+        CompositionLocalProvider(LocalContentColor.provides(MaterialTheme.colorScheme.onSurfaceVariant)) {
+          Text(subTitle, fontSize = 18.sp)
+        }
       }
-      Text(subTitle, color = MaterialTheme.colorScheme.secondary)
+      Icon(
+        imageVector = Icons.Hedvig.ArrowNorthEast,
+        contentDescription = null,
+      )
     }
-
-    Icon(
-      imageVector = Hedvig.ArrowNorthEast,
-      contentDescription = "link",
-    )
   }
 }
 
 @Composable
 @HedvigPreview
 fun PreviewDocumentRow() {
-  HedvigTheme {
-    DocumentRow(
-      title = "Document 1",
-      subTitle = "Subtitle 1",
-      onClick = {},
-    )
+  HedvigTheme(useNewColorScheme = true) {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      DocumentRow(
+        title = "Document 1",
+        subTitle = "Subtitle 1",
+        onClick = {},
+      )
+    }
   }
 }
