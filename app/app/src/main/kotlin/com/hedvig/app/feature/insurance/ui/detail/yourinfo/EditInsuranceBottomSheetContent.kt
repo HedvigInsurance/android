@@ -31,15 +31,13 @@ import com.hedvig.android.core.ui.SelectIndicationCircle
 import hedvig.resources.R
 
 @Composable
-fun EditInsuranceBottomSheetContent(
+internal fun EditInsuranceBottomSheetContent(
   onEditCoInsuredClick: () -> Unit,
   onChangeAddressClick: () -> Unit,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-
   var expandedItemIndex by rememberSaveable { mutableStateOf(-1) }
-
   Column(
     modifier = modifier,
   ) {
@@ -123,7 +121,7 @@ private fun SelectableItem(text: String, isSelected: Boolean, onClick: () -> Uni
 
 @Composable
 @HedvigPreview
-fun PreviewEditBottomSheet() {
+private fun PreviewEditBottomSheet() {
   HedvigTheme(useNewColorScheme = true) {
     Surface(color = MaterialTheme.colorScheme.background) {
       EditInsuranceBottomSheetContent(
