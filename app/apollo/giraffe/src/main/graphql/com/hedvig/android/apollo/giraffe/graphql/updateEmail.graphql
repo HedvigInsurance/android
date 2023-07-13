@@ -1,6 +1,0 @@
-mutation UpdateEmail($input: String!) {
-  updateEmail(input: $input) {
-    id
-    email
-  }
-}

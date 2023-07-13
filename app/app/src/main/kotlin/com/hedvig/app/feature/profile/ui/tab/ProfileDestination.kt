@@ -69,6 +69,8 @@ import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.startChat
 import giraffe.fragment.MonetaryAmountFragment
+import java.math.BigDecimal
+import org.javamoney.moneta.Money
 
 @Composable
 internal fun ProfileDestination(
@@ -77,13 +79,12 @@ internal fun ProfileDestination(
   viewModel: ProfileViewModel,
 ) {
   val uiState by viewModel.data.collectAsStateWithLifecycle()
-  val isLoading by viewModel.loading.collectAsStateWithLifecycle()
+
   LaunchedEffect(viewModel) {
     viewModel.reload()
   }
   ProfileScreen(
     uiState = uiState,
-    isLoading = isLoading,
     navigateToEurobonus = navigateToEurobonus,
     navigateToBusinessModel = navigateToBusinessModel,
     reload = viewModel::reload,
@@ -95,7 +96,6 @@ internal fun ProfileDestination(
 @Composable
 private fun ProfileScreen(
   uiState: ProfileUiState,
-  isLoading: Boolean,
   navigateToEurobonus: () -> Unit,
   navigateToBusinessModel: () -> Unit,
   reload: () -> Unit,
@@ -106,7 +106,7 @@ private fun ProfileScreen(
     WindowInsets.systemBars.getTop(this).toDp()
   }
   val pullRefreshState = rememberPullRefreshState(
-    refreshing = isLoading,
+    refreshing = uiState.isLoading,
     onRefresh = reload,
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
@@ -146,7 +146,7 @@ private fun ProfileScreen(
       )
     }
     PullRefreshIndicator(
-      refreshing = isLoading,
+      refreshing = uiState.isLoading,
       state = pullRefreshState,
       scale = true,
       modifier = Modifier.align(Alignment.TopCenter),
@@ -271,8 +271,7 @@ private fun ColumnScope.ProfileItemRows(
 private fun getPriceCaption(paymentInfo: PaymentInfo): String? {
   paymentInfo.priceCaptionResId ?: return null
   val locale = getLocale()
-  val monetaryMonthlyNet = paymentInfo.monetaryMonthlyNet.toMonetaryAmount()
-  val localizedAmount = monetaryMonthlyNet.format(locale)
+  val localizedAmount = paymentInfo.monetaryMonthlyNet.format(locale)
   return stringResource(paymentInfo.priceCaptionResId, localizedAmount)
 }
 
@@ -348,13 +347,12 @@ private fun PreviewProfileSuccessScreen() {
         uiState = ProfileUiState(
           contactInfoName = "Contact info name",
           paymentInfo = PaymentInfo(
-            MonetaryAmountFragment("123", "SEK"),
+            Money.of(BigDecimal(123), "SEK"),
             hedvig.resources.R.string.Direct_Debit_Connected,
           ),
           euroBonus = EuroBonus("ABC-12345678"),
           showBusinessModel = true,
         ),
-        isLoading = false,
         navigateToEurobonus = {},
         navigateToBusinessModel = {},
         reload = {},
