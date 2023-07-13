@@ -21,8 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.material3.squircle
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -75,7 +75,8 @@ internal fun EditInsuranceBottomSheetContent(
       },
     )
     Spacer(modifier = Modifier.height(16.dp))
-    LargeContainedButton(
+    HedvigContainedButton(
+      text = stringResource(id = R.string.general_continue_button),
       onClick = {
         if (expandedItemIndex == 0) {
           onEditCoInsuredClick()
@@ -83,10 +84,7 @@ internal fun EditInsuranceBottomSheetContent(
           onChangeAddressClick()
         }
       },
-      shape = MaterialTheme.shapes.squircle,
-    ) {
-      Text(text = stringResource(id = R.string.general_continue_button))
-    }
+    )
     Spacer(modifier = Modifier.height(8.dp))
     HedvigTextButton(
       text = stringResource(id = R.string.general_cancel_button),
