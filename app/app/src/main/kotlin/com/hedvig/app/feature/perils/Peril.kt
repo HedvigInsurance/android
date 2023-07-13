@@ -13,7 +13,7 @@ data class Peril(
   val description: String,
   val darkUrl: String?,
   val lightUrl: String?,
-  val colorCode: String?,
+  val colorCode: Long?, // A valid color number in base 16, or null.
   val exception: List<String>,
   val covered: List<String>,
   val info: String,
@@ -36,7 +36,7 @@ data class Peril(
       exception = listOf(),
       covered = listOf(),
       info = peril.info,
-      colorCode = peril.colorCode,
+      colorCode = peril.colorCode?.dropWhile { it == '#' }?.takeIf { it.length == 8 }?.toLongOrNull(16),
       darkUrl = null,
       lightUrl = null,
     )

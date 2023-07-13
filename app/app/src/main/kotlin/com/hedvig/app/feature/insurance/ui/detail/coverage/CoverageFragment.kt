@@ -2,16 +2,17 @@ package com.hedvig.app.feature.insurance.ui.detail.coverage
 
 import android.os.Bundle
 import android.view.View
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.only
@@ -19,80 +20,73 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material.ContentAlpha
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import arrow.core.toNonEmptyListOrNull
-import coil.ImageLoader
+import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
-import com.hedvig.android.core.ui.insurance.PerilGrid
-import com.hedvig.android.core.ui.insurance.PerilGridData
-import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
+import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
+import com.hedvig.android.core.ui.card.ExpandablePlusCard
+import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ContractDetailCoverageFragmentBinding
 import com.hedvig.app.feature.perils.Peril
-import com.hedvig.app.feature.perils.PerilBottomSheet
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
+/**
+ * TODO in this screen:
+ *  Make peril description text come from octopus probably, so that it shows the right information
+ *  Take the color for perils also from octopus which would mean that it's non-null. Otherwise provide a sane default
+ *  Put bottom sheet contents in the bigger screen, and fix its design
+ */
 class CoverageFragment : Fragment(R.layout.contract_detail_coverage_fragment) {
   private val contractId: String by lazy {
     arguments?.getString(INSURANCE_ID) ?: error("Call CoverageFragment.newInstance() instead")
   }
   private val binding by viewBinding(ContractDetailCoverageFragmentBinding::bind)
   private val viewModel: CoverageViewModel by viewModel { parametersOf(contractId) }
-  private val imageLoader: ImageLoader by inject()
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     binding.composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
     binding.composeView.setContent {
-      HedvigTheme {
-        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-        CoverageFragmentScreen(
-          uiState = uiState,
-          imageLoader = imageLoader,
-          onPerilClick = { peril ->
-            PerilBottomSheet
-              .newInstance(peril)
-              .show(
-                parentFragmentManager,
-                PerilBottomSheet.TAG,
-              )
-          },
-          onInsurableLimitClick = { insurableLimit ->
-            InsurableLimitsBottomSheet
-              .newInstance(insurableLimit.label, insurableLimit.description)
-              .show(parentFragmentManager, InsurableLimitsBottomSheet.TAG)
-          },
-          retryLoading = viewModel::reload,
-        )
+      HedvigTheme(useNewColorScheme = true) {
+        Surface(color = MaterialTheme.colorScheme.background) {
+          val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+          CoverageFragmentScreen(
+            uiState = uiState,
+            onInsurableLimitClick = { insurableLimit: ContractCoverage.InsurableLimit ->
+              InsurableLimitsBottomSheet
+                .newInstance(insurableLimit.label, insurableLimit.description)
+                .show(parentFragmentManager, InsurableLimitsBottomSheet.TAG)
+            },
+            retryLoading = viewModel::reload,
+          )
+        }
       }
     }
   }
@@ -111,89 +105,128 @@ class CoverageFragment : Fragment(R.layout.contract_detail_coverage_fragment) {
 @Composable
 private fun CoverageFragmentScreen(
   uiState: CoverageUiState,
-  imageLoader: ImageLoader,
-  onPerilClick: (Peril) -> Unit,
   onInsurableLimitClick: (ContractCoverage.InsurableLimit) -> Unit,
   retryLoading: () -> Unit,
 ) {
   when (uiState) {
     CoverageUiState.Error -> {
-      GenericErrorScreen(
-        onRetryButtonClick = retryLoading,
-        modifier = Modifier
-          .padding(16.dp)
-          .windowInsetsPadding(WindowInsets.safeDrawing),
+      HedvigErrorSection(
+        retry = retryLoading,
+        modifier = Modifier.fillMaxSize(),
       )
     }
     CoverageUiState.Loading -> {}
     is CoverageUiState.Success -> {
-      SuccessScreen(
-        uiState = uiState,
-        imageLoader = imageLoader,
-        onPerilClick = onPerilClick,
-        onInsurableLimitClick = onInsurableLimitClick,
-      )
+      Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))) {
+        Spacer(Modifier.height(16.dp))
+        InsurableLimitSection(uiState.insurableLimitItems, onInsurableLimitClick = onInsurableLimitClick)
+        Spacer(Modifier.height(16.dp))
+        PerilSection(uiState.perilItems)
+        if (uiState.perilItems.isNotEmpty()) {
+          Spacer(Modifier.height(16.dp))
+        }
+        Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
+      }
     }
-  }
-}
-
-@Composable
-private fun SuccessScreen(
-  uiState: CoverageUiState.Success,
-  imageLoader: ImageLoader,
-  onPerilClick: (Peril) -> Unit,
-  onInsurableLimitClick: (ContractCoverage.InsurableLimit) -> Unit,
-) {
-  Column(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))) {
-    Spacer(Modifier.height(8.dp))
-    PerilSection(uiState.contractDisplayName, uiState.perilItems, imageLoader, onPerilClick)
-    Spacer(Modifier.height(32.dp))
-    Divider(Modifier.padding(horizontal = 16.dp))
-    Spacer(Modifier.height(8.dp))
-    InsurableLimitSection(uiState.insurableLimitItems, onInsurableLimitClick)
-    Spacer(Modifier.height(16.dp))
-    Spacer(
-      Modifier.windowInsetsPadding(
-        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
-      ),
-    )
   }
 }
 
 @Suppress("UnusedReceiverParameter")
 @Composable
 private fun ColumnScope.PerilSection(
-  contractDisplayName: String,
   perilItems: ImmutableList<Peril>,
-  imageLoader: ImageLoader,
-  onPerilClick: (Peril) -> Unit,
 ) {
-  val isSystemInDarkTheme = isSystemInDarkTheme()
-  val perilGridData = remember(perilItems, isSystemInDarkTheme) {
-    perilItems.map { peril: Peril ->
-      PerilGridData(
-        text = peril.title,
-        iconUrl = if (isSystemInDarkTheme) peril.darkUrl!! else peril.lightUrl!!,
-        onClick = { onPerilClick(peril) },
+  var expandedItemIndex by rememberSaveable { mutableStateOf(-1) }
+  for ((index, perilItem) in perilItems.withIndex()) {
+    ExpandableCoverageCard(
+      isExpanded = expandedItemIndex == index,
+      onClick = {
+        if (expandedItemIndex == index) {
+          expandedItemIndex = -1
+        } else {
+          expandedItemIndex = index
+        }
+      },
+      color = perilItem.colorCode?.let { Color(it) },
+      title = perilItem.title,
+      expandedTitle = perilItem.description,
+      expandedDescriptionList = buildList {
+        add(perilItem.info)
+        addAll(perilItem.covered)
+        addAll(perilItem.exception)
+      }.toPersistentList(),
+      modifier = Modifier.padding(horizontal = 16.dp),
+    )
+    if (index != perilItems.lastIndex) {
+      Spacer(Modifier.height(4.dp))
+    }
+  }
+}
+
+@Composable
+private fun ExpandableCoverageCard(
+  isExpanded: Boolean,
+  onClick: () -> Unit,
+  color: Color?,
+  title: String,
+  expandedTitle: String,
+  expandedDescriptionList: ImmutableList<String>,
+  modifier: Modifier = Modifier,
+) {
+  ExpandablePlusCard(
+    isExpanded = isExpanded,
+    onClick = onClick,
+    content = {
+      Spacer(
+        Modifier
+          .size(24.dp)
+          .wrapContentSize(Alignment.Center)
+          .size(20.dp)
+          .background(color ?: Color(0xFFC45D4F), CircleShape), // todo consider a different default color?
       )
-    }.toNonEmptyListOrNull()
-  }
-  if (perilGridData != null) {
-    Text(
-      text = stringResource(hedvig.resources.R.string.CONTRACT_COVERAGE_CONTRACT_TYPE, contractDisplayName),
-      style = MaterialTheme.typography.titleLarge,
-      modifier = Modifier
-        .padding(horizontal = 16.dp)
-        .heightIn(min = 40.dp)
-        .wrapContentSize(Alignment.BottomStart),
-    )
-    Spacer(Modifier.height(16.dp))
-    PerilGrid(
-      perils = perilGridData,
-      imageLoader = imageLoader,
-      contentPadding = PaddingValues(horizontal = 16.dp),
-    )
-  }
+      Spacer(Modifier.width(12.dp))
+      Text(
+        text = title,
+        style = MaterialTheme.typography.headlineSmall,
+        modifier = Modifier.weight(1f, true),
+      )
+    },
+    expandedContent = {
+      Column(
+        Modifier.padding(start = 44.dp, end = 32.dp),
+      ) {
+        Spacer(Modifier.height(12.dp))
+        Text(
+          text = expandedTitle,
+          style = MaterialTheme.typography.bodyMedium,
+        )
+        Spacer(Modifier.height(12.dp))
+        if (expandedDescriptionList.isNotEmpty()) {
+          Spacer(Modifier.height(12.dp))
+          for ((index, itemDescription) in expandedDescriptionList.withIndex()) {
+            Row {
+              Text(
+                text = (index + 1).toString().padStart(length = 2, padChar = '0'),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+              )
+              Spacer(Modifier.width(12.dp))
+              Text(
+                text = itemDescription,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.weight(1f),
+              )
+            }
+            if (index != expandedDescriptionList.lastIndex) {
+              Spacer(Modifier.height(12.dp))
+            }
+          }
+        }
+        Spacer(Modifier.height(12.dp))
+      }
+    },
+    modifier = modifier,
+  )
 }
 
 @Suppress("UnusedReceiverParameter")
@@ -202,34 +235,46 @@ private fun ColumnScope.InsurableLimitSection(
   insurableLimitItems: ImmutableList<ContractCoverage.InsurableLimit>,
   onInsurableLimitClick: (ContractCoverage.InsurableLimit) -> Unit,
 ) {
-  Text(
-    text = stringResource(hedvig.resources.R.string.CONTRACT_COVERAGE_MORE_INFO),
-    style = MaterialTheme.typography.titleLarge,
-    modifier = Modifier
-      .padding(horizontal = 16.dp)
-      .heightIn(min = 40.dp)
-      .wrapContentSize(Alignment.BottomStart),
-  )
-  Spacer(Modifier.height(16.dp))
-  insurableLimitItems.map { insurableLimitItem ->
-    Row(
-      verticalAlignment = Alignment.CenterVertically,
+  insurableLimitItems.mapIndexed { index, insurableLimitItem ->
+    HorizontalItemsWithMaximumSpaceTaken(
+      startSlot = {
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          modifier = Modifier.padding(vertical = 16.dp),
+        ) {
+          Text(insurableLimitItem.label)
+        }
+      },
+      endSlot = {
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.End,
+          modifier = Modifier.padding(vertical = 16.dp),
+        ) {
+          Text(
+            text = insurableLimitItem.limit,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+          )
+          Spacer(Modifier.width(8.dp))
+          Icon(
+            imageVector = Icons.Hedvig.InfoFilled,
+            contentDescription = null,
+            modifier = Modifier.size(16.dp),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+          )
+        }
+      },
+      spaceBetween = 8.dp,
       modifier = Modifier
-        .heightIn(64.dp)
+        .heightIn(min = 56.dp)
+        .fillMaxWidth()
         .clickable {
           onInsurableLimitClick(insurableLimitItem)
         }
         .padding(horizontal = 16.dp),
-    ) {
-      Text(insurableLimitItem.label, modifier = Modifier.weight(1f))
-      Spacer(Modifier.widthIn(min = 8.dp))
-      CompositionLocalProvider(LocalContentColor provides LocalContentColor.current.copy(alpha = ContentAlpha.medium)) {
-        Row(Modifier.weight(1f), horizontalArrangement = Arrangement.End) {
-          Text(insurableLimitItem.limit)
-          Spacer(Modifier.width(8.dp))
-          Icon(Icons.Outlined.Info, null, Modifier.size(24.dp))
-        }
-      }
+    )
+    if (index != insurableLimitItems.lastIndex) {
+      Divider(Modifier.fillMaxWidth().padding(horizontal = 16.dp))
     }
   }
 }
@@ -237,19 +282,57 @@ private fun ColumnScope.InsurableLimitSection(
 @HedvigPreview
 @Composable
 private fun PreviewCoverageFragmentScreen() {
-  HedvigTheme {
+  HedvigTheme(useNewColorScheme = true) {
     Surface(color = MaterialTheme.colorScheme.background) {
       CoverageFragmentScreen(
-        CoverageUiState.Success(
-          "Your insurance",
-          List(7) { Peril("Fire", "Descr", "", "", "", emptyList(), emptyList(), "Info") }.toPersistentList(),
-          List(3) { ContractCoverage.InsurableLimit("Label", "limit", "Description") }.toPersistentList(),
+        uiState = CoverageUiState.Success(
+          contractDisplayName = "Your insurance",
+          perilItems = previewPerils,
+          insurableLimitItems = previewInsurableLimits,
         ),
-        rememberPreviewImageLoader(),
-        {},
-        {},
-        {},
+        onInsurableLimitClick = {},
+        retryLoading = {},
       )
     }
   }
 }
+
+@HedvigPreview
+@Composable
+private fun PreviewInsurableLimitSection() {
+  HedvigTheme(useNewColorScheme = true) {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      Column {
+        InsurableLimitSection(
+          previewInsurableLimits,
+          {},
+        )
+      }
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewPerilSection() {
+  HedvigTheme(useNewColorScheme = true) {
+    Surface(color = MaterialTheme.colorScheme.background) {
+      Column {
+        PerilSection(previewPerils)
+      }
+    }
+  }
+}
+
+private val previewPerils = listOf(
+  Peril("Eldsvåda", "", null, null, 0xFFC45D4F, emptyList(), emptyList(), "Info"),
+  Peril("Eldsvåda", "", null, null, 0xFFC45D4F, emptyList(), emptyList(), "Info"),
+  Peril("Eldsvåda", "", null, null, 0xFFC45D4F, emptyList(), emptyList(), "Info"),
+  Peril("Eldsvåda", "", null, null, 0xFFC45D4F, emptyList(), emptyList(), "Info"),
+).toPersistentList()
+
+private val previewInsurableLimits = listOf(
+  ContractCoverage.InsurableLimit("Insured amount".repeat(2), "1 000 000 kr", ""),
+  ContractCoverage.InsurableLimit("Deductible", "1 500 kr", ""),
+  ContractCoverage.InsurableLimit("Travel insurance", "45 days", ""),
+).toPersistentList()
