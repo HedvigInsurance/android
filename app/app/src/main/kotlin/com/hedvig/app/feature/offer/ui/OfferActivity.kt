@@ -156,7 +156,6 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
       openChat = ::openChat,
     )
     val perilsAdapter = PerilsAdapter(
-      fragmentManager = supportFragmentManager,
       imageLoader = imageLoader,
     )
     val insurableLimitsAdapter = InsurableLimitsAdapter(

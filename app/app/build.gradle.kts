@@ -124,6 +124,7 @@ dependencies {
   implementation(projects.app.core.datastore)
   implementation(projects.app.core.designSystem)
   implementation(projects.app.core.resources)
+  implementation(projects.app.core.icons)
   implementation(projects.app.core.ui)
   implementation(projects.app.data.claimFlow)
   implementation(projects.app.data.claimTriaging)
