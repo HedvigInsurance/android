@@ -6,7 +6,6 @@ import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -24,11 +23,10 @@ import com.hedvig.app.databinding.PerilDetailBinding
 import com.hedvig.app.ui.coil.load
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
-import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 
+// TODO in redesign: delete this completely, as the screens that use this adapter won't exist anymore
 class PerilsAdapter(
-  private val fragmentManager: FragmentManager,
   private val imageLoader: ImageLoader,
 ) : ListAdapter<PerilItem, PerilsAdapter.ViewHolder>(GenericDiffUtilItemCallback()),
   SpanSizeLookupOwner,
@@ -41,7 +39,7 @@ class PerilsAdapter(
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
     R.layout.contract_detail_coverage_header -> ViewHolder.Header(parent)
-    R.layout.peril_detail -> ViewHolder.Peril(parent, fragmentManager, imageLoader)
+    R.layout.peril_detail -> ViewHolder.Peril(parent, imageLoader)
     else -> throw Error("Invalid viewType: $viewType")
   }
 
@@ -80,7 +78,6 @@ class PerilsAdapter(
 
     class Peril(
       parent: ViewGroup,
-      private val fragmentManager: FragmentManager,
       private val imageLoader: ImageLoader,
     ) : ViewHolder(parent.inflate(R.layout.peril_detail)) {
       private val binding by viewBinding(PerilDetailBinding::bind)
@@ -93,7 +90,7 @@ class PerilsAdapter(
         binding.label.text = data.inner.title
         if (data.inner.colorCode != null) {
           val shape = ShapeDrawable(OvalShape())
-          shape.setTint(Color.parseColor(data.inner.colorCode))
+          shape.setTint(Color.valueOf(data.inner.colorCode).toArgb())
           shape.intrinsicHeight = 16.viewDps
           shape.intrinsicWidth = 16.viewDps
           binding.icon.setImageDrawable(shape)
@@ -106,15 +103,6 @@ class PerilsAdapter(
           binding.icon.load(iconUrl, imageLoader) {
             crossfade(true)
           }
-        }
-
-        binding.root.setHapticClickListener {
-          PerilBottomSheet
-            .newInstance(data.inner)
-            .show(
-              fragmentManager,
-              PerilBottomSheet.TAG,
-            )
         }
       }
     }

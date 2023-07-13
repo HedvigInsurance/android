@@ -14,9 +14,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.card.ExpandablePlusCard
 
 @Composable
 internal fun Faqs(
@@ -62,13 +62,12 @@ private fun FaqItem(
   onClick: () -> Unit,
   isExpanded: Boolean,
 ) {
-  ExpandablePlusRow(
+  ExpandablePlusCard(
     isExpanded = isExpanded,
     onClick = onClick,
     content = {
       Text(
         text = faqText,
-        fontSize = 18.sp,
         modifier = Modifier.weight(1f, true),
       )
     },

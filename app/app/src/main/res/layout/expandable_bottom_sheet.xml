@@ -44,8 +44,7 @@
         android:layout_height="match_parent"
         android:layout_marginTop="48dp"
         android:clipToPadding="false"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/covered_and_exception_item" />
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
     <FrameLayout
         android:id="@+id/chevronContainer"
