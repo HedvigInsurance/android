@@ -1,11 +1,4 @@
 query Profile {
-  member {
-    id
-    firstName
-    lastName
-    email
-    phoneNumber
-  }
   chargeEstimation {
     subscription {
       ...MonetaryAmountFragment

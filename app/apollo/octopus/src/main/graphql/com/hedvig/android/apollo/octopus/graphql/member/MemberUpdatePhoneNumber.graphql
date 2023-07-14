@@ -1,0 +1,10 @@
+mutation MemberUpdatePhoneNumber($input: MemberUpdatePhoneNumberInput!) {
+  memberUpdatePhoneNumber(input: $input) {
+    userError {
+      message
+    }
+    member {
+      ...MemberDataFragment
+    }
+  }
+}

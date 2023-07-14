@@ -1,0 +1,7 @@
+fragment MemberDataFragment on Member {
+  id
+  firstName
+  lastName
+  email
+  phoneNumber
+}
