@@ -138,7 +138,6 @@ private fun <T> SelectionContent(
         ) { option: T ->
           HedvigCard(
             onClick = { onSelected(option) },
-            shape = MaterialTheme.shapes.squircle,
           ) {
             Row(
               verticalAlignment = Alignment.CenterVertically,
