@@ -62,5 +62,3 @@ sealed interface PaymentMethod {
     val type: String,
   ) : PaymentMethod
 }
-
-

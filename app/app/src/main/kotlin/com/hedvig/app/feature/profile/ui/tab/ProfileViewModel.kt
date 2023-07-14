@@ -10,11 +10,11 @@ import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.market.MarketManager
 import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.feature.profile.data.ProfileRepository
-import javax.money.MonetaryAmount
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.money.MonetaryAmount
 
 internal class ProfileViewModel(
   private val profileRepository: ProfileRepository,
@@ -46,7 +46,9 @@ internal class ProfileViewModel(
                   monetaryMonthlyNet = profile.chargeEstimation.charge,
                   priceCaptionResId = marketManager.market?.let(profile::getPriceCaption),
                 )
-              } else null,
+              } else {
+                null
+              },
               showBusinessModel = showBusinessModel,
             )
           }
@@ -57,7 +59,6 @@ internal class ProfileViewModel(
         ifLeft = { _data.update { it.copy(errorMessage = it.errorMessage) } },
         ifRight = { euroBonus -> _data.update { it.copy(euroBonus = euroBonus) } },
       )
-
     }
   }
 
