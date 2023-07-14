@@ -15,8 +15,8 @@ fun InsuranceQuery.Contract.toContractDetailViewState(
 ): ContractDetailViewState {
   return ContractDetailViewState(
     contractCardViewState = toContractCardViewState(),
-    memberDetailsViewState = toMemberDetailsViewState(),
-    documentsViewState = toDocumentsViewState(isTerminationFlowEnabled),
+    memberDetailsViewState = toMemberDetailsViewState(isTerminationFlowEnabled),
+    documentsViewState = toDocumentsViewState(),
   )
 }
 
@@ -30,7 +30,15 @@ fun InsuranceQuery.Contract.toContractCardViewState() = ContractCardViewState(
   logoUrls = logo?.variants?.fragments?.iconVariantsFragment?.let { ThemedIconUrls.from(it) },
 )
 
-fun InsuranceQuery.Contract.toMemberDetailsViewState(): ContractDetailViewState.MemberDetailsViewState {
+fun InsuranceQuery.Contract.toMemberDetailsViewState(
+  isTerminationFlowEnabled: Boolean = true,
+): ContractDetailViewState.MemberDetailsViewState {
+  val isContractTerminated = run {
+    val isTerminatedInTheFuture = fragments.upcomingAgreementFragment.status.asTerminatedInFutureStatus != null
+    val isTerminatedToday = fragments.upcomingAgreementFragment.status.asTerminatedTodayStatus != null
+    isTerminatedInTheFuture || isTerminatedToday
+  }
+
   return ContractDetailViewState.MemberDetailsViewState(
     pendingAddressChange = fragments
       .upcomingAgreementFragment
@@ -43,18 +51,15 @@ fun InsuranceQuery.Contract.toMemberDetailsViewState(): ContractDetailViewState.
       null
     },
     changeCoInsured = if (typeOfContract.canChangeCoInsured()) YourInfoModel.Change else null,
+    cancelInsuranceData = if (isTerminationFlowEnabled && !isContractTerminated) {
+      YourInfoModel.CancelInsuranceData(id, displayName)
+    } else {
+      null
+    },
   )
 }
 
-fun InsuranceQuery.Contract.toDocumentsViewState(
-  isTerminationFlowEnabled: Boolean = true,
-): ContractDetailViewState.DocumentsViewState {
-  val isContractTerminated = run {
-    val isTerminatedInTheFuture = fragments.upcomingAgreementFragment.status.asTerminatedInFutureStatus != null
-    val isTerminatedToday = fragments.upcomingAgreementFragment.status.asTerminatedTodayStatus != null
-    isTerminatedInTheFuture || isTerminatedToday
-  }
-
+fun InsuranceQuery.Contract.toDocumentsViewState(): ContractDetailViewState.DocumentsViewState {
   return ContractDetailViewState.DocumentsViewState(
     documents = listOfNotNull(
       currentAgreement?.asAgreementCore?.certificateUrl?.let {
@@ -70,10 +75,5 @@ fun InsuranceQuery.Contract.toDocumentsViewState(
         uriString = termsAndConditions.url,
       ),
     ),
-    cancelInsurance = if (isTerminationFlowEnabled && !isContractTerminated) {
-      DocumentItems.CancelInsuranceButton(id, displayName)
-    } else {
-      null
-    },
   )
 }

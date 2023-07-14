@@ -218,6 +218,7 @@ private class UiStateProvider : CollectionPreviewParameterProvider<ContractDetai
           ),
           changeAddressButton = null,
           changeCoInsured = null,
+          cancelInsuranceData = null,
         ),
         ContractDetailViewState.DocumentsViewState(
           documents = listOf(
@@ -243,7 +244,6 @@ private class UiStateProvider : CollectionPreviewParameterProvider<ContractDetai
               uriString = "",
             ),
           ),
-          cancelInsurance = null
         ),
       ),
     ),
