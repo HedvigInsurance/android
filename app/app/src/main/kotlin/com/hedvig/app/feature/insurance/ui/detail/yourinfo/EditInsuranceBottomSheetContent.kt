@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
-import com.hedvig.android.core.designsystem.material3.squircle
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.SelectIndicationCircle
@@ -95,10 +94,7 @@ internal fun EditInsuranceBottomSheetContent(
 
 @Composable
 private fun SelectableItem(text: String, isSelected: Boolean, onClick: () -> Unit) {
-  HedvigCard(
-    onClick = onClick,
-    shape = MaterialTheme.shapes.squircle,
-  ) {
+  HedvigCard(onClick = onClick) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier

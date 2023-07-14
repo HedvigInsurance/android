@@ -299,7 +299,6 @@ private fun MovingDateButton(
     val dateHasError = errorTextResId != null
     HedvigCard(
       onClick = { showDatePicker = true },
-      shape = MaterialTheme.shapes.squircle,
       colors = CardDefaults.outlinedCardColors(
         containerColor = if (dateHasError) {
           MaterialTheme.colorScheme.warningContainer
