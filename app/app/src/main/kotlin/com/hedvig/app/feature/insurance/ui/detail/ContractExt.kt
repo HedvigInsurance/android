@@ -72,7 +72,6 @@ fun InsuranceQuery.Contract.toDocumentsViewState() = ContractDetailViewState.Doc
       titleRes = hedvig.resources.R.string.MY_DOCUMENTS_INSURANCE_TERMS,
       subTitleRes = hedvig.resources.R.string.insurance_details_view_documents_insurance_letter_subtitle,
       uri = Uri.parse(termsAndConditions.url),
-      type = DocumentItems.Document.Type.TERMS_AND_CONDITIONS,
     ),
   ),
 )
