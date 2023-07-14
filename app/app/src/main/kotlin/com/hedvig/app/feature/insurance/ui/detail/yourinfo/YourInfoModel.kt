@@ -11,7 +11,7 @@ sealed class YourInfoModel {
     val upcomingAgreement: GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement,
   ) : YourInfoModel()
 
-  data class CancelInsuranceButton(
+  data class CancelInsuranceData(
     val insuranceId: String,
     val insuranceDisplayName: String,
   ) : YourInfoModel()
