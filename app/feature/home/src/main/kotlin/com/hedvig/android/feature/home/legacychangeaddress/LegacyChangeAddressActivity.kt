@@ -165,7 +165,7 @@ class LegacyChangeAddressActivity : AppCompatActivity(R.layout.legacy_change_add
 
     upcomingAgreementResult.table.let { table ->
       table?.sections?.forEach { section ->
-        section.rows.forEach { row ->
+        section.tableRows.forEach { row ->
           ListTextItemBinding.inflate(layoutInflater, upcomingAddressLayout, false).apply {
             label.text = row.title
             value.text = row.value

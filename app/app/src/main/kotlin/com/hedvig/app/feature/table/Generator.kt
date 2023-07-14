@@ -25,7 +25,7 @@ fun generateTable(target: ViewGroup, table: Table) {
     sectionHeader.root.updateMargin(top = BASE_MARGIN)
     target.addView(sectionHeader.root)
 
-    section.rows.forEach { row ->
+    section.tableRows.forEach { row ->
       if (row.subtitle != null) {
         val twoLine = ListTextItemTwoLineBinding.inflate(inflater, target, false)
         twoLine.title.text = row.title
