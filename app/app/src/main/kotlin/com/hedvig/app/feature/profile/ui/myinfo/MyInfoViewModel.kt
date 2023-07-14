@@ -6,10 +6,10 @@ import arrow.core.Either
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 internal class MyInfoViewModel(
   hAnalytics: HAnalytics,

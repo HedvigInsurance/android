@@ -45,7 +45,11 @@ fun PreviewInsuranceDocumentsTab() {
     Surface(color = MaterialTheme.colorScheme.background) {
       InsuranceDocumentsTab(
         documents = listOf(
-          DocumentItems.Document(title = "Terms & Conditions", subtitle = "All details about your coverage", uri = Uri.EMPTY),
+          DocumentItems.Document(
+            title = "Terms & Conditions",
+            subtitle = "All details about your coverage",
+            uri = Uri.EMPTY,
+          ),
           DocumentItems.Document(title = "Pre-purchase info", subtitle = "All pre-pruchase details", uri = Uri.EMPTY),
           DocumentItems.Document(title = "Productinfo (IPID)", subtitle = "Compare your coverage", uri = Uri.EMPTY),
         ),
