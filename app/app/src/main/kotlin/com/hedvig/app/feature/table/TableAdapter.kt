@@ -25,7 +25,7 @@ class TableAdapter : ListAdapter<TableAdapter.UpcomingAgreementItem, TableAdapte
       ) + table.sections.flatMap { section ->
         listOfNotNull(
           section.title.takeIf { it.isNotBlank() }?.let(UpcomingAgreementItem::Header),
-        ) + section.rows.map { row ->
+        ) + section.tableRows.map { row ->
           row.subtitle?.let { subtitle ->
             UpcomingAgreementItem.BuildingItem(row.title, subtitle, row.value)
           } ?: UpcomingAgreementItem.ListItem(row.title, row.value)

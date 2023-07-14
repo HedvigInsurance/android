@@ -35,7 +35,7 @@ class TestOfferModelBuilder(
       Table.Section(
         "Section 1",
         listOf(
-          Table.Row("Row 1", "Subtitle 1", "Value 1"),
+          Table.TableRow("Row 1", "Subtitle 1", "Value 1"),
         ),
       ),
     ),
