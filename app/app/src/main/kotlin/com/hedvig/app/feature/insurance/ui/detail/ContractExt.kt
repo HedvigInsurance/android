@@ -68,7 +68,6 @@ fun InsuranceQuery.Contract.toDocumentsViewState(
         titleRes = hedvig.resources.R.string.MY_DOCUMENTS_INSURANCE_TERMS,
         subTitleRes = hedvig.resources.R.string.insurance_details_view_documents_insurance_letter_subtitle,
         uriString = termsAndConditions.url,
-        type = DocumentItems.Document.Type.TERMS_AND_CONDITIONS,
       ),
     ),
     cancelInsurance = if (isTerminationFlowEnabled && !isContractTerminated) {
