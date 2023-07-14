@@ -1,14 +1,12 @@
 package com.hedvig.app.feature.insurance.ui.detail.documents
 
 import android.net.Uri
-import android.os.Bundle
-import android.view.View
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -27,7 +25,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.BaselineShift
@@ -36,7 +33,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.common.android.table.Table
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
@@ -47,70 +43,59 @@ import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
 import com.hedvig.android.core.ui.insurance.GradientType
 import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.app.R
-import com.hedvig.app.databinding.ContractDetailDocumentsFragmentBinding
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurance.ui.ContractCardViewState
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewState
 import com.hedvig.app.util.extensions.tryOpenUri
-import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
-class DocumentsFragment : Fragment(R.layout.contract_detail_documents_fragment) {
-  private val binding by viewBinding(ContractDetailDocumentsFragmentBinding::bind)
-  private val viewModel: ContractDetailViewModel by activityViewModel()
-
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    binding.composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-    binding.composeView.setContent {
-      HedvigTheme(useNewColorScheme = true) {
-        Surface(
-          color = MaterialTheme.colorScheme.background,
-          modifier = Modifier.fillMaxSize(),
-        ) {
-          val uiState by viewModel.viewState.collectAsStateWithLifecycle()
-          DocumentsScreen(
-            uiState = uiState,
-            retry = viewModel::retryLoadingContract,
-          )
-        }
-      }
-    }
-  }
+@Composable
+internal fun DocumentsTab(
+  viewModel: ContractDetailViewModel,
+  modifier: Modifier = Modifier,
+) {
+  val uiState by viewModel.viewState.collectAsStateWithLifecycle()
+  DocumentsTab(
+    uiState = uiState,
+    retry = viewModel::retryLoadingContract,
+    modifier = modifier,
+  )
 }
 
 @Composable
-fun DocumentsScreen(
+private fun DocumentsTab(
   uiState: ContractDetailViewModel.ViewState,
   retry: () -> Unit,
+  modifier: Modifier = Modifier,
 ) {
-  when (uiState) {
-    ContractDetailViewModel.ViewState.Error -> {
-      HedvigErrorSection(retry = retry)
-    }
-    ContractDetailViewModel.ViewState.Loading -> {}
-    is ContractDetailViewModel.ViewState.Success -> {
-      val context = LocalContext.current
-      Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))) {
-        Spacer(Modifier.height(16.dp))
-        val documents = uiState.state.documentsViewState.documents.filterIsInstance<DocumentItems.Document>()
-        for ((index, document) in documents.withIndex()) {
-          DocumentCard(
-            onClick = { context.tryOpenUri(document.uri) },
-            title = document.getTitle(context),
-            subtitle = document.getSubTitle(context),
-          )
-          if (index != documents.lastIndex) {
-            Spacer(Modifier.height(4.dp))
+  Box(modifier) {
+    when (uiState) {
+      ContractDetailViewModel.ViewState.Error -> {
+        HedvigErrorSection(modifier = modifier, retry = retry)
+      }
+      ContractDetailViewModel.ViewState.Loading -> {}
+      is ContractDetailViewModel.ViewState.Success -> {
+        val context = LocalContext.current
+        Column {
+          Spacer(Modifier.height(16.dp))
+          val documents = uiState.state.documentsViewState.documents.filterIsInstance<DocumentItems.Document>()
+          for ((index, document) in documents.withIndex()) {
+            DocumentCard(
+              onClick = { context.tryOpenUri(document.uri) },
+              title = document.getTitle(context),
+              subtitle = document.getSubTitle(context),
+            )
+            if (index != documents.lastIndex) {
+              Spacer(Modifier.height(4.dp))
+            }
           }
+          Spacer(Modifier.height(16.dp))
+          Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
         }
-        Spacer(Modifier.height(16.dp))
-        Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
       }
     }
+    HedvigFullScreenCenterAlignedProgress(show = uiState is ContractDetailViewModel.ViewState.Loading)
   }
-  HedvigFullScreenCenterAlignedProgress(show = uiState is ContractDetailViewModel.ViewState.Loading)
 }
 
 @Composable
@@ -169,7 +154,7 @@ private fun PreviewDocumentsScreen(
 ) {
   HedvigTheme(useNewColorScheme = true) {
     Surface(color = MaterialTheme.colorScheme.background) {
-      DocumentsScreen(uiState, {})
+      DocumentsTab(uiState, {})
     }
   }
 }

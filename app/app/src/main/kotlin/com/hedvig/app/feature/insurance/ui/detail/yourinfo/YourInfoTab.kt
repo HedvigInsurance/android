@@ -1,7 +1,5 @@
 package com.hedvig.app.feature.insurance.ui.detail.yourinfo
 
-import android.os.Bundle
-import android.view.View
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,20 +10,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.common.android.table.Table
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
@@ -37,49 +33,38 @@ import com.hedvig.android.core.ui.insurance.GradientType
 import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.feature.terminateinsurance.TerminateInsuranceActivity
-import com.hedvig.app.R
-import com.hedvig.app.databinding.ContractDetailYourInfoFragmentBinding
 import com.hedvig.app.feature.insurance.ui.ContractCardViewState
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewState
-import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
-import org.koin.androidx.viewmodel.ext.android.activityViewModel
-
-class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
-
-  private val binding by viewBinding(ContractDetailYourInfoFragmentBinding::bind)
-  private val viewModel: ContractDetailViewModel by activityViewModel()
-
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    binding.composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-    binding.composeView.setContent {
-      HedvigTheme(useNewColorScheme = true) {
-        Surface(color = MaterialTheme.colorScheme.background) {
-          val uiState by viewModel.viewState.collectAsStateWithLifecycle()
-          YourInfoTab(
-            uiState = uiState,
-            onEditInfoClick = { /* todo open bottom sheet */ },
-            onCancelInsuranceClick = ::openCancelInsuranceScreen,
-            retry = viewModel::retryLoadingContract,
-          )
-        }
-      }
-    }
-  }
-
-  private fun openCancelInsuranceScreen(cancelInsuranceData: YourInfoModel.CancelInsuranceData) {
-    TerminateInsuranceActivity.newInstance(
-      requireContext(),
-      cancelInsuranceData.insuranceId,
-      cancelInsuranceData.insuranceDisplayName,
-    )
-  }
-}
 
 @Composable
 internal fun YourInfoTab(
+  viewModel: ContractDetailViewModel,
+  modifier: Modifier = Modifier,
+) {
+  val uiState by viewModel.viewState.collectAsStateWithLifecycle()
+  val context = LocalContext.current
+  YourInfoTab(
+    uiState = uiState,
+    onEditInfoClick = {
+      // todo open bottom sheet with EditInsuranceBottomSheetContent.kt
+    },
+    onCancelInsuranceClick = { cancelInsuranceData ->
+      TerminateInsuranceActivity.newInstance(
+        context,
+        cancelInsuranceData.insuranceId,
+        cancelInsuranceData.insuranceDisplayName,
+      )
+    },
+    retry = viewModel::retryLoadingContract,
+    modifier = modifier,
+  )
+}
+
+@Composable
+private fun YourInfoTab(
   uiState: ContractDetailViewModel.ViewState,
   onEditInfoClick: () -> Unit,
   onCancelInsuranceClick: (YourInfoModel.CancelInsuranceData) -> Unit,
@@ -104,7 +89,7 @@ internal fun YourInfoTab(
           .toPersistentList()
       }
       Column(modifier) {
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(16.dp))
         CoverageRows(coverageRowItems, Modifier.padding(horizontal = 16.dp))
         Spacer(Modifier.height(16.dp))
         HedvigContainedButton(
