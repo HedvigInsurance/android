@@ -42,7 +42,6 @@ import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.app.databinding.InsuranceContractCardBinding
 import com.hedvig.app.feature.insurance.ui.bindTo
-import com.hedvig.app.feature.insurance.ui.detail.coverage.ContractCoverage
 import com.hedvig.app.feature.insurance.ui.detail.coverage.CoverageTab
 import com.hedvig.app.feature.insurance.ui.detail.coverage.CoverageViewModel
 import com.hedvig.app.feature.insurance.ui.detail.documents.DocumentsTab
@@ -60,12 +59,6 @@ internal fun ContractDetailDestination(
   navigateUp: () -> Unit,
 ) {
   val uiState: ContractDetailViewModel.ViewState by viewModel.viewState.collectAsStateWithLifecycle()
-  val onInsurableLimitClick: (ContractCoverage.InsurableLimit) -> Unit = {
-//    InsurableLimitsBottomSheet
-//      .newInstance(insurableLimit.label, insurableLimit.description)
-//      .show(supportFragmentManager, InsurableLimitsBottomSheet.TAG)
-    // todo
-  }
   ContractDetailScreen(
     uiState = uiState,
     imageLoader = imageLoader,
@@ -79,7 +72,7 @@ internal fun ContractDetailDestination(
         onChangeAddressClick = onChangeAddressClick,
       )
     },
-    tab2 = { CoverageTab(coverageViewModel, onInsurableLimitClick) },
+    tab2 = { CoverageTab(coverageViewModel) },
     tab3 = { DocumentsTab(viewModel) },
   )
 }
