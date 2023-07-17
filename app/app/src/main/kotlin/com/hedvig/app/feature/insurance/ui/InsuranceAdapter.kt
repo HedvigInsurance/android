@@ -14,7 +14,6 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.app.R
 import com.hedvig.app.databinding.InsuranceContractCardBinding
-import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.util.extensions.getActivity
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
@@ -62,12 +61,13 @@ class InsuranceAdapter(
         data.contractCardViewState.bindTo(binding, imageLoader)
         card.setHapticClickListener {
           card.context.getActivity()?.let { activity ->
-            card.context.startActivity(
-              ContractDetailActivity.newInstance(
-                card.context,
-                data.contractCardViewState.id,
-              ),
-            )
+            // todo make terminated contract activity compose too
+//            card.context.startActivity(
+//              ContractDetailActivity.newInstance(
+//                card.context,
+//                data.contractCardViewState.id,
+//              ),
+//            )
           }
         }
       }

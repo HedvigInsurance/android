@@ -44,6 +44,7 @@ import com.hedvig.app.BuildConfig
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.home.ui.HowClaimsWorkDialog
+import com.hedvig.app.feature.insurance.ui.detail.contractDetailGraph
 import com.hedvig.app.feature.insurance.ui.tab.insuranceGraph
 import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.profile.ui.tab.profileGraph
@@ -208,6 +209,16 @@ internal fun HedvigNavHost(
       hAnalytics = hAnalytics,
     )
     insuranceGraph(
+      nestedGraphs = {
+        contractDetailGraph(
+          density = density,
+          navigator = navigator,
+          imageLoader = imageLoader,
+        )
+      },
+      navigateToContractDetailScreen = { backStackEntry, contractId: String ->
+        with(navigator) { backStackEntry.navigate(AppDestination.ContractDetail(contractId)) }
+      },
       imageLoader = imageLoader,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     )
