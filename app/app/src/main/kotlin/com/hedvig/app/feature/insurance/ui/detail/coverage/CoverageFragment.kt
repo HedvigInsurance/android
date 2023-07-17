@@ -1,7 +1,5 @@
 package com.hedvig.app.feature.insurance.ui.detail.coverage
 
-import android.os.Bundle
-import android.view.View
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,21 +25,24 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -49,80 +50,87 @@ import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
 import com.hedvig.android.core.ui.card.ExpandablePlusCard
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
-import com.hedvig.app.R
-import com.hedvig.app.databinding.ContractDetailCoverageFragmentBinding
 import com.hedvig.app.feature.perils.Peril
-import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.parameter.parametersOf
+import kotlinx.coroutines.launch
 
 /**
  * TODO in this screen:
  *  Make peril description text come from octopus probably, so that it shows the right information
  *  Take the color for perils also from octopus which would mean that it's non-null. Otherwise provide a sane default
- *  Put bottom sheet contents in the bigger screen, and fix its design
  */
-class CoverageFragment : Fragment(R.layout.contract_detail_coverage_fragment) {
-  private val contractId: String by lazy {
-    arguments?.getString(INSURANCE_ID) ?: error("Call CoverageFragment.newInstance() instead")
-  }
-  private val binding by viewBinding(ContractDetailCoverageFragmentBinding::bind)
-  private val viewModel: CoverageViewModel by viewModel { parametersOf(contractId) }
-
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    binding.composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-    binding.composeView.setContent {
-      HedvigTheme(useNewColorScheme = true) {
-        Surface(color = MaterialTheme.colorScheme.background) {
-          val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-          CoverageFragmentScreen(
-            uiState = uiState,
-            onInsurableLimitClick = { insurableLimit: ContractCoverage.InsurableLimit ->
-              InsurableLimitsBottomSheet
-                .newInstance(insurableLimit.label, insurableLimit.description)
-                .show(parentFragmentManager, InsurableLimitsBottomSheet.TAG)
-            },
-            retryLoading = viewModel::reload,
-          )
-        }
-      }
-    }
-  }
-
-  companion object {
-    const val INSURANCE_ID = "com.hedvig.app.feature.insurance.ui.detail.coverage.CoverageFragment.INSURANCE_ID"
-
-    fun newInstance(contractId: String): CoverageFragment {
-      return CoverageFragment().apply {
-        arguments = bundleOf(INSURANCE_ID to contractId)
-      }
-    }
-  }
+@Composable
+internal fun CoverageTab(
+  viewModel: CoverageViewModel,
+  modifier: Modifier = Modifier,
+) {
+  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  CoverageFragmentScreen(
+    uiState = uiState,
+    retryLoading = viewModel::reload,
+    modifier = modifier,
+  )
 }
 
 @Composable
 private fun CoverageFragmentScreen(
   uiState: CoverageUiState,
-  onInsurableLimitClick: (ContractCoverage.InsurableLimit) -> Unit,
   retryLoading: () -> Unit,
+  modifier: Modifier = Modifier,
 ) {
   when (uiState) {
     CoverageUiState.Error -> {
       HedvigErrorSection(
         retry = retryLoading,
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
       )
     }
     CoverageUiState.Loading -> {}
     is CoverageUiState.Success -> {
-      Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))) {
+      val coroutineScope = rememberCoroutineScope()
+      val sheetState = rememberModalBottomSheetState(true)
+      var selectedInsurableLimit by remember { mutableStateOf<ContractCoverage.InsurableLimit?>(null) }
+      val selectedInsurableLimitValue = selectedInsurableLimit
+      if (selectedInsurableLimitValue != null) {
+        ModalBottomSheet(
+          onDismissRequest = { selectedInsurableLimit = null },
+          // todo use "https://github.com/c5inco/smoother" for a top only squircle shape here
+          sheetState = sheetState,
+          tonalElevation = 0.dp,
+        ) {
+          Column(
+            Modifier.padding(horizontal = 24.dp).padding(bottom = 16.dp),
+          ) {
+            Text(selectedInsurableLimitValue.label)
+            Spacer(Modifier.height(8.dp))
+            Text(text = selectedInsurableLimitValue.description, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Spacer(Modifier.height(16.dp))
+            HedvigTextButton(
+              text = stringResource(hedvig.resources.R.string.general_close_button),
+              onClick = {
+                coroutineScope.launch {
+                  sheetState.hide()
+                }.invokeOnCompletion {
+                  selectedInsurableLimit = null
+                }
+              },
+            )
+          }
+        }
+      }
+
+      Column(modifier = modifier) {
         Spacer(Modifier.height(16.dp))
-        InsurableLimitSection(uiState.insurableLimitItems, onInsurableLimitClick = onInsurableLimitClick)
+        InsurableLimitSection(
+          insurableLimitItems = uiState.insurableLimitItems,
+          onInsurableLimitClick = { insurableLimit: ContractCoverage.InsurableLimit ->
+            selectedInsurableLimit = insurableLimit
+          },
+        )
         Spacer(Modifier.height(16.dp))
-        PerilSection(uiState.perilItems)
         if (uiState.perilItems.isNotEmpty()) {
+          PerilSection(uiState.perilItems)
           Spacer(Modifier.height(16.dp))
         }
         Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
@@ -274,7 +282,11 @@ private fun ColumnScope.InsurableLimitSection(
         .padding(horizontal = 16.dp),
     )
     if (index != insurableLimitItems.lastIndex) {
-      Divider(Modifier.fillMaxWidth().padding(horizontal = 16.dp))
+      Divider(
+        Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      )
     }
   }
 }
@@ -290,7 +302,6 @@ private fun PreviewCoverageFragmentScreen() {
           perilItems = previewPerils,
           insurableLimitItems = previewInsurableLimits,
         ),
-        onInsurableLimitClick = {},
         retryLoading = {},
       )
     }
