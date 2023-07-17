@@ -10,10 +10,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -36,21 +42,23 @@ import com.hedvig.android.feature.terminateinsurance.TerminateInsuranceActivity
 import com.hedvig.app.feature.insurance.ui.ContractCardViewState
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewState
+import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun YourInfoTab(
   viewModel: ContractDetailViewModel,
+  onEditCoInsuredClick: () -> Unit,
+  onChangeAddressClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val uiState by viewModel.viewState.collectAsStateWithLifecycle()
   val context = LocalContext.current
+
   YourInfoTab(
     uiState = uiState,
-    onEditInfoClick = {
-      // todo open bottom sheet with EditInsuranceBottomSheetContent.kt
-    },
     onCancelInsuranceClick = { cancelInsuranceData ->
       TerminateInsuranceActivity.newInstance(
         context,
@@ -58,6 +66,8 @@ internal fun YourInfoTab(
         cancelInsuranceData.insuranceDisplayName,
       )
     },
+    onEditCoInsuredClick = onEditCoInsuredClick,
+    onChangeAddressClick = onChangeAddressClick,
     retry = viewModel::retryLoadingContract,
     modifier = modifier,
   )
@@ -66,8 +76,9 @@ internal fun YourInfoTab(
 @Composable
 private fun YourInfoTab(
   uiState: ContractDetailViewModel.ViewState,
-  onEditInfoClick: () -> Unit,
   onCancelInsuranceClick: (YourInfoModel.CancelInsuranceData) -> Unit,
+  onEditCoInsuredClick: () -> Unit,
+  onChangeAddressClick: () -> Unit,
   retry: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -80,44 +91,101 @@ private fun YourInfoTab(
     }
     ContractDetailViewModel.ViewState.Loading -> {}
     is ContractDetailViewModel.ViewState.Success -> {
-      val coverageRowItems = remember(uiState.state.memberDetailsViewState.detailsTable.sections) {
-        uiState.state
-          .memberDetailsViewState
-          .detailsTable
-          .sections
-          .flatMap { it.tableRows.map { it.title to it.value } }
-          .toPersistentList()
-      }
-      Column(modifier) {
-        Spacer(Modifier.height(16.dp))
-        CoverageRows(coverageRowItems, Modifier.padding(horizontal = 16.dp))
-        Spacer(Modifier.height(16.dp))
-        HedvigContainedButton(
-          text = stringResource(hedvig.resources.R.string.CONTRACT_EDIT_INFO_LABEL),
-          onClick = onEditInfoClick,
-          colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            contentColor = MaterialTheme.colorScheme.onSurface,
-          ),
-          modifier = Modifier.padding(horizontal = 16.dp),
-        )
-        val cancelInsurance = uiState.state.memberDetailsViewState.cancelInsurance
-        if (cancelInsurance != null) {
-          Spacer(Modifier.height(8.dp))
-          HedvigTextButton(
-            text = stringResource(hedvig.resources.R.string.TERMINATION_BUTTON),
-            onClick = { onCancelInsuranceClick(cancelInsurance) },
-            colors = ButtonDefaults.textButtonColors(
-              contentColor = MaterialTheme.colorScheme.error,
-            ),
-            modifier = Modifier.padding(horizontal = 16.dp),
-          )
-        }
-        Spacer(Modifier.height(16.dp))
-      }
+      YourInfoSuccessScreen(
+        uiState = uiState,
+        onCancelInsuranceClick = onCancelInsuranceClick,
+        onEditCoInsuredClick = onEditCoInsuredClick,
+        onChangeAddressClick = onChangeAddressClick,
+        modifier = modifier,
+      )
     }
   }
   HedvigFullScreenCenterAlignedProgress(show = uiState is ContractDetailViewModel.ViewState.Loading)
+}
+
+@Composable
+private fun YourInfoSuccessScreen(
+  uiState: ContractDetailViewModel.ViewState.Success,
+  onCancelInsuranceClick: (YourInfoModel.CancelInsuranceData) -> Unit,
+  onEditCoInsuredClick: () -> Unit,
+  onChangeAddressClick: () -> Unit,
+  modifier: Modifier,
+) {
+  val coroutineScope = rememberCoroutineScope()
+  var showEditYourInfoBottomSheet by rememberSaveable { mutableStateOf(false) }
+  if (showEditYourInfoBottomSheet) {
+    val sheetState = rememberModalBottomSheetState(true)
+    ModalBottomSheet(
+      onDismissRequest = {
+        showEditYourInfoBottomSheet = false
+      },
+      // todo use "https://github.com/c5inco/smoother" for a top only squircle shape here
+      sheetState = sheetState,
+      tonalElevation = 0.dp,
+    ) {
+      EditInsuranceBottomSheetContent(
+        onEditCoInsuredClick = {
+          coroutineScope.launch {
+            sheetState.hide()
+            showEditYourInfoBottomSheet = false
+            onEditCoInsuredClick()
+          }
+        },
+        onChangeAddressClick = {
+          coroutineScope.launch {
+            sheetState.hide()
+            showEditYourInfoBottomSheet = false
+            onChangeAddressClick()
+          }
+        },
+        onDismiss = {
+          coroutineScope.launch {
+            sheetState.hide()
+            showEditYourInfoBottomSheet = false
+          }
+        },
+        modifier = Modifier
+          .padding(horizontal = 16.dp)
+          .padding(bottom = 16.dp),
+      )
+    }
+  }
+
+  val coverageRowItems = remember(uiState.state.memberDetailsViewState.detailsTable.sections) {
+    uiState.state
+      .memberDetailsViewState
+      .detailsTable
+      .sections
+      .flatMap { it.tableRows.map { it.title to it.value } }
+      .toPersistentList()
+  }
+  Column(modifier) {
+    Spacer(Modifier.height(16.dp))
+    CoverageRows(coverageRowItems, Modifier.padding(horizontal = 16.dp))
+    Spacer(Modifier.height(16.dp))
+    HedvigContainedButton(
+      text = stringResource(R.string.CONTRACT_EDIT_INFO_LABEL),
+      onClick = { showEditYourInfoBottomSheet = true },
+      colors = ButtonDefaults.buttonColors(
+        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        contentColor = MaterialTheme.colorScheme.onSurface,
+      ),
+      modifier = Modifier.padding(horizontal = 16.dp),
+    )
+    val cancelInsurance = uiState.state.memberDetailsViewState.cancelInsurance
+    if (cancelInsurance != null) {
+      Spacer(Modifier.height(8.dp))
+      HedvigTextButton(
+        text = stringResource(R.string.TERMINATION_BUTTON),
+        onClick = { onCancelInsuranceClick(cancelInsurance) },
+        colors = ButtonDefaults.textButtonColors(
+          contentColor = MaterialTheme.colorScheme.error,
+        ),
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+    }
+    Spacer(Modifier.height(16.dp))
+  }
 }
 
 @Composable
@@ -167,8 +235,9 @@ private fun PreviewYourInfoTab(
     androidx.compose.material.Surface(color = MaterialTheme.colorScheme.background) {
       YourInfoTab(
         uiState = uiState,
-        onEditInfoClick = {},
         onCancelInsuranceClick = {},
+        onEditCoInsuredClick = {},
+        onChangeAddressClick = {},
         retry = {},
       )
     }

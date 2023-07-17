@@ -108,6 +108,18 @@ internal fun HedvigNavHost(
       }
     }
   }
+
+  fun startMovingFlow() {
+    coroutineScope.launch {
+      if (featureManager.isFeatureEnabled(Feature.NEW_MOVING_FLOW)) {
+        hedvigAppState.navController.navigate(AppDestination.ChangeAddress)
+      } else {
+        context.startActivity(
+          LegacyChangeAddressActivity.newInstance(context),
+        )
+      }
+    }
+  }
   AnimatedNavHost(
     navController = hedvigAppState.navController,
     startDestination = createRoutePattern<TopLevelGraph.HOME>(),
@@ -155,17 +167,7 @@ internal fun HedvigNavHost(
           }
         }
       },
-      startMovingFlow = {
-        coroutineScope.launch {
-          if (featureManager.isFeatureEnabled(Feature.NEW_MOVING_FLOW)) {
-            hedvigAppState.navController.navigate(AppDestination.ChangeAddress)
-          } else {
-            context.startActivity(
-              LegacyChangeAddressActivity.newInstance(context),
-            )
-          }
-        }
-      },
+      startMovingFlow = { startMovingFlow() },
       onHowClaimsWorkClick = { howClaimsWorkList ->
         val howClaimsWorkData = howClaimsWorkList.mapIndexed { index, howClaimsWork ->
           DismissiblePagerModel.NoTitlePage(
@@ -213,6 +215,12 @@ internal fun HedvigNavHost(
         contractDetailGraph(
           density = density,
           navigator = navigator,
+          onEditCoInsuredClick = {
+            activityNavigator.navigateToChat(context)
+          },
+          onChangeAddressClick = {
+            startMovingFlow()
+          },
           imageLoader = imageLoader,
         )
       },

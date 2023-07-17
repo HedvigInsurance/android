@@ -14,4 +14,5 @@ internal enum class HedvigShapeKeyTokens {
   CornerNone,
   CornerSmall,
   Squircle,
+  SquircleTop,
 }

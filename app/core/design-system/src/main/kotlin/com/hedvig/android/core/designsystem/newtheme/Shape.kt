@@ -93,6 +93,9 @@ val SquircleShape: Shape = object : Shape {
   }
 }
 
+// todo Squircle just on the top
+val SquircleShapeTop: Shape = SquircleShape
+
 @Preview
 @Composable
 private fun PreviewSquircleShape() {

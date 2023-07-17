@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.insurance.ui.detail
 
 import androidx.compose.ui.unit.Density
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
@@ -14,6 +15,8 @@ import org.koin.core.parameter.parametersOf
 fun NavGraphBuilder.contractDetailGraph(
   density: Density,
   navigator: Navigator,
+  onEditCoInsuredClick: (NavBackStackEntry) -> Unit,
+  onChangeAddressClick: (NavBackStackEntry) -> Unit,
   imageLoader: ImageLoader,
 ) {
   animatedComposable<AppDestination.ContractDetail>(
@@ -29,6 +32,8 @@ fun NavGraphBuilder.contractDetailGraph(
       viewModel = viewModel,
       coverageViewModel = coverageViewModel,
       imageLoader = imageLoader,
+      onEditCoInsuredClick = { onEditCoInsuredClick(backStackEntry) },
+      onChangeAddressClick = { onChangeAddressClick(backStackEntry) },
       navigateUp = navigator::navigateUp,
     )
   }

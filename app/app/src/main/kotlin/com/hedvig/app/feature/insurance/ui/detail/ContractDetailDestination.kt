@@ -55,6 +55,8 @@ internal fun ContractDetailDestination(
   viewModel: ContractDetailViewModel,
   coverageViewModel: CoverageViewModel,
   imageLoader: ImageLoader,
+  onEditCoInsuredClick: () -> Unit,
+  onChangeAddressClick: () -> Unit,
   navigateUp: () -> Unit,
 ) {
   val uiState: ContractDetailViewModel.ViewState by viewModel.viewState.collectAsStateWithLifecycle()
@@ -69,7 +71,14 @@ internal fun ContractDetailDestination(
     imageLoader = imageLoader,
     retry = viewModel::retryLoadingContract,
     navigateUp = navigateUp,
-    tab1 = { YourInfoTab(viewModel) }, // todo make bottom sheet from m3 instead of fragment
+    // todo make bottom sheet from m3 instead of fragment
+    tab1 = {
+      YourInfoTab(
+        viewModel = viewModel,
+        onEditCoInsuredClick = onEditCoInsuredClick,
+        onChangeAddressClick = onChangeAddressClick,
+      )
+    },
     tab2 = { CoverageTab(coverageViewModel, onInsurableLimitClick) },
     tab3 = { DocumentsTab(viewModel) },
   )
