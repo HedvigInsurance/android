@@ -195,7 +195,7 @@ internal class ClaimFlowRepositoryImpl(
               itemModelInput = Optional.presentIfNotNull(itemModelInput),
               itemProblemIds = Optional.presentIfNotNull(itemProblemIds),
               purchaseDate = Optional.presentIfNotNull(purchaseDate),
-              purchasePrice = Optional.presentIfNotNull(purchasePrice),
+              purchasePrice = Optional.presentIfNotNull(purchasePrice.takeIf { it: Double? -> it != 0.0 }),
             ),
             claimFlowContextStorage.getContext(),
           ),
