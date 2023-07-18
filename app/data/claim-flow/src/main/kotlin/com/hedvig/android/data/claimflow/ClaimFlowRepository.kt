@@ -34,6 +34,7 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import slimber.log.d
 import slimber.log.e
 import java.io.File
+import octopus.FlowClaimContractNextMutation
 
 interface ClaimFlowRepository {
   suspend fun startClaimFlow(
@@ -48,6 +49,8 @@ interface ClaimFlowRepository {
   suspend fun submitAudioUrl(flowId: FlowId, audioUrl: AudioUrl): Either<ErrorMessage, ClaimFlowStep>
   suspend fun submitDateOfOccurrence(dateOfOccurrence: LocalDate?): Either<ErrorMessage, ClaimFlowStep>
   suspend fun submitLocation(location: String?): Either<ErrorMessage, ClaimFlowStep>
+
+  suspend fun submitContract(contract: String?): Either<ErrorMessage, ClaimFlowStep>
   suspend fun submitDateOfOccurrenceAndLocation(
     dateOfOccurrence: LocalDate?,
     location: String?,
@@ -136,6 +139,21 @@ internal class ClaimFlowRepositoryImpl(
         .toEither(::ErrorMessage)
         .bind()
         .flowClaimLocationNext
+      claimFlowContextStorage.saveContext(result.context)
+      result.currentStep.toClaimFlowStep(FlowId(result.id))
+    }
+  }
+
+  override suspend fun submitContract(
+    contract: String?,
+  ): Either<ErrorMessage, ClaimFlowStep> {
+    return either {
+      val result = apolloClient
+        .mutation(FlowClaimContractNextMutation(contract, claimFlowContextStorage.getContext()))
+        .safeExecute()
+        .toEither(::ErrorMessage)
+        .bind()
+        .flowClaimContractSelectNext
       claimFlowContextStorage.saveContext(result.context)
       result.currentStep.toClaimFlowStep(FlowId(result.id))
     }

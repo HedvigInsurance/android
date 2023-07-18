@@ -19,6 +19,8 @@ import com.hedvig.android.feature.odyssey.step.location.LocationViewModel
 import com.hedvig.android.feature.odyssey.step.notificationpermission.NotificationPermissionDestination
 import com.hedvig.android.feature.odyssey.step.phonenumber.PhoneNumberDestination
 import com.hedvig.android.feature.odyssey.step.phonenumber.PhoneNumberViewModel
+import com.hedvig.android.feature.odyssey.step.selectcontract.SelectContractDestination
+import com.hedvig.android.feature.odyssey.step.selectcontract.SelectContractViewModel
 import com.hedvig.android.feature.odyssey.step.singleitem.SingleItemDestination
 import com.hedvig.android.feature.odyssey.step.singleitem.SingleItemViewModel
 import com.hedvig.android.feature.odyssey.step.singleitemcheckout.SingleItemCheckoutDestination
@@ -193,6 +195,19 @@ fun NavGraphBuilder.claimFlowGraph(
             backStackEntry = backStackEntry,
             destination = ClaimFlowDestination.SingleItemPayout(checkoutMethod = checkoutMethod),
           )
+        },
+        navigateUp = navigator::navigateUp,
+        closeClaimFlow = closeClaimFlow,
+      )
+    }
+    animatedComposable<ClaimFlowDestination.SelectContract> { backStackEntry ->
+      val viewModel: SelectContractViewModel = koinViewModel { parametersOf(this) }
+      SelectContractDestination(
+        viewModel = viewModel,
+        windowSizeClass = windowSizeClass,
+        navigateToNextStep = { claimFlowStep ->
+          viewModel.handledNextStepNavigation()
+          navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
         },
         navigateUp = navigator::navigateUp,
         closeClaimFlow = closeClaimFlow,
