@@ -5,6 +5,7 @@ import kotlinx.datetime.LocalDate
 import octopus.fragment.AudioContentFragment
 import octopus.fragment.CheckoutMethodFragment
 import octopus.fragment.ClaimFlowStepFragment
+import octopus.fragment.FlowClaimContractSelectStepFragment
 import octopus.fragment.FlowClaimLocationStepFragment
 import octopus.fragment.FlowClaimSingleItemStepFragment
 import octopus.fragment.MoneyFragment
@@ -42,7 +43,16 @@ sealed interface ClaimFlowStep {
     val options: List<FlowClaimLocationStepFragment.Option>,
   ) : ClaimFlowStep
 
-  data class ClaimPhoneNumberStep(override val flowId: FlowId, val phoneNumber: String) : ClaimFlowStep
+  data class ClaimPhoneNumberStep(
+    override val flowId: FlowId,
+    val phoneNumber: String,
+  ) : ClaimFlowStep
+
+  data class ClaimSelectContractStep(
+    override val flowId: FlowId,
+    val options: List<FlowClaimContractSelectStepFragment.Option>
+  ) : ClaimFlowStep
+
   data class ClaimSingleItemStep(
     override val flowId: FlowId,
     val preferredCurrency: CurrencyCode,
@@ -161,6 +171,10 @@ internal fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(flowId: FlowId): 
     }
     is ClaimFlowStepFragment.FlowClaimFailedStepCurrentStep -> ClaimFlowStep.ClaimFailedStep(flowId)
     is ClaimFlowStepFragment.FlowClaimSuccessStepCurrentStep -> ClaimFlowStep.ClaimSuccessStep(flowId)
+    is ClaimFlowStepFragment.FlowClaimContractSelectStepCurrentStep -> ClaimFlowStep.ClaimSelectContractStep(
+      flowId,
+      options
+    )
     else -> ClaimFlowStep.UnknownStep(flowId)
   }
 }

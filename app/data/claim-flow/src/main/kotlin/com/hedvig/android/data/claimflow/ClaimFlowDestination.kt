@@ -52,6 +52,11 @@ sealed interface ClaimFlowDestination : Destination {
   data class PhoneNumber(val phoneNumber: String) : ClaimFlowDestination
 
   @Serializable
+  data class SelectContract(
+    val options: List<LocalContractContractOption>
+  ) : ClaimFlowDestination
+
+  @Serializable
   data class SingleItem(
     val preferredCurrency: CurrencyCode,
     val purchaseDate: LocalDate?,
@@ -110,6 +115,12 @@ sealed interface ClaimFlowDestination : Destination {
 @Serializable
 data class LocationOption(
   val value: String,
+  val displayName: String,
+)
+
+@Serializable
+data class LocalContractContractOption(
+  val id: String,
   val displayName: String,
 )
 
