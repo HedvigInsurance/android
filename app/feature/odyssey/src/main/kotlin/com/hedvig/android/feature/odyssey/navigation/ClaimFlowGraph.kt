@@ -201,7 +201,7 @@ fun NavGraphBuilder.claimFlowGraph(
       )
     }
     animatedComposable<ClaimFlowDestination.SelectContract> { backStackEntry ->
-      val viewModel: SelectContractViewModel = koinViewModel { parametersOf(null, options) }
+      val viewModel: SelectContractViewModel = koinViewModel { parametersOf(this) }
       SelectContractDestination(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
