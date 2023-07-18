@@ -22,13 +22,7 @@ internal class SelectContractViewModel(
 
   fun selectContractOption(selectedContract: LocalContractContractOption) {
     _uiState.update { oldUiState ->
-      val selectedValueExistsInOptions = selectedContract in selectContract.options
-      val contractIsAlreadySelected = oldUiState.selectedContract == selectedContract
-      if (contractIsAlreadySelected || !selectedValueExistsInOptions) {
-        oldUiState.copy(selectedContract = null)
-      } else {
-        oldUiState.copy(selectedContract = selectedContract)
-      }
+      oldUiState.copy(selectedContract = selectedContract)
     }
   }
 
@@ -66,12 +60,13 @@ internal class SelectContractViewModel(
 
 internal data class SelectContractUiState(
   val contractOptions: List<LocalContractContractOption>,
-  val selectedContract: LocalContractContractOption?,
+  val selectedContract: LocalContractContractOption,
   val isLoading: Boolean = false,
   val error: Boolean = false,
   val nextStep: ClaimFlowStep? = null,
 ) {
   val canSubmit: Boolean = !isLoading && !error && nextStep == null
+
   companion object {
     fun fromInitialSelection(
       locationOptions: List<LocalContractContractOption>,
