@@ -23,9 +23,7 @@ sealed class DocumentItems {
   ) : DocumentItems(), Parcelable {
     enum class Type {
       TERMS_AND_CONDITIONS,
-      PRE_SALE_INFO_EU_STANDARD,
       GENERAL_TERMS,
-      PRIVACY_POLICY,
     }
 
     fun getTitle(context: Context) = title ?: titleRes?.let(context::getString)
@@ -47,4 +45,9 @@ sealed class DocumentItems {
       )
     }
   }
+
+  data class CancelInsuranceButton(
+    val insuranceId: String,
+    val insuranceDisplayName: String,
+  ) : DocumentItems()
 }

@@ -7,7 +7,6 @@ import com.hedvig.android.feature.home.legacychangeaddress.toUpcomingAgreementRe
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurance.ui.ContractCardViewState
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoModel
-import com.hedvig.app.util.extensions.canChangeCoInsured
 import com.hedvig.app.util.extensions.gradient
 import giraffe.InsuranceQuery
 
@@ -16,8 +15,8 @@ fun InsuranceQuery.Contract.toContractDetailViewState(
 ): ContractDetailViewState {
   return ContractDetailViewState(
     contractCardViewState = toContractCardViewState(),
-    memberDetailsViewState = toMemberDetailsViewState(isTerminationFlowEnabled),
-    documentsViewState = toDocumentsViewState(),
+    memberDetailsViewState = toMemberDetailsViewState(),
+    documentsViewState = toDocumentsViewState(isTerminationFlowEnabled),
   )
 }
 
@@ -31,14 +30,7 @@ fun InsuranceQuery.Contract.toContractCardViewState() = ContractCardViewState(
   logoUrls = logo?.variants?.fragments?.iconVariantsFragment?.let { ThemedIconUrls.from(it) },
 )
 
-fun InsuranceQuery.Contract.toMemberDetailsViewState(
-  isTerminationFlowEnabled: Boolean = true,
-): ContractDetailViewState.MemberDetailsViewState {
-  val isContractTerminated = run {
-    val isTerminatedInTheFuture = fragments.upcomingAgreementFragment.status.asTerminatedInFutureStatus != null
-    val isTerminatedToday = fragments.upcomingAgreementFragment.status.asTerminatedTodayStatus != null
-    isTerminatedInTheFuture || isTerminatedToday
-  }
+fun InsuranceQuery.Contract.toMemberDetailsViewState(): ContractDetailViewState.MemberDetailsViewState {
   return ContractDetailViewState.MemberDetailsViewState(
     pendingAddressChange = fragments
       .upcomingAgreementFragment
@@ -50,29 +42,38 @@ fun InsuranceQuery.Contract.toMemberDetailsViewState(
     } else {
       null
     },
-    change = if (typeOfContract.canChangeCoInsured()) YourInfoModel.Change else null,
+  )
+}
+
+fun InsuranceQuery.Contract.toDocumentsViewState(
+  isTerminationFlowEnabled: Boolean = true,
+): ContractDetailViewState.DocumentsViewState {
+  val isContractTerminated = run {
+    val isTerminatedInTheFuture = fragments.upcomingAgreementFragment.status.asTerminatedInFutureStatus != null
+    val isTerminatedToday = fragments.upcomingAgreementFragment.status.asTerminatedTodayStatus != null
+    isTerminatedInTheFuture || isTerminatedToday
+  }
+
+  return ContractDetailViewState.DocumentsViewState(
+    documents = listOfNotNull(
+      currentAgreement?.asAgreementCore?.certificateUrl?.let {
+        DocumentItems.Document(
+          titleRes = hedvig.resources.R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE,
+          subTitleRes = hedvig.resources.R.string.insurance_details_view_documents_full_terms_subtitle,
+          uri = Uri.parse(it),
+        )
+      },
+      DocumentItems.Document(
+        titleRes = hedvig.resources.R.string.MY_DOCUMENTS_INSURANCE_TERMS,
+        subTitleRes = hedvig.resources.R.string.insurance_details_view_documents_insurance_letter_subtitle,
+        uri = Uri.parse(termsAndConditions.url),
+        type = DocumentItems.Document.Type.TERMS_AND_CONDITIONS,
+      ),
+    ),
     cancelInsurance = if (isTerminationFlowEnabled && !isContractTerminated) {
-      YourInfoModel.CancelInsuranceButton(id, displayName)
+      DocumentItems.CancelInsuranceButton(id, displayName)
     } else {
       null
     },
   )
 }
-
-fun InsuranceQuery.Contract.toDocumentsViewState() = ContractDetailViewState.DocumentsViewState(
-  documents = listOfNotNull(
-    currentAgreement?.asAgreementCore?.certificateUrl?.let {
-      DocumentItems.Document(
-        titleRes = hedvig.resources.R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE,
-        subTitleRes = hedvig.resources.R.string.insurance_details_view_documents_full_terms_subtitle,
-        uri = Uri.parse(it),
-      )
-    },
-    DocumentItems.Document(
-      titleRes = hedvig.resources.R.string.MY_DOCUMENTS_INSURANCE_TERMS,
-      subTitleRes = hedvig.resources.R.string.insurance_details_view_documents_insurance_letter_subtitle,
-      uri = Uri.parse(termsAndConditions.url),
-      type = DocumentItems.Document.Type.TERMS_AND_CONDITIONS,
-    ),
-  ),
-)

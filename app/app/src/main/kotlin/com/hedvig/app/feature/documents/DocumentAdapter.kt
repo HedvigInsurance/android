@@ -2,10 +2,22 @@ package com.hedvig.app.feature.documents
 
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.core.common.android.GenericDiffUtilItemCallback
+import com.hedvig.android.core.designsystem.component.button.LargeTextButton
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DocumentBinding
 import com.hedvig.app.databinding.ListSubtitleItemBinding
@@ -14,17 +26,24 @@ import com.hedvig.app.util.extensions.tryOpenUri
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 
-class DocumentAdapter : ListAdapter<DocumentItems, DocumentAdapter.DocumentsViewHolder>(GenericDiffUtilItemCallback()) {
+class DocumentAdapter(
+  private val openCancelInsuranceScreen: ((insuranceId: String, insuranceDisplayName: String) -> Unit)?,
+  ) : ListAdapter<DocumentItems, DocumentAdapter.DocumentsViewHolder>(GenericDiffUtilItemCallback()) {
 
   override fun getItemViewType(position: Int) = when (currentList[position]) {
     is DocumentItems.Document -> R.layout.document
     is DocumentItems.Header -> R.layout.list_subtitle_item
+    is DocumentItems.CancelInsuranceButton -> TERMINATE_INSURANCE_BUTTON
     else -> error("Could not find item at position $position")
   }
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
     R.layout.document -> DocumentViewHolder(parent.inflate(viewType))
     R.layout.list_subtitle_item -> TitleViewHolder(parent.inflate(viewType))
+    TERMINATE_INSURANCE_BUTTON -> CancelInsuranceButton(
+      ComposeView(parent.context),
+      openCancelInsuranceScreen,
+    )
     else -> error("Could not find viewType $viewType")
   }
 
@@ -32,6 +51,7 @@ class DocumentAdapter : ListAdapter<DocumentItems, DocumentAdapter.DocumentsView
     when (val item = getItem(position)) {
       is DocumentItems.Document -> (holder as DocumentViewHolder).bind(item)
       is DocumentItems.Header -> (holder as TitleViewHolder).bind(item)
+      is DocumentItems.CancelInsuranceButton -> (holder as CancelInsuranceButton).bind(item)
     }
   }
 
@@ -61,5 +81,34 @@ class DocumentAdapter : ListAdapter<DocumentItems, DocumentAdapter.DocumentsView
         it.context.tryOpenUri(document.uri)
       }
     }
+  }
+
+  class CancelInsuranceButton(
+    private val composeView: ComposeView,
+    private val openCancelInsuranceScreen: ((insuranceId: String, insuranceDisplayName: String) -> Unit)?,
+  ) : DocumentsViewHolder(composeView) {
+    init {
+      composeView.setViewCompositionStrategy(ViewCompositionStrategy.Default)
+    }
+
+    fun bind(cancelInsurance: DocumentItems) {
+      require(cancelInsurance is DocumentItems.CancelInsuranceButton)
+      composeView.setContent {
+        HedvigTheme {
+          LargeTextButton(
+            { openCancelInsuranceScreen?.let { it(cancelInsurance.insuranceId, cancelInsurance.insuranceDisplayName) } },
+            Modifier.padding(horizontal = 16.dp).padding(bottom = 8.dp),
+          ) {
+            CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
+              Text(stringResource(hedvig.resources.R.string.TERMINATION_BUTTON))
+            }
+          }
+        }
+      }
+    }
+  }
+
+  companion object {
+    private const val TERMINATE_INSURANCE_BUTTON = 1
   }
 }
