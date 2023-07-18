@@ -60,11 +60,12 @@ internal fun YourInfoTab(
   YourInfoTab(
     uiState = uiState,
     onCancelInsuranceClick = { cancelInsuranceData ->
-      TerminateInsuranceActivity.newInstance(
+      val intent = TerminateInsuranceActivity.newInstance(
         context,
         cancelInsuranceData.insuranceId,
         cancelInsuranceData.insuranceDisplayName,
       )
+      context.startActivity(intent)
     },
     onEditCoInsuredClick = onEditCoInsuredClick,
     onChangeAddressClick = onChangeAddressClick,
