@@ -15,6 +15,7 @@ data class ContractDetailViewState(
     val pendingAddressChange: YourInfoModel.PendingAddressChange?,
     val detailsTable: Table,
     val changeAddressButton: YourInfoModel.ChangeAddressButton?,
+    val changeCoInsured: YourInfoModel.Change?,
   )
 
   data class DocumentsViewState(

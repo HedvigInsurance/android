@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.documents
 
+import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.padding
@@ -78,7 +79,8 @@ class DocumentAdapter(
       binding.subtitle.text = subTitle
       binding.subtitle.isVisible = subTitle != null
       binding.button.setHapticClickListener {
-        it.context.tryOpenUri(document.uri)
+        val uri = Uri.parse(document.uriString)
+        it.context.tryOpenUri(uri)
       }
     }
   }

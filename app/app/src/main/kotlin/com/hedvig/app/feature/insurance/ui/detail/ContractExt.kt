@@ -1,12 +1,12 @@
 package com.hedvig.app.feature.insurance.ui.detail
 
-import android.net.Uri
 import com.hedvig.android.core.common.android.ThemedIconUrls
 import com.hedvig.android.core.common.android.table.intoTable
 import com.hedvig.android.feature.home.legacychangeaddress.toUpcomingAgreementResult
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurance.ui.ContractCardViewState
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoModel
+import com.hedvig.app.util.extensions.canChangeCoInsured
 import com.hedvig.app.util.extensions.gradient
 import giraffe.InsuranceQuery
 
@@ -42,6 +42,7 @@ fun InsuranceQuery.Contract.toMemberDetailsViewState(): ContractDetailViewState.
     } else {
       null
     },
+    changeCoInsured = if (typeOfContract.canChangeCoInsured()) YourInfoModel.Change else null,
   )
 }
 
@@ -60,13 +61,13 @@ fun InsuranceQuery.Contract.toDocumentsViewState(
         DocumentItems.Document(
           titleRes = hedvig.resources.R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE,
           subTitleRes = hedvig.resources.R.string.insurance_details_view_documents_full_terms_subtitle,
-          uri = Uri.parse(it),
+          uriString = it,
         )
       },
       DocumentItems.Document(
         titleRes = hedvig.resources.R.string.MY_DOCUMENTS_INSURANCE_TERMS,
         subTitleRes = hedvig.resources.R.string.insurance_details_view_documents_insurance_letter_subtitle,
-        uri = Uri.parse(termsAndConditions.url),
+        uriString = termsAndConditions.url,
         type = DocumentItems.Document.Type.TERMS_AND_CONDITIONS,
       ),
     ),

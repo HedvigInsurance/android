@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.documents
 
 import android.content.Context
-import android.net.Uri
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import giraffe.fragment.InsuranceTermFragment
@@ -18,7 +17,7 @@ sealed class DocumentItems {
     @StringRes private val titleRes: Int? = null,
     private val subtitle: String? = null,
     @StringRes private val subTitleRes: Int? = null,
-    val uri: Uri,
+    val uriString: String,
     val type: Type = Type.GENERAL_TERMS,
   ) : DocumentItems(), Parcelable {
     enum class Type {
@@ -33,14 +32,14 @@ sealed class DocumentItems {
       fun from(insuranceTerm: InsuranceTermFragment) = Document(
         title = insuranceTerm.displayName,
         subtitle = null,
-        uri = Uri.parse(insuranceTerm.url),
+        uriString = insuranceTerm.url,
         type = Type.GENERAL_TERMS,
       )
 
       fun from(insuranceTerm: CrossSalesQuery.Data.CurrentMember.CrossSell.ProductVariant.Document) = Document(
         title = insuranceTerm.displayName,
         subtitle = null,
-        uri = Uri.parse(insuranceTerm.url),
+        uriString = insuranceTerm.url,
         type = Type.GENERAL_TERMS,
       )
     }

@@ -50,7 +50,7 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
             tableAdapter.setTable(state.detailsTable)
             topYourInfoAdapter.submitList(listOfNotNull(state.pendingAddressChange))
             bottomYourInfoAdapter.submitList(
-              listOfNotNull(state.changeAddressButton),
+              listOfNotNull(state.changeAddressButton, state.changeCoInsured),
             )
           }
         }
