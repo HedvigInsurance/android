@@ -17,6 +17,5 @@ sealed class InsuranceModel {
 
   object Error : InsuranceModel()
 
-  object TerminatedContractsHeader : InsuranceModel()
   data class TerminatedContracts(val quantity: Int) : InsuranceModel()
 }

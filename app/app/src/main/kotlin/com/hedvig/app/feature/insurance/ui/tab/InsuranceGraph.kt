@@ -38,7 +38,6 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidViewBinding
-import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -60,17 +59,15 @@ import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.app.databinding.InsuranceContractCardBinding
-import com.hedvig.app.databinding.InsuranceTerminatedContractsBinding
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.crossselling.ui.detail.CrossSellDetailActivity
 import com.hedvig.app.feature.insurance.ui.ContractCardViewState
 import com.hedvig.app.feature.insurance.ui.CrossSellCard
 import com.hedvig.app.feature.insurance.ui.InsuranceModel
 import com.hedvig.app.feature.insurance.ui.NotificationSubheading
-import com.hedvig.app.feature.insurance.ui.Subheading
 import com.hedvig.app.feature.insurance.ui.bindTo
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsActivity
-import com.hedvig.app.util.extensions.getActivity
+import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsButton
 import com.hedvig.app.util.extensions.openWebBrowser
 import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -239,6 +236,7 @@ private fun ColumnScope.InsuranceModelsRenderer(
   onClickCrossSellCard: (CrossSellData) -> Unit,
   onClickCrossSellAction: (CrossSellData) -> Unit,
 ) {
+  val context = LocalContext.current
   for (insuranceModel in insuranceModels) {
     when (insuranceModel) {
       is InsuranceModel.Contract -> {
@@ -270,13 +268,12 @@ private fun ColumnScope.InsuranceModelsRenderer(
         )
       }
       is InsuranceModel.TerminatedContracts -> {
-        AndroidViewBinding(
-          factory = InsuranceTerminatedContractsBinding::inflate,
-          update = bindInsuranceTerminatedContracts(insuranceModel),
+        TerminatedContractsButton(
+          nrOfTerminatedContracts = insuranceModel.quantity,
+          onClick = {
+            context.startActivity(TerminatedContractsActivity.newInstance(context))
+          },
         )
-      }
-      InsuranceModel.TerminatedContractsHeader -> {
-        Subheading(stringResource(hedvig.resources.R.string.insurances_tab_more_title))
       }
       InsuranceModel.Error -> {} // not applicable
     }
@@ -291,24 +288,6 @@ private fun bindInsuranceContract(
   insuranceModel.contractCardViewState.bindTo(this, imageLoader)
   card.setHapticClickListener {
     onInsuranceCardClick(insuranceModel.contractCardViewState.id)
-  }
-}
-
-private fun bindInsuranceTerminatedContracts(
-  insuranceModel: InsuranceModel.TerminatedContracts,
-): InsuranceTerminatedContractsBinding.() -> Unit = {
-  caption.text = caption.resources.getQuantityString(
-    hedvig.resources.R.plurals.insurances_tab_terminated_insurance_subtitile,
-    insuranceModel.quantity,
-    insuranceModel.quantity,
-  )
-  root.setHapticClickListener {
-    root.context.getActivity()?.let { activity ->
-      root.context.startActivity(
-        TerminatedContractsActivity.newInstance(root.context),
-        ActivityOptionsCompat.makeSceneTransitionAnimation(activity).toBundle(),
-      )
-    }
   }
 }
 
@@ -348,7 +327,6 @@ private fun PreviewInsuranceScreen() {
                 insurableLimits = emptyList(),
               ),
             ),
-            InsuranceModel.TerminatedContractsHeader,
             InsuranceModel.TerminatedContracts(2),
           ),
         ),

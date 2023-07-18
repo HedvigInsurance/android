@@ -32,7 +32,6 @@ fun buildInsuranceModelItems(
 
   if (hasNotOnlyTerminatedContracts(insurances.contracts)) {
     val terminatedContracts = amountOfTerminatedContracts(insurances.contracts)
-    add(InsuranceModel.TerminatedContractsHeader)
     add(InsuranceModel.TerminatedContracts(terminatedContracts))
   }
 }
