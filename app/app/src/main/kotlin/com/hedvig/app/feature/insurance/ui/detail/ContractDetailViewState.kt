@@ -15,11 +15,13 @@ data class ContractDetailViewState(
     val pendingAddressChange: YourInfoModel.PendingAddressChange?,
     val detailsTable: Table,
     val changeAddressButton: YourInfoModel.ChangeAddressButton?,
-    val change: YourInfoModel.Change?,
-    val cancelInsurance: YourInfoModel.CancelInsuranceButton?,
+    val changeCoInsured: YourInfoModel.Change?,
   )
 
   data class DocumentsViewState(
     val documents: List<DocumentItems>,
-  )
+    val cancelInsurance: DocumentItems.CancelInsuranceButton?,
+  ) {
+    fun getItems(): List<DocumentItems> = documents + listOfNotNull(cancelInsurance)
+  }
 }
