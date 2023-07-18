@@ -3,7 +3,6 @@ package com.hedvig.android.feature.odyssey.di
 import com.hedvig.android.data.claimflow.AudioContent
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.data.claimflow.ClaimFlowRepository
-import com.hedvig.android.data.claimflow.LocalContractContractOption
 import com.hedvig.android.data.claimflow.LocationOption
 import com.hedvig.android.data.claimflow.model.FlowId
 import com.hedvig.android.feature.odyssey.step.audiorecording.AudioRecordingViewModel
@@ -59,7 +58,7 @@ val odysseyModule = module {
   viewModel<SingleItemPayoutViewModel> { (singleItemPayout: ClaimFlowDestination.SingleItemPayout) ->
     SingleItemPayoutViewModel(singleItemPayout, get<ClaimFlowRepository>())
   }
-  viewModel<SelectContractViewModel> { (selectedContract: String?, contractOptions: List<LocalContractContractOption>) ->
-    SelectContractViewModel(selectedContract, contractOptions, get<ClaimFlowRepository>())
+  viewModel<SelectContractViewModel> { (selectContract: ClaimFlowDestination.SelectContract) ->
+    SelectContractViewModel(selectContract, get<ClaimFlowRepository>())
   }
 }

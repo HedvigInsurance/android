@@ -48,7 +48,7 @@ internal fun SelectContractDestination(
   SelectContractScreen(
     uiState = uiState,
     windowSizeClass = windowSizeClass,
-    selectLocation = viewModel::selectLocationOption,
+    selectLocation = viewModel::selectContractOption,
     submitLocation = viewModel::submitContract,
     showedError = viewModel::showedError,
     navigateUp = navigateUp,

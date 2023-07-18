@@ -2,6 +2,7 @@ package com.hedvig.android.feature.odyssey.step.selectcontract
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.data.claimflow.ClaimFlowRepository
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.LocalContractContractOption
@@ -12,18 +13,16 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class SelectContractViewModel(
-  initialSelectedContract: String?,
-  private val contractOptions: List<LocalContractContractOption>,
+  private val selectContract: ClaimFlowDestination.SelectContract,
   private val claimFlowRepository: ClaimFlowRepository,
 ) : ViewModel() {
 
-  private val _uiState =
-    MutableStateFlow(SelectContractUiState.fromInitialSelection(initialSelectedContract, contractOptions))
+  private val _uiState = MutableStateFlow(SelectContractUiState.fromInitialSelection(selectContract.options))
   val uiState: StateFlow<SelectContractUiState> = _uiState.asStateFlow()
 
-  fun selectLocationOption(selectedContract: LocalContractContractOption) {
+  fun selectContractOption(selectedContract: LocalContractContractOption) {
     _uiState.update { oldUiState ->
-      val selectedValueExistsInOptions = selectedContract in contractOptions
+      val selectedValueExistsInOptions = selectedContract in selectContract.options
       val contractIsAlreadySelected = oldUiState.selectedContract == selectedContract
       if (contractIsAlreadySelected || !selectedValueExistsInOptions) {
         oldUiState.copy(selectedContract = null)
@@ -72,18 +71,14 @@ internal data class SelectContractUiState(
   val error: Boolean = false,
   val nextStep: ClaimFlowStep? = null,
 ) {
-  val canSubmit: Boolean = selectedContract != null && !isLoading && !error && nextStep == null
-
+  val canSubmit: Boolean = !isLoading && !error && nextStep == null
   companion object {
     fun fromInitialSelection(
-      initialSelectedLocation: String?,
       locationOptions: List<LocalContractContractOption>,
     ): SelectContractUiState {
-      val selectedLocation = locationOptions
-        .firstOrNull { it.id == initialSelectedLocation }
       return SelectContractUiState(
-        locationOptions,
-        selectedLocation,
+        contractOptions = locationOptions,
+        selectedContract = locationOptions.first(),
       )
     }
   }
