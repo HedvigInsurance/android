@@ -172,7 +172,7 @@ private fun YourInfoSuccessScreen(
       ),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
-    val cancelInsurance = uiState.state.memberDetailsViewState.cancelInsurance
+    val cancelInsurance = uiState.state.memberDetailsViewState.cancelInsuranceData
     if (cancelInsurance != null) {
       Spacer(Modifier.height(8.dp))
       HedvigTextButton(
@@ -277,8 +277,8 @@ private class UiStateProvider : CollectionPreviewParameterProvider<ContractDetai
             ),
           ),
           changeAddressButton = null,
-          change = null,
-          cancelInsurance = YourInfoModel.CancelInsuranceData("", ""),
+          changeCoInsured = null,
+          cancelInsuranceData = YourInfoModel.CancelInsuranceData("", ""),
         ),
         ContractDetailViewState.DocumentsViewState(documents = listOf()),
       ),

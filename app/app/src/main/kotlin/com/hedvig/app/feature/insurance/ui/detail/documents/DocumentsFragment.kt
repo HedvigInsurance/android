@@ -1,18 +1,11 @@
 package com.hedvig.app.feature.insurance.ui.detail.documents
 
-import android.app.Activity
-import android.content.Intent
 import android.net.Uri
-import android.os.Bundle
-import android.view.View
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -31,7 +24,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.BaselineShift
@@ -40,7 +32,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.common.android.table.Table
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
@@ -51,51 +42,22 @@ import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
 import com.hedvig.android.core.ui.insurance.GradientType
 import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.feature.terminateinsurance.TerminateInsuranceActivity
-import com.hedvig.app.R
-import com.hedvig.app.databinding.ContractDetailDocumentsFragmentBinding
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurance.ui.ContractCardViewState
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewState
 import com.hedvig.app.util.extensions.tryOpenUri
-import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
-class DocumentsFragment : Fragment(R.layout.contract_detail_documents_fragment) {
-  private val binding by viewBinding(ContractDetailDocumentsFragmentBinding::bind)
-  private val viewModel: ContractDetailViewModel by activityViewModel()
-
-  private val registerForActivityResult: ActivityResultLauncher<Intent> =
-    registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { activityResult ->
-      if (activityResult.resultCode == Activity.RESULT_OK) {
-        requireActivity().onBackPressedDispatcher.onBackPressed()
-      }
-    }
-
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    binding.composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-    binding.composeView.setContent {
-      HedvigTheme(useNewColorScheme = true) {
-        Surface(
-          color = MaterialTheme.colorScheme.background,
-          modifier = Modifier.fillMaxSize(),
-        ) {
-          val uiState by viewModel.viewState.collectAsStateWithLifecycle()
-          DocumentsScreen(
-            uiState = uiState,
-            retry = viewModel::retryLoadingContract,
-          )
-        }
-      }
-    }
-  }
-
-  private fun openCancelInsuranceScreen(insuranceId: String, insuranceDisplayName: String) {
-    registerForActivityResult.launch(
-      TerminateInsuranceActivity.newInstance(requireContext(), insuranceId, insuranceDisplayName),
-    )
-  }
+@Composable
+internal fun DocumentsTab(
+  viewModel: ContractDetailViewModel,
+  modifier: Modifier = Modifier,
+) {
+  val uiState by viewModel.viewState.collectAsStateWithLifecycle()
+  DocumentsScreen(
+    uiState = uiState,
+    retry = viewModel::retryLoadingContract,
+  )
 }
 
 @Composable
