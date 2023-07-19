@@ -25,18 +25,24 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -47,23 +53,21 @@ import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.app.feature.perils.Peril
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.launch
 
 /**
  * TODO in this screen:
  *  Make peril description text come from octopus probably, so that it shows the right information
  *  Take the color for perils also from octopus which would mean that it's non-null. Otherwise provide a sane default
- *  Put bottom sheet contents in the bigger screen, and fix its design
  */
 @Composable
 internal fun CoverageTab(
   viewModel: CoverageViewModel,
-  onInsurableLimitClick: (ContractCoverage.InsurableLimit) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   CoverageFragmentScreen(
     uiState = uiState,
-    onInsurableLimitClick = onInsurableLimitClick,
     retryLoading = viewModel::reload,
     modifier = modifier,
   )
@@ -72,7 +76,6 @@ internal fun CoverageTab(
 @Composable
 private fun CoverageFragmentScreen(
   uiState: CoverageUiState,
-  onInsurableLimitClick: (ContractCoverage.InsurableLimit) -> Unit,
   retryLoading: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -85,9 +88,46 @@ private fun CoverageFragmentScreen(
     }
     CoverageUiState.Loading -> {}
     is CoverageUiState.Success -> {
+      val coroutineScope = rememberCoroutineScope()
+      val sheetState = rememberModalBottomSheetState(true)
+      var selectedInsurableLimit by remember { mutableStateOf<ContractCoverage.InsurableLimit?>(null) }
+      val selectedInsurableLimitValue = selectedInsurableLimit
+      if (selectedInsurableLimitValue != null) {
+        ModalBottomSheet(
+          onDismissRequest = { selectedInsurableLimit = null },
+          // todo use "https://github.com/c5inco/smoother" for a top only squircle shape here
+          sheetState = sheetState,
+          tonalElevation = 0.dp,
+        ) {
+          Column(
+            Modifier.padding(horizontal = 24.dp).padding(bottom = 16.dp),
+          ) {
+            Text(selectedInsurableLimitValue.label)
+            Spacer(Modifier.height(8.dp))
+            Text(text = selectedInsurableLimitValue.description, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Spacer(Modifier.height(16.dp))
+            HedvigTextButton(
+              text = stringResource(hedvig.resources.R.string.general_close_button),
+              onClick = {
+                coroutineScope.launch {
+                  sheetState.hide()
+                }.invokeOnCompletion {
+                  selectedInsurableLimit = null
+                }
+              },
+            )
+          }
+        }
+      }
+
       Column(modifier = modifier) {
         Spacer(Modifier.height(16.dp))
-        InsurableLimitSection(uiState.insurableLimitItems, onInsurableLimitClick = onInsurableLimitClick)
+        InsurableLimitSection(
+          insurableLimitItems = uiState.insurableLimitItems,
+          onInsurableLimitClick = { insurableLimit: ContractCoverage.InsurableLimit ->
+            selectedInsurableLimit = insurableLimit
+          },
+        )
         Spacer(Modifier.height(16.dp))
         if (uiState.perilItems.isNotEmpty()) {
           PerilSection(uiState.perilItems)
@@ -262,7 +302,6 @@ private fun PreviewCoverageFragmentScreen() {
           perilItems = previewPerils,
           insurableLimitItems = previewInsurableLimits,
         ),
-        onInsurableLimitClick = {},
         retryLoading = {},
       )
     }
