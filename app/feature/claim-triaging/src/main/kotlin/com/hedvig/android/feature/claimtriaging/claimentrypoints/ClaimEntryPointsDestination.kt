@@ -34,7 +34,7 @@ import com.hedvig.android.data.claimtriaging.EntryPoint
 import com.hedvig.android.data.claimtriaging.EntryPointId
 import com.hedvig.android.data.claimtriaging.EntryPointOption
 import com.hedvig.android.feature.claimtriaging.OptionChipsFlowRow
-import com.hedvig.android.feature.claimtriaging.WarningTextWithIcon
+import com.hedvig.android.core.ui.text.WarningTextWithIcon
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf

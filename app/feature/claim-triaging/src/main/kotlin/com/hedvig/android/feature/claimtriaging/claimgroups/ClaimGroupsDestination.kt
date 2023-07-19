@@ -35,7 +35,7 @@ import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimtriaging.ClaimGroup
 import com.hedvig.android.data.claimtriaging.ClaimGroupId
 import com.hedvig.android.feature.claimtriaging.OptionChipsFlowRow
-import com.hedvig.android.feature.claimtriaging.WarningTextWithIcon
+import com.hedvig.android.core.ui.text.WarningTextWithIcon
 import hedvig.resources.R
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList

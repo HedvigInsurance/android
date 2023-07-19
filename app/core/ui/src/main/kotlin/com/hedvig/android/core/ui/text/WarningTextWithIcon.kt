@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.claimtriaging
+package com.hedvig.android.core.ui.text
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
