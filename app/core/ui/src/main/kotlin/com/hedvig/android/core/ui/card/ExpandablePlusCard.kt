@@ -1,7 +1,9 @@
 package com.hedvig.android.core.ui.card
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -55,20 +57,29 @@ fun ExpandablePlusCard(
         modifier = Modifier.padding(horizontal = 12.dp),
       ) {
         content()
-        val iconRotation by animateFloatAsState(if (isExpanded) 0f else -90f)
+        val halfRotation by animateFloatAsState(
+          targetValue = if (isExpanded) 0f else -90f,
+          animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        )
+        val fullRotation by animateFloatAsState(
+          targetValue = if (isExpanded) 0f else -180f,
+          animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        )
         Box {
           val iconModifier = Modifier.size(16.dp)
           Icon(
             Icons.Hedvig.Minus,
             contentDescription = null,
             modifier = iconModifier.graphicsLayer {
-              rotationZ = iconRotation
+              rotationZ = halfRotation
             },
           )
           Icon(
             Icons.Hedvig.Minus,
             contentDescription = null,
-            modifier = iconModifier,
+            modifier = iconModifier.graphicsLayer {
+              rotationZ = fullRotation
+            },
           )
         }
         Spacer(Modifier.width(4.dp))
