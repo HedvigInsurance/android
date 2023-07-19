@@ -10,7 +10,6 @@ import com.hedvig.android.core.common.ErrorMessage
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import octopus.ContractCoverageQuery
-import octopus.type.InsurableLimitType
 
 internal class GetContractCoverageUseCase(
   private val apolloClient: ApolloClient,
@@ -36,7 +35,6 @@ internal data class ContractCoverage(
   val insurableLimits: ImmutableList<InsurableLimit>,
 ) {
   internal data class InsurableLimit(
-    val type: InsurableLimitType,
     val label: String,
     val limit: String,
     val description: String,
@@ -72,7 +70,6 @@ internal data class ContractCoverage(
         insurableLimits = contract.variant.insurableLimits
           .map { insurableLimit ->
             InsurableLimit(
-              type = insurableLimit.type,
               label = insurableLimit.label,
               limit = insurableLimit.limit,
               description = insurableLimit.description.trim(),

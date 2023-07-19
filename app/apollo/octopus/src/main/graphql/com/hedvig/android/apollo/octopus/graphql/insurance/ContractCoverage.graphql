@@ -14,7 +14,6 @@ query ContractCoverage($contractId: UUID!) {
 #        info
       }
       insurableLimits {
-        type
         label
         description
         limit

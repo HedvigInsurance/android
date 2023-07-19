@@ -55,7 +55,6 @@ import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.launch
-import octopus.type.InsurableLimitType
 
 @Composable
 internal fun CoverageTab(
@@ -339,7 +338,7 @@ private val previewPerils: PersistentList<ContractCoverage.Peril> = List(4) { in
 }.toPersistentList()
 
 private val previewInsurableLimits: PersistentList<ContractCoverage.InsurableLimit> = persistentListOf(
-  ContractCoverage.InsurableLimit(InsurableLimitType.BIKE, "Insured amount".repeat(2), "1 000 000 kr", ""),
-  ContractCoverage.InsurableLimit(InsurableLimitType.BIKE, "Deductible", "1 500 kr", ""),
-  ContractCoverage.InsurableLimit(InsurableLimitType.BIKE, "Travel insurance", "45 days", ""),
+  ContractCoverage.InsurableLimit("Insured amount".repeat(2), "1 000 000 kr", ""),
+  ContractCoverage.InsurableLimit("Deductible", "1 500 kr", ""),
+  ContractCoverage.InsurableLimit("Travel insurance", "45 days", ""),
 )
