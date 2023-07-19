@@ -33,7 +33,7 @@ import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimtriaging.EntryPointOption
 import com.hedvig.android.data.claimtriaging.EntryPointOptionId
 import com.hedvig.android.feature.claimtriaging.OptionChipsFlowRow
-import com.hedvig.android.feature.claimtriaging.TriageItemNotPickedError
+import com.hedvig.android.feature.claimtriaging.WarningTextWithIcon
 import hedvig.resources.R
 import kotlinx.collections.immutable.toImmutableList
 
@@ -111,7 +111,13 @@ private fun ClaimEntryPointOptionsScreen(
         exit = fadeOut(),
       ) {
         Column {
-          TriageItemNotPickedError(Modifier.padding(horizontal = 16.dp).fillMaxWidth().wrapContentWidth())
+          WarningTextWithIcon(
+            modifier = Modifier
+              .padding(horizontal = 16.dp)
+              .fillMaxWidth()
+              .wrapContentWidth(),
+            text = stringResource(R.string.CLAIMS_SELECT_CATEGORY),
+          )
           Spacer(Modifier.height(16.dp))
         }
       }

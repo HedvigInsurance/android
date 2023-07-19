@@ -62,13 +62,10 @@ import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.app.R
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
-import com.hedvig.app.feature.profile.ui.myinfo.MyInfoActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.apollo.format
-import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.startChat
-import giraffe.fragment.MonetaryAmountFragment
 import java.math.BigDecimal
 import org.javamoney.moneta.Money
 
@@ -76,6 +73,7 @@ import org.javamoney.moneta.Money
 internal fun ProfileDestination(
   navigateToEurobonus: () -> Unit,
   navigateToBusinessModel: () -> Unit,
+  navigateToMyInfo: () -> Unit,
   viewModel: ProfileViewModel,
 ) {
   val uiState by viewModel.data.collectAsStateWithLifecycle()
@@ -87,6 +85,7 @@ internal fun ProfileDestination(
     uiState = uiState,
     navigateToEurobonus = navigateToEurobonus,
     navigateToBusinessModel = navigateToBusinessModel,
+    navigateToMyInfo = navigateToMyInfo,
     reload = viewModel::reload,
     onLogout = viewModel::onLogout,
   )
@@ -98,6 +97,7 @@ private fun ProfileScreen(
   uiState: ProfileUiState,
   navigateToEurobonus: () -> Unit,
   navigateToBusinessModel: () -> Unit,
+  navigateToMyInfo: () -> Unit,
   reload: () -> Unit,
   onLogout: () -> Unit,
 ) {
@@ -127,7 +127,7 @@ private fun ProfileScreen(
       )
       ProfileItemRows(
         profileUiState = uiState,
-        showMyInfo = { context.startActivity(Intent(context, MyInfoActivity::class.java)) },
+        showMyInfo = navigateToMyInfo,
         showBusinessModel = navigateToBusinessModel,
         showPaymentInfo = { context.startActivity(PaymentActivity.newInstance(context)) },
         showSettings = { context.startActivity(SettingsActivity.newInstance(context)) },
@@ -357,6 +357,7 @@ private fun PreviewProfileSuccessScreen() {
         navigateToBusinessModel = {},
         reload = {},
         onLogout = {},
+        navigateToMyInfo = {},
       )
     }
   }

@@ -13,6 +13,8 @@ import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.app.feature.profile.ui.eurobonus.EurobonusDestination
 import com.hedvig.app.feature.profile.ui.eurobonus.EurobonusViewModel
+import com.hedvig.app.feature.profile.ui.myinfo.MyInfoDestination
+import com.hedvig.app.feature.profile.ui.myinfo.MyInfoViewModel
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import org.koin.androidx.compose.koinViewModel
 
@@ -39,6 +41,9 @@ internal fun NavGraphBuilder.profileGraph(
         navigateToBusinessModel = {
           with(navigator) { backStackEntry.navigate(AppDestination.BusinessModel) }
         },
+        navigateToMyInfo = {
+          with(navigator) { backStackEntry.navigate(AppDestination.MyInfo) }
+        },
         viewModel = viewModel,
       )
     }
@@ -49,6 +54,13 @@ internal fun NavGraphBuilder.profileGraph(
     ) {
       val viewModel: EurobonusViewModel = koinViewModel()
       EurobonusDestination(
+        viewModel = viewModel,
+        navigateUp = navigator::navigateUp,
+      )
+    }
+    animatedComposable<AppDestination.MyInfo> {
+      val viewModel: MyInfoViewModel = koinViewModel()
+      MyInfoDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
       )

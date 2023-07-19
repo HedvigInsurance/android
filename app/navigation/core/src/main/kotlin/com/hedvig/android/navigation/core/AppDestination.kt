@@ -33,6 +33,9 @@ sealed interface AppDestination : Destination {
   @Serializable
   object ClaimsFlow : AppDestination
 
+  @Serializable
+  object MyInfo : AppDestination
+
 //  @Serializable
 //  object LegacyClaimsTriaging : AppDestination
 }

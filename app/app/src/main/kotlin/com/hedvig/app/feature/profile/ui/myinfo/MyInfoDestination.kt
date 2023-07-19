@@ -1,0 +1,177 @@
+package com.hedvig.app.feature.profile.ui.myinfo
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
+import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.clearFocusOnTap
+import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.core.ui.scaffold.HedvigScaffold
+import com.hedvig.android.feature.claimtriaging.WarningTextWithIcon
+import hedvig.resources.R
+
+@Composable
+internal fun MyInfoDestination(
+  viewModel: MyInfoViewModel,
+  navigateUp: () -> Unit,
+) {
+  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  MyInfoScreen(
+    uiState = uiState,
+    emailChanged = viewModel::emailChanged,
+    phoneNumberChanged = viewModel::phoneNumberChanged,
+    updateEmailAndPhoneNumber = viewModel::updateEmailAndPhoneNumber,
+    navigateUp = navigateUp,
+  )
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+private fun MyInfoScreen(
+  uiState: MyInfoUiState,
+  updateEmailAndPhoneNumber: () -> Unit,
+  navigateUp: () -> Unit,
+  emailChanged: (String) -> Unit,
+  phoneNumberChanged: (String) -> Unit,
+) {
+  val localSoftwareKeyboardController = LocalSoftwareKeyboardController.current
+  Box(
+    propagateMinConstraints = true,
+    modifier = Modifier.fillMaxSize(),
+  ) {
+    HedvigScaffold(
+      topAppBarText = stringResource(R.string.PROFILE_MY_INFO_TITLE),
+      navigateUp = navigateUp,
+      modifier = Modifier.clearFocusOnTap(),
+    ) {
+      Spacer(Modifier.height(16.dp))
+      val errorText = uiState.member?.phoneNumber?.errorMessageRes?.let { stringResource(id = it) }
+      HedvigTextField(
+        value = uiState.member?.phoneNumber?.input ?: "",
+        onValueChange = { newInput ->
+          if (newInput.indices.all { newInput[it].isWhitespace().not() }) {
+            phoneNumberChanged(newInput)
+          }
+        },
+        label = { Text(stringResource(R.string.PHONE_NUMBER_ROW_TITLE)) },
+        errorText = errorText,
+        keyboardOptions = KeyboardOptions(
+          keyboardType = KeyboardType.Phone,
+          imeAction = ImeAction.Next,
+        ),
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      )
+      AnimatedVisibility(visible = errorText != null) {
+        Spacer(Modifier.height(4.dp))
+      }
+      Spacer(Modifier.height(4.dp))
+      HedvigTextField(
+        value = uiState.member?.email?.input ?: "",
+        onValueChange = { newInput ->
+          if (newInput.indices.all { newInput[it].isWhitespace().not() }) {
+            emailChanged(newInput)
+          }
+        },
+        label = { Text(stringResource(R.string.PROFILE_MY_INFO_EMAIL_LABEL)) },
+        errorText = uiState.member?.email?.errorMessageRes?.let { stringResource(id = it) },
+        keyboardOptions = KeyboardOptions(
+          keyboardType = KeyboardType.Email,
+          imeAction = ImeAction.Done,
+        ),
+        keyboardActions = KeyboardActions(
+          onDone = {
+            updateEmailAndPhoneNumber()
+            localSoftwareKeyboardController?.hide()
+          },
+        ),
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      )
+      Spacer(Modifier.height(16.dp))
+      AnimatedVisibility(
+        visible = uiState.canSubmit || uiState.isSubmitting,
+        enter = fadeIn(),
+        exit = fadeOut(),
+      ) {
+        HedvigContainedButton(
+          text = stringResource(R.string.general_save_button),
+          enabled = uiState.canSubmit,
+          onClick = {
+            updateEmailAndPhoneNumber()
+            localSoftwareKeyboardController?.hide()
+          },
+          isLoading = uiState.isSubmitting,
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+        Spacer(Modifier.height(16.dp))
+      }
+
+      AnimatedVisibility(
+        visible = uiState.errorMessage != null,
+        enter = fadeIn(),
+        exit = fadeOut(),
+      ) {
+        Column {
+          uiState.errorMessage?.let {
+            WarningTextWithIcon(
+              modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth()
+                .wrapContentWidth(),
+              text = it,
+            )
+          }
+          Spacer(Modifier.height(16.dp))
+        }
+      }
+    }
+    HedvigFullScreenCenterAlignedProgress(show = uiState.isLoading)
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewMyInfoScreen() {
+  HedvigTheme(useNewColorScheme = true) {
+    Surface {
+      MyInfoScreen(
+        uiState = MyInfoUiState(
+          errorMessage = "Something went wrong",
+          isLoading = false,
+        ),
+        updateEmailAndPhoneNumber = {},
+        navigateUp = {},
+        emailChanged = {},
+        phoneNumberChanged = {},
+      )
+    }
+  }
+}

@@ -3,20 +3,23 @@ package com.hedvig.app.feature.profile.ui.myinfo
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
+import com.hedvig.android.core.common.android.validation.validateEmail
+import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.app.feature.profile.data.ProfileRepository
+import com.hedvig.app.util.validatePhoneNumber
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 internal class MyInfoViewModel(
   hAnalytics: HAnalytics,
   private val profileRepository: ProfileRepository,
 ) : ViewModel() {
-  private val _data = MutableStateFlow(MyInfoUiState())
-  val data: StateFlow<MyInfoUiState> = _data
+  private val _uiState = MutableStateFlow(MyInfoUiState())
+  val uiState: StateFlow<MyInfoUiState> = _uiState
 
   init {
     hAnalytics.screenView(AppScreen.CONTACT_INFO)
@@ -24,7 +27,7 @@ internal class MyInfoViewModel(
     viewModelScope.launch {
       profileRepository.profile().fold(
         ifLeft = {
-          _data.update {
+          _uiState.update {
             it.copy(
               errorMessage = it.errorMessage,
               isLoading = false,
@@ -32,11 +35,11 @@ internal class MyInfoViewModel(
           }
         },
         ifRight = { profile ->
-          _data.update {
+          _uiState.update {
             it.copy(
               member = MyInfoMember(
-                email = profile.member.email,
-                phoneNumber = profile.member.phoneNumber,
+                email = ValidatedInput(profile.member.email),
+                phoneNumber = ValidatedInput(profile.member.phoneNumber),
               ),
               isLoading = false,
             )
@@ -47,43 +50,60 @@ internal class MyInfoViewModel(
   }
 
   fun updateEmailAndPhoneNumber() {
-    viewModelScope.launch {
-      _data.update { it.copy(isLoading = true) }
-      Either.Companion.zipOrAccumulate(
-        profileRepository.updatePhoneNumber(_data.value.member?.phoneNumber ?: ""),
-        profileRepository.updateEmail(_data.value.member?.email ?: ""),
-      ) { memberWithPhone, memberWithEmail ->
-        memberWithPhone.copy(email = memberWithEmail.email)
-      }.fold(
-        ifLeft = {
-          _data.update {
-            it.copy(
-              errorMessage = it.errorMessage,
-              isLoading = false,
-            )
-          }
-        },
-        ifRight = { member ->
-          _data.update {
-            it.copy(
-              member = MyInfoMember(
-                email = member.email,
-                phoneNumber = member.phoneNumber,
-              ),
-              isLoading = false,
-            )
-          }
-        },
-      )
+    _uiState.update { it.validateInput() }
+    if (_uiState.value.isInputValid) {
+      viewModelScope.launch {
+        _uiState.update { it.copy(isSubmitting = true) }
+        Either.Companion.zipOrAccumulate(
+          profileRepository.updatePhoneNumber(_uiState.value.member?.phoneNumber?.input ?: ""),
+          profileRepository.updateEmail(_uiState.value.member?.email?.input ?: ""),
+        ) { memberWithPhone, memberWithEmail ->
+          memberWithPhone.copy(email = memberWithEmail.email)
+        }.fold(
+          ifLeft = {
+            _uiState.update {
+              it.copy(
+                errorMessage = it.errorMessage,
+                isSubmitting = false,
+                canSubmit = false,
+              )
+            }
+          },
+          ifRight = { member ->
+            _uiState.update {
+              it.copy(
+                member = MyInfoMember(
+                  email = ValidatedInput(member.email),
+                  phoneNumber = ValidatedInput(member.phoneNumber),
+                ),
+                isSubmitting = false,
+                canSubmit = false,
+              )
+            }
+          },
+        )
+      }
     }
   }
 
   fun emailChanged(email: String) {
-    _data.update { it.copy(member = it.member?.copy(email = email)) }
+    _uiState.update {
+      it.copy(
+        member = it.member?.copy(email = ValidatedInput(email)),
+        canSubmit = true,
+        errorMessage = null,
+      )
+    }
   }
 
   fun phoneNumberChanged(phoneNumber: String) {
-    _data.update { it.copy(member = it.member?.copy(phoneNumber = phoneNumber)) }
+    _uiState.update {
+      it.copy(
+        member = it.member?.copy(phoneNumber = ValidatedInput(phoneNumber)),
+        canSubmit = true,
+        errorMessage = null,
+      )
+    }
   }
 }
 
@@ -91,9 +111,43 @@ data class MyInfoUiState(
   val member: MyInfoMember? = null,
   val errorMessage: String? = null,
   val isLoading: Boolean = true,
-)
+  val isSubmitting: Boolean = false,
+  val canSubmit: Boolean = false,
+) {
+  val isInputValid = member?.email?.errorMessageRes == null
+    && member?.phoneNumber?.errorMessageRes == null
+
+  fun validateInput(): MyInfoUiState {
+    return copy(
+      member = member?.copy(
+        email = member.email.copy(
+          errorMessageRes = if (!member.hasValidEmail()) {
+            hedvig.resources.R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_EMAIL
+          } else {
+            null
+          },
+        ),
+        phoneNumber = member.phoneNumber.copy(
+          errorMessageRes = if (!member.hasValidPhoneNumber()) {
+            hedvig.resources.R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_PHONE_NUMBER
+          } else {
+            null
+          },
+        ),
+      ),
+    )
+  }
+
+  private fun MyInfoMember.hasValidEmail() = email.isPresent
+    && email.input?.isBlank() == false
+    && validateEmail(email.input!!).isSuccessful
+
+  private fun MyInfoMember.hasValidPhoneNumber() = phoneNumber.isPresent
+    && phoneNumber.input?.isBlank() == false
+    && validatePhoneNumber(phoneNumber.input!!).isSuccessful
+}
 
 data class MyInfoMember(
-  val email: String?,
-  val phoneNumber: String?,
+  val email: ValidatedInput<String?>,
+  val phoneNumber: ValidatedInput<String?>,
 )
