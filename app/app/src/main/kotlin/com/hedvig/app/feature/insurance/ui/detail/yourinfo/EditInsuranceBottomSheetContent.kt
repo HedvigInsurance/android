@@ -51,7 +51,7 @@ internal fun EditInsuranceBottomSheetContent(
     )
     Spacer(modifier = Modifier.height(32.dp))
     SelectableItem(
-      text = stringResource(id = R.string.insurance_details_edit_insured_people_button),
+      text = stringResource(R.string.insurance_details_change_address_button),
       isSelected = expandedItemIndex == 0,
       onClick = {
         expandedItemIndex = if (expandedItemIndex == 0) {
@@ -63,7 +63,7 @@ internal fun EditInsuranceBottomSheetContent(
     )
     Spacer(modifier = Modifier.height(4.dp))
     SelectableItem(
-      text = stringResource(id = R.string.insurance_details_change_address_button),
+      text = stringResource(R.string.CONTRACT_EDIT_COINSURED),
       isSelected = expandedItemIndex == 1,
       onClick = {
         expandedItemIndex = if (expandedItemIndex == 1) {
@@ -78,9 +78,9 @@ internal fun EditInsuranceBottomSheetContent(
       text = stringResource(id = R.string.general_continue_button),
       onClick = {
         if (expandedItemIndex == 0) {
-          onEditCoInsuredClick()
-        } else if (expandedItemIndex == 1) {
           onChangeAddressClick()
+        } else if (expandedItemIndex == 1) {
+          onEditCoInsuredClick()
         }
       },
     )
