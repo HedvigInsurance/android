@@ -81,7 +81,7 @@ private fun DocumentsTab(
           val documents = uiState.state.documentsViewState.documents.filterIsInstance<DocumentItems.Document>()
           for ((index, document) in documents.withIndex()) {
             DocumentCard(
-              onClick = { context.tryOpenUri(document.uri) },
+              onClick = { context.tryOpenUri(Uri.parse(document.uriString)) },
               title = document.getTitle(context),
               subtitle = document.getSubTitle(context),
             )
@@ -181,8 +181,8 @@ private class UiStateProvider : CollectionPreviewParameterProvider<ContractDetai
             sections = listOf(),
           ),
           changeAddressButton = null,
-          change = null,
-          cancelInsurance = null,
+          changeCoInsured = null,
+          cancelInsuranceData = null,
         ),
         ContractDetailViewState.DocumentsViewState(
           documents = listOf(
@@ -191,21 +191,21 @@ private class UiStateProvider : CollectionPreviewParameterProvider<ContractDetai
               titleRes = null,
               subtitle = "All details about your coverage",
               subTitleRes = null,
-              uri = Uri.EMPTY,
+              uriString = "",
             ),
             DocumentItems.Document(
               title = "Pre-purchase info",
               titleRes = null,
               subtitle = "All pre-pruchase details",
               subTitleRes = null,
-              uri = Uri.EMPTY,
+              uriString = "",
             ),
             DocumentItems.Document(
               title = "Productinfo (IPID)",
               titleRes = null,
               subtitle = "Compare your coverage",
               subTitleRes = null,
-              uri = Uri.EMPTY,
+              uriString = "",
             ),
           ),
         ),
