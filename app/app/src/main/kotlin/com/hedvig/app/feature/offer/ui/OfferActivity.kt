@@ -161,7 +161,7 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
     val insurableLimitsAdapter = InsurableLimitsAdapter(
       fragmentManager = supportFragmentManager,
     )
-    val documentAdapter = DocumentAdapter()
+    val documentAdapter = DocumentAdapter(null)
     val bottomOfferAdapter = OfferAdapter(
       fragmentManager = supportFragmentManager,
       locale = locale,

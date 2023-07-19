@@ -6,6 +6,7 @@ import com.hedvig.android.data.claimflow.model.AudioUrl
 import octopus.fragment.AudioContentFragment
 import octopus.fragment.AutomaticAutogiroPayoutFragment
 import octopus.fragment.CheckoutMethodFragment
+import octopus.fragment.FlowClaimContractSelectStepFragment
 import octopus.fragment.FlowClaimLocationStepFragment
 import octopus.fragment.FlowClaimSingleItemStepFragment
 
@@ -75,7 +76,14 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
     is ClaimFlowStep.ClaimSuccessStep -> ClaimFlowDestination.ClaimSuccess
     is ClaimFlowStep.ClaimFailedStep -> ClaimFlowDestination.Failure
     is ClaimFlowStep.UnknownStep -> ClaimFlowDestination.UpdateApp
+    is ClaimFlowStep.ClaimSelectContractStep -> ClaimFlowDestination.SelectContract(
+      options = options.map { it.toLocalOptions() }
+    )
   }
+}
+
+private fun FlowClaimContractSelectStepFragment.Option.toLocalOptions(): LocalContractContractOption {
+ return LocalContractContractOption(id, displayName)
 }
 
 internal fun FlowClaimSingleItemStepFragment.AvailableItemModel.toItemModel(): ItemModel {

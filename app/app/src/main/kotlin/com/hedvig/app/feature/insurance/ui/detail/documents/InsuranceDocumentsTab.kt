@@ -33,6 +33,7 @@ fun InsuranceDocumentsTab(
           },
         )
         is DocumentItems.Header -> TODO("DocumentItems.Header type should be removed")
+        is DocumentItems.CancelInsuranceButton -> TODO()
       }
     }
   }
@@ -48,10 +49,18 @@ fun PreviewInsuranceDocumentsTab() {
           DocumentItems.Document(
             title = "Terms & Conditions",
             subtitle = "All details about your coverage",
-            uri = Uri.EMPTY,
+            uriString = "",
           ),
-          DocumentItems.Document(title = "Pre-purchase info", subtitle = "All pre-pruchase details", uri = Uri.EMPTY),
-          DocumentItems.Document(title = "Productinfo (IPID)", subtitle = "Compare your coverage", uri = Uri.EMPTY),
+          DocumentItems.Document(
+            title = "Pre-purchase info",
+            subtitle = "All pre-pruchase details",
+            uriString = "",
+          ),
+          DocumentItems.Document(
+            title = "Productinfo (IPID)",
+            subtitle = "Compare your coverage",
+            uriString = "",
+          ),
         ),
         onDocumentClicked = {},
       )

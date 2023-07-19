@@ -60,11 +60,12 @@ internal fun YourInfoTab(
   YourInfoTab(
     uiState = uiState,
     onCancelInsuranceClick = { cancelInsuranceData ->
-      TerminateInsuranceActivity.newInstance(
+      val intent = TerminateInsuranceActivity.newInstance(
         context,
         cancelInsuranceData.insuranceId,
         cancelInsuranceData.insuranceDisplayName,
       )
+      context.startActivity(intent)
     },
     onEditCoInsuredClick = onEditCoInsuredClick,
     onChangeAddressClick = onChangeAddressClick,
@@ -172,7 +173,7 @@ private fun YourInfoSuccessScreen(
       ),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
-    val cancelInsurance = uiState.state.memberDetailsViewState.cancelInsurance
+    val cancelInsurance = uiState.state.memberDetailsViewState.cancelInsuranceData
     if (cancelInsurance != null) {
       Spacer(Modifier.height(8.dp))
       HedvigTextButton(
@@ -277,8 +278,8 @@ private class UiStateProvider : CollectionPreviewParameterProvider<ContractDetai
             ),
           ),
           changeAddressButton = null,
-          change = null,
-          cancelInsurance = YourInfoModel.CancelInsuranceData("", ""),
+          changeCoInsured = null,
+          cancelInsuranceData = YourInfoModel.CancelInsuranceData("", ""),
         ),
         ContractDetailViewState.DocumentsViewState(documents = listOf()),
       ),
