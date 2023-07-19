@@ -9,6 +9,7 @@ import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.util.validatePhoneNumber
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
+import hedvig.resources.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -122,14 +123,14 @@ data class MyInfoUiState(
       member = member?.copy(
         email = member.email.copy(
           errorMessageRes = if (!member.hasValidEmail()) {
-            hedvig.resources.R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_EMAIL
+            R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_EMAIL
           } else {
             null
           },
         ),
         phoneNumber = member.phoneNumber.copy(
           errorMessageRes = if (!member.hasValidPhoneNumber()) {
-            hedvig.resources.R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_PHONE_NUMBER
+            R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_PHONE_NUMBER
           } else {
             null
           },
