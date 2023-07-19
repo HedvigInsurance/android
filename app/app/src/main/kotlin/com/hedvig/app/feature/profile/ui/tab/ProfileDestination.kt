@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.profile.ui.tab
 
-import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -61,7 +60,6 @@ import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.app.R
-import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.apollo.format
@@ -74,6 +72,7 @@ internal fun ProfileDestination(
   navigateToEurobonus: () -> Unit,
   navigateToBusinessModel: () -> Unit,
   navigateToMyInfo: () -> Unit,
+  navigateToAboutApp: () -> Unit,
   viewModel: ProfileViewModel,
 ) {
   val uiState by viewModel.data.collectAsStateWithLifecycle()
@@ -86,6 +85,7 @@ internal fun ProfileDestination(
     navigateToEurobonus = navigateToEurobonus,
     navigateToBusinessModel = navigateToBusinessModel,
     navigateToMyInfo = navigateToMyInfo,
+    navigateToAboutApp = navigateToAboutApp,
     reload = viewModel::reload,
     onLogout = viewModel::onLogout,
   )
@@ -98,6 +98,7 @@ private fun ProfileScreen(
   navigateToEurobonus: () -> Unit,
   navigateToBusinessModel: () -> Unit,
   navigateToMyInfo: () -> Unit,
+  navigateToAboutApp: () -> Unit,
   reload: () -> Unit,
   onLogout: () -> Unit,
 ) {
@@ -131,7 +132,7 @@ private fun ProfileScreen(
         showBusinessModel = navigateToBusinessModel,
         showPaymentInfo = { context.startActivity(PaymentActivity.newInstance(context)) },
         showSettings = { context.startActivity(SettingsActivity.newInstance(context)) },
-        showAboutApp = { context.startActivity(Intent(context, AboutAppActivity::class.java)) },
+        showAboutApp = navigateToAboutApp,
         navigateToEurobonus = navigateToEurobonus,
         logout = onLogout,
       )
@@ -206,6 +207,7 @@ private fun ColumnScope.ProfileItemRows(
         profileUiState.euroBonus.code != null -> {
           painterResource(com.hedvig.android.core.designsystem.R.drawable.ic_checkmark_in_circle)
         }
+
         else -> painterResource(com.hedvig.android.core.designsystem.R.drawable.ic_info)
       },
       onClick = navigateToEurobonus,
@@ -358,6 +360,7 @@ private fun PreviewProfileSuccessScreen() {
         reload = {},
         onLogout = {},
         navigateToMyInfo = {},
+        navigateToAboutApp = {},
       )
     }
   }
