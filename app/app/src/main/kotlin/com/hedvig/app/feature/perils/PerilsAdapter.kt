@@ -1,9 +1,6 @@
 package com.hedvig.app.feature.perils
 
-import android.graphics.Color
 import android.graphics.Rect
-import android.graphics.drawable.ShapeDrawable
-import android.graphics.drawable.shapes.OvalShape
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
@@ -14,7 +11,6 @@ import com.carousell.concatadapterextension.ItemDecorationOwner
 import com.carousell.concatadapterextension.SpanSizeLookupOwner
 import com.hedvig.android.core.common.android.GenericDiffUtilItemCallback
 import com.hedvig.android.core.common.android.isDarkThemeActive
-import com.hedvig.android.core.ui.view.viewDps
 import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.BASE_MARGIN_HALF
 import com.hedvig.app.R
@@ -88,21 +84,13 @@ class PerilsAdapter(
         }
 
         binding.label.text = data.inner.title
-        if (data.inner.colorCode != null) {
-          val shape = ShapeDrawable(OvalShape())
-          shape.setTint(Color.valueOf(data.inner.colorCode).toArgb())
-          shape.intrinsicHeight = 16.viewDps
-          shape.intrinsicWidth = 16.viewDps
-          binding.icon.setImageDrawable(shape)
+        val iconUrl = if (binding.icon.context.isDarkThemeActive) {
+          data.inner.darkUrl
         } else {
-          val iconUrl = if (binding.icon.context.isDarkThemeActive) {
-            data.inner.darkUrl
-          } else {
-            data.inner.lightUrl
-          }
-          binding.icon.load(iconUrl, imageLoader) {
-            crossfade(true)
-          }
+          data.inner.lightUrl
+        }
+        binding.icon.load(iconUrl, imageLoader) {
+          crossfade(true)
         }
       }
     }

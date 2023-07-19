@@ -50,23 +50,20 @@ import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
 import com.hedvig.android.core.ui.card.ExpandablePlusCard
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
-import com.hedvig.app.feature.perils.Peril
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.launch
+import octopus.type.InsurableLimitType
 
-/**
- * TODO in this screen:
- *  Make peril description text come from octopus probably, so that it shows the right information
- *  Take the color for perils also from octopus which would mean that it's non-null. Otherwise provide a sane default
- */
 @Composable
 internal fun CoverageTab(
   viewModel: CoverageViewModel,
   modifier: Modifier = Modifier,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  CoverageFragmentScreen(
+  CoverageTab(
     uiState = uiState,
     retryLoading = viewModel::reload,
     modifier = modifier,
@@ -74,7 +71,7 @@ internal fun CoverageTab(
 }
 
 @Composable
-private fun CoverageFragmentScreen(
+private fun CoverageTab(
   uiState: CoverageUiState,
   retryLoading: () -> Unit,
   modifier: Modifier = Modifier,
@@ -102,10 +99,10 @@ private fun CoverageFragmentScreen(
           Column(
             Modifier.padding(horizontal = 24.dp).padding(bottom = 16.dp),
           ) {
-            Text(selectedInsurableLimitValue.label)
+            Text(stringResource(hedvig.resources.R.string.CONTRACT_COVERAGE_MORE_INFO))
             Spacer(Modifier.height(8.dp))
             Text(text = selectedInsurableLimitValue.description, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(8.dp))
             HedvigTextButton(
               text = stringResource(hedvig.resources.R.string.general_close_button),
               onClick = {
@@ -142,7 +139,7 @@ private fun CoverageFragmentScreen(
 @Suppress("UnusedReceiverParameter")
 @Composable
 private fun ColumnScope.PerilSection(
-  perilItems: ImmutableList<Peril>,
+  perilItems: ImmutableList<ContractCoverage.Peril>,
 ) {
   var expandedItemIndex by rememberSaveable { mutableStateOf(-1) }
   for ((index, perilItem) in perilItems.withIndex()) {
@@ -155,15 +152,10 @@ private fun ColumnScope.PerilSection(
           expandedItemIndex = index
         }
       },
-      color = perilItem.colorCode?.let { Color(it) },
+      color = perilItem.colorHexValue?.let { Color(it) },
       title = perilItem.title,
       expandedTitle = perilItem.description,
-      expandedDescriptionList = buildList {
-        // todo redesign: Info and exceptions not part of the redesign for now
-//        add(perilItem.info)
-        addAll(perilItem.covered)
-//        addAll(perilItem.exception)
-      }.toPersistentList(),
+      expandedDescriptionList = perilItem.covered,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     if (index != perilItems.lastIndex) {
@@ -191,7 +183,7 @@ private fun ExpandableCoverageCard(
           .size(24.dp)
           .wrapContentSize(Alignment.Center)
           .size(20.dp)
-          .background(color ?: Color(0xFFC45D4F), CircleShape), // todo consider a different default color?
+          .background(color ?: Color(0xFFB8D194), CircleShape),
       )
       Spacer(Modifier.width(12.dp))
       Text(
@@ -294,12 +286,11 @@ private fun ColumnScope.InsurableLimitSection(
 
 @HedvigPreview
 @Composable
-private fun PreviewCoverageFragmentScreen() {
+private fun PreviewCoverageTab() {
   HedvigTheme(useNewColorScheme = true) {
     Surface(color = MaterialTheme.colorScheme.background) {
-      CoverageFragmentScreen(
+      CoverageTab(
         uiState = CoverageUiState.Success(
-          contractDisplayName = "Your insurance",
           perilItems = previewPerils,
           insurableLimitItems = previewInsurableLimits,
         ),
@@ -336,15 +327,19 @@ private fun PreviewPerilSection() {
   }
 }
 
-private val previewPerils = listOf(
-  Peril("Eldsvåda", "", null, null, 0xFFC45D4F, emptyList(), emptyList(), "Info"),
-  Peril("Eldsvåda", "", null, null, 0xFFC45D4F, emptyList(), emptyList(), "Info"),
-  Peril("Eldsvåda", "", null, null, 0xFFC45D4F, emptyList(), emptyList(), "Info"),
-  Peril("Eldsvåda", "", null, null, 0xFFC45D4F, emptyList(), emptyList(), "Info"),
-).toPersistentList()
+private val previewPerils: PersistentList<ContractCoverage.Peril> = List(4) { index ->
+  val hexValue = listOf(0xFFC45D4F, 0xFF125D4F, 0xFFC4FF4F, 0xFFC45D00)[index]
+  ContractCoverage.Peril(
+    id = index.toString(),
+    title = "Eldsvåda",
+    description = "description$index",
+    covered = persistentListOf("Covered#$index"),
+    colorHexValue = hexValue,
+  )
+}.toPersistentList()
 
-private val previewInsurableLimits = listOf(
-  ContractCoverage.InsurableLimit("Insured amount".repeat(2), "1 000 000 kr", ""),
-  ContractCoverage.InsurableLimit("Deductible", "1 500 kr", ""),
-  ContractCoverage.InsurableLimit("Travel insurance", "45 days", ""),
-).toPersistentList()
+private val previewInsurableLimits: PersistentList<ContractCoverage.InsurableLimit> = persistentListOf(
+  ContractCoverage.InsurableLimit(InsurableLimitType.BIKE, "Insured amount".repeat(2), "1 000 000 kr", ""),
+  ContractCoverage.InsurableLimit(InsurableLimitType.BIKE, "Deductible", "1 500 kr", ""),
+  ContractCoverage.InsurableLimit(InsurableLimitType.BIKE, "Travel insurance", "45 days", ""),
+)
