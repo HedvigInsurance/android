@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.insurance.ui.detail
 
-import android.net.Uri
 import com.hedvig.android.core.common.android.ThemedIconUrls
 import com.hedvig.android.core.common.android.table.intoTable
 import com.hedvig.android.feature.home.legacychangeaddress.toUpcomingAgreementResult
@@ -39,6 +38,7 @@ fun InsuranceQuery.Contract.toMemberDetailsViewState(
     val isTerminatedToday = fragments.upcomingAgreementFragment.status.asTerminatedTodayStatus != null
     isTerminatedInTheFuture || isTerminatedToday
   }
+
   return ContractDetailViewState.MemberDetailsViewState(
     pendingAddressChange = fragments
       .upcomingAgreementFragment
@@ -50,8 +50,8 @@ fun InsuranceQuery.Contract.toMemberDetailsViewState(
     } else {
       null
     },
-    change = if (typeOfContract.canChangeCoInsured()) YourInfoModel.Change else null,
-    cancelInsurance = if (isTerminationFlowEnabled && !isContractTerminated) {
+    changeCoInsured = if (typeOfContract.canChangeCoInsured()) YourInfoModel.Change else null,
+    cancelInsuranceData = if (isTerminationFlowEnabled && !isContractTerminated) {
       YourInfoModel.CancelInsuranceData(id, displayName)
     } else {
       null
@@ -59,19 +59,21 @@ fun InsuranceQuery.Contract.toMemberDetailsViewState(
   )
 }
 
-fun InsuranceQuery.Contract.toDocumentsViewState() = ContractDetailViewState.DocumentsViewState(
-  documents = listOfNotNull(
-    currentAgreement?.asAgreementCore?.certificateUrl?.let {
+fun InsuranceQuery.Contract.toDocumentsViewState(): ContractDetailViewState.DocumentsViewState {
+  return ContractDetailViewState.DocumentsViewState(
+    documents = listOfNotNull(
+      currentAgreement?.asAgreementCore?.certificateUrl?.let {
+        DocumentItems.Document(
+          titleRes = hedvig.resources.R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE,
+          subTitleRes = hedvig.resources.R.string.insurance_details_view_documents_full_terms_subtitle,
+          uriString = it,
+        )
+      },
       DocumentItems.Document(
-        titleRes = hedvig.resources.R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE,
-        subTitleRes = hedvig.resources.R.string.insurance_details_view_documents_full_terms_subtitle,
-        uri = Uri.parse(it),
-      )
-    },
-    DocumentItems.Document(
-      titleRes = hedvig.resources.R.string.MY_DOCUMENTS_INSURANCE_TERMS,
-      subTitleRes = hedvig.resources.R.string.insurance_details_view_documents_insurance_letter_subtitle,
-      uri = Uri.parse(termsAndConditions.url),
+        titleRes = hedvig.resources.R.string.MY_DOCUMENTS_INSURANCE_TERMS,
+        subTitleRes = hedvig.resources.R.string.insurance_details_view_documents_insurance_letter_subtitle,
+        uriString = termsAndConditions.url,
+      ),
     ),
-  ),
-)
+  )
+}

@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.tokens.HedvigShapeKeyTokens
 import com.hedvig.android.core.designsystem.newtheme.SquircleShape
+import com.hedvig.android.core.designsystem.newtheme.SquircleShapeTop
 
 // Take shapes from existing theme setup
 // https://github.com/HedvigInsurance/android/blob/ced77986fac0fd7867c8e24ba05d0176a112050e/app/src/main/res/values/theme.xml#L27-L33
@@ -28,6 +29,10 @@ internal val HedvigShapes: Shapes
 @Suppress("UnusedReceiverParameter")
 val Shapes.squircle: Shape
   get() = SquircleShape
+
+@Suppress("UnusedReceiverParameter")
+val Shapes.squircleTop: Shape
+  get() = SquircleShapeTop
 
 internal fun CornerBasedShape.top(): CornerBasedShape {
   return copy(bottomStart = CornerSize(0.0.dp), bottomEnd = CornerSize(0.0.dp))
@@ -56,6 +61,7 @@ internal fun Shapes.fromToken(value: HedvigShapeKeyTokens): Shape {
     HedvigShapeKeyTokens.CornerNone -> RectangleShape
     HedvigShapeKeyTokens.CornerSmall -> small
     HedvigShapeKeyTokens.Squircle -> SquircleShape
+    HedvigShapeKeyTokens.SquircleTop -> SquircleShape // Use SquircleShapeTop
   }
 }
 

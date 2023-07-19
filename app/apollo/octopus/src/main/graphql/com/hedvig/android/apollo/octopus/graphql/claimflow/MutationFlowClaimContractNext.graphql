@@ -1,0 +1,7 @@
+mutation FlowClaimContractNext($contractId: UUID, $context: FlowContext!) {
+  flowClaimContractSelectNext(input: { contractId: $contractId }, context: $context) {
+    id
+    context
+    ...ClaimFlowStepFragment
+  }
+}

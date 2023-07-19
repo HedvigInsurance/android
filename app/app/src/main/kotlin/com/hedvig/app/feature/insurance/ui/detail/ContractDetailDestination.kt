@@ -1,10 +1,5 @@
 package com.hedvig.app.feature.insurance.ui.detail
 
-import android.content.Context
-import android.content.Intent
-import android.os.Bundle
-import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -16,7 +11,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
@@ -26,7 +20,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -40,79 +33,30 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidViewBinding
-import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
-import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.designsystem.animation.animateContentHeight
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.app.databinding.InsuranceContractCardBinding
 import com.hedvig.app.feature.insurance.ui.bindTo
-import com.hedvig.app.feature.insurance.ui.detail.coverage.ContractCoverage
 import com.hedvig.app.feature.insurance.ui.detail.coverage.CoverageTab
 import com.hedvig.app.feature.insurance.ui.detail.coverage.CoverageViewModel
-import com.hedvig.app.feature.insurance.ui.detail.coverage.InsurableLimitsBottomSheet
 import com.hedvig.app.feature.insurance.ui.detail.documents.DocumentsTab
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoTab
 import hedvig.resources.R
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.parameter.parametersOf
-
-class ContractDetailActivity : AppCompatActivity() {
-  private val contractId: String
-    get() = intent.getStringExtra(ID) ?: error("Programmer error: ID not provided to ${this.javaClass.name}")
-  private val viewModel: ContractDetailViewModel by viewModel { parametersOf(contractId) }
-  private val coverageViewModel: CoverageViewModel by viewModel { parametersOf(contractId) }
-  private val imageLoader: ImageLoader by inject()
-
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    lifecycle.addObserver(AuthenticatedObserver())
-    WindowCompat.setDecorFitsSystemWindows(window, false)
-    setContent {
-      HedvigTheme(useNewColorScheme = true) {
-        Surface(
-          color = MaterialTheme.colorScheme.background,
-          modifier = Modifier.fillMaxSize(),
-        ) {
-          ContractDetailDestination(
-            viewModel = viewModel,
-            coverageViewModel = coverageViewModel,
-            imageLoader = imageLoader,
-            navigateUp = onBackPressedDispatcher::onBackPressed,
-            onInsurableLimitClick = { insurableLimit: ContractCoverage.InsurableLimit ->
-              InsurableLimitsBottomSheet
-                .newInstance(insurableLimit.label, insurableLimit.description)
-                .show(supportFragmentManager, InsurableLimitsBottomSheet.TAG)
-            },
-          )
-        }
-      }
-    }
-  }
-
-  companion object {
-    private const val ID = "ID"
-    fun newInstance(context: Context, id: String) =
-      Intent(context, ContractDetailActivity::class.java).apply {
-        putExtra(ID, id)
-      }
-  }
-}
 
 @Composable
 internal fun ContractDetailDestination(
   viewModel: ContractDetailViewModel,
   coverageViewModel: CoverageViewModel,
   imageLoader: ImageLoader,
+  onEditCoInsuredClick: () -> Unit,
+  onChangeAddressClick: () -> Unit,
   navigateUp: () -> Unit,
-  onInsurableLimitClick: (ContractCoverage.InsurableLimit) -> Unit,
 ) {
   val uiState: ContractDetailViewModel.ViewState by viewModel.viewState.collectAsStateWithLifecycle()
   ContractDetailScreen(
@@ -120,15 +64,22 @@ internal fun ContractDetailDestination(
     imageLoader = imageLoader,
     retry = viewModel::retryLoadingContract,
     navigateUp = navigateUp,
-    tab1 = { YourInfoTab(viewModel) },
-    tab2 = { CoverageTab(coverageViewModel, onInsurableLimitClick) },
+    // todo make bottom sheet from m3 instead of fragment
+    tab1 = {
+      YourInfoTab(
+        viewModel = viewModel,
+        onEditCoInsuredClick = onEditCoInsuredClick,
+        onChangeAddressClick = onChangeAddressClick,
+      )
+    },
+    tab2 = { CoverageTab(coverageViewModel) },
     tab3 = { DocumentsTab(viewModel) },
   )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ContractDetailScreen(
+private fun ContractDetailScreen(
   uiState: ContractDetailViewModel.ViewState,
   imageLoader: ImageLoader,
   retry: () -> Unit,
