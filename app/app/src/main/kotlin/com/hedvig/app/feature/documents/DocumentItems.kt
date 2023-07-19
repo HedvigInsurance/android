@@ -20,8 +20,8 @@ sealed class DocumentItems {
     val uriString: String,
   ) : DocumentItems(), Parcelable {
 
-    fun getTitle(context: Context) = title ?: titleRes?.let(context::getString)
-    fun getSubTitle(context: Context) = subtitle ?: subTitleRes?.let(context::getString)
+    fun getTitle(context: Context): String? = title ?: titleRes?.let(context::getString)
+    fun getSubTitle(context: Context): String? = subtitle ?: subTitleRes?.let(context::getString)
 
     companion object {
       fun from(insuranceTerm: InsuranceTermFragment) = Document(

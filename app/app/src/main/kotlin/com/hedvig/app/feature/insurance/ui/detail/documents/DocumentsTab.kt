@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.insurance.ui.detail.documents
 
 import android.net.Uri
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -54,46 +55,47 @@ internal fun DocumentsTab(
   modifier: Modifier = Modifier,
 ) {
   val uiState by viewModel.viewState.collectAsStateWithLifecycle()
-  DocumentsScreen(
+  DocumentsTab(
     uiState = uiState,
     retry = viewModel::retryLoadingContract,
+    modifier = modifier,
   )
 }
 
 @Composable
-fun DocumentsScreen(
+private fun DocumentsTab(
   uiState: ContractDetailViewModel.ViewState,
   retry: () -> Unit,
+  modifier: Modifier = Modifier,
 ) {
-  when (uiState) {
-    ContractDetailViewModel.ViewState.Error -> {
-      HedvigErrorSection(retry = retry)
-    }
-    ContractDetailViewModel.ViewState.Loading -> {}
-    is ContractDetailViewModel.ViewState.Success -> {
-      val context = LocalContext.current
-      Column(modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))) {
-        Spacer(Modifier.height(16.dp))
-        val documents = uiState.state.documentsViewState.documents.filterIsInstance<DocumentItems.Document>()
-        for ((index, document) in documents.withIndex()) {
-          DocumentCard(
-            onClick = {
-              val uri = Uri.parse(document.uriString)
-              context.tryOpenUri(uri)
-            },
-            title = document.getTitle(context),
-            subtitle = document.getSubTitle(context),
-          )
-          if (index != documents.lastIndex) {
-            Spacer(Modifier.height(4.dp))
+  Box(modifier) {
+    when (uiState) {
+      ContractDetailViewModel.ViewState.Error -> {
+        HedvigErrorSection(modifier = modifier, retry = retry)
+      }
+      ContractDetailViewModel.ViewState.Loading -> {}
+      is ContractDetailViewModel.ViewState.Success -> {
+        val context = LocalContext.current
+        Column {
+          Spacer(Modifier.height(16.dp))
+          val documents = uiState.state.documentsViewState.documents.filterIsInstance<DocumentItems.Document>()
+          for ((index, document) in documents.withIndex()) {
+            DocumentCard(
+              onClick = { context.tryOpenUri(Uri.parse(document.uriString)) },
+              title = document.getTitle(context),
+              subtitle = document.getSubTitle(context),
+            )
+            if (index != documents.lastIndex) {
+              Spacer(Modifier.height(4.dp))
+            }
           }
+          Spacer(Modifier.height(16.dp))
+          Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
         }
-        Spacer(Modifier.height(16.dp))
-        Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
       }
     }
+    HedvigFullScreenCenterAlignedProgress(show = uiState is ContractDetailViewModel.ViewState.Loading)
   }
-  HedvigFullScreenCenterAlignedProgress(show = uiState is ContractDetailViewModel.ViewState.Loading)
 }
 
 @Composable
@@ -152,7 +154,7 @@ private fun PreviewDocumentsScreen(
 ) {
   HedvigTheme(useNewColorScheme = true) {
     Surface(color = MaterialTheme.colorScheme.background) {
-      DocumentsScreen(uiState, {})
+      DocumentsTab(uiState, {})
     }
   }
 }
