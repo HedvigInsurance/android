@@ -159,9 +159,10 @@ private fun ColumnScope.PerilSection(
       title = perilItem.title,
       expandedTitle = perilItem.description,
       expandedDescriptionList = buildList {
-        add(perilItem.info)
+        // todo redesign: Info and exceptions not part of the redesign for now
+//        add(perilItem.info)
         addAll(perilItem.covered)
-        addAll(perilItem.exception)
+//        addAll(perilItem.exception)
       }.toPersistentList(),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
