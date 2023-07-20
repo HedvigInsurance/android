@@ -10,4 +10,9 @@ sealed class YourInfoModel {
   data class PendingAddressChange(
     val upcomingAgreement: GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement,
   ) : YourInfoModel()
+
+  data class CancelInsuranceData(
+    val insuranceId: String,
+    val insuranceDisplayName: String,
+  ) : YourInfoModel()
 }

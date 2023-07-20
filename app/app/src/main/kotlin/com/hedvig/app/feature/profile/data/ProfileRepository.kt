@@ -56,19 +56,27 @@ internal class ProfileRepositoryImpl(
         DirectDebitStatus.UNKNOWN__ -> com.hedvig.app.feature.profile.data.DirectDebitStatus.UNKNOWN
         null -> com.hedvig.app.feature.profile.data.DirectDebitStatus.NONE
       },
-      activePaymentMethods = profileData.activePaymentMethodsV2?.fragments?.activePaymentMethodsFragment?.asStoredCardDetails?.let {
-        PaymentMethod.CardPaymentMethod(
-          brand = it.brand,
-          lastFourDigits = it.lastFourDigits,
-          expiryMonth = it.expiryMonth,
-          expiryYear = it.expiryYear,
-        )
-      } ?: profileData.activePaymentMethodsV2?.fragments?.activePaymentMethodsFragment?.asStoredThirdPartyDetails?.let {
-        PaymentMethod.ThirdPartyPaymentMethd(
-          name = it.name,
-          type = it.type,
-        )
-      },
+      activePaymentMethods = profileData.activePaymentMethodsV2
+        ?.fragments
+        ?.activePaymentMethodsFragment
+        ?.asStoredCardDetails
+        ?.let {
+          PaymentMethod.CardPaymentMethod(
+            brand = it.brand,
+            lastFourDigits = it.lastFourDigits,
+            expiryMonth = it.expiryMonth,
+            expiryYear = it.expiryYear,
+          )
+        } ?: profileData.activePaymentMethodsV2
+        ?.fragments
+        ?.activePaymentMethodsFragment
+        ?.asStoredThirdPartyDetails
+        ?.let {
+          PaymentMethod.ThirdPartyPaymentMethd(
+            name = it.name,
+            type = it.type,
+          )
+        },
     )
   }
 
@@ -132,5 +140,3 @@ private fun octopus.ProfileQuery.Data.toMember() = Member(
   email = currentMember.email,
   phoneNumber = currentMember.phoneNumber,
 )
-
-

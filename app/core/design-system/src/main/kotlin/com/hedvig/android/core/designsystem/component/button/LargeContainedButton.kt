@@ -22,6 +22,7 @@ import androidx.compose.material.ProvideTextStyle as ProvideTextStyleM2
 import androidx.compose.material3.MaterialTheme as Material3Theme
 import androidx.compose.material3.ProvideTextStyle as ProvideTextStyleM3
 
+@Deprecated("Use HedvigContainedTextButton instead")
 @Composable
 fun LargeContainedTextButton(
   text: String,
@@ -39,6 +40,7 @@ fun LargeContainedTextButton(
     ),
   ),
 ) {
+  @Suppress("DEPRECATION")
   LargeContainedButton(
     onClick = onClick,
     modifier = modifier,
@@ -49,6 +51,7 @@ fun LargeContainedTextButton(
   }
 }
 
+@Deprecated("Use HedvigContainedButton instead")
 @Composable
 fun LargeContainedButton(
   onClick: () -> Unit,
@@ -92,6 +95,7 @@ fun LargeContainedButton(
 @Composable
 private fun PreviewLargeContainedButton() {
   HedvigTheme {
+    @Suppress("DEPRECATION")
     LargeContainedTextButton(text = "Contained Button (Large)", onClick = {})
   }
 }

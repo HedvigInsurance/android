@@ -42,10 +42,10 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
 import coil.ImageLoader
-import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -69,9 +69,7 @@ import com.hedvig.app.feature.insurance.ui.InsuranceModel
 import com.hedvig.app.feature.insurance.ui.NotificationSubheading
 import com.hedvig.app.feature.insurance.ui.Subheading
 import com.hedvig.app.feature.insurance.ui.bindTo
-import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsActivity
-import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.util.extensions.getActivity
 import com.hedvig.app.util.extensions.openWebBrowser
 import com.hedvig.app.util.extensions.startChat
@@ -80,6 +78,8 @@ import com.kiwi.navigationcompose.typed.createRoutePattern
 import org.koin.androidx.compose.koinViewModel
 
 internal fun NavGraphBuilder.insuranceGraph(
+  nestedGraphs: NavGraphBuilder.() -> Unit,
+  navigateToContractDetailScreen: (NavBackStackEntry, contractId: String) -> Unit,
   imageLoader: ImageLoader,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
 ) {
@@ -89,13 +89,17 @@ internal fun NavGraphBuilder.insuranceGraph(
       navDeepLink { uriPattern = hedvigDeepLinkContainer.insurances },
     ),
   ) {
+    nestedGraphs()
     animatedComposable<AppDestination.TopLevelDestination.Insurance>(
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
-    ) {
+    ) { backStackEntry ->
       val viewModel: InsuranceViewModel = koinViewModel()
       InsuranceDestination(
         viewModel = viewModel,
+        onInsuranceCardClick = { insuranceId ->
+          navigateToContractDetailScreen(backStackEntry, insuranceId)
+        },
         imageLoader = imageLoader,
       )
     }
@@ -105,6 +109,7 @@ internal fun NavGraphBuilder.insuranceGraph(
 @Composable
 private fun InsuranceDestination(
   viewModel: InsuranceViewModel,
+  onInsuranceCardClick: (contractId: String) -> Unit,
   imageLoader: ImageLoader,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -137,6 +142,7 @@ private fun InsuranceDestination(
   InsuranceScreen(
     uiState = uiState,
     reload = viewModel::load,
+    onInsuranceCardClick = onInsuranceCardClick,
     onClickCrossSellCard = viewModel::onClickCrossSellCard,
     onClickCrossSellAction = viewModel::onClickCrossSellAction,
     imageLoader = imageLoader,
@@ -148,6 +154,7 @@ private fun InsuranceDestination(
 private fun InsuranceScreen(
   uiState: InsuranceUiState,
   reload: () -> Unit,
+  onInsuranceCardClick: (contractId: String) -> Unit,
   onClickCrossSellCard: (CrossSellData) -> Unit,
   onClickCrossSellAction: (CrossSellData) -> Unit,
   imageLoader: ImageLoader,
@@ -196,6 +203,7 @@ private fun InsuranceScreen(
             InsuranceModelsRenderer(
               insuranceModels = insuranceModels,
               imageLoader = imageLoader,
+              onInsuranceCardClick = onInsuranceCardClick,
               onClickCrossSellCard = {
                 onClickCrossSellCard(it)
                 context.startActivity(CrossSellDetailActivity.newInstance(context, it))
@@ -227,6 +235,7 @@ private fun InsuranceScreen(
 private fun ColumnScope.InsuranceModelsRenderer(
   insuranceModels: List<InsuranceModel>,
   imageLoader: ImageLoader,
+  onInsuranceCardClick: (contractId: String) -> Unit,
   onClickCrossSellCard: (CrossSellData) -> Unit,
   onClickCrossSellAction: (CrossSellData) -> Unit,
 ) {
@@ -235,7 +244,11 @@ private fun ColumnScope.InsuranceModelsRenderer(
       is InsuranceModel.Contract -> {
         AndroidViewBinding(
           factory = InsuranceContractCardBinding::inflate,
-          update = bindInsuranceContract(insuranceModel, imageLoader),
+          update = bindInsuranceContract(
+            insuranceModel = insuranceModel,
+            onInsuranceCardClick = onInsuranceCardClick,
+            imageLoader = imageLoader,
+          ),
         )
       }
       is InsuranceModel.CrossSellCard -> {
@@ -272,22 +285,12 @@ private fun ColumnScope.InsuranceModelsRenderer(
 
 private fun bindInsuranceContract(
   insuranceModel: InsuranceModel.Contract,
+  onInsuranceCardClick: (contractId: String) -> Unit,
   imageLoader: ImageLoader,
 ): InsuranceContractCardBinding.() -> Unit = {
   insuranceModel.contractCardViewState.bindTo(this, imageLoader)
   card.setHapticClickListener {
-    card.context.getActivity()?.let { activity ->
-      if (activity is LoggedInActivity) {
-        activity.window.reenterTransition = null
-        activity.window.exitTransition = null
-      }
-      card.context.startActivity(
-        ContractDetailActivity.newInstance(
-          card.context,
-          insuranceModel.contractCardViewState.id,
-        ),
-      )
-    }
+    onInsuranceCardClick(insuranceModel.contractCardViewState.id)
   }
 }
 
@@ -301,8 +304,6 @@ private fun bindInsuranceTerminatedContracts(
   )
   root.setHapticClickListener {
     root.context.getActivity()?.let { activity ->
-      activity.window.exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
-      activity.window.reenterTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
       root.context.startActivity(
         TerminatedContractsActivity.newInstance(root.context),
         ActivityOptionsCompat.makeSceneTransitionAnimation(activity).toBundle(),
@@ -351,6 +352,7 @@ private fun PreviewInsuranceScreen() {
             InsuranceModel.TerminatedContracts(2),
           ),
         ),
+        {},
         {},
         {},
         {},

@@ -37,7 +37,6 @@ import arrow.core.NonEmptyList
 import arrow.core.toNonEmptyListOrNull
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
-import com.hedvig.android.core.designsystem.material3.squircle
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.SelectIndicationCircle
@@ -104,7 +103,6 @@ private fun SingleItemCheckoutScreen(
     )
     Spacer(Modifier.height(8.dp))
     HedvigCard(
-      shape = MaterialTheme.shapes.squircle,
       modifier = sideSpacingModifier,
     ) {
       Text(
@@ -186,7 +184,6 @@ private fun ColumnScope.CheckoutMethods(
       } else {
         true
       },
-      shape = MaterialTheme.shapes.squircle,
       modifier = modifier.fillMaxWidth(),
     ) {
       Row(

@@ -12,11 +12,11 @@ data class Table(
   @Parcelize
   data class Section(
     val title: String,
-    val rows: List<Row>,
+    val tableRows: List<TableRow>,
   ) : Parcelable
 
   @Parcelize
-  data class Row(
+  data class TableRow(
     val title: String,
     val subtitle: String?,
     val value: String,
@@ -28,8 +28,8 @@ fun TableFragment.intoTable() = Table(
   sections = sections.map { section ->
     Table.Section(
       title = section.title,
-      rows = section.rows.map { row ->
-        Table.Row(
+      tableRows = section.rows.map { row ->
+        Table.TableRow(
           title = row.title,
           value = row.value,
           subtitle = row.subtitle,

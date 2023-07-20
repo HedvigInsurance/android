@@ -117,7 +117,6 @@ private fun RadioButton(
 ) {
   HedvigCard(
     onClick = { selectHousingType(housingType) },
-    shape = MaterialTheme.shapes.squircle,
     modifier = Modifier.padding(horizontal = 16.dp),
   ) {
     Row(

@@ -59,6 +59,7 @@ import com.hedvig.android.core.designsystem.material3.squircle
 import com.hedvig.android.core.designsystem.newtheme.SquircleShape
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.ValidatedInput
+import com.hedvig.android.core.ui.card.ExpandablePlusCard
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
@@ -68,7 +69,6 @@ import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.feature.changeaddress.data.MoveIntentId
 import com.hedvig.android.feature.changeaddress.data.MoveQuote
 import com.hedvig.android.feature.changeaddress.ui.QuoteCard
-import com.hedvig.android.feature.changeaddress.ui.offer.ExpandablePlusRow
 import com.hedvig.android.feature.changeaddress.ui.offer.Faqs
 import hedvig.resources.R
 import kotlinx.coroutines.launch
@@ -296,7 +296,7 @@ private fun CoverageItems(
     )
     var expandedItemIndex by rememberSaveable { mutableStateOf(-1) }
     coverageItems.forEachIndexed { index, (color, coverageText) ->
-      ExpandablePlusRow(
+      ExpandablePlusCard(
         isExpanded = expandedItemIndex == index,
         onClick = {
           if (expandedItemIndex == index) {

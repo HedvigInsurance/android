@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
-import com.hedvig.android.core.designsystem.material3.squircle
 import com.hedvig.android.core.designsystem.material3.warningContainer
 
 @Composable
@@ -30,7 +29,6 @@ private fun HedvigWarningCard(
   content: @Composable RowScope.() -> Unit,
 ) {
   HedvigCard(
-    shape = MaterialTheme.shapes.squircle,
     colors = CardDefaults.outlinedCardColors(
       containerColor = MaterialTheme.colorScheme.warningContainer,
       contentColor = MaterialTheme.colorScheme.onWarningContainer,

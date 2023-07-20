@@ -122,11 +122,6 @@
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".feature.insurance.ui.detail.ContractDetailActivity"
-            android:configChanges="keyboard|keyboardHidden"
-            android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name=".feature.adyen.payin.AdyenConnectPayinActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="adjustResize" />

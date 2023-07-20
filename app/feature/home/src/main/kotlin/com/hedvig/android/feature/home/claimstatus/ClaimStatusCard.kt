@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation
-import com.hedvig.android.core.designsystem.material3.squircle
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.feature.home.claimdetail.ui.previewList
@@ -39,7 +38,6 @@ internal fun ClaimStatusCard(
   }
   HedvigCard(
     onClick = onClick,
-    shape = MaterialTheme.shapes.squircle,
     colors = CardDefaults.elevatedCardColors(),
     elevation = HedvigCardElevation.Elevated(4.dp),
     modifier = modifier,

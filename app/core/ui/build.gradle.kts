@@ -17,6 +17,7 @@ android {
 dependencies {
   implementation(projects.app.core.designSystem)
   implementation(projects.app.core.resources)
+  implementation(projects.app.core.icons)
   implementation(projects.app.apollo.octopus)
 
   api(libs.androidx.compose.foundation)
@@ -31,6 +32,7 @@ dependencies {
   implementation(libs.androidx.other.appCompat)
   implementation(libs.coil.coil)
   implementation(libs.coil.compose)
+  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
 }
