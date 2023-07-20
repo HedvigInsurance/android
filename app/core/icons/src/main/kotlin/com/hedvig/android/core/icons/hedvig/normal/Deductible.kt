@@ -4,10 +4,10 @@ import androidx.compose.material.icons.materialIcon
 import androidx.compose.material.icons.materialPath
 import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val Hedvig.Deductible: ImageVector
+public val HedvigIcons.Deductible: ImageVector
   get() {
     if (_deductible != null) {
       return _deductible!!

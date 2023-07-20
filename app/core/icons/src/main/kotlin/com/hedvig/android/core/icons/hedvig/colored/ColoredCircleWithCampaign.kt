@@ -9,10 +9,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.ImageVector.Builder
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val Hedvig.ColoredCircleWithCampaign: ImageVector
+public val HedvigIcons.ColoredCircleWithCampaign: ImageVector
   get() {
     if (_coloredCircleWithCampaign != null) {
       return _coloredCircleWithCampaign!!
