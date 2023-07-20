@@ -25,17 +25,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.web.WebView
-import com.google.accompanist.web.rememberWebViewState
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
@@ -45,12 +41,11 @@ import com.hedvig.app.BuildConfig
 import com.hedvig.app.feature.embark.ui.MemberIdViewModel
 import hedvig.resources.R
 
-private const val licensesUrl = "file:///android_asset/open_source_licenses.html"
-
 @Composable
 internal fun AboutAppDestination(
   viewModel: MemberIdViewModel,
   onBackPressed: () -> Unit,
+  showOpenSourceLicenses: () -> Unit,
   isProduction: Boolean,
 ) {
   val memberIdState by viewModel.state.collectAsStateWithLifecycle()
@@ -63,19 +58,12 @@ internal fun AboutAppDestination(
     }
   }
 
-  var showWebView by remember { mutableStateOf(false) }
-
   AboutAppScreen(
     memberId = memberId,
     onBackPressed = onBackPressed,
-    showOpenSourceLicenses = { showWebView = true },
+    showOpenSourceLicenses = showOpenSourceLicenses,
     isProduction = isProduction,
   )
-
-  if (showWebView) {
-    val state = rememberWebViewState(licensesUrl)
-    WebView(state = state)
-  }
 }
 
 @Composable
