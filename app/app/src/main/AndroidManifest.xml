@@ -165,10 +165,6 @@
             android:windowSoftInputMode="adjustResize" />
         <activity android:name="com.hedvig.android.feature.home.legacychangeaddress.result.ChangeAddressResultActivity" />
         <activity android:name=".feature.offer.quotedetail.QuoteDetailActivity" />
-        <activity
-            android:name=".feature.crossselling.ui.detail.CrossSellDetailActivity"
-            android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".feature.crossselling.ui.detail.CrossSellFaqActivity" />
         <activity android:name=".feature.sunsetting.ForceUpgradeActivity" />
         <activity
             android:name=".feature.genericauth.GenericAuthActivity"

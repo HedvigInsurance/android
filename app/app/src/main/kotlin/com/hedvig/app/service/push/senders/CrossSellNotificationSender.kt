@@ -11,9 +11,6 @@ import com.hedvig.android.core.common.android.notification.setupNotificationChan
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
-import com.hedvig.app.feature.crossselling.ui.CrossSellData
-import com.hedvig.app.feature.crossselling.ui.detail.CrossSellDetailActivity
-import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsUseCase
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.DATA_MESSAGE_BODY
@@ -24,7 +21,6 @@ import kotlinx.coroutines.launch
 
 class CrossSellNotificationSender(
   private val context: Context,
-  private val crossSellsUseCase: GetCrossSellsUseCase,
   private val applicationScope: ApplicationScope,
 ) : NotificationSender {
   override fun createChannel() {
@@ -38,16 +34,12 @@ class CrossSellNotificationSender(
   override fun sendNotification(type: String, remoteMessage: RemoteMessage) {
     val title = remoteMessage.data[DATA_MESSAGE_TITLE]
     val body = remoteMessage.data[DATA_MESSAGE_BODY]
+
+    @Suppress("UNUSED_VARIABLE") // Unused when there's no cross sale detail screen in the app
     val id = remoteMessage.data[CROSS_SELL_ID]
 
     applicationScope.launch(Dispatchers.IO) {
-      val crossSell = getCrossSell(id)
-
-      val intent = if (crossSell != null) {
-        createCrossSellIntent(context, crossSell)
-      } else {
-        createInsuranceTabIntent(context)
-      }
+      val intent = createInsuranceTabIntent(context)
 
       val notification = createNotification(
         context = context,
@@ -65,22 +57,6 @@ class CrossSellNotificationSender(
   }
 
   override fun handlesNotificationType(notificationType: String) = notificationType == NOTIFICATION_CROSS_SELL
-
-  private fun createCrossSellIntent(
-    context: Context,
-    crossSell: CrossSellData,
-  ): PendingIntent? {
-    val builder = TaskStackBuilder.create(context)
-    val intent = CrossSellDetailActivity.newInstance(
-      context = context,
-      crossSell = crossSell,
-    )
-    builder.addNextIntentWithParentStack(intent)
-    builder.addNextIntentWithParentStack(
-      NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_CROSS_SELL),
-    )
-    return builder.getPendingIntent(0, getImmutablePendingIntentFlags())
-  }
 
   private fun createInsuranceTabIntent(context: Context): PendingIntent? {
     val builder = TaskStackBuilder.create(context)
@@ -115,12 +91,6 @@ class CrossSellNotificationSender(
       .setChannelId(CROSS_SELL_CHANNEL_ID)
       .setContentIntent(pendingIntent)
       .build()
-  }
-
-  private suspend fun getCrossSell(id: String?): CrossSellData? {
-    return crossSellsUseCase.invoke().getOrNull()?.firstOrNull {
-      it.id == id
-    }
   }
 
   companion object {
