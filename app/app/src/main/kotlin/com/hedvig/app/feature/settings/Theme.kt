@@ -31,6 +31,11 @@ enum class Theme {
     SYSTEM_DEFAULT -> SETTING_SYSTEM_DEFAULT
   }
 
+  fun getLabel() = when (this) {
+    LIGHT -> hedvig.resources.R.string.SETTINGS_THEME_LIGHT
+    DARK -> hedvig.resources.R.string.SETTINGS_THEME_DARK
+    SYSTEM_DEFAULT -> hedvig.resources.R.string.SETTINGS_THEME_SYSTEM_DEFAULT
+  }
   companion object {
     const val SETTING_SYSTEM_DEFAULT = "system_default"
     const val SETTING_LIGHT = "light"
