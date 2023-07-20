@@ -71,7 +71,7 @@ fun SettingsScreen(
     ) {
       TopAppBarWithBack(
         onClick = onBackPressed,
-        title = stringResource(R.string.PROFILE_ABOUT_APP_TITLE),
+        title = stringResource(R.string.SETTINGS_TITLE),
         contentPadding = WindowInsets.safeDrawing
           .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
           .asPaddingValues(),
@@ -85,17 +85,17 @@ fun SettingsScreen(
           enabled = true,
         )
         Spacer(Modifier.height(4.dp))
-        HedvigBigCard(
-          onClick = {},
-          inputText = "Light",
-          hintText = "Theme",
-          modifier = Modifier.fillMaxWidth(),
+        ThemeWithDialog(
+          themeOptions = listOf("Light", "Dark", "System Default"),
+          selectedTheme = "Light",
+          selectTheme = {},
+          enabled = true,
         )
         Spacer(Modifier.height(4.dp))
         HedvigBigCard(
           onClick = {},
-          inputText = "Turned off",
-          hintText = "Notifications",
+          inputText = stringResource(id = R.string.PROFILE_NOTIFICATIONS_STATUS_ON),
+          hintText = stringResource(id = R.string.SETTINGS_NOTIFICATIONS_TITLE),
           modifier = Modifier.fillMaxWidth(),
         )
         Spacer(Modifier.height(16.dp))
@@ -115,7 +115,7 @@ fun SettingsScreen(
               )
               Spacer(modifier = Modifier.width(8.dp))
               Text(
-                text = "Allow notifications to get notified when we have new updates regarding your claim",
+                text = stringResource(id = R.string.PROFILE_ALLOW_NOTIFICATIONS_INFO_LABEL),
                 style = MaterialTheme.typography.bodyMedium,
               )
             }
@@ -126,7 +126,7 @@ fun SettingsScreen(
                 .padding(horizontal = 24.dp),
             ) {
               HedvigContainedSmallButton(
-                text = "Not Now",
+                text = stringResource(id = R.string.PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW),
                 onClick = {},
                 colors = ButtonDefaults.buttonColors(
                   containerColor = MaterialTheme.colorScheme.onPrimary,
@@ -136,7 +136,7 @@ fun SettingsScreen(
               )
               Spacer(modifier = Modifier.width(12.dp))
               HedvigContainedSmallButton(
-                text = "Allow",
+                text = stringResource(id = R.string.PUSH_NOTIFICATIONS_ALERT_ACTION_OK),
                 onClick = {},
                 colors = ButtonDefaults.buttonColors(
                   containerColor = MaterialTheme.colorScheme.onPrimary,
@@ -186,6 +186,35 @@ internal fun LanguageWithDialog(
     onClick = { showLanguagePickerDialog = true },
     hintText = stringResource(id = R.string.language_picker_modal_title),
     inputText = selectedLanguage,
+    enabled = enabled,
+    modifier = Modifier.fillMaxWidth(),
+  )
+}
+
+@Composable
+internal fun ThemeWithDialog(
+  themeOptions: List<String>,
+  selectedTheme: String?,
+  selectTheme: (String) -> Unit,
+  enabled: Boolean,
+) {
+  var showThemePickerDialog by rememberSaveable { mutableStateOf(false) }
+  if (showThemePickerDialog) {
+    SingleSelectDialog(
+      title = stringResource(R.string.SETTINGS_THEME_TITLE),
+      optionsList = themeOptions,
+      onSelected = selectTheme,
+      getDisplayText = { it },
+      getIsSelected = { selectedTheme == it },
+      getId = { it },
+      onDismissRequest = { showThemePickerDialog = false },
+    )
+  }
+
+  HedvigBigCard(
+    onClick = { showThemePickerDialog = true },
+    hintText = stringResource(R.string.SETTINGS_THEME_TITLE),
+    inputText = selectedTheme,
     enabled = enabled,
     modifier = Modifier.fillMaxWidth(),
   )
