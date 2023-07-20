@@ -36,6 +36,12 @@ sealed interface AppDestination : Destination {
   @Serializable
   object MyInfo : AppDestination
 
+  @Serializable
+  object AboutApp : AppDestination
+
+  @Serializable
+  object Licenses : AppDestination
+
 //  @Serializable
 //  object LegacyClaimsTriaging : AppDestination
 }
