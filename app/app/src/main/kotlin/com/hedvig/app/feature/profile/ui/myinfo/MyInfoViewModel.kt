@@ -106,6 +106,10 @@ internal class MyInfoViewModel(
       )
     }
   }
+
+  fun dismissError() {
+    _uiState.update { it.copy(errorMessage = null) }
+  }
 }
 
 data class MyInfoUiState(

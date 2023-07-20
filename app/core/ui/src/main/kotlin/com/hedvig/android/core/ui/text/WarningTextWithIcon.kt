@@ -15,7 +15,10 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.material3.warningElement
 
 @Composable
-fun WarningTextWithIcon(modifier: Modifier = Modifier, text: String) {
+fun WarningTextWithIcon(
+  text: String,
+  modifier: Modifier = Modifier,
+) {
   Row(modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
     Icon(
       imageVector = Icons.Default.Info,
