@@ -8,11 +8,8 @@ import arrow.core.raise.either
 import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import assertk.assertions.isFalse
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
-import assertk.assertions.isTrue
-import com.apollographql.apollo3.api.ApolloResponse
 import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.giraffe.test.GiraffeFakeResolver
 import com.hedvig.android.core.common.test.MainCoroutineRule
@@ -27,15 +24,13 @@ import com.hedvig.app.feature.profile.data.Member
 import com.hedvig.app.feature.profile.data.ProfileData
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import giraffe.ProfileQuery
-import java.math.BigDecimal
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import org.javamoney.moneta.Money
 import org.junit.Rule
 import org.junit.Test
+import java.math.BigDecimal
 import kotlin.random.Random
-import org.javamoney.moneta.Money
 
 class ProfileViewModelTest {
 

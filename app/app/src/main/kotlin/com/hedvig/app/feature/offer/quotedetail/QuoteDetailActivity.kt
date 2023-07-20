@@ -61,7 +61,6 @@ class QuoteDetailActivity : AppCompatActivity(R.layout.quote_detail_activity) {
       toolbar.setNavigationOnClickListener { finish() }
 
       val perilAdapter = PerilsAdapter(
-        fragmentManager = supportFragmentManager,
         imageLoader = imageLoader,
       ).also {
         it.submitList(

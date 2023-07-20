@@ -44,6 +44,7 @@ import com.hedvig.app.BuildConfig
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.home.ui.HowClaimsWorkDialog
+import com.hedvig.app.feature.insurance.ui.detail.contractDetailGraph
 import com.hedvig.app.feature.insurance.ui.tab.insuranceGraph
 import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.profile.ui.tab.profileGraph
@@ -71,6 +72,7 @@ internal fun HedvigNavHost(
   hAnalytics: HAnalytics,
   fragmentManager: FragmentManager,
   languageService: LanguageService,
+  isProduction: Boolean,
   modifier: Modifier = Modifier,
 ) {
   LocalConfiguration.current
@@ -104,6 +106,18 @@ internal fun HedvigNavHost(
 
       override fun popBackStack() {
         hedvigAppState.navController.popBackStack()
+      }
+    }
+  }
+
+  fun startMovingFlow() {
+    coroutineScope.launch {
+      if (featureManager.isFeatureEnabled(Feature.NEW_MOVING_FLOW)) {
+        hedvigAppState.navController.navigate(AppDestination.ChangeAddress)
+      } else {
+        context.startActivity(
+          LegacyChangeAddressActivity.newInstance(context),
+        )
       }
     }
   }
@@ -154,17 +168,7 @@ internal fun HedvigNavHost(
           }
         }
       },
-      startMovingFlow = {
-        coroutineScope.launch {
-          if (featureManager.isFeatureEnabled(Feature.NEW_MOVING_FLOW)) {
-            hedvigAppState.navController.navigate(AppDestination.ChangeAddress)
-          } else {
-            context.startActivity(
-              LegacyChangeAddressActivity.newInstance(context),
-            )
-          }
-        }
-      },
+      startMovingFlow = { startMovingFlow() },
       onHowClaimsWorkClick = { howClaimsWorkList ->
         val howClaimsWorkData = howClaimsWorkList.mapIndexed { index, howClaimsWork ->
           DismissiblePagerModel.NoTitlePage(
@@ -208,6 +212,22 @@ internal fun HedvigNavHost(
       hAnalytics = hAnalytics,
     )
     insuranceGraph(
+      nestedGraphs = {
+        contractDetailGraph(
+          density = density,
+          navigator = navigator,
+          onEditCoInsuredClick = {
+            activityNavigator.navigateToChat(context)
+          },
+          onChangeAddressClick = {
+            startMovingFlow()
+          },
+          imageLoader = imageLoader,
+        )
+      },
+      navigateToContractDetailScreen = { backStackEntry, contractId: String ->
+        with(navigator) { backStackEntry.navigate(AppDestination.ContractDetail(contractId)) }
+      },
       imageLoader = imageLoader,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     )
@@ -219,6 +239,7 @@ internal fun HedvigNavHost(
       navigator = navigator,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       windowSizeClass = hedvigAppState.windowSizeClass,
+      isProduction = isProduction,
     )
   }
 }

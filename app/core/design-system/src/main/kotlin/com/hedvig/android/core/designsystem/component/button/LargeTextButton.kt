@@ -14,6 +14,7 @@ import androidx.compose.material.ProvideTextStyle as ProvideTextStyleM2
 import androidx.compose.material3.MaterialTheme as Material3Theme
 import androidx.compose.material3.ProvideTextStyle as ProvideTextStyleM3
 
+@Deprecated("Use HedvigTextButton instead")
 @Composable
 fun LargeTextButton(
   onClick: () -> Unit,

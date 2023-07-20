@@ -479,7 +479,6 @@ private fun CommonClaimsRenderer(
     for (commonClaim in homeModel.claims) {
       HedvigCard(
         elevation = HedvigCardElevation.Elevated(1.dp),
-        shape = MaterialTheme.shapes.squircle,
         onClick = when (commonClaim) {
           is CommonClaim.Emergency -> {
             { onEmergencyClaimClicked(commonClaim.inner) }
