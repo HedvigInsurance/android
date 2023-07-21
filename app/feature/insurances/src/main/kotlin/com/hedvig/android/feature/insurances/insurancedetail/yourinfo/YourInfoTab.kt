@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.BottomSheetDefaults
@@ -86,7 +88,9 @@ internal fun YourInfoTab(
         modifier = Modifier
           .padding(horizontal = 16.dp)
           .padding(bottom = 16.dp)
-          .windowInsetsPadding(BottomSheetDefaults.windowInsets),
+          .windowInsetsPadding(
+            BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+          ),
       )
     }
   }

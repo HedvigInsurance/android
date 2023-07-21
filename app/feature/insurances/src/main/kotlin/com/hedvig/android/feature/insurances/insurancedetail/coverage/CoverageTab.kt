@@ -76,7 +76,9 @@ internal fun CoverageTab(
         Modifier
           .padding(horizontal = 24.dp)
           .padding(bottom = 16.dp)
-          .windowInsetsPadding(BottomSheetDefaults.windowInsets),
+          .windowInsetsPadding(
+            BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+          ),
       ) {
         Text(stringResource(hedvig.resources.R.string.CONTRACT_COVERAGE_MORE_INFO))
         Spacer(Modifier.height(8.dp))
