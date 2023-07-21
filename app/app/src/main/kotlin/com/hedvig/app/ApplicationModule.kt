@@ -154,6 +154,7 @@ import com.hedvig.app.feature.profile.ui.eurobonus.EurobonusViewModel
 import com.hedvig.app.feature.profile.ui.myinfo.MyInfoViewModel
 import com.hedvig.app.feature.profile.ui.payment.PaymentRepository
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel
+import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel2
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModelImpl
 import com.hedvig.app.feature.profile.ui.tab.GetEurobonusStatusUseCase
 import com.hedvig.app.feature.profile.ui.tab.NetworkGetEurobonusStatusUseCase
@@ -421,7 +422,8 @@ private val profileModule = module {
 }
 
 private val paymentModule = module {
-  viewModel<PaymentViewModel> { PaymentViewModelImpl(get(), get(), get(), get()) }
+  viewModel<PaymentViewModel> { PaymentViewModelImpl(get(), get(), get(), get(), get()) }
+  viewModel<PaymentViewModel2> { PaymentViewModel2(get(), get(), get()) }
 }
 
 private val adyenModule = module {

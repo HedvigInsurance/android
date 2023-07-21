@@ -18,6 +18,9 @@ import com.hedvig.app.feature.profile.ui.eurobonus.EurobonusDestination
 import com.hedvig.app.feature.profile.ui.eurobonus.EurobonusViewModel
 import com.hedvig.app.feature.profile.ui.myinfo.MyInfoDestination
 import com.hedvig.app.feature.profile.ui.myinfo.MyInfoViewModel
+import com.hedvig.app.feature.profile.ui.payment.PaymentDestination
+import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel
+import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel2
 import com.hedvig.app.feature.settings.SettingsDestination
 import com.hedvig.app.feature.settings.SettingsViewModel
 import com.kiwi.navigationcompose.typed.createRoutePattern
@@ -55,6 +58,9 @@ internal fun NavGraphBuilder.profileGraph(
         },
         navigateToSettings = {
           with(navigator) { backStackEntry.navigate(AppDestination.Settings) }
+        },
+        navigateToPayment = {
+          with(navigator) { backStackEntry.navigate(AppDestination.PaymentInfo) }
         },
         viewModel = viewModel,
       )
@@ -96,6 +102,13 @@ internal fun NavGraphBuilder.profileGraph(
     animatedComposable<AppDestination.Settings> {
       val viewModel: SettingsViewModel = koinViewModel()
       SettingsDestination(
+        viewModel = viewModel,
+        onBackPressed = navigator::navigateUp,
+      )
+    }
+    animatedComposable<AppDestination.PaymentInfo> {
+      val viewModel: PaymentViewModel2 = koinViewModel()
+      PaymentDestination(
         viewModel = viewModel,
         onBackPressed = navigator::navigateUp,
       )

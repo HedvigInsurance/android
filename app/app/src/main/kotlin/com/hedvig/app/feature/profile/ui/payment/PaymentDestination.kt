@@ -1,14 +1,15 @@
 package com.hedvig.app.feature.profile.ui.payment
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -25,18 +26,26 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.material3.typeContainer
 import com.hedvig.android.core.designsystem.material3.typeElement
+import com.hedvig.android.core.designsystem.newtheme.SquircleShape
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
@@ -45,13 +54,39 @@ import com.hedvig.android.core.icons.hedvig.normal.Payments
 import com.hedvig.android.core.icons.hedvig.normal.Waiting
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
+import com.hedvig.android.market.Market
+import com.hedvig.app.feature.offer.usecase.CampaignCode
+import com.hedvig.app.feature.payment.connectPayinIntent
+import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel2.*
+import com.hedvig.hanalytics.PaymentType
 import hedvig.resources.R
+import java.time.LocalDate
 import java.util.*
-import kotlinx.datetime.LocalDate
 
 @Composable
-fun PaymentDestination(navigateUp: () -> Unit) {
-
+fun PaymentDestination(
+  viewModel: PaymentViewModel2,
+  onBackPressed: () -> Unit,
+) {
+  val context = LocalContext.current
+  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  PaymentScreen(
+    uiState = uiState,
+    locale = Locale.ENGLISH,
+    navigateUp = onBackPressed,
+    onChangeBankAccount = {
+      context.startActivity(
+        connectPayinIntent(
+          context,
+          PaymentType.TRUSTLY,
+          Market.SE,
+          false,
+        ),
+      )
+    },
+    onAddDiscountCode = viewModel::onDiscountCodeAdded,
+    onDiscountCodeChanged = viewModel::onDiscountCodeChanged,
+  )
 }
 
 @Composable
@@ -59,39 +94,42 @@ fun PaymentScreen(
   uiState: PaymentUiState,
   locale: Locale,
   navigateUp: () -> Unit,
+  onChangeBankAccount: () -> Unit,
+  onAddDiscountCode: () -> Unit,
+  onDiscountCodeChanged: (CampaignCode) -> Unit,
 ) {
-  Box(
-    modifier = Modifier.fillMaxSize(),
+  HedvigScaffold(
+    topAppBarText = stringResource(R.string.PROFILE_PAYMENT_TITLE),
+    navigateUp = navigateUp,
+    modifier = Modifier.clearFocusOnTap(),
   ) {
-    HedvigScaffold(
-      topAppBarText = stringResource(R.string.PROFILE_PAYMENT_TITLE),
-      navigateUp = navigateUp,
-      modifier = Modifier.clearFocusOnTap(),
-    ) {
-      Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-        Spacer(Modifier.height(16.dp))
-        NextPayment(uiState, locale)
-        Spacer(Modifier.height(4.dp))
-        Divider()
-        Spacer(Modifier.height(4.dp))
-        InsuranceCosts(uiState, locale)
-        Spacer(Modifier.height(4.dp))
-        TotalDiscount(uiState)
-        Spacer(Modifier.height(4.dp))
-        Divider()
-        Spacer(Modifier.height(16.dp))
-        AddDiscount(uiState)
-        Spacer(Modifier.height(32.dp))
-        PaymentDetails(uiState)
-        Spacer(Modifier.height(4.dp))
-        Divider()
-        PaymentHistory(onClick = {})
-        Spacer(Modifier.height(16.dp))
-        HedvigContainedButton(
-          text = stringResource(id = R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT),
-          onClick = {},
-        )
-      }
+    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+      Spacer(Modifier.height(16.dp))
+      NextPayment(uiState, locale)
+      Spacer(Modifier.height(4.dp))
+      Divider()
+      Spacer(Modifier.height(4.dp))
+      InsuranceCosts(uiState, locale)
+      Spacer(Modifier.height(4.dp))
+      TotalDiscount(uiState)
+      Spacer(Modifier.height(4.dp))
+      Divider()
+      Spacer(Modifier.height(16.dp))
+      AddDiscount(
+        uiState = uiState,
+        onAddDiscountCode = onAddDiscountCode,
+        onDiscountCodeChanged = onDiscountCodeChanged,
+      )
+      Spacer(Modifier.height(32.dp))
+      PaymentDetails(uiState)
+      Spacer(Modifier.height(4.dp))
+      Divider()
+      PaymentHistory(onClick = {})
+      Spacer(Modifier.height(16.dp))
+      HedvigContainedButton(
+        text = stringResource(id = R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT),
+        onClick = onChangeBankAccount,
+      )
     }
   }
 }
@@ -100,7 +138,7 @@ fun PaymentScreen(
 private fun NextPayment(uiState: PaymentUiState, locale: Locale) {
   HedvigCard(modifier = Modifier.fillMaxWidth()) {
     Text(
-      text = uiState.nextChargeAmount.format(locale),
+      text = uiState.nextChargeAmount?.format(locale) ?: "",
       textAlign = TextAlign.Center,
       style = MaterialTheme.typography.displayMedium,
       modifier = Modifier.padding(vertical = 6.dp),
@@ -164,14 +202,19 @@ private fun TotalDiscount(uiState: PaymentUiState) {
   ) {
     Text(stringResource(R.string.PAYMENTS_DISCOUNTS_SECTION_TITLE))
     Text(
-      text = uiState.totalDiscount,
+      text = uiState.totalDiscount ?: "",
       color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
   }
 }
 
 @Composable
-private fun AddDiscount(uiState: PaymentUiState) {
+private fun AddDiscount(
+  uiState: PaymentUiState,
+  onAddDiscountCode: () -> Unit,
+  onDiscountCodeChanged: (CampaignCode) -> Unit,
+) {
+  var showDiscountInput by rememberSaveable { mutableStateOf(uiState.activeDiscounts.isNotEmpty()) }
   Row(
     modifier = Modifier.fillMaxWidth(),
     horizontalArrangement = Arrangement.SpaceBetween,
@@ -179,8 +222,8 @@ private fun AddDiscount(uiState: PaymentUiState) {
   ) {
     Text(stringResource(R.string.PAYMENTS_ADD_CODE_LABEL))
     Switch(
-      checked = true,
-      onCheckedChange = {},
+      checked = showDiscountInput,
+      onCheckedChange = { showDiscountInput = !showDiscountInput },
       colors = SwitchDefaults.colors(checkedTrackColor = MaterialTheme.colorScheme.typeElement),
     )
   }
@@ -196,30 +239,36 @@ private fun AddDiscount(uiState: PaymentUiState) {
     Spacer(Modifier.height(4.dp))
   }
   Spacer(Modifier.height(12.dp))
-  Row(
-    modifier = Modifier.fillMaxWidth(),
-    horizontalArrangement = Arrangement.SpaceBetween,
+  AnimatedVisibility(
+    visible = showDiscountInput,
+    enter = fadeIn(),
+    exit = fadeOut(),
   ) {
-    HedvigTextField(
-      value = uiState.discountCode ?: "",
-      onValueChange = {},
-      errorText = uiState.discountError,
-      label = {
-        Text(stringResource(id = R.string.REFERRAL_ADDCOUPON_INPUTPLACEHOLDER))
-      },
-      modifier = Modifier.weight(1f),
-    )
-    Spacer(Modifier.width(8.dp))
-    HedvigContainedSmallButton(
-      text = stringResource(id = R.string.PAYMENTS_ADD_CODE_BUTTON_LABEL),
-      onClick = {},
-      contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
-      colors = ButtonDefaults.buttonColors(
-        containerColor = MaterialTheme.colorScheme.typeContainer,
-        contentColor = MaterialTheme.colorScheme.primary,
-      ),
-      modifier = Modifier.widthIn(min = 127.dp),
-    )
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+      HedvigTextField(
+        value = uiState.discountCode?.code ?: "",
+        onValueChange = { onDiscountCodeChanged(CampaignCode(it)) },
+        errorText = uiState.discountError,
+        label = {
+          Text(stringResource(id = R.string.REFERRAL_ADDCOUPON_INPUTPLACEHOLDER))
+        },
+        modifier = Modifier.weight(1f),
+      )
+      Spacer(Modifier.width(8.dp))
+      HedvigContainedSmallButton(
+        text = stringResource(id = R.string.PAYMENTS_ADD_CODE_BUTTON_LABEL),
+        onClick = onAddDiscountCode,
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+        colors = ButtonDefaults.buttonColors(
+          containerColor = MaterialTheme.colorScheme.typeContainer,
+          contentColor = MaterialTheme.colorScheme.primary,
+        ),
+        modifier = Modifier.widthIn(min = 127.dp),
+      )
+    }
   }
 }
 
@@ -245,10 +294,10 @@ fun PaymentDetails(uiState: PaymentUiState) {
         modifier = Modifier.size(24.dp),
       )
       Spacer(Modifier.width(16.dp))
-      Text(uiState.paymentMethod.displayName)
+      Text(uiState.paymentMethod?.displayName ?: stringResource(id = R.string.info_card_missing_payment_title))
     }
     Text(
-      text = uiState.paymentMethod.displayValue,
+      text = uiState.paymentMethod?.displayValue ?: "",
       color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
   }
@@ -259,8 +308,9 @@ fun PaymentHistory(onClick: () -> Unit) {
   Row(
     modifier = Modifier
       .fillMaxWidth()
-      .padding(vertical = 12.dp)
-      .clickable { onClick() },
+      .clip(SquircleShape)
+      .clickable { onClick() }
+      .padding(vertical = 12.dp),
     horizontalArrangement = Arrangement.SpaceBetween,
     verticalAlignment = Alignment.CenterVertically,
   ) {
@@ -291,7 +341,7 @@ fun PreviewPaymentScreen() {
       PaymentScreen(
         uiState = PaymentUiState(
           nextChargeAmount = "300 kr",
-          nextChargeDate = LocalDate(2023, 4, 23),
+          nextChargeDate = LocalDate.now(),
           insuranceCosts = listOf(
             PaymentUiState.InsuranceCost(
               displayName = "Home Insurance",
@@ -314,6 +364,9 @@ fun PreviewPaymentScreen() {
         ),
         locale = Locale.ENGLISH,
         navigateUp = {},
+        onChangeBankAccount = {},
+        onAddDiscountCode = {},
+        onDiscountCodeChanged = {},
       )
     }
   }

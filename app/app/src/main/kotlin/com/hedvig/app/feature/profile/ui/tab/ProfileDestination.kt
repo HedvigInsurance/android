@@ -73,6 +73,7 @@ internal fun ProfileDestination(
   navigateToMyInfo: () -> Unit,
   navigateToAboutApp: () -> Unit,
   navigateToSettings: () -> Unit,
+  navigateToPayment: () -> Unit,
   viewModel: ProfileViewModel,
 ) {
   val uiState by viewModel.data.collectAsStateWithLifecycle()
@@ -87,6 +88,7 @@ internal fun ProfileDestination(
     navigateToMyInfo = navigateToMyInfo,
     navigateToAboutApp = navigateToAboutApp,
     navigateToSettings = navigateToSettings,
+    navigateToPayment = navigateToPayment,
     reload = viewModel::reload,
     onLogout = viewModel::onLogout,
   )
@@ -101,6 +103,7 @@ private fun ProfileScreen(
   navigateToMyInfo: () -> Unit,
   navigateToAboutApp: () -> Unit,
   navigateToSettings: () -> Unit,
+  navigateToPayment: () -> Unit,
   reload: () -> Unit,
   onLogout: () -> Unit,
 ) {
@@ -132,7 +135,7 @@ private fun ProfileScreen(
         profileUiState = uiState,
         showMyInfo = navigateToMyInfo,
         showBusinessModel = navigateToBusinessModel,
-        showPaymentInfo = { context.startActivity(PaymentActivity.newInstance(context)) },
+        showPaymentInfo = navigateToPayment,
         showSettings = navigateToSettings,
         showAboutApp = navigateToAboutApp,
         navigateToEurobonus = navigateToEurobonus,
@@ -363,7 +366,8 @@ private fun PreviewProfileSuccessScreen() {
         onLogout = {},
         navigateToMyInfo = {},
         navigateToAboutApp = {},
-        navigateToSettings = {}
+        navigateToSettings = {},
+        navigateToPayment = {},
       )
     }
   }

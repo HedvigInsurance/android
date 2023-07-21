@@ -56,7 +56,9 @@ import com.hedvig.android.core.designsystem.material3.infoElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
+import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.dialog.SingleSelectDialog
+import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.market.Language
 import hedvig.resources.R
 
@@ -102,102 +104,89 @@ fun SettingsScreen(
   onThemeSelected: (Theme) -> Unit,
 ) {
   val context = LocalContext.current
-
-  Surface(
-    color = MaterialTheme.colorScheme.background,
-    modifier = Modifier.fillMaxSize(),
+  HedvigScaffold(
+    topAppBarText = stringResource(R.string.SETTINGS_TITLE),
+    navigateUp = onBackPressed,
+    modifier = Modifier.clearFocusOnTap(),
   ) {
-    Column(
-      Modifier
-        .fillMaxSize()
-        .verticalScroll(rememberScrollState()),
-    ) {
-      TopAppBarWithBack(
-        onClick = onBackPressed,
-        title = stringResource(R.string.SETTINGS_TITLE),
-        contentPadding = WindowInsets.safeDrawing
-          .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
-          .asPaddingValues(),
+    Column(Modifier.padding(16.dp)) {
+      Spacer(Modifier.height(16.dp))
+      LanguageWithDialog(
+        languageOptions = uiState.languageOptions,
+        selectedLanguage = uiState.selectedLanguage,
+        selectLanguage = onLanguageSelected,
+        enabled = true,
       )
-      Column(Modifier.padding(16.dp)) {
-        Spacer(Modifier.height(16.dp))
-        LanguageWithDialog(
-          languageOptions = uiState.languageOptions,
-          selectedLanguage = uiState.selectedLanguage,
-          selectLanguage = onLanguageSelected,
-          enabled = true,
-        )
-        Spacer(Modifier.height(4.dp))
-        ThemeWithDialog(
-          themeOptions = uiState.themeOptions,
-          selectedTheme = uiState.selectedTheme,
-          selectTheme = onThemeSelected,
-          enabled = true,
-        )
-        Spacer(Modifier.height(4.dp))
-        HedvigBigCard(
-          onClick = { startAndroidSettingsActivity(context) },
-          inputText = if (notificationsEnabled) {
-            stringResource(id = R.string.PROFILE_NOTIFICATIONS_STATUS_ON)
-          } else {
-            stringResource(id = R.string.PROFILE_NOTIFICATIONS_STATUS_OFF)
-          },
-          hintText = stringResource(id = R.string.SETTINGS_NOTIFICATIONS_TITLE),
-          modifier = Modifier.fillMaxWidth(),
-        )
-        Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.height(4.dp))
+      ThemeWithDialog(
+        themeOptions = uiState.themeOptions,
+        selectedTheme = uiState.selectedTheme,
+        selectTheme = onThemeSelected,
+        enabled = true,
+      )
+      Spacer(Modifier.height(4.dp))
+      HedvigBigCard(
+        onClick = { startAndroidSettingsActivity(context) },
+        inputText = if (notificationsEnabled) {
+          stringResource(id = R.string.PROFILE_NOTIFICATIONS_STATUS_ON)
+        } else {
+          stringResource(id = R.string.PROFILE_NOTIFICATIONS_STATUS_OFF)
+        },
+        hintText = stringResource(id = R.string.SETTINGS_NOTIFICATIONS_TITLE),
+        modifier = Modifier.fillMaxWidth(),
+      )
+      Spacer(Modifier.height(16.dp))
 
-        AnimatedVisibility(
-          visible = !notificationsEnabled && uiState.showNotificationInfo,
-          enter = fadeIn(),
-          exit = fadeOut(),
+      AnimatedVisibility(
+        visible = !notificationsEnabled && uiState.showNotificationInfo,
+        enter = fadeIn(),
+        exit = fadeOut(),
+      ) {
+        HedvigInfoCard(
+          contentPadding = PaddingValues(12.dp),
         ) {
-          HedvigInfoCard(
-            contentPadding = PaddingValues(12.dp),
-          ) {
-            Column {
-              Row {
-                Icon(
-                  imageVector = Icons.Default.Info,
-                  contentDescription = "info",
-                  modifier = Modifier
-                    .padding(top = 2.dp)
-                    .size(16.dp)
-                    .padding(1.dp),
-                  tint = MaterialTheme.colorScheme.infoElement,
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                  text = stringResource(id = R.string.PROFILE_ALLOW_NOTIFICATIONS_INFO_LABEL),
-                  style = MaterialTheme.typography.bodyMedium,
-                )
-              }
-              Spacer(modifier = Modifier.height(12.dp))
-              Row(
+          Column {
+            Row {
+              Icon(
+                imageVector = Icons.Default.Info,
+                contentDescription = "info",
                 modifier = Modifier
-                  .fillMaxWidth()
-                  .padding(horizontal = 24.dp),
-              ) {
-                HedvigContainedSmallButton(
-                  text = stringResource(id = R.string.PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW),
-                  onClick = onNotificationInfoDismissed,
-                  colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.onPrimary,
-                    contentColor = MaterialTheme.colorScheme.primary,
-                  ),
-                  modifier = Modifier.fillMaxWidth(0.5f),
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                HedvigContainedSmallButton(
-                  text = stringResource(id = R.string.PUSH_NOTIFICATIONS_ALERT_ACTION_OK),
-                  onClick = { startAndroidSettingsActivity(context) },
-                  colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.onPrimary,
-                    contentColor = MaterialTheme.colorScheme.primary,
-                  ),
-                  modifier = Modifier.fillMaxWidth(1f),
-                )
-              }
+                  .padding(top = 2.dp)
+                  .size(16.dp)
+                  .padding(1.dp),
+                tint = MaterialTheme.colorScheme.infoElement,
+              )
+              Spacer(modifier = Modifier.width(8.dp))
+              Text(
+                text = stringResource(id = R.string.PROFILE_ALLOW_NOTIFICATIONS_INFO_LABEL),
+                style = MaterialTheme.typography.bodyMedium,
+              )
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(
+              modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp),
+            ) {
+              HedvigContainedSmallButton(
+                text = stringResource(id = R.string.PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW),
+                onClick = onNotificationInfoDismissed,
+                colors = ButtonDefaults.buttonColors(
+                  containerColor = MaterialTheme.colorScheme.onPrimary,
+                  contentColor = MaterialTheme.colorScheme.primary,
+                ),
+                modifier = Modifier.fillMaxWidth(0.5f),
+              )
+              Spacer(modifier = Modifier.width(12.dp))
+              HedvigContainedSmallButton(
+                text = stringResource(id = R.string.PUSH_NOTIFICATIONS_ALERT_ACTION_OK),
+                onClick = { startAndroidSettingsActivity(context) },
+                colors = ButtonDefaults.buttonColors(
+                  containerColor = MaterialTheme.colorScheme.onPrimary,
+                  contentColor = MaterialTheme.colorScheme.primary,
+                ),
+                modifier = Modifier.fillMaxWidth(1f),
+              )
             }
           }
         }

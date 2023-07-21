@@ -35,6 +35,8 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.ChevronRight
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
+import com.hedvig.android.core.ui.clearFocusOnTap
+import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.feature.embark.ui.MemberIdViewModel
 import hedvig.resources.R
@@ -67,74 +69,62 @@ private fun AboutAppScreen(
   showOpenSourceLicenses: () -> Unit,
   isProduction: Boolean,
 ) {
-  Surface(
-    color = MaterialTheme.colorScheme.background,
-    modifier = Modifier.fillMaxSize(),
+  HedvigScaffold(
+    topAppBarText = stringResource(R.string.PROFILE_ABOUT_APP_TITLE),
+    navigateUp = onBackPressed,
+    modifier = Modifier.clearFocusOnTap(),
   ) {
-    Column(
-      Modifier
-        .fillMaxSize()
-        .verticalScroll(rememberScrollState()),
-    ) {
-      TopAppBarWithBack(
-        onClick = onBackPressed,
-        title = stringResource(R.string.PROFILE_ABOUT_APP_TITLE),
-        contentPadding = WindowInsets.safeDrawing
-          .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
-          .asPaddingValues(),
-      )
-      Spacer(Modifier.height(16.dp))
-      Column {
-        Row(
-          horizontalArrangement = Arrangement.SpaceBetween,
-          verticalAlignment = Alignment.CenterVertically,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        ) {
-          Text(stringResource(id = R.string.PROFILE_ABOUT_APP_MEMBER_ID))
-          CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
-            Text(memberId ?: "")
-          }
+    Spacer(Modifier.height(16.dp))
+    Column {
+      Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(16.dp),
+      ) {
+        Text(stringResource(id = R.string.PROFILE_ABOUT_APP_MEMBER_ID))
+        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
+          Text(memberId ?: "")
         }
-        Row(
-          horizontalArrangement = Arrangement.SpaceBetween,
-          verticalAlignment = Alignment.CenterVertically,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        ) {
-          Text(stringResource(id = R.string.PROFILE_ABOUT_APP_VERSION))
-          CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
-            Text(
-              text = buildString {
-                append(BuildConfig.VERSION_NAME)
-                if (!isProduction) {
-                  append(" (")
-                  append(BuildConfig.VERSION_CODE)
-                  append(")")
-                }
-              },
-              textAlign = TextAlign.End,
-              modifier = Modifier.fillMaxWidth(),
-            )
-          }
+      }
+      Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(16.dp),
+      ) {
+        Text(stringResource(id = R.string.PROFILE_ABOUT_APP_VERSION))
+        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
+          Text(
+            text = buildString {
+              append(BuildConfig.VERSION_NAME)
+              if (!isProduction) {
+                append(" (")
+                append(BuildConfig.VERSION_CODE)
+                append(")")
+              }
+            },
+            textAlign = TextAlign.End,
+            modifier = Modifier.fillMaxWidth(),
+          )
         }
-        Row(
-          horizontalArrangement = Arrangement.SpaceBetween,
-          verticalAlignment = Alignment.CenterVertically,
-          modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = showOpenSourceLicenses)
-            .padding(16.dp),
-        ) {
-          Text(stringResource(R.string.PROFILE_ABOUT_APP_LICENSE_ATTRIBUTIONS))
-          CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
-            Icon(
-              imageVector = Hedvig.ChevronRight,
-              contentDescription = "",
-            )
-          }
+      }
+      Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+          .fillMaxWidth()
+          .clickable(onClick = showOpenSourceLicenses)
+          .padding(16.dp),
+      ) {
+        Text(stringResource(R.string.PROFILE_ABOUT_APP_LICENSE_ATTRIBUTIONS))
+        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
+          Icon(
+            imageVector = Hedvig.ChevronRight,
+            contentDescription = "",
+          )
         }
       }
     }

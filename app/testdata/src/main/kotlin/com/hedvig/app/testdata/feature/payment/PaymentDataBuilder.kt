@@ -36,6 +36,7 @@ data class PaymentDataBuilder(
   fun build() = PaymentQuery.Data(
     contracts = contracts.map { contractStatus ->
       PaymentQuery.Contract(
+        displayName = "",
         status = PaymentQuery.Status(
           __typename = contractStatus.typename,
           fragments = PaymentQuery.Status.Fragments(

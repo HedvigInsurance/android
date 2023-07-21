@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.app.data.debit.PayinStatusRepository
+import com.hedvig.app.feature.offer.usecase.CampaignCode
+import com.hedvig.app.feature.referrals.data.RedeemReferralCodeRepository
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import com.hedvig.hanalytics.PaymentType
@@ -44,6 +46,7 @@ class PaymentViewModelImpl(
   private val paymentRepository: PaymentRepository,
   private val payinStatusRepository: PayinStatusRepository,
   private val featureManager: FeatureManager,
+  private val redeemReferralCodeRepository: RedeemReferralCodeRepository,
   hAnalytics: HAnalytics,
 ) : PaymentViewModel(hAnalytics) {
 
@@ -68,30 +71,4 @@ class PaymentViewModelImpl(
       paymentRepository.refresh()
     }
   }
-}
-
-data class PaymentUiState(
-  val nextChargeAmount: String,
-  val nextChargeDate: LocalDate,
-  val insuranceCosts: List<InsuranceCost>,
-  val totalDiscount: String,
-  val activeDiscounts: List<Discount>,
-  val paymentMethod: PaymentMethod,
-  val discountCode: String? = null,
-  val discountError: String? = null,
-) {
-  data class InsuranceCost(
-    val displayName: String,
-    val cost: String,
-  )
-
-  data class PaymentMethod(
-    val displayName: String,
-    val displayValue: String,
-  )
-
-  data class Discount(
-    val code: String,
-    val displayName: String,
-  )
 }
