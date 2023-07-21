@@ -291,11 +291,18 @@ private fun CrossSellItem(
     HedvigContainedSmallButton(
       text = stringResource(R.string.cross_sell_get_price),
       onClick = { onCrossSellClick(crossSell.uri) },
-      colors = ButtonDefaults.buttonColors(
+      colors = ButtonDefaults.elevatedButtonColors(
         containerColor = MaterialTheme.colorScheme.typeContainer,
         contentColor = MaterialTheme.colorScheme.onTypeContainer,
         disabledContainerColor = MaterialTheme.colorScheme.typeContainer.copy(alpha = 0.12f),
         disabledContentColor = MaterialTheme.colorScheme.onTypeContainer.copy(alpha = 0.38f),
+      ),
+      elevation = ButtonDefaults.buttonElevation(
+        defaultElevation = 2.dp,
+        pressedElevation = 2.dp,
+        focusedElevation = 2.dp,
+        hoveredElevation = 4.dp,
+        disabledElevation = 2.dp,
       ),
     )
   }
