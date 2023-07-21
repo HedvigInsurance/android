@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import com.hedvig.android.core.designsystem.component.card.HedvigBigCard
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.dialog.SingleSelectDialog
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.data.claimflow.LocalContractContractOption
 import com.hedvig.android.data.claimflow.LocationOption

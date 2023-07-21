@@ -326,6 +326,9 @@ private val viewModelModule = module {
     SettingsViewModel(
       hAnalytics = get(),
       changeLanguageUseCase = get(),
+      marketManager = get(),
+      languageService = get(),
+      settingsDataStore = get(),
     )
   }
   viewModel { DatePickerViewModel() }

@@ -61,7 +61,6 @@ import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.app.R
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
-import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.extensions.startChat
 import java.math.BigDecimal
@@ -73,6 +72,7 @@ internal fun ProfileDestination(
   navigateToBusinessModel: () -> Unit,
   navigateToMyInfo: () -> Unit,
   navigateToAboutApp: () -> Unit,
+  navigateToSettings: () -> Unit,
   viewModel: ProfileViewModel,
 ) {
   val uiState by viewModel.data.collectAsStateWithLifecycle()
@@ -86,6 +86,7 @@ internal fun ProfileDestination(
     navigateToBusinessModel = navigateToBusinessModel,
     navigateToMyInfo = navigateToMyInfo,
     navigateToAboutApp = navigateToAboutApp,
+    navigateToSettings = navigateToSettings,
     reload = viewModel::reload,
     onLogout = viewModel::onLogout,
   )
@@ -99,6 +100,7 @@ private fun ProfileScreen(
   navigateToBusinessModel: () -> Unit,
   navigateToMyInfo: () -> Unit,
   navigateToAboutApp: () -> Unit,
+  navigateToSettings: () -> Unit,
   reload: () -> Unit,
   onLogout: () -> Unit,
 ) {
@@ -131,7 +133,7 @@ private fun ProfileScreen(
         showMyInfo = navigateToMyInfo,
         showBusinessModel = navigateToBusinessModel,
         showPaymentInfo = { context.startActivity(PaymentActivity.newInstance(context)) },
-        showSettings = { context.startActivity(SettingsActivity.newInstance(context)) },
+        showSettings = navigateToSettings,
         showAboutApp = navigateToAboutApp,
         navigateToEurobonus = navigateToEurobonus,
         logout = onLogout,
@@ -361,6 +363,7 @@ private fun PreviewProfileSuccessScreen() {
         onLogout = {},
         navigateToMyInfo = {},
         navigateToAboutApp = {},
+        navigateToSettings = {}
       )
     }
   }

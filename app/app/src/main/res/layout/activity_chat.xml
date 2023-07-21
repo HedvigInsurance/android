@@ -59,12 +59,6 @@
             app:srcCompat="@drawable/ic_hedvig_wordmark"
             app:tint="?colorPrimary" />
 
-        <ImageView
-            android:id="@+id/settings"
-            style="@style/ToolbarIcon.End"
-            android:contentDescription="@string/SETTINGS_ACCESSIBILITY_HINT"
-            app:srcCompat="@drawable/ic_profile_settings" />
-
     </FrameLayout>
 
     <com.hedvig.app.feature.chat.ui.ChatInputView
