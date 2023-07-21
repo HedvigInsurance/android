@@ -41,6 +41,7 @@ import kotlinx.coroutines.launch
 @Composable
 internal fun YourInfoTab(
   coverageItems: ImmutableList<Pair<String, String>>,
+  allowEditCoInsured: Boolean,
   cancelInsuranceData: ContractDetails.CancelInsuranceData?,
   onCancelInsuranceClick: (ContractDetails.CancelInsuranceData) -> Unit,
   onEditCoInsuredClick: () -> Unit,
@@ -61,6 +62,7 @@ internal fun YourInfoTab(
       windowInsets = WindowInsets(0.dp),
     ) {
       EditInsuranceBottomSheetContent(
+        allowEditCoInsured = allowEditCoInsured,
         onEditCoInsuredClick = {
           coroutineScope.launch {
             sheetState.hide()
@@ -168,6 +170,7 @@ private fun PreviewYourInfoTab() {
           "Size" to "56 m2",
           "Co-insured".repeat(4) to "You +1".repeat(5),
         ),
+        allowEditCoInsured = true,
         cancelInsuranceData = ContractDetails.CancelInsuranceData("1", ""),
         onCancelInsuranceClick = {},
         onEditCoInsuredClick = {},

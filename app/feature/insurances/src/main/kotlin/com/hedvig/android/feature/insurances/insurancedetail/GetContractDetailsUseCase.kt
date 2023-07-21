@@ -75,6 +75,7 @@ internal class GetContractDetailsUseCase(
             it.rows.map { it.title to it.value }
           }.toPersistentList(),
           cancelInsuranceData = cancelInsuranceData,
+          allowEditCoInsured = contract.typeOfContract.canChangeCoInsured(),
           insurableLimits = contractCoverage.insurableLimits,
           perils = contractCoverage.contractPerils,
           documents = listOfNotNull(
@@ -98,6 +99,7 @@ internal data class ContractDetails(
   val contractCardData: ContractCardData,
   val overviewItems: ImmutableList<Pair<String, String>>,
   val cancelInsuranceData: CancelInsuranceData?,
+  val allowEditCoInsured: Boolean,
   val insurableLimits: ImmutableList<ContractCoverage.InsurableLimit>,
   val perils: ImmutableList<ContractCoverage.Peril>,
   val documents: ImmutableList<Document>,
@@ -124,7 +126,7 @@ internal data class ContractDetails(
   }
 }
 
-fun TypeOfContract.gradient(): GradientType = when (this) {
+private fun TypeOfContract.gradient(): GradientType = when (this) {
   TypeOfContract.SE_ACCIDENT,
   TypeOfContract.SE_ACCIDENT_STUDENT,
   TypeOfContract.NO_ACCIDENT,
@@ -174,7 +176,7 @@ fun TypeOfContract.gradient(): GradientType = when (this) {
   is TypeOfContract.UNKNOWN__ -> GradientType.UNKNOWN
 }
 
-fun TypeOfContract.canChangeCoInsured() = when (this) {
+private fun TypeOfContract.canChangeCoInsured() = when (this) {
   TypeOfContract.SE_HOUSE,
   TypeOfContract.SE_APARTMENT_BRF,
   TypeOfContract.SE_APARTMENT_RENT,

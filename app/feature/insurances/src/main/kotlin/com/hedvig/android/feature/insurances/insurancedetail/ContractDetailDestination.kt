@@ -147,6 +147,7 @@ private fun ContractDetailScreen(
                     YourInfoTab(
                       coverageItems = uiState.contractDetails.overviewItems,
                       cancelInsuranceData = uiState.contractDetails.cancelInsuranceData,
+                      allowEditCoInsured = uiState.contractDetails.allowEditCoInsured,
                       onEditCoInsuredClick = onEditCoInsuredClick,
                       onChangeAddressClick = onChangeAddressClick,
                       onCancelInsuranceClick = onCancelInsuranceClick,
@@ -218,7 +219,7 @@ private fun PreviewContractDetailScreen() {
       ContractDetailScreen(
         uiState = ContractDetailsUiState.Success(
           ContractDetails(
-            ContractDetails.ContractCardData(
+            contractCardData = ContractDetails.ContractCardData(
               contractId = "asd",
               backgroundImageUrl = null,
               chips = persistentListOf(
@@ -229,11 +230,12 @@ private fun PreviewContractDetailScreen() {
               subtitle = "Bellmansgatan 19A ∙ You +1",
               gradientType = GradientType.HOME,
             ),
-            persistentListOf(),
-            ContractDetails.CancelInsuranceData("", ""),
-            persistentListOf(),
-            persistentListOf(),
-            persistentListOf(),
+            overviewItems = persistentListOf(),
+            cancelInsuranceData = ContractDetails.CancelInsuranceData("", ""),
+            allowEditCoInsured = true,
+            insurableLimits = persistentListOf(),
+            perils = persistentListOf(),
+            documents = persistentListOf(),
           ),
         ),
         imageLoader = rememberPreviewImageLoader(),

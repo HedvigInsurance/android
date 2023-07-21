@@ -32,6 +32,7 @@ import hedvig.resources.R
 
 @Composable
 internal fun EditInsuranceBottomSheetContent(
+  allowEditCoInsured: Boolean,
   onEditCoInsuredClick: () -> Unit,
   onChangeAddressClick: () -> Unit,
   onDismiss: () -> Unit,
@@ -61,25 +62,27 @@ internal fun EditInsuranceBottomSheetContent(
         }
       },
     )
-    Spacer(modifier = Modifier.height(4.dp))
-    SelectableItem(
-      text = stringResource(R.string.CONTRACT_EDIT_COINSURED),
-      isSelected = expandedItemIndex == 1,
-      onClick = {
-        expandedItemIndex = if (expandedItemIndex == 1) {
-          -1
-        } else {
-          1
-        }
-      },
-    )
+    if (allowEditCoInsured) {
+      Spacer(modifier = Modifier.height(4.dp))
+      SelectableItem(
+        text = stringResource(R.string.CONTRACT_EDIT_COINSURED),
+        isSelected = expandedItemIndex == 1,
+        onClick = {
+          expandedItemIndex = if (expandedItemIndex == 1) {
+            -1
+          } else {
+            1
+          }
+        },
+      )
+    }
     Spacer(modifier = Modifier.height(16.dp))
     HedvigContainedButton(
       text = stringResource(id = R.string.general_continue_button),
       onClick = {
         if (expandedItemIndex == 0) {
           onChangeAddressClick()
-        } else if (expandedItemIndex == 1) {
+        } else if (expandedItemIndex == 1 && allowEditCoInsured) {
           onEditCoInsuredClick()
         }
       },
@@ -125,6 +128,7 @@ private fun PreviewEditInsuranceBottomSheetContent() {
   HedvigTheme(useNewColorScheme = true) {
     Surface(color = MaterialTheme.colorScheme.background) {
       EditInsuranceBottomSheetContent(
+        allowEditCoInsured = true,
         onEditCoInsuredClick = {},
         onChangeAddressClick = {},
         onDismiss = {},
