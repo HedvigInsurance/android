@@ -3,7 +3,6 @@ package com.hedvig.app.feature.insurance.ui.detail.coverage
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.core.common.RetryChannel
-import com.hedvig.app.feature.perils.Peril
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +22,6 @@ internal class CoverageViewModel(
       ifLeft = { CoverageUiState.Error },
       ifRight = { contractCoverage ->
         CoverageUiState.Success(
-          contractCoverage.contractDisplayName,
           contractCoverage.contractPerils,
           contractCoverage.insurableLimits,
         )
@@ -44,8 +42,7 @@ internal sealed interface CoverageUiState {
   object Loading : CoverageUiState
   object Error : CoverageUiState
   data class Success(
-    val contractDisplayName: String,
-    val perilItems: ImmutableList<Peril>,
+    val perilItems: ImmutableList<ContractCoverage.Peril>,
     val insurableLimitItems: ImmutableList<ContractCoverage.InsurableLimit>,
   ) : CoverageUiState
 }

@@ -7,26 +7,23 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.language.LanguageService
-import com.hedvig.app.feature.perils.Peril
-import giraffe.ContractCoverageQuery
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
+import octopus.ContractCoverageQuery
 
 internal class GetContractCoverageUseCase(
   private val apolloClient: ApolloClient,
-  private val languageService: LanguageService,
 ) {
   suspend fun invoke(
     contractId: String,
   ): Either<ErrorMessage, ContractCoverage> {
     return either {
       val data = apolloClient
-        .query(ContractCoverageQuery(languageService.getGraphQLLocale()))
+        .query(ContractCoverageQuery(contractId))
         .safeExecute()
         .toEither(::ErrorMessage)
         .bind()
-      val contract = data.contracts.firstOrNull { it.id == contractId }
+      val contract = data.contract
       ensureNotNull(contract) { ErrorMessage("Contract not found") }
       ContractCoverage.fromContract(contract)
     }
@@ -34,7 +31,6 @@ internal class GetContractCoverageUseCase(
 }
 
 internal data class ContractCoverage(
-  val contractDisplayName: String,
   val contractPerils: ImmutableList<Peril>,
   val insurableLimits: ImmutableList<InsurableLimit>,
 ) {
@@ -44,22 +40,39 @@ internal data class ContractCoverage(
     val description: String,
   )
 
+  internal data class Peril(
+    val id: String,
+    val title: String,
+    val description: String,
+    val covered: ImmutableList<String>,
+    val colorHexValue: Long?,
+  )
+
   companion object {
-    fun fromContract(contract: ContractCoverageQuery.Contract): ContractCoverage {
+    fun fromContract(contract: ContractCoverageQuery.Data.Contract): ContractCoverage {
       return ContractCoverage(
-        contractDisplayName = contract.displayName,
-        contractPerils = contract.contractPerils
-          .map { contractPeril ->
-            Peril.from(contractPeril.fragments.perilFragmentV2)
+        contractPerils = contract.variant.perils
+          .map { peril ->
+            Peril(
+              id = peril.id,
+              title = peril.title,
+              description = peril.description,
+              covered = peril.covered.toPersistentList(),
+              colorHexValue = peril
+                .colorCode
+                ?.trim('#')
+                ?.takeIf { it.length == 6 }
+                ?.let { "FF$it" }
+                ?.toLongOrNull(16),
+            )
           }
           .toPersistentList(),
-        insurableLimits = contract.insurableLimits
-          .map { it.fragments.insurableLimitsFragment }
+        insurableLimits = contract.variant.insurableLimits
           .map { insurableLimit ->
             InsurableLimit(
               label = insurableLimit.label,
               limit = insurableLimit.limit,
-              description = insurableLimit.description,
+              description = insurableLimit.description.trim(),
             )
           }
           .toPersistentList(),
