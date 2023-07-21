@@ -4,7 +4,6 @@ import android.os.Parcelable
 import androidx.compose.runtime.Immutable
 import giraffe.fragment.PerilFragmentV2
 import kotlinx.parcelize.Parcelize
-import octopus.CrossSalesQuery
 
 @Parcelize
 @Immutable
@@ -26,16 +25,6 @@ data class Peril(
       exception = fragment.exceptions,
       covered = fragment.covered,
       info = fragment.info,
-    )
-
-    fun from(peril: CrossSalesQuery.Data.CurrentMember.CrossSell.ProductVariant.Peril) = Peril(
-      title = peril.title,
-      description = peril.description,
-      exception = listOf(),
-      covered = listOf(),
-      info = peril.info,
-      darkUrl = null,
-      lightUrl = null,
     )
   }
 }

@@ -6,7 +6,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -22,7 +22,7 @@ fun HedvigFullScreenCenterAlignedProgress(
     exit = fadeOut(),
     modifier = modifier.fillMaxSize(),
   ) {
-    Box(contentAlignment = Alignment.Center) {
+    Box(contentAlignment = BiasAlignment(0f, -0.15f)) {
       RotatingHedvigButton()
     }
   }

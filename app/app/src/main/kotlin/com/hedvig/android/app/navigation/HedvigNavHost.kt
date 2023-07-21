@@ -27,6 +27,7 @@ import com.hedvig.android.feature.claimtriaging.claimTriagingDestinations
 import com.hedvig.android.feature.home.claims.pledge.HonestyPledgeBottomSheet
 import com.hedvig.android.feature.home.home.navigation.homeGraph
 import com.hedvig.android.feature.home.legacychangeaddress.LegacyChangeAddressActivity
+import com.hedvig.android.feature.insurances.insuranceGraph
 import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
 import com.hedvig.android.feature.odyssey.navigation.terminalClaimFlowStepDestinations
@@ -44,8 +45,6 @@ import com.hedvig.app.BuildConfig
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.home.ui.HowClaimsWorkDialog
-import com.hedvig.app.feature.insurance.ui.detail.contractDetailGraph
-import com.hedvig.app.feature.insurance.ui.tab.insuranceGraph
 import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.profile.ui.tab.profileGraph
 import com.hedvig.app.feature.referrals.ui.tab.referralsGraph
@@ -167,7 +166,7 @@ internal fun HedvigNavHost(
           }
         }
       },
-      startMovingFlow = { startMovingFlow() },
+      startMovingFlow = ::startMovingFlow,
       onHowClaimsWorkClick = { howClaimsWorkList ->
         val howClaimsWorkData = howClaimsWorkList.mapIndexed { index, howClaimsWork ->
           DismissiblePagerModel.NoTitlePage(
@@ -211,24 +210,14 @@ internal fun HedvigNavHost(
       hAnalytics = hAnalytics,
     )
     insuranceGraph(
-      nestedGraphs = {
-        contractDetailGraph(
-          density = density,
-          navigator = navigator,
-          onEditCoInsuredClick = {
-            activityNavigator.navigateToChat(context)
-          },
-          onChangeAddressClick = {
-            startMovingFlow()
-          },
-          imageLoader = imageLoader,
-        )
+      navigator = navigator,
+      openWebsite = { uri ->
+        activityNavigator.openWebsite(context, uri)
       },
-      navigateToContractDetailScreen = { backStackEntry, contractId: String ->
-        with(navigator) { backStackEntry.navigate(AppDestination.ContractDetail(contractId)) }
-      },
-      imageLoader = imageLoader,
+      openChat = { activityNavigator.navigateToChat(context) },
+      startMovingFlow = ::startMovingFlow,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+      imageLoader = imageLoader,
     )
     referralsGraph(
       languageService = languageService,
@@ -253,7 +242,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   changeAddressGraph(
     density = density,
     navController = hedvigAppState.navController,
-    openChat = context::startChat,
+    openChat = { activityNavigator.navigateToChat(context) },
   )
   generateTravelCertificateGraph(
     density = density,

@@ -14,10 +14,11 @@ datadogPlugin = "1.9.0"
 doctor = "0.8.1"
 easylauncher = "6.2.0"
 googleServices = "4.3.15"
-kotlin = "1.8.21"
+kotlin = "1.8.22"
 kotlinter = "3.12.0"
 ktor = "2.3.1"
 license = "0.9.3"
+molecule = "1.0.0"
 
 # Other versions sorted alphabetically
 accompanist = "0.30.1"
@@ -25,7 +26,7 @@ adyen = "4.12.1"
 androidx-annotation = "1.6.0"
 androidx-arch-testing = "2.2.0"
 androidx-composeBom = "2023.06.01"
-androidx-composeCompiler = "1.4.7"
+androidx-composeCompiler = "1.4.8"
 androidx-datastore = "1.0.0"
 androidx-espresso = "3.5.1"
 androidx-lifecycle = "2.6.1"
@@ -91,6 +92,7 @@ slimber = "2.0.0"
 timber = "5.0.1"
 turbine = "1.0.0"
 zXing = "3.5.1"
+firebaseCrashlyticsBuildtools = "2.9.7"
 
 [libraries]
 
@@ -230,6 +232,7 @@ android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref 
 apollo-gradlePlugin = { module = "com.apollographql.apollo3:apollo-gradle-plugin", version.ref = "apollo" }
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlinter-gradlePlugin = { module = "org.jmailen.gradle:kotlinter-gradle", version.ref = "kotlinter" }
+firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
 
 [bundles]
 
@@ -237,6 +240,7 @@ kotlinter-gradlePlugin = { module = "org.jmailen.gradle:kotlinter-gradle", versi
 
 androidApplication = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 androidLibrary = { id = "com.android.library", version.ref = "androidGradlePlugin" }
+androidRemoveUnusedResourcesPlugin = { id = "io.github.irgaly.remove-unused-resources", version.ref = "androidRemoveUnusedResourcesPlugin" }
 apollo = { id = "com.apollographql.apollo3", version.ref = "apollo" }
 appIconBannerGenerator = { id = "com.starter.easylauncher", version.ref = "easylauncher" }
 cacheFix = { id = "org.gradle.android.cache-fix", version.ref = "cacheFix" }
@@ -249,5 +253,5 @@ kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinter = { id = "org.jmailen.kotlinter", version.ref = "kotlinter" }
 license = { id = "com.jaredsburrows.license", version.ref = "license" }
+molecule = { id = "app.cash.molecule", version.ref = "molecule" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-androidRemoveUnusedResourcesPlugin = { id = "io.github.irgaly.remove-unused-resources", version.ref = "androidRemoveUnusedResourcesPlugin" }

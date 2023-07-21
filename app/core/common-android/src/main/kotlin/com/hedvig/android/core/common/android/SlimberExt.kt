@@ -4,7 +4,7 @@ import slimber.log.d
 import slimber.log.e
 import slimber.log.i
 
-fun d(throwable: Throwable?, message: () -> String) {
+fun d(throwable: Throwable? = null, message: () -> String) {
   if (throwable != null) {
     d(throwable, message)
   } else {
@@ -12,7 +12,7 @@ fun d(throwable: Throwable?, message: () -> String) {
   }
 }
 
-fun e(throwable: Throwable?, message: () -> String) {
+fun e(throwable: Throwable? = null, message: () -> String) {
   if (throwable != null) {
     e(throwable, message)
   } else {
@@ -20,7 +20,7 @@ fun e(throwable: Throwable?, message: () -> String) {
   }
 }
 
-fun i(throwable: Throwable?, message: () -> String) {
+fun i(throwable: Throwable? = null, message: () -> String) {
   if (throwable != null) {
     i(throwable, message)
   } else {

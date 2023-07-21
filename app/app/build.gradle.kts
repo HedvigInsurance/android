@@ -134,6 +134,7 @@ dependencies {
   implementation(projects.app.feature.changeaddress)
   implementation(projects.app.feature.claimTriaging)
   implementation(projects.app.feature.home)
+  implementation(projects.app.feature.insurances)
   implementation(projects.app.feature.odyssey)
   implementation(projects.app.feature.terminateInsurance)
   implementation(projects.app.feature.travelCertificate)

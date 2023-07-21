@@ -141,11 +141,6 @@
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".feature.insurance.ui.terminatedcontracts.TerminatedContractsActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name=".feature.embark.ui.EmbarkActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"

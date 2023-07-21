@@ -45,6 +45,7 @@ import com.hedvig.android.feature.businessmodel.di.businessModelModule
 import com.hedvig.android.feature.changeaddress.di.changeAddressModule
 import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
 import com.hedvig.android.feature.home.di.homeModule
+import com.hedvig.android.feature.insurances.di.insurancesModule
 import com.hedvig.android.feature.odyssey.di.odysseyModule
 import com.hedvig.android.feature.terminateinsurance.di.terminateInsuranceModule
 import com.hedvig.android.feature.travelcertificate.di.travelCertificateModule
@@ -114,12 +115,6 @@ import com.hedvig.app.feature.embark.ui.MemberIdViewModelImpl
 import com.hedvig.app.feature.embark.ui.TooltipViewModel
 import com.hedvig.app.feature.genericauth.GenericAuthViewModel
 import com.hedvig.app.feature.genericauth.otpinput.OtpInputViewModel
-import com.hedvig.app.feature.insurance.data.GetContractsUseCase
-import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
-import com.hedvig.app.feature.insurance.ui.detail.GetContractDetailsUseCase
-import com.hedvig.app.feature.insurance.ui.detail.coverage.di.insuranceCoverageModule
-import com.hedvig.app.feature.insurance.ui.tab.InsuranceViewModel
-import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
 import com.hedvig.app.feature.loggedin.ui.ReviewDialogViewModel
@@ -336,7 +331,6 @@ private val viewModelModule = module {
       multiActionParams,
     )
   }
-  viewModel { TerminatedContractsViewModel(get()) }
   viewModel { (quoteCartId: QuoteCartId) ->
     SwedishBankIdSignViewModel(quoteCartId, get(), get())
   }
@@ -375,13 +369,6 @@ private val onboardingModule = module {
   viewModel<MemberIdViewModel> { MemberIdViewModelImpl(get()) }
 }
 
-private val insuranceModule = module {
-  viewModel { InsuranceViewModel(get(), get(), get(), get()) }
-  viewModel<ContractDetailViewModel> { (contractId: String) ->
-    ContractDetailViewModel(contractId, get(), get())
-  }
-}
-
 private val offerModule = module {
   single<OfferRepository> { OfferRepository(get<ApolloClient>(giraffeClient), get(), get(), get()) }
   viewModel<OfferViewModel> { parametersHolder: ParametersHolder ->
@@ -405,7 +392,12 @@ private val offerModule = module {
 }
 
 private val profileModule = module {
-  single<ProfileRepository> { ProfileRepositoryImpl(get<ApolloClient>(giraffeClient), get<ApolloClient>(octopusClient)) }
+  single<ProfileRepository> {
+    ProfileRepositoryImpl(
+      giraffeApolloClient = get<ApolloClient>(giraffeClient),
+      octopusApolloClient = get<ApolloClient>(octopusClient),
+    )
+  }
   single<GetEurobonusStatusUseCase> { NetworkGetEurobonusStatusUseCase(get<ApolloClient>(octopusClient)) }
   viewModel<ProfileViewModel> { ProfileViewModel(get(), get(), get(), get(), get()) }
   viewModel<EurobonusViewModel> { EurobonusViewModel(get<ApolloClient>(octopusClient)) }
@@ -540,7 +532,7 @@ private val repositoriesModule = module {
 
 private val notificationModule = module {
   single { PaymentNotificationSender(get(), get(), get(), get()) } bind NotificationSender::class
-  single { CrossSellNotificationSender(get(), get(), get()) } bind NotificationSender::class
+  single { CrossSellNotificationSender(get(), get()) } bind NotificationSender::class
   single { ChatNotificationSender(get()) } bind NotificationSender::class
   single { ReferralsNotificationSender(get()) } bind NotificationSender::class
   single { GenericNotificationSender(get()) } bind NotificationSender::class
@@ -556,11 +548,8 @@ private val useCaseModule = module {
   single<LogoutUseCase> {
     LogoutUseCaseImpl(get(), get<ApolloClient>(giraffeClient), get(), get(), get(), get(), get(), get())
   }
-  single { GetContractsUseCase(get<ApolloClient>(giraffeClient), get()) }
   single { GraphQLQueryUseCase(get()) }
-  single { GetCrossSellsUseCase(get<ApolloClient>(octopusClient)) }
   single { GetInsuranceProvidersUseCase(get<ApolloClient>(giraffeClient), get(), get(isProductionQualifier)) }
-  single { GetContractDetailsUseCase(get<ApolloClient>(giraffeClient), get(), get()) }
   single<GetDanishAddressAutoCompletionUseCase> {
     GetDanishAddressAutoCompletionUseCase(get<ApolloClient>(giraffeClient))
   }
@@ -719,8 +708,7 @@ val applicationModule = module {
       hAnalyticsAndroidModule,
       hAnalyticsModule,
       homeModule,
-      insuranceCoverageModule,
-      insuranceModule,
+      insurancesModule,
       languageModule,
       logModule,
       marketManagerModule,
