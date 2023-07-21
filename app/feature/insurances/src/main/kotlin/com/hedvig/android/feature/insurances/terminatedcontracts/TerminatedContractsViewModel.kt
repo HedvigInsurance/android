@@ -45,7 +45,7 @@ internal class TerminatedContractsViewModel(
               contractId = contract.id,
               chips = contract.statusPills.toPersistentList(),
               title = contract.displayName,
-              subtitle = contract.statusPills.joinToString(" ∙ "),
+              subtitle = contract.detailPills.joinToString(" ∙ "),
             )
           }.toPersistentList(),
         )

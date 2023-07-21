@@ -75,7 +75,6 @@ internal fun InsuranceScreenPresenter(
         InsuranceScreenEvent.MarkCardCrossSellsAsSeen -> {
           crossSellCardNotificationBadgeService.markAsSeen()
         }
-        else -> {}
       }
     }
   }
@@ -166,7 +165,7 @@ private suspend fun loadInsuranceData(
             backgroundImageUrl = null, // Fill when we get image from backend
             chips = contract.statusPills.toPersistentList(),
             title = contract.displayName,
-            subtitle = contract.statusPills.joinToString(" ∙ "),
+            subtitle = contract.detailPills.joinToString(" ∙ "),
           )
         }.toPersistentList()
       val crossSells = crossSellsData.map { crossSell ->

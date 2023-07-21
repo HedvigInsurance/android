@@ -68,7 +68,7 @@ internal class GetContractDetailsUseCase(
             backgroundImageUrl = null, // Fill when we get image from backend
             chips = contract.statusPills.toPersistentList(),
             title = contract.displayName,
-            subtitle = contract.statusPills.joinToString(" ∙ "),
+            subtitle = contract.detailPills.joinToString(" ∙ "),
             gradientType = contract.typeOfContract.gradient(),
           ),
           overviewItems = contract.currentAgreementDetailsTable.fragments.tableFragment.sections.flatMap {
