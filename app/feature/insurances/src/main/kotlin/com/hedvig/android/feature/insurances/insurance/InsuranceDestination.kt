@@ -51,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -244,7 +245,7 @@ private fun ColumnScope.InsuranceScreenContent(
   if (quantityOfCancelledInsurances > 0) {
     Spacer(Modifier.height(24.dp))
     HedvigContainedButton(
-      text = stringResource(
+      text = pluralStringResource(
         R.plurals.insurances_tab_terminated_insurance_subtitile,
         quantityOfCancelledInsurances,
         quantityOfCancelledInsurances,
@@ -272,10 +273,13 @@ private fun CrossSellItem(
     )
     Spacer(Modifier.width(16.dp))
     Column(
-      modifier = modifier.weight(1f),
+      modifier = Modifier.weight(1f),
       verticalArrangement = Arrangement.Center,
     ) {
-      Text(crossSell.title)
+      Text(
+        text = crossSell.title,
+        style = MaterialTheme.typography.bodyMedium,
+      )
       Text(
         text = crossSell.subtitle,
         style = MaterialTheme.typography.bodyMedium.copy(
@@ -341,7 +345,13 @@ private fun PreviewInsuranceScreen() {
       InsuranceScreen(
         InsuranceUiState(
           insuranceCards = persistentListOf(),
-          crossSells = persistentListOf(),
+          crossSells = persistentListOf(
+            InsuranceUiState.CrossSell(
+              title = "Pet".repeat(5),
+              subtitle = "Unlimited FirstVet calls".repeat(2),
+              uri = Uri.EMPTY,
+            ),
+          ),
           showNotificationBadge = false,
           quantityOfCancelledInsurances = 0,
           hasError = false,
