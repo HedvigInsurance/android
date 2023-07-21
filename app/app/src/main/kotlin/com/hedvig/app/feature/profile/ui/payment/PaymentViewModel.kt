@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import slimber.log.e
 import kotlin.time.Duration.Companion.seconds
+import kotlinx.datetime.LocalDate
 
 abstract class PaymentViewModel(
   hAnalytics: HAnalytics,
@@ -67,4 +68,30 @@ class PaymentViewModelImpl(
       paymentRepository.refresh()
     }
   }
+}
+
+data class PaymentUiState(
+  val nextChargeAmount: String,
+  val nextChargeDate: LocalDate,
+  val insuranceCosts: List<InsuranceCost>,
+  val totalDiscount: String,
+  val activeDiscounts: List<Discount>,
+  val paymentMethod: PaymentMethod,
+  val discountCode: String? = null,
+  val discountError: String? = null,
+) {
+  data class InsuranceCost(
+    val displayName: String,
+    val cost: String,
+  )
+
+  data class PaymentMethod(
+    val displayName: String,
+    val displayValue: String,
+  )
+
+  data class Discount(
+    val code: String,
+    val displayName: String,
+  )
 }
