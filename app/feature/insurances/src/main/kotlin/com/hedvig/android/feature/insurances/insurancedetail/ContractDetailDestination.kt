@@ -119,7 +119,10 @@ private fun ContractDetailScreen(
               WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
             ),
           ) {
-            item {
+            item(
+              key = 1,
+              contentType = "InsuranceCard",
+            ) {
               val contractCardData = uiState.contractDetails.contractCardData
               InsuranceCard(
                 chips = contractCardData.chips,
@@ -132,9 +135,12 @@ private fun ContractDetailScreen(
                 } ?: ColorPainter(Color.Black.copy(alpha = 0.7f)),
               )
             }
-            item { Spacer(Modifier.height(16.dp)) }
-            stickyHeader { PagerSelector(pagerState) }
-            item {
+            item(key = 2, contentType = "space") { Spacer(Modifier.height(16.dp)) }
+            stickyHeader(key = 3, contentType = "PagerSelector") { PagerSelector(pagerState) }
+            item(
+              key = 4,
+              contentType = "Pager",
+            ) {
               HorizontalPager(
                 pageCount = 3,
                 state = pagerState,
