@@ -34,6 +34,7 @@ import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -58,8 +59,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
+import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.material3.onTypeContainer
 import com.hedvig.android.core.designsystem.material3.typeContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -244,7 +245,7 @@ private fun ColumnScope.InsuranceScreenContent(
   }
   if (quantityOfCancelledInsurances > 0) {
     Spacer(Modifier.height(24.dp))
-    HedvigContainedButton(
+    TerminatedContractsButton(
       text = pluralStringResource(
         R.plurals.insurances_tab_terminated_insurance_subtitile,
         quantityOfCancelledInsurances,
@@ -344,14 +345,45 @@ private fun NotificationSubheading(
   }
 }
 
+@Composable
+private fun TerminatedContractsButton(
+  text: String,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  HedvigCard(
+    onClick = onClick,
+    colors = CardDefaults.outlinedCardColors(
+      containerColor = MaterialTheme.colorScheme.surfaceVariant,
+      contentColor = MaterialTheme.colorScheme.onSurface,
+    ),
+    modifier = modifier,
+  ) {
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier.padding(16.dp).fillMaxWidth(),
+    ) {
+      Text(text)
+    }
+  }
+}
+
 @HedvigPreview
 @Composable
 private fun PreviewInsuranceScreen() {
-  HedvigTheme {
+  HedvigTheme(useNewColorScheme = true) {
     Surface(color = MaterialTheme.colorScheme.background) {
       InsuranceScreen(
         InsuranceUiState(
-          insuranceCards = persistentListOf(),
+          insuranceCards = persistentListOf(
+            InsuranceUiState.InsuranceCard(
+              "",
+              null,
+              persistentListOf("Chip"),
+              "Title",
+              "For you + 1",
+            ),
+          ),
           crossSells = persistentListOf(
             InsuranceUiState.CrossSell(
               title = "Pet".repeat(5),
@@ -360,7 +392,7 @@ private fun PreviewInsuranceScreen() {
             ),
           ),
           showNotificationBadge = false,
-          quantityOfCancelledInsurances = 0,
+          quantityOfCancelledInsurances = 1,
           hasError = false,
           loading = false,
         ),
