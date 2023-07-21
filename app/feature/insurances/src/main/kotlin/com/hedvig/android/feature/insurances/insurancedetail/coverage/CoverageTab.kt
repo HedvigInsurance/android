@@ -19,7 +19,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Divider
@@ -71,10 +73,11 @@ internal fun CoverageTab(
       // todo use "https://github.com/c5inco/smoother" for a top only squircle shape here
       sheetState = sheetState,
       tonalElevation = 0.dp,
-      windowInsets = WindowInsets(0.dp),
+      windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
     ) {
       Column(
         Modifier
+          .verticalScroll(rememberScrollState())
           .padding(horizontal = 24.dp)
           .padding(bottom = 16.dp)
           .windowInsetsPadding(

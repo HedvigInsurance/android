@@ -4,12 +4,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
@@ -61,7 +62,7 @@ internal fun YourInfoTab(
       // todo use "https://github.com/c5inco/smoother" for a top only squircle shape here
       sheetState = sheetState,
       tonalElevation = 0.dp,
-      windowInsets = WindowInsets(0.dp),
+      windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
     ) {
       EditInsuranceBottomSheetContent(
         allowEditCoInsured = allowEditCoInsured,
@@ -86,6 +87,7 @@ internal fun YourInfoTab(
           }
         },
         modifier = Modifier
+          .verticalScroll(rememberScrollState())
           .padding(horizontal = 16.dp)
           .padding(bottom = 16.dp)
           .windowInsetsPadding(
