@@ -7,6 +7,7 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
+import com.hedvig.android.theme.Theme
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +21,7 @@ class SettingsViewModel(
   hAnalytics: HAnalytics,
   private val changeLanguageUseCase: ChangeLanguageUseCase,
   marketManager: MarketManager,
-  languageService: LanguageService,
+  private val languageService: LanguageService,
   private val settingsDataStore: SettingsDataStore,
 ) : ViewModel() {
 
@@ -41,18 +42,9 @@ class SettingsViewModel(
 
     settingsDataStore
       .observeTheme()
-      .onEach { themeString ->
+      .onEach { theme ->
         _uiState.update {
-          it.copy(selectedTheme = Theme.valueOf(themeString))
-        }
-      }
-      .launchIn(viewModelScope)
-
-    settingsDataStore
-      .observeLanguage()
-      .onEach { languageString ->
-        _uiState.update {
-          it.copy(selectedLanguage = Language.valueOf(languageString))
+          it.copy(selectedTheme = theme)
         }
       }
       .launchIn(viewModelScope)
@@ -69,13 +61,14 @@ class SettingsViewModel(
   fun applyLanguage(language: Language) {
     viewModelScope.launch {
       changeLanguageUseCase.invoke(language)
-      settingsDataStore.setLanguage(language.name)
+      languageService.setLanguage(language)
+      _uiState.update { it.copy(selectedLanguage = language) }
     }
   }
 
   fun applyTheme(theme: Theme) {
     viewModelScope.launch {
-      settingsDataStore.setTheme(theme.name)
+      settingsDataStore.setTheme(theme)
     }
   }
 

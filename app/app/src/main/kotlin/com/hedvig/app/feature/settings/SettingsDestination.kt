@@ -48,6 +48,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.theme.Theme
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigBigCard
 import com.hedvig.android.core.designsystem.component.card.HedvigInfoCard
@@ -65,12 +66,11 @@ internal fun SettingsDestination(
   onBackPressed: () -> Unit,
 ) {
   val context = LocalContext.current
-  val notificationManager = NotificationManagerCompat.from(context)
+  val notificationManager = remember(context) { NotificationManagerCompat.from(context) }
   var notificationsEnabled by remember { mutableStateOf(notificationManager.areNotificationsEnabled()) }
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val lifecycleOwner = LocalLifecycleOwner.current
-
-  DisposableEffect(lifecycleOwner) {
+  DisposableEffect(lifecycleOwner, notificationManager) {
     val observer = LifecycleEventObserver { _, event ->
       if (event == Lifecycle.Event.ON_RESUME) {
         notificationsEnabled = notificationManager.areNotificationsEnabled()
@@ -136,7 +136,7 @@ fun SettingsScreen(
         )
         Spacer(Modifier.height(4.dp))
         HedvigBigCard(
-          onClick = { startSettingsActivity(context) },
+          onClick = { startAndroidSettingsActivity(context) },
           inputText = if (notificationsEnabled) {
             stringResource(id = R.string.PROFILE_NOTIFICATIONS_STATUS_ON)
           } else {
@@ -190,7 +190,7 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.width(12.dp))
                 HedvigContainedSmallButton(
                   text = stringResource(id = R.string.PUSH_NOTIFICATIONS_ALERT_ACTION_OK),
-                  onClick = { startSettingsActivity(context) },
+                  onClick = { startAndroidSettingsActivity(context) },
                   colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.onPrimary,
                     contentColor = MaterialTheme.colorScheme.primary,
@@ -290,7 +290,7 @@ internal fun ThemeWithDialog(
   )
 }
 
-private fun startSettingsActivity(context: Context) {
+private fun startAndroidSettingsActivity(context: Context) {
   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
     context.startActivity(
       Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
@@ -306,4 +306,10 @@ private fun startSettingsActivity(context: Context) {
       },
     )
   }
+}
+
+fun Theme.getLabel() = when (this) {
+  Theme.LIGHT -> R.string.SETTINGS_THEME_LIGHT
+  Theme.DARK -> R.string.SETTINGS_THEME_DARK
+  Theme.SYSTEM_DEFAULT -> R.string.SETTINGS_THEME_SYSTEM_DEFAULT
 }

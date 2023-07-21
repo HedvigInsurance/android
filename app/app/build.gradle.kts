@@ -149,6 +149,7 @@ dependencies {
   implementation(projects.app.notification.firebase)
   implementation(projects.app.notification.notificationCore)
   implementation(projects.app.notificationBadgeData)
+  implementation(projects.app.theme)
 
   testImplementation(projects.app.apollo.giraffeTest)
   testImplementation(projects.app.auth.authEventTest)

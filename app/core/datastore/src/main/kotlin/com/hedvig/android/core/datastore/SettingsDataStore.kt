@@ -4,41 +4,28 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.hedvig.android.theme.Theme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 interface SettingsDataStore {
-  suspend fun setTheme(theme: String)
-  fun observeTheme(): Flow<String>
-  suspend fun setLanguage(language: String)
-  fun observeLanguage(): Flow<String>
+  suspend fun setTheme(theme: Theme)
+  fun observeTheme(): Flow<Theme>
 }
 
 internal class SettingsDataStoreImpl(
   private val dataStore: DataStore<Preferences>,
 ) : SettingsDataStore {
 
-  private val languageKey = stringPreferencesKey("settings-language")
   private val themeKey = stringPreferencesKey("settings-theme")
 
-  override suspend fun setTheme(theme: String) {
+  override suspend fun setTheme(theme: Theme) {
     dataStore.edit {
-      it[themeKey] = theme
+      it[themeKey] = theme.name
     }
   }
 
-  override fun observeTheme(): Flow<String> {
-    return dataStore.data.map { it[themeKey] ?: "LIGHT" }
+  override fun observeTheme(): Flow<Theme> {
+    return dataStore.data.map { it[themeKey]?.let { themeString -> Theme.valueOf(themeString) } ?: Theme.LIGHT }
   }
-
-  override suspend fun setLanguage(language: String) {
-    dataStore.edit {
-      it[languageKey] = language
-    }
-  }
-
-  override fun observeLanguage(): Flow<String> {
-    return dataStore.data.map { it[languageKey] ?: "EN_SE" }
-  }
-
 }
