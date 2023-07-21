@@ -32,7 +32,6 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -62,7 +61,9 @@ internal fun CoverageTab(
 ) {
   val coroutineScope = rememberCoroutineScope()
   val sheetState = rememberModalBottomSheetState(true)
-  var selectedInsurableLimit by remember { mutableStateOf<ContractCoverage.InsurableLimit?>(null) }
+  var selectedInsurableLimit by rememberSaveable(stateSaver = ContractCoverage.InsurableLimit.Saver) {
+    mutableStateOf<ContractCoverage.InsurableLimit?>(null)
+  }
   val selectedInsurableLimitValue = selectedInsurableLimit
   if (selectedInsurableLimitValue != null) {
     ModalBottomSheet(

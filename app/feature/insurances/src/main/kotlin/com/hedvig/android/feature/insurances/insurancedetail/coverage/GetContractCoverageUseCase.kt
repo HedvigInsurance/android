@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.insurances.insurancedetail.coverage
 
+import androidx.compose.runtime.saveable.listSaver
 import arrow.core.Either
 import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
@@ -38,7 +39,34 @@ internal data class ContractCoverage(
     val label: String,
     val limit: String,
     val description: String,
-  )
+  ) {
+    companion object {
+      val Saver = listSaver<InsurableLimit?, String>(
+        save = {
+          if (it == null) {
+            emptyList()
+          } else {
+            listOf<String>(
+              it.label,
+              it.limit,
+              it.description,
+            )
+          }
+        },
+        restore = {
+          if (it.size != 3) {
+            null
+          } else {
+            InsurableLimit(
+              label = it[0],
+              limit = it[1],
+              description = it[2],
+            )
+          }
+        },
+      )
+    }
+  }
 
   internal data class Peril(
     val id: String,
