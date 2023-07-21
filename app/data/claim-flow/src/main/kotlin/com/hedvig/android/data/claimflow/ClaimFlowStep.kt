@@ -50,7 +50,7 @@ sealed interface ClaimFlowStep {
 
   data class ClaimSelectContractStep(
     override val flowId: FlowId,
-    val options: List<FlowClaimContractSelectStepFragment.Option>
+    val options: List<FlowClaimContractSelectStepFragment.Option>,
   ) : ClaimFlowStep
 
   data class ClaimSingleItemStep(
@@ -173,7 +173,7 @@ internal fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(flowId: FlowId): 
     is ClaimFlowStepFragment.FlowClaimSuccessStepCurrentStep -> ClaimFlowStep.ClaimSuccessStep(flowId)
     is ClaimFlowStepFragment.FlowClaimContractSelectStepCurrentStep -> ClaimFlowStep.ClaimSelectContractStep(
       flowId,
-      options
+      options,
     )
     else -> ClaimFlowStep.UnknownStep(flowId)
   }

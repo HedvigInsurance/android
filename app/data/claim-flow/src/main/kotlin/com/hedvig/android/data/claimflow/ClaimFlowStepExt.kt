@@ -77,13 +77,13 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
     is ClaimFlowStep.ClaimFailedStep -> ClaimFlowDestination.Failure
     is ClaimFlowStep.UnknownStep -> ClaimFlowDestination.UpdateApp
     is ClaimFlowStep.ClaimSelectContractStep -> ClaimFlowDestination.SelectContract(
-      options = options.map { it.toLocalOptions() }
+      options = options.map { it.toLocalOptions() },
     )
   }
 }
 
 private fun FlowClaimContractSelectStepFragment.Option.toLocalOptions(): LocalContractContractOption {
- return LocalContractContractOption(id, displayName)
+  return LocalContractContractOption(id, displayName)
 }
 
 internal fun FlowClaimSingleItemStepFragment.AvailableItemModel.toItemModel(): ItemModel {
