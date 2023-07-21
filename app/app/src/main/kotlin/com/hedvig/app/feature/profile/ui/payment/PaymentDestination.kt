@@ -88,7 +88,7 @@ fun PaymentScreen(
         PaymentHistory(onClick = {})
         Spacer(Modifier.height(16.dp))
         HedvigContainedButton(
-          text = "Change bank account",
+          text = stringResource(id = R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT),
           onClick = {},
         )
       }
@@ -113,7 +113,7 @@ private fun NextPayment(uiState: PaymentUiState, locale: Locale) {
       .padding(vertical = 12.dp),
     horizontalArrangement = Arrangement.SpaceBetween,
   ) {
-    Text("Next payment") // TODO
+    Text(stringResource(R.string.PAYMENTS_NEXT_PAYMENT_SECTION_TITLE))
     Text(
       text = uiState.nextChargeDate.toString(),
       color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -162,7 +162,7 @@ private fun TotalDiscount(uiState: PaymentUiState) {
       .padding(vertical = 12.dp),
     horizontalArrangement = Arrangement.SpaceBetween,
   ) {
-    Text("Discounts")
+    Text(stringResource(R.string.PAYMENTS_DISCOUNTS_SECTION_TITLE))
     Text(
       text = uiState.totalDiscount,
       color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -177,7 +177,7 @@ private fun AddDiscount(uiState: PaymentUiState) {
     horizontalArrangement = Arrangement.SpaceBetween,
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    Text("Add code")
+    Text(stringResource(R.string.PAYMENTS_ADD_CODE_LABEL))
     Switch(
       checked = true,
       onCheckedChange = {},
@@ -211,7 +211,7 @@ private fun AddDiscount(uiState: PaymentUiState) {
     )
     Spacer(Modifier.width(8.dp))
     HedvigContainedSmallButton(
-      text = "Add", // TODO
+      text = stringResource(id = R.string.PAYMENTS_ADD_CODE_BUTTON_LABEL),
       onClick = {},
       contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
       colors = ButtonDefaults.buttonColors(
@@ -273,7 +273,7 @@ fun PaymentHistory(onClick: () -> Unit) {
         modifier = Modifier.size(24.dp),
       )
       Spacer(Modifier.width(16.dp))
-      Text("Payment history")
+      Text(stringResource(id = R.string.PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL))
     }
     Icon(
       imageVector = Icons.Hedvig.ChevronRight,
