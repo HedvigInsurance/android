@@ -1,16 +1,13 @@
 package com.hedvig.android.app.ui
 
 import android.os.Bundle
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -105,43 +102,6 @@ internal class HedvigAppState(
     get() {
       val navRailWidthRequirements = windowSizeClass.widthSizeClass != WindowWidthSizeClass.Compact
       return navRailWidthRequirements && shouldShowNavBars
-    }
-
-  val backgroundColors: GradientColors
-    @Composable
-    get() {
-      val isLightMode = !isSystemInDarkTheme()
-      return when (currentTopLevelAppDestination) {
-        AppDestination.TopLevelDestination.Home -> {
-          if (isLightMode) {
-            GradientColors(Color(0xFFC0CAD8), Color(0xFFEDCDAB), Color(0xFFF6F6F6))
-          } else {
-            GradientColors(Color(0xFF121212), Color(0xFF1B2631), Color(0xFF34221E))
-          }
-        }
-        AppDestination.TopLevelDestination.Insurance -> {
-          if (isLightMode) {
-            GradientColors(Color(0xFFF6F6F6))
-          } else {
-            GradientColors(Color(0xFF121212))
-          }
-        }
-        AppDestination.TopLevelDestination.Referrals -> {
-          if (isLightMode) {
-            GradientColors(Color(0xFFD3D3D3), Color(0xFFE5E5E5), Color(0xFFF6F6F6))
-          } else {
-            GradientColors(Color(0xFF121212), Color(0xFF131313), Color(0xFF262626))
-          }
-        }
-        AppDestination.TopLevelDestination.Profile -> {
-          if (isLightMode) {
-            GradientColors(Color(0xFFDCDEF5), Color(0xFFEFF0FB), Color(0xFFF6F6F6))
-          } else {
-            GradientColors(Color(0xFF121212), Color(0xFF0F0F05), Color(0xFF1E1D0A))
-          }
-        }
-        null -> GradientColors(Color.Transparent)
-      }
     }
 
   val topLevelGraphs: StateFlow<ImmutableSet<TopLevelGraph>> = flow {
@@ -258,15 +218,6 @@ private fun TopLevelDestinationNavigationSideEffect(
       navController.removeOnDestinationChangedListener(listener)
     }
   }
-}
-
-@Immutable
-internal data class GradientColors(
-  val color1: Color,
-  val color2: Color,
-  val color3: Color,
-) {
-  constructor(color: Color) : this(color, color, color)
 }
 
 private fun BottomNavTab.topTopLevelGraph(): TopLevelGraph {

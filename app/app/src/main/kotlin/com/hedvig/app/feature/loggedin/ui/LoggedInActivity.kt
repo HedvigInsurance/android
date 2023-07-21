@@ -7,12 +7,9 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.AnimationVector4D
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.TwoWayConverter
 import androidx.compose.animation.core.animateValueAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.expandVertically
@@ -40,10 +37,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
-import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -56,7 +49,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import coil.ImageLoader
 import com.hedvig.android.app.navigation.HedvigNavHost
-import com.hedvig.android.app.ui.GradientColors
 import com.hedvig.android.app.ui.HedvigAppState
 import com.hedvig.android.app.ui.HedvigBottomBar
 import com.hedvig.android.app.ui.HedvigNavRail
@@ -293,12 +285,7 @@ private fun HedvigApp(
     contentColor = MaterialTheme.colorScheme.onBackground,
     modifier = Modifier.fillMaxSize(),
   ) {
-    Column(
-      modifier = Modifier.drawBackgroundGradient(
-        colorBehindBackgroundGradient = MaterialTheme.colorScheme.background,
-        backgroundColors = hedvigAppState.backgroundColors,
-      ),
-    ) {
+    Column {
       Row(Modifier.weight(1f).fillMaxWidth()) {
         AnimatedVisibility(
           visible = hedvigAppState.shouldShowNavRail,
@@ -347,30 +334,6 @@ private fun HedvigApp(
           currentDestination = hedvigAppState.currentDestination,
         )
       }
-    }
-  }
-}
-
-private fun Modifier.drawBackgroundGradient(
-  colorBehindBackgroundGradient: Color,
-  backgroundColors: GradientColors,
-): Modifier = composed {
-  val color1 by animateColorAsState(
-    backgroundColors.color1.compositeOver(colorBehindBackgroundGradient),
-    spring(stiffness = Spring.StiffnessVeryLow),
-  )
-  val color2 by animateColorAsState(
-    backgroundColors.color2.compositeOver(colorBehindBackgroundGradient),
-    spring(stiffness = Spring.StiffnessVeryLow),
-  )
-  val color3 by animateColorAsState(
-    backgroundColors.color3.compositeOver(colorBehindBackgroundGradient),
-    spring(stiffness = Spring.StiffnessVeryLow),
-  )
-  Modifier.drawWithCache {
-    val gradient = Brush.linearGradient(listOf(color1, color2, color3))
-    onDrawBehind {
-      drawRect(gradient)
     }
   }
 }
