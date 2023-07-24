@@ -14,8 +14,10 @@ import arrow.fx.coroutines.parZip
 import com.hedvig.android.core.common.RetryChannel
 import com.hedvig.android.core.common.android.i
 import com.hedvig.android.core.ui.MoleculeViewModel
+import com.hedvig.android.core.ui.insurance.GradientType
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
+import com.hedvig.android.feature.insurances.data.gradient
 import com.hedvig.android.feature.insurances.data.isTerminated
 import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeService
 import giraffe.InsuranceContractsQuery
@@ -122,6 +124,7 @@ internal data class InsuranceUiState(
     val chips: ImmutableList<String>,
     val title: String,
     val subtitle: String,
+    val gradientType: GradientType,
   )
 
   data class CrossSell(
@@ -166,6 +169,7 @@ private suspend fun loadInsuranceData(
             chips = contract.statusPills.toPersistentList(),
             title = contract.displayName,
             subtitle = contract.detailPills.joinToString(" ∙ "),
+            gradientType = contract.typeOfContract.gradient(),
           )
         }.toPersistentList()
       val crossSells = crossSellsData.map { crossSell ->
