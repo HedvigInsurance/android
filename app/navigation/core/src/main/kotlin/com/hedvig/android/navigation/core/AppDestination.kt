@@ -45,9 +45,6 @@ sealed interface AppDestination : Destination {
   @Serializable
   object Settings : AppDestination
 
-  @Serializable
-  data class ContractDetail(val contractId: String) : AppDestination
-
 //  @Serializable
 //  object LegacyClaimsTriaging : AppDestination
 }
