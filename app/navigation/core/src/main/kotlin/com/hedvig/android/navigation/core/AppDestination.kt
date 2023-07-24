@@ -45,6 +45,12 @@ sealed interface AppDestination : Destination {
   @Serializable
   object Settings : AppDestination
 
+  @Serializable
+  data class TerminateInsurance(
+    val insuranceId: String,
+    val insuranceDisplayName: String,
+  ) : AppDestination
+
 //  @Serializable
 //  object LegacyClaimsTriaging : AppDestination
 }
