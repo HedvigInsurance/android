@@ -46,108 +46,11 @@ class PaymentHistoryViewModel(
   }
 }
 
-private fun PaymentRepository.ChargeHistory.toUiState2(locale: Locale) = PaymentHistoryViewModel.PaymentHistoryUiState(
+private fun PaymentRepository.ChargeHistory.toUiState(locale: Locale) = PaymentHistoryViewModel.PaymentHistoryUiState(
   charges = charges.map {
     PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
       amount = it.amount.format(locale),
       date = it.date,
     )
   },
-)
-
-
-private fun PaymentRepository.ChargeHistory.toUiState(locale: Locale) = PaymentHistoryViewModel.PaymentHistoryUiState(
-  charges = listOf(
-    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
-      amount = "300kr",
-      date = LocalDate.now(),
-    ),
-    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
-      amount = "300kr",
-      date = LocalDate.now(),
-    ),
-    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
-      amount = "300kr",
-      date = LocalDate.now(),
-    ),PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
-      amount = "300kr",
-      date = LocalDate.now(),
-    ),
-    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
-      amount = "300kr",
-      date = LocalDate.now(),
-    ),
-    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
-      amount = "300kr",
-      date = LocalDate.now(),
-    ),
-    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
-      amount = "300kr",
-      date = LocalDate.now(),
-    ),
-    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
-      amount = "300kr",
-      date = LocalDate.now(),
-    ),
-    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
-      amount = "300kr",
-      date = LocalDate.now(),
-    ),
-    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
-      amount = "300kr",
-      date = LocalDate.now(),
-    ),
-    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
-      amount = "300kr",
-      date = LocalDate.now(),
-    ),
-    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
-      amount = "300kr",
-      date = LocalDate.now(),
-    ),
-    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
-      amount = "300kr",
-      date = LocalDate.now(),
-    ),
-    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
-      amount = "300kr",
-      date = LocalDate.now(),
-    ),
-    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
-      amount = "300kr",
-      date = LocalDate.now(),
-    ),
-    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
-      amount = "300kr",
-      date = LocalDate.now(),
-    ),
-    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
-      amount = "300kr",
-      date = LocalDate.now(),
-    ),
-    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
-      amount = "300kr",
-      date = LocalDate.now(),
-    ),
-    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
-      amount = "300kr",
-      date = LocalDate.now(),
-    ),
-    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
-      amount = "300kr",
-      date = LocalDate.now(),
-    ),
-    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
-      amount = "300kr",
-      date = LocalDate.now(),
-    ),
-    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
-      amount = "300kr",
-      date = LocalDate.now(),
-    ),
-    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
-      amount = "350kr",
-      date = LocalDate.now(),
-    ),
-  ),
 )
