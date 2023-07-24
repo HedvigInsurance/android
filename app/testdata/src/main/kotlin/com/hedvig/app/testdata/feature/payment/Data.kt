@@ -49,6 +49,7 @@ val PAYMENT_DATA_FREE_MONTHS = PaymentDataBuilder(
       owner = PaymentQuery.Owner(
         displayName = "Test Owner",
       ),
+      code = "",
       fragments = PaymentQuery.RedeemedCampaign.Fragments(
         IncentiveFragment(
           incentive = IncentiveFragment.Incentive(
@@ -79,6 +80,7 @@ val PAYMENT_DATA_REFERRAL = PaymentDataBuilder(
     PaymentQuery.RedeemedCampaign(
       __typename = "",
       owner = null,
+      code = "",
       fragments = PaymentQuery.RedeemedCampaign.Fragments(
         IncentiveFragment(
           incentive = IncentiveFragment.Incentive(
@@ -104,6 +106,7 @@ val PAYMENT_DATA_PERCENTAGE_CAMPAIGN = PaymentDataBuilder(
     PaymentQuery.RedeemedCampaign(
       __typename = "",
       owner = null,
+      code = "",
       fragments = PaymentQuery.RedeemedCampaign.Fragments(
         IncentiveFragment(
           incentive = IncentiveFragment.Incentive(

@@ -114,6 +114,7 @@ data class PaymentDataBuilder(
       null
     },
     activePayoutMethods = payoutConnectionStatus?.let { PaymentQuery.ActivePayoutMethods(status = it) },
+    insuranceCost = null,
   )
 }
 

@@ -24,10 +24,10 @@ class PaymentViewModel2(
   val uiState: StateFlow<PaymentUiState> = _uiState
 
   data class PaymentUiState(
-    val nextChargeAmount: String? = "300 kr",
+    val nextChargeAmount: String? = null,
     val nextChargeDate: LocalDate? = null,
     val insuranceCosts: List<InsuranceCost> = emptyList(),
-    val totalDiscount: String? = "-40kr/man",
+    val totalDiscount: String? = null,
     val activeDiscounts: List<Discount> = emptyList(),
     val paymentMethod: PaymentMethod? = null,
     val discountCode: CampaignCode? = null,
@@ -37,7 +37,7 @@ class PaymentViewModel2(
   ) {
     data class InsuranceCost(
       val displayName: String,
-      val cost: String,
+      val cost: String?,
     )
 
     data class PaymentMethod(
@@ -52,7 +52,12 @@ class PaymentViewModel2(
   }
 
   init {
+    loadPaymentData()
+  }
+
+  private fun loadPaymentData() {
     viewModelScope.launch {
+      _uiState.update { it.copy(isLoading = true) }
       paymentRepository.getPaymentData().fold(
         ifLeft = { _uiState.update { it.copy(errorMessage = it.errorMessage) } },
         ifRight = { _uiState.value = it.toUiState(languageService.getLocale()) },
@@ -70,39 +75,27 @@ class PaymentViewModel2(
       redeemReferralCodeRepository.redeemReferralCode(code)
         .fold(
           ifLeft = { error -> _uiState.update { it.copy(discountError = error.message) } },
-          ifRight = { data ->
-            _uiState.update {
-              it.copy(
-                activeDiscounts = listOf(
-                  PaymentUiState.Discount(
-                    code = data?.redeemCode?.campaigns?.firstOrNull()?.fragments?.incentiveFragment?.displayValue ?: "",
-                    displayName = data?.redeemCode?.cost?.fragments?.costFragment?.monthlyGross?.fragments?.monetaryAmountFragment?.amount
-                      ?: "",
-                  ),
-                ),
-              )
-            }
-          },
+          ifRight = { data -> loadPaymentData() },
         )
     }
   }
 }
 
 private fun PaymentRepository.PaymentData.toUiState(locale: Locale) = PaymentViewModel2.PaymentUiState(
-  nextChargeAmount = chargeEstimation.format(locale),
+  nextChargeAmount = chargeEstimation?.format(locale),
   nextChargeDate = nextChargeDate,
   insuranceCosts = contracts.map {
     PaymentViewModel2.PaymentUiState.InsuranceCost(
       displayName = it,
-      cost = "X kr/mån",
+      cost = null,
     )
   },
-  totalDiscount = totalDiscount.format(locale),
+  totalDiscount = totalDiscount?.negate()?.format(locale),
   activeDiscounts = redeemedCampagins.map {
-     PaymentViewModel2.PaymentUiState.Discount(
-       code = it.incentive.toString(),
-       displayName = it.displayValue ?: "Unknown"
-     )
+    PaymentViewModel2.PaymentUiState.Discount(
+      code = it.code,
+      displayName = it.displayValue ?: "-",
+    )
   },
   paymentMethod = PaymentViewModel2.PaymentUiState.PaymentMethod(
     displayName = when (paymentMethod) {
@@ -114,6 +107,6 @@ private fun PaymentRepository.PaymentData.toUiState(locale: Locale) = PaymentVie
       is PaymentMethod.CardPaymentMethod -> paymentMethod.lastFourDigits
       is PaymentMethod.ThirdPartyPaymentMethd -> paymentMethod.type
       null -> null
-    }
+    },
   ),
 )

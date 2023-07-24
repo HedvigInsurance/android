@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.profile.ui.payment
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.ButtonDefaults
@@ -49,10 +51,11 @@ import com.hedvig.android.core.designsystem.newtheme.SquircleShape
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.ChevronRight
 import com.hedvig.android.core.icons.hedvig.normal.Payments
 import com.hedvig.android.core.icons.hedvig.normal.Waiting
 import com.hedvig.android.core.ui.clearFocusOnTap
+import com.hedvig.android.core.ui.hedvigDateTimeFormatter
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.market.Market
 import com.hedvig.app.feature.offer.usecase.CampaignCode
@@ -70,23 +73,29 @@ fun PaymentDestination(
 ) {
   val context = LocalContext.current
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  PaymentScreen(
-    uiState = uiState,
-    locale = Locale.ENGLISH,
-    navigateUp = onBackPressed,
-    onChangeBankAccount = {
-      context.startActivity(
-        connectPayinIntent(
-          context,
-          PaymentType.TRUSTLY,
-          Market.SE,
-          false,
-        ),
+
+  AnimatedContent(targetState = uiState.isLoading) { loading ->
+    when (loading) {
+      true -> HedvigFullScreenCenterAlignedProgress(show = uiState.isLoading)
+      false -> PaymentScreen(
+        uiState = uiState,
+        locale = Locale.ENGLISH,
+        navigateUp = onBackPressed,
+        onChangeBankAccount = {
+          context.startActivity(
+            connectPayinIntent(
+              context,
+              PaymentType.TRUSTLY,
+              Market.SE,
+              false,
+            ),
+          )
+        },
+        onAddDiscountCode = viewModel::onDiscountCodeAdded,
+        onDiscountCodeChanged = viewModel::onDiscountCodeChanged,
       )
-    },
-    onAddDiscountCode = viewModel::onDiscountCodeAdded,
-    onDiscountCodeChanged = viewModel::onDiscountCodeChanged,
-  )
+    }
+  }
 }
 
 @Composable
@@ -115,11 +124,29 @@ fun PaymentScreen(
       Spacer(Modifier.height(4.dp))
       Divider()
       Spacer(Modifier.height(16.dp))
-      AddDiscount(
-        uiState = uiState,
-        onAddDiscountCode = onAddDiscountCode,
-        onDiscountCodeChanged = onDiscountCodeChanged,
-      )
+      if (uiState.activeDiscounts.isEmpty()) {
+        AddDiscount(
+          uiState = uiState,
+          onAddDiscountCode = onAddDiscountCode,
+          onDiscountCodeChanged = onDiscountCodeChanged,
+        )
+      }
+      if (uiState.activeDiscounts.isNotEmpty()) {
+        uiState.activeDiscounts.forEach {
+          Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text(it.code)
+            Text(
+              text = it.displayName,
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+          }
+          Spacer(Modifier.height(4.dp))
+        }
+        Spacer(Modifier.height(12.dp))
+        Divider()
+        Spacer(Modifier.height(4.dp))
+        TotalAmount(uiState)
+      }
       Spacer(Modifier.height(32.dp))
       PaymentDetails(uiState)
       Spacer(Modifier.height(4.dp))
@@ -153,7 +180,7 @@ private fun NextPayment(uiState: PaymentUiState, locale: Locale) {
   ) {
     Text(stringResource(R.string.PAYMENTS_NEXT_PAYMENT_SECTION_TITLE))
     Text(
-      text = uiState.nextChargeDate.toString(),
+      text = uiState.nextChargeDate?.format(hedvigDateTimeFormatter(locale)) ?: "-",
       color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
   }
@@ -183,10 +210,12 @@ private fun InsuranceCosts(
         Spacer(Modifier.width(8.dp))
         Text(insuranceCost.displayName)
       }
-      Text(
-        text = insuranceCost.cost.format(locale),
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-      )
+      if (insuranceCost.cost != null) {
+        Text(
+          text = insuranceCost.cost.format(locale),
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+      }
     }
     Divider()
   }
@@ -228,17 +257,6 @@ private fun AddDiscount(
     )
   }
   Spacer(Modifier.height(12.dp))
-  uiState.activeDiscounts.forEach {
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-      Text(it.code)
-      Text(
-        text = it.displayName,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-      )
-    }
-    Spacer(Modifier.height(4.dp))
-  }
-  Spacer(Modifier.height(12.dp))
   AnimatedVisibility(
     visible = showDiscountInput,
     enter = fadeIn(),
@@ -251,10 +269,13 @@ private fun AddDiscount(
       HedvigTextField(
         value = uiState.discountCode?.code ?: "",
         onValueChange = { onDiscountCodeChanged(CampaignCode(it)) },
-        errorText = uiState.discountError,
+        errorText = uiState.discountError?.let { stringResource(id = R.string.general_error) },
         label = {
           Text(stringResource(id = R.string.REFERRAL_ADDCOUPON_INPUTPLACEHOLDER))
         },
+        keyboardActions = KeyboardActions(
+          onDone = { onAddDiscountCode() },
+        ),
         modifier = Modifier.weight(1f),
       )
       Spacer(Modifier.width(8.dp))
@@ -269,6 +290,26 @@ private fun AddDiscount(
         modifier = Modifier.widthIn(min = 127.dp),
       )
     }
+  }
+}
+
+
+@Composable
+private fun TotalAmount(uiState: PaymentUiState) {
+  Row(
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(vertical = 12.dp),
+    horizontalArrangement = Arrangement.SpaceBetween,
+  ) {
+    Text(stringResource(id = R.string.payment_details_receipt_card_total))
+    Text(
+      text = stringResource(
+        id = R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+        uiState.nextChargeAmount ?: "-",
+      ),
+      color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
   }
 }
 
@@ -311,25 +352,15 @@ fun PaymentHistory(onClick: () -> Unit) {
       .clip(SquircleShape)
       .clickable { onClick() }
       .padding(vertical = 12.dp),
-    horizontalArrangement = Arrangement.SpaceBetween,
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    Row(
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      Icon(
-        imageVector = Icons.Hedvig.Waiting,
-        contentDescription = null,
-        modifier = Modifier.size(24.dp),
-      )
-      Spacer(Modifier.width(16.dp))
-      Text(stringResource(id = R.string.PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL))
-    }
     Icon(
-      imageVector = Icons.Hedvig.ChevronRight,
+      imageVector = Icons.Hedvig.Waiting,
       contentDescription = null,
-      modifier = Modifier.size(16.dp),
+      modifier = Modifier.size(24.dp),
     )
+    Spacer(Modifier.width(16.dp))
+    Text(stringResource(id = R.string.PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL))
   }
 }
 

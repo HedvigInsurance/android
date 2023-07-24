@@ -52,20 +52,25 @@ class PaymentRepository(
   }
 
   suspend fun getPaymentData(): Either<OperationResult.Error, PaymentData> = either {
-    apolloClient.query(paymentQuery)
+    apolloClient
+      .query(paymentQuery)
+      .fetchPolicy(FetchPolicy.NetworkOnly)
       .safeExecute()
       .toEither()
       .map {
         PaymentData(
-          chargeEstimation = it.chargeEstimation.charge.fragments.monetaryAmountFragment.toMonetaryAmount(),
-          totalDiscount = it.chargeEstimation.discount.fragments.monetaryAmountFragment.toMonetaryAmount(),
-          subscription =  it.chargeEstimation.subscription.fragments.monetaryAmountFragment.toMonetaryAmount(),
+          chargeEstimation = it.insuranceCost?.fragments?.costFragment?.monthlyNet?.fragments?.monetaryAmountFragment?.toMonetaryAmount(),
+          totalDiscount = it.insuranceCost?.fragments?.costFragment?.monthlyDiscount?.fragments?.monetaryAmountFragment?.toMonetaryAmount(),
+          subscription = it.chargeEstimation.subscription.fragments.monetaryAmountFragment.toMonetaryAmount(),
           nextChargeDate = it.nextChargeDate,
-          contracts = it.contracts.map { it.displayName },
+          contracts = it.contracts
+            .filter { it.status.fragments.contractStatusFragment.asActiveStatus != null }
+            .map { it.displayName },
           redeemedCampagins = it.redeemedCampaigns.map {
             Campaign(
               incentive = it.fragments.incentiveFragment.incentive.toIncentive(),
               displayValue = it.fragments.incentiveFragment.displayValue,
+              code = it.code,
             )
           },
           bankName = it.bankAccount?.fragments?.bankAccountFragment?.bankName,
@@ -97,8 +102,8 @@ class PaymentRepository(
   }
 
   data class PaymentData(
-    val chargeEstimation: MonetaryAmount,
-    val totalDiscount: MonetaryAmount,
+    val chargeEstimation: MonetaryAmount?,
+    val totalDiscount: MonetaryAmount?,
     val subscription: MonetaryAmount,
     val nextChargeDate: LocalDate?,
     val redeemedCampagins: List<Campaign>,

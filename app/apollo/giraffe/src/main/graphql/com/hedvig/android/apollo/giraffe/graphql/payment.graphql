@@ -28,6 +28,7 @@ query Payment($locale: Locale!) {
   }
   redeemedCampaigns {
     ...IncentiveFragment
+    code
     owner {
       displayName
     }
@@ -40,5 +41,8 @@ query Payment($locale: Locale!) {
   }
   activePayoutMethods {
     status
+  }
+  insuranceCost {
+    ...CostFragment
   }
 }

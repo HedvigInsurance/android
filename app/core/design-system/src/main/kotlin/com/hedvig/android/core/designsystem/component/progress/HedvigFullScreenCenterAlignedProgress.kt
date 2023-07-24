@@ -1,4 +1,4 @@
-package com.hedvig.android.core.ui.progress
+package com.hedvig.android.core.designsystem.component.progress
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.hedvig.android.core.designsystem.animation.ThreeDotsLoading
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 
@@ -23,7 +24,7 @@ fun HedvigFullScreenCenterAlignedProgress(
     modifier = modifier.fillMaxSize(),
   ) {
     Box(contentAlignment = Alignment.Center) {
-      RotatingHedvigButton()
+      ThreeDotsLoading()
     }
   }
 }
