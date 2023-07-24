@@ -42,6 +42,7 @@ import com.hedvig.android.core.designsystem.component.card.HedvigBigCard
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.clearFocusOnTap
+import com.hedvig.android.core.ui.dialog.MultiSelectDialog
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
@@ -53,8 +54,8 @@ import com.hedvig.android.feature.odyssey.ui.ClaimFlowScaffold
 import com.hedvig.android.feature.odyssey.ui.DatePickerUiState
 import com.hedvig.android.feature.odyssey.ui.DatePickerWithDialog
 import com.hedvig.android.feature.odyssey.ui.MonetaryAmountInput
-import com.hedvig.android.feature.odyssey.ui.MultiSelectDialog
-import com.hedvig.android.feature.odyssey.ui.SingleSelectDialog
+import com.hedvig.android.core.ui.dialog.SingleSelectDialog
+import hedvig.resources.R
 import octopus.type.CurrencyCode
 
 @Composable
@@ -109,7 +110,7 @@ private fun SingleItemScreen(
   ) { sideSpacingModifier ->
     Spacer(Modifier.height(16.dp))
     Text(
-      text = stringResource(hedvig.resources.R.string.CLAIMS_SINGLE_ITEM_DETAILS),
+      text = stringResource(R.string.CLAIMS_SINGLE_ITEM_DETAILS),
       style = MaterialTheme.typography.headlineMedium,
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
@@ -159,12 +160,12 @@ private fun SingleItemScreen(
     }
     Spacer(Modifier.height(14.dp))
     VectorInfoCard(
-      stringResource(hedvig.resources.R.string.CLAIMS_SINGLE_ITEM_NOTICE_LABEL),
+      stringResource(R.string.CLAIMS_SINGLE_ITEM_NOTICE_LABEL),
       sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
     HedvigContainedButton(
-      text = stringResource(hedvig.resources.R.string.general_continue_button),
+      text = stringResource(R.string.general_continue_button),
       onClick = submitSelections,
       isLoading = uiState.isLoading,
       enabled = uiState.canSubmit,
@@ -187,7 +188,7 @@ private fun Models(
   var showDialog by rememberSaveable { mutableStateOf(false) }
   if (showDialog && uiState != null) {
     SingleSelectDialog(
-      title = stringResource(hedvig.resources.R.string.claims_item_screen_model_button),
+      title = stringResource(R.string.claims_item_screen_model_button),
       optionsList = uiState.availableItemModels,
       onSelected = selectModel,
       getDisplayText = { it.displayName(resources) },
@@ -200,7 +201,7 @@ private fun Models(
 
   HedvigBigCard(
     onClick = { showDialog = true },
-    hintText = stringResource(hedvig.resources.R.string.claims_item_screen_model_button),
+    hintText = stringResource(R.string.claims_item_screen_model_button),
     inputText = uiState?.selectedItemModel?.displayName(resources),
     modifier = modifier,
     enabled = enabled,
@@ -219,7 +220,7 @@ private fun Brands(
   var showDialog by rememberSaveable { mutableStateOf(false) }
   if (showDialog) {
     SingleSelectDialog(
-      title = stringResource(hedvig.resources.R.string.SINGLE_ITEM_INFO_BRAND),
+      title = stringResource(R.string.SINGLE_ITEM_INFO_BRAND),
       optionsList = uiState.availableItemBrands,
       onSelected = selectBrand,
       getDisplayText = { it.displayName(resources) },
@@ -232,7 +233,7 @@ private fun Brands(
 
   HedvigBigCard(
     onClick = { showDialog = true },
-    hintText = stringResource(hedvig.resources.R.string.SINGLE_ITEM_INFO_BRAND),
+    hintText = stringResource(R.string.SINGLE_ITEM_INFO_BRAND),
     inputText = uiState.selectedItemBrand?.displayName(resources),
     modifier = modifier,
     enabled = enabled,
@@ -248,7 +249,7 @@ private fun DateOfPurchase(
   DatePickerWithDialog(
     uiState = uiState,
     canInteract = canInteract,
-    startText = stringResource(hedvig.resources.R.string.claims_item_screen_date_of_purchase_button),
+    startText = stringResource(R.string.claims_item_screen_date_of_purchase_button),
     modifier = modifier,
   )
 }
@@ -263,7 +264,7 @@ private fun PriceOfPurchase(
   val focusRequester = remember { FocusRequester() }
   MonetaryAmountInput(
     value = uiState.uiMoney.amount?.toString() ?: "",
-    hintText = stringResource(hedvig.resources.R.string.claims_payout_purchase_price),
+    hintText = stringResource(R.string.claims_payout_purchase_price),
     canInteract = canInteract,
     onInput = { uiState.updateAmount(it) },
     currency = uiState.uiMoney.currencyCode.rawValue,
@@ -282,7 +283,7 @@ private fun ItemProblems(
   var showDialog: Boolean by rememberSaveable { mutableStateOf(false) }
   if (showDialog) {
     MultiSelectDialog(
-      title = stringResource(hedvig.resources.R.string.claims_item_screen_type_of_damage_button),
+      title = stringResource(R.string.claims_item_screen_type_of_damage_button),
       optionsList = uiState.availableItemProblems,
       onSelected = selectProblem,
       getDisplayText = { it.displayName },
@@ -295,7 +296,7 @@ private fun ItemProblems(
 
   HedvigBigCard(
     onClick = { showDialog = true },
-    hintText = stringResource(hedvig.resources.R.string.claims_item_screen_type_of_damage_button),
+    hintText = stringResource(R.string.claims_item_screen_type_of_damage_button),
     inputText = when {
       uiState.selectedItemProblems.isEmpty() -> null
       else -> uiState.selectedItemProblems.map(ItemProblem::displayName).joinToString()

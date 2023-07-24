@@ -126,6 +126,7 @@ dependencies {
   implementation(projects.app.core.resources)
   implementation(projects.app.core.icons)
   implementation(projects.app.core.ui)
+  implementation(projects.app.core.icons)
   implementation(projects.app.data.claimFlow)
   implementation(projects.app.data.claimTriaging)
   implementation(projects.app.data.travelCertificate)
@@ -149,6 +150,7 @@ dependencies {
   implementation(projects.app.notification.firebase)
   implementation(projects.app.notification.notificationCore)
   implementation(projects.app.notificationBadgeData)
+  implementation(projects.app.theme)
 
   testImplementation(projects.app.apollo.giraffeTest)
   testImplementation(projects.app.auth.authEventTest)
@@ -173,6 +175,7 @@ dependencies {
   implementation(libs.accompanist.navigationAnimation)
   implementation(libs.accompanist.pagerIndicators)
   implementation(libs.accompanist.systemUiController)
+  implementation(libs.accompanist.webview)
   implementation(libs.adyen)
   implementation(libs.androidx.compose.animation)
   implementation(libs.androidx.compose.foundation)

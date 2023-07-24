@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.odyssey.ui
+package com.hedvig.android.core.ui.dialog
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,7 +41,7 @@ import com.hedvig.android.core.ui.SelectIndicationCircle
 import com.hedvig.android.core.ui.preview.DoubleBooleanCollectionPreviewParameterProvider
 
 @Composable
-internal fun <T> SingleSelectDialog(
+ fun <T> SingleSelectDialog(
   title: String,
   optionsList: List<T>,
   onSelected: (T) -> Unit,
@@ -68,7 +68,7 @@ internal fun <T> SingleSelectDialog(
 }
 
 @Composable
-internal fun <T> MultiSelectDialog(
+fun <T> MultiSelectDialog(
   title: String,
   optionsList: List<T>,
   onSelected: (T) -> Unit,

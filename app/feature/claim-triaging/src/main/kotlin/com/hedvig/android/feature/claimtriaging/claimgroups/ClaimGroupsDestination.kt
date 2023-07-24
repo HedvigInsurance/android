@@ -35,7 +35,8 @@ import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimtriaging.ClaimGroup
 import com.hedvig.android.data.claimtriaging.ClaimGroupId
 import com.hedvig.android.feature.claimtriaging.OptionChipsFlowRow
-import com.hedvig.android.feature.claimtriaging.TriageItemNotPickedError
+import com.hedvig.android.core.ui.text.WarningTextWithIcon
+import hedvig.resources.R
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
@@ -88,8 +89,8 @@ private fun ClaimGroupsScreen(
 ) {
   if (uiState.startClaimErrorMessage != null) {
     ErrorDialog(
-      title = stringResource(hedvig.resources.R.string.something_went_wrong),
-      message = stringResource(hedvig.resources.R.string.GENERAL_ERROR_BODY),
+      title = stringResource(R.string.something_went_wrong),
+      message = stringResource(R.string.GENERAL_ERROR_BODY),
       onDismiss = showedStartClaimError,
     )
   }
@@ -106,29 +107,37 @@ private fun ClaimGroupsScreen(
     ) {
       Spacer(Modifier.height(16.dp))
       Text(
-        text = stringResource(hedvig.resources.R.string.CLAIM_TRIAGING_NAVIGATION_TITLE),
+        text = stringResource(R.string.CLAIM_TRIAGING_NAVIGATION_TITLE),
         style = MaterialTheme.typography.headlineMedium,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
       )
       Spacer(Modifier.height(32.dp))
       Spacer(Modifier.weight(1f))
       if (uiState.chipLoadingErrorMessage != null) {
         Text(
-          text = stringResource(hedvig.resources.R.string.something_went_wrong),
+          text = stringResource(R.string.something_went_wrong),
           style = MaterialTheme.typography.titleLarge,
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
         )
         Spacer(Modifier.height(16.dp))
         Text(
-          text = stringResource(hedvig.resources.R.string.GENERAL_ERROR_BODY),
+          text = stringResource(R.string.GENERAL_ERROR_BODY),
           style = MaterialTheme.typography.bodyLarge,
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
         )
         Spacer(Modifier.height(24.dp))
         HedvigContainedButton(
-          text = stringResource(hedvig.resources.R.string.GENERAL_RETRY),
+          text = stringResource(R.string.GENERAL_RETRY),
           onClick = loadClaimGroups,
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
         )
       } else {
         AnimatedVisibility(
@@ -137,7 +146,13 @@ private fun ClaimGroupsScreen(
           exit = fadeOut(),
         ) {
           Column {
-            TriageItemNotPickedError(Modifier.padding(horizontal = 16.dp).fillMaxWidth().wrapContentWidth())
+            WarningTextWithIcon(
+              modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth()
+                .wrapContentWidth(),
+              text = stringResource(R.string.CLAIMS_SELECT_CATEGORY),
+            )
             Spacer(Modifier.height(16.dp))
           }
         }
@@ -150,7 +165,7 @@ private fun ClaimGroupsScreen(
         )
         Spacer(Modifier.height(8.dp))
         HedvigContainedButton(
-          text = stringResource(hedvig.resources.R.string.claims_continue_button),
+          text = stringResource(R.string.claims_continue_button),
           onClick = onContinue,
           isLoading = uiState.isLoading,
           enabled = uiState.canContinue,

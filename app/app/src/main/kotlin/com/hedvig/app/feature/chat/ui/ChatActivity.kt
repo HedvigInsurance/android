@@ -19,7 +19,6 @@ import com.hedvig.app.databinding.ActivityChatBinding
 import com.hedvig.app.feature.chat.ChatInputType
 import com.hedvig.app.feature.chat.ParagraphInput
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
-import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.extensions.calculateNonFullscreenHeightDiff
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.composeContactSupportEmail
@@ -27,17 +26,16 @@ import com.hedvig.app.util.extensions.handleSingleSelectLink
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
-import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.applyInsetter
 import giraffe.ChatMessagesQuery
+import java.io.File
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import slimber.log.d
 import slimber.log.e
-import java.io.File
 
 class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
   private val chatViewModel: ChatViewModel by viewModel()
@@ -180,9 +178,6 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
   }
 
   private fun initializeToolbarButtons() {
-    binding.settings.setHapticClickListener {
-      startActivity(SettingsActivity.newInstance(this))
-    }
     binding.close.setOnClickListener {
       onBackPressedDispatcher.onBackPressed()
     }

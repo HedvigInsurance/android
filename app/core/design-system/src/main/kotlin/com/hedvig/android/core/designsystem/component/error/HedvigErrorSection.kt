@@ -11,10 +11,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -33,13 +35,16 @@ fun HedvigErrorSection(
   retry: () -> Unit,
   modifier: Modifier = Modifier,
   title: String = stringResource(R.string.something_went_wrong),
+  subTitle: String = stringResource(id = R.string.GENERAL_ERROR_BODY),
   buttonText: String = stringResource(R.string.GENERAL_RETRY),
   contentPadding: PaddingValues = WindowInsets.safeDrawing.asPaddingValues(),
   withDefaultVerticalSpacing: Boolean = true,
 ) {
   Column(
     horizontalAlignment = Alignment.CenterHorizontally,
-    modifier = modifier.padding(contentPadding).padding(horizontal = 16.dp),
+    modifier = modifier
+      .padding(contentPadding)
+      .padding(horizontal = 16.dp),
   ) {
     if (withDefaultVerticalSpacing) {
       Spacer(Modifier.height(32.dp))
@@ -55,6 +60,14 @@ fun HedvigErrorSection(
       textAlign = TextAlign.Center,
       modifier = Modifier.fillMaxWidth(),
     )
+    Spacer(Modifier.height(2.dp))
+    CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
+      Text(
+        text = subTitle,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.fillMaxWidth(),
+      )
+    }
     Spacer(Modifier.height(24.dp))
     HedvigContainedSmallButton(
       text = buttonText,

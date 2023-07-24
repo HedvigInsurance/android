@@ -55,6 +55,7 @@ import com.hedvig.android.app.ui.HedvigNavRail
 import com.hedvig.android.app.ui.rememberHedvigAppState
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.core.common.di.isProductionQualifier
 import com.hedvig.android.core.designsystem.material3.motion.MotionTokens
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
@@ -94,6 +95,7 @@ class LoggedInActivity : AppCompatActivity() {
   private val hAnalytics: HAnalytics by inject()
   private val languageService: LanguageService by inject()
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer by inject()
+  private val isProduction: Boolean by inject(isProductionQualifier)
 
   private val activityNavigator: ActivityNavigator by inject()
 
@@ -226,6 +228,7 @@ class LoggedInActivity : AppCompatActivity() {
           hAnalytics = hAnalytics,
           fragmentManager = supportFragmentManager,
           languageService = languageService,
+          isProduction = isProduction,
         )
       }
     }
@@ -274,6 +277,7 @@ private fun HedvigApp(
   hAnalytics: HAnalytics,
   fragmentManager: FragmentManager,
   languageService: LanguageService,
+  isProduction: Boolean,
 ) {
   LaunchedEffect(getInitialTab, clearInitialTab, hedvigAppState) {
     val initialTab: TopLevelGraph = getInitialTab() ?: return@LaunchedEffect
@@ -313,6 +317,7 @@ private fun HedvigApp(
           hAnalytics = hAnalytics,
           fragmentManager = fragmentManager,
           languageService = languageService,
+          isProduction = isProduction,
           modifier = Modifier
             .fillMaxHeight()
             .weight(1f)

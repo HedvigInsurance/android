@@ -71,6 +71,7 @@ internal fun HedvigNavHost(
   hAnalytics: HAnalytics,
   fragmentManager: FragmentManager,
   languageService: LanguageService,
+  isProduction: Boolean,
   modifier: Modifier = Modifier,
 ) {
   LocalConfiguration.current
@@ -227,6 +228,7 @@ internal fun HedvigNavHost(
       navigator = navigator,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       windowSizeClass = hedvigAppState.windowSizeClass,
+      isProduction = isProduction,
     )
   }
 }
