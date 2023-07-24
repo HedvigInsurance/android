@@ -11,6 +11,7 @@ fragment ClaimFlowStepFragment on Flow {
     ...FlowClaimSummaryStepFragment
     ...FlowClaimFailedStepFragment
     ...FlowClaimSuccessStepFragment
+    ...FlowClaimContractSelectStepFragment
   }
 }
 
@@ -119,4 +120,12 @@ fragment FlowClaimFailedStepFragment on FlowClaimFailedStep {
 
 fragment FlowClaimSuccessStepFragment on FlowClaimSuccessStep {
   id
+}
+
+fragment FlowClaimContractSelectStepFragment on FlowClaimContractSelectStep {
+  id
+  options {
+    id
+    displayName
+  }
 }

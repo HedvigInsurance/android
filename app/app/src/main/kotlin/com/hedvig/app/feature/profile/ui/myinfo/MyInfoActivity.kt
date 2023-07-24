@@ -1,12 +1,9 @@
 package com.hedvig.app.feature.profile.ui.myinfo
 
 import android.os.Bundle
-import android.text.TextWatcher
-import android.view.HapticFeedbackConstants
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.view.menu.ActionMenuItemView
 import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -27,11 +24,9 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MyInfoActivity : AppCompatActivity(R.layout.activity_my_info) {
   private val viewModel: MyInfoViewModel by viewModel()
-
-  private var emailTextWatcher: TextWatcher? = null
-  private var phoneNumberTextWatcher: TextWatcher? = null
-
   private val binding by viewBinding(ActivityMyInfoBinding::bind)
+
+  private var hasEditedPhoneOrEmail: Boolean = false
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -45,6 +40,8 @@ class MyInfoActivity : AppCompatActivity(R.layout.activity_my_info) {
       }
       toolbar.title = getString(hedvig.resources.R.string.PROFILE_MY_INFO_TITLE)
     }
+    setupEmailInput()
+    setupPhoneNumberInput()
     loadData()
   }
 
@@ -54,23 +51,21 @@ class MyInfoActivity : AppCompatActivity(R.layout.activity_my_info) {
   }
 
   override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-    val dirty = viewModel.dirty.value
-    if (dirty == null || !dirty) {
+    if (!hasEditedPhoneOrEmail) {
       menu.removeItem(R.id.save)
     }
     return super.onPrepareOptionsMenu(menu)
   }
 
   override fun onOptionsItemSelected(item: MenuItem): Boolean {
-    val prevEmail = (viewModel.data.value as? MyInfoUiState.Success)?.member?.email ?: ""
-    val prevPhoneNumber = (viewModel.data.value as? MyInfoUiState.Success)?.member?.phoneNumber ?: ""
+    val prevEmail = viewModel.data.value.member?.email ?: ""
+    val prevPhoneNumber = viewModel.data.value.member?.phoneNumber ?: ""
 
     binding.apply {
       val newEmail = emailInput.text.toString()
       val newPhoneNumber = phoneNumberInput.text.toString()
 
       if (prevEmail != newEmail && !validateEmail(newEmail).isSuccessful) {
-        provideValidationNegativeHapticFeedback()
         ValidationDialog.newInstance(
           hedvig.resources.R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_TITLE,
           hedvig.resources.R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_EMAIL,
@@ -80,7 +75,6 @@ class MyInfoActivity : AppCompatActivity(R.layout.activity_my_info) {
       }
 
       if (prevPhoneNumber != newPhoneNumber && !validatePhoneNumber(newPhoneNumber).isSuccessful) {
-        provideValidationNegativeHapticFeedback()
         ValidationDialog.newInstance(
           hedvig.resources.R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_TITLE,
           hedvig.resources.R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_PHONE_NUMBER,
@@ -89,10 +83,9 @@ class MyInfoActivity : AppCompatActivity(R.layout.activity_my_info) {
         return true
       }
 
-      viewModel.saveInputs(
-        emailInput.text.toString(),
-        phoneNumberInput.text.toString(),
-      )
+      viewModel.updateEmailAndPhoneNumber()
+      hasEditedPhoneOrEmail = false
+
       if (emailInput.isFocused) {
         emailInput.clearFocus()
       }
@@ -104,36 +97,28 @@ class MyInfoActivity : AppCompatActivity(R.layout.activity_my_info) {
     return true
   }
 
-  private fun provideValidationNegativeHapticFeedback() =
-    findViewById<ActionMenuItemView>(R.id.save)?.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
-
   private fun loadData() {
     viewModel
       .data
       .flowWithLifecycle(lifecycle)
       .onEach { viewState ->
         binding.apply {
-          spinner.loadingSpinner.isVisible = viewState is MyInfoUiState.Loading
-          contactDetailsContainer.isVisible = viewState !is MyInfoUiState.Loading
+          spinner.loadingSpinner.isVisible = viewState.isLoading
+          contactDetailsContainer.isVisible = !viewState.isLoading
+          invalidateOptionsMenu()
 
-          if (viewState is MyInfoUiState.Success) {
-            setupEmailInput(viewState.member.email ?: "")
-            setupPhoneNumberInput(viewState.member.phoneNumber ?: "")
+          if (viewState.member != null && !hasEditedPhoneOrEmail) {
+            emailInput.setText(viewState.member.email ?: "")
+            phoneNumberInput.setText(viewState.member.phoneNumber ?: "")
           }
         }
       }
       .launchIn(lifecycleScope)
-    viewModel.dirty.observe(this) {
-      invalidateOptionsMenu()
-    }
   }
 
-  private fun setupEmailInput(prefilledEmail: String) {
+  private fun setupEmailInput() {
     binding.apply {
-      emailTextWatcher?.let { emailInput.removeTextChangedListener(it) }
-      emailInput.setText(prefilledEmail)
-
-      emailTextWatcher = emailInput.onChange { value ->
+      emailInput.onChange { value ->
         viewModel.emailChanged(value)
         if (emailInputContainer.isErrorEnabled) {
           val validationResult = validateEmail(value)
@@ -144,10 +129,10 @@ class MyInfoActivity : AppCompatActivity(R.layout.activity_my_info) {
       }
 
       emailInput.setOnFocusChangeListener { _, hasFocus ->
+        hasEditedPhoneOrEmail = true
         if (hasFocus) {
           return@setOnFocusChangeListener
         }
-
         val validationResult = validateEmail(emailInput.text.toString())
         if (!validationResult.isSuccessful) {
           emailInputContainer.error = getString(validationResult.errorTextKey!!)
@@ -156,12 +141,9 @@ class MyInfoActivity : AppCompatActivity(R.layout.activity_my_info) {
     }
   }
 
-  private fun setupPhoneNumberInput(prefilledPhoneNumber: String) {
+  private fun setupPhoneNumberInput() {
     binding.apply {
-      phoneNumberTextWatcher?.let { phoneNumberInput.removeTextChangedListener(it) }
-      phoneNumberInput.setText(prefilledPhoneNumber)
-
-      phoneNumberTextWatcher = phoneNumberInput.onChange { value ->
+      phoneNumberInput.onChange { value ->
         viewModel.phoneNumberChanged(value)
         if (phoneNumberInputContainer.isErrorEnabled) {
           val validationResult = validatePhoneNumber(value)
@@ -172,6 +154,7 @@ class MyInfoActivity : AppCompatActivity(R.layout.activity_my_info) {
       }
 
       phoneNumberInput.setOnFocusChangeListener { _, hasFocus ->
+        hasEditedPhoneOrEmail = true
         if (hasFocus) {
           return@setOnFocusChangeListener
         }

@@ -19,13 +19,6 @@ data class ProfileDataBuilder(
   private val cost: CostFragment = CostBuilder().build(),
 ) {
   fun build() = ProfileQuery.Data(
-    member = ProfileQuery.Member(
-      id = memberId,
-      firstName = firstName,
-      lastName = lastName,
-      email = email,
-      phoneNumber = phoneNumber,
-    ),
     chargeEstimation = ProfileQuery.ChargeEstimation(
       subscription = ProfileQuery.Subscription(
         __typename = "",

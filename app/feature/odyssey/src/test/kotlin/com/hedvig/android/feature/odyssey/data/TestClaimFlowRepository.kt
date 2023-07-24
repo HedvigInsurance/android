@@ -38,6 +38,10 @@ internal class TestClaimFlowRepository : ClaimFlowRepository {
     error("Not implemented")
   }
 
+  override suspend fun submitContract(contract: String?): Either<ErrorMessage, ClaimFlowStep> {
+    error("Not implemented")
+  }
+
   override suspend fun submitDateOfOccurrenceAndLocation(
     dateOfOccurrence: LocalDate?,
     location: String?,

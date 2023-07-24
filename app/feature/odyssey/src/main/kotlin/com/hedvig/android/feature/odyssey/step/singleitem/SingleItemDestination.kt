@@ -267,7 +267,6 @@ private fun PriceOfPurchase(
     canInteract = canInteract,
     onInput = { uiState.updateAmount(it) },
     currency = uiState.uiMoney.currencyCode.rawValue,
-    maximumFractionDigits = 0,
     focusRequester = focusRequester,
     modifier = modifier,
   )

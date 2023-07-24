@@ -103,71 +103,74 @@ private fun Modifier.animatingSliderModifier(
   offsetX: Animatable<Float, AnimationVector1D>,
   density: Density,
   onAccepted: () -> Unit,
-): Modifier = onPlaced {
-  offsetX.updateBounds(
-    lowerBound = 0f,
-    upperBound = it.size.width - with(density) { circleDiameter.toPx() },
-  )
-}
-  .pointerInput(Unit) {
-    val decay = splineBasedDecay<Float>(this)
-    val halfCircleSize = (circleDiameter / 2).roundToPx()
-    val getEndPoint = { this.size.width - circleDiameter.toPx() }
-    val hasOffsetSlidedToTheEnd = {
-      offsetX.value >= getEndPoint()
+): Modifier {
+  return this
+    .onPlaced {
+      offsetX.updateBounds(
+        lowerBound = 0f,
+        upperBound = it.size.width - with(density) { circleDiameter.toPx() },
+      )
     }
-    coroutineScope {
-      while (isActive) {
-        val velocityTracker = VelocityTracker()
+    .pointerInput(Unit) {
+      val decay = splineBasedDecay<Float>(this)
+      val halfCircleSize = (circleDiameter / 2).roundToPx()
+      val getEndPoint = { this.size.width - circleDiameter.toPx() }
+      val hasOffsetSlidedToTheEnd = {
+        offsetX.value >= getEndPoint()
+      }
+      coroutineScope {
+        while (isActive) {
+          val velocityTracker = VelocityTracker()
 
-        val firstDownPointer = awaitPointerEventScope { awaitFirstDown() }
-        offsetX.stop()
-        offsetX.animateTo(
-          targetValue = firstDownPointer.position.x - halfCircleSize,
-          animationSpec = spring(stiffness = Spring.StiffnessHigh * 10),
-        )
-        if (hasOffsetSlidedToTheEnd()) {
-          onAccepted()
-          return@coroutineScope
-        }
-        awaitPointerEventScope {
-          horizontalDrag(firstDownPointer.id) { change: PointerInputChange ->
-            val horizontalDragOffset = change.position.x - halfCircleSize
-            launch(Dispatchers.Unconfined) {
-              offsetX.snapTo(horizontalDragOffset)
-            }
-            if (hasOffsetSlidedToTheEnd()) {
-              onAccepted()
-              this@coroutineScope.cancel()
-            }
-            velocityTracker.addPosition(change.uptimeMillis, change.position)
-            if (change.positionChange() != Offset.Zero) {
-              change.consume()
+          val firstDownPointer = awaitPointerEventScope { awaitFirstDown() }
+          offsetX.stop()
+          offsetX.animateTo(
+            targetValue = firstDownPointer.position.x - halfCircleSize,
+            animationSpec = spring(stiffness = Spring.StiffnessHigh * 10),
+          )
+          if (hasOffsetSlidedToTheEnd()) {
+            onAccepted()
+            return@coroutineScope
+          }
+          awaitPointerEventScope {
+            horizontalDrag(firstDownPointer.id) { change: PointerInputChange ->
+              val horizontalDragOffset = change.position.x - halfCircleSize
+              launch(Dispatchers.Unconfined) {
+                offsetX.snapTo(horizontalDragOffset)
+              }
+              if (hasOffsetSlidedToTheEnd()) {
+                onAccepted()
+                this@coroutineScope.cancel()
+              }
+              velocityTracker.addPosition(change.uptimeMillis, change.position)
+              if (change.positionChange() != Offset.Zero) {
+                change.consume()
+              }
             }
           }
-        }
-        val velocity: Float = velocityTracker.calculateVelocity().x
-        val targetOffsetXAfterFlingEnd = decay.calculateTargetValue(offsetX.value, velocity)
-        launch {
-          if (targetOffsetXAfterFlingEnd <= getEndPoint()) {
-            // Not enough velocity; Slide back to the default position.
-            offsetX.animateTo(
-              targetValue = 0f,
-              animationSpec = spring(
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-                stiffness = Spring.StiffnessVeryLow,
-              ),
-              initialVelocity = velocity,
-            )
-          } else {
-            // Enough velocity to finish the slide
-            offsetX.animateDecay(velocity, decay)
-            onAccepted()
+          val velocity: Float = velocityTracker.calculateVelocity().x
+          val targetOffsetXAfterFlingEnd = decay.calculateTargetValue(offsetX.value, velocity)
+          launch {
+            if (targetOffsetXAfterFlingEnd <= getEndPoint()) {
+              // Not enough velocity; Slide back to the default position.
+              offsetX.animateTo(
+                targetValue = 0f,
+                animationSpec = spring(
+                  dampingRatio = Spring.DampingRatioMediumBouncy,
+                  stiffness = Spring.StiffnessVeryLow,
+                ),
+                initialVelocity = velocity,
+              )
+            } else {
+              // Enough velocity to finish the slide
+              offsetX.animateDecay(velocity, decay)
+              onAccepted()
+            }
           }
         }
       }
     }
-  }
+}
 
 @HedvigPreview
 @Composable
