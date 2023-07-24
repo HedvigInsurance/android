@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlin.time.Duration.Companion.seconds
 
@@ -31,13 +32,22 @@ abstract class MoleculeViewModel<Event, UiState> : ViewModel() {
   @Composable
   protected abstract fun models(events: Flow<Event>): UiState
 
-  abstract val initialValue: UiState
+  /**
+   * This value serves as the initial value that the uiState [StateFlow] will emit. Also serves as a way to cache the
+   * last emission, so that if the flow goes from being cold (in the backstack) to being hot again, the Presenter won't
+   * override the last known value with a Loading state or something similar.
+   */
+  abstract var seed: UiState
 
-  val uiState: StateFlow<UiState> = moleculeFlow<UiState>(RecompositionMode.ContextClock) {
-    models(events)
-  }.stateIn(
-    scope = scope,
-    started = SharingStarted.WhileSubscribed(5.seconds),
-    initialValue = initialValue,
-  )
+  val uiState: StateFlow<UiState> by lazy(LazyThreadSafetyMode.NONE) {
+    moleculeFlow<UiState>(RecompositionMode.ContextClock) {
+      models(events)
+    }.onEach {
+      seed = it
+    }.stateIn(
+      scope = scope,
+      started = SharingStarted.WhileSubscribed(5.seconds),
+      initialValue = seed,
+    )
+  }
 }
