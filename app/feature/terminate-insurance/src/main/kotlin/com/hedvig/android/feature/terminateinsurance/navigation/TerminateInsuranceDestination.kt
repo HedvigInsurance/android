@@ -4,11 +4,6 @@ import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
-internal sealed interface Destinations : Destination {
-  @Serializable
-  object TerminateInsurance : Destinations
-}
-
 internal sealed interface TerminateInsuranceDestination : Destination {
   @Serializable
   object StartStep : TerminateInsuranceDestination

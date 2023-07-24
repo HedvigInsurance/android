@@ -74,7 +74,7 @@ private fun InsuranceDeletionScreen(
       ),
       bodyText = uiState.disclaimer,
       icon = ImageVector.vectorResource(com.hedvig.android.core.designsystem.R.drawable.ic_warning_triangle),
-      navigateBack = navigateBack,
+      navigateUp = navigateBack,
     ) {
       Column {
         LargeOutlinedTextButton(

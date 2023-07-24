@@ -27,6 +27,7 @@ internal fun TerminationSuccessDestination(
   terminationDate: LocalDate?,
   surveyUrl: String,
   windowSizeClass: WindowSizeClass,
+  navigateUp: () -> Unit,
   navigateBack: () -> Unit,
 ) {
   val uriHandler = LocalUriHandler.current
@@ -34,6 +35,7 @@ internal fun TerminationSuccessDestination(
     terminationDate = terminationDate,
     windowSizeClass = windowSizeClass,
     onOpenSurvey = { uriHandler.openUri(surveyUrl) },
+    navigateUp = navigateUp,
     navigateBack = navigateBack,
   )
 }
@@ -43,6 +45,7 @@ private fun TerminationSuccessScreen(
   terminationDate: LocalDate?,
   windowSizeClass: WindowSizeClass,
   onOpenSurvey: () -> Unit,
+  navigateUp: () -> Unit,
   navigateBack: () -> Unit,
 ) {
   TerminationInfoScreen(
@@ -62,7 +65,7 @@ private fun TerminationSuccessScreen(
       )
     },
     icon = Icons.Outlined.CheckCircle,
-    navigateBack = navigateBack,
+    navigateUp = navigateUp,
   ) {
     Column {
       LargeOutlinedTextButton(
@@ -88,6 +91,7 @@ private fun PreviewTerminationSuccessScreen() {
         WindowSizeClass.calculateForPreview(),
         {},
         {},
+        {},
       )
     }
   }
@@ -101,6 +105,7 @@ private fun PreviewTerminationSuccessScreenWithoutTeriminationDate() {
       TerminationSuccessScreen(
         null,
         WindowSizeClass.calculateForPreview(),
+        {},
         {},
         {},
       )
