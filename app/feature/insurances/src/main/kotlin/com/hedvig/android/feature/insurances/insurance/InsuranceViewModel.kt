@@ -12,6 +12,7 @@ import arrow.core.raise.either
 import arrow.fx.coroutines.parZip
 import com.hedvig.android.core.common.RetryChannel
 import com.hedvig.android.core.common.android.i
+import com.hedvig.android.core.ui.MoleculePresenter
 import com.hedvig.android.core.ui.MoleculeViewModel
 import com.hedvig.android.core.ui.insurance.GradientType
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
@@ -42,27 +43,26 @@ internal class InsuranceViewModel(
     loading = true,
   )
 
-  @Composable
-  override fun models(events: Flow<InsuranceScreenEvent>): InsuranceUiState {
+  override fun presenterFactory(): InsuranceScreenPresenter {
     return InsuranceScreenPresenter(
       seed = seed,
-      events = events,
       getInsuranceContractsUseCase = getInsuranceContractsUseCase,
       getCrossSellsUseCase = getCrossSellsUseCase,
       crossSellCardNotificationBadgeService = crossSellCardNotificationBadgeService,
-    ).present()
+    )
   }
 }
 
 internal class InsuranceScreenPresenter(
-  private val seed: InsuranceUiState,
-  private val events: Flow<InsuranceScreenEvent>,
+  override val seed: InsuranceUiState,
   private val getInsuranceContractsUseCase: GetInsuranceContractsUseCase,
   private val getCrossSellsUseCase: GetCrossSellsUseCase,
   private val crossSellCardNotificationBadgeService: CrossSellCardNotificationBadgeService,
-) {
+) : MoleculePresenter<InsuranceScreenEvent, InsuranceUiState> {
   @Composable
-  fun present(): InsuranceUiState {
+  override fun present(
+    events: Flow<InsuranceScreenEvent>,
+  ): InsuranceUiState {
     var insuranceData by remember {
       mutableStateOf<InsuranceData>(
         InsuranceData(

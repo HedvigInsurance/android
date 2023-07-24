@@ -1,6 +1,7 @@
 package com.hedvig.android.core.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.AndroidUiDispatcher
@@ -29,9 +30,6 @@ abstract class MoleculeViewModel<Event, UiState> : ViewModel() {
     }
   }
 
-  @Composable
-  protected abstract fun models(events: Flow<Event>): UiState
-
   /**
    * This value serves as the initial value that the uiState [StateFlow] will emit. Also serves as a way to cache the
    * last emission, so that if the flow goes from being cold (in the backstack) to being hot again, the Presenter won't
@@ -39,15 +37,29 @@ abstract class MoleculeViewModel<Event, UiState> : ViewModel() {
    */
   abstract var seed: UiState
 
+  /**
+   * This is the function that returns the Presenter to be used to produce the [UiState]. This will be remembered in the
+   * context of the moleculeFlow, so that it stays alive for as long as the uiState [StateFlow] stays warm for.
+   */
+  protected abstract fun presenterFactory(): MoleculePresenter<Event, UiState>
+
   val uiState: StateFlow<UiState> by lazy(LazyThreadSafetyMode.NONE) {
     moleculeFlow<UiState>(RecompositionMode.ContextClock) {
-      models(events)
+      val presenter = remember { presenterFactory() }
+      presenter.present(events)
     }.onEach {
       seed = it
     }.stateIn(
       scope = scope,
-      started = SharingStarted.WhileSubscribed(5.seconds),
+      started = SharingStarted.WhileSubscribed(0.1.seconds),
       initialValue = seed,
     )
   }
+}
+
+interface MoleculePresenter<Event, UiState> {
+  val seed: UiState
+
+  @Composable
+  fun present(events: Flow<Event>): UiState
 }
