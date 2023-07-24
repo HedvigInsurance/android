@@ -31,6 +31,7 @@ import com.hedvig.android.feature.insurances.insuranceGraph
 import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
 import com.hedvig.android.feature.odyssey.navigation.terminalClaimFlowStepDestinations
+import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceGraph
 import com.hedvig.android.feature.travelcertificate.navigation.generateTravelCertificateGraph
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
@@ -79,35 +80,7 @@ internal fun HedvigNavHost(
   val resources = context.resources
   val density = LocalDensity.current
   val coroutineScope = rememberCoroutineScope()
-  val navigator: Navigator = remember(hedvigAppState) {
-    object : Navigator {
-      override fun NavBackStackEntry.navigate(
-        destination: Destination,
-        navOptions: NavOptions?,
-        navigatorExtras: androidx.navigation.Navigator.Extras?,
-      ) {
-        if (lifecycle.currentState == Lifecycle.State.RESUMED) {
-          navigateUnsafe(destination, navOptions, navigatorExtras)
-        }
-      }
-
-      override fun navigateUnsafe(
-        destination: Destination,
-        navOptions: NavOptions?,
-        navigatorExtras: androidx.navigation.Navigator.Extras?,
-      ) {
-        hedvigAppState.navController.navigate(destination, navOptions, navigatorExtras)
-      }
-
-      override fun navigateUp() {
-        hedvigAppState.navController.navigateUp()
-      }
-
-      override fun popBackStack() {
-        hedvigAppState.navController.popBackStack()
-      }
-    }
-  }
+  val navigator: Navigator = rememberNavigator(hedvigAppState)
 
   fun startMovingFlow() {
     coroutineScope.launch {
@@ -211,12 +184,26 @@ internal fun HedvigNavHost(
       hAnalytics = hAnalytics,
     )
     insuranceGraph(
+      nestedGraphs = {
+        terminateInsuranceGraph(
+          windowSizeClass = hedvigAppState.windowSizeClass,
+          navigator = navigator,
+          navController = hedvigAppState.navController,
+          openChat = { activityNavigator.navigateToChat(context) },
+          openPlayStore = { activityNavigator.tryOpenPlayStore(context) },
+        )
+      },
       navigator = navigator,
       openWebsite = { uri ->
         activityNavigator.openWebsite(context, uri)
       },
       openChat = { activityNavigator.navigateToChat(context) },
       startMovingFlow = ::startMovingFlow,
+      startTerminationFlow = { backStackEntry: NavBackStackEntry, insuranceId: String, insuranceDisplayName: String ->
+        with(navigator) {
+          backStackEntry.navigate(AppDestination.TerminateInsurance(insuranceId, insuranceDisplayName))
+        }
+      },
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       imageLoader = imageLoader,
     )
@@ -291,4 +278,37 @@ private fun NavGraphBuilder.nestedHomeGraphs(
       activityNavigator.navigateToChat(context)
     },
   )
+}
+
+@Composable
+private fun rememberNavigator(hedvigAppState: HedvigAppState): Navigator {
+  return remember(hedvigAppState) {
+    object : Navigator {
+      override fun NavBackStackEntry.navigate(
+        destination: Destination,
+        navOptions: NavOptions?,
+        navigatorExtras: androidx.navigation.Navigator.Extras?,
+      ) {
+        if (lifecycle.currentState == Lifecycle.State.RESUMED) {
+          navigateUnsafe(destination, navOptions, navigatorExtras)
+        }
+      }
+
+      override fun navigateUnsafe(
+        destination: Destination,
+        navOptions: NavOptions?,
+        navigatorExtras: androidx.navigation.Navigator.Extras?,
+      ) {
+        hedvigAppState.navController.navigate(destination, navOptions, navigatorExtras)
+      }
+
+      override fun navigateUp() {
+        hedvigAppState.navController.navigateUp()
+      }
+
+      override fun popBackStack() {
+        hedvigAppState.navController.popBackStack()
+      }
+    }
+  }
 }

@@ -26,12 +26,14 @@ internal fun TerminationFailureDestination(
   windowSizeClass: WindowSizeClass,
   errorMessage: ErrorMessage,
   openChat: () -> Unit,
+  navigateUp: () -> Unit,
   navigateBack: () -> Unit,
 ) {
   TerminationFailureScreen(
     windowSizeClass = windowSizeClass,
     errorMessage = errorMessage,
     openChat = openChat,
+    navigateUp = navigateUp,
     navigateBack = navigateBack,
   )
 }
@@ -41,6 +43,7 @@ private fun TerminationFailureScreen(
   windowSizeClass: WindowSizeClass,
   errorMessage: ErrorMessage,
   openChat: () -> Unit,
+  navigateUp: () -> Unit,
   navigateBack: () -> Unit,
 ) {
   TerminationInfoScreen(
@@ -49,7 +52,7 @@ private fun TerminationFailureScreen(
     headerText = stringResource(R.string.TERMINATION_NOT_SUCCESSFUL_TITLE),
     bodyText = errorMessage.message ?: stringResource(R.string.something_went_wrong),
     icon = ImageVector.vectorResource(com.hedvig.android.core.designsystem.R.drawable.ic_warning_triangle),
-    navigateBack = navigateBack,
+    navigateUp = navigateUp,
   ) {
     Column {
       LargeOutlinedTextButton(
@@ -70,7 +73,7 @@ private fun TerminationFailureScreen(
 private fun PreviewTerminationFailureScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      TerminationFailureScreen(WindowSizeClass.calculateForPreview(), ErrorMessage(), {}) {}
+      TerminationFailureScreen(WindowSizeClass.calculateForPreview(), ErrorMessage(), {}, {}, {})
     }
   }
 }
