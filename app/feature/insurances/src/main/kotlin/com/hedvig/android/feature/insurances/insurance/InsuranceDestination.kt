@@ -3,6 +3,7 @@ package com.hedvig.android.feature.insurances
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,7 +29,6 @@ import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.pullrefresh.PullRefreshDefaults
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -36,7 +36,6 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -50,11 +49,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -65,12 +70,12 @@ import com.hedvig.android.core.designsystem.material3.onTypeContainer
 import com.hedvig.android.core.designsystem.material3.typeContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.AndroidLogo
 import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
 import com.hedvig.android.core.ui.card.InsuranceCard
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
+import com.hedvig.android.core.ui.insurance.GradientType
+import com.hedvig.android.core.ui.insurance.toDrawable
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
@@ -207,6 +212,7 @@ private fun ColumnScope.InsuranceScreenContent(
   navigateToCancelledInsurances: () -> Unit,
   quantityOfCancelledInsurances: Int,
 ) {
+  val context = LocalContext.current
   for ((index, insuranceCard) in insuranceCards.withIndex()) {
     InsuranceCard(
       backgroundImageUrl = insuranceCard.backgroundImageUrl,
@@ -217,6 +223,9 @@ private fun ColumnScope.InsuranceScreenContent(
       modifier = Modifier.padding(horizontal = 16.dp).clickable {
         onInsuranceCardClick(insuranceCard.contractId)
       },
+      fallbackPainter = insuranceCard.gradientType.toDrawable(context)?.let { drawable ->
+        BitmapPainter(drawable.toBitmap(10, 10).asImageBitmap())
+      } ?: ColorPainter(Color.Black.copy(alpha = 0.7f)),
     )
     if (index != insuranceCards.lastIndex) {
       Spacer(Modifier.height(8.dp))
@@ -267,8 +276,8 @@ private fun CrossSellItem(
     modifier = modifier.heightIn(64.dp),
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    Icon(
-      imageVector = Icons.Hedvig.AndroidLogo,
+    Image(
+      painter = painterResource(com.hedvig.android.core.ui.R.drawable.ic_pillow),
       contentDescription = null,
       modifier = Modifier.size(48.dp),
     )
@@ -382,6 +391,7 @@ private fun PreviewInsuranceScreen() {
               persistentListOf("Chip"),
               "Title",
               "For you + 1",
+              GradientType.HOME,
             ),
           ),
           crossSells = persistentListOf(

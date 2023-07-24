@@ -8,5 +8,6 @@ query InsuranceContracts($locale: Locale!) {
     status {
       ...ContractStatusFragment
     }
+    typeOfContract
   }
 }
