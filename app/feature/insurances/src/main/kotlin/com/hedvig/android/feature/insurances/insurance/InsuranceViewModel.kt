@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.insurances
 
-import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,7 +24,6 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import octopus.CrossSalesQuery
 
@@ -35,74 +33,91 @@ internal class InsuranceViewModel(
   private val crossSellCardNotificationBadgeService: CrossSellCardNotificationBadgeService,
 ) : MoleculeViewModel<InsuranceScreenEvent, InsuranceUiState>() {
 
-  override val initialValue: InsuranceUiState
-    get() = InsuranceUiState(
-      insuranceCards = persistentListOf(),
-      crossSells = persistentListOf(),
-      showNotificationBadge = false,
-      quantityOfCancelledInsurances = 0,
-      hasError = false,
-      loading = true,
-    )
+  override var seed: InsuranceUiState = InsuranceUiState(
+    insuranceCards = persistentListOf(),
+    crossSells = persistentListOf(),
+    showNotificationBadge = false,
+    quantityOfCancelledInsurances = 0,
+    hasError = false,
+    loading = true,
+  )
 
   @Composable
   override fun models(events: Flow<InsuranceScreenEvent>): InsuranceUiState {
     return InsuranceScreenPresenter(
+      seed = seed,
       events = events,
       getInsuranceContractsUseCase = getInsuranceContractsUseCase,
       getCrossSellsUseCase = getCrossSellsUseCase,
       crossSellCardNotificationBadgeService = crossSellCardNotificationBadgeService,
-    )
+    ).present()
   }
 }
 
-@SuppressLint("ComposableNaming")
-@Composable
-internal fun InsuranceScreenPresenter(
-  events: Flow<InsuranceScreenEvent>,
-  getInsuranceContractsUseCase: GetInsuranceContractsUseCase,
-  getCrossSellsUseCase: GetCrossSellsUseCase,
-  crossSellCardNotificationBadgeService: CrossSellCardNotificationBadgeService,
-): InsuranceUiState {
-  var insuranceData by remember { mutableStateOf<InsuranceData?>(null) }
-  var isLoading by remember { mutableStateOf(true) }
-  val retryChannel = remember { RetryChannel() }
+internal class InsuranceScreenPresenter(
+  private val seed: InsuranceUiState,
+  private val events: Flow<InsuranceScreenEvent>,
+  private val getInsuranceContractsUseCase: GetInsuranceContractsUseCase,
+  private val getCrossSellsUseCase: GetCrossSellsUseCase,
+  private val crossSellCardNotificationBadgeService: CrossSellCardNotificationBadgeService,
+) {
+  @Composable
+  fun present(): InsuranceUiState {
+    var insuranceData by remember {
+      mutableStateOf<InsuranceData>(
+        InsuranceData(
+          insuranceCards = seed.insuranceCards,
+          crossSells = seed.crossSells,
+          showNotificationBadge = seed.showNotificationBadge,
+          quantityOfCancelledInsurances = seed.quantityOfCancelledInsurances,
+        ),
+      )
+    }
+    var isLoading by remember { mutableStateOf(true) }
+    var didFailToLoad by remember { mutableStateOf(false) }
+    val retryChannel = remember { RetryChannel() }
 
-  LaunchedEffect(Unit) {
-    events.collect { event: InsuranceScreenEvent ->
-      when (event) {
-        InsuranceScreenEvent.RetryLoading -> {
-          retryChannel.retry()
-        }
-        InsuranceScreenEvent.MarkCardCrossSellsAsSeen -> {
-          crossSellCardNotificationBadgeService.markAsSeen()
+    LaunchedEffect(Unit) {
+      events.collect { event: InsuranceScreenEvent ->
+        when (event) {
+          InsuranceScreenEvent.RetryLoading -> {
+            retryChannel.retry()
+          }
+          InsuranceScreenEvent.MarkCardCrossSellsAsSeen -> {
+            crossSellCardNotificationBadgeService.markAsSeen()
+          }
         }
       }
     }
-  }
-  LaunchedEffect(Unit) {
-    retryChannel.mapLatest {
-      isLoading = true
-      val insuranceDataResult = loadInsuranceData(
-        getInsuranceContractsUseCase,
-        getCrossSellsUseCase,
-        crossSellCardNotificationBadgeService,
-      )
-      Snapshot.withMutableSnapshot {
-        isLoading = false
-        insuranceData = insuranceDataResult
+    LaunchedEffect(Unit) {
+      retryChannel.collectLatest {
+        Snapshot.withMutableSnapshot {
+          didFailToLoad = false
+          isLoading = true
+        }
+        val insuranceDataResult: InsuranceData? = loadInsuranceData(
+          getInsuranceContractsUseCase,
+          getCrossSellsUseCase,
+          crossSellCardNotificationBadgeService,
+        )
+        val didFail = insuranceDataResult == null
+        Snapshot.withMutableSnapshot {
+          isLoading = false
+          didFailToLoad = didFail
+          insuranceData = insuranceDataResult ?: InsuranceData.Empty
+        }
       }
-    }.collect()
-  }
+    }
 
-  return InsuranceUiState(
-    insuranceCards = insuranceData?.insuranceCards ?: persistentListOf(),
-    crossSells = insuranceData?.crossSells ?: persistentListOf(),
-    showNotificationBadge = insuranceData?.showNotificationBadge ?: false,
-    quantityOfCancelledInsurances = insuranceData?.quantityOfCancelledInsurances ?: 0,
-    hasError = insuranceData == null && isLoading == false,
-    loading = isLoading,
-  )
+    return InsuranceUiState(
+      insuranceCards = insuranceData.insuranceCards,
+      crossSells = insuranceData.crossSells,
+      showNotificationBadge = insuranceData.showNotificationBadge,
+      quantityOfCancelledInsurances = insuranceData.quantityOfCancelledInsurances,
+      hasError = didFailToLoad == true && isLoading == false,
+      loading = isLoading,
+    )
+  }
 }
 
 internal sealed interface InsuranceScreenEvent {
@@ -202,4 +217,13 @@ private data class InsuranceData(
   val crossSells: ImmutableList<InsuranceUiState.CrossSell>,
   val showNotificationBadge: Boolean,
   val quantityOfCancelledInsurances: Int,
-)
+) {
+  companion object {
+    val Empty: InsuranceData = InsuranceData(
+      persistentListOf(),
+      persistentListOf(),
+      false,
+      0,
+    )
+  }
+}
