@@ -1,0 +1,153 @@
+package com.hedvig.app.feature.profile.ui.payment.history
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.hedvig.android.language.LanguageService
+import com.hedvig.app.feature.profile.ui.payment.PaymentRepository
+import com.hedvig.app.util.apollo.format
+import java.time.LocalDate
+import java.util.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
+class PaymentHistoryViewModel(
+  private val paymentRepository: PaymentRepository,
+  private val languageService: LanguageService,
+) : ViewModel() {
+
+  private val _uiState = MutableStateFlow(PaymentHistoryUiState())
+  val uiState: StateFlow<PaymentHistoryUiState> = _uiState
+
+  data class PaymentHistoryUiState(
+    val charges: List<Payment> = emptyList(),
+    val errorMessage: String? = null,
+    val isLoading: Boolean = false,
+  ) {
+    data class Payment(
+      val amount: String,
+      val date: LocalDate,
+    )
+  }
+
+  init {
+    loadPaymentHistory()
+  }
+
+  private fun loadPaymentHistory() {
+    viewModelScope.launch {
+      _uiState.update { it.copy(isLoading = true) }
+      paymentRepository.getChargeHistory().fold(
+        ifLeft = { _uiState.update { it.copy(errorMessage = it.errorMessage) } },
+        ifRight = { _uiState.value = it.toUiState(languageService.getLocale()) },
+      )
+    }
+  }
+}
+
+private fun PaymentRepository.ChargeHistory.toUiState2(locale: Locale) = PaymentHistoryViewModel.PaymentHistoryUiState(
+  charges = charges.map {
+    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
+      amount = it.amount.format(locale),
+      date = it.date,
+    )
+  },
+)
+
+
+private fun PaymentRepository.ChargeHistory.toUiState(locale: Locale) = PaymentHistoryViewModel.PaymentHistoryUiState(
+  charges = listOf(
+    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
+      amount = "300kr",
+      date = LocalDate.now(),
+    ),
+    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
+      amount = "300kr",
+      date = LocalDate.now(),
+    ),
+    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
+      amount = "300kr",
+      date = LocalDate.now(),
+    ),PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
+      amount = "300kr",
+      date = LocalDate.now(),
+    ),
+    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
+      amount = "300kr",
+      date = LocalDate.now(),
+    ),
+    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
+      amount = "300kr",
+      date = LocalDate.now(),
+    ),
+    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
+      amount = "300kr",
+      date = LocalDate.now(),
+    ),
+    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
+      amount = "300kr",
+      date = LocalDate.now(),
+    ),
+    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
+      amount = "300kr",
+      date = LocalDate.now(),
+    ),
+    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
+      amount = "300kr",
+      date = LocalDate.now(),
+    ),
+    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
+      amount = "300kr",
+      date = LocalDate.now(),
+    ),
+    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
+      amount = "300kr",
+      date = LocalDate.now(),
+    ),
+    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
+      amount = "300kr",
+      date = LocalDate.now(),
+    ),
+    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
+      amount = "300kr",
+      date = LocalDate.now(),
+    ),
+    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
+      amount = "300kr",
+      date = LocalDate.now(),
+    ),
+    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
+      amount = "300kr",
+      date = LocalDate.now(),
+    ),
+    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
+      amount = "300kr",
+      date = LocalDate.now(),
+    ),
+    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
+      amount = "300kr",
+      date = LocalDate.now(),
+    ),
+    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
+      amount = "300kr",
+      date = LocalDate.now(),
+    ),
+    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
+      amount = "300kr",
+      date = LocalDate.now(),
+    ),
+    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
+      amount = "300kr",
+      date = LocalDate.now(),
+    ),
+    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
+      amount = "300kr",
+      date = LocalDate.now(),
+    ),
+    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
+      amount = "350kr",
+      date = LocalDate.now(),
+    ),
+  ),
+)

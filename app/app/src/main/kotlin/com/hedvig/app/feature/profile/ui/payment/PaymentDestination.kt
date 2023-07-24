@@ -60,7 +60,7 @@ import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.market.Market
 import com.hedvig.app.feature.offer.usecase.CampaignCode
 import com.hedvig.app.feature.payment.connectPayinIntent
-import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel2.*
+import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel.*
 import com.hedvig.hanalytics.PaymentType
 import hedvig.resources.R
 import java.time.LocalDate
@@ -68,8 +68,9 @@ import java.util.*
 
 @Composable
 fun PaymentDestination(
-  viewModel: PaymentViewModel2,
+  viewModel: PaymentViewModel,
   onBackPressed: () -> Unit,
+  onPaymentHistoryClicked: () -> Unit,
 ) {
   val context = LocalContext.current
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -93,6 +94,7 @@ fun PaymentDestination(
         },
         onAddDiscountCode = viewModel::onDiscountCodeAdded,
         onDiscountCodeChanged = viewModel::onDiscountCodeChanged,
+        onPaymentHistoryClicked = onPaymentHistoryClicked,
       )
     }
   }
@@ -106,6 +108,7 @@ fun PaymentScreen(
   onChangeBankAccount: () -> Unit,
   onAddDiscountCode: () -> Unit,
   onDiscountCodeChanged: (CampaignCode) -> Unit,
+  onPaymentHistoryClicked: () -> Unit,
 ) {
   HedvigScaffold(
     topAppBarText = stringResource(R.string.PROFILE_PAYMENT_TITLE),
@@ -151,7 +154,7 @@ fun PaymentScreen(
       PaymentDetails(uiState)
       Spacer(Modifier.height(4.dp))
       Divider()
-      PaymentHistory(onClick = {})
+      PaymentHistory(onClick = onPaymentHistoryClicked)
       Spacer(Modifier.height(16.dp))
       HedvigContainedButton(
         text = stringResource(id = R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT),
@@ -398,6 +401,7 @@ fun PreviewPaymentScreen() {
         onChangeBankAccount = {},
         onAddDiscountCode = {},
         onDiscountCodeChanged = {},
+        onPaymentHistoryClicked = {},
       )
     }
   }

@@ -16,7 +16,9 @@ import com.hedvig.app.feature.offer.model.Campaign
 import com.hedvig.app.feature.offer.model.toIncentive
 import com.hedvig.app.feature.profile.data.PaymentMethod
 import com.hedvig.app.util.apollo.toMonetaryAmount
+import giraffe.ChargeHistoryQuery
 import giraffe.PaymentQuery
+import giraffe.type.Charge
 import giraffe.type.PayoutMethodStatus
 import java.time.LocalDate
 import javax.money.MonetaryAmount
@@ -27,6 +29,7 @@ class PaymentRepository(
   languageService: LanguageService,
 ) {
   private val paymentQuery = PaymentQuery(languageService.getGraphQLLocale())
+  private val chargeHistoryQuery = ChargeHistoryQuery()
   fun payment(): Flow<ApolloResponse<PaymentQuery.Data>> = apolloClient
     .query(paymentQuery)
     .watch()
@@ -49,6 +52,24 @@ class PaymentRepository(
           activePayoutMethods = PaymentQuery.ActivePayoutMethods(status = status),
         ),
       )
+  }
+
+  suspend fun getChargeHistory(): Either<OperationResult.Error, ChargeHistory> = either {
+    apolloClient
+      .query(chargeHistoryQuery)
+      .safeExecute()
+      .toEither()
+      .map {
+        ChargeHistory(
+          charges = it.chargeHistory.map {
+            ChargeHistory.Charge(
+              amount = it.amount.fragments.monetaryAmountFragment.toMonetaryAmount(),
+              date = it.date
+            )
+          }
+        )
+      }
+      .bind()
   }
 
   suspend fun getPaymentData(): Either<OperationResult.Error, PaymentData> = either {
@@ -112,5 +133,14 @@ class PaymentRepository(
     val paymentMethod: PaymentMethod?,
     val contracts: List<String>,
   )
+
+  data class ChargeHistory(
+    val charges: List<Charge>,
+  ) {
+    data class Charge(
+      val amount: MonetaryAmount,
+      val date: LocalDate,
+    )
+  }
 
 }

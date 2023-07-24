@@ -20,12 +20,6 @@ query Payment($locale: Locale!) {
     }
   }
   nextChargeDate
-  chargeHistory {
-    amount {
-      ...MonetaryAmountFragment
-    }
-    date
-  }
   redeemedCampaigns {
     ...IncentiveFragment
     code

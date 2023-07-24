@@ -4,7 +4,6 @@ import android.view.View
 import com.hedvig.app.R
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinActivity
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutActivity
-import com.hedvig.app.feature.profile.ui.payment.PaymentHistoryActivity
 import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeBottomSheet
 import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
 import com.kaspersky.kaspresso.screens.KScreen

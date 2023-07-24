@@ -47,8 +47,8 @@ fun HedvigScaffold(
   topAppBarActionType: TopAppBarActionType = TopAppBarActionType.BACK,
   itemsColumnHorizontalAlignment: Alignment.Horizontal = Alignment.Start,
   topAppBarColors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(
-    containerColor = androidx.compose.material3.MaterialTheme.colorScheme.background,
-    scrolledContainerColor = androidx.compose.material3.MaterialTheme.colorScheme.surface,
+    containerColor = MaterialTheme.colorScheme.background,
+    scrolledContainerColor = MaterialTheme.colorScheme.surface,
   ),
   topAppBarScrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
   scrollState: ScrollState = rememberScrollState(),
