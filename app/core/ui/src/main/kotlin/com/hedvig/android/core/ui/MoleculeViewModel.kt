@@ -27,13 +27,13 @@ abstract class MoleculeViewModel<Event, Model>(
   // small enough to surface issues if they get backed up for some reason.
   private val events = MutableSharedFlow<Event>(extraBufferCapacity = 20)
 
+  private var seed: Model = initialState
+
   fun take(event: Event) {
     if (!events.tryEmit(event)) {
       error("Event buffer overflow on event:$event.")
     }
   }
-
-  var seed: Model = initialState
 
   val models: StateFlow<Model> by lazy(LazyThreadSafetyMode.NONE) {
     moleculeFlow<Model>(RecompositionMode.ContextClock) {
