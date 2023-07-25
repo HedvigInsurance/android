@@ -14,7 +14,6 @@ import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.payment.connectPayinIntent
-import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.getImmutablePendingIntentFlags
 import kotlinx.coroutines.Dispatchers
@@ -110,12 +109,6 @@ class PaymentNotificationSender(
           Intent(
             context,
             LoggedInActivity::class.java,
-          ),
-        )
-        addNextIntentWithParentStack(
-          Intent(
-            context,
-            PaymentActivity::class.java,
           ),
         )
         addNextIntentWithParentStack(

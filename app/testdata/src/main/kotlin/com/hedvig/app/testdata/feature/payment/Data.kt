@@ -19,12 +19,7 @@ val PAYIN_STATUS_DATA_PENDING = PayinStatusQuery.Data(PayinMethodStatus.PENDING)
 
 val PAYMENT_DATA_NOT_CONNECTED = PaymentDataBuilder().build()
 val PAYMENT_DATA_FAILED_PAYMENTS = PaymentDataBuilder(failedCharges = 1).build()
-val PAYMENT_DATA_HISTORIC_PAYMENTS = PaymentDataBuilder(
-  chargeHistory = listOf(
-    ChargeHistoryBuilder().build(),
-    ChargeHistoryBuilder(date = LocalDate.now() - 2.months).build(),
-  ),
-).build()
+
 val PAYMENT_DATA_TRUSTLY_CONNECTED = PaymentDataBuilder(
   payinType = PayinType.TRUSTLY,
   payinConnected = true,
@@ -49,6 +44,7 @@ val PAYMENT_DATA_FREE_MONTHS = PaymentDataBuilder(
       owner = PaymentQuery.Owner(
         displayName = "Test Owner",
       ),
+      code = "",
       fragments = PaymentQuery.RedeemedCampaign.Fragments(
         IncentiveFragment(
           incentive = IncentiveFragment.Incentive(
@@ -79,6 +75,7 @@ val PAYMENT_DATA_REFERRAL = PaymentDataBuilder(
     PaymentQuery.RedeemedCampaign(
       __typename = "",
       owner = null,
+      code = "",
       fragments = PaymentQuery.RedeemedCampaign.Fragments(
         IncentiveFragment(
           incentive = IncentiveFragment.Incentive(
@@ -104,6 +101,7 @@ val PAYMENT_DATA_PERCENTAGE_CAMPAIGN = PaymentDataBuilder(
     PaymentQuery.RedeemedCampaign(
       __typename = "",
       owner = null,
+      code = "",
       fragments = PaymentQuery.RedeemedCampaign.Fragments(
         IncentiveFragment(
           incentive = IncentiveFragment.Incentive(
