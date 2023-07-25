@@ -2,96 +2,132 @@ package com.hedvig.app.feature.profile.ui.payment
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.app.data.debit.PayinStatusRepository
-import com.hedvig.hanalytics.AppScreen
-import com.hedvig.hanalytics.HAnalytics
-import com.hedvig.hanalytics.PaymentType
-import giraffe.PayinStatusQuery
-import giraffe.PaymentQuery
+import com.hedvig.android.language.LanguageService
+import com.hedvig.app.feature.offer.usecase.CampaignCode
+import com.hedvig.app.feature.profile.data.PaymentMethod
+import com.hedvig.app.feature.referrals.data.RedeemReferralCodeRepository
+import com.hedvig.app.util.apollo.format
+import giraffe.type.PayoutMethodStatus
+import java.time.LocalDate
+import java.util.*
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.WhileSubscribed
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import slimber.log.e
-import kotlin.time.Duration.Companion.seconds
-import kotlinx.datetime.LocalDate
 
-abstract class PaymentViewModel(
-  hAnalytics: HAnalytics,
-) : ViewModel() {
-  protected val _paymentData = MutableStateFlow<PaymentQuery.Data?>(null)
-  protected val _payinStatusData = MutableStateFlow<Pair<PayinStatusQuery.Data?, PaymentType>?>(null)
-  val data: StateFlow<Pair<PaymentQuery.Data?, Pair<PayinStatusQuery.Data?, PaymentType>?>> =
-    combine(_paymentData, _payinStatusData) { a, b ->
-      Pair(a, b)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5.seconds), Pair(null, null))
-
-  abstract fun load()
-
-  init {
-    hAnalytics.screenView(AppScreen.PAYMENTS)
-  }
-}
-
-class PaymentViewModelImpl(
+class PaymentViewModel(
+  private val redeemReferralCodeRepository: RedeemReferralCodeRepository,
   private val paymentRepository: PaymentRepository,
-  private val payinStatusRepository: PayinStatusRepository,
-  private val featureManager: FeatureManager,
-  hAnalytics: HAnalytics,
-) : PaymentViewModel(hAnalytics) {
+  private val languageService: LanguageService,
+) : ViewModel() {
+
+  private val _uiState = MutableStateFlow(PaymentUiState())
+  val uiState: StateFlow<PaymentUiState> = _uiState
+
+  data class PaymentUiState(
+    val nextChargeAmount: String? = null,
+    val nextChargeDate: LocalDate? = null,
+    val monthlyCost: String? = null,
+    val insuranceCosts: List<InsuranceCost> = emptyList(),
+    val totalDiscount: String? = null,
+    val activeDiscounts: List<Discount> = emptyList(),
+    val paymentMethod: PaymentMethod? = null,
+    val discountCode: CampaignCode? = null,
+    val discountError: String? = null,
+    val errorMessage: String? = null,
+    val isLoading: Boolean = false,
+    val payoutStatus: PayoutStatus? = null
+  ) {
+    data class InsuranceCost(
+      val displayName: String,
+      val cost: String?,
+    )
+
+    data class PaymentMethod(
+      val displayName: String?,
+      val displayValue: String?,
+    )
+
+    data class Discount(
+      val code: String,
+      val displayName: String,
+    )
+
+    enum class PayoutStatus {
+      ACTIVE,
+      PENDING,
+      NEEDS_SETUP;
+    }
+  }
 
   init {
-    viewModelScope.launch {
-      paymentRepository
-        .payment()
-        .onEach { _paymentData.value = it.data }
-        .catch { e(it) }
-        .launchIn(this)
+    loadPaymentData()
+  }
 
-      payinStatusRepository
-        .payinStatusFlow()
-        .onEach { _payinStatusData.value = Pair(it.data, featureManager.getPaymentType()) }
-        .catch { e(it) }
-        .launchIn(this)
+  private fun loadPaymentData() {
+    viewModelScope.launch {
+      _uiState.update { it.copy(isLoading = true) }
+      paymentRepository.getPaymentData().fold(
+        ifLeft = { error -> _uiState.update { it.copy(errorMessage = error.message, isLoading = false) } },
+        ifRight = { paymentData -> _uiState.value = paymentData.toUiState(languageService.getLocale()) },
+      )
     }
   }
 
-  override fun load() {
+  fun onDiscountCodeChanged(code: CampaignCode) {
+    _uiState.update { it.copy(discountCode = code, discountError = null) }
+  }
+
+  fun onDiscountCodeAdded() {
     viewModelScope.launch {
-      paymentRepository.refresh()
+      val code = _uiState.value.discountCode ?: return@launch
+      redeemReferralCodeRepository.redeemReferralCode(code)
+        .fold(
+          ifLeft = { error -> _uiState.update { it.copy(discountError = error.message) } },
+          ifRight = { data -> loadPaymentData() },
+        )
     }
+  }
+
+  fun retry() {
+    loadPaymentData()
   }
 }
 
-data class PaymentUiState(
-  val nextChargeAmount: String,
-  val nextChargeDate: LocalDate,
-  val insuranceCosts: List<InsuranceCost>,
-  val totalDiscount: String,
-  val activeDiscounts: List<Discount>,
-  val paymentMethod: PaymentMethod,
-  val discountCode: String? = null,
-  val discountError: String? = null,
-) {
-  data class InsuranceCost(
-    val displayName: String,
-    val cost: String,
-  )
-
-  data class PaymentMethod(
-    val displayName: String,
-    val displayValue: String,
-  )
-
-  data class Discount(
-    val code: String,
-    val displayName: String,
-  )
-}
+private fun PaymentRepository.PaymentData.toUiState(locale: Locale) = PaymentViewModel.PaymentUiState(
+  nextChargeAmount = nextCharge.format(locale),
+  monthlyCost = monthlyCost?.format(locale),
+  nextChargeDate = nextChargeDate,
+  insuranceCosts = contracts.map {
+    PaymentViewModel.PaymentUiState.InsuranceCost(
+      displayName = it,
+      cost = null,
+    )
+  },
+  totalDiscount = totalDiscount?.negate()?.format(locale),
+  activeDiscounts = redeemedCampagins.map {
+    PaymentViewModel.PaymentUiState.Discount(
+      code = it.code,
+      displayName = it.displayValue ?: "-",
+    )
+  },
+  paymentMethod = PaymentViewModel.PaymentUiState.PaymentMethod(
+    displayName = when (paymentMethod) {
+      is PaymentMethod.CardPaymentMethod -> paymentMethod.brand ?: "Unknown"
+      is PaymentMethod.ThirdPartyPaymentMethd -> paymentMethod.name
+      null -> null
+    },
+    displayValue = when (paymentMethod) {
+      is PaymentMethod.CardPaymentMethod -> paymentMethod.lastFourDigits
+      is PaymentMethod.ThirdPartyPaymentMethd -> paymentMethod.type
+      null -> null
+    },
+  ),
+  payoutStatus = when (payoutMethodStatus) {
+    PayoutMethodStatus.ACTIVE -> PaymentViewModel.PaymentUiState.PayoutStatus.ACTIVE
+    PayoutMethodStatus.PENDING ->  PaymentViewModel.PaymentUiState.PayoutStatus.PENDING
+    PayoutMethodStatus.NEEDS_SETUP ->  PaymentViewModel.PaymentUiState.PayoutStatus.NEEDS_SETUP
+    PayoutMethodStatus.UNKNOWN__ -> null
+    null -> null
+  }
+)
