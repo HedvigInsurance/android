@@ -1,6 +1,5 @@
-package com.hedvig.android.feature.insurances
+package com.hedvig.android.feature.insurances.insurance.present
 
-import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -13,14 +12,12 @@ import arrow.fx.coroutines.parZip
 import com.hedvig.android.core.common.RetryChannel
 import com.hedvig.android.core.common.android.i
 import com.hedvig.android.core.ui.MoleculePresenter
-import com.hedvig.android.core.ui.MoleculeViewModel
 import com.hedvig.android.core.ui.insurance.GradientType
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
+import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.data.gradient
-import com.hedvig.android.feature.insurances.data.isTerminated
 import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeService
-import giraffe.InsuranceContractsQuery
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
@@ -28,39 +25,54 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import octopus.CrossSalesQuery
 
-internal class InsuranceViewModel(
-  private val getInsuranceContractsUseCase: GetInsuranceContractsUseCase,
-  private val getCrossSellsUseCase: GetCrossSellsUseCase,
-  private val crossSellCardNotificationBadgeService: CrossSellCardNotificationBadgeService,
-) : MoleculeViewModel<InsuranceScreenEvent, InsuranceUiState>() {
+internal sealed interface InsuranceScreenEvent {
+  object RetryLoading : InsuranceScreenEvent
+  object MarkCardCrossSellsAsSeen : InsuranceScreenEvent
+}
 
-  override var seed: InsuranceUiState = InsuranceUiState(
-    insuranceCards = persistentListOf(),
-    crossSells = persistentListOf(),
-    showNotificationBadge = false,
-    quantityOfCancelledInsurances = 0,
-    hasError = false,
-    loading = true,
+internal data class InsuranceUiState(
+  val insuranceCards: ImmutableList<InsuranceCard>,
+  val crossSells: ImmutableList<CrossSell>,
+  val showNotificationBadge: Boolean,
+  val quantityOfCancelledInsurances: Int,
+  val hasError: Boolean = false,
+  val loading: Boolean = false,
+) {
+  data class InsuranceCard(
+    val contractId: String,
+    val backgroundImageUrl: String?,
+    val chips: ImmutableList<String>,
+    val title: String,
+    val subtitle: String,
+    val gradientType: GradientType,
   )
 
-  override fun presenterFactory(): InsuranceScreenPresenter {
-    return InsuranceScreenPresenter(
-      seed = seed,
-      getInsuranceContractsUseCase = getInsuranceContractsUseCase,
-      getCrossSellsUseCase = getCrossSellsUseCase,
-      crossSellCardNotificationBadgeService = crossSellCardNotificationBadgeService,
+  data class CrossSell(
+    val title: String,
+    val subtitle: String,
+    val storeUrl: String,
+  )
+
+  companion object {
+    val InitialState = InsuranceUiState(
+      insuranceCards = persistentListOf(),
+      crossSells = persistentListOf(),
+      showNotificationBadge = false,
+      quantityOfCancelledInsurances = 0,
+      hasError = false,
+      loading = true,
     )
   }
 }
 
-internal class InsuranceScreenPresenter(
-  override val seed: InsuranceUiState,
+internal class InsurancePresenter(
   private val getInsuranceContractsUseCase: GetInsuranceContractsUseCase,
   private val getCrossSellsUseCase: GetCrossSellsUseCase,
   private val crossSellCardNotificationBadgeService: CrossSellCardNotificationBadgeService,
 ) : MoleculePresenter<InsuranceScreenEvent, InsuranceUiState> {
   @Composable
   override fun present(
+    seed: InsuranceUiState,
     events: Flow<InsuranceScreenEvent>,
   ): InsuranceUiState {
     var insuranceData by remember {
@@ -120,46 +132,6 @@ internal class InsuranceScreenPresenter(
   }
 }
 
-internal sealed interface InsuranceScreenEvent {
-  object RetryLoading : InsuranceScreenEvent
-  object MarkCardCrossSellsAsSeen : InsuranceScreenEvent
-}
-
-internal data class InsuranceUiState(
-  val insuranceCards: ImmutableList<InsuranceCard>,
-  val crossSells: ImmutableList<CrossSell>,
-  val showNotificationBadge: Boolean,
-  val quantityOfCancelledInsurances: Int,
-  val hasError: Boolean = false,
-  val loading: Boolean = false,
-) {
-  data class InsuranceCard(
-    val contractId: String,
-    val backgroundImageUrl: String?,
-    val chips: ImmutableList<String>,
-    val title: String,
-    val subtitle: String,
-    val gradientType: GradientType,
-  )
-
-  data class CrossSell(
-    val title: String,
-    val subtitle: String,
-    val uri: Uri,
-  )
-
-  companion object {
-    val Loading = InsuranceUiState(
-      insuranceCards = persistentListOf(),
-      crossSells = persistentListOf(),
-      showNotificationBadge = false,
-      quantityOfCancelledInsurances = 0,
-      hasError = false,
-      loading = true,
-    )
-  }
-}
-
 private suspend fun loadInsuranceData(
   getInsuranceContractsUseCase: GetInsuranceContractsUseCase,
   getCrossSellsUseCase: GetCrossSellsUseCase,
@@ -171,12 +143,12 @@ private suspend fun loadInsuranceData(
       { getCrossSellsUseCase.invoke().bind() },
       { crossSellCardNotificationBadgeService.showNotification().first() },
     ) {
-        contracts: List<InsuranceContractsQuery.Contract>,
+        contracts: List<InsuranceContract>,
         crossSellsData: List<CrossSalesQuery.Data.CurrentMember.CrossSell>,
         showNotificationBadge: Boolean,
       ->
       val insuranceCards = contracts
-        .filterNot(InsuranceContractsQuery.Contract::isTerminated)
+        .filterNot(InsuranceContract::isTerminated)
         .map { contract ->
           InsuranceUiState.InsuranceCard(
             contractId = contract.id,
@@ -191,14 +163,14 @@ private suspend fun loadInsuranceData(
         InsuranceUiState.CrossSell(
           title = crossSell.title,
           subtitle = crossSell.description,
-          uri = Uri.parse(crossSell.storeUrl),
+          storeUrl = crossSell.storeUrl,
         )
       }.toPersistentList()
       InsuranceData(
         insuranceCards = insuranceCards,
         crossSells = crossSells,
         showNotificationBadge = showNotificationBadge,
-        quantityOfCancelledInsurances = contracts.count(InsuranceContractsQuery.Contract::isTerminated),
+        quantityOfCancelledInsurances = contracts.count(InsuranceContract::isTerminated),
       )
     }
   }.fold(

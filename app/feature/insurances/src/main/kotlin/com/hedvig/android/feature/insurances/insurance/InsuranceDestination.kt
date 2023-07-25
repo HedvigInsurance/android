@@ -41,11 +41,13 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -64,6 +66,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
+import com.hedvig.android.core.common.android.d
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.material3.onTypeContainer
@@ -77,6 +80,8 @@ import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.core.ui.insurance.GradientType
 import com.hedvig.android.core.ui.insurance.toDrawable
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
+import com.hedvig.android.feature.insurances.insurance.present.InsuranceScreenEvent
+import com.hedvig.android.feature.insurances.insurance.present.InsuranceUiState
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -90,7 +95,12 @@ internal fun InsuranceDestination(
   openChat: () -> Unit,
   imageLoader: ImageLoader,
 ) {
-  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  val uiState: InsuranceUiState by viewModel.models.collectAsStateWithLifecycle()
+  LaunchedEffect(Unit) {
+    snapshotFlow { uiState }.collect {
+      d { "Stelios:$it" }
+    }
+  }
   val lifecycleOwner = LocalLifecycleOwner.current
   val currentViewModel by rememberUpdatedState(viewModel)
   DisposableEffect(lifecycleOwner) {
@@ -220,9 +230,11 @@ private fun ColumnScope.InsuranceScreenContent(
       topText = insuranceCard.title,
       bottomText = insuranceCard.subtitle,
       imageLoader = imageLoader,
-      modifier = Modifier.padding(horizontal = 16.dp).clickable {
-        onInsuranceCardClick(insuranceCard.contractId)
-      },
+      modifier = Modifier
+        .padding(horizontal = 16.dp)
+        .clickable {
+          onInsuranceCardClick(insuranceCard.contractId)
+        },
       fallbackPainter = insuranceCard.gradientType.toDrawable(context)?.let { drawable ->
         BitmapPainter(drawable.toBitmap(10, 10).asImageBitmap())
       } ?: ColorPainter(Color.Black.copy(alpha = 0.7f)),
@@ -300,7 +312,11 @@ private fun CrossSellItem(
     Spacer(Modifier.width(16.dp))
     HedvigContainedSmallButton(
       text = stringResource(R.string.cross_sell_get_price),
-      onClick = { onCrossSellClick(crossSell.uri) },
+      onClick = {
+        onCrossSellClick(
+          if (crossSell.storeUrl.isBlank()) Uri.EMPTY else Uri.parse(crossSell.storeUrl),
+        )
+      },
       colors = ButtonDefaults.elevatedButtonColors(
         containerColor = MaterialTheme.colorScheme.typeContainer,
         contentColor = MaterialTheme.colorScheme.onTypeContainer,
@@ -370,7 +386,9 @@ private fun TerminatedContractsButton(
   ) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier.padding(16.dp).fillMaxWidth(),
+      modifier = Modifier
+        .padding(16.dp)
+        .fillMaxWidth(),
     ) {
       Text(text)
     }
@@ -398,7 +416,7 @@ private fun PreviewInsuranceScreen() {
             InsuranceUiState.CrossSell(
               title = "Pet".repeat(5),
               subtitle = "Unlimited FirstVet calls".repeat(2),
-              uri = Uri.EMPTY,
+              storeUrl = "",
             ),
           ),
           showNotificationBadge = false,

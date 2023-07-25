@@ -8,10 +8,14 @@ import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import octopus.CrossSalesQuery
 
-internal class GetCrossSellsUseCase(
+internal interface GetCrossSellsUseCase {
+  suspend fun invoke(): Either<ErrorMessage, List<CrossSalesQuery.Data.CurrentMember.CrossSell>>
+}
+
+internal class GetCrossSellsUseCaseImpl(
   private val apolloClient: ApolloClient,
-) {
-  suspend fun invoke(): Either<ErrorMessage, List<CrossSalesQuery.Data.CurrentMember.CrossSell>> {
+) : GetCrossSellsUseCase {
+  override suspend fun invoke(): Either<ErrorMessage, List<CrossSalesQuery.Data.CurrentMember.CrossSell>> {
     return either {
       val result = apolloClient
         .query(CrossSalesQuery())

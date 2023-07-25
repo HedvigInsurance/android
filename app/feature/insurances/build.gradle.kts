@@ -7,6 +7,7 @@ plugins {
 
 android {
   namespace = "com.hedvig.android.feature.insurances"
+  testOptions.unitTests.isReturnDefaultValues = true
 }
 
 dependencies {
@@ -24,7 +25,9 @@ dependencies {
   implementation(projects.app.language.languageCore)
   implementation(projects.app.navigation.core)
   implementation(projects.app.navigation.navigationComposeTyped)
-  implementation(projects.app.notificationBadgeData)
+  implementation(projects.app.notificationBadgeData.public)
+
+  testImplementation(projects.app.notificationBadgeData.fake)
 
   implementation(libs.androidx.compose.material) // for pull to refresh
   implementation(libs.androidx.compose.material3)
@@ -42,4 +45,9 @@ dependencies {
 
   implementation(libs.assertK)
   implementation(libs.junit)
+
+  testImplementation(libs.assertK)
+  testImplementation(libs.coroutines.test)
+  testImplementation(libs.junit)
+  testImplementation(libs.turbine)
 }
