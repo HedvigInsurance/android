@@ -5,6 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.businessmodel.businessModelGraph
+import com.hedvig.android.market.Market
 import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.compose.typed.animatedNavigation
 import com.hedvig.android.navigation.core.AppDestination
@@ -32,6 +33,9 @@ internal fun NavGraphBuilder.profileGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   windowSizeClass: WindowSizeClass,
   isProduction: Boolean,
+  navigateToPayoutScreen: () -> Unit,
+  navigateToPayinScreen: () -> Unit,
+  market: Market?,
 ) {
   animatedNavigation<TopLevelGraph.PROFILE>(
     startDestination = createRoutePattern<AppDestination.TopLevelDestination.Profile>(),
@@ -115,6 +119,9 @@ internal fun NavGraphBuilder.profileGraph(
         onPaymentHistoryClicked = {
           with(navigator) { backStackEntry.navigate(AppDestination.PaymentHistory) }
         },
+        onConnectPayoutMethod = navigateToPayoutScreen,
+        onChangeBankAccount = navigateToPayinScreen,
+        market = market,
       )
     }
     animatedComposable<AppDestination.PaymentHistory> {

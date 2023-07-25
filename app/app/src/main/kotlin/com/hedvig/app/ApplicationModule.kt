@@ -599,7 +599,7 @@ private val useCaseModule = module {
   single<EditCampaignUseCase> { EditCampaignUseCase(get<ApolloClient>(giraffeClient), get()) }
   single<AddPaymentTokenUseCase> { AddPaymentTokenUseCase(get<ApolloClient>(giraffeClient)) }
   single<ConnectPaymentUseCase> { ConnectPaymentUseCase(get(), get(), get()) }
-  single<ConnectPayoutUseCase> { ConnectPayoutUseCase(get(), get()) }
+  single<ConnectPayoutUseCase> { ConnectPayoutUseCase(get(giraffeClient), get()) }
   single<ObserveOfferStateUseCase> { ObserveOfferStateUseCase(get(), get()) }
   single<ChangeLanguageUseCase> {
     ChangeLanguageUseCase(

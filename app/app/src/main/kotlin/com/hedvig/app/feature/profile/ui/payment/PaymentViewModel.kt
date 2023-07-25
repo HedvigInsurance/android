@@ -7,6 +7,7 @@ import com.hedvig.app.feature.offer.usecase.CampaignCode
 import com.hedvig.app.feature.profile.data.PaymentMethod
 import com.hedvig.app.feature.referrals.data.RedeemReferralCodeRepository
 import com.hedvig.app.util.apollo.format
+import giraffe.type.PayoutMethodStatus
 import java.time.LocalDate
 import java.util.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,6 +27,7 @@ class PaymentViewModel(
   data class PaymentUiState(
     val nextChargeAmount: String? = null,
     val nextChargeDate: LocalDate? = null,
+    val monthlyCost: String? = null,
     val insuranceCosts: List<InsuranceCost> = emptyList(),
     val totalDiscount: String? = null,
     val activeDiscounts: List<Discount> = emptyList(),
@@ -34,6 +36,7 @@ class PaymentViewModel(
     val discountError: String? = null,
     val errorMessage: String? = null,
     val isLoading: Boolean = false,
+    val payoutStatus: PayoutStatus? = null
   ) {
     data class InsuranceCost(
       val displayName: String,
@@ -49,6 +52,12 @@ class PaymentViewModel(
       val code: String,
       val displayName: String,
     )
+
+    enum class PayoutStatus {
+      ACTIVE,
+      PENDING,
+      NEEDS_SETUP;
+    }
   }
 
   init {
@@ -59,8 +68,8 @@ class PaymentViewModel(
     viewModelScope.launch {
       _uiState.update { it.copy(isLoading = true) }
       paymentRepository.getPaymentData().fold(
-        ifLeft = { _uiState.update { it.copy(errorMessage = it.errorMessage) } },
-        ifRight = { _uiState.value = it.toUiState(languageService.getLocale()) },
+        ifLeft = { error -> _uiState.update { it.copy(errorMessage = error.message, isLoading = false) } },
+        ifRight = { paymentData -> _uiState.value = paymentData.toUiState(languageService.getLocale()) },
       )
     }
   }
@@ -79,10 +88,15 @@ class PaymentViewModel(
         )
     }
   }
+
+  fun retry() {
+    loadPaymentData()
+  }
 }
 
 private fun PaymentRepository.PaymentData.toUiState(locale: Locale) = PaymentViewModel.PaymentUiState(
-  nextChargeAmount = chargeEstimation?.format(locale),
+  nextChargeAmount = nextCharge.format(locale),
+  monthlyCost = monthlyCost?.format(locale),
   nextChargeDate = nextChargeDate,
   insuranceCosts = contracts.map {
     PaymentViewModel.PaymentUiState.InsuranceCost(
@@ -109,4 +123,11 @@ private fun PaymentRepository.PaymentData.toUiState(locale: Locale) = PaymentVie
       null -> null
     },
   ),
+  payoutStatus = when (payoutMethodStatus) {
+    PayoutMethodStatus.ACTIVE -> PaymentViewModel.PaymentUiState.PayoutStatus.ACTIVE
+    PayoutMethodStatus.PENDING ->  PaymentViewModel.PaymentUiState.PayoutStatus.PENDING
+    PayoutMethodStatus.NEEDS_SETUP ->  PaymentViewModel.PaymentUiState.PayoutStatus.NEEDS_SETUP
+    PayoutMethodStatus.UNKNOWN__ -> null
+    null -> null
+  }
 )
