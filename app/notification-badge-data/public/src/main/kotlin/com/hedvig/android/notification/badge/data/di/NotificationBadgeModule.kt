@@ -7,6 +7,7 @@ import com.hedvig.android.notification.badge.data.crosssell.GetCrossSellsContrac
 import com.hedvig.android.notification.badge.data.crosssell.GetCrossSellsContractTypesUseCaseImpl
 import com.hedvig.android.notification.badge.data.crosssell.bottomnav.CrossSellBottomNavNotificationBadgeService
 import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeService
+import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeServiceImpl
 import com.hedvig.android.notification.badge.data.referrals.ReferralsNotificationBadgeService
 import com.hedvig.android.notification.badge.data.storage.DatastoreNotificationBadgeStorage
 import com.hedvig.android.notification.badge.data.storage.NotificationBadgeStorage
@@ -16,7 +17,7 @@ import org.koin.dsl.module
 @Suppress("RemoveExplicitTypeArguments")
 val notificationBadgeModule = module {
   single<CrossSellBottomNavNotificationBadgeService> { CrossSellBottomNavNotificationBadgeService(get()) }
-  single<CrossSellCardNotificationBadgeService> { CrossSellCardNotificationBadgeService(get()) }
+  single<CrossSellCardNotificationBadgeService> { CrossSellCardNotificationBadgeServiceImpl(get()) }
   single<CrossSellNotificationBadgeService> { CrossSellNotificationBadgeService(get(), get()) }
   single<GetCrossSellsContractTypesUseCase> {
     GetCrossSellsContractTypesUseCaseImpl(get<ApolloClient>(giraffeClient), get())

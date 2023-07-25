@@ -20,7 +20,7 @@ class CrossSellCardNotificationBadgeServiceTest {
     notificationBadgeStorage: NotificationBadgeStorage,
     getCrossSellsContractTypesUseCase: GetCrossSellsContractTypesUseCase,
   ): CrossSellCardNotificationBadgeService {
-    return CrossSellCardNotificationBadgeService(
+    return CrossSellCardNotificationBadgeServiceImpl(
       CrossSellNotificationBadgeService(
         getCrossSellsContractTypesUseCase,
         notificationBadgeStorage,

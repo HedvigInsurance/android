@@ -4,16 +4,21 @@ import com.hedvig.android.notification.badge.data.crosssell.CrossSellBadgeType
 import com.hedvig.android.notification.badge.data.crosssell.CrossSellNotificationBadgeService
 import kotlinx.coroutines.flow.Flow
 
-class CrossSellCardNotificationBadgeService internal constructor(
+interface CrossSellCardNotificationBadgeService {
+  fun showNotification(): Flow<Boolean>
+  suspend fun markAsSeen()
+}
+
+internal class CrossSellCardNotificationBadgeServiceImpl(
   private val crossSellNotificationBadgeService: CrossSellNotificationBadgeService,
-) {
+) : CrossSellCardNotificationBadgeService {
   private val crossSellCardBadgeType = CrossSellBadgeType.InsuranceFragmentCard
 
-  fun showNotification(): Flow<Boolean> {
+  override fun showNotification(): Flow<Boolean> {
     return crossSellNotificationBadgeService.showNotification(crossSellCardBadgeType)
   }
 
-  suspend fun markAsSeen() {
+  override suspend fun markAsSeen() {
     crossSellNotificationBadgeService.markCurrentCrossSellsAsSeen(crossSellCardBadgeType)
   }
 }
