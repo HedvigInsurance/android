@@ -48,6 +48,11 @@ sealed interface AppDestination : Destination {
   @Serializable
   object Settings : AppDestination
 
+  @Serializable
+  object PaymentInfo : AppDestination
+
+  @Serializable
+  object PaymentHistory : AppDestination
 //  @Serializable
 //  object LegacyClaimsTriaging : AppDestination
 }

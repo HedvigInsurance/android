@@ -43,7 +43,7 @@ import com.hedvig.android.core.ui.SelectIndicationCircle
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.claimflow.CheckoutMethod
 import com.hedvig.android.feature.odyssey.ui.ClaimFlowScaffold

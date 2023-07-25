@@ -42,7 +42,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
 import com.hedvig.android.core.ui.insurance.GradientType
-import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurance.ui.ContractCardViewState
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel

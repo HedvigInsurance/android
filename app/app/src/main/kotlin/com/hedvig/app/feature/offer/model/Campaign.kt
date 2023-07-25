@@ -9,6 +9,7 @@ import javax.money.MonetaryAmount
 data class Campaign(
   val displayValue: String?,
   val incentive: Incentive,
+  val code: String,
 ) {
   val shouldShowIncentive = incentive !is Incentive.NoDiscount
 
@@ -39,6 +40,7 @@ data class Campaign(
 fun QuoteCartFragment.Campaign.toCampaign() = Campaign(
   displayValue = displayValue,
   incentive = incentive?.toIncentive() ?: Campaign.Incentive.NoDiscount,
+  code = "",
 )
 
 fun IncentiveFragment.Incentive?.toIncentive(): Campaign.Incentive {

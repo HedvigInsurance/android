@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.genericauth.otpinput
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
@@ -48,11 +49,12 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.text.isDigitsOnly
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
-import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgressOverlay
 import com.hedvig.app.R
 import kotlinx.coroutines.isActive
 
@@ -73,6 +75,7 @@ fun OtpInputScreen(
 ) {
   Box(modifier) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
+
     Scaffold(
       scaffoldState = remember { ScaffoldState(drawerState, snackbarHostState) },
       topBar = {
@@ -85,19 +88,23 @@ fun OtpInputScreen(
         .fillMaxSize()
         .safeDrawingPadding(),
     ) { paddingValues ->
-      OtpInputScreenContents(
-        credential,
-        inputValue,
-        onInputChanged,
-        onSubmitCode,
-        networkErrorMessage,
-        onResendCode,
-        loadingResend,
-        onOpenExternalApp,
-        Modifier.padding(paddingValues),
-      )
+      AnimatedContent(targetState = loadingCode) { loading ->
+        when (loading) {
+          true -> HedvigFullScreenCenterAlignedProgress(show = loadingCode)
+          false -> OtpInputScreenContents(
+            credential,
+            inputValue,
+            onInputChanged,
+            onSubmitCode,
+            networkErrorMessage,
+            onResendCode,
+            loadingResend,
+            onOpenExternalApp,
+            Modifier.padding(paddingValues),
+          )
+        }
+      }
     }
-    HedvigFullScreenCenterAlignedProgressOverlay(show = loadingCode)
   }
 }
 
@@ -139,9 +146,10 @@ private fun OtpInputScreenContents(
     ResendCodeItem(onResendCode, keyboardController, loadingResend, Modifier.align(Alignment.CenterHorizontally))
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(16.dp))
-    LargeContainedButton(onOpenExternalApp) {
-      Text(stringResource(hedvig.resources.R.string.login_open_email_app_button))
-    }
+    HedvigContainedButton(
+      text = stringResource(hedvig.resources.R.string.login_open_email_app_button),
+      onClick = onOpenExternalApp,
+    )
     Spacer(Modifier.height(16.dp))
   }
 }
@@ -262,7 +270,7 @@ private fun PreviewOtpInputScreenValid() {
         credential = "john@doe.com",
         networkErrorMessage = null,
         loadingResend = false,
-        loadingCode = false,
+        loadingCode = true,
         snackbarHostState = SnackbarHostState(),
       )
     }

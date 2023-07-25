@@ -52,7 +52,7 @@ import com.hedvig.android.core.ui.insurance.GradientType
 import com.hedvig.android.core.ui.insurance.toDrawable
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
-import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.app.feature.insurance.ui.ContractCardViewState
 import com.hedvig.app.feature.insurance.ui.detail.coverage.CoverageTab
 import com.hedvig.app.feature.insurance.ui.detail.coverage.CoverageViewModel
