@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 class PaymentViewModel(
   private val redeemReferralCodeRepository: RedeemReferralCodeRepository,
   private val paymentRepository: PaymentRepository,
-  private val languageService: LanguageService,
+  val languageService: LanguageService,
 ) : ViewModel() {
 
   private val _uiState = MutableStateFlow(PaymentUiState())

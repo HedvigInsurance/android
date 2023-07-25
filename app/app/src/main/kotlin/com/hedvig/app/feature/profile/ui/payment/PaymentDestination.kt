@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
@@ -56,7 +55,7 @@ import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.Payments
 import com.hedvig.android.core.icons.hedvig.normal.Waiting
 import com.hedvig.android.core.ui.clearFocusOnTap
-import com.hedvig.android.core.ui.hedvigDateTimeFormatter
+import com.hedvig.android.core.ui.hedvigSecondaryDateTimeFormatter
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.market.Market
 import com.hedvig.app.feature.offer.usecase.CampaignCode
@@ -66,7 +65,7 @@ import java.time.LocalDate
 import java.util.*
 
 @Composable
-fun PaymentDestination(
+internal fun PaymentDestination(
   viewModel: PaymentViewModel,
   onBackPressed: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
@@ -81,7 +80,7 @@ fun PaymentDestination(
       true -> HedvigFullScreenCenterAlignedProgress(show = uiState.isLoading)
       false -> PaymentScreen(
         uiState = uiState,
-        locale = Locale.ENGLISH,
+        locale = viewModel.languageService.getLocale(),
         navigateUp = onBackPressed,
         onChangeBankAccount = onChangeBankAccount,
         onAddDiscountCode = viewModel::onDiscountCodeAdded,
@@ -96,7 +95,7 @@ fun PaymentDestination(
 }
 
 @Composable
-fun PaymentScreen(
+private fun PaymentScreen(
   uiState: PaymentUiState,
   locale: Locale,
   navigateUp: () -> Unit,
@@ -118,19 +117,13 @@ fun PaymentScreen(
         HedvigErrorSection(retry = onRetry)
       }
     } else {
-      val horizontalPaddingModifier = Modifier.padding(horizontal = 16.dp)
       Column {
         Spacer(Modifier.height(16.dp))
         NextPayment(uiState, locale)
-        Spacer(Modifier.height(4.dp))
-        Divider(modifier = horizontalPaddingModifier)
-        Spacer(Modifier.height(4.dp))
+        Divider(Modifier.padding(horizontal = 16.dp))
         InsuranceCosts(uiState, locale)
-        Spacer(Modifier.height(4.dp))
         TotalDiscount(uiState)
-        Spacer(Modifier.height(4.dp))
-        Divider(modifier = horizontalPaddingModifier)
-        Spacer(Modifier.height(16.dp))
+        Divider(Modifier.padding(horizontal = 16.dp))
         if (uiState.activeDiscounts.isEmpty()) {
           AddDiscount(
             uiState = uiState,
@@ -139,12 +132,14 @@ fun PaymentScreen(
           )
         }
         if (uiState.activeDiscounts.isNotEmpty()) {
+          Spacer(Modifier.height(12.dp))
           uiState.activeDiscounts.forEach {
             Row(
               modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
               horizontalArrangement = Arrangement.SpaceBetween,
+              verticalAlignment = Alignment.CenterVertically,
             ) {
               Text(it.code)
               Spacer(Modifier.height(32.dp))
@@ -154,17 +149,14 @@ fun PaymentScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
               )
             }
-            Spacer(Modifier.height(4.dp))
           }
           Spacer(Modifier.height(12.dp))
-          Divider(modifier = horizontalPaddingModifier)
-          Spacer(Modifier.height(4.dp))
+          Divider(Modifier.padding(horizontal = 16.dp))
         }
         TotalAmount(uiState)
         Spacer(Modifier.height(32.dp))
         PaymentDetails(uiState)
-        Spacer(Modifier.height(4.dp))
-        Divider(modifier = horizontalPaddingModifier)
+        Divider(Modifier.padding(horizontal = 16.dp))
         PaymentHistory(onClick = onPaymentHistoryClicked)
         Spacer(Modifier.height(16.dp))
         HedvigContainedButton(
@@ -172,11 +164,10 @@ fun PaymentScreen(
           onClick = onChangeBankAccount,
           modifier = Modifier.padding(horizontal = 16.dp),
         )
-        if (market != null && (market == Market.SE || market == Market.NO)) {
+        if (market != null && (market == Market.DK || market == Market.NO)) {
           Spacer(Modifier.height(32.dp))
           PayoutDetails(uiState)
-          Spacer(Modifier.height(4.dp))
-          Divider(modifier = horizontalPaddingModifier)
+          Divider(Modifier.padding(horizontal = 16.dp))
           Text(
             text = stringResource(id = R.string.payment_screen_pay_out_change_payout_button),
             modifier = Modifier
@@ -208,12 +199,12 @@ private fun NextPayment(uiState: PaymentUiState, locale: Locale) {
   Row(
     modifier = Modifier
       .fillMaxWidth()
-      .padding(vertical = 12.dp, horizontal = 16.dp),
+      .padding(16.dp),
     horizontalArrangement = Arrangement.SpaceBetween,
   ) {
     Text(stringResource(R.string.PAYMENTS_NEXT_PAYMENT_SECTION_TITLE))
     Text(
-      text = uiState.nextChargeDate?.format(hedvigDateTimeFormatter(locale)) ?: "-",
+      text = uiState.nextChargeDate?.format(hedvigSecondaryDateTimeFormatter(locale)) ?: "-",
       color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
   }
@@ -228,7 +219,7 @@ private fun InsuranceCosts(
     Row(
       modifier = Modifier
         .fillMaxWidth()
-        .padding(vertical = 12.dp, horizontal = 16.dp),
+        .padding(16.dp),
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -259,7 +250,7 @@ private fun TotalDiscount(uiState: PaymentUiState) {
   Row(
     modifier = Modifier
       .fillMaxWidth()
-      .padding(vertical = 12.dp, horizontal = 16.dp),
+      .padding(16.dp),
     horizontalArrangement = Arrangement.SpaceBetween,
   ) {
     Text(stringResource(R.string.PAYMENTS_DISCOUNTS_SECTION_TITLE))
@@ -276,11 +267,11 @@ private fun AddDiscount(
   onAddDiscountCode: () -> Unit,
   onDiscountCodeChanged: (CampaignCode) -> Unit,
 ) {
-  var showDiscountInput by rememberSaveable { mutableStateOf(uiState.activeDiscounts.isNotEmpty()) }
+  var showDiscountInput by rememberSaveable { mutableStateOf(false) }
   Row(
     modifier = Modifier
       .fillMaxWidth()
-      .padding(horizontal = 16.dp),
+      .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp),
     horizontalArrangement = Arrangement.SpaceBetween,
     verticalAlignment = Alignment.CenterVertically,
   ) {
@@ -291,7 +282,6 @@ private fun AddDiscount(
       colors = SwitchDefaults.colors(checkedTrackColor = MaterialTheme.colorScheme.typeElement),
     )
   }
-  Spacer(Modifier.height(12.dp))
   AnimatedVisibility(
     visible = showDiscountInput,
     enter = fadeIn(),
@@ -301,7 +291,7 @@ private fun AddDiscount(
       modifier = Modifier
         .fillMaxWidth()
         .height(IntrinsicSize.Max)
-        .padding(horizontal = 16.dp),
+        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
       horizontalArrangement = Arrangement.SpaceBetween,
     ) {
       HedvigTextField(
@@ -337,7 +327,7 @@ private fun TotalAmount(uiState: PaymentUiState) {
   Row(
     modifier = Modifier
       .fillMaxWidth()
-      .padding(vertical = 12.dp, horizontal = 16.dp),
+      .padding(16.dp),
     horizontalArrangement = Arrangement.SpaceBetween,
   ) {
     Text(stringResource(id = R.string.payment_details_receipt_card_total))
@@ -359,11 +349,10 @@ fun PaymentDetails(uiState: PaymentUiState) {
   )
   Spacer(Modifier.height(16.dp))
   Divider(modifier = Modifier.padding(horizontal = 16.dp))
-  Spacer(Modifier.height(4.dp))
   Row(
     modifier = Modifier
       .fillMaxWidth()
-      .padding(vertical = 12.dp, horizontal = 16.dp),
+      .padding(16.dp),
     horizontalArrangement = Arrangement.SpaceBetween,
     verticalAlignment = Alignment.CenterVertically,
   ) {
@@ -393,12 +382,10 @@ fun PayoutDetails(uiState: PaymentUiState) {
   )
   Spacer(Modifier.height(16.dp))
   Divider(modifier = Modifier.padding(horizontal = 16.dp))
-  Spacer(Modifier.height(4.dp))
   Row(
     modifier = Modifier
       .fillMaxWidth()
-      .padding(vertical = 12.dp, horizontal = 16.dp),
-    horizontalArrangement = Arrangement.SpaceBetween,
+      .padding(16.dp),
     verticalAlignment = Alignment.CenterVertically,
   ) {
     Image(
@@ -438,7 +425,7 @@ fun PaymentHistory(onClick: () -> Unit) {
 
 @Composable
 @HedvigPreview
-fun PreviewPaymentScreen() {
+private fun PreviewPaymentScreen() {
   HedvigTheme(useNewColorScheme = true) {
     Surface {
       PaymentScreen(

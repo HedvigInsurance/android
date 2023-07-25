@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 class PaymentHistoryViewModel(
   private val paymentRepository: PaymentRepository,
-  private val languageService: LanguageService,
+  val languageService: LanguageService,
 ) : ViewModel() {
 
   private val _uiState = MutableStateFlow(PaymentHistoryUiState())

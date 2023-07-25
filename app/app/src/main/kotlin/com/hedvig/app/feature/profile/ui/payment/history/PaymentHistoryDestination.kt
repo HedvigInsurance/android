@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
@@ -15,11 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -39,16 +35,15 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBar
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarActionType
-import com.hedvig.android.core.ui.hedvigDateTimeFormatter
+import com.hedvig.android.core.ui.hedvigSecondaryDateTimeFormatter
 import com.hedvig.android.core.ui.plus
-import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel.*
 import com.hedvig.app.feature.profile.ui.payment.history.PaymentHistoryViewModel.*
 import hedvig.resources.R
 import java.time.LocalDate
 import java.util.*
 
 @Composable
-fun PaymentHistoryDestination(
+internal fun PaymentHistoryDestination(
   viewModel: PaymentHistoryViewModel,
   onBackPressed: () -> Unit,
 ) {
@@ -59,7 +54,7 @@ fun PaymentHistoryDestination(
       true -> HedvigFullScreenCenterAlignedProgress(show = uiState.isLoading)
       false -> PaymentHistoryScreen(
         uiState = uiState,
-        locale = Locale.ENGLISH,
+        locale = viewModel.languageService.getLocale(),
         navigateUp = onBackPressed,
       )
     }
@@ -67,7 +62,7 @@ fun PaymentHistoryDestination(
 }
 
 @Composable
-fun PaymentHistoryScreen(
+private fun PaymentHistoryScreen(
   uiState: PaymentHistoryUiState,
   locale: Locale,
   navigateUp: () -> Unit,
@@ -106,7 +101,7 @@ fun PaymentHistoryScreen(
                 .padding(vertical = 16.dp),
               horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-              Text(charge.date.format(hedvigDateTimeFormatter(locale)))
+              Text(charge.date.format(hedvigSecondaryDateTimeFormatter(locale)))
               Text(
                 text = charge.amount.format(locale),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -133,7 +128,7 @@ fun PaymentHistoryScreen(
 
 @Composable
 @HedvigPreview
-fun PreviewPaymentHistoryScreen() {
+private fun PreviewPaymentHistoryScreen() {
   HedvigTheme(useNewColorScheme = true) {
     Surface {
       PaymentHistoryScreen(
