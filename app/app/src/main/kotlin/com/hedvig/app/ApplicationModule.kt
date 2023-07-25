@@ -154,8 +154,7 @@ import com.hedvig.app.feature.profile.ui.eurobonus.EurobonusViewModel
 import com.hedvig.app.feature.profile.ui.myinfo.MyInfoViewModel
 import com.hedvig.app.feature.profile.ui.payment.PaymentRepository
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel
-import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel2
-import com.hedvig.app.feature.profile.ui.payment.PaymentViewModelImpl
+import com.hedvig.app.feature.profile.ui.payment.history.PaymentHistoryViewModel
 import com.hedvig.app.feature.profile.ui.tab.GetEurobonusStatusUseCase
 import com.hedvig.app.feature.profile.ui.tab.NetworkGetEurobonusStatusUseCase
 import com.hedvig.app.feature.profile.ui.tab.ProfileViewModel
@@ -422,8 +421,8 @@ private val profileModule = module {
 }
 
 private val paymentModule = module {
-  viewModel<PaymentViewModel> { PaymentViewModelImpl(get(), get(), get(), get(), get()) }
-  viewModel<PaymentViewModel2> { PaymentViewModel2(get(), get(), get()) }
+  viewModel<PaymentViewModel> { PaymentViewModel(get(), get(), get()) }
+  viewModel<PaymentHistoryViewModel> { PaymentHistoryViewModel(get(), get()) }
 }
 
 private val adyenModule = module {
@@ -600,7 +599,7 @@ private val useCaseModule = module {
   single<EditCampaignUseCase> { EditCampaignUseCase(get<ApolloClient>(giraffeClient), get()) }
   single<AddPaymentTokenUseCase> { AddPaymentTokenUseCase(get<ApolloClient>(giraffeClient)) }
   single<ConnectPaymentUseCase> { ConnectPaymentUseCase(get(), get(), get()) }
-  single<ConnectPayoutUseCase> { ConnectPayoutUseCase(get(), get()) }
+  single<ConnectPayoutUseCase> { ConnectPayoutUseCase(get(giraffeClient), get()) }
   single<ObserveOfferStateUseCase> { ObserveOfferStateUseCase(get(), get()) }
   single<ChangeLanguageUseCase> {
     ChangeLanguageUseCase(

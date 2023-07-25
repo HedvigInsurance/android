@@ -5,6 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.businessmodel.businessModelGraph
+import com.hedvig.android.market.Market
 import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.compose.typed.animatedNavigation
 import com.hedvig.android.navigation.core.AppDestination
@@ -20,7 +21,8 @@ import com.hedvig.app.feature.profile.ui.myinfo.MyInfoDestination
 import com.hedvig.app.feature.profile.ui.myinfo.MyInfoViewModel
 import com.hedvig.app.feature.profile.ui.payment.PaymentDestination
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel
-import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel2
+import com.hedvig.app.feature.profile.ui.payment.history.PaymentHistoryDestination
+import com.hedvig.app.feature.profile.ui.payment.history.PaymentHistoryViewModel
 import com.hedvig.app.feature.settings.SettingsDestination
 import com.hedvig.app.feature.settings.SettingsViewModel
 import com.kiwi.navigationcompose.typed.createRoutePattern
@@ -31,6 +33,9 @@ internal fun NavGraphBuilder.profileGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   windowSizeClass: WindowSizeClass,
   isProduction: Boolean,
+  navigateToPayoutScreen: () -> Unit,
+  navigateToPayinScreen: () -> Unit,
+  market: Market?,
 ) {
   animatedNavigation<TopLevelGraph.PROFILE>(
     startDestination = createRoutePattern<AppDestination.TopLevelDestination.Profile>(),
@@ -106,9 +111,22 @@ internal fun NavGraphBuilder.profileGraph(
         onBackPressed = navigator::navigateUp,
       )
     }
-    animatedComposable<AppDestination.PaymentInfo> {
-      val viewModel: PaymentViewModel2 = koinViewModel()
+    animatedComposable<AppDestination.PaymentInfo> { backStackEntry ->
+      val viewModel: PaymentViewModel = koinViewModel()
       PaymentDestination(
+        viewModel = viewModel,
+        onBackPressed = navigator::navigateUp,
+        onPaymentHistoryClicked = {
+          with(navigator) { backStackEntry.navigate(AppDestination.PaymentHistory) }
+        },
+        onConnectPayoutMethod = navigateToPayoutScreen,
+        onChangeBankAccount = navigateToPayinScreen,
+        market = market,
+      )
+    }
+    animatedComposable<AppDestination.PaymentHistory> {
+      val viewModel: PaymentHistoryViewModel = koinViewModel()
+      PaymentHistoryDestination(
         viewModel = viewModel,
         onBackPressed = navigator::navigateUp,
       )

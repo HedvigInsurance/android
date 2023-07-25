@@ -16,7 +16,9 @@ import com.hedvig.app.feature.offer.model.Campaign
 import com.hedvig.app.feature.offer.model.toIncentive
 import com.hedvig.app.feature.profile.data.PaymentMethod
 import com.hedvig.app.util.apollo.toMonetaryAmount
+import giraffe.ChargeHistoryQuery
 import giraffe.PaymentQuery
+import giraffe.type.Charge
 import giraffe.type.PayoutMethodStatus
 import java.time.LocalDate
 import javax.money.MonetaryAmount
@@ -27,6 +29,7 @@ class PaymentRepository(
   languageService: LanguageService,
 ) {
   private val paymentQuery = PaymentQuery(languageService.getGraphQLLocale())
+  private val chargeHistoryQuery = ChargeHistoryQuery()
   fun payment(): Flow<ApolloResponse<PaymentQuery.Data>> = apolloClient
     .query(paymentQuery)
     .watch()
@@ -51,6 +54,24 @@ class PaymentRepository(
       )
   }
 
+  suspend fun getChargeHistory(): Either<OperationResult.Error, ChargeHistory> = either {
+    apolloClient
+      .query(chargeHistoryQuery)
+      .safeExecute()
+      .toEither()
+      .map {
+        ChargeHistory(
+          charges = it.chargeHistory.map {
+            ChargeHistory.Charge(
+              amount = it.amount.fragments.monetaryAmountFragment.toMonetaryAmount(),
+              date = it.date
+            )
+          }
+        )
+      }
+      .bind()
+  }
+
   suspend fun getPaymentData(): Either<OperationResult.Error, PaymentData> = either {
     apolloClient
       .query(paymentQuery)
@@ -59,9 +80,9 @@ class PaymentRepository(
       .toEither()
       .map {
         PaymentData(
-          chargeEstimation = it.insuranceCost?.fragments?.costFragment?.monthlyNet?.fragments?.monetaryAmountFragment?.toMonetaryAmount(),
+          nextCharge = it.chargeEstimation.subscription.fragments.monetaryAmountFragment.toMonetaryAmount(),
+          monthlyCost = it.insuranceCost?.fragments?.costFragment?.monthlyNet?.fragments?.monetaryAmountFragment?.toMonetaryAmount(),
           totalDiscount = it.insuranceCost?.fragments?.costFragment?.monthlyDiscount?.fragments?.monetaryAmountFragment?.toMonetaryAmount(),
-          subscription = it.chargeEstimation.subscription.fragments.monetaryAmountFragment.toMonetaryAmount(),
           nextChargeDate = it.nextChargeDate,
           contracts = it.contracts
             .filter { it.status.fragments.contractStatusFragment.asActiveStatus != null }
@@ -96,21 +117,32 @@ class PaymentRepository(
                 type = it.type,
               )
             },
+          payoutMethodStatus = it.activePayoutMethods?.status
         )
       }
       .bind()
   }
 
   data class PaymentData(
-    val chargeEstimation: MonetaryAmount?,
+    val nextCharge: MonetaryAmount,
+    val monthlyCost: MonetaryAmount?,
     val totalDiscount: MonetaryAmount?,
-    val subscription: MonetaryAmount,
     val nextChargeDate: LocalDate?,
     val redeemedCampagins: List<Campaign>,
     val bankName: String?,
     val bankDescriptor: String?,
     val paymentMethod: PaymentMethod?,
     val contracts: List<String>,
+    val payoutMethodStatus: PayoutMethodStatus?,
   )
+
+  data class ChargeHistory(
+    val charges: List<Charge>,
+  ) {
+    data class Charge(
+      val amount: MonetaryAmount,
+      val date: LocalDate,
+    )
+  }
 
 }
