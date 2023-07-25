@@ -398,23 +398,19 @@ fun PayoutDetails(uiState: PaymentUiState) {
     horizontalArrangement = Arrangement.SpaceBetween,
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    Row(
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      Image(
-        imageVector = Icons.Hedvig.Payments,
-        contentDescription = null,
-        modifier = Modifier.size(24.dp),
-      )
-      Spacer(Modifier.width(16.dp))
-      val payoutText = when (uiState.payoutStatus) {
-        PaymentUiState.PayoutStatus.ACTIVE -> stringResource(id = R.string.payment_screen_pay_connected_label)
-        PaymentUiState.PayoutStatus.PENDING -> stringResource(id = R.string.PAYMENTS_DIRECT_DEBIT_PENDING)
-        PaymentUiState.PayoutStatus.NEEDS_SETUP -> stringResource(id = R.string.PAYMENTS_DIRECT_DEBIT_NEEDS_SETUP)
-        null -> stringResource(id = R.string.PAYMENTS_DIRECT_DEBIT_NEEDS_SETUP)
-      }
-      Text(payoutText)
+    Image(
+      imageVector = Icons.Hedvig.Payments,
+      contentDescription = null,
+      modifier = Modifier.size(24.dp),
+    )
+    Spacer(Modifier.width(16.dp))
+    val payoutText = when (uiState.payoutStatus) {
+      PaymentUiState.PayoutStatus.ACTIVE -> stringResource(id = R.string.payment_screen_pay_connected_label)
+      PaymentUiState.PayoutStatus.PENDING -> stringResource(id = R.string.PAYMENTS_DIRECT_DEBIT_PENDING)
+      PaymentUiState.PayoutStatus.NEEDS_SETUP -> stringResource(id = R.string.PAYMENTS_DIRECT_DEBIT_NEEDS_SETUP)
+      null -> stringResource(id = R.string.PAYMENTS_DIRECT_DEBIT_NEEDS_SETUP)
     }
+    Text(payoutText)
   }
 }
 
