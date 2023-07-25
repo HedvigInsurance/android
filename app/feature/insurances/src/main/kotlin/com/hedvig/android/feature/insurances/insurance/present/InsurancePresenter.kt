@@ -7,8 +7,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
+import arrow.core.Either
 import arrow.core.raise.either
 import arrow.fx.coroutines.parZip
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.RetryChannel
 import com.hedvig.android.core.common.android.i
 import com.hedvig.android.core.ui.MoleculePresenter
@@ -107,17 +109,26 @@ internal class InsurancePresenter(
           didFailToLoad = false
           isLoading = true
         }
-        val insuranceDataResult: InsuranceData? = loadInsuranceData(
+        loadInsuranceData(
           getInsuranceContractsUseCase,
           getCrossSellsUseCase,
           crossSellCardNotificationBadgeService,
+        ).fold(
+          ifLeft = {
+            Snapshot.withMutableSnapshot {
+              isLoading = false
+              didFailToLoad = true
+              insuranceData = InsuranceData.Empty
+            }
+          },
+          ifRight = { insuranceDataResult ->
+            Snapshot.withMutableSnapshot {
+              isLoading = false
+              didFailToLoad = false
+              insuranceData = insuranceDataResult
+            }
+          },
         )
-        val didFail = insuranceDataResult == null
-        Snapshot.withMutableSnapshot {
-          isLoading = false
-          didFailToLoad = didFail
-          insuranceData = insuranceDataResult ?: InsuranceData.Empty
-        }
       }
     }
 
@@ -136,7 +147,7 @@ private suspend fun loadInsuranceData(
   getInsuranceContractsUseCase: GetInsuranceContractsUseCase,
   getCrossSellsUseCase: GetCrossSellsUseCase,
   crossSellCardNotificationBadgeService: CrossSellCardNotificationBadgeService,
-): InsuranceData? {
+): Either<ErrorMessage, InsuranceData> {
   return either {
     parZip(
       { getInsuranceContractsUseCase.invoke().bind() },
@@ -173,15 +184,9 @@ private suspend fun loadInsuranceData(
         quantityOfCancelledInsurances = contracts.count(InsuranceContract::isTerminated),
       )
     }
-  }.fold(
-    ifLeft = {
-      i(it.throwable) { "Insurance items failed to load: ${it.message}" }
-      null
-    },
-    ifRight = { insuranceData ->
-      insuranceData
-    },
-  )
+  }.onLeft {
+    i(it.throwable) { "Insurance items failed to load: ${it.message}" }
+  }
 }
 
 private data class InsuranceData(
