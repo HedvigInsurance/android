@@ -80,9 +80,9 @@ class PaymentRepository(
       .toEither()
       .map {
         PaymentData(
-          chargeEstimation = it.insuranceCost?.fragments?.costFragment?.monthlyNet?.fragments?.monetaryAmountFragment?.toMonetaryAmount(),
+          nextCharge = it.chargeEstimation.subscription.fragments.monetaryAmountFragment.toMonetaryAmount(),
+          monthlyCost = it.insuranceCost?.fragments?.costFragment?.monthlyNet?.fragments?.monetaryAmountFragment?.toMonetaryAmount(),
           totalDiscount = it.insuranceCost?.fragments?.costFragment?.monthlyDiscount?.fragments?.monetaryAmountFragment?.toMonetaryAmount(),
-          subscription = it.chargeEstimation.subscription.fragments.monetaryAmountFragment.toMonetaryAmount(),
           nextChargeDate = it.nextChargeDate,
           contracts = it.contracts
             .filter { it.status.fragments.contractStatusFragment.asActiveStatus != null }
@@ -117,21 +117,23 @@ class PaymentRepository(
                 type = it.type,
               )
             },
+          payoutMethodStatus = it.activePayoutMethods?.status
         )
       }
       .bind()
   }
 
   data class PaymentData(
-    val chargeEstimation: MonetaryAmount?,
+    val nextCharge: MonetaryAmount,
+    val monthlyCost: MonetaryAmount?,
     val totalDiscount: MonetaryAmount?,
-    val subscription: MonetaryAmount,
     val nextChargeDate: LocalDate?,
     val redeemedCampagins: List<Campaign>,
     val bankName: String?,
     val bankDescriptor: String?,
     val paymentMethod: PaymentMethod?,
     val contracts: List<String>,
+    val payoutMethodStatus: PayoutMethodStatus?,
   )
 
   data class ChargeHistory(
