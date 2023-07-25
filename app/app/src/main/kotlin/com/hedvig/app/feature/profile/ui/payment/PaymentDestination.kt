@@ -9,9 +9,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -298,6 +300,7 @@ private fun AddDiscount(
     Row(
       modifier = Modifier
         .fillMaxWidth()
+        .height(IntrinsicSize.Max)
         .padding(horizontal = 16.dp),
       horizontalArrangement = Arrangement.SpaceBetween,
     ) {
@@ -317,12 +320,12 @@ private fun AddDiscount(
       HedvigContainedSmallButton(
         text = stringResource(id = R.string.PAYMENTS_ADD_CODE_BUTTON_LABEL),
         onClick = onAddDiscountCode,
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+        contentPadding = PaddingValues(horizontal = 32.dp, vertical = 16.dp),
         colors = ButtonDefaults.buttonColors(
           containerColor = MaterialTheme.colorScheme.typeContainer,
           contentColor = MaterialTheme.colorScheme.primary,
         ),
-        modifier = Modifier.widthIn(min = 127.dp),
+        modifier = Modifier.fillMaxHeight(),
       )
     }
   }
