@@ -247,7 +247,6 @@ private fun PreviewProfileSuccessScreen() {
       ProfileScreen(
         uiState = ProfileUiState(
           euroBonus = EuroBonus("ABC-12345678"),
-          showBusinessModel = true,
         ),
         navigateToEurobonus = {},
         reload = {},

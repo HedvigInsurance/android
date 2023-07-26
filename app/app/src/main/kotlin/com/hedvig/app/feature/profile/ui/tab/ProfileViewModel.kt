@@ -17,33 +17,24 @@ import kotlinx.coroutines.launch
 import javax.money.MonetaryAmount
 
 internal class ProfileViewModel(
-  private val profileRepository: ProfileRepository,
   private val getEuroBonusStatusUseCase: GetEurobonusStatusUseCase,
   private val featureManager: FeatureManager,
-  private val marketManager: MarketManager,
   private val logoutUseCase: LogoutUseCase,
 ) : ViewModel() {
-
-  private val retryChannel = RetryChannel()
 
   private val _data = MutableStateFlow(ProfileUiState())
   val data: StateFlow<ProfileUiState> = _data
 
   init {
+    loadProfileData()
+  }
 
+  private fun loadProfileData() {
     viewModelScope.launch {
-      val showBusinessModel = featureManager.isFeatureEnabled(Feature.SHOW_BUSINESS_MODEL)
-
-      profileRepository.profile().fold(
-        ifLeft = { _data.update { it.copy(errorMessage = it.errorMessage) } },
-        ifRight = { profile ->
-          _data.update {
-            it.copy(
-              showBusinessModel = showBusinessModel,
-            )
-          }
-        },
-      )
+      val showPaymentScreen = featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN)
+      _data.update {
+        it.copy(showPaymentScreen = showPaymentScreen)
+      }
 
       getEuroBonusStatusUseCase.invoke().fold(
         ifLeft = { _data.update { it.copy(errorMessage = it.errorMessage) } },
@@ -53,7 +44,7 @@ internal class ProfileViewModel(
   }
 
   fun reload() {
-    retryChannel.retry()
+    loadProfileData()
   }
 
   fun onLogout() {
@@ -63,7 +54,7 @@ internal class ProfileViewModel(
 
 internal data class ProfileUiState(
   val euroBonus: EuroBonus? = null,
-  val showBusinessModel: Boolean = false,
+  val showPaymentScreen: Boolean = false,
   val errorMessage: String? = null,
   val isLoading: Boolean = false,
 )

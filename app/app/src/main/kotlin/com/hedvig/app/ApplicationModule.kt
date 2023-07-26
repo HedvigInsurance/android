@@ -416,7 +416,7 @@ private val offerModule = module {
 private val profileModule = module {
   single<ProfileRepository> { ProfileRepositoryImpl(get<ApolloClient>(giraffeClient), get<ApolloClient>(octopusClient)) }
   single<GetEurobonusStatusUseCase> { NetworkGetEurobonusStatusUseCase(get<ApolloClient>(octopusClient)) }
-  viewModel<ProfileViewModel> { ProfileViewModel(get(), get(), get(), get(), get()) }
+  viewModel<ProfileViewModel> { ProfileViewModel(get(), get(), get()) }
   viewModel<EurobonusViewModel> { EurobonusViewModel(get<ApolloClient>(octopusClient)) }
 }
 
