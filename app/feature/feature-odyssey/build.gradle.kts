@@ -5,6 +5,7 @@ plugins {
   id("hedvig.android.ktlint")
   id("kotlin-parcelize")
   alias(libs.plugins.serialization)
+  alias(libs.plugins.squareSortDependencies)
 }
 
 dependencies {

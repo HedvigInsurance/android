@@ -2,8 +2,8 @@ plugins {
   id("hedvig.android.ktlint")
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
-  @Suppress("DSL_SCOPE_VIOLATION")
   alias(libs.plugins.serialization)
+  alias(libs.plugins.squareSortDependencies)
 }
 
 android {

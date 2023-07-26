@@ -5,6 +5,7 @@ plugins {
   id("hedvig.android.ktlint")
   alias(libs.plugins.molecule)
   alias(libs.plugins.serialization)
+  alias(libs.plugins.squareSortDependencies)
 }
 
 android {
