@@ -52,9 +52,6 @@ internal fun NavGraphBuilder.profileGraph(
         navigateToEurobonus = {
           with(navigator) { backStackEntry.navigate(AppDestination.Eurobonus) }
         },
-        navigateToBusinessModel = {
-          with(navigator) { backStackEntry.navigate(AppDestination.BusinessModel) }
-        },
         navigateToMyInfo = {
           with(navigator) { backStackEntry.navigate(AppDestination.MyInfo) }
         },

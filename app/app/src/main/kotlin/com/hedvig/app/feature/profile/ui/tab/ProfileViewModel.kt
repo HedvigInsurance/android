@@ -32,7 +32,6 @@ internal class ProfileViewModel(
   init {
 
     viewModelScope.launch {
-      val showPaymentScreen = featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN)
       val showBusinessModel = featureManager.isFeatureEnabled(Feature.SHOW_BUSINESS_MODEL)
 
       profileRepository.profile().fold(
@@ -40,15 +39,6 @@ internal class ProfileViewModel(
         ifRight = { profile ->
           _data.update {
             it.copy(
-              contactInfoName = "${profile.member.firstName} ${profile.member.lastName}",
-              paymentInfo = if (showPaymentScreen) {
-                PaymentInfo(
-                  monetaryMonthlyNet = profile.chargeEstimation.charge,
-                  priceCaptionResId = marketManager.market?.let(profile::getPriceCaption),
-                )
-              } else {
-                null
-              },
               showBusinessModel = showBusinessModel,
             )
           }
@@ -72,16 +62,9 @@ internal class ProfileViewModel(
 }
 
 internal data class ProfileUiState(
-  val contactInfoName: String? = null,
-  val paymentInfo: PaymentInfo? = null,
   val euroBonus: EuroBonus? = null,
   val showBusinessModel: Boolean = false,
   val errorMessage: String? = null,
   val isLoading: Boolean = false,
 )
 
-@Immutable
-internal data class PaymentInfo(
-  val monetaryMonthlyNet: MonetaryAmount,
-  @StringRes val priceCaptionResId: Int?,
-)
