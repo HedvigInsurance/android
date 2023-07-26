@@ -41,13 +41,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -66,7 +64,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
-import com.hedvig.android.core.common.android.d
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.material3.onTypeContainer
@@ -96,11 +93,6 @@ internal fun InsuranceDestination(
   imageLoader: ImageLoader,
 ) {
   val uiState: InsuranceUiState by viewModel.models.collectAsStateWithLifecycle()
-  LaunchedEffect(Unit) {
-    snapshotFlow { uiState }.collect {
-      d { "Stelios:$it" }
-    }
-  }
   val lifecycleOwner = LocalLifecycleOwner.current
   val currentViewModel by rememberUpdatedState(viewModel)
   DisposableEffect(lifecycleOwner) {
