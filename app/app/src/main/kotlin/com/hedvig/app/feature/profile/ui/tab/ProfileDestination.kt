@@ -6,7 +6,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -34,15 +33,17 @@ import androidx.compose.material.pullrefresh.PullRefreshDefaults
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -50,6 +51,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
@@ -58,6 +60,8 @@ import com.hedvig.android.core.icons.hedvig.normal.Eurobonus
 import com.hedvig.android.core.icons.hedvig.normal.Info
 import com.hedvig.android.core.icons.hedvig.normal.Payments
 import com.hedvig.android.core.icons.hedvig.normal.Settings
+import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
+import hedvig.resources.R
 
 @Composable
 internal fun ProfileDestination(
@@ -105,6 +109,17 @@ private fun ProfileScreen(
     onRefresh = reload,
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
+
+  var showLogoutDialog by rememberSaveable { mutableStateOf(false) }
+  if (showLogoutDialog) {
+    HedvigAlertDialog(
+      title = stringResource(R.string.GENERAL_ARE_YOU_SURE),
+      text = stringResource(id = R.string.PROFILE_LOGOUT_DIALOG_MESSAGE),
+      onDismissRequest = { showLogoutDialog = false },
+      onConfirmClick = onLogout,
+    )
+  }
+
   Box(Modifier.fillMaxSize()) {
     Column(
       Modifier
@@ -116,7 +131,7 @@ private fun ProfileScreen(
       Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
       Spacer(Modifier.height(64.dp))
       Text(
-        text = stringResource(hedvig.resources.R.string.PROFILE_TITLE),
+        text = stringResource(R.string.PROFILE_TITLE),
         style = MaterialTheme.typography.headlineLarge,
         modifier = Modifier.padding(horizontal = 16.dp),
       )
@@ -129,21 +144,18 @@ private fun ProfileScreen(
         showAboutApp = navigateToAboutApp,
         navigateToEurobonus = navigateToEurobonus,
       )
-      CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.error) {
-        Row(
-          verticalAlignment = Alignment.Bottom,
-          horizontalArrangement = Arrangement.Center,
-          modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onLogout)
-            .padding(16.dp),
-        ) {
-          Text(
-            text = stringResource(hedvig.resources.R.string.LOGOUT_BUTTON),
-            style = MaterialTheme.typography.bodyLarge,
-          )
-        }
-      }
+      Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.weight(1f))
+      HedvigTextButton(
+        text = stringResource(R.string.LOGOUT_BUTTON),
+        colors = ButtonDefaults.textButtonColors(
+          contentColor = MaterialTheme.colorScheme.error,
+        ),
+        onClick = {
+          showLogoutDialog = true
+        },
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
       Spacer(Modifier.height(16.dp))
       Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     }
@@ -166,12 +178,12 @@ private fun ColumnScope.ProfileItemRows(
   navigateToEurobonus: () -> Unit,
 ) {
   ProfileRow(
-    title = stringResource(hedvig.resources.R.string.PROFILE_MY_INFO_ROW_TITLE),
+    title = stringResource(R.string.PROFILE_MY_INFO_ROW_TITLE),
     icon = Icons.Hedvig.ContactInformation,
     onClick = showMyInfo,
   )
   ProfileRow(
-    title = stringResource(hedvig.resources.R.string.PROFILE_ROW_PAYMENT_TITLE),
+    title = stringResource(R.string.PROFILE_ROW_PAYMENT_TITLE),
     icon = Icons.Hedvig.Payments,
     onClick = showPaymentInfo,
   )
@@ -182,18 +194,18 @@ private fun ColumnScope.ProfileItemRows(
     label = "Eurobonus",
   ) {
     ProfileRow(
-      title = stringResource(hedvig.resources.R.string.sas_integration_title),
+      title = stringResource(R.string.sas_integration_title),
       icon = Icons.Hedvig.Eurobonus,
       onClick = navigateToEurobonus,
     )
   }
   ProfileRow(
-    title = stringResource(hedvig.resources.R.string.PROFILE_ABOUT_ROW),
+    title = stringResource(R.string.PROFILE_ABOUT_ROW),
     icon = Icons.Hedvig.Info,
     onClick = showAboutApp,
   )
   ProfileRow(
-    title = stringResource(hedvig.resources.R.string.profile_appSettingsSection_row_headline),
+    title = stringResource(R.string.profile_appSettingsSection_row_headline),
     icon = Icons.Hedvig.Settings,
     onClick = showSettings,
   )
