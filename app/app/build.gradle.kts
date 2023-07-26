@@ -112,6 +112,7 @@ android {
 }
 
 dependencies {
+  implementation(platform(libs.firebase.bom))
   implementation(libs.accompanist.insetsUi)
   implementation(libs.accompanist.navigationAnimation)
   implementation(libs.accompanist.pagerIndicators)
@@ -236,8 +237,6 @@ dependencies {
 
   stagingImplementation(projects.testdata)
 
-  platformImplementation(libs.firebase.bom)
-
   debugImplementation(libs.androidx.compose.uiTestManifest)
   debugImplementation(libs.androidx.compose.uiTooling)
   debugImplementation(libs.leakCanary)
@@ -283,14 +282,6 @@ dependencies {
 
 fun DependencyHandlerScope.stagingImplementation(dependencyNotation: Any) {
   "stagingImplementation"(dependencyNotation)
-}
-
-/**
- * A function in order to be able to do what `implementation(platform(libs.firebase.bom))` for example would be doing.
- * Revisit when https://github.com/square/gradle-dependencies-sorter/issues/41 is addressed
- */
-fun DependencyHandlerScope.platformImplementation(dependencyProvider: Provider<MinimalExternalModuleDependency>) {
-  implementation(variantOf(dependencyProvider, ExternalModuleDependencyVariantSpec::platform))
 }
 
 easylauncher {
