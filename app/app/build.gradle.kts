@@ -281,6 +281,18 @@ dependencies {
   androidTestImplementation(projects.testdata)
 }
 
+fun DependencyHandlerScope.stagingImplementation(dependencyNotation: Any) {
+  "stagingImplementation"(dependencyNotation)
+}
+
+/**
+ * A function in order to be able to do what `implementation(platform(libs.firebase.bom))` for example would be doing.
+ * Revisit when https://github.com/square/gradle-dependencies-sorter/issues/41 is addressed
+ */
+fun DependencyHandlerScope.platformImplementation(dependencyProvider: Provider<MinimalExternalModuleDependency>) {
+  implementation(variantOf(dependencyProvider, ExternalModuleDependencyVariantSpec::platform))
+}
+
 easylauncher {
   buildTypes.register("staging") {
     setFilters(
