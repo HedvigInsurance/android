@@ -13,12 +13,13 @@ import arrow.fx.coroutines.parZip
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.RetryChannel
 import com.hedvig.android.core.common.android.i
-import com.hedvig.android.core.ui.MoleculePresenter
 import com.hedvig.android.core.ui.insurance.GradientType
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.data.gradient
+import com.hedvig.android.molecule.public.MoleculePresenter
+import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeService
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -73,7 +74,7 @@ internal class InsurancePresenter(
   private val crossSellCardNotificationBadgeService: CrossSellCardNotificationBadgeService,
 ) : MoleculePresenter<InsuranceScreenEvent, InsuranceUiState> {
   @Composable
-  override fun present(
+  override fun MoleculePresenterScope<InsuranceScreenEvent>.present(
     seed: InsuranceUiState,
     events: Flow<InsuranceScreenEvent>,
   ): InsuranceUiState {

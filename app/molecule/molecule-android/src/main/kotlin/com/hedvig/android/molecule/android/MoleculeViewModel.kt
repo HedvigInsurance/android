@@ -1,13 +1,13 @@
-package com.hedvig.android.core.ui
+package com.hedvig.android.molecule.android
 
-import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.AndroidUiDispatcher
 import app.cash.molecule.RecompositionMode
 import app.cash.molecule.moleculeFlow
+import com.hedvig.android.molecule.public.MoleculePresenter
+import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -36,8 +36,11 @@ abstract class MoleculeViewModel<Event, Model>(
   }
 
   val models: StateFlow<Model> by lazy(LazyThreadSafetyMode.NONE) {
+    val moleculePresenterScope = MoleculePresenterScope(events)
     moleculeFlow<Model>(RecompositionMode.ContextClock) {
-      presenter.present(seed, events)
+      with(presenter) {
+        moleculePresenterScope.present(seed)
+      }
     }.onEach { model: Model ->
       seed = model
     }.stateIn(
@@ -46,9 +49,4 @@ abstract class MoleculeViewModel<Event, Model>(
       initialValue = seed,
     )
   }
-}
-
-fun interface MoleculePresenter<Event, Model> {
-  @Composable
-  fun present(seed: Model, events: Flow<Event>): Model
 }

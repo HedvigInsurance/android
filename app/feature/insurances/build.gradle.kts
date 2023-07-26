@@ -23,10 +23,13 @@ dependencies {
   implementation(projects.app.hanalytics.hanalyticsCore)
   implementation(projects.app.hanalytics.hanalyticsFeatureFlags)
   implementation(projects.app.language.languageCore)
+  implementation(projects.app.molecule.moleculeAndroid)
+  implementation(projects.app.molecule.moleculePublic)
   implementation(projects.app.navigation.core)
   implementation(projects.app.navigation.navigationComposeTyped)
   implementation(projects.app.notificationBadgeData.public)
 
+  testImplementation(projects.app.molecule.moleculeTest)
   testImplementation(projects.app.notificationBadgeData.fake)
 
   implementation(libs.androidx.compose.material) // for pull to refresh
