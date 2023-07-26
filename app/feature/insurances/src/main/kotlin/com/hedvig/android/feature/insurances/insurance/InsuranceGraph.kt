@@ -1,12 +1,14 @@
 package com.hedvig.android.feature.insurances
 
 import android.net.Uri
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailDestination
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailViewModel
+import com.hedvig.android.feature.insurances.insurancedetail.ContractDetails
 import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsDestination
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsViewModel
@@ -21,10 +23,12 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.insuranceGraph(
+  nestedGraphs: NavGraphBuilder.() -> Unit,
   navigator: Navigator,
   openWebsite: (Uri) -> Unit,
   openChat: () -> Unit,
   startMovingFlow: () -> Unit,
+  startTerminationFlow: (backStackEntry: NavBackStackEntry, insuranceId: String, insuranceDisplayName: String) -> Unit,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   imageLoader: ImageLoader,
 ) {
@@ -34,6 +38,7 @@ fun NavGraphBuilder.insuranceGraph(
       navDeepLink { uriPattern = hedvigDeepLinkContainer.insurances },
     ),
   ) {
+    nestedGraphs()
     animatedComposable<AppDestination.TopLevelDestination.Insurance>(
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
@@ -52,14 +57,20 @@ fun NavGraphBuilder.insuranceGraph(
         imageLoader = imageLoader,
       )
     }
-    animatedComposable<InsurancesDestination.InsuranceContractDetail> {
+    animatedComposable<InsurancesDestination.InsuranceContractDetail> { backStackEntry ->
       val contractDetail = this
       val viewModel: ContractDetailViewModel = koinViewModel { parametersOf(contractDetail.contractId) }
       ContractDetailDestination(
         viewModel = viewModel,
         onEditCoInsuredClick = openChat,
         onChangeAddressClick = { startMovingFlow() },
-        onCancelInsuranceClick = { }, // open termination flow
+        onCancelInsuranceClick = { cancelInsuranceData: ContractDetails.CancelInsuranceData ->
+          startTerminationFlow(
+            backStackEntry,
+            cancelInsuranceData.insuranceId,
+            cancelInsuranceData.insuranceDisplayName,
+          )
+        }, // open termination flow
         openWebsite = openWebsite,
         navigateUp = navigator::navigateUp,
         imageLoader = imageLoader,
