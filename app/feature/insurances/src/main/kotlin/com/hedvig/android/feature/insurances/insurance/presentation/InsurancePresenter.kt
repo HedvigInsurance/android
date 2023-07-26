@@ -1,7 +1,8 @@
-package com.hedvig.android.feature.insurances.insurance.present
+package com.hedvig.android.feature.insurances.insurance.presentation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,8 +25,6 @@ import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNo
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import octopus.CrossSalesQuery
 
 internal sealed interface InsuranceScreenEvent {
@@ -77,14 +76,12 @@ internal class InsurancePresenter(
   @Composable
   override fun MoleculePresenterScope<InsuranceScreenEvent>.present(
     seed: InsuranceUiState,
-    events: Flow<InsuranceScreenEvent>,
   ): InsuranceUiState {
     var insuranceData by remember {
       mutableStateOf<InsuranceData>(
         InsuranceData(
           insuranceCards = seed.insuranceCards,
           crossSells = seed.crossSells,
-          showNotificationBadge = seed.showNotificationBadge,
           quantityOfCancelledInsurances = seed.quantityOfCancelledInsurances,
         ),
       )
@@ -93,18 +90,10 @@ internal class InsurancePresenter(
     var didFailToLoad by remember { mutableStateOf(false) }
     val retryChannel = remember { RetryChannel() }
 
-    LaunchedEffect(Unit) {
-      events.collect { event: InsuranceScreenEvent ->
-        when (event) {
-          InsuranceScreenEvent.RetryLoading -> {
-            retryChannel.retry()
-          }
-          InsuranceScreenEvent.MarkCardCrossSellsAsSeen -> {
-            crossSellCardNotificationBadgeService.markAsSeen()
-          }
-        }
-      }
-    }
+    val showNotificationBadge by crossSellCardNotificationBadgeService
+      .showNotification()
+      .collectAsState(seed.showNotificationBadge)
+
     LaunchedEffect(Unit) {
       retryChannel.collectLatest {
         Snapshot.withMutableSnapshot {
@@ -114,7 +103,6 @@ internal class InsurancePresenter(
         loadInsuranceData(
           getInsuranceContractsUseCase,
           getCrossSellsUseCase,
-          crossSellCardNotificationBadgeService,
         ).fold(
           ifLeft = {
             Snapshot.withMutableSnapshot {
@@ -137,7 +125,7 @@ internal class InsurancePresenter(
     return InsuranceUiState(
       insuranceCards = insuranceData.insuranceCards,
       crossSells = insuranceData.crossSells,
-      showNotificationBadge = insuranceData.showNotificationBadge,
+      showNotificationBadge = showNotificationBadge,
       quantityOfCancelledInsurances = insuranceData.quantityOfCancelledInsurances,
       hasError = didFailToLoad == true && isLoading == false,
       loading = isLoading,
@@ -148,17 +136,14 @@ internal class InsurancePresenter(
 private suspend fun loadInsuranceData(
   getInsuranceContractsUseCase: GetInsuranceContractsUseCase,
   getCrossSellsUseCase: GetCrossSellsUseCase,
-  crossSellCardNotificationBadgeService: CrossSellCardNotificationBadgeService,
 ): Either<ErrorMessage, InsuranceData> {
   return either {
     parZip(
       { getInsuranceContractsUseCase.invoke().bind() },
       { getCrossSellsUseCase.invoke().bind() },
-      { crossSellCardNotificationBadgeService.showNotification().first() },
     ) {
         contracts: List<InsuranceContract>,
         crossSellsData: List<CrossSalesQuery.Data.CurrentMember.CrossSell>,
-        showNotificationBadge: Boolean,
       ->
       val insuranceCards = contracts
         .filterNot(InsuranceContract::isTerminated)
@@ -183,7 +168,6 @@ private suspend fun loadInsuranceData(
       InsuranceData(
         insuranceCards = insuranceCards,
         crossSells = crossSells,
-        showNotificationBadge = showNotificationBadge,
         quantityOfCancelledInsurances = contracts.count(InsuranceContract::isTerminated),
       )
     }
@@ -195,15 +179,13 @@ private suspend fun loadInsuranceData(
 private data class InsuranceData(
   val insuranceCards: ImmutableList<InsuranceUiState.InsuranceCard>,
   val crossSells: ImmutableList<InsuranceUiState.CrossSell>,
-  val showNotificationBadge: Boolean,
   val quantityOfCancelledInsurances: Int,
 ) {
   companion object {
     val Empty: InsuranceData = InsuranceData(
-      persistentListOf(),
-      persistentListOf(),
-      false,
-      0,
+      insuranceCards = persistentListOf(),
+      crossSells = persistentListOf(),
+      quantityOfCancelledInsurances = 0,
     )
   }
 }
