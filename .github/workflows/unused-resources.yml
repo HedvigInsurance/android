@@ -36,10 +36,10 @@ jobs:
         ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
 
     - name: Run android lint
-      run: ./gradlew :app:app:lintDebug -Prur.lint.onlyUnusedResources
+      run: ./gradlew :app:lintDebug -Prur.lint.onlyUnusedResources
 
     - name: Remove unused resources
-      run: ./gradlew :app:app:removeUnusedResources -Prur.lintVariant="debug"
+      run: ./gradlew :app:removeUnusedResources -Prur.lintVariant="debug"
 
     - name: Generate Token
       id: generate_token
