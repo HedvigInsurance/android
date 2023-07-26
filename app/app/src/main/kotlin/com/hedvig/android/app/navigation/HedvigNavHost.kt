@@ -43,6 +43,8 @@ import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.app.BuildConfig
+import com.hedvig.app.feature.adyen.AdyenCurrency
+import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutActivity
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.home.ui.HowClaimsWorkDialog
@@ -216,6 +218,25 @@ internal fun HedvigNavHost(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       windowSizeClass = hedvigAppState.windowSizeClass,
       isProduction = isProduction,
+      navigateToPayoutScreen = navigateToPayoutScreen@{
+        val market = marketManager.market ?: return@navigateToPayoutScreen
+        val intent = AdyenConnectPayoutActivity.newInstance(context, AdyenCurrency.fromMarket(market))
+        context.startActivity(intent)
+      },
+      navigateToPayinScreen = navigateToPayinScreen@{
+        val market = marketManager.market ?: return@navigateToPayinScreen
+        coroutineScope.launch {
+          context.startActivity(
+            connectPayinIntent(
+              context,
+              featureManager.getPaymentType(),
+              market,
+              false,
+            ),
+          )
+        }
+      },
+      market = marketManager.market
     )
   }
 }

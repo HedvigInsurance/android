@@ -22,6 +22,14 @@ fun hedvigDateTimeFormatter(locale: Locale): DateTimeFormatter {
     .toFormatter(locale)
 }
 
+/**
+ * Example output: "May 26 2023"
+ */
+fun hedvigSecondaryDateTimeFormatter(locale: Locale): DateTimeFormatter {
+  return DateTimeFormatter.ofPattern("MMMM d yyyy", locale)
+}
+
+
 @Composable
 fun rememberHedvigDateTimeFormatter(): DateTimeFormatter {
   val locale = getLocale()

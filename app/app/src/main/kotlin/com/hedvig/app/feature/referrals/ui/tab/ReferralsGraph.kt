@@ -52,12 +52,13 @@ import com.google.android.material.snackbar.Snackbar
 import com.hedvig.android.core.common.android.hide
 import com.hedvig.android.core.common.android.remove
 import com.hedvig.android.core.common.android.show
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.core.ui.getLocale
-import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.compose.typed.animatedNavigation
@@ -235,7 +236,7 @@ private fun ForeverScreen(
       ReferralsContent(uiState)
       if (incentive != null && uiState is ReferralsUiState.Success) {
         val code: String = uiState.data.referralInformation.campaign.code
-        LargeContainedTextButton(
+        HedvigContainedButton(
           text = stringResource(hedvig.resources.R.string.referrals_empty_share_code_button),
           onClick = { onShareCodeClick(code, incentive) },
           modifier = Modifier.padding(16.dp),

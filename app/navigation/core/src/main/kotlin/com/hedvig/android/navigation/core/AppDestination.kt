@@ -51,6 +51,11 @@ sealed interface AppDestination : Destination {
     val insuranceDisplayName: String,
   ) : AppDestination
 
+  @Serializable
+  object PaymentInfo : AppDestination
+
+  @Serializable
+  object PaymentHistory : AppDestination
 //  @Serializable
 //  object LegacyClaimsTriaging : AppDestination
 }
