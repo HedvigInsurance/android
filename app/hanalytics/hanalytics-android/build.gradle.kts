@@ -7,18 +7,18 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.coreCommonPublic)
-  implementation(projects.coreCommonAndroidPublic)
-  implementation(projects.coreDatastorePublic)
-  implementation(projects.hanalyticsCore)
-
   api(libs.hAnalytics)
+
   implementation(libs.androidx.lifecycle.common)
   implementation(libs.coroutines.core)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.okhttp.core)
   implementation(libs.slimber)
+  implementation(projects.coreCommonAndroidPublic)
+  implementation(projects.coreCommonPublic)
+  implementation(projects.coreDatastorePublic)
+  implementation(projects.hanalyticsCore)
 }
 
 android {

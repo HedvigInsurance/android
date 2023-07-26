@@ -7,12 +7,12 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.coreCommonPublic)
-
   api(libs.hAnalytics)
+
   implementation(libs.coroutines.core)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)
+  implementation(projects.coreCommonPublic)
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java).configureEach {

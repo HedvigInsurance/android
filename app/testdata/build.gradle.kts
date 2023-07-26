@@ -5,8 +5,8 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.apolloGiraffePublic)
   implementation(libs.adyen)
+  implementation(projects.apolloGiraffePublic)
 }
 
 android {

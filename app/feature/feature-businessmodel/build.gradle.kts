@@ -6,18 +6,17 @@ plugins {
 }
 
 dependencies {
+  implementation(libs.androidx.compose.material)
+  implementation(libs.androidx.compose.material3.windowSizeClass)
+  implementation(libs.androidx.compose.runtime)
+  implementation(libs.androidx.other.activityCompose)
+  implementation(libs.koin.android)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.hanalyticsCore)
-  implementation(projects.navigationCore)
   implementation(projects.navigationComposeTyped)
-
-  implementation(libs.androidx.other.activityCompose)
-  implementation(libs.androidx.compose.material)
-  implementation(libs.androidx.compose.material3.windowSizeClass)
-  implementation(libs.androidx.compose.runtime)
-  implementation(libs.koin.android)
+  implementation(projects.navigationCore)
 }
 
 android {

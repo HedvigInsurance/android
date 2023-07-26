@@ -6,9 +6,6 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.coreIcons)
-  implementation(projects.coreResources)
-
   api(libs.androidx.compose.foundation)
   api(libs.androidx.compose.material3)
 
@@ -16,6 +13,8 @@ dependencies {
   implementation(libs.androidx.compose.material)
   implementation(libs.kotlinx.datetime)
   implementation(libs.slimber)
+  implementation(projects.coreIcons)
+  implementation(projects.coreResources)
 }
 
 android {

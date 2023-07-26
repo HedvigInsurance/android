@@ -5,9 +5,8 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.notificationBadgeDataPublic)
-
   implementation(libs.turbine)
+  implementation(projects.notificationBadgeDataPublic)
 }
 
 android {

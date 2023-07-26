@@ -10,10 +10,6 @@ android {
 }
 
 dependencies {
-  implementation(projects.coreCommonAndroidPublic)
-  implementation(projects.coreDesignSystem)
-  implementation(projects.coreResources)
-
   implementation(libs.androidx.compose.animation)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material)
@@ -23,6 +19,9 @@ dependencies {
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.lifecycle.runtime)
   implementation(libs.slimber)
+  implementation(projects.coreCommonAndroidPublic)
+  implementation(projects.coreDesignSystem)
+  implementation(projects.coreResources)
 
   testImplementation(libs.assertK)
   testImplementation(libs.junit)

@@ -6,9 +6,9 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.apolloGiraffePublic)
-
   api(libs.apollo.api)
+
+  implementation(projects.apolloGiraffePublic)
 }
 
 android {

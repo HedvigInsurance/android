@@ -24,10 +24,6 @@ android {
 }
 
 dependencies {
-  implementation(projects.coreDesignSystem)
-  implementation(projects.coreIcons)
-  implementation(projects.coreUi)
-
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.foundationLayout)
   implementation(libs.androidx.compose.material)
@@ -36,4 +32,7 @@ dependencies {
   implementation(libs.androidx.compose.materialIconsExtended)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.other.activityCompose)
+  implementation(projects.coreDesignSystem)
+  implementation(projects.coreIcons)
+  implementation(projects.coreUi)
 }

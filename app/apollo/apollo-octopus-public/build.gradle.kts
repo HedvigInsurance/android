@@ -6,13 +6,13 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.coreCommonPublic)
-
   api(libs.apollo.api)
   api(libs.kotlinx.datetime)
+
   implementation(libs.apollo.adapters)
   implementation(libs.apollo.runtime)
   implementation(libs.koin.core)
+  implementation(projects.coreCommonPublic)
 }
 
 android {

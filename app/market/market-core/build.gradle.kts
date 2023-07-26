@@ -5,12 +5,11 @@ plugins {
 }
 
 dependencies {
+  implementation(libs.androidx.other.preference)
+  implementation(libs.koin.core)
   implementation(projects.apolloGiraffePublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreResources)
-
-  implementation(libs.androidx.other.preference)
-  implementation(libs.koin.core)
 }
 
 android {

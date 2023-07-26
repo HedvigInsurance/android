@@ -10,13 +10,12 @@ android {
 }
 
 dependencies {
-  implementation(projects.coreCommonPublic)
-  implementation(projects.coreResources)
-  implementation(projects.dataClaimTriaging)
-
   implementation(libs.androidx.annotation)
   implementation(libs.androidx.navigation.common)
   implementation(libs.kiwi.navigationCompose)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)
+  implementation(projects.coreCommonPublic)
+  implementation(projects.coreResources)
+  implementation(projects.dataClaimTriaging)
 }

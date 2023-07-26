@@ -12,8 +12,7 @@ android {
 }
 
 dependencies {
-  implementation(projects.apolloOctopusPublic)
-
   implementation(libs.androidx.compose.runtime)
   implementation(libs.kotlinx.serialization.core)
+  implementation(projects.apolloOctopusPublic)
 }

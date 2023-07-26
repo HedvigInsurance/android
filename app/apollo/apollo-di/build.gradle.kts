@@ -5,10 +5,9 @@ plugins {
 }
 
 dependencies {
+  implementation(libs.koin.core)
   implementation(projects.apolloGiraffePublic)
   implementation(projects.apolloOctopusPublic)
-
-  implementation(libs.koin.core)
 }
 
 android {

@@ -9,23 +9,6 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.apolloCore)
-  implementation(projects.apolloOctopusPublic)
-  implementation(projects.audioPlayer)
-  implementation(projects.coreCommonPublic)
-  implementation(projects.coreCommonAndroidPublic)
-  implementation(projects.coreDatastorePublic)
-  implementation(projects.coreDesignSystem)
-  implementation(projects.coreResources)
-  implementation(projects.coreUi)
-  implementation(projects.coreUiData)
-  implementation(projects.dataClaimFlow)
-  implementation(projects.dataClaimTriaging)
-  implementation(projects.navigationCore)
-  implementation(projects.navigationComposeTyped)
-
-  testImplementation(projects.coreCommonTest)
-
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material)
@@ -46,10 +29,26 @@ dependencies {
   implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.slimber)
+  implementation(projects.apolloCore)
+  implementation(projects.apolloOctopusPublic)
+  implementation(projects.audioPlayer)
+  implementation(projects.coreCommonAndroidPublic)
+  implementation(projects.coreCommonPublic)
+  implementation(projects.coreDatastorePublic)
+  implementation(projects.coreDesignSystem)
+  implementation(projects.coreResources)
+  implementation(projects.coreUi)
+  implementation(projects.coreUiData)
+  implementation(projects.dataClaimFlow)
+  implementation(projects.dataClaimTriaging)
+  implementation(projects.navigationComposeTyped)
+  implementation(projects.navigationCore)
+
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
   testImplementation(libs.turbine)
+  testImplementation(projects.coreCommonTest)
 }
 
 android {

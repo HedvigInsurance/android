@@ -5,11 +5,10 @@ plugins {
 }
 
 dependencies {
+  implementation(libs.koin.core)
   implementation(projects.coreCommonPublic)
   implementation(projects.hanalyticsCore)
   implementation(projects.marketCore)
-
-  implementation(libs.koin.core)
 }
 
 android {

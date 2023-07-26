@@ -10,15 +10,6 @@ android {
 }
 
 dependencies {
-  implementation(projects.apolloCore)
-  implementation(projects.apolloOctopusPublic)
-  implementation(projects.coreCommonPublic)
-  implementation(projects.coreDatastorePublic)
-  implementation(projects.coreResources)
-  implementation(projects.coreUiData)
-  implementation(projects.dataClaimTriaging)
-  implementation(projects.navigationComposeTyped)
-
   implementation(libs.androidx.compose.runtime)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
@@ -29,4 +20,12 @@ dependencies {
   implementation(libs.retrofitArrow)
   implementation(libs.retrofitKotlinxSerializationConverter)
   implementation(libs.slimber)
+  implementation(projects.apolloCore)
+  implementation(projects.apolloOctopusPublic)
+  implementation(projects.coreCommonPublic)
+  implementation(projects.coreDatastorePublic)
+  implementation(projects.coreResources)
+  implementation(projects.coreUiData)
+  implementation(projects.dataClaimTriaging)
+  implementation(projects.navigationComposeTyped)
 }
