@@ -19,6 +19,7 @@ kotlinter = "3.12.0"
 ktor = "2.3.1"
 license = "0.9.3"
 molecule = "1.0.0"
+squareSortDependencies = "0.3"
 
 # Other versions sorted alphabetically
 accompanist = "0.30.1"
@@ -231,9 +232,9 @@ zXing = { module = "com.google.zxing:core", version.ref = "zXing" }
 # Plugin libraries for build-logic's convention plugins to use to resolve the types/tasks coming from these plugins
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradlePlugin" }
 apollo-gradlePlugin = { module = "com.apollographql.apollo3:apollo-gradle-plugin", version.ref = "apollo" }
+firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlinter-gradlePlugin = { module = "org.jmailen.gradle:kotlinter-gradle", version.ref = "kotlinter" }
-firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
 
 [bundles]
 
@@ -256,3 +257,4 @@ kotlinter = { id = "org.jmailen.kotlinter", version.ref = "kotlinter" }
 license = { id = "com.jaredsburrows.license", version.ref = "license" }
 molecule = { id = "app.cash.molecule", version.ref = "molecule" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+squareSortDependencies = { id = "com.squareup.sort-dependencies", version.ref = "squareSortDependencies" }
