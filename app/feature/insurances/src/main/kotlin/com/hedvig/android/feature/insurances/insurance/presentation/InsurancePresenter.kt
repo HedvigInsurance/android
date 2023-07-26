@@ -94,6 +94,17 @@ internal class InsurancePresenter(
       .showNotification()
       .collectAsState(seed.showNotificationBadge)
 
+    CollectEvents { event ->
+      when (event) {
+        InsuranceScreenEvent.RetryLoading -> {
+          retryChannel.retry()
+        }
+        InsuranceScreenEvent.MarkCardCrossSellsAsSeen -> {
+          crossSellCardNotificationBadgeService.markAsSeen()
+        }
+      }
+    }
+
     LaunchedEffect(Unit) {
       retryChannel.collectLatest {
         Snapshot.withMutableSnapshot {
