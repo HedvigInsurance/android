@@ -4,14 +4,13 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.apolloGiraffePublic)
   implementation(projects.coreCommonPublic)
-  implementation(projects.coreResources)
+  implementation(projects.hanalyticsCore)
+  implementation(projects.marketCore)
 
-  implementation(libs.androidx.other.preference)
   implementation(libs.koin.core)
 }
 
 android {
-  namespace = "com.hedvig.android.market"
+  namespace = "com.hedvig.android.hanalytics.featureflags"
 }

@@ -5,9 +5,11 @@ plugins {
 
 dependencies {
   implementation(projects.apolloGiraffePublic)
-  implementation(libs.adyen)
+  implementation(projects.apolloOctopusPublic)
+
+  implementation(libs.koin.core)
 }
 
 android {
-  namespace = "com.hedvig.lib.testdata"
+  namespace = "com.hedvig.android.apollo.di"
 }

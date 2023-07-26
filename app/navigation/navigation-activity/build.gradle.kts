@@ -8,5 +8,5 @@ android {
 }
 
 dependencies {
-  implementation(projects.app.core.commonAndroid)
+  implementation(projects.coreCommonAndroidPublic)
 }

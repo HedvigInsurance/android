@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.app.language.languageCore)
+  implementation(projects.languageCore)
 }
 
 android {

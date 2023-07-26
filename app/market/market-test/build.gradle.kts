@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.app.market.marketCore)
+  implementation(projects.marketCore)
 }
 
 android {

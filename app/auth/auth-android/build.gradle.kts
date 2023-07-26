@@ -4,8 +4,8 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.app.auth.authCore)
-  implementation(projects.app.navigation.navigationActivity)
+  implementation(projects.authCore)
+  implementation(projects.navigationActivity)
 
   implementation(libs.koin.android)
   implementation(libs.slimber)
