@@ -166,7 +166,7 @@ private fun CoverageRows(
 @Composable
 @HedvigPreview
 private fun PreviewYourInfoTab() {
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       YourInfoTab(
         coverageItems = persistentListOf(

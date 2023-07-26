@@ -62,10 +62,7 @@ fun InsuranceCard(
       contentScale = ContentScale.Crop,
       modifier = Modifier.matchParentSize(),
     )
-    HedvigTheme(
-      darkTheme = true,
-      useNewColorScheme = true,
-    ) {
+    HedvigTheme(darkTheme = true) {
       Column(Modifier.padding(16.dp)) {
         Row(Modifier.heightIn(86.dp)) {
           FlowRow(

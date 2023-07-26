@@ -47,7 +47,7 @@ private fun ClaimSuccessScreen(
   openChat: () -> Unit,
   closeSuccessScreen: () -> Unit,
 ) {
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     Surface(
       color = MaterialTheme.colorScheme.background,
       modifier = Modifier.fillMaxSize(),

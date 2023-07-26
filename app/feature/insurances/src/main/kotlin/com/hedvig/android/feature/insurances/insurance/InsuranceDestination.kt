@@ -390,7 +390,7 @@ private fun TerminatedContractsButton(
 @HedvigPreview
 @Composable
 private fun PreviewInsuranceScreen() {
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       InsuranceScreen(
         InsuranceUiState(

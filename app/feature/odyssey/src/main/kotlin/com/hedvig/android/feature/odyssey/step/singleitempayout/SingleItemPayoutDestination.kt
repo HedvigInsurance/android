@@ -74,7 +74,7 @@ private fun SingleItemPayoutScreen(
   openChat: () -> Unit,
   closePayoutScreen: () -> Unit,
 ) {
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     Surface(
       color = MaterialTheme.colorScheme.background,
       modifier = Modifier.fillMaxSize().safeDrawingPadding(),
@@ -265,7 +265,7 @@ private val OvershootEasing: Easing = Easing { fraction ->
 private fun PreviewPayoutScreenLoading(
   @PreviewParameter(PayoutUiStatePreviewProvider::class) payoutUiState: PayoutUiState,
 ) {
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       SingleItemPayoutScreen(
         payoutUiState,
@@ -305,7 +305,7 @@ private fun PreviewPayoutScreenAnimations() {
       value = value.copy(status = PayoutUiState.Status.Loading)
     }
   }
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       SingleItemPayoutScreen(uiState, {}, {}, {}, {})
     }

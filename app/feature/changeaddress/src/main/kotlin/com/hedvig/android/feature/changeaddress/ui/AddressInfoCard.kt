@@ -46,7 +46,7 @@ internal fun AddressInfoCard(
 @HedvigPreview
 @Composable
 private fun PreviewAddressInfoCard() {
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       Box(modifier = Modifier.padding(8.dp)) {
         AddressInfoCard(

@@ -125,7 +125,7 @@ private fun SelectableItem(text: String, isSelected: Boolean, onClick: () -> Uni
 @Composable
 @HedvigPreview
 private fun PreviewEditInsuranceBottomSheetContent() {
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       EditInsuranceBottomSheetContent(
         allowEditCoInsured = true,

@@ -425,7 +425,7 @@ fun PaymentHistory(onClick: () -> Unit) {
 @Composable
 @HedvigPreview
 private fun PreviewPaymentScreen() {
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     Surface {
       PaymentScreen(
         uiState = PaymentUiState(

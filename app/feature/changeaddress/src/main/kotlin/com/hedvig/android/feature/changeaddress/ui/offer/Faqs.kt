@@ -80,7 +80,7 @@ private fun FaqItem(
 @HedvigPreview
 @Composable
 private fun PreviewFaqItem() {
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       var isExpanded by remember { mutableStateOf(false) }
       FaqItem(
@@ -95,7 +95,7 @@ private fun PreviewFaqItem() {
 @HedvigPreview
 @Composable
 private fun PreviewFaqs() {
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       Faqs()
     }

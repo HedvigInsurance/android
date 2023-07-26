@@ -189,7 +189,7 @@ fun SettingsScreen(
 @Composable
 @HedvigPreview
 fun PreviewSettingsScreen() {
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     Surface {
       SettingsScreen(
         onBackPressed = {},

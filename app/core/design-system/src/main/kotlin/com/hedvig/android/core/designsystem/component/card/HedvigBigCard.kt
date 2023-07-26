@@ -97,7 +97,7 @@ fun HedvigBigCard(
 @HedvigPreview
 @Composable
 private fun PreviewHedvigCardButtonWithInput() {
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       Box(Modifier.padding(16.dp)) {
         HedvigBigCard(
@@ -113,7 +113,7 @@ private fun PreviewHedvigCardButtonWithInput() {
 @HedvigPreview
 @Composable
 private fun PreviewHedvigCardButton() {
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       Box(Modifier.padding(16.dp)) {
         HedvigBigCard(

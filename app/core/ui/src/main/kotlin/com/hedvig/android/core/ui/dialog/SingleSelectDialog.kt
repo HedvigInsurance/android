@@ -177,7 +177,7 @@ private fun PreviewSelectionContent(
   val (isScrolled, smallSelectionItems) = input
   val selectedOptions = remember { mutableStateListOf("Front", "Water") }
   val density = LocalDensity.current
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       SelectionContent(
         title = "Type of damage",

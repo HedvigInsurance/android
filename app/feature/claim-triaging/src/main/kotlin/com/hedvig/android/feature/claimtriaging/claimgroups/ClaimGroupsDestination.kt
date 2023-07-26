@@ -94,7 +94,7 @@ private fun ClaimGroupsScreen(
       onDismiss = showedStartClaimError,
     )
   }
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     HedvigScaffold(
       navigateUp = navigateUp,
       topAppBarActions = {
@@ -182,7 +182,7 @@ private fun ClaimGroupsScreen(
 private fun PreviewClaimGroupsScreen(
   @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) hasError: Boolean,
 ) {
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       val claimGroups = remember {
         List(12) {
