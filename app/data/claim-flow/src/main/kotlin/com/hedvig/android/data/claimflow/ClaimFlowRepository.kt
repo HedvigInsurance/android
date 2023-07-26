@@ -16,6 +16,7 @@ import com.hedvig.android.data.claimtriaging.EntryPointId
 import com.hedvig.android.data.claimtriaging.EntryPointOptionId
 import kotlinx.datetime.LocalDate
 import octopus.FlowClaimAudioRecordingNextMutation
+import octopus.FlowClaimContractNextMutation
 import octopus.FlowClaimDateOfOccurrenceNextMutation
 import octopus.FlowClaimDateOfOccurrencePlusLocationNextMutation
 import octopus.FlowClaimLocationNextMutation
@@ -34,7 +35,6 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import slimber.log.d
 import slimber.log.e
 import java.io.File
-import octopus.FlowClaimContractNextMutation
 
 interface ClaimFlowRepository {
   suspend fun startClaimFlow(

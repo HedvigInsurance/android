@@ -9,10 +9,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.ImageVector.Builder
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val Hedvig.Sound: ImageVector
+public val HedvigIcons.Sound: ImageVector
   get() {
     if (_sound != null) {
       return _sound!!

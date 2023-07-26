@@ -1,0 +1,11 @@
+query CrossSales {
+  currentMember {
+    id
+    crossSells {
+      id
+      title
+      description
+      storeUrl
+    }
+  }
+}

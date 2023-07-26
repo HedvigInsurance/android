@@ -84,9 +84,9 @@ private fun PaymentHistoryScreen(
       if (uiState.charges.isNotEmpty()) {
         LazyColumn(
           verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.Top),
-          contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues()
-            + WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues()
-            + PaddingValues(horizontal = 16.dp),
+          contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues() +
+            WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues() +
+            PaddingValues(horizontal = 16.dp),
           modifier = Modifier
             .fillMaxSize()
             .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),

@@ -321,7 +321,6 @@ private fun AddDiscount(
   }
 }
 
-
 @Composable
 private fun TotalAmount(uiState: PaymentUiState) {
   Row(
@@ -466,4 +465,3 @@ private fun PreviewPaymentScreen() {
     }
   }
 }
-

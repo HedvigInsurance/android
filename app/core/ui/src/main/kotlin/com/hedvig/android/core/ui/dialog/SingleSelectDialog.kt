@@ -41,7 +41,7 @@ import com.hedvig.android.core.ui.SelectIndicationCircle
 import com.hedvig.android.core.ui.preview.DoubleBooleanCollectionPreviewParameterProvider
 
 @Composable
- fun <T> SingleSelectDialog(
+fun <T> SingleSelectDialog(
   title: String,
   optionsList: List<T>,
   onSelected: (T) -> Unit,

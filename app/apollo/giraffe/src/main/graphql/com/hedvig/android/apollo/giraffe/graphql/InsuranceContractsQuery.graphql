@@ -1,0 +1,13 @@
+query InsuranceContracts($locale: Locale!) {
+  contracts {
+    id
+    displayName
+    statusPills(locale: $locale)
+    detailPills(locale: $locale)
+    # imageUrl # when backend returns something for the card background
+    status {
+      ...ContractStatusFragment
+    }
+    typeOfContract
+  }
+}

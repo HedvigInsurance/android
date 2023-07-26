@@ -53,7 +53,7 @@ sealed interface ClaimFlowDestination : Destination {
 
   @Serializable
   data class SelectContract(
-    val options: List<LocalContractContractOption>
+    val options: List<LocalContractContractOption>,
   ) : ClaimFlowDestination
 
   @Serializable

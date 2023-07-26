@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.HedvigIcons
 import com.hedvig.android.core.icons.hedvig.colored.hedvig.Chat
 import com.hedvig.android.core.icons.hedvig.colored.hedvig.ColoredCircleWithCampaign
 import com.hedvig.android.core.icons.hedvig.colored.hedvig.FirstVet
@@ -122,7 +123,7 @@ internal fun HedvigIcons() {
 
 private var __AllHedvigIcons: List<List<ImageVector>>? = null
 
-private val Hedvig.AllHedvigIcons: List<List<ImageVector>>
+private val HedvigIcons.AllHedvigIcons: List<List<ImageVector>>
   get() {
     if (__AllHedvigIcons != null) {
       return __AllHedvigIcons!!

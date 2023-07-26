@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonElevation
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,7 +18,6 @@ fun HedvigContainedSmallButton(
   text: String,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
-  contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
   enabled: Boolean = true,
   colors: ButtonColors = ButtonDefaults.buttonColors(
     containerColor = MaterialTheme.colorScheme.primary,
@@ -25,11 +25,14 @@ fun HedvigContainedSmallButton(
     disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
     disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.38f),
   ),
+  elevation: ButtonElevation? = ButtonDefaults.buttonElevation(),
+  contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
 ) {
   HedvigContainedSmallButton(
     onClick = onClick,
     enabled = enabled,
     modifier = modifier,
+    elevation = elevation,
     contentPadding = contentPadding,
     colors = colors,
   ) {
@@ -40,19 +43,21 @@ fun HedvigContainedSmallButton(
 @Composable
 private fun HedvigContainedSmallButton(
   onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-  contentPadding: PaddingValues,
-  enabled: Boolean = true,
+  modifier: Modifier,
+  enabled: Boolean,
   colors: ButtonColors,
+  elevation: ButtonElevation?,
+  contentPadding: PaddingValues,
   content: @Composable RowScope.() -> Unit,
 ) {
   Button(
     onClick = onClick,
-    enabled = enabled,
     modifier = modifier,
+    enabled = enabled,
     shape = MaterialTheme.shapes.squircle,
-    contentPadding = contentPadding,
     colors = colors,
+    elevation = elevation,
+    contentPadding = contentPadding,
   ) {
     content()
   }

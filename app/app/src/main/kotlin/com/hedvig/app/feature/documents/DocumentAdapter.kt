@@ -29,7 +29,7 @@ import com.hedvig.app.util.extensions.viewBinding
 
 class DocumentAdapter(
   private val openCancelInsuranceScreen: ((insuranceId: String, insuranceDisplayName: String) -> Unit)?,
-  ) : ListAdapter<DocumentItems, DocumentAdapter.DocumentsViewHolder>(GenericDiffUtilItemCallback()) {
+) : ListAdapter<DocumentItems, DocumentAdapter.DocumentsViewHolder>(GenericDiffUtilItemCallback()) {
 
   override fun getItemViewType(position: Int) = when (currentList[position]) {
     is DocumentItems.Document -> R.layout.document
@@ -98,8 +98,10 @@ class DocumentAdapter(
       composeView.setContent {
         HedvigTheme {
           LargeTextButton(
-            { openCancelInsuranceScreen?.let { it(cancelInsurance.insuranceId, cancelInsurance.insuranceDisplayName) } },
-            Modifier.padding(horizontal = 16.dp).padding(bottom = 8.dp),
+            onClick = {
+              openCancelInsuranceScreen?.let { it(cancelInsurance.insuranceId, cancelInsurance.insuranceDisplayName) }
+            },
+            modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 8.dp),
           ) {
             CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
               Text(stringResource(hedvig.resources.R.string.TERMINATION_BUTTON))

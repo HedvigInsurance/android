@@ -5,10 +5,10 @@ import androidx.compose.material.icons.materialPath
 import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.group
-import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val Hedvig.Settings: ImageVector
+public val HedvigIcons.Settings: ImageVector
   get() {
     if (_settings != null) {
       return _settings!!

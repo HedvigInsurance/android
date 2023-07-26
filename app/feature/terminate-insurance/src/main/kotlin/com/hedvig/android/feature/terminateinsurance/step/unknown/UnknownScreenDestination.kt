@@ -19,11 +19,13 @@ import hedvig.resources.R
 internal fun UnknownScreenDestination(
   windowSizeClass: WindowSizeClass,
   openPlayStore: () -> Unit,
+  navigateUp: () -> Unit,
   navigateBack: () -> Unit,
 ) {
   UnknownScreenScreen(
     windowSizeClass = windowSizeClass,
     openPlayStore = openPlayStore,
+    navigateUp = navigateUp,
     navigateBack = navigateBack,
   )
 }
@@ -32,6 +34,7 @@ internal fun UnknownScreenDestination(
 private fun UnknownScreenScreen(
   windowSizeClass: WindowSizeClass,
   openPlayStore: () -> Unit,
+  navigateUp: () -> Unit,
   navigateBack: () -> Unit,
 ) {
   TerminationInfoScreen(
@@ -40,7 +43,7 @@ private fun UnknownScreenScreen(
     headerText = stringResource(R.string.EMBARK_UPDATE_APP_TITLE),
     bodyText = stringResource(R.string.EMBARK_UPDATE_APP_BODY),
     icon = ImageVector.vectorResource(com.hedvig.android.core.designsystem.R.drawable.ic_warning_triangle),
-    navigateBack = navigateBack,
+    navigateUp = navigateUp,
   ) {
     Column {
       LargeOutlinedTextButton(

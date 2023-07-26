@@ -37,13 +37,13 @@ import arrow.core.NonEmptyList
 import arrow.core.toNonEmptyListOrNull
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.SelectIndicationCircle
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.ui.preview.calculateForPreview
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.claimflow.CheckoutMethod
 import com.hedvig.android.feature.odyssey.ui.ClaimFlowScaffold

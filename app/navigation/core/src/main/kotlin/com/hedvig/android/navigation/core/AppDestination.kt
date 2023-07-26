@@ -43,10 +43,13 @@ sealed interface AppDestination : Destination {
   object Licenses : AppDestination
 
   @Serializable
-  data class ContractDetail(val contractId: String) : AppDestination
+  object Settings : AppDestination
 
   @Serializable
-  object Settings : AppDestination
+  data class TerminateInsurance(
+    val insuranceId: String,
+    val insuranceDisplayName: String,
+  ) : AppDestination
 
   @Serializable
   object PaymentInfo : AppDestination

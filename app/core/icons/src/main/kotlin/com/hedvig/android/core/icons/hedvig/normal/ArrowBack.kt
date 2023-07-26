@@ -4,10 +4,10 @@ import androidx.compose.material.icons.materialIcon
 import androidx.compose.material.icons.materialPath
 import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val Hedvig.ArrowBack: ImageVector
+public val HedvigIcons.ArrowBack: ImageVector
   get() {
     if (_arrowBack != null) {
       return _arrowBack!!

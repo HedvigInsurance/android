@@ -8,12 +8,12 @@ import com.hedvig.app.feature.profile.data.PaymentMethod
 import com.hedvig.app.feature.referrals.data.RedeemReferralCodeRepository
 import com.hedvig.app.util.apollo.format
 import giraffe.type.PayoutMethodStatus
-import java.time.LocalDate
-import java.util.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.util.Locale
 
 class PaymentViewModel(
   private val redeemReferralCodeRepository: RedeemReferralCodeRepository,
@@ -36,7 +36,7 @@ class PaymentViewModel(
     val discountError: String? = null,
     val errorMessage: String? = null,
     val isLoading: Boolean = false,
-    val payoutStatus: PayoutStatus? = null
+    val payoutStatus: PayoutStatus? = null,
   ) {
     data class InsuranceCost(
       val displayName: String,
@@ -56,7 +56,7 @@ class PaymentViewModel(
     enum class PayoutStatus {
       ACTIVE,
       PENDING,
-      NEEDS_SETUP;
+      NEEDS_SETUP,
     }
   }
 
@@ -125,9 +125,9 @@ private fun PaymentRepository.PaymentData.toUiState(locale: Locale) = PaymentVie
   ),
   payoutStatus = when (payoutMethodStatus) {
     PayoutMethodStatus.ACTIVE -> PaymentViewModel.PaymentUiState.PayoutStatus.ACTIVE
-    PayoutMethodStatus.PENDING ->  PaymentViewModel.PaymentUiState.PayoutStatus.PENDING
-    PayoutMethodStatus.NEEDS_SETUP ->  PaymentViewModel.PaymentUiState.PayoutStatus.NEEDS_SETUP
+    PayoutMethodStatus.PENDING -> PaymentViewModel.PaymentUiState.PayoutStatus.PENDING
+    PayoutMethodStatus.NEEDS_SETUP -> PaymentViewModel.PaymentUiState.PayoutStatus.NEEDS_SETUP
     PayoutMethodStatus.UNKNOWN__ -> null
     null -> null
-  }
+  },
 )

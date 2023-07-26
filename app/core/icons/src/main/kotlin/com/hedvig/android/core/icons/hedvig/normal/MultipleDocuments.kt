@@ -4,10 +4,10 @@ import androidx.compose.material.icons.materialIcon
 import androidx.compose.material.icons.materialPath
 import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val Hedvig.MultipleDocuments: ImageVector
+public val HedvigIcons.MultipleDocuments: ImageVector
   get() {
     if (_multipleDocuments != null) {
       return _multipleDocuments!!

@@ -43,13 +43,13 @@ import kotlinx.collections.immutable.persistentListOf
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun InsuranceCard(
-  backgroundImageUrl: String,
   chips: ImmutableList<String>,
   topText: String,
   bottomText: String,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
   fallbackPainter: Painter = ColorPainter(Color.Black.copy(alpha = 0.7f)),
+  backgroundImageUrl: String? = null,
 ) {
   Box(modifier.clip(MaterialTheme.shapes.squircle)) {
     AsyncImage(
@@ -126,7 +126,6 @@ private fun PreviewInsuranceCard() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       InsuranceCard(
-        backgroundImageUrl = "",
         chips = persistentListOf("Activates 20.03.2024", "Terminates 20.03.2025", "Something in 20.03.2026"),
         topText = "Home Insurance",
         bottomText = "Bellmansgatan 19A ∙ You +1",
