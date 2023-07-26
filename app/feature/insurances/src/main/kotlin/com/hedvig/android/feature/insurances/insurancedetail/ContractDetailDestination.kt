@@ -44,6 +44,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.animation.animateContentHeight
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
@@ -52,7 +53,6 @@ import com.hedvig.android.core.ui.insurance.GradientType
 import com.hedvig.android.core.ui.insurance.toDrawable
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.feature.insurances.insurancedetail.coverage.CoverageTab
 import com.hedvig.android.feature.insurances.insurancedetail.documents.DocumentsTab
 import com.hedvig.android.feature.insurances.insurancedetail.yourinfo.YourInfoTab

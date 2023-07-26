@@ -43,6 +43,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.dialog.MultiSelectDialog
+import com.hedvig.android.core.ui.dialog.SingleSelectDialog
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.snackbar.ErrorSnackbarState
@@ -54,7 +55,6 @@ import com.hedvig.android.feature.odyssey.ui.ClaimFlowScaffold
 import com.hedvig.android.feature.odyssey.ui.DatePickerUiState
 import com.hedvig.android.feature.odyssey.ui.DatePickerWithDialog
 import com.hedvig.android.feature.odyssey.ui.MonetaryAmountInput
-import com.hedvig.android.core.ui.dialog.SingleSelectDialog
 import hedvig.resources.R
 import octopus.type.CurrencyCode
 

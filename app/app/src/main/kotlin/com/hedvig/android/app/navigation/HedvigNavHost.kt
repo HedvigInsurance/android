@@ -236,7 +236,7 @@ internal fun HedvigNavHost(
           )
         }
       },
-      market = marketManager.market
+      market = marketManager.market,
     )
   }
 }

@@ -29,7 +29,6 @@ fun hedvigSecondaryDateTimeFormatter(locale: Locale): DateTimeFormatter {
   return DateTimeFormatter.ofPattern("MMMM d yyyy", locale)
 }
 
-
 @Composable
 fun rememberHedvigDateTimeFormatter(): DateTimeFormatter {
   val locale = getLocale()
