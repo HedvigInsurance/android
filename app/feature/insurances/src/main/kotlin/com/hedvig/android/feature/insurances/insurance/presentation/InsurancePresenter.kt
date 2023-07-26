@@ -51,6 +51,7 @@ internal data class InsuranceUiState(
   )
 
   data class CrossSell(
+    val id: String,
     val title: String,
     val subtitle: String,
     val storeUrl: String,
@@ -173,6 +174,7 @@ private suspend fun loadInsuranceData(
         }.toPersistentList()
       val crossSells = crossSellsData.map { crossSell ->
         InsuranceUiState.CrossSell(
+          id = crossSell.id,
           title = crossSell.title,
           subtitle = crossSell.description,
           storeUrl = crossSell.storeUrl,

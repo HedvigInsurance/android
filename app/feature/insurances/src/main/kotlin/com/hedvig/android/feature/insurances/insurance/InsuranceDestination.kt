@@ -80,8 +80,8 @@ import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.core.ui.insurance.GradientType
 import com.hedvig.android.core.ui.insurance.toDrawable
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
-import com.hedvig.android.feature.insurances.insurance.present.InsuranceScreenEvent
-import com.hedvig.android.feature.insurances.insurance.present.InsuranceUiState
+import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceScreenEvent
+import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceUiState
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -414,6 +414,7 @@ private fun PreviewInsuranceScreen() {
           ),
           crossSells = persistentListOf(
             InsuranceUiState.CrossSell(
+              id = "1",
               title = "Pet".repeat(5),
               subtitle = "Unlimited FirstVet calls".repeat(2),
               storeUrl = "",
