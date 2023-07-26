@@ -8,9 +8,9 @@ import com.hedvig.android.core.designsystem.newtheme.hedvigTonalPalette
 internal val light_primary = hedvigTonalPalette.neutral0
 internal val light_onPrimary = hedvigTonalPalette.neutral100
 internal val light_primaryVariant = hedvigTonalPalette.neutral20
-internal val light_background = hedvigTonalPalette.neutral95
+internal val light_background = hedvigTonalPalette.neutral100
 internal val light_onBackground = hedvigTonalPalette.neutral0
-internal val light_surface = hedvigTonalPalette.neutral100
+internal val light_surface = hedvigTonalPalette.neutral95
 internal val light_onSurface = hedvigTonalPalette.neutral0
 internal val light_surfaceVariant = hedvigTonalPalette.neutral90
 internal val light_onSurfaceVariant = hedvigTonalPalette.neutral30
