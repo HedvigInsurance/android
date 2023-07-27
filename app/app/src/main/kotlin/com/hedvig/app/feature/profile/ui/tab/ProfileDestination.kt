@@ -62,8 +62,8 @@ import com.hedvig.android.core.ui.getLocale
 import com.hedvig.app.R
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.extensions.startChat
-import java.math.BigDecimal
 import org.javamoney.moneta.Money
+import java.math.BigDecimal
 
 @Composable
 internal fun ProfileDestination(
@@ -209,10 +209,10 @@ private fun ColumnScope.ProfileItemRows(
       iconPainter = when {
         profileUiState.euroBonus == null -> ColorPainter(Color.Transparent)
         profileUiState.euroBonus.code != null -> {
-          painterResource(com.hedvig.android.core.designsystem.R.drawable.ic_checkmark_in_circle)
+          painterResource(com.hedvig.android.core.design.system.R.drawable.ic_checkmark_in_circle)
         }
 
-        else -> painterResource(com.hedvig.android.core.designsystem.R.drawable.ic_info)
+        else -> painterResource(com.hedvig.android.core.design.system.R.drawable.ic_info)
       },
       onClick = navigateToEurobonus,
     )

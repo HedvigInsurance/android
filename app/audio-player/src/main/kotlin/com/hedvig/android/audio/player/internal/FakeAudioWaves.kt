@@ -134,7 +134,7 @@ private fun FakeAudioWavePill(
 @HedvigPreview
 @Composable
 private fun PreviewFakeAudioWaves() {
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     Surface(
       color = MaterialTheme.colorScheme.surface,
       modifier = Modifier.height(150.dp),

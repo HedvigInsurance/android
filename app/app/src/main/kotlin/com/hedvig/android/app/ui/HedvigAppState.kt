@@ -1,16 +1,13 @@
 package com.hedvig.android.app.ui
 
 import android.os.Bundle
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -19,6 +16,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navOptions
 import com.datadog.android.rum.GlobalRum
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.hedvig.android.feature.insurances.navigation.insurancesBottomNavPermittedDestinations
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.navigation.core.AppDestination
@@ -104,43 +102,6 @@ internal class HedvigAppState(
     get() {
       val navRailWidthRequirements = windowSizeClass.widthSizeClass != WindowWidthSizeClass.Compact
       return navRailWidthRequirements && shouldShowNavBars
-    }
-
-  val backgroundColors: GradientColors
-    @Composable
-    get() {
-      val isLightMode = !isSystemInDarkTheme()
-      return when (currentTopLevelAppDestination) {
-        AppDestination.TopLevelDestination.Home -> {
-          if (isLightMode) {
-            GradientColors(Color(0xFFC0CAD8), Color(0xFFEDCDAB), Color(0xFFF6F6F6))
-          } else {
-            GradientColors(Color(0xFF121212), Color(0xFF1B2631), Color(0xFF34221E))
-          }
-        }
-        AppDestination.TopLevelDestination.Insurance -> {
-          if (isLightMode) {
-            GradientColors(Color(0xFFF6F6F6))
-          } else {
-            GradientColors(Color(0xFF121212))
-          }
-        }
-        AppDestination.TopLevelDestination.Referrals -> {
-          if (isLightMode) {
-            GradientColors(Color(0xFFD3D3D3), Color(0xFFE5E5E5), Color(0xFFF6F6F6))
-          } else {
-            GradientColors(Color(0xFF121212), Color(0xFF131313), Color(0xFF262626))
-          }
-        }
-        AppDestination.TopLevelDestination.Profile -> {
-          if (isLightMode) {
-            GradientColors(Color(0xFFDCDEF5), Color(0xFFEFF0FB), Color(0xFFF6F6F6))
-          } else {
-            GradientColors(Color(0xFF121212), Color(0xFF0F0F05), Color(0xFF1E1D0A))
-          }
-        }
-        null -> GradientColors(Color.Transparent)
-      }
     }
 
   val topLevelGraphs: StateFlow<ImmutableSet<TopLevelGraph>> = flow {
@@ -259,15 +220,6 @@ private fun TopLevelDestinationNavigationSideEffect(
   }
 }
 
-@Immutable
-internal data class GradientColors(
-  val color1: Color,
-  val color2: Color,
-  val color3: Color,
-) {
-  constructor(color: Color) : this(color, color, color)
-}
-
 private fun BottomNavTab.topTopLevelGraph(): TopLevelGraph {
   return when (this) {
     BottomNavTab.HOME -> TopLevelGraph.HOME
@@ -290,10 +242,12 @@ private fun NavDestination?.toTopLevelAppDestination(): AppDestination.TopLevelD
 /**
  * Special routes, which despite not being top level should still show the navigation bars.
  */
+private val bottomNavPermittedDestinations: List<String> = buildList {
+  add(createRoutePattern<AppDestination.BusinessModel>())
+  add(createRoutePattern<AppDestination.Eurobonus>())
+  addAll(insurancesBottomNavPermittedDestinations)
+}
+
 private fun NavDestination?.isInListOfNonTopLevelNavBarPermittedDestinations(): Boolean {
-  return when (this?.route) {
-    createRoutePattern<AppDestination.BusinessModel>() -> true
-    createRoutePattern<AppDestination.Eurobonus>() -> true
-    else -> false
-  }
+  return this?.route in bottomNavPermittedDestinations
 }

@@ -33,7 +33,7 @@ fun FailedToRetrieveInfo(insuranceProviderDisplayName: String?) {
       bottom = 16.dp,
     ),
   ) {
-    Icon(painterResource(com.hedvig.android.core.designsystem.R.drawable.ic_warning_triangle), null)
+    Icon(painterResource(com.hedvig.android.core.design.system.R.drawable.ic_warning_triangle), null)
     Column(
       verticalArrangement = Arrangement.spacedBy(4.dp),
       modifier = Modifier.fillMaxWidth(),

@@ -145,7 +145,7 @@ private fun MyInfoScreen(
 @HedvigPreview
 @Composable
 private fun PreviewMyInfoScreen() {
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     Surface {
       MyInfoScreen(
         uiState = MyInfoUiState(

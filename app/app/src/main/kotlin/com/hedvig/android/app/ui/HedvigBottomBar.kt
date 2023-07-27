@@ -1,6 +1,5 @@
 package com.hedvig.android.app.ui
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -76,11 +75,7 @@ private fun HedvigBottomBar(
         },
         label = { Text(stringResource(destination.titleTextId)) },
         colors = NavigationBarItemDefaults.colors(
-          indicatorColor = if (isSystemInDarkTheme()) {
-            MaterialTheme.colorScheme.background
-          } else {
-            MaterialTheme.colorScheme.surfaceVariant
-          },
+          indicatorColor = MaterialTheme.colorScheme.background,
           selectedIconColor = MaterialTheme.colorScheme.onSurface,
           unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
         ),

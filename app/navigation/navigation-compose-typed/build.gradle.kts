@@ -2,12 +2,8 @@ plugins {
   id("hedvig.android.ktlint")
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
-  @Suppress("DSL_SCOPE_VIOLATION")
   alias(libs.plugins.serialization)
-}
-
-android {
-  namespace = "com.hedvig.android.navigation.compose.typed"
+  alias(libs.plugins.squareSortDependencies)
 }
 
 dependencies {

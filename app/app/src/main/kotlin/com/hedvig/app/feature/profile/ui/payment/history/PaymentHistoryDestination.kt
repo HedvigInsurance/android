@@ -37,10 +37,9 @@ import com.hedvig.android.core.ui.appbar.m3.TopAppBar
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarActionType
 import com.hedvig.android.core.ui.hedvigSecondaryDateTimeFormatter
 import com.hedvig.android.core.ui.plus
-import com.hedvig.app.feature.profile.ui.payment.history.PaymentHistoryViewModel.*
 import hedvig.resources.R
 import java.time.LocalDate
-import java.util.*
+import java.util.Locale
 
 @Composable
 internal fun PaymentHistoryDestination(
@@ -63,7 +62,7 @@ internal fun PaymentHistoryDestination(
 
 @Composable
 private fun PaymentHistoryScreen(
-  uiState: PaymentHistoryUiState,
+  uiState: PaymentHistoryViewModel.PaymentHistoryUiState,
   locale: Locale,
   navigateUp: () -> Unit,
 ) {
@@ -84,9 +83,9 @@ private fun PaymentHistoryScreen(
       if (uiState.charges.isNotEmpty()) {
         LazyColumn(
           verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.Top),
-          contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues()
-            + WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues()
-            + PaddingValues(horizontal = 16.dp),
+          contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues() +
+            WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom).asPaddingValues() +
+            PaddingValues(horizontal = 16.dp),
           modifier = Modifier
             .fillMaxSize()
             .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
@@ -94,7 +93,7 @@ private fun PaymentHistoryScreen(
           itemsIndexed(
             items = uiState.charges,
             contentType = { _, _ -> "Charge" },
-          ) { index: Int, charge: PaymentHistoryUiState.Payment ->
+          ) { index: Int, charge: PaymentHistoryViewModel.PaymentHistoryUiState.Payment ->
             Row(
               modifier = Modifier
                 .fillMaxWidth()
@@ -129,20 +128,20 @@ private fun PaymentHistoryScreen(
 @Composable
 @HedvigPreview
 private fun PreviewPaymentHistoryScreen() {
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     Surface {
       PaymentHistoryScreen(
-        uiState = PaymentHistoryUiState(
+        uiState = PaymentHistoryViewModel.PaymentHistoryUiState(
           charges = listOf(
-            PaymentHistoryUiState.Payment(
+            PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
               amount = "350kr",
               date = LocalDate.now(),
             ),
-            PaymentHistoryUiState.Payment(
+            PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
               amount = "250kr",
               date = LocalDate.now().minusDays(1),
             ),
-            PaymentHistoryUiState.Payment(
+            PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
               amount = "300kr",
               date = LocalDate.now().minusDays(2),
             ),

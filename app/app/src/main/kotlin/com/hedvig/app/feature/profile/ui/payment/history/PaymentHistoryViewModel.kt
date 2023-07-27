@@ -5,12 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.language.LanguageService
 import com.hedvig.app.feature.profile.ui.payment.PaymentRepository
 import com.hedvig.app.util.apollo.format
-import java.time.LocalDate
-import java.util.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.util.Locale
 
 class PaymentHistoryViewModel(
   private val paymentRepository: PaymentRepository,
