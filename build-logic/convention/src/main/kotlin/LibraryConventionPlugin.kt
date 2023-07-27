@@ -22,7 +22,6 @@ class LibraryConventionPlugin : Plugin<Project> {
       extensions.configure<LibraryExtension> {
         configureKotlinAndroid(this)
         defaultConfig.targetSdk = libs.versions.targetSdkVersion.get().toInt()
-        @Suppress("UnstableApiUsage")
         buildFeatures {
           resValues = false
           shaders = false

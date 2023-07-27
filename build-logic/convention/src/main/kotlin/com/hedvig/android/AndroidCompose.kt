@@ -14,7 +14,6 @@ internal fun Project.configureAndroidCompose(
   val libs = the<LibrariesForLibs>()
 
   commonExtension.apply {
-    @Suppress("UnstableApiUsage")
     buildFeatures {
       compose = true
     }
