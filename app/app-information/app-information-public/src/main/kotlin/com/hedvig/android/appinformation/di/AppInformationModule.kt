@@ -1,9 +1,9 @@
 package com.hedvig.android.appinformation.di
 
-import com.hedvig.android.appinformation.EnableNotificationsInfoManager
-import com.hedvig.android.appinformation.EnableNotificationsInfoManagerImpl
+import com.hedvig.android.appinformation.EnableNotificationsReminderManager
+import com.hedvig.android.appinformation.EnableNotificationsReminderManagerImpl
 import org.koin.dsl.module
 
 val appInformationModule = module {
-  single<EnableNotificationsInfoManager> { EnableNotificationsInfoManagerImpl(get(), get()) }
+  single<EnableNotificationsReminderManager> { EnableNotificationsReminderManagerImpl(get(), get()) }
 }

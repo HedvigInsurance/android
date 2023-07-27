@@ -13,14 +13,14 @@ import org.junit.rules.TemporaryFolder
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
 
-class EnableNotificationsInfoManagerTest {
+class EnableNotificationsReminderManagerTest {
   @get:Rule
   val testFolder = TemporaryFolder()
 
   @Test
   fun `Having never snoozed, showing the notification reminder is true`() = runTest {
     val clock = TestClock()
-    val enableNotificationsInfoManager = EnableNotificationsInfoManagerImpl(
+    val enableNotificationsInfoManager = EnableNotificationsReminderManagerImpl(
       TestPreferencesDataStore(
         datastoreTestFileDirectory = testFolder.newFolder("datastoreTempFolder"),
         coroutineScope = backgroundScope,
@@ -34,7 +34,7 @@ class EnableNotificationsInfoManagerTest {
   @Test
   fun `Right after snoozing, showing the notification reminder is false`() = runTest {
     val clock = TestClock()
-    val enableNotificationsInfoManager = EnableNotificationsInfoManagerImpl(
+    val enableNotificationsInfoManager = EnableNotificationsReminderManagerImpl(
       TestPreferencesDataStore(
         datastoreTestFileDirectory = testFolder.newFolder("datastoreTempFolder"),
         coroutineScope = backgroundScope,
@@ -50,7 +50,7 @@ class EnableNotificationsInfoManagerTest {
   @Test
   fun `Snoozing and waiting for 60 days still does not show the notification reminder`() = runTest {
     val clock = TestClock()
-    val enableNotificationsInfoManager = EnableNotificationsInfoManagerImpl(
+    val enableNotificationsInfoManager = EnableNotificationsReminderManagerImpl(
       TestPreferencesDataStore(
         datastoreTestFileDirectory = testFolder.newFolder("datastoreTempFolder"),
         coroutineScope = backgroundScope,
@@ -66,7 +66,7 @@ class EnableNotificationsInfoManagerTest {
   @Test
   fun `Snoozing and waiting for 60 days + 1 second now asks for the notification reminder to show again`() = runTest {
     val clock = TestClock()
-    val enableNotificationsInfoManager = EnableNotificationsInfoManagerImpl(
+    val enableNotificationsInfoManager = EnableNotificationsReminderManagerImpl(
       TestPreferencesDataStore(
         datastoreTestFileDirectory = testFolder.newFolder("datastoreTempFolder"),
         coroutineScope = backgroundScope,
@@ -83,7 +83,7 @@ class EnableNotificationsInfoManagerTest {
   @Test
   fun `Snoozing and letting 61 days pass many times always returns the right response back`() = runTest {
     val clock = TestClock()
-    val enableNotificationsInfoManager = EnableNotificationsInfoManagerImpl(
+    val enableNotificationsInfoManager = EnableNotificationsReminderManagerImpl(
       TestPreferencesDataStore(
         datastoreTestFileDirectory = testFolder.newFolder("datastoreTempFolder"),
         coroutineScope = backgroundScope,

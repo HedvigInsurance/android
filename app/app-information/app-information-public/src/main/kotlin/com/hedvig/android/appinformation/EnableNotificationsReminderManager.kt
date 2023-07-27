@@ -13,16 +13,16 @@ import kotlinx.serialization.json.Json
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 
-interface EnableNotificationsInfoManager {
+interface EnableNotificationsReminderManager {
   fun showNotificationReminder(): Flow<Boolean>
 
   suspend fun snoozeNotificationReminder()
 }
 
-internal class EnableNotificationsInfoManagerImpl(
+internal class EnableNotificationsReminderManagerImpl(
   private val datastore: DataStore<Preferences>,
   private val clock: Clock,
-) : EnableNotificationsInfoManager {
+) : EnableNotificationsReminderManager {
   override fun showNotificationReminder(): Flow<Boolean> {
     return getLastSnoozeTime().map { lastSnoozeTime ->
       val timeSinceLastSnooze: Duration = clock.now() - lastSnoozeTime
