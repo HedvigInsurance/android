@@ -84,8 +84,6 @@ private fun KotlinJvmOptions.configureKotlinOptions(
     "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
     "-opt-in=kotlinx.coroutines.FlowPreview",
     "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
-    // Fixes "Inheritance from an interface with '@JvmDefault' members is only allowed with -Xjvm-default option"
-    "-Xjvm-default=enable",
   )
 
   jvmTarget = JavaVersion.VERSION_17.toString()
