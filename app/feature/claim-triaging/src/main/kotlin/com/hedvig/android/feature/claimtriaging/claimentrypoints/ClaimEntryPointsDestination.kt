@@ -93,7 +93,7 @@ private fun ClaimEntryPointsScreen(
       onDismiss = showedStartClaimError,
     )
   }
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     HedvigScaffold(
       navigateUp = navigateUp,
       topAppBarActions = {
@@ -153,7 +153,7 @@ private fun ClaimEntryPointsScreen(
 @HedvigPreview
 @Composable
 private fun PreviewClaimEntryPointsScreen() {
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       val entryPoints = remember {
         List(12) {

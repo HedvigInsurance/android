@@ -51,7 +51,7 @@ internal fun ClaimFlowScaffold(
   itemsColumnHorizontalAlignment: Alignment.Horizontal = Alignment.Start,
   content: @Composable (ColumnScope.(sideSpacingModifier: Modifier) -> Unit),
 ) {
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     var showCloseClaimsFlowDialog by rememberSaveable { mutableStateOf(false) }
     if (showCloseClaimsFlowDialog) {
       HedvigAlertDialog(

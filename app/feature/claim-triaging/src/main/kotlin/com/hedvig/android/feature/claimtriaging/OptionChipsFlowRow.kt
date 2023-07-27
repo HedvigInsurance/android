@@ -154,7 +154,7 @@ internal fun <T> OptionChipsFlowRow(
 @HedvigPreview
 @Composable
 private fun PreviewOptionChipsFlowRow() {
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       Box(modifier = Modifier.padding(16.dp)) {
         val items = remember {

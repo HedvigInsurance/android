@@ -284,7 +284,7 @@ private fun PrerecordedPlayback(
 @HedvigPreview
 @Composable
 private fun PreviewNotRecording() {
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       AudioRecorder(
         uiState = AudioRecordingUiState.NotRecording,
@@ -302,7 +302,7 @@ private fun PreviewNotRecording() {
 @HedvigPreview
 @Composable
 private fun PreviewRecording() {
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       AudioRecorder(
         uiState = AudioRecordingUiState.Recording(listOf(70), Clock.System.now(), ""),

@@ -270,7 +270,7 @@ private fun ColumnScope.InsurableLimitSection(
 @HedvigPreview
 @Composable
 private fun PreviewCoverageTab() {
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       CoverageTab(
         previewInsurableLimits,
@@ -283,7 +283,7 @@ private fun PreviewCoverageTab() {
 @HedvigPreview
 @Composable
 private fun PreviewInsurableLimitSection() {
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       Column {
         InsurableLimitSection(
@@ -298,7 +298,7 @@ private fun PreviewInsurableLimitSection() {
 @HedvigPreview
 @Composable
 private fun PreviewPerilSection() {
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       Column {
         PerilSection(previewPerils)

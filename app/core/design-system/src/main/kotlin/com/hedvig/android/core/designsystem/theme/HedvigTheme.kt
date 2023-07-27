@@ -37,28 +37,3 @@ fun HedvigTheme(
     }
   }
 }
-
-@Composable
-fun HedvigTheme(
-  darkTheme: Boolean = isSystemInDarkTheme(),
-  useNewColorScheme: Boolean,
-  content: @Composable () -> Unit,
-) {
-  HedvigTheme(
-    darkTheme = darkTheme,
-    m3ColorOverrides = if (useNewColorScheme && !darkTheme) {
-      { oldColorScheme ->
-        oldColorScheme.copy(
-          background = oldColorScheme.surface,
-          onBackground = oldColorScheme.onSurface,
-          surface = oldColorScheme.background,
-          onSurface = oldColorScheme.onBackground,
-        )
-      }
-    } else {
-      { it }
-    },
-  ) {
-    content()
-  }
-}

@@ -38,7 +38,7 @@ fun SelectIndicationCircle(selected: Boolean, modifier: Modifier = Modifier) {
 private fun PreviewSelectIndicationCircle(
   @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) selected: Boolean,
 ) {
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       SelectIndicationCircle(selected, Modifier.padding(16.dp))
     }

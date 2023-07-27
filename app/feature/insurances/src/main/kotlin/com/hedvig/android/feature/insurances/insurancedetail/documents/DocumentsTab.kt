@@ -126,7 +126,7 @@ private fun DocumentCard(
 @HedvigPreview
 @Composable
 private fun PreviewDocumentsScreen() {
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       DocumentsTab(
         documents = persistentListOf(
