@@ -1,59 +1,34 @@
 package com.hedvig.app.feature.profile.ui.tab
 
-import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.errorprone.annotations.Immutable
-import com.hedvig.android.core.common.RetryChannel
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
-import com.hedvig.android.market.MarketManager
 import com.hedvig.app.authenticate.LogoutUseCase
-import com.hedvig.app.feature.profile.data.ProfileRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.money.MonetaryAmount
 
 internal class ProfileViewModel(
-  private val profileRepository: ProfileRepository,
   private val getEuroBonusStatusUseCase: GetEurobonusStatusUseCase,
   private val featureManager: FeatureManager,
-  private val marketManager: MarketManager,
   private val logoutUseCase: LogoutUseCase,
 ) : ViewModel() {
-
-  private val retryChannel = RetryChannel()
 
   private val _data = MutableStateFlow(ProfileUiState())
   val data: StateFlow<ProfileUiState> = _data
 
   init {
+    loadProfileData()
+  }
 
+  private fun loadProfileData() {
     viewModelScope.launch {
       val showPaymentScreen = featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN)
-      val showBusinessModel = featureManager.isFeatureEnabled(Feature.SHOW_BUSINESS_MODEL)
-
-      profileRepository.profile().fold(
-        ifLeft = { _data.update { it.copy(errorMessage = it.errorMessage) } },
-        ifRight = { profile ->
-          _data.update {
-            it.copy(
-              contactInfoName = "${profile.member.firstName} ${profile.member.lastName}",
-              paymentInfo = if (showPaymentScreen) {
-                PaymentInfo(
-                  monetaryMonthlyNet = profile.chargeEstimation.charge,
-                  priceCaptionResId = marketManager.market?.let(profile::getPriceCaption),
-                )
-              } else {
-                null
-              },
-              showBusinessModel = showBusinessModel,
-            )
-          }
-        },
-      )
+      _data.update {
+        it.copy(showPaymentScreen = showPaymentScreen)
+      }
 
       getEuroBonusStatusUseCase.invoke().fold(
         ifLeft = { _data.update { it.copy(errorMessage = it.errorMessage) } },
@@ -63,7 +38,7 @@ internal class ProfileViewModel(
   }
 
   fun reload() {
-    retryChannel.retry()
+    loadProfileData()
   }
 
   fun onLogout() {
@@ -72,16 +47,9 @@ internal class ProfileViewModel(
 }
 
 internal data class ProfileUiState(
-  val contactInfoName: String? = null,
-  val paymentInfo: PaymentInfo? = null,
   val euroBonus: EuroBonus? = null,
-  val showBusinessModel: Boolean = false,
+  val showPaymentScreen: Boolean = false,
   val errorMessage: String? = null,
   val isLoading: Boolean = false,
 )
 
-@Immutable
-internal data class PaymentInfo(
-  val monetaryMonthlyNet: MonetaryAmount,
-  @StringRes val priceCaptionResId: Int?,
-)

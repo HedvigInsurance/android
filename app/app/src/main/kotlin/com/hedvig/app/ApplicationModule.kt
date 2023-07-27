@@ -402,7 +402,7 @@ private val profileModule = module {
     )
   }
   single<GetEurobonusStatusUseCase> { NetworkGetEurobonusStatusUseCase(get<ApolloClient>(octopusClient)) }
-  viewModel<ProfileViewModel> { ProfileViewModel(get(), get(), get(), get(), get()) }
+  viewModel<ProfileViewModel> { ProfileViewModel(get(), get(), get()) }
   viewModel<EurobonusViewModel> { EurobonusViewModel(get<ApolloClient>(octopusClient)) }
 }
 
