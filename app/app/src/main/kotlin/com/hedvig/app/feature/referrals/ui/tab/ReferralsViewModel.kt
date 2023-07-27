@@ -2,72 +2,217 @@ package com.hedvig.app.feature.referrals.ui.tab
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.apollo.OperationResult
-import com.hedvig.android.core.common.RetryChannel
+import arrow.core.raise.either
+import com.hedvig.android.language.LanguageService
 import com.hedvig.app.feature.referrals.data.ReferralsRepository
+import com.hedvig.app.util.apollo.toMonetaryAmount
 import giraffe.ReferralTermsQuery
 import giraffe.ReferralsQuery
-import kotlinx.coroutines.flow.Flow
+import giraffe.fragment.ReferralFragment
+import java.util.*
+import javax.money.MonetaryAmount
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.launch
 
 class ReferralsViewModel(
   private val referralsRepository: ReferralsRepository,
   private val getReferralTermsUseCase: GetReferralsInformationUseCase,
+  private val languageService: LanguageService,
 ) : ViewModel() {
-  private val retryChannel = RetryChannel()
 
-  private val isLoading = MutableStateFlow(false)
+  private val _uiState = MutableStateFlow(ReferralsUiState())
+  val uiState: StateFlow<ReferralsUiState> = _uiState.stateIn(
+    viewModelScope,
+    SharingStarted.WhileSubscribed(5.seconds),
+    ReferralsUiState(),
+  )
 
-  private val referralsResult: Flow<OperationResult<ReferralsQuery.Data>> = retryChannel.flatMapLatest {
-    referralsRepository.watchReferralsQueryData().onEach {
-      isLoading.update { false }
-    }
+  init {
+    loadReferralData()
   }
 
-  val data: StateFlow<ReferralsUiState> = combine(
-    isLoading,
-    referralsResult,
-    flow { emit(getReferralTermsUseCase.invoke()) },
-  ) { isLoading, referralsResult, referralTerms ->
-    val referralsData: ReferralsQuery.Data? = (referralsResult as? OperationResult.Success)?.data
-    if (referralsData == null) {
-      ReferralsUiState.Error(isLoading)
-    } else {
-      ReferralsUiState.Success(referralsData, referralTerms.getOrNull(), isLoading)
+  private fun loadReferralData() {
+    viewModelScope.launch {
+      _uiState.update { it.copy(isLoading = true) }
+      either {
+        val referralsData = referralsRepository.getReferralsData().bind()
+        val terms = getReferralTermsUseCase.invoke().bind()
+        ReferralsUiState(
+          referralsData = referralsData,
+          referralTerms = terms,
+          locale = languageService.getLocale(),
+        )
+      }.mapLeft {
+        ReferralsUiState(errorMessage = it.message)
+      }.fold(
+        ifLeft = { _uiState.value = it },
+        ifRight = { _uiState.value = it },
+      )
     }
   }
-    .stateIn(
-      viewModelScope,
-      SharingStarted.WhileSubscribed(5.seconds),
-      ReferralsUiState.Loading,
-    )
 
   fun reload() {
-    isLoading.update { true }
-    retryChannel.retry()
+    loadReferralData()
+  }
+
+  fun onCodeChanged(campaignCode: String?) {
+    _uiState.update {
+      it.copy(
+        editedCampaignCode = campaignCode,
+        codeError = null,
+      )
+    }
+  }
+
+  fun onSubmitCode(code: String) {
+    viewModelScope.launch {
+      _uiState.update {
+        it.copy(
+          isLoadingCode = true,
+          codeError = null,
+        )
+      }
+      referralsRepository.updateCode(code).fold(
+        ifLeft = { referralError ->
+          _uiState.update {
+            it.copy(
+              codeError = referralError,
+              isLoadingCode = false,
+            )
+          }
+        },
+        ifRight = { code ->
+          _uiState.update {
+            it.copy(
+              campaignCode = code,
+              isLoadingCode = false,
+              showEditCode = false,
+            )
+          }
+        },
+      )
+    }
+  }
+
+  fun showEditCode() {
+    _uiState.update { it.copy(showEditCode = true) }
+  }
+
+  fun hideEditCode() {
+    _uiState.update { it.copy(showEditCode = false) }
   }
 }
 
-sealed interface ReferralsUiState {
-  val isLoading: Boolean
+data class ReferralsUiState(
+  val campaignCode: String? = null,
+  val editedCampaignCode: String? = null,
+  val incentive: MonetaryAmount? = null,
+  val grossPriceAmount: MonetaryAmount? = null,
+  val referralUrl: String? = null,
+  val isLoading: Boolean = false,
+  val isLoadingCode: Boolean = false,
+  val showEditCode: Boolean = false,
+  val errorMessage: String? = null,
+  val codeError: ReferralsRepository.ReferralError? = null,
+  val potentialDiscountAmount: MonetaryAmount? = null,
+  val currentDiscountAmount: MonetaryAmount? = null,
+  val currentNetAmount: MonetaryAmount? = null,
+  val referrals: List<Referral> = emptyList(),
+  val locale: Locale? = null,
+) {
 
-  data class Success(
-    val data: ReferralsQuery.Data,
-    val referralTerms: ReferralTermsQuery.ReferralTerms?,
-    override val isLoading: Boolean,
-  ) : ReferralsUiState
+  data class Referral(
+    val name: String?,
+    val state: ReferralState,
+    val discount: MonetaryAmount?,
+  )
 
-  data class Error(override val isLoading: Boolean) : ReferralsUiState
-  object Loading : ReferralsUiState {
-    override val isLoading: Boolean = true
+  enum class ReferralState {
+    ACTIVE, IN_PROGRESS, TERMINATED, UNKNOWN
   }
+
+  constructor(
+    referralsData: ReferralsQuery.Data,
+    referralTerms: ReferralTermsQuery.ReferralTerms?,
+    locale: Locale,
+  ) : this(
+    incentive = referralsData
+      .referralInformation
+      .campaign
+      .incentive
+      ?.asMonthlyCostDeduction
+      ?.amount
+      ?.fragments
+      ?.monetaryAmountFragment
+      ?.toMonetaryAmount(),
+    referralUrl = referralTerms?.url,
+    campaignCode = referralsData.referralInformation.campaign.code,
+    editedCampaignCode = referralsData.referralInformation.campaign.code,
+    grossPriceAmount = referralsData
+      .chargeEstimation
+      .subscription
+      .fragments
+      .monetaryAmountFragment
+      .toMonetaryAmount(),
+    potentialDiscountAmount = referralsData
+      .referralInformation
+      .campaign
+      .incentive
+      ?.asMonthlyCostDeduction
+      ?.amount
+      ?.fragments
+      ?.monetaryAmountFragment
+      ?.toMonetaryAmount(),
+    currentDiscountAmount = referralsData
+      .referralInformation
+      .costReducedIndefiniteDiscount
+      ?.fragments
+      ?.costFragment
+      ?.monthlyDiscount
+      ?.fragments
+      ?.monetaryAmountFragment
+      ?.toMonetaryAmount(),
+    currentNetAmount = referralsData
+      .referralInformation
+      .costReducedIndefiniteDiscount
+      ?.fragments
+      ?.costFragment
+      ?.monthlyNet
+      ?.fragments
+      ?.monetaryAmountFragment
+      ?.toMonetaryAmount(),
+    referrals = referralsData.referralInformation.invitations.map {
+      Referral(
+        name = it.fragments.referralFragment.name,
+        state = when {
+          it.fragments.referralFragment.asInProgressReferral != null -> ReferralState.IN_PROGRESS
+          it.fragments.referralFragment.asActiveReferral != null -> ReferralState.ACTIVE
+          it.fragments.referralFragment.asTerminatedReferral != null -> ReferralState.TERMINATED
+          else -> ReferralState.UNKNOWN
+        },
+        discount = it.fragments
+          .referralFragment
+          .asActiveReferral
+          ?.discount
+          ?.fragments
+          ?.monetaryAmountFragment
+          ?.toMonetaryAmount(),
+      )
+    },
+    locale = locale,
+  )
 }
+
+private val ReferralFragment.name: String?
+  get() {
+    asActiveReferral?.name?.let { return it }
+    asInProgressReferral?.name?.let { return it }
+    asTerminatedReferral?.name?.let { return it }
+    return null
+  }

@@ -1,46 +1,62 @@
 package com.hedvig.app.feature.referrals.data
 
+import arrow.core.Either
+import arrow.core.raise.either
 import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.api.ApolloResponse
-import com.apollographql.apollo3.cache.normalized.apolloStore
-import com.hedvig.android.apollo.OperationResult
-import com.hedvig.android.apollo.safeWatch
+import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.apollo.toEither
+import com.hedvig.android.core.common.ErrorMessage
 import giraffe.ReferralsQuery
 import giraffe.UpdateReferralCampaignCodeMutation
-import kotlinx.coroutines.flow.Flow
 
 class ReferralsRepository(
   private val apolloClient: ApolloClient,
 ) {
   private val referralsQuery = ReferralsQuery()
 
-  fun watchReferralsQueryData(): Flow<OperationResult<ReferralsQuery.Data>> = apolloClient
+  suspend fun getReferralsData(): Either<ErrorMessage, ReferralsQuery.Data> = apolloClient
     .query(referralsQuery)
-    .safeWatch()
+    .safeExecute()
+    .toEither(::ErrorMessage)
 
-  suspend fun updateCode(newCode: String): ApolloResponse<UpdateReferralCampaignCodeMutation.Data> {
-    val response = apolloClient
+  suspend fun updateCode(newCode: String): Either<ReferralError, String> = either {
+    val result = apolloClient
       .mutation(UpdateReferralCampaignCodeMutation(newCode))
-      .execute()
+      .safeExecute()
+      .toEither { message, _ ->
+        toReferralError(message)
+      }
+      .bind()
 
-    response.data?.updateReferralCampaignCode?.asSuccessfullyUpdatedCode?.code?.let { updatedCode ->
-      val oldData = apolloClient
-        .apolloStore
-        .readOperation(referralsQuery)
-
-      val newData = oldData.copy(
-        referralInformation = oldData.referralInformation.copy(
-          campaign = oldData.referralInformation.campaign.copy(
-            code = updatedCode,
-          ),
-        ),
-      )
-
-      apolloClient
-        .apolloStore
-        .writeOperation(referralsQuery, newData)
+    when {
+      result.updateReferralCampaignCode.asSuccessfullyUpdatedCode != null -> result.updateReferralCampaignCode.asSuccessfullyUpdatedCode!!.code
+      result.updateReferralCampaignCode.asCodeTooLong != null -> raise(ReferralError.CodeTooLong(result.updateReferralCampaignCode.asCodeTooLong!!.maxCharacters))
+      result.updateReferralCampaignCode.asCodeTooShort != null -> raise(ReferralError.CodeTooShort(result.updateReferralCampaignCode.asCodeTooShort!!.minCharacters))
+      result.updateReferralCampaignCode.asCodeAlreadyTaken != null -> raise(ReferralError.CodeExists)
+      result.updateReferralCampaignCode.asExceededMaximumUpdates != null -> raise(ReferralError.MaxUpdates(result.updateReferralCampaignCode.asExceededMaximumUpdates!!.maximumNumberOfUpdates))
+      else -> raise(ReferralError.GeneralError("Unknown error"))
     }
+  }
 
-    return response
+  private fun toReferralError(message: String?) = ReferralError.GeneralError(message)
+
+  sealed interface ReferralError {
+    data class GeneralError(
+      val message: String?,
+    ) : ReferralError
+
+    data class CodeTooLong(
+      val maxCharacters: Int,
+    ) : ReferralError
+
+    data class CodeTooShort(
+      val minCharacters: Int,
+    ) : ReferralError
+
+    data class MaxUpdates(
+      val maxUpdates: Int,
+    ) : ReferralError
+
+    object CodeExists : ReferralError
   }
 }
