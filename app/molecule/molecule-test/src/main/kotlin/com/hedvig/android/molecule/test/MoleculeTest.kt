@@ -8,9 +8,9 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 
-suspend fun <Event, Model> MoleculePresenter<Event, Model>.test(
-  initialState: Model,
-  block: suspend MoleculePresenterTestContext<Event, Model>.() -> Unit,
+suspend fun <Event, State> MoleculePresenter<Event, State>.test(
+  initialState: State,
+  block: suspend MoleculePresenterTestContext<Event, State>.() -> Unit,
 ) {
   // Events have a capacity large enough to handle simultaneous UI events, but
   // small enough to surface issues if they get backed up for some reason.
@@ -23,10 +23,10 @@ suspend fun <Event, Model> MoleculePresenter<Event, Model>.test(
   }
 }
 
-class MoleculePresenterTestContext<Event, Model>(
-  turbineTestContext: TurbineTestContext<Model>,
+class MoleculePresenterTestContext<Event, State>(
+  turbineTestContext: TurbineTestContext<State>,
   presenterTestingScope: PresenterTestingScope<Event>,
-) : TurbineTestContext<Model> by turbineTestContext,
+) : TurbineTestContext<State> by turbineTestContext,
   PresenterTestingScope<Event> by presenterTestingScope
 
 interface PresenterTestingScope<Event> {

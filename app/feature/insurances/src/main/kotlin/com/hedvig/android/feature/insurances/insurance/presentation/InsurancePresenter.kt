@@ -57,7 +57,7 @@ internal data class InsuranceUiState(
   )
 
   companion object {
-    val InitialState = InsuranceUiState(
+    val initialState = InsuranceUiState(
       insuranceCards = persistentListOf(),
       crossSells = persistentListOf(),
       showNotificationBadge = false,
@@ -75,15 +75,11 @@ internal class InsurancePresenter(
 ) : MoleculePresenter<InsuranceScreenEvent, InsuranceUiState> {
   @Composable
   override fun MoleculePresenterScope<InsuranceScreenEvent>.present(
-    seed: InsuranceUiState,
+    lastState: InsuranceUiState,
   ): InsuranceUiState {
     var insuranceData by remember {
       mutableStateOf<InsuranceData>(
-        InsuranceData(
-          insuranceCards = seed.insuranceCards,
-          crossSells = seed.crossSells,
-          quantityOfCancelledInsurances = seed.quantityOfCancelledInsurances,
-        ),
+        InsuranceData.fromUiState(lastState),
       )
     }
     var isLoading by remember { mutableStateOf(true) }
@@ -92,7 +88,7 @@ internal class InsurancePresenter(
 
     val showNotificationBadge by crossSellCardNotificationBadgeService
       .showNotification()
-      .collectAsState(seed.showNotificationBadge)
+      .collectAsState(lastState.showNotificationBadge)
 
     CollectEvents { event ->
       when (event) {
@@ -193,6 +189,14 @@ private data class InsuranceData(
   val quantityOfCancelledInsurances: Int,
 ) {
   companion object {
+    fun fromUiState(uiState: InsuranceUiState): InsuranceData {
+      return InsuranceData(
+        insuranceCards = uiState.insuranceCards,
+        crossSells = uiState.crossSells,
+        quantityOfCancelledInsurances = uiState.quantityOfCancelledInsurances,
+      )
+    }
+
     val Empty: InsuranceData = InsuranceData(
       insuranceCards = persistentListOf(),
       crossSells = persistentListOf(),

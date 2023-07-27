@@ -92,13 +92,13 @@ internal fun InsuranceDestination(
   openChat: () -> Unit,
   imageLoader: ImageLoader,
 ) {
-  val uiState: InsuranceUiState by viewModel.models.collectAsStateWithLifecycle()
+  val uiState: InsuranceUiState by viewModel.uiState.collectAsStateWithLifecycle()
   val lifecycleOwner = LocalLifecycleOwner.current
   val currentViewModel by rememberUpdatedState(viewModel)
   DisposableEffect(lifecycleOwner) {
     val observer = LifecycleEventObserver { _, event ->
       if (event == Lifecycle.Event.ON_PAUSE) {
-        currentViewModel.take(InsuranceScreenEvent.MarkCardCrossSellsAsSeen)
+        currentViewModel.emit(InsuranceScreenEvent.MarkCardCrossSellsAsSeen)
       }
     }
     lifecycleOwner.lifecycle.addObserver(observer)
@@ -108,12 +108,12 @@ internal fun InsuranceDestination(
   }
   DisposableEffect(Unit) {
     onDispose {
-      currentViewModel.take(InsuranceScreenEvent.MarkCardCrossSellsAsSeen)
+      currentViewModel.emit(InsuranceScreenEvent.MarkCardCrossSellsAsSeen)
     }
   }
   InsuranceScreen(
     uiState = uiState,
-    reload = { viewModel.take(InsuranceScreenEvent.RetryLoading) },
+    reload = { viewModel.emit(InsuranceScreenEvent.RetryLoading) },
     onInsuranceCardClick = onInsuranceCardClick,
     onCrossSellClick = onCrossSellClick,
     navigateToCancelledInsurances = navigateToCancelledInsurances,
