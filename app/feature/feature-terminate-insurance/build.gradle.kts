@@ -2,8 +2,8 @@ plugins {
   id("hedvig.android.ktlint")
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
-  @Suppress("DSL_SCOPE_VIOLATION")
   alias(libs.plugins.serialization)
+  alias(libs.plugins.squareSortDependencies)
 }
 
 android {
@@ -11,19 +11,6 @@ android {
 }
 
 dependencies {
-  implementation(projects.apolloCore)
-  implementation(projects.apolloOctopusPublic)
-  implementation(projects.authAndroid)
-  implementation(projects.coreCommonPublic)
-  implementation(projects.coreCommonAndroidPublic)
-  implementation(projects.coreDatastorePublic)
-  implementation(projects.coreDesignSystem)
-  implementation(projects.coreResources)
-  implementation(projects.coreUi)
-  implementation(projects.navigationCore)
-  implementation(projects.navigationActivity)
-  implementation(projects.navigationComposeTyped)
-
   implementation(libs.accompanist.navigationAnimation)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.material3.windowSizeClass)
@@ -40,4 +27,16 @@ dependencies {
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.slimber)
   implementation(libs.timber)
+  implementation(projects.apolloCore)
+  implementation(projects.apolloOctopusPublic)
+  implementation(projects.authAndroid)
+  implementation(projects.coreCommonAndroidPublic)
+  implementation(projects.coreCommonPublic)
+  implementation(projects.coreDatastorePublic)
+  implementation(projects.coreDesignSystem)
+  implementation(projects.coreResources)
+  implementation(projects.coreUi)
+  implementation(projects.navigationActivity)
+  implementation(projects.navigationComposeTyped)
+  implementation(projects.navigationCore)
 }

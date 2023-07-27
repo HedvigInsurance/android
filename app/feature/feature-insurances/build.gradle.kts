@@ -3,6 +3,7 @@ plugins {
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
   alias(libs.plugins.serialization)
+  alias(libs.plugins.squareSortDependencies)
 }
 
 android {
@@ -11,11 +12,26 @@ android {
 }
 
 dependencies {
+  implementation(libs.androidx.compose.material)
+  implementation(libs.androidx.compose.material3)
+  implementation(libs.androidx.lifecycle.compose)
+  implementation(libs.apollo.normalizedCache)
+  implementation(libs.arrow.core)
+  implementation(libs.arrow.fx)
+  implementation(libs.assertK)
+  implementation(libs.coil.coil)
+  implementation(libs.coil.compose)
+  implementation(libs.junit)
+  implementation(libs.koin.compose)
+  implementation(libs.koin.core)
+  implementation(libs.kotlinx.immutable.collections)
+  implementation(libs.kotlinx.serialization.core)
+  implementation(libs.slimber)
   implementation(projects.apolloCore)
   implementation(projects.apolloGiraffePublic)
   implementation(projects.apolloOctopusPublic)
-  implementation(projects.coreCommonPublic)
   implementation(projects.coreCommonAndroidPublic)
+  implementation(projects.coreCommonPublic)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
@@ -25,32 +41,14 @@ dependencies {
   implementation(projects.languageCore)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
-  implementation(projects.navigationCore)
   implementation(projects.navigationComposeTyped)
+  implementation(projects.navigationCore)
   implementation(projects.notificationBadgeDataPublic)
-
-  testImplementation(projects.moleculeTest)
-  testImplementation(projects.notificationBadgeDataFake)
-
-  implementation(libs.androidx.compose.material) // for pull to refresh
-  implementation(libs.androidx.compose.material3)
-  implementation(libs.androidx.lifecycle.compose)
-  implementation(libs.apollo.normalizedCache)
-  implementation(libs.arrow.core)
-  implementation(libs.arrow.fx)
-  implementation(libs.coil.coil)
-  implementation(libs.coil.compose)
-  implementation(libs.koin.compose)
-  implementation(libs.koin.core)
-  implementation(libs.kotlinx.immutable.collections)
-  implementation(libs.kotlinx.serialization.core)
-  implementation(libs.slimber)
-
-  implementation(libs.assertK)
-  implementation(libs.junit)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
   testImplementation(libs.turbine)
+  testImplementation(projects.moleculeTest)
+  testImplementation(projects.notificationBadgeDataFake)
 }

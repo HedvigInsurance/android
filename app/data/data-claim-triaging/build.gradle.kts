@@ -2,6 +2,7 @@ plugins {
   id("hedvig.android.ktlint")
   id("hedvig.android.library")
   alias(libs.plugins.serialization)
+  alias(libs.plugins.squareSortDependencies)
 }
 
 android {
@@ -9,9 +10,8 @@ android {
 }
 
 dependencies {
-  implementation(projects.apolloOctopusPublic)
-  implementation(projects.navigationComposeTyped)
-
   implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
+  implementation(projects.apolloOctopusPublic)
+  implementation(projects.navigationComposeTyped)
 }

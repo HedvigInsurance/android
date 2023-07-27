@@ -4,6 +4,7 @@ plugins {
   id("hedvig.android.library.compose")
   id("kotlin-parcelize")
   alias(libs.plugins.serialization)
+  alias(libs.plugins.squareSortDependencies)
 }
 
 android {
@@ -15,27 +16,6 @@ android {
 }
 
 dependencies {
-  implementation(projects.apolloCore)
-  implementation(projects.apolloGiraffePublic)
-  implementation(projects.audioPlayer)
-  implementation(projects.authAndroid)
-  implementation(projects.coreCommonPublic)
-  implementation(projects.coreCommonAndroidPublic)
-  implementation(projects.coreDesignSystem)
-  implementation(projects.coreResources)
-  implementation(projects.coreUi)
-  implementation(projects.dataTravelCertificate)
-  implementation(projects.hanalyticsCore)
-  implementation(projects.hanalyticsFeatureFlagsPublic)
-  implementation(projects.languageCore)
-  implementation(projects.marketCore)
-  implementation(projects.navigationCore)
-  implementation(projects.navigationActivity)
-  implementation(projects.navigationComposeTyped)
-
-  testImplementation(projects.apolloGiraffeTest)
-  testImplementation(projects.hanalyticsFeatureFlagsTest)
-
   implementation(libs.accompanist.pagerIndicators)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material)
@@ -57,8 +37,27 @@ dependencies {
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.materialComponents)
   implementation(libs.moneta)
+  implementation(projects.apolloCore)
+  implementation(projects.apolloGiraffePublic)
+  implementation(projects.audioPlayer)
+  implementation(projects.authAndroid)
+  implementation(projects.coreCommonAndroidPublic)
+  implementation(projects.coreCommonPublic)
+  implementation(projects.coreDesignSystem)
+  implementation(projects.coreResources)
+  implementation(projects.coreUi)
+  implementation(projects.dataTravelCertificate)
+  implementation(projects.hanalyticsCore)
+  implementation(projects.hanalyticsFeatureFlagsPublic)
+  implementation(projects.languageCore)
+  implementation(projects.marketCore)
+  implementation(projects.navigationActivity)
+  implementation(projects.navigationComposeTyped)
+  implementation(projects.navigationCore)
 
   testImplementation(libs.assertK)
-  testImplementation(libs.junit)
   testImplementation(libs.coroutines.test)
+  testImplementation(libs.junit)
+  testImplementation(projects.apolloGiraffeTest)
+  testImplementation(projects.hanalyticsFeatureFlagsTest)
 }

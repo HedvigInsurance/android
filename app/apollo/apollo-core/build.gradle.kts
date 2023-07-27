@@ -2,11 +2,10 @@
 plugins {
   id("hedvig.android.library")
   id("hedvig.android.ktlint")
+  alias(libs.plugins.squareSortDependencies)
 }
 
 dependencies {
-  implementation(projects.coreCommonPublic)
-
   api(libs.apollo.api)
   api(libs.apollo.runtime)
   api(libs.arrow.core)
@@ -14,6 +13,7 @@ dependencies {
   api(libs.okhttp.core)
 
   implementation(libs.apollo.normalizedCache)
+  implementation(projects.coreCommonPublic)
 }
 
 android {

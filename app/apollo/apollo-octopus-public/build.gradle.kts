@@ -2,16 +2,17 @@ plugins {
   id("hedvig.android.apollo")
   id("hedvig.android.library")
   id("hedvig.android.ktlint")
+  alias(libs.plugins.squareSortDependencies)
 }
 
 dependencies {
-  implementation(projects.coreCommonPublic)
-
   api(libs.apollo.api)
   api(libs.kotlinx.datetime)
+
   implementation(libs.apollo.adapters)
   implementation(libs.apollo.runtime)
   implementation(libs.koin.core)
+  implementation(projects.coreCommonPublic)
 }
 
 android {

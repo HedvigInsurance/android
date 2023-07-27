@@ -5,6 +5,7 @@ plugins {
   id("hedvig.android.ktlint")
   alias(libs.plugins.molecule)
   alias(libs.plugins.serialization)
+  alias(libs.plugins.squareSortDependencies)
 }
 
 android {
@@ -16,11 +17,6 @@ android {
 }
 
 dependencies {
-  implementation(projects.coreDesignSystem)
-  implementation(projects.coreResources)
-  implementation(projects.coreIcons)
-  implementation(projects.apolloOctopusPublic)
-
   api(libs.androidx.compose.foundation)
   api(libs.androidx.compose.material3)
   api(libs.arrow.core)
@@ -38,4 +34,8 @@ dependencies {
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.slimber)
+  implementation(projects.apolloOctopusPublic)
+  implementation(projects.coreDesignSystem)
+  implementation(projects.coreIcons)
+  implementation(projects.coreResources)
 }
