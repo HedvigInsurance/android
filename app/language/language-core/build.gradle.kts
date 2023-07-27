@@ -4,10 +4,10 @@ plugins {
 }
 
 dependencies {
-  api(projects.app.apollo.giraffe)
-  api(projects.app.market.marketCore)
+  api(projects.apolloGiraffePublic)
+  api(projects.marketCore)
 
-  implementation(projects.app.core.common)
+  implementation(projects.coreCommonPublic)
 
   implementation(libs.androidx.other.appCompat)
   implementation(libs.androidx.other.preference)

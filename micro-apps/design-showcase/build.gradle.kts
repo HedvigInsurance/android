@@ -23,9 +23,9 @@ android {
 }
 
 dependencies {
-  implementation(projects.app.core.designSystem)
-  implementation(projects.app.core.icons)
-  implementation(projects.app.core.ui)
+  implementation(projects.coreDesignSystem)
+  implementation(projects.coreIcons)
+  implementation(projects.coreUi)
 
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.foundationLayout)

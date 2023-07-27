@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-  api(projects.app.molecule.moleculePublic)
+  api(projects.moleculePublic)
 
   implementation(libs.androidx.lifecycle.viewModel)
   implementation(libs.coroutines.core)

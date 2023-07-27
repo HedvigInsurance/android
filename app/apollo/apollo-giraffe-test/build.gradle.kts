@@ -1,3 +1,4 @@
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
   id("hedvig.android.library")
   id("hedvig.android.ktlint")
@@ -5,9 +6,10 @@ plugins {
 
 dependencies {
   implementation(projects.apolloGiraffePublic)
-  implementation(libs.adyen)
+
+  api(libs.apollo.api)
 }
 
 android {
-  namespace = "com.hedvig.lib.testdata"
+  namespace = "com.hedvig.android.apollo.core"
 }

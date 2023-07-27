@@ -4,9 +4,9 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.app.auth.authEventCore)
-  implementation(projects.app.core.common)
-  implementation(projects.app.core.datastore)
+  implementation(projects.authEventCore)
+  implementation(projects.coreCommonPublic)
+  implementation(projects.coreDatastorePublic)
 
   implementation(libs.androidx.other.startup)
   implementation(libs.androidx.other.workManager)

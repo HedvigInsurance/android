@@ -6,7 +6,7 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.app.core.common)
+  implementation(projects.coreCommonPublic)
 
   api(libs.hAnalytics)
   implementation(libs.coroutines.core)
