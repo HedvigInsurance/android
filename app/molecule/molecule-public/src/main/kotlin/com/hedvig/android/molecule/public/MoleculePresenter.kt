@@ -4,13 +4,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import kotlinx.coroutines.flow.Flow
 
-fun interface MoleculePresenter<Event, Model> {
+fun interface MoleculePresenter<Event, State> {
   @Composable
-  fun MoleculePresenterScope<Event>.present(seed: Model): Model
+  fun MoleculePresenterScope<Event>.present(lastState: State): State
 }
 
 class MoleculePresenterScope<Event>(
-  val events: Flow<Event>,
+  private val events: Flow<Event>,
 ) {
   @Composable
   fun CollectEvents(block: suspend (Event) -> Unit) {
