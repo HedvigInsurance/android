@@ -467,7 +467,7 @@ private val numberActionSetModule = module {
 }
 
 private val referralsModule = module {
-  viewModel<ReferralsViewModel> { ReferralsViewModel(get(), get()) }
+  viewModel<ReferralsViewModel> { ReferralsViewModel(get(), get(), get()) }
   viewModel<ReferralsActivatedViewModel> { ReferralsActivatedViewModelImpl(get()) }
   viewModel<ReferralsEditCodeViewModel> { ReferralsEditCodeViewModelImpl(get()) }
   single<GetReferralsInformationUseCase> { GetReferralsInformationUseCase(get(giraffeClient), get()) }

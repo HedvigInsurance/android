@@ -48,14 +48,7 @@ class ReferralsEditCodeViewModelImpl(
         return@launch
       }
 
-      if (response.getOrNull()?.hasErrors() == true) {
-        _data.value = ViewState.Error
-        return@launch
-      }
 
-      val data = response.getOrNull()?.data ?: return@launch
-
-      _data.value = ViewState.Success(data)
     }
   }
 }
