@@ -143,13 +143,9 @@ class BankIdLoginViewModel(
 }
 
 sealed interface BankIdLoginViewState {
-  object Loading : BankIdLoginViewState {
-    override fun toString(): String = "Loading"
-  }
+  data object Loading : BankIdLoginViewState
 
-  data class Error(val message: String) : BankIdLoginViewState {
-    override fun toString(): String = "Error: $message"
-  }
+  data class Error(val message: String) : BankIdLoginViewState
 
   data class HandlingBankId(
     val autoStartToken: String,
