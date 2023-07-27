@@ -77,9 +77,9 @@ internal class InsurancePresenterTest {
       getCrossSellsUseCase,
       FakeCrossSellCardNotificationBadgeService(),
     )
-    presenter.test(InsuranceUiState.InitialState) {
+    presenter.test(InsuranceUiState.initialState) {
       awaitItem().also { uiState ->
-        assertThat(uiState).isEqualTo(InsuranceUiState.InitialState)
+        assertThat(uiState).isEqualTo(InsuranceUiState.initialState)
         assertThat(uiState.loading).isTrue()
       }
 
@@ -108,7 +108,7 @@ internal class InsurancePresenterTest {
       getCrossSellsUseCase,
       FakeCrossSellCardNotificationBadgeService(),
     )
-    presenter.test(InsuranceUiState.InitialState) {
+    presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
 
       getInsuranceContractsUseCase.contracts.add(validContracts)
@@ -130,7 +130,7 @@ internal class InsurancePresenterTest {
       getCrossSellsUseCase,
       FakeCrossSellCardNotificationBadgeService(),
     )
-    presenter.test(InsuranceUiState.InitialState) {
+    presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
 
       getInsuranceContractsUseCase.errorMessages.add(ErrorMessage())
@@ -152,7 +152,7 @@ internal class InsurancePresenterTest {
       getCrossSellsUseCase,
       FakeCrossSellCardNotificationBadgeService(),
     )
-    presenter.test(InsuranceUiState.InitialState) {
+    presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
 
       getInsuranceContractsUseCase.errorMessages.add(ErrorMessage())
@@ -191,7 +191,7 @@ internal class InsurancePresenterTest {
       FakeCrossSellCardNotificationBadgeService(),
     )
     val allContracts = validContracts + terminatedContracts
-    presenter.test(InsuranceUiState.InitialState) {
+    presenter.test(InsuranceUiState.initialState) {
       skipItems(1)
 
       getInsuranceContractsUseCase.contracts.add(allContracts)
@@ -222,12 +222,12 @@ internal class InsurancePresenterTest {
       getCrossSellsUseCase,
       crossSellCardNotificationBadgeService,
     )
-    presenter.test(InsuranceUiState.InitialState) {
-      assertThat(awaitItem().showNotificationBadge).isEqualTo(InsuranceUiState.InitialState.showNotificationBadge)
+    presenter.test(InsuranceUiState.initialState) {
+      assertThat(awaitItem().showNotificationBadge).isEqualTo(InsuranceUiState.initialState.showNotificationBadge)
 
       getInsuranceContractsUseCase.contracts.add(validContracts)
       getCrossSellsUseCase.crossSells.add(validCrossSells)
-      assertThat(awaitItem().showNotificationBadge).isEqualTo(InsuranceUiState.InitialState.showNotificationBadge)
+      assertThat(awaitItem().showNotificationBadge).isEqualTo(InsuranceUiState.initialState.showNotificationBadge)
 
       crossSellCardNotificationBadgeService.showNotification.add(true)
       assertThat(awaitItem().showNotificationBadge).isEqualTo(true)

@@ -16,10 +16,10 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlin.time.Duration.Companion.seconds
 
-abstract class MoleculeViewModel<Event, Model>(
-  initialState: Model,
-  presenter: MoleculePresenter<Event, Model>,
-  val sharingStarted: SharingStarted = SharingStarted.WhileSubscribed(5.seconds),
+abstract class MoleculeViewModel<Event, State>(
+  initialState: State,
+  presenter: MoleculePresenter<Event, State>,
+  sharingStarted: SharingStarted = SharingStarted.WhileSubscribed(5.seconds),
 ) : ViewModel() {
   private val scope = CoroutineScope(viewModelScope.coroutineContext + AndroidUiDispatcher.Main)
 
@@ -27,26 +27,26 @@ abstract class MoleculeViewModel<Event, Model>(
   // small enough to surface issues if they get backed up for some reason.
   private val events = MutableSharedFlow<Event>(extraBufferCapacity = 20)
 
-  private var seed: Model = initialState
+  private var lastState: State = initialState
 
-  fun take(event: Event) {
+  fun emit(event: Event) {
     if (!events.tryEmit(event)) {
       error("Event buffer overflow on event:$event.")
     }
   }
 
-  val models: StateFlow<Model> by lazy(LazyThreadSafetyMode.NONE) {
+  val uiState: StateFlow<State> by lazy(LazyThreadSafetyMode.NONE) {
     val moleculePresenterScope = MoleculePresenterScope(events)
-    moleculeFlow<Model>(RecompositionMode.ContextClock) {
+    moleculeFlow<State>(RecompositionMode.ContextClock) {
       with(presenter) {
-        moleculePresenterScope.present(seed)
+        moleculePresenterScope.present(lastState)
       }
-    }.onEach { model: Model ->
-      seed = model
+    }.onEach { newState: State ->
+      lastState = newState
     }.stateIn(
       scope = scope,
       started = sharingStarted,
-      initialValue = seed,
+      initialValue = lastState,
     )
   }
 }
