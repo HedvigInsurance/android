@@ -30,7 +30,3 @@ dependencies {
   testImplementation(projects.coreCommonTest)
   testImplementation(projects.coreDatastoreTest)
 }
-
-android {
-  namespace = "com.hedvig.android.auth"
-}

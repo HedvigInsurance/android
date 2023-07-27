@@ -5,10 +5,6 @@ plugins {
   alias(libs.plugins.squareSortDependencies)
 }
 
-android {
-  namespace = "com.hedvig.android.audio.player"
-}
-
 dependencies {
   implementation(libs.androidx.compose.animation)
   implementation(libs.androidx.compose.foundation)

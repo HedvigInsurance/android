@@ -15,7 +15,3 @@ dependencies {
   implementation(libs.apollo.normalizedCache)
   implementation(projects.coreCommonPublic)
 }
-
-android {
-  namespace = "com.hedvig.android.apollo.core"
-}

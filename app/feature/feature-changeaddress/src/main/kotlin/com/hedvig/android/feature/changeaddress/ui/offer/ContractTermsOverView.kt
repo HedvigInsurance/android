@@ -20,7 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.R
+import com.hedvig.android.core.design.system.R
 import com.hedvig.android.core.designsystem.newtheme.SquircleShape
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 

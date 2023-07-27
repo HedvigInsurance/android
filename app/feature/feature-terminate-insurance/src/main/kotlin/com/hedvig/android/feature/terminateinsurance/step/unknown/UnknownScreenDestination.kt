@@ -42,7 +42,7 @@ private fun UnknownScreenScreen(
     title = "",
     headerText = stringResource(R.string.EMBARK_UPDATE_APP_TITLE),
     bodyText = stringResource(R.string.EMBARK_UPDATE_APP_BODY),
-    icon = ImageVector.vectorResource(com.hedvig.android.core.designsystem.R.drawable.ic_warning_triangle),
+    icon = ImageVector.vectorResource(com.hedvig.android.core.design.system.R.drawable.ic_warning_triangle),
     navigateUp = navigateUp,
   ) {
     Column {

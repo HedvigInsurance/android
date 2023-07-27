@@ -73,7 +73,7 @@ private fun InsuranceDeletionScreen(
         insuranceDisplayName,
       ),
       bodyText = uiState.disclaimer,
-      icon = ImageVector.vectorResource(com.hedvig.android.core.designsystem.R.drawable.ic_warning_triangle),
+      icon = ImageVector.vectorResource(com.hedvig.android.core.design.system.R.drawable.ic_warning_triangle),
       navigateUp = navigateBack,
     ) {
       Column {

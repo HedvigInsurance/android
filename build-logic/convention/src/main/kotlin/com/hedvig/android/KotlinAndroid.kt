@@ -34,6 +34,8 @@ internal fun Project.configureKotlinAndroid(
     kotlinOptions {
       configureKotlinOptions(this@configureKotlinAndroid)
     }
+
+    configureAutomaticNamespace(this)
   }
 
   dependencies {
@@ -47,6 +49,23 @@ internal fun Project.configureKotlinAndroid(
 internal fun Project.configureKotlin(kotlinCompile: KotlinCompile) {
   kotlinCompile.kotlinOptions {
     this.configureKotlinOptions(this@configureKotlin)
+  }
+}
+
+/**
+ * Takes the project name and creates an aptly named namespace definition for it. For example
+ * project name: :notification-badge-data-fake
+ * results in: com.hedvig.android.notification.badge.data.fake
+ */
+private fun Project.configureAutomaticNamespace(commonExtension: CommonExtension<*, *, *, *>) {
+  with(commonExtension) {
+    if (path.contains(".") || path.contains("_")) error("Module names should just contain `-` between words")
+    if (namespace == null) {
+      namespace = "com.hedvig.android" + path
+        .replace(":", ".") // Change the ':' suffix into a `.` to go after com.hedvig.android
+        .replace("-", ".") // Change all '-' in the module name into '.'
+        .replace("public", "pub") // "public" breaks the generateRFile agp task, "pub" should suffice
+    }
   }
 }
 

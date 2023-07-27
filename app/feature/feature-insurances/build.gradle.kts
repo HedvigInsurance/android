@@ -7,7 +7,6 @@ plugins {
 }
 
 android {
-  namespace = "com.hedvig.android.feature.insurances"
   testOptions.unitTests.isReturnDefaultValues = true
 }
 

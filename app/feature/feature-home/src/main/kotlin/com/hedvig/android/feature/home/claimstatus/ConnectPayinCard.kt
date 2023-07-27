@@ -51,7 +51,7 @@ internal fun ConnectPayinCard(
         modifier = Modifier.padding(horizontal = 16.dp),
       ) {
         Icon(
-          painter = painterResource(com.hedvig.android.core.designsystem.R.drawable.ic_warning_triangle),
+          painter = painterResource(com.hedvig.android.core.design.system.R.drawable.ic_warning_triangle),
           contentDescription = null,
         )
         Spacer(Modifier.width(16.dp))

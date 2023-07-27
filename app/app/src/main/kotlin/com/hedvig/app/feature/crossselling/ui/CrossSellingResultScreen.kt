@@ -78,7 +78,7 @@ private fun InformationSection(
 ) {
   val icon: Painter = when (crossSellingResult) {
     is CrossSellingResult.Success -> painterResource(
-      com.hedvig.android.core.designsystem.R.drawable.ic_checkmark_in_circle,
+      com.hedvig.android.core.design.system.R.drawable.ic_checkmark_in_circle,
     )
     CrossSellingResult.Error -> painterResource(R.drawable.ic_x_in_circle)
   }

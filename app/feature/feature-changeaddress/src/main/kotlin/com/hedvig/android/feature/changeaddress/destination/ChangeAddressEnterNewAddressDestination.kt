@@ -334,7 +334,7 @@ private fun MovingDateButton(
         Spacer(Modifier.width(16.dp))
         Icon(
           painter = painterResource(
-            id = com.hedvig.android.core.designsystem.R.drawable.ic_drop_down_indicator,
+            id = com.hedvig.android.core.design.system.R.drawable.ic_drop_down_indicator,
           ),
           contentDescription = null,
           modifier = Modifier.size(16.dp),

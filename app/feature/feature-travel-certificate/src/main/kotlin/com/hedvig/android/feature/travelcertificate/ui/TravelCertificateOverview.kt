@@ -80,7 +80,7 @@ internal fun TravelCertificateOverview(
       DrawableInfoCard(
         title = stringResource(id = R.string.travel_certificate_travel_certificate_ready),
         text = stringResource(id = R.string.travel_certificate_travel_certificate_ready_description),
-        icon = painterResource(id = com.hedvig.android.core.designsystem.R.drawable.ic_checkmark_success),
+        icon = painterResource(id = com.hedvig.android.core.design.system.R.drawable.ic_checkmark_success),
         iconColor = MaterialTheme.colorScheme.primary,
         colors = CardDefaults.outlinedCardColors(
           containerColor = MaterialTheme.colorScheme.surface,

@@ -50,7 +50,3 @@ dependencies {
   testImplementation(libs.turbine)
   testImplementation(projects.coreCommonTest)
 }
-
-android {
-  namespace = "com.hedvig.android.feature.odyssey"
-}

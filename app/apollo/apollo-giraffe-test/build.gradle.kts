@@ -10,7 +10,3 @@ dependencies {
 
   implementation(projects.apolloGiraffePublic)
 }
-
-android {
-  namespace = "com.hedvig.android.apollo.core"
-}

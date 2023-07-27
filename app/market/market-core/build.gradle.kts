@@ -11,7 +11,3 @@ dependencies {
   implementation(projects.coreCommonPublic)
   implementation(projects.coreResources)
 }
-
-android {
-  namespace = "com.hedvig.android.market"
-}

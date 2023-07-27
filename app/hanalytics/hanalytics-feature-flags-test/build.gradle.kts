@@ -10,7 +10,3 @@ dependencies {
   implementation(libs.turbine)
   implementation(projects.hanalyticsFeatureFlagsPublic)
 }
-
-android {
-  namespace = "com.hedvig.android.hanalytics.featureflags.test"
-}

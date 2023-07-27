@@ -21,10 +21,6 @@ dependencies {
   implementation(projects.hanalyticsCore)
 }
 
-android {
-  namespace = "com.hedvig.android.hanalytics.android"
-}
-
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java).configureEach {
   kotlinOptions {
     freeCompilerArgs = freeCompilerArgs + "-Xopt-in=com.hedvig.android.hanalytics.InternalHanalyticsApi"

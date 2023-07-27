@@ -6,10 +6,6 @@ plugins {
   alias(libs.plugins.squareSortDependencies)
 }
 
-android {
-  namespace = "com.hedvig.android.feature.claimtriaging"
-}
-
 dependencies {
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.lifecycle.compose)

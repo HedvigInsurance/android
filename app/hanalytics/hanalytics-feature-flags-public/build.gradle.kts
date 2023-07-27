@@ -10,7 +10,3 @@ dependencies {
   implementation(projects.hanalyticsCore)
   implementation(projects.marketCore)
 }
-
-android {
-  namespace = "com.hedvig.android.hanalytics.featureflags"
-}

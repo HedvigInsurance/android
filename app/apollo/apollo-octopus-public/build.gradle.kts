@@ -15,10 +15,6 @@ dependencies {
   implementation(projects.coreCommonPublic)
 }
 
-android {
-  namespace = "com.hedvig.android.apollo.octopus"
-}
-
 apollo {
   generateSourcesDuringGradleSync.set(false)
   service("octopus") {
