@@ -13,7 +13,3 @@ dependencies {
   implementation(libs.koin.core)
   implementation(projects.coreCommonPublic)
 }
-
-android {
-  namespace = "com.hedvig.android.language"
-}

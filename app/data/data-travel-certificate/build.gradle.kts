@@ -4,10 +4,6 @@ plugins {
   alias(libs.plugins.squareSortDependencies)
 }
 
-android {
-  namespace = "com.hedvig.android.data.travelcertificate"
-}
-
 dependencies {
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)

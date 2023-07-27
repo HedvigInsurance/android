@@ -6,10 +6,6 @@ plugins {
   alias(libs.plugins.squareSortDependencies)
 }
 
-android {
-  namespace = "com.hedvig.android.feature.terminateinsurance"
-}
-
 dependencies {
   implementation(libs.accompanist.navigationAnimation)
   implementation(libs.androidx.compose.material3)

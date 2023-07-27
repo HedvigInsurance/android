@@ -4,10 +4,6 @@ plugins {
   alias(libs.plugins.squareSortDependencies)
 }
 
-android {
-  namespace = "com.hedvig.android.navigation.activity"
-}
-
 dependencies {
   implementation(projects.coreCommonAndroidPublic)
 }

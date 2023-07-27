@@ -5,10 +5,6 @@ plugins {
   alias(libs.plugins.squareSortDependencies)
 }
 
-android {
-  namespace = "com.hedvig.android.data.claimflow"
-}
-
 dependencies {
   implementation(libs.androidx.compose.runtime)
   implementation(libs.apollo.runtime)

@@ -8,7 +8,3 @@ dependencies {
   implementation(libs.adyen)
   implementation(projects.apolloGiraffePublic)
 }
-
-android {
-  namespace = "com.hedvig.lib.testdata"
-}

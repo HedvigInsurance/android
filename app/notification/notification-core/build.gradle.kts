@@ -4,10 +4,6 @@ plugins {
   alias(libs.plugins.squareSortDependencies)
 }
 
-android {
-  namespace = "com.hedvig.android.notification.core"
-}
-
 dependencies {
   implementation(platform(libs.firebase.bom))
 

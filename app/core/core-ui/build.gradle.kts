@@ -9,8 +9,6 @@ plugins {
 }
 
 android {
-  namespace = "com.hedvig.android.core.ui"
-
   buildFeatures {
     viewBinding = true
   }

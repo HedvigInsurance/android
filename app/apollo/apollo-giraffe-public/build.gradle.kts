@@ -15,10 +15,6 @@ dependencies {
   implementation(projects.coreCommonPublic)
 }
 
-android {
-  namespace = "com.hedvig.android.apollo.giraffe"
-}
-
 apollo {
   generateSourcesDuringGradleSync.set(false)
   service("giraffe") {

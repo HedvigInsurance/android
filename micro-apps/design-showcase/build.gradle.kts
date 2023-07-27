@@ -6,8 +6,6 @@ plugins {
 }
 
 android {
-  namespace = "com.hedvig.android.design.showcase"
-
   defaultConfig {
     applicationId = "com.hedvig.android.design.showcase"
 

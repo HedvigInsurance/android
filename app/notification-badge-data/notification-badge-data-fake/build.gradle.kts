@@ -8,7 +8,3 @@ dependencies {
   implementation(libs.turbine)
   implementation(projects.notificationBadgeDataPublic)
 }
-
-android {
-  namespace = "com.hedvig.android.notification.badge.data.test"
-}

@@ -18,8 +18,6 @@ dependencies {
 }
 
 android {
-  namespace = "com.hedvig.android.core.designsystem"
-
   defaultConfig {
     vectorDrawables.useSupportLibrary = true
   }

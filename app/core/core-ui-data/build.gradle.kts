@@ -7,10 +7,6 @@ plugins {
   alias(libs.plugins.squareSortDependencies)
 }
 
-android {
-  namespace = "com.hedvig.android.core.uidata"
-}
-
 dependencies {
   implementation(libs.androidx.compose.runtime)
   implementation(libs.kotlinx.serialization.core)

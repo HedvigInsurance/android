@@ -9,7 +9,3 @@ dependencies {
   implementation(projects.apolloGiraffePublic)
   implementation(projects.apolloOctopusPublic)
 }
-
-android {
-  namespace = "com.hedvig.android.apollo.di"
-}

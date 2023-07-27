@@ -18,7 +18,3 @@ dependencies {
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
 }
-
-android {
-  namespace = "com.hedvig.android.feature.businessmodel"
-}

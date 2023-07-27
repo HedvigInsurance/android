@@ -10,7 +10,3 @@ dependencies {
   implementation(projects.authCore)
   implementation(projects.navigationActivity)
 }
-
-android {
-  namespace = "com.hedvig.android.auth.android"
-}

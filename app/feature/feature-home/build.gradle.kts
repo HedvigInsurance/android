@@ -8,8 +8,6 @@ plugins {
 }
 
 android {
-  namespace = "com.hedvig.android.feature.home"
-
   buildFeatures {
     viewBinding = true
   }

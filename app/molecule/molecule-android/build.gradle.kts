@@ -11,7 +11,3 @@ dependencies {
   implementation(libs.androidx.lifecycle.viewModel)
   implementation(libs.coroutines.core)
 }
-
-android {
-  namespace = "com.hedvig.android.molecule.android"
-}

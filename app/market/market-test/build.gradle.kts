@@ -7,7 +7,3 @@ plugins {
 dependencies {
   implementation(projects.marketCore)
 }
-
-android {
-  namespace = "com.hedvig.android.market.test"
-}

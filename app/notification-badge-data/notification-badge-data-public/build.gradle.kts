@@ -22,7 +22,3 @@ dependencies {
   testImplementation(libs.turbine)
   testImplementation(projects.hanalyticsFeatureFlagsTest)
 }
-
-android {
-  namespace = "com.hedvig.android.notification.badge.data"
-}

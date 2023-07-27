@@ -7,7 +7,3 @@ plugins {
 dependencies {
   implementation(projects.languageCore)
 }
-
-android {
-  namespace = "com.hedvig.android.language.test"
-}

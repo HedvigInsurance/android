@@ -6,10 +6,6 @@ plugins {
   alias(libs.plugins.squareSortDependencies)
 }
 
-android {
-  namespace = "com.hedvig.android.core.icons"
-}
-
 dependencies {
   implementation(libs.androidx.compose.materialIconsCore)
   implementation(libs.androidx.compose.uiCore)
