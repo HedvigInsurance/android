@@ -62,6 +62,14 @@ import com.hedvig.android.core.icons.hedvig.normal.Payments
 import com.hedvig.android.core.icons.hedvig.normal.Settings
 import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
 import hedvig.resources.R
+import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
+import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
+import com.hedvig.android.core.ui.getLocale
+import com.hedvig.app.R
+import com.hedvig.app.util.apollo.format
+import com.hedvig.app.util.extensions.startChat
+import org.javamoney.moneta.Money
+import java.math.BigDecimal
 
 @Composable
 internal fun ProfileDestination(

@@ -20,9 +20,9 @@ import giraffe.ChargeHistoryQuery
 import giraffe.PaymentQuery
 import giraffe.type.Charge
 import giraffe.type.PayoutMethodStatus
+import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 import javax.money.MonetaryAmount
-import kotlinx.coroutines.flow.Flow
 
 class PaymentRepository(
   private val apolloClient: ApolloClient,
@@ -64,9 +64,9 @@ class PaymentRepository(
           charges = it.chargeHistory.map {
             ChargeHistory.Charge(
               amount = it.amount.fragments.monetaryAmountFragment.toMonetaryAmount(),
-              date = it.date
+              date = it.date,
             )
-          }
+          },
         )
       }
       .bind()
@@ -117,7 +117,7 @@ class PaymentRepository(
                 type = it.type,
               )
             },
-          payoutMethodStatus = it.activePayoutMethods?.status
+          payoutMethodStatus = it.activePayoutMethods?.status,
         )
       }
       .bind()
@@ -144,5 +144,4 @@ class PaymentRepository(
       val date: LocalDate,
     )
   }
-
 }

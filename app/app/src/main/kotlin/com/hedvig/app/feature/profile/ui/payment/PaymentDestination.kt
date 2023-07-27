@@ -321,7 +321,6 @@ private fun AddDiscount(
   }
 }
 
-
 @Composable
 private fun TotalAmount(uiState: PaymentUiState) {
   Row(
@@ -426,7 +425,7 @@ fun PaymentHistory(onClick: () -> Unit) {
 @Composable
 @HedvigPreview
 private fun PreviewPaymentScreen() {
-  HedvigTheme(useNewColorScheme = true) {
+  HedvigTheme {
     Surface {
       PaymentScreen(
         uiState = PaymentUiState(
@@ -466,4 +465,3 @@ private fun PreviewPaymentScreen() {
     }
   }
 }
-

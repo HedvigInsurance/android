@@ -119,8 +119,8 @@ data class MyInfoUiState(
   val isSubmitting: Boolean = false,
   val canSubmit: Boolean = false,
 ) {
-  val isInputValid = member?.email?.errorMessageRes == null
-    && member?.phoneNumber?.errorMessageRes == null
+  val isInputValid = member?.email?.errorMessageRes == null &&
+    member?.phoneNumber?.errorMessageRes == null
 
   fun validateInput(): MyInfoUiState {
     return copy(
@@ -143,13 +143,13 @@ data class MyInfoUiState(
     )
   }
 
-  private fun MyInfoMember.hasValidEmail() = email.isPresent
-    && email.input?.isBlank() == false
-    && validateEmail(email.input!!).isSuccessful
+  private fun MyInfoMember.hasValidEmail() = email.isPresent &&
+    email.input?.isBlank() == false &&
+    validateEmail(email.input!!).isSuccessful
 
-  private fun MyInfoMember.hasValidPhoneNumber() = phoneNumber.isPresent
-    && phoneNumber.input?.isBlank() == false
-    && validatePhoneNumber(phoneNumber.input!!).isSuccessful
+  private fun MyInfoMember.hasValidPhoneNumber() = phoneNumber.isPresent &&
+    phoneNumber.input?.isBlank() == false &&
+    validatePhoneNumber(phoneNumber.input!!).isSuccessful
 }
 
 data class MyInfoMember(

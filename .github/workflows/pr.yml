@@ -143,7 +143,7 @@ jobs:
         run: ./gradlew licenseReleaseReport --no-configuration-cache --continue
         continue-on-error: true
       - name: Build
-        run: "./gradlew app:app:assembleDebug"
+        run: "./gradlew :app:assembleDebug"
       - uses: r0adkll/sign-android-release@v1
         name: Sign app APK
         id: sign_app

@@ -16,6 +16,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navOptions
 import com.datadog.android.rum.GlobalRum
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.hedvig.android.feature.insurances.navigation.insurancesBottomNavPermittedDestinations
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.navigation.core.AppDestination
@@ -241,10 +242,12 @@ private fun NavDestination?.toTopLevelAppDestination(): AppDestination.TopLevelD
 /**
  * Special routes, which despite not being top level should still show the navigation bars.
  */
+private val bottomNavPermittedDestinations: List<String> = buildList {
+  add(createRoutePattern<AppDestination.BusinessModel>())
+  add(createRoutePattern<AppDestination.Eurobonus>())
+  addAll(insurancesBottomNavPermittedDestinations)
+}
+
 private fun NavDestination?.isInListOfNonTopLevelNavBarPermittedDestinations(): Boolean {
-  return when (this?.route) {
-    createRoutePattern<AppDestination.BusinessModel>() -> true
-    createRoutePattern<AppDestination.Eurobonus>() -> true
-    else -> false
-  }
+  return this?.route in bottomNavPermittedDestinations
 }

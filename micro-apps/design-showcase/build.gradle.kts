@@ -2,11 +2,10 @@ plugins {
   id("hedvig.android.application")
   id("hedvig.android.application.compose")
   id("hedvig.android.ktlint")
+  alias(libs.plugins.squareSortDependencies)
 }
 
 android {
-  namespace = "com.hedvig.android.design.showcase"
-
   defaultConfig {
     applicationId = "com.hedvig.android.design.showcase"
 
@@ -23,10 +22,6 @@ android {
 }
 
 dependencies {
-  implementation(projects.app.core.designSystem)
-  implementation(projects.app.core.icons)
-  implementation(projects.app.core.ui)
-
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.foundationLayout)
   implementation(libs.androidx.compose.material)
@@ -35,4 +30,7 @@ dependencies {
   implementation(libs.androidx.compose.materialIconsExtended)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.other.activityCompose)
+  implementation(projects.coreDesignSystem)
+  implementation(projects.coreIcons)
+  implementation(projects.coreUi)
 }

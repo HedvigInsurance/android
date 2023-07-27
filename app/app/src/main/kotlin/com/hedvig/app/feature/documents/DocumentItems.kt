@@ -5,7 +5,6 @@ import android.os.Parcelable
 import androidx.annotation.StringRes
 import giraffe.fragment.InsuranceTermFragment
 import kotlinx.parcelize.Parcelize
-import octopus.CrossSalesQuery
 
 sealed class DocumentItems {
 
@@ -25,12 +24,6 @@ sealed class DocumentItems {
 
     companion object {
       fun from(insuranceTerm: InsuranceTermFragment) = Document(
-        title = insuranceTerm.displayName,
-        subtitle = null,
-        uriString = insuranceTerm.url,
-      )
-
-      fun from(insuranceTerm: CrossSalesQuery.Data.CurrentMember.CrossSell.ProductVariant.Document) = Document(
         title = insuranceTerm.displayName,
         subtitle = null,
         uriString = insuranceTerm.url,

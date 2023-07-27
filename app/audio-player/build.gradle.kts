@@ -2,17 +2,10 @@ plugins {
   id("hedvig.android.ktlint")
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
-}
-
-android {
-  namespace = "com.hedvig.android.audio.player"
+  alias(libs.plugins.squareSortDependencies)
 }
 
 dependencies {
-  implementation(projects.app.core.commonAndroid)
-  implementation(projects.app.core.designSystem)
-  implementation(projects.app.core.resources)
-
   implementation(libs.androidx.compose.animation)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material)
@@ -22,6 +15,9 @@ dependencies {
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.lifecycle.runtime)
   implementation(libs.slimber)
+  implementation(projects.coreCommonAndroidPublic)
+  implementation(projects.coreDesignSystem)
+  implementation(projects.coreResources)
 
   testImplementation(libs.assertK)
   testImplementation(libs.junit)

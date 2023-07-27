@@ -38,7 +38,7 @@ class ConnectPaymentResultFragment : Fragment(R.layout.connect_payment_result_fr
 
       if (success) {
         connectPaymentViewModel.onPaymentSuccess()
-        icon.setImageResource(com.hedvig.android.core.designsystem.R.drawable.ic_checkmark_in_circle)
+        icon.setImageResource(com.hedvig.android.core.design.system.R.drawable.ic_checkmark_in_circle)
         title.setText(
           when (payinType) {
             ConnectPayinType.ADYEN -> hedvig.resources.R.string.pay_in_confirmation_headline
@@ -51,7 +51,7 @@ class ConnectPaymentResultFragment : Fragment(R.layout.connect_payment_result_fr
           connectPaymentViewModel.close()
         }
       } else {
-        icon.setImageResource(com.hedvig.android.core.designsystem.R.drawable.ic_warning_triangle)
+        icon.setImageResource(com.hedvig.android.core.design.system.R.drawable.ic_warning_triangle)
         title.setText(hedvig.resources.R.string.pay_in_error_headline)
         body.setText(
           when (payinType) {
