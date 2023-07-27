@@ -8,8 +8,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.RetryChannel
 import com.hedvig.android.core.common.android.i
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
-import com.hedvig.android.feature.insurances.data.isTerminated
-import giraffe.InsuranceContractsQuery
+import com.hedvig.android.feature.insurances.data.InsuranceContract
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.SharingStarted
@@ -31,7 +30,7 @@ internal class TerminatedContractsViewModel(
       val terminatedContracts = getInsuranceContractsUseCase
         .invoke()
         .bind()
-        .filter(InsuranceContractsQuery.Contract::isTerminated)
+        .filter(InsuranceContract::isTerminated)
       ensure(terminatedContracts.isNotEmpty()) {
         ErrorMessage("", NoSuchElementException())
       }

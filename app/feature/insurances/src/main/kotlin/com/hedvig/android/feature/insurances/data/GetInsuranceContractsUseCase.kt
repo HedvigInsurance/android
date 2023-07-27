@@ -10,12 +10,17 @@ import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.language.LanguageService
 import giraffe.InsuranceContractsQuery
+import giraffe.type.TypeOfContract
 
-internal class GetInsuranceContractsUseCase(
+internal interface GetInsuranceContractsUseCase {
+  suspend fun invoke(): Either<ErrorMessage, List<InsuranceContract>>
+}
+
+internal class GetInsuranceContractsUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,
-) {
-  suspend fun invoke(): Either<ErrorMessage, List<InsuranceContractsQuery.Contract>> {
+) : GetInsuranceContractsUseCase {
+  override suspend fun invoke(): Either<ErrorMessage, List<InsuranceContract>> {
     return either {
       val insuranceQueryData = apolloClient
         .query(InsuranceContractsQuery(languageService.getGraphQLLocale()))
@@ -23,7 +28,31 @@ internal class GetInsuranceContractsUseCase(
         .safeExecute()
         .toEither(::ErrorMessage)
         .bind()
-      insuranceQueryData.contracts
+      insuranceQueryData.contracts.map(InsuranceContractsQuery.Contract::toContract)
     }
   }
+}
+
+data class InsuranceContract(
+  val id: String,
+  val displayName: String,
+  val statusPills: List<String>,
+  val detailPills: List<String>,
+  val isTerminated: Boolean,
+  val typeOfContract: TypeOfContract,
+)
+
+private fun InsuranceContractsQuery.Contract.isTerminated(): Boolean {
+  return this.status.fragments.contractStatusFragment.asTerminatedStatus != null
+}
+
+private fun InsuranceContractsQuery.Contract.toContract(): InsuranceContract {
+  return InsuranceContract(
+    id = id,
+    displayName = displayName,
+    statusPills = statusPills,
+    detailPills = detailPills,
+    isTerminated = isTerminated(),
+    typeOfContract = typeOfContract,
+  )
 }

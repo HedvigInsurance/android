@@ -77,6 +77,8 @@ import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.core.ui.insurance.GradientType
 import com.hedvig.android.core.ui.insurance.toDrawable
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
+import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceScreenEvent
+import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceUiState
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -90,13 +92,13 @@ internal fun InsuranceDestination(
   openChat: () -> Unit,
   imageLoader: ImageLoader,
 ) {
-  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  val uiState: InsuranceUiState by viewModel.uiState.collectAsStateWithLifecycle()
   val lifecycleOwner = LocalLifecycleOwner.current
   val currentViewModel by rememberUpdatedState(viewModel)
   DisposableEffect(lifecycleOwner) {
     val observer = LifecycleEventObserver { _, event ->
       if (event == Lifecycle.Event.ON_PAUSE) {
-        currentViewModel.take(InsuranceScreenEvent.MarkCardCrossSellsAsSeen)
+        currentViewModel.emit(InsuranceScreenEvent.MarkCardCrossSellsAsSeen)
       }
     }
     lifecycleOwner.lifecycle.addObserver(observer)
@@ -106,12 +108,12 @@ internal fun InsuranceDestination(
   }
   DisposableEffect(Unit) {
     onDispose {
-      currentViewModel.take(InsuranceScreenEvent.MarkCardCrossSellsAsSeen)
+      currentViewModel.emit(InsuranceScreenEvent.MarkCardCrossSellsAsSeen)
     }
   }
   InsuranceScreen(
     uiState = uiState,
-    reload = { viewModel.take(InsuranceScreenEvent.RetryLoading) },
+    reload = { viewModel.emit(InsuranceScreenEvent.RetryLoading) },
     onInsuranceCardClick = onInsuranceCardClick,
     onCrossSellClick = onCrossSellClick,
     navigateToCancelledInsurances = navigateToCancelledInsurances,
@@ -220,9 +222,11 @@ private fun ColumnScope.InsuranceScreenContent(
       topText = insuranceCard.title,
       bottomText = insuranceCard.subtitle,
       imageLoader = imageLoader,
-      modifier = Modifier.padding(horizontal = 16.dp).clickable {
-        onInsuranceCardClick(insuranceCard.contractId)
-      },
+      modifier = Modifier
+        .padding(horizontal = 16.dp)
+        .clickable {
+          onInsuranceCardClick(insuranceCard.contractId)
+        },
       fallbackPainter = insuranceCard.gradientType.toDrawable(context)?.let { drawable ->
         BitmapPainter(drawable.toBitmap(10, 10).asImageBitmap())
       } ?: ColorPainter(Color.Black.copy(alpha = 0.7f)),
@@ -300,7 +304,11 @@ private fun CrossSellItem(
     Spacer(Modifier.width(16.dp))
     HedvigContainedSmallButton(
       text = stringResource(R.string.cross_sell_get_price),
-      onClick = { onCrossSellClick(crossSell.uri) },
+      onClick = {
+        onCrossSellClick(
+          if (crossSell.storeUrl.isBlank()) Uri.EMPTY else Uri.parse(crossSell.storeUrl),
+        )
+      },
       colors = ButtonDefaults.elevatedButtonColors(
         containerColor = MaterialTheme.colorScheme.typeContainer,
         contentColor = MaterialTheme.colorScheme.onTypeContainer,
@@ -370,7 +378,9 @@ private fun TerminatedContractsButton(
   ) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier.padding(16.dp).fillMaxWidth(),
+      modifier = Modifier
+        .padding(16.dp)
+        .fillMaxWidth(),
     ) {
       Text(text)
     }
@@ -396,9 +406,10 @@ private fun PreviewInsuranceScreen() {
           ),
           crossSells = persistentListOf(
             InsuranceUiState.CrossSell(
+              id = "1",
               title = "Pet".repeat(5),
               subtitle = "Unlimited FirstVet calls".repeat(2),
-              uri = Uri.EMPTY,
+              storeUrl = "",
             ),
           ),
           showNotificationBadge = false,

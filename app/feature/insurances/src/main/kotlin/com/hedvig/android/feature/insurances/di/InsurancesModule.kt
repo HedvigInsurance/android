@@ -5,7 +5,9 @@ import com.hedvig.android.apollo.giraffe.di.giraffeClient
 import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.feature.insurances.InsuranceViewModel
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
+import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCaseImpl
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
+import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCaseImpl
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailViewModel
 import com.hedvig.android.feature.insurances.insurancedetail.GetContractDetailsUseCase
 import com.hedvig.android.feature.insurances.insurancedetail.coverage.GetContractCoverageUseCase
@@ -31,13 +33,13 @@ val insurancesModule = module {
     ContractDetailViewModel(contractId, get(), get())
   }
   single<GetInsuranceContractsUseCase> {
-    GetInsuranceContractsUseCase(
+    GetInsuranceContractsUseCaseImpl(
       get<ApolloClient>(giraffeClient),
       get<LanguageService>(),
     )
   }
   single<GetCrossSellsUseCase> {
-    GetCrossSellsUseCase(get<ApolloClient>(octopusClient))
+    GetCrossSellsUseCaseImpl(get<ApolloClient>(octopusClient))
   }
   single<GetContractCoverageUseCase> {
     GetContractCoverageUseCase(get<ApolloClient>(octopusClient))

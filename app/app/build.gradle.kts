@@ -148,7 +148,7 @@ dependencies {
   implementation(projects.app.navigation.navigationComposeTyped)
   implementation(projects.app.notification.firebase)
   implementation(projects.app.notification.notificationCore)
-  implementation(projects.app.notificationBadgeData)
+  implementation(projects.app.notificationBadgeData.public)
   implementation(projects.app.theme)
 
   testImplementation(projects.app.apollo.giraffeTest)
