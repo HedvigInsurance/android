@@ -1,8 +1,5 @@
-@file:Suppress("UnstableApiUsage")
-
 import com.project.starter.easylauncher.filter.ColorRibbonFilter
 
-@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once https://youtrack.jetbrains.com/issue/KTIJ-19369 is fixed
 plugins {
   id("hedvig.android.application")
   id("hedvig.android.application.compose")

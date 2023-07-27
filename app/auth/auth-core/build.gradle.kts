@@ -1,4 +1,3 @@
-@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
   id("hedvig.android.ktlint")
   id("hedvig.android.library")
