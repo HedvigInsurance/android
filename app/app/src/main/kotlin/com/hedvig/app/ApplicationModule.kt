@@ -21,6 +21,7 @@ import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.hedvig.android.apollo.di.apolloClientModule
 import com.hedvig.android.apollo.giraffe.di.giraffeClient
 import com.hedvig.android.apollo.octopus.di.octopusClient
+import com.hedvig.android.appinformation.di.appInformationModule
 import com.hedvig.android.auth.AccessTokenProvider
 import com.hedvig.android.auth.di.authModule
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
@@ -686,6 +687,7 @@ val applicationModule = module {
       adyenModule,
       apolloClientModule,
       apolloClientUrlsModule,
+      appInformationModule,
       authModule,
       authRepositoryModule,
       businessModelModule,
