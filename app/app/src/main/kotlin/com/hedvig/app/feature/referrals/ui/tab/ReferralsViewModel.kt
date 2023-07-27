@@ -12,12 +12,8 @@ import giraffe.fragment.ReferralFragment
 import java.util.*
 import javax.money.MonetaryAmount
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.WhileSubscribed
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.launch
 
 class ReferralsViewModel(
@@ -27,11 +23,7 @@ class ReferralsViewModel(
 ) : ViewModel() {
 
   private val _uiState = MutableStateFlow(ReferralsUiState())
-  val uiState: StateFlow<ReferralsUiState> = _uiState.stateIn(
-    viewModelScope,
-    SharingStarted.WhileSubscribed(5.seconds),
-    ReferralsUiState(),
-  )
+  val uiState: StateFlow<ReferralsUiState> = _uiState
 
   init {
     loadReferralData()
@@ -98,14 +90,6 @@ class ReferralsViewModel(
         },
       )
     }
-  }
-
-  fun showEditCode() {
-    _uiState.update { it.copy(showEditCode = true) }
-  }
-
-  fun hideEditCode() {
-    _uiState.update { it.copy(showEditCode = false) }
   }
 }
 

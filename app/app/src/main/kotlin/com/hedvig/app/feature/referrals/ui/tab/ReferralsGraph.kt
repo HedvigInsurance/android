@@ -42,7 +42,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -121,11 +124,9 @@ private fun ReferralsDestination(
       false -> ReferralsScreen(
         uiState = uiState,
         reload = viewModel::reload,
+        onSubmitCode = viewModel::onSubmitCode,
         onCodeChanged = viewModel::onCodeChanged,
         languageService = languageService,
-        onSubmitCode = viewModel::onSubmitCode,
-        showEditCode = viewModel::showEditCode,
-        hideEditCode = viewModel::hideEditCode,
       )
     }
   }
@@ -137,8 +138,6 @@ private fun ReferralsScreen(
   reload: () -> Unit,
   onSubmitCode: (String) -> Unit,
   onCodeChanged: (String) -> Unit,
-  hideEditCode: () -> Unit,
-  showEditCode: () -> Unit,
   languageService: LanguageService,
 ) {
   Box(
@@ -179,20 +178,17 @@ private fun ReferralsScreen(
             intent.type = "text/plain"
           }
         },
-        openReferralsInformation = { referralTermsUrl: String, referralIncentive: MonetaryAmount ->
-          context.startActivity(
-            ReferralsInformationActivity.newInstance(
-              context = context,
-              termsUrl = referralTermsUrl,
-              incentive = referralIncentive,
-            ),
-          )
-        },
         onCodeChanged = onCodeChanged,
         onSubmitCode = onSubmitCode,
-        showEditCode = showEditCode,
-        hideEditCode = hideEditCode,
-      )
+      ) { referralTermsUrl: String, referralIncentive: MonetaryAmount ->
+        context.startActivity(
+          ReferralsInformationActivity.newInstance(
+            context = context,
+            termsUrl = referralTermsUrl,
+            incentive = referralIncentive,
+          ),
+        )
+      }
     }
   }
 }
@@ -205,8 +201,6 @@ private fun ForeverScreen(
   onShareCodeClick: (code: String, incentive: MonetaryAmount) -> Unit,
   onCodeChanged: (String) -> Unit,
   onSubmitCode: (String) -> Unit,
-  hideEditCode: () -> Unit,
-  showEditCode: () -> Unit,
   openReferralsInformation: (String, MonetaryAmount) -> Unit,
 ) {
   val systemBarInsetTopDp = with(LocalDensity.current) {
@@ -219,23 +213,28 @@ private fun ForeverScreen(
   )
   val incentive = uiState.incentive
 
-  val sheetState = rememberModalBottomSheetState()
+  val sheetState = rememberModalBottomSheetState(true)
   val coroutineScope = rememberCoroutineScope()
-
+  var showEditBottomSheet by rememberSaveable { mutableStateOf(false) }
   LaunchedEffect(uiState.showEditCode) {
     coroutineScope.launch {
       if (uiState.showEditCode) {
-        sheetState.show()
+        sheetState.expand()
       } else {
         sheetState.hide()
       }
+      showEditBottomSheet = uiState.showEditCode
     }
   }
 
-  if (uiState.showEditCode) {
+  if (showEditBottomSheet) {
     ModalBottomSheet(
+      containerColor = MaterialTheme.colorScheme.background,
       onDismissRequest = {
-        hideEditCode()
+        coroutineScope.launch {
+          sheetState.hide()
+          showEditBottomSheet = false
+        }
       },
       // todo use "https://github.com/c5inco/smoother" for a top only squircle shape here
       sheetState = sheetState,
@@ -275,8 +274,7 @@ private fun ForeverScreen(
         onClick = {
           coroutineScope.launch {
             sheetState.hide()
-          }.invokeOnCompletion {
-            hideEditCode()
+            showEditBottomSheet = false
           }
         },
         modifier = Modifier.padding(horizontal = 16.dp),
@@ -312,9 +310,8 @@ private fun ForeverScreen(
           text = stringResource(id = hedvig.resources.R.string.referrals_change_change_code),
           onClick = {
             coroutineScope.launch {
-              sheetState.expand()
-            }.invokeOnCompletion {
-              showEditCode()
+              sheetState.hide()
+              showEditBottomSheet = true
             }
           },
           modifier = Modifier.padding(horizontal = 16.dp),
@@ -443,7 +440,9 @@ fun ColumnScope.ReferralsContent(
       Icon(
         imageVector = Icons.Hedvig.Copy,
         contentDescription = "Copy",
-        modifier = Modifier.align(Alignment.Bottom).padding(bottom = 8.dp)
+        modifier = Modifier
+          .align(Alignment.Bottom)
+          .padding(bottom = 8.dp),
       )
     }
   }
