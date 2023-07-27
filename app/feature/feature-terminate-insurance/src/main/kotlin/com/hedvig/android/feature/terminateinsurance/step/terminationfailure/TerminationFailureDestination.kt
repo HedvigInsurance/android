@@ -51,7 +51,7 @@ private fun TerminationFailureScreen(
     title = "",
     headerText = stringResource(R.string.TERMINATION_NOT_SUCCESSFUL_TITLE),
     bodyText = errorMessage.message ?: stringResource(R.string.something_went_wrong),
-    icon = ImageVector.vectorResource(com.hedvig.android.core.designsystem.R.drawable.ic_warning_triangle),
+    icon = ImageVector.vectorResource(com.hedvig.android.core.design.system.R.drawable.ic_warning_triangle),
     navigateUp = navigateUp,
   ) {
     Column {

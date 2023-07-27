@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.R
+import com.hedvig.android.core.design.system.R
 import com.hedvig.android.core.designsystem.component.card.HedvigInfoCard
 import com.hedvig.android.core.designsystem.material3.infoContainer
 import com.hedvig.android.core.designsystem.material3.infoElement

@@ -62,8 +62,9 @@ private fun Project.configureAutomaticNamespace(commonExtension: CommonExtension
     if (path.contains(".") || path.contains("_")) error("Module names should just contain `-` between words")
     if (namespace == null) {
       namespace = "com.hedvig.android" + path
-        .replace(":", ".")
-        .replace("-", ".")
+        .replace(":", ".") // Change the ':' suffix into a `.` to go after com.hedvig.android
+        .replace("-", ".") // Change all '-' in the module name into '.'
+        .replace("public", "pub") // "public" breaks the generateRFile agp task, "pub" should suffice
     }
   }
 }

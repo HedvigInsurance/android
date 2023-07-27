@@ -41,7 +41,7 @@ internal fun FailedAudioPlayerCard(
       modifier = Modifier.padding(horizontal = 16.dp),
     ) {
       Icon(
-        painter = painterResource(com.hedvig.android.core.designsystem.R.drawable.ic_warning_triangle),
+        painter = painterResource(com.hedvig.android.core.design.system.R.drawable.ic_warning_triangle),
         contentDescription = null,
       )
       Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {

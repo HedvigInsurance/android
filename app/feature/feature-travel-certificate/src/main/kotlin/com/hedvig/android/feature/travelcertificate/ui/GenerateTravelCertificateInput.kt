@@ -154,7 +154,7 @@ internal fun GenerateTravelCertificateInput(
           Text(stringResource(id = R.string.travel_certificate_me))
           if (uiState.includeMember) {
             Icon(
-              painter = painterResource(id = com.hedvig.android.core.designsystem.R.drawable.ic_checkmark),
+              painter = painterResource(id = com.hedvig.android.core.design.system.R.drawable.ic_checkmark),
               tint = MaterialTheme.colorScheme.onSurface,
               contentDescription = "include me",
               modifier = Modifier.size(18.dp),
@@ -325,7 +325,7 @@ private fun MovingDateButton(
         Spacer(Modifier.width(16.dp))
         Icon(
           painter = painterResource(
-            id = com.hedvig.android.core.designsystem.R.drawable.ic_drop_down_indicator,
+            id = com.hedvig.android.core.design.system.R.drawable.ic_drop_down_indicator,
           ),
           tint = MaterialTheme.colorScheme.onInfoElement,
           contentDescription = null,

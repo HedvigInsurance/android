@@ -95,7 +95,7 @@ private fun PillAndBasicInfo(movingDate: String?) {
           )
           Spacer(modifier = Modifier.width(4.dp))
           Icon(
-            painter = painterResource(id = com.hedvig.android.core.designsystem.R.drawable.ic_info),
+            painter = painterResource(id = com.hedvig.android.core.design.system.R.drawable.ic_info),
             contentDescription = null,
             modifier = Modifier.size(16.dp).padding(1.dp),
           )
@@ -127,7 +127,7 @@ private fun QuoteDetailsAndPrice(
           },
         )
         Icon(
-          painter = painterResource(com.hedvig.android.core.designsystem.R.drawable.ic_drop_down_indicator),
+          painter = painterResource(com.hedvig.android.core.design.system.R.drawable.ic_drop_down_indicator),
           contentDescription = null,
           tint = MaterialTheme.colorScheme.outlineVariant,
           modifier = Modifier
