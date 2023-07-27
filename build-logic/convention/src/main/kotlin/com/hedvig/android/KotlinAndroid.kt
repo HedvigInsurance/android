@@ -1,6 +1,5 @@
 package com.hedvig.android
 
-import com.android.build.api.dsl.CommonExtension
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
@@ -14,7 +13,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
  * Configure base Kotlin with Android options
  */
 internal fun Project.configureKotlinAndroid(
-  commonExtension: CommonExtension<*, *, *, *>,
+  commonExtension: AndroidCommonExtension,
 ) {
   val libs = the<LibrariesForLibs>()
 
@@ -57,7 +56,7 @@ internal fun Project.configureKotlin(kotlinCompile: KotlinCompile) {
  * project name: :notification-badge-data-fake
  * results in: com.hedvig.android.notification.badge.data.fake
  */
-private fun Project.configureAutomaticNamespace(commonExtension: CommonExtension<*, *, *, *>) {
+private fun Project.configureAutomaticNamespace(commonExtension: AndroidCommonExtension) {
   with(commonExtension) {
     if (path.contains(".") || path.contains("_")) error("Module names should just contain `-` between words")
     if (namespace == null) {
@@ -92,6 +91,6 @@ private fun KotlinJvmOptions.configureKotlinOptions(
   jvmTarget = JavaVersion.VERSION_17.toString()
 }
 
-private fun CommonExtension<*, *, *, *>.kotlinOptions(block: KotlinJvmOptions.() -> Unit) {
+private fun AndroidCommonExtension.kotlinOptions(block: KotlinJvmOptions.() -> Unit) {
   (this as ExtensionAware).extensions.configure("kotlinOptions", block)
 }
