@@ -10,7 +10,8 @@ dependencies {
   api(libs.arrow.core)
   api(libs.coroutines.core)
   api(libs.okhttp.core)
-
+  implementation(libs.moneta)
+  implementation(projects.apolloGiraffePublic)
   implementation(libs.apollo.normalizedCache)
   implementation(projects.coreCommonPublic)
 }

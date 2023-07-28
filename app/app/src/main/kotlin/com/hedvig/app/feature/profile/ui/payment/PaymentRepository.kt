@@ -15,10 +15,9 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.app.feature.offer.model.Campaign
 import com.hedvig.app.feature.offer.model.toIncentive
 import com.hedvig.app.feature.profile.data.PaymentMethod
-import com.hedvig.app.util.apollo.toMonetaryAmount
+import com.hedvig.android.apollo.toMonetaryAmount
 import giraffe.ChargeHistoryQuery
 import giraffe.PaymentQuery
-import giraffe.type.Charge
 import giraffe.type.PayoutMethodStatus
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate

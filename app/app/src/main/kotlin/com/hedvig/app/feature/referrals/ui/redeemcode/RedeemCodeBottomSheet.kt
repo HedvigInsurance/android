@@ -11,9 +11,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.android.core.common.android.QuoteCartId
+import com.hedvig.android.feature.forever.data.CampaignCode
 import com.hedvig.app.R
 import com.hedvig.app.databinding.PromotionCodeDialogBinding
-import com.hedvig.app.feature.offer.usecase.CampaignCode
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.hideKeyboard
 import com.hedvig.app.util.extensions.view.setHapticClickListener

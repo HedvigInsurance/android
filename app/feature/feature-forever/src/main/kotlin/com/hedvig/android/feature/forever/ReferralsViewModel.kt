@@ -1,11 +1,11 @@
-package com.hedvig.app.feature.referrals.ui.tab
+package com.hedvig.android.feature.forever
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.raise.either
+import com.hedvig.android.apollo.toMonetaryAmount
 import com.hedvig.android.language.LanguageService
-import com.hedvig.app.feature.referrals.data.ReferralsRepository
-import com.hedvig.app.util.apollo.toMonetaryAmount
+import com.hedvig.android.feature.forever.data.ReferralsRepository
 import giraffe.ReferralTermsQuery
 import giraffe.ReferralsQuery
 import giraffe.fragment.ReferralFragment

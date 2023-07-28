@@ -150,15 +150,9 @@ import com.hedvig.app.feature.profile.ui.payment.history.PaymentHistoryViewModel
 import com.hedvig.app.feature.profile.ui.tab.GetEurobonusStatusUseCase
 import com.hedvig.app.feature.profile.ui.tab.NetworkGetEurobonusStatusUseCase
 import com.hedvig.app.feature.profile.ui.tab.ProfileViewModel
-import com.hedvig.app.feature.referrals.data.RedeemReferralCodeRepository
-import com.hedvig.app.feature.referrals.data.ReferralsRepository
-import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedViewModel
-import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedViewModelImpl
-import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeViewModel
-import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeViewModelImpl
+import com.hedvig.android.feature.forever.data.ReferralsRepository
+import com.hedvig.android.feature.forever.di.foreverModule
 import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeViewModel
-import com.hedvig.app.feature.referrals.ui.tab.GetReferralsInformationUseCase
-import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModel
 import com.hedvig.app.feature.settings.ChangeLanguageUseCase
 import com.hedvig.app.feature.settings.SettingsViewModel
 import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignViewModel
@@ -181,6 +175,10 @@ import com.hedvig.authlib.AuthEnvironment
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.Callbacks
 import com.hedvig.authlib.NetworkAuthRepository
+import java.io.File
+import java.time.Clock
+import java.util.*
+import kotlin.math.pow
 import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -194,10 +192,6 @@ import org.koin.dsl.module
 import slimber.log.d
 import slimber.log.i
 import timber.log.Timber
-import java.io.File
-import java.time.Clock
-import java.util.Locale
-import kotlin.math.pow
 
 fun isDebug() = BuildConfig.APPLICATION_ID == "com.hedvig.dev.app" ||
   BuildConfig.APPLICATION_ID == "com.hedvig.test.app" ||
@@ -466,13 +460,6 @@ private val numberActionSetModule = module {
   viewModel { (data: NumberActionParams) -> NumberActionViewModel(data) }
 }
 
-private val referralsModule = module {
-  viewModel<ReferralsViewModel> { ReferralsViewModel(get(), get(), get()) }
-  viewModel<ReferralsActivatedViewModel> { ReferralsActivatedViewModelImpl(get()) }
-  viewModel<ReferralsEditCodeViewModel> { ReferralsEditCodeViewModelImpl(get()) }
-  single<GetReferralsInformationUseCase> { GetReferralsInformationUseCase(get(giraffeClient), get()) }
-}
-
 private val connectPaymentModule = module {
   viewModel { ConnectPaymentViewModel(get(), get(), get()) }
 }
@@ -523,11 +510,10 @@ private val serviceModule = module {
 private val repositoriesModule = module {
   single { ChatRepository(get<ApolloClient>(giraffeClient), get(), get()) }
   single { PayinStatusRepository(get<ApolloClient>(giraffeClient)) }
-  single { RedeemReferralCodeRepository(get<ApolloClient>(giraffeClient), get()) }
   single { UserRepository(get<ApolloClient>(giraffeClient)) }
   single { AdyenRepository(get<ApolloClient>(giraffeClient), get()) }
   single { EmbarkRepository(get<ApolloClient>(giraffeClient), get()) }
-  single { ReferralsRepository(get<ApolloClient>(giraffeClient)) }
+  single { ReferralsRepository(get<ApolloClient>(giraffeClient), get()) }
   single { LoggedInRepository(get<ApolloClient>(giraffeClient), get()) }
   single { TrustlyRepository(get<ApolloClient>(giraffeClient)) }
   single { GetMemberIdUseCase(get<ApolloClient>(giraffeClient)) }
@@ -708,6 +694,7 @@ val applicationModule = module {
       externalInsuranceModule,
       featureManagerModule,
       firebaseNotificationModule,
+      foreverModule,
       graphQLQueryModule,
       hAnalyticsAndroidModule,
       hAnalyticsModule,
@@ -725,7 +712,6 @@ val applicationModule = module {
       onboardingModule,
       paymentModule,
       profileModule,
-      referralsModule,
       repositoriesModule,
       serviceModule,
       sharedPreferencesModule,

@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.referrals.ui.tab
+package com.hedvig.android.feature.forever
 
 import arrow.core.Either
 import arrow.core.raise.either

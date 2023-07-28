@@ -1,4 +1,4 @@
-package com.hedvig.app.util.apollo
+package com.hedvig.android.apollo
 
 import giraffe.fragment.MonetaryAmountFragment
 import giraffe.type.Locale

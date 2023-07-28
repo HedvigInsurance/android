@@ -50,7 +50,7 @@ import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.home.ui.HowClaimsWorkDialog
 import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.profile.ui.tab.profileGraph
-import com.hedvig.app.feature.referrals.ui.tab.referralsGraph
+import com.hedvig.android.feature.forever.referralsGraph
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.startChat
