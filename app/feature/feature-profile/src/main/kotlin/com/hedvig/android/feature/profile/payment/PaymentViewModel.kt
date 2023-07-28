@@ -2,10 +2,9 @@ package com.hedvig.android.feature.profile.payment
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.language.LanguageService
-import com.hedvig.app.feature.profile.data.PaymentMethod
-import com.hedvig.android.feature.forever.data.ForeverRepository
 import com.hedvig.android.apollo.format
+import com.hedvig.android.data.forever.CampaignCode
+import com.hedvig.android.data.forever.ForeverRepository
 import com.hedvig.android.feature.profile.data.PaymentMethod
 import com.hedvig.android.language.LanguageService
 import giraffe.type.PayoutMethodStatus

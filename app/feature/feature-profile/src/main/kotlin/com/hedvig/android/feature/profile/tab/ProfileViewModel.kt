@@ -52,4 +52,3 @@ internal data class ProfileUiState(
   val errorMessage: String? = null,
   val isLoading: Boolean = false,
 )
-

@@ -25,7 +25,7 @@ import com.hedvig.android.feature.businessmodel.businessModelGraph
 import com.hedvig.android.feature.changeaddress.navigation.changeAddressGraph
 import com.hedvig.android.feature.claimtriaging.ClaimTriagingDestination
 import com.hedvig.android.feature.claimtriaging.claimTriagingDestinations
-import com.hedvig.android.feature.forever.referralsGraph
+import com.hedvig.android.feature.forever.navigation.foreverGraph
 import com.hedvig.android.feature.home.claims.pledge.HonestyPledgeBottomSheet
 import com.hedvig.android.feature.home.home.navigation.homeGraph
 import com.hedvig.android.feature.home.legacychangeaddress.LegacyChangeAddressActivity
@@ -52,7 +52,6 @@ import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.home.ui.HowClaimsWorkDialog
 import com.hedvig.app.feature.payment.connectPayinIntent
-import com.hedvig.android.feature.forever.navigation.foreverGraph
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.startChat

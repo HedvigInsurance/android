@@ -2,9 +2,9 @@ package com.hedvig.android.feature.profile.payment.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.language.LanguageService
-import com.hedvig.android.feature.profile.payment.PaymentRepository
 import com.hedvig.android.apollo.format
+import com.hedvig.android.feature.profile.payment.PaymentRepository
+import com.hedvig.android.language.LanguageService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update

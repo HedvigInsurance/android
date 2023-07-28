@@ -2,7 +2,6 @@ package com.hedvig.android.feature.profile.settings
 
 import android.content.Context
 import android.content.Intent
-import android.content.res.Resources
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings

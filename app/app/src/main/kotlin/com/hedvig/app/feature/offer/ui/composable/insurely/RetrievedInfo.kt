@@ -23,10 +23,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.apollo.format
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.feature.offer.ui.OfferItems
-import com.hedvig.android.apollo.format
 import com.hedvig.app.util.compose.preview.previewData
 import java.util.Locale
 import javax.money.MonetaryAmount

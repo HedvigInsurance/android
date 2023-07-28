@@ -17,7 +17,7 @@ val foreverModule = module {
   single {
     GetReferralsInformationUseCase(
       get(giraffeClient),
-      get()
+      get(),
     )
   }
 }

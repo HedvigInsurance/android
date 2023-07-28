@@ -1,8 +1,6 @@
 package com.hedvig.app.util.extensions
 
 import android.app.Activity
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
