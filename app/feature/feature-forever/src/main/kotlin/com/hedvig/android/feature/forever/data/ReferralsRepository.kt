@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.referrals.data
+package com.hedvig.android.feature.forever.data
 
 import arrow.core.Either
 import arrow.core.raise.either
@@ -6,11 +6,13 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.feature.forever.data.CampaignCode
 import com.hedvig.android.language.LanguageService
 import giraffe.RedeemReferralCodeMutation
 import giraffe.ReferralsQuery
 import giraffe.UpdateReferralCampaignCodeMutation
+
+@JvmInline
+value class CampaignCode(val code: String)
 
 class ReferralsRepository(
   private val apolloClient: ApolloClient,

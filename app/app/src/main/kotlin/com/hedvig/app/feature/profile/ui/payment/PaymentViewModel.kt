@@ -3,10 +3,10 @@ package com.hedvig.app.feature.profile.ui.payment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.language.LanguageService
-import com.hedvig.app.feature.offer.usecase.CampaignCode
 import com.hedvig.app.feature.profile.data.PaymentMethod
-import com.hedvig.app.feature.referrals.data.RedeemReferralCodeRepository
-import com.hedvig.app.util.apollo.format
+import com.hedvig.android.feature.forever.data.ReferralsRepository
+import com.hedvig.android.apollo.format
+import com.hedvig.android.feature.forever.data.CampaignCode
 import giraffe.type.PayoutMethodStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +16,7 @@ import java.time.LocalDate
 import java.util.Locale
 
 class PaymentViewModel(
-  private val redeemReferralCodeRepository: RedeemReferralCodeRepository,
+  private val referralsRepository: ReferralsRepository,
   private val paymentRepository: PaymentRepository,
   val languageService: LanguageService,
 ) : ViewModel() {
@@ -81,7 +81,7 @@ class PaymentViewModel(
   fun onDiscountCodeAdded() {
     viewModelScope.launch {
       val code = _uiState.value.discountCode ?: return@launch
-      redeemReferralCodeRepository.redeemReferralCode(code)
+      referralsRepository.redeemReferralCode(code)
         .fold(
           ifLeft = { error -> _uiState.update { it.copy(discountError = error.message) } },
           ifRight = { data -> loadPaymentData() },

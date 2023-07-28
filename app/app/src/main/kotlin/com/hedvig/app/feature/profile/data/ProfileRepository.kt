@@ -7,7 +7,7 @@ import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
-import com.hedvig.app.util.apollo.toMonetaryAmount
+import com.hedvig.android.apollo.toMonetaryAmount
 import giraffe.ProfileQuery
 import giraffe.type.DirectDebitStatus
 import octopus.MemberUpdateEmailMutation

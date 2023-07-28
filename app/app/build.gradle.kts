@@ -219,6 +219,7 @@ dependencies {
   implementation(projects.featureOdyssey)
   implementation(projects.featureTerminateInsurance)
   implementation(projects.featureTravelCertificate)
+  implementation(projects.featureForever)
   implementation(projects.hanalyticsAndroid)
   implementation(projects.hanalyticsCore)
   implementation(projects.hanalyticsFeatureFlagsPublic)

@@ -46,7 +46,7 @@ import com.hedvig.app.feature.offer.ui.composable.insurely.InsurelyCard
 import com.hedvig.app.feature.offer.ui.composable.variants.VariantButton
 import com.hedvig.app.feature.offer.ui.composable.variants.VariantHeader
 import com.hedvig.app.feature.table.generateTable
-import com.hedvig.app.util.apollo.format
+import com.hedvig.android.apollo.format
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.drawableAttr

@@ -57,8 +57,8 @@ import com.hedvig.android.core.icons.hedvig.normal.Waiting
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.hedvigSecondaryDateTimeFormatter
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
+import com.hedvig.android.feature.forever.data.CampaignCode
 import com.hedvig.android.market.Market
-import com.hedvig.app.feature.offer.usecase.CampaignCode
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel.PaymentUiState
 import hedvig.resources.R
 import java.time.LocalDate
@@ -75,7 +75,7 @@ internal fun PaymentDestination(
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-  AnimatedContent(targetState = uiState.isLoading) { loading ->
+  AnimatedContent(targetState = uiState.isLoading, label = "") { loading ->
     when (loading) {
       true -> HedvigFullScreenCenterAlignedProgress(show = uiState.isLoading)
       false -> PaymentScreen(

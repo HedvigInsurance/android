@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.language.LanguageService
 import com.hedvig.app.feature.profile.ui.payment.PaymentRepository
-import com.hedvig.app.util.apollo.format
+import com.hedvig.android.apollo.format
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update

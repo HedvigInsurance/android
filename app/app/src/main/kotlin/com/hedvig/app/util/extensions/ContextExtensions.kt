@@ -92,20 +92,6 @@ suspend fun Context.showKeyboardWithDelay(inputView: View?, delayDuration: Durat
 private fun Context.getSharedPreferences() =
   this.getSharedPreferences(SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE)
 
-fun Context.showShareSheet(@StringRes title: Int, configureClosure: ((Intent) -> Unit)?) =
-  showShareSheet(resources.getString(title), configureClosure)
-
-fun Context.showShareSheet(title: String, configureClosure: ((Intent) -> Unit)?) {
-  val intent = Intent().apply {
-    action = Intent.ACTION_SEND
-  }
-
-  configureClosure?.let { it(intent) }
-  startActivity(
-    Intent.createChooser(intent, title),
-  )
-}
-
 /**
  * Note: This extension will not accept an Application Context
  */
@@ -165,12 +151,6 @@ fun Context.showErrorDialog(message: String, positiveAction: () -> Unit) {
     .setMessage(message)
     .setPositiveButton(hedvig.resources.R.string.ALERT_OK) { _, _ -> positiveAction() }
     .show()
-}
-
-fun Context.copyToClipboard(
-  text: String,
-) {
-  getSystemService<ClipboardManager>()?.setPrimaryClip(ClipData.newPlainText(null, text))
 }
 
 fun Context.makeToast(
