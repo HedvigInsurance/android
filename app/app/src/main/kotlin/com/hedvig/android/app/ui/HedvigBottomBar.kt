@@ -36,7 +36,7 @@ internal fun HedvigBottomBar(
         TopLevelGraph.HOME -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.HOME>()
         TopLevelGraph.INSURANCE -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.INSURANCE>()
         TopLevelGraph.PROFILE -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.PROFILE>()
-        TopLevelGraph.REFERRALS -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.REFERRALS>()
+        TopLevelGraph.FOREVER -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.FOREVER>()
       }
     },
     modifier = modifier,
@@ -93,7 +93,7 @@ private fun PreviewHedvigBottomBar() {
         destinations = persistentSetOf(
           TopLevelGraph.HOME,
           TopLevelGraph.INSURANCE,
-          TopLevelGraph.REFERRALS,
+          TopLevelGraph.FOREVER,
           TopLevelGraph.PROFILE,
         ),
         destinationsWithNotifications = persistentSetOf(TopLevelGraph.INSURANCE),

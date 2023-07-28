@@ -50,7 +50,7 @@ class ReferralsNotificationSender(
         addNextIntentWithParentStack(
           LoggedInActivity.newInstance(
             context,
-            initialTab = TopLevelGraph.REFERRALS,
+            initialTab = TopLevelGraph.FOREVER,
           ),
         )
         addNextIntentWithParentStack(
@@ -85,7 +85,7 @@ class ReferralsNotificationSender(
         addNextIntentWithParentStack(
           LoggedInActivity.newInstance(
             context,
-            initialTab = TopLevelGraph.REFERRALS,
+            initialTab = TopLevelGraph.FOREVER,
           ),
         )
         addNextIntentWithParentStack(

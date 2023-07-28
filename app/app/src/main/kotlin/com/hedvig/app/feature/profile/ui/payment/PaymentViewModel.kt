@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.language.LanguageService
 import com.hedvig.app.feature.profile.data.PaymentMethod
-import com.hedvig.android.feature.forever.data.ReferralsRepository
+import com.hedvig.android.feature.forever.data.ForeverRepository
 import com.hedvig.android.apollo.format
 import com.hedvig.android.feature.forever.data.CampaignCode
 import giraffe.type.PayoutMethodStatus
@@ -16,7 +16,7 @@ import java.time.LocalDate
 import java.util.Locale
 
 class PaymentViewModel(
-  private val referralsRepository: ReferralsRepository,
+  private val referralsRepository: ForeverRepository,
   private val paymentRepository: PaymentRepository,
   val languageService: LanguageService,
 ) : ViewModel() {

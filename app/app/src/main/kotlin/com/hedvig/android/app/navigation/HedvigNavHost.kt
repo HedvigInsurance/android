@@ -50,7 +50,7 @@ import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.home.ui.HowClaimsWorkDialog
 import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.profile.ui.tab.profileGraph
-import com.hedvig.android.feature.forever.referralsGraph
+import com.hedvig.android.feature.forever.navigation.foreverGraph
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.startChat
@@ -209,7 +209,7 @@ internal fun HedvigNavHost(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       imageLoader = imageLoader,
     )
-    referralsGraph(
+    foreverGraph(
       languageService = languageService,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     )

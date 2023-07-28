@@ -150,7 +150,7 @@ import com.hedvig.app.feature.profile.ui.payment.history.PaymentHistoryViewModel
 import com.hedvig.app.feature.profile.ui.tab.GetEurobonusStatusUseCase
 import com.hedvig.app.feature.profile.ui.tab.NetworkGetEurobonusStatusUseCase
 import com.hedvig.app.feature.profile.ui.tab.ProfileViewModel
-import com.hedvig.android.feature.forever.data.ReferralsRepository
+import com.hedvig.android.feature.forever.data.ForeverRepository
 import com.hedvig.android.feature.forever.di.foreverModule
 import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeViewModel
 import com.hedvig.app.feature.settings.ChangeLanguageUseCase
@@ -513,7 +513,7 @@ private val repositoriesModule = module {
   single { UserRepository(get<ApolloClient>(giraffeClient)) }
   single { AdyenRepository(get<ApolloClient>(giraffeClient), get()) }
   single { EmbarkRepository(get<ApolloClient>(giraffeClient), get()) }
-  single { ReferralsRepository(get<ApolloClient>(giraffeClient), get()) }
+  single { ForeverRepository(get<ApolloClient>(giraffeClient), get()) }
   single { LoggedInRepository(get<ApolloClient>(giraffeClient), get()) }
   single { TrustlyRepository(get<ApolloClient>(giraffeClient)) }
   single { GetMemberIdUseCase(get<ApolloClient>(giraffeClient)) }

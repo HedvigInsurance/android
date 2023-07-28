@@ -4,8 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.raise.either
 import com.hedvig.android.apollo.toMonetaryAmount
+import com.hedvig.android.feature.forever.data.GetReferralsInformationUseCase
 import com.hedvig.android.language.LanguageService
-import com.hedvig.android.feature.forever.data.ReferralsRepository
+import com.hedvig.android.feature.forever.data.ForeverRepository
 import giraffe.ReferralTermsQuery
 import giraffe.ReferralsQuery
 import giraffe.fragment.ReferralFragment
@@ -16,14 +17,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class ReferralsViewModel(
-  private val referralsRepository: ReferralsRepository,
+class ForeverViewModel(
+  private val foreverRepository: ForeverRepository,
   private val getReferralTermsUseCase: GetReferralsInformationUseCase,
   private val languageService: LanguageService,
 ) : ViewModel() {
 
-  private val _uiState = MutableStateFlow(ReferralsUiState())
-  val uiState: StateFlow<ReferralsUiState> = _uiState
+  private val _uiState = MutableStateFlow(ForeverUiState())
+  val uiState: StateFlow<ForeverUiState> = _uiState
 
   init {
     loadReferralData()
@@ -33,15 +34,15 @@ class ReferralsViewModel(
     viewModelScope.launch {
       _uiState.update { it.copy(isLoading = true) }
       either {
-        val referralsData = referralsRepository.getReferralsData().bind()
+        val referralsData = foreverRepository.getReferralsData().bind()
         val terms = getReferralTermsUseCase.invoke().bind()
-        ReferralsUiState(
+        ForeverUiState(
           referralsData = referralsData,
           referralTerms = terms,
           locale = languageService.getLocale(),
         )
       }.mapLeft {
-        ReferralsUiState(errorMessage = it.message)
+        ForeverUiState(errorMessage = it.message)
       }.fold(
         ifLeft = { _uiState.value = it },
         ifRight = { _uiState.value = it },
@@ -70,7 +71,7 @@ class ReferralsViewModel(
           codeError = null,
         )
       }
-      referralsRepository.updateCode(code).fold(
+      foreverRepository.updateCode(code).fold(
         ifLeft = { referralError ->
           _uiState.update {
             it.copy(
@@ -93,7 +94,7 @@ class ReferralsViewModel(
   }
 }
 
-data class ReferralsUiState(
+data class ForeverUiState(
   val campaignCode: String? = null,
   val editedCampaignCode: String? = null,
   val incentive: MonetaryAmount? = null,
@@ -103,7 +104,7 @@ data class ReferralsUiState(
   val isLoadingCode: Boolean = false,
   val showEditCode: Boolean = false,
   val errorMessage: String? = null,
-  val codeError: ReferralsRepository.ReferralError? = null,
+  val codeError: ForeverRepository.ReferralError? = null,
   val potentialDiscountAmount: MonetaryAmount? = null,
   val currentDiscountAmount: MonetaryAmount? = null,
   val currentNetAmount: MonetaryAmount? = null,
