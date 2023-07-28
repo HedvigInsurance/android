@@ -474,7 +474,7 @@ private val repositoriesModule = module {
   single { UserRepository(get<ApolloClient>(giraffeClient)) }
   single { AdyenRepository(get<ApolloClient>(giraffeClient), get()) }
   single { EmbarkRepository(get<ApolloClient>(giraffeClient), get()) }
-  single { ReferralsRepository(get<ApolloClient>(giraffeClient), get()) }
+  single { ForeverRepository(get<ApolloClient>(giraffeClient), get()) }
   single { LoggedInRepository(get<ApolloClient>(giraffeClient), get()) }
   single { TrustlyRepository(get<ApolloClient>(giraffeClient)) }
   single { GetMemberIdUseCase(get<ApolloClient>(giraffeClient)) }

@@ -2,6 +2,9 @@ package com.hedvig.android.feature.profile.payment
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.language.LanguageService
+import com.hedvig.app.feature.profile.data.PaymentMethod
+import com.hedvig.android.feature.forever.data.ForeverRepository
 import com.hedvig.android.apollo.format
 import com.hedvig.android.feature.profile.data.PaymentMethod
 import com.hedvig.android.language.LanguageService
@@ -13,8 +16,8 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.util.Locale
 
-internal class PaymentViewModel(
-//  private val referralsRepository: ReferralsRepository,
+class PaymentViewModel(
+  private val referralsRepository: ForeverRepository,
   private val paymentRepository: PaymentRepository,
   val languageService: LanguageService,
 ) : ViewModel() {
@@ -77,15 +80,14 @@ internal class PaymentViewModel(
   }
 
   fun onDiscountCodeAdded() {
-    // todo access referrals repo
-//    viewModelScope.launch {
-//      val code = _uiState.value.discountCode ?: return@launch
-//      referralsRepository.redeemReferralCode(code)
-//        .fold(
-//          ifLeft = { error -> _uiState.update { it.copy(discountError = error.message) } },
-//          ifRight = { data -> loadPaymentData() },
-//        )
-//    }
+    viewModelScope.launch {
+      val code = _uiState.value.discountCode ?: return@launch
+      referralsRepository.redeemReferralCode(code)
+        .fold(
+          ifLeft = { error -> _uiState.update { it.copy(discountError = error.message) } },
+          ifRight = { data -> loadPaymentData() },
+        )
+    }
   }
 
   fun retry() {

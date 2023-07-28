@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.forever
+package com.hedvig.android.feature.forever.data
 
 import arrow.core.Either
 import arrow.core.raise.either
