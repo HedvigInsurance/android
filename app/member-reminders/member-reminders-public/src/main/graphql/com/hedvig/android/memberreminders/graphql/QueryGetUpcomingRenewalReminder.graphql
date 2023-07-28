@@ -1,0 +1,9 @@
+query GetUpcomingRenewalReminder {
+  contracts {
+    displayName
+    upcomingRenewal {
+      renewalDate
+      draftCertificateUrl
+    }
+  }
+}

@@ -60,6 +60,7 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.language.di.languageModule
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.market.di.marketManagerModule
+import com.hedvig.android.memberreminders.di.memberRemindersModule
 import com.hedvig.android.navigation.activity.ActivityNavigator
 import com.hedvig.android.navigation.core.di.deepLinkModule
 import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
@@ -703,6 +704,7 @@ val applicationModule = module {
       languageModule,
       logModule,
       marketManagerModule,
+      memberRemindersModule,
       networkModule,
       notificationBadgeModule,
       notificationModule,

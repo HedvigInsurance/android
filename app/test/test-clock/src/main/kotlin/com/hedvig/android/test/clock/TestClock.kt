@@ -1,4 +1,4 @@
-package com.hedvig.android.auth
+package com.hedvig.android.test.clock
 
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant

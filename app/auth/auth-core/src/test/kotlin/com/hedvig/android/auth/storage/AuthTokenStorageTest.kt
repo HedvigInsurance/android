@@ -2,8 +2,8 @@ package com.hedvig.android.auth.storage
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import com.hedvig.android.auth.TestClock
 import com.hedvig.android.core.datastore.TestPreferencesDataStore
+import com.hedvig.android.test.clock.TestClock
 import com.hedvig.authlib.AccessToken
 import com.hedvig.authlib.RefreshToken
 import kotlinx.coroutines.flow.filterNotNull

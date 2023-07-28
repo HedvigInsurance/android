@@ -225,6 +225,7 @@ dependencies {
   implementation(projects.hanalyticsFeatureFlagsPublic)
   implementation(projects.languageCore)
   implementation(projects.marketCore)
+  implementation(projects.memberRemindersPublic)
   implementation(projects.navigationActivity)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
