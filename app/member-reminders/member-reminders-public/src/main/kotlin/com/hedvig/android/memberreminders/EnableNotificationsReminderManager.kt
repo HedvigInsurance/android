@@ -1,4 +1,4 @@
-package com.hedvig.android.appinformation
+package com.hedvig.android.memberreminders
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences

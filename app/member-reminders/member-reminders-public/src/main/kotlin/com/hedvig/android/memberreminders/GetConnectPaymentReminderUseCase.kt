@@ -1,4 +1,4 @@
-package com.hedvig.android.appinformation
+package com.hedvig.android.memberreminders
 
 import arrow.core.Either
 import arrow.core.raise.either
