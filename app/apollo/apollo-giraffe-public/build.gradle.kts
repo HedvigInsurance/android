@@ -28,6 +28,7 @@ apollo {
     packageName.set("giraffe")
     codegenModels.set(com.apollographql.apollo3.compiler.MODELS_COMPAT)
 
+    generateApolloMetadata.set(true)
     generateDataBuilders.set(true)
     testDirConnection {
       // Make test builders available to main (not just test or androidTest) to be used by our mock data
