@@ -6,9 +6,6 @@ import giraffe.fragment.QuoteCartFragment
 import org.javamoney.moneta.Money
 import javax.money.MonetaryAmount
 
-@JvmInline
-value class CampaignCode(val code: String)
-
 data class Campaign(
   val displayValue: String?,
   val incentive: Incentive,

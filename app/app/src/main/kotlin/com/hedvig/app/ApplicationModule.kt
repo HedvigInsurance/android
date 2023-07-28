@@ -37,6 +37,7 @@ import com.hedvig.android.core.common.di.isProductionQualifier
 import com.hedvig.android.core.common.di.logInfoQualifier
 import com.hedvig.android.core.common.di.octopusGraphQLUrlQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
+import com.hedvig.android.data.forever.di.foreverDataModule
 import com.hedvig.android.data.travelcertificate.di.claimFlowDataModule
 import com.hedvig.android.data.travelcertificate.di.odysseyUrlQualifier
 import com.hedvig.android.data.travelcertificate.di.travelCertificateDataModule
@@ -45,7 +46,6 @@ import com.hedvig.android.datadog.di.datadogModule
 import com.hedvig.android.feature.businessmodel.di.businessModelModule
 import com.hedvig.android.feature.changeaddress.di.changeAddressModule
 import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
-import com.hedvig.android.feature.forever.data.ReferralsRepository
 import com.hedvig.android.feature.forever.di.foreverModule
 import com.hedvig.android.feature.home.di.homeModule
 import com.hedvig.android.feature.insurances.di.insurancesModule
@@ -474,7 +474,6 @@ private val repositoriesModule = module {
   single { UserRepository(get<ApolloClient>(giraffeClient)) }
   single { AdyenRepository(get<ApolloClient>(giraffeClient), get()) }
   single { EmbarkRepository(get<ApolloClient>(giraffeClient), get()) }
-  single { ForeverRepository(get<ApolloClient>(giraffeClient), get()) }
   single { LoggedInRepository(get<ApolloClient>(giraffeClient), get()) }
   single { TrustlyRepository(get<ApolloClient>(giraffeClient)) }
   single { GetMemberIdUseCase(get<ApolloClient>(giraffeClient)) }
@@ -647,6 +646,7 @@ val applicationModule = module {
       externalInsuranceModule,
       featureManagerModule,
       firebaseNotificationModule,
+      foreverDataModule,
       foreverModule,
       graphQLQueryModule,
       hAnalyticsAndroidModule,

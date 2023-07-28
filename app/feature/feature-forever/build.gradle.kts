@@ -39,6 +39,7 @@ dependencies {
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
+  implementation(projects.dataForever)
   implementation(projects.languageCore)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)

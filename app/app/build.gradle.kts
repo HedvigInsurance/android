@@ -208,6 +208,7 @@ dependencies {
   implementation(projects.coreUi)
   implementation(projects.dataClaimFlow)
   implementation(projects.dataClaimTriaging)
+  implementation(projects.dataForever)
   implementation(projects.dataTravelCertificate)
   implementation(projects.datadog)
   implementation(projects.featureBusinessmodel)

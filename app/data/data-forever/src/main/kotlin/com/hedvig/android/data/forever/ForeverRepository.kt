@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.forever.data
+package com.hedvig.android.data.forever
 
 import arrow.core.Either
 import arrow.core.raise.either
@@ -90,4 +90,13 @@ class ForeverRepository(
 
     data object CodeExists : ReferralError
   }
+}
+
+fun ForeverRepository.ReferralError?.toErrorMessage(): String? = when (this) {
+  ForeverRepository.ReferralError.CodeExists -> "Code exists" // TODO string resources
+  is ForeverRepository.ReferralError.CodeTooLong -> "Code too long"
+  is ForeverRepository.ReferralError.CodeTooShort -> "Too short"
+  is ForeverRepository.ReferralError.GeneralError -> "General Error"
+  is ForeverRepository.ReferralError.MaxUpdates -> "Max updates"
+  null -> null
 }

@@ -28,6 +28,7 @@ dependencies {
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
+  implementation(projects.dataForever)
   implementation(projects.hanalyticsCore)
   implementation(projects.hanalyticsFeatureFlagsPublic)
   implementation(projects.languageCore)
