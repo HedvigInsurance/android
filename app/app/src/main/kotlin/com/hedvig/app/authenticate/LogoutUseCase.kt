@@ -3,6 +3,7 @@ package com.hedvig.app.authenticate
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.market.MarketManager
@@ -12,10 +13,6 @@ import com.hedvig.app.util.apollo.reconnectSubscriptions
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.launch
 import slimber.log.d
-
-internal interface LogoutUseCase {
-  fun invoke()
-}
 
 internal class LogoutUseCaseImpl(
   private val marketManager: MarketManager,

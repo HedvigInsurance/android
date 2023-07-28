@@ -35,12 +35,28 @@ class ReferralsRepository(
       .bind()
 
     when {
-      result.updateReferralCampaignCode.asSuccessfullyUpdatedCode != null -> result.updateReferralCampaignCode.asSuccessfullyUpdatedCode!!.code
-      result.updateReferralCampaignCode.asCodeTooLong != null -> raise(ReferralError.CodeTooLong(result.updateReferralCampaignCode.asCodeTooLong!!.maxCharacters))
-      result.updateReferralCampaignCode.asCodeTooShort != null -> raise(ReferralError.CodeTooShort(result.updateReferralCampaignCode.asCodeTooShort!!.minCharacters))
-      result.updateReferralCampaignCode.asCodeAlreadyTaken != null -> raise(ReferralError.CodeExists)
-      result.updateReferralCampaignCode.asExceededMaximumUpdates != null -> raise(ReferralError.MaxUpdates(result.updateReferralCampaignCode.asExceededMaximumUpdates!!.maximumNumberOfUpdates))
-      else -> raise(ReferralError.GeneralError("Unknown error"))
+      result.updateReferralCampaignCode.asSuccessfullyUpdatedCode != null -> {
+        result.updateReferralCampaignCode.asSuccessfullyUpdatedCode!!.code
+      }
+      result.updateReferralCampaignCode.asCodeTooLong != null -> {
+        raise(ReferralError.CodeTooLong(result.updateReferralCampaignCode.asCodeTooLong!!.maxCharacters))
+      }
+      result.updateReferralCampaignCode.asCodeTooShort != null -> {
+        raise(ReferralError.CodeTooShort(result.updateReferralCampaignCode.asCodeTooShort!!.minCharacters))
+      }
+      result.updateReferralCampaignCode.asCodeAlreadyTaken != null -> {
+        raise(ReferralError.CodeExists)
+      }
+      result.updateReferralCampaignCode.asExceededMaximumUpdates != null -> {
+        raise(
+          ReferralError.MaxUpdates(
+            result.updateReferralCampaignCode.asExceededMaximumUpdates!!.maximumNumberOfUpdates,
+          ),
+        )
+      }
+      else -> {
+        raise(ReferralError.GeneralError("Unknown error"))
+      }
     }
   }
 

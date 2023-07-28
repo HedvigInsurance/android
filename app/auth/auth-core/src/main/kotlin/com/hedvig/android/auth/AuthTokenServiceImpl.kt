@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.stateIn
 import slimber.log.d
 import slimber.log.v
 
-class AuthTokenServiceImpl(
+internal class AuthTokenServiceImpl(
   private val authTokenStorage: AuthTokenStorage,
   private val authRepository: AuthRepository,
   private val authEventBroadcaster: AuthEventBroadcaster,

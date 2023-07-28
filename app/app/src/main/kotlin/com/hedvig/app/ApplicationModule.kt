@@ -18,10 +18,11 @@ import com.apollographql.apollo3.cache.normalized.normalizedCache
 import com.apollographql.apollo3.interceptor.ApolloInterceptor
 import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
+import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.di.apolloClientModule
 import com.hedvig.android.apollo.giraffe.di.giraffeClient
-import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.auth.AccessTokenProvider
+import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.auth.di.authModule
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.auth.interceptor.MigrateTokenInterceptor
@@ -44,9 +45,12 @@ import com.hedvig.android.datadog.di.datadogModule
 import com.hedvig.android.feature.businessmodel.di.businessModelModule
 import com.hedvig.android.feature.changeaddress.di.changeAddressModule
 import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
+import com.hedvig.android.feature.forever.data.ReferralsRepository
+import com.hedvig.android.feature.forever.di.foreverModule
 import com.hedvig.android.feature.home.di.homeModule
 import com.hedvig.android.feature.insurances.di.insurancesModule
 import com.hedvig.android.feature.odyssey.di.odysseyModule
+import com.hedvig.android.feature.profile.di.profileModule
 import com.hedvig.android.feature.terminateinsurance.di.terminateInsuranceModule
 import com.hedvig.android.feature.travelcertificate.di.travelCertificateModule
 import com.hedvig.android.hanalytics.android.di.appIdQualifier
@@ -67,7 +71,6 @@ import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.firebase.di.firebaseNotificationModule
 import com.hedvig.app.authenticate.BankIdLoginViewModel
-import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.authenticate.LogoutUseCaseImpl
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.addressautocompletion.data.GetDanishAddressAutoCompletionUseCase
@@ -140,22 +143,7 @@ import com.hedvig.app.feature.offer.usecase.ObserveOfferStateUseCase
 import com.hedvig.app.feature.offer.usecase.ObserveQuoteCartCheckoutUseCase
 import com.hedvig.app.feature.offer.usecase.ObserveQuoteCartCheckoutUseCaseImpl
 import com.hedvig.app.feature.offer.usecase.StartCheckoutUseCase
-import com.hedvig.app.feature.profile.data.ProfileRepository
-import com.hedvig.app.feature.profile.data.ProfileRepositoryImpl
-import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppViewModel
-import com.hedvig.app.feature.profile.ui.eurobonus.EurobonusViewModel
-import com.hedvig.app.feature.profile.ui.myinfo.MyInfoViewModel
-import com.hedvig.app.feature.profile.ui.payment.PaymentRepository
-import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel
-import com.hedvig.app.feature.profile.ui.payment.history.PaymentHistoryViewModel
-import com.hedvig.app.feature.profile.ui.tab.GetEurobonusStatusUseCase
-import com.hedvig.app.feature.profile.ui.tab.NetworkGetEurobonusStatusUseCase
-import com.hedvig.app.feature.profile.ui.tab.ProfileViewModel
-import com.hedvig.android.feature.forever.data.ReferralsRepository
-import com.hedvig.android.feature.forever.di.foreverModule
 import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeViewModel
-import com.hedvig.app.feature.settings.ChangeLanguageUseCase
-import com.hedvig.app.feature.settings.SettingsViewModel
 import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignViewModel
 import com.hedvig.app.feature.trustly.TrustlyRepository
 import com.hedvig.app.feature.trustly.TrustlyViewModel
@@ -168,7 +156,7 @@ import com.hedvig.app.service.push.senders.PaymentNotificationSender
 import com.hedvig.app.service.push.senders.ReferralsNotificationSender
 import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
-import com.hedvig.app.util.apollo.NetworkCacheManager
+import com.hedvig.app.util.apollo.NetworkCacheManagerImpl
 import com.hedvig.app.util.apollo.ReopenSubscriptionException
 import com.hedvig.app.util.apollo.SunsettingInterceptor
 import com.hedvig.app.util.extensions.startChat
@@ -176,10 +164,6 @@ import com.hedvig.authlib.AuthEnvironment
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.Callbacks
 import com.hedvig.authlib.NetworkAuthRepository
-import java.io.File
-import java.time.Clock
-import java.util.*
-import kotlin.math.pow
 import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -193,6 +177,10 @@ import org.koin.dsl.module
 import slimber.log.d
 import slimber.log.i
 import timber.log.Timber
+import java.io.File
+import java.time.Clock
+import java.util.*
+import kotlin.math.pow
 
 fun isDebug() = BuildConfig.APPLICATION_ID == "com.hedvig.dev.app" ||
   BuildConfig.APPLICATION_ID == "com.hedvig.test.app" ||
@@ -309,15 +297,6 @@ private val viewModelModule = module {
   viewModel { ChatViewModel(get(), get(), get()) }
   viewModel { (quoteCartId: QuoteCartId?) -> RedeemCodeViewModel(quoteCartId, get(), get()) }
   viewModel { BankIdLoginViewModel(get(), get(), get(), get(), get()) }
-  viewModel {
-    SettingsViewModel(
-      hAnalytics = get(),
-      changeLanguageUseCase = get(),
-      marketManager = get(),
-      languageService = get(),
-      settingsDataStore = get(),
-    )
-  }
   viewModel { DatePickerViewModel() }
   viewModel { params ->
     SimpleSignAuthenticationViewModel(params.get(), get(), get(), get(), get(), get())
@@ -357,8 +336,6 @@ private val viewModelModule = module {
     )
   }
   viewModel { TooltipViewModel(get()) }
-  viewModel { MyInfoViewModel(get(), get()) }
-  viewModel { AboutAppViewModel(get()) }
   viewModel { MarketingViewModel(get<MarketManager>().market, get(), get(), get(), get(), get()) }
   viewModel<ReviewDialogViewModel> { ReviewDialogViewModel(get()) }
 }
@@ -387,23 +364,6 @@ private val offerModule = module {
   single<GetQuoteCartCheckoutUseCase> { GetQuoteCartCheckoutUseCase(get<ApolloClient>(giraffeClient)) }
   single<ObserveQuoteCartCheckoutUseCase> { ObserveQuoteCartCheckoutUseCaseImpl(get()) }
   single<SelectedVariantStore> { SelectedVariantStore() }
-}
-
-private val profileModule = module {
-  single<ProfileRepository> {
-    ProfileRepositoryImpl(
-      giraffeApolloClient = get<ApolloClient>(giraffeClient),
-      octopusApolloClient = get<ApolloClient>(octopusClient),
-    )
-  }
-  single<GetEurobonusStatusUseCase> { NetworkGetEurobonusStatusUseCase(get<ApolloClient>(octopusClient)) }
-  viewModel<ProfileViewModel> { ProfileViewModel(get(), get(), get()) }
-  viewModel<EurobonusViewModel> { EurobonusViewModel(get<ApolloClient>(octopusClient)) }
-}
-
-private val paymentModule = module {
-  viewModel<PaymentViewModel> { PaymentViewModel(get(), get(), get()) }
-  viewModel<PaymentHistoryViewModel> { PaymentHistoryViewModel(get(), get()) }
 }
 
 private val adyenModule = module {
@@ -518,7 +478,6 @@ private val repositoriesModule = module {
   single { LoggedInRepository(get<ApolloClient>(giraffeClient), get()) }
   single { TrustlyRepository(get<ApolloClient>(giraffeClient)) }
   single { GetMemberIdUseCase(get<ApolloClient>(giraffeClient)) }
-  single { PaymentRepository(get<ApolloClient>(giraffeClient), get()) }
 }
 
 private val notificationModule = module {
@@ -571,17 +530,10 @@ private val useCaseModule = module {
   single<ConnectPaymentUseCase> { ConnectPaymentUseCase(get(), get(), get()) }
   single<ConnectPayoutUseCase> { ConnectPayoutUseCase(get(giraffeClient), get()) }
   single<ObserveOfferStateUseCase> { ObserveOfferStateUseCase(get(), get()) }
-  single<ChangeLanguageUseCase> {
-    ChangeLanguageUseCase(
-      apolloClient = get<ApolloClient>(giraffeClient),
-      languageService = get(),
-      cacheManager = get(),
-    )
-  }
 }
 
 private val cacheManagerModule = module {
-  single { NetworkCacheManager(get<ApolloClient>(giraffeClient)) }
+  single<NetworkCacheManager> { NetworkCacheManagerImpl(get<ApolloClient>(giraffeClient)) }
 }
 
 private val sharedPreferencesModule = module {
@@ -712,7 +664,6 @@ val applicationModule = module {
       odysseyModule,
       offerModule,
       onboardingModule,
-      paymentModule,
       profileModule,
       repositoriesModule,
       serviceModule,

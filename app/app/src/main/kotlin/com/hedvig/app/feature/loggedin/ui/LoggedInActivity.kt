@@ -58,6 +58,8 @@ import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.common.di.isProductionQualifier
 import com.hedvig.android.core.designsystem.material3.motion.MotionTokens
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.hanalytics.android.di.appVersionCodeQualifier
+import com.hedvig.android.hanalytics.android.di.appVersionNameQualifier
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.language.LanguageService
@@ -96,6 +98,8 @@ class LoggedInActivity : AppCompatActivity() {
   private val languageService: LanguageService by inject()
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer by inject()
   private val isProduction: Boolean by inject(isProductionQualifier)
+  private val appVersionName: String by inject(appVersionNameQualifier)
+  private val appVersionCode: String by inject(appVersionCodeQualifier)
 
   private val activityNavigator: ActivityNavigator by inject()
 
@@ -228,6 +232,8 @@ class LoggedInActivity : AppCompatActivity() {
           hAnalytics = hAnalytics,
           fragmentManager = supportFragmentManager,
           languageService = languageService,
+          appVersionName = appVersionName,
+          appVersionCode = appVersionCode,
           isProduction = isProduction,
         )
       }
@@ -277,6 +283,8 @@ private fun HedvigApp(
   hAnalytics: HAnalytics,
   fragmentManager: FragmentManager,
   languageService: LanguageService,
+  appVersionName: String,
+  appVersionCode: String,
   isProduction: Boolean,
 ) {
   LaunchedEffect(getInitialTab, clearInitialTab, hedvigAppState) {
@@ -317,6 +325,8 @@ private fun HedvigApp(
           hAnalytics = hAnalytics,
           fragmentManager = fragmentManager,
           languageService = languageService,
+          appVersionName = appVersionName,
+          appVersionCode = appVersionCode,
           isProduction = isProduction,
           modifier = Modifier
             .fillMaxHeight()
