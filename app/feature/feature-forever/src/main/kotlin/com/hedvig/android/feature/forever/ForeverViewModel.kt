@@ -162,7 +162,8 @@ data class ForeverUiState(
       ?.monthlyDiscount
       ?.fragments
       ?.monetaryAmountFragment
-      ?.toMonetaryAmount(),
+      ?.toMonetaryAmount()
+      ?.negate(),
     currentNetAmount = referralsData
       .referralInformation
       .costReducedIndefiniteDiscount

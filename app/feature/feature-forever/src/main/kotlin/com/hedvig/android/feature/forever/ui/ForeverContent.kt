@@ -5,13 +5,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.rememberScrollState
@@ -24,10 +24,12 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,15 +41,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
+import com.hedvig.android.apollo.format
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
 import com.hedvig.android.feature.forever.ForeverUiState
 import com.hedvig.android.feature.forever.data.toErrorMessage
 import hedvig.resources.R
+import java.util.*
 import javax.money.MonetaryAmount
 import kotlinx.coroutines.launch
+import org.javamoney.moneta.Money
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -67,6 +71,7 @@ internal fun ForeverContent(
     onRefresh = reload,
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
+  val locale = uiState.locale ?: Locale.ENGLISH
 
   val sheetState = rememberModalBottomSheetState(true)
   val coroutineScope = rememberCoroutineScope()
@@ -101,8 +106,6 @@ internal fun ForeverContent(
   }
 
   Box {
-    val incentive = uiState.incentive
-
     Column(
       Modifier
         .matchParentSize()
@@ -117,33 +120,69 @@ internal fun ForeverContent(
         style = MaterialTheme.typography.headlineLarge,
         modifier = Modifier.padding(horizontal = 16.dp),
       )
-      ReferralsContent(uiState)
-      if (incentive != null && uiState.campaignCode != null) {
-        Spacer(Modifier.height(16.dp))
-        HedvigContainedButton(
-          text = stringResource(R.string.referrals_empty_share_code_button),
-          onClick = { onShareCodeClick(uiState.campaignCode, incentive) },
-          modifier = Modifier.padding(horizontal = 16.dp),
-        )
-        Spacer(Modifier.height(8.dp))
-        HedvigTextButton(
-          text = stringResource(id = R.string.referrals_change_change_code),
-          onClick = {
-            coroutineScope.launch {
-              sheetState.hide()
-              showEditBottomSheet = true
-            }
-          },
-          modifier = Modifier.padding(horizontal = 16.dp),
+
+      CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
+        Text(
+          text = uiState.currentDiscountAmount?.format(locale) ?: "-",
+          textAlign = TextAlign.Center,
+          modifier = Modifier.fillMaxWidth(),
         )
       }
       Spacer(Modifier.height(16.dp))
-      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+      // TODO Add pie chart
+      Spacer(Modifier.height(24.dp))
+      if (uiState.referrals.isEmpty() && uiState.incentive != null) {
+        Spacer(Modifier.height(32.dp))
+        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
+          Text(
+            text = stringResource(
+              id = R.string.referrals_empty_body,
+              uiState.incentive.format(locale),
+              Money.of(0, uiState.incentive.currency?.currencyCode).format(locale),
+            ),
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
+          )
+        }
+        Spacer(Modifier.height(16.dp))
+      } else {
+        Text(
+          text = stringResource(id = R.string.FOREVER_TAB_MONTLY_COST_LABEL),
+          textAlign = TextAlign.Center,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        )
+        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
+          Text(
+            text = stringResource(
+              id = R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+              uiState.currentNetAmount?.format(locale) ?: "-",
+            ),
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+          )
+        }
+        Spacer(Modifier.height(82.dp))
+      }
+
+      ReferralCodeContent(
+        uiState = uiState,
+        onChangeCodeClicked = {
+          coroutineScope.launch {
+            sheetState.hide()
+            showEditBottomSheet = true
+          }
+        },
+        onShareCodeClick = onShareCodeClick
+      )
     }
-    if (incentive != null && uiState.referralUrl != null) {
+    if (uiState.incentive != null && uiState.referralUrl != null) {
       TopAppBarLayoutForActions {
         IconButton(
-          onClick = { openReferralsInformation(uiState.referralUrl, incentive) },
+          onClick = { openReferralsInformation(uiState.referralUrl, uiState.incentive) },
           colors = IconButtonDefaults.iconButtonColors(),
           modifier = Modifier.size(40.dp),
         ) {
