@@ -21,7 +21,6 @@ import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.hedvig.android.apollo.di.apolloClientModule
 import com.hedvig.android.apollo.giraffe.di.giraffeClient
 import com.hedvig.android.apollo.octopus.di.octopusClient
-import com.hedvig.android.appinformation.di.appInformationModule
 import com.hedvig.android.auth.AccessTokenProvider
 import com.hedvig.android.auth.di.authModule
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
@@ -61,6 +60,7 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.language.di.languageModule
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.market.di.marketManagerModule
+import com.hedvig.android.memberreminders.di.memberRemindersModule
 import com.hedvig.android.navigation.activity.ActivityNavigator
 import com.hedvig.android.navigation.core.di.deepLinkModule
 import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
@@ -687,7 +687,6 @@ val applicationModule = module {
       adyenModule,
       apolloClientModule,
       apolloClientUrlsModule,
-      appInformationModule,
       authModule,
       authRepositoryModule,
       businessModelModule,
@@ -718,6 +717,7 @@ val applicationModule = module {
       languageModule,
       logModule,
       marketManagerModule,
+      memberRemindersModule,
       networkModule,
       notificationBadgeModule,
       notificationModule,

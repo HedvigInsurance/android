@@ -1,4 +1,4 @@
-package com.hedvig.android.appinformation
+package com.hedvig.android.memberreminders
 
 import assertk.assertThat
 import assertk.assertions.isFalse
