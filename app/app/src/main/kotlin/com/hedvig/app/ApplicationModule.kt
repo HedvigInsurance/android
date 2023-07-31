@@ -44,6 +44,7 @@ import com.hedvig.android.datadog.di.datadogModule
 import com.hedvig.android.feature.businessmodel.di.businessModelModule
 import com.hedvig.android.feature.changeaddress.di.changeAddressModule
 import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
+import com.hedvig.android.feature.forever.data.ForeverRepository
 import com.hedvig.android.feature.home.di.homeModule
 import com.hedvig.android.feature.insurances.di.insurancesModule
 import com.hedvig.android.feature.odyssey.di.odysseyModule
@@ -150,7 +151,6 @@ import com.hedvig.app.feature.profile.ui.payment.history.PaymentHistoryViewModel
 import com.hedvig.app.feature.profile.ui.tab.GetEurobonusStatusUseCase
 import com.hedvig.app.feature.profile.ui.tab.NetworkGetEurobonusStatusUseCase
 import com.hedvig.app.feature.profile.ui.tab.ProfileViewModel
-import com.hedvig.android.feature.forever.data.ForeverRepository
 import com.hedvig.android.feature.forever.di.foreverModule
 import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeViewModel
 import com.hedvig.app.feature.settings.ChangeLanguageUseCase

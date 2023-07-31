@@ -4,23 +4,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.raise.either
 import com.hedvig.android.apollo.toMonetaryAmount
-import com.hedvig.android.feature.forever.data.GetReferralsInformationUseCase
-import com.hedvig.android.language.LanguageService
 import com.hedvig.android.feature.forever.data.ForeverRepository
+import com.hedvig.android.feature.forever.data.GetReferralsInformationUseCase
 import giraffe.ReferralTermsQuery
 import giraffe.ReferralsQuery
 import giraffe.fragment.ReferralFragment
-import java.util.*
 import javax.money.MonetaryAmount
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class ForeverViewModel(
+internal class ForeverViewModel(
   private val foreverRepository: ForeverRepository,
   private val getReferralTermsUseCase: GetReferralsInformationUseCase,
-  private val languageService: LanguageService,
 ) : ViewModel() {
 
   private val _uiState = MutableStateFlow(ForeverUiState())
@@ -39,7 +36,6 @@ class ForeverViewModel(
         ForeverUiState(
           referralsData = referralsData,
           referralTerms = terms,
-          locale = languageService.getLocale(),
         )
       }.mapLeft {
         ForeverUiState(errorMessage = it.message)
@@ -94,7 +90,7 @@ class ForeverViewModel(
   }
 }
 
-data class ForeverUiState(
+internal data class ForeverUiState(
   val campaignCode: String? = null,
   val editedCampaignCode: String? = null,
   val incentive: MonetaryAmount? = null,
@@ -109,7 +105,6 @@ data class ForeverUiState(
   val currentDiscountAmount: MonetaryAmount? = null,
   val currentNetAmount: MonetaryAmount? = null,
   val referrals: List<Referral> = emptyList(),
-  val locale: Locale? = null,
 ) {
 
   data class Referral(
@@ -125,7 +120,6 @@ data class ForeverUiState(
   constructor(
     referralsData: ReferralsQuery.Data,
     referralTerms: ReferralTermsQuery.ReferralTerms?,
-    locale: Locale,
   ) : this(
     incentive = referralsData
       .referralInformation
@@ -191,7 +185,6 @@ data class ForeverUiState(
           ?.toMonetaryAmount(),
       )
     },
-    locale = locale,
   )
 }
 

@@ -45,6 +45,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.apollo.format
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
+import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.feature.forever.ForeverUiState
 import com.hedvig.android.feature.forever.data.toErrorMessage
 import hedvig.resources.R
@@ -71,7 +72,7 @@ internal fun ForeverContent(
     onRefresh = reload,
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
-  val locale = uiState.locale ?: Locale.ENGLISH
+  val locale = getLocale()
 
   val sheetState = rememberModalBottomSheetState(true)
   val coroutineScope = rememberCoroutineScope()

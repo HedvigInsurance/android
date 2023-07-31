@@ -1,6 +1,6 @@
 package com.hedvig.android.feature.forever.data
 
-fun ForeverRepository.ReferralError?.toErrorMessage(): String? = when (this) {
+internal fun ForeverRepository.ReferralError?.toErrorMessage(): String? = when (this) {
   ForeverRepository.ReferralError.CodeExists -> "Code exists" // TODO string resources
   is ForeverRepository.ReferralError.CodeTooLong -> "Code too long"
   is ForeverRepository.ReferralError.CodeTooShort -> "Too short"

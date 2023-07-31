@@ -11,7 +11,6 @@ val foreverModule = module {
     ForeverViewModel(
       get(),
       get(),
-      get(),
     )
   }
   single {

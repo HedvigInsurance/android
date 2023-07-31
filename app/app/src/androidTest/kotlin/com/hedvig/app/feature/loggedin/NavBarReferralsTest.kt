@@ -29,7 +29,7 @@ class NavBarReferralsTest : TestCase() {
 
   @get:Rule
   val featureFlagRule = FeatureFlagRule(
-    Feature.REFERRALS to true,
+    Feature.FOREVER to true,
   )
 
   @get:Rule
