@@ -179,6 +179,7 @@ internal fun ForeverContent(
         },
         onShareCodeClick = onShareCodeClick
       )
+      ReferralList(uiState)
     }
     if (uiState.incentive != null && uiState.referralUrl != null) {
       TopAppBarLayoutForActions {
