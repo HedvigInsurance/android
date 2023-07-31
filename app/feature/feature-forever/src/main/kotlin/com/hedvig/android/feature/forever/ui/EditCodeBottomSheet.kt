@@ -19,7 +19,7 @@ import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import hedvig.resources.R
 
 @Composable
-fun EditCodeBottomSheet(
+internal fun EditCodeBottomSheet(
   code: String,
   errorText: String?,
   onCodeChanged: (String) -> Unit,

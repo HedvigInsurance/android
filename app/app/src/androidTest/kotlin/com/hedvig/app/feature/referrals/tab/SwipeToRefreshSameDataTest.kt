@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.referrals.tab
 
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
+import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNTS
 import com.hedvig.app.util.ApolloCacheClearRule
@@ -37,14 +37,14 @@ class SwipeToRefreshSameDataTest : TestCase() {
   @get:Rule
   val featureFlagRule = FeatureFlagRule(
     Feature.REFERRAL_CAMPAIGN to false,
-    Feature.REFERRALS to true,
+    Feature.FOREVER to true,
   )
 
   @Test
   fun shouldRefreshDataWhenSwipingDownToRefreshWhenDataHasNotChanged() = run {
     val intent = LoggedInActivity.newInstance(
       context(),
-      initialTab = LoggedInTabs.REFERRALS,
+      initialTab = TopLevelGraph.FOREVER,
     )
 
     activityRule.launch(intent)

@@ -105,12 +105,12 @@ internal class HedvigAppState(
     }
 
   val topLevelGraphs: StateFlow<ImmutableSet<TopLevelGraph>> = flow {
-    val isReferralsEnabled = featureManager.isFeatureEnabled(Feature.REFERRALS)
+    val isForeverEnabled = featureManager.isFeatureEnabled(Feature.FOREVER)
     emit(
       listOfNotNull(
         TopLevelGraph.HOME,
         TopLevelGraph.INSURANCE,
-        TopLevelGraph.FOREVER.takeIf { isReferralsEnabled },
+        TopLevelGraph.FOREVER.takeIf { isForeverEnabled },
         TopLevelGraph.PROFILE,
       ).toPersistentSet(),
     )

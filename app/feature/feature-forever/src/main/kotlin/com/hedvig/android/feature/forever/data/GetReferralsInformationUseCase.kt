@@ -9,7 +9,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.language.LanguageService
 import giraffe.ReferralTermsQuery
 
-class GetReferralsInformationUseCase(
+internal class GetReferralsInformationUseCase(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,
 ) {

@@ -6,13 +6,13 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.content.getSystemService
 
-fun Context.copyToClipboard(
+internal fun Context.copyToClipboard(
   text: String,
 ) {
   getSystemService<ClipboardManager>()?.setPrimaryClip(ClipData.newPlainText(null, text))
 }
 
-fun Context.showShareSheet(title: String, configureClosure: ((Intent) -> Unit)?) {
+internal fun Context.showShareSheet(title: String, configureClosure: ((Intent) -> Unit)?) {
   val intent = Intent().apply {
     action = Intent.ACTION_SEND
   }
