@@ -233,6 +233,7 @@ dependencies {
   implementation(projects.notificationBadgeDataPublic)
   implementation(projects.notificationCore)
   implementation(projects.notificationFirebase)
+  implementation(projects.payment)
   implementation(projects.theme)
 
   stagingImplementation(projects.testdata)

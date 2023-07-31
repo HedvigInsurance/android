@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.profile.payment
+package com.hedvig.android.payment.model
 
 import com.hedvig.android.apollo.toMonetaryAmount
 import giraffe.fragment.IncentiveFragment
@@ -37,13 +37,13 @@ data class Campaign(
   }
 }
 
-fun QuoteCartFragment.Campaign.toCampaign() = Campaign(
+private fun QuoteCartFragment.Campaign.toCampaign() = Campaign(
   displayValue = displayValue,
   incentive = incentive?.toIncentive() ?: Campaign.Incentive.NoDiscount,
   code = "",
 )
 
-fun IncentiveFragment.Incentive?.toIncentive(): Campaign.Incentive {
+internal fun IncentiveFragment.Incentive?.toIncentive(): Campaign.Incentive {
   return this?.asFreeMonths?.let {
     Campaign.Incentive.FreeMonths(
       numberOfFreeMonths = it.quantity ?: 0,

@@ -3,8 +3,9 @@ package com.hedvig.android.feature.profile.payment.history
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.apollo.format
-import com.hedvig.android.feature.profile.payment.PaymentRepository
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.payment.ChargeHistory
+import com.hedvig.android.payment.PaymentRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -12,7 +13,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.util.Locale
 
-class PaymentHistoryViewModel(
+internal class PaymentHistoryViewModel(
   private val paymentRepository: PaymentRepository,
   val languageService: LanguageService,
 ) : ViewModel() {
@@ -46,7 +47,7 @@ class PaymentHistoryViewModel(
   }
 }
 
-private fun PaymentRepository.ChargeHistory.toUiState(locale: Locale) = PaymentHistoryViewModel.PaymentHistoryUiState(
+private fun ChargeHistory.toUiState(locale: Locale) = PaymentHistoryViewModel.PaymentHistoryUiState(
   charges = charges.map {
     PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
       amount = it.amount.format(locale),

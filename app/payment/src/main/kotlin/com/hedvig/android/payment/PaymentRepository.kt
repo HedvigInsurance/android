@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.profile.payment
+package com.hedvig.android.payment
 
 import arrow.core.Either
 import arrow.core.raise.either
@@ -12,8 +12,9 @@ import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.apollo.toMonetaryAmount
-import com.hedvig.android.feature.profile.data.PaymentMethod
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.payment.model.Campaign
+import com.hedvig.android.payment.model.toIncentive
 import giraffe.ChargeHistoryQuery
 import giraffe.PaymentQuery
 import giraffe.type.PayoutMethodStatus
@@ -99,7 +100,7 @@ class PaymentRepository(
             ?.activePaymentMethodsFragment
             ?.asStoredCardDetails
             ?.let {
-              PaymentMethod.CardPaymentMethod(
+              PaymentData.PaymentMethod.CardPaymentMethod(
                 brand = it.brand,
                 lastFourDigits = it.lastFourDigits,
                 expiryMonth = it.expiryMonth,
@@ -110,7 +111,7 @@ class PaymentRepository(
             ?.activePaymentMethodsFragment
             ?.asStoredThirdPartyDetails
             ?.let {
-              PaymentMethod.ThirdPartyPaymentMethd(
+              PaymentData.PaymentMethod.ThirdPartyPaymentMethd(
                 name = it.name,
                 type = it.type,
               )
@@ -120,26 +121,40 @@ class PaymentRepository(
       }
       .bind()
   }
+}
 
-  data class PaymentData(
-    val nextCharge: MonetaryAmount,
-    val monthlyCost: MonetaryAmount?,
-    val totalDiscount: MonetaryAmount?,
-    val nextChargeDate: LocalDate?,
-    val redeemedCampagins: List<Campaign>,
-    val bankName: String?,
-    val bankDescriptor: String?,
-    val paymentMethod: PaymentMethod?,
-    val contracts: List<String>,
-    val payoutMethodStatus: PayoutMethodStatus?,
-  )
+data class PaymentData(
+  val nextCharge: MonetaryAmount,
+  val monthlyCost: MonetaryAmount?,
+  val totalDiscount: MonetaryAmount?,
+  val nextChargeDate: LocalDate?,
+  val redeemedCampagins: List<Campaign>,
+  val bankName: String?,
+  val bankDescriptor: String?,
+  val paymentMethod: PaymentMethod?,
+  val contracts: List<String>,
+  val payoutMethodStatus: PayoutMethodStatus?,
+) {
+  sealed interface PaymentMethod {
+    data class CardPaymentMethod(
+      val brand: String?,
+      val lastFourDigits: String,
+      val expiryMonth: String,
+      val expiryYear: String,
+    ) : PaymentMethod
 
-  data class ChargeHistory(
-    val charges: List<Charge>,
-  ) {
-    data class Charge(
-      val amount: MonetaryAmount,
-      val date: LocalDate,
-    )
+    data class ThirdPartyPaymentMethd(
+      val name: String,
+      val type: String,
+    ) : PaymentMethod
   }
+}
+
+data class ChargeHistory(
+  val charges: List<Charge>,
+) {
+  data class Charge(
+    val amount: MonetaryAmount,
+    val date: LocalDate,
+  )
 }

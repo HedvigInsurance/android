@@ -9,7 +9,6 @@ import com.hedvig.android.feature.profile.data.ProfileRepository
 import com.hedvig.android.feature.profile.data.ProfileRepositoryImpl
 import com.hedvig.android.feature.profile.eurobonus.EurobonusViewModel
 import com.hedvig.android.feature.profile.myinfo.MyInfoViewModel
-import com.hedvig.android.feature.profile.payment.PaymentRepository
 import com.hedvig.android.feature.profile.payment.PaymentViewModel
 import com.hedvig.android.feature.profile.payment.history.PaymentHistoryViewModel
 import com.hedvig.android.feature.profile.settings.ChangeLanguageUseCase
@@ -22,8 +21,6 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val profileModule = module {
-  single { PaymentRepository(get<ApolloClient>(giraffeClient), get()) }
-
   single<ProfileRepository> {
     ProfileRepositoryImpl(
       giraffeApolloClient = get<ApolloClient>(giraffeClient),

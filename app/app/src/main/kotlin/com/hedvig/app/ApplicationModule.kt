@@ -70,6 +70,7 @@ import com.hedvig.android.navigation.core.di.deepLinkModule
 import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.firebase.di.firebaseNotificationModule
+import com.hedvig.android.payment.di.paymentModule
 import com.hedvig.app.authenticate.BankIdLoginViewModel
 import com.hedvig.app.authenticate.LogoutUseCaseImpl
 import com.hedvig.app.data.debit.PayinStatusRepository
@@ -664,6 +665,7 @@ val applicationModule = module {
       odysseyModule,
       offerModule,
       onboardingModule,
+      paymentModule,
       profileModule,
       repositoriesModule,
       serviceModule,

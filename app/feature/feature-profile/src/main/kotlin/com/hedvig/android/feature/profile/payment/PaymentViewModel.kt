@@ -5,8 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.apollo.format
 import com.hedvig.android.data.forever.CampaignCode
 import com.hedvig.android.data.forever.ForeverRepository
-import com.hedvig.android.feature.profile.data.PaymentMethod
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.payment.PaymentData
+import com.hedvig.android.payment.PaymentRepository
 import giraffe.type.PayoutMethodStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +16,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.util.Locale
 
-class PaymentViewModel(
+internal class PaymentViewModel(
   private val referralsRepository: ForeverRepository,
   private val paymentRepository: PaymentRepository,
   val languageService: LanguageService,
@@ -94,40 +95,43 @@ class PaymentViewModel(
   }
 }
 
-private fun PaymentRepository.PaymentData.toUiState(locale: Locale) = PaymentViewModel.PaymentUiState(
-  nextChargeAmount = nextCharge.format(locale),
-  monthlyCost = monthlyCost?.format(locale),
-  nextChargeDate = nextChargeDate,
-  insuranceCosts = contracts.map {
-    PaymentViewModel.PaymentUiState.InsuranceCost(
-      displayName = it,
-      cost = null,
-    )
-  },
-  totalDiscount = totalDiscount?.negate()?.format(locale),
-  activeDiscounts = redeemedCampagins.map {
-    PaymentViewModel.PaymentUiState.Discount(
-      code = it.code,
-      displayName = it.displayValue ?: "-",
-    )
-  },
-  paymentMethod = PaymentViewModel.PaymentUiState.PaymentMethod(
-    displayName = when (paymentMethod) {
-      is PaymentMethod.CardPaymentMethod -> paymentMethod.brand ?: "Unknown"
-      is PaymentMethod.ThirdPartyPaymentMethd -> paymentMethod.name
+private fun PaymentData.toUiState(locale: Locale): PaymentViewModel.PaymentUiState {
+  val paymentMethod = paymentMethod
+  return PaymentViewModel.PaymentUiState(
+    nextChargeAmount = nextCharge.format(locale),
+    monthlyCost = monthlyCost?.format(locale),
+    nextChargeDate = nextChargeDate,
+    insuranceCosts = contracts.map {
+      PaymentViewModel.PaymentUiState.InsuranceCost(
+        displayName = it,
+        cost = null,
+      )
+    },
+    totalDiscount = totalDiscount?.negate()?.format(locale),
+    activeDiscounts = redeemedCampagins.map {
+      PaymentViewModel.PaymentUiState.Discount(
+        code = it.code,
+        displayName = it.displayValue ?: "-",
+      )
+    },
+    paymentMethod = PaymentViewModel.PaymentUiState.PaymentMethod(
+      displayName = when (paymentMethod) {
+        is PaymentData.PaymentMethod.CardPaymentMethod -> paymentMethod.brand ?: "Unknown"
+        is PaymentData.PaymentMethod.ThirdPartyPaymentMethd -> paymentMethod.name
+        null -> null
+      },
+      displayValue = when (paymentMethod) {
+        is PaymentData.PaymentMethod.CardPaymentMethod -> paymentMethod.lastFourDigits
+        is PaymentData.PaymentMethod.ThirdPartyPaymentMethd -> paymentMethod.type
+        null -> null
+      },
+    ),
+    payoutStatus = when (payoutMethodStatus) {
+      PayoutMethodStatus.ACTIVE -> PaymentViewModel.PaymentUiState.PayoutStatus.ACTIVE
+      PayoutMethodStatus.PENDING -> PaymentViewModel.PaymentUiState.PayoutStatus.PENDING
+      PayoutMethodStatus.NEEDS_SETUP -> PaymentViewModel.PaymentUiState.PayoutStatus.NEEDS_SETUP
+      PayoutMethodStatus.UNKNOWN__ -> null
       null -> null
     },
-    displayValue = when (paymentMethod) {
-      is PaymentMethod.CardPaymentMethod -> paymentMethod.lastFourDigits
-      is PaymentMethod.ThirdPartyPaymentMethd -> paymentMethod.type
-      null -> null
-    },
-  ),
-  payoutStatus = when (payoutMethodStatus) {
-    PayoutMethodStatus.ACTIVE -> PaymentViewModel.PaymentUiState.PayoutStatus.ACTIVE
-    PayoutMethodStatus.PENDING -> PaymentViewModel.PaymentUiState.PayoutStatus.PENDING
-    PayoutMethodStatus.NEEDS_SETUP -> PaymentViewModel.PaymentUiState.PayoutStatus.NEEDS_SETUP
-    PayoutMethodStatus.UNKNOWN__ -> null
-    null -> null
-  },
-)
+  )
+}

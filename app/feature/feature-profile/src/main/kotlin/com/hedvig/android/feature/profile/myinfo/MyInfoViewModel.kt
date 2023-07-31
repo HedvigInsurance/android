@@ -3,10 +3,10 @@ package com.hedvig.android.feature.profile.myinfo
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
+import com.hedvig.android.core.common.android.validation.ValidationResult
 import com.hedvig.android.core.common.android.validation.validateEmail
 import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.feature.profile.data.ProfileRepository
-import com.hedvig.app.util.validatePhoneNumber
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import hedvig.resources.R
@@ -156,3 +156,12 @@ data class MyInfoMember(
   val email: ValidatedInput<String?>,
   val phoneNumber: ValidatedInput<String?>,
 )
+
+private val phoneNumberRegex = Regex("([+]*[0-9]+[+. -]*)")
+
+fun validatePhoneNumber(phoneNumber: CharSequence): ValidationResult =
+  if (!phoneNumberRegex.matches(phoneNumber)) {
+    ValidationResult(false, R.string.PROFILE_MY_INFO_INVALID_PHONE_NUMBER)
+  } else {
+    ValidationResult(true, null)
+  }

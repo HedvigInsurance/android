@@ -8,6 +8,7 @@ import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.apollo.toMonetaryAmount
+import com.hedvig.android.payment.PaymentData
 import giraffe.ProfileQuery
 import giraffe.type.DirectDebitStatus
 import octopus.MemberUpdateEmailMutation
@@ -61,7 +62,7 @@ internal class ProfileRepositoryImpl(
         ?.activePaymentMethodsFragment
         ?.asStoredCardDetails
         ?.let {
-          PaymentMethod.CardPaymentMethod(
+          PaymentData.PaymentMethod.CardPaymentMethod(
             brand = it.brand,
             lastFourDigits = it.lastFourDigits,
             expiryMonth = it.expiryMonth,
@@ -72,7 +73,7 @@ internal class ProfileRepositoryImpl(
         ?.activePaymentMethodsFragment
         ?.asStoredThirdPartyDetails
         ?.let {
-          PaymentMethod.ThirdPartyPaymentMethd(
+          PaymentData.PaymentMethod.ThirdPartyPaymentMethd(
             name = it.name,
             type = it.type,
           )
