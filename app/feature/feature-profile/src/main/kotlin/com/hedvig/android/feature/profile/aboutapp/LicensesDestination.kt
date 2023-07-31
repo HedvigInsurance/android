@@ -22,7 +22,7 @@ import hedvig.resources.R
 private const val licensesUrl = "file:///android_asset/open_source_licenses.html"
 
 @Composable
-fun LicensesDestination(onBackPressed: () -> Unit) {
+internal fun LicensesDestination(onBackPressed: () -> Unit) {
   Surface(
     color = MaterialTheme.colorScheme.background,
     modifier = Modifier.fillMaxSize(),

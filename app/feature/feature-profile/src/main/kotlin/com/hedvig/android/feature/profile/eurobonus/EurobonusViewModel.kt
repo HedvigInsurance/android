@@ -39,7 +39,7 @@ internal class EurobonusViewModel(
   private val isSubmitting = MutableStateFlow(false)
   private val hasError = MutableStateFlow(false)
 
-  // If member isn't eligible for eurbonus, should exit this screen immediatelly.
+  // If member isn't eligible for eurobonus, should exit this screen immediatelly.
   val _isEligibleForEurobonus: MutableStateFlow<Boolean> = MutableStateFlow(true)
   val isEligibleForEurobonus: StateFlow<Boolean> = _isEligibleForEurobonus.asStateFlow()
 

@@ -10,11 +10,11 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
+import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.common.android.show
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
-import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.databinding.ActivityChatBinding
 import com.hedvig.app.feature.chat.ChatInputType
 import com.hedvig.app.feature.chat.ParagraphInput

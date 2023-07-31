@@ -7,7 +7,7 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Language
 import giraffe.UpdateLanguageMutation
 
-class ChangeLanguageUseCase(
+internal class ChangeLanguageUseCase(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,
   private val cacheManager: NetworkCacheManager,

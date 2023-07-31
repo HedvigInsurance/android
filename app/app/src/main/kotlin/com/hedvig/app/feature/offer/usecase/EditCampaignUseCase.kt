@@ -8,7 +8,7 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.android.QuoteCartId
-import com.hedvig.android.feature.forever.data.CampaignCode
+import com.hedvig.android.data.forever.CampaignCode
 import com.hedvig.app.feature.offer.OfferRepository
 import giraffe.QuoteCartAddCampaignMutation
 import giraffe.QuoteCartRemoveCampaignMutation

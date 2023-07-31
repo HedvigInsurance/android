@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class SettingsViewModel(
+internal class SettingsViewModel(
   hAnalytics: HAnalytics,
   private val changeLanguageUseCase: ChangeLanguageUseCase,
   marketManager: MarketManager,

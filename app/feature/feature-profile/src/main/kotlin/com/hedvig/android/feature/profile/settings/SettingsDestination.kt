@@ -86,7 +86,7 @@ internal fun SettingsDestination(
 }
 
 @Composable
-fun SettingsScreen(
+private fun SettingsScreen(
   uiState: SettingsViewModel.SettingsUiState,
   onBackPressed: () -> Unit,
   notificationsEnabled: Boolean,

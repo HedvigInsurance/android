@@ -57,6 +57,7 @@ import com.hedvig.android.core.icons.hedvig.normal.Waiting
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.hedvigSecondaryDateTimeFormatter
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
+import com.hedvig.android.data.forever.CampaignCode
 import com.hedvig.android.market.Market
 import hedvig.resources.R
 import java.time.LocalDate
