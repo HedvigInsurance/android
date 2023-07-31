@@ -6,16 +6,13 @@ import arrow.core.raise.either
 import com.hedvig.android.apollo.toMonetaryAmount
 import com.hedvig.android.data.forever.ForeverRepository
 import com.hedvig.android.feature.forever.data.GetReferralsInformationUseCase
-import com.hedvig.android.language.LanguageService
 import giraffe.ReferralTermsQuery
 import giraffe.ReferralsQuery
 import giraffe.fragment.ReferralFragment
-import javax.money.MonetaryAmount
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.Locale
 import javax.money.MonetaryAmount
 
 internal class ForeverViewModel(
