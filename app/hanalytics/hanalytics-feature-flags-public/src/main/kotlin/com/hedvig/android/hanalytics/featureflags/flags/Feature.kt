@@ -13,7 +13,7 @@ enum class Feature(
   MOVING_FLOW("Lets a user change their address and get a new offer"),
   PAYMENT_SCREEN("Controls whether the payment screen should be accessible from the profile tab"),
   QUOTE_CART("Use new APIs for onboarding"),
-  REFERRALS("Whether the referrals feature is enabled. Shows/Hides the forever tab. Used for Qasa."),
+  FOREVER("Whether the referrals feature is enabled. Shows/Hides the forever tab. Used for Qasa."),
   REFERRAL_CAMPAIGN("Used to show banner in referral view"),
   SHOW_BUSINESS_MODEL("Show anything related to the the business model or hide it all completely. Used for Qasa."),
   TERMINATION_FLOW("Shows the button which enters the insurance termination flow from the insurance tab"),

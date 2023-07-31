@@ -14,7 +14,7 @@ import giraffe.UpdateReferralCampaignCodeMutation
 @JvmInline
 value class CampaignCode(val code: String)
 
-class ReferralsRepository(
+class ForeverRepository(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,
 ) {
@@ -72,6 +72,6 @@ class ReferralsRepository(
       val maxUpdates: Int,
     ) : ReferralError
 
-    object CodeExists : ReferralError
+    data object CodeExists : ReferralError
   }
 }

@@ -15,7 +15,7 @@ internal class HAnalyticsFeatureFlagProvider(
     Feature.MOVING_FLOW -> hAnalytics.movingFlow()
     Feature.PAYMENT_SCREEN -> hAnalytics.paymentScreen()
     Feature.QUOTE_CART -> hAnalytics.useQuoteCart()
-    Feature.REFERRALS -> hAnalytics.forever()
+    Feature.FOREVER -> hAnalytics.forever()
     Feature.REFERRAL_CAMPAIGN -> hAnalytics.foreverFebruaryCampaign()
     Feature.SHOW_BUSINESS_MODEL -> hAnalytics.showCharity()
     Feature.TERMINATION_FLOW -> hAnalytics.terminationFlow()

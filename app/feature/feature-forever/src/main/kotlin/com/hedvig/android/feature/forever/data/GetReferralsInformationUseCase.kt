@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.forever
+package com.hedvig.android.feature.forever.data
 
 import arrow.core.Either
 import arrow.core.raise.either
@@ -9,7 +9,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.language.LanguageService
 import giraffe.ReferralTermsQuery
 
-class GetReferralsInformationUseCase(
+internal class GetReferralsInformationUseCase(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,
 ) {

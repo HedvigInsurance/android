@@ -18,7 +18,7 @@ internal class DevFeatureFlagProvider(
       Feature.MOVING_FLOW -> true
       Feature.PAYMENT_SCREEN -> !isQasaMember
       Feature.QUOTE_CART -> false
-      Feature.REFERRALS -> !isQasaMember
+      Feature.FOREVER -> !isQasaMember
       Feature.REFERRAL_CAMPAIGN -> false
       Feature.SHOW_BUSINESS_MODEL -> !isQasaMember
       Feature.TERMINATION_FLOW -> true

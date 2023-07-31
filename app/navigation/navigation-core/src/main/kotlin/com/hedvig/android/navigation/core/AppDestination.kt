@@ -15,7 +15,7 @@ sealed interface AppDestination : Destination {
     object Profile : TopLevelDestination
 
     @Serializable
-    object Referrals : TopLevelDestination
+    object Forever : TopLevelDestination
   }
 
   @Serializable

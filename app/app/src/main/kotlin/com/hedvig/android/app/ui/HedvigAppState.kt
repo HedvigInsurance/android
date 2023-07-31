@@ -105,12 +105,12 @@ internal class HedvigAppState(
     }
 
   val topLevelGraphs: StateFlow<ImmutableSet<TopLevelGraph>> = flow {
-    val isReferralsEnabled = featureManager.isFeatureEnabled(Feature.REFERRALS)
+    val isForeverEnabled = featureManager.isFeatureEnabled(Feature.FOREVER)
     emit(
       listOfNotNull(
         TopLevelGraph.HOME,
         TopLevelGraph.INSURANCE,
-        TopLevelGraph.REFERRALS.takeIf { isReferralsEnabled },
+        TopLevelGraph.FOREVER.takeIf { isForeverEnabled },
         TopLevelGraph.PROFILE,
       ).toPersistentSet(),
     )
@@ -152,7 +152,7 @@ internal class HedvigAppState(
       TopLevelGraph.HOME -> navController.navigate(TopLevelGraph.HOME, topLevelNavOptions)
       TopLevelGraph.INSURANCE -> navController.navigate(TopLevelGraph.INSURANCE, topLevelNavOptions)
       TopLevelGraph.PROFILE -> navController.navigate(TopLevelGraph.PROFILE, topLevelNavOptions)
-      TopLevelGraph.REFERRALS -> navController.navigate(TopLevelGraph.REFERRALS, topLevelNavOptions)
+      TopLevelGraph.FOREVER -> navController.navigate(TopLevelGraph.FOREVER, topLevelNavOptions)
     }
   }
 }
@@ -202,7 +202,7 @@ private fun TopLevelDestinationNavigationSideEffect(
             hAnalytics.screenView(AppScreen.INSURANCES)
             tabNotificationBadgeService.visitTab(BottomNavTab.INSURANCE)
           }
-          AppDestination.TopLevelDestination.Referrals -> {
+          AppDestination.TopLevelDestination.Forever -> {
             hAnalytics.screenView(AppScreen.FOREVER)
             tabNotificationBadgeService.visitTab(BottomNavTab.REFERRALS)
           }
@@ -224,7 +224,7 @@ private fun BottomNavTab.topTopLevelGraph(): TopLevelGraph {
   return when (this) {
     BottomNavTab.HOME -> TopLevelGraph.HOME
     BottomNavTab.INSURANCE -> TopLevelGraph.INSURANCE
-    BottomNavTab.REFERRALS -> TopLevelGraph.REFERRALS
+    BottomNavTab.REFERRALS -> TopLevelGraph.FOREVER
     BottomNavTab.PROFILE -> TopLevelGraph.PROFILE
   }
 }
@@ -233,7 +233,7 @@ private fun NavDestination?.toTopLevelAppDestination(): AppDestination.TopLevelD
   return when (this?.route) {
     createRoutePattern<AppDestination.TopLevelDestination.Home>() -> AppDestination.TopLevelDestination.Home
     createRoutePattern<AppDestination.TopLevelDestination.Insurance>() -> AppDestination.TopLevelDestination.Insurance
-    createRoutePattern<AppDestination.TopLevelDestination.Referrals>() -> AppDestination.TopLevelDestination.Referrals
+    createRoutePattern<AppDestination.TopLevelDestination.Forever>() -> AppDestination.TopLevelDestination.Forever
     createRoutePattern<AppDestination.TopLevelDestination.Profile>() -> AppDestination.TopLevelDestination.Profile
     else -> null
   }
