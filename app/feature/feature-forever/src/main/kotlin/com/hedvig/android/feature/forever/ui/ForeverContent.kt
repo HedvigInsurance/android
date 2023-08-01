@@ -1,19 +1,18 @@
 package com.hedvig.android.feature.forever.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
@@ -42,7 +41,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.apollo.format
-import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.data.forever.toErrorMessage
 import com.hedvig.android.feature.forever.ForeverUiState
@@ -117,15 +115,42 @@ internal fun ForeverContent(
     )
   }
 
-  Box {
+  Box(
+    Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
+  ) {
     Column(
       Modifier
         .matchParentSize()
         .pullRefresh(pullRefreshState)
-        .verticalScroll(rememberScrollState())
-        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+        .verticalScroll(rememberScrollState()),
     ) {
-      Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
+      Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+          .height(64.dp)
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      ) {
+        Text(
+          text = stringResource(id = R.string.TAB_REFERRALS_TITLE),
+          style = MaterialTheme.typography.titleLarge,
+        )
+
+        if (uiState.incentive != null && uiState.referralUrl != null) {
+          IconButton(
+            onClick = { showReferralExplanationBottomSheet = true },
+            colors = IconButtonDefaults.iconButtonColors(),
+            modifier = Modifier.size(40.dp),
+          ) {
+            Icon(
+              painter = painterResource(R.drawable.ic_info_toolbar),
+              contentDescription = stringResource(R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
+              modifier = Modifier.size(24.dp),
+            )
+          }
+        }
+      }
       Spacer(Modifier.height(72.dp))
       Text(
         text = uiState.currentDiscountAmount?.format(locale) ?: "-",
@@ -185,21 +210,8 @@ internal fun ForeverContent(
         ReferralList(uiState)
       }
     }
-    if (uiState.incentive != null && uiState.referralUrl != null) {
-      TopAppBarLayoutForActions {
-        IconButton(
-          onClick = { showReferralExplanationBottomSheet = true },
-          colors = IconButtonDefaults.iconButtonColors(),
-          modifier = Modifier.size(40.dp),
-        ) {
-          Icon(
-            painter = painterResource(R.drawable.ic_info_toolbar),
-            contentDescription = stringResource(R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
-            modifier = Modifier.size(24.dp),
-          )
-        }
-      }
-    }
+
+
     PullRefreshIndicator(
       refreshing = uiState.isLoading,
       state = pullRefreshState,

@@ -78,7 +78,9 @@ private fun ChangeAddressSelectHousingTypeScreen(
       text = stringResource(hedvig.resources.R.string.CHANGE_ADDRESS_SELECT_HOUSING_TYPE_TITLE),
       style = MaterialTheme.typography.headlineSmall,
       textAlign = TextAlign.Center,
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
     )
     Spacer(modifier = Modifier.height(64.dp))
     RadioButton(HousingType.APARTMENT_OWN, uiState.housingType.input, onHousingTypeSelected)
@@ -126,8 +128,13 @@ private fun RadioButton(
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically,
     ) {
+      val icon = when (housingType) {
+        HousingType.APARTMENT_RENT -> R.drawable.ic_pillow_rental
+        HousingType.APARTMENT_OWN -> R.drawable.ic_pillow_homeowner
+        HousingType.VILLA -> R.drawable.ic_pillow_villa
+      }
       Image(
-        painter = painterResource(R.drawable.ic_pillow),
+        painter = painterResource(icon),
         contentDescription = null,
         modifier = Modifier.size(48.dp),
       )

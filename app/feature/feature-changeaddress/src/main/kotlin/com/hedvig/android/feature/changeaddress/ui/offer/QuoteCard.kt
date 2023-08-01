@@ -76,7 +76,7 @@ internal fun QuoteCard(
 private fun PillAndBasicInfo(movingDate: String?) {
   Row(verticalAlignment = Alignment.CenterVertically) {
     Image(
-      painter = painterResource(id = R.drawable.ic_pillow),
+      painter = painterResource(id = R.drawable.ic_pillow_home),
       contentDescription = null,
       modifier = Modifier.size(48.dp),
     )

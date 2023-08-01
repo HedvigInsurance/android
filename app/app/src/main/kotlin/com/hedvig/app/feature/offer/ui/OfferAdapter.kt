@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePaddingRelative
 import androidx.fragment.app.FragmentManager
@@ -22,7 +23,7 @@ import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.android.apollo.format
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
-import com.hedvig.android.core.ui.insurance.toDrawable
+import com.hedvig.android.core.ui.insurance.toDrawableRes
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.R
@@ -201,7 +202,7 @@ class OfferAdapter(
               onSign(data.checkoutMethod, data.paymentMethodsApiResponse)
             }
           }
-          root.background = data.gradientType.toDrawable(itemView.context)
+          root.background = ContextCompat.getDrawable(itemView.context, data.gradientType.toDrawableRes())
         }
       }
     }

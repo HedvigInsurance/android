@@ -228,7 +228,7 @@ private fun InsuranceCosts(
         verticalAlignment = Alignment.CenterVertically,
       ) {
         Image(
-          painter = painterResource(id = com.hedvig.android.core.ui.R.drawable.ic_pillow),
+          painter = painterResource(id = com.hedvig.android.core.ui.R.drawable.ic_pillow_home),
           contentDescription = null,
           modifier = Modifier.size(32.dp),
         )

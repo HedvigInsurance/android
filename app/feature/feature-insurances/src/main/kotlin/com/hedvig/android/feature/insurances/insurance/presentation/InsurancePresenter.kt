@@ -26,6 +26,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import octopus.CrossSalesQuery
+import octopus.type.CrossSellType
 
 internal sealed interface InsuranceScreenEvent {
   object RetryLoading : InsuranceScreenEvent
@@ -54,7 +55,12 @@ internal data class InsuranceUiState(
     val title: String,
     val subtitle: String,
     val storeUrl: String,
-  )
+    val type: CrossSellType,
+  ) {
+    enum class CrossSellType {
+      PET, HOME, ACCIDENT, CAR, UNKNOWN
+    }
+  }
 
   companion object {
     val initialState = InsuranceUiState(
@@ -170,6 +176,14 @@ private suspend fun loadInsuranceData(
           title = crossSell.title,
           subtitle = crossSell.description,
           storeUrl = crossSell.storeUrl,
+          type = when (crossSell.type) {
+            CrossSellType.CAR -> InsuranceUiState.CrossSell.CrossSellType.CAR
+            CrossSellType.HOME -> InsuranceUiState.CrossSell.CrossSellType.HOME
+            CrossSellType.ACCIDENT -> InsuranceUiState.CrossSell.CrossSellType.ACCIDENT
+            CrossSellType.PET -> InsuranceUiState.CrossSell.CrossSellType.PET
+            CrossSellType.UNKNOWN__ -> InsuranceUiState.CrossSell.CrossSellType.UNKNOWN
+            null -> InsuranceUiState.CrossSell.CrossSellType.UNKNOWN
+          }
         )
       }.toPersistentList()
       InsuranceData(

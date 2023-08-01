@@ -1,5 +1,6 @@
 query Payment($locale: Locale!) {
   contracts {
+    typeOfContract
     displayName
     status {
       ...ContractStatusFragment
