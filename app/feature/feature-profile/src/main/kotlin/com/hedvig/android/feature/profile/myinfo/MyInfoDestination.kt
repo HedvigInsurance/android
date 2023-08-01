@@ -64,7 +64,7 @@ private fun MyInfoScreen(
     modifier = Modifier.fillMaxSize(),
   ) {
     HedvigScaffold(
-      topAppBarText = stringResource(R.string.PROFILE_MY_INFO_TITLE),
+      topAppBarText = stringResource(R.string.PROFILE_MY_INFO_ROW_TITLE),
       navigateUp = navigateUp,
       modifier = Modifier.clearFocusOnTap(),
     ) {
@@ -88,6 +88,7 @@ private fun MyInfoScreen(
             keyboardType = KeyboardType.Phone,
             imeAction = ImeAction.Next,
           ),
+          withNewDesign = true,
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
@@ -115,6 +116,7 @@ private fun MyInfoScreen(
               localSoftwareKeyboardController?.hide()
             },
           ),
+          withNewDesign = true,
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),

@@ -2,18 +2,20 @@ package com.hedvig.android.feature.profile.payment
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -261,7 +263,7 @@ private fun TotalDiscount(uiState: PaymentViewModel.PaymentUiState) {
 }
 
 @Composable
-private fun AddDiscount(
+private fun ColumnScope.AddDiscount(
   uiState: PaymentViewModel.PaymentUiState,
   onAddDiscountCode: () -> Unit,
   onDiscountCodeChanged: (CampaignCode) -> Unit,
@@ -283,8 +285,8 @@ private fun AddDiscount(
   }
   AnimatedVisibility(
     visible = showDiscountInput,
-    enter = fadeIn(),
-    exit = fadeOut(),
+    enter = fadeIn() + expandVertically(expandFrom = Alignment.CenterVertically, clip = false),
+    exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.CenterVertically, clip = false),
   ) {
     Row(
       modifier = Modifier
@@ -314,7 +316,6 @@ private fun AddDiscount(
           containerColor = MaterialTheme.colorScheme.typeContainer,
           contentColor = MaterialTheme.colorScheme.primary,
         ),
-        modifier = Modifier.fillMaxHeight(),
       )
     }
   }

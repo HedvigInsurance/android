@@ -71,6 +71,7 @@ fun HedvigTextField(
   onValueChange: (String) -> Unit,
   errorText: String?,
   modifier: Modifier = Modifier,
+  withNewDesign: Boolean = false, // Adapts the TextField to have the big card size and the bigger text size.
   enabled: Boolean = true,
   readOnly: Boolean = false,
   textStyle: TextStyle = LocalTextStyle.current,
@@ -91,6 +92,7 @@ fun HedvigTextField(
     value = value,
     onValueChange = onValueChange,
     modifier = modifier,
+    withNewDesign = withNewDesign,
     enabled = enabled,
     readOnly = readOnly,
     textStyle = textStyle,
