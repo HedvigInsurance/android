@@ -31,11 +31,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
-import com.hedvig.android.feature.insurances.insurancedetail.ContractDetails
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -45,8 +43,6 @@ import kotlinx.coroutines.launch
 internal fun YourInfoTab(
   coverageItems: ImmutableList<Pair<String, String>>,
   allowEditCoInsured: Boolean,
-  cancelInsuranceData: ContractDetails.CancelInsuranceData?,
-  onCancelInsuranceClick: (ContractDetails.CancelInsuranceData) -> Unit,
   onEditCoInsuredClick: () -> Unit,
   onChangeAddressClick: () -> Unit,
   modifier: Modifier = Modifier,
@@ -110,17 +106,6 @@ internal fun YourInfoTab(
       ),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
-    if (cancelInsuranceData != null) {
-      Spacer(Modifier.height(8.dp))
-      HedvigTextButton(
-        text = stringResource(R.string.TERMINATION_BUTTON),
-        onClick = { onCancelInsuranceClick(cancelInsuranceData) },
-        colors = ButtonDefaults.textButtonColors(
-          contentColor = MaterialTheme.colorScheme.error,
-        ),
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
-    }
     Spacer(Modifier.height(16.dp))
   }
 }
@@ -177,8 +162,6 @@ private fun PreviewYourInfoTab() {
           "Co-insured".repeat(4) to "You +1".repeat(5),
         ),
         allowEditCoInsured = true,
-        cancelInsuranceData = ContractDetails.CancelInsuranceData("1", ""),
-        onCancelInsuranceClick = {},
         onEditCoInsuredClick = {},
         onChangeAddressClick = {},
       )

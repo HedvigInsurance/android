@@ -32,8 +32,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -149,11 +147,9 @@ private fun ContractDetailScreen(
                   0 -> {
                     YourInfoTab(
                       coverageItems = uiState.contractDetails.overviewItems,
-                      cancelInsuranceData = uiState.contractDetails.cancelInsuranceData,
                       allowEditCoInsured = uiState.contractDetails.allowEditCoInsured,
                       onEditCoInsuredClick = onEditCoInsuredClick,
                       onChangeAddressClick = onChangeAddressClick,
-                      onCancelInsuranceClick = onCancelInsuranceClick,
                     )
                   }
                   1 -> {
@@ -166,6 +162,8 @@ private fun ContractDetailScreen(
                     DocumentsTab(
                       documents = uiState.contractDetails.documents,
                       onDocumentClicked = openWebsite,
+                      cancelInsuranceData = uiState.contractDetails.cancelInsuranceData,
+                      onCancelInsuranceClick = onCancelInsuranceClick,
                     )
                   }
                   else -> {}
