@@ -15,10 +15,8 @@ import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material3.Divider
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,10 +37,6 @@ import org.javamoney.moneta.Money
 
 @Composable
 internal fun ReferralList(uiState: ForeverUiState) {
-  if (uiState.referrals.isEmpty()) {
-    return
-  }
-
   Column(modifier = Modifier.padding(horizontal = 16.dp)) {
     Text(
       text = stringResource(id = R.string.FOREVER_REFERRAL_LIST_LABEL),
@@ -72,12 +66,11 @@ internal fun ReferralList(uiState: ForeverUiState) {
     ) {
       Text(text = stringResource(id = R.string.FOREVER_TAB_TOTAL_DISCOUNT_LABEL))
       Row {
-        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
-          Text(
-            text = uiState.grossPriceAmount?.format(getLocale()) ?: "-",
-            style = LocalTextStyle.current.copy(textDecoration = TextDecoration.LineThrough),
-          )
-        }
+        Text(
+          text = uiState.grossPriceAmount?.format(getLocale()) ?: "-",
+          style = LocalTextStyle.current.copy(textDecoration = TextDecoration.LineThrough),
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
         Spacer(modifier = Modifier.width(4.dp))
         Text(uiState.currentNetAmount?.format(getLocale()) ?: "-")
       }
@@ -110,21 +103,24 @@ private fun ReferralRow(referral: ForeverUiState.Referral) {
       }
 
       ForeverUiState.ReferralState.IN_PROGRESS -> {
-        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
-          Text(text = stringResource(id = R.string.REFERRAL_PENDING_STATUS_LABEL))
-        }
+        Text(
+          text = stringResource(id = R.string.REFERRAL_PENDING_STATUS_LABEL),
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
       }
 
       ForeverUiState.ReferralState.TERMINATED -> {
-        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
-          Text(text = stringResource(id = R.string.REFERRAL_TERMINATED_STATUS_LABEL))
-        }
+        Text(
+          text = stringResource(id = R.string.REFERRAL_TERMINATED_STATUS_LABEL),
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
       }
 
       ForeverUiState.ReferralState.UNKNOWN -> {
-        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
-          Text(text = stringResource(id = R.string.REFERRAL_TERMINATED_STATUS_LABEL))
-        }
+        Text(
+          text = stringResource(id = R.string.REFERRAL_TERMINATED_STATUS_LABEL),
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
       }
     }
   }

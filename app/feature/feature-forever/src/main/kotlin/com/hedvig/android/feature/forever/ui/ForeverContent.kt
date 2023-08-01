@@ -24,12 +24,10 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,9 +47,9 @@ import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.data.forever.toErrorMessage
 import com.hedvig.android.feature.forever.ForeverUiState
 import hedvig.resources.R
+import javax.money.MonetaryAmount
 import kotlinx.coroutines.launch
 import org.javamoney.moneta.Money
-import javax.money.MonetaryAmount
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -120,32 +118,29 @@ internal fun ForeverContent(
         style = MaterialTheme.typography.headlineLarge,
         modifier = Modifier.padding(horizontal = 16.dp),
       )
-
-      CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
-        Text(
-          text = uiState.currentDiscountAmount?.format(locale) ?: "-",
-          textAlign = TextAlign.Center,
-          modifier = Modifier.fillMaxWidth(),
-        )
-      }
+      Text(
+        text = uiState.currentDiscountAmount?.format(locale) ?: "-",
+        textAlign = TextAlign.Center,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.fillMaxWidth(),
+      )
       Spacer(Modifier.height(16.dp))
       // TODO Add pie chart
       Spacer(Modifier.height(24.dp))
       if (uiState.referrals.isEmpty() && uiState.incentive != null) {
         Spacer(Modifier.height(32.dp))
-        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
-          Text(
-            text = stringResource(
-              id = R.string.referrals_empty_body,
-              uiState.incentive.format(locale),
-              Money.of(0, uiState.incentive.currency?.currencyCode).format(locale),
-            ),
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 16.dp),
-          )
-        }
+        Text(
+          text = stringResource(
+            id = R.string.referrals_empty_body,
+            uiState.incentive.format(locale),
+            Money.of(0, uiState.incentive.currency?.currencyCode).format(locale),
+          ),
+          textAlign = TextAlign.Center,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        )
         Spacer(Modifier.height(16.dp))
       } else {
         Text(
@@ -155,16 +150,15 @@ internal fun ForeverContent(
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         )
-        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
-          Text(
-            text = stringResource(
-              id = R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-              uiState.currentNetAmount?.format(locale) ?: "-",
-            ),
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth(),
-          )
-        }
+        Text(
+          text = stringResource(
+            id = R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+            uiState.currentNetAmount?.format(locale) ?: "-",
+          ),
+          textAlign = TextAlign.Center,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          modifier = Modifier.fillMaxWidth(),
+        )
         Spacer(Modifier.height(82.dp))
       }
 
@@ -178,7 +172,9 @@ internal fun ForeverContent(
         },
         onShareCodeClick = onShareCodeClick,
       )
-      ReferralList(uiState)
+      if (uiState.referrals.isEmpty()) {
+        ReferralList(uiState)
+      }
     }
     if (uiState.incentive != null && uiState.referralUrl != null) {
       TopAppBarLayoutForActions {
