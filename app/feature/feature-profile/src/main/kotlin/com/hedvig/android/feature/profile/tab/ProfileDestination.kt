@@ -110,8 +110,9 @@ private fun ProfileScreen(
   var showLogoutDialog by rememberSaveable { mutableStateOf(false) }
   if (showLogoutDialog) {
     HedvigAlertDialog(
-      title = stringResource(R.string.GENERAL_ARE_YOU_SURE),
+      title = null,
       text = stringResource(id = R.string.PROFILE_LOGOUT_DIALOG_MESSAGE),
+      dismissButtonLabel = stringResource(id = R.string.general_cancel_button),
       onDismissRequest = { showLogoutDialog = false },
       onConfirmClick = onLogout,
     )
