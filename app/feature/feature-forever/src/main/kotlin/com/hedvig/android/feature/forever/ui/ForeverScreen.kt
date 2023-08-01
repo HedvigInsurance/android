@@ -22,7 +22,6 @@ import com.hedvig.android.feature.forever.ForeverUiState
 import com.hedvig.android.feature.forever.showShareSheet
 import com.hedvig.android.language.LanguageService
 import hedvig.resources.R
-import javax.money.MonetaryAmount
 
 @Composable
 internal fun ForeverScreen(
@@ -38,7 +37,6 @@ internal fun ForeverScreen(
   ) {
     val context = LocalContext.current
     val resources = context.resources
-
     if (uiState.errorMessage != null) {
       Box {
         Column(Modifier.matchParentSize()) {
@@ -73,9 +71,7 @@ internal fun ForeverScreen(
         },
         onCodeChanged = onCodeChanged,
         onSubmitCode = onSubmitCode,
-      ) { referralTermsUrl: String, referralIncentive: MonetaryAmount ->
-        // show bottom sheet
-      }
+      )
     }
   }
 }

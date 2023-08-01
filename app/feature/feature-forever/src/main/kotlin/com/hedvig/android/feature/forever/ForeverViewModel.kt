@@ -9,11 +9,11 @@ import com.hedvig.android.feature.forever.data.GetReferralsInformationUseCase
 import giraffe.ReferralTermsQuery
 import giraffe.ReferralsQuery
 import giraffe.fragment.ReferralFragment
+import javax.money.MonetaryAmount
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.money.MonetaryAmount
 
 internal class ForeverViewModel(
   private val foreverRepository: ForeverRepository,
@@ -185,7 +185,8 @@ internal data class ForeverUiState(
           ?.discount
           ?.fragments
           ?.monetaryAmountFragment
-          ?.toMonetaryAmount(),
+          ?.toMonetaryAmount()
+          ?.negate(),
       )
     },
   )
