@@ -134,11 +134,14 @@ internal data class ForeverUiState(
     campaignCode = referralsData.referralInformation.campaign.code,
     editedCampaignCode = referralsData.referralInformation.campaign.code,
     grossPriceAmount = referralsData
-      .chargeEstimation
-      .subscription
-      .fragments
-      .monetaryAmountFragment
-      .toMonetaryAmount(),
+      .referralInformation
+      .costReducedIndefiniteDiscount
+      ?.fragments
+      ?.costFragment
+      ?.monthlyGross
+      ?.fragments
+      ?.monetaryAmountFragment
+      ?.toMonetaryAmount(),
     potentialDiscountAmount = referralsData
       .referralInformation
       .campaign

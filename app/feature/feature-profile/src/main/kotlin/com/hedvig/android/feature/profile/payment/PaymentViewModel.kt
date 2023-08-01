@@ -121,13 +121,13 @@ private fun PaymentData.toUiState(locale: Locale): PaymentViewModel.PaymentUiSta
       )
     } ?: PaymentViewModel.PaymentUiState.PaymentMethod(
       displayName = when (paymentMethod) {
-        is PaymentMethod.CardPaymentMethod -> paymentMethod.brand ?: "Unknown"
-        is PaymentMethod.ThirdPartyPaymentMethd -> paymentMethod.name
+        is PaymentData.PaymentMethod.CardPaymentMethod -> paymentMethod.brand ?: "Unknown"
+        is PaymentData.PaymentMethod.ThirdPartyPaymentMethd -> paymentMethod.name
         null -> null
       },
       displayValue = when (paymentMethod) {
-        is PaymentMethod.CardPaymentMethod -> paymentMethod.lastFourDigits
-        is PaymentMethod.ThirdPartyPaymentMethd -> paymentMethod.type
+        is PaymentData.PaymentMethod.CardPaymentMethod -> paymentMethod.lastFourDigits
+        is PaymentData.PaymentMethod.ThirdPartyPaymentMethd -> paymentMethod.type
         null -> null
       },
     ),
