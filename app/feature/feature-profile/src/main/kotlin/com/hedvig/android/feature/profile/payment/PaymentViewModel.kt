@@ -114,23 +114,25 @@ private fun PaymentData.toUiState(locale: Locale): PaymentViewModel.PaymentUiSta
         displayName = it.displayValue ?: "-",
       )
     },
-    paymentMethod = bankAccount?.let {
-      PaymentViewModel.PaymentUiState.PaymentMethod(
-        displayName = it.name,
-        displayValue = it.accountNumber,
+    paymentMethod = if (paymentMethod == null) {
+      null
+    } else {
+      bankAccount?.let {
+        PaymentViewModel.PaymentUiState.PaymentMethod(
+          displayName = it.name,
+          displayValue = it.accountNumber,
+        )
+      } ?: PaymentViewModel.PaymentUiState.PaymentMethod(
+        displayName = when (paymentMethod) {
+          is PaymentData.PaymentMethod.CardPaymentMethod -> paymentMethod.brand ?: "Unknown"
+          is PaymentData.PaymentMethod.ThirdPartyPaymentMethd -> paymentMethod.name
+        },
+        displayValue = when (paymentMethod) {
+          is PaymentData.PaymentMethod.CardPaymentMethod -> paymentMethod.lastFourDigits
+          is PaymentData.PaymentMethod.ThirdPartyPaymentMethd -> paymentMethod.type
+        },
       )
-    } ?: PaymentViewModel.PaymentUiState.PaymentMethod(
-      displayName = when (paymentMethod) {
-        is PaymentData.PaymentMethod.CardPaymentMethod -> paymentMethod.brand ?: "Unknown"
-        is PaymentData.PaymentMethod.ThirdPartyPaymentMethd -> paymentMethod.name
-        null -> null
-      },
-      displayValue = when (paymentMethod) {
-        is PaymentData.PaymentMethod.CardPaymentMethod -> paymentMethod.lastFourDigits
-        is PaymentData.PaymentMethod.ThirdPartyPaymentMethd -> paymentMethod.type
-        null -> null
-      },
-    ),
+    },
     payoutStatus = when (payoutMethodStatus) {
       PayoutMethodStatus.ACTIVE -> PaymentViewModel.PaymentUiState.PayoutStatus.ACTIVE
       PayoutMethodStatus.PENDING -> PaymentViewModel.PaymentUiState.PayoutStatus.PENDING
