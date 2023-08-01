@@ -112,8 +112,8 @@ private fun <T> dotInfiniteRepeatableSpec(
 
 // The duration of half of the animation. During this duration, one item does the "out" animation, and at the same
 // time, the next item does the "in" animation, they happen in parallel.
-private val animationDurationMilliseconds = 500
-private val numberOfDots = 3
+private const val animationDurationMilliseconds = 500
+private const val numberOfDots = 3
 
 @HedvigPreview
 @Composable

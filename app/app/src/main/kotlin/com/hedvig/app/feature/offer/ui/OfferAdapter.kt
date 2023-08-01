@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
+import com.hedvig.android.apollo.format
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.core.ui.insurance.toDrawable
@@ -46,7 +47,6 @@ import com.hedvig.app.feature.offer.ui.composable.insurely.InsurelyCard
 import com.hedvig.app.feature.offer.ui.composable.variants.VariantButton
 import com.hedvig.app.feature.offer.ui.composable.variants.VariantHeader
 import com.hedvig.app.feature.table.generateTable
-import com.hedvig.android.apollo.format
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.drawableAttr

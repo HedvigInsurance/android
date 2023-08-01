@@ -8,8 +8,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
-import com.hedvig.android.feature.forever.ui.ForeverScreen
 import com.hedvig.android.feature.forever.ForeverViewModel
+import com.hedvig.android.feature.forever.ui.ForeverScreen
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.compose.typed.animatedNavigation

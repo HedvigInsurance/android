@@ -3,9 +3,9 @@ package com.hedvig.app.feature.referrals.ui.redeemcode
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.core.common.android.QuoteCartId
-import com.hedvig.android.feature.forever.data.CampaignCode
+import com.hedvig.android.data.forever.CampaignCode
+import com.hedvig.android.data.forever.ForeverRepository
 import com.hedvig.app.feature.offer.usecase.EditCampaignUseCase
-import com.hedvig.android.feature.forever.data.ForeverRepository
 import giraffe.RedeemReferralCodeMutation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

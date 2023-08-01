@@ -21,9 +21,11 @@ import com.hedvig.android.core.common.android.ThemedIconUrls
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.toClaimFlowDestination
+import com.hedvig.android.feature.businessmodel.businessModelGraph
 import com.hedvig.android.feature.changeaddress.navigation.changeAddressGraph
 import com.hedvig.android.feature.claimtriaging.ClaimTriagingDestination
 import com.hedvig.android.feature.claimtriaging.claimTriagingDestinations
+import com.hedvig.android.feature.forever.navigation.foreverGraph
 import com.hedvig.android.feature.home.claims.pledge.HonestyPledgeBottomSheet
 import com.hedvig.android.feature.home.home.navigation.homeGraph
 import com.hedvig.android.feature.home.legacychangeaddress.LegacyChangeAddressActivity
@@ -31,6 +33,7 @@ import com.hedvig.android.feature.insurances.insuranceGraph
 import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
 import com.hedvig.android.feature.odyssey.navigation.terminalClaimFlowStepDestinations
+import com.hedvig.android.feature.profile.tab.profileGraph
 import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceGraph
 import com.hedvig.android.feature.travelcertificate.navigation.generateTravelCertificateGraph
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
@@ -49,8 +52,6 @@ import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.home.ui.HowClaimsWorkDialog
 import com.hedvig.app.feature.payment.connectPayinIntent
-import com.hedvig.app.feature.profile.ui.tab.profileGraph
-import com.hedvig.android.feature.forever.navigation.foreverGraph
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.startChat
@@ -74,6 +75,8 @@ internal fun HedvigNavHost(
   hAnalytics: HAnalytics,
   fragmentManager: FragmentManager,
   languageService: LanguageService,
+  appVersionName: String,
+  appVersionCode: String,
   isProduction: Boolean,
   modifier: Modifier = Modifier,
 ) {
@@ -214,9 +217,16 @@ internal fun HedvigNavHost(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     )
     profileGraph(
+      nestedGraphs = {
+        businessModelGraph(
+          navigator = navigator,
+          windowSizeClass = hedvigAppState.windowSizeClass,
+        )
+      },
       navigator = navigator,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-      windowSizeClass = hedvigAppState.windowSizeClass,
+      appVersionName = appVersionName,
+      appVersionCode = appVersionCode,
       isProduction = isProduction,
       navigateToPayoutScreen = navigateToPayoutScreen@{
         val market = marketManager.market ?: return@navigateToPayoutScreen

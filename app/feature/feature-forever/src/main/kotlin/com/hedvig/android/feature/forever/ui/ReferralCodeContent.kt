@@ -32,7 +32,6 @@ import hedvig.resources.R
 import java.util.*
 import javax.money.MonetaryAmount
 
-
 @Suppress("UnusedReceiverParameter")
 @Composable
 internal fun ColumnScope.ReferralCodeContent(

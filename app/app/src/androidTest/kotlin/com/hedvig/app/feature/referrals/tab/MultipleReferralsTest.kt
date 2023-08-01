@@ -1,6 +1,8 @@
 package com.hedvig.app.feature.referrals.tab
 
+import com.hedvig.android.apollo.format
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
+import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES
@@ -8,8 +10,6 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.FeatureFlagRule
 import com.hedvig.app.util.LazyActivityScenarioRule
-import com.hedvig.android.apollo.format
-import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.locale

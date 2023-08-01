@@ -60,8 +60,7 @@ internal fun DocumentsTab(
         subtitle = stringResource(
           when (document) {
             is ContractDetails.Document.InsuranceCertificate -> R.string.MY_DOCUMENTS_INSURANCE_TERMS
-            is ContractDetails.Document.TermsAndConditions ->
-              R.string.insurance_details_view_documents_insurance_letter_subtitle
+            is ContractDetails.Document.TermsAndConditions -> R.string.MY_DOCUMENTS_INSURANCE_TERMS_SUBTITLE
           },
         ),
       )
