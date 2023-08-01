@@ -270,9 +270,9 @@ private val networkModule = module {
 }
 
 private val apolloClientUrlsModule = module {
-  single<String>(giraffeGraphQLUrlQualifier) { get<Context>().getString(R.string.GRAPHQL_URL) }
-  single<String>(giraffeGraphQLWebSocketUrlQualifier) { get<Context>().getString(R.string.WS_GRAPHQL_URL) }
-  single<String>(octopusGraphQLUrlQualifier) { get<Context>().getString(R.string.OCTOPUS_GRAPHQL_URL) }
+  single<String>(giraffeGraphQLUrlQualifier) { get<Context>().getString(hedvig.resources.R.string.GRAPHQL_URL) }
+  single<String>(giraffeGraphQLWebSocketUrlQualifier) { get<Context>().getString(hedvig.resources.R.string.WS_GRAPHQL_URL) }
+  single<String>(octopusGraphQLUrlQualifier) { get<Context>().getString(hedvig.resources.R.string.OCTOPUS_GRAPHQL_URL) }
 }
 
 fun makeUserAgent(locale: Locale): String = buildString {
@@ -435,8 +435,8 @@ private val changeDateBottomSheetModule = module {
 }
 
 private val stringConstantsModule = module {
-  single<String>(hAnalyticsUrlQualifier) { get<Context>().getString(R.string.HANALYTICS_URL) }
-  single<String>(odysseyUrlQualifier) { get<Context>().getString(R.string.ODYSSEY_URL) }
+  single<String>(hAnalyticsUrlQualifier) { get<Context>().getString(hedvig.resources.R.string.HANALYTICS_URL) }
+  single<String>(odysseyUrlQualifier) { get<Context>().getString(hedvig.resources.R.string.ODYSSEY_URL) }
   single<String>(appVersionNameQualifier) { BuildConfig.VERSION_NAME }
   single<String>(appVersionCodeQualifier) { BuildConfig.VERSION_CODE.toString() }
   single<String>(appIdQualifier) { BuildConfig.APPLICATION_ID }
