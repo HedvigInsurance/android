@@ -151,7 +151,7 @@ internal fun ForeverContent(
           }
         }
       }
-      Spacer(Modifier.height(72.dp))
+      Spacer(Modifier.height(16.dp))
       Text(
         text = uiState.currentDiscountAmount?.format(locale) ?: "-",
         textAlign = TextAlign.Center,
@@ -159,7 +159,11 @@ internal fun ForeverContent(
         modifier = Modifier.fillMaxWidth(),
       )
       Spacer(Modifier.height(16.dp))
-      // TODO Add pie chart
+      DiscountPieChart(
+        totalPrice = uiState.grossPriceAmount?.abs()?.number?.toFloat() ?: 0f,
+        totalDiscount = uiState.currentDiscountAmount?.abs()?.number?.toFloat() ?: 0f,
+        incentive = uiState.incentive?.abs()?.number?.toFloat() ?: 0f,
+      )
       Spacer(Modifier.height(24.dp))
       if (uiState.referrals.isEmpty() && uiState.incentive != null) {
         Spacer(Modifier.height(32.dp))
