@@ -117,6 +117,12 @@ class PaymentRepository(
               )
             },
           payoutMethodStatus = it.activePayoutMethods?.status,
+          bankAccount = it.bankAccount?.let {
+            BankAccount(
+              name = it.fragments.bankAccountFragment.bankName,
+              accountNumber = it.fragments.bankAccountFragment.descriptor
+            )
+          }
         )
       }
       .bind()
@@ -131,8 +137,14 @@ class PaymentRepository(
     val bankName: String?,
     val bankDescriptor: String?,
     val paymentMethod: PaymentMethod?,
+    val bankAccount: BankAccount?,
     val contracts: List<String>,
     val payoutMethodStatus: PayoutMethodStatus?,
+  )
+
+  data class BankAccount(
+    val name: String,
+    val accountNumber: String,
   )
 
   data class ChargeHistory(

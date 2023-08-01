@@ -74,7 +74,7 @@ private fun PaymentHistoryScreen(
   Surface(color = MaterialTheme.colorScheme.background) {
     Column(Modifier.fillMaxSize()) {
       TopAppBar(
-        title = stringResource(R.string.payments_history_views_payments),
+        title = stringResource(R.string.PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL),
         onClick = navigateUp,
         actionType = TopAppBarActionType.BACK,
         colors = topAppBarColors,

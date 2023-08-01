@@ -142,6 +142,7 @@ private fun EurobonusScreen(
             }
           },
         ),
+        withNewDesign = true,
         modifier = Modifier
           .fillMaxWidth()
           .padding(horizontal = 16.dp),

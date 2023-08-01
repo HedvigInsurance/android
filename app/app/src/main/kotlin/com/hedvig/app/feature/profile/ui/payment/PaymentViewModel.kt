@@ -111,7 +111,12 @@ private fun PaymentRepository.PaymentData.toUiState(locale: Locale) = PaymentVie
       displayName = it.displayValue ?: "-",
     )
   },
-  paymentMethod = PaymentViewModel.PaymentUiState.PaymentMethod(
+  paymentMethod = bankAccount?.let {
+    PaymentViewModel.PaymentUiState.PaymentMethod(
+      displayName = it.name,
+      displayValue = it.accountNumber,
+    )
+  } ?: PaymentViewModel.PaymentUiState.PaymentMethod(
     displayName = when (paymentMethod) {
       is PaymentMethod.CardPaymentMethod -> paymentMethod.brand ?: "Unknown"
       is PaymentMethod.ThirdPartyPaymentMethd -> paymentMethod.name

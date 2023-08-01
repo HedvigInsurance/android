@@ -1,15 +1,4 @@
 query Referrals {
-  chargeEstimation {
-    charge {
-      ...MonetaryAmountFragment
-    }
-    discount {
-      ...MonetaryAmountFragment
-    }
-    subscription {
-      ...MonetaryAmountFragment
-    }
-  }
   referralInformation {
     campaign {
       code
