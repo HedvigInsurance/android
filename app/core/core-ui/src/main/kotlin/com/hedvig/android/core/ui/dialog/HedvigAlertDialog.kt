@@ -12,19 +12,23 @@ import hedvig.resources.R
 
 @Composable
 fun HedvigAlertDialog(
-  title: String,
+  title: String?,
   text: String,
   onDismissRequest: () -> Unit,
   onConfirmClick: () -> Unit,
   modifier: Modifier = Modifier,
+  confirmButtonLabel: String = stringResource(R.string.GENERAL_YES),
+  dismissButtonLabel: String = stringResource(R.string.GENERAL_NO),
 ) {
   AlertDialog(
     onDismissRequest = onDismissRequest,
     title = {
-      Text(
-        text = title,
-        style = MaterialTheme.typography.bodyLarge,
-      )
+      if (title != null) {
+        Text(
+          text = title,
+          style = MaterialTheme.typography.bodyLarge,
+        )
+      }
     },
     text = {
       Text(
@@ -39,7 +43,7 @@ fun HedvigAlertDialog(
         onClick = onDismissRequest,
       ) {
         Text(
-          text = stringResource(R.string.GENERAL_NO),
+          text = dismissButtonLabel,
           style = MaterialTheme.typography.bodyLarge,
         )
       }
@@ -53,7 +57,7 @@ fun HedvigAlertDialog(
         },
       ) {
         Text(
-          text = stringResource(R.string.GENERAL_YES),
+          text = confirmButtonLabel,
           style = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.error),
         )
       }
