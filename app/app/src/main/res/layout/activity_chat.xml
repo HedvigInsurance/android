@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
+    android:background="?colorSurface"
     tools:context=".feature.chat.ui.ChatActivity">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -25,7 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/background_square"
-        android:backgroundTint="@color/color_background_95"
+        android:backgroundTint="?colorSurface"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingVertical="5dp"
@@ -50,14 +51,15 @@
 
         </LinearLayout>
 
-        <ImageView
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="@dimen/hedvig_logo_margin_top"
             android:contentDescription="@string/HEDVIG_LOGO_ACCESSIBILITY"
-            app:srcCompat="@drawable/ic_hedvig_wordmark"
-            app:tint="?colorPrimary" />
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:textSize="18sp"
+            android:textColor="?colorPrimary"
+            android:text="@string/CHAT_TITLE" />
 
     </FrameLayout>
 
