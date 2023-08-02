@@ -12,12 +12,10 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
@@ -25,7 +23,6 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
@@ -49,17 +46,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.compose.ui.graphics.painter.ColorPainter
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -70,12 +62,10 @@ import com.hedvig.android.core.designsystem.material3.onTypeContainer
 import com.hedvig.android.core.designsystem.material3.typeContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
-import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
 import com.hedvig.android.core.ui.card.InsuranceCard
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
-import com.hedvig.android.core.ui.insurance.GradientType
-import com.hedvig.android.core.ui.insurance.toDrawable
+import com.hedvig.android.core.ui.insurance.ContractType
+import com.hedvig.android.core.ui.insurance.toDrawableRes
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceScreenEvent
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceUiState
@@ -151,16 +141,21 @@ private fun InsuranceScreen(
         Modifier
           .pullRefresh(pullRefreshState)
           .verticalScroll(rememberScrollState())
-          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+          .windowInsetsPadding(WindowInsets.safeDrawing),
       ) {
-        Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
-        Spacer(Modifier.height(64.dp))
-        Text(
-          text = stringResource(R.string.DASHBOARD_SCREEN_TITLE),
-          style = MaterialTheme.typography.headlineLarge,
-          modifier = Modifier.padding(horizontal = 16.dp),
-        )
-        Spacer(Modifier.height(24.dp))
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          modifier = Modifier
+            .height(64.dp)
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        ) {
+          Text(
+            text = stringResource(id = R.string.DASHBOARD_SCREEN_TITLE),
+            style = MaterialTheme.typography.titleLarge,
+          )
+        }
+        Spacer(Modifier.height(16.dp))
         when {
           uiState.hasError -> {
             GenericErrorScreen(
@@ -171,6 +166,7 @@ private fun InsuranceScreen(
                 .padding(top = (40 - 16).dp),
             )
           }
+
           else -> {
             InsuranceScreenContent(
               imageLoader = imageLoader,
@@ -187,11 +183,7 @@ private fun InsuranceScreen(
         Spacer(Modifier.height(16.dp))
         Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
       }
-      TopAppBarLayoutForActions {
-        ToolbarChatIcon(
-          onClick = openChat,
-        )
-      }
+
       PullRefreshIndicator(
         refreshing = isLoading,
         state = pullRefreshState,
@@ -214,7 +206,6 @@ private fun ColumnScope.InsuranceScreenContent(
   navigateToCancelledInsurances: () -> Unit,
   quantityOfCancelledInsurances: Int,
 ) {
-  val context = LocalContext.current
   for ((index, insuranceCard) in insuranceCards.withIndex()) {
     InsuranceCard(
       backgroundImageUrl = insuranceCard.backgroundImageUrl,
@@ -227,9 +218,9 @@ private fun ColumnScope.InsuranceScreenContent(
         .clickable {
           onInsuranceCardClick(insuranceCard.contractId)
         },
-      fallbackPainter = insuranceCard.gradientType.toDrawable(context)?.let { drawable ->
-        BitmapPainter(drawable.toBitmap(10, 10).asImageBitmap())
-      } ?: ColorPainter(Color.Black.copy(alpha = 0.7f)),
+      fallbackPainter = insuranceCard.contractType.toDrawableRes().let { drawableRes ->
+        painterResource(id = drawableRes)
+      },
     )
     if (index != insuranceCards.lastIndex) {
       Spacer(Modifier.height(8.dp))
@@ -281,7 +272,7 @@ private fun CrossSellItem(
     verticalAlignment = Alignment.CenterVertically,
   ) {
     Image(
-      painter = painterResource(com.hedvig.android.core.ui.R.drawable.ic_pillow),
+      painter = painterResource(crossSell.type.iconRes()),
       contentDescription = null,
       modifier = Modifier.size(48.dp),
     )
@@ -324,6 +315,14 @@ private fun CrossSellItem(
       ),
     )
   }
+}
+
+private fun InsuranceUiState.CrossSell.CrossSellType.iconRes(): Int = when (this) {
+  InsuranceUiState.CrossSell.CrossSellType.PET -> com.hedvig.android.core.ui.R.drawable.ic_pillow_pet
+  InsuranceUiState.CrossSell.CrossSellType.HOME -> com.hedvig.android.core.ui.R.drawable.ic_pillow_home
+  InsuranceUiState.CrossSell.CrossSellType.ACCIDENT -> com.hedvig.android.core.ui.R.drawable.ic_pillow_accident
+  InsuranceUiState.CrossSell.CrossSellType.CAR -> com.hedvig.android.core.ui.R.drawable.ic_pillow_car
+  InsuranceUiState.CrossSell.CrossSellType.UNKNOWN -> com.hedvig.android.core.ui.R.drawable.ic_pillow_home
 }
 
 @Composable
@@ -401,7 +400,7 @@ private fun PreviewInsuranceScreen() {
               persistentListOf("Chip"),
               "Title",
               "For you + 1",
-              GradientType.HOME,
+              ContractType.HOMEOWNER,
             ),
           ),
           crossSells = persistentListOf(
@@ -410,6 +409,7 @@ private fun PreviewInsuranceScreen() {
               title = "Pet".repeat(5),
               subtitle = "Unlimited FirstVet calls".repeat(2),
               storeUrl = "",
+              type = InsuranceUiState.CrossSell.CrossSellType.HOME,
             ),
           ),
           showNotificationBadge = false,

@@ -12,11 +12,9 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
@@ -24,7 +22,6 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
@@ -126,15 +123,20 @@ private fun ProfileScreen(
         .matchParentSize()
         .pullRefresh(pullRefreshState)
         .verticalScroll(rememberScrollState())
-        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+        .windowInsetsPadding(WindowInsets.safeDrawing),
     ) {
-      Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
-      Spacer(Modifier.height(64.dp))
-      Text(
-        text = stringResource(R.string.PROFILE_TITLE),
-        style = MaterialTheme.typography.headlineLarge,
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+          .height(64.dp)
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      ) {
+        Text(
+          text = stringResource(id = R.string.PROFILE_TITLE),
+          style = MaterialTheme.typography.titleLarge,
+        )
+      }
       Spacer(Modifier.height(16.dp))
       ProfileItemRows(
         profileUiState = uiState,

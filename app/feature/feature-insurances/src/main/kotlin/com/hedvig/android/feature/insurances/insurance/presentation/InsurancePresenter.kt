@@ -14,11 +14,11 @@ import arrow.fx.coroutines.parZip
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.RetryChannel
 import com.hedvig.android.core.common.android.i
-import com.hedvig.android.core.ui.insurance.GradientType
+import com.hedvig.android.core.ui.insurance.ContractType
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.InsuranceContract
-import com.hedvig.android.feature.insurances.data.gradient
+import com.hedvig.android.feature.insurances.data.toContractType
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeService
@@ -26,6 +26,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import octopus.CrossSalesQuery
+import octopus.type.CrossSellType
 
 internal sealed interface InsuranceScreenEvent {
   object RetryLoading : InsuranceScreenEvent
@@ -46,7 +47,7 @@ internal data class InsuranceUiState(
     val chips: ImmutableList<String>,
     val title: String,
     val subtitle: String,
-    val gradientType: GradientType,
+    val contractType: ContractType,
   )
 
   data class CrossSell(
@@ -54,7 +55,12 @@ internal data class InsuranceUiState(
     val title: String,
     val subtitle: String,
     val storeUrl: String,
-  )
+    val type: CrossSellType,
+  ) {
+    enum class CrossSellType {
+      PET, HOME, ACCIDENT, CAR, UNKNOWN
+    }
+  }
 
   companion object {
     val initialState = InsuranceUiState(
@@ -161,7 +167,7 @@ private suspend fun loadInsuranceData(
             chips = contract.statusPills.toPersistentList(),
             title = contract.displayName,
             subtitle = contract.detailPills.joinToString(" ∙ "),
-            gradientType = contract.typeOfContract.gradient(),
+            contractType = contract.typeOfContract.toContractType(),
           )
         }.toPersistentList()
       val crossSells = crossSellsData.map { crossSell ->
@@ -170,6 +176,14 @@ private suspend fun loadInsuranceData(
           title = crossSell.title,
           subtitle = crossSell.description,
           storeUrl = crossSell.storeUrl,
+          type = when (crossSell.type) {
+            CrossSellType.CAR -> InsuranceUiState.CrossSell.CrossSellType.CAR
+            CrossSellType.HOME -> InsuranceUiState.CrossSell.CrossSellType.HOME
+            CrossSellType.ACCIDENT -> InsuranceUiState.CrossSell.CrossSellType.ACCIDENT
+            CrossSellType.PET -> InsuranceUiState.CrossSell.CrossSellType.PET
+            CrossSellType.UNKNOWN__ -> InsuranceUiState.CrossSell.CrossSellType.UNKNOWN
+            null -> InsuranceUiState.CrossSell.CrossSellType.UNKNOWN
+          }
         )
       }.toPersistentList()
       InsuranceData(

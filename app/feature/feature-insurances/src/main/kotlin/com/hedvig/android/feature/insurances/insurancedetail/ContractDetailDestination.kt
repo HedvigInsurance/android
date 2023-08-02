@@ -32,14 +32,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.animation.animateContentHeight
@@ -49,8 +45,8 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.card.InsuranceCard
-import com.hedvig.android.core.ui.insurance.GradientType
-import com.hedvig.android.core.ui.insurance.toDrawable
+import com.hedvig.android.core.ui.insurance.ContractType
+import com.hedvig.android.core.ui.insurance.toDrawableRes
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.feature.insurances.insurancedetail.coverage.CoverageTab
@@ -95,7 +91,6 @@ private fun ContractDetailScreen(
   openWebsite: (Uri) -> Unit,
   navigateUp: () -> Unit,
 ) {
-  val context = LocalContext.current
   Column {
     TopAppBarWithBack(
       title = "",
@@ -130,9 +125,9 @@ private fun ContractDetailScreen(
                 bottomText = contractCardData.subtitle,
                 imageLoader = imageLoader,
                 modifier = Modifier.padding(horizontal = 16.dp),
-                fallbackPainter = contractCardData.gradientType.toDrawable(context)?.let { drawable ->
-                  BitmapPainter(drawable.toBitmap(10, 10).asImageBitmap())
-                } ?: ColorPainter(Color.Black.copy(alpha = 0.7f)),
+                fallbackPainter = contractCardData.contractType.toDrawableRes().let { drawableRes ->
+                  painterResource(id = drawableRes)
+                },
               )
             }
             item(key = 2, contentType = "space") { Spacer(Modifier.height(16.dp)) }
@@ -234,7 +229,7 @@ private fun PreviewContractDetailScreen() {
               ),
               title = "Home Insurance",
               subtitle = "Bellmansgatan 19A ∙ You +1",
-              gradientType = GradientType.HOME,
+              contractType = ContractType.HOMEOWNER,
             ),
             overviewItems = persistentListOf(),
             cancelInsuranceData = ContractDetails.CancelInsuranceData("", ""),

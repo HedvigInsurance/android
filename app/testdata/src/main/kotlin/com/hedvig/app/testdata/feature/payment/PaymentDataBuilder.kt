@@ -10,6 +10,7 @@ import giraffe.fragment.CostFragment
 import giraffe.fragment.MonetaryAmountFragment
 import giraffe.type.PayoutMethodStatus
 import giraffe.type.StoredCardDetails
+import giraffe.type.TypeOfContract
 import java.time.LocalDate
 
 data class PaymentDataBuilder(
@@ -35,6 +36,7 @@ data class PaymentDataBuilder(
   fun build() = PaymentQuery.Data(
     contracts = contracts.map { contractStatus ->
       PaymentQuery.Contract(
+        typeOfContract = TypeOfContract.SE_ACCIDENT,
         displayName = "",
         status = PaymentQuery.Status(
           __typename = contractStatus.typename,

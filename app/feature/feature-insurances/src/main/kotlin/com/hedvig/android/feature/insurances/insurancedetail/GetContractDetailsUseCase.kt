@@ -8,8 +8,7 @@ import arrow.fx.coroutines.parZip
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
-import com.hedvig.android.core.ui.insurance.GradientType
-import com.hedvig.android.feature.insurances.data.gradient
+import com.hedvig.android.feature.insurances.data.toContractType
 import com.hedvig.android.feature.insurances.insurancedetail.coverage.ContractCoverage
 import com.hedvig.android.feature.insurances.insurancedetail.coverage.GetContractCoverageUseCase
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
@@ -70,7 +69,7 @@ internal class GetContractDetailsUseCase(
             chips = contract.statusPills.toPersistentList(),
             title = contract.displayName,
             subtitle = contract.detailPills.joinToString(" ∙ "),
-            gradientType = contract.typeOfContract.gradient(),
+            contractType = contract.typeOfContract.toContractType(),
           ),
           overviewItems = contract.currentAgreementDetailsTable.fragments.tableFragment.sections.flatMap {
             it.rows.map { it.title to it.value }
@@ -111,7 +110,7 @@ internal data class ContractDetails(
     val chips: ImmutableList<String>,
     val title: String,
     val subtitle: String,
-    val gradientType: GradientType,
+    val contractType: com.hedvig.android.core.ui.insurance.ContractType,
   )
 
   data class CancelInsuranceData(
