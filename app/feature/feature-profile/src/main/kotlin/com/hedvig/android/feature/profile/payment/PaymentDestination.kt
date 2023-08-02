@@ -160,8 +160,13 @@ private fun PaymentScreen(
         Divider(Modifier.padding(horizontal = 16.dp))
         PaymentHistory(onClick = onPaymentHistoryClicked)
         Spacer(Modifier.height(16.dp))
+        val buttonLabel = if (uiState.paymentMethod == null) {
+          R.string.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON
+        } else {
+          R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT
+        }
         HedvigContainedButton(
-          text = stringResource(id = R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT),
+          text = stringResource(id = buttonLabel),
           onClick = onChangeBankAccount,
           modifier = Modifier.padding(horizontal = 16.dp),
         )
