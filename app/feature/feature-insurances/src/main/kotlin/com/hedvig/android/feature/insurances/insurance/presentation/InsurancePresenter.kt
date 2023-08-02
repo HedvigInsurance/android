@@ -14,11 +14,11 @@ import arrow.fx.coroutines.parZip
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.RetryChannel
 import com.hedvig.android.core.common.android.i
-import com.hedvig.android.core.ui.insurance.GradientType
+import com.hedvig.android.core.ui.insurance.ContractType
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.InsuranceContract
-import com.hedvig.android.feature.insurances.data.gradient
+import com.hedvig.android.feature.insurances.data.toContractType
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeService
@@ -47,7 +47,7 @@ internal data class InsuranceUiState(
     val chips: ImmutableList<String>,
     val title: String,
     val subtitle: String,
-    val gradientType: GradientType,
+    val contractType: ContractType,
   )
 
   data class CrossSell(
@@ -167,7 +167,7 @@ private suspend fun loadInsuranceData(
             chips = contract.statusPills.toPersistentList(),
             title = contract.displayName,
             subtitle = contract.detailPills.joinToString(" ∙ "),
-            gradientType = contract.typeOfContract.gradient(),
+            contractType = contract.typeOfContract.toContractType(),
           )
         }.toPersistentList()
       val crossSells = crossSellsData.map { crossSell ->

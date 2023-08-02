@@ -32,8 +32,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -47,7 +45,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.card.InsuranceCard
-import com.hedvig.android.core.ui.insurance.GradientType
+import com.hedvig.android.core.ui.insurance.ContractType
 import com.hedvig.android.core.ui.insurance.toDrawableRes
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
@@ -127,7 +125,7 @@ private fun ContractDetailScreen(
                 bottomText = contractCardData.subtitle,
                 imageLoader = imageLoader,
                 modifier = Modifier.padding(horizontal = 16.dp),
-                fallbackPainter = contractCardData.gradientType.toDrawableRes().let { drawableRes ->
+                fallbackPainter = contractCardData.contractType.toDrawableRes().let { drawableRes ->
                   painterResource(id = drawableRes)
                 },
               )
@@ -231,7 +229,7 @@ private fun PreviewContractDetailScreen() {
               ),
               title = "Home Insurance",
               subtitle = "Bellmansgatan 19A ∙ You +1",
-              gradientType = GradientType.HOME,
+              contractType = ContractType.HOMEOWNER,
             ),
             overviewItems = persistentListOf(),
             cancelInsuranceData = ContractDetails.CancelInsuranceData("", ""),

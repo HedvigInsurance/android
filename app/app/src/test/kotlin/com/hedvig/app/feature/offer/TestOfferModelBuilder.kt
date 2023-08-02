@@ -2,7 +2,7 @@ package com.hedvig.app.feature.offer
 
 import com.hedvig.android.core.common.android.QuoteCartId
 import com.hedvig.android.core.common.android.table.Table
-import com.hedvig.android.core.ui.insurance.GradientType
+import com.hedvig.android.core.ui.insurance.ContractType
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.offer.model.Campaign
@@ -78,7 +78,7 @@ class TestOfferModelBuilder(
     ignoreCampaigns = false,
     title = ViewConfiguration.Title.LOGO,
     startDateTerminology = ViewConfiguration.StartDateTerminology.START_DATE,
-    gradient = GradientType.HOUSE,
+    gradient = ContractType.HOUSE,
     postSignScreen = PostSignScreen.CONNECT_PAYIN,
   ),
   private val checkoutMethod: CheckoutMethod = CheckoutMethod.SWEDISH_BANK_ID,
