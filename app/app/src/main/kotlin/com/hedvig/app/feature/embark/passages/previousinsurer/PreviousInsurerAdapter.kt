@@ -68,7 +68,7 @@ class PreviousInsurerAdapter(
       override fun bind(item: PreviousInsurerItem) {
         (item as? PreviousInsurerItem.Insurer)?.let {
           item.icon?.let { iconUrl ->
-            val url = Uri.parse(binding.icon.context.getString(hedvig.resources.R.string.BASE_URL) + iconUrl)
+            val url = Uri.parse(binding.icon.context.getString(R.string.BASE_URL) + iconUrl)
             binding.icon.load(url, imageLoader)
           }
           binding.text.text = item.name

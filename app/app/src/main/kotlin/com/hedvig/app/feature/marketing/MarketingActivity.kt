@@ -69,7 +69,7 @@ class MarketingActivity : AppCompatActivity() {
   }
 
   private fun openOnboarding(market: Market) {
-    val baseUrl = getString(hedvig.resources.R.string.WEB_BASE_URL).substringAfter("//")
+    val baseUrl = getString(com.hedvig.app.R.string.WEB_BASE_URL).substringAfter("//")
     val uri = market.createOnboardingUri(baseUrl, languageService.getLanguage())
     openWebBrowser(uri)
   }
