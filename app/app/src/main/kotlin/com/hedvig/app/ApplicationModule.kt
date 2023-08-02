@@ -26,6 +26,7 @@ import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.auth.di.authModule
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.auth.interceptor.MigrateTokenInterceptor
+import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.android.QuoteCartId
 import com.hedvig.android.core.common.di.LogInfoType
 import com.hedvig.android.core.common.di.coreCommonModule
@@ -432,6 +433,12 @@ private val trustlyModule = module {
 
 private val changeDateBottomSheetModule = module {
   viewModel { (data: ChangeDateBottomSheetData) -> ChangeDateBottomSheetViewModel(get(), data, get()) }
+}
+
+private val buildConstantsModule = module {
+  single<HedvigBuildConstants> {
+    HedvigBuildConstants()
+  }
 }
 
 private val stringConstantsModule = module {
