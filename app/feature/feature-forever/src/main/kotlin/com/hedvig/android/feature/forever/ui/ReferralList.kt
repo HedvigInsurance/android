@@ -46,18 +46,6 @@ internal fun ReferralList(uiState: ForeverUiState) {
     uiState.referrals.forEach { referral ->
       ReferralRow(referral)
     }
-    if (uiState.currentDiscountAmount != null && !uiState.currentDiscountAmount.isZero) {
-      Row(
-        modifier = Modifier
-          .padding(vertical = 16.dp)
-          .fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-      ) {
-        Text(text = stringResource(id = R.string.referrals_your_other_discounts))
-        Text(uiState.currentDiscountAmount.format(getLocale()))
-      }
-      Divider()
-    }
     Row(
       modifier = Modifier
         .padding(vertical = 16.dp)

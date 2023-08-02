@@ -59,7 +59,6 @@ internal fun ForeverContent(
   onShareCodeClick: (code: String, incentive: MonetaryAmount) -> Unit,
   onCodeChanged: (String) -> Unit,
   onSubmitCode: (String) -> Unit,
-  openReferralsInformation: (String, MonetaryAmount) -> Unit,
 ) {
   val systemBarInsetTopDp = with(LocalDensity.current) {
     WindowInsets.systemBars.getTop(this).toDp()
@@ -71,16 +70,18 @@ internal fun ForeverContent(
   )
   val locale = getLocale()
 
-  val sheetState = rememberModalBottomSheetState(true)
+  val editSheetState = rememberModalBottomSheetState(true)
+  val referralExplanationSheetState = rememberModalBottomSheetState(true)
   val coroutineScope = rememberCoroutineScope()
   var showEditBottomSheet by rememberSaveable { mutableStateOf(false) }
+  var showReferralExplanationBottomSheet by rememberSaveable { mutableStateOf(false) }
 
   LaunchedEffect(uiState.showEditCode) {
     coroutineScope.launch {
       if (uiState.showEditCode) {
-        sheetState.expand()
+        editSheetState.expand()
       } else {
-        sheetState.hide()
+        editSheetState.hide()
       }
       showEditBottomSheet = uiState.showEditCode
     }
@@ -88,18 +89,31 @@ internal fun ForeverContent(
 
   if (showEditBottomSheet) {
     EditCodeBottomSheet(
-      sheetState = sheetState,
+      sheetState = editSheetState,
       code = uiState.editedCampaignCode ?: "",
       onCodeChanged = onCodeChanged,
       onDismiss = {
         coroutineScope.launch {
-          sheetState.hide()
+          editSheetState.hide()
           showEditBottomSheet = false
         }
       },
       onSubmitCode = { onSubmitCode(uiState.editedCampaignCode ?: "") },
       errorText = uiState.codeError.toErrorMessage(),
       isLoading = uiState.isLoadingCode,
+    )
+  }
+
+  if (showReferralExplanationBottomSheet && uiState.incentive != null) {
+    ForeverExplanationBottomSheet(
+      discount = uiState.incentive.format(locale),
+      onDismiss = {
+        coroutineScope.launch {
+          referralExplanationSheetState.hide()
+          showReferralExplanationBottomSheet = false
+        }
+      },
+      sheetState = referralExplanationSheetState,
     )
   }
 
@@ -112,12 +126,7 @@ internal fun ForeverContent(
         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
     ) {
       Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
-      Spacer(Modifier.height(64.dp))
-      Text(
-        text = stringResource(R.string.PROFILE_REFERRAL_TITLE),
-        style = MaterialTheme.typography.headlineLarge,
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
+      Spacer(Modifier.height(72.dp))
       Text(
         text = uiState.currentDiscountAmount?.format(locale) ?: "-",
         textAlign = TextAlign.Center,
@@ -166,20 +175,20 @@ internal fun ForeverContent(
         uiState = uiState,
         onChangeCodeClicked = {
           coroutineScope.launch {
-            sheetState.hide()
+            editSheetState.hide()
             showEditBottomSheet = true
           }
         },
         onShareCodeClick = onShareCodeClick,
       )
-      if (uiState.referrals.isEmpty()) {
+      if (uiState.referrals.isNotEmpty()) {
         ReferralList(uiState)
       }
     }
     if (uiState.incentive != null && uiState.referralUrl != null) {
       TopAppBarLayoutForActions {
         IconButton(
-          onClick = { openReferralsInformation(uiState.referralUrl, uiState.incentive) },
+          onClick = { showReferralExplanationBottomSheet = true },
           colors = IconButtonDefaults.iconButtonColors(),
           modifier = Modifier.size(40.dp),
         ) {
