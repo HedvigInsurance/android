@@ -159,7 +159,6 @@ private fun ProfileScreen(
         modifier = Modifier.padding(horizontal = 16.dp),
       )
       Spacer(Modifier.height(16.dp))
-      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     }
     PullRefreshIndicator(
       refreshing = uiState.isLoading,
