@@ -12,13 +12,13 @@ import hedvig.resources.R
 
 @Composable
 fun HedvigAlertDialog(
-  modifier: Modifier = Modifier,
   title: String?,
   text: String,
-  confirmButtonLabel: String = stringResource(R.string.GENERAL_YES),
-  dismissButtonLabel: String = stringResource(R.string.GENERAL_NO),
   onDismissRequest: () -> Unit,
   onConfirmClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  confirmButtonLabel: String = stringResource(R.string.GENERAL_YES),
+  dismissButtonLabel: String = stringResource(R.string.GENERAL_NO),
 ) {
   AlertDialog(
     onDismissRequest = onDismissRequest,
