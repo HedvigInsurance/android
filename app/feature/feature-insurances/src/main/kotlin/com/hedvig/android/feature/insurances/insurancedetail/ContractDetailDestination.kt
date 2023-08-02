@@ -147,11 +147,9 @@ private fun ContractDetailScreen(
                   0 -> {
                     YourInfoTab(
                       coverageItems = uiState.contractDetails.overviewItems,
-                      cancelInsuranceData = uiState.contractDetails.cancelInsuranceData,
                       allowEditCoInsured = uiState.contractDetails.allowEditCoInsured,
                       onEditCoInsuredClick = onEditCoInsuredClick,
                       onChangeAddressClick = onChangeAddressClick,
-                      onCancelInsuranceClick = onCancelInsuranceClick,
                     )
                   }
                   1 -> {
@@ -164,6 +162,8 @@ private fun ContractDetailScreen(
                     DocumentsTab(
                       documents = uiState.contractDetails.documents,
                       onDocumentClicked = openWebsite,
+                      cancelInsuranceData = uiState.contractDetails.cancelInsuranceData,
+                      onCancelInsuranceClick = onCancelInsuranceClick,
                     )
                   }
                   else -> {}
