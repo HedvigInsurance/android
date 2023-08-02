@@ -18,6 +18,7 @@ import com.hedvig.android.notification.badge.data.crosssell.card.FakeCrossSellCa
 import giraffe.type.TypeOfContract
 import kotlinx.coroutines.test.runTest
 import octopus.CrossSalesQuery
+import octopus.type.CrossSellType
 import org.junit.Assert
 import org.junit.Test
 
@@ -65,6 +66,7 @@ internal class InsurancePresenterTest {
       title = "crossSellTitle",
       description = "crossSellDescription",
       storeUrl = "",
+      type = CrossSellType.HOME,
     ),
   )
 
@@ -72,7 +74,7 @@ internal class InsurancePresenterTest {
   fun `on launch loading state is true, followed by the loaded state`() = runTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
-    val presenter: InsurancePresenter = InsurancePresenter(
+    val presenter = InsurancePresenter(
       getInsuranceContractsUseCase,
       getCrossSellsUseCase,
       FakeCrossSellCardNotificationBadgeService(),
