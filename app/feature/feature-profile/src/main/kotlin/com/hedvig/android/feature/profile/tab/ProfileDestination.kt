@@ -12,9 +12,11 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
@@ -123,7 +125,7 @@ private fun ProfileScreen(
         .matchParentSize()
         .pullRefresh(pullRefreshState)
         .verticalScroll(rememberScrollState())
-        .windowInsetsPadding(WindowInsets.safeDrawing),
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)),
     ) {
       Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -159,6 +161,7 @@ private fun ProfileScreen(
         modifier = Modifier.padding(horizontal = 16.dp),
       )
       Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     }
     PullRefreshIndicator(
       refreshing = uiState.isLoading,
