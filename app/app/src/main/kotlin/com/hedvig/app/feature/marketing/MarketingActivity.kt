@@ -21,7 +21,6 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.createOnboardingUri
-import com.hedvig.app.R
 import com.hedvig.app.authenticate.BankIdLoginDialog
 import com.hedvig.app.feature.marketing.data.MarketingBackground
 import com.hedvig.app.feature.marketing.marketpicked.MarketPickedScreen
@@ -70,7 +69,7 @@ class MarketingActivity : AppCompatActivity() {
   }
 
   private fun openOnboarding(market: Market) {
-    val baseUrl = getString(R.string.WEB_BASE_URL).substringAfter("//")
+    val baseUrl = getString(hedvig.resources.R.string.WEB_BASE_URL).substringAfter("//")
     val uri = market.createOnboardingUri(baseUrl, languageService.getLanguage())
     openWebBrowser(uri)
   }

@@ -58,7 +58,7 @@ internal fun ForeverScreen(
                 R.string.REFERRAL_SMS_MESSAGE,
                 incentive.format(languageService.getLocale()),
                 buildString {
-                  append("https://www.dev.hedvigit.com") // TODO Get from resources
+                  append(R.string.WEB_BASE_URL)
                   append("/")
                   append(languageService.getGraphQLLocale().toWebLocaleTag())
                   append("/forever/")
