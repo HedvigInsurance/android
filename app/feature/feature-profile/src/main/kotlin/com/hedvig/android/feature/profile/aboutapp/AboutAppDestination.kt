@@ -34,27 +34,28 @@ internal fun AboutAppDestination(
   onBackPressed: () -> Unit,
   showOpenSourceLicenses: () -> Unit,
   hedvigBuildConstants: HedvigBuildConstants,
-  isProduction: Boolean,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val memberId = uiState.memberId
 
   AboutAppScreen(
     memberId = memberId,
-    hedvigBuildConstants = hedvigBuildConstants,
     onBackPressed = onBackPressed,
     showOpenSourceLicenses = showOpenSourceLicenses,
-    isProduction = isProduction,
+    isProduction = hedvigBuildConstants.isProduction,
+    appVersionName = hedvigBuildConstants.appVersionName,
+    appVersionCode = hedvigBuildConstants.appVersionCode,
   )
 }
 
 @Composable
 private fun AboutAppScreen(
   memberId: String?,
-  hedvigBuildConstants: HedvigBuildConstants,
   onBackPressed: () -> Unit,
   showOpenSourceLicenses: () -> Unit,
   isProduction: Boolean,
+  appVersionName: String,
+  appVersionCode: String,
 ) {
   HedvigScaffold(
     topAppBarText = stringResource(R.string.PROFILE_ABOUT_APP_TITLE),
@@ -86,10 +87,10 @@ private fun AboutAppScreen(
         CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
           Text(
             text = buildString {
-              append(hedvigBuildConstants.appVersionName)
+              append(appVersionName)
               if (!isProduction) {
                 append(" (")
-                append(hedvigBuildConstants.appVersionCode)
+                append(appVersionCode)
                 append(")")
               }
             },
@@ -117,7 +118,14 @@ private fun AboutAppScreen(
 private fun PreviewAboutAppScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      AboutAppScreen("123", HedvigBuildConstants.previewHedvigBuildConstants(), {}, {}, false)
+      AboutAppScreen(
+        memberId = "123",
+        onBackPressed = {},
+        showOpenSourceLicenses = {},
+        isProduction = false,
+        appVersionName = "11.3.2",
+        appVersionCode = "43",
+      )
     }
   }
 }

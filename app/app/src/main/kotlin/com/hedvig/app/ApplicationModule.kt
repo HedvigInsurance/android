@@ -31,8 +31,6 @@ import com.hedvig.android.core.common.android.QuoteCartId
 import com.hedvig.android.core.common.di.LogInfoType
 import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.common.di.datastoreFileQualifier
-import com.hedvig.android.core.common.di.isDebugQualifier
-import com.hedvig.android.core.common.di.isProductionQualifier
 import com.hedvig.android.core.common.di.logInfoQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.data.forever.di.foreverDataModule
@@ -173,7 +171,7 @@ import slimber.log.i
 import timber.log.Timber
 import java.io.File
 import java.time.Clock
-import java.util.*
+import java.util.Locale
 import kotlin.math.pow
 
 fun isDebug() = BuildConfig.APPLICATION_ID == "com.hedvig.dev.app" ||
@@ -210,7 +208,7 @@ private val networkModule = module {
         )
       }
       .addInterceptor(DeviceIdInterceptor(get(), get()))
-    if (!get<Boolean>(isProductionQualifier)) {
+    if (!get<HedvigBuildConstants>().isProduction) {
       val logger = HttpLoggingInterceptor { message ->
         if (message.contains("Content-Disposition")) {
           Timber.tag("OkHttp").v("File upload omitted from log")
@@ -437,14 +435,11 @@ private val buildConstantsModule = module {
       override val appVersionCode: String = BuildConfig.VERSION_CODE.toString()
 
       override val appId: String = BuildConfig.APPLICATION_ID
-    }
-  }
-}
 
-private val stringConstantsModule = module {
-  single<Boolean>(isDebugQualifier) { BuildConfig.DEBUG }
-  single<Boolean>(isProductionQualifier) {
-    BuildConfig.BUILD_TYPE == "release" && BuildConfig.APPLICATION_ID == "com.hedvig.app"
+      override val isDebug: Boolean = BuildConfig.DEBUG
+      override val isProduction: Boolean =
+        BuildConfig.BUILD_TYPE == "release" && BuildConfig.APPLICATION_ID == "com.hedvig.app"
+    }
   }
 }
 
@@ -501,7 +496,13 @@ private val useCaseModule = module {
     LogoutUseCaseImpl(get(), get<ApolloClient>(giraffeClient), get(), get(), get(), get(), get(), get())
   }
   single { GraphQLQueryUseCase(get()) }
-  single { GetInsuranceProvidersUseCase(get<ApolloClient>(giraffeClient), get(), get(isProductionQualifier)) }
+  single<GetInsuranceProvidersUseCase> {
+    GetInsuranceProvidersUseCase(
+      apolloClient = get<ApolloClient>(giraffeClient),
+      languageService = get(),
+      isProduction = get<HedvigBuildConstants>().isProduction,
+    )
+  }
   single<GetDanishAddressAutoCompletionUseCase> {
     GetDanishAddressAutoCompletionUseCase(get<ApolloClient>(giraffeClient))
   }
@@ -598,7 +599,7 @@ private val graphQLQueryModule = module {
 private val authRepositoryModule = module {
   single<AuthRepository> {
     NetworkAuthRepository(
-      environment = if (get(isProductionQualifier)) {
+      environment = if (get<HedvigBuildConstants>().isProduction) {
         AuthEnvironment.PRODUCTION
       } else {
         AuthEnvironment.STAGING
@@ -672,7 +673,6 @@ val applicationModule = module {
       repositoriesModule,
       serviceModule,
       sharedPreferencesModule,
-      stringConstantsModule,
       terminateInsuranceModule,
       textActionSetModule,
       travelCertificateDataModule,

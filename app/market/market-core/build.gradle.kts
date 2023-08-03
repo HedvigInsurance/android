@@ -8,6 +8,7 @@ dependencies {
   implementation(libs.androidx.other.preference)
   implementation(libs.koin.core)
   implementation(projects.apolloGiraffePublic)
+  implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreResources)
 }

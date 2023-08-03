@@ -55,20 +55,15 @@ interface HedvigBuildConstants {
    */
   val appId: String
 
-  companion object {
-    fun previewHedvigBuildConstants(): HedvigBuildConstants {
-      return object : HedvigBuildConstants {
-        override val urlGiraffeBaseApi: String = "urlBaseApi"
-        override val urlGiraffeGraphql: String = "urlGraphql"
-        override val urlGiraffeGraphqlSubscription: String = "urlGraphqlWs"
-        override val urlGraphqlOctopus: String = "urlGraphqlOctopus"
-        override val urlBaseWeb: String = "urlBaseWeb"
-        override val urlHanalytics: String = "urlHanalytics"
-        override val urlOdyssey: String = "urlOdyssey"
-        override val appVersionName: String = "11.X.Y"
-        override val appVersionCode: String = "42"
-        override val appId: String = "com.hedvig.dev.app"
-      }
-    }
-  }
+  /**
+   * Returns the result of BuildConfig.DEBUG.
+   */
+  val isDebug: Boolean
+
+  /**
+   * Returns whether we are running in release mode.
+   * This is useful as [isDebug] only returns true for dev environment but false for staging environment and we
+   * do sometimes want to know the difference.
+   */
+  val isProduction: Boolean
 }

@@ -32,7 +32,6 @@ fun NavGraphBuilder.profileGraph(
   navigator: Navigator,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   hedvigBuildConstants: HedvigBuildConstants,
-  isProduction: Boolean,
   navigateToPayoutScreen: () -> Unit,
   navigateToPayinScreen: () -> Unit,
   market: Market?,
@@ -94,7 +93,6 @@ fun NavGraphBuilder.profileGraph(
           with(navigator) { backStackEntry.navigate(AppDestination.Licenses) }
         },
         hedvigBuildConstants = hedvigBuildConstants,
-        isProduction = isProduction,
       )
     }
     animatedComposable<AppDestination.Licenses> {

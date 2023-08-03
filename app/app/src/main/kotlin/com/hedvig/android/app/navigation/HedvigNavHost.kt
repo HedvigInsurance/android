@@ -77,7 +77,6 @@ internal fun HedvigNavHost(
   fragmentManager: FragmentManager,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
-  isProduction: Boolean,
   modifier: Modifier = Modifier,
 ) {
   LocalConfiguration.current
@@ -226,7 +225,6 @@ internal fun HedvigNavHost(
       navigator = navigator,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       hedvigBuildConstants = hedvigBuildConstants,
-      isProduction = isProduction,
       navigateToPayoutScreen = navigateToPayoutScreen@{
         val market = marketManager.market ?: return@navigateToPayoutScreen
         val intent = AdyenConnectPayoutActivity.newInstance(context, AdyenCurrency.fromMarket(market))

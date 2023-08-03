@@ -10,8 +10,8 @@ import com.adyen.checkout.dropin.DropIn
 import com.adyen.checkout.dropin.DropInConfiguration
 import com.adyen.checkout.dropin.DropInResult
 import com.hedvig.android.auth.android.AuthenticatedObserver
+import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.android.serializableExtra
-import com.hedvig.android.core.common.di.isProductionQualifier
 import com.hedvig.android.language.LanguageService
 import com.hedvig.app.R
 import com.hedvig.app.feature.adyen.AdyenCurrency
@@ -25,7 +25,7 @@ import slimber.log.e
 class AdyenConnectPayoutActivity : AppCompatActivity(R.layout.fragment_container_activity) {
   private val viewModel: AdyenConnectPayoutViewModel by viewModel()
   private val languageService: LanguageService by inject()
-  private val isProduction: Boolean by inject(isProductionQualifier)
+  private val hedvigBuildConstants: HedvigBuildConstants by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -48,7 +48,7 @@ class AdyenConnectPayoutActivity : AppCompatActivity(R.layout.fragment_container
         )
         .setShopperLocale(languageService.getLocale())
         .setEnvironment(
-          if (isProduction) {
+          if (hedvigBuildConstants.isProduction) {
             Environment.EUROPE
           } else {
             Environment.TEST

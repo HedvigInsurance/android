@@ -6,6 +6,7 @@ plugins {
 
 dependencies {
   implementation(libs.koin.core)
+  implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.hanalyticsCore)
   implementation(projects.marketCore)

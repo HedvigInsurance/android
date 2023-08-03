@@ -30,7 +30,6 @@ dependencies {
   implementation(projects.coreDesignSystem)
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
-  implementation(projects.payment)
   implementation(projects.coreUi)
   implementation(projects.dataForever)
   implementation(projects.hanalyticsCore)
@@ -39,6 +38,7 @@ dependencies {
   implementation(projects.marketCore)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(projects.payment)
   implementation(projects.theme)
 
   testImplementation(libs.assertK)
