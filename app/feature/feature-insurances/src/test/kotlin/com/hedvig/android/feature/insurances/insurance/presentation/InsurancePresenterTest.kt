@@ -18,6 +18,7 @@ import com.hedvig.android.notification.badge.data.crosssell.card.FakeCrossSellCa
 import giraffe.type.TypeOfContract
 import kotlinx.coroutines.test.runTest
 import octopus.CrossSalesQuery
+import octopus.type.CrossSellType
 import org.junit.Assert
 import org.junit.Test
 
@@ -65,6 +66,7 @@ internal class InsurancePresenterTest {
       title = "crossSellTitle",
       description = "crossSellDescription",
       storeUrl = "",
+      type = CrossSellType.HOME,
     ),
   )
 
