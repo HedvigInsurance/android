@@ -31,8 +31,6 @@ import com.hedvig.android.core.common.android.QuoteCartId
 import com.hedvig.android.core.common.di.LogInfoType
 import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.common.di.datastoreFileQualifier
-import com.hedvig.android.core.common.di.giraffeGraphQLUrlQualifier
-import com.hedvig.android.core.common.di.giraffeGraphQLWebSocketUrlQualifier
 import com.hedvig.android.core.common.di.isDebugQualifier
 import com.hedvig.android.core.common.di.isProductionQualifier
 import com.hedvig.android.core.common.di.logInfoQualifier
@@ -264,11 +262,6 @@ private val networkModule = module {
   }
 }
 
-private val apolloClientUrlsModule = module {
-  single<String>(giraffeGraphQLUrlQualifier) { get<Context>().getString(R.string.GRAPHQL_URL) }
-  single<String>(giraffeGraphQLWebSocketUrlQualifier) { get<Context>().getString(R.string.WS_GRAPHQL_URL) }
-}
-
 fun makeUserAgent(locale: Locale): String = buildString {
   append(BuildConfig.APPLICATION_ID)
   append(" ")
@@ -430,14 +423,15 @@ private val changeDateBottomSheetModule = module {
 
 private val buildConstantsModule = module {
   single<HedvigBuildConstants> {
+    val context = get<Context>()
     object : HedvigBuildConstants {
-      override val urlGraphql: String
-      override val urlGraphqlWs: String
-      override val urlGraphqlOctopus: String = get<Context>().getString(R.string.OCTOPUS_GRAPHQL_URL)
-      override val urlBaseApi: String = get<Context>().getString(R.string.BASE_URL)
-      override val urlBaseWeb: String = get<Context>().getString(R.string.WEB_BASE_URL)
-      override val urlHanalytics: String = get<Context>().getString(R.string.HANALYTICS_URL)
-      override val urlOdyssey: String = get<Context>().getString(R.string.ODYSSEY_URL)
+      override val urlGiraffeBaseApi: String = context.getString(R.string.BASE_URL)
+      override val urlGiraffeGraphql: String = context.getString(R.string.GRAPHQL_URL)
+      override val urlGiraffeGraphqlSubscription: String = context.getString(R.string.WS_GRAPHQL_URL)
+      override val urlGraphqlOctopus: String = context.getString(R.string.OCTOPUS_GRAPHQL_URL)
+      override val urlBaseWeb: String = context.getString(R.string.WEB_BASE_URL)
+      override val urlHanalytics: String = context.getString(R.string.HANALYTICS_URL)
+      override val urlOdyssey: String = context.getString(R.string.ODYSSEY_URL)
 
       override val appVersionName: String = BuildConfig.VERSION_NAME
       override val appVersionCode: String = BuildConfig.VERSION_CODE.toString()
@@ -598,7 +592,7 @@ private val chatEventModule = module {
 }
 
 private val graphQLQueryModule = module {
-  single<GraphQLQueryHandler> { GraphQLQueryHandler(get(), get(), get(giraffeGraphQLUrlQualifier)) }
+  single<GraphQLQueryHandler> { GraphQLQueryHandler(get(), get(), get<HedvigBuildConstants>()) }
 }
 
 private val authRepositoryModule = module {
@@ -632,7 +626,6 @@ val applicationModule = module {
       activityNavigatorModule,
       adyenModule,
       apolloClientModule,
-      apolloClientUrlsModule,
       authModule,
       authRepositoryModule,
       buildConstantsModule,

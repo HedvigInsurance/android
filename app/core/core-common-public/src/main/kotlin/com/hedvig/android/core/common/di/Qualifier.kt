@@ -32,9 +32,3 @@ typealias LogInfoType = (() -> String) -> Unit
  * [kotlinx.coroutines.Dispatchers.IO] for production code
  */
 val ioDispatcherQualifier = qualifier("ioDispatcher")
-
-// The URL for giraffe
-val giraffeGraphQLUrlQualifier = qualifier("giraffeGraphQLUrlQualifier")
-
-// The URL for the websocket of giraffe
-val giraffeGraphQLWebSocketUrlQualifier = qualifier("giraffeGraphQLWebSocketUrlQualifier")

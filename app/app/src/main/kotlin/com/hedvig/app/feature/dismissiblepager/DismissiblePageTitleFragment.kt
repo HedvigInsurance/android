@@ -26,7 +26,7 @@ class DismissiblePageTitleFragment : Fragment(R.layout.dismissible_page_title_fr
       ?: error("Programmer error: incorrect arguments passed to ${this.javaClass.name}")
 
     binding.apply {
-      val url = Uri.parse(hedvigBuildConstants.urlBaseApi + model.imageUrls.iconByTheme(requireContext()))
+      val url = Uri.parse(hedvigBuildConstants.urlGiraffeBaseApi + model.imageUrls.iconByTheme(requireContext()))
       illustration.load(url, imageLoader)
       title.text = model.title
       paragraph.text = model.paragraph

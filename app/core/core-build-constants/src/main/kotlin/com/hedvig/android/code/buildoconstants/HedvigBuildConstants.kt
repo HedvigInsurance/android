@@ -1,14 +1,26 @@
 package com.hedvig.android.code.buildoconstants
 
 interface HedvigBuildConstants {
-  val urlGraphql: String
-  val urlGraphqlWs: String
-  val urlGraphqlOctopus: String
-
   /**
    * Base URL for giraffe backend
    */
-  val urlBaseApi: String
+  val urlGiraffeBaseApi: String
+
+  /**
+   * Same as [urlGiraffeBaseApi] with /graphql suffix to it
+   */
+  val urlGiraffeGraphql: String
+
+  /**
+   * Same as [urlGiraffeBaseApi] but for subscriptions, which means it has `wss` instead of `https` and ends with a
+   * `/subscriptions` suffix
+   */
+  val urlGiraffeGraphqlSubscription: String
+
+  /**
+   * Base URL for octupus backend
+   */
+  val urlGraphqlOctopus: String
 
   /**
    * Base URL for the hedvig website
@@ -46,10 +58,10 @@ interface HedvigBuildConstants {
   companion object {
     fun previewHedvigBuildConstants(): HedvigBuildConstants {
       return object : HedvigBuildConstants {
-        override val urlGraphql: String = "urlGraphql"
-        override val urlGraphqlWs: String = "urlGraphqlWs"
+        override val urlGiraffeBaseApi: String = "urlBaseApi"
+        override val urlGiraffeGraphql: String = "urlGraphql"
+        override val urlGiraffeGraphqlSubscription: String = "urlGraphqlWs"
         override val urlGraphqlOctopus: String = "urlGraphqlOctopus"
-        override val urlBaseApi: String = "urlBaseApi"
         override val urlBaseWeb: String = "urlBaseWeb"
         override val urlHanalytics: String = "urlHanalytics"
         override val urlOdyssey: String = "urlOdyssey"
