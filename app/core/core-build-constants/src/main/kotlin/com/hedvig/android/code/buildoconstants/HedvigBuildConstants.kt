@@ -4,6 +4,10 @@ interface HedvigBuildConstants {
   val urlGraphql: String
   val urlGraphqlWs: String
   val urlGraphqlOctopus: String
+
+  /**
+   * Base URL for giraffe backend
+   */
   val urlBaseApi: String
 
   /**

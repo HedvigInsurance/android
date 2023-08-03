@@ -436,7 +436,7 @@ private val buildConstantsModule = module {
       override val urlGraphql: String
       override val urlGraphqlWs: String
       override val urlGraphqlOctopus: String
-      override val urlBaseApi: String
+      override val urlBaseApi: String = get<Context>().getString(R.string.BASE_URL)
       override val urlBaseWeb: String = get<Context>().getString(R.string.WEB_BASE_URL)
       override val urlHanalytics: String = get<Context>().getString(R.string.HANALYTICS_URL)
       override val urlOdyssey: String = get<Context>().getString(R.string.ODYSSEY_URL)

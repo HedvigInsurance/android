@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
+import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.android.GenericDiffUtilItemCallback
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ExpandableBottomSheetTitleBinding
@@ -19,6 +20,7 @@ import com.hedvig.app.util.extensions.viewBinding
 class PreviousInsurerAdapter(
   context: Context,
   previousInsurers: List<PreviousInsurerParameter.PreviousInsurer>,
+  val hedvigBuildConstants: HedvigBuildConstants,
   private val imageLoader: ImageLoader,
   private val onInsurerClicked: (PreviousInsurerItem.Insurer) -> Unit,
 ) : ListAdapter<PreviousInsurerItem, PreviousInsurerAdapter.PreviousInsurerViewHolder>(GenericDiffUtilItemCallback()) {
@@ -38,6 +40,7 @@ class PreviousInsurerAdapter(
     R.layout.expandable_bottom_sheet_title -> PreviousInsurerViewHolder.Header(parent)
     R.layout.previous_insurer_item -> PreviousInsurerViewHolder.InsurerViewHolder(
       parent,
+      hedvigBuildConstants,
       imageLoader,
       onInsurerClicked,
     )
@@ -59,6 +62,7 @@ class PreviousInsurerAdapter(
 
     class InsurerViewHolder(
       parent: ViewGroup,
+      val hedvigBuildConstants: HedvigBuildConstants,
       val imageLoader: ImageLoader,
       val onInsurerClicked: (PreviousInsurerItem.Insurer) -> Unit,
     ) : PreviousInsurerViewHolder(parent.inflate(R.layout.previous_insurer_item)) {
@@ -68,7 +72,7 @@ class PreviousInsurerAdapter(
       override fun bind(item: PreviousInsurerItem) {
         (item as? PreviousInsurerItem.Insurer)?.let {
           item.icon?.let { iconUrl ->
-            val url = Uri.parse(binding.icon.context.getString(R.string.BASE_URL) + iconUrl)
+            val url = Uri.parse(hedvigBuildConstants.urlBaseApi + iconUrl)
             binding.icon.load(url, imageLoader)
           }
           binding.text.text = item.name
