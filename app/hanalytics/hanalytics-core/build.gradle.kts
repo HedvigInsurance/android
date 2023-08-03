@@ -12,6 +12,7 @@ dependencies {
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.coreCommonPublic)
+  implementation(projects.loggingPublic)
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java).configureEach {

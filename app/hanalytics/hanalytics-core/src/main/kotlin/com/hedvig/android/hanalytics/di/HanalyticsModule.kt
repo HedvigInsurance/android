@@ -1,7 +1,5 @@
 package com.hedvig.android.hanalytics.di
 
-import com.hedvig.android.core.common.di.LogInfoType
-import com.hedvig.android.core.common.di.logInfoQualifier
 import com.hedvig.android.hanalytics.HAnalyticsExperimentManager
 import com.hedvig.android.hanalytics.HAnalyticsExperimentManagerImpl
 import com.hedvig.android.hanalytics.HAnalyticsImpl
@@ -34,5 +32,5 @@ val hAnalyticsModule = module {
     )
   }
   single<NetworkHAnalyticsSink> { NetworkHAnalyticsSink(get(), get()) } bind HAnalyticsSink::class
-  single<LoggingHAnalyticsSink> { LoggingHAnalyticsSink(get<LogInfoType>(logInfoQualifier)) } bind HAnalyticsSink::class
+  single<LoggingHAnalyticsSink> { LoggingHAnalyticsSink() } bind HAnalyticsSink::class
 }

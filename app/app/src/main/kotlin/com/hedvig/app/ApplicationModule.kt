@@ -28,10 +28,8 @@ import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.auth.interceptor.MigrateTokenInterceptor
 import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.android.QuoteCartId
-import com.hedvig.android.core.common.di.LogInfoType
 import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.common.di.datastoreFileQualifier
-import com.hedvig.android.core.common.di.logInfoQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.data.forever.di.foreverDataModule
 import com.hedvig.android.data.travelcertificate.di.claimFlowDataModule
@@ -554,12 +552,6 @@ private val datastoreAndroidModule = module {
   }
 }
 
-private val logModule = module {
-  single<LogInfoType>(logInfoQualifier) {
-    ::i
-  }
-}
-
 private val coilModule = module {
   single<ImageLoader> {
     ImageLoader.Builder(get())
@@ -657,7 +649,6 @@ val applicationModule = module {
       homeModule,
       insurancesModule,
       languageModule,
-      logModule,
       marketManagerModule,
       memberRemindersModule,
       networkModule,
