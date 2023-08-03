@@ -33,6 +33,7 @@ dependencies {
   implementation(projects.apolloCore)
   implementation(projects.apolloGiraffePublic)
   implementation(projects.apolloOctopusPublic)
+  implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDesignSystem)
