@@ -13,7 +13,6 @@ dependencies {
   implementation(libs.firebase.messaging)
   implementation(libs.koin.android)
   implementation(libs.koin.workManager)
-  implementation(libs.slimber)
   implementation(projects.apolloCore)
   implementation(projects.apolloGiraffePublic)
   implementation(projects.authCore)

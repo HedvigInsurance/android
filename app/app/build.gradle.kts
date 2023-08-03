@@ -189,7 +189,6 @@ dependencies {
   implementation(libs.reactiveX.android)
   implementation(libs.reactiveX.kotlin)
   implementation(libs.shimmer)
-  implementation(libs.slimber)
   implementation(libs.timber)
   implementation(libs.zXing)
   implementation(projects.apolloCore)

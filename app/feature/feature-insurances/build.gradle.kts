@@ -25,7 +25,6 @@ dependencies {
   implementation(libs.koin.core)
   implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
-  implementation(libs.slimber)
   implementation(projects.apolloCore)
   implementation(projects.apolloGiraffePublic)
   implementation(projects.apolloOctopusPublic)

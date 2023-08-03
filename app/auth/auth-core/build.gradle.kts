@@ -15,7 +15,6 @@ dependencies {
   // do not remove ktor, authlib has an old ktor version which somehow crashes. Remove when we bump authlib.
   implementation(libs.ktor)
   implementation(libs.okhttp.core)
-  implementation(libs.slimber)
   implementation(projects.authEventCore)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)

@@ -13,7 +13,6 @@ dependencies {
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.okhttp.core)
-  implementation(libs.slimber)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)

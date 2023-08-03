@@ -14,7 +14,6 @@ dependencies {
   implementation(libs.androidx.lifecycle.common)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.lifecycle.runtime)
-  implementation(libs.slimber)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)
