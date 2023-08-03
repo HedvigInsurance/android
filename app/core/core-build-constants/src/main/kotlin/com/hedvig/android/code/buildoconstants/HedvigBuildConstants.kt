@@ -5,13 +5,31 @@ interface HedvigBuildConstants {
   val urlGraphqlWs: String
   val urlGraphqlOctopus: String
   val urlBaseApi: String
+
+  /**
+   * Base URL for the hedvig website
+   */
   val urlBaseWeb: String
+
+  /**
+   * The URL targeting Hanalytics backend
+   */
   val urlHanalytics: String
 
-  // The URL targeting odyssey backend
+  /**
+   * The URL targeting odyssey backend
+   */
   val urlOdyssey: String
 
+  /**
+   * e.g. 11.3.2
+   */
   val appVersionName: String
+
+  /**
+   * e.g. 43 (debug builds) 5301 (app tester code)
+   */
+  val appVersionCode: String
 
   companion object {
     fun previewHedvigBuildConstants(): HedvigBuildConstants {
@@ -24,6 +42,7 @@ interface HedvigBuildConstants {
         override val urlHanalytics: String = "urlHanalytics"
         override val urlOdyssey: String = "urlOdyssey"
         override val appVersionName: String = "11.X.Y"
+        override val appVersionCode: String = "42"
       }
     }
   }

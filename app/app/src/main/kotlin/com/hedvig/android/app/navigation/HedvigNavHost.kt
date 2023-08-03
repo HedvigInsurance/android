@@ -77,7 +77,6 @@ internal fun HedvigNavHost(
   fragmentManager: FragmentManager,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
-  appVersionCode: String,
   isProduction: Boolean,
   modifier: Modifier = Modifier,
 ) {
@@ -227,7 +226,6 @@ internal fun HedvigNavHost(
       navigator = navigator,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       hedvigBuildConstants = hedvigBuildConstants,
-      appVersionCode = appVersionCode,
       isProduction = isProduction,
       navigateToPayoutScreen = navigateToPayoutScreen@{
         val market = marketManager.market ?: return@navigateToPayoutScreen

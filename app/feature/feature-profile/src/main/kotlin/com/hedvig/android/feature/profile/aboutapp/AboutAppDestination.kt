@@ -34,7 +34,6 @@ internal fun AboutAppDestination(
   onBackPressed: () -> Unit,
   showOpenSourceLicenses: () -> Unit,
   hedvigBuildConstants: HedvigBuildConstants,
-  appVersionCode: String,
   isProduction: Boolean,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -43,7 +42,6 @@ internal fun AboutAppDestination(
   AboutAppScreen(
     memberId = memberId,
     hedvigBuildConstants = hedvigBuildConstants,
-    appVersionCode = appVersionCode,
     onBackPressed = onBackPressed,
     showOpenSourceLicenses = showOpenSourceLicenses,
     isProduction = isProduction,
@@ -54,7 +52,6 @@ internal fun AboutAppDestination(
 private fun AboutAppScreen(
   memberId: String?,
   hedvigBuildConstants: HedvigBuildConstants,
-  appVersionCode: String,
   onBackPressed: () -> Unit,
   showOpenSourceLicenses: () -> Unit,
   isProduction: Boolean,
@@ -92,7 +89,7 @@ private fun AboutAppScreen(
               append(hedvigBuildConstants.appVersionName)
               if (!isProduction) {
                 append(" (")
-                append(appVersionCode)
+                append(hedvigBuildConstants.appVersionCode)
                 append(")")
               }
             },
@@ -120,7 +117,7 @@ private fun AboutAppScreen(
 private fun PreviewAboutAppScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      AboutAppScreen("123", HedvigBuildConstants.previewHedvigBuildConstants(), "42", {}, {}, false)
+      AboutAppScreen("123", HedvigBuildConstants.previewHedvigBuildConstants(), {}, {}, false)
     }
   }
 }

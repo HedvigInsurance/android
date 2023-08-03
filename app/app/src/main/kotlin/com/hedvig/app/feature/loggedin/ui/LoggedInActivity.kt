@@ -59,7 +59,6 @@ import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.isProductionQualifier
 import com.hedvig.android.core.designsystem.material3.motion.MotionTokens
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.hanalytics.android.di.appVersionCodeQualifier
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.language.LanguageService
@@ -99,7 +98,6 @@ class LoggedInActivity : AppCompatActivity() {
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer by inject()
   private val isProduction: Boolean by inject(isProductionQualifier)
   private val hedvigBuildConstants: HedvigBuildConstants by inject()
-  private val appVersionCode: String by inject(appVersionCodeQualifier)
 
   private val activityNavigator: ActivityNavigator by inject()
 
@@ -233,7 +231,6 @@ class LoggedInActivity : AppCompatActivity() {
           fragmentManager = supportFragmentManager,
           languageService = languageService,
           hedvigBuildConstants = hedvigBuildConstants,
-          appVersionCode = appVersionCode,
           isProduction = isProduction,
         )
       }
@@ -284,7 +281,6 @@ private fun HedvigApp(
   fragmentManager: FragmentManager,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
-  appVersionCode: String,
   isProduction: Boolean,
 ) {
   LaunchedEffect(getInitialTab, clearInitialTab, hedvigAppState) {
@@ -326,7 +322,6 @@ private fun HedvigApp(
           fragmentManager = fragmentManager,
           languageService = languageService,
           hedvigBuildConstants = hedvigBuildConstants,
-          appVersionCode = appVersionCode,
           isProduction = isProduction,
           modifier = Modifier
             .fillMaxHeight()

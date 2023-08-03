@@ -9,7 +9,6 @@ import org.koin.core.qualifier.StringQualifier
 import org.koin.core.qualifier.qualifier
 import org.koin.dsl.module
 
-val appVersionCodeQualifier: StringQualifier = qualifier("appVersionCodeQualifier")
 val appIdQualifier: StringQualifier = qualifier("appIdQualifier")
 
 @Suppress("RemoveExplicitTypeArguments")
@@ -22,7 +21,7 @@ val hAnalyticsAndroidModule = module {
       deviceIdDataStore = get(),
       hAnalyticsBaseUrl = hedvingBuildConstants.urlHanalytics,
       appVersionName = hedvingBuildConstants.appVersionName,
-      appVersionCode = get(appVersionCodeQualifier),
+      appVersionCode = hedvingBuildConstants.appVersionCode,
       appId = get(appIdQualifier),
     )
   }

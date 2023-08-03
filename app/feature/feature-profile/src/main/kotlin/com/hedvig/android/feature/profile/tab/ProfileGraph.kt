@@ -32,7 +32,6 @@ fun NavGraphBuilder.profileGraph(
   navigator: Navigator,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   hedvigBuildConstants: HedvigBuildConstants,
-  appVersionCode: String,
   isProduction: Boolean,
   navigateToPayoutScreen: () -> Unit,
   navigateToPayinScreen: () -> Unit,
@@ -95,7 +94,6 @@ fun NavGraphBuilder.profileGraph(
           with(navigator) { backStackEntry.navigate(AppDestination.Licenses) }
         },
         hedvigBuildConstants = hedvigBuildConstants,
-        appVersionCode = appVersionCode,
         isProduction = isProduction,
       )
     }
