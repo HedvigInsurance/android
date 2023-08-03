@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
+import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.forever.ForeverViewModel
@@ -20,8 +21,9 @@ import com.kiwi.navigationcompose.typed.createRoutePattern
 import org.koin.androidx.compose.koinViewModel
 
 fun NavGraphBuilder.foreverGraph(
-  languageService: LanguageService,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
+  languageService: LanguageService,
+  hedvigBuildConstants: HedvigBuildConstants,
 ) {
   animatedNavigation<TopLevelGraph.FOREVER>(
     startDestination = createRoutePattern<AppDestination.TopLevelDestination.Forever>(),
@@ -38,6 +40,7 @@ fun NavGraphBuilder.foreverGraph(
       ForeverDestination(
         viewModel = viewModel,
         languageService = languageService,
+        hedvigBuildConstants = hedvigBuildConstants,
       )
     }
   }
@@ -47,6 +50,7 @@ fun NavGraphBuilder.foreverGraph(
 private fun ForeverDestination(
   viewModel: ForeverViewModel,
   languageService: LanguageService,
+  hedvigBuildConstants: HedvigBuildConstants,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   AnimatedContent(targetState = uiState.isLoading, label = "") { loading ->
@@ -58,6 +62,7 @@ private fun ForeverDestination(
         onSubmitCode = viewModel::onSubmitCode,
         onCodeChanged = viewModel::onCodeChanged,
         languageService = languageService,
+        hedvigBuildConstants = hedvigBuildConstants,
       )
     }
   }

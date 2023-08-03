@@ -212,8 +212,9 @@ internal fun HedvigNavHost(
       imageLoader = imageLoader,
     )
     foreverGraph(
-      languageService = languageService,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+      languageService = languageService,
+      hedvigBuildConstants = hedvigBuildConstants,
     )
     profileGraph(
       nestedGraphs = {
