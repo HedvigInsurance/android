@@ -23,6 +23,7 @@ dependencies {
   implementation(projects.apolloGiraffePublic)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.authCore)
+  implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDatastorePublic)

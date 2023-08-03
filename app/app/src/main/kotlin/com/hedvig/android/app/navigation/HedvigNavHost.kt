@@ -17,6 +17,7 @@ import androidx.navigation.NavOptions
 import coil.ImageLoader
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.hedvig.android.app.ui.HedvigAppState
+import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.android.ThemedIconUrls
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.data.claimflow.ClaimFlowStep
@@ -75,7 +76,7 @@ internal fun HedvigNavHost(
   hAnalytics: HAnalytics,
   fragmentManager: FragmentManager,
   languageService: LanguageService,
-  appVersionName: String,
+  hedvigBuildConstants: HedvigBuildConstants,
   appVersionCode: String,
   isProduction: Boolean,
   modifier: Modifier = Modifier,
@@ -225,7 +226,7 @@ internal fun HedvigNavHost(
       },
       navigator = navigator,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-      appVersionName = appVersionName,
+      hedvigBuildConstants = hedvigBuildConstants,
       appVersionCode = appVersionCode,
       isProduction = isProduction,
       navigateToPayoutScreen = navigateToPayoutScreen@{

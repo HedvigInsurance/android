@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.clearFocusOnTap
@@ -32,7 +33,7 @@ internal fun AboutAppDestination(
   viewModel: AboutAppViewModel,
   onBackPressed: () -> Unit,
   showOpenSourceLicenses: () -> Unit,
-  appVersionName: String,
+  hedvigBuildConstants: HedvigBuildConstants,
   appVersionCode: String,
   isProduction: Boolean,
 ) {
@@ -41,7 +42,7 @@ internal fun AboutAppDestination(
 
   AboutAppScreen(
     memberId = memberId,
-    appVersionName = appVersionName,
+    hedvigBuildConstants = hedvigBuildConstants,
     appVersionCode = appVersionCode,
     onBackPressed = onBackPressed,
     showOpenSourceLicenses = showOpenSourceLicenses,
@@ -52,7 +53,7 @@ internal fun AboutAppDestination(
 @Composable
 private fun AboutAppScreen(
   memberId: String?,
-  appVersionName: String,
+  hedvigBuildConstants: HedvigBuildConstants,
   appVersionCode: String,
   onBackPressed: () -> Unit,
   showOpenSourceLicenses: () -> Unit,
@@ -88,7 +89,7 @@ private fun AboutAppScreen(
         CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
           Text(
             text = buildString {
-              append(appVersionName)
+              append(hedvigBuildConstants.appVersionName)
               if (!isProduction) {
                 append(" (")
                 append(appVersionCode)
@@ -119,7 +120,7 @@ private fun AboutAppScreen(
 private fun PreviewAboutAppScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      AboutAppScreen("123", "11.4.3", "42", {}, {}, false)
+      AboutAppScreen("123", HedvigBuildConstants.previewHedvigBuildConstants(), "42", {}, {}, false)
     }
   }
 }

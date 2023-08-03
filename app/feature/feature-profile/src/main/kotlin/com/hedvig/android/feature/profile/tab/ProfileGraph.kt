@@ -2,6 +2,7 @@ package com.hedvig.android.feature.profile.tab
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
+import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.profile.aboutapp.AboutAppDestination
 import com.hedvig.android.feature.profile.aboutapp.AboutAppViewModel
@@ -30,7 +31,7 @@ fun NavGraphBuilder.profileGraph(
   nestedGraphs: NavGraphBuilder.() -> Unit,
   navigator: Navigator,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-  appVersionName: String,
+  hedvigBuildConstants: HedvigBuildConstants,
   appVersionCode: String,
   isProduction: Boolean,
   navigateToPayoutScreen: () -> Unit,
@@ -93,7 +94,7 @@ fun NavGraphBuilder.profileGraph(
         showOpenSourceLicenses = {
           with(navigator) { backStackEntry.navigate(AppDestination.Licenses) }
         },
-        appVersionName = appVersionName,
+        hedvigBuildConstants = hedvigBuildConstants,
         appVersionCode = appVersionCode,
         isProduction = isProduction,
       )

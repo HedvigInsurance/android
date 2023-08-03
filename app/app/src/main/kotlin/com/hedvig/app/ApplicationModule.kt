@@ -40,7 +40,6 @@ import com.hedvig.android.core.common.di.octopusGraphQLUrlQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.data.forever.di.foreverDataModule
 import com.hedvig.android.data.travelcertificate.di.claimFlowDataModule
-import com.hedvig.android.data.travelcertificate.di.odysseyUrlQualifier
 import com.hedvig.android.data.travelcertificate.di.travelCertificateDataModule
 import com.hedvig.android.datadog.addDatadogConfiguration
 import com.hedvig.android.datadog.di.datadogModule
@@ -56,9 +55,7 @@ import com.hedvig.android.feature.terminateinsurance.di.terminateInsuranceModule
 import com.hedvig.android.feature.travelcertificate.di.travelCertificateModule
 import com.hedvig.android.hanalytics.android.di.appIdQualifier
 import com.hedvig.android.hanalytics.android.di.appVersionCodeQualifier
-import com.hedvig.android.hanalytics.android.di.appVersionNameQualifier
 import com.hedvig.android.hanalytics.android.di.hAnalyticsAndroidModule
-import com.hedvig.android.hanalytics.android.di.hAnalyticsUrlQualifier
 import com.hedvig.android.hanalytics.di.hAnalyticsModule
 import com.hedvig.android.hanalytics.featureflags.di.featureManagerModule
 import com.hedvig.android.language.LanguageService
