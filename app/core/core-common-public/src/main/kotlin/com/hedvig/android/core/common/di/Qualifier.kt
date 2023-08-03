@@ -33,9 +33,6 @@ typealias LogInfoType = (() -> String) -> Unit
  */
 val ioDispatcherQualifier = qualifier("ioDispatcher")
 
-// The URL for the octopus super-graph
-val octopusGraphQLUrlQualifier = qualifier("octopusGraphQLUrlQualifier")
-
 // The URL for giraffe
 val giraffeGraphQLUrlQualifier = qualifier("giraffeGraphQLUrlQualifier")
 

@@ -12,6 +12,7 @@ dependencies {
   implementation(libs.apollo.adapters)
   implementation(libs.apollo.runtime)
   implementation(libs.koin.core)
+  implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
 }
 

@@ -36,7 +36,6 @@ import com.hedvig.android.core.common.di.giraffeGraphQLWebSocketUrlQualifier
 import com.hedvig.android.core.common.di.isDebugQualifier
 import com.hedvig.android.core.common.di.isProductionQualifier
 import com.hedvig.android.core.common.di.logInfoQualifier
-import com.hedvig.android.core.common.di.octopusGraphQLUrlQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.data.forever.di.foreverDataModule
 import com.hedvig.android.data.travelcertificate.di.claimFlowDataModule
@@ -268,7 +267,6 @@ private val networkModule = module {
 private val apolloClientUrlsModule = module {
   single<String>(giraffeGraphQLUrlQualifier) { get<Context>().getString(R.string.GRAPHQL_URL) }
   single<String>(giraffeGraphQLWebSocketUrlQualifier) { get<Context>().getString(R.string.WS_GRAPHQL_URL) }
-  single<String>(octopusGraphQLUrlQualifier) { get<Context>().getString(R.string.OCTOPUS_GRAPHQL_URL) }
 }
 
 fun makeUserAgent(locale: Locale): String = buildString {
@@ -435,7 +433,7 @@ private val buildConstantsModule = module {
     object : HedvigBuildConstants {
       override val urlGraphql: String
       override val urlGraphqlWs: String
-      override val urlGraphqlOctopus: String
+      override val urlGraphqlOctopus: String = get<Context>().getString(R.string.OCTOPUS_GRAPHQL_URL)
       override val urlBaseApi: String = get<Context>().getString(R.string.BASE_URL)
       override val urlBaseWeb: String = get<Context>().getString(R.string.WEB_BASE_URL)
       override val urlHanalytics: String = get<Context>().getString(R.string.HANALYTICS_URL)
