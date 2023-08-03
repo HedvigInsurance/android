@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
+import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Language
@@ -36,6 +37,7 @@ import slimber.log.i
 
 class MarketingActivity : AppCompatActivity() {
   private val languageService: LanguageService by inject()
+  private val hedvigBuildConstants: HedvigBuildConstants by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -69,7 +71,7 @@ class MarketingActivity : AppCompatActivity() {
   }
 
   private fun openOnboarding(market: Market) {
-    val baseUrl = getString(hedvig.resources.R.string.WEB_BASE_URL).substringAfter("//")
+    val baseUrl = hedvigBuildConstants.urlBaseWeb.substringAfter("//")
     val uri = market.createOnboardingUri(baseUrl, languageService.getLanguage())
     openWebBrowser(uri)
   }

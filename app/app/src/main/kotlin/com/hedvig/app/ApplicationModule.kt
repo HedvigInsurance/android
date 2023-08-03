@@ -26,20 +26,15 @@ import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.auth.di.authModule
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.auth.interceptor.MigrateTokenInterceptor
+import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.android.QuoteCartId
 import com.hedvig.android.core.common.di.LogInfoType
 import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.common.di.datastoreFileQualifier
-import com.hedvig.android.core.common.di.giraffeGraphQLUrlQualifier
-import com.hedvig.android.core.common.di.giraffeGraphQLWebSocketUrlQualifier
-import com.hedvig.android.core.common.di.isDebugQualifier
-import com.hedvig.android.core.common.di.isProductionQualifier
 import com.hedvig.android.core.common.di.logInfoQualifier
-import com.hedvig.android.core.common.di.octopusGraphQLUrlQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.data.forever.di.foreverDataModule
 import com.hedvig.android.data.travelcertificate.di.claimFlowDataModule
-import com.hedvig.android.data.travelcertificate.di.odysseyUrlQualifier
 import com.hedvig.android.data.travelcertificate.di.travelCertificateDataModule
 import com.hedvig.android.datadog.addDatadogConfiguration
 import com.hedvig.android.datadog.di.datadogModule
@@ -53,11 +48,7 @@ import com.hedvig.android.feature.odyssey.di.odysseyModule
 import com.hedvig.android.feature.profile.di.profileModule
 import com.hedvig.android.feature.terminateinsurance.di.terminateInsuranceModule
 import com.hedvig.android.feature.travelcertificate.di.travelCertificateModule
-import com.hedvig.android.hanalytics.android.di.appIdQualifier
-import com.hedvig.android.hanalytics.android.di.appVersionCodeQualifier
-import com.hedvig.android.hanalytics.android.di.appVersionNameQualifier
 import com.hedvig.android.hanalytics.android.di.hAnalyticsAndroidModule
-import com.hedvig.android.hanalytics.android.di.hAnalyticsUrlQualifier
 import com.hedvig.android.hanalytics.di.hAnalyticsModule
 import com.hedvig.android.hanalytics.featureflags.di.featureManagerModule
 import com.hedvig.android.language.LanguageService
@@ -180,7 +171,7 @@ import slimber.log.i
 import timber.log.Timber
 import java.io.File
 import java.time.Clock
-import java.util.*
+import java.util.Locale
 import kotlin.math.pow
 
 fun isDebug() = BuildConfig.APPLICATION_ID == "com.hedvig.dev.app" ||
@@ -217,7 +208,7 @@ private val networkModule = module {
         )
       }
       .addInterceptor(DeviceIdInterceptor(get(), get()))
-    if (!get<Boolean>(isProductionQualifier)) {
+    if (!get<HedvigBuildConstants>().isProduction) {
       val logger = HttpLoggingInterceptor { message ->
         if (message.contains("Content-Disposition")) {
           Timber.tag("OkHttp").v("File upload omitted from log")
@@ -267,12 +258,6 @@ private val networkModule = module {
       .normalizedCache(get<NormalizedCacheFactory>())
       .addInterceptors(interceptors)
   }
-}
-
-private val apolloClientUrlsModule = module {
-  single<String>(giraffeGraphQLUrlQualifier) { get<Context>().getString(hedvig.resources.R.string.GRAPHQL_URL) }
-  single<String>(giraffeGraphQLWebSocketUrlQualifier) { get<Context>().getString(hedvig.resources.R.string.WS_GRAPHQL_URL) }
-  single<String>(octopusGraphQLUrlQualifier) { get<Context>().getString(hedvig.resources.R.string.OCTOPUS_GRAPHQL_URL) }
 }
 
 fun makeUserAgent(locale: Locale): String = buildString {
@@ -434,15 +419,27 @@ private val changeDateBottomSheetModule = module {
   viewModel { (data: ChangeDateBottomSheetData) -> ChangeDateBottomSheetViewModel(get(), data, get()) }
 }
 
-private val stringConstantsModule = module {
-  single<String>(hAnalyticsUrlQualifier) { get<Context>().getString(hedvig.resources.R.string.HANALYTICS_URL) }
-  single<String>(odysseyUrlQualifier) { get<Context>().getString(hedvig.resources.R.string.ODYSSEY_URL) }
-  single<String>(appVersionNameQualifier) { BuildConfig.VERSION_NAME }
-  single<String>(appVersionCodeQualifier) { BuildConfig.VERSION_CODE.toString() }
-  single<String>(appIdQualifier) { BuildConfig.APPLICATION_ID }
-  single<Boolean>(isDebugQualifier) { BuildConfig.DEBUG }
-  single<Boolean>(isProductionQualifier) {
-    BuildConfig.BUILD_TYPE == "release" && BuildConfig.APPLICATION_ID == "com.hedvig.app"
+private val buildConstantsModule = module {
+  single<HedvigBuildConstants> {
+    val context = get<Context>()
+    object : HedvigBuildConstants {
+      override val urlGiraffeBaseApi: String = context.getString(R.string.BASE_URL)
+      override val urlGiraffeGraphql: String = context.getString(R.string.GRAPHQL_URL)
+      override val urlGiraffeGraphqlSubscription: String = context.getString(R.string.WS_GRAPHQL_URL)
+      override val urlGraphqlOctopus: String = context.getString(R.string.OCTOPUS_GRAPHQL_URL)
+      override val urlBaseWeb: String = context.getString(R.string.WEB_BASE_URL)
+      override val urlHanalytics: String = context.getString(R.string.HANALYTICS_URL)
+      override val urlOdyssey: String = context.getString(R.string.ODYSSEY_URL)
+
+      override val appVersionName: String = BuildConfig.VERSION_NAME
+      override val appVersionCode: String = BuildConfig.VERSION_CODE.toString()
+
+      override val appId: String = BuildConfig.APPLICATION_ID
+
+      override val isDebug: Boolean = BuildConfig.DEBUG
+      override val isProduction: Boolean =
+        BuildConfig.BUILD_TYPE == "release" && BuildConfig.APPLICATION_ID == "com.hedvig.app"
+    }
   }
 }
 
@@ -499,7 +496,13 @@ private val useCaseModule = module {
     LogoutUseCaseImpl(get(), get<ApolloClient>(giraffeClient), get(), get(), get(), get(), get(), get())
   }
   single { GraphQLQueryUseCase(get()) }
-  single { GetInsuranceProvidersUseCase(get<ApolloClient>(giraffeClient), get(), get(isProductionQualifier)) }
+  single<GetInsuranceProvidersUseCase> {
+    GetInsuranceProvidersUseCase(
+      apolloClient = get<ApolloClient>(giraffeClient),
+      languageService = get(),
+      isProduction = get<HedvigBuildConstants>().isProduction,
+    )
+  }
   single<GetDanishAddressAutoCompletionUseCase> {
     GetDanishAddressAutoCompletionUseCase(get<ApolloClient>(giraffeClient))
   }
@@ -590,13 +593,13 @@ private val chatEventModule = module {
 }
 
 private val graphQLQueryModule = module {
-  single<GraphQLQueryHandler> { GraphQLQueryHandler(get(), get(), get(giraffeGraphQLUrlQualifier)) }
+  single<GraphQLQueryHandler> { GraphQLQueryHandler(get(), get(), get<HedvigBuildConstants>()) }
 }
 
 private val authRepositoryModule = module {
   single<AuthRepository> {
     NetworkAuthRepository(
-      environment = if (get(isProductionQualifier)) {
+      environment = if (get<HedvigBuildConstants>().isProduction) {
         AuthEnvironment.PRODUCTION
       } else {
         AuthEnvironment.STAGING
@@ -624,9 +627,9 @@ val applicationModule = module {
       activityNavigatorModule,
       adyenModule,
       apolloClientModule,
-      apolloClientUrlsModule,
       authModule,
       authRepositoryModule,
+      buildConstantsModule,
       businessModelModule,
       cacheManagerModule,
       changeAddressModule,
@@ -670,7 +673,6 @@ val applicationModule = module {
       repositoriesModule,
       serviceModule,
       sharedPreferencesModule,
-      stringConstantsModule,
       terminateInsuranceModule,
       textActionSetModule,
       travelCertificateDataModule,

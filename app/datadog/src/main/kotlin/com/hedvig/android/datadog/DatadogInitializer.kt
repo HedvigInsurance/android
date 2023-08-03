@@ -11,9 +11,8 @@ import com.datadog.android.rum.GlobalRum
 import com.datadog.android.rum.RumMonitor
 import com.datadog.android.rum.tracking.ActivityViewTrackingStrategy
 import com.datadog.android.tracing.AndroidTracer
+import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.ApplicationScope
-import com.hedvig.android.core.common.di.isDebugQualifier
-import com.hedvig.android.core.common.di.isProductionQualifier
 import com.hedvig.android.core.datastore.DeviceIdDataStore
 import io.opentracing.util.GlobalTracer
 import kotlinx.coroutines.flow.first
@@ -26,8 +25,7 @@ import timber.log.Timber
 // Used in /app/src/main/AndroidManifest.xml
 abstract class DatadogInitializer : Initializer<Unit>, KoinComponent {
 
-  private val isDebug by inject<Boolean>(isDebugQualifier)
-  private val isProduction by inject<Boolean>(isProductionQualifier)
+  private val hedvigBuildConstants by inject<HedvigBuildConstants>()
   private val deviceIdDataStore by inject<DeviceIdDataStore>()
   private val applicationScope by inject<ApplicationScope>()
 
@@ -35,7 +33,7 @@ abstract class DatadogInitializer : Initializer<Unit>, KoinComponent {
     val clientToken = "pub185bcba7ed324e83d068b80e25a81359"
     val applicationId = "4d7b8355-396d-406e-b543-30a073050e8f"
 
-    val environmentName = if (isProduction) "prod" else "dev"
+    val environmentName = if (hedvigBuildConstants.isProduction) "prod" else "dev"
     val configuration = Configuration.Builder(
       logsEnabled = true,
       tracesEnabled = true,
@@ -56,7 +54,7 @@ abstract class DatadogInitializer : Initializer<Unit>, KoinComponent {
       rumApplicationId = applicationId,
       serviceName = "android",
     )
-    if (isDebug) {
+    if (hedvigBuildConstants.isDebug) {
       Datadog.setVerbosity(android.util.Log.VERBOSE)
     }
     Datadog.initialize(context, credentials, configuration, TrackingConsent.GRANTED)

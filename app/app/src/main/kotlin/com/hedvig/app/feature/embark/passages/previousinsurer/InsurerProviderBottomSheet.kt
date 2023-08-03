@@ -5,6 +5,7 @@ import android.view.View
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import coil.ImageLoader
+import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.android.parcelableArrayList
 import com.hedvig.app.ui.view.ExpandableBottomSheet
 import org.koin.android.ext.android.inject
@@ -12,6 +13,7 @@ import org.koin.android.ext.android.inject
 class InsurerProviderBottomSheet : ExpandableBottomSheet() {
 
   private val imageLoader: ImageLoader by inject()
+  private val hedvigBuildConstants: HedvigBuildConstants by inject()
 
   private val insurers by lazy {
     requireArguments().parcelableArrayList<PreviousInsurerParameter.PreviousInsurer>(PREVIOUS_INSURERS)
@@ -23,7 +25,8 @@ class InsurerProviderBottomSheet : ExpandableBottomSheet() {
     binding.recycler.adapter = PreviousInsurerAdapter(
       context = requireContext(),
       previousInsurers = insurers,
-      imageLoader,
+      hedvigBuildConstants = hedvigBuildConstants,
+      imageLoader = imageLoader,
       onInsurerClicked = ::onInsurerSelected,
     )
   }

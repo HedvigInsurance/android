@@ -17,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.apollo.format
 import com.hedvig.android.apollo.toWebLocaleTag
+import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.feature.forever.ForeverUiState
 import com.hedvig.android.feature.forever.showShareSheet
@@ -30,6 +31,7 @@ internal fun ForeverScreen(
   onSubmitCode: (String) -> Unit,
   onCodeChanged: (String) -> Unit,
   languageService: LanguageService,
+  hedvigBuildConstants: HedvigBuildConstants,
 ) {
   Box(
     modifier = Modifier.fillMaxSize(),
@@ -58,7 +60,7 @@ internal fun ForeverScreen(
                 R.string.REFERRAL_SMS_MESSAGE,
                 incentive.format(languageService.getLocale()),
                 buildString {
-                  append(R.string.WEB_BASE_URL)
+                  append(hedvigBuildConstants.urlBaseWeb)
                   append("/")
                   append(languageService.getGraphQLLocale().toWebLocaleTag())
                   append("/forever/")

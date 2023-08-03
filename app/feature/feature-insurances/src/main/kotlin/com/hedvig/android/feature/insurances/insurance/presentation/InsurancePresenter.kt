@@ -183,7 +183,7 @@ private suspend fun loadInsuranceData(
             CrossSellType.PET -> InsuranceUiState.CrossSell.CrossSellType.PET
             CrossSellType.UNKNOWN__ -> InsuranceUiState.CrossSell.CrossSellType.UNKNOWN
             null -> InsuranceUiState.CrossSell.CrossSellType.UNKNOWN
-          }
+          },
         )
       }.toPersistentList()
       InsuranceData(

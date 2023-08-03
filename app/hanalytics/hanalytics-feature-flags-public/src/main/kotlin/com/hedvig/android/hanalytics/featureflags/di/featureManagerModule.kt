@@ -1,6 +1,6 @@
 package com.hedvig.android.hanalytics.featureflags.di
 
-import com.hedvig.android.core.common.di.isDebugQualifier
+import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.hanalytics.featureflags.ClearHAnalyticsExperimentsCacheUseCase
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.FeatureManagerImpl
@@ -16,7 +16,7 @@ import org.koin.dsl.module
 val featureManagerModule = module {
   single<ClearHAnalyticsExperimentsCacheUseCase> { ClearHAnalyticsExperimentsCacheUseCase(get()) }
   single<FeatureManager> {
-    if (get(isDebugQualifier)) {
+    if (get<HedvigBuildConstants>().isDebug) {
       FeatureManagerImpl(
         DevFeatureFlagProvider(get()),
         DevLoginMethodProvider(get()),

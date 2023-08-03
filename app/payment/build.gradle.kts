@@ -11,7 +11,7 @@ dependencies {
   implementation(libs.coroutines.core)
   implementation(libs.koin.core)
   implementation(libs.moneta)
-  implementation(projects.apolloGiraffePublic)
   implementation(projects.apolloCore)
+  implementation(projects.apolloGiraffePublic)
   implementation(projects.languageCore)
 }
