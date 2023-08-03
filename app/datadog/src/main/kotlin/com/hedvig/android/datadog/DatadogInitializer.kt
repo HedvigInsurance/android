@@ -14,12 +14,13 @@ import com.datadog.android.tracing.AndroidTracer
 import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.datastore.DeviceIdDataStore
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import io.opentracing.util.GlobalTracer
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import slimber.log.v
 import timber.log.Timber
 
 // Used in /app/src/main/AndroidManifest.xml
@@ -61,11 +62,11 @@ abstract class DatadogInitializer : Initializer<Unit>, KoinComponent {
     val didRegisterGlobalRum = GlobalRum.registerIfAbsent {
       RumMonitor.Builder().build()
     }
-    v { "Datadog RUM registering succeeded: $didRegisterGlobalRum" }
+    logcat(LogPriority.VERBOSE) { "Datadog RUM registering succeeded: $didRegisterGlobalRum" }
     val didRegisterGlobalTracer = GlobalTracer.registerIfAbsent {
       AndroidTracer.Builder().build()
     }
-    v { "Datadog Global Tracer registering succeeded: $didRegisterGlobalTracer" }
+    logcat(LogPriority.VERBOSE) { "Datadog Global Tracer registering succeeded: $didRegisterGlobalTracer" }
     applicationScope.launch {
       val deviceId = deviceIdDataStore.observeDeviceId().first()
       Datadog.addUserExtraInfo(mapOf(DEVICE_ID_KEY to deviceId))

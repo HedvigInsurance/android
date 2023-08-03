@@ -15,8 +15,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
-import slimber.log.d
-import slimber.log.v
 
 class AuthTokenServiceImpl(
   private val authTokenStorage: AuthTokenStorage,
@@ -49,7 +47,7 @@ class AuthTokenServiceImpl(
         null
       }
       is AuthTokenResult.Success -> {
-        v { "Refreshing token success. Updating tokens" }
+        com.hedvig.android.logger.logcat(com.hedvig.android.logger.LogPriority.VERBOSE) { "Refreshing token success. Updating tokens" }
         authTokenStorage.updateTokens(result.accessToken, result.refreshToken)
         result.accessToken
       }

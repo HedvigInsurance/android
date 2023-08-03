@@ -20,6 +20,7 @@ dependencies {
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDatastorePublic)
   implementation(projects.testClock)
+  implementation(projects.loggingPublic)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
