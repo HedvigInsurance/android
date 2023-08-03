@@ -5,11 +5,7 @@ import com.hedvig.android.core.common.di.isProductionQualifier
 import com.hedvig.android.hanalytics.AndroidHAnalyticsService
 import com.hedvig.android.hanalytics.HAnalyticsService
 import com.hedvig.android.hanalytics.android.tracking.ApplicationLifecycleTracker
-import org.koin.core.qualifier.StringQualifier
-import org.koin.core.qualifier.qualifier
 import org.koin.dsl.module
-
-val appIdQualifier: StringQualifier = qualifier("appIdQualifier")
 
 @Suppress("RemoveExplicitTypeArguments")
 val hAnalyticsAndroidModule = module {
@@ -22,7 +18,7 @@ val hAnalyticsAndroidModule = module {
       hAnalyticsBaseUrl = hedvingBuildConstants.urlHanalytics,
       appVersionName = hedvingBuildConstants.appVersionName,
       appVersionCode = hedvingBuildConstants.appVersionCode,
-      appId = get(appIdQualifier),
+      appId = hedvingBuildConstants.appId,
     )
   }
   single<ApplicationLifecycleTracker> { ApplicationLifecycleTracker(get(), get(isProductionQualifier)) }

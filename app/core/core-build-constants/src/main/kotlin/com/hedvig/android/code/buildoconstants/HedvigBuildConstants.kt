@@ -31,6 +31,14 @@ interface HedvigBuildConstants {
    */
   val appVersionCode: String
 
+  /**
+   * The id/package name of the application.
+   * production -> com.hedvig.app
+   * staging    -> com.hedvig.test.app
+   * develop    -> com.hedvig.dev.app
+   */
+  val appId: String
+
   companion object {
     fun previewHedvigBuildConstants(): HedvigBuildConstants {
       return object : HedvigBuildConstants {
@@ -43,6 +51,7 @@ interface HedvigBuildConstants {
         override val urlOdyssey: String = "urlOdyssey"
         override val appVersionName: String = "11.X.Y"
         override val appVersionCode: String = "42"
+        override val appId: String = "com.hedvig.dev.app"
       }
     }
   }

@@ -53,7 +53,6 @@ import com.hedvig.android.feature.odyssey.di.odysseyModule
 import com.hedvig.android.feature.profile.di.profileModule
 import com.hedvig.android.feature.terminateinsurance.di.terminateInsuranceModule
 import com.hedvig.android.feature.travelcertificate.di.travelCertificateModule
-import com.hedvig.android.hanalytics.android.di.appIdQualifier
 import com.hedvig.android.hanalytics.android.di.hAnalyticsAndroidModule
 import com.hedvig.android.hanalytics.di.hAnalyticsModule
 import com.hedvig.android.hanalytics.featureflags.di.featureManagerModule
@@ -444,12 +443,13 @@ private val buildConstantsModule = module {
 
       override val appVersionName: String = BuildConfig.VERSION_NAME
       override val appVersionCode: String = BuildConfig.VERSION_CODE.toString()
+
+      override val appId: String = BuildConfig.APPLICATION_ID
     }
   }
 }
 
 private val stringConstantsModule = module {
-  single<String>(appIdQualifier) { BuildConfig.APPLICATION_ID }
   single<Boolean>(isDebugQualifier) { BuildConfig.DEBUG }
   single<Boolean>(isProductionQualifier) {
     BuildConfig.BUILD_TYPE == "release" && BuildConfig.APPLICATION_ID == "com.hedvig.app"
