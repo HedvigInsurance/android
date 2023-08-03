@@ -10,6 +10,8 @@ import com.hedvig.android.data.travelcertificate.TravelCertificateError
 import com.hedvig.android.feature.travelcertificate.data.CreateTravelCertificateUseCase
 import com.hedvig.android.feature.travelcertificate.data.DownloadTravelCertificateUseCase
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,8 +21,6 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import slimber.log.e
-import slimber.log.i
 
 internal class GenerateTravelCertificateViewModel(
   private val getTravelCertificateSpecificationsUseCase: GetTravelCertificateSpecificationsUseCase,
@@ -161,11 +161,11 @@ internal class GenerateTravelCertificateViewModel(
   fun onDownloadTravelCertificate(url: TravelCertificateUrl) {
     viewModelScope.launch {
       _uiState.update { it.copy(isLoading = true) }
-      i { "Downloading travel certificate with url:${url.uri}" }
+      logcat(LogPriority.INFO) { "Downloading travel certificate with url:${url.uri}" }
       downloadTravelCertificateUseCase.invoke(url)
         .fold(
           ifLeft = { errorMessage ->
-            e { "Downloading travel certificate failed:$errorMessage" }
+            logcat(LogPriority.ERROR) { "Downloading travel certificate failed:$errorMessage" }
             _uiState.update {
               it.copy(
                 isLoading = false,
@@ -174,7 +174,7 @@ internal class GenerateTravelCertificateViewModel(
             }
           },
           ifRight = { uri ->
-            i { "Downloading travel certificate succeeded. Result uri:${uri.uri.absolutePath}" }
+            logcat(LogPriority.INFO) { "Downloading travel certificate succeeded. Result uri:${uri.uri.absolutePath}" }
             _uiState.update {
               it.copy(
                 isLoading = false,

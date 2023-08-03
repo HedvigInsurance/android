@@ -35,7 +35,7 @@ internal class TerminatedContractsViewModel(
         ErrorMessage("", NoSuchElementException())
       }
       if (terminatedContracts.isEmpty()) {
-        e { "Terminated insurances screen got 0 terminated insurances" }
+        logcat(LogPriority.ERROR) { "Terminated insurances screen got 0 terminated insurances" }
         TerminatedContractsUiState.NoTerminatedInsurances
       } else {
         TerminatedContractsUiState.Success(

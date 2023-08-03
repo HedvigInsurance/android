@@ -19,14 +19,14 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.getSystemService
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.android.core.common.android.SHARED_PREFERENCE_NAME
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import kotlinx.coroutines.delay
-import slimber.log.e
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -229,7 +229,7 @@ fun Context.openWebBrowser(uri: Uri) {
   if (browserIntent.resolveActivity(packageManager) != null) {
     startActivity(browserIntent)
   } else {
-    e { "Tried to launch $uri but the phone has nothing to support such an intent." }
+    logcat(LogPriority.ERROR) { "Tried to launch $uri but the phone has nothing to support such an intent." }
     makeToast(hedvig.resources.R.string.general_unknown_error)
   }
 }

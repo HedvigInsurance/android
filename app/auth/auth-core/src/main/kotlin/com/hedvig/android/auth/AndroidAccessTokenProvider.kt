@@ -33,12 +33,14 @@ internal class AndroidAccessTokenProvider(
       }
       logcat(LogPriority.VERBOSE) { "$requestId Still an expired token at this point, try to refresh it" }
       if (authTokens.refreshToken.expiryDate.isExpired()) {
-        d { "$requestId Refresh token expired, invalidating tokens and proceeding unauthenticated" }
+        logcat { "$requestId Refresh token expired, invalidating tokens and proceeding unauthenticated" }
         // If refresh is also expired, consider ourselves logged out
         authTokenService.logoutAndInvalidateTokens()
         return@withLock null
       }
-      logcat(LogPriority.VERBOSE) { "$requestId Access token expired, but not expired refresh token, refreshing tokens now" }
+      logcat(LogPriority.VERBOSE) {
+        "$requestId Access token expired, but not expired refresh token, refreshing tokens now"
+      }
       val refreshedAccessToken = authTokenService.refreshAndGetAccessToken() ?: return@withLock null.also {
         logcat(LogPriority.VERBOSE) { "$requestId Refreshing failed, proceed unauthenticated" }
       }

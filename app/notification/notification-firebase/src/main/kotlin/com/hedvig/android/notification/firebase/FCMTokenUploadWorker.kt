@@ -8,9 +8,9 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.logger.logcat
 import giraffe.NotificationRegisterDeviceMutation
 import kotlinx.coroutines.flow.first
-import slimber.log.d
 
 /**
  * When we get a new firebase token, we need to make sure that we do not fail to upload it to the backend. If we are in
@@ -28,12 +28,12 @@ internal class FCMTokenUploadWorker(
   override suspend fun doWork(): Result {
     val storedToken = fcmTokenStorage.getToken().first()
     if (storedToken == null) {
-      d { "stored token was null, no longer need to report something to backend" }
+      logcat { "stored token was null, no longer need to report something to backend" }
       return Result.success()
     }
     val authStatus = authTokenService.authStatus.value
     if (authStatus !is AuthStatus.LoggedIn) {
-      d { "We're not logged in, we shouldn't upload a token to the backend" }
+      logcat { "We're not logged in, we shouldn't upload a token to the backend" }
       return Result.success()
     }
     return apolloClient
@@ -42,11 +42,11 @@ internal class FCMTokenUploadWorker(
       .toEither()
       .fold(
         ifLeft = {
-          d { "NotificationRegisterDeviceMutation failed with token:$storedToken. Will retry later. Error:$it" }
+          logcat { "NotificationRegisterDeviceMutation failed with token:$storedToken. Will retry later. Error:$it" }
           Result.retry()
         },
         ifRight = {
-          d { "NotificationRegisterDeviceMutation success with token:$storedToken" }
+          logcat { "NotificationRegisterDeviceMutation success with token:$storedToken" }
           Result.success()
         },
       )

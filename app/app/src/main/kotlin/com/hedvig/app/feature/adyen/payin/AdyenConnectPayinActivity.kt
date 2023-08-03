@@ -10,6 +10,8 @@ import com.adyen.checkout.dropin.DropInResult
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.common.android.serializableExtra
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.app.R
 import com.hedvig.app.feature.adyen.AdyenCurrency
 import com.hedvig.app.feature.connectpayin.ConnectPayinType
@@ -20,7 +22,6 @@ import com.hedvig.app.feature.connectpayin.PostSignExplainerFragment
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import slimber.log.e
 
 class AdyenConnectPayinActivity : AppCompatActivity(R.layout.fragment_container_activity) {
 
@@ -38,7 +39,7 @@ class AdyenConnectPayinActivity : AppCompatActivity(R.layout.fragment_container_
     val c = intent.serializableExtra<AdyenCurrency>(CURRENCY)
 
     if (c == null) {
-      e { "Programmer error: CURRENCY not provided to ${this.javaClass.name}" }
+      logcat(LogPriority.ERROR) { "Programmer error: CURRENCY not provided to ${this.javaClass.name}" }
       finish()
       return
     }

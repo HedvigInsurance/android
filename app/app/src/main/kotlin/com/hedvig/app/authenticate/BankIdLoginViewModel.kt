@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.Market
 import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
 import com.hedvig.authlib.AuthAttemptResult
@@ -24,8 +26,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import slimber.log.e
-import slimber.log.i
 import kotlin.time.Duration.Companion.seconds
 
 class BankIdLoginViewModel(
@@ -47,7 +47,7 @@ class BankIdLoginViewModel(
         if (loginStatusResult is LoginStatusResult.Completed) {
           when (val authTokenResult = authRepository.exchange(loginStatusResult.authorizationCode)) {
             is AuthTokenResult.Error -> {
-              e { "Login failed, with error: ${authTokenResult.message}" }
+              logcat(LogPriority.ERROR) { "Login failed, with error: ${authTokenResult.message}" }
               return@map LoginStatusResult.Failed(authTokenResult.message)
             }
 
@@ -70,17 +70,17 @@ class BankIdLoginViewModel(
       when (result) {
         is AuthAttemptResult.BankIdProperties -> bankIdProperties.update { result }
         is AuthAttemptResult.Error -> {
-          e { "Got Error when signing in with BankId: ${result.message}" }
+          logcat(LogPriority.ERROR) { "Got Error when signing in with BankId: ${result.message}" }
           startLoginAttemptFailed.update { "Got Error when signing in with BankId: ${result.message}" }
         }
 
         is AuthAttemptResult.ZignSecProperties -> {
-          e { "Got ZignSec properties when signing in with BankId" }
+          logcat(LogPriority.ERROR) { "Got ZignSec properties when signing in with BankId" }
           startLoginAttemptFailed.update { "Got ZignSec properties when signing in with BankId" }
         }
 
         is AuthAttemptResult.OtpProperties -> {
-          e { "Got Otp properties when signing in with BankId" }
+          logcat(LogPriority.ERROR) { "Got Otp properties when signing in with BankId" }
           startLoginAttemptFailed.update { "Got Otp properties when signing in with BankId" }
         }
       }
@@ -107,7 +107,7 @@ class BankIdLoginViewModel(
       return@combine BankIdLoginViewState.Error(loginStatusResult.message)
     }
     if (loginStatusResult is LoginStatusResult.Exception) {
-      e { "Got exception for login status: ${loginStatusResult.message}" }
+      logcat(LogPriority.ERROR) { "Got exception for login status: ${loginStatusResult.message}" }
       return@combine BankIdLoginViewState.Error(loginStatusResult.message)
     }
     BankIdLoginViewState.HandlingBankId(
@@ -138,7 +138,7 @@ class BankIdLoginViewModel(
     featureManager.invalidateExperiments()
     uploadMarketAndLanguagePreferencesUseCase.invoke()
     hAnalytics.loggedIn()
-    i { "Logged in!" }
+    logcat(LogPriority.INFO) { "Logged in!" }
   }
 }
 

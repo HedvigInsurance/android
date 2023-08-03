@@ -19,6 +19,7 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.hedvig.android.feature.insurances.navigation.insurancesBottomNavPermittedDestinations
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.tab.BottomNavTab
@@ -39,7 +40,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import slimber.log.d
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
@@ -161,7 +161,7 @@ internal class HedvigAppState(
 private fun NavigationTrackingSideEffect(navController: NavController) {
   DisposableEffect(navController) {
     val listener = NavController.OnDestinationChangedListener { _, destination: NavDestination, bundle: Bundle? ->
-      d {
+      logcat {
         buildString {
           append("Navigated to route:${destination.route}")
           if (bundle != null) {

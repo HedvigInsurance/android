@@ -13,6 +13,8 @@ import com.carousell.concatadapterextension.ConcatItemDecoration
 import com.carousell.concatadapterextension.ConcatSpanSizeLookup
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.common.android.parcelableArrayListExtra
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.app.R
 import com.hedvig.app.databinding.QuoteDetailActivityBinding
 import com.hedvig.app.feature.documents.DocumentAdapter
@@ -26,7 +28,6 @@ import com.hedvig.app.util.extensions.toArrayList
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.Insetter
 import org.koin.android.ext.android.inject
-import slimber.log.e
 
 class QuoteDetailActivity : AppCompatActivity(R.layout.quote_detail_activity) {
   private val binding by viewBinding(QuoteDetailActivityBinding::bind)
@@ -43,7 +44,9 @@ class QuoteDetailActivity : AppCompatActivity(R.layout.quote_detail_activity) {
     val documents = intent.parcelableArrayListExtra<DocumentItems.Document>(DOCUMENTS)
 
     if (title == null || perils == null || insurableLimits == null || documents == null) {
-      e { "Programmer error: PERILS/INSURABLE_LIMITS/DOCUMENTS not provided to ${this.javaClass.name}" }
+      logcat(LogPriority.ERROR) {
+        "Programmer error: PERILS/INSURABLE_LIMITS/DOCUMENTS not provided to ${this.javaClass.name}"
+      }
       return
     }
 

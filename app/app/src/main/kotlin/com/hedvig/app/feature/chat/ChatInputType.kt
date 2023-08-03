@@ -1,9 +1,10 @@
 package com.hedvig.app.feature.chat
 
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import giraffe.ChatMessagesQuery
 import giraffe.fragment.ChatMessageFragment
 import giraffe.type.KeyboardType
-import slimber.log.e
 
 sealed class ChatInputType {
   companion object {
@@ -36,7 +37,7 @@ sealed class ChatInputType {
         return Audio
       }
 
-      e { "Implement support for ${message::class.java.simpleName}" }
+      logcat(LogPriority.ERROR) { "Implement support for ${message::class.java.simpleName}" }
       return NullInput
     }
   }

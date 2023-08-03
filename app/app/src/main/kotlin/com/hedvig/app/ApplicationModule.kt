@@ -53,6 +53,7 @@ import com.hedvig.android.hanalytics.di.hAnalyticsModule
 import com.hedvig.android.hanalytics.featureflags.di.featureManagerModule
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.language.di.languageModule
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.market.di.marketManagerModule
 import com.hedvig.android.memberreminders.di.memberRemindersModule
@@ -166,8 +167,6 @@ import org.koin.core.parameter.ParametersHolder
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import slimber.log.d
-import slimber.log.i
 import timber.log.Timber
 import java.io.File
 import java.time.Clock
@@ -245,7 +244,7 @@ private val networkModule = module {
         SubscriptionWsProtocol.Factory(
           connectionPayload = {
             val accessToken = accessTokenProvider.provide()
-            d { "Apollo-kotlin: Subscription acquired auth token: $accessToken" }
+            logcat { "Apollo-kotlin: Subscription acquired auth token: $accessToken" }
             val authorizationHeaderValue = if (accessToken != null) {
               "Bearer $accessToken"
             } else {

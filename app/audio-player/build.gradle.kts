@@ -17,6 +17,7 @@ dependencies {
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreResources)
+  implementation(projects.loggingPublic)
 
   testImplementation(libs.assertK)
   testImplementation(libs.junit)

@@ -66,10 +66,10 @@ class ChatViewModel(
       chatRepository
         .subscribeToChatMessages()
         .onStart {
-          d { "Chat: start subscription" }
+          logcat { "Chat: start subscription" }
         }
         .onEach { response ->
-          d { "Chat: subscription response null?:${response.data == null}" }
+          logcat { "Chat: subscription response null?:${response.data == null}" }
           response.data?.message?.let { message ->
             if (isSubscriptionAllowedToWrite) {
               chatRepository
@@ -77,7 +77,7 @@ class ChatViewModel(
                   message.fragments.chatMessageFragment,
                 )
             } else {
-              i { "Chat: subscription was not allowed to write" }
+              logcat(LogPriority.INFO) { "Chat: subscription was not allowed to write" }
             }
           }
         }

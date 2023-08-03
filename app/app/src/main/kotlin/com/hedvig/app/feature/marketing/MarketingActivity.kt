@@ -19,6 +19,8 @@ import coil.ImageLoader
 import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.createOnboardingUri
@@ -33,7 +35,6 @@ import com.hedvig.hanalytics.LoginMethod
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.getViewModel
-import slimber.log.i
 
 class MarketingActivity : AppCompatActivity() {
   private val languageService: LanguageService by inject()
@@ -62,7 +63,7 @@ class MarketingActivity : AppCompatActivity() {
           },
           onClickLogIn = { market ->
             viewModel.onClickLogIn()
-            i { "Start login with market:$market" }
+            logcat(LogPriority.INFO) { "Start login with market:$market" }
             onClickLogin(state, market)
           },
         )

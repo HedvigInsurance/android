@@ -8,4 +8,5 @@ dependencies {
   implementation(libs.koin.android)
   implementation(projects.authCore)
   implementation(projects.navigationActivity)
+  implementation(projects.loggingPublic)
 }
