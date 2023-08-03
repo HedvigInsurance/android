@@ -5,7 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo3.api.ApolloResponse
-import com.hedvig.android.core.common.android.e
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.util.LiveEvent
@@ -26,9 +27,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import slimber.log.d
-import slimber.log.e
-import slimber.log.i
 import java.util.concurrent.TimeUnit
 
 class ChatViewModel(
@@ -83,7 +81,7 @@ class ChatViewModel(
             }
           }
         }
-        .catch { e(it) { "Chat: Error on chat subscription" } }
+        .catch { logcat(LogPriority.ERROR, it) { "Chat: Error on chat subscription" } }
         .launchIn(this)
     }
   }
@@ -102,7 +100,7 @@ class ChatViewModel(
         }.catch {
           retryLoad()
           isSubscriptionAllowedToWrite = true
-          e(it)
+          logcat(LogPriority.ERROR, it) { "fetch chat messages response threw an exception" }
         }
         .launchIn(this)
     }
@@ -118,7 +116,7 @@ class ChatViewModel(
           {
             load()
           },
-          { e(it) },
+          { logcat(LogPriority.ERROR, it) { "retry load threw an exception" } },
         )
     } else {
       networkError.postValue(true)
@@ -252,7 +250,7 @@ class ChatViewModel(
       }
       if (response.isFailure) {
         isSendingMessage = false
-        response.exceptionOrNull()?.let { e(it) }
+        response.exceptionOrNull()?.let { logcat(LogPriority.ERROR, it) { "sendFileResponse failed" } }
         return@launch
       }
       isSendingMessage = false
@@ -275,7 +273,7 @@ class ChatViewModel(
       }
       if (response.isFailure) {
         isSendingMessage = false
-        response.exceptionOrNull()?.let { e(it) }
+        response.exceptionOrNull()?.let { logcat(LogPriority.ERROR, it) { "sendSingleSelect failed" } }
         return@launch
       }
       isSendingMessage = false
@@ -298,7 +296,7 @@ class ChatViewModel(
     viewModelScope.launch {
       val response = runCatching { chatRepository.searchGifs(query) }
       if (response.isFailure) {
-        response.exceptionOrNull()?.let { e(it) }
+        response.exceptionOrNull()?.let { logcat(LogPriority.ERROR, it) { "searchGifs thew an exception" } }
         return@launch
       }
       response.getOrNull()?.data?.let { gifs.postValue(it) }

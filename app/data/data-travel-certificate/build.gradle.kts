@@ -12,4 +12,5 @@ dependencies {
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.hanalyticsFeatureFlagsPublic)
+  implementation(projects.loggingPublic)
 }

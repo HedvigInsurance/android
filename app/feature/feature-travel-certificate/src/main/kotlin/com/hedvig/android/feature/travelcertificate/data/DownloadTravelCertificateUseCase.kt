@@ -5,6 +5,8 @@ import arrow.core.Either
 import arrow.core.raise.either
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.await
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
@@ -15,7 +17,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okio.buffer
 import okio.sink
-import slimber.log.e
 import java.io.File
 import java.io.IOException
 import java.time.format.DateTimeFormatter
@@ -50,7 +51,7 @@ internal class DownloadTravelCertificateUseCase(
 
           TravelCertificateUri(downloadedFile)
         } catch (exception: IOException) {
-          e(exception) { "Could not download travel certificate" }
+          logcat(LogPriority.ERROR, exception) { "Could not download travel certificate" }
           raise(ErrorMessage("Could not download travel certificate"))
         }
       }

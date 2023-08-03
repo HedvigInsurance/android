@@ -41,6 +41,7 @@ dependencies {
   implementation(projects.dataClaimTriaging)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(projects.loggingPublic)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)

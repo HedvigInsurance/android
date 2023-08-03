@@ -10,10 +10,10 @@ import androidx.work.await
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.tasks.await
-import slimber.log.d
-import slimber.log.e
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 
 /**
  * A central place to handle firebase push tokens. Currently called both from the login auth event, and when a new
@@ -49,7 +49,7 @@ internal class FCMTokenManager(
       if (e is CancellationException) {
         throw e
       }
-      e(e) { "Did not delete the FirebaseMessaging token, failed with exception" }
+      logcat(LogPriority.ERROR, e) { "Did not delete the FirebaseMessaging token, failed with exception" }
     }
   }
 

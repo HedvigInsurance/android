@@ -4,8 +4,8 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.android.auth.event.AuthEventListener
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.tasks.await
-import slimber.log.d
-import slimber.log.e
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 
 internal class FCMTokenAuthEventListener(
   private val fcmTokenManager: FCMTokenManager,
@@ -20,7 +20,7 @@ internal class FCMTokenAuthEventListener(
       if (throwable is CancellationException) {
         throw throwable
       }
-      e(throwable) { "Failed to fetch new token after logging in" }
+      logcat(LogPriority.ERROR, throwable) { "Failed to fetch new token after logging in" }
     }
   }
 

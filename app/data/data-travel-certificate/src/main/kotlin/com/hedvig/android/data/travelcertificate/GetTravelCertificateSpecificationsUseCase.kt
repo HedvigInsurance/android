@@ -10,10 +10,10 @@ import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import kotlinx.datetime.LocalDate
 import octopus.TravelCertificateSpecificationsQuery
-import slimber.log.ifPlanted
-import timber.log.Timber
 
 class GetTravelCertificateSpecificationsUseCase(
   private val apolloClient: ApolloClient,
@@ -32,7 +32,7 @@ class GetTravelCertificateSpecificationsUseCase(
         .safeExecute()
         .toEither(::ErrorMessage)
         .mapLeft(TravelCertificateError::Error)
-        .onLeft { ifPlanted { Timber.e(it.throwable, it.message ?: "Could not fetch travel certificate") } }
+        .onLeft { logcat(LogPriority.ERROR, it.throwable) { it.message ?: "Could not fetch travel certificate" } }
         .bind()
         .currentMember
 

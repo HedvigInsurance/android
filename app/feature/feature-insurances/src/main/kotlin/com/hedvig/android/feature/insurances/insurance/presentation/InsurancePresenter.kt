@@ -13,12 +13,13 @@ import arrow.core.raise.either
 import arrow.fx.coroutines.parZip
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.RetryChannel
-import com.hedvig.android.core.common.android.i
 import com.hedvig.android.core.ui.insurance.ContractType
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.data.toContractType
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeService
@@ -193,7 +194,9 @@ private suspend fun loadInsuranceData(
       )
     }
   }.onLeft {
-    i(it.throwable) { "Insurance items failed to load: ${it.message}" }
+    logcat(LogPriority.INFO, it.throwable) {
+      "Insurance items failed to load: ${it.message}"
+    }
   }
 }
 

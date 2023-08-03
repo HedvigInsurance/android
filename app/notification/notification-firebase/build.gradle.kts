@@ -18,4 +18,5 @@ dependencies {
   implementation(projects.authCore)
   implementation(projects.authEventCore)
   implementation(projects.notificationCore)
+  implementation(projects.loggingPublic)
 }

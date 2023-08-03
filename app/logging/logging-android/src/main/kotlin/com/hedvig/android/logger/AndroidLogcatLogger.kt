@@ -30,7 +30,7 @@ class AndroidLogcatLogger : LogcatLogger {
   }
 }
 
-private fun v(throwable: Throwable? = null, message: () -> String) {
+private fun v(throwable: Throwable?, message: () -> String) {
   if (throwable != null) {
     slimber.log.v(throwable, message)
   } else {
@@ -38,7 +38,7 @@ private fun v(throwable: Throwable? = null, message: () -> String) {
   }
 }
 
-private fun d(throwable: Throwable? = null, message: () -> String) {
+private fun d(throwable: Throwable?, message: () -> String) {
   if (throwable != null) {
     slimber.log.d(throwable, message)
   } else {
@@ -46,7 +46,7 @@ private fun d(throwable: Throwable? = null, message: () -> String) {
   }
 }
 
-private fun i(throwable: Throwable? = null, message: () -> String) {
+private fun i(throwable: Throwable?, message: () -> String) {
   if (throwable != null) {
     slimber.log.i(throwable, message)
   } else {
@@ -54,7 +54,7 @@ private fun i(throwable: Throwable? = null, message: () -> String) {
   }
 }
 
-private fun w(throwable: Throwable? = null, message: () -> String) {
+private fun w(throwable: Throwable?, message: () -> String) {
   if (throwable != null) {
     slimber.log.w(throwable, message)
   } else {
@@ -62,7 +62,7 @@ private fun w(throwable: Throwable? = null, message: () -> String) {
   }
 }
 
-private fun e(throwable: Throwable? = null, message: () -> String) {
+private fun e(throwable: Throwable?, message: () -> String) {
   if (throwable != null) {
     slimber.log.e(throwable, message)
   } else {
@@ -70,7 +70,7 @@ private fun e(throwable: Throwable? = null, message: () -> String) {
   }
 }
 
-private fun wtf(throwable: Throwable? = null, message: () -> String) {
+private fun wtf(throwable: Throwable?, message: () -> String) {
   if (throwable != null) {
     slimber.log.wtf(throwable, message)
   } else {

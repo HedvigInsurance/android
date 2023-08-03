@@ -6,9 +6,10 @@ import arrow.core.raise.either
 import arrow.core.raise.ensure
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.RetryChannel
-import com.hedvig.android.core.common.android.i
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.InsuranceContract
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,7 +17,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
-import slimber.log.e
 import kotlin.time.Duration.Companion.seconds
 
 internal class TerminatedContractsViewModel(
@@ -51,7 +51,9 @@ internal class TerminatedContractsViewModel(
       }
     }.fold(
       ifLeft = { errorMessage ->
-        i(errorMessage.throwable) { "Terminated contracts failed to load ${errorMessage.message}" }
+        logcat(LogPriority.INFO, errorMessage.throwable) {
+          "Terminated contracts failed to load ${errorMessage.message}"
+        }
         emit(TerminatedContractsUiState.Error)
       },
       ifRight = { emit(it) },

@@ -5,11 +5,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.launch
-import slimber.log.e
 
 abstract class AdyenConnectPayinViewModel : ViewModel() {
   protected val _paymentMethods = MutableLiveData<PaymentMethodsApiResponse>()
@@ -29,7 +30,7 @@ class AdyenConnectPayinViewModelImpl(
       }
 
       if (response.isFailure) {
-        response.exceptionOrNull()?.let { e(it) }
+        response.exceptionOrNull()?.let { logcat(LogPriority.ERROR, it) { "Loading Adyen payment methods failed" } }
         return@launch
       }
 

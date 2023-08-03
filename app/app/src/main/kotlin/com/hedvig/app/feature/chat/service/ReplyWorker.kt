@@ -5,10 +5,10 @@ import android.os.Build
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import arrow.core.Either
-import com.hedvig.android.core.common.android.e
 import com.hedvig.android.core.common.android.whenApiVersion
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.app.feature.chat.data.ChatRepository
-import slimber.log.e
 
 class ReplyWorker(
   private val context: Context,
@@ -26,7 +26,7 @@ class ReplyWorker(
     }
 
     if (idsResponse.isFailure) {
-      idsResponse.exceptionOrNull()?.let { e(it) }
+      idsResponse.exceptionOrNull()?.let { logcat(LogPriority.ERROR, it) { "messages ids failed to load" } }
       return Result.failure()
     }
 
@@ -39,7 +39,7 @@ class ReplyWorker(
 
     if (sendChatMessageResponse is Either.Left) {
       val error = sendChatMessageResponse.value
-      e(error.throwable) {
+      logcat(LogPriority.ERROR, error.throwable) {
         buildString {
           append("Chat: Replying through ReplyWorker failed")
           if (error.message != null) {
