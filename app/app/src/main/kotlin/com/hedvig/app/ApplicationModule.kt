@@ -437,14 +437,21 @@ private val changeDateBottomSheetModule = module {
 
 private val buildConstantsModule = module {
   single<HedvigBuildConstants> {
-    HedvigBuildConstants()
+    object : HedvigBuildConstants {
+      override val urlGraphql: String
+      override val urlGraphqlWs: String
+      override val urlGraphqlOctopus: String
+      override val urlBaseApi: String
+      override val urlBaseWeb: String
+      override val urlHanalytics: String = get<Context>().getString(R.string.HANALYTICS_URL)
+      override val urlOdyssey: String = get<Context>().getString(R.string.ODYSSEY_URL)
+
+      override val appVersionName: String = BuildConfig.VERSION_NAME
+    }
   }
 }
 
 private val stringConstantsModule = module {
-  single<String>(hAnalyticsUrlQualifier) { get<Context>().getString(R.string.HANALYTICS_URL) }
-  single<String>(odysseyUrlQualifier) { get<Context>().getString(R.string.ODYSSEY_URL) }
-  single<String>(appVersionNameQualifier) { BuildConfig.VERSION_NAME }
   single<String>(appVersionCodeQualifier) { BuildConfig.VERSION_CODE.toString() }
   single<String>(appIdQualifier) { BuildConfig.APPLICATION_ID }
   single<Boolean>(isDebugQualifier) { BuildConfig.DEBUG }
@@ -634,6 +641,7 @@ val applicationModule = module {
       apolloClientUrlsModule,
       authModule,
       authRepositoryModule,
+      buildConstantsModule,
       businessModelModule,
       cacheManagerModule,
       changeAddressModule,

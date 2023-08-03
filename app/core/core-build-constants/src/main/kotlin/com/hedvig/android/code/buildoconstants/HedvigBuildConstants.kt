@@ -7,5 +7,9 @@ interface HedvigBuildConstants {
   val urlBaseApi: String
   val urlBaseWeb: String
   val urlHanalytics: String
+
+  // The URL targeting odyssey backend
   val urlOdyssey: String
+
+  val appVersionName: String
 }

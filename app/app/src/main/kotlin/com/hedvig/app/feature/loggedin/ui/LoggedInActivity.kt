@@ -55,6 +55,7 @@ import com.hedvig.android.app.ui.HedvigNavRail
 import com.hedvig.android.app.ui.rememberHedvigAppState
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.isProductionQualifier
 import com.hedvig.android.core.designsystem.material3.motion.MotionTokens
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -98,6 +99,7 @@ class LoggedInActivity : AppCompatActivity() {
   private val languageService: LanguageService by inject()
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer by inject()
   private val isProduction: Boolean by inject(isProductionQualifier)
+  private val hedvigBuildConstants: HedvigBuildConstants by inject()
   private val appVersionName: String by inject(appVersionNameQualifier)
   private val appVersionCode: String by inject(appVersionCodeQualifier)
 
