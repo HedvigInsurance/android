@@ -29,4 +29,5 @@ dependencies {
   testImplementation(projects.authTest)
   testImplementation(projects.coreCommonTest)
   testImplementation(projects.coreDatastoreTest)
+  testImplementation(projects.loggingTest)
 }

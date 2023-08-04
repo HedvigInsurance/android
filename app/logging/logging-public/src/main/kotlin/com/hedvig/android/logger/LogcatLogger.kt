@@ -43,8 +43,21 @@ interface LogcatLogger {
         Companion.logger = logger
       }
     }
+
+    /**
+     * Replaces the current logger (if any) with a no-op logger.
+     */
+    fun uninstall() {
+      synchronized(this) {
+        installedThrowable = null
+        logger = NoLog
+      }
+    }
   }
 
+  /**
+   * If this fails a test, consider adding [com.hedvig.android.logger.TestLogcatLoggingRule] test rule to your test.
+   */
   private object NoLog : LogcatLogger {
     override fun log(
       priority: LogPriority,
