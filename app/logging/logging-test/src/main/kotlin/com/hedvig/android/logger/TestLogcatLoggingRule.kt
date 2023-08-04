@@ -4,6 +4,11 @@ import org.junit.rules.ExternalResource
 
 /**
  * A test rule to install a [TestLogcatLogger] as a [LogcatLogger] for the test class to print to.
+ * Just add:
+ * ```
+ * @get:Rule
+ * val testLogcatLogger = TestLogcatLoggingRule()
+ * ```
  */
 class TestLogcatLoggingRule(
   private val testLogcatLogger: LogcatLogger = TestLogcatLogger(),
