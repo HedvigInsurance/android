@@ -18,7 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
-import com.hedvig.android.core.designsystem.material3.squircle
+import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.clearFocusOnTap
@@ -83,7 +83,7 @@ internal fun TravelCertificateInformation(
       Spacer(modifier = Modifier.weight(1f))
       LargeContainedButton(
         onClick = onContinue,
-        shape = MaterialTheme.shapes.squircle,
+        shape = MaterialTheme.shapes.squircleMedium,
         modifier = Modifier.padding(horizontal = 16.dp),
       ) {
         Text(stringResource(R.string.travel_certificate_get_travel_certificate_button))

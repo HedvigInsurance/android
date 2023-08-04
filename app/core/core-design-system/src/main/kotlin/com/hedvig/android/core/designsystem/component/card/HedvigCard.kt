@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.material3.squircle
+import com.hedvig.android.core.designsystem.material3.squircleMedium
 
 /**
  * Our mapping of m3 style to our card is that we always want the outlined card colors, as they closely resemble how it
@@ -24,7 +24,7 @@ import com.hedvig.android.core.designsystem.material3.squircle
 @Composable
 fun HedvigCard(
   modifier: Modifier = Modifier,
-  shape: Shape = MaterialTheme.shapes.squircle,
+  shape: Shape = MaterialTheme.shapes.squircleMedium,
   colors: CardColors = CardDefaults.outlinedCardColors(),
   elevation: HedvigCardElevation = HedvigCardElevation.NoElevation,
   border: BorderStroke? = null,
@@ -49,7 +49,7 @@ fun HedvigCard(
 fun HedvigCard(
   onClick: (() -> Unit)?,
   modifier: Modifier = Modifier,
-  shape: Shape = MaterialTheme.shapes.squircle,
+  shape: Shape = MaterialTheme.shapes.squircleMedium,
   colors: CardColors = CardDefaults.outlinedCardColors(),
   elevation: HedvigCardElevation = HedvigCardElevation.NoElevation,
   border: BorderStroke? = null,

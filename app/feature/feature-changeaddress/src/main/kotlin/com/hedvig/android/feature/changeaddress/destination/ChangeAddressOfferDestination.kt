@@ -55,7 +55,7 @@ import com.hedvig.android.core.designsystem.component.button.LargeContainedButto
 import com.hedvig.android.core.designsystem.component.button.LargeTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.card.HedvigInfoCard
-import com.hedvig.android.core.designsystem.material3.squircle
+import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.newtheme.SquircleShape
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.ValidatedInput
@@ -160,7 +160,7 @@ private fun ChangeAddressOfferScreen(
     Spacer(Modifier.height(16.dp))
     LargeContainedButton(
       onClick = { onConfirmMove(moveIntentId) },
-      shape = MaterialTheme.shapes.squircle,
+      shape = MaterialTheme.shapes.squircleMedium,
       modifier = Modifier.padding(horizontal = 16.dp),
     ) {
       Text(text = stringResource(R.string.CHANGE_ADDRESS_ACCEPT_OFFER))
@@ -177,12 +177,13 @@ private fun ChangeAddressOfferScreen(
           )
         }
       },
-      shape = MaterialTheme.shapes.squircle,
+      shape = MaterialTheme.shapes.squircleMedium,
       modifier = Modifier
         .padding(horizontal = 16.dp)
         .onGloballyPositioned { layoutCoordinates ->
           // Find the Y position where this button ends, to scroll right below it on click.
-          whatsIncludedButtonPositionY = layoutCoordinates.positionInParent().y + layoutCoordinates.size.height
+          whatsIncludedButtonPositionY =
+            layoutCoordinates.positionInParent().y + layoutCoordinates.size.height
         },
     ) {
       Text(

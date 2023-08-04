@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.sp
 import arrow.core.identity
 import com.hedvig.android.core.designsystem.material3.motion.MotionTokens
 import com.hedvig.android.core.designsystem.material3.onTypeContainer
-import com.hedvig.android.core.designsystem.material3.squircle
+import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.material3.typeContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -127,8 +127,8 @@ internal fun <T> OptionChipsFlowRow(
                 scaleX = backgroundScale.value
                 scaleY = backgroundScale.value
               }
-              .clip(MaterialTheme.shapes.squircle)
-              .background(surfaceColor, MaterialTheme.shapes.squircle)
+              .clip(MaterialTheme.shapes.squircleMedium)
+              .background(surfaceColor, MaterialTheme.shapes.squircleMedium)
               .clickable(
                 interactionSource = interactionSource,
                 indication = null,

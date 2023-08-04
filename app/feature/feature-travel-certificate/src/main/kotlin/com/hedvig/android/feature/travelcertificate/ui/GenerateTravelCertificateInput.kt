@@ -43,7 +43,7 @@ import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicke
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.material3.onInfoElement
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
-import com.hedvig.android.core.designsystem.material3.squircle
+import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.material3.warningElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -140,7 +140,7 @@ internal fun GenerateTravelCertificateInput(
       LargeContainedButton(
         onClick = { onIncludeMemberClicked(!uiState.includeMember) },
         modifier = Modifier.padding(horizontal = 16.dp),
-        shape = MaterialTheme.shapes.squircle,
+        shape = MaterialTheme.shapes.squircleMedium,
         colors = ButtonDefaults.buttonColors(
           containerColor = MaterialTheme.colorScheme.surfaceVariant,
           contentColor = MaterialTheme.colorScheme.onSurface,
@@ -169,12 +169,17 @@ internal fun GenerateTravelCertificateInput(
         LargeContainedButton(
           onClick = { onCoInsuredClicked(coInsured) },
           modifier = Modifier.padding(horizontal = 16.dp),
-          shape = MaterialTheme.shapes.squircle,
+          shape = MaterialTheme.shapes.squircleMedium,
           colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
             contentColor = MaterialTheme.colorScheme.onSurface,
           ),
-          contentPadding = PaddingValues(start = 16.dp, top = 16.dp, bottom = 16.dp, end = 12.dp),
+          contentPadding = PaddingValues(
+            start = 16.dp,
+            top = 16.dp,
+            bottom = 16.dp,
+            end = 12.dp,
+          ),
         ) {
           Text(
             text = "${coInsured.firstName()}, ${coInsured.ssn}",
@@ -225,7 +230,7 @@ internal fun GenerateTravelCertificateInput(
       Spacer(modifier = Modifier.weight(1f))
       LargeContainedButton(
         onClick = onContinue,
-        shape = MaterialTheme.shapes.squircle,
+        shape = MaterialTheme.shapes.squircleMedium,
         modifier = Modifier.padding(horizontal = 16.dp),
       ) {
         Text(stringResource(R.string.SAVE_AND_CONTINUE_BUTTON_LABEL))

@@ -38,7 +38,7 @@ import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
-import com.hedvig.android.core.designsystem.material3.squircle
+import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.material3.warningContainer
 import com.hedvig.android.core.designsystem.material3.warningElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -153,7 +153,7 @@ private fun ChangeAddressEnterNewScreen(
     Spacer(modifier = Modifier.weight(1f))
     LargeContainedButton(
       onClick = onSaveNewAddress,
-      shape = MaterialTheme.shapes.squircle,
+      shape = MaterialTheme.shapes.squircleMedium,
       modifier = Modifier.padding(horizontal = 16.dp),
     ) {
       Text(stringResource(R.string.SAVE_AND_CONTINUE_BUTTON_LABEL))
