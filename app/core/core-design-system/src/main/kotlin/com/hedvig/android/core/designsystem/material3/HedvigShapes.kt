@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.tokens.HedvigShapeKeyTokens
 import com.hedvig.android.core.designsystem.newtheme.FigmaShape
-import com.hedvig.android.core.designsystem.newtheme.SquircleShape
 
 // Take shapes from existing theme setup
 // https://github.com/HedvigInsurance/android/blob/ced77986fac0fd7867c8e24ba05d0176a112050e/app/src/main/res/values/theme.xml#L27-L33
@@ -51,16 +50,6 @@ val Shapes.squircleLarge: Shape get() = SquircleLarge
 val Shapes.squircleLargeTop: Shape get() = SquircleLargeTop
 val Shapes.squircleExtraLarge: Shape get() = SquircleExtraLarge
 val Shapes.squircleExtraLargeTop: Shape get() = SquircleExtraLargeTop
-
-@Deprecated(
-  "",
-  replaceWith = ReplaceWith(
-    "squircleMedium",
-    "import com.hedvig.android.core.designsystem.material3.squircleMedium",
-  ),
-)
-val Shapes.squircle: Shape
-  get() = SquircleShape
 
 /**
  * Turns the shape into one where only the top corners apply, by combining the path with a square path at the bottom.

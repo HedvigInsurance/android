@@ -56,7 +56,6 @@ import com.hedvig.android.core.designsystem.component.button.LargeTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.card.HedvigInfoCard
 import com.hedvig.android.core.designsystem.material3.squircleMedium
-import com.hedvig.android.core.designsystem.newtheme.SquircleShape
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.core.ui.card.ExpandablePlusCard
@@ -218,7 +217,7 @@ private fun ChangeAddressOfferScreen(
     )
     Spacer(Modifier.height(24.dp))
     Button(
-      shape = SquircleShape,
+      shape = MaterialTheme.shapes.squircleMedium,
       onClick = { openChat() },
       modifier = Modifier
         .fillMaxWidth()
