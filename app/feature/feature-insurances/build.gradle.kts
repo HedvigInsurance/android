@@ -37,12 +37,12 @@ dependencies {
   implementation(projects.hanalyticsCore)
   implementation(projects.hanalyticsFeatureFlagsPublic)
   implementation(projects.languageCore)
+  implementation(projects.loggingPublic)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.notificationBadgeDataPublic)
-  implementation(projects.loggingPublic)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)

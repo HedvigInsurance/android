@@ -19,8 +19,8 @@ dependencies {
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDatastorePublic)
-  implementation(projects.testClock)
   implementation(projects.loggingPublic)
+  implementation(projects.testClock)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)

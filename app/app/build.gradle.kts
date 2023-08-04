@@ -263,9 +263,9 @@ dependencies {
   testImplementation(projects.hanalyticsFeatureFlagsTest)
   testImplementation(projects.hanalyticsTest)
   testImplementation(projects.languageTest)
+  testImplementation(projects.loggingTest)
   testImplementation(projects.marketTest)
   testImplementation(projects.testdata)
-  testImplementation(projects.loggingTest)
 
   androidTestImplementation(libs.androidx.compose.uiTestJunit)
   androidTestImplementation(libs.androidx.espresso.contrib)

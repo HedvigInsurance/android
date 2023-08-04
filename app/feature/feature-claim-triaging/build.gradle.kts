@@ -23,7 +23,7 @@ dependencies {
   implementation(projects.coreUi)
   implementation(projects.dataClaimFlow)
   implementation(projects.dataClaimTriaging)
+  implementation(projects.loggingPublic)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
-  implementation(projects.loggingPublic)
 }
