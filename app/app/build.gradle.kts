@@ -265,6 +265,7 @@ dependencies {
   testImplementation(projects.languageTest)
   testImplementation(projects.marketTest)
   testImplementation(projects.testdata)
+  testImplementation(projects.loggingTest)
 
   androidTestImplementation(libs.androidx.compose.uiTestJunit)
   androidTestImplementation(libs.androidx.espresso.contrib)

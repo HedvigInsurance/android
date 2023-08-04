@@ -13,6 +13,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.InsuranceContract
+import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
 import com.hedvig.android.notification.badge.data.crosssell.card.FakeCrossSellCardNotificationBadgeService
 import giraffe.type.TypeOfContract
@@ -20,9 +21,13 @@ import kotlinx.coroutines.test.runTest
 import octopus.CrossSalesQuery
 import octopus.type.CrossSellType
 import org.junit.Assert
+import org.junit.Rule
 import org.junit.Test
 
 internal class InsurancePresenterTest {
+
+  @get:Rule
+  val testLogcatLogger = TestLogcatLoggingRule()
 
   private val validContracts: List<InsuranceContract> = listOf(
     InsuranceContract(

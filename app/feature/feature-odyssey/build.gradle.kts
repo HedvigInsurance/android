@@ -48,4 +48,5 @@ dependencies {
   testImplementation(libs.junit)
   testImplementation(libs.turbine)
   testImplementation(projects.coreCommonTest)
+  testImplementation(projects.loggingTest)
 }

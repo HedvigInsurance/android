@@ -11,6 +11,7 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.claimflow.CheckoutMethod
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.feature.odyssey.data.TestClaimFlowRepository
+import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import octopus.type.CurrencyCode
@@ -20,6 +21,9 @@ import org.junit.Test
 class SingleItemPayoutViewModelTest {
   @get:Rule
   val mainCoroutineRule = MainCoroutineRule()
+
+  @get:Rule
+  val testLogcatLogger = TestLogcatLoggingRule()
 
   @Test
   fun `succeeding a payout updates the status to be considered PaidOut`() = runTest {
