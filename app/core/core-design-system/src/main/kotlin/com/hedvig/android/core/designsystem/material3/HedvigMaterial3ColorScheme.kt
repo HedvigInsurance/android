@@ -24,6 +24,30 @@ import com.hedvig.android.core.designsystem.newtheme.green_600
 import com.hedvig.android.core.designsystem.newtheme.green_800
 import com.hedvig.android.core.designsystem.newtheme.greyscale_0
 import com.hedvig.android.core.designsystem.newtheme.greyscale_1000
+import com.hedvig.android.core.designsystem.newtheme.greyscale_translucent_0
+import com.hedvig.android.core.designsystem.newtheme.greyscale_translucent_100
+import com.hedvig.android.core.designsystem.newtheme.greyscale_translucent_1000
+import com.hedvig.android.core.designsystem.newtheme.greyscale_translucent_200
+import com.hedvig.android.core.designsystem.newtheme.greyscale_translucent_300
+import com.hedvig.android.core.designsystem.newtheme.greyscale_translucent_400
+import com.hedvig.android.core.designsystem.newtheme.greyscale_translucent_50
+import com.hedvig.android.core.designsystem.newtheme.greyscale_translucent_500
+import com.hedvig.android.core.designsystem.newtheme.greyscale_translucent_600
+import com.hedvig.android.core.designsystem.newtheme.greyscale_translucent_700
+import com.hedvig.android.core.designsystem.newtheme.greyscale_translucent_800
+import com.hedvig.android.core.designsystem.newtheme.greyscale_translucent_900
+import com.hedvig.android.core.designsystem.newtheme.greyscale_translucent_dark_0
+import com.hedvig.android.core.designsystem.newtheme.greyscale_translucent_dark_100
+import com.hedvig.android.core.designsystem.newtheme.greyscale_translucent_dark_1000
+import com.hedvig.android.core.designsystem.newtheme.greyscale_translucent_dark_200
+import com.hedvig.android.core.designsystem.newtheme.greyscale_translucent_dark_300
+import com.hedvig.android.core.designsystem.newtheme.greyscale_translucent_dark_400
+import com.hedvig.android.core.designsystem.newtheme.greyscale_translucent_dark_50
+import com.hedvig.android.core.designsystem.newtheme.greyscale_translucent_dark_500
+import com.hedvig.android.core.designsystem.newtheme.greyscale_translucent_dark_600
+import com.hedvig.android.core.designsystem.newtheme.greyscale_translucent_dark_700
+import com.hedvig.android.core.designsystem.newtheme.greyscale_translucent_dark_800
+import com.hedvig.android.core.designsystem.newtheme.greyscale_translucent_dark_900
 
 internal val LocalHedvigMaterial3ColorScheme = staticCompositionLocalOf<HedvigMaterial3ColorScheme> {
   lightHedvigColorScheme(LightColorScheme)
@@ -49,6 +73,19 @@ class HedvigMaterial3ColorScheme(
   val onInfoElement: Color,
   val infoContainer: Color,
   val onInfoContainer: Color,
+
+  val g_1000_t: Color,
+  val g_900_t: Color,
+  val g_800_t: Color,
+  val g_700_t: Color,
+  val g_600_t: Color,
+  val g_500_t: Color,
+  val g_400_t: Color,
+  val g_300_t: Color,
+  val g_200_t: Color,
+  val g_100_t: Color,
+  val g_50_t: Color,
+  val g_10_t: Color,
 )
 
 internal fun darkHedvigColorScheme(
@@ -72,6 +109,19 @@ internal fun darkHedvigColorScheme(
   onInfoElement = greyscale_0, // greyscale_1000,
   infoContainer = blue_800, // blue_100,
   onInfoContainer = blue_100, // blue_900,
+
+  g_1000_t = greyscale_translucent_dark_1000,
+  g_900_t = greyscale_translucent_dark_900,
+  g_800_t = greyscale_translucent_dark_800,
+  g_700_t = greyscale_translucent_dark_700,
+  g_600_t = greyscale_translucent_dark_600,
+  g_500_t = greyscale_translucent_dark_500,
+  g_400_t = greyscale_translucent_dark_400,
+  g_300_t = greyscale_translucent_dark_300,
+  g_200_t = greyscale_translucent_dark_200,
+  g_100_t = greyscale_translucent_dark_100,
+  g_50_t = greyscale_translucent_dark_50,
+  g_10_t = greyscale_translucent_dark_0,
 )
 
 internal fun lightHedvigColorScheme(
@@ -94,6 +144,19 @@ internal fun lightHedvigColorScheme(
   onInfoElement = greyscale_1000,
   infoContainer = blue_100,
   onInfoContainer = blue_900,
+
+  g_1000_t = greyscale_translucent_1000,
+  g_900_t = greyscale_translucent_900,
+  g_800_t = greyscale_translucent_800,
+  g_700_t = greyscale_translucent_700,
+  g_600_t = greyscale_translucent_600,
+  g_500_t = greyscale_translucent_500,
+  g_400_t = greyscale_translucent_400,
+  g_300_t = greyscale_translucent_300,
+  g_200_t = greyscale_translucent_200,
+  g_100_t = greyscale_translucent_100,
+  g_50_t = greyscale_translucent_50,
+  g_10_t = greyscale_translucent_0,
 )
 
 val ColorScheme.containedButtonContainer: Color
@@ -172,6 +235,56 @@ val ColorScheme.onInfoContainer: Color
   get() = LocalHedvigMaterial3ColorScheme.current.onInfoContainer
 // endregion
 
+// region translucent greyscale colors
+val ColorScheme.g_1000_t: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.g_1000_t
+val ColorScheme.g_900_t: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.g_900_t
+val ColorScheme.g_800_t: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.g_800_t
+val ColorScheme.g_700_t: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.g_700_t
+val ColorScheme.g_600_t: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.g_600_t
+val ColorScheme.g_500_t: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.g_500_t
+val ColorScheme.g_400_t: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.g_400_t
+val ColorScheme.g_300_t: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.g_300_t
+val ColorScheme.g_200_t: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.g_200_t
+val ColorScheme.g_100_t: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.g_100_t
+val ColorScheme.g_50_t: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.g_50_t
+val ColorScheme.g_10_t: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.g_10_t
+// endregion
 /**
  * Helper function for component color tokens. Here is an example on how to use component color
  * tokens:
