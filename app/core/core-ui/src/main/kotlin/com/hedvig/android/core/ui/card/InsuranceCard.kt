@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import com.hedvig.android.core.designsystem.material3.DisabledAlpha
+import com.hedvig.android.core.designsystem.material3.g_700_t
 import com.hedvig.android.core.designsystem.material3.squircleExtraSmall
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -88,7 +89,7 @@ fun InsuranceCard(
         Spacer(Modifier.height(4.dp))
         Text(
           text = bottomText,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          color = MaterialTheme.colorScheme.g_700_t,
           style = MaterialTheme.typography.bodyMedium,
         )
       }
