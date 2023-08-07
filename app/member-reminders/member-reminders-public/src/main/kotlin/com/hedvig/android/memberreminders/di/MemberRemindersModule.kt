@@ -9,6 +9,8 @@ import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
 import com.hedvig.android.memberreminders.EnableNotificationsReminderManagerImpl
 import com.hedvig.android.memberreminders.GetConnectPaymentReminderUseCase
 import com.hedvig.android.memberreminders.GetConnectPaymentReminderUseCaseImpl
+import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
+import com.hedvig.android.memberreminders.GetMemberRemindersUseCaseImpl
 import com.hedvig.android.memberreminders.GetUpcomingRenewalRemindersUseCase
 import com.hedvig.android.memberreminders.GetUpcomingRenewalRemindersUseCaseImpl
 import kotlinx.datetime.Clock
@@ -23,5 +25,12 @@ val memberRemindersModule = module {
   }
   single<GetUpcomingRenewalRemindersUseCase> {
     GetUpcomingRenewalRemindersUseCaseImpl(get<ApolloClient>(giraffeClient), get<Clock>())
+  }
+  single<GetMemberRemindersUseCase> {
+    GetMemberRemindersUseCaseImpl(
+      get<EnableNotificationsReminderManager>(),
+      get<GetConnectPaymentReminderUseCase>(),
+      get<GetUpcomingRenewalRemindersUseCase>(),
+    )
   }
 }
