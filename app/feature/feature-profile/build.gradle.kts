@@ -18,6 +18,7 @@ dependencies {
   implementation(libs.koin.android)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)
+  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.moneta)
   implementation(projects.apolloCore)
   implementation(projects.apolloGiraffePublic)
@@ -36,6 +37,7 @@ dependencies {
   implementation(projects.hanalyticsFeatureFlagsPublic)
   implementation(projects.languageCore)
   implementation(projects.marketCore)
+  implementation(projects.memberRemindersPublic)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.payment)
@@ -47,4 +49,5 @@ dependencies {
   testImplementation(libs.turbine)
   testImplementation(projects.coreCommonTest)
   testImplementation(projects.hanalyticsFeatureFlagsTest)
+  testImplementation(projects.memberRemindersTest)
 }

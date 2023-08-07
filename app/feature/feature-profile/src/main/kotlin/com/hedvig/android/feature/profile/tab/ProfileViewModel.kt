@@ -3,42 +3,51 @@ package com.hedvig.android.feature.profile.tab
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.auth.LogoutUseCase
+import com.hedvig.android.core.common.RetryChannel
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
+import com.hedvig.android.memberreminders.MemberReminder
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.WhileSubscribed
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.stateIn
+import kotlin.time.Duration.Companion.seconds
 
 internal class ProfileViewModel(
   private val getEuroBonusStatusUseCase: GetEurobonusStatusUseCase,
+  private val getMemberRemindersUseCase: GetMemberRemindersUseCase,
   private val featureManager: FeatureManager,
   private val logoutUseCase: LogoutUseCase,
 ) : ViewModel() {
 
-  private val _data = MutableStateFlow(ProfileUiState())
-  val data: StateFlow<ProfileUiState> = _data
+  private val retryChannel = RetryChannel()
 
-  init {
-    loadProfileData()
-  }
-
-  private fun loadProfileData() {
-    viewModelScope.launch {
-      val showPaymentScreen = featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN)
-      _data.update {
-        it.copy(showPaymentScreen = showPaymentScreen)
-      }
-
-      getEuroBonusStatusUseCase.invoke().fold(
-        ifLeft = { _data.update { it.copy(errorMessage = it.errorMessage) } },
-        ifRight = { euroBonus -> _data.update { it.copy(euroBonus = euroBonus) } },
+  val data: StateFlow<ProfileUiState> = retryChannel.flatMapLatest {
+    combine(
+      getMemberRemindersUseCase.invoke(),
+      flow { emit(featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN)) },
+      flow { emit(getEuroBonusStatusUseCase.invoke()) },
+    ) { memberReminders, isPaymentScreenFeatureEnabled, eurobonusResponse ->
+      ProfileUiState(
+        euroBonus = eurobonusResponse.getOrNull(),
+        showPaymentScreen = isPaymentScreenFeatureEnabled,
+        memberReminders = memberReminders,
+        isLoading = false,
       )
     }
-  }
+  }.stateIn(
+    viewModelScope,
+    SharingStarted.WhileSubscribed(5.seconds),
+    ProfileUiState(),
+  )
 
   fun reload() {
-    loadProfileData()
+    retryChannel.retry()
   }
 
   fun onLogout() {
@@ -49,6 +58,6 @@ internal class ProfileViewModel(
 internal data class ProfileUiState(
   val euroBonus: EuroBonus? = null,
   val showPaymentScreen: Boolean = false,
-  val errorMessage: String? = null,
-  val isLoading: Boolean = false,
+  val memberReminders: ImmutableList<MemberReminder> = persistentListOf(),
+  val isLoading: Boolean = true,
 )
