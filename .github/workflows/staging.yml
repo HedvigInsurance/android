@@ -2,7 +2,7 @@ name: Build and Publish to Staging
 on:
   push:
     branches:
-      - redesign/text_color_palette
+      - develop
 jobs:
   build_staging:
     runs-on: ubuntu-latest
