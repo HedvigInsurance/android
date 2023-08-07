@@ -55,7 +55,7 @@ class GetConnectPaymentReminderUseCaseTest {
 
     assertAll {
       assertThat(result).isInstanceOf<Either.Right<*>>()
-      assertThat(result.getOrNull()).isEqualTo(ShowReminder)
+      assertThat(result.getOrNull()).isEqualTo(ShowConnectPaymentReminder)
     }
   }
 
