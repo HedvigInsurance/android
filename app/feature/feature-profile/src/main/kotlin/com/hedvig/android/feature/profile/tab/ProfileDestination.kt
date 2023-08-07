@@ -36,7 +36,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -70,10 +69,6 @@ internal fun ProfileDestination(
   viewModel: ProfileViewModel,
 ) {
   val uiState by viewModel.data.collectAsStateWithLifecycle()
-
-  LaunchedEffect(viewModel) {
-    viewModel.reload()
-  }
   ProfileScreen(
     uiState = uiState,
     navigateToEurobonus = navigateToEurobonus,
@@ -212,7 +207,6 @@ private fun ColumnScope.ProfileItemRows(
     icon = Icons.Hedvig.Settings,
     onClick = showSettings,
   )
-  Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
 }
 
 @Composable
