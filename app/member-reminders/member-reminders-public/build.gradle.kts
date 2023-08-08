@@ -22,6 +22,7 @@ dependencies {
   implementation(libs.kotlinx.serialization.json)
   implementation(projects.apolloCore)
   implementation(projects.apolloGiraffePublic)
+  implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.hanalyticsFeatureFlagsPublic)
   implementation(projects.loggingPublic)

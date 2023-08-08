@@ -6,21 +6,22 @@ import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.common.RetryChannel
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
+import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
-import com.hedvig.android.memberreminders.MemberReminder
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
+import com.hedvig.android.memberreminders.MemberReminders
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
 internal class ProfileViewModel(
   private val getEuroBonusStatusUseCase: GetEurobonusStatusUseCase,
   private val getMemberRemindersUseCase: GetMemberRemindersUseCase,
+  private val enableNotificationsReminderManager: EnableNotificationsReminderManager,
   private val featureManager: FeatureManager,
   private val logoutUseCase: LogoutUseCase,
 ) : ViewModel() {
@@ -50,6 +51,12 @@ internal class ProfileViewModel(
     retryChannel.retry()
   }
 
+  fun snoozeNotificationPermission() {
+    viewModelScope.launch {
+      enableNotificationsReminderManager.snoozeNotificationReminder()
+    }
+  }
+
   fun onLogout() {
     logoutUseCase.invoke()
   }
@@ -58,6 +65,6 @@ internal class ProfileViewModel(
 internal data class ProfileUiState(
   val euroBonus: EuroBonus? = null,
   val showPaymentScreen: Boolean = false,
-  val memberReminders: ImmutableList<MemberReminder> = persistentListOf(),
+  val memberReminders: MemberReminders = MemberReminders(),
   val isLoading: Boolean = true,
 )

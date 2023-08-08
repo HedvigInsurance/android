@@ -19,6 +19,7 @@ import com.hedvig.android.feature.profile.tab.NetworkGetEurobonusStatusUseCase
 import com.hedvig.android.feature.profile.tab.ProfileViewModel
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -35,6 +36,7 @@ val profileModule = module {
     ProfileViewModel(
       get<GetEurobonusStatusUseCase>(),
       get<GetMemberRemindersUseCase>(),
+      get<EnableNotificationsReminderManager>(),
       get<FeatureManager>(),
       get<LogoutUseCase>(),
     )

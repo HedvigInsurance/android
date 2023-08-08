@@ -1,8 +1,5 @@
 package com.hedvig.android.feature.odyssey.step.notificationpermission
 
-import android.Manifest
-import android.os.Build
-import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -16,71 +13,39 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.permission.PermissionDialog
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.feature.odyssey.ui.ClaimFlowScaffold
+import com.hedvig.android.notification.permission.NotificationPermissionDialog
+import com.hedvig.android.notification.permission.NotificationPermissionState
+import com.hedvig.android.notification.permission.rememberNotificationPermissionState
 import hedvig.resources.R
 
 @Composable
 internal fun NotificationPermissionDestination(
   windowSizeClass: WindowSizeClass,
-  shouldShowRequestPermissionRationale: (String) -> Boolean,
   onNotificationPermissionDecided: () -> Unit,
   openAppSettings: () -> Unit,
   navigateUp: () -> Unit,
   closeClaimFlow: () -> Unit,
 ) {
-  NotificationPermissionScreen(
-    windowSizeClass = windowSizeClass,
-    onNotificationPermissionDecided = onNotificationPermissionDecided,
-    openAppSettings = openAppSettings,
-    shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-    navigateUp = navigateUp,
-    closeClaimFlow = closeClaimFlow,
+  val notificationPermissionState = rememberNotificationPermissionState(
+    onNotificationGranted = onNotificationPermissionDecided,
   )
-}
-
-@Composable
-private fun NotificationPermissionScreen(
-  windowSizeClass: WindowSizeClass,
-  shouldShowRequestPermissionRationale: (String) -> Boolean,
-  onNotificationPermissionDecided: () -> Unit,
-  openAppSettings: () -> Unit,
-  navigateUp: () -> Unit,
-  closeClaimFlow: () -> Unit,
-) {
-  var showDialog by remember { mutableStateOf(false) }
-  val notificationPermissionState: PermissionState = rememberNotificationPermissionState { isGranted ->
-    if (isGranted) {
-      onNotificationPermissionDecided()
-    } else {
-      showDialog = true
-    }
-  }
   NotificationPermissionScreen(
     windowSizeClass = windowSizeClass,
     notificationPermissionState = notificationPermissionState,
-    showDialog = showDialog,
-    hideDialog = { showDialog = false },
-    shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
     onNotificationPermissionDecided = onNotificationPermissionDecided,
     openAppSettings = openAppSettings,
     navigateUp = navigateUp,
@@ -91,10 +56,7 @@ private fun NotificationPermissionScreen(
 @Composable
 private fun NotificationPermissionScreen(
   windowSizeClass: WindowSizeClass,
-  notificationPermissionState: PermissionState,
-  showDialog: Boolean,
-  hideDialog: () -> Unit,
-  shouldShowRequestPermissionRationale: (String) -> Boolean,
+  notificationPermissionState: NotificationPermissionState,
   onNotificationPermissionDecided: () -> Unit,
   openAppSettings: () -> Unit,
   navigateUp: () -> Unit,
@@ -105,15 +67,7 @@ private fun NotificationPermissionScreen(
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
   ) { sideSpacingModifier ->
-    if (showDialog) {
-      PermissionDialog(
-        permissionDescription = stringResource(R.string.CLAIMS_ACTIVATE_NOTIFICATIONS_BODY),
-        isPermanentlyDeclined = !shouldShowNotificationPermissionRationale(shouldShowRequestPermissionRationale),
-        onDismiss = { hideDialog() },
-        okClick = notificationPermissionState::launchPermissionRequest,
-        openAppSettings = openAppSettings,
-      )
-    }
+    NotificationPermissionDialog(notificationPermissionState, openAppSettings)
 
     Spacer(Modifier.height(16.dp))
     Text(
@@ -161,50 +115,24 @@ private fun NotificationPermissionScreen(
   }
 }
 
-@OptIn(ExperimentalPermissionsApi::class)
-@Composable
-private fun rememberNotificationPermissionState(
-  onPermissionResult: (Boolean) -> Unit,
-): PermissionState {
-  return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-    rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS, onPermissionResult)
-  } else {
-    object : PermissionState {
-      override val permission: String = ""
-      override val status: PermissionStatus = PermissionStatus.Granted
-
-      override fun launchPermissionRequest() {}
-    }
-  }
-}
-
-@ChecksSdkIntAtLeast(api = Build.VERSION_CODES.TIRAMISU, lambda = 0)
-@Composable
-private fun shouldShowNotificationPermissionRationale(
-  shouldShowRequestPermissionRationale: (String) -> Boolean,
-): Boolean {
-  return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-    shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)
-  } else {
-    false
-  }
-}
-
 @HedvigPreview
 @Composable
 private fun PreviewNotificationPermissionScreen(
-  @PreviewParameter(PermissionStateParameterProvider::class) previewStatus: Pair<Boolean, PermissionState>,
+  @PreviewParameter(PermissionStatusCollectionPreviewParameterProvider::class)
+  previewPermissionState: PreviewPermissionState,
 ) {
-  val showDialog = previewStatus.first
-  val permissionState = previewStatus.second
+  val notificationPermissionState: NotificationPermissionState = object : NotificationPermissionState {
+    override val showDialog: Boolean = previewPermissionState.isDialogShowing
+    override val status: PermissionStatus = previewPermissionState.permissionStatus
+    override fun dismissDialog() {}
+    override val permission: String = ""
+    override fun launchPermissionRequest() {}
+  }
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       NotificationPermissionScreen(
         WindowSizeClass.calculateForPreview(),
-        permissionState,
-        showDialog,
-        {},
-        { true },
+        notificationPermissionState,
         {},
         {},
         {},
@@ -214,22 +142,18 @@ private fun PreviewNotificationPermissionScreen(
   }
 }
 
-private class PermissionStateParameterProvider : CollectionPreviewParameterProvider<Pair<Boolean, PermissionState>>(
-  listOf(
-    false to object : PermissionState {
-      override val permission: String = ""
-      override val status: PermissionStatus = PermissionStatus.Granted
-      override fun launchPermissionRequest() {}
-    },
-    false to object : PermissionState {
-      override val permission: String = ""
-      override val status: PermissionStatus = PermissionStatus.Denied(false)
-      override fun launchPermissionRequest() {}
-    },
-    true to object : PermissionState {
-      override val permission: String = ""
-      override val status: PermissionStatus = PermissionStatus.Denied(false)
-      override fun launchPermissionRequest() {}
-    },
-  ),
+private data class PreviewPermissionState(
+  val permissionStatus: PermissionStatus,
+  val isDialogShowing: Boolean,
 )
+
+@OptIn(ExperimentalPermissionsApi::class)
+private class PermissionStatusCollectionPreviewParameterProvider :
+  CollectionPreviewParameterProvider<PreviewPermissionState>(
+    listOf(
+      PreviewPermissionState(PermissionStatus.Granted, false),
+      PreviewPermissionState(PermissionStatus.Denied(false), false),
+      PreviewPermissionState(PermissionStatus.Denied(true), true),
+      PreviewPermissionState(PermissionStatus.Denied(false), true),
+    ),
+  )

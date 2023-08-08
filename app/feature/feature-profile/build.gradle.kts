@@ -6,6 +6,7 @@ plugins {
 }
 
 dependencies {
+  implementation(libs.accompanist.permissions)
   implementation(libs.accompanist.webview)
   implementation(libs.androidx.compose.material)
   implementation(libs.androidx.compose.material3.windowSizeClass)
@@ -38,8 +39,10 @@ dependencies {
   implementation(projects.languageCore)
   implementation(projects.marketCore)
   implementation(projects.memberRemindersPublic)
+  implementation(projects.memberRemindersUi)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(projects.notificationPermission)
   implementation(projects.payment)
   implementation(projects.theme)
 

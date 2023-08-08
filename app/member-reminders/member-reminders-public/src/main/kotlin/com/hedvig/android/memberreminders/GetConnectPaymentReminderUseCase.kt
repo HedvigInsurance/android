@@ -14,7 +14,7 @@ import com.hedvig.android.logger.logcat
 import giraffe.GetPayinMethodStatusQuery
 import giraffe.type.PayinMethodStatus
 
-interface GetConnectPaymentReminderUseCase {
+internal interface GetConnectPaymentReminderUseCase {
   suspend fun invoke(): Either<ConnectPaymentReminderError, ShowConnectPaymentReminder>
 }
 
