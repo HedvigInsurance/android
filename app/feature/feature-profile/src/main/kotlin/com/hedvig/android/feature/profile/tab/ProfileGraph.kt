@@ -109,7 +109,8 @@ fun NavGraphBuilder.profileGraph(
       val viewModel: SettingsViewModel = koinViewModel()
       SettingsDestination(
         viewModel = viewModel,
-        onBackPressed = navigator::navigateUp,
+        openAppSettings = openAppSettings,
+        navigateUp = navigator::navigateUp,
       )
     }
     animatedComposable<AppDestination.PaymentInfo> { backStackEntry ->

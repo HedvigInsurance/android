@@ -26,6 +26,8 @@ internal class SettingsDataStoreImpl(
   }
 
   override fun observeTheme(): Flow<Theme> {
-    return dataStore.data.map { it[themeKey]?.let { themeString -> Theme.valueOf(themeString) } ?: Theme.LIGHT }
+    return dataStore.data.map {
+      it[themeKey]?.let { themeString -> Theme.valueOf(themeString) } ?: Theme.SYSTEM_DEFAULT
+    }
   }
 }

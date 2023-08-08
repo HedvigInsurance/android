@@ -4,9 +4,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,20 +14,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
-import com.hedvig.android.core.designsystem.material3.squircleExtraSmall
 import com.hedvig.android.core.designsystem.material3.warningContainer
 import com.hedvig.android.core.designsystem.material3.warningElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -101,7 +99,9 @@ private val cardReminderEnterTransition = fadeIn() + expandVertically(
   initialHeight = { (it * 0.9).toInt() },
   clip = false,
 )
-private val cardReminderExitTransition = fadeOut()
+private val cardReminderExitTransition = fadeOut() + shrinkVertically(
+  shrinkTowards = Alignment.CenterVertically,
+)
 
 @Composable
 fun ReminderCardEnableNotifications(
@@ -186,22 +186,15 @@ private fun InfoCardTextButton(
   text: String,
   modifier: Modifier = Modifier,
 ) {
-  Button(
+  HedvigContainedSmallButton(
+    text = text,
     onClick = onClick,
-    shape = MaterialTheme.shapes.squircleExtraSmall,
-    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-    elevation = ButtonDefaults.elevatedButtonElevation(1.dp),
     colors = ButtonDefaults.buttonColors(
-      containerColor = MaterialTheme.colorScheme.surface,
-      contentColor = MaterialTheme.colorScheme.onSurface,
+      containerColor = MaterialTheme.colorScheme.background,
+      contentColor = MaterialTheme.colorScheme.onBackground,
     ),
     modifier = modifier,
-  ) {
-    Text(
-      text = text,
-      style = MaterialTheme.typography.bodyMedium,
-    )
-  }
+  )
 }
 
 @HedvigPreview

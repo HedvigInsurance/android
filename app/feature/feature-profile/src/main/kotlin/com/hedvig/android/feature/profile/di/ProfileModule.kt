@@ -5,6 +5,7 @@ import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.giraffe.di.giraffeClient
 import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.auth.LogoutUseCase
+import com.hedvig.android.core.datastore.SettingsDataStore
 import com.hedvig.android.feature.profile.aboutapp.AboutAppViewModel
 import com.hedvig.android.feature.profile.data.ProfileRepository
 import com.hedvig.android.feature.profile.data.ProfileRepositoryImpl
@@ -12,15 +13,17 @@ import com.hedvig.android.feature.profile.eurobonus.EurobonusViewModel
 import com.hedvig.android.feature.profile.myinfo.MyInfoViewModel
 import com.hedvig.android.feature.profile.payment.PaymentViewModel
 import com.hedvig.android.feature.profile.payment.history.PaymentHistoryViewModel
-import com.hedvig.android.feature.profile.settings.ChangeLanguageUseCase
+import com.hedvig.android.feature.profile.settings.NotifyBackendAboutLanguageChangeUseCase
 import com.hedvig.android.feature.profile.settings.SettingsViewModel
 import com.hedvig.android.feature.profile.tab.GetEurobonusStatusUseCase
 import com.hedvig.android.feature.profile.tab.NetworkGetEurobonusStatusUseCase
 import com.hedvig.android.feature.profile.tab.ProfileViewModel
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.market.MarketManager
 import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
+import com.hedvig.hanalytics.HAnalytics
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -43,21 +46,21 @@ val profileModule = module {
   }
   viewModel<EurobonusViewModel> { EurobonusViewModel(get<ApolloClient>(octopusClient)) }
 
-  single<ChangeLanguageUseCase> {
-    ChangeLanguageUseCase(
+  single<NotifyBackendAboutLanguageChangeUseCase> {
+    NotifyBackendAboutLanguageChangeUseCase(
       apolloClient = get<ApolloClient>(giraffeClient),
-      languageService = get<LanguageService>(),
       cacheManager = get<NetworkCacheManager>(),
     )
   }
 
   viewModel<SettingsViewModel> {
     SettingsViewModel(
-      hAnalytics = get(),
-      changeLanguageUseCase = get(),
-      marketManager = get(),
-      languageService = get(),
-      settingsDataStore = get(),
+      hAnalytics = get<HAnalytics>(),
+      notifyBackendAboutLanguageChangeUseCase = get<NotifyBackendAboutLanguageChangeUseCase>(),
+      marketManager = get<MarketManager>(),
+      languageService = get<LanguageService>(),
+      settingsDataStore = get<SettingsDataStore>(),
+      enableNotificationsReminderManager = get<EnableNotificationsReminderManager>(),
     )
   }
 
