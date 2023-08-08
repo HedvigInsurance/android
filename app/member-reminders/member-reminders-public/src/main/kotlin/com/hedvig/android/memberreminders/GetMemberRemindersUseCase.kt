@@ -1,14 +1,13 @@
 package com.hedvig.android.memberreminders
 
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toPersistentList
+import arrow.core.NonEmptyList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 interface GetMemberRemindersUseCase {
-  fun invoke(): Flow<ImmutableList<MemberReminder>>
+  fun invoke(): Flow<MemberReminders>
 }
 
 internal class GetMemberRemindersUseCaseImpl(
@@ -16,7 +15,7 @@ internal class GetMemberRemindersUseCaseImpl(
   private val getConnectPaymentReminderUseCase: GetConnectPaymentReminderUseCase,
   private val getUpcomingRenewalRemindersUseCase: GetUpcomingRenewalRemindersUseCase,
 ) : GetMemberRemindersUseCase {
-  override fun invoke(): Flow<ImmutableList<MemberReminder>> {
+  override fun invoke(): Flow<MemberReminders> {
     return combine(
       enableNotificationsReminderManager.showNotificationReminder().map { showReminder ->
         if (showReminder) {
@@ -30,7 +29,7 @@ internal class GetMemberRemindersUseCaseImpl(
       },
       flow {
         val upcomingRenewals = getUpcomingRenewalRemindersUseCase.invoke().getOrNull()?.let {
-          MemberReminder.UpcomingRenewals(it.toPersistentList())
+          MemberReminder.UpcomingRenewals(it)
         }
         emit(upcomingRenewals)
       },
@@ -39,17 +38,47 @@ internal class GetMemberRemindersUseCaseImpl(
         connectPayment: MemberReminder.ConnectPayment?,
         upcomingRenewalReminders: MemberReminder.UpcomingRenewals?,
       ->
-      listOfNotNull(
-        enableNotifications,
-        connectPayment,
-        upcomingRenewalReminders,
-      ).toPersistentList()
+      MemberReminders(
+        connectPayment = connectPayment,
+        upcomingRenewals = upcomingRenewalReminders,
+        enableNotifications = enableNotifications,
+      )
     }
   }
 }
 
+data class MemberReminders(
+  val connectPayment: MemberReminder.ConnectPayment? = null,
+  val upcomingRenewals: MemberReminder.UpcomingRenewals? = null,
+  val enableNotifications: MemberReminder.EnableNotifications? = null,
+) {
+  /**
+   * In some cases a reminder may be present but may not be applicable in our current app state.
+   *
+   * If [alreadyHasNotificationPermission] is true, then the notification permission reminder should not be shown.
+   */
+  fun onlyApplicableReminders(
+    alreadyHasNotificationPermission: Boolean,
+  ): ApplicableMemberReminders {
+    return ApplicableMemberReminders(
+      connectPayment,
+      upcomingRenewals,
+      enableNotifications.takeIf { !alreadyHasNotificationPermission },
+    )
+  }
+}
+
+data class ApplicableMemberReminders(
+  val connectPayment: MemberReminder.ConnectPayment? = null,
+  val upcomingRenewals: MemberReminder.UpcomingRenewals? = null,
+  val enableNotifications: MemberReminder.EnableNotifications? = null,
+) {
+  val hasAnyReminders: Boolean
+    get() = connectPayment != null || upcomingRenewals != null || enableNotifications != null
+}
+
 sealed interface MemberReminder {
   object ConnectPayment : MemberReminder
-  data class UpcomingRenewals(val upcomingRenewals: ImmutableList<UpcomingRenewal>) : MemberReminder
+  data class UpcomingRenewals(val upcomingRenewals: NonEmptyList<UpcomingRenewal>) : MemberReminder
   object EnableNotifications : MemberReminder
 }
