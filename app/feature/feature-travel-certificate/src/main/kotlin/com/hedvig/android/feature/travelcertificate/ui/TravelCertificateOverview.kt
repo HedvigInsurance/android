@@ -90,7 +90,6 @@ internal fun TravelCertificateOverview(
       )
       Spacer(modifier = Modifier.weight(1f))
       VectorInfoCard(
-        title = null,
         text = stringResource(id = R.string.travel_certificate_download_recommendation),
         modifier = Modifier.padding(horizontal = 16.dp),
       )

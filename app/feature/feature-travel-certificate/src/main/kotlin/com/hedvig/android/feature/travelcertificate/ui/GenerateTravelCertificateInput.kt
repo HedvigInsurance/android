@@ -121,7 +121,6 @@ internal fun GenerateTravelCertificateInput(
       uiState.daysValid?.let {
         Spacer(modifier = Modifier.height(8.dp))
         VectorInfoCard(
-          title = null,
           text = stringResource(id = R.string.travel_certificate_start_date_info, uiState.daysValid),
           modifier = Modifier.padding(horizontal = 16.dp),
         )

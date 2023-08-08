@@ -1,12 +1,14 @@
 package com.hedvig.android.core.ui.infocard
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -24,18 +26,42 @@ import com.hedvig.android.core.designsystem.component.card.HedvigInfoCard
 import com.hedvig.android.core.designsystem.material3.infoContainer
 import com.hedvig.android.core.designsystem.material3.infoElement
 import com.hedvig.android.core.designsystem.material3.onInfoContainer
+import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.Info
+import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
 
 @Composable
 fun VectorInfoCard(
   text: String,
   modifier: Modifier = Modifier,
-  title: String? = null,
-  icon: ImageVector = Icons.Default.Info,
+  icon: ImageVector = Icons.Hedvig.Info,
   iconColor: Color = MaterialTheme.colorScheme.infoElement,
   colors: CardColors = CardDefaults.outlinedCardColors(
     containerColor = MaterialTheme.colorScheme.infoContainer,
     contentColor = MaterialTheme.colorScheme.onInfoContainer,
   ),
+) {
+  VectorInfoCard(
+    text = text,
+    modifier = modifier,
+    icon = icon,
+    iconColor = iconColor,
+    colors = colors,
+    underTextContent = null,
+  )
+}
+
+@Composable
+fun VectorInfoCard(
+  text: String,
+  modifier: Modifier = Modifier,
+  icon: ImageVector = Icons.Hedvig.InfoFilled,
+  iconColor: Color = MaterialTheme.colorScheme.infoElement,
+  colors: CardColors = CardDefaults.outlinedCardColors(
+    containerColor = MaterialTheme.colorScheme.infoContainer,
+    contentColor = MaterialTheme.colorScheme.onInfoContainer,
+  ),
+  underTextContent: @Composable (ColumnScope.() -> Unit)?,
 ) {
   HedvigInfoCard(
     modifier = modifier,
@@ -51,19 +77,16 @@ fun VectorInfoCard(
         .padding(1.dp),
       tint = iconColor,
     )
-    Spacer(modifier = Modifier.padding(start = 8.dp))
+    Spacer(Modifier.width(8.dp))
     Column {
-      if (title != null) {
-        Text(
-          text = title,
-          style = MaterialTheme.typography.bodyMedium,
-        )
-        Spacer(modifier = Modifier.padding(2.dp))
-      }
       Text(
         text = text,
         style = MaterialTheme.typography.bodyMedium,
       )
+      if (underTextContent != null) {
+        Spacer(Modifier.height(8.dp))
+        underTextContent()
+      }
     }
   }
 }
