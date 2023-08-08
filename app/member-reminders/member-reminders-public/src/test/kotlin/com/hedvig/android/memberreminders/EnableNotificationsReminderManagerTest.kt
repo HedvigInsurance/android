@@ -3,6 +3,7 @@ package com.hedvig.android.memberreminders
 import assertk.assertThat
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
+import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.datastore.TestPreferencesDataStore
 import com.hedvig.android.test.clock.TestClock
 import kotlinx.coroutines.flow.first
@@ -26,6 +27,7 @@ class EnableNotificationsReminderManagerTest {
         coroutineScope = backgroundScope,
       ),
       clock,
+      TestHedvigBuildConstants,
     )
 
     assertThat(enableNotificationsInfoManager.showNotificationReminder().first()).isTrue()
@@ -40,6 +42,7 @@ class EnableNotificationsReminderManagerTest {
         coroutineScope = backgroundScope,
       ),
       clock,
+      TestHedvigBuildConstants,
     )
 
     assertThat(enableNotificationsInfoManager.showNotificationReminder().first()).isTrue()
@@ -56,6 +59,7 @@ class EnableNotificationsReminderManagerTest {
         coroutineScope = backgroundScope,
       ),
       clock,
+      TestHedvigBuildConstants,
     )
 
     enableNotificationsInfoManager.snoozeNotificationReminder()
@@ -72,6 +76,7 @@ class EnableNotificationsReminderManagerTest {
         coroutineScope = backgroundScope,
       ),
       clock,
+      TestHedvigBuildConstants,
     )
 
     enableNotificationsInfoManager.snoozeNotificationReminder()
@@ -89,6 +94,7 @@ class EnableNotificationsReminderManagerTest {
         coroutineScope = backgroundScope,
       ),
       clock,
+      TestHedvigBuildConstants,
     )
 
     val getCurrentReminderStatus: suspend () -> Boolean = {
@@ -111,4 +117,19 @@ class EnableNotificationsReminderManagerTest {
     enableNotificationsInfoManager.snoozeNotificationReminder()
     assertThat(getCurrentReminderStatus()).isFalse()
   }
+}
+
+private val TestHedvigBuildConstants = object : HedvigBuildConstants {
+  override val urlGiraffeBaseApi: String = ""
+  override val urlGiraffeGraphql: String = ""
+  override val urlGiraffeGraphqlSubscription: String = ""
+  override val urlGraphqlOctopus: String = ""
+  override val urlBaseWeb: String = ""
+  override val urlHanalytics: String = ""
+  override val urlOdyssey: String = ""
+  override val appVersionName: String = ""
+  override val appVersionCode: String = ""
+  override val appId: String = ""
+  override val isDebug: Boolean = false
+  override val isProduction: Boolean = true
 }
