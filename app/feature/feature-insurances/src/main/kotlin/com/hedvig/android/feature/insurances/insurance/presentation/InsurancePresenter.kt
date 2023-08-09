@@ -26,6 +26,7 @@ import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNo
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.launch
 import octopus.CrossSalesQuery
 import octopus.type.CrossSellType
 
@@ -103,7 +104,7 @@ internal class InsurancePresenter(
           retryChannel.retry()
         }
         InsuranceScreenEvent.MarkCardCrossSellsAsSeen -> {
-          crossSellCardNotificationBadgeService.markAsSeen()
+          launch { crossSellCardNotificationBadgeService.markAsSeen() }
         }
       }
     }
