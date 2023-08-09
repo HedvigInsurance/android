@@ -87,13 +87,30 @@ internal sealed interface HomeModel {
 }
 
 sealed interface CommonClaim {
+
+  val title: String
+
   data class Emergency(
     val inner: EmergencyData,
-  ) : CommonClaim
+  ) : CommonClaim {
+    override val title: String
+      get() = "Emergency"
+  }
 
   data class TitleAndBulletPoints(
     val inner: CommonClaimsData,
-  ) : CommonClaim
+  ) : CommonClaim {
+    override val title: String
+      get() = inner.title
+  }
 
-  object GenerateTravelCertificate : CommonClaim
+  data object GenerateTravelCertificate : CommonClaim {
+    override val title: String
+      get() = "Travel Certificate"
+  }
+
+  data object ChangeAddress : CommonClaim {
+    override val title: String
+      get() = "Change address"
+  }
 }

@@ -90,12 +90,12 @@ import com.hedvig.hanalytics.PaymentType
 import giraffe.HomeQuery
 import giraffe.type.HedvigColor
 import hedvig.resources.R
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.time.temporal.ChronoUnit
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -125,6 +125,7 @@ internal fun HomeDestination(
     onRefresh = reload,
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
+
   Box(Modifier.fillMaxSize()) {
     Column(
       Modifier
@@ -488,6 +489,8 @@ private fun CommonClaimsRenderer(
           is CommonClaim.TitleAndBulletPoints -> {
             { onCommonClaimClicked(commonClaim.inner) }
           }
+
+          CommonClaim.ChangeAddress -> TODO()
         },
       ) {
         Column(
