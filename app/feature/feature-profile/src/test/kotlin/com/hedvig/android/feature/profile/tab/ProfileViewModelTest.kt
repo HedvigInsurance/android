@@ -15,12 +15,10 @@ import com.hedvig.android.core.common.test.MainCoroutineRule
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager
 import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager2
-import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
-import com.hedvig.android.memberreminders.TestGetMemberRemindersUseCase
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
+import com.hedvig.android.memberreminders.test.TestEnableNotificationsReminderManager
+import com.hedvig.android.memberreminders.test.TestGetMemberRemindersUseCase
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
@@ -297,14 +295,6 @@ class ProfileViewModelTest {
       cancelAndIgnoreRemainingEvents()
     }
   }
-}
-
-private class TestEnableNotificationsReminderManager() : EnableNotificationsReminderManager {
-  override fun showNotificationReminder(): Flow<Boolean> {
-    return emptyFlow()
-  }
-
-  override suspend fun snoozeNotificationReminder() {}
 }
 
 private class FakeGetEurobonusStatusUseCase() : GetEurobonusStatusUseCase {

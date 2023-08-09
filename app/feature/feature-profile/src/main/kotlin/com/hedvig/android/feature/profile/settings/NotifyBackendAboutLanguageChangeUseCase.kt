@@ -6,11 +6,15 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.market.Language
 import giraffe.UpdateLanguageMutation
 
-internal class NotifyBackendAboutLanguageChangeUseCase(
+internal interface NotifyBackendAboutLanguageChangeUseCase {
+  suspend fun invoke(language: Language)
+}
+
+internal class NotifyBackendAboutLanguageChangeUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val cacheManager: NetworkCacheManager,
-) {
-  suspend fun invoke(language: Language) {
+) : NotifyBackendAboutLanguageChangeUseCase {
+  override suspend fun invoke(language: Language) {
     apolloClient.mutation(UpdateLanguageMutation(language.toString(), language.toLocale())).safeExecute()
     cacheManager.clearCache()
   }

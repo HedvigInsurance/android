@@ -7,12 +7,13 @@ import arrow.core.NonEmptyList
 import arrow.core.left
 import arrow.core.nonEmptyListOf
 import arrow.core.right
+import assertk.assertAll
 import assertk.assertThat
 import assertk.assertions.containsExactly
-import assertk.assertions.isEmpty
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.consumeAsFlow
+import assertk.assertions.isNotNull
+import assertk.assertions.isNull
+import assertk.assertions.prop
+import com.hedvig.android.memberreminders.test.TestEnableNotificationsReminderManager
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import org.junit.Test
@@ -20,7 +21,7 @@ import org.junit.Test
 class GetMemberRemindersUseCaseTest {
 
   @Test
-  fun `no reminders returns an empty list`() = runTest {
+  fun `no reminders returns all null reminders`() = runTest {
     val enableNotificationsReminderManager = TestEnableNotificationsReminderManager()
     val getConnectPaymentReminderUseCase = TestGetConnectPaymentReminderUseCase()
     val getUpcomingRenewalRemindersUseCase = TestGetUpcomingRenewalRemindersUseCase()
@@ -35,7 +36,13 @@ class GetMemberRemindersUseCaseTest {
       enableNotificationsReminderManager.showNotification.add(false)
       getConnectPaymentReminderUseCase.turbine.add(ConnectPaymentReminderError.AlreadySetup.left())
       getUpcomingRenewalRemindersUseCase.turbine.add(UpcomingRenewalReminderError.NoUpcomingRenewals.left())
-      assertThat(awaitItem()).isEmpty()
+      assertAll {
+        with(awaitItem()) {
+          assertThat(this.connectPayment).isNull()
+          assertThat(this.enableNotifications).isNull()
+          assertThat(this.upcomingRenewals).isNull()
+        }
+      }
     }
   }
 
@@ -57,22 +64,18 @@ class GetMemberRemindersUseCaseTest {
       getUpcomingRenewalRemindersUseCase.turbine.add(
         nonEmptyListOf(UpcomingRenewal("", LocalDate.parse("2023-01-01"), "")).right(),
       )
-      assertThat(awaitItem()).containsExactly(
-        MemberReminder.EnableNotifications,
-        MemberReminder.ConnectPayment,
-        MemberReminder.UpcomingRenewals(persistentListOf(UpcomingRenewal("", LocalDate.parse("2023-01-01"), ""))),
-      )
-    }
-  }
-
-  class TestEnableNotificationsReminderManager : EnableNotificationsReminderManager {
-    val showNotification = Turbine<Boolean>()
-    override fun showNotificationReminder(): Flow<Boolean> {
-      return showNotification.asChannel().consumeAsFlow()
-    }
-
-    override suspend fun snoozeNotificationReminder() {
-      error("Not needed")
+      assertAll {
+        with(awaitItem()) {
+          assertThat(this.connectPayment).isNotNull()
+          assertThat(this.enableNotifications).isNotNull()
+          assertThat(this.upcomingRenewals)
+            .isNotNull()
+            .prop(MemberReminder.UpcomingRenewals::upcomingRenewals)
+            .containsExactly(
+              UpcomingRenewal("", LocalDate.parse("2023-01-01"), ""),
+            )
+        }
+      }
     }
   }
 

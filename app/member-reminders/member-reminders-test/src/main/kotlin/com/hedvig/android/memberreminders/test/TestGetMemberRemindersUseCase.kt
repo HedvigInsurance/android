@@ -1,6 +1,8 @@
-package com.hedvig.android.memberreminders
+package com.hedvig.android.memberreminders.test
 
 import app.cash.turbine.Turbine
+import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
+import com.hedvig.android.memberreminders.MemberReminders
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 

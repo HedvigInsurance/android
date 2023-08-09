@@ -34,7 +34,7 @@ class FakeFeatureManager(
     operator fun invoke(noopFeatureManager: Boolean): FakeFeatureManager {
       return if (noopFeatureManager) {
         FakeFeatureManager(
-          { Feature.values().toList().associateWith { false } },
+          { Feature.entries.associateWith { false } },
           { LoginMethod.OTP },
           { PaymentType.ADYEN },
         )

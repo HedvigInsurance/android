@@ -5,6 +5,10 @@ plugins {
   alias(libs.plugins.squareSortDependencies)
 }
 
+android {
+  testOptions.unitTests.isReturnDefaultValues = true
+}
+
 dependencies {
   implementation(libs.accompanist.permissions)
   implementation(libs.accompanist.webview)
@@ -53,6 +57,10 @@ dependencies {
   testImplementation(libs.junit)
   testImplementation(libs.turbine)
   testImplementation(projects.coreCommonTest)
+  testImplementation(projects.coreDatastoreTest)
   testImplementation(projects.hanalyticsFeatureFlagsTest)
+  testImplementation(projects.languageTest)
+  testImplementation(projects.marketTest)
   testImplementation(projects.memberRemindersTest)
+  testImplementation(projects.moleculeTest)
 }

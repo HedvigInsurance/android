@@ -86,7 +86,6 @@ private fun SettingsScreen(
         )
         Spacer(Modifier.height(4.dp))
         ThemeWithDialog(
-          themeOptions = uiState.themeOptions,
           selectedTheme = uiState.selectedTheme,
           selectTheme = onThemeSelected,
           enabled = true,
@@ -139,7 +138,6 @@ fun PreviewSettingsScreen() {
           selectedLanguage = Language.SV_SE,
           languageOptions = listOf(Language.SV_SE, Language.EN_SE),
           selectedTheme = Theme.SYSTEM_DEFAULT,
-          themeOptions = Theme.values().toList(),
           showNotificationReminder = true,
         ),
         navigateUp = {},
@@ -185,7 +183,6 @@ internal fun LanguageWithDialog(
 
 @Composable
 internal fun ThemeWithDialog(
-  themeOptions: List<Theme>,
   selectedTheme: Theme,
   selectTheme: (Theme) -> Unit,
   enabled: Boolean,
@@ -196,7 +193,7 @@ internal fun ThemeWithDialog(
   if (showThemePickerDialog) {
     SingleSelectDialog(
       title = stringResource(R.string.SETTINGS_THEME_TITLE),
-      optionsList = themeOptions,
+      optionsList = Theme.entries,
       onSelected = selectTheme,
       getDisplayText = { context.getString(it.getLabel()) },
       getIsSelected = { selectedTheme == it },
