@@ -25,7 +25,6 @@ dependencies {
   implementation(libs.koin.core)
   implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
-  implementation(libs.slimber)
   implementation(projects.apolloCore)
   implementation(projects.apolloGiraffePublic)
   implementation(projects.apolloOctopusPublic)
@@ -38,6 +37,7 @@ dependencies {
   implementation(projects.hanalyticsCore)
   implementation(projects.hanalyticsFeatureFlagsPublic)
   implementation(projects.languageCore)
+  implementation(projects.loggingPublic)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.navigationComposeTyped)
@@ -48,6 +48,7 @@ dependencies {
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
   testImplementation(libs.turbine)
+  testImplementation(projects.loggingTest)
   testImplementation(projects.moleculeTest)
   testImplementation(projects.notificationBadgeDataFake)
 }

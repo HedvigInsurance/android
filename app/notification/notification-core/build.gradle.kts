@@ -9,5 +9,5 @@ dependencies {
 
   implementation(libs.androidx.other.core)
   implementation(libs.firebase.messaging)
-  implementation(libs.slimber)
+  implementation(projects.loggingPublic)
 }

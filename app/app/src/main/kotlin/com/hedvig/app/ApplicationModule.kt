@@ -28,10 +28,8 @@ import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.auth.interceptor.MigrateTokenInterceptor
 import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.android.QuoteCartId
-import com.hedvig.android.core.common.di.LogInfoType
 import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.common.di.datastoreFileQualifier
-import com.hedvig.android.core.common.di.logInfoQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.data.forever.di.foreverDataModule
 import com.hedvig.android.data.travelcertificate.di.claimFlowDataModule
@@ -53,6 +51,7 @@ import com.hedvig.android.hanalytics.di.hAnalyticsModule
 import com.hedvig.android.hanalytics.featureflags.di.featureManagerModule
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.language.di.languageModule
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.market.di.marketManagerModule
 import com.hedvig.android.memberreminders.di.memberRemindersModule
@@ -166,8 +165,6 @@ import org.koin.core.parameter.ParametersHolder
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import slimber.log.d
-import slimber.log.i
 import timber.log.Timber
 import java.io.File
 import java.time.Clock
@@ -245,7 +242,7 @@ private val networkModule = module {
         SubscriptionWsProtocol.Factory(
           connectionPayload = {
             val accessToken = accessTokenProvider.provide()
-            d { "Apollo-kotlin: Subscription acquired auth token: $accessToken" }
+            logcat { "Apollo-kotlin: Subscription acquired auth token: $accessToken" }
             val authorizationHeaderValue = if (accessToken != null) {
               "Bearer $accessToken"
             } else {
@@ -566,12 +563,6 @@ private val datastoreAndroidModule = module {
   }
 }
 
-private val logModule = module {
-  single<LogInfoType>(logInfoQualifier) {
-    ::i
-  }
-}
-
 private val coilModule = module {
   single<ImageLoader> {
     ImageLoader.Builder(get())
@@ -669,7 +660,6 @@ val applicationModule = module {
       homeModule,
       insurancesModule,
       languageModule,
-      logModule,
       marketManagerModule,
       memberRemindersModule,
       networkModule,

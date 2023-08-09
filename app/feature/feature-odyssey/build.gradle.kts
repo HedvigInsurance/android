@@ -27,7 +27,6 @@ dependencies {
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
-  implementation(libs.slimber)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.audioPlayer)
@@ -40,6 +39,7 @@ dependencies {
   implementation(projects.coreUiData)
   implementation(projects.dataClaimFlow)
   implementation(projects.dataClaimTriaging)
+  implementation(projects.loggingPublic)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
 
@@ -48,4 +48,5 @@ dependencies {
   testImplementation(libs.junit)
   testImplementation(libs.turbine)
   testImplementation(projects.coreCommonTest)
+  testImplementation(projects.loggingTest)
 }

@@ -4,10 +4,10 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import giraffe.UpdateLanguageMutation
 import giraffe.type.Locale
-import slimber.log.e
-import slimber.log.i
 
 class UploadMarketAndLanguagePreferencesUseCase(
   private val apolloClient: ApolloClient,
@@ -21,8 +21,16 @@ class UploadMarketAndLanguagePreferencesUseCase(
       .safeExecute()
       .toEither()
       .fold(
-        ifLeft = { e { "Failed to to upload language preferences to language:$languageTag | locale:$locale" } },
-        ifRight = { i { "Succeeded uploading language preferences to language:$languageTag | locale:$locale" } },
+        ifLeft = {
+          logcat(LogPriority.ERROR) {
+            "Failed to to upload language preferences to language:$languageTag | locale:$locale"
+          }
+        },
+        ifRight = {
+          logcat(LogPriority.INFO) {
+            "Succeeded uploading language preferences to language:$languageTag | locale:$locale"
+          }
+        },
       )
   }
 }

@@ -15,11 +15,11 @@ dependencies {
   // do not remove ktor, authlib has an old ktor version which somehow crashes. Remove when we bump authlib.
   implementation(libs.ktor)
   implementation(libs.okhttp.core)
-  implementation(libs.slimber)
   implementation(projects.authEventCore)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDatastorePublic)
+  implementation(projects.loggingPublic)
   implementation(projects.testClock)
 
   testImplementation(libs.assertK)
@@ -29,4 +29,5 @@ dependencies {
   testImplementation(projects.authTest)
   testImplementation(projects.coreCommonTest)
   testImplementation(projects.coreDatastoreTest)
+  testImplementation(projects.loggingTest)
 }

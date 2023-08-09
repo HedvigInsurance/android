@@ -9,6 +9,7 @@ import androidx.fragment.app.setFragmentResultListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.android.core.common.android.parcelable
 import com.hedvig.android.core.common.android.whenApiVersion
+import com.hedvig.android.logger.logcat
 import com.hedvig.app.R
 import com.hedvig.app.databinding.PreviousOrExternalInsurerFragmentBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
@@ -17,7 +18,6 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
-import slimber.log.d
 
 class PreviousInsurerFragment : Fragment(R.layout.previous_or_external_insurer_fragment) {
 
@@ -78,7 +78,7 @@ class PreviousInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
       insurerId?.let {
         viewModel.putInStore(insurerData.storeKey, it)
         continueEmbark()
-      } ?: d { "insurerId was null when continuing from PreviousInsurerFragment" }
+      } ?: logcat { "insurerId was null when continuing from PreviousInsurerFragment" }
     }
   }
 

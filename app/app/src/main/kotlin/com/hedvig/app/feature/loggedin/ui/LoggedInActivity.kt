@@ -61,6 +61,8 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.activity.ActivityNavigator
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
@@ -80,9 +82,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import slimber.log.d
-import slimber.log.e
-import slimber.log.i
 
 class LoggedInActivity : AppCompatActivity() {
   private val reviewDialogViewModel: ReviewDialogViewModel by viewModel()
@@ -106,7 +105,7 @@ class LoggedInActivity : AppCompatActivity() {
     installSplashScreen().apply {
       setKeepOnScreenCondition { showSplash.value == true }
       setOnExitAnimationListener {
-        i { "Splash screen will be removed" }
+        logcat(LogPriority.INFO) { "Splash screen will be removed" }
         it.remove()
       }
     }
@@ -154,12 +153,16 @@ class LoggedInActivity : AppCompatActivity() {
               pathSegments.isEmpty() -> DynamicLink.None
               else -> DynamicLink.Unknown
             }
-            i { "Deep link was found:$dynamicLink, with segments: ${pathSegments.joinToString(",")}" }
+            logcat(LogPriority.INFO) {
+              "Deep link was found:$dynamicLink, with segments: ${pathSegments.joinToString(",")}"
+            }
             if (dynamicLink is DynamicLink.DirectDebit) {
               hAnalytics.deepLinkOpened(dynamicLink.type)
               val market = marketManager.market
               if (market == null) {
-                e { "Tried to open DirectDebit deep link, but market was null. Aborting and continuing to normal flow" }
+                logcat(LogPriority.ERROR) {
+                  "Tried to open DirectDebit deep link, but market was null. Aborting and continuing to normal flow"
+                }
               } else {
                 lifecycleScope.launch {
                   this@LoggedInActivity.startActivity(
@@ -173,7 +176,7 @@ class LoggedInActivity : AppCompatActivity() {
                 }
               }
             } else {
-              d { "Deep link $dynamicLink did not open some specific activity" }
+              logcat { "Deep link $dynamicLink did not open some specific activity" }
             }
           }
         }
@@ -181,7 +184,7 @@ class LoggedInActivity : AppCompatActivity() {
       lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
         authTokenService.authStatus
           .onEach { authStatus ->
-            d {
+            logcat {
               buildString {
                 append("Owner: LoggedInActivity | Received authStatus: ")
                 append(
@@ -250,7 +253,7 @@ class LoggedInActivity : AppCompatActivity() {
       initialTab: TopLevelGraph = TopLevelGraph.HOME,
       showRatingDialog: Boolean = false,
     ): Intent = Intent(context, LoggedInActivity::class.java).apply {
-      i { "LoggedInActivity.newInstance was called. withoutHistory:$withoutHistory" }
+      logcat(LogPriority.INFO) { "LoggedInActivity.newInstance was called. withoutHistory:$withoutHistory" }
       if (withoutHistory) {
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)

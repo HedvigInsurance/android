@@ -14,7 +14,6 @@ dependencies {
   implementation(libs.androidx.other.core)
   implementation(libs.androidx.other.recyclerView)
   implementation(libs.kotlinx.serialization.core)
-  implementation(libs.slimber)
   implementation(projects.apolloGiraffePublic)
   implementation(projects.coreResources)
 

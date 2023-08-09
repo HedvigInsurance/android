@@ -3,10 +3,11 @@ package com.hedvig.android.feature.odyssey.step.singleitempayout
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
-import com.hedvig.android.core.common.android.e
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.data.claimflow.ClaimFlowRepository
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,7 +32,9 @@ internal class SingleItemPayoutViewModel(
     viewModelScope.launch {
       when (val submitResult = claimFlowRepository.submitSingleItemCheckout(uiState.value.amount.amount)) {
         is Either.Left -> {
-          e(submitResult.value.throwable) { "SingleItemPayout request payout message:${submitResult.value.message}" }
+          logcat(LogPriority.ERROR, submitResult.value.throwable) {
+            "SingleItemPayout request payout message:${submitResult.value.message}"
+          }
           _uiState.update { it.copy(status = PayoutUiState.Status.Error) }
         }
         is Either.Right -> {

@@ -5,8 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
-import com.hedvig.android.core.common.android.e
 import com.hedvig.android.core.common.android.tryOpenPlayStore
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 
 class ActivityNavigator(
   private val application: Application,
@@ -66,7 +67,7 @@ class ActivityNavigator(
     if (browserIntent.resolveActivity(context.packageManager) != null) {
       context.startActivity(browserIntent)
     } else {
-      e { "Tried to launch $uri but the phone has nothing to support such an intent." }
+      logcat(LogPriority.ERROR) { "Tried to launch $uri but the phone has nothing to support such an intent." }
     }
   }
 }

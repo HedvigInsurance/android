@@ -12,6 +12,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.datadog.android.rum.GlobalRum
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.app.databinding.DialogAuthenticateBinding
 import com.hedvig.app.feature.genericauth.GenericAuthActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -22,7 +24,6 @@ import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import hedvig.resources.R
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import slimber.log.i
 
 private const val VIEW_KEY = "BankIdErrorDialog"
 private const val VIEW_NAME = "BankId Error"
@@ -42,11 +43,11 @@ class BankIdLoginDialog : DialogFragment(com.hedvig.app.R.layout.dialog_authenti
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
-    i { "BankIdLoginDialog started" }
+    logcat(LogPriority.INFO) { "BankIdLoginDialog started" }
     binding.authTitle.setText(R.string.BANK_ID_AUTH_TITLE_INITIATED)
 
     binding.login.setOnClickListener {
-      i { "Login with OTP clicked" }
+      logcat(LogPriority.INFO) { "Login with OTP clicked" }
       requireActivity().startActivity(GenericAuthActivity.newInstance(requireActivity()))
     }
     lifecycleScope.launch {
@@ -59,7 +60,7 @@ class BankIdLoginDialog : DialogFragment(com.hedvig.app.R.layout.dialog_authenti
   }
 
   private fun bindViewState(viewState: BankIdLoginViewState) {
-    i { "BankIdLoginDialog viewState updated to:$viewState" }
+    logcat(LogPriority.INFO) { "BankIdLoginDialog viewState updated to:$viewState" }
     when (viewState) {
       is BankIdLoginViewState.Error -> {
         binding.authTitle.text = viewState.message
@@ -106,13 +107,13 @@ class BankIdLoginDialog : DialogFragment(com.hedvig.app.R.layout.dialog_authenti
           bankIdUri,
         ),
       )
-      i { "Openned BankID to handle login" }
+      logcat(LogPriority.INFO) { "Openned BankID to handle login" }
     } else {
       QR
         .with(requireContext())
         .load(autoStartUrl)
         .into(binding.qrCode)
-      i { "BankID not found, showing QR code instead" }
+      logcat(LogPriority.INFO) { "BankID not found, showing QR code instead" }
     }
   }
 

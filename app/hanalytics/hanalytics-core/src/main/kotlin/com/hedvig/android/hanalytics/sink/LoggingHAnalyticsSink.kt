@@ -1,7 +1,8 @@
 package com.hedvig.android.hanalytics.sink
 
-import com.hedvig.android.core.common.di.LogInfoType
 import com.hedvig.android.hanalytics.HAnalyticsSink
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.hanalytics.HAnalyticsEvent
 
 /**
@@ -9,14 +10,12 @@ import com.hedvig.hanalytics.HAnalyticsEvent
  * Also visible in Firebase Crashlytics, to give a better idea of what lead up to the crash.
  * Use in development by opening AS Logcat on "Debug" mode with the filter "LoggingHAnalyticsSink".
  */
-internal class LoggingHAnalyticsSink(
-  private val logInfoType: LogInfoType,
-) : HAnalyticsSink {
+internal class LoggingHAnalyticsSink : HAnalyticsSink {
   override fun send(event: HAnalyticsEvent) {
-    logInfoType { "Track ${event.name}, properties: ${event.properties}" }
+    logcat(LogPriority.INFO) { "Track ${event.name}, properties: ${event.properties}" }
   }
 
   override fun identify() {
-    logInfoType { "\"Identify\" HAnalytics event triggered" }
+    logcat(LogPriority.INFO) { "\"Identify\" HAnalytics event triggered" }
   }
 }

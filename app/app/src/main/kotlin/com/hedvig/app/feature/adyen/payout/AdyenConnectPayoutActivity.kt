@@ -13,11 +13,12 @@ import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.android.serializableExtra
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.app.R
 import com.hedvig.app.feature.adyen.AdyenCurrency
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import slimber.log.e
 
 /**
  * Hedvig paying to member
@@ -34,7 +35,7 @@ class AdyenConnectPayoutActivity : AppCompatActivity(R.layout.fragment_container
     val adyenCurrency = intent.serializableExtra<AdyenCurrency>(CURRENCY)
 
     if (adyenCurrency == null) {
-      e { "Programmer error: CURRENCY not provided to ${this.javaClass.name}" }
+      logcat(LogPriority.ERROR) { "Programmer error: CURRENCY not provided to ${this.javaClass.name}" }
       finish()
       return
     }
