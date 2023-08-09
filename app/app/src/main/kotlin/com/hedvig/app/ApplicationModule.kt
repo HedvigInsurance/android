@@ -260,6 +260,17 @@ private val networkModule = module {
   }
 }
 
+
+private val apolloClientUrlsModule = module {
+  single<String>(giraffeGraphQLUrlQualifier) { get<Context>().getString(hedvig.resources.R.string.GRAPHQL_URL) }
+  single<String>(giraffeGraphQLWebSocketUrlQualifier) {
+    get<Context>().getString(
+      hedvig.resources.R.string.WS_GRAPHQL_URL,
+    )
+  }
+  single<String>(octopusGraphQLUrlQualifier) { get<Context>().getString(hedvig.resources.R.string.OCTOPUS_GRAPHQL_URL) }
+}
+
 fun makeUserAgent(locale: Locale): String = buildString {
   append(BuildConfig.APPLICATION_ID)
   append(" ")

@@ -45,9 +45,9 @@ import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.data.forever.toErrorMessage
 import com.hedvig.android.feature.forever.ForeverUiState
 import hedvig.resources.R
-import javax.money.MonetaryAmount
 import kotlinx.coroutines.launch
 import org.javamoney.moneta.Money
+import javax.money.MonetaryAmount
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -151,7 +151,7 @@ internal fun ForeverContent(
           }
         }
       }
-      Spacer(Modifier.height(72.dp))
+      Spacer(Modifier.height(16.dp))
       Text(
         text = uiState.currentDiscountAmount?.format(locale) ?: "-",
         textAlign = TextAlign.Center,
@@ -159,7 +159,11 @@ internal fun ForeverContent(
         modifier = Modifier.fillMaxWidth(),
       )
       Spacer(Modifier.height(16.dp))
-      // TODO Add pie chart
+      DiscountPieChart(
+        totalPrice = uiState.grossPriceAmount?.abs()?.number?.toFloat() ?: 0f,
+        totalDiscount = uiState.currentDiscountAmount?.abs()?.number?.toFloat() ?: 0f,
+        incentive = uiState.incentive?.abs()?.number?.toFloat() ?: 0f,
+      )
       Spacer(Modifier.height(24.dp))
       if (uiState.referrals.isEmpty() && uiState.incentive != null) {
         Spacer(Modifier.height(32.dp))
@@ -210,7 +214,6 @@ internal fun ForeverContent(
         ReferralList(uiState)
       }
     }
-
 
     PullRefreshIndicator(
       refreshing = uiState.isLoading,
