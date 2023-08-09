@@ -79,7 +79,7 @@ internal class InsurancePresenterTest {
   fun `on launch loading state is true, followed by the loaded state`() = runTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
-    val presenter: InsurancePresenter = InsurancePresenter(
+    val presenter = InsurancePresenter(
       getInsuranceContractsUseCase,
       getCrossSellsUseCase,
       FakeCrossSellCardNotificationBadgeService(),
