@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.material3.infoContainer
 import com.hedvig.android.core.designsystem.material3.onInfoContainer
-import com.hedvig.android.core.designsystem.newtheme.SquircleShape
+import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import hedvig.resources.R
@@ -79,11 +79,12 @@ private fun InnerChatTooltip(
   ) {
     Crossfade(show) { crossfadeShow ->
       if (crossfadeShow) {
+        val squircleMedium = MaterialTheme.shapes.squircleMedium
         Surface(
           onClick = onClick,
           color = MaterialTheme.colorScheme.infoContainer,
           contentColor = MaterialTheme.colorScheme.onInfoContainer,
-          shape = CircleCornerWithTopRightArrowShape,
+          shape = remember(squircleMedium) { squircleMedium.withTopRightPointingArrow() },
           modifier = Modifier.widthIn(max = 200.dp),
         ) {
           Text(
@@ -96,30 +97,32 @@ private fun InnerChatTooltip(
   }
 }
 
-private val CircleCornerWithTopRightArrowShape = object : Shape {
-  override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
-    val iconWidth: Float = with(density) { 40.dp.toPx() }
-    val arrowWidth = with(density) { 15.dp.toPx() }
-    val arrowHeight = with(density) { arrowHeightDp.toPx() }
-    val squircleOutline = SquircleShape.createOutline(
-      size.copy(height = size.height - arrowHeight),
-      layoutDirection,
-      density,
-    )
-    val squirclePath: Path = (squircleOutline as Outline.Generic).path
-    val arrowPath: Path = Path().apply {
-      relativeLineTo(-(arrowWidth / 2), 0f)
-      relativeLineTo(arrowWidth / 2, -arrowHeight)
-      relativeLineTo(arrowWidth / 2, arrowHeight)
-      relativeLineTo(0f, 20f)
-      close()
+private fun Shape.withTopRightPointingArrow(): Shape {
+  return object : Shape {
+    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
+      val iconWidth: Float = with(density) { 40.dp.toPx() }
+      val arrowWidth = with(density) { 15.dp.toPx() }
+      val arrowHeight = with(density) { arrowHeightDp.toPx() }
+      val squircleOutline = this@withTopRightPointingArrow.createOutline(
+        size.copy(height = size.height - arrowHeight),
+        layoutDirection,
+        density,
+      )
+      val squirclePath: Path = (squircleOutline as Outline.Generic).path
+      val arrowPath: Path = Path().apply {
+        relativeLineTo(-(arrowWidth / 2), 0f)
+        relativeLineTo(arrowWidth / 2, -arrowHeight)
+        relativeLineTo(arrowWidth / 2, arrowHeight)
+        relativeLineTo(0f, 20f)
+        close()
+      }
+      return Outline.Generic(
+        Path().apply {
+          addPath(path = squirclePath, offset = Offset(0f, arrowHeight))
+          addPath(path = arrowPath, offset = Offset(size.width - (iconWidth / 2), arrowHeight))
+        },
+      )
     }
-    return Outline.Generic(
-      Path().apply {
-        addPath(path = squirclePath, offset = Offset(0f, arrowHeight))
-        addPath(path = arrowPath, offset = Offset(size.width - (iconWidth / 2), arrowHeight))
-      },
-    )
   }
 }
 

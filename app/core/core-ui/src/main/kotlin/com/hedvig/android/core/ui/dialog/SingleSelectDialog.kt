@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import arrow.core.identity
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
-import com.hedvig.android.core.designsystem.material3.squircle
+import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.SelectIndicationCircle
@@ -102,7 +102,7 @@ private fun <T> SelectionContent(
 ) {
   Surface(
     color = MaterialTheme.colorScheme.background,
-    shape = MaterialTheme.shapes.squircle,
+    shape = MaterialTheme.shapes.squircleMedium,
   ) {
     Column {
       Spacer(modifier = Modifier.height(32.dp))
@@ -122,7 +122,10 @@ private fun <T> SelectionContent(
         }
       }
       if (showTopBorder) {
-        Box(Modifier.fillMaxWidth().height(0.dp).wrapContentHeight(align = Alignment.Bottom, unbounded = true)) {
+        Box(
+          Modifier.fillMaxWidth().height(0.dp)
+            .wrapContentHeight(align = Alignment.Bottom, unbounded = true),
+        ) {
           Divider()
         }
       }

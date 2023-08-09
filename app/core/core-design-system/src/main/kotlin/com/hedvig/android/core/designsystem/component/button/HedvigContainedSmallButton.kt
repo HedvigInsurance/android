@@ -11,7 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.material3.squircle
+import com.hedvig.android.core.designsystem.material3.squircleMedium
 
 @Composable
 fun HedvigContainedSmallButton(
@@ -54,7 +54,7 @@ private fun HedvigContainedSmallButton(
     onClick = onClick,
     modifier = modifier,
     enabled = enabled,
-    shape = MaterialTheme.shapes.squircle,
+    shape = MaterialTheme.shapes.squircleMedium,
     colors = colors,
     elevation = elevation,
     contentPadding = contentPadding,

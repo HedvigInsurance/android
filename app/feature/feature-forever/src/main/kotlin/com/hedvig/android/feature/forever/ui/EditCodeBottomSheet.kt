@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
+import com.hedvig.android.core.designsystem.material3.squircleLargeTop
 import hedvig.resources.R
 
 @Composable
@@ -33,7 +34,7 @@ internal fun EditCodeBottomSheet(
     onDismissRequest = {
       onDismiss()
     },
-    // todo use "https://github.com/c5inco/smoother" for a top only squircle shape here
+    shape = MaterialTheme.shapes.squircleLargeTop,
     sheetState = sheetState,
     tonalElevation = 0.dp,
   ) {

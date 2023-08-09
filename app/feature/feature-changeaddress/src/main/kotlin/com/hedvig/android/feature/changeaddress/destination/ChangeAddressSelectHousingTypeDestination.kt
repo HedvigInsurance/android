@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
-import com.hedvig.android.core.designsystem.material3.squircle
+import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.R
@@ -102,7 +102,7 @@ private fun ChangeAddressSelectHousingTypeScreen(
           onHousingTypeSubmitted()
         }
       },
-      shape = MaterialTheme.shapes.squircle,
+      shape = MaterialTheme.shapes.squircleMedium,
       modifier = Modifier.padding(horizontal = 16.dp),
     ) {
       Text(text = stringResource(id = hedvig.resources.R.string.general_continue_button))
