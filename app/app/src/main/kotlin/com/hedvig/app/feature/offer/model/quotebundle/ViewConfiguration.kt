@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.offer.model.quotebundle
 
-import com.hedvig.android.core.ui.insurance.GradientType
-import com.hedvig.app.util.extensions.gradient
+import com.hedvig.android.core.ui.insurance.ContractType
+import com.hedvig.app.util.extensions.toContractType
 import giraffe.fragment.QuoteBundleFragment
 import giraffe.type.QuoteBundleAppConfigurationStartDateTerminology
 import giraffe.type.QuoteBundleAppConfigurationTitle
@@ -12,7 +12,7 @@ data class ViewConfiguration(
   val ignoreCampaigns: Boolean,
   val title: Title,
   val startDateTerminology: StartDateTerminology,
-  val gradient: GradientType,
+  val gradient: ContractType,
   val postSignScreen: PostSignScreen,
 ) {
   enum class Title {
@@ -30,7 +30,7 @@ fun QuoteBundleFragment.toViewConfiguration() = ViewConfiguration(
   ignoreCampaigns = appConfiguration.ignoreCampaigns,
   title = appConfiguration.title.toTitle(),
   startDateTerminology = appConfiguration.startDateTerminology.toStartDateTerminology(),
-  gradient = quotes.first().typeOfContract.gradient(),
+  gradient = quotes.first().typeOfContract.toContractType(),
   postSignScreen = PostSignScreen.from(appConfiguration.postSignStep),
 )
 

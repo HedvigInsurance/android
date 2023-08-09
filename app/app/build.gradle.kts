@@ -199,6 +199,7 @@ dependencies {
   implementation(projects.authAndroid)
   implementation(projects.authCore)
   implementation(projects.authEventCore)
+  implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDatastorePublic)

@@ -64,7 +64,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.card.InsuranceCard
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
-import com.hedvig.android.core.ui.insurance.GradientType
+import com.hedvig.android.core.ui.insurance.ContractType
 import com.hedvig.android.core.ui.insurance.toDrawableRes
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceScreenEvent
@@ -218,7 +218,7 @@ private fun ColumnScope.InsuranceScreenContent(
         .clickable {
           onInsuranceCardClick(insuranceCard.contractId)
         },
-      fallbackPainter = insuranceCard.gradientType.toDrawableRes().let { drawableRes ->
+      fallbackPainter = insuranceCard.contractType.toDrawableRes().let { drawableRes ->
         painterResource(id = drawableRes)
       },
     )
@@ -400,7 +400,7 @@ private fun PreviewInsuranceScreen() {
               persistentListOf("Chip"),
               "Title",
               "For you + 1",
-              GradientType.HOME,
+              ContractType.HOMEOWNER,
             ),
           ),
           crossSells = persistentListOf(
