@@ -31,9 +31,9 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.feature.forever.ForeverUiState
 import hedvig.resources.R
+import org.javamoney.moneta.Money
 import javax.money.CurrencyContext
 import javax.money.CurrencyUnit
-import org.javamoney.moneta.Money
 
 @Composable
 internal fun ReferralList(uiState: ForeverUiState) {
@@ -163,5 +163,3 @@ internal val fakeSekCurrency = object : CurrencyUnit {
   override fun getDefaultFractionDigits(): Int = 0
   override fun getContext(): CurrencyContext? = null
 }
-
-

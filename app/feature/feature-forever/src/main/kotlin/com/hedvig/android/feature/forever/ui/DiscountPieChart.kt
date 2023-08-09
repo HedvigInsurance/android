@@ -2,9 +2,9 @@ package com.hedvig.android.feature.forever.ui
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.InfiniteRepeatableSpec
-import androidx.compose.animation.core.KeyframesSpec
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Column
@@ -37,14 +37,15 @@ fun ColumnScope.DiscountPieChart(
     initialValue = 0f,
     targetValue = calculateAngle(totalPrice, incentive),
     animationSpec = InfiniteRepeatableSpec(
-      animation = KeyframesSpec(
-        KeyframesSpec.KeyframesSpecConfig<Float>().apply {
-          0f at 800 with FastOutSlowInEasing
-          30f at 1300
-          30f at 2800 with FastOutSlowInEasing
-          durationMillis = 2800
-        },
-      ),
+      animation = keyframes {
+        durationMillis = 5400
+        0f at 0
+        0f at 1800 with FastOutSlowInEasing
+        30f at 2300
+        30f at 3600 with FastOutSlowInEasing
+        0f at 4100
+        0f at 5400
+      },
       repeatMode = RepeatMode.Reverse,
     ),
     label = "animation",
@@ -74,7 +75,7 @@ fun ColumnScope.DiscountPieChart(
 
 private fun calculateAngle(
   totalPrice: Float,
-  totalDiscount: Float
+  totalDiscount: Float,
 ): Float {
   return if (totalPrice == 0f) {
     0f
