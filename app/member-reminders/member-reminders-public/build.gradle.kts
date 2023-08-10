@@ -36,6 +36,7 @@ dependencies {
   testImplementation(projects.apolloGiraffeTest)
   testImplementation(projects.coreDatastoreTest)
   testImplementation(projects.hanalyticsFeatureFlagsTest)
+  testImplementation(projects.loggingTest)
   testImplementation(projects.memberRemindersTest)
   testImplementation(projects.testClock)
 }

@@ -14,15 +14,20 @@ import com.apollographql.apollo3.testing.enqueueTestResponse
 import com.hedvig.android.apollo.giraffe.test.GiraffeFakeResolver
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager2
+import com.hedvig.android.logger.TestLogcatLoggingRule
 import giraffe.GetPayinMethodStatusQuery
 import giraffe.type.PayinMethodStatus
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 
 @OptIn(ApolloExperimental::class)
 class GetConnectPaymentReminderUseCaseTest {
+
+  @get:Rule
+  val testLogcatLogger = TestLogcatLoggingRule()
 
   private lateinit var apolloClient: ApolloClient
 

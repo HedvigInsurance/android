@@ -57,7 +57,7 @@ internal class EnableNotificationsReminderManagerImpl(
   }
 
   companion object {
-    private val snoozeTimeBeforeShowingReminderAgain: Duration = 30.days
+    private val snoozeTimeBeforeShowingReminderAgain: Duration = 60.days
 
     val notificationReminderTimeOfLastSnoozeKey = stringPreferencesKey("notificationReminderKey")
   }

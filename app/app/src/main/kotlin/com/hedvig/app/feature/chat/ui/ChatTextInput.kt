@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.os.bundleOf
 import com.hedvig.android.core.common.android.parcelable
 import com.hedvig.android.core.designsystem.material3.infoElement
-import com.hedvig.android.core.designsystem.material3.squircle
+import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.ChevronUp
@@ -84,7 +84,7 @@ class ChatTextInput : AbstractComposeView {
       Surface(
         color = MaterialTheme.colorScheme.surfaceVariant,
         contentColor = contentColorFor(MaterialTheme.colorScheme.onSurfaceVariant),
-        shape = MaterialTheme.shapes.squircle,
+        shape = MaterialTheme.shapes.squircleMedium,
       ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
           val showPlaceholder by remember { derivedStateOf { text.isEmpty() } }
