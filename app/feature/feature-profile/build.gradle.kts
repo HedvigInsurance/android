@@ -5,7 +5,12 @@ plugins {
   alias(libs.plugins.squareSortDependencies)
 }
 
+android {
+  testOptions.unitTests.isReturnDefaultValues = true
+}
+
 dependencies {
+  implementation(libs.accompanist.permissions)
   implementation(libs.accompanist.webview)
   implementation(libs.androidx.compose.material)
   implementation(libs.androidx.compose.material3.windowSizeClass)
@@ -18,6 +23,7 @@ dependencies {
   implementation(libs.koin.android)
   implementation(libs.koin.compose)
   implementation(libs.koin.core)
+  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.moneta)
   implementation(projects.apolloCore)
   implementation(projects.apolloGiraffePublic)
@@ -36,8 +42,13 @@ dependencies {
   implementation(projects.hanalyticsFeatureFlagsPublic)
   implementation(projects.languageCore)
   implementation(projects.marketCore)
+  implementation(projects.memberRemindersPublic)
+  implementation(projects.memberRemindersUi)
+  implementation(projects.moleculeAndroid)
+  implementation(projects.moleculePublic)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(projects.notificationPermission)
   implementation(projects.payment)
   implementation(projects.theme)
 
@@ -46,5 +57,10 @@ dependencies {
   testImplementation(libs.junit)
   testImplementation(libs.turbine)
   testImplementation(projects.coreCommonTest)
+  testImplementation(projects.coreDatastoreTest)
   testImplementation(projects.hanalyticsFeatureFlagsTest)
+  testImplementation(projects.languageTest)
+  testImplementation(projects.marketTest)
+  testImplementation(projects.memberRemindersTest)
+  testImplementation(projects.moleculeTest)
 }

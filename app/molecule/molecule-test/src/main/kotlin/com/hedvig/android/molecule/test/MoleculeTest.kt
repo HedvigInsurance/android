@@ -7,6 +7,7 @@ import app.cash.turbine.test
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 suspend fun <Event, State> MoleculePresenter<Event, State>.test(
   initialState: State,
@@ -18,7 +19,7 @@ suspend fun <Event, State> MoleculePresenter<Event, State>.test(
   val moleculePresenterScope = MoleculePresenterScope(events)
   moleculeFlow(RecompositionMode.Immediate) {
     moleculePresenterScope.present(initialState)
-  }.test {
+  }.distinctUntilChanged().test {
     MoleculePresenterTestContext(this, PresenterTestingScopeImpl(events)).block()
   }
 }

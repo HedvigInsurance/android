@@ -10,18 +10,19 @@ import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
+import com.hedvig.android.logger.logcat
 import giraffe.GetPayinMethodStatusQuery
 import giraffe.type.PayinMethodStatus
 
-interface GetConnectPaymentReminderUseCase {
-  suspend fun invoke(): Either<ConnectPaymentReminderError, ShowReminder>
+internal interface GetConnectPaymentReminderUseCase {
+  suspend fun invoke(): Either<ConnectPaymentReminderError, ShowConnectPaymentReminder>
 }
 
 internal class GetConnectPaymentReminderUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
 ) : GetConnectPaymentReminderUseCase {
-  override suspend fun invoke(): Either<ConnectPaymentReminderError, ShowReminder> {
+  override suspend fun invoke(): Either<ConnectPaymentReminderError, ShowConnectPaymentReminder> {
     return either {
       parZip(
         {
@@ -41,8 +42,10 @@ internal class GetConnectPaymentReminderUseCaseImpl(
         ensure(payinStatus.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
           ConnectPaymentReminderError.AlreadySetup
         }
-        ShowReminder
+        ShowConnectPaymentReminder
       }
+    }.onLeft {
+      logcat { "GetConnectPaymentReminderUseCase failed with error:$it" }
     }
   }
 }
@@ -53,4 +56,4 @@ sealed interface ConnectPaymentReminderError {
   data class NetworkError(val errorMessage: ErrorMessage) : ConnectPaymentReminderError, ErrorMessage by errorMessage
 }
 
-object ShowReminder
+object ShowConnectPaymentReminder

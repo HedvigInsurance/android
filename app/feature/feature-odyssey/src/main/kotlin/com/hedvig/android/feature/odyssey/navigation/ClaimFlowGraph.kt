@@ -70,7 +70,6 @@ fun NavGraphBuilder.claimFlowGraph(
     animatedComposable<ClaimFlowDestination.NotificationPermission> {
       NotificationPermissionDestination(
         windowSizeClass = windowSizeClass,
-        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
         onNotificationPermissionDecided = {
           // We need to navigate without checking lifecycle, since we want to navigate after accepting the permission.
           // That dialog showing means that the app is not Resumed and would otherwise make us not navigate.

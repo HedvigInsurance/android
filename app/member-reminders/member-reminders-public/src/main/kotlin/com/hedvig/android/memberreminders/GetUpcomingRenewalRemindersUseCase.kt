@@ -17,7 +17,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toKotlinLocalDate
 
-interface GetUpcomingRenewalRemindersUseCase {
+internal interface GetUpcomingRenewalRemindersUseCase {
   suspend fun invoke(): Either<UpcomingRenewalReminderError, NonEmptyList<UpcomingRenewal>>
 }
 

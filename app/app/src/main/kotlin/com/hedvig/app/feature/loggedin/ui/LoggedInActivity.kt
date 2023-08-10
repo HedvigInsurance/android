@@ -390,7 +390,7 @@ private fun Modifier.animatedNavigationBarInsetsConsumption(
   val animatedInsetsToConsume: PaddingValues by animateValueAsState(
     targetValue = insetsToConsume,
     typeConverter = paddingValuesVectorConverter,
-    animationSpec = tween(MotionTokens.DurationMedium2.toInt()),
+    animationSpec = tween(MotionTokens.DurationMedium1.toInt()),
     label = "Padding values inset animation",
   )
   Modifier.consumeWindowInsets(animatedInsetsToConsume)

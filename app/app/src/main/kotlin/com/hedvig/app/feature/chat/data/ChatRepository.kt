@@ -145,7 +145,9 @@ class ChatRepository(
         logcat { "Chat: uploadFileInner (picture taken) succeeded." }
       }
       .onLeft { error ->
-        logcat(LogPriority.ERROR, error.throwable) { "Chat: uploadFileInner (picture taken) failed. Message:${error.message}" }
+        logcat(LogPriority.ERROR, error.throwable) {
+          "Chat: uploadFileInner (picture taken) failed. Message:${error.message}"
+        }
       }
   }
 

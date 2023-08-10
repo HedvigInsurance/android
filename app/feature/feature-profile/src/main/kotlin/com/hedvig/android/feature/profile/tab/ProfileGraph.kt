@@ -34,6 +34,8 @@ fun NavGraphBuilder.profileGraph(
   hedvigBuildConstants: HedvigBuildConstants,
   navigateToPayoutScreen: () -> Unit,
   navigateToPayinScreen: () -> Unit,
+  openAppSettings: () -> Unit,
+  openUrl: (String) -> Unit,
   market: Market?,
 ) {
   animatedNavigation<TopLevelGraph.PROFILE>(
@@ -63,6 +65,9 @@ fun NavGraphBuilder.profileGraph(
         navigateToPayment = {
           with(navigator) { backStackEntry.navigate(AppDestination.PaymentInfo) }
         },
+        navigateToConnectPayment = navigateToPayinScreen,
+        openAppSettings = openAppSettings,
+        openUrl = openUrl,
         viewModel = viewModel,
       )
     }
@@ -104,7 +109,8 @@ fun NavGraphBuilder.profileGraph(
       val viewModel: SettingsViewModel = koinViewModel()
       SettingsDestination(
         viewModel = viewModel,
-        onBackPressed = navigator::navigateUp,
+        openAppSettings = openAppSettings,
+        navigateUp = navigator::navigateUp,
       )
     }
     animatedComposable<AppDestination.PaymentInfo> { backStackEntry ->

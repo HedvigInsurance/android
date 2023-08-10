@@ -42,6 +42,7 @@ dependencies {
   implementation(projects.loggingPublic)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(projects.notificationPermission)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)

@@ -1,7 +1,5 @@
 package com.hedvig.android.feature.odyssey.step.honestypledge
 
-import android.Manifest
-import android.os.Build
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -20,17 +18,14 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.feature.odyssey.ui.ClaimFlowScaffold
+import com.hedvig.android.notification.permission.rememberNotificationPermissionStatus
 
 @Composable
 internal fun HonestyPledgeDestination(
@@ -100,17 +95,6 @@ private fun HonestyPledgeScreen(
     )
     Spacer(Modifier.height(16.dp))
     Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
-  }
-}
-
-@OptIn(ExperimentalPermissionsApi::class)
-@Composable
-private fun rememberNotificationPermissionStatus(): Boolean {
-  val isPreview = LocalInspectionMode.current
-  return if (!isPreview && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-    rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS).status.isGranted
-  } else {
-    true
   }
 }
 

@@ -1,6 +1,7 @@
 package com.hedvig.android.app.navigation
 
 import android.content.Context
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -243,6 +244,13 @@ internal fun HedvigNavHost(
             ),
           )
         }
+      },
+      openAppSettings = { activityNavigator.openAppSettings(context) },
+      openUrl = { url: String ->
+        activityNavigator.openWebsite(
+          context,
+          if (url.isBlank()) Uri.EMPTY else Uri.parse(url),
+        )
       },
       market = marketManager.market,
     )
