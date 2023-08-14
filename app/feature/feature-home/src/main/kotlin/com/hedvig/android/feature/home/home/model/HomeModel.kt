@@ -83,7 +83,6 @@ internal sealed interface HomeModel {
 
   data class PendingAddressChange(val address: String) : HomeModel
 
-  object ChangeAddress : HomeModel
 }
 
 sealed interface CommonClaim {

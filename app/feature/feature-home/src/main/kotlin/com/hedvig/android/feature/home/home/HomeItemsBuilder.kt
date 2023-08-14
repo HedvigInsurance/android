@@ -66,9 +66,6 @@ internal class HomeItemsBuilder(
     if (nonEmptyCommonClaimsList != null) {
       add(HomeModel.CommonClaims(nonEmptyCommonClaimsList))
     }
-
-    add(HomeModel.Header(hedvig.resources.R.string.home_tab_editing_section_title))
-    add(HomeModel.ChangeAddress)
   }
 
   private fun buildActiveInFutureItems(homeData: HomeQuery.Data): List<HomeModel> = buildList {

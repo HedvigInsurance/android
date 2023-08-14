@@ -298,23 +298,6 @@ private fun ColumnScope.HomeScreenSuccess(
         BodyTextRenderer(homeModel)
       }
 
-      HomeModel.ChangeAddress -> {
-        Row(
-          Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onStartMovingFlow)
-            .padding(16.dp),
-        ) {
-          Icon(
-            painter = painterResource(R.drawable.ic_apartment),
-            contentDescription = null,
-            modifier = Modifier.size(24.dp),
-          )
-          Spacer(Modifier.width(16.dp))
-          Text(stringResource(R.string.home_tab_editing_section_change_address_label))
-        }
-      }
-
       is HomeModel.ClaimStatus -> {
         ClaimStatusCards(
           goToDetailScreen = onClaimDetailCardClicked,
