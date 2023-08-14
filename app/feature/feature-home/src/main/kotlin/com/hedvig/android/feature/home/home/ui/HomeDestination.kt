@@ -3,7 +3,6 @@ package com.hedvig.android.feature.home.home.ui
 import android.content.Context
 import android.net.Uri
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -64,11 +63,7 @@ import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.core.designsystem.component.button.LargeOutlinedTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
-import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation
-import com.hedvig.android.core.designsystem.material3.squircle
 import com.hedvig.android.core.designsystem.material3.squircleMedium
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.SerifBookSmall
 import com.hedvig.android.core.designsystem.theme.lavender_200
 import com.hedvig.android.core.designsystem.theme.lavender_900
