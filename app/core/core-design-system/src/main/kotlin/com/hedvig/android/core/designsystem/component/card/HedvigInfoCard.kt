@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.material3.infoContainer
 import com.hedvig.android.core.designsystem.material3.onInfoContainer
-import com.hedvig.android.core.designsystem.material3.squircle
+import com.hedvig.android.core.designsystem.material3.squircleMedium
 
 @Composable
 fun HedvigInfoCard(
@@ -25,7 +25,7 @@ fun HedvigInfoCard(
   content: @Composable RowScope.() -> Unit,
 ) {
   HedvigCard(
-    shape = MaterialTheme.shapes.squircle,
+    shape = MaterialTheme.shapes.squircleMedium,
     colors = colors,
     modifier = modifier,
   ) {

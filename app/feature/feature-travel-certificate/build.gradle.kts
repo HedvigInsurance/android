@@ -18,8 +18,6 @@ dependencies {
   implementation(libs.koin.compose)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
-  implementation(libs.slimber)
-  implementation(libs.timber)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreCommonPublic)
@@ -27,6 +25,7 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.dataTravelCertificate)
+  implementation(projects.loggingPublic)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
 }

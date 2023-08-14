@@ -14,6 +14,7 @@ import com.hedvig.android.audio.player.internal.getProgressPercentage
 import com.hedvig.android.audio.player.internal.hasReachedTheEnd
 import com.hedvig.android.audio.player.internal.seekToPercent
 import com.hedvig.android.core.common.android.ProgressPercentage
+import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitCancellation
@@ -36,7 +37,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.yield
-import slimber.log.d
 import java.io.Closeable
 
 interface AudioPlayer : Closeable {
@@ -168,7 +168,7 @@ private class AudioPlayerImpl(
       )
       setDataSource(dataSourceUrl)
       setOnErrorListener { _, what, extra ->
-        d { "AudioPlayer failed with code: $what and extras code: $extra" }
+        logcat { "AudioPlayer failed with code: $what and extras code: $extra" }
         _audioPlayerState.update { AudioPlayerState.Failed }
         true
       }

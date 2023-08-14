@@ -20,8 +20,6 @@ dependencies {
   implementation(libs.koin.compose)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
-  implementation(libs.slimber)
-  implementation(libs.timber)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreCommonPublic)

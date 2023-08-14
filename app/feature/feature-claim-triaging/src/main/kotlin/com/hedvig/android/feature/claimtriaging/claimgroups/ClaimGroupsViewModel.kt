@@ -3,11 +3,12 @@ package com.hedvig.android.feature.claimtriaging.claimgroups
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.core.common.android.i
 import com.hedvig.android.data.claimflow.ClaimFlowRepository
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimtriaging.ClaimGroup
 import com.hedvig.android.feature.claimtriaging.GetEntryPointGroupsUseCase
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,7 +32,9 @@ internal class ClaimGroupsViewModel(
     viewModelScope.launch {
       getEntryPointGroupsUseCase.invoke().fold(
         ifLeft = { errorMessage ->
-          i(errorMessage.throwable) { "ClaimGroupsViewModel failed to load entry groups" }
+          logcat(LogPriority.INFO, errorMessage.throwable) {
+            "ClaimGroupsViewModel failed to load entry groups"
+          }
           _uiState.update {
             it.copy(
               chipLoadingErrorMessage = errorMessage.message,

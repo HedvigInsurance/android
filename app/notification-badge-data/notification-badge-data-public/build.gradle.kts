@@ -9,12 +9,12 @@ dependencies {
   implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.arrow.core)
   implementation(libs.koin.core)
-  implementation(libs.slimber)
   implementation(projects.apolloCore)
   implementation(projects.apolloGiraffePublic)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.hanalyticsFeatureFlagsPublic)
   implementation(projects.languageCore)
+  implementation(projects.loggingPublic)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)

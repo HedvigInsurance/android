@@ -43,6 +43,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
+import com.hedvig.android.core.designsystem.material3.squircleLargeTop
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
@@ -70,7 +71,7 @@ internal fun CoverageTab(
   if (selectedInsurableLimitValue != null) {
     ModalBottomSheet(
       onDismissRequest = { selectedInsurableLimit = null },
-      // todo use "https://github.com/c5inco/smoother" for a top only squircle shape here
+      shape = MaterialTheme.shapes.squircleLargeTop,
       sheetState = sheetState,
       tonalElevation = 0.dp,
       windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),

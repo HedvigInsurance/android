@@ -42,7 +42,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.material3.squircle
+import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
@@ -156,7 +156,7 @@ private fun ColumnScope.BusinessModelContent(
     onClick = {
       openBusinessModelInfo()
     },
-    shape = MaterialTheme.shapes.squircle,
+    shape = MaterialTheme.shapes.squircleMedium,
     modifier = Modifier.align(Alignment.CenterHorizontally),
   ) {
     Icon(

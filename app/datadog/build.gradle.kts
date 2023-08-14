@@ -11,11 +11,12 @@ dependencies {
   implementation(libs.koin.android)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.okhttp.core)
-  implementation(libs.slimber)
+  implementation(libs.timber)
   implementation(projects.authEventCore)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDatastorePublic)
+  implementation(projects.loggingPublic)
 }
 
 android {

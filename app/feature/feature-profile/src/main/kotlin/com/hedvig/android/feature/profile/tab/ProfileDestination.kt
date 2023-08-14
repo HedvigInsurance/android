@@ -36,7 +36,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -48,6 +47,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -58,6 +58,9 @@ import com.hedvig.android.core.icons.hedvig.normal.Info
 import com.hedvig.android.core.icons.hedvig.normal.Payments
 import com.hedvig.android.core.icons.hedvig.normal.Settings
 import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
+import com.hedvig.android.memberreminders.ui.MemberReminderCards
+import com.hedvig.android.notification.permission.NotificationPermissionDialog
+import com.hedvig.android.notification.permission.rememberNotificationPermissionState
 import hedvig.resources.R
 
 @Composable
@@ -67,21 +70,24 @@ internal fun ProfileDestination(
   navigateToAboutApp: () -> Unit,
   navigateToSettings: () -> Unit,
   navigateToPayment: () -> Unit,
+  navigateToConnectPayment: () -> Unit,
+  openAppSettings: () -> Unit,
+  openUrl: (String) -> Unit,
   viewModel: ProfileViewModel,
 ) {
   val uiState by viewModel.data.collectAsStateWithLifecycle()
-
-  LaunchedEffect(viewModel) {
-    viewModel.reload()
-  }
   ProfileScreen(
     uiState = uiState,
+    reload = viewModel::reload,
     navigateToEurobonus = navigateToEurobonus,
     navigateToMyInfo = navigateToMyInfo,
     navigateToAboutApp = navigateToAboutApp,
     navigateToSettings = navigateToSettings,
     navigateToPayment = navigateToPayment,
-    reload = viewModel::reload,
+    navigateToConnectPayment = navigateToConnectPayment,
+    openAppSettings = openAppSettings,
+    openUrl = openUrl,
+    snoozeNotificationPermission = viewModel::snoozeNotificationPermission,
     onLogout = viewModel::onLogout,
   )
 }
@@ -90,12 +96,16 @@ internal fun ProfileDestination(
 @Composable
 private fun ProfileScreen(
   uiState: ProfileUiState,
+  reload: () -> Unit,
   navigateToEurobonus: () -> Unit,
   navigateToMyInfo: () -> Unit,
   navigateToAboutApp: () -> Unit,
   navigateToSettings: () -> Unit,
   navigateToPayment: () -> Unit,
-  reload: () -> Unit,
+  navigateToConnectPayment: () -> Unit,
+  openAppSettings: () -> Unit,
+  openUrl: (String) -> Unit,
+  snoozeNotificationPermission: () -> Unit,
   onLogout: () -> Unit,
 ) {
   val systemBarInsetTopDp = with(LocalDensity.current) {
@@ -149,6 +159,21 @@ private fun ProfileScreen(
       )
       Spacer(Modifier.height(16.dp))
       Spacer(Modifier.weight(1f))
+      val notificationPermissionState = rememberNotificationPermissionState()
+      val memberReminders =
+        uiState.memberReminders.onlyApplicableReminders(notificationPermissionState.status.isGranted)
+      NotificationPermissionDialog(notificationPermissionState, openAppSettings = openAppSettings)
+      MemberReminderCards(
+        memberReminders = memberReminders,
+        navigateToConnectPayment = navigateToConnectPayment,
+        openUrl = openUrl,
+        notificationPermissionState = notificationPermissionState,
+        snoozePermission = snoozeNotificationPermission,
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+      if (memberReminders.hasAnyReminders) {
+        Spacer(Modifier.height(16.dp))
+      }
       HedvigTextButton(
         text = stringResource(R.string.LOGOUT_BUTTON),
         colors = ButtonDefaults.textButtonColors(
@@ -212,7 +237,6 @@ private fun ColumnScope.ProfileItemRows(
     icon = Icons.Hedvig.Settings,
     onClick = showSettings,
   )
-  Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
 }
 
 @Composable
@@ -248,16 +272,18 @@ private fun PreviewProfileSuccessScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       ProfileScreen(
-        uiState = ProfileUiState(
-          euroBonus = EuroBonus("ABC-12345678"),
-        ),
-        navigateToEurobonus = {},
+        uiState = ProfileUiState(euroBonus = EuroBonus("ABC-12345678")),
         reload = {},
-        onLogout = {},
+        navigateToEurobonus = {},
         navigateToMyInfo = {},
         navigateToAboutApp = {},
         navigateToSettings = {},
         navigateToPayment = {},
+        navigateToConnectPayment = {},
+        openAppSettings = {},
+        openUrl = {},
+        snoozeNotificationPermission = {},
+        onLogout = {},
       )
     }
   }

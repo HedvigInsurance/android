@@ -14,6 +14,8 @@ import com.hedvig.android.data.claimflow.model.FlowId
 import com.hedvig.android.data.claimflow.retrofit.toErrorMessage
 import com.hedvig.android.data.claimtriaging.EntryPointId
 import com.hedvig.android.data.claimtriaging.EntryPointOptionId
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import kotlinx.datetime.LocalDate
 import octopus.FlowClaimAudioRecordingNextMutation
 import octopus.FlowClaimContractNextMutation
@@ -32,8 +34,6 @@ import octopus.type.FlowClaimSummaryInput
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import slimber.log.d
-import slimber.log.e
 import java.io.File
 
 interface ClaimFlowRepository {
@@ -41,6 +41,7 @@ interface ClaimFlowRepository {
     entryPointId: EntryPointId?,
     entryPointOptionId: EntryPointOptionId?,
   ): Either<ErrorMessage, ClaimFlowStep>
+
   suspend fun submitAudioRecording(flowId: FlowId, audioFile: File): Either<ErrorMessage, ClaimFlowStep>
 
   /**
@@ -101,9 +102,9 @@ internal class ClaimFlowRepositoryImpl(
 
   override suspend fun submitAudioRecording(flowId: FlowId, audioFile: File): Either<ErrorMessage, ClaimFlowStep> {
     return either {
-      d { "Uploading file with flowId:$flowId and audio file name:${audioFile.name}" }
+      logcat { "Uploading file with flowId:$flowId and audio file name:${audioFile.name}" }
       val audioUrl: AudioUrl = uploadAudioFile(flowId.value, audioFile)
-      d { "Uploaded audio file, resulting url:$audioUrl" }
+      logcat { "Uploaded audio file, resulting url:$audioUrl" }
       nextClaimFlowStepWithAudioUrl(audioUrl)
     }
   }
@@ -294,7 +295,7 @@ internal class ClaimFlowRepositoryImpl(
         ),
       )
       .onLeft {
-        e { "Failed to upload file for flowId:$flowId. Error:$it" }
+        logcat(LogPriority.ERROR) { "Failed to upload file for flowId:$flowId. Error:$it" }
       }
       .mapLeft(CallError::toErrorMessage)
       .bind()
@@ -308,7 +309,7 @@ internal class ClaimFlowRepositoryImpl(
       .toEither(::ErrorMessage)
       .bind()
       .flowClaimAudioRecordingNext
-    d { "Submitted audio file to GQL with URL $audioUrl" }
+    logcat { "Submitted audio file to GQL with URL $audioUrl" }
     claimFlowContextStorage.saveContext(result.context)
     return result.currentStep.toClaimFlowStep(FlowId(result.id))
   }

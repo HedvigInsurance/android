@@ -11,7 +11,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.material3.squircle
+import com.hedvig.android.core.designsystem.material3.squircleMedium
 
 @Composable
 fun HedvigTextButton(
@@ -26,7 +26,7 @@ fun HedvigTextButton(
     onClick = onClick,
     enabled = enabled,
     modifier = modifier.fillMaxWidth(),
-    shape = MaterialTheme.shapes.squircle,
+    shape = MaterialTheme.shapes.squircleMedium,
     contentPadding = contentPadding,
     colors = colors,
   ) {

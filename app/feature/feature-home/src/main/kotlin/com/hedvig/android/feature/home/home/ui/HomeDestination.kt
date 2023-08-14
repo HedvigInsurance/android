@@ -64,7 +64,11 @@ import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.core.designsystem.component.button.LargeOutlinedTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
+import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation
 import com.hedvig.android.core.designsystem.material3.squircle
+import com.hedvig.android.core.designsystem.material3.squircleMedium
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.SerifBookSmall
 import com.hedvig.android.core.designsystem.theme.lavender_200
 import com.hedvig.android.core.designsystem.theme.lavender_900
@@ -347,7 +351,7 @@ private fun ColumnScope.HomeScreenSuccess(
       is HomeModel.HowClaimsWork -> {
         TextButton(
           onClick = { onHowClaimsWorkClick(homeModel.pages) },
-          shape = MaterialTheme.shapes.squircle,
+          shape = MaterialTheme.shapes.squircleMedium,
           modifier = Modifier
             .fillMaxWidth()
             .wrapContentWidth(),
@@ -556,7 +560,7 @@ private fun PurpleInfoCard(
       Divider(color = LocalContentColor.current.copy(alpha = 0.2f))
       TextButton(
         onClick = buttonAction,
-        shape = MaterialTheme.shapes.squircle,
+        shape = MaterialTheme.shapes.squircleMedium,
         modifier = Modifier
           .align(Alignment.End)
           .padding(horizontal = 16.dp, vertical = 4.dp),

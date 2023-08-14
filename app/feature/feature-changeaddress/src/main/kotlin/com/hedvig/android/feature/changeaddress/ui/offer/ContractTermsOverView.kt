@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,11 +22,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.design.system.R
-import com.hedvig.android.core.designsystem.newtheme.SquircleShape
+import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 
 @Composable
-fun ContractTermsOverView(
+internal fun ContractTermsOverView(
   contractDisplayName: String,
   contractTerms: ContractTerms,
 ) {
@@ -38,7 +39,7 @@ fun ContractTermsOverView(
       text = contractDisplayName,
       modifier = Modifier
         .background(
-          shape = SquircleShape,
+          shape = MaterialTheme.shapes.squircleMedium,
           color = Color(0xFFE0F0F9),
         )
         .padding(8.dp),
@@ -81,7 +82,7 @@ fun ContractTermsOverView(
         horizontalArrangement = SpaceBetween,
         modifier = Modifier
           .background(
-            shape = SquircleShape,
+            shape = MaterialTheme.shapes.squircleMedium,
             color = Color(0xFFF0F0F0),
           )
           .fillMaxWidth()
@@ -109,7 +110,7 @@ fun ContractTermsOverView(
       text = "Vad som täcks",
       modifier = Modifier
         .background(
-          shape = SquircleShape,
+          shape = MaterialTheme.shapes.squircleMedium,
           color = Color(0xFFE0F0F9),
         )
         .padding(8.dp),
@@ -122,7 +123,7 @@ fun ContractTermsOverView(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = SpaceBetween,
         modifier = Modifier
-          .background(shape = SquircleShape, color = Color(0xFFF0F0F0))
+          .background(shape = MaterialTheme.shapes.squircleMedium, color = Color(0xFFF0F0F0))
           .fillMaxWidth()
           .padding(horizontal = 16.dp, vertical = 12.dp),
       ) {

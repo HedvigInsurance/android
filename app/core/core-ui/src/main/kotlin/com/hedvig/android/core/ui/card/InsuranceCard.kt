@@ -32,7 +32,8 @@ import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import com.hedvig.android.core.designsystem.material3.DisabledAlpha
-import com.hedvig.android.core.designsystem.material3.squircle
+import com.hedvig.android.core.designsystem.material3.squircleExtraSmall
+import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.Hedvig
@@ -51,7 +52,7 @@ fun InsuranceCard(
   fallbackPainter: Painter = ColorPainter(Color.Black.copy(alpha = 0.7f)),
   backgroundImageUrl: String? = null,
 ) {
-  Box(modifier.clip(MaterialTheme.shapes.squircle)) {
+  Box(modifier.clip(MaterialTheme.shapes.squircleMedium)) {
     AsyncImage(
       model = backgroundImageUrl,
       contentDescription = null,
@@ -101,7 +102,7 @@ private fun Chip(
   modifier: Modifier = Modifier,
 ) {
   Box(
-    modifier.clip(shape = MaterialTheme.shapes.squircle),
+    modifier.clip(shape = MaterialTheme.shapes.squircleExtraSmall),
   ) {
     Box(
       Modifier

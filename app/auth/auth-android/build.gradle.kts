@@ -6,7 +6,7 @@ plugins {
 
 dependencies {
   implementation(libs.koin.android)
-  implementation(libs.slimber)
   implementation(projects.authCore)
+  implementation(projects.loggingPublic)
   implementation(projects.navigationActivity)
 }

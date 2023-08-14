@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.material3.squircle
+import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 
@@ -25,7 +25,7 @@ fun HedvigBigCard(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
-  shape: Shape = MaterialTheme.shapes.squircle,
+  shape: Shape = MaterialTheme.shapes.squircleMedium,
   content: @Composable () -> Unit,
 ) {
   HedvigCard(
@@ -41,7 +41,7 @@ fun HedvigBigCard(
 @Composable
 fun HedvigBigCard(
   modifier: Modifier = Modifier,
-  shape: Shape = MaterialTheme.shapes.squircle,
+  shape: Shape = MaterialTheme.shapes.squircleMedium,
   content: @Composable () -> Unit,
 ) {
   HedvigCard(
@@ -59,7 +59,7 @@ fun HedvigBigCard(
   inputText: String?,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
-  shape: Shape = MaterialTheme.shapes.squircle,
+  shape: Shape = MaterialTheme.shapes.squircleMedium,
 ) {
   HedvigBigCard(
     onClick = onClick,
@@ -76,13 +76,17 @@ fun HedvigBigCard(
       if (inputText == null) {
         Text(
           text = hintText,
-          style = MaterialTheme.typography.headlineSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+          style = MaterialTheme.typography.headlineSmall.copy(
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+          ),
         )
       } else {
         Column {
           Text(
             text = hintText,
-            style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+            style = MaterialTheme.typography.bodyMedium.copy(
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+            ),
           )
           Text(
             text = inputText,

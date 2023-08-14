@@ -58,6 +58,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.Market
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import hedvig.resources.R
@@ -65,7 +66,6 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
-import slimber.log.d
 
 class SimpleSignAuthenticationActivity : AppCompatActivity() {
   private val viewModel: SimpleSignAuthenticationViewModel by viewModel { parametersOf(data) }
@@ -106,10 +106,10 @@ class SimpleSignAuthenticationActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     WindowCompat.setDecorFitsSystemWindows(window, false)
-    d { "SimpleSignAuthenticationActivity with market:$zignSecMarket" }
+    logcat { "SimpleSignAuthenticationActivity with market:$zignSecMarket" }
 
     onBackPressedDispatcher.addCallback(this) {
-      d { "SimpleSignAuthenticationActivity: invoked back. Going back to marketing" }
+      logcat { "SimpleSignAuthenticationActivity: invoked back. Going back to marketing" }
       remove()
       onBackPressedDispatcher.onBackPressed()
     }
@@ -131,7 +131,7 @@ class SimpleSignAuthenticationActivity : AppCompatActivity() {
 
     var hasErrored by mutableStateOf(false)
     viewModel.events.observe(this) { event ->
-      d { "Simple sign event:$event" }
+      logcat { "Simple sign event:$event" }
       when (event) {
         SimpleSignAuthenticationViewModel.Event.Error -> {
           hasErrored = true
@@ -141,7 +141,7 @@ class SimpleSignAuthenticationActivity : AppCompatActivity() {
 
     viewModel.zignSecUrl.observe(this) { zignSecUrl ->
       if (zignSecUrl.contains("failure")) {
-        d { "Url loading had \"failure\" in it. Failing authentication" }
+        logcat { "Url loading had \"failure\" in it. Failing authentication" }
         viewModel.authFailed()
       }
       customZignSecTabLauncher.launch(zignSecUrl)

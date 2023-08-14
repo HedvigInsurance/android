@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.Clock
@@ -12,6 +13,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.seconds
 
 interface EnableNotificationsReminderManager {
   fun showNotificationReminder(): Flow<Boolean>
@@ -22,11 +24,17 @@ interface EnableNotificationsReminderManager {
 internal class EnableNotificationsReminderManagerImpl(
   private val datastore: DataStore<Preferences>,
   private val clock: Clock,
+  private val hedvigBuildConstants: HedvigBuildConstants,
 ) : EnableNotificationsReminderManager {
   override fun showNotificationReminder(): Flow<Boolean> {
     return getLastSnoozeTime().map { lastSnoozeTime ->
       val timeSinceLastSnooze: Duration = clock.now() - lastSnoozeTime
-      timeSinceLastSnooze > snoozeTimeBeforeShowingReminderAgain
+      val snoozeTime = if (hedvigBuildConstants.isDebug) {
+        5.seconds
+      } else {
+        snoozeTimeBeforeShowingReminderAgain
+      }
+      timeSinceLastSnooze > snoozeTime
     }
   }
 

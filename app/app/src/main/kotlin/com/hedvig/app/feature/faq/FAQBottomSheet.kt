@@ -6,10 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FaqBottomSheetBinding
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import slimber.log.e
 
 class FAQBottomSheet : BottomSheetDialogFragment() {
   private val binding by viewBinding(FaqBottomSheetBinding::bind)
@@ -26,7 +27,7 @@ class FAQBottomSheet : BottomSheetDialogFragment() {
     val body = requireArguments().getString(BODY)
 
     if (title == null || body == null) {
-      e { "Programmer error: TITLE or BODY not supplied to ${this.javaClass.name}" }
+      logcat(LogPriority.ERROR) { "Programmer error: TITLE or BODY not supplied to ${this.javaClass.name}" }
       return
     }
 

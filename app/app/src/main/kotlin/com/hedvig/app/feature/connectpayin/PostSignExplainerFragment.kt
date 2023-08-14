@@ -7,12 +7,13 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.google.android.material.transition.MaterialSharedAxis
 import com.hedvig.android.core.common.android.serializableExtra
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ConnectPaymentExplainerFragmentBinding
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
-import slimber.log.e
 
 class PostSignExplainerFragment : Fragment(R.layout.connect_payment_explainer_fragment) {
   private val viewModel: ConnectPaymentViewModel by activityViewModel()
@@ -28,7 +29,7 @@ class PostSignExplainerFragment : Fragment(R.layout.connect_payment_explainer_fr
 
     val paymentType = requireArguments().serializableExtra<ConnectPayinType>(PAYIN_TYPE)
     if (paymentType == null) {
-      e { "Programmer error: PAYIN_TYPE not supplied to ${this.javaClass.name}" }
+      logcat(LogPriority.ERROR) { "Programmer error: PAYIN_TYPE not supplied to ${this.javaClass.name}" }
       return
     }
 

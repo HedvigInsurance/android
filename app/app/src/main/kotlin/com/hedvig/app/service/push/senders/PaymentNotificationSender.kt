@@ -9,6 +9,8 @@ import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.android.notification.setupNotificationChannel
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
@@ -18,7 +20,6 @@ import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.getImmutablePendingIntentFlags
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import slimber.log.e
 
 class PaymentNotificationSender(
   private val context: Context,
@@ -71,9 +72,10 @@ class PaymentNotificationSender(
               ),
             )
           } catch (error: IllegalArgumentException) {
-            e {
+            val paymentType = featureManager.getPaymentType()
+            logcat(LogPriority.ERROR) {
               "Illegal market and payment type, could not create payin intent. " +
-                "Market: $market, PaymentType: ${featureManager.getPaymentType()}"
+                "Market: $market, PaymentType: $paymentType"
             }
           }
 

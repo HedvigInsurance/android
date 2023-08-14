@@ -7,7 +7,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
-import com.hedvig.android.core.designsystem.material3.squircle
+import com.hedvig.android.core.designsystem.material3.squircleMedium
 import hedvig.resources.R
 
 @Composable
@@ -15,7 +15,7 @@ fun ErrorDialog(
   message: String?,
   onDismiss: () -> Unit,
   title: String = stringResource(R.string.general_unknown_error),
-  shape: Shape = MaterialTheme.shapes.squircle,
+  shape: Shape = MaterialTheme.shapes.squircleMedium,
 ) {
   AlertDialog(
     onDismissRequest = onDismiss,

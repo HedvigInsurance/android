@@ -13,6 +13,8 @@ import coil.ImageLoader
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.common.android.show
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityChatBinding
@@ -33,8 +35,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import slimber.log.d
-import slimber.log.e
 import java.io.File
 
 class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
@@ -58,7 +58,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
   private var currentPhotoPath: String? = null
 
   val takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { didSucceed ->
-    d { "Take piture launcher result, didSucceed:$didSucceed, currentPhotoPath:$currentPhotoPath" }
+    logcat { "Take piture launcher result, didSucceed:$didSucceed, currentPhotoPath:$currentPhotoPath" }
     if (didSucceed) {
       currentPhotoPath?.let { tempFile ->
         attachPickerDialog?.uploadingTakenPicture(true)
@@ -314,7 +314,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
 
   private fun startTakePicture() {
     val externalPhotosDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES) ?: run {
-      e { "Could not getExternalFilesDir(Environment.DIRECTORY_PICTURES)" }
+      logcat(LogPriority.ERROR) { "Could not getExternalFilesDir(Environment.DIRECTORY_PICTURES)" }
       showAlert(
         title = hedvig.resources.R.string.something_went_wrong,
         positiveLabel = hedvig.resources.R.string.GENERAL_EMAIL_US,

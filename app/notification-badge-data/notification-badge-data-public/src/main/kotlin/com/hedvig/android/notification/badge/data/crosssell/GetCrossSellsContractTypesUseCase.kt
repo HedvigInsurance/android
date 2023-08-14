@@ -4,8 +4,9 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
-import com.hedvig.android.core.common.android.d
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import giraffe.CrossSellsQuery
 import giraffe.type.TypeOfContract
 
@@ -24,7 +25,9 @@ internal class GetCrossSellsContractTypesUseCaseImpl(
       .toEither()
       .fold(
         { operationResultError: OperationResult.Error ->
-          d(operationResultError.throwable) { "Error when loading potential cross-sells: $operationResultError" }
+          logcat(LogPriority.DEBUG, operationResultError.throwable) {
+            "Error when loading potential cross-sells: $operationResultError"
+          }
           emptySet()
         },
         { data ->

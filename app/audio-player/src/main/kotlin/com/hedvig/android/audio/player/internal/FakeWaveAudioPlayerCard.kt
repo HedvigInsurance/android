@@ -19,7 +19,7 @@ import com.hedvig.android.audio.player.WaveInteraction
 import com.hedvig.android.audio.player.state.AudioPlayerState
 import com.hedvig.android.audio.player.state.AudioPlayerState.Ready.ReadyState
 import com.hedvig.android.core.common.android.ProgressPercentage
-import com.hedvig.android.core.designsystem.material3.squircle
+import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.onWarning
@@ -46,7 +46,7 @@ internal fun FakeWaveAudioPlayerCard(
   )
   Surface(
     modifier = modifier.fillMaxWidth(),
-    shape = MaterialTheme.shapes.squircle,
+    shape = MaterialTheme.shapes.squircleMedium,
     color = color,
     contentColor = contentColor,
   ) {

@@ -4,16 +4,19 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.AttributeSet
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.LocalTextStyle
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -30,16 +33,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.AbstractComposeView
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.os.bundleOf
 import com.hedvig.android.core.common.android.parcelable
+import com.hedvig.android.core.designsystem.material3.infoElement
+import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.designsystem.theme.button_background_dark
-import com.hedvig.android.core.designsystem.theme.hedvig_light_gray
+import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.ChevronUp
 
 class ChatTextInput : AbstractComposeView {
   constructor(context: Context) : super(context)
@@ -50,7 +56,7 @@ class ChatTextInput : AbstractComposeView {
     defStyleAttr,
   )
 
-  var placeholderText: String by mutableStateOf(resources.getString(hedvig.resources.R.string.CHAT_TEXT_INPUT_HINT))
+  var placeholderText: String by mutableStateOf(resources.getString(hedvig.resources.R.string.CHAT_INPUT_PLACEHOLDER))
   var text: String by mutableStateOf("")
   var onSendMessageListener: (() -> Unit)? by mutableStateOf(null)
 
@@ -76,9 +82,9 @@ class ChatTextInput : AbstractComposeView {
   override fun Content() {
     HedvigTheme {
       Surface(
-        color = if (isSystemInDarkTheme()) button_background_dark else hedvig_light_gray,
-        contentColor = contentColorFor(MaterialTheme.colorScheme.surface),
-        shape = MaterialTheme.shapes.medium,
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        contentColor = contentColorFor(MaterialTheme.colorScheme.onSurfaceVariant),
+        shape = MaterialTheme.shapes.squircleMedium,
       ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
           val showPlaceholder by remember { derivedStateOf { text.isEmpty() } }
@@ -105,31 +111,43 @@ class ChatTextInput : AbstractComposeView {
               )
               .graphicsLayer {
                 alpha = if (showPlaceholder) {
-                  0.38f
+                  0.60f
                 } else {
                   1f
                 }
               },
           ) { innerTextField ->
-            Box {
-              if (showPlaceholder) {
-                Text(placeholderText)
-              }
-              innerTextField()
+            if (showPlaceholder) {
+              Text(
+                text = placeholderText,
+                fontSize = 15.sp,
+                textAlign = TextAlign.Start,
+              )
             }
+            innerTextField()
           }
           IconButton(
             onClick = {
               onSendMessageListener?.invoke()
             },
+            colors = IconButtonDefaults.iconButtonColors(
+              containerColor = MaterialTheme.colorScheme.infoElement,
+              disabledContainerColor = MaterialTheme.colorScheme.infoElement,
+              contentColor = MaterialTheme.colorScheme.surface,
+              disabledContentColor = MaterialTheme.colorScheme.surface,
+            ),
             enabled = onSendMessageListener != null && text.isNotBlank(),
-            modifier = Modifier.align(Alignment.Bottom),
+            modifier = Modifier
+              .align(Alignment.CenterVertically)
+              .size(24.dp),
           ) {
             Icon(
-              painterResource(com.hedvig.app.R.drawable.ic_send),
-              stringResource(hedvig.resources.R.string.CHAT_UPLOAD_PRESS_SEND_LABEL),
+              imageVector = Icons.Hedvig.ChevronUp,
+              contentDescription = stringResource(hedvig.resources.R.string.CHAT_UPLOAD_PRESS_SEND_LABEL),
+              modifier = Modifier.size(14.dp),
             )
           }
+          Spacer(Modifier.width(8.dp))
         }
       }
     }

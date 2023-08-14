@@ -12,6 +12,7 @@ import com.hedvig.android.auth.event.AuthEventBroadcaster
 import com.hedvig.android.auth.storage.AuthTokenStorage
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.datastore.TestPreferencesDataStore
+import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.test.clock.TestClock
 import com.hedvig.authlib.AccessToken
 import com.hedvig.authlib.AuthTokenResult
@@ -38,6 +39,9 @@ class AuthTokenRefreshingInterceptorTest {
 
   @get:Rule
   val testFolder = TemporaryFolder()
+
+  @get:Rule
+  val testLogcatLogger = TestLogcatLoggingRule()
 
   @Test
   fun `The token in the header contains the 'Bearer ' prefix as the backend expects it`() = runTest {

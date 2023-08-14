@@ -14,7 +14,6 @@ dependencies {
   implementation(libs.koin.core)
   implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
-  implementation(libs.slimber)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreCommonAndroidPublic)
@@ -24,6 +23,7 @@ dependencies {
   implementation(projects.coreUi)
   implementation(projects.dataClaimFlow)
   implementation(projects.dataClaimTriaging)
+  implementation(projects.loggingPublic)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
 }

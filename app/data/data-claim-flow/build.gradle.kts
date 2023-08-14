@@ -15,7 +15,6 @@ dependencies {
   implementation(libs.retrofit)
   implementation(libs.retrofitArrow)
   implementation(libs.retrofitKotlinxSerializationConverter)
-  implementation(libs.slimber)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreBuildConstants)
@@ -24,5 +23,6 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreUiData)
   implementation(projects.dataClaimTriaging)
+  implementation(projects.loggingPublic)
   implementation(projects.navigationComposeTyped)
 }

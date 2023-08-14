@@ -31,6 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
+import com.hedvig.android.core.designsystem.material3.squircleLargeTop
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
@@ -55,7 +56,7 @@ internal fun YourInfoTab(
       onDismissRequest = {
         showEditYourInfoBottomSheet = false
       },
-      // todo use "https://github.com/c5inco/smoother" for a top only squircle shape here
+      shape = MaterialTheme.shapes.squircleLargeTop,
       sheetState = sheetState,
       tonalElevation = 0.dp,
       windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),

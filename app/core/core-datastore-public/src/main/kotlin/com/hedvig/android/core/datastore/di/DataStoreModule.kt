@@ -10,7 +10,6 @@ import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.datastore.DeviceIdDataStore
 import com.hedvig.android.core.datastore.DeviceIdDataStoreImpl
 import com.hedvig.android.core.datastore.SettingsDataStore
-import com.hedvig.android.core.datastore.SettingsDataStoreImpl
 import org.koin.dsl.module
 import java.io.File
 
@@ -33,5 +32,5 @@ val dataStoreModule = module {
     )
   }
   single<DeviceIdDataStore> { DeviceIdDataStoreImpl(get(), get<ApplicationScope>()) }
-  single<SettingsDataStore> { SettingsDataStoreImpl(get()) }
+  single<SettingsDataStore> { SettingsDataStore(get()) }
 }

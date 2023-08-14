@@ -4,6 +4,8 @@ import com.hedvig.android.auth.event.AuthEventBroadcaster
 import com.hedvig.android.auth.storage.AuthTokenStorage
 import com.hedvig.android.auth.token.AuthTokens
 import com.hedvig.android.auth.token.LocalRefreshToken
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.authlib.AccessToken
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult
@@ -15,8 +17,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
-import slimber.log.d
-import slimber.log.v
 
 class AuthTokenServiceImpl(
   private val authTokenStorage: AuthTokenStorage,
@@ -44,12 +44,12 @@ class AuthTokenServiceImpl(
     val refreshToken = getRefreshToken() ?: return null
     return when (val result = authRepository.exchange(RefreshTokenGrant(refreshToken.token))) {
       is AuthTokenResult.Error -> {
-        d { "Refreshing token failed. Invalidating present tokens" }
+        logcat { "Refreshing token failed. Invalidating present tokens" }
         logoutAndInvalidateTokens()
         null
       }
       is AuthTokenResult.Success -> {
-        v { "Refreshing token success. Updating tokens" }
+        logcat(LogPriority.VERBOSE) { "Refreshing token success. Updating tokens" }
         authTokenStorage.updateTokens(result.accessToken, result.refreshToken)
         result.accessToken
       }
@@ -73,7 +73,7 @@ class AuthTokenServiceImpl(
   override suspend fun migrateFromToken(token: String) {
     when (val result = authRepository.migrateOldToken(token)) {
       is AuthTokenResult.Error -> {
-        d { "Migrating old token failed, logging out" }
+        logcat { "Migrating old token failed, logging out" }
         logoutAndInvalidateTokens()
       }
       is AuthTokenResult.Success -> {

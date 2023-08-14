@@ -33,6 +33,7 @@ import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.sample.design.showcase.ui.colorscheme.HedvigColorScheme
 import com.hedvig.android.sample.design.showcase.ui.hedviguikit.HTextField
 import com.hedvig.android.sample.design.showcase.ui.hedviguikit.HedvigIcons
+import com.hedvig.android.sample.design.showcase.ui.hedviguikit.HedvigShapes
 import com.hedvig.android.sample.design.showcase.ui.hedviguikit.InfoCard
 import com.hedvig.android.sample.design.showcase.ui.hedviguikit.WarningCard
 import com.hedvig.android.sample.design.showcase.ui.m2.components.M2Buttons
@@ -90,6 +91,7 @@ private fun ThemeSelection() {
   var showColorSchemes: Boolean by rememberSaveable { mutableStateOf(false) }
   var showHedvigUiKit: Boolean by rememberSaveable { mutableStateOf(false) }
   var showIcons: Boolean by rememberSaveable { mutableStateOf(false) }
+  var showShapes: Boolean by rememberSaveable { mutableStateOf(false) }
   when {
     showM2 -> {
       BackHandler { showM2 = false }
@@ -110,6 +112,10 @@ private fun ThemeSelection() {
     showIcons -> {
       BackHandler { showIcons = false }
       HedvigIcons()
+    }
+    showShapes -> {
+      BackHandler { showShapes = false }
+      HedvigShapes()
     }
     else -> {
       Box(
@@ -132,6 +138,9 @@ private fun ThemeSelection() {
             }
             Button(onClick = { showIcons = true }) {
               Text("New design Icons")
+            }
+            Button(onClick = { showShapes = true }) {
+              Text("Hedvig squircle shapes")
             }
           }
         }

@@ -3,8 +3,8 @@ package com.hedvig.app.util.compose
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
+import com.hedvig.android.logger.logcat
 import com.hedvig.app.BuildConfig
-import slimber.log.d
 
 /**
  * Only for use with [LogCompositions], not defined as private because inline [LogCompositions] doesn't allow it.
@@ -22,6 +22,6 @@ inline fun LogCompositions(message: String) {
   if (BuildConfig.DEBUG) {
     val ref = remember { Ref(0) }
     SideEffect { ref.value++ }
-    d { "Debug Log Compositions: $message ${ref.value}" }
+    logcat { "Debug Log Compositions: $message ${ref.value}" }
   }
 }

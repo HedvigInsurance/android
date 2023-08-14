@@ -8,11 +8,8 @@ internal enum class HedvigShapeKeyTokens {
   CornerExtraSmallTop,
   CornerFull,
   CornerLarge,
-  CornerLargeEnd,
   CornerLargeTop,
   CornerMedium,
   CornerNone,
   CornerSmall,
-  Squircle,
-  SquircleTop,
 }
