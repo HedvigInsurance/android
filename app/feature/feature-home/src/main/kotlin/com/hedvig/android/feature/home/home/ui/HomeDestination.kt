@@ -8,7 +8,6 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -16,7 +15,6 @@ import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -42,10 +40,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -54,19 +57,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import arrow.core.toNonEmptyListOrNull
 import coil.ImageLoader
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.hedvig.android.core.common.android.SHARED_PREFERENCE_NAME
 import com.hedvig.android.core.common.android.ThemedIconUrls
+import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
 import com.hedvig.android.core.designsystem.component.button.LargeOutlinedTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
-import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation
 import com.hedvig.android.core.designsystem.material3.squircle
-import com.hedvig.android.core.designsystem.preview.HedvigPreview
-import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.SerifBookSmall
 import com.hedvig.android.core.designsystem.theme.lavender_200
 import com.hedvig.android.core.designsystem.theme.lavender_900
@@ -75,15 +73,13 @@ import com.hedvig.android.core.designsystem.theme.warning
 import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
 import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
-import com.hedvig.android.core.ui.grid.HedvigGrid
-import com.hedvig.android.core.ui.grid.InsideGridSpace
-import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimsData
 import com.hedvig.android.feature.home.claims.commonclaim.EmergencyActivity
 import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
 import com.hedvig.android.feature.home.claimstatus.ClaimStatusCards
 import com.hedvig.android.feature.home.claimstatus.ConnectPayinCard
 import com.hedvig.android.feature.home.home.ChatTooltip
+import com.hedvig.android.feature.home.otherservices.OtherServicesBottomSheet
 import com.hedvig.app.feature.home.model.CommonClaim
 import com.hedvig.app.feature.home.model.HomeModel
 import com.hedvig.hanalytics.PaymentType
@@ -95,6 +91,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.time.temporal.ChronoUnit
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -126,6 +123,72 @@ internal fun HomeDestination(
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
 
+  val coroutineScope = rememberCoroutineScope()
+  val sheetState = rememberModalBottomSheetState(true)
+  var showEditYourInfoBottomSheet by rememberSaveable { mutableStateOf(false) }
+
+  if (showEditYourInfoBottomSheet) {
+    OtherServicesBottomSheet(
+      options = listOf(
+        CommonClaim.Chat,// TODO Provide this from the uiState
+        CommonClaim.ChangeAddress,
+        CommonClaim.GenerateTravelCertificate,
+        CommonClaim.Emergency(
+          EmergencyData(
+            iconUrls = ThemedIconUrls("", ""),
+            color = HedvigColor.DarkGray,
+            title = "Test",
+            eligibleToClaim = true,
+            emergencyNumber = "123",
+          ),
+        ),
+      ),
+      onChatClicked = {
+        coroutineScope.launch {
+          sheetState.hide()
+          showEditYourInfoBottomSheet = false
+          onStartChat()
+        }
+      },
+      onStartMovingFlow = {
+        coroutineScope.launch {
+          sheetState.hide()
+          showEditYourInfoBottomSheet = false
+          onStartMovingFlow()
+        }
+      },
+      onEmergencyClaimClicked = {
+        val emergencyActivity = EmergencyActivity.newInstance(context = context, data = it)
+        coroutineScope.launch {
+          sheetState.hide()
+          showEditYourInfoBottomSheet = false
+          context.startActivity(emergencyActivity)
+        }
+      },
+      onGenerateTravelCertificateClicked = {
+        coroutineScope.launch {
+          sheetState.hide()
+          showEditYourInfoBottomSheet = false
+          onGenerateTravelCertificateClicked()
+        }
+      },
+      onCommonClaimClicked = {
+        coroutineScope.launch {
+          sheetState.hide()
+          showEditYourInfoBottomSheet = false
+          onOpenCommonClaim(it)
+        }
+      },
+      onDismiss = {
+        coroutineScope.launch {
+          sheetState.hide()
+          showEditYourInfoBottomSheet = false
+        }
+      },
+      sheetState = sheetState,
+    )
+  }
+
   Box(Modifier.fillMaxSize()) {
     Column(
       Modifier
@@ -150,23 +213,13 @@ internal fun HomeDestination(
         is HomeUiState.Success -> {
           HomeScreenSuccess(
             homeItems = uiState.homeItems,
-            imageLoader = imageLoader,
             onStartMovingFlow = onStartMovingFlow,
             onClaimDetailCardClicked = onClaimDetailCardClicked,
             onClaimDetailCardShown = onClaimDetailCardShown,
             onPaymentCardClicked = onPaymentCardClicked,
             onPaymentCardShown = onPaymentCardShown,
-            onEmergencyClaimClicked = { emergencyData ->
-              context.startActivity(
-                EmergencyActivity.newInstance(
-                  context = context,
-                  data = emergencyData,
-                ),
-              )
-            },
-            onGenerateTravelCertificateClicked = onGenerateTravelCertificateClicked,
-            onCommonClaimClicked = { commonClaimsData ->
-              onOpenCommonClaim(commonClaimsData)
+            showOtherServices = {
+              showEditYourInfoBottomSheet = true
             },
             onHowClaimsWorkClick = onHowClaimsWorkClick,
             onStartClaimClicked = onStartClaim,
@@ -217,21 +270,17 @@ private suspend fun daysSinceLastTooltipShown(context: Context): Boolean {
   return daysSinceLastTooltipShown
 }
 
-@Suppress("UnusedReceiverParameter")
 @Composable
 private fun ColumnScope.HomeScreenSuccess(
   homeItems: List<HomeModel>,
-  imageLoader: ImageLoader,
   onStartMovingFlow: () -> Unit,
   onClaimDetailCardClicked: (claimId: String) -> Unit,
   onClaimDetailCardShown: (claimId: String) -> Unit,
   onPaymentCardClicked: (PaymentType) -> Unit,
   onPaymentCardShown: () -> Unit,
-  onEmergencyClaimClicked: (EmergencyData) -> Unit,
-  onGenerateTravelCertificateClicked: () -> Unit,
-  onCommonClaimClicked: (CommonClaimsData) -> Unit,
   onHowClaimsWorkClick: (List<HomeQuery.HowClaimsWork>) -> Unit,
   onStartClaimClicked: () -> Unit,
+  showOtherServices: () -> Unit,
   onPsaClicked: (Uri) -> Unit,
   onUpcomingRenewalClick: (Uri) -> Unit,
 ) {
@@ -258,7 +307,7 @@ private fun ColumnScope.HomeScreenSuccess(
             modifier = Modifier.size(24.dp),
           )
           Spacer(Modifier.width(16.dp))
-          Text(stringResource(hedvig.resources.R.string.home_tab_editing_section_change_address_label))
+          Text(stringResource(R.string.home_tab_editing_section_change_address_label))
         }
       }
 
@@ -271,12 +320,10 @@ private fun ColumnScope.HomeScreenSuccess(
       }
 
       is HomeModel.CommonClaims -> {
-        CommonClaimsRenderer(
-          homeModel = homeModel,
-          onEmergencyClaimClicked = onEmergencyClaimClicked,
-          onGenerateTravelCertificateClicked = onGenerateTravelCertificateClicked,
-          onCommonClaimClicked = onCommonClaimClicked,
-          imageLoader = imageLoader,
+        HedvigTextButton(
+          text = stringResource(id = R.string.home_tab_other_services),
+          onClick = { showOtherServices() },
+          modifier = Modifier.padding(horizontal = 16.dp)
         )
       }
 
@@ -312,7 +359,7 @@ private fun ColumnScope.HomeScreenSuccess(
           )
           Spacer(Modifier.width(4.dp))
           Text(
-            text = stringResource(hedvig.resources.R.string.home_tab_claim_explainer_button),
+            text = stringResource(R.string.home_tab_claim_explainer_button),
           )
         }
       }
@@ -409,28 +456,28 @@ private fun BigTextRenderer(bigText: HomeModel.BigText) {
   val formatter = remember { DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG) }
   val headlineText = when (bigText) {
     is HomeModel.BigText.Pending -> stringResource(
-      hedvig.resources.R.string.home_tab_pending_unknown_title,
+      R.string.home_tab_pending_unknown_title,
       bigText.name,
     )
 
     is HomeModel.BigText.ActiveInFuture -> stringResource(
-      hedvig.resources.R.string.home_tab_active_in_future_welcome_title,
+      R.string.home_tab_active_in_future_welcome_title,
       bigText.name,
       formatter.format(bigText.inception),
     )
 
     is HomeModel.BigText.Active -> stringResource(
-      hedvig.resources.R.string.home_tab_welcome_title,
+      R.string.home_tab_welcome_title,
       bigText.name,
     )
 
     is HomeModel.BigText.Terminated -> stringResource(
-      hedvig.resources.R.string.home_tab_terminated_welcome_title,
+      R.string.home_tab_terminated_welcome_title,
       bigText.name,
     )
 
     is HomeModel.BigText.Switching -> stringResource(
-      hedvig.resources.R.string.home_tab_pending_switchable_welcome_title,
+      R.string.home_tab_pending_switchable_welcome_title,
       bigText.name,
     )
   }
@@ -451,10 +498,10 @@ private fun BigTextRenderer(bigText: HomeModel.BigText) {
 @Composable
 private fun ColumnScope.BodyTextRenderer(bigText: HomeModel.BodyText) {
   val bodyTextRes = when (bigText) {
-    HomeModel.BodyText.Pending -> hedvig.resources.R.string.home_tab_pending_unknown_body
-    HomeModel.BodyText.ActiveInFuture -> hedvig.resources.R.string.home_tab_active_in_future_body
-    HomeModel.BodyText.Terminated -> hedvig.resources.R.string.home_tab_terminated_body
-    HomeModel.BodyText.Switching -> hedvig.resources.R.string.home_tab_pending_switchable_body
+    HomeModel.BodyText.Pending -> R.string.home_tab_pending_unknown_body
+    HomeModel.BodyText.ActiveInFuture -> R.string.home_tab_active_in_future_body
+    HomeModel.BodyText.Terminated -> R.string.home_tab_terminated_body
+    HomeModel.BodyText.Switching -> R.string.home_tab_pending_switchable_body
   }
   Text(
     text = stringResource(bodyTextRes),
@@ -463,83 +510,6 @@ private fun ColumnScope.BodyTextRenderer(bigText: HomeModel.BodyText) {
       .padding(horizontal = 24.dp)
       .padding(top = 24.dp),
   )
-}
-
-@Composable
-private fun CommonClaimsRenderer(
-  homeModel: HomeModel.CommonClaims,
-  onEmergencyClaimClicked: (EmergencyData) -> Unit,
-  onGenerateTravelCertificateClicked: () -> Unit,
-  onCommonClaimClicked: (CommonClaimsData) -> Unit,
-  imageLoader: ImageLoader,
-) {
-  HedvigGrid(
-    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp),
-    insideGridSpace = InsideGridSpace(8.dp),
-  ) {
-    for (commonClaim in homeModel.claims) {
-      HedvigCard(
-        elevation = HedvigCardElevation.Elevated(1.dp),
-        onClick = when (commonClaim) {
-          is CommonClaim.Emergency -> {
-            { onEmergencyClaimClicked(commonClaim.inner) }
-          }
-
-          is CommonClaim.GenerateTravelCertificate -> onGenerateTravelCertificateClicked
-          is CommonClaim.TitleAndBulletPoints -> {
-            { onCommonClaimClicked(commonClaim.inner) }
-          }
-
-          CommonClaim.ChangeAddress -> TODO()
-        },
-      ) {
-        Column(
-          Modifier
-            .heightIn(100.dp)
-            .padding(16.dp),
-        ) {
-          val context = LocalContext.current
-          val density = LocalDensity.current
-          if (commonClaim is CommonClaim.GenerateTravelCertificate) {
-            Icon(
-              painter = painterResource(R.drawable.ic_travel_certificate),
-              contentDescription = null,
-              modifier = Modifier.size(24.dp),
-            )
-          } else {
-            AsyncImage(
-              model = ImageRequest.Builder(context)
-                .data(
-                  when (commonClaim) {
-                    is CommonClaim.Emergency -> commonClaim.inner.iconUrls.themedIcon
-                    is CommonClaim.TitleAndBulletPoints -> commonClaim.inner.iconUrls.themedIcon
-                    is CommonClaim.GenerateTravelCertificate -> null
-                  },
-                )
-                .size(with(density) { 24.dp.roundToPx() })
-                .build(),
-              contentDescription = null,
-              imageLoader = imageLoader,
-              modifier = Modifier.size(24.dp),
-            )
-          }
-          Spacer(Modifier.height(8.dp))
-          Spacer(Modifier.weight(1f))
-          Text(
-            text = when (commonClaim) {
-              is CommonClaim.Emergency -> commonClaim.inner.title
-              is CommonClaim.GenerateTravelCertificate -> stringResource(
-                id = hedvig.resources.R.string.travel_certificate_card_title,
-              )
-
-              is CommonClaim.TitleAndBulletPoints -> commonClaim.inner.title
-            },
-            style = MaterialTheme.typography.bodyLarge,
-          )
-        }
-      }
-    }
-  }
 }
 
 @Composable
@@ -608,38 +578,4 @@ private fun Context.setLastEpochDayWhenChatTooltipWasShown(epochDay: Long) =
 private fun Context.getLastEpochDayWhenChatTooltipWasShown() =
   getSharedPreferences().getLong(SHARED_PREFERENCE_LAST_OPEN, 0)
 
-private fun Context.getSharedPreferences() =
-  this.getSharedPreferences(SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE)
-
-@HedvigPreview
-@Composable
-private fun PreviewCommonClaimsRenderer() {
-  HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
-      CommonClaimsRenderer(
-        HomeModel.CommonClaims(
-          claims = List(4) { CommonClaim.GenerateTravelCertificate }
-            .plus(
-              CommonClaim.TitleAndBulletPoints(
-                CommonClaimsData(
-                  "",
-                  ThemedIconUrls("", ""),
-                  "Some title which gets quite long sometimes",
-                  HedvigColor.DarkPurple,
-                  "",
-                  "",
-                  true,
-                  emptyList(),
-                ),
-              ),
-            )
-            .toNonEmptyListOrNull()!!,
-        ),
-        {},
-        {},
-        {},
-        rememberPreviewImageLoader(),
-      )
-    }
-  }
-}
+private fun Context.getSharedPreferences() = this.getSharedPreferences(SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE)

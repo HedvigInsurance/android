@@ -26,7 +26,7 @@ import hedvig.resources.R
 
 @Composable
 internal fun OtherServicesBottomSheetContent(
-  commonClaims: List<CommonClaim>,
+  options: List<CommonClaim>,
   onClick: (CommonClaim) -> Unit,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
@@ -35,7 +35,7 @@ internal fun OtherServicesBottomSheetContent(
     modifier = modifier,
   ) {
     Text(
-      text = "Other services", // TODO string res
+      text = stringResource(id = R.string.home_tab_other_services),
       style = MaterialTheme.typography.bodyLarge,
       textAlign = TextAlign.Center,
       modifier = Modifier
@@ -44,7 +44,7 @@ internal fun OtherServicesBottomSheetContent(
     )
     Spacer(modifier = Modifier.height(32.dp))
 
-    commonClaims.forEach { commonClaim ->
+    options.forEach { commonClaim ->
       SelectableItem(
         text = commonClaim.title,
         onClick = { onClick(commonClaim) },
@@ -56,6 +56,8 @@ internal fun OtherServicesBottomSheetContent(
       text = stringResource(id = R.string.general_close_button),
       onClick = onDismiss,
     )
+
+    Spacer(modifier = Modifier.height(16.dp))
   }
 }
 
@@ -71,7 +73,7 @@ private fun SelectableItem(text: String, onClick: () -> Unit) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier
-        .heightIn(72.dp)
+        .heightIn(56.dp)
         .fillMaxWidth()
         .padding(horizontal = 16.dp, vertical = 10.dp),
     ) {
@@ -89,7 +91,7 @@ private fun PreviewOtherServicesBottomSheetContent() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       OtherServicesBottomSheetContent(
-        commonClaims = listOf(
+        options = listOf(
           CommonClaim.GenerateTravelCertificate,
           CommonClaim.ChangeAddress,
         ),

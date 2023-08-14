@@ -113,4 +113,9 @@ sealed interface CommonClaim {
     override val title: String
       get() = "Change address"
   }
+
+  data object Chat : CommonClaim {
+    override val title: String
+      get() = "Chat"
+  }
 }

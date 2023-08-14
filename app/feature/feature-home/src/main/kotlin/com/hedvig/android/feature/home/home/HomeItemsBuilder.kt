@@ -64,7 +64,6 @@ internal class HomeItemsBuilder(
     }
     val nonEmptyCommonClaimsList = commonClaims.toNonEmptyListOrNull()
     if (nonEmptyCommonClaimsList != null) {
-      add(HomeModel.Header(hedvig.resources.R.string.CLAIMS_QUICK_CHOICE_HEADER))
       add(HomeModel.CommonClaims(nonEmptyCommonClaimsList))
     }
 
