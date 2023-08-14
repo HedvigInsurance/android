@@ -65,8 +65,7 @@ internal fun TravelCertificateInformation(
       Spacer(modifier = Modifier.padding(top = 48.dp))
       infoSections?.map {
         VectorInfoCard(
-          title = it.title,
-          text = it.body,
+          text = StringBuilder().append(it.title).append("\n").append(it.body).toString(),
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
@@ -77,7 +76,6 @@ internal fun TravelCertificateInformation(
       HedvigContainedButton(
         text = stringResource(R.string.travel_certificate_get_travel_certificate_button),
         onClick = onContinue,
-        shape = MaterialTheme.shapes.squircleMedium,
         modifier = Modifier.padding(horizontal = 16.dp),
       )
       Spacer(Modifier.height(32.dp))
