@@ -34,6 +34,8 @@ dependencies {
   testImplementation(libs.junit)
   testImplementation(libs.turbine)
   testImplementation(projects.apolloGiraffeTest)
+  testImplementation(projects.apolloTest)
+  testImplementation(projects.coreCommonTest)
   testImplementation(projects.coreDatastoreTest)
   testImplementation(projects.hanalyticsFeatureFlagsTest)
   testImplementation(projects.loggingTest)
