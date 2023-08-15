@@ -15,14 +15,15 @@ data class EmergencyData(
   val emergencyNumber: String,
 ) : Parcelable {
   companion object {
-    fun from(data: HomeQuery.CommonClaim, eligibleToClaim: Boolean): EmergencyData? {
-      val layout = data.layout.asEmergency ?: return null
+    fun from(data: HomeQuery.Data): EmergencyData? {
+      val emergencyCommonClaim = data.commonClaims.firstOrNull { it.layout.asEmergency != null }
+      val emergency: HomeQuery.AsEmergency = emergencyCommonClaim?.layout?.asEmergency ?: return null
       return EmergencyData(
-        ThemedIconUrls.from(data.icon.variants.fragments.iconVariantsFragment),
-        layout.color,
-        data.title,
-        eligibleToClaim,
-        layout.emergencyNumber,
+        iconUrls = ThemedIconUrls.from(emergencyCommonClaim.icon.variants.fragments.iconVariantsFragment),
+        color = emergency.color,
+        title = emergencyCommonClaim.title,
+        eligibleToClaim = data.isEligibleToCreateClaim,
+        emergencyNumber = emergency.emergencyNumber,
       )
     }
   }
