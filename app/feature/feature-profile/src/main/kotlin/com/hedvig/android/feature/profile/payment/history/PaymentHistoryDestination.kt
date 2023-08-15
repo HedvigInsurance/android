@@ -48,7 +48,7 @@ internal fun PaymentHistoryDestination(
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-  AnimatedContent(targetState = uiState.isLoading) { loading ->
+  AnimatedContent(targetState = uiState.isLoading, label = "") { loading ->
     when (loading) {
       true -> HedvigFullScreenCenterAlignedProgress(show = uiState.isLoading)
       false -> PaymentHistoryScreen(
