@@ -15,14 +15,18 @@ import com.hedvig.android.logger.logcat
 import kotlinx.datetime.LocalDate
 import octopus.TravelCertificateSpecificationsQuery
 
-class GetTravelCertificateSpecificationsUseCase(
+interface GetTravelCertificateSpecificationsUseCase {
+  suspend fun invoke(): Either<TravelCertificateError, TravelCertificateData>
+}
+
+internal class GetTravelCertificateSpecificationsUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
-) {
+) : GetTravelCertificateSpecificationsUseCase {
 
   private val query = TravelCertificateSpecificationsQuery()
 
-  suspend fun invoke(): Either<TravelCertificateError, TravelCertificateData> {
+  override suspend fun invoke(): Either<TravelCertificateError, TravelCertificateData> {
     return either {
       ensure(featureManager.isFeatureEnabled(Feature.TRAVEL_CERTIFICATE)) {
         TravelCertificateError.NotEligible
