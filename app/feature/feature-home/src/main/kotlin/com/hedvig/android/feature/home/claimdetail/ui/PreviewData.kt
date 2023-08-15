@@ -13,13 +13,13 @@ import javax.money.MonetaryAmount
 import kotlin.time.Duration.Companion.minutes
 
 internal fun PillUiState.Companion.previewList(): List<PillUiState> {
-  return PillUiState.PillType.values().dropLast(1).map { pillType ->
+  return PillUiState.PillType.entries.dropLast(1).map { pillType ->
     PillUiState(pillType.name, pillType)
   }
 }
 
 internal fun ClaimProgressUiState.Companion.previewList(): List<ClaimProgressUiState> {
-  return ClaimProgressUiState.ClaimProgressType.values().dropLast(1).map { progressType ->
+  return ClaimProgressUiState.ClaimProgressType.entries.dropLast(1).map { progressType ->
     ClaimProgressUiState(progressType.name, progressType)
   }
 }

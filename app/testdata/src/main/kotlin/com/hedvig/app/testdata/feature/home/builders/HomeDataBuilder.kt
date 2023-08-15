@@ -187,7 +187,7 @@ class ClaimStatusCardsBuilder {
       HomeQuery.ClaimStatusCard(
         id = index.toString(),
         pills = List(3) {
-          HomeQuery.Pill(text = "Pill #$it", type = ClaimStatusCardPillType.values().random())
+          HomeQuery.Pill(text = "Pill #$it", type = ClaimStatusCardPillType.entries.random())
         },
         title = "Title. Random pills ^^",
         subtitle = "Subtitle. Random progress segments vv",
@@ -197,7 +197,7 @@ class ClaimStatusCardsBuilder {
             fragments = HomeQuery.ProgressSegment.Fragments(
               progressSegments = giraffe.fragment.ProgressSegments(
                 text = "Segment #$it",
-                type = ClaimStatusProgressType.values().random(),
+                type = ClaimStatusProgressType.entries.random(),
               ),
             ),
           )
