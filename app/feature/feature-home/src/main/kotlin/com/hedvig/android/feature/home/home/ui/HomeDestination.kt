@@ -116,12 +116,11 @@ internal fun HomeDestination(
   imageLoader: ImageLoader,
 ) {
   val context = LocalContext.current
-  val isLoading = uiState.isLoading
   val systemBarInsetTopDp = with(LocalDensity.current) {
     WindowInsets.systemBars.getTop(this).toDp()
   }
   val pullRefreshState = rememberPullRefreshState(
-    refreshing = isLoading,
+    refreshing = uiState.isLoading,
     onRefresh = reload,
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
@@ -134,7 +133,7 @@ internal fun HomeDestination(
         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
     ) {
       Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
-      Spacer(Modifier.height(64.dp))
+      Spacer(Modifier.height(64.dp)) // Room for TopAppBarLayoutForActions
       when (uiState) {
         HomeUiState.Loading -> {}
         is HomeUiState.Error -> {
@@ -198,7 +197,7 @@ internal fun HomeDestination(
       )
     }
     PullRefreshIndicator(
-      refreshing = isLoading,
+      refreshing = uiState.isLoading,
       state = pullRefreshState,
       scale = true,
       modifier = Modifier.align(Alignment.TopCenter),

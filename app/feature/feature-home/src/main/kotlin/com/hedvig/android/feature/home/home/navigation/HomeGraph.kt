@@ -12,6 +12,7 @@ import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.home.claimdetail.claimDetailGraph
 import com.hedvig.android.feature.home.claims.commonclaim.commonClaimGraph
 import com.hedvig.android.feature.home.home.ui.HomeDestination
+import com.hedvig.android.feature.home.home.ui.HomeEvent
 import com.hedvig.android.feature.home.home.ui.HomeViewModel
 import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.compose.typed.animatedNavigation
@@ -53,7 +54,7 @@ fun NavGraphBuilder.homeGraph(
       val uiState by viewModel.uiState.collectAsStateWithLifecycle()
       HomeDestination(
         uiState = uiState,
-        reload = viewModel::reload,
+        reload = { viewModel.emit(HomeEvent.RefreshData) },
         onStartChat = onStartChat,
         onClaimDetailCardClicked = { claimId: String ->
           viewModel.onClaimDetailCardClicked(claimId)
