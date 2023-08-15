@@ -29,7 +29,6 @@ internal fun ForeverScreen(
   uiState: ForeverUiState,
   reload: () -> Unit,
   onSubmitCode: (String) -> Unit,
-  onCodeChanged: (String) -> Unit,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
 ) {
@@ -71,7 +70,6 @@ internal fun ForeverScreen(
             intent.type = "text/plain"
           }
         },
-        onCodeChanged = onCodeChanged,
         onSubmitCode = onSubmitCode,
       )
     }

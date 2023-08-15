@@ -60,7 +60,6 @@ private fun ForeverDestination(
         uiState = uiState,
         reload = viewModel::reload,
         onSubmitCode = viewModel::onSubmitCode,
-        onCodeChanged = viewModel::onCodeChanged,
         languageService = languageService,
         hedvigBuildConstants = hedvigBuildConstants,
       )

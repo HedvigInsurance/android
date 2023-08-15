@@ -50,15 +50,6 @@ internal class ForeverViewModel(
     loadReferralData()
   }
 
-  fun onCodeChanged(campaignCode: String?) {
-    _uiState.update {
-      it.copy(
-        editedCampaignCode = campaignCode,
-        codeError = null,
-      )
-    }
-  }
-
   fun onSubmitCode(code: String) {
     viewModelScope.launch {
       _uiState.update {
@@ -92,7 +83,6 @@ internal class ForeverViewModel(
 
 internal data class ForeverUiState(
   val campaignCode: String? = null,
-  val editedCampaignCode: String? = null,
   val incentive: MonetaryAmount? = null,
   val grossPriceAmount: MonetaryAmount? = null,
   val referralUrl: String? = null,
@@ -121,6 +111,7 @@ internal data class ForeverUiState(
     referralsData: ReferralsQuery.Data,
     referralTerms: ReferralTermsQuery.ReferralTerms?,
   ) : this(
+    campaignCode = referralsData.referralInformation.campaign.code,
     incentive = referralsData
       .referralInformation
       .campaign
@@ -130,9 +121,6 @@ internal data class ForeverUiState(
       ?.fragments
       ?.monetaryAmountFragment
       ?.toMonetaryAmount(),
-    referralUrl = referralTerms?.url,
-    campaignCode = referralsData.referralInformation.campaign.code,
-    editedCampaignCode = referralsData.referralInformation.campaign.code,
     grossPriceAmount = referralsData
       .referralInformation
       .costReducedIndefiniteDiscount
@@ -142,6 +130,7 @@ internal data class ForeverUiState(
       ?.fragments
       ?.monetaryAmountFragment
       ?.toMonetaryAmount(),
+    referralUrl = referralTerms?.url,
     potentialDiscountAmount = referralsData
       .referralInformation
       .campaign

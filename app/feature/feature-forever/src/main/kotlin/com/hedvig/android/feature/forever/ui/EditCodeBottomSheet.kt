@@ -10,7 +10,10 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
@@ -21,13 +24,14 @@ import hedvig.resources.R
 
 @Composable
 internal fun EditCodeBottomSheet(
-  code: String,
+  code: TextFieldValue,
   errorText: String?,
-  onCodeChanged: (String) -> Unit,
+  onCodeChanged: (TextFieldValue) -> Unit,
   onDismiss: () -> Unit,
   onSubmitCode: () -> Unit,
   isLoading: Boolean,
   sheetState: SheetState,
+  focusRequester: FocusRequester,
 ) {
   ModalBottomSheet(
     containerColor = MaterialTheme.colorScheme.background,
@@ -55,6 +59,7 @@ internal fun EditCodeBottomSheet(
       errorText = errorText,
       modifier = Modifier
         .padding(horizontal = 16.dp)
+        .focusRequester(focusRequester)
         .fillMaxWidth(),
     )
     Spacer(Modifier.height(8.dp))
