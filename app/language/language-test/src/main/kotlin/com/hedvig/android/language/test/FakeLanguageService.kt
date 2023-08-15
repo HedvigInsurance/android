@@ -19,7 +19,7 @@ class FakeLanguageService : LanguageService {
   }
 
   override fun getGraphQLLocale(): giraffe.type.Locale {
-    TODO("Not yet implemented")
+    return giraffe.type.Locale.en_SE
   }
 
   override fun performOnLaunchLanguageCheck() {
