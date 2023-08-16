@@ -31,7 +31,7 @@ import com.hedvig.android.core.designsystem.material3.warningElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.Warning
+import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.memberreminders.ApplicableMemberReminders
 import com.hedvig.android.memberreminders.UpcomingRenewal
@@ -136,7 +136,7 @@ private fun ReminderCardConnectPayment(
 ) {
   VectorInfoCard(
     text = stringResource(R.string.info_card_missing_payment_body),
-    icon = Icons.Hedvig.Warning,
+    icon = Icons.Hedvig.WarningFilled,
     iconColor = MaterialTheme.colorScheme.warningElement,
     colors = CardDefaults.outlinedCardColors(
       containerColor = MaterialTheme.colorScheme.warningContainer,
