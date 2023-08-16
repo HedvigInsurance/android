@@ -52,12 +52,11 @@ import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.common.android.parcelableExtra
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
 import com.hedvig.android.core.ui.clearFocusOnTap
-import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.Market
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -174,12 +173,7 @@ class SimpleSignAuthenticationActivity : AppCompatActivity() {
                   .asPaddingValues(),
               )
               if (hasErrored) {
-                GenericErrorScreen(
-                  onRetryButtonClick = { finish() },
-                  modifier = Modifier
-                    .padding(16.dp)
-                    .padding(top = (80 - 16).dp),
-                )
+                HedvigErrorSection(retry = { finish() })
               } else {
                 // A layout which makes the button and the textField always visible on top of the IME.
                 Layout(

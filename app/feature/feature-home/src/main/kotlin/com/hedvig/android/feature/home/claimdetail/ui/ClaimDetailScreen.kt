@@ -19,11 +19,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
-import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.feature.home.claimdetail.model.ClaimDetailResult
 import com.hedvig.android.feature.home.claimdetail.model.ClaimDetailUiState
 import java.util.Locale
@@ -57,20 +57,9 @@ internal fun ClaimDetailScreen(
           onPlayClick = onPlayClick,
           modifier = Modifier.weight(1f),
         )
-        ClaimDetailViewState.Error -> GenericErrorScreen(
-          onRetryButtonClick = retry,
-          modifier = Modifier
-            .padding(16.dp)
-            .padding(top = 40.dp)
-            .padding(
-              WindowInsets.safeDrawing
-                .only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal)
-                .asPaddingValues(),
-            ),
-        )
-        ClaimDetailViewState.Loading -> {
-          HedvigFullScreenCenterAlignedProgress()
-        }
+
+        ClaimDetailViewState.Error -> HedvigErrorSection(retry = retry)
+        ClaimDetailViewState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced()
       }
     }
   }
@@ -99,6 +88,7 @@ private fun ClaimDetailScreen(
       ClaimDetailResult.Open -> {
         Spacer(Modifier.height(16.dp))
       }
+
       is ClaimDetailResult.Closed -> {
         Spacer(Modifier.height(20.dp))
         ClaimResultSection(uiState.claimDetailResult, locale)
