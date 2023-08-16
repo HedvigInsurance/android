@@ -58,12 +58,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
+import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.material3.onTypeContainer
 import com.hedvig.android.core.designsystem.material3.typeContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.card.InsuranceCard
-import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.core.ui.insurance.ContractType
 import com.hedvig.android.core.ui.insurance.toDrawableRes
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
@@ -158,13 +158,7 @@ private fun InsuranceScreen(
         Spacer(Modifier.height(16.dp))
         when {
           uiState.hasError -> {
-            GenericErrorScreen(
-              description = stringResource(R.string.home_tab_error_body),
-              onRetryButtonClick = reload,
-              modifier = Modifier
-                .padding(16.dp)
-                .padding(top = (40 - 16).dp),
-            )
+            HedvigErrorSection(retry = reload)
           }
 
           else -> {

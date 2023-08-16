@@ -50,7 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.text.isDigitsOnly
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
@@ -89,7 +89,7 @@ fun OtpInputScreen(
     ) { paddingValues ->
       AnimatedContent(targetState = loadingCode) { loading ->
         when (loading) {
-          true -> HedvigFullScreenCenterAlignedProgressDebounced(show = loadingCode)
+          true -> HedvigFullScreenCenterAlignedProgress(show = loadingCode)
           false -> OtpInputScreenContents(
             credential,
             inputValue,
