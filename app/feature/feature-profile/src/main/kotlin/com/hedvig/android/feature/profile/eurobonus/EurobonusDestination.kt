@@ -31,7 +31,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.material3.warningElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -162,7 +162,7 @@ private fun EurobonusScreen(
       )
       Spacer(Modifier.height(16.dp))
     }
-    HedvigFullScreenCenterAlignedProgress(show = uiState.isLoading)
+    HedvigFullScreenCenterAlignedProgressDebounced(show = uiState.isLoading)
   }
 }
 

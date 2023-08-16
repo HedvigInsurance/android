@@ -80,6 +80,7 @@ internal class HomeViewModel(
         { getHomeUseCase.invoke(forceReload).bind() },
         { getTravelCertificateUseCase.invoke().getOrNull() },
       ) { homeData, travelCertificateData ->
+
         HomeUiState.Success(
           claimStatusCards = homeData.claimStatusCards,
           homeItems = homeItemsBuilder.buildItems(
@@ -106,5 +107,5 @@ internal sealed interface HomeUiState {
   ) : HomeUiState
 
   data class Error(val message: String?) : HomeUiState
-  object Loading : HomeUiState
+  data object Loading : HomeUiState
 }

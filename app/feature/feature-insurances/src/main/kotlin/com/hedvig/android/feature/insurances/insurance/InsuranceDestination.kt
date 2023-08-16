@@ -1,6 +1,7 @@
-package com.hedvig.android.feature.insurances
+package com.hedvig.android.feature.insurances.insurance
 
 import android.net.Uri
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -58,17 +59,19 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
+import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.material3.onTypeContainer
 import com.hedvig.android.core.designsystem.material3.typeContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.card.InsuranceCard
-import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.core.ui.insurance.ContractType
 import com.hedvig.android.core.ui.insurance.toDrawableRes
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceScreenEvent
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceUiState
+import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -79,7 +82,6 @@ internal fun InsuranceDestination(
   onInsuranceCardClick: (contractId: String) -> Unit,
   onCrossSellClick: (Uri) -> Unit,
   navigateToCancelledInsurances: () -> Unit,
-  openChat: () -> Unit,
   imageLoader: ImageLoader,
 ) {
   val uiState: InsuranceUiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -107,7 +109,6 @@ internal fun InsuranceDestination(
     onInsuranceCardClick = onInsuranceCardClick,
     onCrossSellClick = onCrossSellClick,
     navigateToCancelledInsurances = navigateToCancelledInsurances,
-    openChat = openChat,
     imageLoader = imageLoader,
   )
 }
@@ -120,10 +121,9 @@ private fun InsuranceScreen(
   onInsuranceCardClick: (contractId: String) -> Unit,
   onCrossSellClick: (Uri) -> Unit,
   navigateToCancelledInsurances: () -> Unit,
-  openChat: () -> Unit,
   imageLoader: ImageLoader,
 ) {
-  val isLoading = uiState.loading
+  val isRetrying = uiState.isRetrying
   Box(
     modifier = Modifier.fillMaxSize(),
     propagateMinConstraints = true,
@@ -132,52 +132,50 @@ private fun InsuranceScreen(
       WindowInsets.systemBars.getTop(this).toDp()
     }
     val pullRefreshState = rememberPullRefreshState(
-      refreshing = isLoading,
+      refreshing = isRetrying,
       onRefresh = reload,
       refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
     )
     Box {
-      Column(
-        Modifier
-          .pullRefresh(pullRefreshState)
-          .verticalScroll(rememberScrollState())
-          .windowInsetsPadding(WindowInsets.safeDrawing),
-      ) {
-        Row(
-          verticalAlignment = Alignment.CenterVertically,
-          modifier = Modifier
-            .height(64.dp)
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        ) {
-          Text(
-            text = stringResource(id = R.string.DASHBOARD_SCREEN_TITLE),
-            style = MaterialTheme.typography.titleLarge,
-          )
-        }
+      AnimatedContent(targetState = uiState.isLoading, label = "") { isLoading ->
         Spacer(Modifier.height(16.dp))
-        when {
-          uiState.hasError -> {
-            GenericErrorScreen(
-              description = stringResource(R.string.home_tab_error_body),
-              onRetryButtonClick = reload,
-              modifier = Modifier
-                .padding(16.dp)
-                .padding(top = (40 - 16).dp),
-            )
-          }
-
-          else -> {
-            InsuranceScreenContent(
-              imageLoader = imageLoader,
-              insuranceCards = uiState.insuranceCards,
-              crossSells = uiState.crossSells,
-              showNotificationBadge = uiState.showNotificationBadge,
-              onInsuranceCardClick = onInsuranceCardClick,
-              onCrossSellClick = onCrossSellClick,
-              navigateToCancelledInsurances = navigateToCancelledInsurances,
-              quantityOfCancelledInsurances = uiState.quantityOfCancelledInsurances,
-            )
+        when (isLoading) {
+          true -> HedvigFullScreenCenterAlignedProgressDebounced()
+          false -> {
+            Column(
+              Modifier
+                .pullRefresh(pullRefreshState)
+                .verticalScroll(rememberScrollState())
+                .windowInsetsPadding(WindowInsets.safeDrawing),
+            ) {
+              Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                  .height(64.dp)
+                  .fillMaxWidth()
+                  .padding(horizontal = 16.dp),
+              ) {
+                Text(
+                  text = stringResource(id = R.string.DASHBOARD_SCREEN_TITLE),
+                  style = MaterialTheme.typography.titleLarge,
+                )
+              }
+                
+              if (uiState.hasError) {
+                HedvigErrorSection(retry = reload)
+              } else {
+                InsuranceScreenContent(
+                  imageLoader = imageLoader,
+                  insuranceCards = uiState.insuranceCards,
+                  crossSells = uiState.crossSells,
+                  showNotificationBadge = uiState.showNotificationBadge,
+                  onInsuranceCardClick = onInsuranceCardClick,
+                  onCrossSellClick = onCrossSellClick,
+                  navigateToCancelledInsurances = navigateToCancelledInsurances,
+                  quantityOfCancelledInsurances = uiState.quantityOfCancelledInsurances,
+                )
+              }
+            }
           }
         }
         Spacer(Modifier.height(16.dp))
@@ -185,7 +183,7 @@ private fun InsuranceScreen(
       }
 
       PullRefreshIndicator(
-        refreshing = isLoading,
+        refreshing = isRetrying,
         state = pullRefreshState,
         scale = true,
         modifier = Modifier.align(Alignment.TopCenter),
@@ -415,9 +413,8 @@ private fun PreviewInsuranceScreen() {
           showNotificationBadge = false,
           quantityOfCancelledInsurances = 1,
           hasError = false,
-          loading = false,
+          isLoading = false,
         ),
-        {},
         {},
         {},
         {},

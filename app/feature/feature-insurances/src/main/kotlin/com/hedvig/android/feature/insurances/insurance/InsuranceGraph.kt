@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.insurances
+package com.hedvig.android.feature.insurances.insurance
 
 import android.net.Uri
 import androidx.navigation.NavBackStackEntry
@@ -6,6 +6,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
+import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailDestination
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailViewModel
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetails
@@ -53,7 +54,6 @@ fun NavGraphBuilder.insuranceGraph(
         navigateToCancelledInsurances = {
           with(navigator) { backStackEntry.navigate(InsurancesDestination.TerminatedInsurances) }
         },
-        openChat = openChat,
         imageLoader = imageLoader,
       )
     }

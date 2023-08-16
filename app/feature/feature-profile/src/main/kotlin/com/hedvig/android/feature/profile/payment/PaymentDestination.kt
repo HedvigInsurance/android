@@ -47,7 +47,7 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedButt
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.material3.typeContainer
 import com.hedvig.android.core.designsystem.material3.typeElement
@@ -78,7 +78,7 @@ internal fun PaymentDestination(
 
   AnimatedContent(targetState = uiState.isLoading, label = "") { loading ->
     when (loading) {
-      true -> HedvigFullScreenCenterAlignedProgress(show = uiState.isLoading)
+      true -> HedvigFullScreenCenterAlignedProgressDebounced(show = uiState.isLoading)
       false -> PaymentScreen(
         uiState = uiState,
         locale = viewModel.languageService.getLocale(),

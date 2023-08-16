@@ -27,14 +27,13 @@ import com.hedvig.android.core.designsystem.material3.infoContainer
 import com.hedvig.android.core.designsystem.material3.infoElement
 import com.hedvig.android.core.designsystem.material3.onInfoContainer
 import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.Info
 import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
 
 @Composable
 fun VectorInfoCard(
   text: String,
   modifier: Modifier = Modifier,
-  icon: ImageVector = Icons.Hedvig.Info,
+  icon: ImageVector = Icons.Hedvig.InfoFilled,
   iconColor: Color = MaterialTheme.colorScheme.infoElement,
   colors: CardColors = CardDefaults.outlinedCardColors(
     containerColor = MaterialTheme.colorScheme.infoContainer,
