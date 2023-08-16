@@ -170,6 +170,7 @@ private fun PaymentScreen(
           onClick = onChangeBankAccount,
           modifier = Modifier.padding(horizontal = 16.dp),
         )
+        Spacer(Modifier.height(16.dp))
         if (market != null && (market == Market.DK || market == Market.NO)) {
           Spacer(Modifier.height(32.dp))
           PayoutDetails(uiState)
