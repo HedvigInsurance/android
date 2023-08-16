@@ -3,6 +3,7 @@ package com.hedvig.android.feature.insurances.insurance
 import android.net.Uri
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.with
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -61,6 +62,7 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmal
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.core.designsystem.material3.onTypeContainer
 import com.hedvig.android.core.designsystem.material3.typeContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -137,7 +139,13 @@ private fun InsuranceScreen(
       refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
     )
     Box {
-      AnimatedContent(targetState = uiState.isLoading, label = "") { isLoading ->
+      AnimatedContent(
+        targetState = uiState.isLoading,
+        transitionSpec = {
+          MotionDefaults.fadeThroughEnter with MotionDefaults.fadeThroughExit
+        },
+        label = "",
+      ) { isLoading ->
         Spacer(Modifier.height(16.dp))
         when (isLoading) {
           true -> HedvigFullScreenCenterAlignedProgressDebounced()

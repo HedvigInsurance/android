@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.forever.navigation
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.with
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -53,7 +54,13 @@ private fun ForeverDestination(
   hedvigBuildConstants: HedvigBuildConstants,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  AnimatedContent(targetState = uiState.isLoading, label = "") { loading ->
+  AnimatedContent(
+    targetState = uiState.isLoading,
+    transitionSpec = {
+      MotionDefaults.fadeThroughEnter with MotionDefaults.fadeThroughExit
+    },
+    label = "",
+  ) { loading ->
     when (loading) {
       true -> HedvigFullScreenCenterAlignedProgressDebounced(show = uiState.isLoading)
       false -> ForeverScreen(
