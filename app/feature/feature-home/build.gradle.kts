@@ -42,6 +42,7 @@ dependencies {
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDesignSystem)
+  implementation(projects.coreIcons)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.dataTravelCertificate)
@@ -52,7 +53,6 @@ dependencies {
   implementation(projects.navigationActivity)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
-
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)

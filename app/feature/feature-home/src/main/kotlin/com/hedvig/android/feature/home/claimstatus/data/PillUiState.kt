@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.home.claimstatus.data
 
+import giraffe.ClaimDetailsQuery
 import giraffe.HomeQuery
 import giraffe.type.ClaimStatusCardPillType
 
@@ -31,6 +32,15 @@ internal data class PillUiState(
     fun fromClaimStatusCardsQuery(
       claimStatusCards: HomeQuery.ClaimStatusCard,
     ): List<PillUiState> = claimStatusCards.pills.map { pill ->
+      PillUiState(
+        text = pill.text,
+        type = PillType.fromQueryType(pill.type),
+      )
+    }
+
+    fun fromClaimDetailsQuery(
+      claimDetail: ClaimDetailsQuery.ClaimDetail,
+    ): List<PillUiState> = claimDetail.pills.map { pill ->
       PillUiState(
         text = pill.text,
         type = PillType.fromQueryType(pill.type),
