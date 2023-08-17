@@ -165,9 +165,9 @@ internal class GetHomeUseCaseTest {
       rightResult.apply {
         prop(HomeData::memberName).isNotNull().isEqualTo("member name")
         prop(HomeData::contractStatus).isEqualTo(HomeData.ContractStatus.Active)
-        prop(HomeData::claimStatusCards)
+        prop(HomeData::claimStatusCardsData)
           .isNotNull()
-          .prop(HomeData.ClaimStatusCards::claimStatusCardsUiState)
+          .prop(HomeData.ClaimStatusCardsData::claimStatusCardsUiState)
           .containsExactly(
             ClaimStatusCardUiState(
               "card id",
@@ -521,9 +521,9 @@ internal class GetHomeUseCaseTest {
     assertThat(result)
       .isNotNull()
       .isRight()
-      .prop(HomeData::claimStatusCards)
+      .prop(HomeData::claimStatusCardsData)
       .isNotNull()
-      .prop(HomeData.ClaimStatusCards::claimStatusCardsUiState)
+      .prop(HomeData.ClaimStatusCardsData::claimStatusCardsUiState)
       .containsExactly(
         ClaimStatusCardUiState(
           id = "status id#1",
@@ -565,7 +565,7 @@ internal class GetHomeUseCaseTest {
     assertThat(result)
       .isNotNull()
       .isRight()
-      .prop(HomeData::claimStatusCards)
+      .prop(HomeData::claimStatusCardsData)
       .isNull()
   }
 

@@ -72,7 +72,7 @@ internal class GetHomeDataUseCaseImpl(
         HomeData(
           memberName = memberName,
           contractStatus = contractStatus,
-          claimStatusCards = homeQueryData.claimStatusCards(),
+          claimStatusCardsData = homeQueryData.claimStatusCards(),
           upcomingRenewals = upcomingRenewals.toPersistentList(),
           veryImportantMessages = veryImportantMessages.toPersistentList(),
           memberReminders = memberReminders,
@@ -135,16 +135,16 @@ internal class GetHomeDataUseCaseImpl(
   }
 }
 
-private fun HomeQuery.Data.claimStatusCards(): HomeData.ClaimStatusCards? {
+private fun HomeQuery.Data.claimStatusCards(): HomeData.ClaimStatusCardsData? {
   val claimStatusCards: NonEmptyList<HomeQuery.ClaimStatusCard> =
     claimStatusCards.toNonEmptyListOrNull() ?: return null
-  return HomeData.ClaimStatusCards(claimStatusCards.map(ClaimStatusCardUiState::fromClaimStatusCardsQuery))
+  return HomeData.ClaimStatusCardsData(claimStatusCards.map(ClaimStatusCardUiState::fromClaimStatusCardsQuery))
 }
 
 internal data class HomeData(
   val memberName: String?,
   val contractStatus: ContractStatus,
-  val claimStatusCards: ClaimStatusCards?,
+  val claimStatusCardsData: ClaimStatusCardsData?,
   val upcomingRenewals: ImmutableList<UpcomingRenewal>,
   val veryImportantMessages: ImmutableList<VeryImportantMessage>,
   val memberReminders: MemberReminders,
@@ -154,7 +154,7 @@ internal data class HomeData(
 ) {
 
   @Immutable
-  data class ClaimStatusCards(
+  data class ClaimStatusCardsData(
     val claimStatusCardsUiState: NonEmptyList<ClaimStatusCardUiState>,
   )
 
