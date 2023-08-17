@@ -77,7 +77,6 @@ internal class HomePresenter(
           isReloading = isLoading,
           homeText = successData.homeText,
           claimStatusCardsData = successData.claimStatusCardsData,
-          upcomingRenewals = successData.upcomingRenewals,
           memberReminders = successData.memberReminders,
           veryImportantMessages = successData.veryImportantMessages,
           allowAddressChange = successData.allowAddressChange,
@@ -102,7 +101,6 @@ internal sealed interface HomeUiState {
     val isReloading: Boolean = false,
     val homeText: HomeText,
     val claimStatusCardsData: HomeData.ClaimStatusCardsData?,
-    val upcomingRenewals: ImmutableList<HomeData.UpcomingRenewal>,
     val veryImportantMessages: ImmutableList<HomeData.VeryImportantMessage>,
     val memberReminders: MemberReminders,
     val allowAddressChange: Boolean,
@@ -117,7 +115,6 @@ internal sealed interface HomeUiState {
 private data class SuccessData(
   val homeText: HomeText,
   val claimStatusCardsData: HomeData.ClaimStatusCardsData?,
-  val upcomingRenewals: ImmutableList<HomeData.UpcomingRenewal>,
   val veryImportantMessages: ImmutableList<HomeData.VeryImportantMessage>,
   val memberReminders: MemberReminders,
   val allowAddressChange: Boolean,
@@ -130,7 +127,6 @@ private data class SuccessData(
       return SuccessData(
         homeText = lastState.homeText,
         claimStatusCardsData = lastState.claimStatusCardsData,
-        upcomingRenewals = lastState.upcomingRenewals,
         veryImportantMessages = lastState.veryImportantMessages,
         memberReminders = lastState.memberReminders,
         allowAddressChange = lastState.allowAddressChange,
@@ -153,7 +149,6 @@ private data class SuccessData(
           HomeData.ContractStatus.Unknown -> HomeText.Active(homeData.memberName)
         },
         claimStatusCardsData = homeData.claimStatusCardsData,
-        upcomingRenewals = homeData.upcomingRenewals,
         memberReminders = homeData.memberReminders,
         veryImportantMessages = homeData.veryImportantMessages,
         allowAddressChange = homeData.allowAddressChange,

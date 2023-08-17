@@ -60,20 +60,10 @@ internal class GetHomeDataUseCaseImpl(
             link = it.link ?: return@mapNotNull null,
           )
         }
-        val upcomingRenewals = homeQueryData.contracts.mapNotNull { contract ->
-          contract.upcomingRenewal?.let { upcomingRenewal ->
-            HomeData.UpcomingRenewal(
-              contract.displayName,
-              upcomingRenewal.renewalDate.toKotlinLocalDate(),
-              upcomingRenewal.draftCertificateUrl,
-            )
-          }
-        }
         HomeData(
           memberName = memberName,
           contractStatus = contractStatus,
           claimStatusCardsData = homeQueryData.claimStatusCards(),
-          upcomingRenewals = upcomingRenewals.toPersistentList(),
           veryImportantMessages = veryImportantMessages.toPersistentList(),
           memberReminders = memberReminders,
           allowAddressChange = contractStatus is HomeData.ContractStatus.Active,
@@ -145,7 +135,6 @@ internal data class HomeData(
   val memberName: String?,
   val contractStatus: ContractStatus,
   val claimStatusCardsData: ClaimStatusCardsData?,
-  val upcomingRenewals: ImmutableList<UpcomingRenewal>,
   val veryImportantMessages: ImmutableList<VeryImportantMessage>,
   val memberReminders: MemberReminders,
   val allowAddressChange: Boolean,
@@ -156,13 +145,6 @@ internal data class HomeData(
   @Immutable
   data class ClaimStatusCardsData(
     val claimStatusCardsUiState: NonEmptyList<ClaimStatusCardUiState>,
-  )
-
-  @Immutable
-  data class UpcomingRenewal(
-    val contractDisplayName: String,
-    public val renewalDate: LocalDate,
-    public val draftCertificateUrl: String,
   )
 
   data class VeryImportantMessage(

@@ -63,7 +63,6 @@ import giraffe.type.buildTerminatedInFutureStatus
 import giraffe.type.buildTerminatedStatus
 import giraffe.type.buildTerminatedTodayStatus
 import giraffe.type.buildTitleAndBulletPoints
-import giraffe.type.buildUpcomingRenewal
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
@@ -125,11 +124,6 @@ internal class GetHomeUseCaseTest {
         contracts = listOf(
           buildContract {
             status = buildActiveStatus { }
-            displayName = "upcoming contract"
-            upcomingRenewal = buildUpcomingRenewal {
-              renewalDate = LocalDate.parse("2024-01-02").toJavaLocalDate()
-              draftCertificateUrl = "url renewal"
-            }
           },
         )
         // claims_statusCards aliased https://www.apollographql.com/docs/kotlin/testing/data-builders#aliases
@@ -177,9 +171,6 @@ internal class GetHomeUseCaseTest {
               emptyList(),
             ),
           )
-        prop(HomeData::upcomingRenewals).containsExactly(
-          HomeData.UpcomingRenewal("upcoming contract", LocalDate.parse("2024-01-02"), "url renewal"),
-        )
         prop(HomeData::veryImportantMessages).containsExactly(
           HomeData.VeryImportantMessage("important", "message url"),
         )
@@ -567,71 +558,6 @@ internal class GetHomeUseCaseTest {
       .isRight()
       .prop(HomeData::claimStatusCardsData)
       .isNull()
-  }
-
-  @Test
-  fun `when there are upcoming renewals, show them`() = runTest {
-    val getHomeDataUseCase = testUseCaseWithoutRemindersAndNoTravelCertificate()
-
-    apolloClient.enqueueTestResponse(
-      HomeQuery(Locale.en_SE, ""),
-      HomeQuery.Data(GiraffeFakeResolver) {
-        contracts = listOf(
-          buildContract {
-            upcomingRenewal = buildUpcomingRenewal {
-              displayName = "renewal display name"
-              renewalDate = LocalDate.parse("2023-01-01").toJavaLocalDate()
-              draftCertificateUrl = "draft certificate url"
-            }
-          },
-          buildContract {
-            upcomingRenewal = null
-          },
-          buildContract {
-            upcomingRenewal = buildUpcomingRenewal {
-              displayName = "renewal display name#2"
-              renewalDate = LocalDate.parse("2023-01-02").toJavaLocalDate()
-              draftCertificateUrl = "draft certificate url#2"
-            }
-          },
-        )
-      },
-    )
-    val result = getHomeDataUseCase.invoke(true).first()
-
-    assertThat(result)
-      .isNotNull()
-      .isRight()
-      .prop(HomeData::upcomingRenewals)
-      .containsExactly(
-        HomeData.UpcomingRenewal(
-          "renewal display name",
-          LocalDate.parse("2023-01-01"),
-          "draft certificate url",
-        ),
-        HomeData.UpcomingRenewal(
-          "renewal display name#2",
-          LocalDate.parse("2023-01-02"),
-          "draft certificate url#2",
-        ),
-      )
-  }
-
-  @Test
-  fun `when there are no upcoming renewals, don't show them`() = runTest {
-    val getHomeDataUseCase = testUseCaseWithoutRemindersAndNoTravelCertificate()
-
-    apolloClient.enqueueTestResponse(
-      HomeQuery(Locale.en_SE, ""),
-      HomeQuery.Data(GiraffeFakeResolver),
-    )
-    val result = getHomeDataUseCase.invoke(true).first()
-
-    assertThat(result)
-      .isNotNull()
-      .isRight()
-      .prop(HomeData::upcomingRenewals)
-      .isEmpty()
   }
 
   @Test

@@ -83,7 +83,6 @@ import hedvig.resources.R
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -424,7 +423,6 @@ private fun PreviewHomeScreen() {
               ),
             ),
           ),
-          upcomingRenewals = persistentListOf(HomeData.UpcomingRenewal("contract", LocalDate.parse("2024-01-01"), "")),
           veryImportantMessages = persistentListOf(HomeData.VeryImportantMessage("Beware of the earthquake", "")),
           memberReminders = MemberReminders(
             connectPayment = MemberReminder.ConnectPayment,
