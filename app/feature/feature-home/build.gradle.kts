@@ -16,6 +16,7 @@ android {
 
 dependencies {
   implementation(libs.accompanist.pagerIndicators)
+  implementation(libs.accompanist.permissions)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material)
   implementation(libs.androidx.compose.material3)
@@ -44,6 +45,7 @@ dependencies {
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDesignSystem)
+  implementation(projects.coreIcons)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.dataTravelCertificatePublic)
@@ -59,6 +61,7 @@ dependencies {
   implementation(projects.navigationActivity)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(projects.notificationPermission)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)
