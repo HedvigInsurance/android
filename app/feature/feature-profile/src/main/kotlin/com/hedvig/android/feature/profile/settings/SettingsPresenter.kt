@@ -40,7 +40,7 @@ internal class SettingsPresenter(
         is SettingsEvent.ChangeTheme -> {
           launch { settingsDataStore.setTheme(event.theme) }
         }
-        SettingsEvent.SnoozeNotificationReminder -> {
+        SettingsEvent.SnoozeNotificationPermissionReminder -> {
           launch { enableNotificationsReminderManager.snoozeNotificationReminder() }
         }
       }
@@ -87,5 +87,5 @@ sealed interface SettingsUiState {
 sealed interface SettingsEvent {
   data class ChangeLanguage(val language: Language) : SettingsEvent
   data class ChangeTheme(val theme: Theme) : SettingsEvent
-  object SnoozeNotificationReminder : SettingsEvent
+  object SnoozeNotificationPermissionReminder : SettingsEvent
 }

@@ -3,6 +3,7 @@
 package com.hedvig.android.notification.permission
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
@@ -56,6 +57,7 @@ private class NotificationPermissionStateImpl(
  * notification. Use in conjuction with [NotificationPermissionDialog] to get an easy to use notification permission
  * handling.
  */
+@SuppressLint("InlinedApi")
 @Composable
 fun rememberNotificationPermissionState(
   onNotificationGranted: () -> Unit = {},

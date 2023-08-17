@@ -50,7 +50,7 @@ fun MemberReminderCards(
   navigateToConnectPayment: () -> Unit,
   openUrl: (String) -> Unit,
   notificationPermissionState: NotificationPermissionState,
-  snoozePermission: () -> Unit,
+  snoozeNotificationPermissionReminder: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -63,7 +63,7 @@ fun MemberReminderCards(
       exit = cardReminderExitTransition,
     ) {
       ReminderCardEnableNotifications(
-        snoozePermission = snoozePermission,
+        snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
         requestNotificationPermission = notificationPermissionState::launchPermissionRequest,
       )
     }
@@ -105,7 +105,7 @@ private val cardReminderExitTransition = fadeOut() + shrinkVertically(
 
 @Composable
 fun ReminderCardEnableNotifications(
-  snoozePermission: () -> Unit,
+  snoozeNotificationPermissionReminder: () -> Unit,
   requestNotificationPermission: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -115,7 +115,7 @@ fun ReminderCardEnableNotifications(
   ) {
     Row(Modifier.padding(vertical = 4.dp)) {
       InfoCardTextButton(
-        onClick = snoozePermission,
+        onClick = snoozeNotificationPermissionReminder,
         text = stringResource(R.string.PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW),
         modifier = Modifier.weight(1f),
       )
