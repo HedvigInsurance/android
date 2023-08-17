@@ -4,7 +4,6 @@
     <item name="splash_foreground" type="color">@color/hedvig_black</item>
 
     <color name="black">#000000</color>
-    <color name="blur_white">#e6ffffff</color>
     <color name="white">#ffffff</color>
     <color name="purple">#651eff</color>
     <color name="gray">#9b9baa</color>
@@ -20,15 +19,12 @@
     <color name="maroon">#AA0045</color>
     <color name="yellow">#F2C852</color>
     <color name="transparent">#00FFFFFF</color>
-    <color name="button_background_dark">#333333</color>
-    <color name="grey_inactive">#777777</color>
 
     <color name="hedvig_black">#121212</color>
     <color name="hedvig_off_white">#fafafa</color>
     <color name="hedvig_white">#ffffff</color>
     <color name="hedvig_light_gray">#eaeaea</color>
     <color name="hedvig_dark_gray">#505050</color>
-    <color name="hedvig_off_black">#1b1b1b</color>
 
     <color name="lavender_200">#E7D6FF</color>
     <color name="lavender_300">#C9ABF5</color>
@@ -36,8 +32,6 @@
     <color name="lavender_600">#875EC5</color>
     <color name="lavender_900">#1C1724</color>
 
-    <color name="forever_orange_300">#FCBA8D</color>
-    <color name="forever_orange_500">#FE9650</color>
 
     <color name="text_color_primary_light">#AB121212</color>
 
