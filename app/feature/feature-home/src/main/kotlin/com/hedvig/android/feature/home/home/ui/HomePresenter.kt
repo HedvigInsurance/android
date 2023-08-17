@@ -10,15 +10,18 @@ import androidx.compose.runtime.snapshots.Snapshot
 import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
 import com.hedvig.android.feature.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.data.HomeData
+import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 
 internal class HomePresenter(
   private val getHomeDataUseCase: GetHomeDataUseCase,
+  private val enableNotificationsReminderManager: EnableNotificationsReminderManager,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
   @Composable
   override fun MoleculePresenterScope<HomeEvent>.present(lastState: HomeUiState): HomeUiState {
@@ -30,6 +33,9 @@ internal class HomePresenter(
     CollectEvents { homeEvent: HomeEvent ->
       when (homeEvent) {
         HomeEvent.RefreshData -> loadIteration++
+        HomeEvent.SnoozeNotificationPermissionReminder -> {
+          launch { enableNotificationsReminderManager.snoozeNotificationReminder() }
+        }
       }
     }
 
@@ -70,7 +76,7 @@ internal class HomePresenter(
         HomeUiState.Success(
           isReloading = isLoading,
           homeText = successData.homeText,
-          claimStatusCards = successData.claimStatusCards,
+          claimStatusCardsData = successData.claimStatusCardsData,
           upcomingRenewals = successData.upcomingRenewals,
           memberReminders = successData.memberReminders,
           veryImportantMessages = successData.veryImportantMessages,
@@ -85,6 +91,7 @@ internal class HomePresenter(
 
 internal sealed interface HomeEvent {
   object RefreshData : HomeEvent
+  object SnoozeNotificationPermissionReminder : HomeEvent
 }
 
 internal sealed interface HomeUiState {
@@ -94,7 +101,7 @@ internal sealed interface HomeUiState {
   data class Success(
     val isReloading: Boolean = false,
     val homeText: HomeText,
-    val claimStatusCards: HomeData.ClaimStatusCards?,
+    val claimStatusCardsData: HomeData.ClaimStatusCardsData?,
     val upcomingRenewals: ImmutableList<HomeData.UpcomingRenewal>,
     val veryImportantMessages: ImmutableList<HomeData.VeryImportantMessage>,
     val memberReminders: MemberReminders,
@@ -109,7 +116,7 @@ internal sealed interface HomeUiState {
 
 private data class SuccessData(
   val homeText: HomeText,
-  val claimStatusCards: HomeData.ClaimStatusCards?,
+  val claimStatusCardsData: HomeData.ClaimStatusCardsData?,
   val upcomingRenewals: ImmutableList<HomeData.UpcomingRenewal>,
   val veryImportantMessages: ImmutableList<HomeData.VeryImportantMessage>,
   val memberReminders: MemberReminders,
@@ -122,7 +129,7 @@ private data class SuccessData(
       lastState as? HomeUiState.Success ?: return null
       return SuccessData(
         homeText = lastState.homeText,
-        claimStatusCards = lastState.claimStatusCards,
+        claimStatusCardsData = lastState.claimStatusCardsData,
         upcomingRenewals = lastState.upcomingRenewals,
         veryImportantMessages = lastState.veryImportantMessages,
         memberReminders = lastState.memberReminders,
@@ -145,7 +152,7 @@ private data class SuccessData(
           HomeData.ContractStatus.Switching -> HomeText.Switching(homeData.memberName)
           HomeData.ContractStatus.Unknown -> HomeText.Active(homeData.memberName)
         },
-        claimStatusCards = homeData.claimStatusCards,
+        claimStatusCardsData = homeData.claimStatusCardsData,
         upcomingRenewals = homeData.upcomingRenewals,
         memberReminders = homeData.memberReminders,
         veryImportantMessages = homeData.veryImportantMessages,

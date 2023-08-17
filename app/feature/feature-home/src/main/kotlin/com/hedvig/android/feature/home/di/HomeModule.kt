@@ -16,6 +16,7 @@ import com.hedvig.android.feature.home.legacychangeaddress.GetAddressChangeStory
 import com.hedvig.android.feature.home.legacychangeaddress.GetUpcomingAgreementUseCase
 import com.hedvig.android.feature.home.legacychangeaddress.LegacyChangeAddressViewModel
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -39,6 +40,6 @@ val homeModule = module {
   viewModel<LegacyChangeAddressViewModel> { LegacyChangeAddressViewModel(get(), get(), get()) }
   viewModel<ClaimDetailViewModel> { (claimId: String) -> ClaimDetailViewModel(claimId, get(), get()) }
   viewModel<CommonClaimViewModel> { CommonClaimViewModel(get()) }
-  viewModel<HomeViewModel> { HomeViewModel(get<GetHomeDataUseCase>()) }
+  viewModel<HomeViewModel> { HomeViewModel(get<GetHomeDataUseCase>(), get<EnableNotificationsReminderManager>()) }
   viewModel<HonestyPledgeViewModel> { HonestyPledgeViewModel(get()) }
 }
