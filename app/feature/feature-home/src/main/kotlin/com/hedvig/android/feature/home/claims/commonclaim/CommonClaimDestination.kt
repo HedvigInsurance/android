@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import coil.ImageLoader
 import com.hedvig.android.core.common.android.disable
@@ -35,9 +34,9 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 fun NavGraphBuilder.commonClaimGraph(
-  navController: NavController,
   imageLoader: ImageLoader,
   hAnalytics: HAnalytics,
+  navigateUp: () -> Unit,
   startClaimsFlow: (NavBackStackEntry) -> Unit,
 ) {
   animatedComposable<HomeDestinations.CommonClaimDestination> { backStackEntry ->
@@ -48,7 +47,7 @@ fun NavGraphBuilder.commonClaimGraph(
       imageLoader = imageLoader,
       hAnalytics = hAnalytics,
       startClaimsFlow = { startClaimsFlow(backStackEntry) },
-      navigateUp = navController::navigateUp,
+      navigateUp = navigateUp,
     )
   }
 }

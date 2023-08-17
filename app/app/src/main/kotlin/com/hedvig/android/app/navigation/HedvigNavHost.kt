@@ -119,7 +119,7 @@ internal fun HedvigNavHost(
           activityNavigator = activityNavigator,
         )
       },
-      navController = hedvigAppState.navController,
+      navigator = navigator,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       onStartChat = { context.startChat() },
       onStartClaim = { backStackEntry ->
