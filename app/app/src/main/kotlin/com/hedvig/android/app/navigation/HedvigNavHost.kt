@@ -98,6 +98,27 @@ internal fun HedvigNavHost(
       }
     }
   }
+
+  fun navigateToPayinScreen() {
+    val market = marketManager.market ?: return@navigateToPayinScreen
+    coroutineScope.launch {
+      context.startActivity(
+        connectPayinIntent(
+          context,
+          featureManager.getPaymentType(),
+          market,
+          false,
+        ),
+      )
+    }
+  }
+
+  fun openUrl(url: String) {
+    activityNavigator.openWebsite(
+      context,
+      if (url.isBlank()) Uri.EMPTY else Uri.parse(url),
+    )
+  }
   AnimatedNavHost(
     navController = hedvigAppState.navController,
     startDestination = createRoutePattern<TopLevelGraph.HOME>(),
@@ -169,17 +190,9 @@ internal fun HedvigNavHost(
       onGenerateTravelCertificateClicked = {
         hedvigAppState.navController.navigate(AppDestination.GenerateTravelCertificate)
       },
-      navigateToPayinScreen = navigateToPayinScreen@{ paymentType ->
-        val market = marketManager.market ?: return@navigateToPayinScreen
-        context.startActivity(
-          connectPayinIntent(
-            context,
-            paymentType,
-            market,
-            false,
-          ),
-        )
-      },
+      navigateToPayinScreen = ::navigateToPayinScreen,
+      openAppSettings = { activityNavigator.openAppSettings(context) },
+      openUrl = ::openUrl,
       tryOpenUri = { uri ->
         if (context.canOpenUri(uri)) {
           context.openUri(uri)
@@ -232,26 +245,9 @@ internal fun HedvigNavHost(
         val intent = AdyenConnectPayoutActivity.newInstance(context, AdyenCurrency.fromMarket(market))
         context.startActivity(intent)
       },
-      navigateToPayinScreen = navigateToPayinScreen@{
-        val market = marketManager.market ?: return@navigateToPayinScreen
-        coroutineScope.launch {
-          context.startActivity(
-            connectPayinIntent(
-              context,
-              featureManager.getPaymentType(),
-              market,
-              false,
-            ),
-          )
-        }
-      },
+      navigateToPayinScreen = ::navigateToPayinScreen,
       openAppSettings = { activityNavigator.openAppSettings(context) },
-      openUrl = { url: String ->
-        activityNavigator.openWebsite(
-          context,
-          if (url.isBlank()) Uri.EMPTY else Uri.parse(url),
-        )
-      },
+      openUrl = ::openUrl,
       market = marketManager.market,
     )
   }
