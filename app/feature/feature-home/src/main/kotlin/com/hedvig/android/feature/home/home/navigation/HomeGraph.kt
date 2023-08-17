@@ -18,7 +18,6 @@ import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.hanalytics.HAnalytics
 import com.kiwi.navigationcompose.typed.createRoutePattern
-import giraffe.HomeQuery
 import org.koin.androidx.compose.koinViewModel
 
 fun NavGraphBuilder.homeGraph(
@@ -28,7 +27,6 @@ fun NavGraphBuilder.homeGraph(
   onStartChat: () -> Unit,
   onStartClaim: (NavBackStackEntry) -> Unit,
   startMovingFlow: () -> Unit,
-  onHowClaimsWorkClick: (List<HomeQuery.HowClaimsWork>) -> Unit,
   onGenerateTravelCertificateClicked: () -> Unit,
   navigateToPayinScreen: () -> Unit,
   openAppSettings: () -> Unit,
@@ -55,7 +53,6 @@ fun NavGraphBuilder.homeGraph(
           with(navigator) { backStackEntry.navigate(HomeDestinations.ClaimDetailDestination(claimId)) }
         },
         navigateToConnectPayment = navigateToPayinScreen,
-        onHowClaimsWorkClick = onHowClaimsWorkClick,
         onStartClaim = { onStartClaim(backStackEntry) },
         onStartMovingFlow = startMovingFlow,
         onGenerateTravelCertificateClicked = onGenerateTravelCertificateClicked,

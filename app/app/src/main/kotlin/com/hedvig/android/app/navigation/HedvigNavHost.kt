@@ -19,7 +19,6 @@ import coil.ImageLoader
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.hedvig.android.app.ui.HedvigAppState
 import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
-import com.hedvig.android.core.common.android.ThemedIconUrls
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.toClaimFlowDestination
@@ -50,9 +49,7 @@ import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.feature.adyen.AdyenCurrency
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutActivity
-import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
-import com.hedvig.app.feature.home.ui.HowClaimsWorkDialog
 import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.openUri
@@ -167,26 +164,6 @@ internal fun HedvigNavHost(
         }
       },
       startMovingFlow = ::startMovingFlow,
-      onHowClaimsWorkClick = { howClaimsWorkList ->
-        val howClaimsWorkData = howClaimsWorkList.mapIndexed { index, howClaimsWork ->
-          DismissiblePagerModel.NoTitlePage(
-            imageUrls = ThemedIconUrls.from(
-              howClaimsWork.illustration.variants.fragments.iconVariantsFragment,
-            ),
-            paragraph = howClaimsWork.body,
-            buttonText = resources.getString(
-              if (index == howClaimsWorkList.lastIndex) {
-                hedvig.resources.R.string.claims_explainer_button_start_claim
-              } else {
-                hedvig.resources.R.string.claims_explainer_button_next
-              },
-            ),
-          )
-        }
-        HowClaimsWorkDialog
-          .newInstance(howClaimsWorkData)
-          .show(fragmentManager, HowClaimsWorkDialog.TAG)
-      },
       onGenerateTravelCertificateClicked = {
         hedvigAppState.navController.navigate(AppDestination.GenerateTravelCertificate)
       },

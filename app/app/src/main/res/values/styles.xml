@@ -19,25 +19,8 @@
 
     <style name="Hedvig.Theme.Marketing" parent="Hedvig.Theme.Marketing.V23" />
 
-    <style name="Hedvig.Theme.LoggedIn">
-        <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:statusBarColor">@color/transparent</item>
-    </style>
-
     <style name="Hedvig.Theme.Chat">
         <item name="android:navigationBarColor">@color/color_background_95</item>
-    </style>
-
-    <style name="FullScreenDialog" parent="Hedvig.Theme">
-        <item name="windowNoTitle">true</item>
-        <item name="android:windowFullscreen">false</item>
-        <item name="android:windowIsFloating">false</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-    </style>
-
-    <style name="DialogSlideInSlideOut">
-        <item name="android:windowEnterAnimation">@anim/slide_in_up</item>
-        <item name="android:windowExitAnimation">@anim/slide_out_down</item>
     </style>
 
     <style name="DialogNoAnimation">

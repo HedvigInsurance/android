@@ -78,7 +78,6 @@ import com.hedvig.android.memberreminders.ui.MemberReminderCards
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.NotificationPermissionState
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
-import giraffe.HomeQuery
 import hedvig.resources.R
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
@@ -93,7 +92,6 @@ internal fun HomeDestination(
   onStartChat: () -> Unit,
   onClaimDetailCardClicked: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
-  onHowClaimsWorkClick: (List<HomeQuery.HowClaimsWork>) -> Unit,
   onStartClaim: () -> Unit,
   onStartMovingFlow: () -> Unit,
   onGenerateTravelCertificateClicked: () -> Unit,
@@ -113,7 +111,6 @@ internal fun HomeDestination(
     onStartChat = onStartChat,
     onClaimDetailCardClicked = onClaimDetailCardClicked,
     navigateToConnectPayment = navigateToConnectPayment,
-    onHowClaimsWorkClick = onHowClaimsWorkClick,
     onStartClaim = onStartClaim,
     onStartMovingFlow = onStartMovingFlow,
     onGenerateTravelCertificateClicked = onGenerateTravelCertificateClicked,
@@ -135,7 +132,6 @@ private fun HomeScreen(
   onStartChat: () -> Unit,
   onClaimDetailCardClicked: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
-  onHowClaimsWorkClick: (List<HomeQuery.HowClaimsWork>) -> Unit,
   onStartClaim: () -> Unit,
   onStartMovingFlow: () -> Unit,
   onGenerateTravelCertificateClicked: () -> Unit,
@@ -188,7 +184,6 @@ private fun HomeScreen(
             onCommonClaimClicked = { commonClaimsData ->
               onOpenCommonClaim(commonClaimsData)
             },
-            onHowClaimsWorkClick = onHowClaimsWorkClick,
             onStartClaimClicked = onStartClaim,
             onUpcomingRenewalClick = tryOpenUri,
             openAppSettings = openAppSettings,
@@ -251,7 +246,6 @@ private fun ColumnScope.HomeScreenSuccess(
   onEmergencyClaimClicked: (EmergencyData) -> Unit,
   onGenerateTravelCertificateClicked: () -> Unit,
   onCommonClaimClicked: (CommonClaimsData) -> Unit,
-  onHowClaimsWorkClick: (List<HomeQuery.HowClaimsWork>) -> Unit,
   onStartClaimClicked: () -> Unit,
   onUpcomingRenewalClick: (Uri) -> Unit,
   openAppSettings: () -> Unit,
@@ -429,7 +423,6 @@ private fun PreviewHomeScreen() {
         onStartChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
-        onHowClaimsWorkClick = {},
         onStartClaim = {},
         onStartMovingFlow = {},
         onGenerateTravelCertificateClicked = {},
