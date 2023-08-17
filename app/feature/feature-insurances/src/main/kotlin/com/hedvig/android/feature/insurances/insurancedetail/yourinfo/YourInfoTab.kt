@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -31,10 +32,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.material3.squircleLargeTop
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.feature.insurances.insurancedetail.ContractDetails
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -44,8 +48,10 @@ import kotlinx.coroutines.launch
 internal fun YourInfoTab(
   coverageItems: ImmutableList<Pair<String, String>>,
   allowEditCoInsured: Boolean,
+  upcomingChanges: ContractDetails.UpcomingChanges?,
   onEditCoInsuredClick: () -> Unit,
   onChangeAddressClick: () -> Unit,
+  openChat: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val coroutineScope = rememberCoroutineScope()
@@ -94,8 +100,62 @@ internal fun YourInfoTab(
     }
   }
 
+  var showUpcomingChangesBottomSheet by rememberSaveable { mutableStateOf(false) }
+  if (showUpcomingChangesBottomSheet && upcomingChanges != null) {
+    val sheetState = rememberModalBottomSheetState(true)
+    ModalBottomSheet(
+      onDismissRequest = {
+        showUpcomingChangesBottomSheet = false
+      },
+      shape = MaterialTheme.shapes.squircleLargeTop,
+      sheetState = sheetState,
+      tonalElevation = 0.dp,
+      windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
+    ) {
+      UpcomingChangesBottomSheetContent(
+        title = upcomingChanges.title,
+        sections = upcomingChanges.sections,
+        onOpenChat = openChat,
+        onDismiss = {
+          coroutineScope.launch {
+            sheetState.hide()
+            showUpcomingChangesBottomSheet = false
+          }
+        },
+        modifier = Modifier
+          .verticalScroll(rememberScrollState())
+          .padding(horizontal = 16.dp)
+          .padding(bottom = 16.dp)
+          .windowInsetsPadding(
+            BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+          ),
+      )
+    }
+  }
+
   Column(modifier) {
     Spacer(Modifier.height(16.dp))
+    if (upcomingChanges != null) {
+      VectorInfoCard(
+        text = upcomingChanges.title,
+        modifier = modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      ) {
+        if (upcomingChanges.sections.isNotEmpty()) {
+          HedvigContainedSmallButton(
+            text = stringResource(id = R.string.insurances_tab_view_details),
+            onClick = { showUpcomingChangesBottomSheet = true },
+            colors = ButtonDefaults.buttonColors(
+              containerColor = MaterialTheme.colorScheme.background,
+              contentColor = MaterialTheme.colorScheme.onBackground,
+            ),
+            modifier = modifier.fillMaxWidth(),
+          )
+        }
+      }
+      Spacer(Modifier.height(8.dp))
+    }
     CoverageRows(coverageItems, Modifier.padding(horizontal = 16.dp))
     Spacer(Modifier.height(16.dp))
     HedvigContainedButton(
@@ -112,7 +172,7 @@ internal fun YourInfoTab(
 }
 
 @Composable
-private fun CoverageRows(
+internal fun CoverageRows(
   coverageRowItems: ImmutableList<Pair<String, String>>,
   modifier: Modifier = Modifier,
 ) {
@@ -163,8 +223,13 @@ private fun PreviewYourInfoTab() {
           "Co-insured".repeat(4) to "You +1".repeat(5),
         ),
         allowEditCoInsured = true,
+        upcomingChanges = ContractDetails.UpcomingChanges(
+          "Your insurance will update on 2023.08.17",
+          persistentListOf("1" to "2"),
+        ),
         onEditCoInsuredClick = {},
         onChangeAddressClick = {},
+        openChat = {},
       )
     }
   }

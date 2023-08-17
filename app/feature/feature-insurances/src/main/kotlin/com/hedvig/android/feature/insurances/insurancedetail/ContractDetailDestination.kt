@@ -64,6 +64,7 @@ internal fun ContractDetailDestination(
   onChangeAddressClick: () -> Unit,
   onCancelInsuranceClick: (ContractDetails.CancelInsuranceData) -> Unit,
   openWebsite: (Uri) -> Unit,
+  openChat: () -> Unit,
   navigateUp: () -> Unit,
   imageLoader: ImageLoader,
 ) {
@@ -75,6 +76,7 @@ internal fun ContractDetailDestination(
     onEditCoInsuredClick = onEditCoInsuredClick,
     onChangeAddressClick = onChangeAddressClick,
     onCancelInsuranceClick = onCancelInsuranceClick,
+    openChat = openChat,
     openWebsite = openWebsite,
     navigateUp = navigateUp,
   )
@@ -91,6 +93,7 @@ private fun ContractDetailScreen(
   onCancelInsuranceClick: (ContractDetails.CancelInsuranceData) -> Unit,
   openWebsite: (Uri) -> Unit,
   navigateUp: () -> Unit,
+  openChat: () -> Unit,
 ) {
   Column {
     TopAppBarWithBack(
@@ -150,6 +153,8 @@ private fun ContractDetailScreen(
                         allowEditCoInsured = state.contractDetails.allowEditCoInsured,
                         onEditCoInsuredClick = onEditCoInsuredClick,
                         onChangeAddressClick = onChangeAddressClick,
+                        upcomingChanges = state.contractDetails.upcomingChanges,
+                        openChat = openChat,
                       )
                     }
 
@@ -240,6 +245,7 @@ private fun PreviewContractDetailScreen() {
             insurableLimits = persistentListOf(),
             perils = persistentListOf(),
             documents = persistentListOf(),
+            upcomingChanges = ContractDetails.UpcomingChanges("Test", persistentListOf()),
           ),
         ),
         imageLoader = rememberPreviewImageLoader(),
@@ -249,6 +255,7 @@ private fun PreviewContractDetailScreen() {
         onCancelInsuranceClick = {},
         openWebsite = {},
         navigateUp = {},
+        openChat = {},
       )
     }
   }
