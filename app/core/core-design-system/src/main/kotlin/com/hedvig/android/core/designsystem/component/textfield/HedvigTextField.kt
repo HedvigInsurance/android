@@ -106,7 +106,7 @@ fun HedvigTextField(
     suffix = suffix,
     supportingText = errorText?.let { text ->
       {
-        errorRow(text)
+        ErrorRow(text)
       }
     },
     isError = errorText != null,
@@ -328,7 +328,7 @@ fun HedvigTextField(
     suffix = suffix,
     supportingText = errorText?.let { text ->
       {
-        errorRow(text)
+        ErrorRow(text)
       }
     },
     isError = errorText != null,
@@ -342,7 +342,7 @@ fun HedvigTextField(
 }
 
 @Composable
-private fun errorRow(text: String) {
+private fun ErrorRow(text: String) {
   Row(
     verticalAlignment = Alignment.CenterVertically,
   ) {

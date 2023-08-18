@@ -50,10 +50,10 @@ import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.data.forever.toErrorMessage
 import com.hedvig.android.feature.forever.ForeverUiState
 import hedvig.resources.R
-import kotlinx.coroutines.launch
-import org.javamoney.moneta.Money
 import javax.money.MonetaryAmount
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import org.javamoney.moneta.Money
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -219,7 +219,7 @@ internal fun ForeverContent(
             showEditBottomSheet = true
             delay(400)
             focusRequester.requestFocus()
-            textFieldValueState = textFieldValueState.copy(selection = TextRange(textFieldValueState.text.length))
+            textFieldValueState = textFieldValueState.copy(selection = TextRange(0, textFieldValueState.text.length))
           }
         },
         onShareCodeClick = onShareCodeClick,
