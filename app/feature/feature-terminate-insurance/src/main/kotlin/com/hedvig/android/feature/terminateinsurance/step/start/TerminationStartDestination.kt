@@ -15,10 +15,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 
 @Composable
@@ -44,12 +44,7 @@ private fun TerminationStartScreen(
 ) {
   Box(Modifier.fillMaxSize(), Alignment.Center) {
     when (uiState) {
-      TerminationFlowUiState.Error -> {
-        GenericErrorScreen(
-          onRetryButtonClick = retryLoad,
-          modifier = Modifier.padding(16.dp).windowInsetsPadding(WindowInsets.safeDrawing),
-        )
-      }
+      TerminationFlowUiState.Error -> HedvigErrorSection(retry = retryLoad)
       TerminationFlowUiState.Loading,
       is TerminationFlowUiState.Success,
       -> HedvigFullScreenCenterAlignedProgress()

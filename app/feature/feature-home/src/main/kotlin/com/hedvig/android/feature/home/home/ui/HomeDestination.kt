@@ -64,6 +64,7 @@ import com.hedvig.android.core.designsystem.component.button.LargeContainedTextB
 import com.hedvig.android.core.designsystem.component.button.LargeOutlinedTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.card.HedvigCardElevation
+import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -74,7 +75,6 @@ import com.hedvig.android.core.designsystem.theme.onWarning
 import com.hedvig.android.core.designsystem.theme.warning
 import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
-import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
 import com.hedvig.android.core.ui.grid.HedvigGrid
 import com.hedvig.android.core.ui.grid.InsideGridSpace
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
@@ -137,15 +137,7 @@ internal fun HomeDestination(
       Spacer(Modifier.height(64.dp))
       when (uiState) {
         HomeUiState.Loading -> {}
-        is HomeUiState.Error -> {
-          GenericErrorScreen(
-            onRetryButtonClick = reload,
-            modifier = Modifier
-              .padding(16.dp)
-              .padding(top = (80 - 16).dp),
-          )
-        }
-
+        is HomeUiState.Error -> HedvigErrorSection(retry = reload)
         is HomeUiState.Success -> {
           HomeScreenSuccess(
             homeItems = uiState.homeItems,
