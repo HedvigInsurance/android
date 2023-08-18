@@ -30,8 +30,8 @@ import octopus.CrossSalesQuery
 import octopus.type.CrossSellType
 
 internal sealed interface InsuranceScreenEvent {
-  object RetryLoading : InsuranceScreenEvent
-  object MarkCardCrossSellsAsSeen : InsuranceScreenEvent
+  data object RetryLoading : InsuranceScreenEvent
+  data object MarkCardCrossSellsAsSeen : InsuranceScreenEvent
 }
 
 internal data class InsuranceUiState(
@@ -40,7 +40,8 @@ internal data class InsuranceUiState(
   val showNotificationBadge: Boolean,
   val quantityOfCancelledInsurances: Int,
   val hasError: Boolean = false,
-  val loading: Boolean = false,
+  val isLoading: Boolean = false,
+  val isRetrying: Boolean = false,
 ) {
   data class InsuranceCard(
     val contractId: String,
@@ -70,7 +71,7 @@ internal data class InsuranceUiState(
       showNotificationBadge = false,
       quantityOfCancelledInsurances = 0,
       hasError = false,
-      loading = true,
+      isLoading = true,
     )
   }
 }
@@ -90,6 +91,7 @@ internal class InsurancePresenter(
       )
     }
     var isLoading by remember { mutableStateOf(true) }
+    var isRetrying by remember { mutableStateOf(false) }
     var didFailToLoad by remember { mutableStateOf(false) }
     val retryChannel = remember { RetryChannel() }
 
@@ -112,7 +114,7 @@ internal class InsurancePresenter(
       retryChannel.collectLatest {
         Snapshot.withMutableSnapshot {
           didFailToLoad = false
-          isLoading = true
+          isRetrying = true
         }
         loadInsuranceData(
           getInsuranceContractsUseCase,
@@ -121,6 +123,7 @@ internal class InsurancePresenter(
           ifLeft = {
             Snapshot.withMutableSnapshot {
               isLoading = false
+              isRetrying = false
               didFailToLoad = true
               insuranceData = InsuranceData.Empty
             }
@@ -128,6 +131,7 @@ internal class InsurancePresenter(
           ifRight = { insuranceDataResult ->
             Snapshot.withMutableSnapshot {
               isLoading = false
+              isRetrying = false
               didFailToLoad = false
               insuranceData = insuranceDataResult
             }
@@ -142,7 +146,7 @@ internal class InsurancePresenter(
       showNotificationBadge = showNotificationBadge,
       quantityOfCancelledInsurances = insuranceData.quantityOfCancelledInsurances,
       hasError = didFailToLoad == true && isLoading == false,
-      loading = isLoading,
+      isLoading = isLoading,
     )
   }
 }

@@ -30,7 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBar
@@ -50,7 +50,7 @@ internal fun PaymentHistoryDestination(
 
   AnimatedContent(targetState = uiState.isLoading, label = "") { loading ->
     when (loading) {
-      true -> HedvigFullScreenCenterAlignedProgress(show = uiState.isLoading)
+      true -> HedvigFullScreenCenterAlignedProgressDebounced(show = uiState.isLoading)
       false -> PaymentHistoryScreen(
         uiState = uiState,
         locale = viewModel.languageService.getLocale(),

@@ -52,7 +52,7 @@ internal class TerminationStartStepViewModel(
 }
 
 internal sealed interface TerminationFlowUiState {
-  object Loading : TerminationFlowUiState
-  object Error : TerminationFlowUiState
+  data object Loading : TerminationFlowUiState
+  data object Error : TerminationFlowUiState
   data class Success(val nextStep: TerminateInsuranceStep?) : TerminationFlowUiState
 }
