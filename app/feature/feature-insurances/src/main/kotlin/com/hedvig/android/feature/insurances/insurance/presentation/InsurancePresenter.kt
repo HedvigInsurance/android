@@ -12,7 +12,6 @@ import arrow.core.Either
 import arrow.core.raise.either
 import arrow.fx.coroutines.parZip
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.common.RetryChannel
 import com.hedvig.android.core.ui.insurance.ContractType
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
@@ -94,7 +93,7 @@ internal class InsurancePresenter(
     var isLoading by remember { mutableStateOf(true) }
     var isRetrying by remember { mutableStateOf(false) }
     var didFailToLoad by remember { mutableStateOf(false) }
-    val retryChannel = remember { RetryChannel() }
+    var loadIteration by remember { mutableStateOf(0) }
 
     val showNotificationBadge by crossSellCardNotificationBadgeService
       .showNotification()
@@ -102,43 +101,40 @@ internal class InsurancePresenter(
 
     CollectEvents { event ->
       when (event) {
-        InsuranceScreenEvent.RetryLoading -> {
-          retryChannel.retry()
-        }
+        InsuranceScreenEvent.RetryLoading -> loadIteration++
         InsuranceScreenEvent.MarkCardCrossSellsAsSeen -> {
           launch { crossSellCardNotificationBadgeService.markAsSeen() }
         }
       }
     }
 
-    LaunchedEffect(Unit) {
-      retryChannel.collectLatest {
-        Snapshot.withMutableSnapshot {
-          didFailToLoad = false
-          isRetrying = true
-        }
-        loadInsuranceData(
-          getInsuranceContractsUseCase,
-          getCrossSellsUseCase,
-        ).fold(
-          ifLeft = {
-            Snapshot.withMutableSnapshot {
-              isLoading = false
-              isRetrying = false
-              didFailToLoad = true
-              insuranceData = InsuranceData.Empty
-            }
-          },
-          ifRight = { insuranceDataResult ->
-            Snapshot.withMutableSnapshot {
-              isLoading = false
-              isRetrying = false
-              didFailToLoad = false
-              insuranceData = insuranceDataResult
-            }
-          },
-        )
+    LaunchedEffect(loadIteration) {
+      val isRetryingIteration = loadIteration != 0
+      Snapshot.withMutableSnapshot {
+        didFailToLoad = false
+        isRetrying = isRetryingIteration
       }
+      loadInsuranceData(
+        getInsuranceContractsUseCase,
+        getCrossSellsUseCase,
+      ).fold(
+        ifLeft = {
+          Snapshot.withMutableSnapshot {
+            isLoading = false
+            isRetrying = false
+            didFailToLoad = true
+            insuranceData = InsuranceData.Empty
+          }
+        },
+        ifRight = { insuranceDataResult ->
+          Snapshot.withMutableSnapshot {
+            isLoading = false
+            isRetrying = false
+            didFailToLoad = false
+            insuranceData = insuranceDataResult
+          }
+        },
+      )
     }
 
     return InsuranceUiState(
@@ -146,8 +142,9 @@ internal class InsurancePresenter(
       crossSells = insuranceData.crossSells,
       showNotificationBadge = showNotificationBadge,
       quantityOfCancelledInsurances = insuranceData.quantityOfCancelledInsurances,
-      hasError = didFailToLoad == true && isLoading == false,
+      hasError = didFailToLoad == true && isLoading == false && isRetrying == false,
       isLoading = isLoading,
+      isRetrying = isRetrying,
     )
   }
 }
