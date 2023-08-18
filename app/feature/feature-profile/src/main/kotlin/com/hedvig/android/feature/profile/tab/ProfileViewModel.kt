@@ -66,5 +66,5 @@ internal data class ProfileUiState(
   val euroBonus: EuroBonus? = null,
   val showPaymentScreen: Boolean = false,
   val memberReminders: MemberReminders = MemberReminders(),
-  val isLoading: Boolean = false,
+  val isLoading: Boolean = true,
 )

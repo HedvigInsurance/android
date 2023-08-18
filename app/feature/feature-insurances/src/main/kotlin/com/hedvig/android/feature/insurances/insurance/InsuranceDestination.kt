@@ -144,7 +144,7 @@ private fun InsuranceScreen(
         transitionSpec = {
           MotionDefaults.fadeThroughEnter with MotionDefaults.fadeThroughExit
         },
-        label = "",
+        label =  "uiState is Loading",
       ) { isLoading ->
         Spacer(Modifier.height(16.dp))
         when (isLoading) {
