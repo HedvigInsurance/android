@@ -138,7 +138,6 @@ private fun InsuranceScreen(
     )
     Box {
       AnimatedContent(targetState = uiState.isLoading, label = "") { isLoading ->
-        Spacer(Modifier.height(16.dp))
         when (isLoading) {
           true -> HedvigFullScreenCenterAlignedProgressDebounced()
           false -> {
