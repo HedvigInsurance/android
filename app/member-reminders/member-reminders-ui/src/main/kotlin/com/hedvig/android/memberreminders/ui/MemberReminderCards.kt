@@ -61,6 +61,7 @@ fun MemberReminderCards(
       visible = memberReminders.enableNotifications != null,
       enter = cardReminderEnterTransition,
       exit = cardReminderExitTransition,
+      label = "enableNotifications animated visibility",
     ) {
       ReminderCardEnableNotifications(
         snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
@@ -71,6 +72,7 @@ fun MemberReminderCards(
       visible = memberReminders.connectPayment != null,
       enter = cardReminderEnterTransition,
       exit = cardReminderExitTransition,
+      label = "connectPayment animated visibility",
     ) {
       ReminderCardConnectPayment(
         navigateToConnectPayment = navigateToConnectPayment,
@@ -80,6 +82,7 @@ fun MemberReminderCards(
       visible = memberReminders.upcomingRenewals != null,
       enter = cardReminderEnterTransition,
       exit = cardReminderExitTransition,
+      label = "upcomingRenewals animated visibility",
     ) {
       memberReminders.upcomingRenewals?.upcomingRenewals?.withIndex()?.forEach { (renewalsIndex, upcomingRenewal) ->
         ReminderCardUpcomingRenewals(
