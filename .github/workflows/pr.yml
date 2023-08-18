@@ -101,7 +101,7 @@ jobs:
         continue-on-error: true
         run: ./gradlew ktlintCheck
       - name: Annotate ktlint errors in the PR
-        continue-on-error: true
+        continue-on-error: false
         uses: yutailang0119/action-ktlint@v3
         with:
           report-path: build/reports/ktlint/*.xml

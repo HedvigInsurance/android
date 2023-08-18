@@ -39,8 +39,7 @@ internal fun ChatIcon(
       Image(
         imageVector = Icons.Hedvig.Chat,
         contentDescription = contentDescription,
-        modifier = Modifier
-          .layoutId("chatImage")
+        modifier = Modifier.layoutId("chatImage"),
       )
       if (showRedDot) {
         Box(

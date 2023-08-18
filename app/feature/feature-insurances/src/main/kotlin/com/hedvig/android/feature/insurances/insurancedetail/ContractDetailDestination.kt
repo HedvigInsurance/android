@@ -105,7 +105,9 @@ private fun ContractDetailScreen(
       AnimatedContent(targetState = uiState, label = "") { state ->
         when (state) {
           ContractDetailsUiState.Error -> HedvigErrorSection(retry = retry)
-          ContractDetailsUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced(show = uiState is ContractDetailsUiState.Loading)
+          ContractDetailsUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced(
+            show = uiState is ContractDetailsUiState.Loading,
+          )
           is ContractDetailsUiState.Success -> {
             LazyColumn(
               contentPadding = WindowInsets

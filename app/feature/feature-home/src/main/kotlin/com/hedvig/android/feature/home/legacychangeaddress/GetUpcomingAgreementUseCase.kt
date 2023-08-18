@@ -7,8 +7,8 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.android.table.Table
 import com.hedvig.android.language.LanguageService
 import giraffe.UpcomingAgreementQuery
-import java.time.LocalDate
 import kotlinx.parcelize.Parcelize
+import java.time.LocalDate
 
 class GetUpcomingAgreementUseCase(
   private val apolloClient: ApolloClient,

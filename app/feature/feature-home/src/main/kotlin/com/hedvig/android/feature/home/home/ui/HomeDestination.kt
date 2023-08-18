@@ -52,8 +52,8 @@ import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.core.common.android.SHARED_PREFERENCE_NAME
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.material3.onWarningContainer
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
+import com.hedvig.android.core.designsystem.material3.onWarningContainer
 import com.hedvig.android.core.designsystem.material3.warningContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -61,8 +61,6 @@ import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.ArrowForward
 import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
-import com.hedvig.android.core.ui.grid.HedvigGrid
-import com.hedvig.android.core.ui.grid.InsideGridSpace
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.feature.home.claimdetail.ui.previewList
 import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimsData

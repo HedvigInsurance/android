@@ -144,7 +144,7 @@ private fun InsuranceScreen(
         transitionSpec = {
           MotionDefaults.fadeThroughEnter with MotionDefaults.fadeThroughExit
         },
-        label =  "uiState is Loading",
+        label = "uiState is Loading",
       ) { isLoading ->
         Spacer(Modifier.height(16.dp))
         when (isLoading) {
@@ -168,7 +168,7 @@ private fun InsuranceScreen(
                   style = MaterialTheme.typography.titleLarge,
                 )
               }
-                
+
               if (uiState.hasError) {
                 HedvigErrorSection(retry = reload)
               } else {
