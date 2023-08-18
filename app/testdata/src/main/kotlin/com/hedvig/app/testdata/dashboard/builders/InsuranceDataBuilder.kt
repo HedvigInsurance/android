@@ -204,6 +204,12 @@ class InsuranceDataBuilder(
             ),
           ),
         ),
+        upcomingAgreementDetailsTable = InsuranceQuery.UpcomingAgreementDetailsTable(
+          __typename = "",
+          fragments = InsuranceQuery.UpcomingAgreementDetailsTable.Fragments(
+            TableFragment("", listOf())
+          )
+        ),
       )
     },
   )

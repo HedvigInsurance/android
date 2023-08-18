@@ -72,6 +72,7 @@ fun NavGraphBuilder.insuranceGraph(
           )
         }, // open termination flow
         openWebsite = openWebsite,
+        openChat = openChat,
         navigateUp = navigator::navigateUp,
         imageLoader = imageLoader,
       )
