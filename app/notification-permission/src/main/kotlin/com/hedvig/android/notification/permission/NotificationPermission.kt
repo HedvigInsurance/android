@@ -23,6 +23,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MutablePermissionState
 import com.google.accompanist.permissions.PermissionLifecycleCheckerEffect
 import com.google.accompanist.permissions.PermissionState
+import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
@@ -122,4 +123,15 @@ private fun Context.findActivity(): Activity {
     context = context.baseContext
   }
   throw IllegalStateException("Permissions should be called in the context of an Activity")
+}
+
+fun rememberPreviewNotificationPermissionState(
+  permissionStatus: PermissionStatus = PermissionStatus.Granted,
+  isDialogShowing: Boolean = false,
+): NotificationPermissionState = object : NotificationPermissionState {
+  override val showDialog: Boolean = isDialogShowing
+  override fun dismissDialog() {}
+  override val permission: String = ""
+  override val status: PermissionStatus = permissionStatus
+  override fun launchPermissionRequest() {}
 }
