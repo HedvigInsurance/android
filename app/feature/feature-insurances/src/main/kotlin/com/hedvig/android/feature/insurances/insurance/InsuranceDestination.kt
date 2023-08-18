@@ -137,7 +137,7 @@ private fun InsuranceScreen(
       refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
     )
     Box {
-      AnimatedContent(targetState = uiState.isLoading, label = "") { isLoading ->
+      AnimatedContent(targetState = uiState.isLoading, label = "uiState is Loading") { isLoading ->
         when (isLoading) {
           true -> HedvigFullScreenCenterAlignedProgressDebounced()
           false -> {

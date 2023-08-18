@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
@@ -59,7 +59,7 @@ internal fun ClaimDetailScreen(
         )
 
         ClaimDetailViewState.Error -> HedvigErrorSection(retry = retry)
-        ClaimDetailViewState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced()
+        ClaimDetailViewState.Loading -> HedvigFullScreenCenterAlignedProgress()
       }
     }
   }
