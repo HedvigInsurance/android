@@ -70,6 +70,8 @@ internal class GetHomeDataUseCaseImpl(
           allowGeneratingTravelCertificate = travelCertificateData != null,
           emergencyData = EmergencyData.from(homeQueryData),
         )
+      }.onLeft { errorMessage ->
+        logcat(throwable = errorMessage.throwable) { "GetHomeDataUseCase failed with ${errorMessage.message}" }
       }
     }
   }
