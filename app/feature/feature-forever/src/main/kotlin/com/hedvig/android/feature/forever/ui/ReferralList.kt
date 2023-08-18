@@ -130,6 +130,9 @@ private fun PreviewReferralList() {
     Surface {
       ReferralList(
         uiState = ForeverUiState(
+          grossPriceAmount = Money.of(138, fakeSekCurrency),
+          currentDiscountAmount = Money.of(40, fakeSekCurrency),
+          currentNetAmount = Money.of(118, fakeSekCurrency),
           referrals = listOf(
             ForeverUiState.Referral(
               name = "Ermir",
@@ -147,9 +150,6 @@ private fun PreviewReferralList() {
               discount = Money.of(10, fakeSekCurrency),
             ),
           ),
-          currentDiscountAmount = Money.of(40, fakeSekCurrency),
-          currentNetAmount = Money.of(118, fakeSekCurrency),
-          grossPriceAmount = Money.of(138, fakeSekCurrency),
         ),
       )
     }
