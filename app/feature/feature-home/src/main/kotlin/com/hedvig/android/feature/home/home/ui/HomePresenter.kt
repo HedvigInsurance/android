@@ -26,7 +26,7 @@ internal class HomePresenter(
   @Composable
   override fun MoleculePresenterScope<HomeEvent>.present(lastState: HomeUiState): HomeUiState {
     var hasError by remember { mutableStateOf(false) }
-    var isLoading by remember { mutableStateOf(false) }
+    var isReloading by remember { mutableStateOf(false) }
     var successData: SuccessData? by remember { mutableStateOf(SuccessData.fromLastState(lastState)) }
     var loadIteration by remember { mutableStateOf(0) }
 
@@ -42,7 +42,7 @@ internal class HomePresenter(
     LaunchedEffect(loadIteration) {
       val forceNetworkFetch = loadIteration != 0
       Snapshot.withMutableSnapshot {
-        isLoading = true
+        isReloading = true
         hasError = false
       }
       getHomeDataUseCase.invoke(forceNetworkFetch).collectLatest { homeResult ->
@@ -50,14 +50,14 @@ internal class HomePresenter(
           ifLeft = {
             Snapshot.withMutableSnapshot {
               hasError = true
-              isLoading = false
+              isReloading = false
               successData = null
             }
           },
           ifRight = { homeData: HomeData ->
             Snapshot.withMutableSnapshot {
               hasError = false
-              isLoading = false
+              isReloading = false
               successData = SuccessData.fromHomeData(homeData)
             }
           },
@@ -74,7 +74,7 @@ internal class HomePresenter(
         HomeUiState.Loading
       } else {
         HomeUiState.Success(
-          isReloading = isLoading,
+          isReloading = isReloading,
           homeText = successData.homeText,
           claimStatusCardsData = successData.claimStatusCardsData,
           memberReminders = successData.memberReminders,
@@ -94,11 +94,11 @@ internal sealed interface HomeEvent {
 }
 
 internal sealed interface HomeUiState {
-  val isLoading: Boolean
-    get() = this is Loading || (this is Success && isReloading)
+  val isReloading: Boolean
+    get() = false
 
   data class Success(
-    val isReloading: Boolean = false,
+    override val isReloading: Boolean = false,
     val homeText: HomeText,
     val claimStatusCardsData: HomeData.ClaimStatusCardsData?,
     val veryImportantMessages: ImmutableList<HomeData.VeryImportantMessage>,

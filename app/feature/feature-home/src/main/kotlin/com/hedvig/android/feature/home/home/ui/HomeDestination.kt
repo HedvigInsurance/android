@@ -2,6 +2,7 @@ package com.hedvig.android.feature.home.home.ui
 
 import android.content.Context
 import android.net.Uri
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -53,6 +54,7 @@ import com.hedvig.android.core.common.android.SHARED_PREFERENCE_NAME
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
 import com.hedvig.android.core.designsystem.material3.warningContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -78,6 +80,7 @@ import com.hedvig.android.memberreminders.ui.MemberReminderCards
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.NotificationPermissionState
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
+import com.hedvig.android.notification.permission.rememberPreviewNotificationPermissionState
 import hedvig.resources.R
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
@@ -146,53 +149,59 @@ private fun HomeScreen(
     WindowInsets.systemBars.getTop(this).toDp()
   }
   val pullRefreshState = rememberPullRefreshState(
-    refreshing = uiState.isLoading,
+    refreshing = uiState.isReloading,
     onRefresh = reload,
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
   Box(Modifier.fillMaxSize()) {
-    Column(
-      Modifier
-        .matchParentSize()
-        .pullRefresh(pullRefreshState)
-        .verticalScroll(rememberScrollState())
-        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-    ) {
-      Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
-      Spacer(Modifier.height(64.dp)) // Room for TopAppBarLayoutForActions
-      when (uiState) {
-        HomeUiState.Loading -> {}
-        is HomeUiState.Error -> HedvigErrorSection(retry = reload)
-        is HomeUiState.Success -> {
-          HomeScreenSuccess(
-            uiState = uiState,
-            notificationPermissionState = notificationPermissionState,
-            imageLoader = imageLoader,
-            snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
-            onStartMovingFlow = onStartMovingFlow,
-            onClaimDetailCardClicked = onClaimDetailCardClicked,
-            navigateToConnectPayment = navigateToConnectPayment,
-            onEmergencyClaimClicked = { emergencyData ->
-              context.startActivity(
-                EmergencyActivity.newInstance(
-                  context = context,
-                  data = emergencyData,
-                ),
-              )
-            },
-            onGenerateTravelCertificateClicked = onGenerateTravelCertificateClicked,
-            onCommonClaimClicked = { commonClaimsData ->
-              onOpenCommonClaim(commonClaimsData)
-            },
-            onStartClaimClicked = onStartClaim,
-            onUpcomingRenewalClick = tryOpenUri,
-            openAppSettings = openAppSettings,
-            openUrl = openUrl,
-          )
+    AnimatedContent(
+      targetState = uiState,
+      modifier = Modifier.fillMaxSize(),
+      label = "home ui state",
+    ) { uiState ->
+      Column(
+        Modifier
+          .fillMaxSize()
+          .pullRefresh(pullRefreshState)
+          .verticalScroll(rememberScrollState())
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+      ) {
+        Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
+        Spacer(Modifier.height(64.dp)) // Room for TopAppBarLayoutForActions
+        when (uiState) {
+          HomeUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced(Modifier.weight(1f))
+          is HomeUiState.Error -> HedvigErrorSection(retry = reload, modifier = Modifier.weight(1f))
+          is HomeUiState.Success -> {
+            HomeScreenSuccess(
+              uiState = uiState,
+              notificationPermissionState = notificationPermissionState,
+              imageLoader = imageLoader,
+              snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
+              onStartMovingFlow = onStartMovingFlow,
+              onClaimDetailCardClicked = onClaimDetailCardClicked,
+              navigateToConnectPayment = navigateToConnectPayment,
+              onEmergencyClaimClicked = { emergencyData ->
+                context.startActivity(
+                  EmergencyActivity.newInstance(
+                    context = context,
+                    data = emergencyData,
+                  ),
+                )
+              },
+              onGenerateTravelCertificateClicked = onGenerateTravelCertificateClicked,
+              onCommonClaimClicked = { commonClaimsData ->
+                onOpenCommonClaim(commonClaimsData)
+              },
+              onStartClaimClicked = onStartClaim,
+              onUpcomingRenewalClick = tryOpenUri,
+              openAppSettings = openAppSettings,
+              openUrl = openUrl,
+            )
+          }
         }
+        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
       }
-      Spacer(Modifier.height(16.dp))
-      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     }
     Column {
       TopAppBarLayoutForActions {
@@ -215,7 +224,7 @@ private fun HomeScreen(
       )
     }
     PullRefreshIndicator(
-      refreshing = uiState.isLoading,
+      refreshing = uiState.isReloading,
       state = pullRefreshState,
       scale = true,
       modifier = Modifier.align(Alignment.TopCenter),
@@ -417,7 +426,7 @@ private fun PreviewHomeScreen() {
           allowGeneratingTravelCertificate = true,
           emergencyData = null,
         ),
-        notificationPermissionState = rememberNotificationPermissionState(),
+        notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
         snoozeNotificationPermissionReminder = {},
         onStartChat = {},
