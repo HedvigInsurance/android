@@ -42,7 +42,7 @@ internal fun MyInfoDestination(
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-  AnimatedContent(targetState = uiState.isLoading, label = "") { loading ->
+  AnimatedContent(targetState = uiState.isLoading, label = "uiState is loading") { loading ->
     when (loading) {
       true -> HedvigFullScreenCenterAlignedProgress(show = uiState.isLoading)
       false -> MyInfoScreen(
