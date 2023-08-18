@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Card
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.LocalContentAlpha
@@ -19,22 +18,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.feature.home.claimdetail.model.ClaimDetailCardUiState
-import com.hedvig.android.feature.home.claimstatus.claimprogress.ClaimProgressRow
 import com.hedvig.android.feature.home.claimstatus.claimprogress.ClaimProgressUiState
 
 @Composable
-internal fun ClaimDetailCard(
+internal fun ClaimInfoCard(
   uiState: ClaimDetailCardUiState,
   onChatClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Card(modifier = modifier) {
+  HedvigCard(modifier = modifier) {
     Column {
       TopSection(
-        claimProgressItemsUiState = uiState.claimProgressItemsUiState,
         statusParagraph = uiState.statusParagraph,
         modifier = Modifier
           .animateContentSize()
@@ -56,7 +54,6 @@ internal fun ClaimDetailCard(
 
 @Composable
 private fun TopSection(
-  claimProgressItemsUiState: List<ClaimProgressUiState>,
   statusParagraph: String,
   modifier: Modifier = Modifier,
 ) {
@@ -64,9 +61,6 @@ private fun TopSection(
     verticalArrangement = Arrangement.spacedBy(24.dp),
     modifier = modifier,
   ) {
-    ClaimProgressRow(
-      claimProgressItemsUiState = claimProgressItemsUiState,
-    )
     Text(
       text = statusParagraph,
       style = MaterialTheme.typography.subtitle1,
@@ -108,7 +102,7 @@ private fun BottomSection(
 private fun PreviewClaimDetailCard() {
   HedvigTheme {
     Surface(color = MaterialTheme.colors.background) {
-      ClaimDetailCard(
+      ClaimInfoCard(
         ClaimDetailCardUiState(
           claimProgressItemsUiState = ClaimProgressUiState.previewList(),
           statusParagraph = "StatusParagraph",

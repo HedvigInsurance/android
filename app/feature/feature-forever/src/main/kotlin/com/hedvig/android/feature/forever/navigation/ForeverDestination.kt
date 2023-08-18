@@ -1,13 +1,14 @@
 package com.hedvig.android.feature.forever.navigation
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.with
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
 import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.forever.ForeverViewModel
 import com.hedvig.android.feature.forever.ui.ForeverScreen
@@ -53,14 +54,19 @@ private fun ForeverDestination(
   hedvigBuildConstants: HedvigBuildConstants,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  AnimatedContent(targetState = uiState.isLoading, label = "") { loading ->
+  AnimatedContent(
+    targetState = uiState.isLoading,
+    transitionSpec = {
+      MotionDefaults.fadeThroughEnter with MotionDefaults.fadeThroughExit
+    },
+    label = "",
+  ) { loading ->
     when (loading) {
-      true -> HedvigFullScreenCenterAlignedProgress(show = uiState.isLoading)
+      true -> HedvigFullScreenCenterAlignedProgressDebounced(show = uiState.isLoading)
       false -> ForeverScreen(
         uiState = uiState,
         reload = viewModel::reload,
         onSubmitCode = viewModel::onSubmitCode,
-        onCodeChanged = viewModel::onCodeChanged,
         languageService = languageService,
         hedvigBuildConstants = hedvigBuildConstants,
       )

@@ -7,8 +7,8 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.android.table.Table
 import com.hedvig.android.language.LanguageService
 import giraffe.UpcomingAgreementQuery
-import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
+import kotlinx.parcelize.Parcelize
 
 class GetUpcomingAgreementUseCase(
   private val apolloClient: ApolloClient,
@@ -23,7 +23,7 @@ class GetUpcomingAgreementUseCase(
     return when (val response = apolloClient.query(upcomingAgreementQuery()).safeExecute()) {
       is OperationResult.Success -> {
         val contracts = response.data.contracts
-        if (contracts.isNullOrEmpty()) {
+        if (contracts.isEmpty()) {
           UpcomingAgreementResult.Error.NoContractsError
         } else {
           contracts.firstOrNull {

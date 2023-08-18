@@ -5,7 +5,6 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
 
 private const val ProgressThreshold = 0.35f
 
@@ -16,27 +15,16 @@ private val Int.ForIncoming: Int
   get() = this - this.ForOutgoing
 
 object FadeThroughDefaults {
-  const val FadeThroughDuration = MotionTokens.DurationMedium2.toInt()
-  val FadeThroughInterpolator = MotionTokens.EasingStandardCubicBezier
+  private const val FadeThroughDuration = MotionTokens.DurationMedium1.toInt()
+  private val FadeThroughInterpolator = MotionTokens.EasingStandardCubicBezier
 
-  internal val fadeThroughEnterTransition: EnterTransition = run {
-    val fade = fadeIn(
-      tween(
-        durationMillis = FadeThroughDuration.ForIncoming,
-        delayMillis = FadeThroughDuration.ForOutgoing,
-        easing = FadeThroughInterpolator,
-      ),
-    )
-    val scale = scaleIn(
-      tween(
-        durationMillis = FadeThroughDuration.ForIncoming,
-        delayMillis = FadeThroughDuration.ForOutgoing,
-        easing = FadeThroughInterpolator,
-      ),
-      initialScale = 0.92f,
-    )
-    fade + scale
-  }
+  internal val fadeThroughEnterTransition: EnterTransition = fadeIn(
+    animationSpec = tween(
+      durationMillis = FadeThroughDuration.ForIncoming,
+      delayMillis = FadeThroughDuration.ForOutgoing,
+      easing = FadeThroughInterpolator,
+    ),
+  )
 
   internal val fadeThroughExitTransition: ExitTransition = fadeOut(
     animationSpec = tween(

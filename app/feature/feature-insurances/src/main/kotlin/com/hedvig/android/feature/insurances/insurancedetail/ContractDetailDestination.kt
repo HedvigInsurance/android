@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.insurances.insurancedetail
 
 import android.net.Uri
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -40,7 +41,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.animation.animateContentHeight
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
@@ -63,6 +64,7 @@ internal fun ContractDetailDestination(
   onChangeAddressClick: () -> Unit,
   onCancelInsuranceClick: (ContractDetails.CancelInsuranceData) -> Unit,
   openWebsite: (Uri) -> Unit,
+  openChat: () -> Unit,
   navigateUp: () -> Unit,
   imageLoader: ImageLoader,
 ) {
@@ -74,6 +76,7 @@ internal fun ContractDetailDestination(
     onEditCoInsuredClick = onEditCoInsuredClick,
     onChangeAddressClick = onChangeAddressClick,
     onCancelInsuranceClick = onCancelInsuranceClick,
+    openChat = openChat,
     openWebsite = openWebsite,
     navigateUp = navigateUp,
   )
@@ -90,6 +93,7 @@ private fun ContractDetailScreen(
   onCancelInsuranceClick: (ContractDetails.CancelInsuranceData) -> Unit,
   openWebsite: (Uri) -> Unit,
   navigateUp: () -> Unit,
+  openChat: () -> Unit,
 ) {
   Column {
     TopAppBarWithBack(
@@ -98,82 +102,86 @@ private fun ContractDetailScreen(
     )
     val pagerState = rememberPagerState()
     Box(Modifier.weight(1f)) {
-      when (uiState) {
-        ContractDetailsUiState.Error -> {
-          HedvigErrorSection(retry = retry)
-        }
-        ContractDetailsUiState.Loading -> {}
-        is ContractDetailsUiState.Success -> {
-          LazyColumn(
-            contentPadding = WindowInsets
-              .safeDrawing
-              .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
-              .asPaddingValues()
-              .plus(PaddingValues(top = 16.dp)),
-            modifier = Modifier.consumeWindowInsets(
-              WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
-            ),
-          ) {
-            item(
-              key = 1,
-              contentType = "InsuranceCard",
+      AnimatedContent(targetState = uiState, label = "") { state ->
+        when (state) {
+          ContractDetailsUiState.Error -> HedvigErrorSection(retry = retry)
+          ContractDetailsUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced(show = uiState is ContractDetailsUiState.Loading)
+          is ContractDetailsUiState.Success -> {
+            LazyColumn(
+              contentPadding = WindowInsets
+                .safeDrawing
+                .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
+                .asPaddingValues()
+                .plus(PaddingValues(top = 16.dp)),
+              modifier = Modifier.consumeWindowInsets(
+                WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+              ),
             ) {
-              val contractCardData = uiState.contractDetails.contractCardData
-              InsuranceCard(
-                chips = contractCardData.chips,
-                topText = contractCardData.title,
-                bottomText = contractCardData.subtitle,
-                imageLoader = imageLoader,
-                modifier = Modifier.padding(horizontal = 16.dp),
-                fallbackPainter = contractCardData.contractType.toDrawableRes().let { drawableRes ->
-                  painterResource(id = drawableRes)
-                },
-              )
-            }
-            item(key = 2, contentType = "space") { Spacer(Modifier.height(16.dp)) }
-            stickyHeader(key = 3, contentType = "PagerSelector") { PagerSelector(pagerState) }
-            item(
-              key = 4,
-              contentType = "Pager",
-            ) {
-              HorizontalPager(
-                pageCount = 3,
-                state = pagerState,
-                key = { it },
-                verticalAlignment = Alignment.Top,
-                modifier = Modifier.animateContentHeight(spring(stiffness = Spring.StiffnessLow)),
-              ) { pageIndex ->
-                when (pageIndex) {
-                  0 -> {
-                    YourInfoTab(
-                      coverageItems = uiState.contractDetails.overviewItems,
-                      allowEditCoInsured = uiState.contractDetails.allowEditCoInsured,
-                      onEditCoInsuredClick = onEditCoInsuredClick,
-                      onChangeAddressClick = onChangeAddressClick,
-                    )
+              item(
+                key = 1,
+                contentType = "InsuranceCard",
+              ) {
+                val contractCardData = state.contractDetails.contractCardData
+                InsuranceCard(
+                  chips = contractCardData.chips,
+                  topText = contractCardData.title,
+                  bottomText = contractCardData.subtitle,
+                  imageLoader = imageLoader,
+                  modifier = Modifier.padding(horizontal = 16.dp),
+                  fallbackPainter = contractCardData.contractType.toDrawableRes().let { drawableRes ->
+                    painterResource(id = drawableRes)
+                  },
+                )
+              }
+              item(key = 2, contentType = "space") { Spacer(Modifier.height(16.dp)) }
+              stickyHeader(key = 3, contentType = "PagerSelector") { PagerSelector(pagerState) }
+              item(
+                key = 4,
+                contentType = "Pager",
+              ) {
+                HorizontalPager(
+                  pageCount = 3,
+                  state = pagerState,
+                  key = { it },
+                  verticalAlignment = Alignment.Top,
+                  modifier = Modifier.animateContentHeight(spring(stiffness = Spring.StiffnessLow)),
+                ) { pageIndex ->
+                  when (pageIndex) {
+                    0 -> {
+                      YourInfoTab(
+                        coverageItems = state.contractDetails.overviewItems,
+                        allowEditCoInsured = state.contractDetails.allowEditCoInsured,
+                        onEditCoInsuredClick = onEditCoInsuredClick,
+                        onChangeAddressClick = onChangeAddressClick,
+                        upcomingChanges = state.contractDetails.upcomingChanges,
+                        openChat = openChat,
+                      )
+                    }
+
+                    1 -> {
+                      CoverageTab(
+                        state.contractDetails.insurableLimits,
+                        state.contractDetails.perils,
+                      )
+                    }
+
+                    2 -> {
+                      DocumentsTab(
+                        documents = state.contractDetails.documents,
+                        onDocumentClicked = openWebsite,
+                        cancelInsuranceData = state.contractDetails.cancelInsuranceData,
+                        onCancelInsuranceClick = onCancelInsuranceClick,
+                      )
+                    }
+
+                    else -> {}
                   }
-                  1 -> {
-                    CoverageTab(
-                      uiState.contractDetails.insurableLimits,
-                      uiState.contractDetails.perils,
-                    )
-                  }
-                  2 -> {
-                    DocumentsTab(
-                      documents = uiState.contractDetails.documents,
-                      onDocumentClicked = openWebsite,
-                      cancelInsuranceData = uiState.contractDetails.cancelInsuranceData,
-                      onCancelInsuranceClick = onCancelInsuranceClick,
-                    )
-                  }
-                  else -> {}
                 }
               }
             }
           }
         }
       }
-      HedvigFullScreenCenterAlignedProgress(show = uiState is ContractDetailsUiState.Loading)
     }
   }
 }
@@ -237,6 +245,7 @@ private fun PreviewContractDetailScreen() {
             insurableLimits = persistentListOf(),
             perils = persistentListOf(),
             documents = persistentListOf(),
+            upcomingChanges = ContractDetails.UpcomingChanges("Test", persistentListOf()),
           ),
         ),
         imageLoader = rememberPreviewImageLoader(),
@@ -246,6 +255,7 @@ private fun PreviewContractDetailScreen() {
         onCancelInsuranceClick = {},
         openWebsite = {},
         navigateUp = {},
+        openChat = {},
       )
     }
   }

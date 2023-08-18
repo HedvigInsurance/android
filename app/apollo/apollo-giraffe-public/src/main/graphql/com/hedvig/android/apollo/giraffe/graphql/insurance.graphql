@@ -24,6 +24,9 @@ query InsuranceQuery($locale: Locale!) {
     currentAgreementDetailsTable(locale: $locale) {
       ...TableFragment
     }
+    upcomingAgreementDetailsTable(locale: $locale) {
+      ...TableFragment
+    }
     contractPerils(locale: $locale) {
       ...PerilFragmentV2
     }

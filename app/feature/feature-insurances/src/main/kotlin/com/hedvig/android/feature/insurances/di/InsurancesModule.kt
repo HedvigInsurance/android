@@ -3,7 +3,7 @@ package com.hedvig.android.feature.insurances.di
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.giraffe.di.giraffeClient
 import com.hedvig.android.apollo.octopus.di.octopusClient
-import com.hedvig.android.feature.insurances.InsuranceViewModel
+import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCaseImpl
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase

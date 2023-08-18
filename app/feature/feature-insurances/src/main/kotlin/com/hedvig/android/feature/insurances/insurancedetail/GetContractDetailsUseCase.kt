@@ -74,6 +74,16 @@ internal class GetContractDetailsUseCase(
           overviewItems = contract.currentAgreementDetailsTable.fragments.tableFragment.sections.flatMap {
             it.rows.map { it.title to it.value }
           }.toPersistentList(),
+          upcomingChanges = if (contract.upcomingAgreementDetailsTable.fragments.tableFragment.title.isNotBlank()) {
+            ContractDetails.UpcomingChanges(
+              title = contract.upcomingAgreementDetailsTable.fragments.tableFragment.title,
+              sections = contract.upcomingAgreementDetailsTable.fragments.tableFragment.sections.flatMap {
+                it.rows.map { it.title to it.value }
+              }.toPersistentList(),
+            )
+          } else {
+            null
+          },
           cancelInsuranceData = cancelInsuranceData,
           allowEditCoInsured = contract.typeOfContract.canChangeCoInsured(),
           insurableLimits = contractCoverage.insurableLimits,
@@ -98,6 +108,7 @@ internal sealed class ContractDetailError {
 internal data class ContractDetails(
   val contractCardData: ContractCardData,
   val overviewItems: ImmutableList<Pair<String, String>>,
+  val upcomingChanges: UpcomingChanges?,
   val cancelInsuranceData: CancelInsuranceData?,
   val allowEditCoInsured: Boolean,
   val insurableLimits: ImmutableList<ContractCoverage.InsurableLimit>,
@@ -124,6 +135,11 @@ internal data class ContractDetails(
     data class InsuranceCertificate(override val uri: Uri) : Document
     data class TermsAndConditions(override val uri: Uri) : Document
   }
+
+  data class UpcomingChanges(
+    val title: String,
+    val sections: ImmutableList<Pair<String, String>>,
+  )
 }
 
 private fun TypeOfContract.canChangeCoInsured() = when (this) {
@@ -155,6 +171,7 @@ private fun TypeOfContract.canChangeCoInsured() = when (this) {
   TypeOfContract.DK_TRAVEL,
   TypeOfContract.DK_TRAVEL_STUDENT,
   -> true
+
   TypeOfContract.SE_CAR_TRAFFIC,
   TypeOfContract.SE_CAR_HALF,
   TypeOfContract.SE_CAR_FULL,
