@@ -22,11 +22,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
+import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
-import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
+import com.hedvig.android.feature.home.claimdetail.model.ClaimDetailResult
 import com.hedvig.android.feature.home.claimdetail.model.ClaimDetailUiState
 import com.hedvig.android.feature.home.claimstatus.TopInfo
 import com.hedvig.android.feature.home.claimstatus.claimprogress.ClaimProgressRow
@@ -109,6 +110,7 @@ private fun ClaimDetailScreen(
           claimProgressItemsUiState = uiState.claimDetailCard.claimProgressItemsUiState,
           modifier = Modifier.padding(16.dp),
         )
+
       }
     }
     Spacer(Modifier.height(8.dp))

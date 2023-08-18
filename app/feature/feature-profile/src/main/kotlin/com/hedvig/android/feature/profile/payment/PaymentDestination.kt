@@ -6,6 +6,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.with
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -47,8 +48,9 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedButt
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
+import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.core.designsystem.material3.typeContainer
 import com.hedvig.android.core.designsystem.material3.typeElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -76,9 +78,15 @@ internal fun PaymentDestination(
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-  AnimatedContent(targetState = uiState.isLoading, label = "") { loading ->
+  AnimatedContent(
+    targetState = uiState.isLoading,
+    transitionSpec = {
+      MotionDefaults.fadeThroughEnter with MotionDefaults.fadeThroughExit
+    },
+    label = "",
+  ) { loading ->
     when (loading) {
-      true -> HedvigFullScreenCenterAlignedProgress(show = uiState.isLoading)
+      true -> HedvigFullScreenCenterAlignedProgressDebounced(show = uiState.isLoading)
       false -> PaymentScreen(
         uiState = uiState,
         locale = viewModel.languageService.getLocale(),

@@ -87,7 +87,7 @@ internal class InsurancePresenterTest {
     presenter.test(InsuranceUiState.initialState) {
       awaitItem().also { uiState ->
         assertThat(uiState).isEqualTo(InsuranceUiState.initialState)
-        assertThat(uiState.loading).isTrue()
+        assertThat(uiState.isLoading).isTrue()
       }
 
       getInsuranceContractsUseCase.contracts.add(validContracts)
@@ -95,7 +95,7 @@ internal class InsurancePresenterTest {
       awaitItem().also { uiState ->
         assertAll {
           assertThat(uiState.hasError).isFalse()
-          assertThat(uiState.loading).isFalse()
+          assertThat(uiState.isLoading).isFalse()
           assertThat(uiState.quantityOfCancelledInsurances)
             .isEqualTo(validContracts.count(InsuranceContract::isTerminated))
           assertThat(uiState.insuranceCards.map { it.contractId }).containsSubList(validContracts.map { it.id })
@@ -122,7 +122,7 @@ internal class InsurancePresenterTest {
       getCrossSellsUseCase.errorMessages.add(ErrorMessage())
       awaitItem().also { uiState ->
         assertThat(uiState.hasError).isTrue()
-        assertThat(uiState.loading).isFalse()
+        assertThat(uiState.isLoading).isFalse()
         assertThat(uiState.quantityOfCancelledInsurances).isEqualTo(0)
       }
     }
@@ -145,7 +145,7 @@ internal class InsurancePresenterTest {
       getCrossSellsUseCase.errorMessages.add(ErrorMessage())
       awaitItem().also { uiState ->
         assertThat(uiState.hasError).isTrue()
-        assertThat(uiState.loading).isFalse()
+        assertThat(uiState.isLoading).isFalse()
       }
     }
   }
@@ -166,14 +166,14 @@ internal class InsurancePresenterTest {
       getCrossSellsUseCase.crossSells.add(validCrossSells)
       awaitItem().also { uiState ->
         assertThat(uiState.hasError).isTrue()
-        assertThat(uiState.loading).isFalse()
+        assertThat(uiState.isLoading).isFalse()
         assertThat(uiState.quantityOfCancelledInsurances).isEqualTo(0)
       }
 
       sendEvent(InsuranceScreenEvent.RetryLoading)
       awaitItem().also { uiState ->
         assertThat(uiState.hasError).isFalse()
-        assertThat(uiState.loading).isTrue()
+        assertThat(uiState.isLoading).isTrue()
         assertThat(uiState.quantityOfCancelledInsurances).isEqualTo(0)
       }
 
@@ -181,7 +181,7 @@ internal class InsurancePresenterTest {
       getInsuranceContractsUseCase.contracts.add(validContracts)
       awaitItem().also { uiState ->
         assertThat(uiState.hasError).isFalse()
-        assertThat(uiState.loading).isFalse()
+        assertThat(uiState.isLoading).isFalse()
         assertThat(uiState.quantityOfCancelledInsurances)
           .isEqualTo(validContracts.count(InsuranceContract::isTerminated))
       }

@@ -31,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
@@ -48,6 +49,7 @@ import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
@@ -104,18 +106,7 @@ fun HedvigTextField(
     suffix = suffix,
     supportingText = errorText?.let { text ->
       {
-        Row(
-          verticalAlignment = Alignment.CenterVertically,
-        ) {
-          Icon(
-            imageVector = Icons.Rounded.Warning,
-            contentDescription = null,
-            modifier = Modifier.size(16.dp),
-            tint = MaterialTheme.colorScheme.warningElement,
-          )
-          Spacer(Modifier.width(6.dp))
-          Text(text)
-        }
+        ErrorRow(text)
       }
     },
     isError = errorText != null,
@@ -157,14 +148,8 @@ fun HedvigTextField(
   colors: HedvigTextFieldColors = HedvigTextFieldDefaults.colors(),
 ) {
   // If color is not provided via the text style, use content color as a default
-  val textColor = textStyle.color.takeOrElse {
-    colors.textColor(enabled, isError, interactionSource).value
-  }
-  val mergedTextStyle = if (withNewDesign) {
-    textStyle.merge(MaterialTheme.typography.headlineSmall.copy(color = textColor))
-  } else {
-    textStyle.merge(MaterialTheme.typography.bodyLarge.copy(color = textColor))
-  }
+  val textColor = getTextColor(textStyle, colors, enabled, isError, interactionSource)
+  val mergedTextStyle = getMergedTextStyle(withNewDesign, textStyle, textColor)
 
   CompositionLocalProvider(LocalTextSelectionColors provides colors.selectionColors) {
     BasicTextField(
@@ -215,6 +200,183 @@ fun HedvigTextField(
       },
     )
   }
+}
+
+/**
+ * The raw HedvigTextField, with the same API as the [androidx.compose.material3.TextField], with our HedvigSpecific
+ * HedvigTextFieldDefaults.
+ */
+@Composable
+fun HedvigTextField(
+  value: TextFieldValue,
+  onValueChange: (TextFieldValue) -> Unit,
+  modifier: Modifier = Modifier,
+  withNewDesign: Boolean = false, // Adapts the TextField to have the big card size and the bigger text size.
+  enabled: Boolean = true,
+  readOnly: Boolean = false,
+  textStyle: TextStyle = LocalTextStyle.current,
+  label: @Composable (() -> Unit)? = null,
+  placeholder: @Composable (() -> Unit)? = null,
+  leadingIcon: @Composable (() -> Unit)? = null,
+  trailingIcon: @Composable (() -> Unit)? = null,
+  prefix: @Composable (() -> Unit)? = null,
+  suffix: @Composable (() -> Unit)? = null,
+  supportingText: @Composable (() -> Unit)? = null,
+  isError: Boolean = false,
+  visualTransformation: VisualTransformation = VisualTransformation.None,
+  keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+  keyboardActions: KeyboardActions = KeyboardActions.Default,
+  interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+  shape: Shape = HedvigTextFieldDefaults.shape,
+  colors: HedvigTextFieldColors = HedvigTextFieldDefaults.colors(),
+) {
+  // If color is not provided via the text style, use content color as a default
+  val textColor = getTextColor(textStyle, colors, enabled, isError, interactionSource)
+  val mergedTextStyle = getMergedTextStyle(withNewDesign, textStyle, textColor)
+
+  CompositionLocalProvider(LocalTextSelectionColors provides colors.selectionColors) {
+    BasicTextField(
+      value = value,
+      modifier = modifier
+        .defaultMinSize(
+          minWidth = HedvigTextFieldDefaults.MinWidth,
+          minHeight = HedvigTextFieldDefaults.MinHeight,
+        )
+        .then(
+          if (withNewDesign) {
+            Modifier.heightIn(72.dp) // Hedvig adjusted, matches the new design system card height.
+          } else {
+            Modifier
+          },
+        ),
+      onValueChange = onValueChange,
+      enabled = enabled,
+      readOnly = readOnly,
+      textStyle = mergedTextStyle,
+      cursorBrush = SolidColor(colors.cursorColor(isError).value),
+      visualTransformation = visualTransformation,
+      keyboardOptions = keyboardOptions,
+      keyboardActions = keyboardActions,
+      interactionSource = interactionSource,
+      singleLine = true,
+      decorationBox = @Composable { innerTextField ->
+        // places leading icon, text field with label and placeholder, trailing icon
+        HedvigTextFieldDefaults.DecorationBox(
+          value = value.text,
+          withNewDesign = withNewDesign,
+          visualTransformation = visualTransformation,
+          innerTextField = innerTextField,
+          placeholder = placeholder,
+          label = label,
+          leadingIcon = leadingIcon,
+          trailingIcon = trailingIcon,
+          prefix = prefix,
+          suffix = suffix,
+          supportingText = supportingText,
+          shape = shape,
+          singleLine = true,
+          enabled = enabled,
+          isError = isError,
+          interactionSource = interactionSource,
+          colors = colors,
+        )
+      },
+    )
+  }
+}
+
+/**
+ * A convenience function for [HedvigTextField] which provides a parameter for `errorText` and none for `supportingText`
+ * since we provide the default that our design system expects.
+ */
+@Composable
+fun HedvigTextField(
+  value: TextFieldValue,
+  onValueChange: (TextFieldValue) -> Unit,
+  errorText: String?,
+  modifier: Modifier = Modifier,
+  withNewDesign: Boolean = false, // Adapts the TextField to have the big card size and the bigger text size.
+  enabled: Boolean = true,
+  readOnly: Boolean = false,
+  textStyle: TextStyle = LocalTextStyle.current,
+  label: @Composable (() -> Unit)? = null,
+  placeholder: @Composable (() -> Unit)? = null,
+  leadingIcon: @Composable (() -> Unit)? = null,
+  trailingIcon: @Composable (() -> Unit)? = null,
+  prefix: @Composable (() -> Unit)? = null,
+  suffix: @Composable (() -> Unit)? = null,
+  visualTransformation: VisualTransformation = VisualTransformation.None,
+  keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+  keyboardActions: KeyboardActions = KeyboardActions.Default,
+  interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+  shape: Shape = HedvigTextFieldDefaults.shape,
+  colors: HedvigTextFieldColors = HedvigTextFieldDefaults.colors(),
+) {
+  HedvigTextField(
+    value = value,
+    onValueChange = onValueChange,
+    modifier = modifier,
+    withNewDesign = withNewDesign,
+    enabled = enabled,
+    readOnly = readOnly,
+    textStyle = textStyle,
+    label = label,
+    placeholder = placeholder,
+    leadingIcon = leadingIcon,
+    trailingIcon = trailingIcon,
+    prefix = prefix,
+    suffix = suffix,
+    supportingText = errorText?.let { text ->
+      {
+        ErrorRow(text)
+      }
+    },
+    isError = errorText != null,
+    visualTransformation = visualTransformation,
+    keyboardOptions = keyboardOptions,
+    keyboardActions = keyboardActions,
+    interactionSource = interactionSource,
+    shape = shape,
+    colors = colors,
+  )
+}
+
+@Composable
+private fun ErrorRow(text: String) {
+  Row(
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    Icon(
+      imageVector = Icons.Rounded.Warning,
+      contentDescription = null,
+      modifier = Modifier.size(16.dp),
+      tint = MaterialTheme.colorScheme.warningElement,
+    )
+    Spacer(Modifier.width(6.dp))
+    Text(text)
+  }
+}
+
+@Composable
+private fun getMergedTextStyle(
+  withNewDesign: Boolean,
+  textStyle: TextStyle,
+  textColor: Color,
+) = if (withNewDesign) {
+  textStyle.merge(MaterialTheme.typography.headlineSmall.copy(color = textColor))
+} else {
+  textStyle.merge(MaterialTheme.typography.bodyLarge.copy(color = textColor))
+}
+
+@Composable
+private fun getTextColor(
+  textStyle: TextStyle,
+  colors: HedvigTextFieldColors,
+  enabled: Boolean,
+  isError: Boolean,
+  interactionSource: MutableInteractionSource,
+) = textStyle.color.takeOrElse {
+  colors.textColor(enabled, isError, interactionSource).value
 }
 
 @Composable
