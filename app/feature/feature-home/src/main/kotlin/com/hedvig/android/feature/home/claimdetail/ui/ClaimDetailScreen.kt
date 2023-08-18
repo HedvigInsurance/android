@@ -27,7 +27,6 @@ import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenC
 import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
-import com.hedvig.android.feature.home.claimdetail.model.ClaimDetailResult
 import com.hedvig.android.feature.home.claimdetail.model.ClaimDetailUiState
 import com.hedvig.android.feature.home.claimstatus.TopInfo
 import com.hedvig.android.feature.home.claimstatus.claimprogress.ClaimProgressRow
@@ -59,17 +58,7 @@ internal fun ClaimDetailScreen(
           onPlayClick = onPlayClick,
         )
 
-        ClaimDetailViewState.Error -> GenericErrorScreen(
-          onRetryButtonClick = retry,
-          modifier = Modifier
-            .padding(16.dp)
-            .padding(top = 40.dp)
-            .padding(
-              WindowInsets.safeDrawing
-                .only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal)
-                .asPaddingValues(),
-            ),
-        )
+        ClaimDetailViewState.Error -> HedvigErrorSection(retry = retry)
 
         ClaimDetailViewState.Loading -> {
           HedvigFullScreenCenterAlignedProgress()
