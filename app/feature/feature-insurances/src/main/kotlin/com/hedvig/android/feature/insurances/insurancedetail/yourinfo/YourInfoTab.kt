@@ -113,7 +113,7 @@ internal fun YourInfoTab(
       windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
     ) {
       UpcomingChangesBottomSheetContent(
-        title = upcomingChanges.title,
+        infoText = upcomingChanges.title,
         sections = upcomingChanges.sections,
         onOpenChat = openChat,
         onDismiss = {

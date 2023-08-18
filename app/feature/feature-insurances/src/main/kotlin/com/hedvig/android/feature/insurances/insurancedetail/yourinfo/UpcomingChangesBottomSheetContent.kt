@@ -24,7 +24,7 @@ import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun UpcomingChangesBottomSheetContent(
-  title: String,
+  infoText: String,
   sections: ImmutableList<Pair<String, String>>,
   onOpenChat: () -> Unit,
   onDismiss: () -> Unit,
@@ -45,7 +45,7 @@ internal fun UpcomingChangesBottomSheetContent(
     CoverageRows(coverageRowItems = sections)
     Spacer(modifier = Modifier.height(16.dp))
     VectorInfoCard(
-      text = title,
+      text = infoText,
       modifier = Modifier.fillMaxWidth(),
     )
     Spacer(modifier = Modifier.height(16.dp))
@@ -68,7 +68,7 @@ private fun PreviewUpcomingChangesBottomSheetContent() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       UpcomingChangesBottomSheetContent(
-        title = "Test",
+        infoText = "Test",
         sections = persistentListOf(
           "1" to "2",
         ),
