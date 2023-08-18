@@ -89,8 +89,8 @@ internal class HomePresenter(
 }
 
 internal sealed interface HomeEvent {
-  object RefreshData : HomeEvent
-  object SnoozeNotificationPermissionReminder : HomeEvent
+  data object RefreshData : HomeEvent
+  data object SnoozeNotificationPermissionReminder : HomeEvent
 }
 
 internal sealed interface HomeUiState {
