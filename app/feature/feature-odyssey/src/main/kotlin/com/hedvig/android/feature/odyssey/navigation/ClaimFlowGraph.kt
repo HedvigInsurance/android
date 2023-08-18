@@ -4,6 +4,7 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navOptions
+import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.toClaimFlowDestination
@@ -54,7 +55,10 @@ fun NavGraphBuilder.claimFlowGraph(
     startDestination = createRoutePattern<ClaimFlowDestination.HonestyPledge>(),
   ) {
     nestedGraphs()
-    animatedComposable<ClaimFlowDestination.HonestyPledge> { backStackEntry ->
+    animatedComposable<ClaimFlowDestination.HonestyPledge>(
+      enterTransition = { MotionDefaults.fadeThroughEnter },
+      exitTransition = { MotionDefaults.fadeThroughExit },
+    ) { backStackEntry ->
       HonestyPledgeDestination(
         windowSizeClass = windowSizeClass,
         openNotificationPermissionStep = {
