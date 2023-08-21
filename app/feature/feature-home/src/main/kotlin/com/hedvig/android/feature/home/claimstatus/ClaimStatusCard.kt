@@ -38,7 +38,6 @@ internal fun ClaimStatusCard(
         pillsUiState = uiState.pillsUiState,
         title = uiState.title,
         subtitle = uiState.subtitle,
-        isClickable = goToDetailScreen != null,
         modifier = Modifier.padding(16.dp),
       )
       Divider()

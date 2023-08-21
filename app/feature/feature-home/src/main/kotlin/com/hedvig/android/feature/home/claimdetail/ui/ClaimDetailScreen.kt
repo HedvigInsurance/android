@@ -91,7 +91,6 @@ private fun ClaimDetailScreen(
           pillsUiState = uiState.pillsUiState,
           title = uiState.claimType,
           subtitle = uiState.insuranceType,
-          isClickable = false,
           modifier = Modifier.padding(16.dp),
         )
         Divider()

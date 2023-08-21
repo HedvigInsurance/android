@@ -23,10 +23,9 @@ internal fun TopInfo(
   title: String,
   subtitle: String,
   modifier: Modifier = Modifier,
-  isClickable: Boolean = false,
 ) {
   Column(modifier = modifier) {
-    ClaimPillsAndForwardArrow(pillsUiState, isClickable = isClickable)
+    ClaimPillsAndForwardArrow(pillsUiState)
     Spacer(modifier = Modifier.height(20.dp))
     Text(title)
     CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
