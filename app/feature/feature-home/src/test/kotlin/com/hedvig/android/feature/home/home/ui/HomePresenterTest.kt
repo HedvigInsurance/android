@@ -107,6 +107,7 @@ internal class HomePresenterTest {
           allowAddressChange = true,
           allowGeneratingTravelCertificate = false,
           emergencyData = null,
+          commonClaimsData = persistentListOf(),
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -129,6 +130,7 @@ internal class HomePresenterTest {
           allowAddressChange = true,
           allowGeneratingTravelCertificate = false,
           emergencyData = null,
+          commonClaimsData = persistentListOf(),
         ),
       )
     }
@@ -168,5 +170,6 @@ internal class HomePresenterTest {
     allowAddressChange = true,
     allowGeneratingTravelCertificate = false,
     emergencyData = null,
+    commonClaimsData = persistentListOf(),
   )
 }

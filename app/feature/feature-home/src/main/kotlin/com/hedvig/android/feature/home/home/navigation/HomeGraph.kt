@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.home.home.navigation
 
-import android.net.Uri
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
@@ -31,7 +30,6 @@ fun NavGraphBuilder.homeGraph(
   navigateToPayinScreen: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
-  tryOpenUri: (Uri) -> Unit,
   imageLoader: ImageLoader,
   hAnalytics: HAnalytics,
 ) {
@@ -60,9 +58,7 @@ fun NavGraphBuilder.homeGraph(
           with(navigator) { backStackEntry.navigate(HomeDestinations.CommonClaimDestination(commonClaimsData)) }
         },
         openUrl = openUrl,
-        tryOpenUri = tryOpenUri,
         openAppSettings = openAppSettings,
-        imageLoader = imageLoader,
       )
     }
     claimDetailGraph(

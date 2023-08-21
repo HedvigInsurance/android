@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.home.home.ui
 
 import android.content.Context
-import android.net.Uri
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,10 +35,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -48,7 +52,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
-import coil.ImageLoader
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.core.common.android.SHARED_PREFERENCE_NAME
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
@@ -63,7 +66,6 @@ import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.ArrowForward
 import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
-import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.feature.home.claimdetail.ui.previewList
 import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimsData
 import com.hedvig.android.feature.home.claims.commonclaim.EmergencyActivity
@@ -74,6 +76,7 @@ import com.hedvig.android.feature.home.claimstatus.data.ClaimStatusCardUiState
 import com.hedvig.android.feature.home.claimstatus.data.PillUiState
 import com.hedvig.android.feature.home.data.HomeData
 import com.hedvig.android.feature.home.home.ChatTooltip
+import com.hedvig.android.feature.home.otherservices.OtherServicesBottomSheet
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.memberreminders.ui.MemberReminderCards
@@ -84,6 +87,7 @@ import com.hedvig.android.notification.permission.rememberPreviewNotificationPer
 import hedvig.resources.R
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.toJavaLocalDate
 import java.time.format.DateTimeFormatter
@@ -100,9 +104,7 @@ internal fun HomeDestination(
   onGenerateTravelCertificateClicked: () -> Unit,
   onOpenCommonClaim: (CommonClaimsData) -> Unit,
   openUrl: (String) -> Unit,
-  tryOpenUri: (Uri) -> Unit,
   openAppSettings: () -> Unit,
-  imageLoader: ImageLoader,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val notificationPermissionState = rememberNotificationPermissionState()
@@ -119,9 +121,7 @@ internal fun HomeDestination(
     onGenerateTravelCertificateClicked = onGenerateTravelCertificateClicked,
     onOpenCommonClaim = onOpenCommonClaim,
     openUrl = openUrl,
-    tryOpenUri = tryOpenUri,
     openAppSettings = openAppSettings,
-    imageLoader = imageLoader,
   )
 }
 
@@ -140,9 +140,7 @@ private fun HomeScreen(
   onGenerateTravelCertificateClicked: () -> Unit,
   onOpenCommonClaim: (CommonClaimsData) -> Unit,
   openUrl: (String) -> Unit,
-  tryOpenUri: (Uri) -> Unit,
   openAppSettings: () -> Unit,
-  imageLoader: ImageLoader,
 ) {
   val context = LocalContext.current
   val systemBarInsetTopDp = with(LocalDensity.current) {
@@ -153,72 +151,6 @@ private fun HomeScreen(
     onRefresh = reload,
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
-
-  val coroutineScope = rememberCoroutineScope()
-  val sheetState = rememberModalBottomSheetState(true)
-  var showEditYourInfoBottomSheet by rememberSaveable { mutableStateOf(false) }
-
-  if (showEditYourInfoBottomSheet) {
-    OtherServicesBottomSheet(
-      options = listOf(
-        CommonClaim.Chat,// TODO Provide this from the uiState
-        CommonClaim.ChangeAddress,
-        CommonClaim.GenerateTravelCertificate,
-        CommonClaim.Emergency(
-          EmergencyData(
-            iconUrls = ThemedIconUrls("", ""),
-            color = HedvigColor.DarkGray,
-            title = "Test",
-            eligibleToClaim = true,
-            emergencyNumber = "123",
-          ),
-        ),
-      ),
-      onChatClicked = {
-        coroutineScope.launch {
-          sheetState.hide()
-          showEditYourInfoBottomSheet = false
-          onStartChat()
-        }
-      },
-      onStartMovingFlow = {
-        coroutineScope.launch {
-          sheetState.hide()
-          showEditYourInfoBottomSheet = false
-          onStartMovingFlow()
-        }
-      },
-      onEmergencyClaimClicked = {
-        val emergencyActivity = EmergencyActivity.newInstance(context = context, data = it)
-        coroutineScope.launch {
-          sheetState.hide()
-          showEditYourInfoBottomSheet = false
-          context.startActivity(emergencyActivity)
-        }
-      },
-      onGenerateTravelCertificateClicked = {
-        coroutineScope.launch {
-          sheetState.hide()
-          showEditYourInfoBottomSheet = false
-          onGenerateTravelCertificateClicked()
-        }
-      },
-      onCommonClaimClicked = {
-        coroutineScope.launch {
-          sheetState.hide()
-          showEditYourInfoBottomSheet = false
-          onOpenCommonClaim(it)
-        }
-      },
-      onDismiss = {
-        coroutineScope.launch {
-          sheetState.hide()
-          showEditYourInfoBottomSheet = false
-        }
-      },
-      sheetState = sheetState,
-    )
-  }
 
   Box(Modifier.fillMaxSize()) {
     AnimatedContent(
@@ -242,7 +174,6 @@ private fun HomeScreen(
             HomeScreenSuccess(
               uiState = uiState,
               notificationPermissionState = notificationPermissionState,
-              imageLoader = imageLoader,
               snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
               onStartMovingFlow = onStartMovingFlow,
               onClaimDetailCardClicked = onClaimDetailCardClicked,
@@ -256,12 +187,10 @@ private fun HomeScreen(
                 )
               },
               onGenerateTravelCertificateClicked = onGenerateTravelCertificateClicked,
-              onCommonClaimClicked = { commonClaimsData ->
-                onOpenCommonClaim(commonClaimsData)
-              },
+              onOpenCommonClaim = onOpenCommonClaim,
               onStartClaimClicked = onStartClaim,
-              onUpcomingRenewalClick = tryOpenUri,
               openAppSettings = openAppSettings,
+              openChat = onStartChat,
               openUrl = openUrl,
             )
           }
@@ -314,19 +243,41 @@ private suspend fun daysSinceLastTooltipShown(context: Context): Boolean {
 private fun ColumnScope.HomeScreenSuccess(
   uiState: HomeUiState.Success,
   notificationPermissionState: NotificationPermissionState,
-  imageLoader: ImageLoader,
   snoozeNotificationPermissionReminder: () -> Unit,
   onStartMovingFlow: () -> Unit,
   onClaimDetailCardClicked: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   onEmergencyClaimClicked: (EmergencyData) -> Unit,
   onGenerateTravelCertificateClicked: () -> Unit,
-  onCommonClaimClicked: (CommonClaimsData) -> Unit,
+  onOpenCommonClaim: (CommonClaimsData) -> Unit,
   onStartClaimClicked: () -> Unit,
-  onUpcomingRenewalClick: (Uri) -> Unit,
   openAppSettings: () -> Unit,
+  openChat: () -> Unit,
   openUrl: (String) -> Unit,
 ) {
+  val coroutineScope = rememberCoroutineScope()
+  val sheetState = rememberModalBottomSheetState(true)
+  var showEditYourInfoBottomSheet by rememberSaveable { mutableStateOf(false) }
+  val dismissOtherServicesBottomSheet: () -> Unit = {
+    coroutineScope.launch {
+      sheetState.hide()
+    }.invokeOnCompletion {
+      showEditYourInfoBottomSheet = false
+    }
+  }
+  if (showEditYourInfoBottomSheet) {
+    OtherServicesBottomSheet(
+      uiState = uiState,
+      dismissBottomSheet = dismissOtherServicesBottomSheet,
+      onChatClicked = openChat,
+      onStartMovingFlow = onStartMovingFlow,
+      onEmergencyClaimClicked = onEmergencyClaimClicked,
+      onGenerateTravelCertificateClicked = onGenerateTravelCertificateClicked,
+      onOpenCommonClaim = onOpenCommonClaim,
+      sheetState = sheetState,
+    )
+  }
+
   for ((index, veryImportantMessage) in uiState.veryImportantMessages.withIndex()) {
     VeryImportantMessageBanner(openUrl, veryImportantMessage)
     if (index == uiState.veryImportantMessages.lastIndex) {
@@ -369,8 +320,8 @@ private fun ColumnScope.HomeScreenSuccess(
   )
   Spacer(Modifier.height(8.dp))
   HedvigTextButton(
-    text = stringResource(R.string.home_tab_other_services),
-    onClick = {}, // todo open bottom sheet with other services here
+    text = stringResource(id = R.string.home_tab_other_services),
+    onClick = { showEditYourInfoBottomSheet = true },
     modifier = Modifier.padding(horizontal = 16.dp),
   )
 }
@@ -492,6 +443,7 @@ private fun PreviewHomeScreen() {
           allowAddressChange = true,
           allowGeneratingTravelCertificate = true,
           emergencyData = null,
+          commonClaimsData = persistentListOf(),
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
@@ -504,22 +456,8 @@ private fun PreviewHomeScreen() {
         onGenerateTravelCertificateClicked = {},
         onOpenCommonClaim = {},
         openUrl = {},
-        tryOpenUri = {},
         openAppSettings = {},
-        imageLoader = rememberPreviewImageLoader(),
       )
     }
   }
-}
-
-fun todo() {
-  showOtherServices = {
-    showEditYourInfoBottomSheet = true
-  },
-
-  HedvigTextButton(
-    text = stringResource(id = R.string.home_tab_other_services),
-    onClick = { showOtherServices() },
-    modifier = Modifier.padding(horizontal = 16.dp)
-  )
 }
