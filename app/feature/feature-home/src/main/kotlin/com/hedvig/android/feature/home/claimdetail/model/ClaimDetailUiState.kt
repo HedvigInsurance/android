@@ -27,7 +27,7 @@ internal data class ClaimDetailUiState(
         claimDetailCard = ClaimDetailCardUiState.fromDto(dto),
         signedAudioURL = SignedAudioUrl.fromSignedAudioUrlStringOrNull(dto.claim.signedAudioURL),
         claimStatus = dto.claim.status,
-        pillsUiState = PillUiState.fromClaimDetailsQuery(dto)
+        pillsUiState = PillUiState.fromClaimDetailsQuery(dto),
       )
     }
   }

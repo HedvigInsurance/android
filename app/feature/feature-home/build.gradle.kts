@@ -11,10 +11,12 @@ android {
   buildFeatures {
     viewBinding = true
   }
+  testOptions.unitTests.isReturnDefaultValues = true
 }
 
 dependencies {
   implementation(libs.accompanist.pagerIndicators)
+  implementation(libs.accompanist.permissions)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material)
   implementation(libs.androidx.compose.material3)
@@ -32,6 +34,7 @@ dependencies {
   implementation(libs.insetter)
   implementation(libs.koin.compose)
   implementation(libs.kotlinx.datetime)
+  implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.materialComponents)
   implementation(libs.moneta)
@@ -45,17 +48,33 @@ dependencies {
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
-  implementation(projects.dataTravelCertificate)
+  implementation(projects.dataTravelCertificatePublic)
   implementation(projects.hanalyticsCore)
   implementation(projects.hanalyticsFeatureFlagsPublic)
   implementation(projects.languageCore)
+  implementation(projects.loggingPublic)
   implementation(projects.marketCore)
+  implementation(projects.memberRemindersPublic)
+  implementation(projects.memberRemindersUi)
+  implementation(projects.moleculeAndroid)
+  implementation(projects.moleculePublic)
   implementation(projects.navigationActivity)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+  implementation(projects.notificationPermission)
+
+  testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
+  testImplementation(libs.turbine)
   testImplementation(projects.apolloGiraffeTest)
+  testImplementation(projects.apolloTest)
+  testImplementation(projects.coreCommonTest)
+  testImplementation(projects.dataTravelCertificateTest)
   testImplementation(projects.hanalyticsFeatureFlagsTest)
+  testImplementation(projects.languageTest)
+  testImplementation(projects.loggingTest)
+  testImplementation(projects.memberRemindersTest)
+  testImplementation(projects.moleculeTest)
 }

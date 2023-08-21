@@ -84,7 +84,7 @@ class SettingsPresenterTest {
     settingsPresenter.test(SettingsUiState.Loading(Language.EN_SE, listOf(Language.EN_SE, Language.SV_SE))) {
       skipItems(1)
       enableNotificationsReminderManager.snoozeNotificationReminderCalls.expectNoEvents()
-      sendEvent(SettingsEvent.SnoozeNotificationReminder)
+      sendEvent(SettingsEvent.SnoozeNotificationPermissionReminder)
       enableNotificationsReminderManager.snoozeNotificationReminderCalls.expectMostRecentItem()
     }
   }

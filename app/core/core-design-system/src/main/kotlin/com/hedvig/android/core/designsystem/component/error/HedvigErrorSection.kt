@@ -1,5 +1,6 @@
 package com.hedvig.android.core.designsystem.component.error
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -42,6 +43,7 @@ fun HedvigErrorSection(
 ) {
   Column(
     horizontalAlignment = Alignment.CenterHorizontally,
+    verticalArrangement = Arrangement.Center,
     modifier = modifier
       .padding(contentPadding)
       .padding(horizontal = 16.dp),

@@ -77,7 +77,7 @@ private fun InnerChatTooltip(
       .wrapContentWidth(Alignment.End, true)
       .offset(y = -arrowHeightDp),
   ) {
-    Crossfade(show) { crossfadeShow ->
+    Crossfade(show, label = "chat tooltip") { crossfadeShow ->
       if (crossfadeShow) {
         val squircleMedium = MaterialTheme.shapes.squircleMedium
         Surface(

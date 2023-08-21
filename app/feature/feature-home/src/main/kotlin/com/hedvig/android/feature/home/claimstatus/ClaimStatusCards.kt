@@ -15,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import arrow.core.NonEmptyList
 import arrow.core.nonEmptyListOf
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -24,21 +23,24 @@ import com.hedvig.android.feature.home.claimdetail.ui.previewList
 import com.hedvig.android.feature.home.claimstatus.claimprogress.ClaimProgressUiState
 import com.hedvig.android.feature.home.claimstatus.data.ClaimStatusCardUiState
 import com.hedvig.android.feature.home.claimstatus.data.PillUiState
+import com.hedvig.android.feature.home.data.HomeData
 import java.util.UUID
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun ClaimStatusCards(
   goToDetailScreen: ((claimId: String) -> Unit)?,
-  onClaimCardShown: (String) -> Unit,
-  claimStatusCardsUiState: NonEmptyList<ClaimStatusCardUiState>,
+  claimStatusCardsData: HomeData.ClaimStatusCardsData,
+  contentPadding: PaddingValues,
+  modifier: Modifier = Modifier,
 ) {
+  val claimStatusCardsUiState = claimStatusCardsData.claimStatusCardsUiState
   val pagerState = rememberPagerState()
-  Column {
+  Column(modifier) {
     HorizontalPager(
       pageCount = claimStatusCardsUiState.size,
       state = pagerState,
-      contentPadding = PaddingValues(horizontal = 16.dp),
+      contentPadding = contentPadding,
       beyondBoundsPageCount = 1,
       pageSpacing = 12.dp,
       key = { index -> claimStatusCardsUiState[index].id },
@@ -49,12 +51,9 @@ internal fun ClaimStatusCards(
         uiState = claimStatusUiState,
         goToDetailScreen = goToDetailScreen,
         modifier = Modifier.fillMaxWidth(),
-        onClaimCardShown = onClaimCardShown,
       )
     }
-    if (claimStatusCardsUiState.size == 1) {
-      Spacer(Modifier.height(14.dp))
-    } else {
+    if (claimStatusCardsUiState.size > 1) {
       Spacer(Modifier.height(16.dp))
 
       HorizontalPagerIndicator(
@@ -80,8 +79,8 @@ private fun PreviewClaimStatusCards() {
       )
       ClaimStatusCards(
         goToDetailScreen = {},
-        claimStatusCardsUiState = nonEmptyListOf(claimStatusCardsUiState),
-        onClaimCardShown = {},
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        claimStatusCardsData = HomeData.ClaimStatusCardsData(nonEmptyListOf(claimStatusCardsUiState)),
       )
     }
   }

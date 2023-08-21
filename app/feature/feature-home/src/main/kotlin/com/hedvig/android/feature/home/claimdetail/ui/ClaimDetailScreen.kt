@@ -99,7 +99,6 @@ private fun ClaimDetailScreen(
           claimProgressItemsUiState = uiState.claimDetailCard.claimProgressItemsUiState,
           modifier = Modifier.padding(16.dp),
         )
-
       }
     }
     Spacer(Modifier.height(8.dp))

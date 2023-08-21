@@ -27,7 +27,6 @@
 
     <item name="colorChatUserBackground" type="color">#FFE0F0F9</item>
     <item name="colorChatHedvigBackground" type="color">#FFF0F0F0</item>
-    <item name="colorChatInputButton" type="color">@color/hedvig_light_gray</item>
 
     <item name="colorInfoCardSurface" type="color">@color/lavender_200</item>
 

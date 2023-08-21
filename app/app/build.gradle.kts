@@ -209,7 +209,7 @@ dependencies {
   implementation(projects.dataClaimFlow)
   implementation(projects.dataClaimTriaging)
   implementation(projects.dataForever)
-  implementation(projects.dataTravelCertificate)
+  implementation(projects.dataTravelCertificatePublic)
   implementation(projects.datadog)
   implementation(projects.featureBusinessmodel)
   implementation(projects.featureChangeaddress)

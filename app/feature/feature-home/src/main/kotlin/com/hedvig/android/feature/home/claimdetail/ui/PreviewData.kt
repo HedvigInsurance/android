@@ -5,17 +5,17 @@ import com.hedvig.android.feature.home.claimdetail.model.ClaimDetailUiState
 import com.hedvig.android.feature.home.claimstatus.claimprogress.ClaimProgressUiState
 import com.hedvig.android.feature.home.claimstatus.data.PillUiState
 import giraffe.type.ClaimStatus
-import kotlin.time.Duration.Companion.minutes
 import kotlinx.datetime.Clock
+import kotlin.time.Duration.Companion.minutes
 
 internal fun PillUiState.Companion.previewList(): List<PillUiState> {
-  return PillUiState.PillType.values().dropLast(1).map { pillType ->
+  return PillUiState.PillType.entries.dropLast(1).map { pillType ->
     PillUiState(pillType.name, pillType)
   }
 }
 
 internal fun ClaimProgressUiState.Companion.previewList(): List<ClaimProgressUiState> {
-  return ClaimProgressUiState.ClaimProgressType.values().dropLast(1).map { progressType ->
+  return ClaimProgressUiState.ClaimProgressType.entries.dropLast(1).map { progressType ->
     ClaimProgressUiState(progressType.name, progressType)
   }
 }

@@ -50,7 +50,7 @@ internal fun SettingsDestination(
     uiState = uiState,
     navigateUp = navigateUp,
     openAppSettings = openAppSettings,
-    onNotificationInfoDismissed = { viewModel.emit(SettingsEvent.SnoozeNotificationReminder) },
+    onNotificationInfoDismissed = { viewModel.emit(SettingsEvent.SnoozeNotificationPermissionReminder) },
     onLanguageSelected = { viewModel.emit(SettingsEvent.ChangeLanguage(it)) },
     onThemeSelected = { viewModel.emit(SettingsEvent.ChangeTheme(it)) },
   )
@@ -116,7 +116,7 @@ private fun SettingsScreen(
         ) {
           Column {
             ReminderCardEnableNotifications(
-              snoozePermission = onNotificationInfoDismissed,
+              snoozeNotificationPermissionReminder = onNotificationInfoDismissed,
               requestNotificationPermission = notificationPermissionState::launchPermissionRequest,
               modifier = Modifier.padding(horizontal = 16.dp),
             )

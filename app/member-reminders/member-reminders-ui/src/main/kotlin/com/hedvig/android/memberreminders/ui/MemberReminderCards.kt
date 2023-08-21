@@ -50,7 +50,7 @@ fun MemberReminderCards(
   navigateToConnectPayment: () -> Unit,
   openUrl: (String) -> Unit,
   notificationPermissionState: NotificationPermissionState,
-  snoozePermission: () -> Unit,
+  snoozeNotificationPermissionReminder: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -61,9 +61,10 @@ fun MemberReminderCards(
       visible = memberReminders.enableNotifications != null,
       enter = cardReminderEnterTransition,
       exit = cardReminderExitTransition,
+      label = "enableNotifications animated visibility",
     ) {
       ReminderCardEnableNotifications(
-        snoozePermission = snoozePermission,
+        snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
         requestNotificationPermission = notificationPermissionState::launchPermissionRequest,
       )
     }
@@ -71,6 +72,7 @@ fun MemberReminderCards(
       visible = memberReminders.connectPayment != null,
       enter = cardReminderEnterTransition,
       exit = cardReminderExitTransition,
+      label = "connectPayment animated visibility",
     ) {
       ReminderCardConnectPayment(
         navigateToConnectPayment = navigateToConnectPayment,
@@ -80,6 +82,7 @@ fun MemberReminderCards(
       visible = memberReminders.upcomingRenewals != null,
       enter = cardReminderEnterTransition,
       exit = cardReminderExitTransition,
+      label = "upcomingRenewals animated visibility",
     ) {
       memberReminders.upcomingRenewals?.upcomingRenewals?.withIndex()?.forEach { (renewalsIndex, upcomingRenewal) ->
         ReminderCardUpcomingRenewals(
@@ -105,7 +108,7 @@ private val cardReminderExitTransition = fadeOut() + shrinkVertically(
 
 @Composable
 fun ReminderCardEnableNotifications(
-  snoozePermission: () -> Unit,
+  snoozeNotificationPermissionReminder: () -> Unit,
   requestNotificationPermission: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -115,7 +118,7 @@ fun ReminderCardEnableNotifications(
   ) {
     Row(Modifier.padding(vertical = 4.dp)) {
       InfoCardTextButton(
-        onClick = snoozePermission,
+        onClick = snoozeNotificationPermissionReminder,
         text = stringResource(R.string.PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW),
         modifier = Modifier.weight(1f),
       )

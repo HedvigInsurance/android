@@ -1,19 +1,19 @@
 package com.hedvig.android.memberreminders
 
-import arrow.core.Either
-import assertk.assertAll
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.containsSubList
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
-import assertk.assertions.isNotNull
+import assertk.assertions.prop
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.annotations.ApolloExperimental
-import com.apollographql.apollo3.testing.QueueTestNetworkTransport
 import com.apollographql.apollo3.testing.enqueueTestNetworkError
 import com.apollographql.apollo3.testing.enqueueTestResponse
 import com.hedvig.android.apollo.giraffe.test.GiraffeFakeResolver
+import com.hedvig.android.apollo.test.TestApolloClientRule
+import com.hedvig.android.core.common.test.isLeft
+import com.hedvig.android.core.common.test.isRight
 import com.hedvig.android.test.clock.TestClock
 import giraffe.GetUpcomingRenewalReminderQuery
 import giraffe.type.buildContract
@@ -23,8 +23,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toKotlinLocalDate
 import kotlinx.datetime.toLocalDateTime
-import org.junit.After
-import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
@@ -32,19 +31,10 @@ import kotlin.time.Duration.Companion.days
 @OptIn(ApolloExperimental::class)
 class GetUpcomingRenewalRemindersUseCaseTest {
 
-  private lateinit var apolloClient: ApolloClient
-
-  @Before
-  fun setUp() {
-    apolloClient = ApolloClient.Builder()
-      .networkTransport(QueueTestNetworkTransport())
-      .build()
-  }
-
-  @After
-  fun tearDown() {
-    apolloClient.close()
-  }
+  @get:Rule
+  val testApolloClientRule = TestApolloClientRule()
+  val apolloClient: ApolloClient
+    get() = testApolloClientRule.apolloClient
 
   @Test
   fun `one upcoming renewal should show the reminder`() = runTest {
@@ -71,12 +61,9 @@ class GetUpcomingRenewalRemindersUseCaseTest {
 
     val result = getUpcomingRenewalRemindersUseCase.invoke()
 
-    assertAll {
-      assertThat(result).isInstanceOf<Either.Right<*>>()
-      assertThat(result.getOrNull()).isNotNull().containsExactly(
-        UpcomingRenewal("display name", upcomingRenewalLocalDate.toKotlinLocalDate(), "draftUrl"),
-      )
-    }
+    assertThat(result).isRight().containsExactly(
+      UpcomingRenewal("display name", upcomingRenewalLocalDate.toKotlinLocalDate(), "draftUrl"),
+    )
   }
 
   @Test
@@ -103,18 +90,15 @@ class GetUpcomingRenewalRemindersUseCaseTest {
 
     val result = getUpcomingRenewalRemindersUseCase.invoke()
 
-    assertAll {
-      assertThat(result).isInstanceOf<Either.Right<*>>()
-      assertThat(result.getOrNull()).isNotNull().containsSubList(
-        List(30) { index ->
-          UpcomingRenewal(
-            contractDisplayName = "#$index",
-            renewalDate = clock.now().plus((index + 1).days).toLocalDateTime(TimeZone.UTC).date,
-            draftCertificateUrl = "url#$index",
-          )
-        },
-      )
-    }
+    assertThat(result).isRight().containsSubList(
+      List(30) { index ->
+        UpcomingRenewal(
+          contractDisplayName = "#$index",
+          renewalDate = clock.now().plus((index + 1).days).toLocalDateTime(TimeZone.UTC).date,
+          draftCertificateUrl = "url#$index",
+        )
+      },
+    )
   }
 
   @Test
@@ -142,10 +126,7 @@ class GetUpcomingRenewalRemindersUseCaseTest {
 
     val result = getUpcomingRenewalRemindersUseCase.invoke()
 
-    assertAll {
-      assertThat(result).isInstanceOf<Either.Left<*>>()
-      assertThat(result.leftOrNull()).isNotNull().isEqualTo(UpcomingRenewalReminderError.NoUpcomingRenewals)
-    }
+    assertThat(result).isLeft().isEqualTo(UpcomingRenewalReminderError.NoUpcomingRenewals)
   }
 
   @Test
@@ -172,10 +153,7 @@ class GetUpcomingRenewalRemindersUseCaseTest {
 
     val result = getUpcomingRenewalRemindersUseCase.invoke()
 
-    assertAll {
-      assertThat(result).isInstanceOf<Either.Left<*>>()
-      assertThat(result.leftOrNull()).isNotNull().isEqualTo(UpcomingRenewalReminderError.NoUpcomingRenewals)
-    }
+    assertThat(result).isLeft().isEqualTo(UpcomingRenewalReminderError.NoUpcomingRenewals)
   }
 
   @Test
@@ -209,15 +187,11 @@ class GetUpcomingRenewalRemindersUseCaseTest {
 
     val result = getUpcomingRenewalRemindersUseCase.invoke()
 
-    assertAll {
-      assertThat(result).isInstanceOf<Either.Right<*>>()
-      val upcomingRenewals = result.getOrNull()!!
-      assertThat(upcomingRenewals).containsExactly(
-        UpcomingRenewal("#1", clock.now().plus(renewalOffsets[1]!!).toLocalDateTime(TimeZone.UTC).date, "url#1"),
-        UpcomingRenewal("#3", clock.now().plus(renewalOffsets[3]!!).toLocalDateTime(TimeZone.UTC).date, "url#3"),
-        UpcomingRenewal("#4", clock.now().plus(renewalOffsets[4]!!).toLocalDateTime(TimeZone.UTC).date, "url#4"),
-      )
-    }
+    assertThat(result).isRight().containsExactly(
+      UpcomingRenewal("#1", clock.now().plus(renewalOffsets[1]!!).toLocalDateTime(TimeZone.UTC).date, "url#1"),
+      UpcomingRenewal("#3", clock.now().plus(renewalOffsets[3]!!).toLocalDateTime(TimeZone.UTC).date, "url#3"),
+      UpcomingRenewal("#4", clock.now().plus(renewalOffsets[4]!!).toLocalDateTime(TimeZone.UTC).date, "url#4"),
+    )
   }
 
   @Test
@@ -231,11 +205,10 @@ class GetUpcomingRenewalRemindersUseCaseTest {
 
     val result = getUpcomingRenewalRemindersUseCase.invoke()
 
-    assertAll {
-      assertThat(result).isInstanceOf<Either.Left<*>>()
-      assertThat(result.leftOrNull()).isNotNull().isInstanceOf<UpcomingRenewalReminderError.NetworkError>()
-      assertThat((result.leftOrNull() as UpcomingRenewalReminderError.NetworkError).message)
-        .isEqualTo("Network error queued in QueueTestNetworkTransport")
-    }
+    assertThat(result)
+      .isLeft()
+      .isInstanceOf<UpcomingRenewalReminderError.NetworkError>()
+      .prop(UpcomingRenewalReminderError.NetworkError::message)
+      .isEqualTo("Network error queued in QueueTestNetworkTransport")
   }
 }

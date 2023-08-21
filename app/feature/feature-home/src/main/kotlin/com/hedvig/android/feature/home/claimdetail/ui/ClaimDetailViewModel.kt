@@ -7,11 +7,11 @@ import com.hedvig.android.feature.home.claimdetail.data.GetClaimDetailUiStateFlo
 import com.hedvig.android.feature.home.claimdetail.model.ClaimDetailUiState
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.stateIn
+import kotlin.time.Duration.Companion.seconds
 
 internal sealed class ClaimDetailViewState {
   data object Loading : ClaimDetailViewState()

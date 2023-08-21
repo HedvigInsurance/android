@@ -20,7 +20,6 @@ import giraffe.type.TypeOfContract
 import kotlinx.coroutines.test.runTest
 import octopus.CrossSalesQuery
 import octopus.type.CrossSellType
-import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
 
@@ -88,6 +87,7 @@ internal class InsurancePresenterTest {
       awaitItem().also { uiState ->
         assertThat(uiState).isEqualTo(InsuranceUiState.initialState)
         assertThat(uiState.isLoading).isTrue()
+        assertThat(uiState.isRetrying).isFalse()
       }
 
       getInsuranceContractsUseCase.contracts.add(validContracts)
@@ -96,6 +96,7 @@ internal class InsurancePresenterTest {
         assertAll {
           assertThat(uiState.hasError).isFalse()
           assertThat(uiState.isLoading).isFalse()
+          assertThat(uiState.isRetrying).isFalse()
           assertThat(uiState.quantityOfCancelledInsurances)
             .isEqualTo(validContracts.count(InsuranceContract::isTerminated))
           assertThat(uiState.insuranceCards.map { it.contractId }).containsSubList(validContracts.map { it.id })
@@ -123,6 +124,7 @@ internal class InsurancePresenterTest {
       awaitItem().also { uiState ->
         assertThat(uiState.hasError).isTrue()
         assertThat(uiState.isLoading).isFalse()
+        assertThat(uiState.isRetrying).isFalse()
         assertThat(uiState.quantityOfCancelledInsurances).isEqualTo(0)
       }
     }
@@ -146,6 +148,7 @@ internal class InsurancePresenterTest {
       awaitItem().also { uiState ->
         assertThat(uiState.hasError).isTrue()
         assertThat(uiState.isLoading).isFalse()
+        assertThat(uiState.isRetrying).isFalse()
       }
     }
   }
@@ -167,13 +170,15 @@ internal class InsurancePresenterTest {
       awaitItem().also { uiState ->
         assertThat(uiState.hasError).isTrue()
         assertThat(uiState.isLoading).isFalse()
+        assertThat(uiState.isRetrying).isFalse()
         assertThat(uiState.quantityOfCancelledInsurances).isEqualTo(0)
       }
 
       sendEvent(InsuranceScreenEvent.RetryLoading)
       awaitItem().also { uiState ->
         assertThat(uiState.hasError).isFalse()
-        assertThat(uiState.isLoading).isTrue()
+        assertThat(uiState.isLoading).isFalse()
+        assertThat(uiState.isRetrying).isTrue()
         assertThat(uiState.quantityOfCancelledInsurances).isEqualTo(0)
       }
 
@@ -182,6 +187,7 @@ internal class InsurancePresenterTest {
       awaitItem().also { uiState ->
         assertThat(uiState.hasError).isFalse()
         assertThat(uiState.isLoading).isFalse()
+        assertThat(uiState.isRetrying).isFalse()
         assertThat(uiState.quantityOfCancelledInsurances)
           .isEqualTo(validContracts.count(InsuranceContract::isTerminated))
       }
@@ -189,7 +195,7 @@ internal class InsurancePresenterTest {
   }
 
   @Test
-  fun `getting some terminated contracts should no be part of the cards, but show the quantity of them`() = runTest {
+  fun `getting some terminated contracts should not be part of the cards, but show the quantity of them`() = runTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
     val presenter = InsurancePresenter(
@@ -204,11 +210,6 @@ internal class InsurancePresenterTest {
       getInsuranceContractsUseCase.contracts.add(allContracts)
       getCrossSellsUseCase.crossSells.add(validCrossSells)
       awaitItem().also { uiState ->
-        Assert.assertArrayEquals(
-          "message, then expected, then actual",
-          allContracts.filterNot(InsuranceContract::isTerminated).map(InsuranceContract::id).toTypedArray(),
-          uiState.insuranceCards.map(InsuranceUiState.InsuranceCard::contractId).toTypedArray(),
-        )
         assertAll {
           assertThat(uiState.insuranceCards.map(InsuranceUiState.InsuranceCard::contractId))
             .containsSubList(allContracts.filterNot(InsuranceContract::isTerminated).map(InsuranceContract::id))

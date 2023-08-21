@@ -4,7 +4,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.runtime.snapshots.Snapshot
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo3.ApolloClient
@@ -56,9 +55,7 @@ internal class EurobonusViewModel(
             }
           }
           data.currentMember.partnerData?.sas?.eurobonusNumber?.let { existingEurobonusNumber ->
-            Snapshot.withMutableSnapshot {
-              eurobonusText = existingEurobonusNumber
-            }
+            eurobonusText = existingEurobonusNumber
           }
         }
       isLoadingInitialEurobonusValue.update { false }
@@ -102,9 +99,7 @@ internal class EurobonusViewModel(
     if (isSubmitting.value) {
       return
     }
-    Snapshot.withMutableSnapshot {
-      eurobonusText = newEurobonusValue
-    }
+    eurobonusText = newEurobonusValue
   }
 
   fun submitEurobonus(newEurobonusValue: String) {

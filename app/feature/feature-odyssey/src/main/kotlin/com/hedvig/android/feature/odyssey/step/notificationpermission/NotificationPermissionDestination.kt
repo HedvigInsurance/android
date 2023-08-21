@@ -30,6 +30,7 @@ import com.hedvig.android.feature.odyssey.ui.ClaimFlowScaffold
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.NotificationPermissionState
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
+import com.hedvig.android.notification.permission.rememberPreviewNotificationPermissionState
 import hedvig.resources.R
 
 @Composable
@@ -121,18 +122,14 @@ private fun PreviewNotificationPermissionScreen(
   @PreviewParameter(PermissionStatusCollectionPreviewParameterProvider::class)
   previewPermissionState: PreviewPermissionState,
 ) {
-  val notificationPermissionState: NotificationPermissionState = object : NotificationPermissionState {
-    override val showDialog: Boolean = previewPermissionState.isDialogShowing
-    override val status: PermissionStatus = previewPermissionState.permissionStatus
-    override fun dismissDialog() {}
-    override val permission: String = ""
-    override fun launchPermissionRequest() {}
-  }
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       NotificationPermissionScreen(
         WindowSizeClass.calculateForPreview(),
-        notificationPermissionState,
+        rememberPreviewNotificationPermissionState(
+          previewPermissionState.permissionStatus,
+          previewPermissionState.isDialogShowing,
+        ),
         {},
         {},
         {},

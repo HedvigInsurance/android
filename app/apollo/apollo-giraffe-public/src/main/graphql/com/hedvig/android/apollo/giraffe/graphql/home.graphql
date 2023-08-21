@@ -27,10 +27,6 @@ query HomeQuery($locale: Locale!, $languageCode: String!) {
   }
   contracts {
     displayName
-    upcomingRenewal {
-      renewalDate
-      draftCertificateUrl
-    }
     switchedFromInsuranceProvider
     status {
       ... on PendingStatus {
@@ -89,15 +85,6 @@ query HomeQuery($locale: Locale!, $languageCode: String!) {
   importantMessages(where: { language: { code: $languageCode } }) {
     message
     link
-  }
-
-  howClaimsWork(locale: $locale) {
-    illustration {
-      variants {
-        ... IconVariantsFragment
-      }
-    }
-    body
   }
   payinMethodStatus
   insuranceProviders(locale: $locale) {

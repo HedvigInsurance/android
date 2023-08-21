@@ -3,6 +3,7 @@
 package com.hedvig.android.notification.permission
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
@@ -22,6 +23,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MutablePermissionState
 import com.google.accompanist.permissions.PermissionLifecycleCheckerEffect
 import com.google.accompanist.permissions.PermissionState
+import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
@@ -56,6 +58,7 @@ private class NotificationPermissionStateImpl(
  * notification. Use in conjuction with [NotificationPermissionDialog] to get an easy to use notification permission
  * handling.
  */
+@SuppressLint("InlinedApi")
 @Composable
 fun rememberNotificationPermissionState(
   onNotificationGranted: () -> Unit = {},
@@ -120,4 +123,15 @@ private fun Context.findActivity(): Activity {
     context = context.baseContext
   }
   throw IllegalStateException("Permissions should be called in the context of an Activity")
+}
+
+fun rememberPreviewNotificationPermissionState(
+  permissionStatus: PermissionStatus = PermissionStatus.Granted,
+  isDialogShowing: Boolean = false,
+): NotificationPermissionState = object : NotificationPermissionState {
+  override val showDialog: Boolean = isDialogShowing
+  override fun dismissDialog() {}
+  override val permission: String = ""
+  override val status: PermissionStatus = permissionStatus
+  override fun launchPermissionRequest() {}
 }
