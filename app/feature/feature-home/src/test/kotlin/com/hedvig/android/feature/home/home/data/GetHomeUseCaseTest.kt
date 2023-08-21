@@ -6,6 +6,7 @@ import arrow.core.right
 import assertk.assertAll
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.first
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
@@ -24,6 +25,8 @@ import com.hedvig.android.core.common.test.isRight
 import com.hedvig.android.data.travelcertificate.TestGetTravelCertificateSpecificationsUseCase
 import com.hedvig.android.data.travelcertificate.TravelCertificateData
 import com.hedvig.android.data.travelcertificate.TravelCertificateError
+import com.hedvig.android.feature.home.claims.commonclaim.BulletPoint
+import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimsData
 import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
 import com.hedvig.android.feature.home.claimstatus.claimprogress.ClaimProgressUiState
 import com.hedvig.android.feature.home.claimstatus.data.ClaimStatusCardUiState
@@ -42,10 +45,12 @@ import giraffe.type.ClaimStatusCardPillType
 import giraffe.type.ClaimStatusProgressType
 import giraffe.type.CommonClaimLayoutsMap
 import giraffe.type.ContractStatusMap
+import giraffe.type.HedvigColor
 import giraffe.type.Locale
 import giraffe.type.buildActiveInFutureAndTerminatedInFutureStatus
 import giraffe.type.buildActiveInFutureStatus
 import giraffe.type.buildActiveStatus
+import giraffe.type.buildBulletPoints
 import giraffe.type.buildClaimStatusCard
 import giraffe.type.buildClaimStatusCardPill
 import giraffe.type.buildClaimStatusProgressSegment
@@ -147,7 +152,19 @@ internal class GetHomeUseCaseTest {
               emergencyNumber = "112"
             }
           },
-          buildCommonClaim { layout = buildTitleAndBulletPoints {} },
+          buildCommonClaim {
+            id = "bullet point id"
+            layout = buildTitleAndBulletPoints {
+              title = "layout title"
+              color = HedvigColor.DarkPurple
+              bulletPoints = listOf(
+                buildBulletPoints {
+                  title = "bullet point title"
+                  description = "bullet point description"
+                },
+              )
+            }
+          },
         )
       },
     )
@@ -190,6 +207,14 @@ internal class GetHomeUseCaseTest {
         prop(HomeData::emergencyData).isNotNull().apply {
           prop(EmergencyData::eligibleToClaim).isTrue()
           prop(EmergencyData::emergencyNumber).isEqualTo("112")
+        }
+        prop(HomeData::commonClaimsData).first().apply {
+          prop(CommonClaimsData::id).isEqualTo("bullet point id")
+          prop(CommonClaimsData::layoutTitle).isEqualTo("layout title")
+          prop(CommonClaimsData::bulletPoints).first().apply {
+            prop(BulletPoint::title).isEqualTo("bullet point title")
+            prop(BulletPoint::description).isEqualTo("bullet point description")
+          }
         }
       }
     }

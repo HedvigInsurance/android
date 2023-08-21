@@ -51,8 +51,6 @@ import com.hedvig.app.feature.adyen.AdyenCurrency
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutActivity
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.payment.connectPayinIntent
-import com.hedvig.app.util.extensions.canOpenUri
-import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.startChat
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
@@ -170,11 +168,6 @@ internal fun HedvigNavHost(
       navigateToPayinScreen = ::navigateToPayinScreen,
       openAppSettings = { activityNavigator.openAppSettings(context) },
       openUrl = ::openUrl,
-      tryOpenUri = { uri ->
-        if (context.canOpenUri(uri)) {
-          context.openUri(uri)
-        }
-      },
       imageLoader = imageLoader,
       hAnalytics = hAnalytics,
     )

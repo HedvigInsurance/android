@@ -11,6 +11,7 @@ import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.travelcertificate.GetTravelCertificateSpecificationsUseCase
+import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimsData
 import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
 import com.hedvig.android.feature.home.claimstatus.data.ClaimStatusCardUiState
 import com.hedvig.android.language.LanguageService
@@ -60,6 +61,9 @@ internal class GetHomeDataUseCaseImpl(
             link = it.link ?: return@mapNotNull null,
           )
         }
+        val commonClaimsData = homeQueryData.commonClaims.mapNotNull { commonClaim ->
+          CommonClaimsData.from(commonClaim, homeQueryData.isEligibleToCreateClaim)
+        }
         HomeData(
           memberName = memberName,
           contractStatus = contractStatus,
@@ -69,6 +73,7 @@ internal class GetHomeDataUseCaseImpl(
           allowAddressChange = contractStatus is HomeData.ContractStatus.Active,
           allowGeneratingTravelCertificate = travelCertificateData != null,
           emergencyData = EmergencyData.from(homeQueryData),
+          commonClaimsData = commonClaimsData.toPersistentList(),
         )
       }.onLeft { errorMessage ->
         logcat(throwable = errorMessage.throwable) { "GetHomeDataUseCase failed with ${errorMessage.message}" }
@@ -142,6 +147,7 @@ internal data class HomeData(
   val allowAddressChange: Boolean,
   val allowGeneratingTravelCertificate: Boolean,
   val emergencyData: EmergencyData?,
+  val commonClaimsData: ImmutableList<CommonClaimsData>,
 ) {
 
   @Immutable

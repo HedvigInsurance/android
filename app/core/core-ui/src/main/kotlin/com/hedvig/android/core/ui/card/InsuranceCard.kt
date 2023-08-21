@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
@@ -49,10 +50,11 @@ fun InsuranceCard(
   bottomText: String,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
+  shape: Shape = MaterialTheme.shapes.squircleMedium,
   fallbackPainter: Painter = ColorPainter(Color.Black.copy(alpha = 0.7f)),
   backgroundImageUrl: String? = null,
 ) {
-  Box(modifier.clip(MaterialTheme.shapes.squircleMedium)) {
+  Box(modifier.clip(shape)) {
     AsyncImage(
       model = backgroundImageUrl,
       contentDescription = null,

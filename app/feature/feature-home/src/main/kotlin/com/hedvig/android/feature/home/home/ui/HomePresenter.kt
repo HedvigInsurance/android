@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
+import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimsData
 import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
 import com.hedvig.android.feature.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.data.HomeData
@@ -82,6 +83,7 @@ internal class HomePresenter(
           allowAddressChange = successData.allowAddressChange,
           allowGeneratingTravelCertificate = successData.allowGeneratingTravelCertificate,
           emergencyData = successData.emergencyData,
+          commonClaimsData = successData.commonClaimsData,
         )
       }
     }
@@ -106,6 +108,7 @@ internal sealed interface HomeUiState {
     val allowAddressChange: Boolean,
     val allowGeneratingTravelCertificate: Boolean,
     val emergencyData: EmergencyData?,
+    val commonClaimsData: ImmutableList<CommonClaimsData>,
   ) : HomeUiState
 
   data class Error(val message: String?) : HomeUiState
@@ -120,6 +123,7 @@ private data class SuccessData(
   val allowAddressChange: Boolean,
   val allowGeneratingTravelCertificate: Boolean,
   val emergencyData: EmergencyData?,
+  val commonClaimsData: ImmutableList<CommonClaimsData>,
 ) {
   companion object {
     fun fromLastState(lastState: HomeUiState): SuccessData? {
@@ -132,6 +136,7 @@ private data class SuccessData(
         allowAddressChange = lastState.allowAddressChange,
         allowGeneratingTravelCertificate = lastState.allowGeneratingTravelCertificate,
         emergencyData = lastState.emergencyData,
+        commonClaimsData = lastState.commonClaimsData,
       )
     }
 
@@ -154,6 +159,7 @@ private data class SuccessData(
         allowAddressChange = homeData.allowAddressChange,
         allowGeneratingTravelCertificate = homeData.allowGeneratingTravelCertificate,
         emergencyData = homeData.emergencyData,
+        commonClaimsData = homeData.commonClaimsData,
       )
     }
   }
@@ -165,10 +171,6 @@ sealed interface HomeText {
   data class Active(override val name: String?) : HomeText
   data class Terminated(override val name: String?) : HomeText
   data class ActiveInFuture(override val name: String?, val inception: LocalDate) : HomeText
-
-  // Probably use generic text here. what does home_tab_pending_unknown_body mean otherwise?
   data class Pending(override val name: String?) : HomeText
-
-  // Also use generic text, home_tab_pending_switchable_body doesn't make sense in new design probably
-  data class Switching(override val name: String?) : HomeText // no need?
+  data class Switching(override val name: String?) : HomeText
 }

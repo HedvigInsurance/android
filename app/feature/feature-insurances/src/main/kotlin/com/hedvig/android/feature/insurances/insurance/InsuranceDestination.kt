@@ -47,6 +47,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -64,6 +65,7 @@ import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.core.designsystem.material3.onTypeContainer
+import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.material3.typeContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -146,7 +148,6 @@ private fun InsuranceScreen(
         },
         label = "uiState is Loading",
       ) { isLoading ->
-        Spacer(Modifier.height(16.dp))
         when (isLoading) {
           true -> HedvigFullScreenCenterAlignedProgressDebounced()
           false -> {
@@ -156,6 +157,7 @@ private fun InsuranceScreen(
                 .verticalScroll(rememberScrollState())
                 .windowInsetsPadding(WindowInsets.safeDrawing),
             ) {
+              Spacer(Modifier.height(16.dp))
               Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
@@ -183,11 +185,11 @@ private fun InsuranceScreen(
                   quantityOfCancelledInsurances = uiState.quantityOfCancelledInsurances,
                 )
               }
+              Spacer(Modifier.height(16.dp))
+              Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
             }
           }
         }
-        Spacer(Modifier.height(16.dp))
-        Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
       }
 
       PullRefreshIndicator(
@@ -221,9 +223,11 @@ private fun ColumnScope.InsuranceScreenContent(
       imageLoader = imageLoader,
       modifier = Modifier
         .padding(horizontal = 16.dp)
-        .clickable {
+        .clip(MaterialTheme.shapes.squircleMedium)
+        .clickable() {
           onInsuranceCardClick(insuranceCard.contractId)
         },
+      shape = MaterialTheme.shapes.squircleMedium,
       fallbackPainter = insuranceCard.contractType.toDrawableRes().let { drawableRes ->
         painterResource(id = drawableRes)
       },
@@ -306,18 +310,11 @@ private fun CrossSellItem(
           if (crossSell.storeUrl.isBlank()) Uri.EMPTY else Uri.parse(crossSell.storeUrl),
         )
       },
-      colors = ButtonDefaults.elevatedButtonColors(
+      colors = ButtonDefaults.buttonColors(
         containerColor = MaterialTheme.colorScheme.typeContainer,
         contentColor = MaterialTheme.colorScheme.onTypeContainer,
         disabledContainerColor = MaterialTheme.colorScheme.typeContainer.copy(alpha = 0.12f),
         disabledContentColor = MaterialTheme.colorScheme.onTypeContainer.copy(alpha = 0.38f),
-      ),
-      elevation = ButtonDefaults.buttonElevation(
-        defaultElevation = 2.dp,
-        pressedElevation = 2.dp,
-        focusedElevation = 2.dp,
-        hoveredElevation = 4.dp,
-        disabledElevation = 2.dp,
       ),
     )
   }
