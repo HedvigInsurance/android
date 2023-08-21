@@ -9,6 +9,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -17,6 +18,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.card.InsuranceCard
@@ -76,8 +78,10 @@ private fun TerminatedContractsScreen(
             topText = insuranceCard.title,
             bottomText = insuranceCard.subtitle,
             imageLoader = imageLoader,
+            shape = MaterialTheme.shapes.squircleMedium,
             modifier = Modifier
               .padding(horizontal = 16.dp)
+              .clip(MaterialTheme.shapes.squircleMedium)
               .clickable {
                 onContractClick(insuranceCard.contractId)
               },
