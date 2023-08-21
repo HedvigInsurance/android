@@ -30,14 +30,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.apollo.format
@@ -45,6 +50,7 @@ import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.data.forever.toErrorMessage
 import com.hedvig.android.feature.forever.ForeverUiState
 import hedvig.resources.R
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.javamoney.moneta.Money
 import javax.money.MonetaryAmount
@@ -55,7 +61,6 @@ internal fun ForeverContent(
   uiState: ForeverUiState,
   reload: () -> Unit,
   onShareCodeClick: (code: String, incentive: MonetaryAmount) -> Unit,
-  onCodeChanged: (String) -> Unit,
   onSubmitCode: (String) -> Unit,
 ) {
   val systemBarInsetTopDp = with(LocalDensity.current) {
@@ -73,6 +78,8 @@ internal fun ForeverContent(
   val coroutineScope = rememberCoroutineScope()
   var showEditBottomSheet by rememberSaveable { mutableStateOf(false) }
   var showReferralExplanationBottomSheet by rememberSaveable { mutableStateOf(false) }
+  val focusRequester = remember { FocusRequester() }
+  var textFieldValueState by remember { mutableStateOf(TextFieldValue(text = uiState.campaignCode ?: "")) }
 
   LaunchedEffect(uiState.showEditCode) {
     coroutineScope.launch {
@@ -88,17 +95,18 @@ internal fun ForeverContent(
   if (showEditBottomSheet) {
     EditCodeBottomSheet(
       sheetState = editSheetState,
-      code = uiState.editedCampaignCode ?: "",
-      onCodeChanged = onCodeChanged,
+      code = textFieldValueState,
+      onCodeChanged = { textFieldValueState = it },
       onDismiss = {
         coroutineScope.launch {
           editSheetState.hide()
           showEditBottomSheet = false
         }
       },
-      onSubmitCode = { onSubmitCode(uiState.editedCampaignCode ?: "") },
+      onSubmitCode = { onSubmitCode(textFieldValueState.text) },
       errorText = uiState.codeError.toErrorMessage(),
       isLoading = uiState.isLoadingCode,
+      focusRequester = focusRequester,
     )
   }
 
@@ -173,7 +181,10 @@ internal fun ForeverContent(
             uiState.incentive.format(locale),
             Money.of(0, uiState.incentive.currency?.currencyCode).format(locale),
           ),
-          textAlign = TextAlign.Center,
+          style = MaterialTheme.typography.bodyLarge.copy(
+            textAlign = TextAlign.Center,
+            lineBreak = LineBreak.Heading,
+          ),
           color = MaterialTheme.colorScheme.onSurfaceVariant,
           modifier = Modifier
             .fillMaxWidth()
@@ -206,6 +217,9 @@ internal fun ForeverContent(
           coroutineScope.launch {
             editSheetState.hide()
             showEditBottomSheet = true
+            delay(400)
+            focusRequester.requestFocus()
+            textFieldValueState = textFieldValueState.copy(selection = TextRange(0, textFieldValueState.text.length))
           }
         },
         onShareCodeClick = onShareCodeClick,

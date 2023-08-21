@@ -1,5 +1,6 @@
 package com.hedvig.android.apollo
 
+import arrow.core.Either
 import com.apollographql.apollo3.ApolloCall
 import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.api.Operation
@@ -24,7 +25,9 @@ suspend fun <D : Operation.Data> ApolloCall<D>.safeExecute(): OperationResult<D>
   }
 }
 
-fun <D : Operation.Data> ApolloCall<D>.safeFlow(): Flow<OperationResult<D>> {
+fun <D : Operation.Data, ErrorType> ApolloCall<D>.safeFlow(
+  ifEmpty: (message: String?, throwable: Throwable?) -> ErrorType,
+): Flow<Either<ErrorType, D>> {
   return toFlow()
     .map(ApolloResponse<D>::toOperationResult)
     .catch { throwable ->
@@ -34,6 +37,7 @@ fun <D : Operation.Data> ApolloCall<D>.safeFlow(): Flow<OperationResult<D>> {
         OperationResult.Error.GeneralError(throwable)
       }
     }
+    .map { it.toEither(ifEmpty) }
 }
 
 /**

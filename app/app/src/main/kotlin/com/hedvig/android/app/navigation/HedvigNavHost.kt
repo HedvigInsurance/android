@@ -19,7 +19,6 @@ import coil.ImageLoader
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.hedvig.android.app.ui.HedvigAppState
 import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
-import com.hedvig.android.core.common.android.ThemedIconUrls
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.toClaimFlowDestination
@@ -31,7 +30,7 @@ import com.hedvig.android.feature.forever.navigation.foreverGraph
 import com.hedvig.android.feature.home.claims.pledge.HonestyPledgeBottomSheet
 import com.hedvig.android.feature.home.home.navigation.homeGraph
 import com.hedvig.android.feature.home.legacychangeaddress.LegacyChangeAddressActivity
-import com.hedvig.android.feature.insurances.insuranceGraph
+import com.hedvig.android.feature.insurances.insurance.insuranceGraph
 import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
 import com.hedvig.android.feature.odyssey.navigation.terminalClaimFlowStepDestinations
@@ -50,9 +49,7 @@ import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.feature.adyen.AdyenCurrency
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutActivity
-import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
-import com.hedvig.app.feature.home.ui.HowClaimsWorkDialog
 import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.openUri
@@ -98,6 +95,27 @@ internal fun HedvigNavHost(
       }
     }
   }
+
+  fun navigateToPayinScreen() {
+    val market = marketManager.market ?: return@navigateToPayinScreen
+    coroutineScope.launch {
+      context.startActivity(
+        connectPayinIntent(
+          context,
+          featureManager.getPaymentType(),
+          market,
+          false,
+        ),
+      )
+    }
+  }
+
+  fun openUrl(url: String) {
+    activityNavigator.openWebsite(
+      context,
+      if (url.isBlank()) Uri.EMPTY else Uri.parse(url),
+    )
+  }
   AnimatedNavHost(
     navController = hedvigAppState.navController,
     startDestination = createRoutePattern<TopLevelGraph.HOME>(),
@@ -119,7 +137,7 @@ internal fun HedvigNavHost(
           activityNavigator = activityNavigator,
         )
       },
-      navController = hedvigAppState.navController,
+      navigator = navigator,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       onStartChat = { context.startChat() },
       onStartClaim = { backStackEntry ->
@@ -146,40 +164,12 @@ internal fun HedvigNavHost(
         }
       },
       startMovingFlow = ::startMovingFlow,
-      onHowClaimsWorkClick = { howClaimsWorkList ->
-        val howClaimsWorkData = howClaimsWorkList.mapIndexed { index, howClaimsWork ->
-          DismissiblePagerModel.NoTitlePage(
-            imageUrls = ThemedIconUrls.from(
-              howClaimsWork.illustration.variants.fragments.iconVariantsFragment,
-            ),
-            paragraph = howClaimsWork.body,
-            buttonText = resources.getString(
-              if (index == howClaimsWorkList.lastIndex) {
-                hedvig.resources.R.string.claims_explainer_button_start_claim
-              } else {
-                hedvig.resources.R.string.claims_explainer_button_next
-              },
-            ),
-          )
-        }
-        HowClaimsWorkDialog
-          .newInstance(howClaimsWorkData)
-          .show(fragmentManager, HowClaimsWorkDialog.TAG)
-      },
       onGenerateTravelCertificateClicked = {
         hedvigAppState.navController.navigate(AppDestination.GenerateTravelCertificate)
       },
-      navigateToPayinScreen = navigateToPayinScreen@{ paymentType ->
-        val market = marketManager.market ?: return@navigateToPayinScreen
-        context.startActivity(
-          connectPayinIntent(
-            context,
-            paymentType,
-            market,
-            false,
-          ),
-        )
-      },
+      navigateToPayinScreen = ::navigateToPayinScreen,
+      openAppSettings = { activityNavigator.openAppSettings(context) },
+      openUrl = ::openUrl,
       tryOpenUri = { uri ->
         if (context.canOpenUri(uri)) {
           context.openUri(uri)
@@ -232,26 +222,9 @@ internal fun HedvigNavHost(
         val intent = AdyenConnectPayoutActivity.newInstance(context, AdyenCurrency.fromMarket(market))
         context.startActivity(intent)
       },
-      navigateToPayinScreen = navigateToPayinScreen@{
-        val market = marketManager.market ?: return@navigateToPayinScreen
-        coroutineScope.launch {
-          context.startActivity(
-            connectPayinIntent(
-              context,
-              featureManager.getPaymentType(),
-              market,
-              false,
-            ),
-          )
-        }
-      },
+      navigateToPayinScreen = ::navigateToPayinScreen,
       openAppSettings = { activityNavigator.openAppSettings(context) },
-      openUrl = { url: String ->
-        activityNavigator.openWebsite(
-          context,
-          if (url.isBlank()) Uri.EMPTY else Uri.parse(url),
-        )
-      },
+      openUrl = ::openUrl,
       market = marketManager.market,
     )
   }

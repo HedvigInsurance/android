@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.core.designsystem.component.card.HedvigBigCard
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.clearFocusOnTap
@@ -50,7 +50,7 @@ internal fun SettingsDestination(
     uiState = uiState,
     navigateUp = navigateUp,
     openAppSettings = openAppSettings,
-    onNotificationInfoDismissed = { viewModel.emit(SettingsEvent.SnoozeNotificationReminder) },
+    onNotificationInfoDismissed = { viewModel.emit(SettingsEvent.SnoozeNotificationPermissionReminder) },
     onLanguageSelected = { viewModel.emit(SettingsEvent.ChangeLanguage(it)) },
     onThemeSelected = { viewModel.emit(SettingsEvent.ChangeTheme(it)) },
   )
@@ -73,7 +73,7 @@ private fun SettingsScreen(
   ) {
     when (uiState) {
       is SettingsUiState.Loading -> {
-        HedvigFullScreenCenterAlignedProgress()
+        HedvigFullScreenCenterAlignedProgressDebounced()
       }
       is SettingsUiState.Loaded -> {
         Spacer(Modifier.height(16.dp))
@@ -116,7 +116,7 @@ private fun SettingsScreen(
         ) {
           Column {
             ReminderCardEnableNotifications(
-              snoozePermission = onNotificationInfoDismissed,
+              snoozeNotificationPermissionReminder = onNotificationInfoDismissed,
               requestNotificationPermission = notificationPermissionState::launchPermissionRequest,
               modifier = Modifier.padding(horizontal = 16.dp),
             )

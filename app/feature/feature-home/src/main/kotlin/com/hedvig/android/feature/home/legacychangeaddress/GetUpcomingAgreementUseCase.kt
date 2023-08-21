@@ -23,7 +23,7 @@ class GetUpcomingAgreementUseCase(
     return when (val response = apolloClient.query(upcomingAgreementQuery()).safeExecute()) {
       is OperationResult.Success -> {
         val contracts = response.data.contracts
-        if (contracts.isNullOrEmpty()) {
+        if (contracts.isEmpty()) {
           UpcomingAgreementResult.Error.NoContractsError
         } else {
           contracts.firstOrNull {

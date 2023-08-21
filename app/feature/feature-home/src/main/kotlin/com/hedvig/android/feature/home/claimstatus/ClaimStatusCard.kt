@@ -7,7 +7,6 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
@@ -26,11 +25,7 @@ internal fun ClaimStatusCard(
   uiState: ClaimStatusCardUiState,
   goToDetailScreen: ((claimId: String) -> Unit)?,
   modifier: Modifier = Modifier,
-  onClaimCardShown: (String) -> Unit,
 ) {
-  LaunchedEffect(uiState.id) {
-    onClaimCardShown(uiState.id)
-  }
   val onClick: (() -> Unit)? = if (goToDetailScreen != null) {
     { goToDetailScreen.invoke(uiState.id) }
   } else {
@@ -71,7 +66,7 @@ private fun PreviewClaimStatusCard() {
         subtitle = "Home Insurance Renter",
         claimProgressItemsUiState = ClaimProgressUiState.previewList(),
       )
-      ClaimStatusCard(claimStatusData, null) {}
+      ClaimStatusCard(claimStatusData, null)
     }
   }
 }

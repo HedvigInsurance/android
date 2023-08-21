@@ -13,6 +13,7 @@ import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.theme.Theme
+import kotlinx.coroutines.launch
 
 internal class SettingsPresenter(
   private val notifyBackendAboutLanguageChangeUseCase: NotifyBackendAboutLanguageChangeUseCase,
@@ -32,15 +33,15 @@ internal class SettingsPresenter(
     CollectEvents { event ->
       when (event) {
         is SettingsEvent.ChangeLanguage -> {
-          languageService.setLanguage(event.language)
-          notifyBackendAboutLanguageChangeUseCase.invoke(event.language)
           selectedLanguage = event.language
+          languageService.setLanguage(event.language)
+          launch { notifyBackendAboutLanguageChangeUseCase.invoke(event.language) }
         }
         is SettingsEvent.ChangeTheme -> {
-          settingsDataStore.setTheme(event.theme)
+          launch { settingsDataStore.setTheme(event.theme) }
         }
-        SettingsEvent.SnoozeNotificationReminder -> {
-          enableNotificationsReminderManager.snoozeNotificationReminder()
+        SettingsEvent.SnoozeNotificationPermissionReminder -> {
+          launch { enableNotificationsReminderManager.snoozeNotificationReminder() }
         }
       }
     }
@@ -86,5 +87,5 @@ sealed interface SettingsUiState {
 sealed interface SettingsEvent {
   data class ChangeLanguage(val language: Language) : SettingsEvent
   data class ChangeTheme(val theme: Theme) : SettingsEvent
-  object SnoozeNotificationReminder : SettingsEvent
+  object SnoozeNotificationPermissionReminder : SettingsEvent
 }

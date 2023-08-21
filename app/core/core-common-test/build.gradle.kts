@@ -5,6 +5,8 @@ plugins {
 }
 
 dependencies {
+  implementation(libs.arrow.core)
+  implementation(libs.assertK)
   implementation(libs.coroutines.test)
   implementation(libs.junit)
 }

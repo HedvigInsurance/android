@@ -1,10 +1,7 @@
 package com.hedvig.android.feature.home.home.navigation
 
 import android.net.Uri
-import androidx.compose.runtime.getValue
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
 import coil.ImageLoader
@@ -17,24 +14,23 @@ import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.compose.typed.animatedNavigation
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
+import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.hanalytics.HAnalytics
-import com.hedvig.hanalytics.PaymentType
 import com.kiwi.navigationcompose.typed.createRoutePattern
-import com.kiwi.navigationcompose.typed.navigate
-import giraffe.HomeQuery
 import org.koin.androidx.compose.koinViewModel
 
 fun NavGraphBuilder.homeGraph(
   nestedGraphs: NavGraphBuilder.() -> Unit,
-  navController: NavController,
+  navigator: Navigator,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   onStartChat: () -> Unit,
   onStartClaim: (NavBackStackEntry) -> Unit,
   startMovingFlow: () -> Unit,
-  onHowClaimsWorkClick: (List<HomeQuery.HowClaimsWork>) -> Unit,
   onGenerateTravelCertificateClicked: () -> Unit,
-  navigateToPayinScreen: (PaymentType) -> Unit,
+  navigateToPayinScreen: () -> Unit,
+  openAppSettings: () -> Unit,
+  openUrl: (String) -> Unit,
   tryOpenUri: (Uri) -> Unit,
   imageLoader: ImageLoader,
   hAnalytics: HAnalytics,
@@ -50,40 +46,33 @@ fun NavGraphBuilder.homeGraph(
       exitTransition = { MotionDefaults.fadeThroughExit },
     ) { backStackEntry ->
       val viewModel: HomeViewModel = koinViewModel()
-      val uiState by viewModel.uiState.collectAsStateWithLifecycle()
       HomeDestination(
-        uiState = uiState,
-        reload = viewModel::reload,
+        viewModel = viewModel,
         onStartChat = onStartChat,
         onClaimDetailCardClicked = { claimId: String ->
-          viewModel.onClaimDetailCardClicked(claimId)
-          navController.navigate(HomeDestinations.ClaimDetailDestination(claimId))
+          with(navigator) { backStackEntry.navigate(HomeDestinations.ClaimDetailDestination(claimId)) }
         },
-        onClaimDetailCardShown = viewModel::onClaimDetailCardShown,
-        onPaymentCardClicked = { paymentType ->
-          viewModel.onPaymentCardClicked()
-          navigateToPayinScreen(paymentType)
-        },
-        onPaymentCardShown = viewModel::onPaymentCardShown,
-        onHowClaimsWorkClick = onHowClaimsWorkClick,
+        navigateToConnectPayment = navigateToPayinScreen,
         onStartClaim = { onStartClaim(backStackEntry) },
         onStartMovingFlow = startMovingFlow,
         onGenerateTravelCertificateClicked = onGenerateTravelCertificateClicked,
         onOpenCommonClaim = { commonClaimsData ->
-          navController.navigate(HomeDestinations.CommonClaimDestination(commonClaimsData))
+          with(navigator) { backStackEntry.navigate(HomeDestinations.CommonClaimDestination(commonClaimsData)) }
         },
+        openUrl = openUrl,
         tryOpenUri = tryOpenUri,
+        openAppSettings = openAppSettings,
         imageLoader = imageLoader,
       )
     }
     claimDetailGraph(
-      navController = navController,
+      navigateUp = navigator::navigateUp,
       navigateToChat = onStartChat,
     )
     commonClaimGraph(
-      navController = navController,
       imageLoader = imageLoader,
       hAnalytics = hAnalytics,
+      navigateUp = navigator::navigateUp,
       startClaimsFlow = onStartClaim,
     )
     nestedGraphs()

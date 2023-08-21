@@ -6,6 +6,10 @@ query claimDetails($locale: Locale!) {
     progressSegments {
       ...ProgressSegments
     }
+    pills {
+      text
+      type
+    }
     claim {
       status
       outcome
@@ -16,6 +20,7 @@ query claimDetails($locale: Locale!) {
       closedAt
       statusParagraph
       signedAudioURL
+
 #      contract {
 #        contractPerils(locale: $locale) {
 #          title # filter on title and get its icon?

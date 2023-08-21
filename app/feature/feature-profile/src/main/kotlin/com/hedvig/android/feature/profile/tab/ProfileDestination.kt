@@ -162,13 +162,13 @@ private fun ProfileScreen(
       val notificationPermissionState = rememberNotificationPermissionState()
       val memberReminders =
         uiState.memberReminders.onlyApplicableReminders(notificationPermissionState.status.isGranted)
-      NotificationPermissionDialog(notificationPermissionState, openAppSettings = openAppSettings)
+      NotificationPermissionDialog(notificationPermissionState, openAppSettings)
       MemberReminderCards(
         memberReminders = memberReminders,
         navigateToConnectPayment = navigateToConnectPayment,
         openUrl = openUrl,
         notificationPermissionState = notificationPermissionState,
-        snoozePermission = snoozeNotificationPermission,
+        snoozeNotificationPermissionReminder = snoozeNotificationPermission,
         modifier = Modifier.padding(horizontal = 16.dp),
       )
       if (memberReminders.hasAnyReminders) {

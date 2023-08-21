@@ -2,9 +2,7 @@ package com.hedvig.android.feature.home.claimdetail
 
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.feature.home.claimdetail.ui.ClaimDetailScreen
 import com.hedvig.android.feature.home.claimdetail.ui.ClaimDetailViewModel
 import com.hedvig.android.feature.home.home.navigation.HomeDestinations
@@ -13,7 +11,7 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.claimDetailGraph(
-  navController: NavController,
+  navigateUp: () -> Unit,
   navigateToChat: () -> Unit,
 ) {
   animatedComposable<HomeDestinations.ClaimDetailDestination> {
@@ -21,9 +19,8 @@ fun NavGraphBuilder.claimDetailGraph(
     val viewState by viewModel.viewState.collectAsStateWithLifecycle()
     ClaimDetailScreen(
       viewState = viewState,
-      locale = getLocale(),
       retry = viewModel::retry,
-      onUpClick = navController::navigateUp,
+      onUpClick = navigateUp,
       onChatClick = {
         viewModel.onChatClick()
         navigateToChat()

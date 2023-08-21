@@ -1,25 +1,23 @@
 package com.hedvig.android.memberreminders
 
-import arrow.core.Either
-import assertk.assertAll
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
-import assertk.assertions.isNotNull
+import assertk.assertions.prop
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.annotations.ApolloExperimental
-import com.apollographql.apollo3.testing.QueueTestNetworkTransport
 import com.apollographql.apollo3.testing.enqueueTestNetworkError
 import com.apollographql.apollo3.testing.enqueueTestResponse
 import com.hedvig.android.apollo.giraffe.test.GiraffeFakeResolver
+import com.hedvig.android.apollo.test.TestApolloClientRule
+import com.hedvig.android.core.common.test.isLeft
+import com.hedvig.android.core.common.test.isRight
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager2
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import giraffe.GetPayinMethodStatusQuery
 import giraffe.type.PayinMethodStatus
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -29,19 +27,10 @@ class GetConnectPaymentReminderUseCaseTest {
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
 
-  private lateinit var apolloClient: ApolloClient
-
-  @Before
-  fun setUp() {
-    apolloClient = ApolloClient.Builder()
-      .networkTransport(QueueTestNetworkTransport())
-      .build()
-  }
-
-  @After
-  fun tearDown() {
-    apolloClient.close()
-  }
+  @get:Rule
+  val testApolloClientRule = TestApolloClientRule()
+  val apolloClient: ApolloClient
+    get() = testApolloClientRule.apolloClient
 
   @Test
   fun `when payin method needs setup and the feature flag is on, show the reminder`() = runTest {
@@ -58,10 +47,7 @@ class GetConnectPaymentReminderUseCaseTest {
 
     val result = getConnectPaymentReminderUseCase.invoke()
 
-    assertAll {
-      assertThat(result).isInstanceOf<Either.Right<*>>()
-      assertThat(result.getOrNull()).isEqualTo(ShowConnectPaymentReminder)
-    }
+    assertThat(result).isRight().isEqualTo(ShowConnectPaymentReminder)
   }
 
   @Test
@@ -79,10 +65,7 @@ class GetConnectPaymentReminderUseCaseTest {
 
     val result = getConnectPaymentReminderUseCase.invoke()
 
-    assertAll {
-      assertThat(result).isInstanceOf<Either.Left<*>>()
-      assertThat(result.leftOrNull()).isEqualTo(ConnectPaymentReminderError.AlreadySetup)
-    }
+    assertThat(result).isLeft().isEqualTo(ConnectPaymentReminderError.AlreadySetup)
   }
 
   @Test
@@ -100,10 +83,7 @@ class GetConnectPaymentReminderUseCaseTest {
 
     val result = getConnectPaymentReminderUseCase.invoke()
 
-    assertAll {
-      assertThat(result).isInstanceOf<Either.Left<*>>()
-      assertThat(result.leftOrNull()).isEqualTo(ConnectPaymentReminderError.FeatureFlagNotEnabled)
-    }
+    assertThat(result).isLeft().isEqualTo(ConnectPaymentReminderError.FeatureFlagNotEnabled)
   }
 
   @Test
@@ -121,10 +101,7 @@ class GetConnectPaymentReminderUseCaseTest {
 
     val result = getConnectPaymentReminderUseCase.invoke()
 
-    assertAll {
-      assertThat(result).isInstanceOf<Either.Left<*>>()
-      assertThat(result.leftOrNull()).isEqualTo(ConnectPaymentReminderError.AlreadySetup)
-    }
+    assertThat(result).isLeft().isEqualTo(ConnectPaymentReminderError.AlreadySetup)
   }
 
   @Test
@@ -137,11 +114,10 @@ class GetConnectPaymentReminderUseCaseTest {
 
     val result = getConnectPaymentReminderUseCase.invoke()
 
-    assertAll {
-      assertThat(result).isInstanceOf<Either.Left<*>>()
-      assertThat(result.leftOrNull()).isNotNull().isInstanceOf<ConnectPaymentReminderError.NetworkError>()
-      assertThat((result.leftOrNull() as ConnectPaymentReminderError.NetworkError).message)
-        .isEqualTo("Network error queued in QueueTestNetworkTransport")
-    }
+    assertThat(result)
+      .isLeft()
+      .isInstanceOf<ConnectPaymentReminderError.NetworkError>()
+      .prop(ConnectPaymentReminderError.NetworkError::message)
+      .isEqualTo("Network error queued in QueueTestNetworkTransport")
   }
 }

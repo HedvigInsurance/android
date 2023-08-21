@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.insurances.insurancedetail.yourinfo
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -28,6 +29,7 @@ import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.SelectIndicationCircle
+import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import hedvig.resources.R
 
 @Composable
@@ -38,7 +40,7 @@ internal fun EditInsuranceBottomSheetContent(
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  var expandedItemIndex by rememberSaveable { mutableStateOf(-1) }
+  var selectedItemIndex by rememberSaveable { mutableStateOf(-1) }
   Column(
     modifier = modifier,
   ) {
@@ -53,9 +55,9 @@ internal fun EditInsuranceBottomSheetContent(
     Spacer(modifier = Modifier.height(32.dp))
     SelectableItem(
       text = stringResource(R.string.insurance_details_change_address_button),
-      isSelected = expandedItemIndex == 0,
+      isSelected = selectedItemIndex == 0,
       onClick = {
-        expandedItemIndex = if (expandedItemIndex == 0) {
+        selectedItemIndex = if (selectedItemIndex == 0) {
           -1
         } else {
           0
@@ -66,9 +68,9 @@ internal fun EditInsuranceBottomSheetContent(
       Spacer(modifier = Modifier.height(4.dp))
       SelectableItem(
         text = stringResource(R.string.CONTRACT_EDIT_COINSURED),
-        isSelected = expandedItemIndex == 1,
+        isSelected = selectedItemIndex == 1,
         onClick = {
-          expandedItemIndex = if (expandedItemIndex == 1) {
+          selectedItemIndex = if (selectedItemIndex == 1) {
             -1
           } else {
             1
@@ -77,12 +79,19 @@ internal fun EditInsuranceBottomSheetContent(
       )
     }
     Spacer(modifier = Modifier.height(16.dp))
+    AnimatedVisibility(visible = selectedItemIndex == 1) {
+      VectorInfoCard(
+        text = stringResource(id = R.string.insurances_tab_contact_us_to_edit_co_insured),
+        modifier = Modifier.fillMaxWidth(),
+      )
+    }
+    Spacer(modifier = Modifier.height(16.dp))
     HedvigContainedButton(
       text = stringResource(id = R.string.general_continue_button),
       onClick = {
-        if (expandedItemIndex == 0) {
+        if (selectedItemIndex == 0) {
           onChangeAddressClick()
-        } else if (expandedItemIndex == 1 && allowEditCoInsured) {
+        } else if (selectedItemIndex == 1 && allowEditCoInsured) {
           onEditCoInsuredClick()
         }
       },
@@ -92,6 +101,7 @@ internal fun EditInsuranceBottomSheetContent(
       text = stringResource(id = R.string.general_cancel_button),
       onClick = onDismiss,
     )
+    Spacer(modifier = Modifier.height(8.dp))
   }
 }
 

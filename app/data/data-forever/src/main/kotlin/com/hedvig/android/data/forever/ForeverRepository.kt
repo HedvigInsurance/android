@@ -3,6 +3,8 @@ package com.hedvig.android.data.forever
 import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.cache.normalized.FetchPolicy
+import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
@@ -22,6 +24,7 @@ class ForeverRepository(
 
   suspend fun getReferralsData(): Either<ErrorMessage, ReferralsQuery.Data> = apolloClient
     .query(referralsQuery) // TODO include terms in this query and remove referralsTermsUseCase
+    .fetchPolicy(FetchPolicy.NetworkOnly)
     .safeExecute()
     .toEither(::ErrorMessage)
 

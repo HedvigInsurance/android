@@ -14,8 +14,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlin.time.Duration.Companion.seconds
 
 internal sealed class ClaimDetailViewState {
-  object Loading : ClaimDetailViewState()
-  object Error : ClaimDetailViewState()
+  data object Loading : ClaimDetailViewState()
+  data object Error : ClaimDetailViewState()
   data class Content(
     val uiState: ClaimDetailUiState,
   ) : ClaimDetailViewState()
