@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 
@@ -18,6 +19,7 @@ fun HedvigContainedSmallButton(
   text: String,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
+  textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
   enabled: Boolean = true,
   colors: ButtonColors = ButtonDefaults.buttonColors(
     containerColor = MaterialTheme.colorScheme.primary,
@@ -36,7 +38,7 @@ fun HedvigContainedSmallButton(
     contentPadding = contentPadding,
     colors = colors,
   ) {
-    ButtonText(text)
+    ButtonText(text = text, textStyle = textStyle)
   }
 }
 
@@ -64,10 +66,14 @@ private fun HedvigContainedSmallButton(
 }
 
 @Composable
-private fun ButtonText(text: String, modifier: Modifier = Modifier) {
+private fun ButtonText(
+  text: String,
+  modifier: Modifier = Modifier,
+  textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
+) {
   Text(
     text = text,
-    style = MaterialTheme.typography.bodyLarge,
+    style = textStyle,
     modifier = modifier,
   )
 }
