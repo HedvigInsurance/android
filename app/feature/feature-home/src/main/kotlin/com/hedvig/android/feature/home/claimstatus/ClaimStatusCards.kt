@@ -42,7 +42,7 @@ internal fun ClaimStatusCards(
       state = pagerState,
       contentPadding = contentPadding,
       beyondBoundsPageCount = 1,
-      pageSpacing = 12.dp,
+      pageSpacing = 8.dp,
       key = { index -> claimStatusCardsUiState[index].id },
       modifier = Modifier.fillMaxWidth().systemGestureExclusion(),
     ) { page: Int ->
