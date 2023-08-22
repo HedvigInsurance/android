@@ -196,6 +196,7 @@ private fun InfoCardTextButton(
       containerColor = MaterialTheme.colorScheme.background,
       contentColor = MaterialTheme.colorScheme.onBackground,
     ),
+    textStyle = MaterialTheme.typography.bodyMedium,
     modifier = modifier,
   )
 }
