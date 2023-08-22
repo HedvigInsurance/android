@@ -18,7 +18,7 @@ internal val light_secondary = lavender_300
 internal val light_onSecondary = hedvigTonalPalette.neutral0
 internal val light_error = Color(0xFFDD2727)
 internal val light_onError = hedvigTonalPalette.neutral100
-internal val light_outlineVariant = hedvigTonalPalette.neutral60
+internal val light_outlineVariant = hedvigTonalPalette.neutral70
 
 // Dark from xml | https://github.com/HedvigInsurance/android/blob/e86158084061de59a9f1b6d71dda3b234057883d/app/src/main/res/values-night/colors_dark.xml#L2
 internal val dark_primary = hedvigTonalPalette.neutral100
@@ -34,4 +34,4 @@ internal val dark_secondary = lavender_400
 internal val dark_onSecondary = hedvigTonalPalette.neutral0
 internal val dark_error = Color(0xFFE24646)
 internal val dark_onError = hedvigTonalPalette.neutral100
-internal val dark_outlineVariant = hedvigTonalPalette.neutral40
+internal val dark_outlineVariant = hedvigTonalPalette.neutral30
