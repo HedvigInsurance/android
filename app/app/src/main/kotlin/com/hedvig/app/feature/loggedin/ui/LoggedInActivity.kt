@@ -23,11 +23,13 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.union
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
@@ -360,7 +362,7 @@ private fun Modifier.animatedNavigationBarInsetsConsumption(
   val insetsToConsume = if (hedvigAppState.shouldShowBottomBar) {
     WindowInsets.systemBars.only(WindowInsetsSides.Bottom).asPaddingValues(density)
   } else if (hedvigAppState.shouldShowNavRail) {
-    WindowInsets.systemBars.only(WindowInsetsSides.Left).asPaddingValues(density)
+    WindowInsets.systemBars.union(WindowInsets.displayCutout).only(WindowInsetsSides.Left).asPaddingValues(density)
   } else {
     PaddingValues(0.dp)
   }
@@ -393,5 +395,5 @@ private fun Modifier.animatedNavigationBarInsetsConsumption(
     animationSpec = tween(MotionTokens.DurationMedium1.toInt()),
     label = "Padding values inset animation",
   )
-  Modifier.consumeWindowInsets(animatedInsetsToConsume)
+  consumeWindowInsets(animatedInsetsToConsume)
 }
