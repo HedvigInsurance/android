@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - develop
+      - feature/redesign
 jobs:
   build_staging:
     runs-on: ubuntu-latest
