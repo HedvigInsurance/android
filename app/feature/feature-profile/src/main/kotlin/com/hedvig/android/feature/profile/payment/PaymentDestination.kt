@@ -1,12 +1,10 @@
 package com.hedvig.android.feature.profile.payment
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.with
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -44,13 +42,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.core.designsystem.animation.FadeAnimatedVisibility
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
-import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.core.designsystem.material3.typeContainer
 import com.hedvig.android.core.designsystem.material3.typeElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -77,29 +74,19 @@ internal fun PaymentDestination(
   market: Market?,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-  AnimatedContent(
-    targetState = uiState.isLoading,
-    transitionSpec = {
-      MotionDefaults.fadeThroughEnter with MotionDefaults.fadeThroughExit
-    },
-    label = "",
-  ) { loading ->
-    when (loading) {
-      true -> HedvigFullScreenCenterAlignedProgressDebounced(show = uiState.isLoading)
-      false -> PaymentScreen(
-        uiState = uiState,
-        locale = viewModel.languageService.getLocale(),
-        navigateUp = onBackPressed,
-        onChangeBankAccount = onChangeBankAccount,
-        onAddDiscountCode = viewModel::onDiscountCodeAdded,
-        onDiscountCodeChanged = viewModel::onDiscountCodeChanged,
-        onPaymentHistoryClicked = onPaymentHistoryClicked,
-        onConnectPayoutMethod = onConnectPayoutMethod,
-        market = market,
-        onRetry = viewModel::retry,
-      )
-    }
+  FadeAnimatedVisibility(isLoading = uiState.isLoading) {
+    PaymentScreen(
+      uiState = uiState,
+      locale = viewModel.languageService.getLocale(),
+      navigateUp = onBackPressed,
+      onChangeBankAccount = onChangeBankAccount,
+      onAddDiscountCode = viewModel::onDiscountCodeAdded,
+      onDiscountCodeChanged = viewModel::onDiscountCodeChanged,
+      onPaymentHistoryClicked = onPaymentHistoryClicked,
+      onConnectPayoutMethod = onConnectPayoutMethod,
+      market = market,
+      onRetry = viewModel::retry,
+    )
   }
 }
 
@@ -412,6 +399,7 @@ private fun PayoutDetails(uiState: PaymentViewModel.PaymentUiState) {
       PaymentViewModel.PaymentUiState.PayoutStatus.PENDING -> stringResource(R.string.PAYMENTS_DIRECT_DEBIT_PENDING)
       PaymentViewModel.PaymentUiState.PayoutStatus.NEEDS_SETUP ->
         stringResource(R.string.PAYMENTS_DIRECT_DEBIT_NEEDS_SETUP)
+
       null -> stringResource(R.string.PAYMENTS_DIRECT_DEBIT_NEEDS_SETUP)
     }
     Text(payoutText)

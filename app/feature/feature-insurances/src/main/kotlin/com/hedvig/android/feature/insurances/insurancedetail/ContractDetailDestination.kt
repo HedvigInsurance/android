@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.insurances.insurancedetail
 
 import android.net.Uri
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -39,6 +38,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
+import com.hedvig.android.core.designsystem.animation.FadeAnimatedContent
 import com.hedvig.android.core.designsystem.animation.animateContentHeight
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
@@ -102,7 +102,7 @@ private fun ContractDetailScreen(
     )
     val pagerState = rememberPagerState()
     Box(Modifier.weight(1f)) {
-      AnimatedContent(targetState = uiState, label = "") { state ->
+      FadeAnimatedContent(targetState = uiState, label = "") { state ->
         when (state) {
           ContractDetailsUiState.Error -> HedvigErrorSection(retry = retry)
           ContractDetailsUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced(

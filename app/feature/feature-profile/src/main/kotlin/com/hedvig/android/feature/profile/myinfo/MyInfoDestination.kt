@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.profile.myinfo
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -25,9 +24,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.core.designsystem.animation.FadeAnimatedVisibility
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -41,19 +40,15 @@ internal fun MyInfoDestination(
   navigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-  AnimatedContent(targetState = uiState.isLoading, label = "uiState is loading") { loading ->
-    when (loading) {
-      true -> HedvigFullScreenCenterAlignedProgress(show = uiState.isLoading)
-      false -> MyInfoScreen(
-        uiState = uiState,
-        emailChanged = viewModel::emailChanged,
-        phoneNumberChanged = viewModel::phoneNumberChanged,
-        updateEmailAndPhoneNumber = viewModel::updateEmailAndPhoneNumber,
-        dismissError = viewModel::dismissError,
-        navigateUp = navigateUp,
-      )
-    }
+  FadeAnimatedVisibility(isLoading = uiState.isLoading) {
+    MyInfoScreen(
+      uiState = uiState,
+      emailChanged = viewModel::emailChanged,
+      phoneNumberChanged = viewModel::phoneNumberChanged,
+      updateEmailAndPhoneNumber = viewModel::updateEmailAndPhoneNumber,
+      dismissError = viewModel::dismissError,
+      navigateUp = navigateUp,
+    )
   }
 }
 
