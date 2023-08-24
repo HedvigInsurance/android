@@ -50,6 +50,7 @@ dependencies {
   implementation(projects.navigationCore)
   implementation(projects.notificationPermission)
   implementation(projects.payment)
+  implementation(projects.placeholder)
   implementation(projects.theme)
 
   testImplementation(libs.assertK)
