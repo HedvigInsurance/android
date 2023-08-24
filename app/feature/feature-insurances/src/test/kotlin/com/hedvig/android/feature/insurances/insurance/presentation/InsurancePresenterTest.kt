@@ -17,6 +17,7 @@ import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
 import com.hedvig.android.notification.badge.data.crosssell.card.FakeCrossSellCardNotificationBadgeService
 import giraffe.type.TypeOfContract
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.runTest
 import octopus.CrossSalesQuery
 import octopus.type.CrossSellType
@@ -242,6 +243,39 @@ internal class InsurancePresenterTest {
 
       sendEvent(InsuranceScreenEvent.MarkCardCrossSellsAsSeen)
       assertThat(awaitItem().showNotificationBadge).isEqualTo(false)
+    }
+  }
+
+  @Test
+  fun `when starting presentation with an already loaded initial state, don't briefly show loading`() = runTest {
+    val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
+    val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
+    val crossSellCardNotificationBadgeService = FakeCrossSellCardNotificationBadgeService()
+    val presenter = InsurancePresenter(
+      getInsuranceContractsUseCase,
+      getCrossSellsUseCase,
+      crossSellCardNotificationBadgeService,
+    )
+    val initialState = InsuranceUiState(
+      insuranceCards = persistentListOf(),
+      crossSells = persistentListOf(),
+      showNotificationBadge = false,
+      quantityOfCancelledInsurances = 0,
+      hasError = false,
+      isLoading = false,
+      isRetrying = false,
+    )
+    presenter.test(initialState) {
+      awaitItem().also { uiState ->
+        assertThat(uiState).isEqualTo(initialState)
+        assertThat(uiState.isLoading).isFalse()
+        assertThat(uiState.isRetrying).isFalse()
+      }
+
+      getInsuranceContractsUseCase.contracts.add(validContracts)
+      expectNoEvents()
+      getCrossSellsUseCase.crossSells.add(validCrossSells)
+      assertThat(awaitItem().isLoading).isEqualTo(false)
     }
   }
 

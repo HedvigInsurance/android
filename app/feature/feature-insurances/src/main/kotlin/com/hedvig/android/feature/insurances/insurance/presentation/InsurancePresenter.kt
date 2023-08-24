@@ -39,9 +39,9 @@ internal data class InsuranceUiState(
   val crossSells: ImmutableList<CrossSell>,
   val showNotificationBadge: Boolean,
   val quantityOfCancelledInsurances: Int,
-  val hasError: Boolean = false,
-  val isLoading: Boolean = false,
-  val isRetrying: Boolean = false,
+  val hasError: Boolean,
+  val isLoading: Boolean,
+  val isRetrying: Boolean,
 ) {
   data class InsuranceCard(
     val contractId: String,
@@ -72,6 +72,7 @@ internal data class InsuranceUiState(
       quantityOfCancelledInsurances = 0,
       hasError = false,
       isLoading = true,
+      isRetrying = false,
     )
   }
 }
@@ -90,7 +91,7 @@ internal class InsurancePresenter(
         InsuranceData.fromUiState(lastState),
       )
     }
-    var isLoading by remember { mutableStateOf(true) }
+    var isLoading by remember { mutableStateOf(lastState.isLoading) }
     var isRetrying by remember { mutableStateOf(false) }
     var didFailToLoad by remember { mutableStateOf(false) }
     var loadIteration by remember { mutableStateOf(0) }
