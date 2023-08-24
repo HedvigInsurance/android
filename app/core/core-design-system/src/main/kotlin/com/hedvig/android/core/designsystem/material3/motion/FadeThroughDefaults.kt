@@ -16,13 +16,12 @@ private val Int.ForIncoming: Int
 
 object FadeThroughDefaults {
   private const val FadeThroughDuration = MotionTokens.DurationMedium1.toInt()
-  private val FadeThroughInterpolator = MotionTokens.EasingStandardCubicBezier
 
   internal val fadeThroughEnterTransition: EnterTransition = fadeIn(
     animationSpec = tween(
       durationMillis = FadeThroughDuration.ForIncoming,
       delayMillis = FadeThroughDuration.ForOutgoing,
-      easing = FadeThroughInterpolator,
+      easing = MotionTokens.EasingStandardCubicBezier,
     ),
   )
 
