@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.with
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,15 +16,18 @@ import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 @Composable
 fun FadeAnimatedVisibility(
   isLoading: Boolean,
+  modifier: Modifier = Modifier,
   content: @Composable () -> Unit,
 ) {
-  HedvigFullScreenCenterAlignedProgressDebounced(show = isLoading)
-  AnimatedVisibility(
-    visible = !isLoading,
-    enter = MotionDefaults.fadeThroughEnter,
-    exit = MotionDefaults.fadeThroughExit,
-  ) {
-    content()
+  Box(modifier) {
+    HedvigFullScreenCenterAlignedProgressDebounced(show = isLoading)
+    AnimatedVisibility(
+      visible = !isLoading,
+      enter = MotionDefaults.fadeThroughEnter,
+      exit = MotionDefaults.fadeThroughExit,
+    ) {
+      content()
+    }
   }
 }
 
