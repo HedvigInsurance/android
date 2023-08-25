@@ -15,11 +15,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -70,7 +70,7 @@ fun AudioRecorderScreen(
         ) {
           Text(
             text = message,
-            style = MaterialTheme.typography.subtitle1,
+            style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier
               .padding(16.dp),
           )
@@ -121,7 +121,7 @@ fun NotRecording(startRecording: () -> Unit) {
     }
     Text(
       text = label,
-      style = MaterialTheme.typography.caption,
+      style = MaterialTheme.typography.bodySmall,
       modifier = Modifier.padding(bottom = 16.dp),
     )
   }
@@ -167,7 +167,7 @@ fun Recording(
     val label = String.format("%02d:%02d", diff.toMinutes(), diff.seconds % 60)
     Text(
       text = label,
-      style = MaterialTheme.typography.caption,
+      style = MaterialTheme.typography.bodySmall,
       modifier = Modifier.padding(bottom = 16.dp),
     )
   }
@@ -221,7 +221,7 @@ fun Playback(
 @Composable
 private fun PreviewAudioRecorderScreenNotRecording() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       AudioRecorderScreen(
         parameters = AudioRecorderParameters(
           messages = listOf("Hello", "World"),
@@ -246,7 +246,7 @@ private fun PreviewAudioRecorderScreenNotRecording() {
 @Composable
 private fun PreviewAudioRecorderScreenRecording() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       AudioRecorderScreen(
         parameters = AudioRecorderParameters(
           messages = listOf("Hello", "World"),
@@ -299,7 +299,7 @@ private fun PreviewAudioRecorderScreenRecording() {
 @Composable
 private fun PreviewAudioRecorderScreenPlayback() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       AudioRecorderScreen(
         parameters = AudioRecorderParameters(
           messages = listOf("Hello", "World"),

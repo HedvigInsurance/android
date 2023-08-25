@@ -24,12 +24,7 @@ import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.pullrefresh.PullRefreshDefaults
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -61,6 +56,10 @@ import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
 import com.hedvig.android.memberreminders.ui.MemberReminderCards
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
+import com.hedvig.android.pullrefresh.PullRefreshDefaults
+import com.hedvig.android.pullrefresh.PullRefreshIndicator
+import com.hedvig.android.pullrefresh.pullRefresh
+import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import hedvig.resources.R
 
 @Composable
@@ -92,7 +91,6 @@ internal fun ProfileDestination(
   )
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun ProfileScreen(
   uiState: ProfileUiState,

@@ -10,7 +10,6 @@ dependencies {
   api(libs.androidx.compose.material3)
 
   implementation(libs.accompanist.systemUiController)
-  implementation(libs.androidx.compose.material)
   implementation(libs.kotlinx.datetime)
   implementation(projects.coreIcons)
   implementation(projects.coreResources)

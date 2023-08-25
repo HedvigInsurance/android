@@ -5,14 +5,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -31,24 +28,20 @@ fun LoadingRetrieval(locale: Locale) {
       .padding(horizontal = 16.dp, vertical = 24.dp),
   ) {
     val resources = LocalContext.current.resources
-    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-      Text(
-        text = resources.getQuantityString(
-          hedvig.resources.R.plurals.offer_switcher_title,
-          2,
-        ).uppercase(locale),
-        style = MaterialTheme.typography.caption,
-      )
-    }
+    Text(
+      text = resources.getQuantityString(
+        hedvig.resources.R.plurals.offer_switcher_title,
+        2,
+      ).uppercase(locale),
+      style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+    )
     Spacer(Modifier.height(24.dp))
     CircularProgressIndicator()
     Spacer(Modifier.height(16.dp))
-    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-      Text(
-        text = stringResource(hedvig.resources.R.string.offer_screen_insurely_card_loading_support_text),
-        style = MaterialTheme.typography.body2,
-      )
-    }
+    Text(
+      text = stringResource(hedvig.resources.R.string.offer_screen_insurely_card_loading_support_text),
+      style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+    )
   }
 }
 
@@ -56,7 +49,7 @@ fun LoadingRetrieval(locale: Locale) {
 @Composable
 private fun PreviewLoadingRetrieval() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       LoadingRetrieval(Locale.ENGLISH)
     }
   }

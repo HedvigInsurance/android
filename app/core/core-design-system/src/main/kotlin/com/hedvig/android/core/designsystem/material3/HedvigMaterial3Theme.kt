@@ -1,7 +1,6 @@
 package com.hedvig.android.core.designsystem.material3
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -40,7 +39,6 @@ import com.hedvig.android.core.designsystem.theme.light_surfaceVariant
 @Composable
 internal fun HedvigMaterial3Theme(
   darkTheme: Boolean = isSystemInDarkTheme(),
-  colorOverrides: (ColorScheme) -> ColorScheme = { it },
   content: @Composable () -> Unit,
 ) {
   val (colorScheme, hedvigColorTheme) = when {
@@ -48,7 +46,7 @@ internal fun HedvigMaterial3Theme(
     else -> LightColorScheme to lightHedvigColorScheme(LightColorScheme)
   }
   MaterialTheme(
-    colorScheme = colorOverrides.invoke(colorScheme),
+    colorScheme = colorScheme,
     shapes = HedvigShapes,
     typography = HedvigTypography,
   ) {

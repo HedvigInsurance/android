@@ -6,14 +6,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Divider
-import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -63,7 +60,7 @@ private fun TopSection(
   ) {
     Text(
       text = statusParagraph,
-      style = MaterialTheme.typography.subtitle1,
+      style = MaterialTheme.typography.bodyLarge,
     )
   }
 }
@@ -79,15 +76,13 @@ private fun BottomSection(
     verticalAlignment = Alignment.CenterVertically,
   ) {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-      CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-        Text(
-          text = stringResource(hedvig.resources.R.string.claim_status_contact_generic_subtitle),
-          style = MaterialTheme.typography.caption,
-        )
-      }
+      Text(
+        text = stringResource(hedvig.resources.R.string.claim_status_contact_generic_subtitle),
+        style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+      )
       Text(
         text = stringResource(hedvig.resources.R.string.claim_status_contact_generic_title),
-        style = MaterialTheme.typography.body1,
+        style = MaterialTheme.typography.bodyLarge,
       )
     }
     ChatIcon(
@@ -101,7 +96,7 @@ private fun BottomSection(
 @Composable
 private fun PreviewClaimDetailCard() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       ClaimInfoCard(
         ClaimDetailCardUiState(
           claimProgressItemsUiState = ClaimProgressUiState.previewList(),

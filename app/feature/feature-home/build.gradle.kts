@@ -18,7 +18,6 @@ dependencies {
   implementation(libs.accompanist.pagerIndicators)
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.compose.foundation)
-  implementation(libs.androidx.compose.material)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.uiViewBinding)
   implementation(libs.androidx.lifecycle.compose)
@@ -62,6 +61,7 @@ dependencies {
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.notificationPermission)
+  implementation(projects.pullrefresh)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)

@@ -12,7 +12,6 @@ android {
 dependencies {
   implementation(libs.accompanist.permissions)
   implementation(libs.accompanist.webview)
-  implementation(libs.androidx.compose.material)
   implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.lifecycle.compose)
@@ -51,6 +50,7 @@ dependencies {
   implementation(projects.notificationPermission)
   implementation(projects.payment)
   implementation(projects.placeholder)
+  implementation(projects.pullrefresh)
   implementation(projects.theme)
 
   testImplementation(libs.assertK)

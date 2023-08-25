@@ -211,7 +211,6 @@ dependencies {
   implementation(projects.dataForever)
   implementation(projects.dataTravelCertificatePublic)
   implementation(projects.datadog)
-  implementation(projects.featureBusinessmodel)
   implementation(projects.featureChangeaddress)
   implementation(projects.featureClaimTriaging)
   implementation(projects.featureForever)

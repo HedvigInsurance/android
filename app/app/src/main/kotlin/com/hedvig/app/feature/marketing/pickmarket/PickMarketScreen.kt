@@ -5,6 +5,7 @@ package com.hedvig.app.feature.marketing.pickmarket
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -26,19 +27,20 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.RadioButton
-import androidx.compose.material.RadioButtonDefaults
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,7 +54,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.BottomSheetHandle
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -88,9 +89,9 @@ fun PickMarketScreen(
   ModalBottomSheetLayout(
     sheetState = modalBottomSheetState,
     sheetBackgroundColor = if (isSystemInDarkTheme()) {
-      MaterialTheme.colors.surface
+      MaterialTheme.colorScheme.surface
     } else {
-      MaterialTheme.colors.onSurface
+      MaterialTheme.colorScheme.onSurface
     },
     sheetContent = {
       HedvigTheme { // Use standard theme again inside the sheet.
@@ -138,7 +139,7 @@ private fun ScreenContent(
   Box(modifier.fillMaxSize()) {
     Text(
       text = stringResource(hedvig.resources.R.string.market_language_screen_title),
-      style = MaterialTheme.typography.h4,
+      style = MaterialTheme.typography.headlineLarge,
       textAlign = TextAlign.Center,
       modifier = Modifier.align(Alignment.Center),
     )
@@ -264,7 +265,7 @@ private fun ColumnScope.PickMarketSheetContent(
   Text(
     text = stringResource(hedvig.resources.R.string.market_picker_modal_title),
     modifier = Modifier.padding(horizontal = 16.dp),
-    style = MaterialTheme.typography.h5,
+    style = MaterialTheme.typography.headlineSmall,
   )
   Spacer(Modifier.height(8.dp))
   markets.forEach { market ->
@@ -291,13 +292,13 @@ private fun ColumnScope.PickLanguageSheetContent(
   Text(
     text = stringResource(hedvig.resources.R.string.language_picker_modal_title),
     modifier = Modifier.padding(horizontal = 16.dp),
-    style = MaterialTheme.typography.h5,
+    style = MaterialTheme.typography.headlineSmall,
   )
   Spacer(Modifier.height(16.dp))
   Text(
     text = stringResource(hedvig.resources.R.string.language_picker_modal_text),
     modifier = Modifier.padding(horizontal = 16.dp),
-    style = MaterialTheme.typography.body1,
+    style = MaterialTheme.typography.bodyLarge,
   )
   Language.getAvailableLanguages(selectedMarket).forEach { language ->
     RadioButtonRow(
@@ -328,13 +329,13 @@ private fun RadioButtonRow(
       selected = selected,
       onClick = onClick,
       colors = RadioButtonDefaults.colors(
-        selectedColor = MaterialTheme.colors.onSurface,
+        selectedColor = MaterialTheme.colorScheme.onSurface,
       ),
     )
     Spacer(Modifier.width(4.dp))
     Text(
       text = text,
-      style = MaterialTheme.typography.body1,
+      style = MaterialTheme.typography.bodyLarge,
     )
   }
 }
@@ -368,7 +369,7 @@ private fun PickerRow(
       if (label != null) {
         Text(
           text = label,
-          style = MaterialTheme.typography.caption,
+          style = MaterialTheme.typography.bodySmall,
         )
       }
     }
@@ -380,11 +381,23 @@ private fun PickerRow(
   }
 }
 
+@Composable
+fun BottomSheetHandle(modifier: Modifier = Modifier) {
+  Box(
+    modifier = modifier
+      .size(width = 32.dp, height = 4.dp)
+      .background(
+        color = MaterialTheme.colorScheme.outlineVariant,
+        shape = RoundedCornerShape(20.dp),
+      ),
+  )
+}
+
 @HedvigPreview
 @Composable
 private fun PreviewRadioButtonRow() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       RadioButtonRow(
         onClick = {},
         selected = false,
@@ -398,7 +411,7 @@ private fun PreviewRadioButtonRow() {
 @Composable
 private fun PreviewEmptyPickerRow() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       PickerRow(onClick = {}, icon = null, header = "asd", label = "efg", enabled = false)
     }
   }
@@ -408,7 +421,7 @@ private fun PreviewEmptyPickerRow() {
 @Composable
 private fun PreviewPickerRow() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       PickerRow(onClick = {}, icon = { LanguageFlag() }, header = "asd", label = "efg", enabled = false)
     }
   }
@@ -418,7 +431,7 @@ private fun PreviewPickerRow() {
 @Composable
 private fun PreviewPickMarket() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       PickMarketScreen(
         onSubmit = {},
         onSelectMarket = {},

@@ -24,12 +24,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.pullrefresh.PullRefreshDefaults
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -84,6 +79,10 @@ import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.NotificationPermissionState
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
 import com.hedvig.android.notification.permission.rememberPreviewNotificationPermissionState
+import com.hedvig.android.pullrefresh.PullRefreshDefaults
+import com.hedvig.android.pullrefresh.PullRefreshIndicator
+import com.hedvig.android.pullrefresh.pullRefresh
+import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import hedvig.resources.R
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
@@ -125,7 +124,6 @@ internal fun HomeDestination(
   )
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun HomeScreen(
   uiState: HomeUiState,
@@ -168,8 +166,8 @@ private fun HomeScreen(
         contentKey = { it::class },
       ) { uiState ->
         when (uiState) {
-          HomeUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced(Modifier.weight(1f))
-          is HomeUiState.Error -> HedvigErrorSection(retry = reload, modifier = Modifier.weight(1f))
+          HomeUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced(Modifier.fillMaxSize())
+          is HomeUiState.Error -> HedvigErrorSection(retry = reload, modifier = Modifier.fillMaxSize())
           is HomeUiState.Success -> {
             HomeScreenSuccess(
               uiState = uiState,
@@ -254,6 +252,7 @@ private fun HomeScreenSuccess(
   openAppSettings: () -> Unit,
   openChat: () -> Unit,
   openUrl: (String) -> Unit,
+  modifier: Modifier = Modifier,
 ) {
   val coroutineScope = rememberCoroutineScope()
   val sheetState = rememberModalBottomSheetState(true)
@@ -278,7 +277,7 @@ private fun HomeScreenSuccess(
     )
   }
 
-  Column {
+  Column(modifier) {
     for ((index, veryImportantMessage) in uiState.veryImportantMessages.withIndex()) {
       VeryImportantMessageBanner(openUrl, veryImportantMessage)
       if (index == uiState.veryImportantMessages.lastIndex) {

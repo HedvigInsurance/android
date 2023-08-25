@@ -15,11 +15,6 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.pullrefresh.PullRefreshDefaults
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -49,13 +44,16 @@ import com.hedvig.android.apollo.format
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.data.forever.toErrorMessage
 import com.hedvig.android.feature.forever.ForeverUiState
+import com.hedvig.android.pullrefresh.PullRefreshDefaults
+import com.hedvig.android.pullrefresh.PullRefreshIndicator
+import com.hedvig.android.pullrefresh.pullRefresh
+import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import hedvig.resources.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.javamoney.moneta.Money
 import javax.money.MonetaryAmount
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 internal fun ForeverContent(
   uiState: ForeverUiState,

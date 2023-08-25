@@ -6,8 +6,8 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material.RadioButtonColors
-import androidx.compose.material.RadioButtonDefaults
+import androidx.compose.material3.RadioButtonColors
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -35,6 +35,8 @@ fun RadioButton(
     animationSpec = tween(durationMillis = RadioAnimationDuration),
     label = "dotRadius",
   )
+
+  @Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
   val radioColor = colors.radioColor(enabled, selected)
   Canvas(
     modifier

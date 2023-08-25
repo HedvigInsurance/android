@@ -4,15 +4,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Card
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -20,7 +16,6 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AddressCard(
   addressText: Pair<String, String?>?,
@@ -52,28 +47,24 @@ private fun AddressTextColumn(
     modifier = modifier,
   ) {
     if (addressText == null) {
-      CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-        Text(
-          placeholderText,
-          style = MaterialTheme.typography.subtitle1,
-          textAlign = TextAlign.Center,
-        )
-      }
+      Text(
+        placeholderText,
+        style = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+        textAlign = TextAlign.Center,
+      )
     } else {
       Text(
         addressText.first,
-        style = MaterialTheme.typography.subtitle1,
+        style = MaterialTheme.typography.bodyLarge,
         textAlign = TextAlign.Center,
       )
       addressText.second?.let { secondaryText ->
         if (secondaryText.isBlank()) return@let
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-          Text(
-            secondaryText,
-            style = MaterialTheme.typography.body1,
-            textAlign = TextAlign.Center,
-          )
-        }
+        Text(
+          secondaryText,
+          style = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+          textAlign = TextAlign.Center,
+        )
       }
     }
   }
@@ -83,7 +74,7 @@ private fun AddressTextColumn(
 @Composable
 private fun PreviewAddressCard() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       AddressCard(
         "Willemoesgade 4, st. tv".repeat(3) to "2100 København Ø".repeat(1),
         "",

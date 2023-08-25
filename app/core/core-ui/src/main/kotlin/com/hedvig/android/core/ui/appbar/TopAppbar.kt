@@ -1,13 +1,13 @@
 package com.hedvig.android.core.ui.appbar
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,7 +19,7 @@ fun TopAppBarWithBack(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   title: String? = null,
-  backgroundColor: Color = MaterialTheme.colors.background,
+  backgroundColor: Color = MaterialTheme.colorScheme.background,
   contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
   TopAppBar(
@@ -37,7 +37,7 @@ fun TopAppBarWithClose(
   onClick: () -> Unit,
   title: String,
   modifier: Modifier = Modifier,
-  backgroundColor: Color = MaterialTheme.colors.background,
+  backgroundColor: Color = MaterialTheme.colorScheme.background,
   contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
   TopAppBar(
@@ -60,7 +60,7 @@ private inline fun TopAppBar(
   actionType: TopAppBarActionType,
   modifier: Modifier = Modifier,
   title: String? = null,
-  backgroundColor: Color = MaterialTheme.colors.background,
+  backgroundColor: Color = MaterialTheme.colorScheme.background,
   contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
   TopAppBar(
@@ -69,7 +69,7 @@ private inline fun TopAppBar(
       if (title != null) {
         Text(
           text = title,
-          style = MaterialTheme.typography.h6,
+          style = MaterialTheme.typography.bodyLarge,
         )
       }
     },
