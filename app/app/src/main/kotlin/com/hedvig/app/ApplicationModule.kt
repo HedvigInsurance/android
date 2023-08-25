@@ -36,7 +36,6 @@ import com.hedvig.android.data.travelcertificate.di.claimFlowDataModule
 import com.hedvig.android.data.travelcertificate.di.travelCertificateDataModule
 import com.hedvig.android.datadog.addDatadogConfiguration
 import com.hedvig.android.datadog.di.datadogModule
-import com.hedvig.android.feature.businessmodel.di.businessModelModule
 import com.hedvig.android.feature.changeaddress.di.changeAddressModule
 import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
 import com.hedvig.android.feature.forever.di.foreverModule
@@ -621,7 +620,6 @@ val applicationModule = module {
       authModule,
       authRepositoryModule,
       buildConstantsModule,
-      businessModelModule,
       cacheManagerModule,
       changeAddressModule,
       changeDateBottomSheetModule,

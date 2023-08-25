@@ -28,9 +28,6 @@ sealed interface AppDestination : Destination {
   object Eurobonus : AppDestination
 
   @Serializable
-  object BusinessModel : AppDestination
-
-  @Serializable
   object ClaimsFlow : AppDestination
 
   @Serializable
