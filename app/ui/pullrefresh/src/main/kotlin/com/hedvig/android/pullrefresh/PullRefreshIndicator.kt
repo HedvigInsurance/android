@@ -101,7 +101,7 @@ fun PullRefreshIndicator(
 private fun CircularArrowIndicator(
   state: PullRefreshState,
   color: Color,
-  modifier: Modifier,
+  modifier: Modifier = Modifier,
 ) {
   val path = remember { Path().apply { fillType = PathFillType.EvenOdd } }
 

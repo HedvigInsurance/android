@@ -33,10 +33,10 @@ fun HedvigContainedSmallButton(
   HedvigContainedSmallButton(
     onClick = onClick,
     enabled = enabled,
-    modifier = modifier,
     elevation = elevation,
     contentPadding = contentPadding,
     colors = colors,
+    modifier = modifier,
   ) {
     ButtonText(text = text, textStyle = textStyle)
   }
@@ -45,11 +45,11 @@ fun HedvigContainedSmallButton(
 @Composable
 private fun HedvigContainedSmallButton(
   onClick: () -> Unit,
-  modifier: Modifier,
   enabled: Boolean,
   colors: ButtonColors,
   elevation: ButtonElevation?,
   contentPadding: PaddingValues,
+  modifier: Modifier = Modifier,
   content: @Composable RowScope.() -> Unit,
 ) {
   Button(

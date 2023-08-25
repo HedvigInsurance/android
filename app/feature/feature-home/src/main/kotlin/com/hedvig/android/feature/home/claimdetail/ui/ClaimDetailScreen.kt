@@ -81,7 +81,6 @@ private fun ClaimDetailScreen(
     Spacer(Modifier.height(8.dp))
     HedvigCard(
       colors = CardDefaults.elevatedCardColors(),
-      modifier = modifier,
     ) {
       Column {
         TopInfo(

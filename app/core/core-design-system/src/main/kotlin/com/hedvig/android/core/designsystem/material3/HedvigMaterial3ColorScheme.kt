@@ -2,6 +2,7 @@
 
 package com.hedvig.android.core.designsystem.material3
 
+import android.annotation.SuppressLint
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -25,6 +26,7 @@ import com.hedvig.android.core.designsystem.newtheme.green_800
 import com.hedvig.android.core.designsystem.newtheme.greyscale_0
 import com.hedvig.android.core.designsystem.newtheme.greyscale_1000
 
+@SuppressLint("ComposeCompositionLocalUsage")
 internal val LocalHedvigMaterial3ColorScheme = staticCompositionLocalOf<HedvigMaterial3ColorScheme> {
   lightHedvigColorScheme(LightColorScheme)
 }

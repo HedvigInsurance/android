@@ -139,14 +139,14 @@ private fun LazyListScope.LightAndDarkItem(content: @Composable () -> Unit) {
   item {
     Row(Modifier.fillMaxWidth()) {
       Box(Modifier.weight(1f)) {
-        HedvigTheme(false) {
+        HedvigTheme(darkTheme = false) {
           Surface(Modifier.fillMaxWidth()) {
             content()
           }
         }
       }
       Box(Modifier.weight(1f)) {
-        HedvigTheme(true) {
+        HedvigTheme(darkTheme = true) {
           Surface(Modifier.fillMaxWidth()) {
             content()
           }

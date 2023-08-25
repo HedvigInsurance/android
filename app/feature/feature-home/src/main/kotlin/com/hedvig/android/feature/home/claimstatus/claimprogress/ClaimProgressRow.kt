@@ -19,11 +19,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.material3.DisabledAlpha
 import com.hedvig.android.core.designsystem.material3.infoElement
 import com.hedvig.android.core.designsystem.material3.warningElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.ContentAlpha
 
 @Composable
 internal fun ClaimProgressRow(
@@ -48,7 +48,7 @@ internal fun ClaimProgressRow(
 private fun ClaimProgress(
   text: String,
   type: ClaimProgressUiState.ClaimProgressType,
-  modifier: Modifier,
+  modifier: Modifier = Modifier,
 ) {
   val color = when (type) {
     ClaimProgressUiState.ClaimProgressType.PAID -> MaterialTheme.colorScheme.infoElement
@@ -102,6 +102,21 @@ private fun ClaimProgress(
       )
     }
   }
+}
+
+private enum class ContentAlpha {
+  HIGH,
+  MEDIUM,
+  DISABLED,
+  ;
+
+  val value: Float
+    @Composable
+    get() = when (this) {
+      HIGH -> 1f
+      MEDIUM -> 0.74f
+      DISABLED -> DisabledAlpha
+    }
 }
 
 @HedvigPreview

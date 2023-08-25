@@ -138,7 +138,7 @@ internal fun YourInfoTab(
     if (upcomingChanges != null) {
       VectorInfoCard(
         text = upcomingChanges.title,
-        modifier = modifier
+        modifier = Modifier
           .fillMaxWidth()
           .padding(horizontal = 16.dp),
       ) {
@@ -150,7 +150,7 @@ internal fun YourInfoTab(
               containerColor = MaterialTheme.colorScheme.background,
               contentColor = MaterialTheme.colorScheme.onBackground,
             ),
-            modifier = modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
           )
         }
       }

@@ -22,11 +22,12 @@ import hedvig.resources.R
 @Composable
 fun ToolbarChatIcon(
   onClick: () -> Unit,
+  modifier: Modifier = Modifier,
 ) {
   Image(
     imageVector = Icons.Hedvig.Chat,
     contentDescription = stringResource(R.string.DASHBOARD_OPEN_CHAT),
-    modifier = Modifier
+    modifier = modifier
       .size(40.dp)
       .shadow(4.dp, CircleShape)
       .clip(CircleShape)

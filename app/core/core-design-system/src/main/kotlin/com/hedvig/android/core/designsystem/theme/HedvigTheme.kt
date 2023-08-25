@@ -12,11 +12,12 @@ import com.hedvig.android.core.designsystem.material3.HedvigMaterial3Theme
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun HedvigTheme(
+  modifier: Modifier = Modifier,
   darkTheme: Boolean = isSystemInDarkTheme(),
   content: @Composable () -> Unit,
 ) {
   Box(
-    modifier = Modifier.semantics {
+    modifier = modifier.semantics {
       testTagsAsResourceId = true
     },
   ) {

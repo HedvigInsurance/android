@@ -365,8 +365,9 @@ private fun TotalAmount(uiState: PaymentViewModel.PaymentUiState) {
   }
 }
 
+@Suppress("UnusedReceiverParameter")
 @Composable
-private fun PaymentDetails(uiState: PaymentViewModel.PaymentUiState) {
+private fun ColumnScope.PaymentDetails(uiState: PaymentViewModel.PaymentUiState) {
   Text(
     text = stringResource(id = R.string.payment_details_navigation_bar_title),
     modifier = Modifier.padding(horizontal = 16.dp),
@@ -398,8 +399,9 @@ private fun PaymentDetails(uiState: PaymentViewModel.PaymentUiState) {
   }
 }
 
+@Suppress("UnusedReceiverParameter")
 @Composable
-private fun PayoutDetails(uiState: PaymentViewModel.PaymentUiState) {
+private fun ColumnScope.PayoutDetails(uiState: PaymentViewModel.PaymentUiState) {
   Text(
     text = stringResource(id = R.string.payment_screen_payout_section_title),
     modifier = Modifier.padding(horizontal = 16.dp),
@@ -431,9 +433,12 @@ private fun PayoutDetails(uiState: PaymentViewModel.PaymentUiState) {
 }
 
 @Composable
-fun PaymentHistory(onClick: () -> Unit) {
+fun PaymentHistory(
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
   Row(
-    modifier = Modifier
+    modifier = modifier
       .fillMaxWidth()
       .clickable { onClick() }
       .padding(16.dp),

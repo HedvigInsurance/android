@@ -3,6 +3,7 @@ package com.hedvig.android.feature.forever.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -66,10 +67,14 @@ internal fun ReferralList(uiState: ForeverUiState) {
   }
 }
 
+@Suppress("UnusedReceiverParameter")
 @Composable
-private fun ReferralRow(referral: ForeverUiState.Referral) {
+private fun ColumnScope.ReferralRow(
+  referral: ForeverUiState.Referral,
+  modifier: Modifier = Modifier,
+) {
   Row(
-    modifier = Modifier
+    modifier = modifier
       .padding(vertical = 16.dp)
       .fillMaxWidth(),
     horizontalArrangement = Arrangement.SpaceBetween,
