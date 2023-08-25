@@ -8,7 +8,7 @@ import androidx.compose.ui.tooling.preview.Preview
   uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL,
 )
 @Preview(
-  name = "darkMode portrait",
+  name = "nightMode portrait",
   uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL,
 )
 annotation class HedvigPreview
