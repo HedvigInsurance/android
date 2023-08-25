@@ -76,7 +76,7 @@ private fun SettingsScreen(
         HedvigFullScreenCenterAlignedProgressDebounced()
       }
       is SettingsUiState.Loaded -> {
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(8.dp))
         LanguageWithDialog(
           languageOptions = uiState.languageOptions,
           selectedLanguage = uiState.selectedLanguage,
