@@ -69,7 +69,7 @@ internal fun darkHedvigColorScheme(
   onTypeContainer = green_100, // green_800,
 
   infoElement = blue_400, // blue_600,
-  onInfoElement = greyscale_0, // greyscale_1000,
+  onInfoElement = greyscale_1000, // greyscale_1000,
   infoContainer = blue_800, // blue_100,
   onInfoContainer = blue_100, // blue_900,
 )

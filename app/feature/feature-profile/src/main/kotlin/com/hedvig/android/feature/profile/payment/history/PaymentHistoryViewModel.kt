@@ -15,7 +15,7 @@ import java.util.Locale
 
 internal class PaymentHistoryViewModel(
   private val paymentRepository: PaymentRepository,
-  val languageService: LanguageService,
+  private val languageService: LanguageService,
 ) : ViewModel() {
 
   private val _uiState = MutableStateFlow(PaymentHistoryUiState())

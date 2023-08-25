@@ -36,7 +36,7 @@ fun HedvigErrorSection(
   retry: () -> Unit,
   modifier: Modifier = Modifier,
   title: String = stringResource(R.string.something_went_wrong),
-  subTitle: String = stringResource(id = R.string.GENERAL_ERROR_BODY),
+  subTitle: String? = stringResource(id = R.string.GENERAL_ERROR_BODY),
   buttonText: String = stringResource(R.string.GENERAL_RETRY),
   contentPadding: PaddingValues = WindowInsets.safeDrawing.asPaddingValues(),
   withDefaultVerticalSpacing: Boolean = true,
@@ -63,12 +63,14 @@ fun HedvigErrorSection(
       modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(2.dp))
-    CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
-      Text(
-        text = subTitle,
-        textAlign = TextAlign.Center,
-        modifier = Modifier.fillMaxWidth(),
-      )
+    if (subTitle != null) {
+      CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
+        Text(
+          text = subTitle,
+          textAlign = TextAlign.Center,
+          modifier = Modifier.fillMaxWidth(),
+        )
+      }
     }
     Spacer(Modifier.height(24.dp))
     HedvigContainedSmallButton(

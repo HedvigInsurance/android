@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.os.bundleOf
 import com.hedvig.android.core.common.android.parcelable
 import com.hedvig.android.core.designsystem.material3.infoElement
+import com.hedvig.android.core.designsystem.material3.onInfoElement
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
@@ -133,8 +134,8 @@ class ChatTextInput : AbstractComposeView {
             colors = IconButtonDefaults.iconButtonColors(
               containerColor = MaterialTheme.colorScheme.infoElement,
               disabledContainerColor = MaterialTheme.colorScheme.infoElement,
-              contentColor = MaterialTheme.colorScheme.surface,
-              disabledContentColor = MaterialTheme.colorScheme.surface,
+              contentColor = MaterialTheme.colorScheme.onInfoElement,
+              disabledContentColor = MaterialTheme.colorScheme.onInfoElement,
             ),
             enabled = onSendMessageListener != null && text.isNotBlank(),
             modifier = Modifier

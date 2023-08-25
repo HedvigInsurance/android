@@ -28,8 +28,9 @@
     <item name="textColorLink" type="color">@color/colorSecondary</item>
     <item name="textColorLargeButton" type="color">@color/colorOnPrimary</item>
 
-    <item name="colorChatUserBackground" type="color">#FFE0F0F9</item>
-    <item name="colorChatHedvigBackground" type="color">#FFF0F0F0</item>
+    <item name="colorChatUserBackground" type="color">#FF30577E</item>
+    <item name="colorChatHedvigBackground" type="color">#FF505050</item>
+
 
     <item name="colorInfoCardSurface" type="color">@color/lavender_900</item>
 

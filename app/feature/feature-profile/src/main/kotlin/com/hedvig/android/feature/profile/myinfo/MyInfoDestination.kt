@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,9 +25,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.core.designsystem.animation.FadeAnimatedVisibility
+import com.hedvig.android.core.designsystem.animation.FadeAnimatedContent
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -40,16 +42,14 @@ internal fun MyInfoDestination(
   navigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  FadeAnimatedVisibility(isLoading = uiState.isLoading) {
-    MyInfoScreen(
-      uiState = uiState,
-      emailChanged = viewModel::emailChanged,
-      phoneNumberChanged = viewModel::phoneNumberChanged,
-      updateEmailAndPhoneNumber = viewModel::updateEmailAndPhoneNumber,
-      dismissError = viewModel::dismissError,
-      navigateUp = navigateUp,
-    )
-  }
+  MyInfoScreen(
+    uiState = uiState,
+    emailChanged = viewModel::emailChanged,
+    phoneNumberChanged = viewModel::phoneNumberChanged,
+    updateEmailAndPhoneNumber = viewModel::updateEmailAndPhoneNumber,
+    dismissError = viewModel::dismissError,
+    navigateUp = navigateUp,
+  )
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -71,76 +71,86 @@ private fun MyInfoScreen(
       navigateUp = navigateUp,
       modifier = Modifier.clearFocusOnTap(),
     ) {
-      if (uiState.errorMessage != null) {
-        Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-          HedvigErrorSection(retry = dismissError)
-        }
-      } else {
-        Spacer(Modifier.height(16.dp))
-        val errorText = uiState.member?.phoneNumber?.errorMessageRes?.let { stringResource(id = it) }
-        HedvigTextField(
-          value = uiState.member?.phoneNumber?.input ?: "",
-          onValueChange = { newInput ->
-            if (newInput.indices.all { newInput[it].isWhitespace().not() }) {
-              phoneNumberChanged(newInput)
+      FadeAnimatedContent(uiState, Modifier.weight(1f)) { uiState ->
+        Column(Modifier.fillMaxSize()) {
+          when {
+            uiState.isLoading -> {
+              HedvigFullScreenCenterAlignedProgressDebounced()
             }
-          },
-          label = { Text(stringResource(R.string.PHONE_NUMBER_ROW_TITLE)) },
-          errorText = errorText,
-          keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Phone,
-            imeAction = ImeAction.Next,
-          ),
-          withNewDesign = true,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        )
-        AnimatedVisibility(visible = errorText != null) {
-          Spacer(Modifier.height(4.dp))
-        }
-        Spacer(Modifier.height(4.dp))
-        HedvigTextField(
-          value = uiState.member?.email?.input ?: "",
-          onValueChange = { newInput ->
-            if (newInput.indices.all { newInput[it].isWhitespace().not() }) {
-              emailChanged(newInput)
+            uiState.errorMessage != null -> {
+              Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                HedvigErrorSection(retry = dismissError)
+              }
             }
-          },
-          label = { Text(stringResource(R.string.PROFILE_MY_INFO_EMAIL_LABEL)) },
-          errorText = uiState.member?.email?.errorMessageRes?.let { stringResource(id = it) },
-          keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Email,
-            imeAction = ImeAction.Done,
-          ),
-          keyboardActions = KeyboardActions(
-            onDone = {
-              updateEmailAndPhoneNumber()
-              localSoftwareKeyboardController?.hide()
-            },
-          ),
-          withNewDesign = true,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        )
-        Spacer(Modifier.height(16.dp))
-        AnimatedVisibility(
-          visible = uiState.canSubmit || uiState.isSubmitting,
-          enter = fadeIn(),
-          exit = fadeOut(),
-        ) {
-          HedvigContainedButton(
-            text = stringResource(R.string.general_save_button),
-            enabled = uiState.canSubmit,
-            onClick = {
-              updateEmailAndPhoneNumber()
-              localSoftwareKeyboardController?.hide()
-            },
-            isLoading = uiState.isSubmitting,
-            modifier = Modifier.padding(horizontal = 16.dp),
-          )
-          Spacer(Modifier.height(16.dp))
+            else -> {
+              Spacer(Modifier.height(16.dp))
+              val errorText = uiState.member?.phoneNumber?.errorMessageRes?.let { stringResource(id = it) }
+              HedvigTextField(
+                value = uiState.member?.phoneNumber?.input ?: "",
+                onValueChange = { newInput ->
+                  if (newInput.indices.all { newInput[it].isWhitespace().not() }) {
+                    phoneNumberChanged(newInput)
+                  }
+                },
+                label = { Text(stringResource(R.string.PHONE_NUMBER_ROW_TITLE)) },
+                errorText = errorText,
+                keyboardOptions = KeyboardOptions(
+                  keyboardType = KeyboardType.Phone,
+                  imeAction = ImeAction.Next,
+                ),
+                withNewDesign = true,
+                modifier = Modifier
+                  .fillMaxWidth()
+                  .padding(horizontal = 16.dp),
+              )
+              AnimatedVisibility(visible = errorText != null) {
+                Spacer(Modifier.height(4.dp))
+              }
+              Spacer(Modifier.height(4.dp))
+              HedvigTextField(
+                value = uiState.member?.email?.input ?: "",
+                onValueChange = { newInput ->
+                  if (newInput.indices.all { newInput[it].isWhitespace().not() }) {
+                    emailChanged(newInput)
+                  }
+                },
+                label = { Text(stringResource(R.string.PROFILE_MY_INFO_EMAIL_LABEL)) },
+                errorText = uiState.member?.email?.errorMessageRes?.let { stringResource(id = it) },
+                keyboardOptions = KeyboardOptions(
+                  keyboardType = KeyboardType.Email,
+                  imeAction = ImeAction.Done,
+                ),
+                keyboardActions = KeyboardActions(
+                  onDone = {
+                    updateEmailAndPhoneNumber()
+                    localSoftwareKeyboardController?.hide()
+                  },
+                ),
+                withNewDesign = true,
+                modifier = Modifier
+                  .fillMaxWidth()
+                  .padding(horizontal = 16.dp),
+              )
+              Spacer(Modifier.height(16.dp))
+              AnimatedVisibility(
+                visible = uiState.canSubmit || uiState.isSubmitting,
+                enter = fadeIn(),
+                exit = fadeOut(),
+              ) {
+                HedvigContainedButton(
+                  text = stringResource(R.string.general_save_button),
+                  enabled = uiState.canSubmit,
+                  onClick = {
+                    updateEmailAndPhoneNumber()
+                    localSoftwareKeyboardController?.hide()
+                  },
+                  isLoading = uiState.isSubmitting,
+                  modifier = Modifier.padding(horizontal = 16.dp),
+                )
+                Spacer(Modifier.height(16.dp))
+              }
+            }
+          }
         }
       }
     }

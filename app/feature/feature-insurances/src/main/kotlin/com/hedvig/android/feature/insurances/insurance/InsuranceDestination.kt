@@ -128,77 +128,74 @@ private fun InsuranceScreen(
   imageLoader: ImageLoader,
 ) {
   val isRetrying = uiState.isRetrying
-  Box(
-    modifier = Modifier.fillMaxSize(),
-    propagateMinConstraints = true,
-  ) {
-    val systemBarInsetTopDp = with(LocalDensity.current) {
-      WindowInsets.systemBars.getTop(this).toDp()
-    }
-    val pullRefreshState = rememberPullRefreshState(
-      refreshing = isRetrying,
-      onRefresh = reload,
-      refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
-    )
-    Box {
-      AnimatedContent(
-        targetState = uiState.isLoading,
-        transitionSpec = {
-          MotionDefaults.fadeThroughEnter with MotionDefaults.fadeThroughExit
-        },
-        label = "uiState is Loading",
-      ) { isLoading ->
-        when (isLoading) {
-          true -> HedvigFullScreenCenterAlignedProgressDebounced()
-          false -> {
-            Column(
-              Modifier
-                .pullRefresh(pullRefreshState)
-                .verticalScroll(rememberScrollState())
-                .windowInsetsPadding(WindowInsets.safeDrawing),
+  val systemBarInsetTopDp = with(LocalDensity.current) {
+    WindowInsets.systemBars.getTop(this).toDp()
+  }
+  val pullRefreshState = rememberPullRefreshState(
+    refreshing = isRetrying,
+    onRefresh = reload,
+    refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
+  )
+  Box(Modifier.fillMaxSize()) {
+    AnimatedContent(
+      targetState = uiState.isLoading,
+      transitionSpec = {
+        MotionDefaults.fadeThroughEnter with MotionDefaults.fadeThroughExit
+      },
+      label = "uiState is Loading",
+      modifier = Modifier.fillMaxSize(),
+    ) { isLoading ->
+      when (isLoading) {
+        true -> HedvigFullScreenCenterAlignedProgressDebounced(Modifier.fillMaxSize())
+        false -> {
+          Column(
+            Modifier
+              .fillMaxSize()
+              .pullRefresh(pullRefreshState)
+              .verticalScroll(rememberScrollState())
+              .windowInsetsPadding(WindowInsets.safeDrawing),
+          ) {
+            Spacer(Modifier.height(16.dp))
+            Row(
+              verticalAlignment = Alignment.CenterVertically,
+              modifier = Modifier
+                .height(64.dp)
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
             ) {
-              Spacer(Modifier.height(16.dp))
-              Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                  .height(64.dp)
-                  .fillMaxWidth()
-                  .padding(horizontal = 16.dp),
-              ) {
-                Text(
-                  text = stringResource(id = R.string.DASHBOARD_SCREEN_TITLE),
-                  style = MaterialTheme.typography.titleLarge,
-                )
-              }
-
-              if (uiState.hasError) {
-                HedvigErrorSection(retry = reload)
-              } else {
-                InsuranceScreenContent(
-                  imageLoader = imageLoader,
-                  insuranceCards = uiState.insuranceCards,
-                  crossSells = uiState.crossSells,
-                  showNotificationBadge = uiState.showNotificationBadge,
-                  onInsuranceCardClick = onInsuranceCardClick,
-                  onCrossSellClick = onCrossSellClick,
-                  navigateToCancelledInsurances = navigateToCancelledInsurances,
-                  quantityOfCancelledInsurances = uiState.quantityOfCancelledInsurances,
-                )
-              }
-              Spacer(Modifier.height(16.dp))
-              Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+              Text(
+                text = stringResource(id = R.string.DASHBOARD_SCREEN_TITLE),
+                style = MaterialTheme.typography.titleLarge,
+              )
             }
+
+            if (uiState.hasError) {
+              HedvigErrorSection(retry = reload)
+            } else {
+              InsuranceScreenContent(
+                imageLoader = imageLoader,
+                insuranceCards = uiState.insuranceCards,
+                crossSells = uiState.crossSells,
+                showNotificationBadge = uiState.showNotificationBadge,
+                onInsuranceCardClick = onInsuranceCardClick,
+                onCrossSellClick = onCrossSellClick,
+                navigateToCancelledInsurances = navigateToCancelledInsurances,
+                quantityOfCancelledInsurances = uiState.quantityOfCancelledInsurances,
+              )
+            }
+            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
           }
         }
       }
-
-      PullRefreshIndicator(
-        refreshing = isRetrying,
-        state = pullRefreshState,
-        scale = true,
-        modifier = Modifier.align(Alignment.TopCenter),
-      )
     }
+
+    PullRefreshIndicator(
+      refreshing = isRetrying,
+      state = pullRefreshState,
+      scale = true,
+      modifier = Modifier.align(Alignment.TopCenter),
+    )
   }
 }
 
@@ -419,6 +416,7 @@ private fun PreviewInsuranceScreen() {
           quantityOfCancelledInsurances = 1,
           hasError = false,
           isLoading = false,
+          isRetrying = false,
         ),
         {},
         {},

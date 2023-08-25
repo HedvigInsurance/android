@@ -25,6 +25,7 @@ fun FadeAnimatedVisibility(
       visible = !isLoading,
       enter = MotionDefaults.fadeThroughEnter,
       exit = MotionDefaults.fadeThroughExit,
+      label = "FadeAnimatedVisibility",
     ) {
       content()
     }
@@ -37,7 +38,7 @@ fun <S> FadeAnimatedContent(
   targetState: S,
   modifier: Modifier = Modifier,
   contentAlignment: Alignment = Alignment.TopStart,
-  label: String = "AnimatedContent",
+  label: String = "FadeAnimatedContent",
   content: @Composable AnimatedVisibilityScope.(targetState: S) -> Unit,
 ) = AnimatedContent(
   targetState = targetState,

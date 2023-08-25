@@ -2,8 +2,10 @@ package com.hedvig.android.feature.forever.navigation
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.with
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
@@ -62,7 +64,10 @@ private fun ForeverDestination(
     label = "",
   ) { loading ->
     when (loading) {
-      true -> HedvigFullScreenCenterAlignedProgressDebounced(show = uiState.isLoading)
+      true -> HedvigFullScreenCenterAlignedProgressDebounced(
+        show = uiState.isLoading,
+        modifier = Modifier.fillMaxSize(),
+      )
       false -> ForeverScreen(
         uiState = uiState,
         reload = viewModel::reload,

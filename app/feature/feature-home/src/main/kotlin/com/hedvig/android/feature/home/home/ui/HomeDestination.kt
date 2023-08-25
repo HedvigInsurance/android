@@ -2,9 +2,9 @@ package com.hedvig.android.feature.home.home.ui
 
 import android.content.Context
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -153,20 +153,20 @@ private fun HomeScreen(
   )
 
   Box(Modifier.fillMaxSize()) {
-    AnimatedContent(
-      targetState = uiState,
-      modifier = Modifier.fillMaxSize(),
-      label = "home ui state",
-    ) { uiState ->
-      Column(
-        Modifier
-          .fillMaxSize()
-          .pullRefresh(pullRefreshState)
-          .verticalScroll(rememberScrollState())
-          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-      ) {
-        Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
-        Spacer(Modifier.height(64.dp)) // Room for TopAppBarLayoutForActions
+    Column(
+      Modifier
+        .fillMaxSize()
+        .pullRefresh(pullRefreshState)
+        .verticalScroll(rememberScrollState())
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+    ) {
+      Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
+      Spacer(Modifier.height(64.dp)) // Room for TopAppBarLayoutForActions
+      val transition = updateTransition(targetState = uiState, label = "home ui state")
+      transition.AnimatedContent(
+        modifier = Modifier.fillMaxSize(),
+        contentKey = { it::class },
+      ) { uiState ->
         when (uiState) {
           HomeUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced(Modifier.weight(1f))
           is HomeUiState.Error -> HedvigErrorSection(retry = reload, modifier = Modifier.weight(1f))
@@ -195,9 +195,9 @@ private fun HomeScreen(
             )
           }
         }
-        Spacer(Modifier.height(16.dp))
-        Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
       }
+      Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     }
     Column {
       TopAppBarLayoutForActions {
@@ -240,7 +240,7 @@ private suspend fun daysSinceLastTooltipShown(context: Context): Boolean {
 
 @Suppress("UnusedReceiverParameter")
 @Composable
-private fun ColumnScope.HomeScreenSuccess(
+private fun HomeScreenSuccess(
   uiState: HomeUiState.Success,
   notificationPermissionState: NotificationPermissionState,
   snoozeNotificationPermissionReminder: () -> Unit,
@@ -278,52 +278,54 @@ private fun ColumnScope.HomeScreenSuccess(
     )
   }
 
-  for ((index, veryImportantMessage) in uiState.veryImportantMessages.withIndex()) {
-    VeryImportantMessageBanner(openUrl, veryImportantMessage)
-    if (index == uiState.veryImportantMessages.lastIndex) {
+  Column {
+    for ((index, veryImportantMessage) in uiState.veryImportantMessages.withIndex()) {
+      VeryImportantMessageBanner(openUrl, veryImportantMessage)
+      if (index == uiState.veryImportantMessages.lastIndex) {
+        Spacer(Modifier.height(16.dp))
+      }
+    }
+    WelcomeMessage(
+      homeText = uiState.homeText,
+      modifier = Modifier.padding(horizontal = 24.dp),
+    )
+    Spacer(Modifier.height(24.dp))
+    if (uiState.claimStatusCardsData != null) {
+      ClaimStatusCards(
+        goToDetailScreen = onClaimDetailCardClicked,
+        claimStatusCardsData = uiState.claimStatusCardsData,
+        contentPadding = PaddingValues(horizontal = 16.dp),
+      )
       Spacer(Modifier.height(16.dp))
     }
-  }
-  WelcomeMessage(
-    homeText = uiState.homeText,
-    modifier = Modifier.padding(horizontal = 24.dp),
-  )
-  Spacer(Modifier.height(24.dp))
-  if (uiState.claimStatusCardsData != null) {
-    ClaimStatusCards(
-      goToDetailScreen = onClaimDetailCardClicked,
-      claimStatusCardsData = uiState.claimStatusCardsData,
-      contentPadding = PaddingValues(horizontal = 16.dp),
+    val memberReminders = uiState.memberReminders.onlyApplicableReminders(notificationPermissionState.status.isGranted)
+    NotificationPermissionDialog(notificationPermissionState, openAppSettings)
+    MemberReminderCards(
+      memberReminders = memberReminders,
+      navigateToConnectPayment = navigateToConnectPayment,
+      openUrl = openUrl,
+      notificationPermissionState = notificationPermissionState,
+      snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
     )
-    Spacer(Modifier.height(16.dp))
+    if (memberReminders.hasAnyReminders) {
+      Spacer(Modifier.height(16.dp))
+    }
+    Spacer(Modifier.weight(1f))
+    HedvigContainedButton(
+      text = stringResource(R.string.home_tab_claim_button_text),
+      onClick = onStartClaimClicked,
+      modifier = Modifier.padding(horizontal = 16.dp),
+    )
+    Spacer(Modifier.height(8.dp))
+    HedvigTextButton(
+      text = stringResource(id = R.string.home_tab_other_services),
+      onClick = { showEditYourInfoBottomSheet = true },
+      modifier = Modifier.padding(horizontal = 16.dp),
+    )
   }
-  val memberReminders = uiState.memberReminders.onlyApplicableReminders(notificationPermissionState.status.isGranted)
-  NotificationPermissionDialog(notificationPermissionState, openAppSettings)
-  MemberReminderCards(
-    memberReminders = memberReminders,
-    navigateToConnectPayment = navigateToConnectPayment,
-    openUrl = openUrl,
-    notificationPermissionState = notificationPermissionState,
-    snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(horizontal = 16.dp),
-  )
-  if (memberReminders.hasAnyReminders) {
-    Spacer(Modifier.height(16.dp))
-  }
-  Spacer(Modifier.weight(1f))
-  HedvigContainedButton(
-    text = stringResource(R.string.home_tab_claim_button_text),
-    onClick = onStartClaimClicked,
-    modifier = Modifier.padding(horizontal = 16.dp),
-  )
-  Spacer(Modifier.height(8.dp))
-  HedvigTextButton(
-    text = stringResource(id = R.string.home_tab_other_services),
-    onClick = { showEditYourInfoBottomSheet = true },
-    modifier = Modifier.padding(horizontal = 16.dp),
-  )
 }
 
 @Composable

@@ -44,15 +44,17 @@ fun HedvigFullScreenCenterAlignedProgress(
   modifier: Modifier = Modifier,
   show: Boolean = true,
 ) {
-  AnimatedVisibility(
-    visible = show,
-    enter = fadeIn(),
-    exit = fadeOut(),
-    modifier = modifier,
-    label = "three dots loading animated visibility",
-  ) {
-    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-      ThreeDotsLoading()
+  Box(modifier) {
+    AnimatedVisibility(
+      visible = show,
+      enter = fadeIn(),
+      exit = fadeOut(),
+      label = "three dots loading animated visibility",
+      modifier = Modifier.fillMaxSize(),
+    ) {
+      Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+        ThreeDotsLoading()
+      }
     }
   }
 }
