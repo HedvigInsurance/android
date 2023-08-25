@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.ButtonDefaults
@@ -116,7 +115,7 @@ fun ReminderCardEnableNotifications(
     text = stringResource(R.string.PROFILE_ALLOW_NOTIFICATIONS_INFO_LABEL),
     modifier = modifier,
   ) {
-    Row(Modifier.padding(vertical = 4.dp)) {
+    Row {
       InfoCardTextButton(
         onClick = snoozeNotificationPermissionReminder,
         text = stringResource(R.string.PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW),
@@ -150,9 +149,7 @@ private fun ReminderCardConnectPayment(
     InfoCardTextButton(
       onClick = navigateToConnectPayment,
       text = stringResource(R.string.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON),
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(vertical = 4.dp),
+      modifier = Modifier.fillMaxWidth(),
     )
   }
 }
@@ -176,9 +173,7 @@ private fun ReminderCardUpcomingRenewals(
     InfoCardTextButton(
       onClick = { openUrl(upcomingRenewal.draftCertificateUrl) },
       text = stringResource(R.string.travel_certificate_download),
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(vertical = 4.dp),
+      modifier = Modifier.fillMaxWidth(),
     )
   }
 }

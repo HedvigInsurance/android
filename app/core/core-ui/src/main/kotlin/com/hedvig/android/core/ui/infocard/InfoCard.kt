@@ -67,7 +67,12 @@ fun VectorInfoCard(
 ) {
   HedvigInfoCard(
     modifier = modifier,
-    contentPadding = PaddingValues(12.dp),
+    contentPadding = PaddingValues(
+      start = 12.dp,
+      top = 12.dp,
+      end = 16.dp,
+      bottom = 12.dp,
+    ),
     colors = colors,
   ) {
     Icon(
@@ -75,8 +80,7 @@ fun VectorInfoCard(
       contentDescription = "info",
       modifier = Modifier
         .padding(top = 2.dp)
-        .size(16.dp)
-        .padding(1.dp),
+        .size(16.dp),
       tint = iconColor,
     )
     Spacer(Modifier.width(8.dp))
@@ -86,8 +90,9 @@ fun VectorInfoCard(
         style = MaterialTheme.typography.bodyMedium,
       )
       if (underTextContent != null) {
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(12.dp))
         underTextContent()
+        Spacer(Modifier.height(4.dp))
       }
     }
   }
