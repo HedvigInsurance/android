@@ -19,13 +19,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.material3.infoElement
+import com.hedvig.android.core.designsystem.material3.warningElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.ContentAlpha
-import com.hedvig.android.feature.home.claimstatus.data.ClaimStatusColors
 
 @Composable
-fun ClaimProgressRow(
+internal fun ClaimProgressRow(
   claimProgressItemsUiState: List<ClaimProgressUiState>,
   modifier: Modifier = Modifier,
 ) {
@@ -50,8 +51,8 @@ private fun ClaimProgress(
   modifier: Modifier,
 ) {
   val color = when (type) {
-    ClaimProgressUiState.ClaimProgressType.PAID -> ClaimStatusColors.Progress.paid
-    ClaimProgressUiState.ClaimProgressType.REOPENED -> ClaimStatusColors.Progress.reopened
+    ClaimProgressUiState.ClaimProgressType.PAID -> MaterialTheme.colorScheme.infoElement
+    ClaimProgressUiState.ClaimProgressType.REOPENED -> MaterialTheme.colorScheme.warningElement
     ClaimProgressUiState.ClaimProgressType.UNKNOWN,
     ClaimProgressUiState.ClaimProgressType.PAST_INACTIVE,
     ClaimProgressUiState.ClaimProgressType.CURRENTLY_ACTIVE,

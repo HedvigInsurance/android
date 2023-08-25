@@ -3,19 +3,21 @@ package com.hedvig.android.feature.home.claimstatus
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.material3.infoContainer
+import com.hedvig.android.core.designsystem.material3.onInfoContainer
+import com.hedvig.android.core.designsystem.material3.onWarningContainer
+import com.hedvig.android.core.designsystem.material3.warningContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.feature.home.claimdetail.ui.OutlinedPill
 import com.hedvig.android.feature.home.claimdetail.ui.Pill
 import com.hedvig.android.feature.home.claimdetail.ui.previewList
-import com.hedvig.android.feature.home.claimstatus.data.ClaimStatusColors
 import com.hedvig.android.feature.home.claimstatus.data.PillUiState
 
 @Composable
@@ -42,11 +44,19 @@ private fun ClaimPill(
   pillType: PillUiState.PillType,
 ) {
   when (pillType) {
-    PillUiState.PillType.OPEN -> OutlinedPill(text)
-    PillUiState.PillType.CLOSED -> Pill(text, MaterialTheme.colors.primary)
-    PillUiState.PillType.REOPENED -> Pill(text, ClaimStatusColors.Pill.reopened)
-    PillUiState.PillType.PAYMENT -> Pill(text, ClaimStatusColors.Pill.paid)
-    PillUiState.PillType.UNKNOWN -> OutlinedPill(text)
+    PillUiState.PillType.OPEN -> Pill(text, MaterialTheme.colorScheme.outlineVariant)
+    PillUiState.PillType.CLOSED -> Pill(text, MaterialTheme.colorScheme.primary)
+    PillUiState.PillType.REOPENED -> Pill(
+      text,
+      MaterialTheme.colorScheme.warningContainer,
+      MaterialTheme.colorScheme.onWarningContainer,
+    )
+    PillUiState.PillType.PAYMENT -> Pill(
+      text,
+      MaterialTheme.colorScheme.infoContainer,
+      MaterialTheme.colorScheme.onInfoContainer,
+    )
+    PillUiState.PillType.UNKNOWN -> Pill(text, MaterialTheme.colorScheme.surface)
   }
 }
 
@@ -56,7 +66,7 @@ private fun PreviewPills(
   @PreviewParameter(PillsUiStateProvider::class) pillsUiState: List<PillUiState>,
 ) {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       ClaimPillsAndForwardArrow(pillsUiState)
     }
   }
