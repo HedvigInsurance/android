@@ -7,17 +7,6 @@ plugins {
   alias(libs.plugins.squareSortDependencies)
 }
 
-lint {
-  htmlReport = true
-  htmlOutput = file("lint-reports/lint-report.html")
-  textReport = true
-  textOutput = file("lint-reports/lint-report.txt")
-  xmlReport = true
-  xmlOutput = file("lint-reports/lint-report.xml")
-  absolutePaths = false
-  checkTestSources = true
-}
-
 dependencies {
   compileOnly(libs.lintApi)
 }
