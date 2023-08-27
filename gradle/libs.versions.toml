@@ -4,6 +4,11 @@ compileSdkVersion = "33"
 targetSdkVersion = "33"
 minSdkVersion = "23"
 
+# lint versions
+slackLintCompose = "1.2.0"
+lintApi = "31.1.1"
+lintGradlePlugin = "8.1.0"
+
 # gradlePlugin versions
 androidGradlePlugin = "8.1.0"
 androidRemoveUnusedResourcesPlugin = "1.4.1"
@@ -239,6 +244,10 @@ firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "fireb
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlinter-gradlePlugin = { module = "org.jmailen.gradle:kotlinter-gradle", version.ref = "kotlinter" }
 
+# lint dependencies
+lintApi = { module = "com.android.tools.lint:lint-api", version.ref = "lintApi" }
+slackLintCompose = { module = "com.slack.lint.compose:compose-lint-checks", version.ref = "slackLintCompose" }
+
 [bundles]
 
 [plugins]
@@ -258,6 +267,7 @@ kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinter = { id = "org.jmailen.kotlinter", version.ref = "kotlinter" }
 license = { id = "com.jaredsburrows.license", version.ref = "license" }
+lintGradlePlugin = { id = "com.android.lint", version.ref = "lintGradlePlugin" }
 molecule = { id = "app.cash.molecule", version.ref = "molecule" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 squareSortDependencies = { id = "com.squareup.sort-dependencies", version.ref = "squareSortDependencies" }
