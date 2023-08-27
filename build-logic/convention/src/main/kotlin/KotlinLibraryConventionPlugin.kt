@@ -13,6 +13,7 @@ class KotlinLibraryConventionPlugin : Plugin<Project> {
       val libs = the<LibrariesForLibs>()
       with(pluginManager) {
         apply(libs.plugins.kotlinJvm.get().pluginId)
+        apply(libs.plugins.lintGradlePlugin.get().pluginId)
       }
 
       tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java).configureEach {
