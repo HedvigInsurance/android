@@ -46,16 +46,14 @@ constructor(
         val resolved = node.resolve() ?: return
         val packageName = context.evaluator.getPackage(resolved)?.qualifiedName ?: return
         if (packageName == M2Package) {
-          // Ignore any in the allow-list.
           // https://github.com/slackhq/compose-lints/issues/167
           // https://issuetracker.google.com/issues/297544175
           val resolvedName = (resolved as? PsiNamedElement)?.name
           val unmangledResolvedName = resolvedName?.substringBefore("-")
           if (unmangledResolvedName in allowList.value) {
-            context.log(null, "Material2Detector ignoring m2 $resolvedName because it's in the allowlist")
+            // Ignore any in the allow-list.
             return
           }
-          context.log(null, "Material2Detector reporting m2 usage for name: $resolvedName")
           context.report(
             issue = ISSUE,
             location = context.getLocation(node),
