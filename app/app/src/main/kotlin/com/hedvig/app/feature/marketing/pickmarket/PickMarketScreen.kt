@@ -1,5 +1,8 @@
+@file:SuppressLint("ComposeM2Api") // todo fix after login redesign
+
 package com.hedvig.app.feature.marketing.pickmarket
 
+import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
