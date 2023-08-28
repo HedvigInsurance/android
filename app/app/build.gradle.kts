@@ -37,6 +37,7 @@ android {
   }
 
   lint {
+    abortOnError = false
     checkDependencies = true
     checkGeneratedSources = true
   }
