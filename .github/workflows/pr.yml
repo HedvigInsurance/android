@@ -64,7 +64,7 @@ jobs:
           LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
           ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
-      - run: ./gradlew lintDebug
+      - run: ./gradlew lint
       - uses: yutailang0119/action-android-lint@v3.1.0
         with:
           report-path: app/build/reports/lint-results-debug.xml
