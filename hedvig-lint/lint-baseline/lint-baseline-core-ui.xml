@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="6" by="lint 8.1.0" type="baseline" client="gradle" dependencies="false" name="AGP (8.1.0)" variant="all" version="8.1.0">
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/gradient_accident.png` in densityless folder">
+        <location
+            file="src/main/res/drawable/gradient_accident.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/gradient_car.png` in densityless folder">
+        <location
+            file="src/main/res/drawable/gradient_car.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/gradient_cat.png` in densityless folder">
+        <location
+            file="src/main/res/drawable/gradient_cat.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/gradient_dog.png` in densityless folder">
+        <location
+            file="src/main/res/drawable/gradient_dog.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/gradient_homeowner.png` in densityless folder">
+        <location
+            file="src/main/res/drawable/gradient_homeowner.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/gradient_rental.png` in densityless folder">
+        <location
+            file="src/main/res/drawable/gradient_rental.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/gradient_student.png` in densityless folder">
+        <location
+            file="src/main/res/drawable/gradient_student.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/gradient_villa.png` in densityless folder">
+        <location
+            file="src/main/res/drawable/gradient_villa.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/ic_pillow_accident.png` in densityless folder">
+        <location
+            file="src/main/res/drawable/ic_pillow_accident.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/ic_pillow_car.png` in densityless folder">
+        <location
+            file="src/main/res/drawable/ic_pillow_car.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/ic_pillow_cat.png` in densityless folder">
+        <location
+            file="src/main/res/drawable/ic_pillow_cat.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/ic_pillow_dog.png` in densityless folder">
+        <location
+            file="src/main/res/drawable/ic_pillow_dog.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/ic_pillow_home.png` in densityless folder">
+        <location
+            file="src/main/res/drawable/ic_pillow_home.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/ic_pillow_homeowner.png` in densityless folder">
+        <location
+            file="src/main/res/drawable/ic_pillow_homeowner.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/ic_pillow_pet.png` in densityless folder">
+        <location
+            file="src/main/res/drawable/ic_pillow_pet.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/ic_pillow_rental.png` in densityless folder">
+        <location
+            file="src/main/res/drawable/ic_pillow_rental.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/ic_pillow_student.png` in densityless folder">
+        <location
+            file="src/main/res/drawable/ic_pillow_student.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/ic_pillow_villa.png` in densityless folder">
+        <location
+            file="src/main/res/drawable/ic_pillow_villa.png"/>
+    </issue>
+
+</issues>
