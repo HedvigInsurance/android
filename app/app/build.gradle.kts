@@ -36,12 +36,6 @@ android {
     testInstrumentationRunner = "com.hedvig.app.TestRunner"
   }
 
-  lint {
-    abortOnError = false
-    checkDependencies = true
-    checkGeneratedSources = true
-  }
-
   packaging {
     resources {
       excludes += "javamoney.properties"
