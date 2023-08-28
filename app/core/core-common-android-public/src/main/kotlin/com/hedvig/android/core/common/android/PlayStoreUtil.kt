@@ -1,5 +1,6 @@
 package com.hedvig.android.core.common.android
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -19,6 +20,7 @@ fun Context.tryOpenPlayStore() {
 
 private fun Context.playStoreIntent() = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$packageName"))
 
+@SuppressLint("QueryPermissionsNeeded")
 private fun Context.canOpenPlayStore() = playStoreIntent().resolveActivity(packageManager) != null
 
 private fun Context.openPlayStore() {
