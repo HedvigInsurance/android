@@ -2,6 +2,8 @@
 
 package com.hedvig.android.core.designsystem.material3
 
+import android.graphics.PointF
+import androidx.annotation.FloatRange
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -14,11 +16,14 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathOperation
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.asComposePath
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.graphics.shapes.CornerRounding
+import androidx.graphics.shapes.RoundedPolygon
 import com.hedvig.android.core.designsystem.component.tokens.HedvigShapeKeyTokens
-import com.hedvig.android.core.designsystem.newtheme.FigmaShape
 
 // Take shapes from existing theme setup
 // https://github.com/HedvigInsurance/android/blob/ced77986fac0fd7867c8e24ba05d0176a112050e/app/src/main/res/values/theme.xml#L27-L33
@@ -30,6 +35,40 @@ internal val HedvigShapes: Shapes
     medium = RoundedCornerShape(8.0.dp),
     large = RoundedCornerShape(8.0.dp),
   )
+
+private fun RoundedPolygon.Companion.squircle(
+  width: Float,
+  height: Float,
+  cornerRadius: Float,
+  @FloatRange(from = 0.0, to = 1.0) smoothing: Float,
+): RoundedPolygon {
+  require(width >= 0f)
+  require(height >= 0f)
+  return RoundedPolygon(
+    vertices = listOf(
+      PointF(0f, 0f),
+      PointF(width, 0f),
+      PointF(width, height),
+      PointF(0f, height),
+    ),
+    rounding = CornerRounding(cornerRadius, smoothing),
+  )
+}
+
+internal class FigmaShape(
+  private val radius: Dp,
+  @FloatRange(from = 0.0, to = 1.0) private val smoothing: Float = 1f,
+) : Shape {
+  override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
+    val squircle = RoundedPolygon.squircle(
+      width = size.width,
+      height = size.height,
+      cornerRadius = with(density) { radius.toPx() },
+      smoothing = smoothing,
+    )
+    return Outline.Generic(squircle.toPath().asComposePath())
+  }
+}
 
 private val SquircleExtraSmall = FigmaShape(8.dp)
 private val SquircleExtraSmallTop = FigmaShape(8.dp).top()
