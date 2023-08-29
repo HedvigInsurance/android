@@ -14,8 +14,9 @@ class ApplicationConventionPlugin : Plugin<Project> {
       val libs = the<LibrariesForLibs>()
       with(pluginManager) {
         apply(libs.plugins.androidApplication.get().pluginId)
-        apply(libs.plugins.kotlin.get().pluginId)
         apply(libs.plugins.cacheFix.get().pluginId)
+        apply(libs.plugins.kotlin.get().pluginId)
+        apply("hedvig.lint")
       }
 
       extensions.configure<BaseAppModuleExtension> {

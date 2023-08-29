@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!--<issue id="all" severity="ignore" />-->
+    <issue id="ComposeM2Api" severity="error">
+        <option name="allowed-m2-apis" value="Foo" />
+    </issue>
+</lint>

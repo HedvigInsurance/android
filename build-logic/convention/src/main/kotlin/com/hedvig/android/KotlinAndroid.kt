@@ -39,6 +39,7 @@ internal fun Project.configureKotlinAndroid(
 
   dependencies {
     add("coreLibraryDesugaring", libs.coreLibraryDesugaring.get())
+    add("lintChecks", project(":hedvig-lint"))
   }
 }
 

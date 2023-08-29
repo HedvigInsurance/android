@@ -2,6 +2,7 @@ import com.hedvig.android.configureKotlin
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.the
 
 /**
@@ -13,10 +14,15 @@ class KotlinLibraryConventionPlugin : Plugin<Project> {
       val libs = the<LibrariesForLibs>()
       with(pluginManager) {
         apply(libs.plugins.kotlinJvm.get().pluginId)
+        apply("hedvig.lint")
       }
 
       tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java).configureEach {
         configureKotlin(this)
+      }
+
+      dependencies {
+        add("lintChecks", project(":hedvig-lint"))
       }
     }
   }
