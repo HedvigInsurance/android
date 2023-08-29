@@ -11,7 +11,6 @@ android {
 }
 
 dependencies {
-  implementation(libs.androidx.compose.material)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.apollo.normalizedCache)
@@ -43,6 +42,7 @@ dependencies {
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.notificationBadgeDataPublic)
+  implementation(projects.pullrefresh)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)

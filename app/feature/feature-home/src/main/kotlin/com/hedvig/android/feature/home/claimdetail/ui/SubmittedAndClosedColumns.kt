@@ -4,13 +4,10 @@ import android.text.format.DateUtils
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -74,15 +71,13 @@ private fun SubmittedAndClosedColumn(
     verticalArrangement = Arrangement.spacedBy(4.dp),
     modifier = modifier,
   ) {
-    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-      Text(
-        text = topText,
-        style = MaterialTheme.typography.overline,
-      )
-    }
+    Text(
+      text = topText,
+      style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+    )
     Text(
       text = bottomText,
-      style = MaterialTheme.typography.body2,
+      style = MaterialTheme.typography.bodyMedium,
     )
   }
 }
@@ -138,7 +133,7 @@ private object HedvigDateUtils {
 @Composable
 private fun PreviewSubmittedAndClosedInformation() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       SubmittedAndClosedColumns(
         submittedAt = Clock.System.now().minus(10.days),
         closedAt = Clock.System.now().minus(30.seconds),

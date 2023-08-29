@@ -27,11 +27,6 @@ import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.pullrefresh.PullRefreshDefaults
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -76,6 +71,10 @@ import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceScreenEvent
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceUiState
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
+import com.hedvig.android.pullrefresh.PullRefreshDefaults
+import com.hedvig.android.pullrefresh.PullRefreshIndicator
+import com.hedvig.android.pullrefresh.pullRefresh
+import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -117,7 +116,6 @@ internal fun InsuranceDestination(
   )
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun InsuranceScreen(
   uiState: InsuranceUiState,

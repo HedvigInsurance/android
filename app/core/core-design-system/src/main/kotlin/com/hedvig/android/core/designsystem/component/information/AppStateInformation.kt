@@ -3,14 +3,11 @@ package com.hedvig.android.core.designsystem.component.information
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Icon
-import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
@@ -73,10 +70,12 @@ private fun AppStateInformation(
     horizontalAlignment = horizontalAlignment,
   ) {
     Icon(painter = iconPainter, contentDescription = null, Modifier.size(24.dp))
-    Text(text = title, style = MaterialTheme.typography.h5, textAlign = textAlign)
-    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-      Text(text = description, style = MaterialTheme.typography.body1, textAlign = textAlign)
-    }
+    Text(text = title, style = MaterialTheme.typography.headlineSmall, textAlign = textAlign)
+    Text(
+      text = description,
+      style = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+      textAlign = textAlign,
+    )
   }
 }
 
@@ -84,7 +83,7 @@ private fun AppStateInformation(
 @Composable
 private fun PreviewSuccess() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       AppStateInformation(AppStateInformationType.Success, "Title", "Description")
     }
   }
@@ -94,7 +93,7 @@ private fun PreviewSuccess() {
 @Composable
 private fun PreviewFailure() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       AppStateInformation(AppStateInformationType.Failure, "Title", "Description")
     }
   }

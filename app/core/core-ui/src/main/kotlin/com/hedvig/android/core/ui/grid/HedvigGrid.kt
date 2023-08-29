@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -123,7 +123,7 @@ private fun Placeable.withCoordinates(
 @Composable
 private fun PreviewSelectActionGrid() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       HedvigGrid {
         repeat(3) { index ->
           val normalIndex = index + 1
@@ -142,7 +142,7 @@ private fun PreviewSelectActionGrid() {
 @Composable
 private fun PreviewSelectActionGridWithCenteredItems() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       HedvigGrid(centerLastItem = true) {
         repeat(3) { index ->
           val normalIndex = index + 1
@@ -161,7 +161,7 @@ private fun PreviewSelectActionGridWithCenteredItems() {
 @Composable
 private fun PreviewSelectActionGridWithoutItems() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       HedvigGrid {}
     }
   }

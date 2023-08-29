@@ -1,9 +1,9 @@
 package com.hedvig.android.core.ui.text
 
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
@@ -101,7 +101,7 @@ fun HorizontalItemsWithMaximumSpaceTaken(
 @Composable
 private fun PreviewSmallTexts() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = { Text(text = "Start") },
         endSlot = { Text(text = "End", textAlign = TextAlign.End) },
@@ -115,7 +115,7 @@ private fun PreviewSmallTexts() {
 @Composable
 private fun PreviewBigTexts() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = { Text(text = "Start".repeat(10)) },
         endSlot = { Text(text = "End".repeat(10), textAlign = TextAlign.End) },
@@ -129,7 +129,7 @@ private fun PreviewBigTexts() {
 @Composable
 private fun PreviewBigTextsWithSpaceText() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = { Text(text = "Start".repeat(10)) },
         endSlot = { Text(text = "End".repeat(10), textAlign = TextAlign.End) },
@@ -144,7 +144,7 @@ private fun PreviewBigTextsWithSpaceText() {
 @Composable
 private fun PreviewBigStartText() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = { Text(text = "Start".repeat(10)) },
         endSlot = { Text(text = "End", textAlign = TextAlign.End) },
@@ -158,7 +158,7 @@ private fun PreviewBigStartText() {
 @Composable
 private fun PreviewBigEndText() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = { Text(text = "Start") },
         endSlot = { Text(text = "End".repeat(10), textAlign = TextAlign.End) },
@@ -172,7 +172,7 @@ private fun PreviewBigEndText() {
 @Composable
 private fun PreviewBigEndTextWithSpace() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = { Text(text = "Start") },
         endSlot = { Text(text = "End".repeat(10), textAlign = TextAlign.End) },

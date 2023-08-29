@@ -4,12 +4,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -33,12 +30,10 @@ internal fun ClaimDetailHedvigAudioPlayerItem(
     Spacer(Modifier.height(8.dp))
     val audioPlayerState by audioPlayer.audioPlayerState.collectAsStateWithLifecycle()
     AnimatedVisibility(visible = audioPlayerState !is AudioPlayerState.Failed) {
-      CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-        Text(
-          text = stringResource(hedvig.resources.R.string.claim_status_files_claim_audio_footer),
-          style = MaterialTheme.typography.caption,
-        )
-      }
+      Text(
+        text = stringResource(hedvig.resources.R.string.claim_status_files_claim_audio_footer),
+        style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+      )
     }
   }
 }

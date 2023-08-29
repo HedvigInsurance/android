@@ -1,5 +1,6 @@
 package com.hedvig.android.navigation.activity
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import android.content.Intent
@@ -17,6 +18,7 @@ class ActivityNavigator(
   private val navigateToEmbark: Context.(storyName: String, storyTitle: String) -> Unit,
   private val navigateToLoggedInActivity: Context.(clearBackstack: Boolean) -> Unit,
 ) {
+  @SuppressLint("IntentWithNullActionLaunch")
   fun navigateToMarketingActivity() {
     application.startActivity(
       Intent(application, loggedOutActivityClass)
@@ -61,6 +63,7 @@ class ActivityNavigator(
     context.tryOpenPlayStore()
   }
 
+  @SuppressLint("QueryPermissionsNeeded")
   fun openWebsite(context: Context, uri: Uri) {
     val browserIntent = Intent(Intent.ACTION_VIEW, uri)
 

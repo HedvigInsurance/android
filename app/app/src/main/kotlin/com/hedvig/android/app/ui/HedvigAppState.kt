@@ -243,7 +243,6 @@ private fun NavDestination?.toTopLevelAppDestination(): AppDestination.TopLevelD
  * Special routes, which despite not being top level should still show the navigation bars.
  */
 private val bottomNavPermittedDestinations: List<String> = buildList {
-  add(createRoutePattern<AppDestination.BusinessModel>())
   add(createRoutePattern<AppDestination.Eurobonus>())
   addAll(insurancesBottomNavPermittedDestinations)
 }

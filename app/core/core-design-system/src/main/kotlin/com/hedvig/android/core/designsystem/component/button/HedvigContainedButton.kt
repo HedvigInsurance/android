@@ -102,10 +102,10 @@ fun HedvigContainedButton(
 @Composable
 private fun HedvigContainedButton(
   onClick: () -> Unit,
+  colors: ButtonColors,
   modifier: Modifier = Modifier,
   contentPadding: PaddingValues = PaddingValues(16.dp),
   enabled: Boolean = true,
-  colors: ButtonColors,
   content: @Composable RowScope.() -> Unit,
 ) {
   Button(

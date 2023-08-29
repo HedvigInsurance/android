@@ -36,12 +36,6 @@ android {
     testInstrumentationRunner = "com.hedvig.app.TestRunner"
   }
 
-  lint {
-    abortOnError = false
-    checkDependencies = true
-    checkGeneratedSources = true
-  }
-
   packaging {
     resources {
       excludes += "javamoney.properties"
@@ -211,7 +205,6 @@ dependencies {
   implementation(projects.dataForever)
   implementation(projects.dataTravelCertificatePublic)
   implementation(projects.datadog)
-  implementation(projects.featureBusinessmodel)
   implementation(projects.featureChangeaddress)
   implementation(projects.featureClaimTriaging)
   implementation(projects.featureForever)

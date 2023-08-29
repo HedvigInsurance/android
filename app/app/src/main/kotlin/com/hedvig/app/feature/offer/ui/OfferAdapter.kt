@@ -4,9 +4,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -399,7 +399,7 @@ class OfferAdapter(
           HedvigTheme {
             Text(
               text = stringResource(hedvig.resources.R.string.OFFER_PRICE_COMPARISION_HEADER),
-              style = MaterialTheme.typography.h5,
+              style = MaterialTheme.typography.headlineSmall,
               modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .padding(top = 48.dp),

@@ -3,6 +3,7 @@ package com.hedvig.android.feature.forever.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,11 +12,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.material3.Divider
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,10 +67,14 @@ internal fun ReferralList(uiState: ForeverUiState) {
   }
 }
 
+@Suppress("UnusedReceiverParameter")
 @Composable
-private fun ReferralRow(referral: ForeverUiState.Referral) {
+private fun ColumnScope.ReferralRow(
+  referral: ForeverUiState.Referral,
+  modifier: Modifier = Modifier,
+) {
   Row(
-    modifier = Modifier
+    modifier = modifier
       .padding(vertical = 16.dp)
       .fillMaxWidth(),
     horizontalArrangement = Arrangement.SpaceBetween,
@@ -156,7 +161,7 @@ private fun PreviewReferralList() {
   }
 }
 
-internal val fakeSekCurrency = object : CurrencyUnit {
+private val fakeSekCurrency = object : CurrencyUnit {
   override fun compareTo(other: CurrencyUnit?): Int = 0
   override fun getCurrencyCode(): String = "SEK"
   override fun getNumericCode(): Int = 0

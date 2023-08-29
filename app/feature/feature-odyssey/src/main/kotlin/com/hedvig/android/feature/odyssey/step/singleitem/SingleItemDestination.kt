@@ -213,7 +213,7 @@ private fun Brands(
   uiState: ItemBrandsUiState.Content,
   enabled: Boolean,
   selectBrand: (ItemBrand) -> Unit,
-  modifier: Modifier,
+  modifier: Modifier = Modifier,
 ) {
   LocalConfiguration.current
   val resources = LocalContext.current.resources
@@ -244,7 +244,7 @@ private fun Brands(
 private fun DateOfPurchase(
   uiState: DatePickerUiState,
   canInteract: Boolean,
-  modifier: Modifier,
+  modifier: Modifier = Modifier,
 ) {
   DatePickerWithDialog(
     uiState = uiState,
@@ -278,7 +278,7 @@ private fun ItemProblems(
   uiState: ItemProblemsUiState.Content,
   enabled: Boolean,
   selectProblem: (ItemProblem) -> Unit,
-  modifier: Modifier,
+  modifier: Modifier = Modifier,
 ) {
   var showDialog: Boolean by rememberSaveable { mutableStateOf(false) }
   if (showDialog) {

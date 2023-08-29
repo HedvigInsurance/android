@@ -92,10 +92,11 @@ object HedvigTextFieldDefaults {
     isError: Boolean,
     interactionSource: InteractionSource,
     colors: HedvigTextFieldColors,
+    modifier: Modifier = Modifier,
     shape: Shape = HedvigTextFieldDefaults.shape,
   ) {
     Box(
-      Modifier.background(colors.containerColor(value, enabled, isError, interactionSource).value, shape),
+      modifier.background(colors.containerColor(value, enabled, isError, interactionSource).value, shape),
     )
   }
 
@@ -429,7 +430,7 @@ object HedvigTextFieldDefaults {
         contentPaddingWithLabel()
       },
     container: @Composable () -> Unit = {
-      ContainerBox(value, enabled, isError, interactionSource, colors, shape)
+      ContainerBox(value, enabled, isError, interactionSource, colors, shape = shape)
     },
   ) {
     HedvigDecorationBox(

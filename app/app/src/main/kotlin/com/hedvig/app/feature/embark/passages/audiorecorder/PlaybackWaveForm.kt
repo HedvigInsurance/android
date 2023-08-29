@@ -7,10 +7,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Card
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
+import androidx.compose.material3.Card
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -89,8 +89,8 @@ fun PlaybackWaveForm(
           }
         }
       }
-      val playedColor = MaterialTheme.colors.primary
-      val notPlayedColor = MaterialTheme.colors.primary.copy(alpha = 0.12f)
+      val playedColor = MaterialTheme.colorScheme.primary
+      val notPlayedColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
 
       Canvas(
         modifier = Modifier
@@ -128,7 +128,7 @@ fun PlaybackWaveForm(
 @Composable
 private fun PreviewPlaybackWaveForm() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       PlaybackWaveForm(
         isPlaying = false,
         play = {},
