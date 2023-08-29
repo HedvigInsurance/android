@@ -41,9 +41,10 @@ private fun RoundedPolygon.Companion.squircle(
   height: Float,
   cornerRadius: Float,
   @FloatRange(from = 0.0, to = 1.0) smoothing: Float,
-): RoundedPolygon {
-  require(width >= 0f)
-  require(height >= 0f)
+): android.graphics.Path {
+  if (width == 0f || height == 0f) {
+    return android.graphics.Path()
+  }
   return RoundedPolygon(
     vertices = listOf(
       PointF(0f, 0f),
@@ -52,7 +53,7 @@ private fun RoundedPolygon.Companion.squircle(
       PointF(0f, height),
     ),
     rounding = CornerRounding(cornerRadius, smoothing),
-  )
+  ).toPath()
 }
 
 internal class FigmaShape(
@@ -60,13 +61,13 @@ internal class FigmaShape(
   @FloatRange(from = 0.0, to = 1.0) private val smoothing: Float = 1f,
 ) : Shape {
   override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
-    val squircle = RoundedPolygon.squircle(
+    val squirclePath = RoundedPolygon.squircle(
       width = size.width,
       height = size.height,
       cornerRadius = with(density) { radius.toPx() },
       smoothing = smoothing,
     )
-    return Outline.Generic(squircle.toPath().asComposePath())
+    return Outline.Generic(squirclePath.asComposePath())
   }
 }
 
