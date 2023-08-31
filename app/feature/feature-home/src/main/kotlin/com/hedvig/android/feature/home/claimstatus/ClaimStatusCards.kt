@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.systemGestureExclusion
@@ -59,7 +60,7 @@ internal fun ClaimStatusCards(
       HorizontalPagerIndicator(
         pagerState = pagerState,
         pageCount = claimStatusCardsUiState.size,
-        modifier = Modifier.align(Alignment.CenterHorizontally),
+        modifier = Modifier.padding(contentPadding).align(Alignment.CenterHorizontally),
       )
     }
   }

@@ -10,18 +10,19 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.onConsumedWindowInsetsChanged
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -41,9 +42,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
@@ -61,6 +65,7 @@ import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.ArrowForward
 import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
+import com.hedvig.android.core.ui.plus
 import com.hedvig.android.feature.home.claimdetail.ui.previewList
 import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimsData
 import com.hedvig.android.feature.home.claims.commonclaim.EmergencyActivity
@@ -81,6 +86,7 @@ import com.hedvig.android.notification.permission.rememberNotificationPermission
 import com.hedvig.android.notification.permission.rememberPreviewNotificationPermissionState
 import com.hedvig.android.pullrefresh.PullRefreshDefaults
 import com.hedvig.android.pullrefresh.PullRefreshIndicator
+import com.hedvig.android.pullrefresh.PullRefreshState
 import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import hedvig.resources.R
@@ -151,51 +157,55 @@ private fun HomeScreen(
   )
 
   Box(Modifier.fillMaxSize()) {
-    Column(
-      Modifier
-        .fillMaxSize()
-        .pullRefresh(pullRefreshState)
-        .verticalScroll(rememberScrollState())
-        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-    ) {
-      Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
-      Spacer(Modifier.height(64.dp)) // Room for TopAppBarLayoutForActions
-      val transition = updateTransition(targetState = uiState, label = "home ui state")
-      transition.AnimatedContent(
-        modifier = Modifier.fillMaxSize(),
-        contentKey = { it::class },
-      ) { uiState ->
-        when (uiState) {
-          HomeUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced(Modifier.fillMaxSize())
-          is HomeUiState.Error -> HedvigErrorSection(retry = reload, modifier = Modifier.fillMaxSize())
-          is HomeUiState.Success -> {
-            HomeScreenSuccess(
-              uiState = uiState,
-              notificationPermissionState = notificationPermissionState,
-              snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
-              onStartMovingFlow = onStartMovingFlow,
-              onClaimDetailCardClicked = onClaimDetailCardClicked,
-              navigateToConnectPayment = navigateToConnectPayment,
-              onEmergencyClaimClicked = { emergencyData ->
-                context.startActivity(
-                  EmergencyActivity.newInstance(
-                    context = context,
-                    data = emergencyData,
-                  ),
-                )
-              },
-              onGenerateTravelCertificateClicked = onGenerateTravelCertificateClicked,
-              onOpenCommonClaim = onOpenCommonClaim,
-              onStartClaimClicked = onStartClaim,
-              openAppSettings = openAppSettings,
-              openChat = onStartChat,
-              openUrl = openUrl,
-            )
-          }
+    val toolbarHeight = 64.dp
+    val transition = updateTransition(targetState = uiState, label = "home ui state")
+    transition.AnimatedContent(
+      modifier = Modifier.fillMaxSize(),
+      contentKey = { it::class },
+    ) { uiState ->
+      when (uiState) {
+        HomeUiState.Loading -> {
+          HedvigFullScreenCenterAlignedProgressDebounced(
+            modifier = Modifier
+              .fillMaxSize()
+              .windowInsetsPadding(WindowInsets.safeDrawing),
+          )
+        }
+        is HomeUiState.Error -> {
+          HedvigErrorSection(
+            retry = reload,
+            modifier = Modifier
+              .padding(16.dp)
+              .windowInsetsPadding(WindowInsets.safeDrawing),
+          )
+        }
+        is HomeUiState.Success -> {
+          HomeScreenSuccess(
+            uiState = uiState,
+            pullRefreshState = pullRefreshState,
+            toolbarHeight = toolbarHeight,
+            notificationPermissionState = notificationPermissionState,
+            snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
+            onStartMovingFlow = onStartMovingFlow,
+            onClaimDetailCardClicked = onClaimDetailCardClicked,
+            navigateToConnectPayment = navigateToConnectPayment,
+            onEmergencyClaimClicked = { emergencyData ->
+              context.startActivity(
+                EmergencyActivity.newInstance(
+                  context = context,
+                  data = emergencyData,
+                ),
+              )
+            },
+            onGenerateTravelCertificateClicked = onGenerateTravelCertificateClicked,
+            onOpenCommonClaim = onOpenCommonClaim,
+            onStartClaimClicked = onStartClaim,
+            openAppSettings = openAppSettings,
+            openChat = onStartChat,
+            openUrl = openUrl,
+          )
         }
       }
-      Spacer(Modifier.height(16.dp))
-      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     }
     Column {
       TopAppBarLayoutForActions {
@@ -212,9 +222,7 @@ private fun HomeScreen(
         tooltipShown = {
           context.setLastEpochDayWhenChatTooltipWasShown(java.time.LocalDate.now().toEpochDay())
         },
-        modifier = Modifier
-          .align(Alignment.End)
-          .padding(horizontal = 16.dp),
+        modifier = Modifier.align(Alignment.End).padding(horizontal = 16.dp),
       )
     }
     PullRefreshIndicator(
@@ -240,6 +248,8 @@ private suspend fun daysSinceLastTooltipShown(context: Context): Boolean {
 @Composable
 private fun HomeScreenSuccess(
   uiState: HomeUiState.Success,
+  pullRefreshState: PullRefreshState,
+  toolbarHeight: Dp,
   notificationPermissionState: NotificationPermissionState,
   snoozeNotificationPermissionReminder: () -> Unit,
   onStartMovingFlow: () -> Unit,
@@ -277,52 +287,84 @@ private fun HomeScreenSuccess(
     )
   }
 
-  Column(modifier) {
-    for ((index, veryImportantMessage) in uiState.veryImportantMessages.withIndex()) {
-      VeryImportantMessageBanner(openUrl, veryImportantMessage)
-      if (index == uiState.veryImportantMessages.lastIndex) {
-        Spacer(Modifier.height(16.dp))
-      }
-    }
-    WelcomeMessage(
-      homeText = uiState.homeText,
-      modifier = Modifier.padding(horizontal = 24.dp),
-    )
-    Spacer(Modifier.height(24.dp))
-    if (uiState.claimStatusCardsData != null) {
-      ClaimStatusCards(
-        goToDetailScreen = onClaimDetailCardClicked,
-        claimStatusCardsData = uiState.claimStatusCardsData,
-        contentPadding = PaddingValues(horizontal = 16.dp),
-      )
-      Spacer(Modifier.height(16.dp))
-    }
-    val memberReminders = uiState.memberReminders.onlyApplicableReminders(notificationPermissionState.status.isGranted)
+  var fullScreenSize: IntSize by remember { mutableStateOf(IntSize(0, 0)) }
+  Column(
+    modifier = modifier
+      .fillMaxSize()
+      .onSizeChanged { fullScreenSize = it }
+      .pullRefresh(pullRefreshState)
+      .verticalScroll(rememberScrollState()),
+  ) {
     NotificationPermissionDialog(notificationPermissionState, openAppSettings)
-    MemberReminderCards(
-      memberReminders = memberReminders,
-      navigateToConnectPayment = navigateToConnectPayment,
-      openUrl = openUrl,
-      notificationPermissionState = notificationPermissionState,
-      snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
-    )
-    if (memberReminders.hasAnyReminders) {
-      Spacer(Modifier.height(16.dp))
-    }
-    Spacer(Modifier.weight(1f))
-    HedvigContainedButton(
-      text = stringResource(R.string.home_tab_claim_button_text),
-      onClick = onStartClaimClicked,
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
-    Spacer(Modifier.height(8.dp))
-    HedvigTextButton(
-      text = stringResource(id = R.string.home_tab_other_services),
-      onClick = { showEditYourInfoBottomSheet = true },
-      modifier = Modifier.padding(horizontal = 16.dp),
+    HomeLayout(
+      welcomeMessage = {
+        WelcomeMessage(
+          homeText = uiState.homeText,
+          modifier = Modifier
+            .padding(horizontal = 24.dp)
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+        )
+      },
+      claimStatusCards = {
+        if (uiState.claimStatusCardsData != null) {
+          var consumedWindowInsets by remember { mutableStateOf(WindowInsets(0.dp)) }
+          ClaimStatusCards(
+            goToDetailScreen = onClaimDetailCardClicked,
+            claimStatusCardsData = uiState.claimStatusCardsData,
+            contentPadding = PaddingValues(horizontal = 16.dp) +
+              WindowInsets.safeDrawing.exclude(consumedWindowInsets).only(WindowInsetsSides.Horizontal).asPaddingValues(),
+            modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets = it },
+          )
+        }
+      },
+      memberReminderCards = {
+        val memberReminders =
+          uiState.memberReminders.onlyApplicableReminders(notificationPermissionState.status.isGranted)
+        MemberReminderCards(
+          memberReminders = memberReminders,
+          navigateToConnectPayment = navigateToConnectPayment,
+          openUrl = openUrl,
+          notificationPermissionState = notificationPermissionState,
+          snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+        )
+      },
+      startClaimButton = {
+        HedvigContainedButton(
+          text = stringResource(R.string.home_tab_claim_button_text),
+          onClick = onStartClaimClicked,
+          modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+        )
+      },
+      otherServicesButton = {
+        HedvigTextButton(
+          text = stringResource(id = R.string.home_tab_other_services),
+          onClick = { showEditYourInfoBottomSheet = true },
+          modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+        )
+      },
+      topSpacer = {
+        Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top)).height(toolbarHeight))
+      },
+      bottomSpacer = {
+        Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)).height(16.dp))
+      },
+//      veryImportantMessages = {
+//        for ((index, veryImportantMessage) in uiState.veryImportantMessages.withIndex()) {
+//          VeryImportantMessageBanner(openUrl, veryImportantMessage)
+//          if (index == uiState.veryImportantMessages.lastIndex) {
+//            Spacer(Modifier.height(16.dp))
+//          }
+//        }
+//      }
+      fullScreenSize = fullScreenSize,
     )
   }
 }
