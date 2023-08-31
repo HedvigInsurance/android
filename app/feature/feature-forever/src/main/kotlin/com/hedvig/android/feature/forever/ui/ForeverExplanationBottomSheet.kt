@@ -49,7 +49,7 @@ internal fun ForeverExplanationBottomSheet(
     HedvigTextButton(
       text = stringResource(id = R.string.general_close_button),
       onClick = { onDismiss() },
-      modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 32.dp),
+      modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 16.dp),
     )
   }
 }

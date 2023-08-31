@@ -18,6 +18,7 @@ import com.hedvig.android.core.designsystem.theme.dark_onSurfaceVariant
 import com.hedvig.android.core.designsystem.theme.dark_outlineVariant
 import com.hedvig.android.core.designsystem.theme.dark_primary
 import com.hedvig.android.core.designsystem.theme.dark_primaryVariant
+import com.hedvig.android.core.designsystem.theme.dark_scrim
 import com.hedvig.android.core.designsystem.theme.dark_secondary
 import com.hedvig.android.core.designsystem.theme.dark_surface
 import com.hedvig.android.core.designsystem.theme.dark_surfaceVariant
@@ -88,7 +89,7 @@ internal val LightColorScheme = lightColorScheme(
   onErrorContainer = light_onSurface,
 //  outline = no equivalent,
   outlineVariant = light_outlineVariant,
-//  scrim = no equivalent,
+//  scrim = default is ok,
 )
 
 private val DarkColorScheme = darkColorScheme(
@@ -120,5 +121,5 @@ private val DarkColorScheme = darkColorScheme(
   onErrorContainer = dark_onSurface,
 //  outline = no equivalent,
   outlineVariant = dark_outlineVariant,
-//  scrim = no equivalent,
+  scrim = dark_scrim,
 )
