@@ -3,6 +3,7 @@ package com.hedvig.android.feature.home.home.ui
 import android.content.Context
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -317,6 +318,19 @@ private fun HomeScreenSuccess(
           )
         }
       },
+      veryImportantMessages = {
+        Column(
+          modifier = modifier,
+          verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+          for ((index, veryImportantMessage) in uiState.veryImportantMessages.withIndex()) {
+            VeryImportantMessageBanner(openUrl, veryImportantMessage)
+            if (index == uiState.veryImportantMessages.lastIndex) {
+              Spacer(Modifier.height(16.dp))
+            }
+          }
+        }
+      },
       memberReminderCards = {
         val memberReminders =
           uiState.memberReminders.onlyApplicableReminders(notificationPermissionState.status.isGranted)
@@ -356,14 +370,6 @@ private fun HomeScreenSuccess(
       bottomSpacer = {
         Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)).height(16.dp))
       },
-//      veryImportantMessages = {
-//        for ((index, veryImportantMessage) in uiState.veryImportantMessages.withIndex()) {
-//          VeryImportantMessageBanner(openUrl, veryImportantMessage)
-//          if (index == uiState.veryImportantMessages.lastIndex) {
-//            Spacer(Modifier.height(16.dp))
-//          }
-//        }
-//      }
       fullScreenSize = fullScreenSize,
     )
   }

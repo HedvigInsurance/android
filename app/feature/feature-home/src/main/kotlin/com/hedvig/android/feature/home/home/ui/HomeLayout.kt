@@ -44,6 +44,7 @@ internal fun HomeLayout(
   fullScreenSize: IntSize,
   welcomeMessage: @Composable @UiComposable () -> Unit,
   claimStatusCards: @Composable @UiComposable () -> Unit,
+  veryImportantMessages: @Composable @UiComposable () -> Unit,
   memberReminderCards: @Composable @UiComposable () -> Unit,
   startClaimButton: @Composable @UiComposable () -> Unit,
   otherServicesButton: @Composable @UiComposable () -> Unit,
@@ -55,6 +56,7 @@ internal fun HomeLayout(
     content = {
       Box(Modifier.layoutId(HomeLayoutContent.WelcomeMessage).animatePlacement()) { welcomeMessage() }
       Box(Modifier.layoutId(HomeLayoutContent.ClaimStatusCards).animatePlacement()) { claimStatusCards() }
+      Box(Modifier.layoutId(HomeLayoutContent.VeryImportantMessages)) { veryImportantMessages() }
       Box(Modifier.layoutId(HomeLayoutContent.MemberReminderCards)) { memberReminderCards() }
       Box(Modifier.layoutId(HomeLayoutContent.StartClaimButton)) { startClaimButton() }
       Box(Modifier.layoutId(HomeLayoutContent.OtherServicesButton)) { otherServicesButton() }
@@ -72,6 +74,8 @@ internal fun HomeLayout(
       measurables.fastFirstOrNull { it.layoutId == HomeLayoutContent.WelcomeMessage }!!.measure(constraints)
     val claimStatusCardsPlaceable: Placeable =
       measurables.fastFirstOrNull { it.layoutId == HomeLayoutContent.ClaimStatusCards }!!.measure(constraints)
+    val veryImportantMessagesPlaceable: Placeable =
+      measurables.fastFirstOrNull { it.layoutId == HomeLayoutContent.VeryImportantMessages }!!.measure(constraints)
     val memberReminderCardsPlaceable: Placeable =
       measurables.fastFirstOrNull { it.layoutId == HomeLayoutContent.MemberReminderCards }!!.measure(constraints)
     val startClaimButtonPlaceable: Placeable =
@@ -89,6 +93,10 @@ internal fun HomeLayout(
 
     val bottomAttachedPlaceables = buildList {
       add(FixedSizePlaceable(0, 16.dp.roundToPx()))
+      if (veryImportantMessagesPlaceable.height > 0) {
+        add(veryImportantMessagesPlaceable)
+        add(FixedSizePlaceable(0, 8.dp.roundToPx()))
+      }
       if (memberReminderCardsPlaceable.height > 0) {
         add(memberReminderCardsPlaceable)
         add(FixedSizePlaceable(0, 16.dp.roundToPx()))
@@ -157,7 +165,8 @@ private fun Placeable.PlacementScope.placeAsColumn(
 }
 
 private enum class HomeLayoutContent {
-  WelcomeMessage, ClaimStatusCards, MemberReminderCards, StartClaimButton, OtherServicesButton, TopSpacer, BottomSpacer
+  WelcomeMessage, ClaimStatusCards, MemberReminderCards, StartClaimButton, OtherServicesButton, VeryImportantMessages,
+  TopSpacer, BottomSpacer
 }
 
 // region previews
@@ -212,9 +221,14 @@ private fun PreviewHomeLayoutNonCenteredNonScrollableContent() {
         PreviewHomeLayout(
           maxWidth = constraints.maxWidth,
           maxHeight = constraints.maxHeight,
+          veryImportantMessages = {
+            Column(Modifier.padding(horizontal = 16.dp), Arrangement.spacedBy(8.dp)) {
+              PreviewBox(0) { Text("Important message") }
+            }
+          },
           memberReminderCards = {
             Column(Modifier.padding(horizontal = 16.dp), Arrangement.spacedBy(8.dp)) {
-              repeat(5) { index ->
+              repeat(3) { index ->
                 PreviewBox(index)
               }
             }
@@ -258,12 +272,14 @@ private fun PreviewHomeLayout(
   maxHeight: Int,
   modifier: Modifier = Modifier,
   claimStatusCards: @Composable @UiComposable () -> Unit = {},
+  veryImportantMessages: @Composable @UiComposable () -> Unit = {},
   memberReminderCards: @Composable @UiComposable () -> Unit = {},
 ) {
   HomeLayout(
     fullScreenSize = IntSize(maxWidth, maxHeight),
     welcomeMessage = { Text("Welcome!", Modifier.fillMaxWidth().wrapContentWidth(Alignment.CenterHorizontally)) },
     claimStatusCards = claimStatusCards,
+    veryImportantMessages = veryImportantMessages,
     memberReminderCards = memberReminderCards,
     startClaimButton = {
       HedvigContainedButton(
