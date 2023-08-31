@@ -87,6 +87,20 @@ private fun KotlinJvmOptions.configureKotlinOptions(
     "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
   )
 
+  // Get compose metrics with `./gradlew :app:assembleRelease -Pcom.hedvig.app.enableComposeCompilerReports=true`
+  if (project.findProperty("com.hedvig.app.enableComposeCompilerReports") == "true") {
+    freeCompilerArgs = freeCompilerArgs + listOf(
+      "-P",
+      "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" +
+        project.buildDir.absolutePath + "/compose_metrics",
+    )
+    freeCompilerArgs = freeCompilerArgs + listOf(
+      "-P",
+      "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" +
+        project.buildDir.absolutePath + "/compose_metrics",
+    )
+  }
+
   jvmTarget = JavaVersion.VERSION_17.toString()
 }
 
