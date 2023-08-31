@@ -30,6 +30,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -59,7 +60,6 @@ import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
-import com.hedvig.android.core.designsystem.material3.onTypeContainer
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.material3.typeContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -307,9 +307,7 @@ private fun CrossSellItem(
       },
       colors = ButtonDefaults.buttonColors(
         containerColor = MaterialTheme.colorScheme.typeContainer,
-        contentColor = MaterialTheme.colorScheme.onTypeContainer,
-        disabledContainerColor = MaterialTheme.colorScheme.typeContainer.copy(alpha = 0.12f),
-        disabledContentColor = MaterialTheme.colorScheme.onTypeContainer.copy(alpha = 0.38f),
+        contentColor = LocalContentColor.current,
       ),
     )
   }
