@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -20,18 +19,16 @@ import androidx.compose.foundation.layout.onConsumedWindowInsetsChanged
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Icon
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -55,17 +52,20 @@ import arrow.core.nonEmptyListOf
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.core.common.android.SHARED_PREFERENCE_NAME
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
 import com.hedvig.android.core.designsystem.material3.warningContainer
+import com.hedvig.android.core.designsystem.material3.warningElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
-import com.hedvig.android.core.icons.hedvig.normal.ArrowForward
+import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
 import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
+import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.feature.home.claimdetail.ui.previewList
 import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimsData
@@ -320,14 +320,14 @@ private fun HomeScreenSuccess(
       },
       veryImportantMessages = {
         Column(
-          modifier = modifier,
           verticalArrangement = Arrangement.spacedBy(8.dp),
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
         ) {
-          for ((index, veryImportantMessage) in uiState.veryImportantMessages.withIndex()) {
-            VeryImportantMessageBanner(openUrl, veryImportantMessage)
-            if (index == uiState.veryImportantMessages.lastIndex) {
-              Spacer(Modifier.height(16.dp))
-            }
+          for (veryImportantMessage in uiState.veryImportantMessages) {
+            VeryImportantMessageCard(openUrl, veryImportantMessage)
           }
         }
       },
@@ -357,7 +357,7 @@ private fun HomeScreenSuccess(
       },
       otherServicesButton = {
         HedvigTextButton(
-          text = stringResource(id = R.string.home_tab_other_services),
+          text = stringResource(R.string.home_tab_other_services),
           onClick = { showEditYourInfoBottomSheet = true },
           modifier = Modifier
             .padding(horizontal = 16.dp)
@@ -376,33 +376,31 @@ private fun HomeScreenSuccess(
 }
 
 @Composable
-private fun VeryImportantMessageBanner(
+private fun VeryImportantMessageCard(
   openUrl: (String) -> Unit,
   veryImportantMessage: HomeData.VeryImportantMessage,
+  modifier: Modifier = Modifier,
 ) {
-  Surface(
-    onClick = { openUrl(veryImportantMessage.link) },
-    color = MaterialTheme.colorScheme.warningContainer,
-    contentColor = MaterialTheme.colorScheme.onWarningContainer,
+  VectorInfoCard(
+    text = veryImportantMessage.message,
+    icon = Icons.Hedvig.WarningFilled,
+    iconColor = MaterialTheme.colorScheme.warningElement,
+    colors = CardDefaults.outlinedCardColors(
+      containerColor = MaterialTheme.colorScheme.warningContainer,
+      contentColor = MaterialTheme.colorScheme.onWarningContainer,
+    ),
+    modifier = modifier,
   ) {
-    Row(
-      verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier
-        .minimumInteractiveComponentSize()
-        .fillMaxWidth()
-        .padding(horizontal = 32.dp, vertical = 8.dp),
-    ) {
-      Text(
-        text = veryImportantMessage.message,
-        modifier = Modifier.weight(1f),
-      )
-      Spacer(Modifier.width(16.dp))
-      Icon(
-        imageVector = Icons.Hedvig.ArrowForward,
-        contentDescription = null,
-        modifier = Modifier.size(16.dp),
-      )
-    }
+    HedvigContainedSmallButton(
+      text = stringResource(R.string.important_message_read_more),
+      onClick = { openUrl(veryImportantMessage.link) },
+      colors = ButtonDefaults.buttonColors(
+        containerColor = MaterialTheme.colorScheme.background,
+        contentColor = MaterialTheme.colorScheme.onBackground,
+      ),
+      textStyle = MaterialTheme.typography.bodyMedium,
+      modifier = Modifier.fillMaxWidth(),
+    )
   }
 }
 
