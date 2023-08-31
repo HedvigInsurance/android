@@ -239,6 +239,7 @@ private fun ColumnScope.InsurableLimitSection(
           Text(
             text = insurableLimitItem.limit,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.align(Alignment.Top),
           )
           Spacer(Modifier.width(8.dp))
           Icon(
