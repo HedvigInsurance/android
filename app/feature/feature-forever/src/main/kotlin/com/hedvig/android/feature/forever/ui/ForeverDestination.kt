@@ -108,28 +108,6 @@ private fun ForeverScreen(
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
 ) {
-//  AnimatedContent(
-//    targetState = uiState.isLoading,
-//    transitionSpec = {
-//      MotionDefaults.fadeThroughEnter with MotionDefaults.fadeThroughExit
-//    },
-//    label = "",
-//  ) { loading ->
-//    when (loading) {
-//      true -> HedvigFullScreenCenterAlignedProgressDebounced(
-//        show = uiState.isLoading,
-//        modifier = Modifier.fillMaxSize(),
-//      )
-//      false -> ForeverScreen(
-//        uiState = uiState,
-//        reload = viewModel::reload,
-//        onSubmitCode = viewModel::onSubmitCode,
-//        languageService = languageService,
-//        hedvigBuildConstants = hedvigBuildConstants,
-//      )
-//    }
-//  }
-
   val context = LocalContext.current
   LocalConfiguration.current
   val resources = context.resources
