@@ -182,17 +182,17 @@ internal fun ForeverContent(
   var showEditBottomSheet by rememberSaveable { mutableStateOf(false) }
   var showReferralExplanationBottomSheet by rememberSaveable { mutableStateOf(false) }
   val focusRequester = remember { FocusRequester() }
-  var textFieldValueState by remember { mutableStateOf(TextFieldValue(text = uiState.campaignCode ?: "")) }
+  var textFieldValueState by remember(uiState.campaignCode) {
+    mutableStateOf(TextFieldValue(text = uiState.campaignCode ?: ""))
+  }
 
   LaunchedEffect(uiState.showEditCode) {
-    coroutineScope.launch {
-      if (uiState.showEditCode) {
-        editSheetState.expand()
-      } else {
-        editSheetState.hide()
-      }
-      showEditBottomSheet = uiState.showEditCode
+    if (uiState.showEditCode) {
+      editSheetState.expand()
+    } else {
+      editSheetState.hide()
     }
+    showEditBottomSheet = uiState.showEditCode
   }
 
   if (showEditBottomSheet) {
@@ -321,7 +321,7 @@ internal fun ForeverContent(
           showEditBottomSheet = true
           delay(400)
           focusRequester.requestFocus()
-          textFieldValueState = textFieldValueState.copy(selection = TextRange(0, textFieldValueState.text.length))
+          textFieldValueState = textFieldValueState.copy(selection = TextRange(textFieldValueState.text.length))
         }
       },
       onShareCodeClick = onShareCodeClick,
