@@ -290,7 +290,7 @@ internal fun ForeverContent(
     Spacer(Modifier.height(16.dp))
     DiscountPieChart(
       totalPrice = uiState.grossPriceAmount?.abs()?.number?.toFloat() ?: 0f,
-      totalDiscount = uiState.currentDiscountAmount?.abs()?.number?.toFloat() ?: 0f,
+      totalExistingDiscount = uiState.currentDiscountAmount?.abs()?.number?.toFloat() ?: 0f,
       incentive = uiState.incentive?.abs()?.number?.toFloat() ?: 0f,
       modifier = Modifier
         .padding(horizontal = 16.dp)
