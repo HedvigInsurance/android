@@ -8,13 +8,11 @@ import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -24,13 +22,14 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 
 @Composable
-fun ColumnScope.DiscountPieChart(
-  containerColor: Color = MaterialTheme.colorScheme.typeElement,
-  discountColor: Color = MaterialTheme.colorScheme.secondaryContainer,
-  incentiveColor: Color = MaterialTheme.colorScheme.surface,
+fun DiscountPieChart(
   totalPrice: Float,
   totalDiscount: Float,
   incentive: Float,
+  modifier: Modifier = Modifier,
+  containerColor: Color = MaterialTheme.colorScheme.typeElement,
+  discountColor: Color = MaterialTheme.colorScheme.secondaryContainer,
+  incentiveColor: Color = MaterialTheme.colorScheme.surface,
 ) {
   val transition = rememberInfiniteTransition(label = "transition")
   val sweep by transition.animateFloat(
@@ -52,9 +51,7 @@ fun ColumnScope.DiscountPieChart(
   )
 
   Canvas(
-    modifier = Modifier
-      .size(215.dp)
-      .align(Alignment.CenterHorizontally),
+    modifier = modifier.size(215.dp),
     onDraw = {
       drawCircle(color = containerColor)
       drawArc(

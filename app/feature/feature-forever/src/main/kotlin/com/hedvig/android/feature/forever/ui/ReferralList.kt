@@ -37,8 +37,11 @@ import javax.money.CurrencyContext
 import javax.money.CurrencyUnit
 
 @Composable
-internal fun ReferralList(uiState: ForeverUiState) {
-  Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+internal fun ReferralList(
+  uiState: ForeverUiState,
+  modifier: Modifier = Modifier,
+) {
+  Column(modifier) {
     Text(
       text = stringResource(id = R.string.FOREVER_REFERRAL_LIST_LABEL),
       modifier = Modifier.padding(vertical = 16.dp),
