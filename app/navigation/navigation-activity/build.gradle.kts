@@ -6,5 +6,4 @@ plugins {
 
 dependencies {
   implementation(projects.coreCommonAndroidPublic)
-  implementation(projects.loggingPublic)
 }

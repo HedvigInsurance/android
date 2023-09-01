@@ -16,7 +16,6 @@ dependencies {
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDatastorePublic)
-  implementation(projects.loggingPublic)
 }
 
 android {
