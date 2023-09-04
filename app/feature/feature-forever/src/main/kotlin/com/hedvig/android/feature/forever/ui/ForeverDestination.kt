@@ -47,6 +47,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
@@ -175,50 +176,56 @@ internal fun ForeverContent(
   onSubmitCode: (String) -> Unit,
 ) {
   val locale = getLocale()
-
-  val editSheetState = rememberModalBottomSheetState(true)
-  val referralExplanationSheetState = rememberModalBottomSheetState(true)
   val coroutineScope = rememberCoroutineScope()
-  var showEditBottomSheet by rememberSaveable { mutableStateOf(false) }
-  var showReferralExplanationBottomSheet by rememberSaveable { mutableStateOf(false) }
+  val focusManager = LocalFocusManager.current
   val focusRequester = remember { FocusRequester() }
   var textFieldValueState by remember(uiState.campaignCode) {
     mutableStateOf(TextFieldValue(text = uiState.campaignCode ?: ""))
   }
 
+  val editBottomSheetState = rememberModalBottomSheetState(true)
+  var showEditBottomSheet by rememberSaveable { mutableStateOf(false) }
   LaunchedEffect(uiState.showEditCode) {
     if (uiState.showEditCode) {
-      editSheetState.expand()
+      editBottomSheetState.expand()
     } else {
-      editSheetState.hide()
+      editBottomSheetState.hide()
     }
     showEditBottomSheet = uiState.showEditCode
   }
 
   if (showEditBottomSheet) {
     EditCodeBottomSheet(
-      sheetState = editSheetState,
+      sheetState = editBottomSheetState,
       code = textFieldValueState,
       onCodeChanged = { textFieldValueState = it },
       onDismiss = {
         coroutineScope.launch {
-          editSheetState.hide()
+          editBottomSheetState.hide()
+        }.invokeOnCompletion {
           showEditBottomSheet = false
+          focusManager.clearFocus(true)
         }
       },
-      onSubmitCode = { onSubmitCode(textFieldValueState.text) },
+      onSubmitCode = {
+        focusManager.clearFocus()
+        onSubmitCode(textFieldValueState.text)
+      },
       errorText = uiState.codeError.toErrorMessage(),
       isLoading = uiState.isLoadingCode,
       focusRequester = focusRequester,
     )
   }
 
+  val referralExplanationSheetState = rememberModalBottomSheetState(true)
+  var showReferralExplanationBottomSheet by rememberSaveable { mutableStateOf(false) }
   if (showReferralExplanationBottomSheet && uiState.incentive != null) {
     ForeverExplanationBottomSheet(
       discount = uiState.incentive.format(locale),
       onDismiss = {
         coroutineScope.launch {
           referralExplanationSheetState.hide()
+        }.invokeOnCompletion {
           showReferralExplanationBottomSheet = false
         }
       },
@@ -317,7 +324,7 @@ internal fun ForeverContent(
       uiState = uiState,
       onChangeCodeClicked = {
         coroutineScope.launch {
-          editSheetState.hide()
+          editBottomSheetState.hide()
           showEditBottomSheet = true
           delay(400)
           focusRequester.requestFocus()
