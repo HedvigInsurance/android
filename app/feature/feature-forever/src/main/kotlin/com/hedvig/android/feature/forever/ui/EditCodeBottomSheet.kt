@@ -35,9 +35,7 @@ internal fun EditCodeBottomSheet(
 ) {
   ModalBottomSheet(
     containerColor = MaterialTheme.colorScheme.background,
-    onDismissRequest = {
-      onDismiss()
-    },
+    onDismissRequest = { onDismiss() },
     shape = MaterialTheme.shapes.squircleLargeTop,
     sheetState = sheetState,
     tonalElevation = 0.dp,
@@ -75,5 +73,6 @@ internal fun EditCodeBottomSheet(
       onClick = { onDismiss() },
       modifier = Modifier.padding(horizontal = 16.dp),
     )
+    Spacer(Modifier.height(16.dp))
   }
 }
