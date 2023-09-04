@@ -39,8 +39,10 @@ internal fun Project.configureKotlinAndroid(
 
   dependencies {
     add("coreLibraryDesugaring", libs.coreLibraryDesugaring.get())
-    add("implementation", project(":logging-public"))
     add("lintChecks", project(":hedvig-lint"))
+    if (this@configureKotlinAndroid.name != "logging-public") {
+      add("implementation", project(":logging-public"))
+    }
   }
 }
 
