@@ -166,10 +166,10 @@ private fun ExpandableCoverageCard(
         Modifier
           .size(24.dp)
           .wrapContentSize(Alignment.Center)
-          .size(20.dp)
+          .size(16.dp)
           .background(color ?: Color(0xFFB8D194), CircleShape),
       )
-      Spacer(Modifier.width(12.dp))
+      Spacer(Modifier.width(8.dp))
       Text(
         text = title,
         style = MaterialTheme.typography.headlineSmall,
@@ -239,6 +239,7 @@ private fun ColumnScope.InsurableLimitSection(
           Text(
             text = insurableLimitItem.limit,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.align(Alignment.Top),
           )
           Spacer(Modifier.width(8.dp))
           Icon(
