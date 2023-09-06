@@ -1,8 +1,5 @@
-@file:Suppress("UnstableApiUsage")
-
 import com.project.starter.easylauncher.filter.ColorRibbonFilter
 
-@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once https://youtrack.jetbrains.com/issue/KTIJ-19369 is fixed
 plugins {
   id("hedvig.android.application")
   id("hedvig.android.application.compose")
@@ -15,6 +12,7 @@ plugins {
   alias(libs.plugins.googleServices)
   alias(libs.plugins.license)
   alias(libs.plugins.serialization)
+  alias(libs.plugins.squareSortDependencies)
 }
 
 android {
@@ -36,12 +34,6 @@ android {
     resourceConfigurations.addAll(listOf("en", "en-rNO", "en-rSE", "en-rDK", "nb-rNO", "sv-rSE", "da-rDK"))
 
     testInstrumentationRunner = "com.hedvig.app.TestRunner"
-  }
-
-  lint {
-    abortOnError = false
-    checkDependencies = true
-    checkGeneratedSources = true
   }
 
   packaging {
@@ -111,62 +103,7 @@ android {
 }
 
 dependencies {
-  implementation(projects.app.apollo.core)
-  implementation(projects.app.apollo.di)
-  implementation(projects.app.apollo.giraffe)
-  implementation(projects.app.apollo.octopus)
-  implementation(projects.app.audioPlayer)
-  implementation(projects.app.auth.authAndroid)
-  implementation(projects.app.auth.authCore)
-  implementation(projects.app.auth.authEventCore)
-  implementation(projects.app.core.common)
-  implementation(projects.app.core.commonAndroid)
-  implementation(projects.app.core.datastore)
-  implementation(projects.app.core.designSystem)
-  implementation(projects.app.core.resources)
-  implementation(projects.app.core.ui)
-  implementation(projects.app.data.claimFlow)
-  implementation(projects.app.data.claimTriaging)
-  implementation(projects.app.data.travelCertificate)
-  implementation(projects.app.datadog)
-  implementation(projects.app.feature.businessmodel)
-  implementation(projects.app.feature.changeaddress)
-  implementation(projects.app.feature.claimTriaging)
-  implementation(projects.app.feature.home)
-  implementation(projects.app.feature.odyssey)
-  implementation(projects.app.feature.terminateInsurance)
-  implementation(projects.app.feature.travelCertificate)
-  implementation(projects.app.hanalytics.hanalyticsAndroid)
-  implementation(projects.app.hanalytics.hanalyticsCore)
-  implementation(projects.app.hanalytics.hanalyticsFeatureFlags)
-  implementation(projects.app.language.languageCore)
-  implementation(projects.app.market.marketCore)
-  implementation(projects.app.navigation.core)
-  implementation(projects.app.navigation.navigationActivity)
-  implementation(projects.app.navigation.navigationComposeTyped)
-  implementation(projects.app.notification.firebase)
-  implementation(projects.app.notification.notificationCore)
-  implementation(projects.app.notificationBadgeData)
-
-  testImplementation(projects.app.apollo.giraffeTest)
-  testImplementation(projects.app.auth.authEventTest)
-  testImplementation(projects.app.auth.authTest)
-  testImplementation(projects.app.core.commonTest)
-  testImplementation(projects.app.core.datastoreTest)
-  testImplementation(projects.app.hanalytics.hanalyticsFeatureFlagsTest)
-  testImplementation(projects.app.hanalytics.hanalyticsTest)
-  testImplementation(projects.app.language.languageTest)
-  testImplementation(projects.app.market.marketTest)
-
-  androidTestImplementation(projects.app.hanalytics.hanalyticsFeatureFlagsTest)
-
-  androidTestImplementation(projects.app.testdata)
-  testImplementation(projects.app.testdata)
-  debugImplementation(projects.app.testdata)
-  "stagingImplementation"(projects.app.testdata)
-
   implementation(platform(libs.firebase.bom))
-
   implementation(libs.accompanist.insetsUi)
   implementation(libs.accompanist.navigationAnimation)
   implementation(libs.accompanist.pagerIndicators)
@@ -233,6 +170,7 @@ dependencies {
   implementation(libs.koin.compose)
   implementation(libs.koin.workManager)
   implementation(libs.kotlin.reflect)
+  implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.markwon.core)
@@ -245,13 +183,60 @@ dependencies {
   implementation(libs.reactiveX.android)
   implementation(libs.reactiveX.kotlin)
   implementation(libs.shimmer)
-  implementation(libs.slimber)
   implementation(libs.timber)
   implementation(libs.zXing)
+  implementation(projects.apolloCore)
+  implementation(projects.apolloDi)
+  implementation(projects.apolloGiraffePublic)
+  implementation(projects.audioPlayer)
+  implementation(projects.authAndroid)
+  implementation(projects.authCore)
+  implementation(projects.authEventCore)
+  implementation(projects.coreBuildConstants)
+  implementation(projects.coreCommonAndroidPublic)
+  implementation(projects.coreCommonPublic)
+  implementation(projects.coreDatastorePublic)
+  implementation(projects.coreDesignSystem)
+  implementation(projects.coreIcons)
+  implementation(projects.coreResources)
+  implementation(projects.coreUi)
+  implementation(projects.dataClaimFlow)
+  implementation(projects.dataClaimTriaging)
+  implementation(projects.dataForever)
+  implementation(projects.dataTravelCertificatePublic)
+  implementation(projects.datadog)
+  implementation(projects.featureChangeaddress)
+  implementation(projects.featureClaimTriaging)
+  implementation(projects.featureForever)
+  implementation(projects.featureHome)
+  implementation(projects.featureInsurances)
+  implementation(projects.featureOdyssey)
+  implementation(projects.featureProfile)
+  implementation(projects.featureTerminateInsurance)
+  implementation(projects.featureTravelCertificate)
+  implementation(projects.hanalyticsAndroid)
+  implementation(projects.hanalyticsCore)
+  implementation(projects.hanalyticsFeatureFlagsPublic)
+  implementation(projects.languageCore)
+  implementation(projects.loggingAndroid)
+  implementation(projects.loggingPublic)
+  implementation(projects.marketCore)
+  implementation(projects.memberRemindersPublic)
+  implementation(projects.navigationActivity)
+  implementation(projects.navigationComposeTyped)
+  implementation(projects.navigationCore)
+  implementation(projects.notificationBadgeDataPublic)
+  implementation(projects.notificationCore)
+  implementation(projects.notificationFirebase)
+  implementation(projects.payment)
+  implementation(projects.theme)
+
+  stagingImplementation(projects.testdata)
 
   debugImplementation(libs.androidx.compose.uiTestManifest)
   debugImplementation(libs.androidx.compose.uiTooling)
   debugImplementation(libs.leakCanary)
+  debugImplementation(projects.testdata)
 
   testImplementation(libs.androidx.arch.testing)
   testImplementation(libs.androidx.test.junit)
@@ -263,6 +248,17 @@ dependencies {
   testImplementation(libs.koin.test)
   testImplementation(libs.mockk.jvm)
   testImplementation(libs.turbine)
+  testImplementation(projects.apolloGiraffeTest)
+  testImplementation(projects.authEventFake)
+  testImplementation(projects.authTest)
+  testImplementation(projects.coreCommonTest)
+  testImplementation(projects.coreDatastoreTest)
+  testImplementation(projects.hanalyticsFeatureFlagsTest)
+  testImplementation(projects.hanalyticsTest)
+  testImplementation(projects.languageTest)
+  testImplementation(projects.loggingTest)
+  testImplementation(projects.marketTest)
+  testImplementation(projects.testdata)
 
   androidTestImplementation(libs.androidx.compose.uiTestJunit)
   androidTestImplementation(libs.androidx.espresso.contrib)
@@ -277,6 +273,12 @@ dependencies {
   androidTestImplementation(libs.koin.test)
   androidTestImplementation(libs.mockk.android)
   androidTestImplementation(libs.okhttp.mockWebServer)
+  androidTestImplementation(projects.hanalyticsFeatureFlagsTest)
+  androidTestImplementation(projects.testdata)
+}
+
+fun DependencyHandlerScope.stagingImplementation(dependencyNotation: Any) {
+  "stagingImplementation"(dependencyNotation)
 }
 
 easylauncher {

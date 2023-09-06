@@ -64,7 +64,7 @@ jobs:
           LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
           ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
-      - run: ./gradlew lintDebug
+      - run: ./gradlew lint
       - uses: yutailang0119/action-android-lint@v3.1.0
         with:
           report-path: app/build/reports/lint-results-debug.xml
@@ -101,7 +101,7 @@ jobs:
         continue-on-error: true
         run: ./gradlew ktlintCheck
       - name: Annotate ktlint errors in the PR
-        continue-on-error: true
+        continue-on-error: false
         uses: yutailang0119/action-ktlint@v3
         with:
           report-path: build/reports/ktlint/*.xml
@@ -143,7 +143,7 @@ jobs:
         run: ./gradlew licenseReleaseReport --no-configuration-cache --continue
         continue-on-error: true
       - name: Build
-        run: "./gradlew app:app:assembleDebug"
+        run: "./gradlew :app:assembleDebug"
       - uses: r0adkll/sign-android-release@v1
         name: Sign app APK
         id: sign_app

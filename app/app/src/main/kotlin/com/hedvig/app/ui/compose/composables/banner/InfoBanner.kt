@@ -5,16 +5,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.contentColorFor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.designsystem.theme.hedvig_black
 import com.hedvig.android.core.designsystem.theme.hedvig_black12percent
 import com.hedvig.app.R
 
@@ -40,8 +40,8 @@ fun InfoBanner(
     Text(
       modifier = Modifier.padding(16.dp),
       text = text,
-      color = contentColorFor(backgroundColor).copy(alpha = 0.5f),
-      style = MaterialTheme.typography.subtitle2,
+      color = hedvig_black.copy(alpha = 0.5f),
+      style = MaterialTheme.typography.bodyMedium,
     )
   }
 }
@@ -50,7 +50,7 @@ fun InfoBanner(
 @Composable
 private fun PreviewInfoBanner() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       InfoBanner(onClick = { }, text = "Test info banner text")
     }
   }

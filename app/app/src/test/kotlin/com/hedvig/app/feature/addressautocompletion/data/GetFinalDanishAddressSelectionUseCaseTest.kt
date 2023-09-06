@@ -7,7 +7,7 @@ import assertk.assertions.isInstanceOf
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import io.mockk.coEvery
 import io.mockk.mockk
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class GetFinalDanishAddressSelectionUseCaseTest {
@@ -23,7 +23,7 @@ class GetFinalDanishAddressSelectionUseCaseTest {
   )
 
   @Test
-  fun `return null when only providing an address`() = runBlockingTest {
+  fun `return null when only providing an address`() = runTest {
     val selectedAddress = asavej
     val fetchResult = asavej_results
 
@@ -36,7 +36,7 @@ class GetFinalDanishAddressSelectionUseCaseTest {
   }
 
   @Test
-  fun `return null when after querying again it turns out to not be the only possible result`() = runBlockingTest {
+  fun `return null when after querying again it turns out to not be the only possible result`() = runTest {
     val selectedAddress = asavej_1_9330_dronninglund
     val fetchResult = asavej_1_9330_dronninglund_results // Contains 2 results
 
@@ -50,7 +50,7 @@ class GetFinalDanishAddressSelectionUseCaseTest {
 
   @Test
   fun `return the selected address when it is not the only result but it was selected again in the previous query`() =
-    runBlockingTest {
+    runTest {
       val selectedAddress = asavej_1_9330_dronninglund
       val fetchResult = asavej_1_9330_dronninglund_results
 
@@ -65,34 +65,32 @@ class GetFinalDanishAddressSelectionUseCaseTest {
     }
 
   @Test
-  fun `return the selected address when after querying again it turns out to be the only possible result`() =
-    runBlockingTest {
-      val selectedAddress = asavej_1_9330_dronninglund
-      val fetchResult = asavej_1_9330_dronninglund_results.take(1)
+  fun `return the selected address when after querying again it turns out to be the only possible result`() = runTest {
+    val selectedAddress = asavej_1_9330_dronninglund
+    val fetchResult = asavej_1_9330_dronninglund_results.take(1)
 
-      val result = getTestUseCase(fetchResult).invoke(
-        selectedAddress = selectedAddress,
-        lastSelection = null,
-      )
+    val result = getTestUseCase(fetchResult).invoke(
+      selectedAddress = selectedAddress,
+      lastSelection = null,
+    )
 
-      assertThat(result).isInstanceOf(FinalAddressResult.Found::class)
-      result as FinalAddressResult.Found
-      assertThat(result.address).isEqualTo(selectedAddress)
-    }
+    assertThat(result).isInstanceOf(FinalAddressResult.Found::class)
+    result as FinalAddressResult.Found
+    assertThat(result.address).isEqualTo(selectedAddress)
+  }
 
   @Test
-  fun `return null when after querying again and despite being a single result, it's not the same item`() =
-    runBlockingTest {
-      val selectedAddress = asavej_1_9330_dronninglund
-      val fetchResult = asavej_1_9330_dronninglund_results.takeLast(1)
+  fun `return null when after querying again and despite being a single result, it's not the same item`() = runTest {
+    val selectedAddress = asavej_1_9330_dronninglund
+    val fetchResult = asavej_1_9330_dronninglund_results.takeLast(1)
 
-      val result = getTestUseCase(fetchResult).invoke(
-        selectedAddress = selectedAddress,
-        lastSelection = null,
-      )
+    val result = getTestUseCase(fetchResult).invoke(
+      selectedAddress = selectedAddress,
+      lastSelection = null,
+    )
 
-      assertThat(result).isInstanceOf(FinalAddressResult.NotFinalAddress::class)
-    }
+    assertThat(result).isInstanceOf(FinalAddressResult.NotFinalAddress::class)
+  }
 
   companion object {
     private val asavej = DanishAddress("asavej")

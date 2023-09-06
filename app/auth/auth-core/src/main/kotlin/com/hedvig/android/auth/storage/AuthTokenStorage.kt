@@ -7,13 +7,14 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.hedvig.android.auth.token.AuthTokens
 import com.hedvig.android.auth.token.LocalAccessToken
 import com.hedvig.android.auth.token.LocalRefreshToken
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.authlib.AccessToken
 import com.hedvig.authlib.RefreshToken
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import slimber.log.v
 import kotlin.time.Duration.Companion.seconds
 
 class AuthTokenStorage(
@@ -49,7 +50,7 @@ class AuthTokenStorage(
       preferences[refreshTokenPreferenceKey] = refreshToken.token
       val refreshTokenExpirationInstant = now + refreshToken.expiryInSeconds.seconds
       preferences[refreshTokenExpirationIso8601PreferenceKey] = refreshTokenExpirationInstant.toString()
-      v {
+      logcat(LogPriority.VERBOSE) {
         buildString {
           append("Saved tokens with expiration instants: ")
           append("Access token:$accessTokenExpirationInstant")

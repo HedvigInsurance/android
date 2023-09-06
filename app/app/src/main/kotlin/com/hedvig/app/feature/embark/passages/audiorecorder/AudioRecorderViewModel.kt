@@ -3,10 +3,11 @@ package com.hedvig.app.feature.embark.passages.audiorecorder
 import android.media.MediaPlayer
 import android.media.MediaRecorder
 import androidx.lifecycle.ViewModel
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import slimber.log.e
 import java.io.File
 import java.time.Clock
 import java.time.Instant
@@ -115,7 +116,7 @@ class AudioRecorderViewModel(
       throw IllegalStateException("Must be in Playback-state to play")
     }
     if (!currentState.isPrepared) {
-      e { "Attempted to play before player was prepared" }
+      logcat(LogPriority.ERROR) { "Attempted to play before player was prepared" }
       return
     }
     timer = Timer()

@@ -1,5 +1,11 @@
 package com.hedvig.android.app.ui
 
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.union
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationRail
@@ -9,6 +15,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -36,7 +44,7 @@ internal fun HedvigNavRail(
         TopLevelGraph.HOME -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.HOME>()
         TopLevelGraph.INSURANCE -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.INSURANCE>()
         TopLevelGraph.PROFILE -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.PROFILE>()
-        TopLevelGraph.REFERRALS -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.REFERRALS>()
+        TopLevelGraph.FOREVER -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.FOREVER>()
       }
     },
     modifier = modifier,
@@ -51,9 +59,20 @@ private fun HedvigNavRail(
   getIsCurrentlySelected: (TopLevelGraph) -> Boolean,
   modifier: Modifier = Modifier,
 ) {
+  val outlineVariant = MaterialTheme.colorScheme.outlineVariant
   NavigationRail(
-    containerColor = Color.Transparent,
-    modifier = modifier,
+    containerColor = MaterialTheme.colorScheme.background,
+    contentColor = MaterialTheme.colorScheme.onBackground,
+    windowInsets = WindowInsets.systemBars.union(WindowInsets.displayCutout)
+      .only(WindowInsetsSides.Vertical + WindowInsetsSides.Left),
+    modifier = modifier.drawWithContent {
+      drawContent()
+      drawLine(
+        color = outlineVariant,
+        start = Offset(size.width, 0f),
+        end = Offset(size.width, size.height),
+      )
+    },
   ) {
     for (destination in destinations) {
       val hasNotification = destinationsWithNotifications.contains(destination)
@@ -96,7 +115,7 @@ private fun PreviewHedvigNavRail() {
         destinations = persistentSetOf(
           TopLevelGraph.HOME,
           TopLevelGraph.INSURANCE,
-          TopLevelGraph.REFERRALS,
+          TopLevelGraph.FOREVER,
           TopLevelGraph.PROFILE,
         ),
         destinationsWithNotifications = persistentSetOf(TopLevelGraph.INSURANCE),

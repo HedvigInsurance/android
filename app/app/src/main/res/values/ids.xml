@@ -28,7 +28,4 @@
     <item name="alpha" type="id" />
     <item name="scroll_x" type="id" />
     <item name="scroll_y" type="id" />
-
-    <!-- PieChartView-tags -->
-    <item name="slice_blink_animation" type="id" />
 </resources>

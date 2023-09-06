@@ -1,37 +1,33 @@
-@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
   id("hedvig.android.ktlint")
   id("hedvig.android.library")
   alias(libs.plugins.serialization)
+  alias(libs.plugins.squareSortDependencies)
 }
 
 dependencies {
-  implementation(projects.app.auth.authEventCore)
-  implementation(projects.app.core.common)
-  implementation(projects.app.core.commonAndroid)
-  implementation(projects.app.core.datastore)
-
   api(libs.hedvig.authlib)
-  // do not remove ktor, authlib has an old ktor version which somehow crashes. Remove when we bump authlib.
-  implementation(libs.ktor)
 
   implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.json)
+  // do not remove ktor, authlib has an old ktor version which somehow crashes. Remove when we bump authlib.
+  implementation(libs.ktor)
   implementation(libs.okhttp.core)
-  implementation(libs.slimber)
-
-  testImplementation(projects.app.auth.authTest)
-  testImplementation(projects.app.core.commonTest)
-  testImplementation(projects.app.core.datastoreTest)
+  implementation(projects.authEventCore)
+  implementation(projects.coreCommonAndroidPublic)
+  implementation(projects.coreCommonPublic)
+  implementation(projects.coreDatastorePublic)
+  implementation(projects.loggingPublic)
+  implementation(projects.testClock)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.okhttp.mockWebServer)
   testImplementation(libs.turbine)
-}
-
-android {
-  namespace = "com.hedvig.android.auth"
+  testImplementation(projects.authTest)
+  testImplementation(projects.coreCommonTest)
+  testImplementation(projects.coreDatastoreTest)
+  testImplementation(projects.loggingTest)
 }

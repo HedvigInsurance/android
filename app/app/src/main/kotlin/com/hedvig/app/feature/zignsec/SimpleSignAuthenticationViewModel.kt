@@ -8,6 +8,8 @@ import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.Market
 import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.util.LiveEvent
@@ -22,8 +24,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
-import slimber.log.d
-import slimber.log.e
 
 class SimpleSignAuthenticationViewModel(
   private val data: SimpleSignAuthenticationData,
@@ -69,10 +69,10 @@ class SimpleSignAuthenticationViewModel(
       authRepository.observeLoginStatus(statusUrl)
         .distinctUntilChanged()
         .onCompletion {
-          d { "subscribeToAuthSuccessEvent finished" }
+          logcat { "subscribeToAuthSuccessEvent finished" }
         }
         .collect { loginStatusResult ->
-          d { "Login status:$loginStatusResult" }
+          logcat { "Login status:$loginStatusResult" }
           when (loginStatusResult) {
             is LoginStatusResult.Completed -> {
               onSimpleSignSuccess(loginStatusResult)
@@ -112,7 +112,7 @@ class SimpleSignAuthenticationViewModel(
   }
 
   private fun handleStartAuth(result: AuthAttemptResult) {
-    d { "Auth start result:$result" }
+    logcat { "Auth start result:$result" }
     when (result) {
       is AuthAttemptResult.BankIdProperties -> _events.postValue(Event.Error)
       is AuthAttemptResult.Error -> _events.postValue(Event.Error)
@@ -126,15 +126,15 @@ class SimpleSignAuthenticationViewModel(
   }
 
   private suspend fun onSimpleSignSuccess(loginStatusResult: LoginStatusResult.Completed) {
-    d { "Simple sign success:$loginStatusResult" }
+    logcat { "Simple sign success:$loginStatusResult" }
     when (val result = authRepository.exchange(loginStatusResult.authorizationCode)) {
       is AuthTokenResult.Error -> {
         _events.postValue(Event.Error)
-        e { "Login exchange error:$result" }
+        logcat(LogPriority.ERROR) { "Login exchange error:$result" }
       }
 
       is AuthTokenResult.Success -> {
-        d { "Login exchange success:$result" }
+        logcat { "Login exchange success:$result" }
         hAnalytics.loggedIn()
         featureManager.invalidateExperiments()
         authTokenService.loginWithTokens(result.accessToken, result.refreshToken)

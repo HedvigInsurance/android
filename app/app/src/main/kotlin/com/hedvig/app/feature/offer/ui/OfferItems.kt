@@ -4,7 +4,7 @@ import androidx.compose.ui.unit.Dp
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.android.core.common.android.QuoteCartId
 import com.hedvig.android.core.common.android.table.Table
-import com.hedvig.android.core.ui.insurance.GradientType
+import com.hedvig.android.core.ui.insurance.ContractType
 import com.hedvig.app.feature.faq.FAQItem
 import com.hedvig.app.feature.offer.model.CheckoutLabel
 import com.hedvig.app.feature.offer.model.CheckoutMethod
@@ -29,7 +29,7 @@ sealed class OfferItems {
     val checkoutMethod: CheckoutMethod,
     val showCampaignManagement: Boolean,
     val ignoreCampaigns: Boolean,
-    val gradientType: GradientType,
+    val gradientType: ContractType,
     val paymentMethodsApiResponse: PaymentMethodsApiResponse?,
     val quoteCartId: QuoteCartId?,
   ) : OfferItems()

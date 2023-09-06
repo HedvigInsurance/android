@@ -94,12 +94,5 @@
         <item name="colorSurface">@color/colorChatUserBackground</item>
     </style>
 
-    <style name="Hedvig.Theme.Widgets.Chat.Input" parent="Hedvig.Theme">
-        <item name="colorSurface">@color/colorChatInputButton</item>
-    </style>
 
-    <style name="Hedvig.Theme.Settings" parent="Hedvig.Theme">
-        <item name="android:textColorSecondary">@color/colorPrimaryVariant</item>
-        <item name="android:textColor">?colorPrimary</item>
-    </style>
 </resources>

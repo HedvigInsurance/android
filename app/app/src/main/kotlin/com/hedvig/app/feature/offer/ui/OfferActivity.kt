@@ -48,7 +48,6 @@ import com.hedvig.app.feature.offer.model.quotebundle.ViewConfiguration
 import com.hedvig.app.feature.offer.quotedetail.QuoteDetailActivity
 import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.perils.PerilsAdapter
-import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignDialog
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.extensions.compatDrawable
@@ -127,7 +126,6 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
       setOnMenuItemClickListener { menuItem ->
         when (menuItem.itemId) {
           R.id.chat -> openChat()
-          R.id.app_settings -> startActivity(SettingsActivity.newInstance(this@OfferActivity))
           R.id.app_info -> startActivity(MoreOptionsActivity.newInstance(this@OfferActivity))
           R.id.discard_offer -> {
             showAlert(
@@ -156,7 +154,6 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
       openChat = ::openChat,
     )
     val perilsAdapter = PerilsAdapter(
-      fragmentManager = supportFragmentManager,
       imageLoader = imageLoader,
     )
     val insurableLimitsAdapter = InsurableLimitsAdapter(

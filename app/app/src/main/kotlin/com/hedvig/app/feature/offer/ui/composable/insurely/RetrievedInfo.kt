@@ -8,25 +8,23 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Divider
-import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.apollo.format
+import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.feature.offer.ui.OfferItems
-import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.compose.preview.previewData
 import java.util.Locale
 import javax.money.MonetaryAmount
@@ -47,37 +45,33 @@ fun RetrievedInfo(
       Spacer(Modifier.height(6.dp))
     }
     Spacer(Modifier.height(8.dp))
-    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-      val resources = LocalContext.current.resources
-      Text(
-        text = when {
-          data.currentInsurances.size > 1 -> {
-            resources.getQuantityString(hedvig.resources.R.plurals.offer_switcher_title, data.currentInsurances.size)
-          }
-          data.insuranceProviderDisplayName != null -> {
-            stringResource(
-              hedvig.resources.R.string.offer_screen_insurely_card_your_insurance_with,
-              data.insuranceProviderDisplayName,
-            )
-          }
-          else -> {
-            resources.getQuantityString(hedvig.resources.R.plurals.offer_switcher_title, 1)
-          }
-        }.uppercase(locale),
-        style = MaterialTheme.typography.caption,
-      )
-    }
+    val resources = LocalContext.current.resources
+    Text(
+      text = when {
+        data.currentInsurances.size > 1 -> {
+          resources.getQuantityString(hedvig.resources.R.plurals.offer_switcher_title, data.currentInsurances.size)
+        }
+        data.insuranceProviderDisplayName != null -> {
+          stringResource(
+            hedvig.resources.R.string.offer_screen_insurely_card_your_insurance_with,
+            data.insuranceProviderDisplayName,
+          )
+        }
+        else -> {
+          resources.getQuantityString(hedvig.resources.R.plurals.offer_switcher_title, 1)
+        }
+      }.uppercase(locale),
+      style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+    )
     Spacer(Modifier.height(24.dp))
     Text(
       text = data.totalNetPremium?.format(locale) ?: "",
-      style = MaterialTheme.typography.h4,
+      style = MaterialTheme.typography.headlineMedium,
     )
-    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-      Text(
-        text = stringResource(hedvig.resources.R.string.OFFER_PRICE_PER_MONTH),
-        style = MaterialTheme.typography.body2,
-      )
-    }
+    Text(
+      text = stringResource(hedvig.resources.R.string.OFFER_PRICE_PER_MONTH),
+      style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+    )
     if (data.currentInsurances.size <= 1) {
       Spacer(Modifier.height(8.dp))
     } else {
@@ -91,16 +85,18 @@ fun RetrievedInfo(
 
 @Composable
 private fun SavedWithHedvigChip(savedWithHedvig: MonetaryAmount) {
-  Card(
+  HedvigCard(
     shape = RoundedCornerShape(4.dp),
-    backgroundColor = MaterialTheme.colors.secondary,
+    colors = CardDefaults.outlinedCardColors(
+      MaterialTheme.colorScheme.secondary,
+    ),
   ) {
     Text(
       text = stringResource(
         hedvig.resources.R.string.offer_screen_insurely_card_cost_difference_info,
         savedWithHedvig.number,
       ),
-      style = MaterialTheme.typography.overline,
+      style = MaterialTheme.typography.labelSmall,
       modifier = Modifier.padding(vertical = 4.dp, horizontal = 6.dp),
     )
   }
@@ -121,15 +117,13 @@ private fun CurrentInsurancesList(
     ) {
       Text(
         text = insurance.name,
-        style = MaterialTheme.typography.subtitle1,
+        style = MaterialTheme.typography.bodyLarge,
         overflow = TextOverflow.Ellipsis,
       )
-      CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-        Text(
-          text = insurance.amount.format(locale),
-          style = MaterialTheme.typography.body1,
-        )
-      }
+      Text(
+        text = insurance.amount.format(locale),
+        style = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+      )
     }
   }
 }
@@ -138,7 +132,7 @@ private fun CurrentInsurancesList(
 @Composable
 private fun PreviewRetrievedInfo() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       RetrievedInfo(
         OfferItems.InsurelyCard.Retrieved.previewData(),
         Locale.ENGLISH,

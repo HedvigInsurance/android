@@ -1,13 +1,10 @@
 plugins {
   id("hedvig.android.library")
   id("hedvig.android.ktlint")
+  alias(libs.plugins.squareSortDependencies)
 }
 
 dependencies {
-  implementation(projects.app.apollo.giraffe)
   implementation(libs.adyen)
-}
-
-android {
-  namespace = "com.hedvig.lib.testdata"
+  implementation(projects.apolloGiraffePublic)
 }

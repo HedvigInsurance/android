@@ -26,7 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 internal fun M3Slider() {
-  var sliderPosition by remember { mutableStateOf(0.5f) }
+  var sliderPosition by remember { mutableFloatStateOf(0.5f) }
   Column {
     Spacer(Modifier.size(16.dp))
     M3OnSurfaceText(

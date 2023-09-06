@@ -7,11 +7,4 @@
     </style>
 
     <style name="Hedvig.Theme" parent="Hedvig.Theme.V29" />
-
-    <style name="Hedvig.Theme.LoggedIn">
-        <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:enforceNavigationBarContrast">false</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-    </style>
-
 </resources>

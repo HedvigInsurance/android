@@ -1,12 +1,10 @@
 plugins {
   id("hedvig.android.library")
   id("hedvig.android.ktlint")
-}
-
-android {
-  namespace = "com.hedvig.android.navigation.activity"
+  alias(libs.plugins.squareSortDependencies)
 }
 
 dependencies {
-  implementation(projects.app.core.commonAndroid)
+  implementation(projects.coreCommonAndroidPublic)
+  implementation(projects.loggingPublic)
 }

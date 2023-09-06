@@ -11,7 +11,6 @@ import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ContractCoverageDetailRowBinding
 import com.hedvig.app.databinding.TextHeadline6Binding
-import com.hedvig.app.feature.insurance.ui.detail.coverage.InsurableLimitsBottomSheet
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
 import com.hedvig.app.util.extensions.view.setHapticClickListener

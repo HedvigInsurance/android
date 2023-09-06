@@ -8,6 +8,8 @@ import coil.ImageLoader
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.android.core.common.android.remove
 import com.hedvig.android.core.common.android.show
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.app.R
 import com.hedvig.app.databinding.SendGifDialogBinding
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
@@ -20,7 +22,6 @@ import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
-import slimber.log.e
 import java.util.concurrent.TimeUnit
 
 class GifPickerBottomSheet : BottomSheetDialogFragment() {
@@ -54,7 +55,7 @@ class GifPickerBottomSheet : BottomSheetDialogFragment() {
             }
             viewModel.searchGifs(query)
           },
-          { e(it) },
+          { logcat(LogPriority.ERROR, it) { "gif search threw an error" } },
         )
       val adapter = GifAdapter(imageLoader) { url ->
         viewModel.respondWithGif(url)

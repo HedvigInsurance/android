@@ -11,9 +11,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -146,7 +146,7 @@ fun SwedishBankIdSignDialog(text: String) {
     ) {
       Text(
         text = text,
-        style = MaterialTheme.typography.subtitle1,
+        style = MaterialTheme.typography.bodyLarge,
       )
       Image(
         painter = painterResource(id = R.drawable.ic_bank_id),
@@ -161,7 +161,7 @@ fun SwedishBankIdSignDialog(text: String) {
 @Composable
 private fun PreviewSwedishBankIdSignDialog() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       SwedishBankIdSignDialog(text = stringResource(id = hedvig.resources.R.string.SIGN_IN_PROGRESS))
     }
   }

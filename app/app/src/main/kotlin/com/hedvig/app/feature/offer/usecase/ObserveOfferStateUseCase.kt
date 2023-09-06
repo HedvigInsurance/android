@@ -5,6 +5,8 @@ import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.android.QuoteCartId
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.app.feature.embark.util.SelectedContractType
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.SelectedVariantStore
@@ -14,7 +16,6 @@ import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
-import slimber.log.e
 
 class ObserveOfferStateUseCase(
   private val offerRepository: OfferRepository,
@@ -32,7 +33,7 @@ class ObserveOfferStateUseCase(
       val offerModel = offer.bind()
       val bundleVariant = offerModel.getBundleVariant(selectedVariantId, selectedContractTypes)
       ensureNotNull(bundleVariant) {
-        e { "bundleVariant was null for quote cart id:$quoteCartId and offer:$offerModel" }
+        logcat(LogPriority.ERROR) { "bundleVariant was null for quote cart id:$quoteCartId and offer:$offerModel" }
         ErrorMessage()
       }
       OfferState(offerModel, bundleVariant)

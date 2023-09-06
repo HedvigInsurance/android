@@ -4,10 +4,11 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
-import slimber.log.e
 
 interface ChatEventStore {
   suspend fun increaseChatClosedCounter()
@@ -32,7 +33,7 @@ class ChatEventDataStore(
   }
 
   override fun observeChatClosedCounter() = dataStore.data
-    .catch { e(it) }
+    .catch { logcat(LogPriority.ERROR, it) { "observeChatClosedCounter failed" } }
     .map { it[CHAT_CLOSED_COUNTER] ?: 0 }
 
   companion object {

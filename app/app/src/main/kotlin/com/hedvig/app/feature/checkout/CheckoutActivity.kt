@@ -12,6 +12,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
+import com.hedvig.android.apollo.format
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.common.android.parcelableExtra
 import com.hedvig.android.core.common.android.show
@@ -19,7 +20,6 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityCheckoutBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.extensions.setMarkdownText
 import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.showErrorDialog

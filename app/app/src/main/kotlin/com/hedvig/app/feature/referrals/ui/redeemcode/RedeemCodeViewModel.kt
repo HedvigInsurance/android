@@ -3,9 +3,9 @@ package com.hedvig.app.feature.referrals.ui.redeemcode
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.core.common.android.QuoteCartId
-import com.hedvig.app.feature.offer.usecase.CampaignCode
+import com.hedvig.android.data.forever.CampaignCode
+import com.hedvig.android.data.forever.ForeverRepository
 import com.hedvig.app.feature.offer.usecase.EditCampaignUseCase
-import com.hedvig.app.feature.referrals.data.RedeemReferralCodeRepository
 import giraffe.RedeemReferralCodeMutation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 
 class RedeemCodeViewModel(
   private val quoteCartId: QuoteCartId?,
-  private val redeemReferralCodeRepository: RedeemReferralCodeRepository,
+  private val referralsRepository: ForeverRepository,
   private val editCampaignUseCase: EditCampaignUseCase,
 ) : ViewModel() {
 
@@ -49,7 +49,7 @@ class RedeemCodeViewModel(
   }
 
   private suspend fun redeemCode(code: CampaignCode) {
-    val state = redeemReferralCodeRepository.redeemReferralCode(code)
+    val state = referralsRepository.redeemReferralCode(code)
       .fold(
         ifLeft = { error -> _viewState.value.copy(errorMessage = error.message) },
         ifRight = { data -> _viewState.value.copy(data = data) },
