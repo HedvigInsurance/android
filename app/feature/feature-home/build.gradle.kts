@@ -19,6 +19,7 @@ dependencies {
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3)
+  implementation(libs.androidx.compose.uiUtil)
   implementation(libs.androidx.compose.uiViewBinding)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.lifecycle.runtime)
