@@ -24,21 +24,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.apollo.format
 import com.hedvig.android.core.designsystem.material3.typeElement
 import com.hedvig.android.core.designsystem.material3.warningElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.getLocale
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.forever.ForeverUiState
 import hedvig.resources.R
-import org.javamoney.moneta.Money
-import javax.money.CurrencyContext
-import javax.money.CurrencyUnit
+import octopus.type.CurrencyCode
 
 @Composable
 internal fun ReferralList(
-  uiState: ForeverUiState,
+  referrals: List<ForeverUiState.Referral>,
+  grossPriceAmount: UiMoney?,
+  currentNetAmount: UiMoney?,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
@@ -47,7 +46,7 @@ internal fun ReferralList(
       modifier = Modifier.padding(vertical = 16.dp),
     )
     Divider()
-    uiState.referrals.forEach { referral ->
+    referrals.forEach { referral ->
       ReferralRow(referral)
     }
     Row(
@@ -56,15 +55,15 @@ internal fun ReferralList(
         .fillMaxWidth(),
       horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-      Text(text = stringResource(id = R.string.FOREVER_TAB_TOTAL_DISCOUNT_LABEL))
+      Text(stringResource(id = R.string.FOREVER_TAB_TOTAL_DISCOUNT_LABEL))
       Row {
         Text(
-          text = uiState.grossPriceAmount?.format(getLocale()) ?: "-",
+          text = grossPriceAmount?.toString() ?: "-",
           style = LocalTextStyle.current.copy(textDecoration = TextDecoration.LineThrough),
           color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(modifier = Modifier.width(4.dp))
-        Text(uiState.currentNetAmount?.format(getLocale()) ?: "-")
+        Text(currentNetAmount?.toString() ?: "-")
       }
     }
   }
@@ -91,11 +90,11 @@ private fun ColumnScope.ReferralRow(
           .background(referral.state.toColor(), CircleShape),
       )
       Spacer(modifier = Modifier.width(8.dp))
-      Text(text = referral.name ?: "-")
+      Text(referral.name ?: "-")
     }
     when (referral.state) {
       ForeverUiState.ReferralState.ACTIVE -> {
-        Text(text = referral.discount?.format(getLocale()) ?: "-")
+        Text(referral.discount?.toString()?.let { "-$it" } ?: "-")
       }
 
       ForeverUiState.ReferralState.IN_PROGRESS -> {
@@ -137,37 +136,26 @@ private fun PreviewReferralList() {
   HedvigTheme {
     Surface {
       ReferralList(
-        uiState = ForeverUiState(
-          grossPriceAmount = Money.of(138, fakeSekCurrency),
-          currentDiscountAmount = Money.of(40, fakeSekCurrency),
-          currentNetAmount = Money.of(118, fakeSekCurrency),
-          referrals = listOf(
-            ForeverUiState.Referral(
-              name = "Ermir",
-              state = ForeverUiState.ReferralState.ACTIVE,
-              discount = Money.of(10, fakeSekCurrency),
-            ),
-            ForeverUiState.Referral(
-              name = "Genc",
-              state = ForeverUiState.ReferralState.IN_PROGRESS,
-              discount = null,
-            ),
-            ForeverUiState.Referral(
-              name = "Ermir",
-              state = ForeverUiState.ReferralState.TERMINATED,
-              discount = Money.of(10, fakeSekCurrency),
-            ),
+        grossPriceAmount = UiMoney(138.0, CurrencyCode.SEK),
+        currentNetAmount = UiMoney(118.0, CurrencyCode.SEK),
+        referrals = listOf(
+          ForeverUiState.Referral(
+            name = "Ermir",
+            state = ForeverUiState.ReferralState.ACTIVE,
+            discount = UiMoney(10.0, CurrencyCode.SEK),
+          ),
+          ForeverUiState.Referral(
+            name = "Genc",
+            state = ForeverUiState.ReferralState.IN_PROGRESS,
+            discount = null,
+          ),
+          ForeverUiState.Referral(
+            name = "Ermir",
+            state = ForeverUiState.ReferralState.TERMINATED,
+            discount = UiMoney(10.0, CurrencyCode.SEK),
           ),
         ),
       )
     }
   }
-}
-
-private val fakeSekCurrency = object : CurrencyUnit {
-  override fun compareTo(other: CurrencyUnit?): Int = 0
-  override fun getCurrencyCode(): String = "SEK"
-  override fun getNumericCode(): Int = 0
-  override fun getDefaultFractionDigits(): Int = 0
-  override fun getContext(): CurrencyContext? = null
 }
