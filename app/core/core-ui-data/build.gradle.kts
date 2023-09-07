@@ -9,5 +9,6 @@ plugins {
 dependencies {
   implementation(libs.androidx.compose.runtime)
   implementation(libs.kotlinx.serialization.core)
+  implementation(projects.apolloGiraffePublic)
   implementation(projects.apolloOctopusPublic)
 }
