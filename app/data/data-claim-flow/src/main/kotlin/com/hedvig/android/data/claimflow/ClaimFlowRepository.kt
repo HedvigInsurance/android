@@ -16,6 +16,7 @@ import com.hedvig.android.data.claimtriaging.EntryPointId
 import com.hedvig.android.data.claimtriaging.EntryPointOptionId
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import java.io.File
 import kotlinx.datetime.LocalDate
 import octopus.FlowClaimAudioRecordingNextMutation
 import octopus.FlowClaimContractNextMutation
@@ -34,7 +35,6 @@ import octopus.type.FlowClaimSummaryInput
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import java.io.File
 
 interface ClaimFlowRepository {
   suspend fun startClaimFlow(
@@ -289,7 +289,7 @@ internal class ClaimFlowRepositoryImpl(
         flowId = flowId,
         file = MultipartBody.Part.createFormData(
           // Same name for both due to this: https://hedviginsurance.slack.com/archives/C03RP2M458V/p1680004365854429
-          name = file.name,
+          name = "file",
           filename = file.name,
           body = file.asRequestBody("audio/aac".toMediaType()),
         ),
