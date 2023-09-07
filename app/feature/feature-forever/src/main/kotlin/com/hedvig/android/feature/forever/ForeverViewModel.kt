@@ -1,184 +1,225 @@
 package com.hedvig.android.feature.forever
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import arrow.core.raise.either
-import com.hedvig.android.apollo.toMonetaryAmount
+import arrow.fx.coroutines.parZip
+import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.forever.ForeverRepository
 import com.hedvig.android.feature.forever.data.GetReferralsInformationUseCase
+import com.hedvig.android.molecule.android.MoleculeViewModel
+import com.hedvig.android.molecule.public.MoleculePresenter
+import com.hedvig.android.molecule.public.MoleculePresenterScope
 import giraffe.ReferralTermsQuery
 import giraffe.ReferralsQuery
 import giraffe.fragment.ReferralFragment
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
-import javax.money.MonetaryAmount
+import kotlinx.coroutines.delay
 
 internal class ForeverViewModel(
   private val foreverRepository: ForeverRepository,
   private val getReferralTermsUseCase: GetReferralsInformationUseCase,
-) : ViewModel() {
+) : MoleculeViewModel<ForeverEvent, ForeverUiState>(
+  ForeverUiState.Loading,
+  ForeverPresenter(
+    foreverRepository = foreverRepository,
+    getReferralsInformationUseCase = getReferralTermsUseCase,
+  ),
+)
 
-  private val _uiState = MutableStateFlow(ForeverUiState())
-  val uiState: StateFlow<ForeverUiState> = _uiState
+internal class ForeverPresenter(
+  private val foreverRepository: ForeverRepository,
+  private val getReferralsInformationUseCase: GetReferralsInformationUseCase,
+) : MoleculePresenter<ForeverEvent, ForeverUiState> {
+  @Composable
+  override fun MoleculePresenterScope<ForeverEvent>.present(lastState: ForeverUiState): ForeverUiState {
+    var isLoadingForeverData by remember { mutableStateOf(lastState.isLoadingForeverData) }
+    var foreverDataLoadIteration by remember { mutableStateOf(0) }
+    var foreverDataErrorMessage by remember { mutableStateOf(lastState.foreverDataErrorMessage) }
+    var foreverData by remember { mutableStateOf(lastState.foreverData) }
 
-  init {
-    loadReferralData()
-  }
+    var referralCodeToSubmit by remember { mutableStateOf<String?>(null) }
+    var referralCodeToSubmitErrorMessage by remember { mutableStateOf<ForeverRepository.ReferralError?>(null) }
+    var showReferralCodeToSubmitSuccess by remember { mutableStateOf<Boolean>(false) }
+    var isSubmittingReferralCode by remember { mutableStateOf(false) }
 
-  private fun loadReferralData() {
-    viewModelScope.launch {
-      _uiState.update { it.copy(isLoading = true) }
-      either {
-        val referralsData = foreverRepository.getReferralsData().bind()
-        val terms = getReferralTermsUseCase.invoke().bind()
-        ForeverUiState(
-          referralsData = referralsData,
-          referralTerms = terms,
-        )
-      }.mapLeft {
-        ForeverUiState(errorMessage = it.message)
-      }.fold(
-        ifLeft = { _uiState.value = it },
-        ifRight = { _uiState.value = it },
-      )
-    }
-  }
-
-  fun reload() {
-    loadReferralData()
-  }
-
-  fun onSubmitCode(code: String) {
-    viewModelScope.launch {
-      _uiState.update {
-        it.copy(
-          isLoadingCode = true,
-          codeError = null,
-        )
+    CollectEvents { event ->
+      when (event) {
+        ForeverEvent.ShowedReferralCodeSuccessfulChangeMessage -> showReferralCodeToSubmitSuccess = false
+        ForeverEvent.ShowedReferralCodeSubmissionError -> referralCodeToSubmitErrorMessage = null
+        ForeverEvent.RetryLoadReferralData -> foreverDataLoadIteration++
+        is ForeverEvent.SubmitNewReferralCode -> referralCodeToSubmit = event.code
       }
-      foreverRepository.updateCode(code).fold(
-        ifLeft = { referralError ->
-          _uiState.update {
-            it.copy(
-              codeError = referralError,
-              isLoadingCode = false,
-            )
-          }
-        },
-        ifRight = { code ->
-          _uiState.update {
-            it.copy(
-              campaignCode = code,
-              isLoadingCode = false,
-              showEditCode = false,
-            )
-          }
+    }
+
+    LaunchedEffect(foreverDataLoadIteration) {
+      isLoadingForeverData = true
+      either {
+        parZip(
+          { foreverRepository.getReferralsData().bind() },
+          { getReferralsInformationUseCase.invoke().bind() },
+        ) { referralsData, terms ->
+          ForeverUiState.ForeverData(
+            referralsData = referralsData,
+            referralTerms = terms,
+          )
+        }
+      }.fold(
+        ifLeft = { foreverDataErrorMessage = it },
+        ifRight = { foreverData = it },
+      )
+      isLoadingForeverData = false
+    }
+
+    LaunchedEffect(referralCodeToSubmit) {
+      val codeToSubmit = referralCodeToSubmit
+      if (codeToSubmit == null || isSubmittingReferralCode) return@LaunchedEffect
+      isSubmittingReferralCode = true
+      delay(3_000)
+      foreverRepository.updateCode(codeToSubmit).fold(
+        ifLeft = { referralCodeToSubmitErrorMessage = it },
+        ifRight = {
+          showReferralCodeToSubmitSuccess = true
+          foreverDataLoadIteration++ // Trigger a refetch of the data to update the campaign code
         },
       )
+      isSubmittingReferralCode = false
+      referralCodeToSubmit = null
     }
+
+    return ForeverUiState(
+      foreverData = foreverData,
+      isLoadingForeverData = isLoadingForeverData,
+      foreverDataErrorMessage = foreverDataErrorMessage,
+      referralCodeLoading = isSubmittingReferralCode,
+      referralCodeError = referralCodeToSubmitErrorMessage,
+      showReferralCodeSuccessfullyChangedMessage = showReferralCodeToSubmitSuccess,
+    )
   }
 }
 
+sealed interface ForeverEvent {
+  object ShowedReferralCodeSuccessfulChangeMessage : ForeverEvent
+  object ShowedReferralCodeSubmissionError : ForeverEvent
+  data class SubmitNewReferralCode(val code: String) : ForeverEvent
+  object RetryLoadReferralData : ForeverEvent
+}
+
 internal data class ForeverUiState(
-  val campaignCode: String? = null,
-  val incentive: MonetaryAmount? = null,
-  val grossPriceAmount: MonetaryAmount? = null,
-  val referralUrl: String? = null,
-  val isLoading: Boolean = false,
-  val isLoadingCode: Boolean = false,
-  val showEditCode: Boolean = false,
-  val errorMessage: String? = null,
-  val codeError: ForeverRepository.ReferralError? = null,
-  val potentialDiscountAmount: MonetaryAmount? = null,
-  val currentDiscountAmount: MonetaryAmount? = null,
-  val currentNetAmount: MonetaryAmount? = null,
-  val referrals: List<Referral> = emptyList(),
+  val foreverData: ForeverData?,
+  val isLoadingForeverData: Boolean,
+  val foreverDataErrorMessage: ErrorMessage?,
+  val referralCodeLoading: Boolean,
+  val referralCodeError: ForeverRepository.ReferralError?,
+  val showReferralCodeSuccessfullyChangedMessage: Boolean,
 ) {
+
+  data class ForeverData(
+    val campaignCode: String?,
+    val incentive: UiMoney?,
+    val grossPriceAmount: UiMoney?,
+    val referralUrl: String?,
+    val potentialDiscountAmount: UiMoney?,
+    val currentDiscountAmount: UiMoney?,
+    val currentNetAmount: UiMoney?,
+    val referrals: List<Referral>,
+  ) {
+    constructor(
+      referralsData: ReferralsQuery.Data,
+      referralTerms: ReferralTermsQuery.ReferralTerms?,
+    ) : this(
+      campaignCode = referralsData.referralInformation.campaign.code,
+      incentive = referralsData
+        .referralInformation
+        .campaign
+        .incentive
+        ?.asMonthlyCostDeduction
+        ?.amount
+        ?.fragments
+        ?.monetaryAmountFragment
+        .let(UiMoney::fromMonetaryAmountFragment),
+      grossPriceAmount = referralsData
+        .referralInformation
+        .costReducedIndefiniteDiscount
+        ?.fragments
+        ?.costFragment
+        ?.monthlyGross
+        ?.fragments
+        ?.monetaryAmountFragment
+        .let(UiMoney::fromMonetaryAmountFragment),
+      referralUrl = referralTerms?.url,
+      potentialDiscountAmount = referralsData
+        .referralInformation
+        .campaign
+        .incentive
+        ?.asMonthlyCostDeduction
+        ?.amount
+        ?.fragments
+        ?.monetaryAmountFragment
+        .let(UiMoney::fromMonetaryAmountFragment),
+      currentDiscountAmount = referralsData
+        .referralInformation
+        .costReducedIndefiniteDiscount
+        ?.fragments
+        ?.costFragment
+        ?.monthlyDiscount
+        ?.fragments
+        ?.monetaryAmountFragment
+        .let(UiMoney::fromMonetaryAmountFragment),
+      currentNetAmount = referralsData
+        .referralInformation
+        .costReducedIndefiniteDiscount
+        ?.fragments
+        ?.costFragment
+        ?.monthlyNet
+        ?.fragments
+        ?.monetaryAmountFragment
+        .let(UiMoney::fromMonetaryAmountFragment),
+      referrals = referralsData.referralInformation.invitations.map {
+        Referral(
+          name = it.fragments.referralFragment.name,
+          state = when {
+            it.fragments.referralFragment.asInProgressReferral != null -> ReferralState.IN_PROGRESS
+            it.fragments.referralFragment.asActiveReferral != null -> ReferralState.ACTIVE
+            it.fragments.referralFragment.asTerminatedReferral != null -> ReferralState.TERMINATED
+            else -> ReferralState.UNKNOWN
+          },
+          discount = it.fragments
+            .referralFragment
+            .asActiveReferral
+            ?.discount
+            ?.fragments
+            ?.monetaryAmountFragment
+            .let(UiMoney::fromMonetaryAmountFragment),
+        )
+      },
+    )
+  }
 
   data class Referral(
     val name: String?,
     val state: ReferralState,
-    val discount: MonetaryAmount?,
+    val discount: UiMoney?,
   )
 
   enum class ReferralState {
     ACTIVE, IN_PROGRESS, TERMINATED, UNKNOWN
   }
 
-  constructor(
-    referralsData: ReferralsQuery.Data,
-    referralTerms: ReferralTermsQuery.ReferralTerms?,
-  ) : this(
-    campaignCode = referralsData.referralInformation.campaign.code,
-    incentive = referralsData
-      .referralInformation
-      .campaign
-      .incentive
-      ?.asMonthlyCostDeduction
-      ?.amount
-      ?.fragments
-      ?.monetaryAmountFragment
-      ?.toMonetaryAmount(),
-    grossPriceAmount = referralsData
-      .referralInformation
-      .costReducedIndefiniteDiscount
-      ?.fragments
-      ?.costFragment
-      ?.monthlyGross
-      ?.fragments
-      ?.monetaryAmountFragment
-      ?.toMonetaryAmount(),
-    referralUrl = referralTerms?.url,
-    potentialDiscountAmount = referralsData
-      .referralInformation
-      .campaign
-      .incentive
-      ?.asMonthlyCostDeduction
-      ?.amount
-      ?.fragments
-      ?.monetaryAmountFragment
-      ?.toMonetaryAmount(),
-    currentDiscountAmount = referralsData
-      .referralInformation
-      .costReducedIndefiniteDiscount
-      ?.fragments
-      ?.costFragment
-      ?.monthlyDiscount
-      ?.fragments
-      ?.monetaryAmountFragment
-      ?.toMonetaryAmount()
-      ?.negate(),
-    currentNetAmount = referralsData
-      .referralInformation
-      .costReducedIndefiniteDiscount
-      ?.fragments
-      ?.costFragment
-      ?.monthlyNet
-      ?.fragments
-      ?.monetaryAmountFragment
-      ?.toMonetaryAmount(),
-    referrals = referralsData.referralInformation.invitations.map {
-      Referral(
-        name = it.fragments.referralFragment.name,
-        state = when {
-          it.fragments.referralFragment.asInProgressReferral != null -> ReferralState.IN_PROGRESS
-          it.fragments.referralFragment.asActiveReferral != null -> ReferralState.ACTIVE
-          it.fragments.referralFragment.asTerminatedReferral != null -> ReferralState.TERMINATED
-          else -> ReferralState.UNKNOWN
-        },
-        discount = it.fragments
-          .referralFragment
-          .asActiveReferral
-          ?.discount
-          ?.fragments
-          ?.monetaryAmountFragment
-          ?.toMonetaryAmount()
-          ?.negate(),
-      )
-    },
-  )
+  companion object {
+    val Loading: ForeverUiState = ForeverUiState(
+      foreverData = null,
+      isLoadingForeverData = true,
+      foreverDataErrorMessage = null,
+      referralCodeLoading = false,
+      referralCodeError = null,
+      showReferralCodeSuccessfullyChangedMessage = false,
+    )
+  }
 }
 
 private val ReferralFragment.name: String?

@@ -43,22 +43,23 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.apollo.format
 import com.hedvig.android.apollo.toWebLocaleTag
 import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigBigCard
@@ -68,7 +69,10 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.Copy
 import com.hedvig.android.core.ui.getLocale
+import com.hedvig.android.core.ui.snackbar.HedvigSnackbar
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.forever.toErrorMessage
+import com.hedvig.android.feature.forever.ForeverEvent
 import com.hedvig.android.feature.forever.ForeverUiState
 import com.hedvig.android.feature.forever.ForeverViewModel
 import com.hedvig.android.feature.forever.copyToClipboard
@@ -80,10 +84,8 @@ import com.hedvig.android.pullrefresh.PullRefreshState
 import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import hedvig.resources.R
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.javamoney.moneta.Money
-import javax.money.MonetaryAmount
 
 @Composable
 internal fun ForeverDestination(
@@ -94,8 +96,12 @@ internal fun ForeverDestination(
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   ForeverScreen(
     uiState = uiState,
-    reload = viewModel::reload,
-    onSubmitCode = viewModel::onSubmitCode,
+    reload = { viewModel.emit(ForeverEvent.RetryLoadReferralData) },
+    onSubmitCode = { viewModel.emit(ForeverEvent.SubmitNewReferralCode(it)) },
+    showedReferralCodeSubmissionError = { viewModel.emit(ForeverEvent.ShowedReferralCodeSubmissionError) },
+    showedReferralCodeSuccessfulChangeMessage = {
+      viewModel.emit(ForeverEvent.ShowedReferralCodeSuccessfulChangeMessage)
+    },
     languageService = languageService,
     hedvigBuildConstants = hedvigBuildConstants,
   )
@@ -106,6 +112,8 @@ private fun ForeverScreen(
   uiState: ForeverUiState,
   reload: () -> Unit,
   onSubmitCode: (String) -> Unit,
+  showedReferralCodeSubmissionError: () -> Unit,
+  showedReferralCodeSuccessfulChangeMessage: () -> Unit,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
 ) {
@@ -116,7 +124,7 @@ private fun ForeverScreen(
     WindowInsets.systemBars.getTop(this).toDp()
   }
   val pullRefreshState = rememberPullRefreshState(
-    refreshing = uiState.isLoading,
+    refreshing = uiState.isLoadingForeverData,
     onRefresh = reload,
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
@@ -124,25 +132,22 @@ private fun ForeverScreen(
     val transition = updateTransition(targetState = uiState, label = "home ui state")
     transition.AnimatedContent(
       modifier = Modifier.fillMaxSize(),
-      contentKey = { it.errorMessage },
+      contentKey = { it.foreverDataErrorMessage },
     ) { uiState ->
-      if (uiState.errorMessage != null) {
-        Column {
-          Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
-          HedvigErrorSection(retry = reload)
-        }
+      if (uiState.foreverDataErrorMessage != null) {
+        HedvigErrorSection(retry = reload)
       } else {
         val shareSheetTitle = stringResource(R.string.REFERRALS_SHARE_SHEET_TITLE)
         ForeverContent(
           uiState = uiState,
           pullRefreshState = pullRefreshState,
-          onShareCodeClick = { code, incentive ->
+          onShareCodeClick = { code: String, incentive: UiMoney ->
             context.showShareSheet(shareSheetTitle) { intent ->
               intent.putExtra(
                 Intent.EXTRA_TEXT,
                 resources.getString(
                   R.string.REFERRAL_SMS_MESSAGE,
-                  incentive.format(languageService.getLocale()),
+                  incentive.toString(),
                   buildString {
                     append(hedvigBuildConstants.urlBaseWeb)
                     append("/")
@@ -156,11 +161,13 @@ private fun ForeverScreen(
             }
           },
           onSubmitCode = onSubmitCode,
+          showedReferralCodeSubmissionError = showedReferralCodeSubmissionError,
+          showedCampaignCodeSuccessfulChangeMessage = showedReferralCodeSuccessfulChangeMessage,
         )
       }
     }
     PullRefreshIndicator(
-      refreshing = uiState.isLoading,
+      refreshing = uiState.isLoadingForeverData,
       state = pullRefreshState,
       scale = true,
       modifier = Modifier.align(Alignment.TopCenter),
@@ -172,56 +179,66 @@ private fun ForeverScreen(
 internal fun ForeverContent(
   uiState: ForeverUiState,
   pullRefreshState: PullRefreshState,
-  onShareCodeClick: (code: String, incentive: MonetaryAmount) -> Unit,
+  onShareCodeClick: (code: String, incentive: UiMoney) -> Unit,
   onSubmitCode: (String) -> Unit,
+  showedReferralCodeSubmissionError: () -> Unit,
+  showedCampaignCodeSuccessfulChangeMessage: () -> Unit,
 ) {
   val locale = getLocale()
   val coroutineScope = rememberCoroutineScope()
-  val focusManager = LocalFocusManager.current
-  val focusRequester = remember { FocusRequester() }
-  var textFieldValueState by remember(uiState.campaignCode) {
-    mutableStateOf(TextFieldValue(text = uiState.campaignCode ?: ""))
+  var textFieldValueState by remember(uiState.foreverData?.campaignCode) {
+    mutableStateOf(TextFieldValue(text = uiState.foreverData?.campaignCode ?: ""))
   }
 
-  val editBottomSheetState = rememberModalBottomSheetState(true)
-  var showEditBottomSheet by rememberSaveable { mutableStateOf(false) }
-  LaunchedEffect(uiState.showEditCode) {
-    if (uiState.showEditCode) {
-      editBottomSheetState.expand()
-    } else {
-      editBottomSheetState.hide()
+  val editReferralCodeBottomSheetState = rememberModalBottomSheetState(true)
+  var showEditReferralCodeBottomSheet by rememberSaveable { mutableStateOf(false) }
+
+  LaunchedEffect(uiState.showReferralCodeSuccessfullyChangedMessage) {
+    if (!uiState.showReferralCodeSuccessfullyChangedMessage) return@LaunchedEffect
+    // Hide the bottom sheet if we've successfully changed the code
+    launch {
+      editReferralCodeBottomSheetState.hide()
+    }.invokeOnCompletion {
+      showEditReferralCodeBottomSheet = false
     }
-    showEditBottomSheet = uiState.showEditCode
   }
 
-  if (showEditBottomSheet) {
+  LaunchedEffect(textFieldValueState) {
+    showedReferralCodeSubmissionError() // Clear error on new referral code input
+  }
+  LaunchedEffect(showEditReferralCodeBottomSheet) {
+    if (!showEditReferralCodeBottomSheet) {
+      showedReferralCodeSubmissionError() // Clear error when the dialog is dismissed
+    }
+  }
+
+  if (showEditReferralCodeBottomSheet) {
     EditCodeBottomSheet(
-      sheetState = editBottomSheetState,
+      sheetState = editReferralCodeBottomSheetState,
       code = textFieldValueState,
       onCodeChanged = { textFieldValueState = it },
       onDismiss = {
+        showedReferralCodeSubmissionError()
         coroutineScope.launch {
-          editBottomSheetState.hide()
+          editReferralCodeBottomSheetState.hide()
         }.invokeOnCompletion {
-          showEditBottomSheet = false
-          focusManager.clearFocus(true)
+          showEditReferralCodeBottomSheet = false
         }
       },
       onSubmitCode = {
-        focusManager.clearFocus()
         onSubmitCode(textFieldValueState.text)
       },
-      errorText = uiState.codeError.toErrorMessage(),
-      isLoading = uiState.isLoadingCode,
-      focusRequester = focusRequester,
+      errorText = uiState.referralCodeError.toErrorMessage(),
+      showedReferralCodeSubmissionError = showedReferralCodeSubmissionError,
+      isLoading = uiState.referralCodeLoading,
     )
   }
 
   val referralExplanationSheetState = rememberModalBottomSheetState(true)
   var showReferralExplanationBottomSheet by rememberSaveable { mutableStateOf(false) }
-  if (showReferralExplanationBottomSheet && uiState.incentive != null) {
+  if (showReferralExplanationBottomSheet && uiState.foreverData?.incentive != null) {
     ForeverExplanationBottomSheet(
-      discount = uiState.incentive.format(locale),
+      discount = uiState.foreverData.incentive.toString(),
       onDismiss = {
         coroutineScope.launch {
           referralExplanationSheetState.hide()
@@ -233,171 +250,185 @@ internal fun ForeverContent(
     )
   }
 
-  Column(
-    Modifier
-      .pullRefresh(pullRefreshState)
-      .verticalScroll(rememberScrollState())
-      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-  ) {
-    Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
-    Row(
-      horizontalArrangement = Arrangement.SpaceBetween,
-      verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier
-        .height(64.dp)
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
+  Box {
+    Column(
+      Modifier
+        .matchParentSize()
+        .pullRefresh(pullRefreshState)
+        .verticalScroll(rememberScrollState())
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
     ) {
-      Text(
-        text = stringResource(R.string.TAB_REFERRALS_TITLE),
-        style = MaterialTheme.typography.titleLarge,
-      )
-      if (uiState.incentive != null && uiState.referralUrl != null) {
-        IconButton(
-          onClick = { showReferralExplanationBottomSheet = true },
-          modifier = Modifier.size(40.dp),
-        ) {
-          Icon(
-            painter = painterResource(R.drawable.ic_info_toolbar),
-            contentDescription = stringResource(R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
-            modifier = Modifier.size(24.dp),
-          )
+      Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
+      Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+          .height(64.dp)
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      ) {
+        Text(
+          text = stringResource(R.string.TAB_REFERRALS_TITLE),
+          style = MaterialTheme.typography.titleLarge,
+        )
+        if (uiState.foreverData?.incentive != null && uiState.foreverData.referralUrl != null) {
+          IconButton(
+            onClick = { showReferralExplanationBottomSheet = true },
+            modifier = Modifier.size(40.dp),
+          ) {
+            Icon(
+              painter = painterResource(R.drawable.ic_info_toolbar),
+              contentDescription = stringResource(R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
+              modifier = Modifier.size(24.dp),
+            )
+          }
         }
       }
-    }
-    Spacer(Modifier.height(16.dp))
-    Text(
-      text = uiState.currentDiscountAmount?.format(locale) ?: "-",
-      textAlign = TextAlign.Center,
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
-      modifier = Modifier.fillMaxWidth(),
-    )
-    Spacer(Modifier.height(16.dp))
-    DiscountPieChart(
-      totalPrice = uiState.grossPriceAmount?.abs()?.number?.toFloat() ?: 0f,
-      totalExistingDiscount = uiState.currentDiscountAmount?.abs()?.number?.toFloat() ?: 0f,
-      incentive = uiState.incentive?.abs()?.number?.toFloat() ?: 0f,
-      modifier = Modifier
-        .padding(horizontal = 16.dp)
-        .fillMaxWidth()
-        .wrapContentWidth(Alignment.CenterHorizontally),
-    )
-    Spacer(Modifier.height(24.dp))
-    if (uiState.referrals.isEmpty() && uiState.incentive != null) {
+      Spacer(Modifier.height(16.dp))
       Text(
-        text = stringResource(
-          id = R.string.referrals_empty_body,
-          uiState.incentive.format(locale),
-          Money.of(0, uiState.incentive.currency?.currencyCode).format(locale),
-        ),
-        style = MaterialTheme.typography.bodyLarge.copy(
-          textAlign = TextAlign.Center,
-          lineBreak = LineBreak.Heading,
-        ),
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-      )
-    } else {
-      Text(
-        text = stringResource(id = R.string.FOREVER_TAB_MONTLY_COST_LABEL),
-        textAlign = TextAlign.Center,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-      )
-      Text(
-        text = stringResource(
-          id = R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-          uiState.currentNetAmount?.format(locale) ?: "-",
-        ),
+        text = uiState.foreverData?.currentDiscountAmount?.toString()?.let { "-$it" } ?: "-",
         textAlign = TextAlign.Center,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier.fillMaxWidth(),
       )
+      Spacer(Modifier.height(16.dp))
+      DiscountPieChart(
+        totalPrice = uiState.foreverData?.grossPriceAmount?.amount?.toFloat() ?: 0f,
+        totalExistingDiscount = uiState.foreverData?.currentDiscountAmount?.amount?.toFloat() ?: 0f,
+        incentive = uiState.foreverData?.incentive?.amount?.toFloat() ?: 0f,
+        modifier = Modifier
+          .padding(horizontal = 16.dp)
+          .fillMaxWidth()
+          .wrapContentWidth(Alignment.CenterHorizontally),
+      )
+      Spacer(Modifier.height(24.dp))
+      if (uiState.foreverData?.referrals?.isEmpty() == true && uiState.foreverData.incentive != null) {
+        Text(
+          text = stringResource(
+            id = R.string.referrals_empty_body,
+            uiState.foreverData.incentive.toString(),
+            Money.of(0, uiState.foreverData.incentive.currencyCode.rawValue).format(locale),
+          ),
+          style = MaterialTheme.typography.bodyLarge.copy(
+            textAlign = TextAlign.Center,
+            lineBreak = LineBreak.Heading,
+          ),
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        )
+      } else {
+        Text(
+          text = stringResource(id = R.string.FOREVER_TAB_MONTLY_COST_LABEL),
+          textAlign = TextAlign.Center,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        )
+        Text(
+          text = stringResource(
+            id = R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+            uiState.foreverData?.currentNetAmount?.toString() ?: "-",
+          ),
+          textAlign = TextAlign.Center,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          modifier = Modifier.fillMaxWidth(),
+        )
+      }
+      if (uiState.foreverData?.campaignCode != null) {
+        Spacer(Modifier.height(16.dp))
+        ReferralCodeCard(
+          campaignCode = uiState.foreverData.campaignCode,
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+      }
+      Spacer(Modifier.weight(1f))
+      if (uiState.foreverData?.incentive != null && uiState.foreverData.campaignCode != null) {
+        Spacer(Modifier.height(16.dp))
+        HedvigContainedButton(
+          text = stringResource(R.string.referrals_empty_share_code_button),
+          onClick = {
+            onShareCodeClick(
+              uiState.foreverData.campaignCode,
+              uiState.foreverData.incentive,
+            )
+          },
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+        Spacer(Modifier.height(8.dp))
+        HedvigTextButton(
+          text = stringResource(id = R.string.referrals_change_change_code),
+          onClick = {
+            coroutineScope.launch {
+              editReferralCodeBottomSheetState.hide()
+              showEditReferralCodeBottomSheet = true
+              textFieldValueState =
+                textFieldValueState.copy(selection = TextRange(textFieldValueState.text.length))
+            }
+          },
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+      }
+      if (uiState.foreverData?.referrals?.isNotEmpty() == true) {
+        Spacer(Modifier.height(16.dp))
+        ReferralList(
+          referrals = uiState.foreverData.referrals,
+          grossPriceAmount = uiState.foreverData.grossPriceAmount,
+          currentNetAmount = uiState.foreverData.currentNetAmount,
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+      }
+      Spacer(Modifier.height(16.dp))
+      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     }
-    Spacer(Modifier.weight(1f))
-    Spacer(Modifier.height(16.dp))
-
-    ReferralCodeContent(
-      uiState = uiState,
-      onChangeCodeClicked = {
-        coroutineScope.launch {
-          editBottomSheetState.hide()
-          showEditBottomSheet = true
-          delay(400)
-          focusRequester.requestFocus()
-          textFieldValueState = textFieldValueState.copy(selection = TextRange(textFieldValueState.text.length))
-        }
-      },
-      onShareCodeClick = onShareCodeClick,
-      modifier = Modifier.padding(horizontal = 16.dp),
+    HedvigSnackbar(
+      snackbarText = stringResource(R.string.referrals_change_code_changed),
+      showSnackbar = uiState.showReferralCodeSuccessfullyChangedMessage,
+      showedSnackbar = showedCampaignCodeSuccessfulChangeMessage,
+      modifier = Modifier
+        .align(Alignment.BottomCenter)
+        .windowInsetsPadding(WindowInsets.safeDrawing),
     )
-    if (uiState.referrals.isNotEmpty()) {
-      Spacer(Modifier.height(8.dp))
-      ReferralList(uiState, Modifier.padding(horizontal = 16.dp))
-    }
-    Spacer(Modifier.height(16.dp))
-    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }
 
 @Suppress("UnusedReceiverParameter")
 @Composable
-internal fun ReferralCodeContent(
-  uiState: ForeverUiState,
-  onChangeCodeClicked: () -> Unit,
-  onShareCodeClick: (code: String, incentive: MonetaryAmount) -> Unit,
+internal fun ReferralCodeCard(
+  campaignCode: String,
   modifier: Modifier = Modifier,
 ) {
   val context = LocalContext.current
-  Column(modifier) {
-    HedvigBigCard(
-      onClick = {
-        uiState.campaignCode?.let {
-          context.copyToClipboard(uiState.campaignCode)
-        }
-      },
-      enabled = true,
-      modifier = Modifier.fillMaxWidth(),
+  HedvigBigCard(
+    onClick = {
+      context.copyToClipboard(campaignCode)
+    },
+    enabled = true,
+    modifier = modifier.fillMaxWidth(),
+  ) {
+    Row(
+      modifier = Modifier
+        .heightIn(min = 72.dp)
+        .padding(horizontal = 16.dp, vertical = 10.dp),
     ) {
-      Row(
-        modifier = Modifier
-          .heightIn(min = 72.dp)
-          .padding(horizontal = 16.dp, vertical = 10.dp),
-      ) {
-        Column {
-          Text(
-            text = stringResource(id = R.string.referrals_empty_code_headline),
-            style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
-          )
-          Text(
-            text = uiState.campaignCode ?: "",
-            style = MaterialTheme.typography.headlineSmall,
-          )
-        }
-        Spacer(modifier = Modifier.weight(1f))
-        Icon(
-          imageVector = Icons.Hedvig.Copy,
-          contentDescription = "Copy",
-          modifier = Modifier
-            .align(Alignment.Bottom)
-            .padding(bottom = 8.dp),
+      Column {
+        Text(
+          text = stringResource(id = R.string.referrals_empty_code_headline),
+          style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+        )
+        Text(
+          text = campaignCode,
+          style = MaterialTheme.typography.headlineSmall,
         )
       }
-    }
-
-    if (uiState.incentive != null && uiState.campaignCode != null) {
-      Spacer(Modifier.height(16.dp))
-      HedvigContainedButton(
-        text = stringResource(R.string.referrals_empty_share_code_button),
-        onClick = { onShareCodeClick(uiState.campaignCode, uiState.incentive) },
-      )
-      Spacer(Modifier.height(8.dp))
-      HedvigTextButton(
-        text = stringResource(id = R.string.referrals_change_change_code),
-        onClick = { onChangeCodeClicked() },
+      Spacer(modifier = Modifier.weight(1f))
+      Icon(
+        imageVector = Icons.Hedvig.Copy,
+        contentDescription = "Copy",
+        modifier = Modifier
+          .align(Alignment.Bottom)
+          .padding(bottom = 8.dp),
       )
     }
   }
@@ -405,21 +436,53 @@ internal fun ReferralCodeContent(
 
 @HedvigPreview
 @Composable
-private fun PreviewForeverContent() {
+private fun PreviewForeverContent(
+  @PreviewParameter(ForeverUiStateProvider::class) foreverUiState: ForeverUiState,
+) {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       ForeverContent(
-        ForeverUiState(
-          referrals = listOf(
-            ForeverUiState.Referral("Name#1", ForeverUiState.ReferralState.ACTIVE, null),
-            ForeverUiState.Referral("Name#2", ForeverUiState.ReferralState.IN_PROGRESS, null),
-            ForeverUiState.Referral("Name#3", ForeverUiState.ReferralState.TERMINATED, null),
-          ),
-        ),
+        foreverUiState,
         rememberPullRefreshState(false, {}),
         { _, _ -> },
+        {},
+        {},
         {},
       )
     }
   }
 }
+
+private class ForeverUiStateProvider : CollectionPreviewParameterProvider<ForeverUiState>(
+  listOf(
+    ForeverUiState(
+      foreverDataErrorMessage = ErrorMessage("Error message", null),
+      foreverData = null,
+      isLoadingForeverData = false,
+      referralCodeLoading = false,
+      referralCodeError = null,
+      showReferralCodeSuccessfullyChangedMessage = false,
+    ),
+    ForeverUiState(
+      foreverData = ForeverUiState.ForeverData(
+        referrals = listOf(
+          ForeverUiState.Referral("Name#1", ForeverUiState.ReferralState.ACTIVE, null),
+          ForeverUiState.Referral("Name#2", ForeverUiState.ReferralState.IN_PROGRESS, null),
+          ForeverUiState.Referral("Name#3", ForeverUiState.ReferralState.TERMINATED, null),
+        ),
+        campaignCode = null,
+        incentive = null,
+        grossPriceAmount = null,
+        referralUrl = null,
+        potentialDiscountAmount = null,
+        currentDiscountAmount = null,
+        currentNetAmount = null,
+      ),
+      isLoadingForeverData = false,
+      foreverDataErrorMessage = null,
+      referralCodeLoading = false,
+      referralCodeError = null,
+      showReferralCodeSuccessfullyChangedMessage = false,
+    ),
+  ),
+)
