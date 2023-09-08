@@ -165,6 +165,7 @@ private fun PreviewClaimEntryPointsScreen() {
         uiState = ClaimEntryPointsUiState(
           entryPoints = entryPoints,
           selectedEntryPoint = entryPoints[3],
+          startClaimErrorMessage = "",
         ),
         onSelectEntryPoint = {},
         onContinue = {},

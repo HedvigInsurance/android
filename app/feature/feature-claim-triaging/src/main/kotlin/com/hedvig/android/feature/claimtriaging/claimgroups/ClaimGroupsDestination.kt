@@ -26,6 +26,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
+import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.dialog.ErrorDialog
@@ -94,6 +95,7 @@ private fun ClaimGroupsScreen(
       onDismiss = showedStartClaimError,
     )
   }
+
   HedvigTheme {
     HedvigScaffold(
       navigateUp = navigateUp,
@@ -106,40 +108,18 @@ private fun ClaimGroupsScreen(
       modifier = Modifier.fillMaxWidth(),
     ) {
       Spacer(Modifier.height(16.dp))
-      Text(
-        text = stringResource(R.string.CLAIM_TRIAGING_NAVIGATION_TITLE),
-        style = MaterialTheme.typography.headlineMedium,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-      )
-      Spacer(Modifier.height(32.dp))
-      Spacer(Modifier.weight(1f))
       if (uiState.chipLoadingErrorMessage != null) {
-        Text(
-          text = stringResource(R.string.something_went_wrong),
-          style = MaterialTheme.typography.titleLarge,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        )
-        Spacer(Modifier.height(16.dp))
-        Text(
-          text = stringResource(R.string.GENERAL_ERROR_BODY),
-          style = MaterialTheme.typography.bodyLarge,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        )
-        Spacer(Modifier.height(24.dp))
-        HedvigContainedButton(
-          text = stringResource(R.string.GENERAL_RETRY),
-          onClick = loadClaimGroups,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        )
+        HedvigErrorSection(retry = loadClaimGroups)
       } else {
+        Text(
+          text = stringResource(R.string.CLAIM_TRIAGING_NAVIGATION_TITLE),
+          style = MaterialTheme.typography.headlineMedium,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        )
+        Spacer(Modifier.height(32.dp))
+        Spacer(Modifier.weight(1f))
         AnimatedVisibility(
           visible = uiState.haveTriedContinuingWithoutSelection,
           enter = fadeIn(),
@@ -171,8 +151,8 @@ private fun ClaimGroupsScreen(
           enabled = uiState.canContinue,
           modifier = Modifier.padding(horizontal = 16.dp),
         )
+        Spacer(modifier = Modifier.height(16.dp))
       }
-      Spacer(modifier = Modifier.height(16.dp))
     }
   }
 }
