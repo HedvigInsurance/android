@@ -28,7 +28,7 @@ internal class ClaimGroupsViewModel(
   }
 
   fun loadClaimGroups() {
-    _uiState.update { it.copy(chipLoadingErrorMessage = null, isLoading = true) }
+    _uiState.update { it.copy(isLoading = true) }
     viewModelScope.launch {
       getEntryPointGroupsUseCase.invoke().fold(
         ifLeft = { errorMessage ->
@@ -47,6 +47,7 @@ internal class ClaimGroupsViewModel(
             it.copy(
               claimGroups = claimGroups,
               selectedClaimGroup = null,
+              chipLoadingErrorMessage = null,
               isLoading = false,
             )
           }

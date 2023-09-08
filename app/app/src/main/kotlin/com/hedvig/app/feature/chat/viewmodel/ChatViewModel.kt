@@ -20,6 +20,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
@@ -27,7 +28,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import java.util.concurrent.TimeUnit
 
 class ChatViewModel(
   private val chatRepository: ChatRepository,
@@ -81,7 +81,10 @@ class ChatViewModel(
             }
           }
         }
-        .catch { logcat(LogPriority.ERROR, it) { "Chat: Error on chat subscription" } }
+        .catch {
+          logcat(LogPriority.ERROR, it) { "Chat: Error on chat subscription" }
+          _events.send(Event.Error)
+        }
         .launchIn(this)
     }
   }
