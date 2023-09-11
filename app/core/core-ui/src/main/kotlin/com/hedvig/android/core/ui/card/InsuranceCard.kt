@@ -70,7 +70,7 @@ fun InsuranceCard(
         Row(Modifier.heightIn(86.dp)) {
           FlowRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
-            verticalAlignment = Alignment.Top,
+            verticalArrangement = Arrangement.Top,
             modifier = Modifier.weight(1f),
           ) {
             for (chipText in chips) {

@@ -101,7 +101,7 @@ private fun ContractDetailScreen(
       title = stringResource(R.string.insurance_details_view_title),
       onClick = navigateUp,
     )
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState(pageCount = { 3 })
     FadeAnimatedContent(
       targetState = uiState,
       label = "contract detail screen fade animated content",
@@ -149,7 +149,6 @@ private fun ContractDetailScreen(
               contentType = "Pager",
             ) {
               HorizontalPager(
-                pageCount = 3,
                 state = pagerState,
                 key = { it },
                 verticalAlignment = Alignment.Top,

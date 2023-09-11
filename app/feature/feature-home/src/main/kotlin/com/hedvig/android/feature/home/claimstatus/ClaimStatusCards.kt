@@ -37,10 +37,9 @@ internal fun ClaimStatusCards(
   modifier: Modifier = Modifier,
 ) {
   val claimStatusCardsUiState = claimStatusCardsData.claimStatusCardsUiState
-  val pagerState = rememberPagerState()
+  val pagerState = rememberPagerState(pageCount = { claimStatusCardsUiState.size })
   Column(modifier) {
     HorizontalPager(
-      pageCount = claimStatusCardsUiState.size,
       state = pagerState,
       contentPadding = contentPadding,
       beyondBoundsPageCount = 1,
