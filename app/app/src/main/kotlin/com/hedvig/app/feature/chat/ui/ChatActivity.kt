@@ -19,7 +19,6 @@ import com.hedvig.app.R
 import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.databinding.ActivityChatBinding
 import com.hedvig.app.feature.chat.ChatInputType
-import com.hedvig.app.feature.chat.ParagraphInput
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.extensions.calculateNonFullscreenHeightDiff
@@ -60,7 +59,6 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
   private var preventOpenAttachFile = false
 
   private var attachPickerDialog: AttachPickerDialog? = null
-  private var forceScrollToBottom = true
 
   private var currentPhotoPath: String? = null
 
@@ -130,7 +128,6 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
   override fun onResume() {
     super.onResume()
     storeBoolean(ACTIVITY_IS_IN_FOREGROUND, true)
-    forceScrollToBottom = true
   }
 
   override fun onPause() {
@@ -212,7 +209,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
 
   private fun observeData() {
     chatViewModel.messages.observe(this) { data ->
-      data?.let { bindData(it, forceScrollToBottom) }
+      data?.let { bindData(it) }
     }
     // Maybe we should move the loading into the chatViewModel instead
     lifecycleScope.launch {
@@ -258,28 +255,17 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
     }
   }
 
-  private fun bindData(data: ChatMessagesQuery.Data, forceScrollToBottom: Boolean) {
-    var triggerScrollToBottom = false
+  private fun bindData(data: ChatMessagesQuery.Data) {
     val firstMessage = data.messages.firstOrNull()?.let {
       ChatInputType.from(
         it,
       )
     }
     binding.input.message = firstMessage
-    if (firstMessage is ParagraphInput) {
-      triggerScrollToBottom = true
-    }
     (binding.messages.adapter as? ChatAdapter)?.let {
       it.messages = data.messages.filterNotNull()
-      val layoutManager = binding.messages.layoutManager as LinearLayoutManager
-      val pos = layoutManager.findFirstCompletelyVisibleItemPosition()
-      if (pos == 0) {
-        triggerScrollToBottom = true
-      }
     }
-    if (triggerScrollToBottom || forceScrollToBottom) {
-      scrollToBottom(false)
-    }
+    scrollToBottom(true)
   }
 
   private fun openAttachPicker() {
