@@ -42,7 +42,12 @@ class ChatViewModel(
   }
 
   val messages = MutableLiveData<ChatMessagesQuery.Data>()
-  val sendMessageResponse = MutableLiveData<Boolean>()
+
+  /**
+   * When there is an event thrown into this channel, the UI clears the existing input in the chat box
+   * Used to clear the text after a message was successfully sent
+   */
+  val clearTextFieldInputSignal = Channel<Unit>(Channel.UNLIMITED)
   val isUploading = LiveEvent<Boolean>()
   val uploadBottomSheetResponse = LiveEvent<UploadFileMutation.Data>()
   val takePictureUploadFinished = LiveEvent<Unit>() // Reports that the picture upload was done, even if it failed
@@ -231,9 +236,9 @@ class ChatViewModel(
         },
         ifRight = { data ->
           if (data.sendChatTextResponse) {
+            clearTextFieldInputSignal.send(Unit)
             load()
           }
-          sendMessageResponse.postValue(data.sendChatTextResponse)
         },
       )
     }

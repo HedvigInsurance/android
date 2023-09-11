@@ -6,8 +6,10 @@ import android.os.Environment
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
 import com.hedvig.android.auth.android.AuthenticatedObserver
@@ -31,8 +33,11 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.applyInsetter
 import giraffe.ChatMessagesQuery
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import slimber.log.d
@@ -210,9 +215,11 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
       data?.let { bindData(it, forceScrollToBottom) }
     }
     // Maybe we should move the loading into the chatViewModel instead
-    chatViewModel.sendMessageResponse.observe(this) { response ->
-      if (response == true) {
-        binding.input.clearInput()
+    lifecycleScope.launch {
+      lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+        chatViewModel.clearTextFieldInputSignal.receiveAsFlow().collectLatest {
+          binding.input.clearInput()
+        }
       }
     }
     chatViewModel.takePictureUploadFinished.observe(this) {
