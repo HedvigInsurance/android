@@ -7,7 +7,6 @@ plugins {
 }
 
 dependencies {
-  implementation(libs.accompanist.navigationAnimation)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.lifecycle.compose)

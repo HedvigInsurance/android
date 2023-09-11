@@ -7,12 +7,12 @@ import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.forever.ForeverViewModel
 import com.hedvig.android.feature.forever.ui.ForeverDestination
 import com.hedvig.android.language.LanguageService
-import com.hedvig.android.navigation.compose.typed.animatedComposable
-import com.hedvig.android.navigation.compose.typed.animatedNavigation
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.TopLevelGraph
+import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createRoutePattern
+import com.kiwi.navigationcompose.typed.navigation
 import org.koin.androidx.compose.koinViewModel
 
 fun NavGraphBuilder.foreverGraph(
@@ -20,13 +20,13 @@ fun NavGraphBuilder.foreverGraph(
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
 ) {
-  animatedNavigation<TopLevelGraph.FOREVER>(
+  navigation<TopLevelGraph.FOREVER>(
     startDestination = createRoutePattern<AppDestination.TopLevelDestination.Forever>(),
     deepLinks = listOf(
       navDeepLink { uriPattern = hedvigDeepLinkContainer.forever },
     ),
   ) {
-    animatedComposable<AppDestination.TopLevelDestination.Forever>(
+    composable<AppDestination.TopLevelDestination.Forever>(
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
     ) {

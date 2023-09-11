@@ -18,13 +18,13 @@ import com.hedvig.android.feature.profile.payment.history.PaymentHistoryViewMode
 import com.hedvig.android.feature.profile.settings.SettingsDestination
 import com.hedvig.android.feature.profile.settings.SettingsViewModel
 import com.hedvig.android.market.Market
-import com.hedvig.android.navigation.compose.typed.animatedComposable
-import com.hedvig.android.navigation.compose.typed.animatedNavigation
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.android.navigation.core.TopLevelGraph
+import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createRoutePattern
+import com.kiwi.navigationcompose.typed.navigation
 import org.koin.androidx.compose.koinViewModel
 
 fun NavGraphBuilder.profileGraph(
@@ -38,13 +38,13 @@ fun NavGraphBuilder.profileGraph(
   openUrl: (String) -> Unit,
   market: Market?,
 ) {
-  animatedNavigation<TopLevelGraph.PROFILE>(
+  navigation<TopLevelGraph.PROFILE>(
     startDestination = createRoutePattern<AppDestination.TopLevelDestination.Profile>(),
     deepLinks = listOf(
       navDeepLink { uriPattern = hedvigDeepLinkContainer.profile },
     ),
   ) {
-    animatedComposable<AppDestination.TopLevelDestination.Profile>(
+    composable<AppDestination.TopLevelDestination.Profile>(
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
     ) { backStackEntry ->
@@ -71,7 +71,7 @@ fun NavGraphBuilder.profileGraph(
         viewModel = viewModel,
       )
     }
-    animatedComposable<AppDestination.Eurobonus>(
+    composable<AppDestination.Eurobonus>(
       deepLinks = listOf(
         navDeepLink { uriPattern = hedvigDeepLinkContainer.eurobonus },
       ),
@@ -82,14 +82,14 @@ fun NavGraphBuilder.profileGraph(
         navigateUp = navigator::navigateUp,
       )
     }
-    animatedComposable<AppDestination.MyInfo> {
+    composable<AppDestination.MyInfo> {
       val viewModel: MyInfoViewModel = koinViewModel()
       MyInfoDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
       )
     }
-    animatedComposable<AppDestination.AboutApp> { backStackEntry ->
+    composable<AppDestination.AboutApp> { backStackEntry ->
       val viewModel: AboutAppViewModel = koinViewModel()
       AboutAppDestination(
         viewModel = viewModel,
@@ -100,12 +100,12 @@ fun NavGraphBuilder.profileGraph(
         hedvigBuildConstants = hedvigBuildConstants,
       )
     }
-    animatedComposable<AppDestination.Licenses> {
+    composable<AppDestination.Licenses> {
       LicensesDestination(
         onBackPressed = navigator::navigateUp,
       )
     }
-    animatedComposable<AppDestination.Settings> {
+    composable<AppDestination.Settings> {
       val viewModel: SettingsViewModel = koinViewModel()
       SettingsDestination(
         viewModel = viewModel,
@@ -113,7 +113,7 @@ fun NavGraphBuilder.profileGraph(
         navigateUp = navigator::navigateUp,
       )
     }
-    animatedComposable<AppDestination.PaymentInfo> { backStackEntry ->
+    composable<AppDestination.PaymentInfo> { backStackEntry ->
       val viewModel: PaymentViewModel = koinViewModel()
       PaymentDestination(
         viewModel = viewModel,
@@ -126,7 +126,7 @@ fun NavGraphBuilder.profileGraph(
         market = market,
       )
     }
-    animatedComposable<AppDestination.PaymentHistory> {
+    composable<AppDestination.PaymentHistory> {
       val viewModel: PaymentHistoryViewModel = koinViewModel()
       PaymentHistoryDestination(
         viewModel = viewModel,

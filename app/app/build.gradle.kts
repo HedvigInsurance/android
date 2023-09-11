@@ -105,7 +105,6 @@ android {
 dependencies {
   implementation(platform(libs.firebase.bom))
   implementation(libs.accompanist.insetsUi)
-  implementation(libs.accompanist.navigationAnimation)
   implementation(libs.accompanist.pagerIndicators)
   implementation(libs.accompanist.systemUiController)
   implementation(libs.adyen)
@@ -131,6 +130,7 @@ dependencies {
   implementation(libs.androidx.lifecycle.viewModel)
   implementation(libs.androidx.lifecycle.viewmodelCompose)
   implementation(libs.androidx.navigation.common)
+  implementation(libs.androidx.navigation.compose)
   implementation(libs.androidx.other.activityCompose)
   implementation(libs.androidx.other.appCompat)
   implementation(libs.androidx.other.browser)

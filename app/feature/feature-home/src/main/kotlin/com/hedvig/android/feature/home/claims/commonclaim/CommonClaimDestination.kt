@@ -27,9 +27,9 @@ import com.hedvig.android.core.common.android.setupToolbarScrollListener
 import com.hedvig.android.feature.home.claims.commonclaim.bulletpoint.BulletPointsAdapter
 import com.hedvig.android.feature.home.databinding.ActivityCommonClaimBinding
 import com.hedvig.android.feature.home.home.navigation.HomeDestinations
-import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
+import com.kiwi.navigationcompose.typed.composable
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -39,7 +39,7 @@ fun NavGraphBuilder.commonClaimGraph(
   navigateUp: () -> Unit,
   startClaimsFlow: (NavBackStackEntry) -> Unit,
 ) {
-  animatedComposable<HomeDestinations.CommonClaimDestination> { backStackEntry ->
+  composable<HomeDestinations.CommonClaimDestination> { backStackEntry ->
     @Suppress("UNUSED_VARIABLE")
     val viewModel = koinViewModel<CommonClaimViewModel>()
     CommonClaimDestination(

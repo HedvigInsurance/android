@@ -13,9 +13,9 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.datadog.android.rum.GlobalRum
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.hedvig.android.feature.insurances.navigation.insurancesBottomNavPermittedDestinations
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
@@ -49,7 +49,7 @@ internal fun rememberHedvigAppState(
   featureManager: FeatureManager,
   hAnalytics: HAnalytics,
   coroutineScope: CoroutineScope = rememberCoroutineScope(),
-  navController: NavHostController = rememberAnimatedNavController(),
+  navController: NavHostController = rememberNavController(),
 ): HedvigAppState {
   NavigationTrackingSideEffect(navController)
   TopLevelDestinationNavigationSideEffect(navController, hAnalytics, tabNotificationBadgeService, coroutineScope)

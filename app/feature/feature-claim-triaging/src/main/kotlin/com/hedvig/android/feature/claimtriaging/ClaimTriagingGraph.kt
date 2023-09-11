@@ -14,9 +14,9 @@ import com.hedvig.android.feature.claimtriaging.claimentrypoints.ClaimEntryPoint
 import com.hedvig.android.feature.claimtriaging.claimgroups.ClaimGroupsDestination
 import com.hedvig.android.feature.claimtriaging.claimgroups.ClaimGroupsViewModel
 import com.hedvig.android.navigation.compose.typed.SerializableImmutableList
-import com.hedvig.android.navigation.compose.typed.animatedComposable
 import com.hedvig.android.navigation.core.Navigator
 import com.kiwi.navigationcompose.typed.Destination
+import com.kiwi.navigationcompose.typed.composable
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
@@ -43,7 +43,7 @@ fun NavGraphBuilder.claimTriagingDestinations(
   startClaimFlow: (NavBackStackEntry, ClaimFlowStep) -> Unit,
   closeClaimFlow: () -> Unit,
 ) {
-  animatedComposable<ClaimTriagingDestination.ClaimGroups> { backStackEntry ->
+  composable<ClaimTriagingDestination.ClaimGroups> { backStackEntry ->
     val viewModel: ClaimGroupsViewModel = koinViewModel()
     ClaimGroupsDestination(
       viewModel = viewModel,
@@ -60,7 +60,7 @@ fun NavGraphBuilder.claimTriagingDestinations(
       closeClaimFlow = closeClaimFlow,
     )
   }
-  animatedComposable<ClaimTriagingDestination.ClaimEntryPoints> { backStackEntry ->
+  composable<ClaimTriagingDestination.ClaimEntryPoints> { backStackEntry ->
     val entryPoints: ImmutableList<EntryPoint> = this.entryPoints
     val viewModel: ClaimEntryPointsViewModel = koinViewModel { parametersOf(entryPoints) }
     ClaimEntryPointsDestination(
@@ -78,7 +78,7 @@ fun NavGraphBuilder.claimTriagingDestinations(
       closeClaimFlow = closeClaimFlow,
     )
   }
-  animatedComposable<ClaimTriagingDestination.ClaimEntryPointOptions> { backStackEntry ->
+  composable<ClaimTriagingDestination.ClaimEntryPointOptions> { backStackEntry ->
     val entryPointId: EntryPointId = this.entryPointId
     val entryPointOptions: ImmutableList<EntryPointOption> = this.entryPointOptions
     val viewModel: ClaimEntryPointOptionsViewModel = koinViewModel { parametersOf(entryPointId, entryPointOptions) }
