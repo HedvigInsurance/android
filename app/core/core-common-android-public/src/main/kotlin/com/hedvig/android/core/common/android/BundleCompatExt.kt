@@ -1,8 +1,8 @@
 package com.hedvig.android.core.common.android
 
+import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
-import androidx.core.os.BuildCompat
 import androidx.core.os.BundleCompat
 import java.io.Serializable
 
@@ -14,9 +14,8 @@ inline fun <reified T : Parcelable> Bundle.parcelableArrayList(key: String): Arr
   return BundleCompat.getParcelableArrayList(this, key, T::class.java)
 }
 
-@BuildCompat.PrereleaseSdkCheck
 inline fun <reified T : Serializable> Bundle.serializableExtra(key: String): T? {
-  return if (BuildCompat.isAtLeastU()) {
+  return if (Build.VERSION.SDK_INT >= 34) {
     this.getSerializable(key, T::class.java)
   } else {
     @Suppress("DEPRECATION") // https://issuetracker.google.com/issues/242048899

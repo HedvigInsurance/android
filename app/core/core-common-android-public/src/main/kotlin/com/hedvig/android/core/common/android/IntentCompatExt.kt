@@ -1,9 +1,9 @@
 package com.hedvig.android.core.common.android
 
 import android.content.Intent
+import android.os.Build
 import android.os.Parcelable
 import androidx.core.content.IntentCompat
-import androidx.core.os.BuildCompat
 import java.io.Serializable
 
 inline fun <reified T : Parcelable> Intent.parcelableExtra(key: String): T? {
@@ -14,9 +14,8 @@ inline fun <reified T : Parcelable> Intent.parcelableArrayListExtra(key: String)
   return IntentCompat.getParcelableArrayListExtra(this, key, T::class.java)
 }
 
-@BuildCompat.PrereleaseSdkCheck
 inline fun <reified T : Serializable> Intent.serializableExtra(key: String): T? {
-  return if (BuildCompat.isAtLeastU()) {
+  return if (Build.VERSION.SDK_INT >= 34) {
     this.getSerializableExtra(key, T::class.java)
   } else {
     @Suppress("DEPRECATION") // https://issuetracker.google.com/issues/242048899
