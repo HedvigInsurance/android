@@ -6,10 +6,13 @@ import android.os.Environment
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.common.android.show
@@ -19,7 +22,7 @@ import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityChatBinding
 import com.hedvig.app.feature.chat.ChatInputType
-import com.hedvig.app.feature.chat.ParagraphInput
+import com.hedvig.app.feature.chat.viewmodel.ChatEvent
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.util.extensions.calculateNonFullscreenHeightDiff
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
@@ -33,6 +36,7 @@ import dev.chrisbanes.insetter.applyInsetter
 import giraffe.ChatMessagesQuery
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
@@ -53,7 +57,6 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
   private var preventOpenAttachFile = false
 
   private var attachPickerDialog: AttachPickerDialog? = null
-  private var forceScrollToBottom = true
 
   private var currentPhotoPath: String? = null
 
@@ -88,7 +91,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
       .flowWithLifecycle(lifecycle)
       .onEach { event ->
         when (event) {
-          is ChatViewModel.Event.Error -> showAlert(
+          is ChatEvent.Error -> showAlert(
             title = hedvig.resources.R.string.something_went_wrong,
             message = hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE,
             positiveAction = {
@@ -97,6 +100,26 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
             positiveLabel = hedvig.resources.R.string.GENERAL_EMAIL_US,
             negativeLabel = hedvig.resources.R.string.general_cancel_button,
           )
+          is ChatEvent.RetryableNonDismissibleNetworkError -> {
+            MaterialAlertDialogBuilder(this).apply {
+              setTitle(resources.getString(hedvig.resources.R.string.NETWORK_ERROR_ALERT_TITLE))
+              setPositiveButton(
+                resources.getString(hedvig.resources.R.string.NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION),
+              ) { _, _ ->
+                chatViewModel.retry()
+              }
+              setNegativeButton(
+                resources.getString(android.R.string.cancel),
+              ) { _, _ ->
+                finish()
+              }
+              setMessage(hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE)
+              setCancelable(false)
+            }.show()
+          }
+          ChatEvent.ClearTextFieldInput -> {
+            binding.input.clearInput()
+          }
         }
       }
       .launchIn(lifecycleScope)
@@ -123,7 +146,6 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
   override fun onResume() {
     super.onResume()
     storeBoolean(ACTIVITY_IS_IN_FOREGROUND, true)
-    forceScrollToBottom = true
   }
 
   override fun onPause() {
@@ -201,13 +223,12 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
   }
 
   private fun observeData() {
-    chatViewModel.messages.observe(this) { data ->
-      data?.let { bindData(it, forceScrollToBottom) }
-    }
-    // Maybe we should move the loading into the chatViewModel instead
-    chatViewModel.sendMessageResponse.observe(this) { response ->
-      if (response == true) {
-        binding.input.clearInput()
+    lifecycleScope.launch {
+      repeatOnLifecycle(Lifecycle.State.STARTED) {
+        chatViewModel.messages.collect { data ->
+          logcat(LogPriority.VERBOSE) { "ChatActivity, new messages" }
+          data?.let { bindData(it) }
+        }
       }
     }
     chatViewModel.takePictureUploadFinished.observe(this) {
@@ -215,23 +236,6 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
       currentPhotoPath?.let { File(it).delete() }
       currentPhotoPath = null
     }
-
-    chatViewModel.networkError.observe(this) { networkError ->
-      if (networkError) {
-        showAlert(
-          hedvig.resources.R.string.NETWORK_ERROR_ALERT_TITLE,
-          hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE,
-          hedvig.resources.R.string.NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION,
-          hedvig.resources.R.string.NETWORK_ERROR_ALERT_CANCEL_ACTION,
-          positiveAction = {
-            chatViewModel.load()
-          },
-        )
-      }
-    }
-
-    chatViewModel.subscribe()
-    chatViewModel.load()
   }
 
   private fun scrollToBottom(smooth: Boolean) {
@@ -246,28 +250,15 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
     }
   }
 
-  private fun bindData(data: ChatMessagesQuery.Data, forceScrollToBottom: Boolean) {
-    var triggerScrollToBottom = false
+  private fun bindData(data: ChatMessagesQuery.Data) {
     val firstMessage = data.messages.firstOrNull()?.let {
-      ChatInputType.from(
-        it,
-      )
+      ChatInputType.from(it)
     }
     binding.input.message = firstMessage
-    if (firstMessage is ParagraphInput) {
-      triggerScrollToBottom = true
-    }
     (binding.messages.adapter as? ChatAdapter)?.let {
       it.messages = data.messages.filterNotNull()
-      val layoutManager = binding.messages.layoutManager as LinearLayoutManager
-      val pos = layoutManager.findFirstCompletelyVisibleItemPosition()
-      if (pos == 0) {
-        triggerScrollToBottom = true
-      }
     }
-    if (triggerScrollToBottom || forceScrollToBottom) {
-      scrollToBottom(false)
-    }
+    scrollToBottom(true)
   }
 
   private fun openAttachPicker() {
