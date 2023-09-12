@@ -25,7 +25,10 @@ apollo {
       endpointUrl.set("https://graphql.dev.hedvigit.com/graphql")
       schemaFile.set(file("src/main/graphql/com/hedvig/android/apollo/giraffe/schema.graphqls"))
     }
-    schemaFile.set(file("src/main/graphql/com/hedvig/android/apollo/giraffe/schema.graphqls"))
+    schemaFiles.setFrom(
+      file("src/main/graphql/com/hedvig/android/apollo/giraffe/schema.graphqls"),
+      file("src/main/graphql/com/hedvig/android/apollo/giraffe/extra.graphqls"),
+    )
     srcDir(file("src/main/graphql/com/hedvig/android/apollo/giraffe/graphql"))
 
     packageName.set("giraffe")
