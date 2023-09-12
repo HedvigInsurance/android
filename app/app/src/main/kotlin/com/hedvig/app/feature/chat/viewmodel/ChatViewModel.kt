@@ -40,24 +40,32 @@ class ChatViewModel(
   init {
     hAnalytics.screenView(AppScreen.CHAT)
     viewModelScope.launch {
-      d { "Chat: fetchChatMessages starting" }
+      v { "Chat: fetchChatMessages starting" }
       retryChannel
-        .flatMapLatest { chatRepository.fetchChatMessages() }
-        .catch {
-          e(it) { "chatRepository.fetchChatMessages threw an exception" }
-          _events.send(ChatEvent.Error)
+        .flatMapLatest {
+          chatRepository
+            .fetchChatMessages()
+            .catch {
+              e(it) { "chatRepository.fetchChatMessages threw an exception" }
+            }
         }
         .collect { response ->
           v { "Chat: new response from chat query with #${response.data?.messages?.count() ?: 0} messages" }
           response.data?.let { responseData -> _messages.update { responseData } }
         }
-      d { "Chat: fetchChatMessages finished" }
+      v { "Chat: fetchChatMessages finished" }
     }
     viewModelScope.launch {
+      v { "Chat: subscribeToChatMessages starting" }
       retryChannel
-        .flatMapLatest { chatRepository.subscribeToChatMessages() }
-        .onStart { d { "Chat: start subscription" } }
-        .catch { e(it) { "Chat: Error on chat subscription" } }
+        .flatMapLatest {
+          chatRepository.subscribeToChatMessages()
+            .onStart { d { "Chat: start subscription" } }
+            .catch {
+              d(it) { "Chat: Error on chat subscription" }
+              _events.send(ChatEvent.RetryableNonDismissibleNetworkError)
+            }
+        }
         .collect { response ->
           d { "Chat: subscription response null?:${response.data == null}" }
           // Write to cache
@@ -65,13 +73,13 @@ class ChatViewModel(
             chatRepository.writeNewMessageToApolloCache(it)
           }
         }
+      v { "Chat: subscribeToChatMessages finished" }
     }
   }
 
   val isUploading = LiveEvent<Boolean>()
   val uploadBottomSheetResponse = LiveEvent<UploadFileMutation.Data>()
   val takePictureUploadFinished = LiveEvent<Unit>() // Reports that the picture upload was done, even if it failed
-  val networkError = LiveEvent<Boolean>()
   val gifs = MutableLiveData<GifQuery.Data>()
 
   private val disposables = CompositeDisposable()
@@ -82,6 +90,7 @@ class ChatViewModel(
   val events = _events.receiveAsFlow()
 
   fun retry() {
+    v { "Chat: retrying" }
     retryChannel.retry()
   }
 
@@ -226,7 +235,11 @@ class ChatViewModel(
 }
 
 sealed class ChatEvent {
+  // A generic error message, which results in a dismissible dialog which only lets members contact via email
   object Error : ChatEvent()
+
+  // A dialog which should let the member retry loading the messages, else exit the chat if they don't wnat to retry.
+  object RetryableNonDismissibleNetworkError : ChatEvent()
 
   // An event to inform the UI that the current input field can be cleared. Used after a message was successfully sent
   object ClearTextFieldInput : ChatEvent()

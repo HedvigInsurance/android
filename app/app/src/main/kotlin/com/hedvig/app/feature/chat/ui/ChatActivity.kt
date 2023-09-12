@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.common.android.show
 import com.hedvig.app.BuildConfig
@@ -102,6 +103,23 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
             positiveLabel = hedvig.resources.R.string.GENERAL_EMAIL_US,
             negativeLabel = hedvig.resources.R.string.general_cancel_button,
           )
+          is ChatEvent.RetryableNonDismissibleNetworkError -> {
+            MaterialAlertDialogBuilder(this).apply {
+              setTitle(resources.getString(hedvig.resources.R.string.NETWORK_ERROR_ALERT_TITLE))
+              setPositiveButton(
+                resources.getString(hedvig.resources.R.string.NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION),
+              ) { _, _ ->
+                chatViewModel.retry()
+              }
+              setNegativeButton(
+                resources.getString(android.R.string.cancel),
+              ) { _, _ ->
+                finish()
+              }
+              setMessage(hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE)
+              setCancelable(false)
+            }.show()
+          }
           ChatEvent.ClearTextFieldInput -> {
             binding.input.clearInput()
           }
@@ -214,7 +232,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
     lifecycleScope.launch {
       repeatOnLifecycle(Lifecycle.State.STARTED) {
         chatViewModel.messages.collect { data ->
-          v { "ChatActivity, new messages: $data" }
+          v { "ChatActivity, new messages" }
           data?.let { bindData(it) }
         }
       }
@@ -223,20 +241,6 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
       attachPickerDialog?.uploadingTakenPicture(false)
       currentPhotoPath?.let { File(it).delete() }
       currentPhotoPath = null
-    }
-
-    chatViewModel.networkError.observe(this) { networkError ->
-      if (networkError) {
-        showAlert(
-          hedvig.resources.R.string.NETWORK_ERROR_ALERT_TITLE,
-          hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE,
-          hedvig.resources.R.string.NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION,
-          hedvig.resources.R.string.NETWORK_ERROR_ALERT_CANCEL_ACTION,
-          positiveAction = {
-            chatViewModel.retry()
-          },
-        )
-      }
     }
   }
 
