@@ -99,6 +99,7 @@ internal class PaymentViewModel(
 
 private fun PaymentData.toUiState(locale: Locale): PaymentViewModel.PaymentUiState {
   val paymentMethod = paymentMethod
+  val bankAccount = bankAccount
   return PaymentViewModel.PaymentUiState(
     nextChargeAmount = nextCharge.format(locale),
     monthlyCost = monthlyCost?.format(locale),
@@ -117,15 +118,8 @@ private fun PaymentData.toUiState(locale: Locale): PaymentViewModel.PaymentUiSta
         displayName = it.displayValue ?: "-",
       )
     },
-    paymentMethod = if (paymentMethod == null) {
-      null
-    } else {
-      bankAccount?.let {
-        PaymentViewModel.PaymentUiState.PaymentMethod(
-          displayName = it.name,
-          displayValue = it.accountNumber,
-        )
-      } ?: PaymentViewModel.PaymentUiState.PaymentMethod(
+    paymentMethod = when {
+      paymentMethod != null -> PaymentViewModel.PaymentUiState.PaymentMethod(
         displayName = when (paymentMethod) {
           is PaymentData.PaymentMethod.CardPaymentMethod -> paymentMethod.brand ?: "Unknown"
           is PaymentData.PaymentMethod.ThirdPartyPaymentMethd -> paymentMethod.name
@@ -135,6 +129,13 @@ private fun PaymentData.toUiState(locale: Locale): PaymentViewModel.PaymentUiSta
           is PaymentData.PaymentMethod.ThirdPartyPaymentMethd -> paymentMethod.type
         },
       )
+
+      bankAccount != null -> PaymentViewModel.PaymentUiState.PaymentMethod(
+        displayName = bankAccount.name,
+        displayValue = bankAccount.accountNumber,
+      )
+
+      else -> null
     },
     payoutStatus = when (payoutMethodStatus) {
       PayoutMethodStatus.ACTIVE -> PaymentViewModel.PaymentUiState.PayoutStatus.ACTIVE
