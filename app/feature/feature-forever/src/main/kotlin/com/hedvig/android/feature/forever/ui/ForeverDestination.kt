@@ -56,7 +56,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.apollo.format
 import com.hedvig.android.apollo.toWebLocaleTag
 import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.ErrorMessage
@@ -68,7 +67,6 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.Copy
-import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.snackbar.HedvigSnackbar
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.forever.toErrorMessage
@@ -85,7 +83,6 @@ import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import hedvig.resources.R
 import kotlinx.coroutines.launch
-import org.javamoney.moneta.Money
 
 @Composable
 internal fun ForeverDestination(
@@ -184,7 +181,6 @@ internal fun ForeverContent(
   showedReferralCodeSubmissionError: () -> Unit,
   showedCampaignCodeSuccessfulChangeMessage: () -> Unit,
 ) {
-  val locale = getLocale()
   val coroutineScope = rememberCoroutineScope()
   var textFieldValueState by remember(uiState.foreverData?.campaignCode) {
     mutableStateOf(TextFieldValue(text = uiState.foreverData?.campaignCode ?: ""))
@@ -307,7 +303,7 @@ internal fun ForeverContent(
           text = stringResource(
             id = R.string.referrals_empty_body,
             uiState.foreverData.incentive.toString(),
-            Money.of(0, uiState.foreverData.incentive.currencyCode.rawValue).format(locale),
+            UiMoney(0.0, uiState.foreverData.incentive.currencyCode).toString(),
           ),
           style = MaterialTheme.typography.bodyLarge.copy(
             textAlign = TextAlign.Center,
