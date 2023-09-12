@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.offer.model.quotebundle
 
 import com.hedvig.android.core.ui.insurance.ContractType
-import com.hedvig.app.util.extensions.toContractType
+import com.hedvig.android.core.ui.insurance.toContractType
 import giraffe.fragment.QuoteBundleFragment
 import giraffe.type.QuoteBundleAppConfigurationStartDateTerminology
 import giraffe.type.QuoteBundleAppConfigurationTitle

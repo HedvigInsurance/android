@@ -9,12 +9,13 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.payment.PaymentData
 import com.hedvig.android.payment.PaymentRepository
 import giraffe.type.PayoutMethodStatus
+import giraffe.type.TypeOfContract
+import java.time.LocalDate
+import java.util.Locale
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.util.Locale
 
 internal class PaymentViewModel(
   private val referralsRepository: ForeverRepository,
@@ -42,6 +43,7 @@ internal class PaymentViewModel(
     data class InsuranceCost(
       val displayName: String,
       val cost: String?,
+      val typeOfContract: TypeOfContract,
     )
 
     data class PaymentMethod(
@@ -103,7 +105,8 @@ private fun PaymentData.toUiState(locale: Locale): PaymentViewModel.PaymentUiSta
     nextChargeDate = nextChargeDate,
     insuranceCosts = contracts.map {
       PaymentViewModel.PaymentUiState.InsuranceCost(
-        displayName = it,
+        displayName = it.name,
+        typeOfContract = it.typeOfContract,
         cost = null,
       )
     },

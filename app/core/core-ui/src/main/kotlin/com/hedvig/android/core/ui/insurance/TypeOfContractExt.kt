@@ -1,9 +1,8 @@
-package com.hedvig.app.util.extensions
+package com.hedvig.android.core.ui.insurance
 
-import com.hedvig.android.core.ui.insurance.ContractType
 import giraffe.type.TypeOfContract
 
-internal fun TypeOfContract.toContractType(): ContractType = when (this) {
+fun TypeOfContract.toContractType(): ContractType = when (this) {
   TypeOfContract.NO_HOUSE,
   TypeOfContract.DK_HOUSE,
   TypeOfContract.SE_HOUSE,
