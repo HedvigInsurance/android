@@ -19,6 +19,7 @@ import com.hedvig.app.R
 import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.databinding.ActivityChatBinding
 import com.hedvig.app.feature.chat.ChatInputType
+import com.hedvig.app.feature.chat.viewmodel.ChatEvent
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.extensions.calculateNonFullscreenHeightDiff
@@ -32,15 +33,14 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.applyInsetter
 import giraffe.ChatMessagesQuery
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import slimber.log.d
 import slimber.log.e
+import slimber.log.v
 import java.io.File
 
 class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
@@ -93,7 +93,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
       .flowWithLifecycle(lifecycle)
       .onEach { event ->
         when (event) {
-          is ChatViewModel.Event.Error -> showAlert(
+          is ChatEvent.Error -> showAlert(
             title = hedvig.resources.R.string.something_went_wrong,
             message = hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE,
             positiveAction = {
@@ -102,6 +102,9 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
             positiveLabel = hedvig.resources.R.string.GENERAL_EMAIL_US,
             negativeLabel = hedvig.resources.R.string.general_cancel_button,
           )
+          ChatEvent.ClearTextFieldInput -> {
+            binding.input.clearInput()
+          }
         }
       }
       .launchIn(lifecycleScope)
@@ -208,14 +211,11 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
   }
 
   private fun observeData() {
-    chatViewModel.messages.observe(this) { data ->
-      data?.let { bindData(it) }
-    }
-    // Maybe we should move the loading into the chatViewModel instead
     lifecycleScope.launch {
-      lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-        chatViewModel.clearTextFieldInputSignal.receiveAsFlow().collectLatest {
-          binding.input.clearInput()
+      repeatOnLifecycle(Lifecycle.State.STARTED) {
+        chatViewModel.messages.collect { data ->
+          v { "ChatActivity, new messages: $data" }
+          data?.let { bindData(it) }
         }
       }
     }
@@ -233,14 +233,11 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
           hedvig.resources.R.string.NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION,
           hedvig.resources.R.string.NETWORK_ERROR_ALERT_CANCEL_ACTION,
           positiveAction = {
-            chatViewModel.load()
+            chatViewModel.retry()
           },
         )
       }
     }
-
-    chatViewModel.subscribe()
-    chatViewModel.load()
   }
 
   private fun scrollToBottom(smooth: Boolean) {
@@ -257,9 +254,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
 
   private fun bindData(data: ChatMessagesQuery.Data) {
     val firstMessage = data.messages.firstOrNull()?.let {
-      ChatInputType.from(
-        it,
-      )
+      ChatInputType.from(it)
     }
     binding.input.message = firstMessage
     (binding.messages.adapter as? ChatAdapter)?.let {
