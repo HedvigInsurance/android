@@ -21,6 +21,7 @@ fragment ChatMessageFragment on Message {
   }
   body {
     ... on MessageBodySingleSelect {
+      id
       type
       choices {
         ... on MessageBodyChoicesSelection {
@@ -48,19 +49,23 @@ fragment ChatMessageFragment on Message {
       }
     }
     ... on MessageBodyCore {
+      id
       type
       text
     }
     ... on MessageBodyFile {
+      id
       file {
         signedUrl
       }
     }
     ... on MessageBodyText {
+      id
       keyboard
       placeholder
     }
     ... on MessageBodyNumber {
+      id
       keyboard
       placeholder
     }

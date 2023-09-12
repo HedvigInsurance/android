@@ -4,8 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.apollographql.apollo3.api.ApolloResponse
-import com.hedvig.android.core.common.android.e
+import com.hedvig.android.core.common.RetryChannel
 import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.util.LiveEvent
@@ -14,22 +13,17 @@ import com.hedvig.hanalytics.HAnalytics
 import giraffe.ChatMessagesQuery
 import giraffe.GifQuery
 import giraffe.UploadFileMutation
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import slimber.log.d
 import slimber.log.e
-import slimber.log.i
-import java.util.concurrent.TimeUnit
+import slimber.log.v
 
 class ChatViewModel(
   private val chatRepository: ChatRepository,
@@ -37,124 +31,64 @@ class ChatViewModel(
   private val hAnalytics: HAnalytics,
 ) : ViewModel() {
 
+  private val retryChannel = RetryChannel()
+
+  private val _messages = MutableStateFlow<ChatMessagesQuery.Data?>(null)
+  val messages = _messages.asStateFlow()
+
   init {
     hAnalytics.screenView(AppScreen.CHAT)
+    viewModelScope.launch {
+      v { "Chat: fetchChatMessages starting" }
+      retryChannel
+        .flatMapLatest {
+          chatRepository
+            .fetchChatMessages()
+            .catch {
+              e(it) { "chatRepository.fetchChatMessages threw an exception" }
+            }
+        }
+        .collect { response ->
+          v { "Chat: new response from chat query with #${response.data?.messages?.count() ?: 0} messages" }
+          response.data?.let { responseData -> _messages.update { responseData } }
+        }
+      v { "Chat: fetchChatMessages finished" }
+    }
+    viewModelScope.launch {
+      v { "Chat: subscribeToChatMessages starting" }
+      retryChannel
+        .flatMapLatest {
+          chatRepository.subscribeToChatMessages()
+            .onStart { d { "Chat: start subscription" } }
+            .catch {
+              d(it) { "Chat: Error on chat subscription" }
+              _events.send(ChatEvent.RetryableNonDismissibleNetworkError)
+            }
+        }
+        .collect { response ->
+          d { "Chat: subscription response null?:${response.data == null}" }
+          // Write to cache
+          response.data?.message?.fragments?.chatMessageFragment?.let {
+            chatRepository.writeNewMessageToApolloCache(it)
+          }
+        }
+      v { "Chat: subscribeToChatMessages finished" }
+    }
   }
 
-  val messages = MutableLiveData<ChatMessagesQuery.Data>()
-  val sendMessageResponse = MutableLiveData<Boolean>()
   val isUploading = LiveEvent<Boolean>()
   val uploadBottomSheetResponse = LiveEvent<UploadFileMutation.Data>()
   val takePictureUploadFinished = LiveEvent<Unit>() // Reports that the picture upload was done, even if it failed
-  val networkError = LiveEvent<Boolean>()
   val gifs = MutableLiveData<GifQuery.Data>()
 
-  private val disposables = CompositeDisposable()
-
-  private var isSubscriptionAllowedToWrite = true
-  private var isWaitingForParagraph = false
   private var isSendingMessage = false
-  private var loadRetries = 0L
 
-  private val _events = Channel<Event>(Channel.UNLIMITED)
+  private val _events = Channel<ChatEvent>(Channel.UNLIMITED)
   val events = _events.receiveAsFlow()
 
-  sealed class Event {
-    object Error : Event()
-  }
-
-  fun subscribe() {
-    viewModelScope.launch {
-      chatRepository
-        .subscribeToChatMessages()
-        .onStart {
-          d { "Chat: start subscription" }
-        }
-        .onEach { response ->
-          d { "Chat: subscription response null?:${response.data == null}" }
-          response.data?.message?.let { message ->
-            if (isSubscriptionAllowedToWrite) {
-              chatRepository
-                .writeNewMessage(
-                  message.fragments.chatMessageFragment,
-                )
-            } else {
-              i { "Chat: subscription was not allowed to write" }
-            }
-          }
-        }
-        .catch { e(it) { "Chat: Error on chat subscription" } }
-        .launchIn(this)
-    }
-  }
-
-  fun load() {
-    isSubscriptionAllowedToWrite = false
-    viewModelScope.launch {
-      chatRepository
-        .fetchChatMessages()
-        .onEach { response ->
-          postResponseValue(response)
-          if (isFirstParagraph(response)) {
-            waitForParagraph(getFirstParagraphDelay(response))
-          }
-          isSubscriptionAllowedToWrite = true
-        }.catch {
-          retryLoad()
-          isSubscriptionAllowedToWrite = true
-          e(it)
-        }
-        .launchIn(this)
-    }
-  }
-
-  private fun retryLoad() {
-    if (loadRetries < 5) {
-      loadRetries += 1
-      disposables += Observable
-        .timer(loadRetries, TimeUnit.SECONDS, Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(
-          {
-            load()
-          },
-          { e(it) },
-        )
-    } else {
-      networkError.postValue(true)
-    }
-  }
-
-  private fun isFirstParagraph(response: ApolloResponse<ChatMessagesQuery.Data>) = response
-    .data
-    ?.messages
-    ?.firstOrNull()
-    ?.fragments
-    ?.chatMessageFragment
-    ?.body
-    ?.asMessageBodyCore
-    ?.type == "paragraph"
-
-  private fun getFirstParagraphDelay(response: ApolloResponse<ChatMessagesQuery.Data>) =
-    response.data?.messages?.firstOrNull()?.fragments?.chatMessageFragment?.header?.pollingInterval?.toLong()
-      ?: 0L
-
-  private fun waitForParagraph(delay: Long) {
-    if (isWaitingForParagraph) {
-      return
-    }
-
-    isWaitingForParagraph = true
-    disposables += Observable
-      .timer(delay, TimeUnit.MILLISECONDS, Schedulers.io())
-      .observeOn(AndroidSchedulers.mainThread())
-      .subscribe(
-        {
-          load()
-          isWaitingForParagraph = false
-        },
-        {},
-      )
+  fun retry() {
+    d { "Chat: retrying" }
+    retryChannel.retry()
   }
 
   fun uploadTakenPicture(uri: Uri) {
@@ -166,12 +100,11 @@ class ChatViewModel(
   }
 
   private suspend fun uploadFileInner(uri: Uri): UploadFileMutation.Data? {
-    isSubscriptionAllowedToWrite = false
     isUploading.value = true
     val response = chatRepository.uploadFile(uri)
     return response.fold(
       ifLeft = {
-        _events.send(Event.Error)
+        _events.send(ChatEvent.Error)
         null
       },
       ifRight = { data ->
@@ -183,13 +116,12 @@ class ChatViewModel(
 
   fun uploadFileFromProvider(uri: Uri) {
     hAnalytics.chatRichMessageSent()
-    isSubscriptionAllowedToWrite = false
     isUploading.value = true
     viewModelScope.launch {
       val response = chatRepository.uploadFileFromProvider(uri)
       response.fold(
         ifLeft = {
-          _events.send(Event.Error)
+          _events.send(ChatEvent.Error)
         },
         ifRight = { data ->
           respondWithFile(
@@ -200,10 +132,6 @@ class ChatViewModel(
         },
       )
     }
-  }
-
-  private fun postResponseValue(response: ApolloResponse<ChatMessagesQuery.Data>) {
-    response.data?.let { messages.postValue(it) }
   }
 
   fun respondWithGif(url: String) {
@@ -221,19 +149,15 @@ class ChatViewModel(
       return
     }
     isSendingMessage = true
-    isSubscriptionAllowedToWrite = false
     viewModelScope.launch {
       val response = chatRepository.sendChatMessage(getLastId(), message)
       isSendingMessage = false
       response.fold(
         ifLeft = {
-          _events.send(Event.Error)
+          _events.send(ChatEvent.Error)
         },
-        ifRight = { data ->
-          if (data.sendChatTextResponse) {
-            load()
-          }
-          sendMessageResponse.postValue(data.sendChatTextResponse)
+        ifRight = {
+          _events.send(ChatEvent.ClearTextFieldInput)
         },
       )
     }
@@ -244,21 +168,18 @@ class ChatViewModel(
       return
     }
     isSendingMessage = true
-    isSubscriptionAllowedToWrite = false
     viewModelScope.launch {
       val response = runCatching {
-        chatRepository
-          .sendFileResponse(getLastId(), key, uri)
+        chatRepository.sendFileResponse(getLastId(), key, uri)
       }
+      isSendingMessage = false
       if (response.isFailure) {
-        isSendingMessage = false
         response.exceptionOrNull()?.let { e(it) }
         return@launch
       }
-      isSendingMessage = false
-      if (response.getOrNull()?.data?.sendChatFileResponse == true) {
-        load()
-      }
+//      if (response.getOrNull()?.data?.sendChatFileResponse == true) {
+//        load()
+//      }
     }
   }
 
@@ -267,32 +188,25 @@ class ChatViewModel(
       return
     }
     isSendingMessage = true
-    isSubscriptionAllowedToWrite = false
     viewModelScope.launch {
       val response = runCatching {
         chatRepository
           .sendSingleSelect(getLastId(), value)
       }
+      isSendingMessage = false
       if (response.isFailure) {
-        isSendingMessage = false
         response.exceptionOrNull()?.let { e(it) }
         return@launch
       }
-      isSendingMessage = false
-      if (response.getOrNull()?.data?.sendChatSingleSelectResponse == true) {
-        load()
-      }
+//      if (response.getOrNull()?.data?.sendChatSingleSelectResponse == true) {
+//        load()
+//      }
     }
   }
 
   private fun getLastId(): String =
-    messages.value?.messages?.firstOrNull()?.fragments?.chatMessageFragment?.globalId
+    _messages.value?.messages?.firstOrNull()?.fragments?.chatMessageFragment?.globalId
       ?: error("Messages is not initialized!")
-
-  override fun onCleared() {
-    super.onCleared()
-    disposables.clear()
-  }
 
   fun searchGifs(query: String) {
     viewModelScope.launch {
@@ -310,4 +224,15 @@ class ChatViewModel(
       chatClosedTracker.increaseChatClosedCounter()
     }
   }
+}
+
+sealed class ChatEvent {
+  // A generic error message, which results in a dismissible dialog which only lets members contact via email
+  object Error : ChatEvent()
+
+  // A dialog which should let the member retry loading the messages, else exit the chat if they don't wnat to retry.
+  object RetryableNonDismissibleNetworkError : ChatEvent()
+
+  // An event to inform the UI that the current input field can be cleared. Used after a message was successfully sent
+  object ClearTextFieldInput : ChatEvent()
 }
