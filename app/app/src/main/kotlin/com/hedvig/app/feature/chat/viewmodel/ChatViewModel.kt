@@ -13,7 +13,6 @@ import com.hedvig.hanalytics.HAnalytics
 import giraffe.ChatMessagesQuery
 import giraffe.GifQuery
 import giraffe.UploadFileMutation
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -82,15 +81,13 @@ class ChatViewModel(
   val takePictureUploadFinished = LiveEvent<Unit>() // Reports that the picture upload was done, even if it failed
   val gifs = MutableLiveData<GifQuery.Data>()
 
-  private val disposables = CompositeDisposable()
-
   private var isSendingMessage = false
 
   private val _events = Channel<ChatEvent>(Channel.UNLIMITED)
   val events = _events.receiveAsFlow()
 
   fun retry() {
-    v { "Chat: retrying" }
+    d { "Chat: retrying" }
     retryChannel.retry()
   }
 
@@ -210,11 +207,6 @@ class ChatViewModel(
   private fun getLastId(): String =
     _messages.value?.messages?.firstOrNull()?.fragments?.chatMessageFragment?.globalId
       ?: error("Messages is not initialized!")
-
-  override fun onCleared() {
-    super.onCleared()
-    disposables.clear()
-  }
 
   fun searchGifs(query: String) {
     viewModelScope.launch {
