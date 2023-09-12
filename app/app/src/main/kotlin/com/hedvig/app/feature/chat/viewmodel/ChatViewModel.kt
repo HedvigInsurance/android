@@ -4,7 +4,6 @@ import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.apollographql.apollo3.api.ApolloResponse
 import com.hedvig.android.core.common.RetryChannel
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -16,7 +15,6 @@ import com.hedvig.hanalytics.HAnalytics
 import giraffe.ChatMessagesQuery
 import giraffe.GifQuery
 import giraffe.UploadFileMutation
-import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -40,40 +38,42 @@ class ChatViewModel(
   init {
     hAnalytics.screenView(AppScreen.CHAT)
     viewModelScope.launch {
-      v { "Chat: fetchChatMessages starting" }
+      logcat(LogPriority.VERBOSE) { "Chat: fetchChatMessages starting" }
       retryChannel
         .flatMapLatest {
           chatRepository
             .fetchChatMessages()
             .catch {
-              e(it) { "chatRepository.fetchChatMessages threw an exception" }
+              logcat(LogPriority.ERROR, it) { "chatRepository.fetchChatMessages threw an exception" }
             }
         }
         .collect { response ->
-          v { "Chat: new response from chat query with #${response.data?.messages?.count() ?: 0} messages" }
+          logcat(LogPriority.VERBOSE) {
+            "Chat: new response from chat query with #${response.data?.messages?.count() ?: 0} messages"
+          }
           response.data?.let { responseData -> _messages.update { responseData } }
         }
-      v { "Chat: fetchChatMessages finished" }
+      logcat(LogPriority.VERBOSE) { "Chat: fetchChatMessages finished" }
     }
     viewModelScope.launch {
-      v { "Chat: subscribeToChatMessages starting" }
+      logcat(LogPriority.VERBOSE) { "Chat: subscribeToChatMessages starting" }
       retryChannel
         .flatMapLatest {
           chatRepository.subscribeToChatMessages()
-            .onStart { d { "Chat: start subscription" } }
+            .onStart { logcat { "Chat: start subscription" } }
             .catch {
-              d(it) { "Chat: Error on chat subscription" }
+              logcat(throwable = it) { "Chat: Error on chat subscription" }
               _events.send(ChatEvent.RetryableNonDismissibleNetworkError)
             }
         }
         .collect { response ->
-          d { "Chat: subscription response null?:${response.data == null}" }
+          logcat { "Chat: subscription response null?:${response.data == null}" }
           // Write to cache
           response.data?.message?.fragments?.chatMessageFragment?.let {
             chatRepository.writeNewMessageToApolloCache(it)
           }
         }
-      v { "Chat: subscribeToChatMessages finished" }
+      logcat(LogPriority.VERBOSE) { "Chat: subscribeToChatMessages finished" }
     }
   }
 
@@ -88,7 +88,7 @@ class ChatViewModel(
   val events = _events.receiveAsFlow()
 
   fun retry() {
-    d { "Chat: retrying" }
+    logcat { "Chat: retrying" }
     retryChannel.retry()
   }
 
