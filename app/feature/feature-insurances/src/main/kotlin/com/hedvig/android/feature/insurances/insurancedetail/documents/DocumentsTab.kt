@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -30,7 +29,6 @@ import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -45,8 +43,6 @@ import kotlinx.collections.immutable.persistentListOf
 internal fun DocumentsTab(
   documents: ImmutableList<ContractDetails.Document>,
   onDocumentClicked: (Uri) -> Unit,
-  cancelInsuranceData: ContractDetails.CancelInsuranceData?,
-  onCancelInsuranceClick: (ContractDetails.CancelInsuranceData) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
@@ -71,17 +67,6 @@ internal fun DocumentsTab(
       if (index != documents.lastIndex) {
         Spacer(Modifier.height(4.dp))
       }
-    }
-    if (cancelInsuranceData != null) {
-      Spacer(Modifier.height(8.dp))
-      HedvigTextButton(
-        text = stringResource(R.string.TERMINATION_BUTTON),
-        onClick = { onCancelInsuranceClick(cancelInsuranceData) },
-        colors = ButtonDefaults.textButtonColors(
-          contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        ),
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
     }
     Spacer(Modifier.height(16.dp))
     Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
@@ -148,8 +133,6 @@ private fun PreviewDocumentsScreen() {
           ContractDetails.Document.InsuranceCertificate(Uri.EMPTY),
         ),
         onDocumentClicked = {},
-        cancelInsuranceData = ContractDetails.CancelInsuranceData("123", "123"),
-        onCancelInsuranceClick = {},
       )
     }
   }
