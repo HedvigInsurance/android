@@ -58,12 +58,15 @@ import com.hedvig.android.core.icons.hedvig.normal.Payments
 import com.hedvig.android.core.icons.hedvig.normal.Waiting
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.hedvigSecondaryDateTimeFormatter
+import com.hedvig.android.core.ui.insurance.toContractType
+import com.hedvig.android.core.ui.insurance.toPillow
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.data.forever.CampaignCode
 import com.hedvig.android.market.Market
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.placeholder.fade
 import com.hedvig.android.placeholder.placeholder
+import giraffe.type.TypeOfContract
 import hedvig.resources.R
 import java.time.LocalDate
 import java.util.Locale
@@ -253,7 +256,7 @@ private fun InsuranceCosts(
         verticalAlignment = Alignment.CenterVertically,
       ) {
         Image(
-          painter = painterResource(id = com.hedvig.android.core.ui.R.drawable.ic_pillow_home),
+          painter = painterResource(id = insuranceCost.typeOfContract.toContractType().toPillow()),
           contentDescription = null,
           modifier = Modifier.size(32.dp),
         )
@@ -467,10 +470,12 @@ private fun PreviewPaymentScreen() {
             PaymentViewModel.PaymentUiState.InsuranceCost(
               displayName = "Home Insurance",
               cost = "279kr/mån",
+              typeOfContract = TypeOfContract.SE_HOUSE,
             ),
             PaymentViewModel.PaymentUiState.InsuranceCost(
               displayName = "Accident Insurance",
               cost = "359kr/mån",
+              typeOfContract = TypeOfContract.SE_ACCIDENT,
             ),
           ),
           totalDiscount = "-40kr/mån",
