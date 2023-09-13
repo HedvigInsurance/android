@@ -9,12 +9,13 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.payment.PaymentData
 import com.hedvig.android.payment.PaymentRepository
 import giraffe.type.PayoutMethodStatus
+import giraffe.type.TypeOfContract
+import java.time.LocalDate
+import java.util.Locale
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.util.Locale
 
 internal class PaymentViewModel(
   private val referralsRepository: ForeverRepository,
@@ -42,6 +43,7 @@ internal class PaymentViewModel(
     data class InsuranceCost(
       val displayName: String,
       val cost: String?,
+      val typeOfContract: TypeOfContract,
     )
 
     data class PaymentMethod(
@@ -97,13 +99,15 @@ internal class PaymentViewModel(
 
 private fun PaymentData.toUiState(locale: Locale): PaymentViewModel.PaymentUiState {
   val paymentMethod = paymentMethod
+  val bankAccount = bankAccount
   return PaymentViewModel.PaymentUiState(
     nextChargeAmount = nextCharge.format(locale),
     monthlyCost = monthlyCost?.format(locale),
     nextChargeDate = nextChargeDate,
     insuranceCosts = contracts.map {
       PaymentViewModel.PaymentUiState.InsuranceCost(
-        displayName = it,
+        displayName = it.name,
+        typeOfContract = it.typeOfContract,
         cost = null,
       )
     },
@@ -114,15 +118,8 @@ private fun PaymentData.toUiState(locale: Locale): PaymentViewModel.PaymentUiSta
         displayName = it.displayValue ?: "-",
       )
     },
-    paymentMethod = if (paymentMethod == null) {
-      null
-    } else {
-      bankAccount?.let {
-        PaymentViewModel.PaymentUiState.PaymentMethod(
-          displayName = it.name,
-          displayValue = it.accountNumber,
-        )
-      } ?: PaymentViewModel.PaymentUiState.PaymentMethod(
+    paymentMethod = when {
+      paymentMethod != null -> PaymentViewModel.PaymentUiState.PaymentMethod(
         displayName = when (paymentMethod) {
           is PaymentData.PaymentMethod.CardPaymentMethod -> paymentMethod.brand ?: "Unknown"
           is PaymentData.PaymentMethod.ThirdPartyPaymentMethd -> paymentMethod.name
@@ -132,6 +129,13 @@ private fun PaymentData.toUiState(locale: Locale): PaymentViewModel.PaymentUiSta
           is PaymentData.PaymentMethod.ThirdPartyPaymentMethd -> paymentMethod.type
         },
       )
+
+      bankAccount != null -> PaymentViewModel.PaymentUiState.PaymentMethod(
+        displayName = bankAccount.name,
+        displayValue = bankAccount.accountNumber,
+      )
+
+      else -> null
     },
     payoutStatus = when (payoutMethodStatus) {
       PayoutMethodStatus.ACTIVE -> PaymentViewModel.PaymentUiState.PayoutStatus.ACTIVE

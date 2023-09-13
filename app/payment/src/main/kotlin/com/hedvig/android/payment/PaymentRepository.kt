@@ -18,9 +18,10 @@ import com.hedvig.android.payment.model.toIncentive
 import giraffe.ChargeHistoryQuery
 import giraffe.PaymentQuery
 import giraffe.type.PayoutMethodStatus
-import kotlinx.coroutines.flow.Flow
+import giraffe.type.TypeOfContract
 import java.time.LocalDate
 import javax.money.MonetaryAmount
+import kotlinx.coroutines.flow.Flow
 
 class PaymentRepository(
   private val apolloClient: ApolloClient,
@@ -85,7 +86,12 @@ class PaymentRepository(
           nextChargeDate = it.nextChargeDate,
           contracts = it.contracts
             .filter { it.status.fragments.contractStatusFragment.asActiveStatus != null }
-            .map { it.displayName },
+            .map {
+                 Contract(
+                   name = it.displayName,
+                   typeOfContract = it.typeOfContract
+                 )
+            },
           redeemedCampagins = it.redeemedCampaigns.map {
             Campaign(
               incentive = it.fragments.incentiveFragment.incentive.toIncentive(),
@@ -139,7 +145,7 @@ data class PaymentData(
   val bankDescriptor: String?,
   val paymentMethod: PaymentMethod?,
   val bankAccount: BankAccount?,
-  val contracts: List<String>,
+  val contracts: List<Contract>,
   val payoutMethodStatus: PayoutMethodStatus?,
 ) {
   sealed interface PaymentMethod {
@@ -156,6 +162,11 @@ data class PaymentData(
     ) : PaymentMethod
   }
 }
+
+data class Contract(
+  val name: String,
+  val typeOfContract: TypeOfContract,
+)
 
 data class BankAccount(
   val name: String,
