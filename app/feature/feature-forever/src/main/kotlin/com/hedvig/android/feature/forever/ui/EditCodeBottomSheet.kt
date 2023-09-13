@@ -13,6 +13,7 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
@@ -45,6 +46,10 @@ internal fun EditCodeBottomSheet(
   onSubmitCode: () -> Unit,
   isLoading: Boolean,
 ) {
+  // No idea why material3.ModalBottomSheet does not read the latest values here, but this fixes it
+  // https://issuetracker.google.com/issues/300280211
+  val updatedErrorText by rememberUpdatedState(errorText)
+  val updatedIsLoading by rememberUpdatedState(isLoading)
   ModalBottomSheet(
     containerColor = MaterialTheme.colorScheme.background,
     onDismissRequest = onDismiss,
@@ -66,7 +71,7 @@ internal fun EditCodeBottomSheet(
       value = code,
       label = { Text(stringResource(R.string.referrals_empty_code_headline)) },
       onValueChange = onCodeChanged,
-      errorText = errorText,
+      errorText = updatedErrorText,
       modifier = Modifier
         .padding(horizontal = 16.dp)
         .focusRequester(focusRequester)
@@ -79,7 +84,7 @@ internal fun EditCodeBottomSheet(
         showedReferralCodeSubmissionError()
         onSubmitCode()
       },
-      isLoading = isLoading,
+      isLoading = updatedIsLoading,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(8.dp))
