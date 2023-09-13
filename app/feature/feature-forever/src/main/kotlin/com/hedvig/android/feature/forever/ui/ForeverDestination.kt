@@ -86,6 +86,7 @@ import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import hedvig.resources.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
@@ -190,6 +191,12 @@ internal fun ForeverContent(
   val coroutineScope = rememberCoroutineScope()
   var textFieldValueState by remember(uiState.foreverData?.campaignCode) {
     mutableStateOf(TextFieldValue(text = uiState.foreverData?.campaignCode ?: ""))
+  }
+
+  LaunchedEffect(Unit) {
+    snapshotFlow { textFieldValueState }.collectLatest {
+      showedReferralCodeSubmissionError() // clear error after the member edits the code manually
+    }
   }
 
   val editReferralCodeBottomSheetState = rememberModalBottomSheetState(true)
