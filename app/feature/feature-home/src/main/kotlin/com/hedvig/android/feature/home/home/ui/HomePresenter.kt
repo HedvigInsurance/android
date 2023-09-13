@@ -3,6 +3,7 @@ package com.hedvig.android.feature.home.home.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -11,32 +12,26 @@ import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimsData
 import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
 import com.hedvig.android.feature.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.data.HomeData
-import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 
 internal class HomePresenter(
   private val getHomeDataUseCase: GetHomeDataUseCase,
-  private val enableNotificationsReminderManager: EnableNotificationsReminderManager,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
   @Composable
   override fun MoleculePresenterScope<HomeEvent>.present(lastState: HomeUiState): HomeUiState {
     var hasError by remember { mutableStateOf(false) }
     var isReloading by remember { mutableStateOf(false) }
     var successData: SuccessData? by remember { mutableStateOf(SuccessData.fromLastState(lastState)) }
-    var loadIteration by remember { mutableStateOf(0) }
+    var loadIteration by remember { mutableIntStateOf(0) }
 
     CollectEvents { homeEvent: HomeEvent ->
       when (homeEvent) {
         HomeEvent.RefreshData -> loadIteration++
-        HomeEvent.SnoozeNotificationPermissionReminder -> {
-          launch { enableNotificationsReminderManager.snoozeNotificationReminder() }
-        }
       }
     }
 
@@ -92,7 +87,6 @@ internal class HomePresenter(
 
 internal sealed interface HomeEvent {
   data object RefreshData : HomeEvent
-  data object SnoozeNotificationPermissionReminder : HomeEvent
 }
 
 internal sealed interface HomeUiState {
@@ -154,7 +148,7 @@ private data class SuccessData(
           HomeData.ContractStatus.Unknown -> HomeText.Active(homeData.memberName)
         },
         claimStatusCardsData = homeData.claimStatusCardsData,
-        memberReminders = homeData.memberReminders,
+        memberReminders = homeData.memberReminders.copy(enableNotifications = null),
         veryImportantMessages = homeData.veryImportantMessages,
         allowAddressChange = homeData.allowAddressChange,
         allowGeneratingTravelCertificate = homeData.allowGeneratingTravelCertificate,

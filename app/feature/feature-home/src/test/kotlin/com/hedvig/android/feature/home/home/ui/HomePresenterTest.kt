@@ -14,8 +14,8 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.home.claimstatus.data.ClaimStatusCardUiState
 import com.hedvig.android.feature.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.data.HomeData
+import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
-import com.hedvig.android.memberreminders.test.TestEnableNotificationsReminderManager
 import com.hedvig.android.molecule.test.test
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.Flow
@@ -28,7 +28,7 @@ internal class HomePresenterTest {
   @Test
   fun `asking to refresh successfully asks for a fetch from the network`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
-    val homePresenter = HomePresenter(getHomeDataUseCase, TestEnableNotificationsReminderManager())
+    val homePresenter = HomePresenter(getHomeDataUseCase)
 
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -47,23 +47,9 @@ internal class HomePresenterTest {
   }
 
   @Test
-  fun `asking to snooze the permission notification successfully forwards that to the reminder manager`() = runTest {
-    val enableNotificationsReminderManager = TestEnableNotificationsReminderManager()
-    val homePresenter = HomePresenter(TestGetHomeDataUseCase(), enableNotificationsReminderManager)
-
-    homePresenter.test(HomeUiState.Loading) {
-      skipItems(1)
-      enableNotificationsReminderManager.snoozeNotificationReminderCalls.expectNoEvents()
-      sendEvent(HomeEvent.SnoozeNotificationPermissionReminder)
-      enableNotificationsReminderManager.snoozeNotificationReminderCalls.awaitItem()
-      enableNotificationsReminderManager.snoozeNotificationReminderCalls.expectNoEvents()
-    }
-  }
-
-  @Test
   fun `getting a failed response and retrying, should result in a successful state`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
-    val homePresenter = HomePresenter(getHomeDataUseCase, TestEnableNotificationsReminderManager())
+    val homePresenter = HomePresenter(getHomeDataUseCase)
 
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -82,7 +68,7 @@ internal class HomePresenterTest {
   @Test
   fun `a successful response, properly propagates the info to the UI State`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
-    val homePresenter = HomePresenter(getHomeDataUseCase, TestEnableNotificationsReminderManager())
+    val homePresenter = HomePresenter(getHomeDataUseCase)
 
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -137,9 +123,50 @@ internal class HomePresenterTest {
   }
 
   @Test
+  fun `the notification member reminder must not show for the home presenter`() = runTest {
+    val getHomeDataUseCase = TestGetHomeDataUseCase()
+    val homePresenter = HomePresenter(getHomeDataUseCase)
+
+    homePresenter.test(HomeUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
+
+      getHomeDataUseCase.responseTurbine.add(
+        HomeData(
+          memberName = null,
+          contractStatus = HomeData.ContractStatus.Active,
+          claimStatusCardsData = null,
+          memberReminders = MemberReminders(
+            enableNotifications = MemberReminder.EnableNotifications,
+          ),
+          veryImportantMessages = persistentListOf(),
+          allowAddressChange = true,
+          allowGeneratingTravelCertificate = false,
+          emergencyData = null,
+          commonClaimsData = persistentListOf(),
+        ).right(),
+      )
+      assertThat(awaitItem()).isEqualTo(
+        HomeUiState.Success(
+          isReloading = false,
+          homeText = HomeText.Active(null),
+          claimStatusCardsData = null,
+          veryImportantMessages = persistentListOf(),
+          memberReminders = MemberReminders(
+            connectPayment = null,
+          ),
+          allowAddressChange = true,
+          allowGeneratingTravelCertificate = false,
+          emergencyData = null,
+          commonClaimsData = persistentListOf(),
+        ),
+      )
+    }
+  }
+
+  @Test
   fun `receiving a failed state and then a successful one propagates the success without having to retry`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
-    val homePresenter = HomePresenter(getHomeDataUseCase, TestEnableNotificationsReminderManager())
+    val homePresenter = HomePresenter(getHomeDataUseCase)
 
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)

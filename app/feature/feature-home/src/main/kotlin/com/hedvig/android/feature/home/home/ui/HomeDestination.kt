@@ -118,7 +118,6 @@ internal fun HomeDestination(
     uiState = uiState,
     notificationPermissionState = notificationPermissionState,
     reload = { viewModel.emit(HomeEvent.RefreshData) },
-    snoozeNotificationPermissionReminder = { viewModel.emit(HomeEvent.SnoozeNotificationPermissionReminder) },
     onStartChat = onStartChat,
     onClaimDetailCardClicked = onClaimDetailCardClicked,
     navigateToConnectPayment = navigateToConnectPayment,
@@ -136,7 +135,6 @@ private fun HomeScreen(
   uiState: HomeUiState,
   notificationPermissionState: NotificationPermissionState,
   reload: () -> Unit,
-  snoozeNotificationPermissionReminder: () -> Unit,
   onStartChat: () -> Unit,
   onClaimDetailCardClicked: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
@@ -186,7 +184,6 @@ private fun HomeScreen(
             pullRefreshState = pullRefreshState,
             toolbarHeight = toolbarHeight,
             notificationPermissionState = notificationPermissionState,
-            snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
             onStartMovingFlow = onStartMovingFlow,
             onClaimDetailCardClicked = onClaimDetailCardClicked,
             navigateToConnectPayment = navigateToConnectPayment,
@@ -252,7 +249,6 @@ private fun HomeScreenSuccess(
   pullRefreshState: PullRefreshState,
   toolbarHeight: Dp,
   notificationPermissionState: NotificationPermissionState,
-  snoozeNotificationPermissionReminder: () -> Unit,
   onStartMovingFlow: () -> Unit,
   onClaimDetailCardClicked: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
@@ -338,8 +334,6 @@ private fun HomeScreenSuccess(
           memberReminders = memberReminders,
           navigateToConnectPayment = navigateToConnectPayment,
           openUrl = openUrl,
-          notificationPermissionState = notificationPermissionState,
-          snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
@@ -494,7 +488,6 @@ private fun PreviewHomeScreen() {
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
-        snoozeNotificationPermissionReminder = {},
         onStartChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
