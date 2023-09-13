@@ -30,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -41,6 +42,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -82,6 +84,10 @@ import com.hedvig.android.pullrefresh.PullRefreshState
 import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import hedvig.resources.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
 @Composable
@@ -188,10 +194,7 @@ internal fun ForeverContent(
 
   val editReferralCodeBottomSheetState = rememberModalBottomSheetState(true)
   var showEditReferralCodeBottomSheet by rememberSaveable { mutableStateOf(false) }
-
-  LaunchedEffect(uiState.showReferralCodeSuccessfullyChangedMessage) {
-    if (!uiState.showReferralCodeSuccessfullyChangedMessage) return@LaunchedEffect
-    // Hide the bottom sheet if we've successfully changed the code
+  val dismissEditReferralCodeBottomSheetState: CoroutineScope.() -> Unit = {
     launch {
       editReferralCodeBottomSheetState.hide()
     }.invokeOnCompletion {
@@ -199,13 +202,20 @@ internal fun ForeverContent(
     }
   }
 
-  LaunchedEffect(textFieldValueState) {
-    showedReferralCodeSubmissionError() // Clear error on new referral code input
+  LaunchedEffect(Unit) {
+    // Sheet does not dismiss on click outside. So we clear the state ourselves when it gets hidden.
+    snapshotFlow { editReferralCodeBottomSheetState.currentValue }
+      .filter { it == SheetValue.Hidden }
+      .drop(1)
+      .collect {
+        coroutineScope { dismissEditReferralCodeBottomSheetState() }
+      }
   }
-  LaunchedEffect(showEditReferralCodeBottomSheet) {
-    if (!showEditReferralCodeBottomSheet) {
-      showedReferralCodeSubmissionError() // Clear error when the dialog is dismissed
-    }
+
+  LaunchedEffect(uiState.showReferralCodeSuccessfullyChangedMessage) {
+    if (!uiState.showReferralCodeSuccessfullyChangedMessage) return@LaunchedEffect
+    // Hide the bottom sheet if we've successfully changed the code
+    dismissEditReferralCodeBottomSheetState()
   }
 
   if (showEditReferralCodeBottomSheet) {
@@ -215,11 +225,7 @@ internal fun ForeverContent(
       onCodeChanged = { textFieldValueState = it },
       onDismiss = {
         showedReferralCodeSubmissionError()
-        coroutineScope.launch {
-          editReferralCodeBottomSheetState.hide()
-        }.invokeOnCompletion {
-          showEditReferralCodeBottomSheet = false
-        }
+        coroutineScope.dismissEditReferralCodeBottomSheetState()
       },
       onSubmitCode = {
         onSubmitCode(textFieldValueState.text)
@@ -244,6 +250,15 @@ internal fun ForeverContent(
       },
       sheetState = referralExplanationSheetState,
     )
+  }
+
+  LaunchedEffect(textFieldValueState) {
+    showedReferralCodeSubmissionError() // Clear error on new referral code input
+  }
+  LaunchedEffect(showEditReferralCodeBottomSheet) {
+    if (!showEditReferralCodeBottomSheet) {
+      showedReferralCodeSubmissionError() // Clear error when the dialog is dismissed
+    }
   }
 
   Box {
@@ -357,10 +372,10 @@ internal fun ForeverContent(
           text = stringResource(id = R.string.referrals_change_change_code),
           onClick = {
             coroutineScope.launch {
-              editReferralCodeBottomSheetState.hide()
               showEditReferralCodeBottomSheet = true
-              textFieldValueState =
-                textFieldValueState.copy(selection = TextRange(textFieldValueState.text.length))
+              textFieldValueState = textFieldValueState.copy(
+                selection = TextRange(textFieldValueState.text.length),
+              )
             }
           },
           modifier = Modifier.padding(horizontal = 16.dp),

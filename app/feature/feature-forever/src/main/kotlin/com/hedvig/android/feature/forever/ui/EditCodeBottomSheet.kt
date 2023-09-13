@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,22 +47,13 @@ internal fun EditCodeBottomSheet(
 ) {
   ModalBottomSheet(
     containerColor = MaterialTheme.colorScheme.background,
-    onDismissRequest = { onDismiss() },
+    onDismissRequest = onDismiss,
     shape = MaterialTheme.shapes.squircleLargeTop,
     sheetState = sheetState,
     tonalElevation = 0.dp,
   ) {
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
-    LaunchedEffect(Unit) {
-      snapshotFlow { sheetState.targetValue }
-        .filter { it == SheetValue.Hidden }
-        .drop(1)
-        .collect {
-          focusManager.clearFocus()
-          focusRequester.freeFocus()
-        }
-    }
     Text(
       text = stringResource(R.string.referrals_change_change_code),
       textAlign = TextAlign.Center,
