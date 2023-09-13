@@ -1,31 +1,48 @@
-package com.feature.changeaddress.navigation
+package com.hedvig.android.feature.changeaddress.destination
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
-import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
+import com.hedvig.android.core.designsystem.component.success.HedvigSuccessSection
+import com.hedvig.android.core.designsystem.preview.HedvigPreview
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 
 @Composable
 internal fun ChangeAddressResultDestination(
-  navigateUp: () -> Unit,
+  movingDate: String?,
   popBackstack: () -> Unit,
 ) {
-  Surface(Modifier.fillMaxSize()) {
-    Column {
-      TopAppBarWithBack(
-        onClick = navigateUp,
-        title = "Ny address",
-      )
-      Text("Address changed successfully!")
-      LargeContainedButton(
-        onClick = popBackstack,
-      ) {
-        Text(text = "Stäng")
-      }
+  Box(
+    modifier = Modifier.fillMaxSize(),
+  ) {
+    HedvigSuccessSection(
+      title = "Address updated",
+      subTitle = "Your new home will be insured starting from $movingDate",
+      modifier = Modifier.align(Alignment.Center),
+    )
+    HedvigTextButton(
+      text = stringResource(id = hedvig.resources.R.string.general_close_button),
+      onClick = popBackstack,
+      modifier = Modifier
+        .align(Alignment.BottomStart)
+        .padding(vertical = 32.dp, horizontal = 16.dp),
+    )
+  }
+}
+
+@HedvigPreview
+@Composable
+internal fun PreviewChangeAddressResultDestination() {
+  HedvigTheme {
+    Surface {
+      ChangeAddressResultDestination(movingDate = "2023.03.12") {}
     }
   }
 }

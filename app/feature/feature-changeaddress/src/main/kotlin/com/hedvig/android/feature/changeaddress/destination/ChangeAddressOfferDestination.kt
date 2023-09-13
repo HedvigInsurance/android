@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,7 +41,6 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.BaselineShift
@@ -49,19 +49,22 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
-import com.hedvig.android.core.designsystem.component.button.LargeTextButton
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
+import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.card.HedvigInfoCard
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.ValidatedInput
+import com.hedvig.android.core.ui.appbar.m3.TopAppBarActionType
 import com.hedvig.android.core.ui.card.ExpandablePlusCard
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.changeaddress.ChangeAddressUiState
+import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.feature.changeaddress.data.MoveIntentId
 import com.hedvig.android.feature.changeaddress.data.MoveQuote
 import com.hedvig.android.feature.changeaddress.ui.QuoteCard
@@ -73,38 +76,36 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import octopus.type.CurrencyCode
 
-// import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
+@Composable
+internal fun ChangeAddressOfferDestination(
+  viewModel: ChangeAddressViewModel,
+  openChat: () -> Unit,
+  close: () -> Unit,
+  onChangeAddressResult: (String?) -> Unit,
+) {
+  val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
+  val moveResult = uiState.successfulMoveResult
 
-// @Composable
-// internal fun ChangeAddressOfferDestination(
-//  viewModel: ChangeAddressViewModel,
-//  openChat: () -> Unit,
-//  navigateBack: () -> Unit,
-//  onChangeAddressResult: () -> Unit,
-// ) {
-//  val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
-//  val moveResult = uiState.successfulMoveResult
-//
-//  LaunchedEffect(moveResult) {
-//    if (moveResult != null) {
-//      onChangeAddressResult()
-//    }
-//  }
-//  ChangeAddressOfferScreen(
-//    uiState = uiState,
-//    openChat = openChat,
-//    navigateBack = navigateBack,
-//    onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
-//    onExpandQuote = viewModel::onExpandQuote,
-//    onConfirmMove = viewModel::onConfirmMove,
-//  )
-// }
+  LaunchedEffect(moveResult) {
+    if (moveResult != null) {
+      onChangeAddressResult(uiState.movingDate.input?.toString())
+    }
+  }
+  ChangeAddressOfferScreen(
+    uiState = uiState,
+    openChat = openChat,
+    close = close,
+    onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
+    onExpandQuote = viewModel::onExpandQuote,
+    onConfirmMove = viewModel::onConfirmMove,
+  )
+}
 
 @Composable
 private fun ChangeAddressOfferScreen(
   uiState: ChangeAddressUiState,
   openChat: () -> Unit,
-  navigateBack: () -> Unit,
+  close: () -> Unit,
   onErrorDialogDismissed: () -> Unit,
   onExpandQuote: (MoveQuote) -> Unit,
   onConfirmMove: (MoveIntentId) -> Unit,
@@ -120,18 +121,13 @@ private fun ChangeAddressOfferScreen(
 
   val scrollState = rememberScrollState()
   HedvigScaffold(
-    navigateUp = navigateBack,
+    topAppBarText = "Summary",
+    navigateUp = close,
     topAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
+    topAppBarActionType = TopAppBarActionType.CLOSE,
     scrollState = scrollState,
   ) {
-    Spacer(Modifier.height(48.dp))
-    Text(
-      text = stringResource(R.string.CHANGE_ADDRESS_ACCEPT_QUOTES_TITLE),
-      style = MaterialTheme.typography.headlineSmall,
-      textAlign = TextAlign.Center,
-      modifier = Modifier.fillMaxWidth(),
-    )
-    Spacer(Modifier.height(64.dp))
+    Spacer(Modifier.height(8.dp))
     for (quote in uiState.quotes) {
       QuoteCard(
         movingDate = uiState.movingDate.input?.toString(),
@@ -141,13 +137,6 @@ private fun ChangeAddressOfferScreen(
         modifier = Modifier.padding(horizontal = 16.dp),
       )
       Spacer(Modifier.height(16.dp))
-//      if (quote.isMovingFlow) { // check if is moving flow somehow?
-//        AddressInfoCard(
-//          text = stringResource(R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT),
-//          modifier = Modifier.padding(horizontal = 16.dp),
-//        )
-//        Spacer(Modifier.height(16.dp))
-//      }
     }
     if (uiState.quotes.size > 1) {
       QuotesPriceSum(
@@ -155,18 +144,18 @@ private fun ChangeAddressOfferScreen(
         modifier = Modifier.padding(horizontal = 16.dp),
       )
     }
-    Spacer(Modifier.height(16.dp))
-    LargeContainedButton(
+    Spacer(Modifier.height(32.dp))
+    HedvigContainedButton(
+      text = stringResource(R.string.CHANGE_ADDRESS_ACCEPT_OFFER),
       onClick = { onConfirmMove(moveIntentId) },
-      shape = MaterialTheme.shapes.squircleMedium,
+      isLoading = uiState.isLoading,
       modifier = Modifier.padding(horizontal = 16.dp),
-    ) {
-      Text(text = stringResource(R.string.CHANGE_ADDRESS_ACCEPT_OFFER))
-    }
+    )
     Spacer(Modifier.height(8.dp))
     val coroutineScope = rememberCoroutineScope()
     var whatsIncludedButtonPositionY by remember { mutableStateOf(0f) }
-    LargeTextButton(
+    HedvigTextButton(
+      text = "Se vad som ingår",
       onClick = {
         coroutineScope.launch {
           scrollState.animateScrollTo(
@@ -175,7 +164,6 @@ private fun ChangeAddressOfferScreen(
           )
         }
       },
-      shape = MaterialTheme.shapes.squircleMedium,
       modifier = Modifier
         .padding(horizontal = 16.dp)
         .onGloballyPositioned { layoutCoordinates ->
@@ -183,12 +171,7 @@ private fun ChangeAddressOfferScreen(
           whatsIncludedButtonPositionY =
             layoutCoordinates.positionInParent().y + layoutCoordinates.size.height
         },
-    ) {
-      Text(
-        text = "Se vad som ingår",
-        fontSize = 18.sp,
-      )
-    }
+    )
     Spacer(Modifier.height(80.dp))
     for (quote in uiState.quotes) {
       QuoteDetailsAndPdfs(
@@ -363,7 +346,6 @@ private fun ColumnScope.CoverageRows(quote: MoveQuote) {
   }
 }
 
-@OptIn(ExperimentalTextApi::class)
 @Composable
 private fun Pdfs(quote: MoveQuote) {
   // todo get pdf info from inside MoveQuote

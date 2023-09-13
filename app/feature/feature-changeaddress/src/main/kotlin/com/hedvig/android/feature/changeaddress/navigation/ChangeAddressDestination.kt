@@ -5,14 +5,16 @@ import kotlinx.serialization.Serializable
 
 internal sealed interface ChangeAddressDestination : Destination {
   @Serializable
-  object EnterNewAddress : ChangeAddressDestination
+  data object EnterNewAddress : ChangeAddressDestination
 
   @Serializable
-  object OfferDestination : ChangeAddressDestination
+  data object OfferDestination : ChangeAddressDestination
 
   @Serializable
-  object SelectHousingType : ChangeAddressDestination
+  data object SelectHousingType : ChangeAddressDestination
 
   @Serializable
-  object AddressResult : ChangeAddressDestination
+  data class AddressResult(
+    val movingDate: String?,
+  ) : ChangeAddressDestination
 }

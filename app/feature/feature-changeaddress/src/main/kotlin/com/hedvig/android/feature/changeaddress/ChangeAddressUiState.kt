@@ -16,7 +16,7 @@ data class ChangeAddressUiState(
   val postalCode: ValidatedInput<String?> = ValidatedInput(null),
   val squareMeters: ValidatedInput<String?> = ValidatedInput(null),
   val movingDate: ValidatedInput<LocalDate?> = ValidatedInput(null),
-  val numberCoInsured: ValidatedInput<Int?> = ValidatedInput(null),
+  val numberCoInsured: ValidatedInput<String?> = ValidatedInput(null),
   val housingType: ValidatedInput<HousingType?> = ValidatedInput(null),
   val moveRange: ClosedRange<LocalDate>? = null,
   val errorMessage: String? = null,

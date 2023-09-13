@@ -50,7 +50,7 @@ internal fun QuoteCard(
     modifier = modifier,
   ) {
     Column(Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp)) {
-      PillAndBasicInfo(movingDate)
+      PillAndBasicInfo(quote.insuranceName, movingDate)
       Spacer(Modifier.height(16.dp))
       Divider()
       Spacer(Modifier.height(16.dp))
@@ -73,7 +73,7 @@ internal fun QuoteCard(
 }
 
 @Composable
-private fun PillAndBasicInfo(movingDate: String?) {
+private fun PillAndBasicInfo(insuranceName: String, movingDate: String?) {
   Row(verticalAlignment = Alignment.CenterVertically) {
     Image(
       painter = painterResource(id = R.drawable.ic_pillow_home),
@@ -83,7 +83,7 @@ private fun PillAndBasicInfo(movingDate: String?) {
     Spacer(modifier = Modifier.width(16.dp))
     Column {
       Text(
-        text = "Hemförsäkring Bostadsrätt",
+        text = insuranceName,
         style = MaterialTheme.typography.titleMedium,
         fontSize = 18.sp,
       )
