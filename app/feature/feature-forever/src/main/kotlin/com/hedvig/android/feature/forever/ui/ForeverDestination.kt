@@ -71,7 +71,6 @@ import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.Copy
 import com.hedvig.android.core.ui.snackbar.HedvigSnackbar
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.data.forever.toErrorMessage
 import com.hedvig.android.feature.forever.ForeverEvent
 import com.hedvig.android.feature.forever.ForeverUiState
 import com.hedvig.android.feature.forever.ForeverViewModel
@@ -237,7 +236,7 @@ internal fun ForeverContent(
       onSubmitCode = {
         onSubmitCode(textFieldValueState.text)
       },
-      errorText = uiState.referralCodeError.toErrorMessage(),
+      errorText = uiState.referralCodeErrorMessage,
       showedReferralCodeSubmissionError = showedReferralCodeSubmissionError,
       isLoading = uiState.referralCodeLoading,
     )
@@ -478,7 +477,7 @@ private class ForeverUiStateProvider : CollectionPreviewParameterProvider<Foreve
       foreverData = null,
       isLoadingForeverData = false,
       referralCodeLoading = false,
-      referralCodeError = null,
+      referralCodeErrorMessage = null,
       showReferralCodeSuccessfullyChangedMessage = false,
     ),
     ForeverUiState(
@@ -499,7 +498,7 @@ private class ForeverUiStateProvider : CollectionPreviewParameterProvider<Foreve
       isLoadingForeverData = false,
       foreverDataErrorMessage = null,
       referralCodeLoading = false,
-      referralCodeError = null,
+      referralCodeErrorMessage = null,
       showReferralCodeSuccessfullyChangedMessage = false,
     ),
   ),
