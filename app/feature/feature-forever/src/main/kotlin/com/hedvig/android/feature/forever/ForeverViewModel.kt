@@ -57,6 +57,7 @@ internal class ForeverPresenter(
 
     LaunchedEffect(foreverDataLoadIteration) {
       isLoadingForeverData = true
+      foreverDataErrorMessage = null
       either {
         parZip(
           { foreverRepository.getReferralsData().bind() },
