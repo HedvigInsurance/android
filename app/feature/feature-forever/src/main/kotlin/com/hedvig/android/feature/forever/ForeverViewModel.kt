@@ -11,7 +11,6 @@ import arrow.fx.coroutines.parZip
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.forever.ForeverRepository
-import com.hedvig.android.data.forever.toErrorMessage
 import com.hedvig.android.feature.forever.data.GetReferralsInformationUseCase
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -96,7 +95,7 @@ internal class ForeverPresenter(
       isLoadingForeverData = isLoadingForeverData,
       foreverDataErrorMessage = foreverDataErrorMessage,
       referralCodeLoading = referralCodeToSubmit != null,
-      referralCodeErrorMessage = referralCodeToSubmitErrorMessage.toErrorMessage(),
+      referralCodeErrorMessage = referralCodeToSubmitErrorMessage,
       showReferralCodeSuccessfullyChangedMessage = showReferralCodeToSubmitSuccess,
     )
   }
@@ -114,7 +113,7 @@ internal data class ForeverUiState(
   val isLoadingForeverData: Boolean,
   val foreverDataErrorMessage: ErrorMessage?,
   val referralCodeLoading: Boolean,
-  val referralCodeErrorMessage: String?,
+  val referralCodeErrorMessage: ForeverRepository.ReferralError?,
   val showReferralCodeSuccessfullyChangedMessage: Boolean,
 ) {
 

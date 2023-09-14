@@ -45,7 +45,11 @@ class ForeverRepository(
         raise(ReferralError.CodeTooLong(result.updateReferralCampaignCode.asCodeTooLong!!.maxCharacters))
       }
       result.updateReferralCampaignCode.asCodeTooShort != null -> {
-        raise(ReferralError.CodeTooShort(result.updateReferralCampaignCode.asCodeTooShort!!.minCharacters))
+        if (result.updateReferralCampaignCode.asCodeTooShort!!.minCharacters <= 1) {
+          raise(ReferralError.CodeIsEmpty)
+        } else {
+          raise(ReferralError.CodeTooShort(result.updateReferralCampaignCode.asCodeTooShort!!.minCharacters))
+        }
       }
       result.updateReferralCampaignCode.asCodeAlreadyTaken != null -> {
         raise(ReferralError.CodeExists)
@@ -91,15 +95,7 @@ class ForeverRepository(
       val maxUpdates: Int,
     ) : ReferralError
 
+    data object CodeIsEmpty : ReferralError
     data object CodeExists : ReferralError
   }
-}
-
-fun ForeverRepository.ReferralError?.toErrorMessage(): String? = when (this) {
-  ForeverRepository.ReferralError.CodeExists -> "Code exists" // TODO string resources
-  is ForeverRepository.ReferralError.CodeTooLong -> "Code too long"
-  is ForeverRepository.ReferralError.CodeTooShort -> "Too short"
-  is ForeverRepository.ReferralError.GeneralError -> "General Error"
-  is ForeverRepository.ReferralError.MaxUpdates -> "Max updates"
-  null -> null
 }
