@@ -11,6 +11,7 @@ import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceVie
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailViewModel
 import com.hedvig.android.feature.insurances.insurancedetail.GetContractDetailsUseCase
 import com.hedvig.android.feature.insurances.insurancedetail.coverage.GetContractCoverageUseCase
+import com.hedvig.android.feature.insurances.insurancedetail.coverage.GetContractCoverageUseCaseImpl
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsViewModel
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageService
@@ -42,7 +43,7 @@ val insurancesModule = module {
     GetCrossSellsUseCaseImpl(get<ApolloClient>(octopusClient))
   }
   single<GetContractCoverageUseCase> {
-    GetContractCoverageUseCase(get<ApolloClient>(octopusClient))
+    GetContractCoverageUseCaseImpl(get<ApolloClient>(octopusClient))
   }
   single<GetContractDetailsUseCase> {
     GetContractDetailsUseCase(
