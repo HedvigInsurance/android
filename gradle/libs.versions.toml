@@ -5,7 +5,6 @@ targetSdkVersion = "33"
 minSdkVersion = "23"
 
 # lint versions
-slackLintCompose = "1.2.0"
 lintApi = "31.1.1"
 lintGradlePlugin = "8.1.1"
 
@@ -65,6 +64,7 @@ coreLibraryDesugaring = "2.0.3"
 coroutines = "1.7.3"
 datadog = "1.19.3"
 dependencyAnalysis = "1.20.0"
+firebaseCrashlyticsBuildtools = "2.9.9"
 flexbox = "3.0.0"
 fragmentViewBindingDelegate = "1.0.2"
 hAnalytics = "v0.300.0"
@@ -95,11 +95,11 @@ retrofitArrow = "1.2.0-RC"
 retrofitKotlinxSerializationConverter = "1.0.0"
 shimmer = "0.5.0"
 slimber = "2.0.0"
+testParameterInjector = "1.12"
 timber = "5.0.1"
 turbine = "1.0.0"
 zXing = "3.5.1"
 zoomable = "1.5.0-beta1"
-firebaseCrashlyticsBuildtools = "2.9.9"
 
 [libraries]
 
@@ -232,6 +232,7 @@ retrofitArrow = { module = "io.arrow-kt:arrow-core-retrofit", version.ref = "ret
 retrofitKotlinxSerializationConverter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofitKotlinxSerializationConverter" }
 shimmer = { module = "com.facebook.shimmer:shimmer", version.ref = "shimmer" }
 slimber = { module = "com.github.PaulWoitaschek:Slimber", version.ref = "slimber" }
+testParameterInjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 zXing = { module = "com.google.zxing:core", version.ref = "zXing" }
@@ -246,7 +247,6 @@ kotlinter-gradlePlugin = { module = "org.jmailen.gradle:kotlinter-gradle", versi
 
 # lint dependencies
 lintApi = { module = "com.android.tools.lint:lint-api", version.ref = "lintApi" }
-slackLintCompose = { module = "com.slack.lint.compose:compose-lint-checks", version.ref = "slackLintCompose" }
 
 [bundles]
 
