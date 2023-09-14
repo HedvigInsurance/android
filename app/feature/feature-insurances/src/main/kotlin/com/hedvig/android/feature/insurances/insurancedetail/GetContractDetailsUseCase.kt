@@ -15,6 +15,7 @@ import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.language.LanguageService
 import giraffe.InsuranceQuery
+import giraffe.fragment.ContractStatusFragment
 import giraffe.type.TypeOfContract
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
@@ -50,13 +51,16 @@ internal class GetContractDetailsUseCase(
           isTerminationFlowEnabled: Boolean,
         ->
 
-        val isContractTerminated = run {
-          val status = contract.fragments.upcomingAgreementFragment.status
-          val isTerminatedInTheFuture = status.asTerminatedInFutureStatus != null
-          val isTerminatedToday = status.asTerminatedTodayStatus != null
-          isTerminatedInTheFuture || isTerminatedToday
+        val isContractDisallowedToBeTerminated = run {
+          val contractStatusFragment: ContractStatusFragment = contract.status.fragments.contractStatusFragment
+          val isTerminatedInTheFuture = contractStatusFragment.asTerminatedInFutureStatus != null ||
+            contractStatusFragment.asActiveInFutureAndTerminatedInFutureStatus != null
+          val isTerminatedToday = contractStatusFragment.asTerminatedTodayStatus != null
+          val isTerminatedInThePast = contractStatusFragment.asTerminatedStatus != null
+          val isDeleted = contractStatusFragment.asDeletedStatus != null
+          isTerminatedInTheFuture || isTerminatedToday || isTerminatedInThePast || isDeleted
         }
-        val cancelInsuranceData = if (isTerminationFlowEnabled && !isContractTerminated) {
+        val cancelInsuranceData = if (isTerminationFlowEnabled && !isContractDisallowedToBeTerminated) {
           ContractDetails.CancelInsuranceData(contract.id, contract.displayName)
         } else {
           null
