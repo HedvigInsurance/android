@@ -8,6 +8,7 @@ import assertk.assertions.isNull
 import assertk.assertions.prop
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.annotations.ApolloExperimental
+import com.apollographql.apollo3.api.BuilderScope
 import com.apollographql.apollo3.testing.enqueueTestResponse
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameter.TestParameterValuesProvider
@@ -22,7 +23,7 @@ import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager
 import com.hedvig.android.language.test.FakeLanguageService
 import giraffe.InsuranceQuery
-import giraffe.fragment.ContractStatusFragment
+import giraffe.type.ContractStatusMap
 import giraffe.type.Locale
 import giraffe.type.buildActiveInFutureAndTerminatedInFutureStatus
 import giraffe.type.buildActiveInFutureStatus
@@ -51,9 +52,9 @@ class GetContractDetailsUseCaseTest {
   @Test
   fun `the contract status should determine if terminating the contract is allowed or not`(
     @TestParameter(valuesProvider = ContractStatusToTerminationAvailabilityProvider::class)
-    contractStatusToTerminationAvailability: Pair<ContractStatusFragment, IsAllowedToTerminateContract>,
+    contractStatusToTerminationAvailability: Pair<BuilderScope.() -> ContractStatusMap, IsAllowedToTerminateContract>,
   ) = runTest {
-    val (contractStatusFragment, isTerminationAllowed) = contractStatusToTerminationAvailability
+    val (statusBuilder, isTerminationAllowed) = contractStatusToTerminationAvailability
     val getContractCoverageUseCase = object : GetContractCoverageUseCase {
       override suspend fun invoke(contractId: String): Either<ErrorMessage, ContractCoverage> {
         return ContractCoverage(persistentListOf(), persistentListOf()).right()
@@ -71,19 +72,7 @@ class GetContractDetailsUseCaseTest {
         contracts = listOf(
           buildContract {
             id = "contractId"
-            status = when {
-              contractStatusFragment.asPendingStatus != null -> buildPendingStatus {}
-              contractStatusFragment.asActiveInFutureStatus != null -> buildActiveInFutureStatus {}
-              contractStatusFragment.asActiveStatus != null -> buildActiveStatus {}
-              contractStatusFragment.asActiveInFutureAndTerminatedInFutureStatus != null -> {
-                buildActiveInFutureAndTerminatedInFutureStatus {}
-              }
-              contractStatusFragment.asTerminatedInFutureStatus != null -> buildTerminatedInFutureStatus {}
-              contractStatusFragment.asTerminatedTodayStatus != null -> buildTerminatedTodayStatus {}
-              contractStatusFragment.asTerminatedStatus != null -> buildTerminatedStatus {}
-              contractStatusFragment.asDeletedStatus != null -> buildDeletedStatus {}
-              else -> error("test error")
-            }
+            status = statusBuilder()
           },
         )
       },
@@ -102,51 +91,18 @@ class GetContractDetailsUseCaseTest {
   }
 
   private object ContractStatusToTerminationAvailabilityProvider : TestParameterValuesProvider {
-    private val nullContractStatusFragment =
-      ContractStatusFragment("", null, null, null, null, null, null, null, null)
-
-    override fun provideValues(): List<Pair<ContractStatusFragment, IsAllowedToTerminateContract>> {
-      return listOf(
-        nullContractStatusFragment.copy(
-          asPendingStatus = ContractStatusFragment.AsPendingStatus("", null),
-        ) to IsAllowedToTerminateContract.ALLOWED,
-        nullContractStatusFragment.copy(
-          asActiveInFutureStatus = ContractStatusFragment.AsActiveInFutureStatus(
-            "",
-            null,
-          ),
-        ) to IsAllowedToTerminateContract.ALLOWED,
-        nullContractStatusFragment.copy(
-          asActiveStatus = ContractStatusFragment.AsActiveStatus("", null, null),
-        ) to IsAllowedToTerminateContract.ALLOWED,
-        nullContractStatusFragment.copy(
-          asActiveInFutureAndTerminatedInFutureStatus = ContractStatusFragment.AsActiveInFutureAndTerminatedInFutureStatus(
-            "",
-            null,
-            null,
-          ),
-        ) to IsAllowedToTerminateContract.DISALLOWED,
-        nullContractStatusFragment.copy(
-          asTerminatedInFutureStatus = ContractStatusFragment.AsTerminatedInFutureStatus(
-            "",
-            null,
-          ),
-        ) to IsAllowedToTerminateContract.DISALLOWED,
-        nullContractStatusFragment.copy(
-          asTerminatedTodayStatus = ContractStatusFragment.AsTerminatedTodayStatus(
-            "",
-            null,
-          ),
-        ) to IsAllowedToTerminateContract.DISALLOWED,
-        nullContractStatusFragment.copy(
-          asTerminatedStatus = ContractStatusFragment.AsTerminatedStatus(
-            "",
-            null,
-          ),
-        ) to IsAllowedToTerminateContract.DISALLOWED,
-        nullContractStatusFragment.copy(
-          asDeletedStatus = ContractStatusFragment.AsDeletedStatus("", null),
-        ) to IsAllowedToTerminateContract.DISALLOWED,
+    override fun provideValues(): List<Pair<BuilderScope.() -> ContractStatusMap, IsAllowedToTerminateContract>> {
+      return listOf<Pair<BuilderScope.() -> ContractStatusMap, IsAllowedToTerminateContract>>(
+        { it: BuilderScope -> it.buildPendingStatus {} } to IsAllowedToTerminateContract.ALLOWED,
+        { it: BuilderScope -> it.buildActiveInFutureStatus {} } to IsAllowedToTerminateContract.ALLOWED,
+        { it: BuilderScope -> it.buildActiveStatus {} } to IsAllowedToTerminateContract.ALLOWED,
+        { it: BuilderScope ->
+          it.buildActiveInFutureAndTerminatedInFutureStatus {}
+        } to IsAllowedToTerminateContract.DISALLOWED,
+        { it: BuilderScope -> it.buildTerminatedInFutureStatus {} } to IsAllowedToTerminateContract.DISALLOWED,
+        { it: BuilderScope -> it.buildTerminatedTodayStatus {} } to IsAllowedToTerminateContract.DISALLOWED,
+        { it: BuilderScope -> it.buildTerminatedStatus {} } to IsAllowedToTerminateContract.DISALLOWED,
+        { it: BuilderScope -> it.buildDeletedStatus {} } to IsAllowedToTerminateContract.DISALLOWED,
       )
     }
   }
