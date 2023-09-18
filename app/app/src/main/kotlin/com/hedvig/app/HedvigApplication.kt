@@ -4,7 +4,7 @@ import android.app.Application
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ProcessLifecycleOwner
-import com.hedvig.android.core.datastore.SettingsDataStore
+import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.hanalytics.android.tracking.ApplicationLifecycleTracker
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.theme.Theme

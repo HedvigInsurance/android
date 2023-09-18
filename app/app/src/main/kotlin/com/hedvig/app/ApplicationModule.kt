@@ -32,6 +32,7 @@ import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.data.forever.di.foreverDataModule
+import com.hedvig.android.data.settings.datastore.di.settingsDatastoreModule
 import com.hedvig.android.data.travelcertificate.di.claimFlowDataModule
 import com.hedvig.android.data.travelcertificate.di.travelCertificateDataModule
 import com.hedvig.android.datadog.addDatadogConfiguration
@@ -660,6 +661,7 @@ val applicationModule = module {
       profileModule,
       repositoriesModule,
       serviceModule,
+      settingsDatastoreModule,
       sharedPreferencesModule,
       terminateInsuranceModule,
       textActionSetModule,

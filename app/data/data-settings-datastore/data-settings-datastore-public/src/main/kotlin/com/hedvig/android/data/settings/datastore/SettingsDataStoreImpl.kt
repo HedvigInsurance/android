@@ -1,4 +1,4 @@
-package com.hedvig.android.core.datastore
+package com.hedvig.android.data.settings.datastore
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -8,16 +8,21 @@ import com.hedvig.android.theme.Theme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class SettingsDataStore(
+interface SettingsDataStore {
+  suspend fun setTheme(theme: Theme)
+  fun observeTheme(): Flow<Theme>
+}
+
+class SettingsDataStoreImpl(
   private val dataStore: DataStore<Preferences>,
-) {
-  suspend fun setTheme(theme: Theme) {
+) : SettingsDataStore {
+  override suspend fun setTheme(theme: Theme) {
     dataStore.edit {
       it[themeKey] = theme.name
     }
   }
 
-  fun observeTheme(): Flow<Theme> {
+  override fun observeTheme(): Flow<Theme> {
     return dataStore.data.map {
       it[themeKey]?.let { themeString -> Theme.valueOf(themeString) } ?: Theme.SYSTEM_DEFAULT
     }

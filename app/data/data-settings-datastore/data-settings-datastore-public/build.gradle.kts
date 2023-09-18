@@ -5,10 +5,9 @@ plugins {
 }
 
 dependencies {
-  api(libs.androidx.datastore.core)
-  api(libs.androidx.datastore.preferencesCore)
-
+  implementation(libs.androidx.datastore.core)
+  implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.coroutines.core)
   implementation(libs.koin.core)
-  implementation(projects.coreCommonPublic)
+  implementation(projects.theme)
 }

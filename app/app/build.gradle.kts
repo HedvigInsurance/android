@@ -203,6 +203,7 @@ dependencies {
   implementation(projects.dataClaimFlow)
   implementation(projects.dataClaimTriaging)
   implementation(projects.dataForever)
+  implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.dataTravelCertificatePublic)
   implementation(projects.datadog)
   implementation(projects.featureChangeaddress)
