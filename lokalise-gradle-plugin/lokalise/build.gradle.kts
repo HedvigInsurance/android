@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+
 plugins {
   `embedded-kotlin`
   `java-gradle-plugin`
@@ -12,6 +14,10 @@ dependencies {
 java {
   sourceCompatibility = JavaVersion.VERSION_17
   targetCompatibility = JavaVersion.VERSION_17
+}
+
+tasks.withType<KotlinJvmCompile>().configureEach {
+  kotlinOptions.jvmTarget = JavaVersion.VERSION_17.toString()
 }
 
 gradlePlugin {
