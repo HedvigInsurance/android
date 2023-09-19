@@ -20,12 +20,12 @@ import com.hedvig.android.feature.terminateinsurance.step.terminationdate.Termin
 import com.hedvig.android.feature.terminateinsurance.step.terminationfailure.TerminationFailureDestination
 import com.hedvig.android.feature.terminateinsurance.step.terminationsuccess.TerminationSuccessDestination
 import com.hedvig.android.feature.terminateinsurance.step.unknown.UnknownScreenDestination
-import com.hedvig.android.navigation.compose.typed.animatedComposable
-import com.hedvig.android.navigation.compose.typed.animatedNavigation
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.Navigator
+import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.decodeArguments
+import com.kiwi.navigationcompose.typed.navigation
 import com.kiwi.navigationcompose.typed.popBackStack
 import com.kiwi.navigationcompose.typed.popUpTo
 import org.koin.androidx.compose.koinViewModel
@@ -47,7 +47,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
   openChat: () -> Unit,
   openPlayStore: () -> Unit,
 ) {
-  animatedComposable<TerminateInsuranceDestination.TerminationSuccess> {
+  composable<TerminateInsuranceDestination.TerminationSuccess> {
     TerminationSuccessDestination(
       terminationDate = this.terminationDate,
       surveyUrl = this.surveyUrl,
@@ -56,7 +56,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       navigateBack = navigator::popBackStack,
     )
   }
-  animatedComposable<TerminateInsuranceDestination.TerminationFailure> {
+  composable<TerminateInsuranceDestination.TerminationFailure> {
     TerminationFailureDestination(
       windowSizeClass = windowSizeClass,
       errorMessage = ErrorMessage(this.message),
@@ -65,7 +65,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       navigateBack = navigator::popBackStack,
     )
   }
-  animatedComposable<TerminateInsuranceDestination.UnknownScreen> {
+  composable<TerminateInsuranceDestination.UnknownScreen> {
     UnknownScreenDestination(
       windowSizeClass = windowSizeClass,
       openPlayStore = openPlayStore,
@@ -73,10 +73,10 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       navigateBack = navigator::popBackStack,
     )
   }
-  animatedNavigation<AppDestination.TerminateInsurance>(
+  navigation<AppDestination.TerminateInsurance>(
     startDestination = createRoutePattern<TerminateInsuranceDestination.StartStep>(),
   ) {
-    animatedComposable<TerminateInsuranceDestination.StartStep> { backStackEntry ->
+    composable<TerminateInsuranceDestination.StartStep> { backStackEntry ->
       val terminateInsurance = getTerminateInsuranceDataFromParentBackstack(navController, backStackEntry)
       val insuranceId: InsuranceId = InsuranceId(terminateInsurance.insuranceId)
       val viewModel: TerminationStartStepViewModel = koinViewModel { parametersOf(insuranceId) }
@@ -92,7 +92,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         },
       )
     }
-    animatedComposable<TerminateInsuranceDestination.TerminationDate> { backStackEntry ->
+    composable<TerminateInsuranceDestination.TerminationDate> { backStackEntry ->
       val shouldFinishFlowOnBack = run {
         val previousBackstackEntryRoute = navController.previousBackStackEntry?.destination?.route
         previousBackstackEntryRoute == createRoutePattern<TerminateInsuranceDestination.StartStep>()
@@ -119,7 +119,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         },
       )
     }
-    animatedComposable<TerminateInsuranceDestination.InsuranceDeletion> { backStackEntry ->
+    composable<TerminateInsuranceDestination.InsuranceDeletion> { backStackEntry ->
       val terminateInsurance = getTerminateInsuranceDataFromParentBackstack(navController, backStackEntry)
       val shouldFinishFlowOnBack = run {
         val previousBackstackEntryRoute = navController.previousBackStackEntry?.destination?.route

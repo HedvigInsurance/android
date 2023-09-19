@@ -14,7 +14,6 @@ dependencies {
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.hanalyticsFeatureFlagsPublic)
   implementation(projects.languageCore)
-  implementation(projects.loggingPublic)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)

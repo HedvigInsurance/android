@@ -13,13 +13,13 @@ import com.hedvig.android.feature.insurances.insurancedetail.ContractDetails
 import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsDestination
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsViewModel
-import com.hedvig.android.navigation.compose.typed.animatedComposable
-import com.hedvig.android.navigation.compose.typed.animatedNavigation
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.android.navigation.core.TopLevelGraph
+import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createRoutePattern
+import com.kiwi.navigationcompose.typed.navigation
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -33,14 +33,14 @@ fun NavGraphBuilder.insuranceGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   imageLoader: ImageLoader,
 ) {
-  animatedNavigation<TopLevelGraph.INSURANCE>(
+  navigation<TopLevelGraph.INSURANCE>(
     startDestination = createRoutePattern<AppDestination.TopLevelDestination.Insurance>(),
     deepLinks = listOf(
       navDeepLink { uriPattern = hedvigDeepLinkContainer.insurances },
     ),
   ) {
     nestedGraphs()
-    animatedComposable<AppDestination.TopLevelDestination.Insurance>(
+    composable<AppDestination.TopLevelDestination.Insurance>(
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
     ) { backStackEntry ->
@@ -57,7 +57,7 @@ fun NavGraphBuilder.insuranceGraph(
         imageLoader = imageLoader,
       )
     }
-    animatedComposable<InsurancesDestination.InsuranceContractDetail> { backStackEntry ->
+    composable<InsurancesDestination.InsuranceContractDetail> { backStackEntry ->
       val contractDetail = this
       val viewModel: ContractDetailViewModel = koinViewModel { parametersOf(contractDetail.contractId) }
       ContractDetailDestination(
@@ -77,7 +77,7 @@ fun NavGraphBuilder.insuranceGraph(
         imageLoader = imageLoader,
       )
     }
-    animatedComposable<InsurancesDestination.TerminatedInsurances> { backStackEntry ->
+    composable<InsurancesDestination.TerminatedInsurances> { backStackEntry ->
       val viewModel: TerminatedContractsViewModel = koinViewModel()
       TerminatedContractsDestination(
         viewModel = viewModel,

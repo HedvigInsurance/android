@@ -52,7 +52,6 @@ dependencies {
   implementation(projects.hanalyticsCore)
   implementation(projects.hanalyticsFeatureFlagsPublic)
   implementation(projects.languageCore)
-  implementation(projects.loggingPublic)
   implementation(projects.marketCore)
   implementation(projects.memberRemindersPublic)
   implementation(projects.memberRemindersUi)

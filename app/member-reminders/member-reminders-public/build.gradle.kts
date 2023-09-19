@@ -25,7 +25,6 @@ dependencies {
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.hanalyticsFeatureFlagsPublic)
-  implementation(projects.loggingPublic)
 
   testImplementation(libs.apollo.annotations)
   testImplementation(libs.apollo.testingSupport)

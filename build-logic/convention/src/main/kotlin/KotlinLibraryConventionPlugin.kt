@@ -23,6 +23,9 @@ class KotlinLibraryConventionPlugin : Plugin<Project> {
 
       dependencies {
         add("lintChecks", project(":hedvig-lint"))
+        if (target.name != "logging-public") {
+          add("implementation", project(":logging-public"))
+        }
       }
     }
   }

@@ -3,7 +3,7 @@ package com.hedvig.android.feature.insurances.insurance
 import android.net.Uri
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.with
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -138,7 +138,7 @@ private fun InsuranceScreen(
     AnimatedContent(
       targetState = uiState.isLoading,
       transitionSpec = {
-        MotionDefaults.fadeThroughEnter with MotionDefaults.fadeThroughExit
+        MotionDefaults.fadeThroughEnter togetherWith MotionDefaults.fadeThroughExit
       },
       label = "uiState is Loading",
       modifier = Modifier.fillMaxSize(),

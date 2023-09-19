@@ -1,20 +1,20 @@
 [versions]
 # androidSdkVersions
-compileSdkVersion = "33"
+compileSdkVersion = "34"
 targetSdkVersion = "33"
 minSdkVersion = "23"
 
 # lint versions
 slackLintCompose = "1.2.0"
 lintApi = "31.1.1"
-lintGradlePlugin = "8.1.0"
+lintGradlePlugin = "8.1.1"
 
 # gradlePlugin versions
-androidGradlePlugin = "8.1.0"
+androidGradlePlugin = "8.1.1"
 androidRemoveUnusedResourcesPlugin = "1.4.1"
 apollo = "3.8.2"
 cacheFix = "2.7.2"
-crashlytics = "2.9.7"
+crashlytics = "2.9.9"
 datadogPlugin = "1.11.0"
 doctor = "0.8.1"
 easylauncher = "6.2.0"
@@ -23,29 +23,29 @@ kotlin = "1.9.0"
 kotlinter = "3.12.0"
 ktor = "2.3.1"
 license = "0.9.3"
-molecule = "1.1.0"
+molecule = "1.2.0"
 squareSortDependencies = "0.3"
 
 # Other versions sorted alphabetically
-accompanist = "0.30.1"
+accompanist = "0.32.0"
 adyen = "4.12.1"
-androidx-annotation = "1.6.0"
+androidx-annotation = "1.7.0"
 androidx-arch-testing = "2.2.0"
-androidx-composeBom = "2023.06.01"
+androidx-composeBom = "2023.09.00"
 androidx-composeCompiler = "1.5.1"
 androidx-datastore = "1.0.0"
 androidx-espresso = "3.5.1"
-androidx-lifecycle = "2.6.1"
-androidx-navigation = "2.6.0"
+androidx-lifecycle = "2.6.2"
+androidx-navigation = "2.7.2"
 androidx-other-activityCompose = "1.7.2"
 androidx-other-appCompat = "1.6.1"
-androidx-other-browser = "1.5.0"
+androidx-other-browser = "1.6.0"
 androidx-other-constraintLayout = "2.1.4"
-androidx-other-core = "1.10.1"
+androidx-other-core = "1.12.0"
 androidx-other-dynamicAnimation = "1.0.0"
-androidx-other-fragment = "1.6.0"
-androidx-other-preference = "1.2.0"
-androidx-other-recyclerView = "1.3.0"
+androidx-other-fragment = "1.6.1"
+androidx-other-preference = "1.2.1"
+androidx-other-recyclerView = "1.3.1"
 androidx-other-splashscreen = "1.0.1"
 androidx-other-startup = "1.1.1"
 androidx-other-swipeRefreshLayout = "1.1.0"
@@ -62,10 +62,9 @@ assertK = "0.26.1"
 coil = "2.4.0"
 concatAdapterExtension = "1.2.1"
 coreLibraryDesugaring = "2.0.3"
-coroutines = "1.7.2"
+coroutines = "1.7.3"
 datadog = "1.19.3"
 dependencyAnalysis = "1.20.0"
-firebase = "28.4.2"
 flexbox = "3.0.0"
 fragmentViewBindingDelegate = "1.0.2"
 hAnalytics = "v0.300.0"
@@ -74,7 +73,7 @@ insetter = "0.6.1"
 jsonTest = "20230618"
 junit = "4.13.2"
 kaspresso = "1.5.2"
-kiwi-navigationCompose = "0.6.2"
+kiwi-navigationCompose = "0.7.0"
 koinAndroid = "3.4.1"
 koinCompose = "3.4.5"
 koinCore = "3.4.1"
@@ -100,12 +99,11 @@ timber = "5.0.1"
 turbine = "1.0.0"
 zXing = "3.5.1"
 zoomable = "1.5.0-beta1"
-firebaseCrashlyticsBuildtools = "2.9.7"
+firebaseCrashlyticsBuildtools = "2.9.9"
 
 [libraries]
 
 accompanist-insetsUi = { module = "com.google.accompanist:accompanist-insets-ui", version.ref = "accompanist" }
-accompanist-navigationAnimation = { module = "com.google.accompanist:accompanist-navigation-animation", version.ref = "accompanist" }
 accompanist-pagerIndicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanist" }
 accompanist-systemUiController = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
@@ -190,7 +188,7 @@ coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", ve
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 datadog-sdk = { module = "com.datadoghq:dd-sdk-android", version.ref = "datadog" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics-ktx" }
-firebase-bom = "com.google.firebase:firebase-bom:32.2.0"
+firebase-bom = "com.google.firebase:firebase-bom:32.2.3"
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics-ktx" }
 firebase-dynamicLinks = { module = "com.google.firebase:firebase-dynamic-links" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }

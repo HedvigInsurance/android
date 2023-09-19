@@ -15,8 +15,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
+import androidx.navigation.compose.NavHost
 import coil.ImageLoader
-import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.hedvig.android.app.ui.HedvigAppState
 import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
@@ -113,7 +113,7 @@ internal fun HedvigNavHost(
       if (url.isBlank()) Uri.EMPTY else Uri.parse(url),
     )
   }
-  AnimatedNavHost(
+  NavHost(
     navController = hedvigAppState.navController,
     startDestination = createRoutePattern<TopLevelGraph.HOME>(),
     route = "root",

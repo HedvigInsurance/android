@@ -33,11 +33,11 @@ import com.hedvig.android.feature.odyssey.step.summary.ClaimSummaryDestination
 import com.hedvig.android.feature.odyssey.step.summary.ClaimSummaryViewModel
 import com.hedvig.android.feature.odyssey.step.unknownerror.UnknownErrorDestination
 import com.hedvig.android.feature.odyssey.step.unknownscreen.UnknownScreenDestination
-import com.hedvig.android.navigation.compose.typed.animatedComposable
-import com.hedvig.android.navigation.compose.typed.animatedNavigation
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.Navigator
+import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createRoutePattern
+import com.kiwi.navigationcompose.typed.navigation
 import com.kiwi.navigationcompose.typed.popUpTo
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -51,11 +51,11 @@ fun NavGraphBuilder.claimFlowGraph(
   closeClaimFlow: () -> Unit,
   nestedGraphs: NavGraphBuilder.() -> Unit,
 ) {
-  animatedNavigation<AppDestination.ClaimsFlow>(
+  navigation<AppDestination.ClaimsFlow>(
     startDestination = createRoutePattern<ClaimFlowDestination.HonestyPledge>(),
   ) {
     nestedGraphs()
-    animatedComposable<ClaimFlowDestination.HonestyPledge>(
+    composable<ClaimFlowDestination.HonestyPledge>(
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
     ) { backStackEntry ->
@@ -71,7 +71,7 @@ fun NavGraphBuilder.claimFlowGraph(
         closeClaimFlow = closeClaimFlow,
       )
     }
-    animatedComposable<ClaimFlowDestination.NotificationPermission> {
+    composable<ClaimFlowDestination.NotificationPermission> {
       NotificationPermissionDestination(
         windowSizeClass = windowSizeClass,
         onNotificationPermissionDecided = {
@@ -84,7 +84,7 @@ fun NavGraphBuilder.claimFlowGraph(
         closeClaimFlow = closeClaimFlow,
       )
     }
-    animatedComposable<ClaimFlowDestination.AudioRecording> { backStackEntry ->
+    composable<ClaimFlowDestination.AudioRecording> { backStackEntry ->
       val viewModel: AudioRecordingViewModel = koinViewModel { parametersOf(flowId, audioContent) }
       AudioRecordingDestination(
         viewModel = viewModel,
@@ -100,7 +100,7 @@ fun NavGraphBuilder.claimFlowGraph(
         closeClaimFlow = closeClaimFlow,
       )
     }
-    animatedComposable<ClaimFlowDestination.DateOfOccurrence> { backStackEntry ->
+    composable<ClaimFlowDestination.DateOfOccurrence> { backStackEntry ->
       val dateOfOccurrence: ClaimFlowDestination.DateOfOccurrence = this
       val viewModel: DateOfOccurrenceViewModel = koinViewModel { parametersOf(dateOfOccurrence) }
       DateOfOccurrenceDestination(
@@ -114,7 +114,7 @@ fun NavGraphBuilder.claimFlowGraph(
         closeClaimFlow = closeClaimFlow,
       )
     }
-    animatedComposable<ClaimFlowDestination.DateOfOccurrencePlusLocation> { backStackEntry ->
+    composable<ClaimFlowDestination.DateOfOccurrencePlusLocation> { backStackEntry ->
       val dateOfOccurencePlusLocation: ClaimFlowDestination.DateOfOccurrencePlusLocation = this
       val viewModel: DateOfOccurrencePlusLocationViewModel = koinViewModel {
         parametersOf(dateOfOccurencePlusLocation)
@@ -130,7 +130,7 @@ fun NavGraphBuilder.claimFlowGraph(
         closeClaimFlow = closeClaimFlow,
       )
     }
-    animatedComposable<ClaimFlowDestination.Location> { backStackEntry ->
+    composable<ClaimFlowDestination.Location> { backStackEntry ->
       val viewModel: LocationViewModel = koinViewModel { parametersOf(selectedLocation, locationOptions) }
       LocationDestination(
         viewModel = viewModel,
@@ -143,7 +143,7 @@ fun NavGraphBuilder.claimFlowGraph(
         closeClaimFlow = closeClaimFlow,
       )
     }
-    animatedComposable<ClaimFlowDestination.PhoneNumber> { backStackEntry ->
+    composable<ClaimFlowDestination.PhoneNumber> { backStackEntry ->
       val viewModel: PhoneNumberViewModel = koinViewModel { parametersOf(phoneNumber) }
       PhoneNumberDestination(
         viewModel = viewModel,
@@ -156,7 +156,7 @@ fun NavGraphBuilder.claimFlowGraph(
         closeClaimFlow = closeClaimFlow,
       )
     }
-    animatedComposable<ClaimFlowDestination.SingleItem> { backStackEntry ->
+    composable<ClaimFlowDestination.SingleItem> { backStackEntry ->
       val singleItem: ClaimFlowDestination.SingleItem = this
       val viewModel: SingleItemViewModel = koinViewModel { parametersOf(singleItem) }
       SingleItemDestination(
@@ -170,7 +170,7 @@ fun NavGraphBuilder.claimFlowGraph(
         closeClaimFlow = closeClaimFlow,
       )
     }
-    animatedComposable<ClaimFlowDestination.Summary> { backStackEntry ->
+    composable<ClaimFlowDestination.Summary> { backStackEntry ->
       val summary: ClaimFlowDestination.Summary = this
       val viewModel: ClaimSummaryViewModel = koinViewModel { parametersOf(summary) }
       ClaimSummaryDestination(
@@ -184,7 +184,7 @@ fun NavGraphBuilder.claimFlowGraph(
         closeClaimFlow = closeClaimFlow,
       )
     }
-    animatedComposable<ClaimFlowDestination.SingleItemCheckout> { backStackEntry ->
+    composable<ClaimFlowDestination.SingleItemCheckout> { backStackEntry ->
       val singleItemCheckout = this
       val viewModel: SingleItemCheckoutViewModel = koinViewModel { parametersOf(singleItemCheckout) }
       SingleItemCheckoutDestination(
@@ -203,7 +203,7 @@ fun NavGraphBuilder.claimFlowGraph(
         closeClaimFlow = closeClaimFlow,
       )
     }
-    animatedComposable<ClaimFlowDestination.SelectContract> { backStackEntry ->
+    composable<ClaimFlowDestination.SelectContract> { backStackEntry ->
       val viewModel: SelectContractViewModel = koinViewModel { parametersOf(this) }
       SelectContractDestination(
         viewModel = viewModel,
@@ -228,7 +228,7 @@ fun NavGraphBuilder.terminalClaimFlowStepDestinations(
   openPlayStore: () -> Unit,
   openChat: () -> Unit,
 ) {
-  animatedComposable<ClaimFlowDestination.SingleItemPayout> {
+  composable<ClaimFlowDestination.SingleItemPayout> {
     val singleItemPayout = this
     val viewModel: SingleItemPayoutViewModel = koinViewModel { parametersOf(singleItemPayout) }
     SingleItemPayoutDestination(
@@ -238,19 +238,19 @@ fun NavGraphBuilder.terminalClaimFlowStepDestinations(
       closePayoutScreen = navigator::popBackStack,
     )
   }
-  animatedComposable<ClaimFlowDestination.ClaimSuccess> {
+  composable<ClaimFlowDestination.ClaimSuccess> {
     ClaimSuccessDestination(
       openChat = openChat,
       closeSuccessScreen = navigator::popBackStack,
     )
   }
-  animatedComposable<ClaimFlowDestination.UpdateApp> {
+  composable<ClaimFlowDestination.UpdateApp> {
     UnknownScreenDestination(
       openPlayStore = openPlayStore,
       closeUnknownScreenDestination = navigator::popBackStack,
     )
   }
-  animatedComposable<ClaimFlowDestination.Failure> {
+  composable<ClaimFlowDestination.Failure> {
     UnknownErrorDestination(
       openChat = openChat,
       closeFailureScreenDestination = navigator::popBackStack,

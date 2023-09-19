@@ -23,6 +23,5 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreUiData)
   implementation(projects.dataClaimTriaging)
-  implementation(projects.loggingPublic)
   implementation(projects.navigationComposeTyped)
 }
