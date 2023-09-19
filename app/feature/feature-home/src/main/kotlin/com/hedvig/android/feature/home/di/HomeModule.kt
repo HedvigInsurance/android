@@ -15,6 +15,7 @@ import com.hedvig.android.feature.home.legacychangeaddress.CreateQuoteCartUseCas
 import com.hedvig.android.feature.home.legacychangeaddress.GetAddressChangeStoryIdUseCase
 import com.hedvig.android.feature.home.legacychangeaddress.GetUpcomingAgreementUseCase
 import com.hedvig.android.feature.home.legacychangeaddress.LegacyChangeAddressViewModel
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -39,6 +40,6 @@ val homeModule = module {
   viewModel<LegacyChangeAddressViewModel> { LegacyChangeAddressViewModel(get(), get(), get()) }
   viewModel<ClaimDetailViewModel> { (claimId: String) -> ClaimDetailViewModel(claimId, get(), get()) }
   viewModel<CommonClaimViewModel> { CommonClaimViewModel(get()) }
-  viewModel<HomeViewModel> { HomeViewModel(get<GetHomeDataUseCase>()) }
+  viewModel<HomeViewModel> { HomeViewModel(get<GetHomeDataUseCase>(), get<FeatureManager>()) }
   viewModel<HonestyPledgeViewModel> { HonestyPledgeViewModel(get()) }
 }

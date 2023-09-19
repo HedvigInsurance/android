@@ -205,23 +205,25 @@ private fun HomeScreen(
         }
       }
     }
-    Column {
-      TopAppBarLayoutForActions {
-        ToolbarChatIcon(
-          onClick = onStartChat,
+    if (uiState.showChatIcon) {
+      Column {
+        TopAppBarLayoutForActions {
+          ToolbarChatIcon(
+            onClick = onStartChat,
+          )
+        }
+        val shouldShowTooltip by produceState(false) {
+          val daysSinceLastTooltipShown = daysSinceLastTooltipShown(context)
+          value = daysSinceLastTooltipShown
+        }
+        ChatTooltip(
+          showTooltip = shouldShowTooltip,
+          tooltipShown = {
+            context.setLastEpochDayWhenChatTooltipWasShown(java.time.LocalDate.now().toEpochDay())
+          },
+          modifier = Modifier.align(Alignment.End).padding(horizontal = 16.dp),
         )
       }
-      val shouldShowTooltip by produceState(false) {
-        val daysSinceLastTooltipShown = daysSinceLastTooltipShown(context)
-        value = daysSinceLastTooltipShown
-      }
-      ChatTooltip(
-        showTooltip = shouldShowTooltip,
-        tooltipShown = {
-          context.setLastEpochDayWhenChatTooltipWasShown(java.time.LocalDate.now().toEpochDay())
-        },
-        modifier = Modifier.align(Alignment.End).padding(horizontal = 16.dp),
-      )
     }
     PullRefreshIndicator(
       refreshing = uiState.isReloading,
@@ -485,6 +487,7 @@ private fun PreviewHomeScreen() {
           allowGeneratingTravelCertificate = true,
           emergencyData = null,
           commonClaimsData = persistentListOf(),
+          showChatIcon = true,
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
