@@ -20,7 +20,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -32,7 +31,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
@@ -48,39 +46,40 @@ import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.feature.changeaddress.ChangeAddressUiState
-import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import hedvig.resources.R
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
-@Composable
-internal fun ChangeAddressEnterNewDestination(
-  viewModel: ChangeAddressViewModel,
-  navigateBack: () -> Unit,
-  onQuotesReceived: () -> Unit,
-) {
-  val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
+// import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 
-  val quotes = uiState.quotes
-  LaunchedEffect(quotes) {
-    if (quotes.isNotEmpty()) {
-      onQuotesReceived()
-    }
-  }
-  ChangeAddressEnterNewScreen(
-    uiState = uiState,
-    navigateBack = navigateBack,
-    onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
-    onStreetChanged = viewModel::onStreetChanged,
-    onPostalCodeChanged = viewModel::onPostalCodeChanged,
-    onSquareMetersChanged = viewModel::onSquareMetersChanged,
-    onCoInsuredChanged = viewModel::onCoInsuredChanged,
-    onMoveDateSelected = viewModel::onMoveDateSelected,
-    onSaveNewAddress = viewModel::onSaveNewAddress,
-  )
-}
+// @Composable
+// internal fun ChangeAddressEnterNewDestination(
+//  viewModel: ChangeAddressViewModel,
+//  navigateBack: () -> Unit,
+//  onQuotesReceived: () -> Unit,
+// ) {
+//  val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
+//
+//  val quotes = uiState.quotes
+//  LaunchedEffect(quotes) {
+//    if (quotes.isNotEmpty()) {
+//      onQuotesReceived()
+//    }
+//  }
+//  ChangeAddressEnterNewScreen(
+//    uiState = uiState,
+//    navigateBack = navigateBack,
+//    onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
+//    onStreetChanged = viewModel::onStreetChanged,
+//    onPostalCodeChanged = viewModel::onPostalCodeChanged,
+//    onSquareMetersChanged = viewModel::onSquareMetersChanged,
+//    onCoInsuredChanged = viewModel::onCoInsuredChanged,
+//    onMoveDateSelected = viewModel::onMoveDateSelected,
+//    onSaveNewAddress = viewModel::onSaveNewAddress,
+//  )
+// }
 
 @Composable
 private fun ChangeAddressEnterNewScreen(

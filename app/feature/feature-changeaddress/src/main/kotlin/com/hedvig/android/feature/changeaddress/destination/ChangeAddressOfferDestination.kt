@@ -27,7 +27,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,7 +49,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.component.button.LargeTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
@@ -64,7 +62,6 @@ import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.changeaddress.ChangeAddressUiState
-import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.feature.changeaddress.data.MoveIntentId
 import com.hedvig.android.feature.changeaddress.data.MoveQuote
 import com.hedvig.android.feature.changeaddress.ui.QuoteCard
@@ -76,30 +73,32 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import octopus.type.CurrencyCode
 
-@Composable
-internal fun ChangeAddressOfferDestination(
-  viewModel: ChangeAddressViewModel,
-  openChat: () -> Unit,
-  navigateBack: () -> Unit,
-  onChangeAddressResult: () -> Unit,
-) {
-  val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
-  val moveResult = uiState.successfulMoveResult
+// import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 
-  LaunchedEffect(moveResult) {
-    if (moveResult != null) {
-      onChangeAddressResult()
-    }
-  }
-  ChangeAddressOfferScreen(
-    uiState = uiState,
-    openChat = openChat,
-    navigateBack = navigateBack,
-    onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
-    onExpandQuote = viewModel::onExpandQuote,
-    onConfirmMove = viewModel::onConfirmMove,
-  )
-}
+// @Composable
+// internal fun ChangeAddressOfferDestination(
+//  viewModel: ChangeAddressViewModel,
+//  openChat: () -> Unit,
+//  navigateBack: () -> Unit,
+//  onChangeAddressResult: () -> Unit,
+// ) {
+//  val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
+//  val moveResult = uiState.successfulMoveResult
+//
+//  LaunchedEffect(moveResult) {
+//    if (moveResult != null) {
+//      onChangeAddressResult()
+//    }
+//  }
+//  ChangeAddressOfferScreen(
+//    uiState = uiState,
+//    openChat = openChat,
+//    navigateBack = navigateBack,
+//    onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
+//    onExpandQuote = viewModel::onExpandQuote,
+//    onConfirmMove = viewModel::onConfirmMove,
+//  )
+// }
 
 @Composable
 private fun ChangeAddressOfferScreen(

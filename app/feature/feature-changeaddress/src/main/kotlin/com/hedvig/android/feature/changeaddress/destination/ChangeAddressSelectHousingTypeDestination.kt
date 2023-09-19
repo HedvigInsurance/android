@@ -15,7 +15,6 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -23,7 +22,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.material3.squircleMedium
@@ -33,26 +31,27 @@ import com.hedvig.android.core.ui.R
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.feature.changeaddress.ChangeAddressUiState
-import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.feature.changeaddress.ui.AddressInfoCard
 import displayNameResource
 
-@Composable
-internal fun ChangeAddressSelectHousingTypeDestination(
-  viewModel: ChangeAddressViewModel,
-  navigateUp: () -> Unit,
-  onHousingTypeSubmitted: () -> Unit,
-) {
-  val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
-  ChangeAddressSelectHousingTypeScreen(
-    uiState = uiState,
-    navigateUp = navigateUp,
-    onHousingTypeSelected = viewModel::onHousingTypeSelected,
-    onHousingTypeSubmitted = onHousingTypeSubmitted,
-    onHousingTypeErrorDialogDismissed = viewModel::onHousingTypeErrorDialogDismissed,
-    onValidateHousingType = viewModel::onValidateHousingType,
-  )
-}
+// import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
+
+// @Composable
+// internal fun ChangeAddressSelectHousingTypeDestination(
+//  viewModel: ChangeAddressViewModel,
+//  navigateUp: () -> Unit,
+//  onHousingTypeSubmitted: () -> Unit,
+// ) {
+//  val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
+//  ChangeAddressSelectHousingTypeScreen(
+//    uiState = uiState,
+//    navigateUp = navigateUp,
+//    onHousingTypeSelected = viewModel::onHousingTypeSelected,
+//    onHousingTypeSubmitted = onHousingTypeSubmitted,
+//    onHousingTypeErrorDialogDismissed = viewModel::onHousingTypeErrorDialogDismissed,
+//    onValidateHousingType = viewModel::onValidateHousingType,
+//  )
+// }
 
 @Composable
 private fun ChangeAddressSelectHousingTypeScreen(
