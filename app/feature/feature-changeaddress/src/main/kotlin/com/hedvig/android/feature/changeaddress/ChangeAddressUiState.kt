@@ -10,7 +10,7 @@ import com.hedvig.android.feature.changeaddress.data.ExtraBuildingType
 import com.hedvig.android.feature.changeaddress.data.HousingType
 import com.hedvig.android.feature.changeaddress.data.MoveIntentId
 import com.hedvig.android.feature.changeaddress.data.MoveQuote
-import com.hedvig.android.feature.changeaddress.data.MoveResult
+import com.hedvig.android.feature.changeaddress.data.SuccessfulMove
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
@@ -33,7 +33,7 @@ internal data class ChangeAddressUiState(
   val isLoading: Boolean = false,
   val moveFromAddressId: AddressId? = null,
   val quotes: List<MoveQuote> = emptyList(),
-  val successfulMoveResult: MoveResult? = null,
+  val successfulMoveResult: SuccessfulMove? = null,
 ) {
 
   val isHousingTypeValid: Boolean

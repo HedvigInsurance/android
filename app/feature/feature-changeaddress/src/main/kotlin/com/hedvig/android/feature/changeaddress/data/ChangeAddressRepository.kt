@@ -14,7 +14,7 @@ import octopus.MoveIntentRequestMutation
 internal interface ChangeAddressRepository {
   suspend fun createMoveIntent(): Either<ErrorMessage, MoveIntent>
   suspend fun createQuotes(input: QuoteInput): Either<ErrorMessage, List<MoveQuote>>
-  suspend fun commitMove(id: MoveIntentId): Either<ErrorMessage, MoveResult>
+  suspend fun commitMove(id: MoveIntentId): Either<ErrorMessage, SuccessfulMove>
 }
 
 internal class NetworkChangeAddressRepository(
@@ -60,7 +60,7 @@ internal class NetworkChangeAddressRepository(
     }
   }
 
-  override suspend fun commitMove(id: MoveIntentId): Either<ErrorMessage, MoveResult> {
+  override suspend fun commitMove(id: MoveIntentId): Either<ErrorMessage, SuccessfulMove> {
     return either {
       val result = apolloClient
         .mutation(MoveIntentCommitMutation(id.id))
@@ -69,13 +69,11 @@ internal class NetworkChangeAddressRepository(
         .bind()
         .moveIntentCommit
 
-      val moveIntent = result.moveIntent
       val userError = result.userError
 
       when {
         userError != null -> raise(ErrorMessage(userError.message))
-        moveIntent != null -> moveIntent.toMoveResult()
-        else -> raise(ErrorMessage("No data found in MoveIntent"))
+        else -> SuccessfulMove
       }
     }
   }
@@ -114,7 +112,3 @@ private fun MoveIntentRequestMutation.Data.MoveIntentRequest.MoveIntent.toMoveQu
     productVariant = quote.productVariant,
   )
 }
-
-private fun MoveIntentCommitMutation.Data.MoveIntentCommit.MoveIntent.toMoveResult() = MoveResult(
-  addressId = AddressId(id),
-)
