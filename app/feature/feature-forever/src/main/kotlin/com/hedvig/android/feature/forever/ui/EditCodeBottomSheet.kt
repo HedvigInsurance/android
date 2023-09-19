@@ -29,6 +29,7 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedButt
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.material3.squircleLargeTop
+import com.hedvig.android.data.forever.ForeverRepository
 import hedvig.resources.R
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
@@ -39,7 +40,7 @@ import kotlinx.coroutines.flow.filter
 internal fun EditCodeBottomSheet(
   sheetState: SheetState,
   code: TextFieldValue,
-  errorText: String?,
+  referralCodeUpdateError: ForeverRepository.ReferralError?,
   showedReferralCodeSubmissionError: () -> Unit,
   onCodeChanged: (TextFieldValue) -> Unit,
   onDismiss: () -> Unit,
@@ -48,7 +49,7 @@ internal fun EditCodeBottomSheet(
 ) {
   // No idea why material3.ModalBottomSheet does not read the latest values here, but this fixes it
   // https://issuetracker.google.com/issues/300280211
-  val updatedErrorText by rememberUpdatedState(errorText)
+  val updatedReferralCodeUpdateError by rememberUpdatedState(referralCodeUpdateError)
   val updatedIsLoading by rememberUpdatedState(isLoading)
   ModalBottomSheet(
     containerColor = MaterialTheme.colorScheme.background,
@@ -71,7 +72,7 @@ internal fun EditCodeBottomSheet(
       value = code,
       label = { Text(stringResource(R.string.referrals_empty_code_headline)) },
       onValueChange = onCodeChanged,
-      errorText = updatedErrorText,
+      errorText = updatedReferralCodeUpdateError?.toErrorMessage(),
       modifier = Modifier
         .padding(horizontal = 16.dp)
         .focusRequester(focusRequester)
@@ -104,6 +105,30 @@ internal fun EditCodeBottomSheet(
         .collectLatest {
           focusManager.clearFocus()
         }
+    }
+  }
+}
+
+@Composable
+private fun ForeverRepository.ReferralError.toErrorMessage(): String {
+  return when (this) {
+    ForeverRepository.ReferralError.CodeExists -> {
+      stringResource(R.string.referrals_change_code_sheet_error_claimed_code)
+    }
+    is ForeverRepository.ReferralError.CodeTooLong -> {
+      stringResource(R.string.referrals_change_code_sheet_error_max_length)
+    }
+    is ForeverRepository.ReferralError.CodeIsEmpty -> {
+      stringResource(R.string.referrals_change_code_sheet_error_empty_code)
+    }
+    is ForeverRepository.ReferralError.CodeTooShort -> {
+      stringResource(R.string.referrals_change_code_sheet_general_error)
+    }
+    is ForeverRepository.ReferralError.GeneralError -> {
+      stringResource(R.string.referrals_change_code_sheet_general_error)
+    }
+    is ForeverRepository.ReferralError.MaxUpdates -> {
+      stringResource(R.string.referrals_change_code_sheet_error_change_limit_reached, this.maxUpdates)
     }
   }
 }

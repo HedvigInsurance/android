@@ -236,7 +236,7 @@ internal fun ForeverContent(
       onSubmitCode = {
         onSubmitCode(textFieldValueState.text)
       },
-      errorText = uiState.referralCodeErrorMessage,
+      referralCodeUpdateError = uiState.referralCodeErrorMessage,
       showedReferralCodeSubmissionError = showedReferralCodeSubmissionError,
       isLoading = uiState.referralCodeLoading,
     )
