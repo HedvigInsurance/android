@@ -83,13 +83,13 @@ internal fun HedvigNavHost(
 
   fun startMovingFlow() {
     coroutineScope.launch {
-      if (featureManager.isFeatureEnabled(Feature.NEW_MOVING_FLOW)) {
-        hedvigAppState.navController.navigate(AppDestination.ChangeAddress)
-      } else {
-        context.startActivity(
-          LegacyChangeAddressActivity.newInstance(context),
-        )
-      }
+//      if (featureManager.isFeatureEnabled(Feature.NEW_MOVING_FLOW)) { // todo use again as soon as MOVING_FLOW works
+//        hedvigAppState.navController.navigate(AppDestination.ChangeAddress)
+//      } else {
+      context.startActivity(
+        LegacyChangeAddressActivity.newInstance(context),
+      )
+//      }
     }
   }
 

@@ -1,10 +1,11 @@
-mutation MoveIntentCreate($input: MoveIntentCreateInput!) {
-  moveIntentCreate(input: $input) {
+#mutation MoveIntentCreate($input: MoveIntentCreateInput!) {
+mutation MoveIntentCreate {
+  moveIntentCreate {
     moveIntent {
       id
       minMovingDate
       maxMovingDate
-      numberCoInsured
+#      numberCoInsured
       currentHomeAddresses {
         id
         street
