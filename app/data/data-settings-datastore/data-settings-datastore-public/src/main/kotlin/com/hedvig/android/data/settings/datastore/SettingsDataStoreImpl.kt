@@ -10,7 +10,11 @@ import kotlinx.coroutines.flow.map
 
 interface SettingsDataStore {
   suspend fun setTheme(theme: Theme)
-  fun observeTheme(): Flow<Theme>
+
+  /**
+   * Returns if a specific [Theme] was explicitly chosen, otherwise null.
+   */
+  fun observeTheme(): Flow<Theme?>
 }
 
 class SettingsDataStoreImpl(
@@ -22,9 +26,9 @@ class SettingsDataStoreImpl(
     }
   }
 
-  override fun observeTheme(): Flow<Theme> {
+  override fun observeTheme(): Flow<Theme?> {
     return dataStore.data.map {
-      it[themeKey]?.let { themeString -> Theme.valueOf(themeString) } ?: Theme.SYSTEM_DEFAULT
+      it[themeKey]?.let { themeString -> Theme.valueOf(themeString) }
     }
   }
 
