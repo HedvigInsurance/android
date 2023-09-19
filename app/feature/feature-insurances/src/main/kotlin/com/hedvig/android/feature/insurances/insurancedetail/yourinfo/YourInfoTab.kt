@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
+import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.material3.squircleLargeTop
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -52,6 +53,8 @@ internal fun YourInfoTab(
   onEditCoInsuredClick: () -> Unit,
   onChangeAddressClick: () -> Unit,
   openChat: () -> Unit,
+  cancelInsuranceData: ContractDetails.CancelInsuranceData?,
+  onCancelInsuranceClick: (ContractDetails.CancelInsuranceData) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val coroutineScope = rememberCoroutineScope()
@@ -167,6 +170,17 @@ internal fun YourInfoTab(
       ),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
+    if (cancelInsuranceData != null) {
+      Spacer(Modifier.height(8.dp))
+      HedvigTextButton(
+        text = stringResource(R.string.TERMINATION_BUTTON),
+        onClick = { onCancelInsuranceClick(cancelInsuranceData) },
+        colors = ButtonDefaults.textButtonColors(
+          contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        ),
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+    }
     Spacer(Modifier.height(16.dp))
   }
 }
@@ -230,6 +244,8 @@ private fun PreviewYourInfoTab() {
         onEditCoInsuredClick = {},
         onChangeAddressClick = {},
         openChat = {},
+        cancelInsuranceData = ContractDetails.CancelInsuranceData("123", "123"),
+        onCancelInsuranceClick = {},
       )
     }
   }

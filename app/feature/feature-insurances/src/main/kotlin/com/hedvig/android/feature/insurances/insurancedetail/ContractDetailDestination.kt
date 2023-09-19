@@ -163,6 +163,8 @@ private fun ContractDetailScreen(
                       onChangeAddressClick = onChangeAddressClick,
                       upcomingChanges = state.contractDetails.upcomingChanges,
                       openChat = openChat,
+                      cancelInsuranceData = state.contractDetails.cancelInsuranceData,
+                      onCancelInsuranceClick = onCancelInsuranceClick,
                     )
                   }
 
@@ -177,8 +179,6 @@ private fun ContractDetailScreen(
                     DocumentsTab(
                       documents = state.contractDetails.documents,
                       onDocumentClicked = openWebsite,
-                      cancelInsuranceData = state.contractDetails.cancelInsuranceData,
-                      onCancelInsuranceClick = onCancelInsuranceClick,
                     )
                   }
 
