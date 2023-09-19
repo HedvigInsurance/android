@@ -65,12 +65,13 @@ fun NavGraphBuilder.insuranceGraph(
         onEditCoInsuredClick = openChat,
         onChangeAddressClick = { startMovingFlow() },
         onCancelInsuranceClick = { cancelInsuranceData: ContractDetails.CancelInsuranceData ->
+          // open termination flow
           startTerminationFlow(
             backStackEntry,
             cancelInsuranceData.insuranceId,
             cancelInsuranceData.insuranceDisplayName,
           )
-        }, // open termination flow
+        },
         openWebsite = openWebsite,
         openChat = openChat,
         navigateUp = navigator::navigateUp,

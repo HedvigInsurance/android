@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -49,7 +50,7 @@ internal fun DocumentsTab(
     Spacer(Modifier.height(16.dp))
     for ((index, document) in documents.withIndex()) {
       DocumentCard(
-        onClick = { onDocumentClicked(document.uri) },
+        onClick = { onDocumentClicked(document.url.toUri()) },
         title = stringResource(
           when (document) {
             is ContractDetails.Document.InsuranceCertificate -> R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE
@@ -129,8 +130,8 @@ private fun PreviewDocumentsScreen() {
     Surface(color = MaterialTheme.colorScheme.background) {
       DocumentsTab(
         documents = persistentListOf(
-          ContractDetails.Document.TermsAndConditions(Uri.EMPTY),
-          ContractDetails.Document.InsuranceCertificate(Uri.EMPTY),
+          ContractDetails.Document.TermsAndConditions(""),
+          ContractDetails.Document.InsuranceCertificate(""),
         ),
         onDocumentClicked = {},
       )

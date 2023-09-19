@@ -28,4 +28,7 @@ fragment ContractStatusFragment on ContractStatus {
   ... on TerminatedStatus {
     termination
   }
+  ... on DeletedStatus {
+    isDeleted
+  }
 }

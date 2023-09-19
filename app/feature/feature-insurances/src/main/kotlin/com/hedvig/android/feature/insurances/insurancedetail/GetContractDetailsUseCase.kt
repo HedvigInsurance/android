@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.insurances.insurancedetail
 
-import android.net.Uri
 import arrow.core.Either
 import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
@@ -15,6 +14,7 @@ import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.language.LanguageService
 import giraffe.InsuranceQuery
+import giraffe.fragment.ContractStatusFragment
 import giraffe.type.TypeOfContract
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
@@ -50,13 +50,16 @@ internal class GetContractDetailsUseCase(
           isTerminationFlowEnabled: Boolean,
         ->
 
-        val isContractTerminated = run {
-          val status = contract.fragments.upcomingAgreementFragment.status
-          val isTerminatedInTheFuture = status.asTerminatedInFutureStatus != null
-          val isTerminatedToday = status.asTerminatedTodayStatus != null
-          isTerminatedInTheFuture || isTerminatedToday
+        val isContractDisallowedToBeTerminated = run {
+          val contractStatusFragment: ContractStatusFragment = contract.status.fragments.contractStatusFragment
+          val isTerminatedInTheFuture = contractStatusFragment.asTerminatedInFutureStatus != null ||
+            contractStatusFragment.asActiveInFutureAndTerminatedInFutureStatus != null
+          val isTerminatedToday = contractStatusFragment.asTerminatedTodayStatus != null
+          val isTerminatedInThePast = contractStatusFragment.asTerminatedStatus != null
+          val isDeleted = contractStatusFragment.asDeletedStatus != null
+          isTerminatedInTheFuture || isTerminatedToday || isTerminatedInThePast || isDeleted
         }
-        val cancelInsuranceData = if (isTerminationFlowEnabled && !isContractTerminated) {
+        val cancelInsuranceData = if (isTerminationFlowEnabled && !isContractDisallowedToBeTerminated) {
           ContractDetails.CancelInsuranceData(contract.id, contract.displayName)
         } else {
           null
@@ -90,9 +93,9 @@ internal class GetContractDetailsUseCase(
           perils = contractCoverage.contractPerils,
           documents = listOfNotNull(
             contract.currentAgreement?.asAgreementCore?.certificateUrl?.let { certificateUrl ->
-              ContractDetails.Document.InsuranceCertificate(Uri.parse(certificateUrl))
+              ContractDetails.Document.InsuranceCertificate(certificateUrl)
             },
-            ContractDetails.Document.TermsAndConditions(Uri.parse(contract.termsAndConditions.url)),
+            ContractDetails.Document.TermsAndConditions(contract.termsAndConditions.url),
           ).toPersistentList(),
         )
       }
@@ -130,10 +133,10 @@ internal data class ContractDetails(
   )
 
   sealed interface Document {
-    val uri: Uri
+    val url: String
 
-    data class InsuranceCertificate(override val uri: Uri) : Document
-    data class TermsAndConditions(override val uri: Uri) : Document
+    data class InsuranceCertificate(override val url: String) : Document
+    data class TermsAndConditions(override val url: String) : Document
   }
 
   data class UpcomingChanges(

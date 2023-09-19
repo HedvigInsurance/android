@@ -74,5 +74,6 @@ data class ContractStatusFragmentBuilder(
     } else {
       null
     },
+    asDeletedStatus = null,
   )
 }

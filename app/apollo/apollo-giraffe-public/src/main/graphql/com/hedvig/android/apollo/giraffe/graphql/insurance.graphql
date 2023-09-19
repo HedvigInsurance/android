@@ -40,6 +40,5 @@ query InsuranceQuery($locale: Locale!) {
     statusPills(locale: $locale)
     detailPills(locale: $locale)
     supportsAddressChange
-    ...UpcomingAgreementFragment
   }
 }

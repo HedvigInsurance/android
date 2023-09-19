@@ -12,10 +12,14 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import octopus.ContractCoverageQuery
 
-internal class GetContractCoverageUseCase(
+internal interface GetContractCoverageUseCase {
+  suspend fun invoke(contractId: String): Either<ErrorMessage, ContractCoverage>
+}
+
+internal class GetContractCoverageUseCaseImpl(
   private val apolloClient: ApolloClient,
-) {
-  suspend fun invoke(
+) : GetContractCoverageUseCase {
+  override suspend fun invoke(
     contractId: String,
   ): Either<ErrorMessage, ContractCoverage> {
     return either {
