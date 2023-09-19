@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
@@ -12,6 +13,8 @@ import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimsData
 import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
 import com.hedvig.android.feature.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.data.HomeData
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -21,13 +24,18 @@ import kotlinx.datetime.LocalDate
 
 internal class HomePresenter(
   private val getHomeDataUseCase: GetHomeDataUseCase,
+  private val featureManager: FeatureManager,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
   @Composable
   override fun MoleculePresenterScope<HomeEvent>.present(lastState: HomeUiState): HomeUiState {
     var hasError by remember { mutableStateOf(false) }
-    var isReloading by remember { mutableStateOf(false) }
+    var isReloading by remember { mutableStateOf(lastState.isReloading) }
     var successData: SuccessData? by remember { mutableStateOf(SuccessData.fromLastState(lastState)) }
     var loadIteration by remember { mutableIntStateOf(0) }
+    val showChatIcon by produceState(lastState.showChatIcon) {
+      val showChatIcon = !featureManager.isFeatureEnabled(Feature.DISABLE_CHAT)
+      value = showChatIcon
+    }
 
     CollectEvents { homeEvent: HomeEvent ->
       when (homeEvent) {
@@ -79,6 +87,7 @@ internal class HomePresenter(
           allowGeneratingTravelCertificate = successData.allowGeneratingTravelCertificate,
           emergencyData = successData.emergencyData,
           commonClaimsData = successData.commonClaimsData,
+          showChatIcon = showChatIcon,
         )
       }
     }
@@ -93,6 +102,9 @@ internal sealed interface HomeUiState {
   val isReloading: Boolean
     get() = false
 
+  val showChatIcon: Boolean
+    get() = false
+
   data class Success(
     override val isReloading: Boolean = false,
     val homeText: HomeText,
@@ -103,6 +115,7 @@ internal sealed interface HomeUiState {
     val allowGeneratingTravelCertificate: Boolean,
     val emergencyData: EmergencyData?,
     val commonClaimsData: ImmutableList<CommonClaimsData>,
+    override val showChatIcon: Boolean,
   ) : HomeUiState
 
   data class Error(val message: String?) : HomeUiState

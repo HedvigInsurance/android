@@ -14,6 +14,8 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.home.claimstatus.data.ClaimStatusCardUiState
 import com.hedvig.android.feature.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.data.HomeData
+import com.hedvig.android.hanalytics.featureflags.flags.Feature
+import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager2
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.test.test
@@ -28,7 +30,7 @@ internal class HomePresenterTest {
   @Test
   fun `asking to refresh successfully asks for a fetch from the network`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
-    val homePresenter = HomePresenter(getHomeDataUseCase)
+    val homePresenter = HomePresenter(getHomeDataUseCase, FakeFeatureManager2())
 
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -49,7 +51,7 @@ internal class HomePresenterTest {
   @Test
   fun `getting a failed response and retrying, should result in a successful state`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
-    val homePresenter = HomePresenter(getHomeDataUseCase)
+    val homePresenter = HomePresenter(getHomeDataUseCase, FakeFeatureManager2())
 
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -68,7 +70,7 @@ internal class HomePresenterTest {
   @Test
   fun `a successful response, properly propagates the info to the UI State`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
-    val homePresenter = HomePresenter(getHomeDataUseCase)
+    val homePresenter = HomePresenter(getHomeDataUseCase, FakeFeatureManager2())
 
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -117,6 +119,7 @@ internal class HomePresenterTest {
           allowGeneratingTravelCertificate = false,
           emergencyData = null,
           commonClaimsData = persistentListOf(),
+          showChatIcon = false,
         ),
       )
     }
@@ -125,7 +128,7 @@ internal class HomePresenterTest {
   @Test
   fun `the notification member reminder must not show for the home presenter`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
-    val homePresenter = HomePresenter(getHomeDataUseCase)
+    val homePresenter = HomePresenter(getHomeDataUseCase, FakeFeatureManager2())
 
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -158,6 +161,7 @@ internal class HomePresenterTest {
           allowGeneratingTravelCertificate = false,
           emergencyData = null,
           commonClaimsData = persistentListOf(),
+          showChatIcon = false,
         ),
       )
     }
@@ -166,7 +170,7 @@ internal class HomePresenterTest {
   @Test
   fun `receiving a failed state and then a successful one propagates the success without having to retry`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
-    val homePresenter = HomePresenter(getHomeDataUseCase)
+    val homePresenter = HomePresenter(getHomeDataUseCase, FakeFeatureManager2())
 
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -176,6 +180,61 @@ internal class HomePresenterTest {
 
       getHomeDataUseCase.responseTurbine.add(someIrrelevantHomeDataInstance.right())
       assertThat(awaitItem()).isInstanceOf<HomeUiState.Success>()
+    }
+  }
+
+  @Test
+  fun `when the disable chat feature flag is true, the chat icon should remain hidden`() = runTest {
+    val featureManager = FakeFeatureManager2()
+    val homePresenter = HomePresenter(
+      TestGetHomeDataUseCase(),
+      featureManager,
+    )
+
+    homePresenter.test(
+      HomeUiState.Success(
+        isReloading = true,
+        HomeText.Active(""),
+        null,
+        persistentListOf(),
+        MemberReminders(),
+        false,
+        false,
+        null,
+        persistentListOf(),
+        showChatIcon = false,
+      ),
+    ) {
+      assertThat(awaitItem().showChatIcon).isFalse()
+      featureManager.featureTurbine.add(Feature.DISABLE_CHAT to true)
+    }
+  }
+
+  @Test
+  fun `when the disable chat feature flag is false, the chat icon should now show`() = runTest {
+    val featureManager = FakeFeatureManager2()
+    val homePresenter = HomePresenter(
+      TestGetHomeDataUseCase(),
+      featureManager,
+    )
+
+    homePresenter.test(
+      HomeUiState.Success(
+        isReloading = true,
+        HomeText.Active(""),
+        null,
+        persistentListOf(),
+        MemberReminders(),
+        false,
+        false,
+        null,
+        persistentListOf(),
+        showChatIcon = false,
+      ),
+    ) {
+      assertThat(awaitItem().showChatIcon).isFalse()
+      featureManager.featureTurbine.add(Feature.DISABLE_CHAT to false)
+      assertThat(awaitItem().showChatIcon).isTrue()
     }
   }
 
