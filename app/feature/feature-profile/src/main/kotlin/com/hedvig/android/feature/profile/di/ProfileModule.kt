@@ -5,7 +5,7 @@ import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.giraffe.di.giraffeClient
 import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.auth.LogoutUseCase
-import com.hedvig.android.core.datastore.SettingsDataStore
+import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.profile.aboutapp.AboutAppViewModel
 import com.hedvig.android.feature.profile.data.ProfileRepository
 import com.hedvig.android.feature.profile.data.ProfileRepositoryImpl
@@ -62,6 +62,7 @@ val profileModule = module {
       languageService = get<LanguageService>(),
       settingsDataStore = get<SettingsDataStore>(),
       enableNotificationsReminderManager = get<EnableNotificationsReminderManager>(),
+      featureManager = get<FeatureManager>(),
     )
   }
 

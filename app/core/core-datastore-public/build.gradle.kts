@@ -11,5 +11,4 @@ dependencies {
   implementation(libs.coroutines.core)
   implementation(libs.koin.core)
   implementation(projects.coreCommonPublic)
-  implementation(projects.theme)
 }

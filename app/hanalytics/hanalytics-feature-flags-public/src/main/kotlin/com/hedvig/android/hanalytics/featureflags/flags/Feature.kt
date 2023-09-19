@@ -8,6 +8,12 @@ enum class Feature(
   CONNECT_PAYMENT_POST_ONBOARDING(
     "Connecting payment post onboarding. Having this OFF means that it must happen in the offer page",
   ),
+  DISABLE_CHAT(
+    "This flag determines if the chat feature inside the app should be disabled. This does not disable the ability to navigate to the chat, only that in the chat feature itself, some information should be shown describing that the chat is currently unavailable and they should check back later.",
+  ),
+  DISABLE_DARK_MODE(
+    "When this flag is on, dark mode is not allowed in the app at all. This also removes the ability to change the theme in the settings completely",
+  ),
   EXTERNAL_DATA_COLLECTION("Enables external data collection for offers, from eg. Insurely"),
   FRANCE_MARKET("Used to select french market in app"),
   MOVING_FLOW("Lets a user change their address and get a new offer"),

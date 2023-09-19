@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -65,6 +67,11 @@ private fun SettingsScreen(
   onLanguageSelected: (Language) -> Unit,
   onThemeSelected: (Theme) -> Unit,
 ) {
+  LaunchedEffect(uiState.allowSelectingTheme, uiState.selectedTheme) {
+    if (uiState.allowSelectingTheme == true) { // Remove this check when dark-mode support is back
+      uiState.selectedTheme?.apply()
+    }
+  }
   val context = LocalContext.current
   HedvigScaffold(
     topAppBarText = stringResource(R.string.SETTINGS_TITLE),
@@ -84,13 +91,15 @@ private fun SettingsScreen(
           enabled = true,
           modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
         )
-        Spacer(Modifier.height(4.dp))
-        ThemeWithDialog(
-          selectedTheme = uiState.selectedTheme,
-          selectTheme = onThemeSelected,
-          enabled = true,
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-        )
+        if (uiState.allowSelectingTheme) {
+          Spacer(Modifier.height(4.dp))
+          ThemeWithDialog(
+            selectedTheme = uiState.selectedTheme,
+            selectTheme = onThemeSelected,
+            enabled = true,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+          )
+        }
         Spacer(Modifier.height(4.dp))
         val notificationPermissionState = rememberNotificationPermissionState()
         NotificationPermissionDialog(
@@ -139,6 +148,7 @@ fun PreviewSettingsScreen() {
           languageOptions = listOf(Language.SV_SE, Language.EN_SE),
           selectedTheme = Theme.SYSTEM_DEFAULT,
           showNotificationReminder = true,
+          allowSelectingTheme = true,
         ),
         navigateUp = {},
         openAppSettings = {},
@@ -183,7 +193,7 @@ internal fun LanguageWithDialog(
 
 @Composable
 internal fun ThemeWithDialog(
-  selectedTheme: Theme,
+  selectedTheme: Theme?,
   selectTheme: (Theme) -> Unit,
   enabled: Boolean,
   modifier: Modifier = Modifier,
@@ -205,7 +215,7 @@ internal fun ThemeWithDialog(
   HedvigBigCard(
     onClick = { showThemePickerDialog = true },
     hintText = stringResource(R.string.SETTINGS_THEME_TITLE),
-    inputText = stringResource(id = selectedTheme.getLabel()),
+    inputText = stringResource(selectedTheme.getLabel()),
     enabled = enabled,
     modifier = modifier,
   )
@@ -229,8 +239,21 @@ private fun startAndroidNotificationSettingsActivity(context: Context) {
   }
 }
 
-fun Theme.getLabel() = when (this) {
+fun Theme?.getLabel() = when (this) {
   Theme.LIGHT -> R.string.SETTINGS_THEME_LIGHT
   Theme.DARK -> R.string.SETTINGS_THEME_DARK
   Theme.SYSTEM_DEFAULT -> R.string.SETTINGS_THEME_SYSTEM_DEFAULT
+  null -> R.string.not_selected
+}
+
+private fun Theme.apply() = when (this) {
+  Theme.LIGHT -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+  Theme.DARK -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+  Theme.SYSTEM_DEFAULT -> {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+    } else {
+      AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY)
+    }
+  }
 }

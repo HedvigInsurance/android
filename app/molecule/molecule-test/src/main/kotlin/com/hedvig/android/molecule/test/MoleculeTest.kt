@@ -7,7 +7,6 @@ import app.cash.turbine.test
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
 
 suspend fun <Event, State> MoleculePresenter<Event, State>.test(
   initialState: State,
@@ -19,27 +18,47 @@ suspend fun <Event, State> MoleculePresenter<Event, State>.test(
   val moleculePresenterScope = MoleculePresenterScope(events)
   moleculeFlow(RecompositionMode.Immediate) {
     moleculePresenterScope.present(initialState)
-  }.distinctUntilChanged().test {
-    MoleculePresenterTestContext(this, PresenterTestingScopeImpl(events)).block()
+  }.test(name = "molecule presenter turbine") {
+    MoleculePresenterTestContextImpl(events, this).block()
   }
 }
 
-class MoleculePresenterTestContext<Event, State>(
-  turbineTestContext: TurbineTestContext<State>,
-  presenterTestingScope: PresenterTestingScope<Event>,
-) : TurbineTestContext<State> by turbineTestContext,
-  PresenterTestingScope<Event> by presenterTestingScope
-
-interface PresenterTestingScope<Event> {
+interface MoleculePresenterTestContext<Event, State> : TurbineTestContext<State> {
   fun sendEvent(event: Event)
+
+  /**
+   *  Awaits the next item, and checks that it's the exact same [State] as it was in the previous emission
+   */
+  suspend fun awaitUnchanged()
 }
 
-private class PresenterTestingScopeImpl<Event>(
+private class MoleculePresenterTestContextImpl<Event, State>(
   private val eventChannel: MutableSharedFlow<Event>,
-) : PresenterTestingScope<Event> {
+  private val turbineTestContext: TurbineTestContext<State>,
+) : MoleculePresenterTestContext<Event, State>,
+  TurbineTestContext<State> by turbineTestContext {
   override fun sendEvent(event: Event) {
     if (!eventChannel.tryEmit(event)) {
       error("Event buffer overflow on event:$event.")
+    }
+  }
+
+  private var lastModel: State? = null
+
+  override suspend fun awaitItem(): State {
+    while (true) {
+      val nextModel = turbineTestContext.awaitItem()
+      if (nextModel != lastModel) {
+        lastModel = nextModel
+        return nextModel
+      }
+    }
+  }
+
+  override suspend fun awaitUnchanged() {
+    val nextModel = turbineTestContext.awaitItem()
+    check(nextModel == lastModel) {
+      "Expected recomposition to re-emit $lastModel, but received $nextModel"
     }
   }
 }

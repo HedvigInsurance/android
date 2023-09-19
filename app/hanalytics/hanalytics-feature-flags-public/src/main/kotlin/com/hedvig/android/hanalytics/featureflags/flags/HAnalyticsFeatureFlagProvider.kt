@@ -10,6 +10,8 @@ internal class HAnalyticsFeatureFlagProvider(
     Feature.COMMON_CLAIMS -> hAnalytics.homeCommonClaim()
     Feature.CONNECT_PAYIN_REMINDER -> hAnalytics.connectPaymentReminder()
     Feature.CONNECT_PAYMENT_POST_ONBOARDING -> hAnalytics.postOnboardingShowPaymentStep()
+    Feature.DISABLE_CHAT -> hAnalytics.disableChat()
+    Feature.DISABLE_DARK_MODE -> hAnalytics.disableDarkMode()
     Feature.EXTERNAL_DATA_COLLECTION -> hAnalytics.allowExternalDataCollection()
     Feature.FRANCE_MARKET -> hAnalytics.frenchMarket()
     Feature.MOVING_FLOW -> hAnalytics.movingFlow()

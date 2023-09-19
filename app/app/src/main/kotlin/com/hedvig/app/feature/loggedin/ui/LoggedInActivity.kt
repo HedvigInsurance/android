@@ -3,9 +3,11 @@ package com.hedvig.app.feature.loggedin.ui
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.AnimationVector4D
 import androidx.compose.animation.core.TwoWayConverter
@@ -60,6 +62,7 @@ import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.designsystem.material3.motion.MotionTokens
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.language.LanguageService
@@ -70,11 +73,13 @@ import com.hedvig.android.navigation.activity.ActivityNavigator
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
+import com.hedvig.android.theme.Theme
 import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
 import com.hedvig.app.service.DynamicLink
 import com.hedvig.app.util.extensions.showReviewDialog
 import com.hedvig.hanalytics.HAnalytics
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterIsInstance
@@ -97,15 +102,19 @@ class LoggedInActivity : AppCompatActivity() {
   private val languageService: LanguageService by inject()
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer by inject()
   private val hedvigBuildConstants: HedvigBuildConstants by inject()
+  private val settingsDataStore: SettingsDataStore by inject()
 
   private val activityNavigator: ActivityNavigator by inject()
 
   // Shows the splash screen as long as the auth status is still undetermined, that's the only condition.
   private val showSplash = MutableStateFlow(true)
 
+  // Before this is done, we should not navigate away or stop showing the splash screen
+  private val darkThemeEvaluated = MutableStateFlow(false)
+
   override fun onCreate(savedInstanceState: Bundle?) {
     installSplashScreen().apply {
-      setKeepOnScreenCondition { showSplash.value == true }
+      setKeepOnScreenCondition { showSplash.value == true || darkThemeEvaluated.value == false }
       setOnExitAnimationListener {
         logcat(LogPriority.INFO) { "Splash screen will be removed" }
         it.remove()
@@ -117,10 +126,22 @@ class LoggedInActivity : AppCompatActivity() {
     val intent: Intent = intent
     val uri: Uri? = intent.data
     lifecycleScope.launch {
+      val theme = async { settingsDataStore.observeTheme().first() }
       if (featureManager.isFeatureEnabled(Feature.UPDATE_NECESSARY)) {
         applicationContext.startActivity(ForceUpgradeActivity.newInstance(applicationContext))
         finish()
         return@launch
+      }
+      launch {
+        val disableDarkModeFlag = featureManager.isFeatureEnabled(Feature.DISABLE_DARK_MODE)
+        if (disableDarkModeFlag) {
+          AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+          theme.cancel()
+        } else {
+          theme.await()?.apply()
+        }
+      }.invokeOnCompletion {
+        darkThemeEvaluated.update { true }
       }
       launch {
         lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
@@ -201,6 +222,7 @@ class LoggedInActivity : AppCompatActivity() {
           }
           .filterIsInstance<AuthStatus.LoggedOut>()
           .first()
+        darkThemeEvaluated.first { it == true }
         activityNavigator.navigateToMarketingActivity()
         finish()
       }
@@ -396,4 +418,20 @@ private fun Modifier.animatedNavigationBarInsetsConsumption(
     label = "Padding values inset animation",
   )
   consumeWindowInsets(animatedInsetsToConsume)
+}
+
+/**
+ * Move just to the settings place where this is edited after we remove the dark_mode feature flag
+ * We do not need to set this on every app launch from that point on.
+ */
+private fun Theme.apply() = when (this) {
+  Theme.LIGHT -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+  Theme.DARK -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+  Theme.SYSTEM_DEFAULT -> {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+    } else {
+      AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY)
+    }
+  }
 }
