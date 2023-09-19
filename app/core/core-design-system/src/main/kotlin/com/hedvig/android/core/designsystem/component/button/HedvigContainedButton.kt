@@ -5,7 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.with
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
@@ -80,7 +80,7 @@ fun HedvigContainedButton(
     val loadingTransition = updateTransition(isLoading)
     loadingTransition.AnimatedContent(
       transitionSpec = {
-        fadeIn(tween(durationMillis = 220, delayMillis = 90)) with fadeOut(tween(90))
+        fadeIn(tween(durationMillis = 220, delayMillis = 90)) togetherWith fadeOut(tween(90))
       },
       contentAlignment = Alignment.Center,
     ) { isLoading ->
@@ -102,8 +102,13 @@ fun HedvigContainedButton(
 @Composable
 private fun HedvigContainedButton(
   onClick: () -> Unit,
-  colors: ButtonColors,
   modifier: Modifier = Modifier,
+  colors: ButtonColors = ButtonDefaults.buttonColors(
+    containerColor = MaterialTheme.colorScheme.primary,
+    contentColor = MaterialTheme.colorScheme.onPrimary,
+    disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+    disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.38f),
+  ),
   contentPadding: PaddingValues = PaddingValues(16.dp),
   enabled: Boolean = true,
   content: @Composable RowScope.() -> Unit,

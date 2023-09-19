@@ -17,8 +17,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
-import com.hedvig.android.core.designsystem.material3.squircleMedium
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarActionType
@@ -94,7 +93,12 @@ internal fun TravelCertificateOverview(
         modifier = Modifier.padding(horizontal = 16.dp),
       )
       Spacer(modifier = Modifier.padding(top = 8.dp))
-      LargeContainedButton(
+      HedvigContainedButton(
+        text = if (travelCertificateUri != null) {
+          stringResource(R.string.travel_certificate_share_travel_certificate)
+        } else {
+          stringResource(R.string.travel_certificate_download_travel_certificate)
+        },
         onClick = {
           if (travelCertificateUri != null) {
             onShareTravelCertificate(travelCertificateUri)
@@ -102,17 +106,10 @@ internal fun TravelCertificateOverview(
             onDownloadCertificate(travelCertificateUrl)
           }
         },
-        shape = MaterialTheme.shapes.squircleMedium,
         modifier = Modifier
           .padding(horizontal = 16.dp)
           .padding(bottom = 32.dp),
-      ) {
-        if (travelCertificateUri != null) {
-          Text(stringResource(id = R.string.travel_certificate_share_travel_certificate))
-        } else {
-          Text(stringResource(id = R.string.travel_certificate_download_travel_certificate))
-        }
-      }
+      )
     }
   }
 }

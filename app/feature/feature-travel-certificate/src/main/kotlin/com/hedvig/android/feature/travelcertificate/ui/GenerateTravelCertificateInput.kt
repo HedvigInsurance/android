@@ -37,6 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
@@ -153,7 +154,7 @@ internal fun GenerateTravelCertificateInput(
           Text(stringResource(id = R.string.travel_certificate_me))
           if (uiState.includeMember) {
             Icon(
-              painter = painterResource(id = com.hedvig.android.core.design.system.R.drawable.ic_checkmark),
+              painter = painterResource(com.hedvig.android.core.design.system.R.drawable.ic_checkmark),
               tint = MaterialTheme.colorScheme.onSurface,
               contentDescription = "include me",
               modifier = Modifier.size(18.dp),
@@ -227,13 +228,11 @@ internal fun GenerateTravelCertificateInput(
       }
 
       Spacer(modifier = Modifier.weight(1f))
-      LargeContainedButton(
+      HedvigContainedButton(
         onClick = onContinue,
-        shape = MaterialTheme.shapes.squircleMedium,
+        text = stringResource(R.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
         modifier = Modifier.padding(horizontal = 16.dp),
-      ) {
-        Text(stringResource(R.string.SAVE_AND_CONTINUE_BUTTON_LABEL))
-      }
+      )
       Spacer(Modifier.height(32.dp))
     }
   }
@@ -307,7 +306,7 @@ private fun MovingDateButton(
       onClick = { showDatePicker = true },
       colors = CardDefaults.outlinedCardColors(
         containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        contentColor = MaterialTheme.colorScheme.onSurface,
       ),
       modifier = Modifier.fillMaxWidth(),
     ) {
@@ -321,10 +320,7 @@ private fun MovingDateButton(
             style = MaterialTheme.typography.bodySmall,
           )
           Spacer(modifier = Modifier.height(4.dp))
-          Text(
-            text = uiState.travelDate.toString(),
-            color = MaterialTheme.colorScheme.onInfoElement,
-          )
+          Text(text = uiState.travelDate.toString())
         }
         Spacer(Modifier.width(16.dp))
         Icon(
