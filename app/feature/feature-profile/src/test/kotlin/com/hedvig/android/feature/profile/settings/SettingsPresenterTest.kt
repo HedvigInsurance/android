@@ -17,23 +17,20 @@ import org.junit.Test
 
 class SettingsPresenterTest {
   @Test
-  fun `content stays loading as long as selectedTheme, notificationReminder or allowingSelectingTheme are uninitialized`() =
+  fun `content stays loading as long as notificationReminder and allowingSelectingTheme are uninitialized`() =
     runTest {
-      val settingsDataStore = FakeSettingsDataStore()
       val enableNotificationsReminderManager = TestEnableNotificationsReminderManager()
       val featureManager = FakeFeatureManager2()
       val settingsPresenter = SettingsPresenter(
         NoopNotifyBackendAboutLanguageChangeUseCase(),
         FakeLanguageService(),
-        settingsDataStore,
+        FakeSettingsDataStore(),
         enableNotificationsReminderManager,
         featureManager,
       )
 
       settingsPresenter.test(SettingsUiState.Loading(Language.entries.first(), Language.entries)) {
         assertThat(awaitItem()).isInstanceOf<SettingsUiState.Loading>()
-        settingsDataStore.setTheme(Theme.SYSTEM_DEFAULT)
-        awaitUnchanged()
         enableNotificationsReminderManager.showNotification.add(false)
         awaitUnchanged()
         featureManager.featureTurbine.add(Feature.DISABLE_DARK_MODE to true)

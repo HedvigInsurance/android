@@ -54,7 +54,7 @@ internal class SettingsPresenter(
       }
     }
 
-    return if (selectedTheme == null || showNotificationReminder == null || allowSelectingTheme == null) {
+    return if (showNotificationReminder == null || allowSelectingTheme == null) {
       SettingsUiState.Loading(
         selectedLanguage = selectedLanguage,
         languageOptions = lastState.languageOptions,
@@ -90,7 +90,7 @@ sealed interface SettingsUiState {
   data class Loaded(
     override val selectedLanguage: Language,
     override val languageOptions: List<Language>,
-    override val selectedTheme: Theme,
+    override val selectedTheme: Theme?,
     override val showNotificationReminder: Boolean,
     override val allowSelectingTheme: Boolean,
   ) : SettingsUiState
