@@ -96,6 +96,49 @@ fun MemberReminderCards(
   }
 }
 
+/**
+ * Member reminder cards without the notification reminder
+ */
+@Composable
+fun MemberReminderCards(
+  memberReminders: ApplicableMemberReminders,
+  navigateToConnectPayment: () -> Unit,
+  openUrl: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Column(
+    modifier = modifier,
+    verticalArrangement = Arrangement.spacedBy(8.dp),
+  ) {
+    AnimatedVisibility(
+      visible = memberReminders.connectPayment != null,
+      enter = cardReminderEnterTransition,
+      exit = cardReminderExitTransition,
+      label = "connectPayment animated visibility",
+    ) {
+      ReminderCardConnectPayment(
+        navigateToConnectPayment = navigateToConnectPayment,
+      )
+    }
+    AnimatedVisibility(
+      visible = memberReminders.upcomingRenewals != null,
+      enter = cardReminderEnterTransition,
+      exit = cardReminderExitTransition,
+      label = "upcomingRenewals animated visibility",
+    ) {
+      memberReminders.upcomingRenewals?.upcomingRenewals?.withIndex()?.forEach { (renewalsIndex, upcomingRenewal) ->
+        ReminderCardUpcomingRenewals(
+          upcomingRenewal = upcomingRenewal,
+          openUrl = openUrl,
+        )
+        if (renewalsIndex != memberReminders.upcomingRenewals?.upcomingRenewals?.lastIndex) {
+          Spacer(Modifier.height(8.dp))
+        }
+      }
+    }
+  }
+}
+
 private val cardReminderEnterTransition = fadeIn() + expandVertically(
   expandFrom = Alignment.Top,
   initialHeight = { (it * 0.9).toInt() },
