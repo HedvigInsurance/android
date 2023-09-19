@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.core.common.RetryChannel
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.app.feature.chat.data.ChatEventStore
@@ -17,23 +19,41 @@ import giraffe.GifQuery
 import giraffe.UploadFileMutation
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 class ChatViewModel(
   private val chatRepository: ChatRepository,
   private val chatClosedTracker: ChatEventStore,
   private val hAnalytics: HAnalytics,
+  private val featureManager: FeatureManager,
 ) : ViewModel() {
 
   private val retryChannel = RetryChannel()
 
   private val _messages = MutableStateFlow<ChatMessagesQuery.Data?>(null)
   val messages = _messages.asStateFlow()
+
+  /**
+   * [null] implies that it's still not evaluated. In those situations, not showing the chat at all is preferred.
+   */
+  val isChatDisabled: StateFlow<Boolean?> = flow {
+    emit(featureManager.isFeatureEnabled(Feature.DISABLE_CHAT))
+  }.stateIn(
+    viewModelScope,
+    SharingStarted.WhileSubscribed(5.seconds),
+    null,
+  )
 
   init {
     hAnalytics.screenView(AppScreen.CHAT)

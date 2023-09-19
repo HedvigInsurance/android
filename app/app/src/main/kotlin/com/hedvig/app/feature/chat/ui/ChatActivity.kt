@@ -5,8 +5,16 @@ import android.os.Bundle
 import android.os.Environment
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.core.content.FileProvider
+import androidx.core.view.isGone
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -16,6 +24,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.common.android.show
+import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.app.BuildConfig
@@ -141,6 +151,31 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
     initializeInput()
     initializeKeyboardVisibilityHandler()
     observeData()
+
+    lifecycleScope.launch {
+      repeatOnLifecycle(Lifecycle.State.STARTED) {
+        chatViewModel.isChatDisabled.collect { isChatDisabled ->
+          if (isChatDisabled == false) {
+            binding.disabledChatView.isGone = true
+          }
+        }
+      }
+    }
+    binding.disabledChatView.setContent {
+      val isChatDisabled by chatViewModel.isChatDisabled.collectAsStateWithLifecycle()
+      HedvigTheme {
+        Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+          if (isChatDisabled == true) {
+            HedvigErrorSection(
+              title = stringResource(hedvig.resources.R.string.CHAT_DISABLED_MESSAGE),
+              subTitle = null,
+              buttonText = stringResource(hedvig.resources.R.string.general_close_button),
+              retry = { finish() },
+            )
+          }
+        }
+      }
+    }
   }
 
   override fun onResume() {
