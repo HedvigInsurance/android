@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.changeaddress.ui
+package com.hedvig.android.feature.changeaddress.ui.offer
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
@@ -6,7 +6,6 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,17 +24,21 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.ImageLoader
+import coil.compose.AsyncImage
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.R
+import com.hedvig.android.core.ui.preview.PreviewImageLoader
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.feature.changeaddress.data.MoveQuote
+import hedvig.resources.R
 
 @Composable
 internal fun QuoteCard(
@@ -43,6 +46,7 @@ internal fun QuoteCard(
   quote: MoveQuote,
   onExpandClicked: () -> Unit,
   isExpanded: Boolean,
+  imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
 ) {
   HedvigCard(
@@ -50,7 +54,7 @@ internal fun QuoteCard(
     modifier = modifier,
   ) {
     Column(Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp)) {
-      PillAndBasicInfo(quote.insuranceName, movingDate)
+      PillAndBasicInfo(quote, movingDate, imageLoader)
       Spacer(Modifier.height(16.dp))
       Divider()
       Spacer(Modifier.height(16.dp))
@@ -73,31 +77,34 @@ internal fun QuoteCard(
 }
 
 @Composable
-private fun PillAndBasicInfo(insuranceName: String, movingDate: String?) {
+private fun PillAndBasicInfo(quote: MoveQuote, movingDate: String?, imageLoader: ImageLoader) {
   Row(verticalAlignment = Alignment.CenterVertically) {
-    Image(
-      painter = painterResource(id = R.drawable.ic_pillow_home),
-      contentDescription = null,
+    AsyncImage(
+      model = quote.productVariant.product.pillowImage.src,
+      contentDescription = "pillow",
+      imageLoader = imageLoader,
       modifier = Modifier.size(48.dp),
     )
     Spacer(modifier = Modifier.width(16.dp))
     Column {
       Text(
-        text = insuranceName,
+        text = quote.insuranceName,
         style = MaterialTheme.typography.titleMedium,
         fontSize = 18.sp,
       )
       CompositionLocalProvider(LocalContentColor.provides(MaterialTheme.colorScheme.onSurfaceVariant)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
           Text(
-            text = "Aktiveras $movingDate",
+            text = stringResource(id = R.string.CHANGE_ADDRESS_ACTIVATION_DATE, movingDate.toString()),
             fontSize = 18.sp,
           )
           Spacer(modifier = Modifier.width(4.dp))
           Icon(
             painter = painterResource(id = com.hedvig.android.core.design.system.R.drawable.ic_info),
             contentDescription = null,
-            modifier = Modifier.size(16.dp).padding(1.dp),
+            modifier = Modifier
+              .size(16.dp)
+              .padding(1.dp),
           )
         }
       }
@@ -110,11 +117,12 @@ private fun QuoteDetailsAndPrice(
   isExpanded: Boolean,
   quote: MoveQuote,
 ) {
+
   HorizontalItemsWithMaximumSpaceTaken(
     startSlot = {
       Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
-          text = "Detaljer",
+          text = stringResource(id = R.string.CHANGE_ADDRESS_DETAILS_LABEL),
           style = MaterialTheme.typography.titleMedium,
           fontSize = 18.sp,
         )
@@ -125,6 +133,7 @@ private fun QuoteDetailsAndPrice(
           } else {
             -180f
           },
+          label = "",
         )
         Icon(
           painter = painterResource(com.hedvig.android.core.design.system.R.drawable.ic_drop_down_indicator),
@@ -141,7 +150,7 @@ private fun QuoteDetailsAndPrice(
     endSlot = {
       Text(
         text = stringResource(
-          id = hedvig.resources.R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL,
+          id = R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL,
           quote.premium.toString(),
         ),
         style = MaterialTheme.typography.titleMedium,
@@ -158,28 +167,18 @@ private fun ExpandedInformation(
 ) {
   Column {
     HorizontalItemsWithMaximumSpaceTaken(
-      startSlot = { Text("Bostadstyp") },
-      endSlot = { Text("Bostadsrättt", textAlign = TextAlign.End) },
-      spaceBetween = 4.dp,
-    )
-    HorizontalItemsWithMaximumSpaceTaken(
-      startSlot = { Text("Address") },
+      startSlot = { Text(stringResource(id = R.string.CHANGE_ADDRESS_NEW_ADDRESS_LABEL)) },
       endSlot = { Text(quote.address.street, textAlign = TextAlign.End) },
       spaceBetween = 4.dp,
     )
     HorizontalItemsWithMaximumSpaceTaken(
-      startSlot = { Text("Postkod") },
+      startSlot = { Text(stringResource(id = R.string.CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL)) },
       endSlot = { Text(quote.address.postalCode, textAlign = TextAlign.End) },
       spaceBetween = 4.dp,
     )
     HorizontalItemsWithMaximumSpaceTaken(
-      startSlot = { Text("Boarea") },
-      endSlot = { Text("63kvm", textAlign = TextAlign.End) },
-      spaceBetween = 4.dp,
-    )
-    HorizontalItemsWithMaximumSpaceTaken(
-      startSlot = { Text("Antal försäkrade") },
-      endSlot = { Text("${quote.numberCoInsured} personer", textAlign = TextAlign.End) },
+      startSlot = { Text(stringResource(id = R.string.CHANGE_ADDRESS_CO_INSURED_LABEL)) },
+      endSlot = { Text(quote.numberCoInsured.toString(), textAlign = TextAlign.End) },
       spaceBetween = 4.dp,
     )
   }
@@ -196,6 +195,7 @@ fun PreviewQuoteCard() {
         onExpandClicked = {},
         isExpanded = true,
         modifier = Modifier.padding(16.dp),
+        imageLoader = PreviewImageLoader(LocalContext.current),
       )
     }
   }

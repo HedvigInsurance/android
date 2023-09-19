@@ -1,11 +1,8 @@
 package com.hedvig.android.feature.changeaddress.data
 
-import CreateQuoteInput
-import HousingType
 import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.api.Optional
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
@@ -13,14 +10,10 @@ import com.hedvig.android.core.uidata.UiMoney
 import octopus.MoveIntentCommitMutation
 import octopus.MoveIntentCreateMutation
 import octopus.MoveIntentRequestMutation
-import octopus.type.MoveApartmentSubType
-import octopus.type.MoveIntentCreateInput
-import octopus.type.MoveToAddressInput
-import octopus.type.MoveToApartmentInput
 
 internal interface ChangeAddressRepository {
   suspend fun createMoveIntent(): Either<ErrorMessage, MoveIntent>
-  suspend fun createQuotes(input: CreateQuoteInput): Either<ErrorMessage, List<MoveQuote>>
+  suspend fun createQuotes(input: QuoteInput): Either<ErrorMessage, List<MoveQuote>>
   suspend fun commitMove(id: MoveIntentId): Either<ErrorMessage, MoveResult>
 }
 
@@ -30,7 +23,7 @@ internal class NetworkChangeAddressRepository(
   override suspend fun createMoveIntent(): Either<ErrorMessage, MoveIntent> {
     return either {
       val result = apolloClient
-        .mutation(MoveIntentCreateMutation(MoveIntentCreateInput(toType = octopus.type.MoveToType.APARTMENT)))
+        .mutation(MoveIntentCreateMutation())
         .safeExecute()
         .toEither(::ErrorMessage)
         .bind()
@@ -47,38 +40,10 @@ internal class NetworkChangeAddressRepository(
     }
   }
 
-  override suspend fun createQuotes(input: CreateQuoteInput): Either<ErrorMessage, List<MoveQuote>> {
+  override suspend fun createQuotes(input: QuoteInput): Either<ErrorMessage, List<MoveQuote>> {
     return either {
       val result = apolloClient
-        .mutation(
-          MoveIntentRequestMutation(
-            intentId = input.moveIntentId.id,
-            input = octopus.type.MoveIntentRequestInput(
-              moveToAddress = MoveToAddressInput(
-                street = input.address.street,
-                postalCode = input.address.postalCode,
-                city = Optional.absent(),
-                bbrId = Optional.absent(),
-                apartmentNumber = Optional.absent(),
-                floor = Optional.absent(),
-              ),
-              moveFromAddressId = input.moveFromAddressId.id,
-              movingDate = input.movingDate,
-              numberCoInsured = input.numberCoInsured,
-              squareMeters = input.squareMeters,
-              apartment = Optional.present(
-                MoveToApartmentInput(
-                  subType = when (input.apartmentOwnerType) {
-                    HousingType.APARTMENT_RENT -> MoveApartmentSubType.RENT
-                    HousingType.APARTMENT_OWN -> MoveApartmentSubType.OWN
-                    HousingType.VILLA -> throw IllegalArgumentException("Can not create request with villa type")
-                  },
-                  isStudent = input.isStudent,
-                ),
-              ),
-            ),
-          ),
-        )
+        .mutation(input.toMoveIntentRequestMutation())
         .safeExecute()
         .toEither(::ErrorMessage)
         .bind()
@@ -126,19 +91,17 @@ private fun MoveIntentCreateMutation.Data.MoveIntentCreate.MoveIntent.toMoveInte
     )
   },
   movingDateRange = minMovingDate..maxMovingDate,
-  numberCoInsured = numberCoInsured,
+  numberCoInsured = suggestedNumberCoInsured,
+  extraBuildingTypes = extraBuildingTypes.map { it.toExtraBuildingType() },
 )
 
 private fun MoveIntentRequestMutation.Data.MoveIntentRequest.MoveIntent.toMoveQuotes() = quotes.map { quote ->
   MoveQuote(
-    insuranceName = quote.termsVersion.id,
+    id = id,
+    insuranceName = quote.productVariant.displayName,
     moveIntentId = MoveIntentId(id),
     address = Address(
       id = AddressId(quote.address.id),
-      apartmentNumber = quote.address.apartmentNumber,
-      bbrId = quote.address.bbrId,
-      city = quote.address.city,
-      floor = quote.address.floor,
       postalCode = quote.address.postalCode,
       street = quote.address.street,
     ),
@@ -148,7 +111,7 @@ private fun MoveIntentRequestMutation.Data.MoveIntentRequest.MoveIntent.toMoveQu
       currencyCode = quote.premium.currencyCode,
     ),
     startDate = quote.startDate,
-    termsVersion = quote.termsVersion.id,
+    productVariant = quote.productVariant,
   )
 }
 

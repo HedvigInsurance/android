@@ -8,6 +8,9 @@ internal sealed interface ChangeAddressDestination : Destination {
   data object EnterNewAddress : ChangeAddressDestination
 
   @Serializable
+  data object EnterNewVillaAddress : ChangeAddressDestination
+
+  @Serializable
   data object OfferDestination : ChangeAddressDestination
 
   @Serializable

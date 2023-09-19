@@ -23,8 +23,8 @@ internal fun ChangeAddressResultDestination(
     modifier = Modifier.fillMaxSize(),
   ) {
     HedvigSuccessSection(
-      title = "Address updated",
-      subTitle = "Your new home will be insured starting from $movingDate",
+      title = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_SUCCESS_TITLE),
+      subTitle = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_SUCCESS_TITLE, movingDate.toString()),
       modifier = Modifier.align(Alignment.Center),
     )
     HedvigTextButton(

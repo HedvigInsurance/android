@@ -1,14 +1,15 @@
 package com.hedvig.android.feature.changeaddress
 
-import CreateQuoteInput
-import HousingType
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.feature.changeaddress.data.AddressInput
 import com.hedvig.android.feature.changeaddress.data.ChangeAddressRepository
+import com.hedvig.android.feature.changeaddress.data.ExtraBuilding
+import com.hedvig.android.feature.changeaddress.data.HousingType
 import com.hedvig.android.feature.changeaddress.data.MoveIntentId
 import com.hedvig.android.feature.changeaddress.data.MoveQuote
+import com.hedvig.android.feature.changeaddress.data.QuoteInput
 import hedvig.resources.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,32 +24,6 @@ internal class ChangeAddressViewModel(
 
   private val _uiState: MutableStateFlow<ChangeAddressUiState> = MutableStateFlow(ChangeAddressUiState())
   val uiState: StateFlow<ChangeAddressUiState> = _uiState.asStateFlow()
-
-  init {
-    viewModelScope.launch {
-      _uiState.update { it.copy(isLoading = true) }
-      changeAddressRepository.createMoveIntent().fold(
-        ifLeft = { error ->
-          _uiState.update {
-            it.copy(
-              isLoading = false,
-              errorMessage = error.message,
-            )
-          }
-        },
-        ifRight = { moveIntent ->
-          _uiState.update {
-            it.copy(
-              moveIntentId = moveIntent.id,
-              numberCoInsured = ValidatedInput(moveIntent.numberCoInsured.toString()),
-              moveFromAddressId = moveIntent.currentHomeAddresses.firstOrNull()?.id,
-              isLoading = false,
-            )
-          }
-        },
-      )
-    }
-  }
 
   fun onStreetChanged(street: String) {
     _uiState.update { it.copy(street = ValidatedInput(street)) }
@@ -66,6 +41,18 @@ internal class ChangeAddressViewModel(
     _uiState.update { it.copy(numberCoInsured = ValidatedInput(coInsured)) }
   }
 
+  fun onYearOfConstructionChanged(yearOfConstruction: String) {
+    _uiState.update { it.copy(yearOfConstruction = ValidatedInput(yearOfConstruction)) }
+  }
+
+  fun onAncillaryAreaChanged(ancillaryArea: String) {
+    _uiState.update { it.copy(ancillaryArea = ValidatedInput(ancillaryArea)) }
+  }
+
+  fun onNumberOfBathroomsChanged(numberOfBathrooms: String) {
+    _uiState.update { it.copy(numberOfBathrooms = ValidatedInput(numberOfBathrooms)) }
+  }
+
   fun onMoveDateSelected(movingDate: LocalDate) {
     _uiState.update { it.copy(movingDate = ValidatedInput(movingDate)) }
   }
@@ -74,10 +61,16 @@ internal class ChangeAddressViewModel(
     _uiState.update { it.copy(quotes = emptyList()) }
   }
 
-  fun onSaveNewAddress() {
+  fun onSubmitNewAddress() {
+    if (uiState.value.moveIntentId == null) {
+      _uiState.update {
+        it.copy(errorMessage = "No MoveIntent found")
+      }
+    }
+
     _uiState.update { it.validateInput() }
     if (_uiState.value.isInputValid) {
-      val input = _uiState.value.toCreateQuoteInput()
+      val input = _uiState.value.toQuoteInput()
       _uiState.update { it.copy(isLoading = true) }
       viewModelScope.launch {
         changeAddressRepository.createQuotes(input).fold(
@@ -107,7 +100,7 @@ internal class ChangeAddressViewModel(
       it.copy(
         quotes = it.quotes.replace(
           newValue = moveQuote.copy(isExpanded = !moveQuote.isExpanded),
-          block = { it.termsVersion == moveQuote.termsVersion },
+          block = { it == moveQuote },
         ),
       )
     }
@@ -151,15 +144,6 @@ internal class ChangeAddressViewModel(
           ),
         )
       }
-    } else if (_uiState.value.housingType.input == HousingType.VILLA) {
-      _uiState.update {
-        it.copy(
-          housingType = ValidatedInput(
-            input = it.housingType.input,
-            errorMessageRes = R.string.CHANGE_ADDRESS_MOVE_TO_VILLA_ERROR_TEXT,
-          ),
-        )
-      }
     }
   }
 
@@ -170,21 +154,96 @@ internal class ChangeAddressViewModel(
   fun onHousingTypeErrorDialogDismissed() {
     _uiState.update { it.copy(housingType = ValidatedInput(it.housingType.input)) }
   }
+
+  fun onHousingTypeSubmitted() {
+    viewModelScope.launch {
+      _uiState.update { it.copy(isLoading = true) }
+      changeAddressRepository.createMoveIntent().fold(
+        ifLeft = { error ->
+          _uiState.update {
+            it.copy(
+              isLoading = false,
+              errorMessage = error.message,
+            )
+          }
+        },
+        ifRight = { moveIntent ->
+          _uiState.update {
+            it.copy(
+              moveIntentId = moveIntent.id,
+              numberCoInsured = ValidatedInput(moveIntent.numberCoInsured.toString()),
+              moveFromAddressId = moveIntent.currentHomeAddresses.firstOrNull()?.id,
+              extraBuildingTypes = moveIntent.extraBuildingTypes,
+              isLoading = false,
+              datePickerUiState = DatePickerUiState(
+                initiallySelectedDate = null,
+                minDate = moveIntent.movingDateRange.start,
+                maxDate = moveIntent.movingDateRange.endInclusive,
+              ),
+            )
+          }
+        },
+      )
+    }
+  }
+
+  fun onRemoveExtraBuildingClicked(clickedExtraBuilding: ExtraBuilding) {
+    _uiState.update {
+      val extraBuildings = it.extraBuildings.toMutableList()
+      extraBuildings.remove(clickedExtraBuilding)
+      it.copy(extraBuildings = extraBuildings)
+    }
+  }
+
+  fun addExtraBuilding(extraBuilding: ExtraBuilding) {
+    _uiState.update {
+      val extraBuildings = it.extraBuildings.toMutableList()
+      extraBuildings.find { it.id == extraBuilding.id }?.let {
+        extraBuildings.replace(extraBuilding) { it.id == extraBuilding.id }
+      } ?: extraBuildings.add(extraBuilding)
+      it.copy(extraBuildings = extraBuildings)
+    }
+  }
 }
 
-private fun ChangeAddressUiState.toCreateQuoteInput() = CreateQuoteInput(
-  moveIntentId = moveIntentId!!,
-  address = AddressInput(
-    street = street.input!!,
-    postalCode = postalCode.input!!,
-  ),
-  moveFromAddressId = moveFromAddressId!!,
-  movingDate = movingDate.input!!,
-  numberCoInsured = numberCoInsured.input!!.toInt(),
-  squareMeters = squareMeters.input!!.toInt(),
-  apartmentOwnerType = housingType.input!!,
-  isStudent = false,
-)
+private fun ChangeAddressUiState.toQuoteInput() = when (housingType.input) {
+  HousingType.APARTMENT_RENT,
+  HousingType.APARTMENT_OWN,
+  -> QuoteInput.ApartmentInput(
+    moveIntentId = moveIntentId!!,
+    address = AddressInput(
+      street = street.input!!,
+      postalCode = postalCode.input!!,
+    ),
+    moveFromAddressId = moveFromAddressId!!,
+    movingDate = movingDate.input!!,
+    numberCoInsured = numberCoInsured.input!!.toInt(),
+    squareMeters = squareMeters.input!!.toInt(),
+    apartmentOwnerType = housingType.input!!,
+    isStudent = false, // TODO
+  )
+
+  HousingType.VILLA -> QuoteInput.VillaInput(
+    moveIntentId = moveIntentId!!,
+    address = AddressInput(
+      street = street.input!!,
+      postalCode = postalCode.input!!,
+    ),
+    moveFromAddressId = moveFromAddressId!!,
+    movingDate = movingDate.input!!,
+    numberCoInsured = numberCoInsured.input!!.toInt(),
+    squareMeters = squareMeters.input!!.toInt(),
+    apartmentOwnerType = housingType.input!!,
+    yearOfConstruction = yearOfConstruction.input!!.toInt(),
+    ancillaryArea = ancillaryArea.input!!.toInt(),
+    numberOfBathrooms = numberOfBathrooms.input!!.toInt(),
+    extraBuildings = extraBuildings,
+    isStudent = false,
+    isSubleted = false, // TODO
+  )
+
+  null -> throw IllegalArgumentException("No housing type found when creating input")
+}
 
 fun <T> List<T>.replace(newValue: T, block: (T) -> Boolean): List<T> {
   return map {

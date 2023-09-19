@@ -76,7 +76,6 @@ internal fun HedvigNavHost(
 ) {
   LocalConfiguration.current
   val context = LocalContext.current
-  val resources = context.resources
   val density = LocalDensity.current
   val coroutineScope = rememberCoroutineScope()
   val navigator: Navigator = rememberNavigator(hedvigAppState)
@@ -94,7 +93,7 @@ internal fun HedvigNavHost(
   }
 
   fun navigateToPayinScreen() {
-    val market = marketManager.market ?: return@navigateToPayinScreen
+    val market = marketManager.market ?: return
     coroutineScope.launch {
       context.startActivity(
         connectPayinIntent(
@@ -132,6 +131,7 @@ internal fun HedvigNavHost(
           navigator = navigator,
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           activityNavigator = activityNavigator,
+          imageLoader = imageLoader,
         )
       },
       navigator = navigator,
@@ -224,11 +224,14 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   navigator: Navigator,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   activityNavigator: ActivityNavigator,
+  imageLoader: ImageLoader,
 ) {
   changeAddressGraph(
     density = density,
     navController = hedvigAppState.navController,
     openChat = { activityNavigator.navigateToChat(context) },
+    openUrl = { activityNavigator.openWebsite(context, Uri.parse(it)) },
+    imageLoader = imageLoader,
   )
   generateTravelCertificateGraph(
     density = density,
