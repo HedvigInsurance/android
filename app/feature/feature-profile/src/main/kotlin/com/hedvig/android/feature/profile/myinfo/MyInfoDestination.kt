@@ -71,7 +71,11 @@ private fun MyInfoScreen(
       navigateUp = navigateUp,
       modifier = Modifier.clearFocusOnTap(),
     ) {
-      FadeAnimatedContent(uiState, Modifier.weight(1f)) { uiState ->
+      FadeAnimatedContent(
+        targetState = uiState,
+        contentKey = { it::class },
+        modifier = Modifier.weight(1f),
+      ) { uiState ->
         Column(Modifier.fillMaxSize()) {
           when {
             uiState.isLoading -> {
