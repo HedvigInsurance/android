@@ -135,9 +135,12 @@ class LoggedInActivity : AppCompatActivity() {
       launch {
         val disableDarkModeFlag = featureManager.isFeatureEnabled(Feature.DISABLE_DARK_MODE)
         if (disableDarkModeFlag) {
+          logcat { "Disabling dark mode feature flag evaluated to true" }
           AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+          logcat { "Successfully disabled dark mode" }
           theme.cancel()
         } else {
+          logcat { "Dark mode feature flag evaluated to false." }
           theme.await()?.apply()
         }
       }.invokeOnCompletion {
