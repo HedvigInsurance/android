@@ -9,11 +9,15 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.language.LanguageService
 import giraffe.ReferralTermsQuery
 
-internal class GetReferralsInformationUseCase(
+interface GetReferralsInformationUseCase {
+  suspend fun invoke(): Either<ErrorMessage, ReferralTermsQuery.ReferralTerms>
+}
+
+internal class GetReferralsInformationUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,
-) {
-  suspend fun invoke(): Either<ErrorMessage, ReferralTermsQuery.ReferralTerms> {
+) : GetReferralsInformationUseCase {
+  override suspend fun invoke(): Either<ErrorMessage, ReferralTermsQuery.ReferralTerms> {
     return either {
       apolloClient
         .query(ReferralTermsQuery(languageService.getGraphQLLocale()))

@@ -23,22 +23,30 @@ import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 import javax.money.MonetaryAmount
 
-class PaymentRepository(
+interface PaymentRepository {
+  fun payment(): Flow<ApolloResponse<PaymentQuery.Data>>
+  suspend fun refresh(): ApolloResponse<PaymentQuery.Data>
+  suspend fun writeActivePayoutMethodStatus(status: PayoutMethodStatus)
+  suspend fun getChargeHistory(): Either<OperationResult.Error, ChargeHistory>
+  suspend fun getPaymentData(): Either<OperationResult.Error, PaymentData>
+}
+
+class PaymentRepositoryImpl(
   private val apolloClient: ApolloClient,
   languageService: LanguageService,
-) {
+) : PaymentRepository {
   private val paymentQuery = PaymentQuery(languageService.getGraphQLLocale())
   private val chargeHistoryQuery = ChargeHistoryQuery()
-  fun payment(): Flow<ApolloResponse<PaymentQuery.Data>> = apolloClient
+  override fun payment(): Flow<ApolloResponse<PaymentQuery.Data>> = apolloClient
     .query(paymentQuery)
     .watch()
 
-  suspend fun refresh(): ApolloResponse<PaymentQuery.Data> = apolloClient
+  override suspend fun refresh(): ApolloResponse<PaymentQuery.Data> = apolloClient
     .query(paymentQuery)
     .fetchPolicy(FetchPolicy.NetworkOnly)
     .execute()
 
-  suspend fun writeActivePayoutMethodStatus(status: PayoutMethodStatus) {
+  override suspend fun writeActivePayoutMethodStatus(status: PayoutMethodStatus) {
     val cachedData = apolloClient
       .apolloStore
       .readOperation(paymentQuery)
@@ -53,7 +61,7 @@ class PaymentRepository(
       )
   }
 
-  suspend fun getChargeHistory(): Either<OperationResult.Error, ChargeHistory> = either {
+  override suspend fun getChargeHistory(): Either<OperationResult.Error, ChargeHistory> = either {
     apolloClient
       .query(chargeHistoryQuery)
       .safeExecute()
@@ -71,7 +79,7 @@ class PaymentRepository(
       .bind()
   }
 
-  suspend fun getPaymentData(): Either<OperationResult.Error, PaymentData> = either {
+  override suspend fun getPaymentData(): Either<OperationResult.Error, PaymentData> = either {
     apolloClient
       .query(paymentQuery)
       .fetchPolicy(FetchPolicy.NetworkOnly)

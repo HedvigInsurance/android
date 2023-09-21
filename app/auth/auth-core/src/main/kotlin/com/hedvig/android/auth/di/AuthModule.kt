@@ -2,6 +2,7 @@ package com.hedvig.android.auth.di
 
 import com.hedvig.android.auth.AccessTokenProvider
 import com.hedvig.android.auth.AndroidAccessTokenProvider
+import com.hedvig.android.auth.AuthTokenDemoServiceImpl
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.AuthTokenServiceImpl
 import com.hedvig.android.auth.event.AuthEventBroadcaster
@@ -29,4 +30,12 @@ val authModule = module {
   }
   single<MigrateTokenInterceptor> { MigrateTokenInterceptor(get(), get()) }
   single<SharedPreferencesAuthenticationTokenService> { SharedPreferencesAuthenticationTokenService(get()) }
+}
+
+val authTokenServiceModule = module {
+  single<AuthTokenService> { AuthTokenServiceImpl(get(), get(), get(), get<ApplicationScope>()) }
+}
+
+val authTokenDemoServiceModule = module {
+  single<AuthTokenService> { AuthTokenDemoServiceImpl() }
 }

@@ -8,8 +8,9 @@ import com.hedvig.android.feature.home.claimdetail.data.GetClaimDetailUseCase
 import com.hedvig.android.feature.home.claimdetail.ui.ClaimDetailViewModel
 import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimViewModel
 import com.hedvig.android.feature.home.claims.pledge.HonestyPledgeViewModel
-import com.hedvig.android.feature.home.data.GetHomeDataUseCase
-import com.hedvig.android.feature.home.data.GetHomeDataUseCaseImpl
+import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
+import com.hedvig.android.feature.home.home.data.GetHomeDataUseCaseImpl
+import com.hedvig.android.feature.home.home.data.GetHomeDataUseDemoCaseImpl
 import com.hedvig.android.feature.home.home.ui.HomeViewModel
 import com.hedvig.android.feature.home.legacychangeaddress.CreateQuoteCartUseCase
 import com.hedvig.android.feature.home.legacychangeaddress.GetAddressChangeStoryIdUseCase
@@ -42,4 +43,21 @@ val homeModule = module {
   viewModel<CommonClaimViewModel> { CommonClaimViewModel(get()) }
   viewModel<HomeViewModel> { HomeViewModel(get<GetHomeDataUseCase>(), get<FeatureManager>()) }
   viewModel<HonestyPledgeViewModel> { HonestyPledgeViewModel(get()) }
+}
+
+val homeDataModule = module {
+  single<GetHomeDataUseCase> {
+    GetHomeDataUseCaseImpl(
+      get<ApolloClient>(giraffeClient),
+      get<LanguageService>(),
+      get<GetMemberRemindersUseCase>(),
+      get<GetTravelCertificateSpecificationsUseCase>(),
+    )
+  }
+}
+
+val homeDataDemoModule = module {
+  single<GetHomeDataUseCase> {
+    GetHomeDataUseDemoCaseImpl()
+  }
 }

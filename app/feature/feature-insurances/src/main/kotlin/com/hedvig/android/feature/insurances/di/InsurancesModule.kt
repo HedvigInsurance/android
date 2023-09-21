@@ -3,8 +3,10 @@ package com.hedvig.android.feature.insurances.di
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.giraffe.di.giraffeClient
 import com.hedvig.android.apollo.octopus.di.octopusClient
+import com.hedvig.android.feature.insurances.data.GetCrossSellsDemoUseCaseImpl
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCaseImpl
+import com.hedvig.android.feature.insurances.data.GetInsuranceContractsDemoUseCaseImpl
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCaseImpl
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
@@ -33,15 +35,7 @@ val insurancesModule = module {
   viewModel<ContractDetailViewModel> { (contractId: String) ->
     ContractDetailViewModel(contractId, get(), get())
   }
-  single<GetInsuranceContractsUseCase> {
-    GetInsuranceContractsUseCaseImpl(
-      get<ApolloClient>(giraffeClient),
-      get<LanguageService>(),
-    )
-  }
-  single<GetCrossSellsUseCase> {
-    GetCrossSellsUseCaseImpl(get<ApolloClient>(octopusClient))
-  }
+
   single<GetContractCoverageUseCase> {
     GetContractCoverageUseCaseImpl(get<ApolloClient>(octopusClient))
   }
@@ -52,5 +46,32 @@ val insurancesModule = module {
       get<LanguageService>(),
       get<FeatureManager>(),
     )
+  }
+}
+
+val insuranceContractsUseCaseModule = module {
+  single<GetInsuranceContractsUseCase> {
+    GetInsuranceContractsUseCaseImpl(
+      get<ApolloClient>(giraffeClient),
+      get<LanguageService>(),
+    )
+  }
+}
+
+val insuranceContractsDemoUseCaseModule = module {
+  single<GetInsuranceContractsUseCase> {
+    GetInsuranceContractsDemoUseCaseImpl()
+  }
+}
+
+val crossSellsUseCaseModule = module {
+  single<GetCrossSellsUseCase> {
+    GetCrossSellsUseCaseImpl(get<ApolloClient>(octopusClient))
+  }
+}
+
+val crossSellsDemoUseCaseModule = module {
+  single<GetCrossSellsUseCase> {
+    GetCrossSellsDemoUseCaseImpl()
   }
 }

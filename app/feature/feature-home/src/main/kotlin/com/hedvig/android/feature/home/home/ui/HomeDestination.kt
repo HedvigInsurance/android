@@ -75,7 +75,7 @@ import com.hedvig.android.feature.home.claimstatus.ClaimStatusCards
 import com.hedvig.android.feature.home.claimstatus.claimprogress.ClaimProgressUiState
 import com.hedvig.android.feature.home.claimstatus.data.ClaimStatusCardUiState
 import com.hedvig.android.feature.home.claimstatus.data.PillUiState
-import com.hedvig.android.feature.home.data.HomeData
+import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.ChatTooltip
 import com.hedvig.android.feature.home.otherservices.OtherServicesBottomSheet
 import com.hedvig.android.memberreminders.MemberReminder
@@ -373,9 +373,9 @@ private fun HomeScreenSuccess(
 
 @Composable
 private fun VeryImportantMessageCard(
-  openUrl: (String) -> Unit,
-  veryImportantMessage: HomeData.VeryImportantMessage,
-  modifier: Modifier = Modifier,
+    openUrl: (String) -> Unit,
+    veryImportantMessage: HomeData.VeryImportantMessage,
+    modifier: Modifier = Modifier,
 ) {
   VectorInfoCard(
     text = veryImportantMessage.message,

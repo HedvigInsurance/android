@@ -29,7 +29,7 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedButt
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.material3.squircleLargeTop
-import com.hedvig.android.data.forever.ForeverRepository
+import com.hedvig.android.data.forever.ForeverRepositoryImpl
 import hedvig.resources.R
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
@@ -38,14 +38,14 @@ import kotlinx.coroutines.flow.filter
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun EditCodeBottomSheet(
-  sheetState: SheetState,
-  code: TextFieldValue,
-  referralCodeUpdateError: ForeverRepository.ReferralError?,
-  showedReferralCodeSubmissionError: () -> Unit,
-  onCodeChanged: (TextFieldValue) -> Unit,
-  onDismiss: () -> Unit,
-  onSubmitCode: () -> Unit,
-  isLoading: Boolean,
+    sheetState: SheetState,
+    code: TextFieldValue,
+    referralCodeUpdateError: ForeverRepositoryImpl.ReferralError?,
+    showedReferralCodeSubmissionError: () -> Unit,
+    onCodeChanged: (TextFieldValue) -> Unit,
+    onDismiss: () -> Unit,
+    onSubmitCode: () -> Unit,
+    isLoading: Boolean,
 ) {
   // No idea why material3.ModalBottomSheet does not read the latest values here, but this fixes it
   // https://issuetracker.google.com/issues/300280211
@@ -110,24 +110,24 @@ internal fun EditCodeBottomSheet(
 }
 
 @Composable
-private fun ForeverRepository.ReferralError.toErrorMessage(): String {
+private fun ForeverRepositoryImpl.ReferralError.toErrorMessage(): String {
   return when (this) {
-    ForeverRepository.ReferralError.CodeExists -> {
+    ForeverRepositoryImpl.ReferralError.CodeExists -> {
       stringResource(R.string.referrals_change_code_sheet_error_claimed_code)
     }
-    is ForeverRepository.ReferralError.CodeTooLong -> {
+    is ForeverRepositoryImpl.ReferralError.CodeTooLong -> {
       stringResource(R.string.referrals_change_code_sheet_error_max_length)
     }
-    is ForeverRepository.ReferralError.CodeIsEmpty -> {
+    is ForeverRepositoryImpl.ReferralError.CodeIsEmpty -> {
       stringResource(R.string.referrals_change_code_sheet_error_empty_code)
     }
-    is ForeverRepository.ReferralError.CodeTooShort -> {
+    is ForeverRepositoryImpl.ReferralError.CodeTooShort -> {
       stringResource(R.string.referrals_change_code_sheet_general_error)
     }
-    is ForeverRepository.ReferralError.GeneralError -> {
+    is ForeverRepositoryImpl.ReferralError.GeneralError -> {
       stringResource(R.string.referrals_change_code_sheet_general_error)
     }
-    is ForeverRepository.ReferralError.MaxUpdates -> {
+    is ForeverRepositoryImpl.ReferralError.MaxUpdates -> {
       stringResource(R.string.referrals_change_code_sheet_error_change_limit_reached, this.maxUpdates)
     }
   }

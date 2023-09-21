@@ -24,6 +24,7 @@ import com.hedvig.android.apollo.giraffe.di.giraffeClient
 import com.hedvig.android.auth.AccessTokenProvider
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.auth.di.authModule
+import com.hedvig.android.auth.di.authTokenServiceModule
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.auth.interceptor.MigrateTokenInterceptor
 import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
@@ -40,10 +41,15 @@ import com.hedvig.android.datadog.di.datadogModule
 import com.hedvig.android.feature.changeaddress.di.changeAddressModule
 import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
 import com.hedvig.android.feature.forever.di.foreverModule
+import com.hedvig.android.feature.forever.di.referralsInformationUseCase
+import com.hedvig.android.feature.home.di.homeDataModule
 import com.hedvig.android.feature.home.di.homeModule
+import com.hedvig.android.feature.insurances.di.crossSellsUseCaseModule
+import com.hedvig.android.feature.insurances.di.insuranceContractsUseCaseModule
 import com.hedvig.android.feature.insurances.di.insurancesModule
 import com.hedvig.android.feature.odyssey.di.odysseyModule
 import com.hedvig.android.feature.profile.di.profileModule
+import com.hedvig.android.feature.profile.di.profileRepositoryModule
 import com.hedvig.android.feature.terminateinsurance.di.terminateInsuranceModule
 import com.hedvig.android.feature.travelcertificate.di.travelCertificateModule
 import com.hedvig.android.hanalytics.android.di.hAnalyticsAndroidModule
@@ -155,6 +161,10 @@ import com.hedvig.authlib.AuthEnvironment
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.Callbacks
 import com.hedvig.authlib.NetworkAuthRepository
+import java.io.File
+import java.time.Clock
+import java.util.Locale
+import kotlin.math.pow
 import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -166,10 +176,6 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import timber.log.Timber
-import java.io.File
-import java.time.Clock
-import java.util.Locale
-import kotlin.math.pow
 
 fun isDebug() = BuildConfig.APPLICATION_ID == "com.hedvig.dev.app" ||
   BuildConfig.APPLICATION_ID == "com.hedvig.test.app" ||
@@ -619,6 +625,7 @@ val applicationModule = module {
       adyenModule,
       apolloClientModule,
       authModule,
+      authTokenServiceModule,
       authRepositoryModule,
       buildConstantsModule,
       cacheManagerModule,
@@ -642,11 +649,15 @@ val applicationModule = module {
       firebaseNotificationModule,
       foreverDataModule,
       foreverModule,
+      referralsInformationUseCase,
       graphQLQueryModule,
       hAnalyticsAndroidModule,
       hAnalyticsModule,
       homeModule,
+      homeDataModule,
       insurancesModule,
+      insuranceContractsUseCaseModule,
+      crossSellsUseCaseModule,
       languageModule,
       marketManagerModule,
       memberRemindersModule,
@@ -659,6 +670,7 @@ val applicationModule = module {
       onboardingModule,
       paymentModule,
       profileModule,
+      profileRepositoryModule,
       repositoriesModule,
       serviceModule,
       settingsDatastoreModule,

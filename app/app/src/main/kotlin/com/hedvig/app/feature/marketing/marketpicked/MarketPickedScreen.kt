@@ -16,9 +16,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.component.button.LargeOutlinedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -26,6 +28,9 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.designsystem.theme.hedvig_off_white
 import com.hedvig.android.market.Market
 import com.hedvig.app.R
+import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.util.loadDemoModules
+import com.hedvig.app.util.loadProductionModules
 
 @Composable
 fun MarketPickedScreen(
@@ -34,6 +39,7 @@ fun MarketPickedScreen(
   onClickLogIn: () -> Unit,
   market: Market,
 ) {
+  val context = LocalContext.current
   Box(
     modifier = Modifier
       .fillMaxSize()
@@ -73,6 +79,11 @@ fun MarketPickedScreen(
       LargeOutlinedButton(onClick = onClickLogIn) {
         Text(text = stringResource(hedvig.resources.R.string.MARKETING_SCREEN_LOGIN))
       }
+      HedvigTextButton(text = "Demo mode", onClick = {
+        loadDemoModules()
+        val loggedInActivity = LoggedInActivity.newInstance(context, withoutHistory = true)
+        context.startActivity(loggedInActivity)
+      })
     }
   }
 }

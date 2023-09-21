@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.home.data
+package com.hedvig.android.feature.home.home.data
 
 import androidx.compose.runtime.Immutable
 import arrow.core.Either

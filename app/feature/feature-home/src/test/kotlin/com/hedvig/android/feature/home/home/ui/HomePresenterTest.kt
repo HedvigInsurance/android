@@ -12,8 +12,8 @@ import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.home.claimstatus.data.ClaimStatusCardUiState
-import com.hedvig.android.feature.home.data.GetHomeDataUseCase
-import com.hedvig.android.feature.home.data.HomeData
+import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
+import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager2
 import com.hedvig.android.memberreminders.MemberReminder

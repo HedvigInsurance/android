@@ -11,6 +11,7 @@ import arrow.fx.coroutines.parZip
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.forever.ForeverRepository
+import com.hedvig.android.data.forever.ForeverRepositoryImpl
 import com.hedvig.android.feature.forever.data.GetReferralsInformationUseCase
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -42,7 +43,7 @@ internal class ForeverPresenter(
     var foreverData by remember { mutableStateOf(lastState.foreverData) }
 
     var referralCodeToSubmit by remember { mutableStateOf<String?>(null) }
-    var referralCodeToSubmitErrorMessage by remember { mutableStateOf<ForeverRepository.ReferralError?>(null) }
+    var referralCodeToSubmitErrorMessage by remember { mutableStateOf<ForeverRepositoryImpl.ReferralError?>(null) }
     var showReferralCodeToSubmitSuccess by remember { mutableStateOf<Boolean>(false) }
 
     CollectEvents { event ->
@@ -113,7 +114,7 @@ internal data class ForeverUiState(
   val isLoadingForeverData: Boolean,
   val foreverDataErrorMessage: ErrorMessage?,
   val referralCodeLoading: Boolean,
-  val referralCodeErrorMessage: ForeverRepository.ReferralError?,
+  val referralCodeErrorMessage: ForeverRepositoryImpl.ReferralError?,
   val showReferralCodeSuccessfullyChangedMessage: Boolean,
 ) {
 

@@ -11,8 +11,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimsData
 import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
-import com.hedvig.android.feature.home.data.GetHomeDataUseCase
-import com.hedvig.android.feature.home.data.HomeData
+import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
+import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.memberreminders.MemberReminders
@@ -106,7 +106,23 @@ internal sealed interface HomeUiState {
     get() = false
 
   data class Success(
-    override val isReloading: Boolean = false,
+      override val isReloading: Boolean = false,
+      val homeText: HomeText,
+      val claimStatusCardsData: HomeData.ClaimStatusCardsData?,
+      val veryImportantMessages: ImmutableList<HomeData.VeryImportantMessage>,
+      val memberReminders: MemberReminders,
+      val allowAddressChange: Boolean,
+      val allowGeneratingTravelCertificate: Boolean,
+      val emergencyData: EmergencyData?,
+      val commonClaimsData: ImmutableList<CommonClaimsData>,
+      override val showChatIcon: Boolean,
+  ) : HomeUiState
+
+  data class Error(val message: String?) : HomeUiState
+  object Loading : HomeUiState
+}
+
+private data class SuccessData(
     val homeText: HomeText,
     val claimStatusCardsData: HomeData.ClaimStatusCardsData?,
     val veryImportantMessages: ImmutableList<HomeData.VeryImportantMessage>,
@@ -115,22 +131,6 @@ internal sealed interface HomeUiState {
     val allowGeneratingTravelCertificate: Boolean,
     val emergencyData: EmergencyData?,
     val commonClaimsData: ImmutableList<CommonClaimsData>,
-    override val showChatIcon: Boolean,
-  ) : HomeUiState
-
-  data class Error(val message: String?) : HomeUiState
-  object Loading : HomeUiState
-}
-
-private data class SuccessData(
-  val homeText: HomeText,
-  val claimStatusCardsData: HomeData.ClaimStatusCardsData?,
-  val veryImportantMessages: ImmutableList<HomeData.VeryImportantMessage>,
-  val memberReminders: MemberReminders,
-  val allowAddressChange: Boolean,
-  val allowGeneratingTravelCertificate: Boolean,
-  val emergencyData: EmergencyData?,
-  val commonClaimsData: ImmutableList<CommonClaimsData>,
 ) {
   companion object {
     fun fromLastState(lastState: HomeUiState): SuccessData? {

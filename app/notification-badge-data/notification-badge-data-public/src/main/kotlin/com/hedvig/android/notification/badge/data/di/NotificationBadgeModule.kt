@@ -6,6 +6,7 @@ import com.hedvig.android.notification.badge.data.crosssell.CrossSellNotificatio
 import com.hedvig.android.notification.badge.data.crosssell.GetCrossSellsContractTypesUseCase
 import com.hedvig.android.notification.badge.data.crosssell.GetCrossSellsContractTypesUseCaseImpl
 import com.hedvig.android.notification.badge.data.crosssell.bottomnav.CrossSellBottomNavNotificationBadgeService
+import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeDemoServiceImpl
 import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeService
 import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeServiceImpl
 import com.hedvig.android.notification.badge.data.referrals.ReferralsNotificationBadgeService
@@ -25,4 +26,8 @@ val notificationBadgeModule = module {
   single<NotificationBadgeStorage> { DatastoreNotificationBadgeStorage(get()) }
   single<ReferralsNotificationBadgeService> { ReferralsNotificationBadgeService(get(), get()) }
   single<TabNotificationBadgeService> { TabNotificationBadgeService(get(), get()) }
+}
+
+val notificationDemoBadgeModule = module {
+  single<CrossSellCardNotificationBadgeService> { CrossSellCardNotificationBadgeDemoServiceImpl() }
 }

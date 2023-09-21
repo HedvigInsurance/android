@@ -33,3 +33,15 @@ val featureManagerModule = module {
     }
   }
 }
+
+val featureManagerDemoModule = module {
+  single<ClearHAnalyticsExperimentsCacheUseCase> { ClearHAnalyticsExperimentsCacheUseCase(get()) }
+  single<FeatureManager> {
+    FeatureManagerImpl(
+      DevFeatureFlagProvider(get()),
+      DevLoginMethodProvider(get()),
+      DevPaymentTypeProvider(get()),
+      get<ClearHAnalyticsExperimentsCacheUseCase>(),
+    )
+  }
+}

@@ -16,19 +16,25 @@ import giraffe.UpdateReferralCampaignCodeMutation
 @JvmInline
 value class CampaignCode(val code: String)
 
-class ForeverRepository(
+interface ForeverRepository {
+  suspend fun getReferralsData(): Either<ErrorMessage, ReferralsQuery.Data>
+  suspend fun updateCode(newCode: String): Either<ForeverRepositoryImpl.ReferralError, String>
+  suspend fun redeemReferralCode(campaignCode: CampaignCode): Either<ErrorMessage, RedeemReferralCodeMutation.Data?>
+}
+
+class ForeverRepositoryImpl(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,
-) {
+) : ForeverRepository {
   private val referralsQuery = ReferralsQuery()
 
-  suspend fun getReferralsData(): Either<ErrorMessage, ReferralsQuery.Data> = apolloClient
+  override suspend fun getReferralsData(): Either<ErrorMessage, ReferralsQuery.Data> = apolloClient
     .query(referralsQuery) // TODO include terms in this query and remove referralsTermsUseCase
     .fetchPolicy(FetchPolicy.NetworkOnly)
     .safeExecute()
     .toEither(::ErrorMessage)
 
-  suspend fun updateCode(newCode: String): Either<ReferralError, String> = either {
+  override suspend fun updateCode(newCode: String): Either<ReferralError, String> = either {
     val result = apolloClient
       .mutation(UpdateReferralCampaignCodeMutation(newCode))
       .safeExecute()
@@ -41,9 +47,11 @@ class ForeverRepository(
       result.updateReferralCampaignCode.asSuccessfullyUpdatedCode != null -> {
         result.updateReferralCampaignCode.asSuccessfullyUpdatedCode!!.code
       }
+
       result.updateReferralCampaignCode.asCodeTooLong != null -> {
         raise(ReferralError.CodeTooLong(result.updateReferralCampaignCode.asCodeTooLong!!.maxCharacters))
       }
+
       result.updateReferralCampaignCode.asCodeTooShort != null -> {
         if (result.updateReferralCampaignCode.asCodeTooShort!!.minCharacters <= 1) {
           raise(ReferralError.CodeIsEmpty)
@@ -51,9 +59,11 @@ class ForeverRepository(
           raise(ReferralError.CodeTooShort(result.updateReferralCampaignCode.asCodeTooShort!!.minCharacters))
         }
       }
+
       result.updateReferralCampaignCode.asCodeAlreadyTaken != null -> {
         raise(ReferralError.CodeExists)
       }
+
       result.updateReferralCampaignCode.asExceededMaximumUpdates != null -> {
         raise(
           ReferralError.MaxUpdates(
@@ -61,13 +71,14 @@ class ForeverRepository(
           ),
         )
       }
+
       else -> {
         raise(ReferralError.GeneralError("Unknown error"))
       }
     }
   }
 
-  suspend fun redeemReferralCode(
+  override suspend fun redeemReferralCode(
     campaignCode: CampaignCode,
   ): Either<ErrorMessage, RedeemReferralCodeMutation.Data?> {
     return apolloClient

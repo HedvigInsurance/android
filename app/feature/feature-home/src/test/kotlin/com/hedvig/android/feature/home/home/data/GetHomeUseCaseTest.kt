@@ -31,9 +31,6 @@ import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
 import com.hedvig.android.feature.home.claimstatus.claimprogress.ClaimProgressUiState
 import com.hedvig.android.feature.home.claimstatus.data.ClaimStatusCardUiState
 import com.hedvig.android.feature.home.claimstatus.data.PillUiState
-import com.hedvig.android.feature.home.data.GetHomeDataUseCase
-import com.hedvig.android.feature.home.data.GetHomeDataUseCaseImpl
-import com.hedvig.android.feature.home.data.HomeData
 import com.hedvig.android.language.test.FakeLanguageService
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.memberreminders.MemberReminder

@@ -25,16 +25,16 @@ import com.hedvig.android.feature.home.claimdetail.ui.previewList
 import com.hedvig.android.feature.home.claimstatus.claimprogress.ClaimProgressUiState
 import com.hedvig.android.feature.home.claimstatus.data.ClaimStatusCardUiState
 import com.hedvig.android.feature.home.claimstatus.data.PillUiState
-import com.hedvig.android.feature.home.data.HomeData
+import com.hedvig.android.feature.home.home.data.HomeData
 import java.util.UUID
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun ClaimStatusCards(
-  goToDetailScreen: ((claimId: String) -> Unit)?,
-  claimStatusCardsData: HomeData.ClaimStatusCardsData,
-  contentPadding: PaddingValues,
-  modifier: Modifier = Modifier,
+    goToDetailScreen: ((claimId: String) -> Unit)?,
+    claimStatusCardsData: HomeData.ClaimStatusCardsData,
+    contentPadding: PaddingValues,
+    modifier: Modifier = Modifier,
 ) {
   val claimStatusCardsUiState = claimStatusCardsData.claimStatusCardsUiState
   val pagerState = rememberPagerState(pageCount = { claimStatusCardsUiState.size })

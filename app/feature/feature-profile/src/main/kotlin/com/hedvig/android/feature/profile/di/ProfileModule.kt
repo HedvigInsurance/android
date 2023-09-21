@@ -7,6 +7,7 @@ import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.profile.aboutapp.AboutAppViewModel
+import com.hedvig.android.feature.profile.data.ProfileDemoRepository
 import com.hedvig.android.feature.profile.data.ProfileRepository
 import com.hedvig.android.feature.profile.data.ProfileRepositoryImpl
 import com.hedvig.android.feature.profile.eurobonus.EurobonusViewModel
@@ -29,12 +30,6 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val profileModule = module {
-  single<ProfileRepository> {
-    ProfileRepositoryImpl(
-      giraffeApolloClient = get<ApolloClient>(giraffeClient),
-      octopusApolloClient = get<ApolloClient>(octopusClient),
-    )
-  }
   single<GetEurobonusStatusUseCase> { NetworkGetEurobonusStatusUseCase(get<ApolloClient>(octopusClient)) }
   viewModel<ProfileViewModel> {
     ProfileViewModel(
@@ -71,4 +66,19 @@ val profileModule = module {
 
   viewModel<PaymentViewModel> { PaymentViewModel(get(), get(), get()) }
   viewModel<PaymentHistoryViewModel> { PaymentHistoryViewModel(get(), get()) }
+}
+
+val profileRepositoryModule = module {
+  single<ProfileRepository> {
+    ProfileRepositoryImpl(
+      giraffeApolloClient = get<ApolloClient>(giraffeClient),
+      octopusApolloClient = get<ApolloClient>(octopusClient),
+    )
+  }
+}
+
+val profileDemoRepositoryModule = module {
+  single<ProfileRepository> {
+    ProfileDemoRepository()
+  }
 }
