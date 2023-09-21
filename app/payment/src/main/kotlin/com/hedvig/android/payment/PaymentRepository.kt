@@ -19,9 +19,9 @@ import giraffe.ChargeHistoryQuery
 import giraffe.PaymentQuery
 import giraffe.type.PayoutMethodStatus
 import giraffe.type.TypeOfContract
+import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 import javax.money.MonetaryAmount
-import kotlinx.coroutines.flow.Flow
 
 class PaymentRepository(
   private val apolloClient: ApolloClient,
@@ -87,10 +87,10 @@ class PaymentRepository(
           contracts = it.contracts
             .filter { it.status.fragments.contractStatusFragment.asActiveStatus != null }
             .map {
-                 Contract(
-                   name = it.displayName,
-                   typeOfContract = it.typeOfContract
-                 )
+              Contract(
+                name = it.displayName,
+                typeOfContract = it.typeOfContract,
+              )
             },
           redeemedCampagins = it.redeemedCampaigns.map {
             Campaign(

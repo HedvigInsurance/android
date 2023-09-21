@@ -10,12 +10,12 @@ import com.hedvig.android.payment.PaymentData
 import com.hedvig.android.payment.PaymentRepository
 import giraffe.type.PayoutMethodStatus
 import giraffe.type.TypeOfContract
-import java.time.LocalDate
-import java.util.Locale
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.util.Locale
 
 internal class PaymentViewModel(
   private val referralsRepository: ForeverRepository,
