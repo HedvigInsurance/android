@@ -41,7 +41,7 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature.loggedin.ui.LoggedInActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout"
             android:exported="true"
             android:theme="@style/Hedvig.Theme.Splash"
             android:windowSoftInputMode="adjustResize">

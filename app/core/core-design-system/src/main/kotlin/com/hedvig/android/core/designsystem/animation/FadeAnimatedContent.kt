@@ -4,7 +4,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.with
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -39,14 +39,16 @@ fun <S> FadeAnimatedContent(
   modifier: Modifier = Modifier,
   contentAlignment: Alignment = Alignment.TopStart,
   label: String = "FadeAnimatedContent",
+  contentKey: (targetState: S) -> Any? = { it },
   content: @Composable AnimatedVisibilityScope.(targetState: S) -> Unit,
 ) = AnimatedContent(
   targetState = targetState,
   modifier = modifier,
   transitionSpec = {
-    MotionDefaults.fadeThroughEnter with MotionDefaults.fadeThroughExit
+    MotionDefaults.fadeThroughEnter togetherWith MotionDefaults.fadeThroughExit
   },
   label = label,
+  contentKey = contentKey,
   content = content,
   contentAlignment = contentAlignment,
 )
