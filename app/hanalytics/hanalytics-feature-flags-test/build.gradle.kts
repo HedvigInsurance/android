@@ -1,16 +1,12 @@
 plugins {
-  id("hedvig.android.library")
   id("hedvig.android.ktlint")
+  id("hedvig.android.library")
+  alias(libs.plugins.squareSortDependencies)
 }
 
 dependencies {
-  implementation(projects.app.hanalytics.hanalyticsFeatureFlags)
-
   api(libs.hAnalytics)
 
   implementation(libs.turbine)
-}
-
-android {
-  namespace = "com.hedvig.android.hanalytics.featureflags.test"
+  implementation(projects.hanalyticsFeatureFlagsPublic)
 }

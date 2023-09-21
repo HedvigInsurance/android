@@ -34,7 +34,7 @@ class FakeFeatureManager(
     operator fun invoke(noopFeatureManager: Boolean): FakeFeatureManager {
       return if (noopFeatureManager) {
         FakeFeatureManager(
-          { Feature.values().toList().associateWith { false } },
+          { Feature.entries.associateWith { false } },
           { LoginMethod.OTP },
           { PaymentType.ADYEN },
         )
@@ -50,7 +50,7 @@ class FakeFeatureManager(
  * Should probably delete `FakeFeatureManager` asap in favor of this, while keeping same API maybe.
  */
 class FakeFeatureManager2(
-  private val fixedMap: Map<Feature, Boolean>,
+  private val fixedMap: Map<Feature, Boolean> = emptyMap(),
 ) : FeatureManager {
   val featureTurbine = Turbine<Pair<Feature, Boolean>>(name = "FeatureTurbine")
 

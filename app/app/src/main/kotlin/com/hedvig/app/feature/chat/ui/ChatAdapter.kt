@@ -9,6 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import com.hedvig.android.core.common.android.remove
 import com.hedvig.android.core.common.android.show
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChatMessageFileUploadBinding
 import com.hedvig.app.databinding.ChatMessageHedvigBinding
@@ -22,7 +24,6 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import giraffe.ChatMessagesQuery
 import giraffe.fragment.ChatMessageFragment
-import slimber.log.e
 
 class ChatAdapter(
   private val imageLoader: ImageLoader,
@@ -149,7 +150,7 @@ class ChatAdapter(
         }
       }
     } ?: run {
-      e { "Found no message to render with position: %d $position" }
+      logcat(LogPriority.ERROR) { "Found no message to render with position: %d $position" }
       NULL_RENDER
     }
 

@@ -18,7 +18,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,18 +32,9 @@ import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.sample.design.showcase.ui.colorscheme.HedvigColorScheme
 import com.hedvig.android.sample.design.showcase.ui.hedviguikit.HTextField
 import com.hedvig.android.sample.design.showcase.ui.hedviguikit.HedvigIcons
+import com.hedvig.android.sample.design.showcase.ui.hedviguikit.HedvigShapes
 import com.hedvig.android.sample.design.showcase.ui.hedviguikit.InfoCard
 import com.hedvig.android.sample.design.showcase.ui.hedviguikit.WarningCard
-import com.hedvig.android.sample.design.showcase.ui.m2.components.M2Buttons
-import com.hedvig.android.sample.design.showcase.ui.m2.components.M2Cards
-import com.hedvig.android.sample.design.showcase.ui.m2.components.M2Checkbox
-import com.hedvig.android.sample.design.showcase.ui.m2.components.M2Chips
-import com.hedvig.android.sample.design.showcase.ui.m2.components.M2Divider
-import com.hedvig.android.sample.design.showcase.ui.m2.components.M2ProgressBar
-import com.hedvig.android.sample.design.showcase.ui.m2.components.M2Slider
-import com.hedvig.android.sample.design.showcase.ui.m2.components.M2Tab
-import com.hedvig.android.sample.design.showcase.ui.m2.components.M2TextFields
-import com.hedvig.android.sample.design.showcase.ui.m2.components.M2TopAppBars
 import com.hedvig.android.sample.design.showcase.ui.m3.components.M3Buttons
 import com.hedvig.android.sample.design.showcase.ui.m3.components.M3Cards
 import com.hedvig.android.sample.design.showcase.ui.m3.components.M3Checkbox
@@ -61,40 +51,18 @@ import com.hedvig.android.sample.design.showcase.ui.m3.components.M3TopAppBars
 
 @Composable
 internal fun MaterialComponents(windowSizeClass: WindowSizeClass) {
-  if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded) {
-    BothThemes()
-  } else {
-    ThemeSelection()
-  }
-}
-
-@Composable
-private fun BothThemes() {
-  Row(Modifier.fillMaxSize()) {
-    Column(Modifier.weight(1f)) {
-      Text("M2")
-      M2()
-    }
-    Column(Modifier.weight(1f)) {
-      Text("M3")
-      M3()
-    }
-  }
+  ThemeSelection()
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ThemeSelection() {
-  var showM2: Boolean by rememberSaveable { mutableStateOf(false) }
   var showM3: Boolean by rememberSaveable { mutableStateOf(false) }
   var showColorSchemes: Boolean by rememberSaveable { mutableStateOf(false) }
   var showHedvigUiKit: Boolean by rememberSaveable { mutableStateOf(false) }
   var showIcons: Boolean by rememberSaveable { mutableStateOf(false) }
+  var showShapes: Boolean by rememberSaveable { mutableStateOf(false) }
   when {
-    showM2 -> {
-      BackHandler { showM2 = false }
-      M2()
-    }
     showM3 -> {
       BackHandler { showM3 = false }
       M3()
@@ -111,6 +79,10 @@ private fun ThemeSelection() {
       BackHandler { showIcons = false }
       HedvigIcons()
     }
+    showShapes -> {
+      BackHandler { showShapes = false }
+      HedvigShapes()
+    }
     else -> {
       Box(
         modifier = Modifier.fillMaxSize(),
@@ -118,9 +90,6 @@ private fun ThemeSelection() {
       ) {
         Surface {
           FlowRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            Button(onClick = { showM2 = true }) {
-              Text("M2")
-            }
             Button(onClick = { showM3 = true }) {
               Text("M3")
             }
@@ -133,29 +102,13 @@ private fun ThemeSelection() {
             Button(onClick = { showIcons = true }) {
               Text("New design Icons")
             }
+            Button(onClick = { showShapes = true }) {
+              Text("Hedvig squircle shapes")
+            }
           }
         }
       }
     }
-  }
-}
-
-@Composable
-private fun M2() {
-  LazyColumn(
-    modifier = Modifier.fillMaxSize(),
-    state = rememberLazyListState(),
-  ) {
-    M2LightAndDarkItem { M2Buttons() }
-    M2LightAndDarkItem { M2TextFields() }
-    M2LightAndDarkItem { M2Chips() }
-    M2LightAndDarkItem { M2Checkbox() }
-    M2LightAndDarkItem { M2Slider() }
-    M2LightAndDarkItem { M2ProgressBar() }
-    M2LightAndDarkItem { M2Divider() }
-    M2LightAndDarkItem { M2Cards() }
-    M2LightAndDarkItem { M2TopAppBars() }
-    M2LightAndDarkItem { M2Tab() }
   }
 }
 
@@ -176,30 +129,8 @@ private fun M3() {
     LightAndDarkItem { M3TopAppBars() }
     LightAndDarkItem { M3NavigationBars() }
     LightAndDarkItem { M3Tab() }
-    LightAndDarkItem { M3Switch() } // We don't use this in m2
-    LightAndDarkItem { M3DatePicker() } // We don't use this in m2
-  }
-}
-
-@Suppress("FunctionName")
-private fun LazyListScope.M2LightAndDarkItem(content: @Composable () -> Unit) {
-  item {
-    Row(Modifier.fillMaxWidth()) {
-      Box(Modifier.weight(1f)) {
-        HedvigTheme(false) {
-          Surface(Modifier.fillMaxWidth()) {
-            content()
-          }
-        }
-      }
-      Box(Modifier.weight(1f)) {
-        HedvigTheme(true) {
-          Surface(Modifier.fillMaxWidth()) {
-            content()
-          }
-        }
-      }
-    }
+    LightAndDarkItem { M3Switch() }
+    LightAndDarkItem { M3DatePicker() }
   }
 }
 
@@ -208,14 +139,14 @@ private fun LazyListScope.LightAndDarkItem(content: @Composable () -> Unit) {
   item {
     Row(Modifier.fillMaxWidth()) {
       Box(Modifier.weight(1f)) {
-        HedvigTheme(false) {
+        HedvigTheme(darkTheme = false) {
           Surface(Modifier.fillMaxWidth()) {
             content()
           }
         }
       }
       Box(Modifier.weight(1f)) {
-        HedvigTheme(true) {
+        HedvigTheme(darkTheme = true) {
           Surface(Modifier.fillMaxWidth()) {
             content()
           }

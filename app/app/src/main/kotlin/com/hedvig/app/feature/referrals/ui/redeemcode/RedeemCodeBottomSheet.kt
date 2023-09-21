@@ -11,9 +11,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.android.core.common.android.QuoteCartId
+import com.hedvig.android.data.forever.CampaignCode
 import com.hedvig.app.R
 import com.hedvig.app.databinding.PromotionCodeDialogBinding
-import com.hedvig.app.feature.offer.usecase.CampaignCode
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.hideKeyboard
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -86,7 +86,7 @@ abstract class RedeemCodeBottomSheet : BottomSheetDialogFragment() {
 
   private fun wrongPromotionCode(errorMessage: String) {
     binding.textField.errorIconDrawable =
-      requireContext().compatDrawable(com.hedvig.android.core.designsystem.R.drawable.ic_warning_triangle)
+      requireContext().compatDrawable(com.hedvig.android.core.design.system.R.drawable.ic_warning_triangle)
     binding.textField.error = errorMessage
   }
 }

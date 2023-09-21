@@ -10,6 +10,7 @@ import giraffe.fragment.CostFragment
 import giraffe.fragment.MonetaryAmountFragment
 import giraffe.type.PayoutMethodStatus
 import giraffe.type.StoredCardDetails
+import giraffe.type.TypeOfContract
 import java.time.LocalDate
 
 data class PaymentDataBuilder(
@@ -20,7 +21,6 @@ data class PaymentDataBuilder(
   private val subscription: String = "139.00",
   private val charge: String = subscription,
   private val nextChargeDate: LocalDate? = LocalDate.now().withDayOfMonth(27),
-  private val chargeHistory: List<PaymentQuery.ChargeHistory> = emptyList(),
   private val freeUntil: LocalDate? = null,
   private val cost: CostFragment = CostBuilder(
     grossAmount = "139.00",
@@ -36,6 +36,8 @@ data class PaymentDataBuilder(
   fun build() = PaymentQuery.Data(
     contracts = contracts.map { contractStatus ->
       PaymentQuery.Contract(
+        typeOfContract = TypeOfContract.SE_ACCIDENT,
+        displayName = "",
         status = PaymentQuery.Status(
           __typename = contractStatus.typename,
           fragments = PaymentQuery.Status.Fragments(
@@ -77,7 +79,6 @@ data class PaymentDataBuilder(
       ),
     ),
     nextChargeDate = nextChargeDate,
-    chargeHistory = chargeHistory,
     redeemedCampaigns = redeemedCampaigns,
     bankAccount = if (payinType == PayinType.TRUSTLY && payinConnected) {
       PaymentQuery.BankAccount(
@@ -113,6 +114,7 @@ data class PaymentDataBuilder(
       null
     },
     activePayoutMethods = payoutConnectionStatus?.let { PaymentQuery.ActivePayoutMethods(status = it) },
+    insuranceCost = null,
   )
 }
 

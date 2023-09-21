@@ -23,7 +23,7 @@
     <application
         android:name=".HedvigApplication"
         android:allowBackup="true"
-        android:enableOnBackInvokedCallback="true"
+        android:enableOnBackInvokedCallback="false"
         android:fullBackupOnly="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/APP_NAME"
@@ -63,29 +63,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".feature.profile.ui.myinfo.MyInfoActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.profile.ui.payment.PaymentActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.profile.ui.payment.PaymentHistoryActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.profile.ui.aboutapp.AboutAppActivity"
-            android:configChanges="keyboard|keyboardHidden"
-            android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name="com.hedvig.android.feature.home.claims.commonclaim.EmergencyActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
@@ -105,50 +82,12 @@
             android:name=".feature.crossselling.ui.CrossSellingResultActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".feature.referrals.ReferralsReceiverActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:noHistory="true"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.settings.SettingsActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.referrals.ui.activated.ReferralsActivatedActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.referrals.ui.ReferralsInformationActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.referrals.ui.editcode.ReferralsEditCodeActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.insurance.ui.detail.ContractDetailActivity"
-            android:configChanges="keyboard|keyboardHidden"
-            android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name=".feature.adyen.payin.AdyenConnectPayinActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature.trustly.TrustlyConnectPayinActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.insurance.ui.terminatedcontracts.TerminatedContractsActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature.embark.ui.EmbarkActivity"
@@ -170,10 +109,6 @@
             android:windowSoftInputMode="adjustResize" />
         <activity android:name="com.hedvig.android.feature.home.legacychangeaddress.result.ChangeAddressResultActivity" />
         <activity android:name=".feature.offer.quotedetail.QuoteDetailActivity" />
-        <activity
-            android:name=".feature.crossselling.ui.detail.CrossSellDetailActivity"
-            android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".feature.crossselling.ui.detail.CrossSellFaqActivity" />
         <activity android:name=".feature.sunsetting.ForceUpgradeActivity" />
         <activity
             android:name=".feature.genericauth.GenericAuthActivity"
@@ -189,10 +124,6 @@
         <activity
             android:name=".feature.marketing.MarketingActivity"
             android:theme="@style/Hedvig.Theme.Marketing"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name="com.hedvig.android.feature.terminateinsurance.TerminateInsuranceActivity"
-            android:parentActivityName="com.hedvig.app.feature.loggedin.ui.LoggedInActivity"
             android:windowSoftInputMode="adjustResize" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"

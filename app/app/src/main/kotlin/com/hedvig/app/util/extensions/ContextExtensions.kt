@@ -1,8 +1,6 @@
 package com.hedvig.app.util.extensions
 
 import android.app.Activity
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
@@ -21,14 +19,14 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.getSystemService
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.android.core.common.android.SHARED_PREFERENCE_NAME
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import kotlinx.coroutines.delay
-import slimber.log.e
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -92,20 +90,6 @@ suspend fun Context.showKeyboardWithDelay(inputView: View?, delayDuration: Durat
 private fun Context.getSharedPreferences() =
   this.getSharedPreferences(SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE)
 
-fun Context.showShareSheet(@StringRes title: Int, configureClosure: ((Intent) -> Unit)?) =
-  showShareSheet(resources.getString(title), configureClosure)
-
-fun Context.showShareSheet(title: String, configureClosure: ((Intent) -> Unit)?) {
-  val intent = Intent().apply {
-    action = Intent.ACTION_SEND
-  }
-
-  configureClosure?.let { it(intent) }
-  startActivity(
-    Intent.createChooser(intent, title),
-  )
-}
-
 /**
  * Note: This extension will not accept an Application Context
  */
@@ -165,12 +149,6 @@ fun Context.showErrorDialog(message: String, positiveAction: () -> Unit) {
     .setMessage(message)
     .setPositiveButton(hedvig.resources.R.string.ALERT_OK) { _, _ -> positiveAction() }
     .show()
-}
-
-fun Context.copyToClipboard(
-  text: String,
-) {
-  getSystemService<ClipboardManager>()?.setPrimaryClip(ClipData.newPlainText(null, text))
 }
 
 fun Context.makeToast(
@@ -251,7 +229,7 @@ fun Context.openWebBrowser(uri: Uri) {
   if (browserIntent.resolveActivity(packageManager) != null) {
     startActivity(browserIntent)
   } else {
-    e { "Tried to launch $uri but the phone has nothing to support such an intent." }
+    logcat(LogPriority.ERROR) { "Tried to launch $uri but the phone has nothing to support such an intent." }
     makeToast(hedvig.resources.R.string.general_unknown_error)
   }
 }

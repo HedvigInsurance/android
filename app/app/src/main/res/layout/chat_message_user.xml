@@ -29,7 +29,6 @@
             android:layout_marginEnd="16dp"
             android:autoLink="web"
             android:background="@drawable/chat_message_hedvig"
-            android:backgroundTint="?colorSurface"
             android:linksClickable="true"
             android:paddingStart="16dp"
             android:paddingTop="8dp"

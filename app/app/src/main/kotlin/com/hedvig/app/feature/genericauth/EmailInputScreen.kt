@@ -13,15 +13,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.outlined.ErrorOutline
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -62,7 +62,7 @@ fun EmailInputScreen(
       Spacer(Modifier.height(60.dp))
       Text(
         text = stringResource(hedvig.resources.R.string.login_enter_your_email_address),
-        style = MaterialTheme.typography.h4,
+        style = MaterialTheme.typography.headlineMedium,
       )
       Spacer(Modifier.height(40.dp))
       EmailTextField(emailInput, onInputChanged, onSubmitEmail, error, loading, onClear)
@@ -106,7 +106,7 @@ private fun EmailTextField(
   if (error != null) {
     Text(
       text = error,
-      style = MaterialTheme.typography.caption.copy(color = MaterialTheme.colors.error),
+      style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.error),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
   }
@@ -123,7 +123,7 @@ private fun TrailingIcon(
     Image(
       imageVector = Icons.Outlined.ErrorOutline,
       contentDescription = null,
-      colorFilter = ColorFilter.tint(color = MaterialTheme.colors.error),
+      colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.error),
     )
   } else if (loading) {
     CircularProgressIndicator(modifier = Modifier.size(24.dp))
@@ -143,7 +143,7 @@ private fun TrailingIcon(
 @Composable
 private fun PreviewEmailInputScreenValid() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       EmailInputScreen(
         onUpClick = {},
         onInputChanged = {},
@@ -161,7 +161,7 @@ private fun PreviewEmailInputScreenValid() {
 @Composable
 private fun PreviewEmailInputScreenInvalid() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       EmailInputScreen(
         onUpClick = {},
         onInputChanged = {},

@@ -17,18 +17,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.material.Card
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ListItem
 import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,7 +45,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.appbar.CenterAlignedTopAppBar
+import com.hedvig.android.core.ui.appbar.TopAppBarWithClose
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddressInput
 import com.hedvig.app.util.compose.preview.previewData
@@ -114,12 +111,11 @@ private fun TopAppBar(
   closeKeyboard: () -> Unit,
   contentPadding: PaddingValues,
 ) {
-  Surface(color = MaterialTheme.colors.background) {
+  Surface(color = MaterialTheme.colorScheme.background) {
     Column(Modifier.padding(contentPadding)) {
-      CenterAlignedTopAppBar(
-        title = stringResource(R.string.EMBARK_ADDRESS_AUTOCOMPLETE_ADDRESS),
+      TopAppBarWithClose(
         onClick = { cancelAutoCompletion() },
-        backgroundColor = MaterialTheme.colors.background,
+        title = stringResource(R.string.EMBARK_ADDRESS_AUTOCOMPLETE_ADDRESS),
       )
       AddressInput(
         viewState = viewState,
@@ -141,7 +137,7 @@ private fun AddressInput(
   modifier: Modifier = Modifier,
 ) {
   Card(
-    border = BorderStroke(1.dp, MaterialTheme.colors.primary.copy(alpha = 0.12f)),
+    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)),
     modifier = modifier,
   ) {
     Column(
@@ -189,17 +185,14 @@ private fun AddressInput(
       )
       val numberAndCity = viewState.input.selectedAddress?.toPresentableTextPair()?.second
       AnimatedVisibility(numberAndCity != null) {
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-          numberAndCity?.let {
-            Text(it)
-          }
+        numberAndCity?.let {
+          Text(it, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
       }
     }
   }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun SuggestionsList(
   viewState: AddressAutoCompleteViewState,
@@ -226,9 +219,8 @@ private fun SuggestionsList(
     ) { address: DanishAddress ->
       val (primaryText, secondaryText) = address.toPresentableTextPair()
       ListItem(
-        text = { Text(text = primaryText) },
-        secondaryText = secondaryText?.let { { Text(secondaryText) } },
-        singleLineSecondaryText = true,
+        headlineContent = { Text(text = primaryText) },
+        supportingContent = secondaryText?.let { { Text(secondaryText, maxLines = 1) } },
         modifier = Modifier.clickable {
           selectAddress(address)
         },
@@ -237,10 +229,10 @@ private fun SuggestionsList(
     if (viewState.showCantFindAddressItem) {
       item(key = "cantFindAddress") {
         ListItem(
-          text = {
+          headlineContent = {
             Text(
               stringResource(R.string.EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS),
-              color = MaterialTheme.colors.error,
+              color = MaterialTheme.colorScheme.error,
             )
           },
           modifier = Modifier.clickable { cantFindAddress() },
@@ -254,7 +246,7 @@ private fun SuggestionsList(
 @Composable
 private fun PreviewAddressAutoCompleteScreen() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       val previewDanishAddress = DanishAddress.previewData()
       AddressAutoCompleteScreen(
         AddressAutoCompleteViewState(

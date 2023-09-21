@@ -5,24 +5,35 @@ import android.os.Bundle
 import android.os.Environment
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.core.content.FileProvider
+import androidx.core.view.isGone
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.common.android.show
+import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
+import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
-import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.databinding.ActivityChatBinding
 import com.hedvig.app.feature.chat.ChatInputType
 import com.hedvig.app.feature.chat.viewmodel.ChatEvent
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
-import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.extensions.calculateNonFullscreenHeightDiff
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.composeContactSupportEmail
@@ -30,7 +41,6 @@ import com.hedvig.app.util.extensions.handleSingleSelectLink
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
-import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.applyInsetter
 import giraffe.ChatMessagesQuery
@@ -39,9 +49,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import slimber.log.d
-import slimber.log.e
-import slimber.log.v
 import java.io.File
 
 class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
@@ -64,7 +71,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
   private var currentPhotoPath: String? = null
 
   val takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { didSucceed ->
-    d { "Take piture launcher result, didSucceed:$didSucceed, currentPhotoPath:$currentPhotoPath" }
+    logcat { "Take piture launcher result, didSucceed:$didSucceed, currentPhotoPath:$currentPhotoPath" }
     if (didSucceed) {
       currentPhotoPath?.let { tempFile ->
         attachPickerDialog?.uploadingTakenPicture(true)
@@ -144,6 +151,31 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
     initializeInput()
     initializeKeyboardVisibilityHandler()
     observeData()
+
+    lifecycleScope.launch {
+      repeatOnLifecycle(Lifecycle.State.STARTED) {
+        chatViewModel.isChatDisabled.collect { isChatDisabled ->
+          if (isChatDisabled == false) {
+            binding.disabledChatView.isGone = true
+          }
+        }
+      }
+    }
+    binding.disabledChatView.setContent {
+      val isChatDisabled by chatViewModel.isChatDisabled.collectAsStateWithLifecycle()
+      HedvigTheme {
+        Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+          if (isChatDisabled == true) {
+            HedvigErrorSection(
+              title = stringResource(hedvig.resources.R.string.CHAT_DISABLED_MESSAGE),
+              subTitle = null,
+              buttonText = stringResource(hedvig.resources.R.string.general_close_button),
+              retry = { finish() },
+            )
+          }
+        }
+      }
+    }
   }
 
   override fun onResume() {
@@ -203,9 +235,6 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
   }
 
   private fun initializeToolbarButtons() {
-    binding.settings.setHapticClickListener {
-      startActivity(SettingsActivity.newInstance(this))
-    }
     binding.close.setOnClickListener {
       onBackPressedDispatcher.onBackPressed()
     }
@@ -232,7 +261,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
     lifecycleScope.launch {
       repeatOnLifecycle(Lifecycle.State.STARTED) {
         chatViewModel.messages.collect { data ->
-          v { "ChatActivity, new messages" }
+          logcat(LogPriority.VERBOSE) { "ChatActivity, new messages" }
           data?.let { bindData(it) }
         }
       }
@@ -311,7 +340,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
 
   private fun startTakePicture() {
     val externalPhotosDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES) ?: run {
-      e { "Could not getExternalFilesDir(Environment.DIRECTORY_PICTURES)" }
+      logcat(LogPriority.ERROR) { "Could not getExternalFilesDir(Environment.DIRECTORY_PICTURES)" }
       showAlert(
         title = hedvig.resources.R.string.something_went_wrong,
         positiveLabel = hedvig.resources.R.string.GENERAL_EMAIL_US,

@@ -5,6 +5,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.activity.ActivityNavigator
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.filterIsInstance
@@ -12,7 +13,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent.inject
-import slimber.log.d
 
 class AuthenticatedObserver : DefaultLifecycleObserver {
 
@@ -25,7 +25,7 @@ class AuthenticatedObserver : DefaultLifecycleObserver {
     authObservingJob = owner.lifecycleScope.launch {
       authTokenService.authStatus
         .onEach { authStatus ->
-          d {
+          logcat {
             buildString {
               append("Owner: ${owner::class.simpleName} | Received authStatus: ")
               append(

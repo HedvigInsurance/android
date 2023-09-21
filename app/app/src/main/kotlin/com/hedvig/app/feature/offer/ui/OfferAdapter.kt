@@ -4,14 +4,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePaddingRelative
 import androidx.fragment.app.FragmentManager
@@ -19,9 +20,10 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
+import com.hedvig.android.apollo.format
+import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.genericinfo.GenericErrorScreen
-import com.hedvig.android.core.ui.insurance.toDrawable
+import com.hedvig.android.core.ui.insurance.toDrawableRes
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.R
@@ -46,7 +48,6 @@ import com.hedvig.app.feature.offer.ui.composable.insurely.InsurelyCard
 import com.hedvig.app.feature.offer.ui.composable.variants.VariantButton
 import com.hedvig.app.feature.offer.ui.composable.variants.VariantHeader
 import com.hedvig.app.feature.table.generateTable
-import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.drawableAttr
@@ -78,6 +79,7 @@ class OfferAdapter(
       onSign,
       onRemoveDiscount,
     )
+
     VARIANT_BUTTON -> ViewHolder.VariantButton(ComposeView(parent.context), locale)
     VARIANT_HEADER -> ViewHolder.VariantHeader(ComposeView(parent.context))
     R.layout.offer_fact_area -> ViewHolder.Facts(parent)
@@ -201,7 +203,7 @@ class OfferAdapter(
               onSign(data.checkoutMethod, data.paymentMethodsApiResponse)
             }
           }
-          root.background = data.gradientType.toDrawable(itemView.context)
+          root.background = ContextCompat.getDrawable(itemView.context, data.gradientType.toDrawableRes())
         }
       }
     }
@@ -324,6 +326,7 @@ class OfferAdapter(
             setText(hedvig.resources.R.string.offer_screen_coverage_title)
             updateMargin(bottom = BASE_MARGIN)
           }
+
           is OfferItems.Subheading.Switcher -> {
             text = context.resources.getQuantityString(
               hedvig.resources.R.plurals.offer_switcher_title,
@@ -396,7 +399,7 @@ class OfferAdapter(
           HedvigTheme {
             Text(
               text = stringResource(hedvig.resources.R.string.OFFER_PRICE_COMPARISION_HEADER),
-              style = MaterialTheme.typography.h5,
+              style = MaterialTheme.typography.headlineSmall,
               modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .padding(top = 48.dp),
@@ -533,12 +536,7 @@ class OfferAdapter(
         }
         composeView.setContent {
           HedvigTheme {
-            GenericErrorScreen(
-              onRetryButtonClick = { reload() },
-              Modifier
-                .padding(16.dp)
-                .padding(top = (80 - 16).dp),
-            )
+            HedvigErrorSection(retry = reload)
           }
         }
       }
@@ -558,16 +556,20 @@ class OfferAdapter(
         oldItem is OfferItems.InsurelyCard && newItem is OfferItems.InsurelyCard -> {
           oldItem.id == newItem.id
         }
+
         oldItem is OfferItems.PriceComparisonHeader && newItem is OfferItems.PriceComparisonHeader -> {
           // Should only display 1 PriceComparisonHeader ever
           true
         }
+
         oldItem is OfferItems.Header && newItem is OfferItems.Header -> {
           true
         }
+
         oldItem is OfferItems.VariantButton && newItem is OfferItems.VariantButton -> {
           oldItem.id == newItem.id
         }
+
         else -> {
           oldItem == newItem
         }

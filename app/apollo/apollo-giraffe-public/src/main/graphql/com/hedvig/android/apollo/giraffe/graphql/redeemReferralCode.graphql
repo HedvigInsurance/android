@@ -1,0 +1,12 @@
+mutation RedeemReferralCodeMutation($code: String!, $locale: Locale!) {
+  redeemCode(code: $code) {
+    campaigns {
+      code
+      ... IncentiveFragment
+    }
+    cost {
+      ... CostFragment
+    }
+  }
+}
+

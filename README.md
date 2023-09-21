@@ -45,6 +45,6 @@ The `username` used in there is the result of passing our jitpack username (from
 
 The [android-remove-unused-resources-plugin](https://github.com/irgaly/android-remove-unused-resources-plugin/tree/main#usage)
 plugin is used to achieve this. This will run on CI using [this task](./.github/workflows/unused-resources.yml), but to run locally one can also just do
-`./gradlew :app:app:lintDebug -Prur.lint.onlyUnusedResources`
+`./gradlew :app:lintDebug -Prur.lint.onlyUnusedResources`
 And then
-`./gradlew :app:app:removeUnusedResources -Prur.lintVariant="debug"`
+`./gradlew :app:removeUnusedResources -Prur.lintVariant="debug"`

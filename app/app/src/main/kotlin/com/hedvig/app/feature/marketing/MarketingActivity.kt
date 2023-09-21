@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -16,12 +16,14 @@ import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
+import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.createOnboardingUri
-import com.hedvig.app.R
 import com.hedvig.app.authenticate.BankIdLoginDialog
 import com.hedvig.app.feature.marketing.data.MarketingBackground
 import com.hedvig.app.feature.marketing.marketpicked.MarketPickedScreen
@@ -33,10 +35,10 @@ import com.hedvig.hanalytics.LoginMethod
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.getViewModel
-import slimber.log.i
 
 class MarketingActivity : AppCompatActivity() {
   private val languageService: LanguageService by inject()
+  private val hedvigBuildConstants: HedvigBuildConstants by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -61,7 +63,7 @@ class MarketingActivity : AppCompatActivity() {
           },
           onClickLogIn = { market ->
             viewModel.onClickLogIn()
-            i { "Start login with market:$market" }
+            logcat(LogPriority.INFO) { "Start login with market:$market" }
             onClickLogin(state, market)
           },
         )
@@ -70,7 +72,7 @@ class MarketingActivity : AppCompatActivity() {
   }
 
   private fun openOnboarding(market: Market) {
-    val baseUrl = getString(R.string.WEB_BASE_URL).substringAfter("//")
+    val baseUrl = hedvigBuildConstants.urlBaseWeb.substringAfter("//")
     val uri = market.createOnboardingUri(baseUrl, languageService.getLanguage())
     openWebBrowser(uri)
   }

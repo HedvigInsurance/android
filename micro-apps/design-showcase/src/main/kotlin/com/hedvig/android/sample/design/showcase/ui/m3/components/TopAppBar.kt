@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -55,11 +54,6 @@ internal fun M3TopAppBars() {
       navigationIcon = { NavigationIcon() },
     )
     Spacer(modifier = Modifier.size(16.dp))
-    CenterAlignedTopAppBar(
-      navigationIcon = { NavigationIcon() },
-      title = { Text("Center aligned") },
-    )
-    Spacer(modifier = Modifier.size(16.dp))
     M3OnSurfaceText(
       text = "Scrolled State",
       style = MaterialTheme.typography.labelLarge,
@@ -70,12 +64,6 @@ internal fun M3TopAppBars() {
     TopAppBar(
       title = { Text("Small top app bar") },
       navigationIcon = { NavigationIcon() },
-      scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(scrollState),
-    )
-    Spacer(modifier = Modifier.size(16.dp))
-    CenterAlignedTopAppBar(
-      navigationIcon = { NavigationIcon() },
-      title = { Text("Center aligned") },
       scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(scrollState),
     )
   }

@@ -1,12 +1,13 @@
 package com.hedvig.android.auth.event
 
 import com.hedvig.android.core.common.ApplicationScope
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
-import slimber.log.v
 import kotlin.coroutines.CoroutineContext
 
 class AuthEventBroadcaster(
@@ -21,7 +22,7 @@ class AuthEventBroadcaster(
       authEvents
         .consumeAsFlow()
         .collect { event ->
-          v { "AuthenticationEventDispatcher dispatching event:$event" }
+          logcat(LogPriority.VERBOSE) { "AuthenticationEventDispatcher dispatching event:$event" }
           authEventListeners.map { listener ->
             async {
               when (event) {

@@ -57,7 +57,7 @@ internal fun HedvigColorScheme() {
 private fun ColorItem(color: @Composable () -> Color, colorName: String) {
   Row() {
     Box(Modifier.weight(1f)) {
-      HedvigTheme(false) {
+      HedvigTheme(darkTheme = false) {
         Surface(Modifier.fillMaxSize().height(50.dp), color = color()) {
           Box(contentAlignment = Alignment.Center) {
             Text(colorName)
@@ -66,7 +66,7 @@ private fun ColorItem(color: @Composable () -> Color, colorName: String) {
       }
     }
     Box(Modifier.weight(1f)) {
-      HedvigTheme(true) {
+      HedvigTheme(darkTheme = true) {
         Surface(Modifier.fillMaxSize().height(50.dp), color = color()) {
           Box(contentAlignment = Alignment.Center) {
             Text(colorName)

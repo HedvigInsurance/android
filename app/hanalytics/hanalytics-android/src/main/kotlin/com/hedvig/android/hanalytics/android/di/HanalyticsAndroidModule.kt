@@ -1,30 +1,33 @@
 package com.hedvig.android.hanalytics.android.di
 
-import com.hedvig.android.core.common.di.isProductionQualifier
+import android.content.Context
+import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
+import com.hedvig.android.core.datastore.DeviceIdDataStore
 import com.hedvig.android.hanalytics.AndroidHAnalyticsService
 import com.hedvig.android.hanalytics.HAnalyticsService
 import com.hedvig.android.hanalytics.android.tracking.ApplicationLifecycleTracker
-import org.koin.core.qualifier.StringQualifier
-import org.koin.core.qualifier.qualifier
+import com.hedvig.hanalytics.HAnalytics
+import okhttp3.OkHttpClient
 import org.koin.dsl.module
-
-val hAnalyticsUrlQualifier: StringQualifier = qualifier("hAnalyticsUrlQualifier")
-val appVersionNameQualifier: StringQualifier = qualifier("appVersionNameQualifier")
-val appVersionCodeQualifier: StringQualifier = qualifier("appVersionCodeQualifier")
-val appIdQualifier: StringQualifier = qualifier("appIdQualifier")
 
 @Suppress("RemoveExplicitTypeArguments")
 val hAnalyticsAndroidModule = module {
   single<HAnalyticsService> {
+    val hedvingBuildConstants = get<HedvigBuildConstants>()
     AndroidHAnalyticsService(
-      context = get(),
-      okHttpClient = get(),
-      deviceIdDataStore = get(),
-      hAnalyticsBaseUrl = get(hAnalyticsUrlQualifier),
-      appVersionName = get(appVersionNameQualifier),
-      appVersionCode = get(appVersionCodeQualifier),
-      appId = get(appIdQualifier),
+      context = get<Context>(),
+      okHttpClient = get<OkHttpClient>(),
+      deviceIdDataStore = get<DeviceIdDataStore>(),
+      hAnalyticsBaseUrl = hedvingBuildConstants.urlHanalytics,
+      appVersionName = hedvingBuildConstants.appVersionName,
+      appVersionCode = hedvingBuildConstants.appVersionCode,
+      appId = hedvingBuildConstants.appId,
     )
   }
-  single<ApplicationLifecycleTracker> { ApplicationLifecycleTracker(get(), get(isProductionQualifier)) }
+  single<ApplicationLifecycleTracker> {
+    ApplicationLifecycleTracker(
+      hAnalytics = get<HAnalytics>(),
+      isProduction = get<HedvigBuildConstants>().isProduction,
+    )
+  }
 }

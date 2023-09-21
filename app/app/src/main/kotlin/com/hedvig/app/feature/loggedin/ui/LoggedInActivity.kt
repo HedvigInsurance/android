@@ -3,16 +3,15 @@ package com.hedvig.app.feature.loggedin.ui
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.AnimationVector4D
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.TwoWayConverter
 import androidx.compose.animation.core.animateValueAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.expandVertically
@@ -26,11 +25,13 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.union
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
@@ -40,10 +41,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
-import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -56,28 +53,33 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import coil.ImageLoader
 import com.hedvig.android.app.navigation.HedvigNavHost
-import com.hedvig.android.app.ui.GradientColors
 import com.hedvig.android.app.ui.HedvigAppState
 import com.hedvig.android.app.ui.HedvigBottomBar
 import com.hedvig.android.app.ui.HedvigNavRail
 import com.hedvig.android.app.ui.rememberHedvigAppState
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.designsystem.material3.motion.MotionTokens
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.activity.ActivityNavigator
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
+import com.hedvig.android.theme.Theme
 import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
 import com.hedvig.app.service.DynamicLink
 import com.hedvig.app.util.extensions.showReviewDialog
 import com.hedvig.hanalytics.HAnalytics
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterIsInstance
@@ -87,9 +89,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import slimber.log.d
-import slimber.log.e
-import slimber.log.i
 
 class LoggedInActivity : AppCompatActivity() {
   private val reviewDialogViewModel: ReviewDialogViewModel by viewModel()
@@ -102,17 +101,22 @@ class LoggedInActivity : AppCompatActivity() {
   private val hAnalytics: HAnalytics by inject()
   private val languageService: LanguageService by inject()
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer by inject()
+  private val hedvigBuildConstants: HedvigBuildConstants by inject()
+  private val settingsDataStore: SettingsDataStore by inject()
 
   private val activityNavigator: ActivityNavigator by inject()
 
   // Shows the splash screen as long as the auth status is still undetermined, that's the only condition.
   private val showSplash = MutableStateFlow(true)
 
+  // Before this is done, we should not navigate away or stop showing the splash screen
+  private val darkThemeEvaluated = MutableStateFlow(false)
+
   override fun onCreate(savedInstanceState: Bundle?) {
     installSplashScreen().apply {
-      setKeepOnScreenCondition { showSplash.value == true }
+      setKeepOnScreenCondition { showSplash.value == true || darkThemeEvaluated.value == false }
       setOnExitAnimationListener {
-        i { "Splash screen will be removed" }
+        logcat(LogPriority.INFO) { "Splash screen will be removed" }
         it.remove()
       }
     }
@@ -122,10 +126,25 @@ class LoggedInActivity : AppCompatActivity() {
     val intent: Intent = intent
     val uri: Uri? = intent.data
     lifecycleScope.launch {
+      val theme = async { settingsDataStore.observeTheme().first() }
       if (featureManager.isFeatureEnabled(Feature.UPDATE_NECESSARY)) {
         applicationContext.startActivity(ForceUpgradeActivity.newInstance(applicationContext))
         finish()
         return@launch
+      }
+      launch {
+        val disableDarkModeFlag = featureManager.isFeatureEnabled(Feature.DISABLE_DARK_MODE)
+        if (disableDarkModeFlag) {
+          logcat { "Disabling dark mode feature flag evaluated to true" }
+          AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+          logcat { "Successfully disabled dark mode" }
+          theme.cancel()
+        } else {
+          logcat { "Dark mode feature flag evaluated to false." }
+          theme.await()?.apply()
+        }
+      }.invokeOnCompletion {
+        darkThemeEvaluated.update { true }
       }
       launch {
         lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
@@ -160,12 +179,16 @@ class LoggedInActivity : AppCompatActivity() {
               pathSegments.isEmpty() -> DynamicLink.None
               else -> DynamicLink.Unknown
             }
-            i { "Deep link was found:$dynamicLink, with segments: ${pathSegments.joinToString(",")}" }
+            logcat(LogPriority.INFO) {
+              "Deep link was found:$dynamicLink, with segments: ${pathSegments.joinToString(",")}"
+            }
             if (dynamicLink is DynamicLink.DirectDebit) {
               hAnalytics.deepLinkOpened(dynamicLink.type)
               val market = marketManager.market
               if (market == null) {
-                e { "Tried to open DirectDebit deep link, but market was null. Aborting and continuing to normal flow" }
+                logcat(LogPriority.ERROR) {
+                  "Tried to open DirectDebit deep link, but market was null. Aborting and continuing to normal flow"
+                }
               } else {
                 lifecycleScope.launch {
                   this@LoggedInActivity.startActivity(
@@ -179,7 +202,7 @@ class LoggedInActivity : AppCompatActivity() {
                 }
               }
             } else {
-              d { "Deep link $dynamicLink did not open some specific activity" }
+              logcat { "Deep link $dynamicLink did not open some specific activity" }
             }
           }
         }
@@ -187,7 +210,7 @@ class LoggedInActivity : AppCompatActivity() {
       lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
         authTokenService.authStatus
           .onEach { authStatus ->
-            d {
+            logcat {
               buildString {
                 append("Owner: LoggedInActivity | Received authStatus: ")
                 append(
@@ -202,6 +225,7 @@ class LoggedInActivity : AppCompatActivity() {
           }
           .filterIsInstance<AuthStatus.LoggedOut>()
           .first()
+        darkThemeEvaluated.first { it == true }
         activityNavigator.navigateToMarketingActivity()
         finish()
       }
@@ -234,6 +258,7 @@ class LoggedInActivity : AppCompatActivity() {
           hAnalytics = hAnalytics,
           fragmentManager = supportFragmentManager,
           languageService = languageService,
+          hedvigBuildConstants = hedvigBuildConstants,
         )
       }
     }
@@ -255,7 +280,7 @@ class LoggedInActivity : AppCompatActivity() {
       initialTab: TopLevelGraph = TopLevelGraph.HOME,
       showRatingDialog: Boolean = false,
     ): Intent = Intent(context, LoggedInActivity::class.java).apply {
-      i { "LoggedInActivity.newInstance was called. withoutHistory:$withoutHistory" }
+      logcat(LogPriority.INFO) { "LoggedInActivity.newInstance was called. withoutHistory:$withoutHistory" }
       if (withoutHistory) {
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -282,6 +307,7 @@ private fun HedvigApp(
   hAnalytics: HAnalytics,
   fragmentManager: FragmentManager,
   languageService: LanguageService,
+  hedvigBuildConstants: HedvigBuildConstants,
 ) {
   LaunchedEffect(getInitialTab, clearInitialTab, hedvigAppState) {
     val initialTab: TopLevelGraph = getInitialTab() ?: return@LaunchedEffect
@@ -293,12 +319,7 @@ private fun HedvigApp(
     contentColor = MaterialTheme.colorScheme.onBackground,
     modifier = Modifier.fillMaxSize(),
   ) {
-    Column(
-      modifier = Modifier.drawBackgroundGradient(
-        colorBehindBackgroundGradient = MaterialTheme.colorScheme.background,
-        backgroundColors = hedvigAppState.backgroundColors,
-      ),
-    ) {
+    Column {
       Row(Modifier.weight(1f).fillMaxWidth()) {
         AnimatedVisibility(
           visible = hedvigAppState.shouldShowNavRail,
@@ -326,6 +347,7 @@ private fun HedvigApp(
           hAnalytics = hAnalytics,
           fragmentManager = fragmentManager,
           languageService = languageService,
+          hedvigBuildConstants = hedvigBuildConstants,
           modifier = Modifier
             .fillMaxHeight()
             .weight(1f)
@@ -351,30 +373,6 @@ private fun HedvigApp(
   }
 }
 
-private fun Modifier.drawBackgroundGradient(
-  colorBehindBackgroundGradient: Color,
-  backgroundColors: GradientColors,
-): Modifier = composed {
-  val color1 by animateColorAsState(
-    backgroundColors.color1.compositeOver(colorBehindBackgroundGradient),
-    spring(stiffness = Spring.StiffnessVeryLow),
-  )
-  val color2 by animateColorAsState(
-    backgroundColors.color2.compositeOver(colorBehindBackgroundGradient),
-    spring(stiffness = Spring.StiffnessVeryLow),
-  )
-  val color3 by animateColorAsState(
-    backgroundColors.color3.compositeOver(colorBehindBackgroundGradient),
-    spring(stiffness = Spring.StiffnessVeryLow),
-  )
-  Modifier.drawWithCache {
-    val gradient = Brush.linearGradient(listOf(color1, color2, color3))
-    onDrawBehind {
-      drawRect(gradient)
-    }
-  }
-}
-
 /**
  * Animates how we consume the insets, so that when we leave a screen which does not consume any insets, and we enter a
  * screen which does (by showing the bottom nav for example) then we don't want the outgoing screen to have its
@@ -389,7 +387,7 @@ private fun Modifier.animatedNavigationBarInsetsConsumption(
   val insetsToConsume = if (hedvigAppState.shouldShowBottomBar) {
     WindowInsets.systemBars.only(WindowInsetsSides.Bottom).asPaddingValues(density)
   } else if (hedvigAppState.shouldShowNavRail) {
-    WindowInsets.systemBars.only(WindowInsetsSides.Left).asPaddingValues(density)
+    WindowInsets.systemBars.union(WindowInsets.displayCutout).only(WindowInsetsSides.Left).asPaddingValues(density)
   } else {
     PaddingValues(0.dp)
   }
@@ -419,8 +417,24 @@ private fun Modifier.animatedNavigationBarInsetsConsumption(
   val animatedInsetsToConsume: PaddingValues by animateValueAsState(
     targetValue = insetsToConsume,
     typeConverter = paddingValuesVectorConverter,
-    animationSpec = tween(MotionTokens.DurationMedium2.toInt()),
+    animationSpec = tween(MotionTokens.DurationMedium1.toInt()),
     label = "Padding values inset animation",
   )
-  Modifier.consumeWindowInsets(animatedInsetsToConsume)
+  consumeWindowInsets(animatedInsetsToConsume)
+}
+
+/**
+ * Move just to the settings place where this is edited after we remove the dark_mode feature flag
+ * We do not need to set this on every app launch from that point on.
+ */
+private fun Theme.apply() = when (this) {
+  Theme.LIGHT -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+  Theme.DARK -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+  Theme.SYSTEM_DEFAULT -> {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+    } else {
+      AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY)
+    }
+  }
 }

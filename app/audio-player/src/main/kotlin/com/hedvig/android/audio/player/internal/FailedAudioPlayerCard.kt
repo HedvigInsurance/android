@@ -6,34 +6,33 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.material3.onWarningContainer
+import com.hedvig.android.core.designsystem.material3.squircleMedium
+import com.hedvig.android.core.designsystem.material3.warningContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.designsystem.theme.onWarning
-import com.hedvig.android.core.designsystem.theme.warning
 
 @Composable
 internal fun FailedAudioPlayerCard(
   tryAgain: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Column(modifier) {
+  Column(modifier.clip(MaterialTheme.shapes.squircleMedium)) {
     Spacer(Modifier.height(20.dp))
     Row(
       horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -41,20 +40,20 @@ internal fun FailedAudioPlayerCard(
       modifier = Modifier.padding(horizontal = 16.dp),
     ) {
       Icon(
-        painter = painterResource(com.hedvig.android.core.designsystem.R.drawable.ic_warning_triangle),
+        painter = painterResource(com.hedvig.android.core.design.system.R.drawable.ic_warning_triangle),
         contentDescription = null,
       )
       Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text(
           text = stringResource(hedvig.resources.R.string.claim_status_detail_info_error_title),
-          style = MaterialTheme.typography.body1,
+          style = MaterialTheme.typography.bodyLarge,
         )
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-          Text(
-            text = stringResource(hedvig.resources.R.string.claim_status_detail_info_error_body),
-            style = MaterialTheme.typography.body2,
-          )
-        }
+        Text(
+          text = stringResource(hedvig.resources.R.string.claim_status_detail_info_error_body),
+          style = MaterialTheme.typography.bodyMedium.copy(
+            color = LocalContentColor.current.copy(alpha = 0.7f),
+          ),
+        )
       }
     }
     Spacer(Modifier.height(16.dp))
@@ -68,7 +67,7 @@ internal fun FailedAudioPlayerCard(
     ) {
       Text(
         text = stringResource(hedvig.resources.R.string.claim_status_detail_info_error_button),
-        style = MaterialTheme.typography.body2,
+        style = MaterialTheme.typography.bodyMedium,
       )
     }
   }
@@ -78,10 +77,12 @@ internal fun FailedAudioPlayerCard(
 @Composable
 private fun PreviewFailedAudioPlayerCard() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.warning) {
-      CompositionLocalProvider(LocalContentColor provides MaterialTheme.colors.onWarning) {
-        FailedAudioPlayerCard({})
-      }
+    Surface(
+      color = MaterialTheme.colorScheme.warningContainer,
+      contentColor = MaterialTheme.colorScheme.onWarningContainer,
+      modifier = Modifier.padding(16.dp),
+    ) {
+      FailedAudioPlayerCard({})
     }
   }
 }

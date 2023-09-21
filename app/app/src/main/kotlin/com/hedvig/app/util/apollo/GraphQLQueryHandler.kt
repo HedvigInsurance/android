@@ -3,6 +3,7 @@ package com.hedvig.app.util.apollo
 import com.apollographql.apollo3.api.json.BufferedSinkJsonWriter
 import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.safeGraphqlCall
+import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.android.jsonObjectOfNotNull
 import com.hedvig.app.service.FileService
 import okhttp3.MediaType.Companion.toMediaType
@@ -21,7 +22,7 @@ import java.util.concurrent.TimeUnit
 class GraphQLQueryHandler(
   private val okHttpClient: OkHttpClient,
   private val fileService: FileService,
-  private val giraffeUrl: String,
+  private val hedvigBuildConstants: HedvigBuildConstants,
 ) {
 
   suspend fun graphQLQuery(
@@ -47,7 +48,7 @@ class GraphQLQueryHandler(
     return modifiedOkHttpClient
       .newCall(
         Request.Builder()
-          .url(giraffeUrl)
+          .url(hedvigBuildConstants.urlGiraffeGraphql)
           .header("Content-Type", "application/json")
           .post(requestBody)
           .build(),

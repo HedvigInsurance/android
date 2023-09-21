@@ -1,6 +1,5 @@
 package com.hedvig.android.app.ui
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -10,6 +9,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -37,7 +38,7 @@ internal fun HedvigBottomBar(
         TopLevelGraph.HOME -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.HOME>()
         TopLevelGraph.INSURANCE -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.INSURANCE>()
         TopLevelGraph.PROFILE -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.PROFILE>()
-        TopLevelGraph.REFERRALS -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.REFERRALS>()
+        TopLevelGraph.FOREVER -> currentDestination.isTopLevelGraphInHierarchy<TopLevelGraph.FOREVER>()
       }
     },
     modifier = modifier,
@@ -52,7 +53,19 @@ private fun HedvigBottomBar(
   getIsCurrentlySelected: (TopLevelGraph) -> Boolean,
   modifier: Modifier = Modifier,
 ) {
-  NavigationBar(modifier = modifier) {
+  val outlineVariant = MaterialTheme.colorScheme.outlineVariant
+  NavigationBar(
+    containerColor = MaterialTheme.colorScheme.background,
+    contentColor = MaterialTheme.colorScheme.onBackground,
+    modifier = modifier.drawWithContent {
+      drawContent()
+      drawLine(
+        color = outlineVariant,
+        start = Offset.Zero,
+        end = Offset(size.width, 0f),
+      )
+    },
+  ) {
     for (destination in destinations) {
       val hasNotification = destinationsWithNotifications.contains(destination)
       val selected = getIsCurrentlySelected(destination)
@@ -76,11 +89,7 @@ private fun HedvigBottomBar(
         },
         label = { Text(stringResource(destination.titleTextId)) },
         colors = NavigationBarItemDefaults.colors(
-          indicatorColor = if (isSystemInDarkTheme()) {
-            MaterialTheme.colorScheme.background
-          } else {
-            MaterialTheme.colorScheme.surfaceVariant
-          },
+          indicatorColor = MaterialTheme.colorScheme.surface,
           selectedIconColor = MaterialTheme.colorScheme.onSurface,
           unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
         ),
@@ -98,7 +107,7 @@ private fun PreviewHedvigBottomBar() {
         destinations = persistentSetOf(
           TopLevelGraph.HOME,
           TopLevelGraph.INSURANCE,
-          TopLevelGraph.REFERRALS,
+          TopLevelGraph.FOREVER,
           TopLevelGraph.PROFILE,
         ),
         destinationsWithNotifications = persistentSetOf(TopLevelGraph.INSURANCE),

@@ -5,18 +5,18 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.core.designsystem.component.card.HedvigCard
+import com.hedvig.android.core.designsystem.material3.warningContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.designsystem.theme.hedvigContentColorFor
 import com.hedvig.android.core.designsystem.theme.hedvig_black12percent
-import com.hedvig.android.core.designsystem.theme.warning
 import com.hedvig.app.feature.offer.ui.OfferItems
 import com.hedvig.app.feature.offer.ui.OfferItems.InsurelyCard.FailedToRetrieve
 import com.hedvig.app.feature.offer.ui.OfferItems.InsurelyCard.Loading
@@ -33,17 +33,18 @@ fun InsurelyCard(
 ) {
   val backgroundColor by animateColorAsState(
     targetValue = if (data is FailedToRetrieve) {
-      MaterialTheme.colors.warning
+      MaterialTheme.colorScheme.warningContainer
     } else {
-      MaterialTheme.colors.surface
+      MaterialTheme.colorScheme.surface
     },
     label = "backgroundColor",
   )
-  Card(
+  HedvigCard(
     border = BorderStroke(1.dp, hedvig_black12percent),
-    backgroundColor = backgroundColor,
-    contentColor = hedvigContentColorFor(backgroundColor),
-    elevation = 0.dp,
+    colors = CardDefaults.outlinedCardColors(
+      containerColor = backgroundColor,
+      contentColor = MaterialTheme.colorScheme.onSurface,
+    ),
     modifier = modifier,
   ) {
     Box(Modifier.animateContentSize()) {
@@ -60,7 +61,7 @@ fun InsurelyCard(
 @Composable
 private fun PreviewInsurelyCard() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       Column {
         val insuranceProvider = "insuranceProvider"
         listOf(

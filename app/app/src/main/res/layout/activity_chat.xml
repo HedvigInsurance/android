@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
+    android:background="?colorSurface"
     tools:context=".feature.chat.ui.ChatActivity">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -25,7 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/background_square"
-        android:backgroundTint="@color/color_background_95"
+        android:backgroundTint="?colorSurface"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingVertical="5dp"
@@ -50,20 +51,15 @@
 
         </LinearLayout>
 
-        <ImageView
+        <TextView
+            style="@style/TextAppearance.AppCompat.Body1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="@dimen/hedvig_logo_margin_top"
             android:contentDescription="@string/HEDVIG_LOGO_ACCESSIBILITY"
-            app:srcCompat="@drawable/ic_hedvig_wordmark"
-            app:tint="?colorPrimary" />
-
-        <ImageView
-            android:id="@+id/settings"
-            style="@style/ToolbarIcon.End"
-            android:contentDescription="@string/SETTINGS_ACCESSIBILITY_HINT"
-            app:srcCompat="@drawable/ic_profile_settings" />
+            android:text="@string/CHAT_TITLE"
+            android:textColor="?colorPrimary"
+            android:textSize="18sp" />
 
     </FrameLayout>
 
@@ -72,5 +68,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent" />
+
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/disabled_chat_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

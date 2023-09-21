@@ -1,6 +1,5 @@
 package com.hedvig.android
 
-import com.android.build.api.dsl.CommonExtension
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
@@ -14,7 +13,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
  * Configure base Kotlin with Android options
  */
 internal fun Project.configureKotlinAndroid(
-  commonExtension: CommonExtension<*, *, *, *>,
+  commonExtension: AndroidCommonExtension,
 ) {
   val libs = the<LibrariesForLibs>()
 
@@ -34,10 +33,16 @@ internal fun Project.configureKotlinAndroid(
     kotlinOptions {
       configureKotlinOptions(this@configureKotlinAndroid)
     }
+
+    configureAutomaticNamespace(this)
   }
 
   dependencies {
     add("coreLibraryDesugaring", libs.coreLibraryDesugaring.get())
+    add("lintChecks", project(":hedvig-lint"))
+    if (this@configureKotlinAndroid.name != "logging-public") {
+      add("implementation", project(":logging-public"))
+    }
   }
 }
 
@@ -47,6 +52,23 @@ internal fun Project.configureKotlinAndroid(
 internal fun Project.configureKotlin(kotlinCompile: KotlinCompile) {
   kotlinCompile.kotlinOptions {
     this.configureKotlinOptions(this@configureKotlin)
+  }
+}
+
+/**
+ * Takes the project name and creates an aptly named namespace definition for it. For example
+ * project name: :notification-badge-data-fake
+ * results in: com.hedvig.android.notification.badge.data.fake
+ */
+private fun Project.configureAutomaticNamespace(commonExtension: AndroidCommonExtension) {
+  with(commonExtension) {
+    if (path.contains(".") || path.contains("_")) error("Module names should just contain `-` between words")
+    if (namespace == null) {
+      namespace = "com.hedvig.android" + path
+        .replace(":", ".") // Change the ':' suffix into a `.` to go after com.hedvig.android
+        .replace("-", ".") // Change all '-' in the module name into '.'
+        .replace("public", "pub") // "public" breaks the generateRFile agp task, "pub" should suffice
+    }
   }
 }
 
@@ -66,13 +88,25 @@ private fun KotlinJvmOptions.configureKotlinOptions(
     "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
     "-opt-in=kotlinx.coroutines.FlowPreview",
     "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
-    // Fixes "Inheritance from an interface with '@JvmDefault' members is only allowed with -Xjvm-default option"
-    "-Xjvm-default=enable",
   )
+
+  // Get compose metrics with `./gradlew :app:assembleRelease -Pcom.hedvig.app.enableComposeCompilerReports=true`
+  if (project.findProperty("com.hedvig.app.enableComposeCompilerReports") == "true") {
+    freeCompilerArgs = freeCompilerArgs + listOf(
+      "-P",
+      "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" +
+        project.buildDir.absolutePath + "/compose_metrics",
+    )
+    freeCompilerArgs = freeCompilerArgs + listOf(
+      "-P",
+      "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" +
+        project.buildDir.absolutePath + "/compose_metrics",
+    )
+  }
 
   jvmTarget = JavaVersion.VERSION_17.toString()
 }
 
-private fun CommonExtension<*, *, *, *>.kotlinOptions(block: KotlinJvmOptions.() -> Unit) {
+private fun AndroidCommonExtension.kotlinOptions(block: KotlinJvmOptions.() -> Unit) {
   (this as ExtensionAware).extensions.configure("kotlinOptions", block)
 }

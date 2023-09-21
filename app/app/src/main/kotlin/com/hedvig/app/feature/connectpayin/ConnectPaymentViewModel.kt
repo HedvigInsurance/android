@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.payment.PaymentRepository
 import com.hedvig.app.data.debit.PayinStatusRepository
-import com.hedvig.app.feature.profile.ui.payment.PaymentRepository
 import com.hedvig.app.util.LiveEvent
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics

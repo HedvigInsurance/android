@@ -18,9 +18,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.play.core.review.ReviewManagerFactory
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.app.authenticate.BankIdLoginDialog
 import com.hedvig.app.util.extensions.view.setupToolbar
-import slimber.log.e
 
 val Activity.screenWidth: Int
   get() = window.decorView.measuredWidth
@@ -70,7 +71,7 @@ fun Activity.showPermissionExplanationDialog(permission: String) {
         positiveAction = { openAppSettings() },
       )
     else -> {
-      e { "No dialog for permission $permission!" }
+      logcat(LogPriority.ERROR) { "No dialog for permission $permission!" }
     }
   }
 }
@@ -106,7 +107,7 @@ fun Activity.openEmail(title: String) {
 
     startActivity(openInChooser)
   } else {
-    e { "No email app found" }
+    logcat(LogPriority.ERROR) { "No email app found" }
   }
 }
 
@@ -122,7 +123,7 @@ fun Context.composeContactSupportEmail(
   if (intent.resolveActivity(packageManager) != null) {
     startActivity(intent)
   } else {
-    e { "Failed to open email app through `composeEmail`" }
+    logcat(LogPriority.ERROR) { "Failed to open email app through `composeEmail`" }
     makeToast(hedvig.resources.R.string.login_open_email_app_button)
   }
 }
@@ -138,7 +139,7 @@ fun AppCompatActivity.handleSingleSelectLink(
   onLinkHandleFailure: () -> Unit,
 ) = when (value) {
   "message.forslag.dashboard" -> {
-    e { "Can't handle going to the offer page without a QuoteCartId from link: `$value`" }
+    logcat(LogPriority.ERROR) { "Can't handle going to the offer page without a QuoteCartId from link: `$value`" }
     AlertDialog.Builder(this)
       .setTitle(com.adyen.checkout.dropin.R.string.error_dialog_title)
       .setMessage(getString(hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE))
@@ -162,7 +163,7 @@ fun AppCompatActivity.handleSingleSelectLink(
     finish()
   }
   else -> {
-    e { "Can't handle the link $value" }
+    logcat(LogPriority.ERROR) { "Can't handle the link $value" }
   }
 }
 

@@ -11,10 +11,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.common.android.tryOpenPlayStore
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 
@@ -57,22 +57,19 @@ fun UpgradeApp(
   ) {
     Text(
       text = stringResource(hedvig.resources.R.string.EMBARK_UPDATE_APP_TITLE),
-      style = MaterialTheme.typography.h4,
+      style = MaterialTheme.typography.headlineMedium,
     )
     Spacer(Modifier.height(16.dp))
     Text(
       text = stringResource(hedvig.resources.R.string.EMBARK_UPDATE_APP_BODY),
       textAlign = TextAlign.Center,
-      style = MaterialTheme.typography.body1,
+      style = MaterialTheme.typography.bodyLarge,
     )
     Spacer(Modifier.height(16.dp))
-    Button(
+    HedvigContainedSmallButton(
+      text = stringResource(hedvig.resources.R.string.EMBARK_UPDATE_APP_BUTTON),
       onClick = goToPlayStore,
-    ) {
-      Text(
-        text = stringResource(hedvig.resources.R.string.EMBARK_UPDATE_APP_BUTTON),
-      )
-    }
+    )
   }
 }
 
@@ -80,7 +77,7 @@ fun UpgradeApp(
 @Composable
 private fun PreviewUpgradeApp() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       UpgradeApp(goToPlayStore = {})
     }
   }

@@ -17,6 +17,7 @@ import com.hedvig.android.core.common.test.MainCoroutineRule
 import com.hedvig.android.core.datastore.TestPreferencesDataStore
 import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager
 import com.hedvig.android.hanalytics.test.FakeHAnalytics
+import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
 import com.hedvig.authlib.AccessToken
 import com.hedvig.authlib.AuthAttemptResult
@@ -44,6 +45,9 @@ class BankIdLoginViewModelTest {
 
   @get:Rule
   val testFolder = TemporaryFolder()
+
+  @get:Rule
+  val testLogcatLogger = TestLogcatLoggingRule()
 
   @Test
   fun `start login attempt failing results in an error state immediately`() = runTest {

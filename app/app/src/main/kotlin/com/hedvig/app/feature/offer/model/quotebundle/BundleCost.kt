@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.offer.model.quotebundle
 
-import com.hedvig.app.util.apollo.toMonetaryAmount
+import com.hedvig.android.apollo.toMonetaryAmount
 import giraffe.fragment.QuoteBundleFragment
 import javax.money.MonetaryAmount
 

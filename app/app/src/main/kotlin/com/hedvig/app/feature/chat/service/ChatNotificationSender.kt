@@ -14,14 +14,14 @@ import androidx.core.content.getSystemService
 import androidx.core.graphics.drawable.IconCompat
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.core.common.android.notification.setupNotificationChannel
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.getMutablePendingIntentFlags
 import com.hedvig.app.util.extensions.getStoredBoolean
-import slimber.log.e
-import slimber.log.i
 
 class ChatNotificationSender(
   private val context: Context,
@@ -37,7 +37,7 @@ class ChatNotificationSender(
 
   override fun sendNotification(type: String, remoteMessage: RemoteMessage) {
     if (context.getStoredBoolean(ChatActivity.ACTIVITY_IS_IN_FOREGROUND)) {
-      i { "ChatNotificationSender ignoring notification since chat is open" }
+      logcat(LogPriority.INFO) { "ChatNotificationSender ignoring notification since chat is open" }
       return
     }
 
@@ -52,7 +52,7 @@ class ChatNotificationSender(
 
     val messageText = remoteMessage.data.bodyFromCustomerIoData() ?: remoteMessage.data[DATA_NEW_MESSAGE_BODY]
     if (messageText == null) {
-      e { "GCM message came without a valid message. Data:${remoteMessage.data}" }
+      logcat(LogPriority.ERROR) { "GCM message came without a valid message. Data:${remoteMessage.data}" }
       return
     }
 

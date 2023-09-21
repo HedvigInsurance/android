@@ -2,6 +2,7 @@ package com.hedvig.app.startup
 
 import android.content.Context
 import androidx.startup.Initializer
+import com.hedvig.android.logger.AndroidLogcatLogger
 import com.hedvig.app.isDebug
 import com.hedvig.app.util.firebase.FirebaseBreadcrumbTimberTree
 import com.hedvig.app.util.firebase.FirebaseCrashlyticsLogExceptionTree
@@ -14,6 +15,7 @@ class TimberInitializer : Initializer<Unit> {
     }
     Timber.plant(FirebaseBreadcrumbTimberTree())
     Timber.plant(FirebaseCrashlyticsLogExceptionTree())
+    AndroidLogcatLogger.install()
   }
 
   override fun dependencies(): List<Class<out Initializer<*>>> {

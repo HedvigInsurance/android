@@ -1,14 +1,17 @@
 package com.hedvig.app.feature.offer.model
 
-import com.hedvig.app.util.apollo.toMonetaryAmount
-import giraffe.fragment.IncentiveFragment
+import com.hedvig.android.apollo.toMonetaryAmount
 import giraffe.fragment.QuoteCartFragment
-import org.javamoney.moneta.Money
 import javax.money.MonetaryAmount
 
+/**
+ * We got a duplicate of this class in [com.hedvig.android.payment.model.Campaign] which we should be using.
+ * This one is used only from the offer screen which will be deleted soon.
+ */
 data class Campaign(
   val displayValue: String?,
   val incentive: Incentive,
+  val code: String,
 ) {
   val shouldShowIncentive = incentive !is Incentive.NoDiscount
 
@@ -39,26 +42,8 @@ data class Campaign(
 fun QuoteCartFragment.Campaign.toCampaign() = Campaign(
   displayValue = displayValue,
   incentive = incentive?.toIncentive() ?: Campaign.Incentive.NoDiscount,
+  code = "",
 )
-
-fun IncentiveFragment.Incentive?.toIncentive(): Campaign.Incentive {
-  return this?.asFreeMonths?.let {
-    Campaign.Incentive.FreeMonths(
-      numberOfFreeMonths = it.quantity ?: 0,
-    )
-  } ?: this?.asMonthlyCostDeduction?.let {
-    Campaign.Incentive.MonthlyCostDeduction(
-      amount = Money.of(it.amount?.amount?.toBigDecimal(), "SEK"),
-    )
-  } ?: this?.asPercentageDiscountMonths?.let {
-    Campaign.Incentive.PercentageDiscountMonths(
-      percentage = it.percentageDiscount,
-      numberOfMonths = it.pdmQuantity,
-    )
-  } ?: this?.asNoDiscount?.let {
-    Campaign.Incentive.NoDiscount
-  } ?: Campaign.Incentive.NoDiscount
-}
 
 private fun QuoteCartFragment.Incentive?.toIncentive(): Campaign.Incentive {
   return this?.asIndefinitePercentageDiscount?.let {

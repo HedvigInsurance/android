@@ -1,10 +1,10 @@
 package com.hedvig.app.feature.genericauth.otpinput
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
@@ -12,23 +12,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.DrawerValue
-import androidx.compose.material.Icon
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Scaffold
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.SnackbarHostState
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
-import androidx.compose.material.rememberDrawerState
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -48,11 +45,11 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.text.isDigitsOnly
-import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
-import com.hedvig.android.core.ui.progress.HedvigFullScreenCenterAlignedProgressOverlay
 import com.hedvig.app.R
 import kotlinx.coroutines.isActive
 
@@ -71,33 +68,34 @@ fun OtpInputScreen(
   snackbarHostState: SnackbarHostState,
   modifier: Modifier = Modifier,
 ) {
-  Box(modifier) {
-    val drawerState = rememberDrawerState(DrawerValue.Closed)
-    Scaffold(
-      scaffoldState = remember { ScaffoldState(drawerState, snackbarHostState) },
-      topBar = {
-        TopAppBarWithBack(
-          onClick = onBackPressed,
-          title = stringResource(hedvig.resources.R.string.login_navigation_bar_center_element_title),
-        )
-      },
-      modifier = modifier
-        .fillMaxSize()
-        .safeDrawingPadding(),
-    ) { paddingValues ->
-      OtpInputScreenContents(
-        credential,
-        inputValue,
-        onInputChanged,
-        onSubmitCode,
-        networkErrorMessage,
-        onResendCode,
-        loadingResend,
-        onOpenExternalApp,
-        Modifier.padding(paddingValues),
+  Scaffold(
+    topBar = {
+      TopAppBarWithBack(
+        onClick = onBackPressed,
+        title = stringResource(hedvig.resources.R.string.login_navigation_bar_center_element_title),
       )
+    },
+    snackbarHost = {
+      SnackbarHost(snackbarHostState)
+    },
+    modifier = modifier.fillMaxSize(),
+  ) { paddingValues ->
+    AnimatedContent(targetState = loadingCode) { loading ->
+      when (loading) {
+        true -> HedvigFullScreenCenterAlignedProgress(show = loadingCode)
+        false -> OtpInputScreenContents(
+          credential,
+          inputValue,
+          onInputChanged,
+          onSubmitCode,
+          networkErrorMessage,
+          onResendCode,
+          loadingResend,
+          onOpenExternalApp,
+          Modifier.padding(paddingValues),
+        )
+      }
     }
-    HedvigFullScreenCenterAlignedProgressOverlay(show = loadingCode)
   }
 }
 
@@ -124,12 +122,12 @@ private fun OtpInputScreenContents(
     Spacer(Modifier.height(60.dp))
     Text(
       text = stringResource(hedvig.resources.R.string.login_title_check_your_email),
-      style = MaterialTheme.typography.h4,
+      style = MaterialTheme.typography.headlineMedium,
     )
     Spacer(Modifier.height(16.dp))
     Text(
       text = stringResource(hedvig.resources.R.string.login_subtitle_verification_code_email, credential),
-      style = MaterialTheme.typography.body1,
+      style = MaterialTheme.typography.bodyLarge,
     )
     Spacer(Modifier.height(40.dp))
     SixDigitCodeInputField(inputValue, onInputChanged, keyboardController, onSubmitCode, otpErrorMessage)
@@ -139,9 +137,10 @@ private fun OtpInputScreenContents(
     ResendCodeItem(onResendCode, keyboardController, loadingResend, Modifier.align(Alignment.CenterHorizontally))
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(16.dp))
-    LargeContainedButton(onOpenExternalApp) {
-      Text(stringResource(hedvig.resources.R.string.login_open_email_app_button))
-    }
+    HedvigContainedButton(
+      text = stringResource(hedvig.resources.R.string.login_open_email_app_button),
+      onClick = onOpenExternalApp,
+    )
     Spacer(Modifier.height(16.dp))
   }
 }
@@ -185,7 +184,7 @@ private fun ColumnScope.SixDigitCodeInputField(
       Spacer(Modifier.height(8.dp))
       Text(
         text = otpErrorMessage ?: "",
-        style = MaterialTheme.typography.caption.copy(color = MaterialTheme.colors.error),
+        style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.error),
         modifier = Modifier.fillMaxWidth(),
         textAlign = TextAlign.Center,
       )
@@ -214,7 +213,7 @@ private fun ResendCodeItem(
     Text(
       modifier = Modifier.align(Alignment.CenterVertically),
       text = stringResource(hedvig.resources.R.string.login_smedium_button_active_resend_code),
-      style = MaterialTheme.typography.caption,
+      style = MaterialTheme.typography.bodySmall,
       textAlign = TextAlign.Center,
     )
   }
@@ -251,7 +250,7 @@ private fun RotatingIcon(isLoading: Boolean) {
 @Composable
 private fun PreviewOtpInputScreenValid() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colorScheme.background) {
       OtpInputScreen(
         onInputChanged = {},
         onOpenExternalApp = {},
@@ -262,7 +261,7 @@ private fun PreviewOtpInputScreenValid() {
         credential = "john@doe.com",
         networkErrorMessage = null,
         loadingResend = false,
-        loadingCode = false,
+        loadingCode = true,
         snackbarHostState = SnackbarHostState(),
       )
     }

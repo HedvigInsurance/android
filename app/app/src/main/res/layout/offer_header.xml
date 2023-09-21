@@ -5,7 +5,6 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/house"
     android:paddingTop="150dp"
     android:paddingBottom="32dp"
     tools:context=".feature.offer.ui.OfferActivity">

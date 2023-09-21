@@ -1,10 +1,11 @@
 plugins {
   id("hedvig.android.ktlint")
   id("hedvig.kotlin.library")
+  alias(libs.plugins.squareSortDependencies)
 }
 
 dependencies {
-  implementation(projects.app.hanalytics.hanalyticsCore)
-
   api(libs.hAnalytics)
+
+  implementation(projects.hanalyticsCore)
 }
