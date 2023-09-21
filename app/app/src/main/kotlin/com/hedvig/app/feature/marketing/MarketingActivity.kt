@@ -31,6 +31,7 @@ import com.hedvig.app.feature.marketing.pickmarket.PickMarketScreen
 import com.hedvig.app.feature.marketing.ui.BackgroundImage
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationActivity
 import com.hedvig.app.util.extensions.openWebBrowser
+import com.hedvig.app.util.loadProductionModules
 import com.hedvig.hanalytics.LoginMethod
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
@@ -43,6 +44,7 @@ class MarketingActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     WindowCompat.setDecorFitsSystemWindows(window, false)
+    loadProductionModules()
     val viewModel = getViewModel<MarketingViewModel>()
     val imageLoader: ImageLoader = get()
     setContent {
