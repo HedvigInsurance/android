@@ -63,11 +63,6 @@ data class MoveQuote(
             get() = emptyList()
           override val documents: List<ProductVariantFragment.Document>
             get() = emptyList()
-          override val highlights: List<ProductVariantFragment.Highlight>
-            get() = emptyList()
-          override val faq: List<ProductVariantFragment.Faq>
-            get() = emptyList()
-
         }
       )
     }

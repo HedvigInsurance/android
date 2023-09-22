@@ -3,6 +3,7 @@ package com.hedvig.android.feature.changeaddress.ui.offer
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -69,7 +70,13 @@ private fun FaqItem(
       )
     },
     expandedContent = {
-      faqText?.let { Text(it) }
+      faqText?.let {
+        Text(
+          text = it,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          modifier = Modifier.padding(start = 12.dp, end = 32.dp),
+        )
+      }
     },
   )
 }
@@ -79,9 +86,9 @@ private fun FaqItem(
 private fun PreviewFaqItem() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      var isExpanded by remember { mutableStateOf(false) }
+      var isExpanded by remember { mutableStateOf(true) }
       FaqItem(
-        faqText = "Reseförsäkring",
+        faqText = "ReseförsäkringReseförs äkring Rese försäkring Res eförsäkr inResefö rsäkrin ReseförsäkringReseförsäkringReseförsäkrin",
         onClick = { isExpanded = !isExpanded },
         isExpanded = isExpanded,
         faqDisplayName = "Test",
@@ -96,7 +103,7 @@ private fun PreviewFaqs() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       Faqs(
-        faqItems = listOf("test" to "testbody")
+        faqItems = listOf("test" to "testbody"),
       )
     }
   }

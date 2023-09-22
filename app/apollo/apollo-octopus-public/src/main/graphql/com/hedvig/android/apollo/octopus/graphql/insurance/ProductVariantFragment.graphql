@@ -28,12 +28,4 @@ fragment ProductVariantFragment on ProductVariant {
     url
     type
   }
-  highlights {
-    title
-    description
-  }
-  faq {
-    headline
-    body
-  }
 }

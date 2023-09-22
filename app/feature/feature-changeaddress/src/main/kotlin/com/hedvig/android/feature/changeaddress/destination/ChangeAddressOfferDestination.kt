@@ -68,6 +68,7 @@ import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.feature.changeaddress.data.MoveIntentId
 import com.hedvig.android.feature.changeaddress.data.MoveQuote
 import com.hedvig.android.feature.changeaddress.data.documentDisplayName
+import com.hedvig.android.feature.changeaddress.ui.offer.Faqs
 import com.hedvig.android.feature.changeaddress.ui.offer.QuoteCard
 import hedvig.resources.R
 import kotlinx.coroutines.launch
@@ -193,12 +194,16 @@ private fun ChangeAddressOfferScreen(
       )
       Spacer(Modifier.height(40.dp))
     }
-    /* // TODO FAQS
     Faqs(
-      faqItems = listOf("FAQ" to "Info"),
+      faqItems = listOf(
+        stringResource(id = R.string.CHANGE_ADDRESS_FAQ_DATE_TITLE) to stringResource(id = R.string.CHANGE_ADDRESS_FAQ_DATE_LABEL),
+        stringResource(id = R.string.CHANGE_ADDRESS_FAQ_PRICE_TITLE) to stringResource(id = R.string.CHANGE_ADDRESS_FAQ_PRICE_LABEL),
+        stringResource(id = R.string.CHANGE_ADDRESS_FAQ_RENTBRF_TITLE) to stringResource(id = R.string.CHANGE_ADDRESS_FAQ_RENTBRF_LABEL),
+        stringResource(id = R.string.CHANGE_ADDRESS_FAQ_STORAGE_TITLE) to stringResource(id = R.string.CHANGE_ADDRESS_FAQ_STORAGE_LABEL),
+        stringResource(id = R.string.CHANGE_ADDRESS_FAQ_STUDENT_TITLE) to stringResource(id = R.string.CHANGE_ADDRESS_FAQ_STUDENT_LABEL),
+      ),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
-     */
     Spacer(Modifier.height(64.dp))
     Text(
       text = stringResource(id = R.string.CHANGE_ADDRESS_NO_FIND),
@@ -286,7 +291,7 @@ private fun ColumnScope.InsurableLimits(quote: MoveQuote) {
         }
       },
     )
-    if (index != quote.productVariant.highlights.lastIndex) {
+    if (index != quote.productVariant.insurableLimits.lastIndex) {
       Spacer(Modifier.height(16.dp))
       Divider()
       Spacer(Modifier.height(16.dp))
