@@ -17,6 +17,8 @@ internal interface ChangeAddressRepository {
   suspend fun commitMove(id: MoveIntentId): Either<ErrorMessage, SuccessfulMove>
 }
 
+data object SuccessfulMove
+
 internal class NetworkChangeAddressRepository(
   private val apolloClient: ApolloClient,
 ) : ChangeAddressRepository {

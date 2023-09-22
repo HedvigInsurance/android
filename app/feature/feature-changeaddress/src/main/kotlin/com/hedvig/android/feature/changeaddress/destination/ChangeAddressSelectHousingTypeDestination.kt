@@ -95,6 +95,7 @@ private fun ChangeAddressSelectHousingTypeScreen(
         .padding(horizontal = 16.dp),
     )
     Spacer(modifier = Modifier.weight(1f))
+    Spacer(modifier = Modifier.height(16.dp))
     RadioButton(HousingType.APARTMENT_OWN, uiState.housingType.input, onHousingTypeSelected)
     Spacer(modifier = Modifier.height(8.dp))
     RadioButton(HousingType.APARTMENT_RENT, uiState.housingType.input, onHousingTypeSelected)

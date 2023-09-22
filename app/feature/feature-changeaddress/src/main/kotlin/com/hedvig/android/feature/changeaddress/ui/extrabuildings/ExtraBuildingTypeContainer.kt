@@ -25,7 +25,7 @@ import com.hedvig.android.feature.changeaddress.data.ExtraBuildingType
 import com.hedvig.android.feature.changeaddress.data.stringRes
 
 @Composable
-fun ExtraBuildingTypeContainer(
+internal fun ExtraBuildingTypeContainer(
   types: List<ExtraBuildingType>,
   selectedType: ExtraBuildingType?,
   onSelected: (ExtraBuildingType) -> Unit,

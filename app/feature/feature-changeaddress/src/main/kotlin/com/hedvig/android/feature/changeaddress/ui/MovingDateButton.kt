@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,7 +32,7 @@ import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicke
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
 import com.hedvig.android.core.designsystem.material3.warningContainer
 import com.hedvig.android.core.designsystem.material3.warningElement
-import com.hedvig.android.feature.changeaddress.ChangeAddressUiState
+import com.hedvig.android.core.ui.ValidatedInput
 import hedvig.resources.R
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -41,12 +42,11 @@ import kotlinx.datetime.toLocalDateTime
 @Composable
 internal fun MovingDateButton(
   onDateSelected: (LocalDate) -> Unit,
-  uiState: ChangeAddressUiState,
+  datePickerState: DatePickerState,
+  movingDate: ValidatedInput<LocalDate?>,
+  validate: (Long) -> Boolean,
   modifier: Modifier = Modifier,
 ) {
-  val datePicketState = uiState.datePickerUiState?.datePickerState
-  requireNotNull(datePicketState)
-
   var showDatePicker by rememberSaveable { mutableStateOf(false) }
 
   if (showDatePicker) {
@@ -55,11 +55,12 @@ internal fun MovingDateButton(
       confirmButton = {
         TextButton(
           onClick = {
-            datePicketState.selectedDateMillis?.let {
+            datePickerState.selectedDateMillis?.let {
               val selectedDate = Instant.fromEpochMilliseconds(it)
                 .toLocalDateTime(TimeZone.UTC)
                 .date
-              uiState.datePickerUiState.datePickerState.setSelection(it)
+
+              datePickerState.setSelection(it)
               onDateSelected(selectedDate)
             }
 
@@ -82,17 +83,15 @@ internal fun MovingDateButton(
       },
     ) {
       HedvigDatePicker(
-        datePickerState = uiState.datePickerUiState.datePickerState,
-        dateValidator = {
-          uiState.datePickerUiState.validateDate(it)
-        },
+        datePickerState = datePickerState,
+        dateValidator = validate,
       )
     }
   }
 
   Column(modifier) {
-    val errorTextResId = if (uiState.movingDate.errorMessageRes != null) {
-      uiState.movingDate.errorMessageRes
+    val errorTextResId = if (movingDate.errorMessageRes != null) {
+      movingDate.errorMessageRes
     } else {
       null
     }
@@ -124,7 +123,7 @@ internal fun MovingDateButton(
           )
           Spacer(modifier = Modifier.height(4.dp))
           Text(
-            text = uiState.movingDate.input?.toString()
+            text = movingDate.input?.toString()
               ?: stringResource(R.string.CHANGE_ADDRESS_SELECT_MOVING_DATE_LABEL),
             style = MaterialTheme.typography.headlineSmall,
           )

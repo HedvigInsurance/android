@@ -189,9 +189,7 @@ internal class ChangeAddressViewModel(
 
   fun onRemoveExtraBuildingClicked(clickedExtraBuilding: ExtraBuilding) {
     _uiState.update {
-      val extraBuildings = it.extraBuildings.toMutableList()
-      extraBuildings.remove(clickedExtraBuilding)
-      it.copy(extraBuildings = extraBuildings)
+      it.copy(extraBuildings = it.extraBuildings - clickedExtraBuilding)
     }
   }
 

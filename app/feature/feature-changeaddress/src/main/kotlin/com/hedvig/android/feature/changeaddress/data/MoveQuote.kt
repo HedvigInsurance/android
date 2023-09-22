@@ -2,11 +2,9 @@ package com.hedvig.android.feature.changeaddress.data
 
 import com.hedvig.android.core.uidata.UiMoney
 import kotlinx.datetime.LocalDate
-import kotlinx.serialization.Serializable
 import octopus.fragment.ProductVariantFragment
 import octopus.type.CurrencyCode
 
-@Serializable
 data class MoveQuote(
   val id: String,
   val insuranceName: String,

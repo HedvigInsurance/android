@@ -53,7 +53,7 @@ fun NavGraphBuilder.changeAddressGraph(
         backStackEntry = navBackStackEntry,
       )
       BackHandler {
-        navController.popBackStack<ChangeAddressDestination.SelectHousingType>(inclusive = true)
+        navController.popBackStack<AppDestination.ChangeAddress>(inclusive = true)
       }
       ChangeAddressEnterNewDestination(
         viewModel = viewModel,
@@ -86,14 +86,14 @@ fun NavGraphBuilder.changeAddressGraph(
       )
       BackHandler {
         viewModel.onQuotesCleared()
-        navController.popBackStack<ChangeAddressDestination.SelectHousingType>(inclusive = true)
+        navController.popBackStack<AppDestination.ChangeAddress>(inclusive = true)
       }
       ChangeAddressOfferDestination(
         viewModel = viewModel,
         openChat = openChat,
         close = {
           viewModel.onQuotesCleared()
-          navController.popBackStack<ChangeAddressDestination.SelectHousingType>(inclusive = true)
+          navController.popBackStack<AppDestination.ChangeAddress>(inclusive = true)
         },
         onChangeAddressResult = { movingDate ->
           navController.navigate(ChangeAddressDestination.AddressResult(movingDate)) {

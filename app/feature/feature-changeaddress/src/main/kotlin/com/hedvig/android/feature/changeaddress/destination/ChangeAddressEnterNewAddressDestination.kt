@@ -145,12 +145,18 @@ private fun ChangeAddressEnterNewScreen(
         keyboardType = KeyboardType.Number,
       ),
     )
-    Spacer(modifier = Modifier.height(8.dp))
-    MovingDateButton(
-      onDateSelected = { onMoveDateSelected(it) },
-      uiState = uiState,
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
+    uiState.datePickerUiState?.let {
+      Spacer(modifier = Modifier.height(8.dp))
+      MovingDateButton(
+        onDateSelected = { onMoveDateSelected(it) },
+        datePickerState = uiState.datePickerUiState.datePickerState,
+        movingDate = uiState.movingDate,
+        validate = {
+          uiState.datePickerUiState.validateDate(it)
+        },
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+    }
     Spacer(modifier = Modifier.height(16.dp))
     VectorInfoCard(
       text = stringResource(id = R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT),

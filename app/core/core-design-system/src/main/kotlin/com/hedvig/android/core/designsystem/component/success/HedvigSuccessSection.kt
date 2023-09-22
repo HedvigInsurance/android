@@ -31,8 +31,8 @@ import com.hedvig.android.core.icons.hedvig.small.hedvig.Checkmark
 
 @Composable
 fun HedvigSuccessSection(
-  modifier: Modifier = Modifier,
   title: String,
+  modifier: Modifier = Modifier,
   subTitle: String? = null,
   contentPadding: PaddingValues = WindowInsets.safeDrawing.asPaddingValues(),
   withDefaultVerticalSpacing: Boolean = true,
