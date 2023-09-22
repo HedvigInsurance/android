@@ -34,6 +34,5 @@ internal class CreateQuoteCartUseCase(
     com.hedvig.android.market.Market.SE -> Market.SWEDEN
     com.hedvig.android.market.Market.NO -> Market.NORWAY
     com.hedvig.android.market.Market.DK -> Market.DENMARK
-    com.hedvig.android.market.Market.FR -> Market.UNKNOWN__
   }
 }

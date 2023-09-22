@@ -24,8 +24,5 @@ fun Market.openAuth(context: Context, fragmentManager: FragmentManager) {
     Market.NO, Market.DK -> {
       context.startActivity(SimpleSignAuthenticationActivity.newInstance(context, this))
     }
-    Market.FR -> {
-      TODO("Open generic auth")
-    }
   }
 }
