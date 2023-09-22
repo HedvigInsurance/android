@@ -4,38 +4,33 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.ui.unit.Density
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import com.kiwi.navigationcompose.typed.navigation
+import com.kiwi.navigationcompose.typed.composable
+import com.kiwi.navigationcompose.typed.createRoutePattern
 import coil.ImageLoader
-import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.feature.changeaddress.destination.ChangeAddressEnterNewDestination
 import com.hedvig.android.feature.changeaddress.destination.ChangeAddressEnterNewVillaAddressDestination
 import com.hedvig.android.feature.changeaddress.destination.ChangeAddressOfferDestination
 import com.hedvig.android.feature.changeaddress.destination.ChangeAddressResultDestination
 import com.hedvig.android.feature.changeaddress.destination.ChangeAddressSelectHousingTypeDestination
-import com.hedvig.android.navigation.compose.typed.animatedComposable
-import com.hedvig.android.navigation.compose.typed.animatedNavigation
 import com.hedvig.android.navigation.compose.typed.destinationScopedViewModel
 import com.hedvig.android.navigation.core.AppDestination
-import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
 import com.kiwi.navigationcompose.typed.popBackStack
 import com.kiwi.navigationcompose.typed.popUpTo
 
 fun NavGraphBuilder.changeAddressGraph(
-  density: Density,
   navController: NavController,
   openChat: () -> Unit,
   openUrl: (String) -> Unit,
   imageLoader: ImageLoader,
 ) {
-  animatedNavigation<AppDestination.ChangeAddress>(
+  navigation<AppDestination.ChangeAddress>(
     startDestination = createRoutePattern<ChangeAddressDestination.SelectHousingType>(),
-    enterTransition = { MotionDefaults.sharedXAxisEnter(density) },
-    exitTransition = { MotionDefaults.sharedXAxisExit(density) },
-    popEnterTransition = { MotionDefaults.sharedXAxisPopEnter(density) },
-    popExitTransition = { MotionDefaults.sharedXAxisPopExit(density) },
+    deepLinks = listOf(),
   ) {
-    animatedComposable<ChangeAddressDestination.SelectHousingType> { navBackStackEntry ->
+    composable<ChangeAddressDestination.SelectHousingType> { navBackStackEntry ->
       val viewModel: ChangeAddressViewModel = destinationScopedViewModel<AppDestination.ChangeAddress, _>(
         navController = navController,
         backStackEntry = navBackStackEntry,
@@ -47,7 +42,7 @@ fun NavGraphBuilder.changeAddressGraph(
       )
     }
 
-    animatedComposable<ChangeAddressDestination.EnterNewAddress> { navBackStackEntry ->
+    composable<ChangeAddressDestination.EnterNewAddress> { navBackStackEntry ->
       val viewModel: ChangeAddressViewModel = destinationScopedViewModel<AppDestination.ChangeAddress, _>(
         navController = navController,
         backStackEntry = navBackStackEntry,
@@ -65,7 +60,7 @@ fun NavGraphBuilder.changeAddressGraph(
       )
     }
 
-    animatedComposable<ChangeAddressDestination.EnterNewVillaAddress> { navBackStackEntry ->
+    composable<ChangeAddressDestination.EnterNewVillaAddress> { navBackStackEntry ->
       val viewModel: ChangeAddressViewModel = destinationScopedViewModel<AppDestination.ChangeAddress, _>(
         navController = navController,
         backStackEntry = navBackStackEntry,
@@ -79,7 +74,7 @@ fun NavGraphBuilder.changeAddressGraph(
       )
     }
 
-    animatedComposable<ChangeAddressDestination.OfferDestination> { navBackStackEntry ->
+    composable<ChangeAddressDestination.OfferDestination> { navBackStackEntry ->
       val viewModel: ChangeAddressViewModel = destinationScopedViewModel<AppDestination.ChangeAddress, _>(
         navController = navController,
         backStackEntry = navBackStackEntry,
@@ -107,7 +102,7 @@ fun NavGraphBuilder.changeAddressGraph(
       )
     }
   }
-  animatedComposable<ChangeAddressDestination.AddressResult> {
+  composable<ChangeAddressDestination.AddressResult> {
     ChangeAddressResultDestination(
       movingDate = movingDate,
       popBackstack = navController::popBackStack,
