@@ -12,7 +12,6 @@ internal class DevPaymentTypeProvider(
       Market.SE -> PaymentType.TRUSTLY
       Market.NO -> PaymentType.ADYEN
       Market.DK -> PaymentType.ADYEN
-      Market.FR -> throw IllegalArgumentException()
       null -> PaymentType.TRUSTLY
     }
   }

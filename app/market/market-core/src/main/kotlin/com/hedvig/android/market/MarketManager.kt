@@ -11,7 +11,6 @@ interface MarketManager {
 
 internal class MarketManagerImpl(
   context: Context,
-  isDebug: Boolean,
 ) : MarketManager {
 
   private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -20,7 +19,6 @@ internal class MarketManagerImpl(
     Market.SE,
     Market.NO,
     Market.DK,
-    if (isDebug) Market.FR else null,
   )
 
   override var market: Market?

@@ -3,7 +3,6 @@ package com.hedvig.app.feature.marketing
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.app.feature.marketing.data.GetInitialMarketPickerValuesUseCase
@@ -52,14 +51,11 @@ class MarketingViewModel(
     }
   }
 
-  private suspend fun getAvailableMarkets() = buildList {
-    add(Market.SE)
-    add(Market.NO)
-    add(Market.DK)
-    if (featureManager.isFeatureEnabled(Feature.FRANCE_MARKET)) {
-      add(Market.FR)
-    }
-  }
+  private suspend fun getAvailableMarkets(): List<Market> = listOf(
+    Market.SE,
+    Market.NO,
+    Market.DK,
+  )
 
   fun setMarket(market: Market) {
     updateApplicationLanguageUseCase.invoke(market, market.defaultLanguage())

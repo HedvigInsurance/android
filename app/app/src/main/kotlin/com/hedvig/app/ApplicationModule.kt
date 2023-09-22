@@ -517,7 +517,7 @@ private val useCaseModule = module {
       languageService = get(),
     )
   }
-  single { GetInitialMarketPickerValuesUseCase(get<ApolloClient>(giraffeClient), get(), get(), get()) }
+  single { GetInitialMarketPickerValuesUseCase(get<ApolloClient>(giraffeClient), get(), get()) }
   single<EditCheckoutUseCase> {
     EditCheckoutUseCase(
       languageService = get(),

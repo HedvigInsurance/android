@@ -38,7 +38,6 @@ class MarketingViewModelTest {
       mockk(relaxed = true),
       mockk(relaxed = true),
       mockk(relaxed = true),
-      mockk(relaxed = true),
     ),
     featureManager: FeatureManager = mockk(relaxed = true),
   ) = MarketingViewModel(

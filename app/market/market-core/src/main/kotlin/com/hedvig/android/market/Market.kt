@@ -7,7 +7,6 @@ enum class Market {
   SE,
   NO,
   DK,
-  FR,
   ;
 
   val flag: Int
@@ -15,7 +14,6 @@ enum class Market {
       SE -> hedvig.resources.R.drawable.ic_flag_se
       NO -> hedvig.resources.R.drawable.ic_flag_no
       DK -> hedvig.resources.R.drawable.ic_flag_dk
-      FR -> hedvig.resources.R.drawable.ic_flag_fr
     }
 
   val label: Int
@@ -23,14 +21,12 @@ enum class Market {
       SE -> hedvig.resources.R.string.market_sweden
       NO -> hedvig.resources.R.string.market_norway
       DK -> hedvig.resources.R.string.market_denmark
-      FR -> hedvig.resources.R.string.market_france
     }
 
   fun defaultLanguage() = when (this) {
     SE -> Language.EN_SE
     NO -> Language.EN_NO
     DK -> Language.EN_DK
-    FR -> Language.EN_FR
   }
 
   companion object {

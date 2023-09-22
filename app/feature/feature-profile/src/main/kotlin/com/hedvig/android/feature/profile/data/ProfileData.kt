@@ -28,7 +28,6 @@ internal data class ProfileData(
       is PaymentData.PaymentMethod.ThirdPartyPaymentMethd -> hedvig.resources.R.string.Third_Party_Connected
       null -> hedvig.resources.R.string.Card_Not_Connected
     }
-    Market.FR -> throw IllegalArgumentException("Can not get price caption for market")
   }
 }
 

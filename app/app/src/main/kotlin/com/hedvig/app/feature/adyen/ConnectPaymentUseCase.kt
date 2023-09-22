@@ -50,7 +50,6 @@ class ConnectPaymentUseCase(
       Market.SE -> giraffe.type.Market.SWEDEN
       Market.NO -> giraffe.type.Market.NORWAY
       Market.DK -> giraffe.type.Market.DENMARK
-      Market.FR -> giraffe.type.Market.UNKNOWN__
       null -> giraffe.type.Market.UNKNOWN__
     }.toString()
 

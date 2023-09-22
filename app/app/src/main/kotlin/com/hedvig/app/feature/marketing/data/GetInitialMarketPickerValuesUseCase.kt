@@ -1,11 +1,9 @@
 package com.hedvig.app.feature.marketing.data
 
-import arrow.core.identity
+import arrow.core.merge
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
@@ -15,7 +13,6 @@ import giraffe.GeoQuery
 class GetInitialMarketPickerValuesUseCase(
   private val apolloClient: ApolloClient,
   private val marketManager: MarketManager,
-  private val featureManager: FeatureManager,
   private val languageService: LanguageService,
 ) {
   suspend operator fun invoke(): Pair<Market, Language> {
@@ -30,14 +27,8 @@ class GetInitialMarketPickerValuesUseCase(
       .safeExecute()
       .toEither()
       .map { runCatching { Market.valueOf(it.geo.countryISOCode) }.getOrNull() }
-      .map { market ->
-        if (market == Market.FR && !featureManager.isFeatureEnabled(Feature.FRANCE_MARKET)) {
-          null
-        } else {
-          market
-        }
-      }
-      .fold({ null }, ::identity)
+      .mapLeft { null }
+      .merge()
       ?: Market.SE
 
     return marketOrDefault to marketOrDefault.defaultLanguage()
