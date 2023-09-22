@@ -80,7 +80,7 @@ internal fun QuoteCard(
 private fun PillAndBasicInfo(quote: MoveQuote, movingDate: String?, imageLoader: ImageLoader) {
   Row(verticalAlignment = Alignment.CenterVertically) {
     AsyncImage(
-      model = quote.productVariant.product.pillowImage.src,
+      model = quote.productVariant.product.pillowImageUrl,
       contentDescription = "pillow",
       imageLoader = imageLoader,
       modifier = Modifier.size(48.dp),

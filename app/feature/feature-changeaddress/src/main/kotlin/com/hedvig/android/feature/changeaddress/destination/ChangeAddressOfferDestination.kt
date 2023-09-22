@@ -67,7 +67,6 @@ import com.hedvig.android.feature.changeaddress.ChangeAddressUiState
 import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.feature.changeaddress.data.MoveIntentId
 import com.hedvig.android.feature.changeaddress.data.MoveQuote
-import com.hedvig.android.feature.changeaddress.data.documentDisplayName
 import com.hedvig.android.feature.changeaddress.ui.offer.Faqs
 import com.hedvig.android.feature.changeaddress.ui.offer.QuoteCard
 import hedvig.resources.R
@@ -315,7 +314,7 @@ private fun Documents(
         Column(Modifier.weight(1f, true)) {
           Text(
             text = buildAnnotatedString {
-              document.type.documentDisplayName()?.let {
+              document.type.getStringRes()?.let {
                 append(stringResource(id = it))
               }
               withStyle(

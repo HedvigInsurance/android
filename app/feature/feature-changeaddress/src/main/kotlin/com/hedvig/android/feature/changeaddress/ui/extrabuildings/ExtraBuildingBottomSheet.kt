@@ -1,8 +1,6 @@
 package com.hedvig.android.feature.changeaddress.ui.extrabuildings
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,7 +11,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -21,20 +18,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.material3.squircleLargeTop
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.feature.changeaddress.data.ExtraBuilding
 import com.hedvig.android.feature.changeaddress.data.ExtraBuildingType
+import com.hedvig.android.feature.changeaddress.ui.ChangeAddressSwitch
 import hedvig.resources.R
 
 @Composable
@@ -93,24 +89,12 @@ internal fun ExtraBuildingBottomSheet(
           .fillMaxWidth(),
       )
       Spacer(Modifier.height(8.dp))
-      HedvigCard(
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp)
-          .clickable { hasWaterConnected = !hasWaterConnected },
-      ) {
-        Row(
-          verticalAlignment = Alignment.CenterVertically,
-          modifier = Modifier.padding(horizontal = 16.dp),
-        ) {
-          Text(text = stringResource(id = R.string.CHANGE_ADDRESS_EXTRA_BUILDINGS_WATER_INPUT_LABEL))
-          Spacer(modifier = Modifier.weight(1f))
-          Switch(
-            checked = hasWaterConnected,
-            onCheckedChange = { hasWaterConnected = it },
-          )
-        }
-      }
+      ChangeAddressSwitch(
+        label = stringResource(id = R.string.CHANGE_ADDRESS_EXTRA_BUILDINGS_WATER_INPUT_LABEL),
+        checked = hasWaterConnected,
+        onCheckedChange = { hasWaterConnected = it },
+        onClick = { hasWaterConnected = !hasWaterConnected }
+      )
       Spacer(Modifier.height(16.dp))
       HedvigContainedButton(
         text = stringResource(id = R.string.general_save_button),

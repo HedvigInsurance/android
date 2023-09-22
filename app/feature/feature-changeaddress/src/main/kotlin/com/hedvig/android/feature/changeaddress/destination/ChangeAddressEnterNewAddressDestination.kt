@@ -29,6 +29,7 @@ import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.feature.changeaddress.ChangeAddressUiState
 import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.feature.changeaddress.data.HousingType
+import com.hedvig.android.feature.changeaddress.ui.ChangeAddressSwitch
 import com.hedvig.android.feature.changeaddress.ui.InputTextField
 import com.hedvig.android.feature.changeaddress.ui.MovingDateButton
 import hedvig.resources.R
@@ -59,6 +60,7 @@ internal fun ChangeAddressEnterNewDestination(
     onSquareMetersChanged = viewModel::onSquareMetersChanged,
     onCoInsuredChanged = viewModel::onCoInsuredChanged,
     onMoveDateSelected = viewModel::onMoveDateSelected,
+    onIsStudentSelected = viewModel::onIsStudentChanged,
     onSaveNewAddress = {
       if (uiState.housingType.input == HousingType.VILLA) {
         onContinue()
@@ -79,6 +81,7 @@ private fun ChangeAddressEnterNewScreen(
   onSquareMetersChanged: (String) -> Unit,
   onCoInsuredChanged: (String) -> Unit,
   onMoveDateSelected: (LocalDate) -> Unit,
+  onIsStudentSelected: (Boolean) -> Unit,
   onSaveNewAddress: () -> Unit,
 ) {
   if (uiState.errorMessage != null) {
@@ -157,6 +160,15 @@ private fun ChangeAddressEnterNewScreen(
         modifier = Modifier.padding(horizontal = 16.dp),
       )
     }
+    if (uiState.housingType.input != HousingType.VILLA) {
+      Spacer(modifier = Modifier.height(8.dp))
+      ChangeAddressSwitch(
+        label = stringResource(id = R.string.CHANGE_ADDRESS_STUDENT_LABEL),
+        checked = uiState.isStudent.input,
+        onCheckedChange = onIsStudentSelected,
+        onClick = { onIsStudentSelected(!uiState.isStudent.input) }
+      )
+    }
     Spacer(modifier = Modifier.height(16.dp))
     VectorInfoCard(
       text = stringResource(id = R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT),
@@ -180,7 +192,7 @@ private fun PreviewChangeAddressEnterNewScreen() {
     Surface(color = MaterialTheme.colorScheme.background) {
       ChangeAddressEnterNewScreen(
         ChangeAddressUiState(),
-        {}, {}, {}, {}, {}, {}, {}, {},
+        {}, {}, {}, {}, {}, {}, {}, {}, {},
       )
     }
   }

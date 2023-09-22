@@ -1,8 +1,9 @@
 package com.hedvig.android.feature.changeaddress.data
 
+import com.hedvig.android.core.insurance.Product
+import com.hedvig.android.core.insurance.ProductVariant
 import com.hedvig.android.core.uidata.UiMoney
 import kotlinx.datetime.LocalDate
-import octopus.fragment.ProductVariantFragment
 import octopus.type.CurrencyCode
 
 data class MoveQuote(
@@ -13,7 +14,7 @@ data class MoveQuote(
   val numberCoInsured: Int,
   val premium: UiMoney,
   val startDate: LocalDate,
-  val productVariant: ProductVariantFragment,
+  val productVariant: ProductVariant,
   val isExpanded: Boolean = false,
 ) {
   companion object {
@@ -37,31 +38,18 @@ data class MoveQuote(
         premium = UiMoney(99.0 * index, CurrencyCode.SEK),
         startDate = LocalDate(2023, 5, 13),
         isExpanded = index == 1,
-        productVariant = object : ProductVariantFragment {
-          override val displayName: String
-            get() = "Test"
-          override val typeOfContract: String
-            get() = "testType"
-          override val partner: String
-            get() = "test"
-          override val product: ProductVariantFragment.Product
-            get() = object : ProductVariantFragment.Product {
-              override val displayNameFull: String
-                get() = ""
-              override val pillowImage: ProductVariantFragment.Product.PillowImage
-                get() = object : ProductVariantFragment.Product.PillowImage {
-                  override val src: String
-                    get() = "test"
-
-                }
-            }
-          override val perils: List<ProductVariantFragment.Peril>
-            get() = emptyList()
-          override val insurableLimits: List<ProductVariantFragment.InsurableLimit>
-            get() = emptyList()
-          override val documents: List<ProductVariantFragment.Document>
-            get() = emptyList()
-        }
+        productVariant = ProductVariant(
+          displayName = "Test",
+          typeOfContract = "testTpe",
+          partner = "test",
+          product = Product(
+            displayNameFull = "Test",
+            pillowImageUrl = "",
+          ),
+          perils = emptyList(),
+          insurableLimits = emptyList(),
+          documents = emptyList(),
+        )
       )
     }
   }

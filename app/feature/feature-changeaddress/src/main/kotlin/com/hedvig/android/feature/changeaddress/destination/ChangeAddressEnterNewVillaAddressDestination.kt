@@ -31,6 +31,7 @@ import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.feature.changeaddress.ChangeAddressUiState
 import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.feature.changeaddress.data.ExtraBuilding
+import com.hedvig.android.feature.changeaddress.ui.ChangeAddressSwitch
 import com.hedvig.android.feature.changeaddress.ui.InputTextField
 import com.hedvig.android.feature.changeaddress.ui.extrabuildings.ExtraBuildingBottomSheet
 import com.hedvig.android.feature.changeaddress.ui.extrabuildings.ExtraBuildingContainer
@@ -74,6 +75,7 @@ internal fun ChangeAddressEnterNewVillaAddressDestination(
     onYearOfConstructionChanged = viewModel::onYearOfConstructionChanged,
     onAncillaryAreaChanged = viewModel::onAncillaryAreaChanged,
     onNumberOfBathroomsChanged = viewModel::onNumberOfBathroomsChanged,
+    onIsSubletSelected = viewModel::onIsSubletChanged,
     onSaveNewAddress = viewModel::onSubmitNewAddress,
     onExtraBuildingClicked = {
       showExtraBuildingsBottomSheet = true
@@ -93,6 +95,7 @@ private fun ChangeAddressEnterNewVillaAddressScreen(
   onYearOfConstructionChanged: (String) -> Unit,
   onAncillaryAreaChanged: (String) -> Unit,
   onNumberOfBathroomsChanged: (String) -> Unit,
+  onIsSubletSelected: (Boolean) -> Unit,
   onSaveNewAddress: () -> Unit,
   onExtraBuildingClicked: (ExtraBuilding) -> Unit,
   onAddExtraBuildingClicked: () -> Unit,
@@ -151,6 +154,13 @@ private fun ChangeAddressEnterNewVillaAddressScreen(
       ),
     )
     Spacer(modifier = Modifier.height(8.dp))
+    ChangeAddressSwitch(
+      label = stringResource(id = R.string.CHANGE_ADDRESS_SUBLET_LABEL),
+      checked = uiState.isSublet.input,
+      onCheckedChange = onIsSubletSelected,
+      onClick = { onIsSubletSelected(!uiState.isSublet.input) }
+    )
+    Spacer(modifier = Modifier.height(8.dp))
     ExtraBuildingContainer(
       extraBuildings = uiState.extraBuildings,
       onExtraBuildingItemClicked = onExtraBuildingClicked,
@@ -183,6 +193,7 @@ private fun PreviewChangeAddressEnterNewVillaAddressDestination() {
     Surface(color = MaterialTheme.colorScheme.background) {
       ChangeAddressEnterNewVillaAddressScreen(
         ChangeAddressUiState(),
+        {},
         {},
         {},
         {},

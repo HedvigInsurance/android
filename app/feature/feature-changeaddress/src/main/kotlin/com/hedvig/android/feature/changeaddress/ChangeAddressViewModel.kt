@@ -57,6 +57,14 @@ internal class ChangeAddressViewModel(
     _uiState.update { it.copy(movingDate = ValidatedInput(movingDate)) }
   }
 
+  fun onIsStudentChanged(isStudent: Boolean) {
+    _uiState.update { it.copy(isStudent = ValidatedInput(isStudent)) }
+  }
+
+  fun onIsSubletChanged(isSublet: Boolean) {
+    _uiState.update { it.copy(isSublet = ValidatedInput(isSublet)) }
+  }
+
   fun onQuotesCleared() {
     _uiState.update { it.copy(quotes = emptyList()) }
   }
@@ -218,7 +226,7 @@ private fun ChangeAddressUiState.toQuoteInput() = when (housingType.input) {
     numberCoInsured = numberCoInsured.input!!.toInt(),
     squareMeters = squareMeters.input!!.toInt(),
     apartmentOwnerType = housingType.input!!,
-    isStudent = false, // TODO
+    isStudent = isStudent.input,
   )
 
   HousingType.VILLA -> QuoteInput.VillaInput(
@@ -236,8 +244,8 @@ private fun ChangeAddressUiState.toQuoteInput() = when (housingType.input) {
     ancillaryArea = ancillaryArea.input!!.toInt(),
     numberOfBathrooms = numberOfBathrooms.input!!.toInt(),
     extraBuildings = extraBuildings,
-    isStudent = false,
-    isSubleted = false, // TODO
+    isStudent = isStudent.input,
+    isSubleted = isSublet.input,
   )
 
   null -> throw IllegalArgumentException("No housing type found when creating input")
