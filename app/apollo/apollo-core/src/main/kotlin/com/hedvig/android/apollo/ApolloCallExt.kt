@@ -7,6 +7,8 @@ import com.apollographql.apollo3.api.Operation
 import com.apollographql.apollo3.api.Query
 import com.apollographql.apollo3.cache.normalized.watch
 import com.apollographql.apollo3.exception.ApolloException
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -22,6 +24,18 @@ suspend fun <D : Operation.Data> ApolloCall<D>.safeExecute(): OperationResult<D>
       throw throwable
     }
     OperationResult.Error.GeneralError(throwable)
+  }.also { operationResult ->
+    if (operationResult is OperationResult.Error) {
+      val message: () -> String = {
+        "Query:${this.operation.name()} failed with error message: ${operationResult.message}"
+      }
+      when (operationResult) {
+        is OperationResult.Error.GeneralError -> logcat(LogPriority.ERROR, operationResult.throwable, message)
+        is OperationResult.Error.NetworkError -> logcat(LogPriority.INFO, operationResult.throwable, message)
+        is OperationResult.Error.NoDataError -> logcat(LogPriority.ERROR, operationResult.throwable, message)
+        is OperationResult.Error.OperationError -> logcat(LogPriority.ERROR, operationResult.throwable, message)
+      }
+    }
   }
 }
 
@@ -64,11 +78,13 @@ fun <D : Query.Data> ApolloCall<D>.safeWatch(): Flow<OperationResult<D>> {
 private fun <D : Operation.Data> ApolloResponse<D>.toOperationResult(): OperationResult<D> {
   val data = data
   return when {
+    // TODO here differantiate between unauthorized errors here by looking inside extensions when that's available.
+    //  extensions.containsKey("unauthorized") -> OperationResult.Error.OperationError
     hasErrors() -> {
       val exception = errors?.first()?.extensions?.get("exception")
       val body = (exception as? Map<*, *>)?.get("body")
       val message = (body as? Map<*, *>)?.get("message") as? String
-      OperationResult.Error.OperationError(message ?: errors?.first()?.message)
+      OperationResult.Error.OperationError("message:$message | errors:${errors?.joinToString()} | body:$body")
     }
     data != null -> OperationResult.Success(data)
     else -> OperationResult.Error.NoDataError("No data")
