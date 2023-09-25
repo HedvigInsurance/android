@@ -36,7 +36,7 @@ internal class GetTravelCertificateSpecificationsUseCaseImpl(
         .safeExecute()
         .toEither(::ErrorMessage)
         .mapLeft(TravelCertificateError::Error)
-        .onLeft { logcat(LogPriority.ERROR, it.throwable) { it.message ?: "Could not fetch travel certificate" } }
+        .onLeft { logcat(LogPriority.INFO, it.throwable) { "Could not fetch travel certificate:${it.message}" } }
         .bind()
         .currentMember
 
