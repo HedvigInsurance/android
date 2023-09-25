@@ -175,8 +175,8 @@ private fun ScreenContent(
           LanguageFlag()
         },
         header = stringResource(hedvig.resources.R.string.market_language_screen_language_label),
-        label = selectedLanguage?.getLabel()?.let { stringResource(it) },
-        enabled = selectedMarket?.let { Language.getAvailableLanguages(it).isNotEmpty() } ?: false,
+        label = selectedLanguage?.label?.let { stringResource(it) },
+        enabled = selectedMarket?.let { it.availableLanguages.isNotEmpty() } ?: false,
         modifier = Modifier.testTag("languagePicker"),
       )
       Spacer(Modifier.height(32.dp))
@@ -300,11 +300,11 @@ private fun ColumnScope.PickLanguageSheetContent(
     modifier = Modifier.padding(horizontal = 16.dp),
     style = MaterialTheme.typography.bodyLarge,
   )
-  Language.getAvailableLanguages(selectedMarket).forEach { language ->
+  selectedMarket.availableLanguages.forEach { language ->
     RadioButtonRow(
       onClick = { onSelectLanguage(language) },
       selected = selectedLanguage == language,
-      text = stringResource(language.getLabel()),
+      text = stringResource(language.label),
       modifier = Modifier.testTag("languageRadioButton$language"),
     )
   }
