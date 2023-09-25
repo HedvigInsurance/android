@@ -3,7 +3,6 @@ package com.hedvig.android.feature.changeaddress.destination
 import android.content.res.Configuration
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -27,20 +26,19 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.BaselineShift
@@ -49,65 +47,73 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
-import com.hedvig.android.core.designsystem.component.button.LargeTextButton
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.ImageLoader
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
+import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.card.HedvigInfoCard
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.ValidatedInput
-import com.hedvig.android.core.ui.card.ExpandablePlusCard
+import com.hedvig.android.core.ui.appbar.m3.TopAppBarActionType
 import com.hedvig.android.core.ui.dialog.ErrorDialog
+import com.hedvig.android.core.ui.infocard.VectorInfoCard
+import com.hedvig.android.core.ui.preview.PreviewImageLoader
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.changeaddress.ChangeAddressUiState
+import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.feature.changeaddress.data.MoveIntentId
 import com.hedvig.android.feature.changeaddress.data.MoveQuote
-import com.hedvig.android.feature.changeaddress.ui.QuoteCard
 import com.hedvig.android.feature.changeaddress.ui.offer.Faqs
+import com.hedvig.android.feature.changeaddress.ui.offer.QuoteCard
 import hedvig.resources.R
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import octopus.type.CurrencyCode
 
-// import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
+@Composable
+internal fun ChangeAddressOfferDestination(
+  viewModel: ChangeAddressViewModel,
+  openChat: () -> Unit,
+  close: () -> Unit,
+  onChangeAddressResult: (String?) -> Unit,
+  openUrl: (String) -> Unit,
+  imageLoader: ImageLoader,
+) {
+  val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
+  val moveResult = uiState.successfulMoveResult
 
-// @Composable
-// internal fun ChangeAddressOfferDestination(
-//  viewModel: ChangeAddressViewModel,
-//  openChat: () -> Unit,
-//  navigateBack: () -> Unit,
-//  onChangeAddressResult: () -> Unit,
-// ) {
-//  val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
-//  val moveResult = uiState.successfulMoveResult
-//
-//  LaunchedEffect(moveResult) {
-//    if (moveResult != null) {
-//      onChangeAddressResult()
-//    }
-//  }
-//  ChangeAddressOfferScreen(
-//    uiState = uiState,
-//    openChat = openChat,
-//    navigateBack = navigateBack,
-//    onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
-//    onExpandQuote = viewModel::onExpandQuote,
-//    onConfirmMove = viewModel::onConfirmMove,
-//  )
-// }
+  LaunchedEffect(moveResult) {
+    if (moveResult != null) {
+      onChangeAddressResult(uiState.movingDate.input?.toString())
+    }
+  }
+  ChangeAddressOfferScreen(
+    uiState = uiState,
+    openChat = openChat,
+    close = close,
+    onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
+    onExpandQuote = viewModel::onExpandQuote,
+    onConfirmMove = viewModel::onConfirmMove,
+    openUrl = openUrl,
+    imageLoader = imageLoader,
+  )
+}
 
 @Composable
 private fun ChangeAddressOfferScreen(
   uiState: ChangeAddressUiState,
   openChat: () -> Unit,
-  navigateBack: () -> Unit,
+  close: () -> Unit,
   onErrorDialogDismissed: () -> Unit,
   onExpandQuote: (MoveQuote) -> Unit,
   onConfirmMove: (MoveIntentId) -> Unit,
+  openUrl: (String) -> Unit,
+  imageLoader: ImageLoader,
 ) {
   val moveIntentId = uiState.moveIntentId ?: throw IllegalArgumentException("No moveIntentId found!")
 
@@ -120,53 +126,47 @@ private fun ChangeAddressOfferScreen(
 
   val scrollState = rememberScrollState()
   HedvigScaffold(
-    navigateUp = navigateBack,
+    topAppBarText = stringResource(id = R.string.CHANGE_ADDRESS_SUMMARY_TITLE),
+    navigateUp = close,
     topAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
+    topAppBarActionType = TopAppBarActionType.CLOSE,
     scrollState = scrollState,
   ) {
-    Spacer(Modifier.height(48.dp))
-    Text(
-      text = stringResource(R.string.CHANGE_ADDRESS_ACCEPT_QUOTES_TITLE),
-      style = MaterialTheme.typography.headlineSmall,
-      textAlign = TextAlign.Center,
-      modifier = Modifier.fillMaxWidth(),
-    )
-    Spacer(Modifier.height(64.dp))
+    Spacer(Modifier.height(8.dp))
     for (quote in uiState.quotes) {
       QuoteCard(
         movingDate = uiState.movingDate.input?.toString(),
         quote = quote,
         onExpandClicked = { onExpandQuote(quote) },
         isExpanded = quote.isExpanded,
+        imageLoader = imageLoader,
         modifier = Modifier.padding(horizontal = 16.dp),
       )
       Spacer(Modifier.height(16.dp))
-//      if (quote.isMovingFlow) { // check if is moving flow somehow?
-//        AddressInfoCard(
-//          text = stringResource(R.string.CHANGE_ADDRESS_COVERAGE_INFO_TEXT),
-//          modifier = Modifier.padding(horizontal = 16.dp),
-//        )
-//        Spacer(Modifier.height(16.dp))
-//      }
     }
     if (uiState.quotes.size > 1) {
+      VectorInfoCard(
+        text = stringResource(id = R.string.CHANGE_ADDRESS_OTHER_INSURANCES_INFO_TEXT),
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+      Spacer(Modifier.height(16.dp))
       QuotesPriceSum(
         quotes = uiState.quotes,
         modifier = Modifier.padding(horizontal = 16.dp),
       )
     }
-    Spacer(Modifier.height(16.dp))
-    LargeContainedButton(
+    Spacer(Modifier.height(32.dp))
+    HedvigContainedButton(
+      text = stringResource(R.string.CHANGE_ADDRESS_ACCEPT_OFFER),
       onClick = { onConfirmMove(moveIntentId) },
-      shape = MaterialTheme.shapes.squircleMedium,
+      isLoading = uiState.isLoading,
       modifier = Modifier.padding(horizontal = 16.dp),
-    ) {
-      Text(text = stringResource(R.string.CHANGE_ADDRESS_ACCEPT_OFFER))
-    }
+    )
     Spacer(Modifier.height(8.dp))
     val coroutineScope = rememberCoroutineScope()
     var whatsIncludedButtonPositionY by remember { mutableStateOf(0f) }
-    LargeTextButton(
+    HedvigTextButton(
+      text = stringResource(id = R.string.CHANGE_ADDRESS_INCLUDED),
       onClick = {
         coroutineScope.launch {
           scrollState.animateScrollTo(
@@ -175,7 +175,6 @@ private fun ChangeAddressOfferScreen(
           )
         }
       },
-      shape = MaterialTheme.shapes.squircleMedium,
       modifier = Modifier
         .padding(horizontal = 16.dp)
         .onGloballyPositioned { layoutCoordinates ->
@@ -183,31 +182,30 @@ private fun ChangeAddressOfferScreen(
           whatsIncludedButtonPositionY =
             layoutCoordinates.positionInParent().y + layoutCoordinates.size.height
         },
-    ) {
-      Text(
-        text = "Se vad som ingår",
-        fontSize = 18.sp,
-      )
-    }
+    )
     Spacer(Modifier.height(80.dp))
+
     for (quote in uiState.quotes) {
       QuoteDetailsAndPdfs(
         quote = quote,
+        openUrl = openUrl,
         modifier = Modifier.padding(horizontal = 16.dp),
       )
-      Spacer(Modifier.height(80.dp))
-      CoverageItems(
-        quote = quote,
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
-      Spacer(Modifier.height(80.dp))
+      Spacer(Modifier.height(40.dp))
     }
     Faqs(
+      faqItems = listOf(
+        stringResource(id = R.string.CHANGE_ADDRESS_FAQ_DATE_TITLE) to stringResource(id = R.string.CHANGE_ADDRESS_FAQ_DATE_LABEL),
+        stringResource(id = R.string.CHANGE_ADDRESS_FAQ_PRICE_TITLE) to stringResource(id = R.string.CHANGE_ADDRESS_FAQ_PRICE_LABEL),
+        stringResource(id = R.string.CHANGE_ADDRESS_FAQ_RENTBRF_TITLE) to stringResource(id = R.string.CHANGE_ADDRESS_FAQ_RENTBRF_LABEL),
+        stringResource(id = R.string.CHANGE_ADDRESS_FAQ_STORAGE_TITLE) to stringResource(id = R.string.CHANGE_ADDRESS_FAQ_STORAGE_LABEL),
+        stringResource(id = R.string.CHANGE_ADDRESS_FAQ_STUDENT_TITLE) to stringResource(id = R.string.CHANGE_ADDRESS_FAQ_STUDENT_LABEL),
+      ),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
-    Spacer(Modifier.height(80.dp))
+    Spacer(Modifier.height(64.dp))
     Text(
-      text = "Hittar du inte det du söker?",
+      text = stringResource(id = R.string.CHANGE_ADDRESS_NO_FIND),
       fontSize = 18.sp,
       textAlign = TextAlign.Center,
       modifier = Modifier
@@ -240,7 +238,7 @@ private fun QuotesPriceSum(
   HorizontalItemsWithMaximumSpaceTaken(
     startSlot = {
       Text(
-        text = "Total",
+        text = stringResource(id = R.string.CHANGE_ADDRESS_TOTAL),
         fontSize = 18.sp,
       )
     },
@@ -259,103 +257,40 @@ private fun QuotesPriceSum(
 @Composable
 private fun QuoteDetailsAndPdfs(
   quote: MoveQuote,
+  openUrl: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
     HedvigInfoCard(
       contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
     ) {
-      Text(quote.insuranceName)
+      Text(quote.productVariant.product.displayNameFull)
     }
     Spacer(Modifier.height(32.dp))
-    CoverageRows(quote)
+    InsurableLimits(quote)
     Spacer(Modifier.height(32.dp))
-    Pdfs(quote)
-  }
-}
-
-@Composable
-private fun CoverageItems(
-  quote: MoveQuote,
-  modifier: Modifier = Modifier,
-) {
-  Column(modifier) {
-    HedvigInfoCard(
-      contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
-    ) {
-      Text("Vad som täcks")
-    }
-    Spacer(Modifier.height(16.dp))
-    val coverageItems = listOf(
-      // todo get coverage items from inside ui state
-      Color((0xFF000000..0xFFFFFFFF).random()) to "Eldsvåda",
-      Color((0xFF000000..0xFFFFFFFF).random()) to "Vattenskada",
-      Color((0xFF000000..0xFFFFFFFF).random()) to "Oväder",
-      Color((0xFF000000..0xFFFFFFFF).random()) to "Inbrott",
-    )
-    var expandedItemIndex by rememberSaveable { mutableStateOf(-1) }
-    coverageItems.forEachIndexed { index, (color, coverageText) ->
-      ExpandablePlusCard(
-        isExpanded = expandedItemIndex == index,
-        onClick = {
-          if (expandedItemIndex == index) {
-            expandedItemIndex = -1
-          } else {
-            expandedItemIndex = index
-          }
-        },
-        content = {
-          Canvas(Modifier.size(16.dp)) {
-            drawCircle(color)
-          }
-          Spacer(Modifier.width(12.dp))
-          Text(
-            text = coverageText,
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.weight(1f, true),
-          )
-        },
-        expandedContent = {
-          Text("Information about $coverageText. ${"Lorem Ipsum".repeat(15)}")
-        },
-      )
-      if (index != coverageItems.lastIndex) {
-        Spacer(Modifier.height(4.dp))
-      }
-    }
+    Documents(quote, openUrl)
   }
 }
 
 @Suppress("UnusedReceiverParameter")
 @Composable
-private fun ColumnScope.CoverageRows(quote: MoveQuote) {
-  // todo add a section in MoveQuote which contains a list of these
-  val coverageRowItems = listOf(
-    "Försäkrat belopp" to UiMoney(1_000_000.0, CurrencyCode.SEK).toString(),
-    "Självrisk" to UiMoney(1_500.0, CurrencyCode.SEK).toString(),
-    "Reseskydd" to "45 dagar",
-  )
-  coverageRowItems.forEachIndexed { index, (firstText, secondText) ->
+private fun ColumnScope.InsurableLimits(quote: MoveQuote) {
+  quote.productVariant.insurableLimits.mapIndexed { index, highlight ->
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
-        Text(firstText, fontSize = 18.sp)
+        Text(highlight.label, fontSize = 18.sp)
       },
       endSlot = {
         Row(
           verticalAlignment = Alignment.CenterVertically,
           horizontalArrangement = Arrangement.End,
         ) {
-          Text(secondText, fontSize = 18.sp)
-          // TODO if there's a click action here, add it along with the info icon
-//          Spacer(Modifier.width(4.dp))
-//          Icon(
-//            imageVector = Icons.Rounded.Info,
-//            contentDescription = null,
-//          )
+          Text(highlight.limit, fontSize = 18.sp)
         }
       },
     )
-    if (index != coverageRowItems.lastIndex) {
+    if (index != quote.productVariant.insurableLimits.lastIndex) {
       Spacer(Modifier.height(16.dp))
       Divider()
       Spacer(Modifier.height(16.dp))
@@ -363,18 +298,14 @@ private fun ColumnScope.CoverageRows(quote: MoveQuote) {
   }
 }
 
-@OptIn(ExperimentalTextApi::class)
 @Composable
-private fun Pdfs(quote: MoveQuote) {
-  // todo get pdf info from inside MoveQuote
-  val pdfs = listOf(
-    "Fullständiga villkor" to "Alla detaljer om skyddet", // also add a link on click
-    "Förköpsinformation" to "De nödvändiga detaljerna",
-    "Produktfaktablad (IPID)" to "Gör jämförelser enklare",
-  )
-  pdfs.forEachIndexed { index, (topText, bottomText) ->
+private fun Documents(
+  quote: MoveQuote,
+  openUrl: (String) -> Unit,
+) {
+  quote.productVariant.documents.mapIndexed { index, document ->
     HedvigCard(
-      onClick = {}, // Open the pdf link here
+      onClick = { openUrl(document.url) }
     ) {
       Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -383,7 +314,9 @@ private fun Pdfs(quote: MoveQuote) {
         Column(Modifier.weight(1f, true)) {
           Text(
             text = buildAnnotatedString {
-              append(topText)
+              document.type.getStringRes()?.let {
+                append(stringResource(id = it))
+              }
               withStyle(
                 SpanStyle(
                   baselineShift = BaselineShift(0.3f),
@@ -396,7 +329,7 @@ private fun Pdfs(quote: MoveQuote) {
             fontSize = 18.sp,
           )
           CompositionLocalProvider(LocalContentColor.provides(MaterialTheme.colorScheme.onSurfaceVariant)) {
-            Text(bottomText, fontSize = 18.sp)
+            Text(document.displayName, fontSize = 18.sp)
           }
         }
         Spacer(Modifier.width(8.dp))
@@ -407,7 +340,7 @@ private fun Pdfs(quote: MoveQuote) {
         )
       }
     }
-    if (index != pdfs.lastIndex) {
+    if (index != quote.productVariant.documents.lastIndex) {
       Spacer(Modifier.height(8.dp))
     }
   }
@@ -432,12 +365,15 @@ private fun PreviewChangeAddressOfferScreen() {
           moveIntentId = MoveIntentId(""),
           quotes = List(2, MoveQuote::PreviewData),
           movingDate = ValidatedInput(Clock.System.now().toLocalDateTime(TimeZone.UTC).date),
+          extraBuildingTypes = emptyList(),
         ),
         {},
         {},
         {},
         {},
         {},
+        {},
+        imageLoader = PreviewImageLoader(LocalContext.current),
       )
     }
   }

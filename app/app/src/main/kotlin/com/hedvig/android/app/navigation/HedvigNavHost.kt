@@ -28,7 +28,6 @@ import com.hedvig.android.feature.claimtriaging.claimTriagingDestinations
 import com.hedvig.android.feature.forever.navigation.foreverGraph
 import com.hedvig.android.feature.home.claims.pledge.HonestyPledgeBottomSheet
 import com.hedvig.android.feature.home.home.navigation.homeGraph
-import com.hedvig.android.feature.home.legacychangeaddress.LegacyChangeAddressActivity
 import com.hedvig.android.feature.insurances.insurance.insuranceGraph
 import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
@@ -76,25 +75,16 @@ internal fun HedvigNavHost(
 ) {
   LocalConfiguration.current
   val context = LocalContext.current
-  val resources = context.resources
   val density = LocalDensity.current
   val coroutineScope = rememberCoroutineScope()
   val navigator: Navigator = rememberNavigator(hedvigAppState)
 
   fun startMovingFlow() {
-    coroutineScope.launch {
-//      if (featureManager.isFeatureEnabled(Feature.NEW_MOVING_FLOW)) { // todo use again as soon as MOVING_FLOW works
-//        hedvigAppState.navController.navigate(AppDestination.ChangeAddress)
-//      } else {
-      context.startActivity(
-        LegacyChangeAddressActivity.newInstance(context),
-      )
-//      }
-    }
+    hedvigAppState.navController.navigate(AppDestination.ChangeAddress)
   }
 
   fun navigateToPayinScreen() {
-    val market = marketManager.market ?: return@navigateToPayinScreen
+    val market = marketManager.market ?: return
     coroutineScope.launch {
       context.startActivity(
         connectPayinIntent(
@@ -132,6 +122,7 @@ internal fun HedvigNavHost(
           navigator = navigator,
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           activityNavigator = activityNavigator,
+          imageLoader = imageLoader,
         )
       },
       navigator = navigator,
@@ -224,11 +215,13 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   navigator: Navigator,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   activityNavigator: ActivityNavigator,
+  imageLoader: ImageLoader,
 ) {
   changeAddressGraph(
-    density = density,
     navController = hedvigAppState.navController,
     openChat = { activityNavigator.navigateToChat(context) },
+    openUrl = { activityNavigator.openWebsite(context, Uri.parse(it)) },
+    imageLoader = imageLoader,
   )
   generateTravelCertificateGraph(
     density = density,

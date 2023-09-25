@@ -7,20 +7,16 @@ mutation MoveIntentRequest($intentId: ID!, $input: MoveIntentRequestInput!) {
           amount
           currencyCode
         }
-#        termsVersion {
-#          id
-#        }
         startDate
         address {
           id
           street
           postalCode
-          city
-#          bbrId
-#          apartmentNumber
-#          floor
         }
         numberCoInsured
+        productVariant {
+          ...ProductVariantFragment
+        }
       }
     }
     userError {
