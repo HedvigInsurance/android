@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
+import com.hedvig.android.market.MarketManager
 import com.hedvig.app.feature.marketing.data.GetInitialMarketPickerValuesUseCase
 import com.hedvig.app.feature.marketing.data.GetMarketingBackgroundUseCase
 import com.hedvig.app.feature.marketing.data.MarketingBackground
@@ -17,7 +18,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MarketingViewModel(
-  market: Market?,
+  private val marketManager: MarketManager,
   private val hAnalytics: HAnalytics,
   private val getMarketingBackgroundUseCase: GetMarketingBackgroundUseCase,
   private val updateApplicationLanguageUseCase: UpdateApplicationLanguageUseCase,
@@ -25,7 +26,7 @@ class MarketingViewModel(
   private val featureManager: FeatureManager,
 ) : ViewModel() {
 
-  private val _state = MutableStateFlow(MarketingViewState(selectedMarket = market))
+  private val _state = MutableStateFlow(MarketingViewState(selectedMarket = marketManager.market.value))
   val state = _state.asStateFlow()
 
   private val _marketingBackground = MutableStateFlow<MarketingBackground?>(null)
@@ -58,22 +59,27 @@ class MarketingViewModel(
   )
 
   fun setMarket(market: Market) {
-    updateApplicationLanguageUseCase.invoke(market, market.defaultLanguage())
+    viewModelScope.launch {
+      updateApplicationLanguageUseCase.invoke(market, market.defaultLanguage())
 
-    _state.update {
-      it.copy(
-        market = market,
-        language = market.defaultLanguage(),
-      )
+      // todo fix updating market in market manager instead of just locally
+      _state.update {
+        it.copy(
+          market = market,
+          language = market.defaultLanguage(),
+        )
+      }
     }
   }
 
   fun setLanguage(language: Language) {
-    state.value.market?.let {
-      updateApplicationLanguageUseCase.invoke(it, language)
-    }
+    viewModelScope.launch {
+      state.value.market?.let {
+        updateApplicationLanguageUseCase.invoke(it, language)
+      }
 
-    _state.update { it.copy(language = language) }
+      _state.update { it.copy(language = language) }
+    }
   }
 
   fun submitMarketAndLanguage() {
