@@ -48,7 +48,6 @@ enum class Language {
   }
 
   companion object {
-    const val SETTING_SYSTEM_DEFAULT = "system_default"
     const val SETTING_SV_SE = "sv-SE"
     const val SETTING_EN_SE = "en-SE"
     const val SETTING_NB_NO = "nb-NO"
