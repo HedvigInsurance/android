@@ -1,7 +1,7 @@
 package com.hedvig.android.data.forever.di
 
 import com.hedvig.android.data.forever.ForeverRepository
-import com.hedvig.android.feature.demomode.DemoManager
+import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.ProdOrDemoProvider
 
 class ForeverRepositoryProvider(

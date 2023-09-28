@@ -15,8 +15,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import coil.ImageLoader
 import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
+import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
@@ -25,6 +27,7 @@ import com.hedvig.android.market.Language
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.createOnboardingUri
 import com.hedvig.app.authenticate.BankIdLoginDialog
+import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.marketing.data.MarketingBackground
 import com.hedvig.app.feature.marketing.marketpicked.MarketPickedScreen
 import com.hedvig.app.feature.marketing.pickmarket.PickMarketScreen
@@ -32,6 +35,7 @@ import com.hedvig.app.feature.marketing.ui.BackgroundImage
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationActivity
 import com.hedvig.app.util.extensions.openWebBrowser
 import com.hedvig.hanalytics.LoginMethod
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.getViewModel
@@ -39,6 +43,7 @@ import org.koin.androidx.viewmodel.ext.android.getViewModel
 class MarketingActivity : AppCompatActivity() {
   private val languageService: LanguageService by inject()
   private val hedvigBuildConstants: HedvigBuildConstants by inject()
+  private val demoManager: DemoManager by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -65,6 +70,13 @@ class MarketingActivity : AppCompatActivity() {
             viewModel.onClickLogIn()
             logcat(LogPriority.INFO) { "Start login with market:$market" }
             onClickLogin(state, market)
+          },
+          onClickDemoMode = {
+            lifecycleScope.launch {
+              demoManager.setDemoMode(true)
+            }
+            val loggedInActivity = LoggedInActivity.newInstance(this, withoutHistory = true)
+            startActivity(loggedInActivity)
           },
         )
       }
@@ -122,6 +134,7 @@ private fun MarketingScreen(
   onFlagClick: () -> Unit,
   onClickSignUp: (market: Market) -> Unit,
   onClickLogIn: (market: Market) -> Unit,
+  onClickDemoMode: () -> Unit,
 ) {
   Box(Modifier.fillMaxSize()) {
     BackgroundImage(marketingBackground, imageLoader)
@@ -145,6 +158,7 @@ private fun MarketingScreen(
           onClickMarket = onFlagClick,
           onClickSignUp = { onClickSignUp(market) },
           onClickLogIn = { onClickLogIn(market) },
+          onClickDemoMode = onClickDemoMode,
           market = market,
         )
       }

@@ -1,6 +1,6 @@
 package com.hedvig.android.feature.profile.di
 
-import com.hedvig.android.feature.demomode.DemoManager
+import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.ProdOrDemoProvider
 import com.hedvig.android.feature.profile.data.ProfileRepository
 

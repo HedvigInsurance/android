@@ -14,7 +14,7 @@ import com.hedvig.android.auth.storage.AuthTokenStorage
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.test.MainCoroutineRule
 import com.hedvig.android.core.datastore.TestPreferencesDataStore
-import com.hedvig.android.feature.demomode.DemoManager
+import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.app.feature.genericauth.otpinput.OtpInputViewModel
 import com.hedvig.authlib.AccessToken

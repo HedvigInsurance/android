@@ -5,6 +5,7 @@ import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.hedvig.android.auth.AuthTokenServiceProvider
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.common.ApplicationScope
+import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.MarketManager
@@ -23,6 +24,7 @@ internal class LogoutUseCaseImpl(
   private val featureManager: FeatureManager,
   private val hAnalytics: HAnalytics,
   private val applicationScope: ApplicationScope,
+  private val demoManager: DemoManager,
 ) : LogoutUseCase {
   override fun invoke() {
     logcat { "Logout usecase called" }
@@ -34,5 +36,6 @@ internal class LogoutUseCaseImpl(
     applicationScope.launch { apolloClient.apolloStore.clearAll() }
     applicationScope.launch { chatEventStore.resetChatClosedCounter() }
     applicationScope.launch { apolloClient.reconnectSubscriptions() }
+    applicationScope.launch { demoManager.setDemoMode(false) }
   }
 }

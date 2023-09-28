@@ -6,6 +6,8 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.os.Build
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.work.WorkerParameters
 import coil.ImageLoader
 import coil.decode.GifDecoder
@@ -31,6 +33,8 @@ import com.hedvig.android.core.common.android.QuoteCartId
 import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
+import com.hedvig.android.core.demomode.DataStoreDemoManager
+import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.data.forever.di.foreverDataModule
 import com.hedvig.android.data.settings.datastore.di.settingsDatastoreModule
 import com.hedvig.android.data.travelcertificate.di.claimFlowDataModule
@@ -39,7 +43,6 @@ import com.hedvig.android.datadog.addDatadogConfiguration
 import com.hedvig.android.datadog.di.datadogModule
 import com.hedvig.android.feature.changeaddress.di.changeAddressModule
 import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
-import com.hedvig.android.feature.demomode.DemoManager
 import com.hedvig.android.feature.forever.di.foreverModule
 import com.hedvig.android.feature.home.di.homeModule
 import com.hedvig.android.feature.insurances.di.insurancesModule
@@ -359,7 +362,6 @@ private val embarkModule = module {
   viewModel<EmbarkViewModel> { (storyName: String) ->
     EmbarkViewModelImpl(
       embarkRepository = get(),
-      authTokenService = get(),
       graphQLQueryUseCase = get(),
       valueStore = get(),
       hAnalytics = get(),
@@ -491,7 +493,7 @@ private val clockModule = module {
 private val useCaseModule = module {
   single { StartCheckoutUseCase(get<ApolloClient>(giraffeClient), get(), get()) }
   single<LogoutUseCase> {
-    LogoutUseCaseImpl(get(), get<ApolloClient>(giraffeClient), get(), get(), get(), get(), get(), get())
+    LogoutUseCaseImpl(get(), get<ApolloClient>(giraffeClient), get(), get(), get(), get(), get(), get(), get())
   }
   single { GraphQLQueryUseCase(get()) }
   single<GetInsuranceProvidersUseCase> {
@@ -615,7 +617,7 @@ private val workManagerModule = module {
 
 private val demoManagerModule = module {
   single<DemoManager> {
-    DemoManager()
+    DataStoreDemoManager(get<DataStore<Preferences>>())
   }
 }
 
