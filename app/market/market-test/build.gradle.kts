@@ -5,5 +5,6 @@ plugins {
 }
 
 dependencies {
+  implementation(libs.coroutines.core)
   implementation(projects.marketCore)
 }

@@ -283,7 +283,7 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
   private fun handlePostSign(event: OfferViewModel.Event.ApproveSuccessful) {
     when (event.postSignScreen) {
       PostSignScreen.CONNECT_PAYIN -> {
-        val market = marketManager.market ?: return
+        val market = marketManager.market.value
         startActivity(
           connectPayinIntent(
             this,

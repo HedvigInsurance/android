@@ -5,6 +5,8 @@ plugins {
 }
 
 dependencies {
+  implementation(libs.androidx.datastore.core)
+  implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.androidx.other.preference)
   implementation(libs.koin.core)
   implementation(projects.apolloGiraffePublic)

@@ -165,7 +165,7 @@ class EmbarkActivity : AppCompatActivity(R.layout.activity_embark) {
 
   private fun handleMenuItem(menuItem: MenuItem) = when (menuItem.itemId) {
     R.id.login -> {
-      marketManager.market?.openAuth(this, supportFragmentManager)
+      marketManager.market.value.openAuth(this@EmbarkActivity, supportFragmentManager)
       true
     }
 

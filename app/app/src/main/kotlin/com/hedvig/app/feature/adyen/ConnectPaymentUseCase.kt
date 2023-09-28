@@ -46,11 +46,10 @@ class ConnectPaymentUseCase(
     }
 
   private fun createConnectPaymentVariables(data: JSONObject): JSONObject? {
-    val market = when (marketManager.market) {
+    val market = when (marketManager.market.value) {
       Market.SE -> giraffe.type.Market.SWEDEN
       Market.NO -> giraffe.type.Market.NORWAY
       Market.DK -> giraffe.type.Market.DENMARK
-      null -> giraffe.type.Market.UNKNOWN__
     }.toString()
 
     return buildJsonObject {

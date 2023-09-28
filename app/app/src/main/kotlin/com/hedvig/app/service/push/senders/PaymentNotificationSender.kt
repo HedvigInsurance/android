@@ -51,8 +51,8 @@ class PaymentNotificationSender(
   }
 
   private fun sendConnectDirectDebitNotification() {
-    val market = marketManager.market ?: return
     applicationScope.launch(Dispatchers.IO) {
+      val market = marketManager.market.value
       val pendingIntent = TaskStackBuilder
         .create(context)
         .run {

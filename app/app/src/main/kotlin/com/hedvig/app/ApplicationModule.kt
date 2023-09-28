@@ -319,7 +319,7 @@ private val viewModelModule = module {
     )
   }
   viewModel { TooltipViewModel(get()) }
-  viewModel { MarketingViewModel(get<MarketManager>().market, get(), get(), get(), get(), get()) }
+  viewModel { MarketingViewModel(get<MarketManager>(), get(), get(), get(), get(), get()) }
   viewModel<ReviewDialogViewModel> { ReviewDialogViewModel(get()) }
 }
 
@@ -490,7 +490,7 @@ private val clockModule = module {
 private val useCaseModule = module {
   single { StartCheckoutUseCase(get<ApolloClient>(giraffeClient), get(), get()) }
   single<LogoutUseCase> {
-    LogoutUseCaseImpl(get(), get<ApolloClient>(giraffeClient), get(), get(), get(), get(), get(), get())
+    LogoutUseCaseImpl(get<ApolloClient>(giraffeClient), get(), get(), get(), get(), get(), get())
   }
   single { GraphQLQueryUseCase(get()) }
   single<GetInsuranceProvidersUseCase> {
@@ -517,7 +517,7 @@ private val useCaseModule = module {
       languageService = get(),
     )
   }
-  single { GetInitialMarketPickerValuesUseCase(get<ApolloClient>(giraffeClient), get(), get()) }
+  single { GetInitialMarketPickerValuesUseCase(get(), get()) }
   single<EditCheckoutUseCase> {
     EditCheckoutUseCase(
       languageService = get(),

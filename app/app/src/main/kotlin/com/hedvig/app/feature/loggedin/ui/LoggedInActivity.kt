@@ -68,6 +68,7 @@ import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.activity.ActivityNavigator
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
@@ -184,23 +185,15 @@ class LoggedInActivity : AppCompatActivity() {
             }
             if (dynamicLink is DynamicLink.DirectDebit) {
               hAnalytics.deepLinkOpened(dynamicLink.type)
-              val market = marketManager.market
-              if (market == null) {
-                logcat(LogPriority.ERROR) {
-                  "Tried to open DirectDebit deep link, but market was null. Aborting and continuing to normal flow"
-                }
-              } else {
-                lifecycleScope.launch {
-                  this@LoggedInActivity.startActivity(
-                    connectPayinIntent(
-                      this@LoggedInActivity,
-                      featureManager.getPaymentType(),
-                      market,
-                      false,
-                    ),
-                  )
-                }
-              }
+              val market = marketManager.market.first()
+              this@LoggedInActivity.startActivity(
+                connectPayinIntent(
+                  this@LoggedInActivity,
+                  featureManager.getPaymentType(),
+                  market,
+                  false,
+                ),
+              )
             } else {
               logcat { "Deep link $dynamicLink did not open some specific activity" }
             }
@@ -232,6 +225,7 @@ class LoggedInActivity : AppCompatActivity() {
     }
 
     setContent {
+      val market by marketManager.market.collectAsStateWithLifecycle()
       HedvigTheme {
         val windowSizeClass = calculateWindowSizeClass(this)
         HedvigApp(
@@ -252,7 +246,7 @@ class LoggedInActivity : AppCompatActivity() {
             intent.removeExtra(INITIAL_TAB)
           },
           shouldShowRequestPermissionRationale = ::shouldShowRequestPermissionRationale,
-          marketManager = marketManager,
+          market = market,
           imageLoader = imageLoader,
           featureManager = featureManager,
           hAnalytics = hAnalytics,
@@ -301,7 +295,7 @@ private fun HedvigApp(
   getInitialTab: () -> TopLevelGraph?,
   clearInitialTab: () -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
-  marketManager: MarketManager,
+  market: Market,
   imageLoader: ImageLoader,
   featureManager: FeatureManager,
   hAnalytics: HAnalytics,
@@ -342,7 +336,7 @@ private fun HedvigApp(
           activityNavigator = activityNavigator,
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           imageLoader = imageLoader,
-          marketManager = marketManager,
+          market = market,
           featureManager = featureManager,
           hAnalytics = hAnalytics,
           fragmentManager = fragmentManager,

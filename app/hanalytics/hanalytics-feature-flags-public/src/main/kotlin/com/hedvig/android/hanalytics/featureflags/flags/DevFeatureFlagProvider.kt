@@ -12,10 +12,10 @@ internal class DevFeatureFlagProvider(
     return when (feature) {
       Feature.COMMON_CLAIMS -> !isQasaMember
       Feature.CONNECT_PAYIN_REMINDER -> !isQasaMember
-      Feature.CONNECT_PAYMENT_POST_ONBOARDING -> marketManager.market == Market.SE
+      Feature.CONNECT_PAYMENT_POST_ONBOARDING -> marketManager.market.value == Market.SE
       Feature.DISABLE_CHAT -> false
       Feature.DISABLE_DARK_MODE -> true
-      Feature.EXTERNAL_DATA_COLLECTION -> marketManager.market == Market.SE
+      Feature.EXTERNAL_DATA_COLLECTION -> marketManager.market.value == Market.SE
       Feature.MOVING_FLOW -> true
       Feature.PAYMENT_SCREEN -> !isQasaMember
       Feature.QUOTE_CART -> false
