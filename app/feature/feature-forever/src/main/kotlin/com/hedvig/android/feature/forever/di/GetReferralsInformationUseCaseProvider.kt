@@ -1,7 +1,7 @@
 package com.hedvig.android.feature.forever.di
 
 import com.hedvig.android.feature.demomode.DemoManager
-import com.hedvig.android.feature.demomode.ProdOrDemoProvider
+import com.hedvig.android.core.demomode.ProdOrDemoProvider
 import com.hedvig.android.feature.forever.data.GetReferralsInformationUseCase
 
 internal class GetReferralsInformationUseCaseProvider(

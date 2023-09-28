@@ -14,6 +14,6 @@ dependencies {
   implementation(projects.apolloCore)
   implementation(projects.apolloGiraffePublic)
   implementation(projects.coreCommonPublic)
-  implementation(projects.featureDemoMode)
+  implementation(projects.coreDemoMode)
   implementation(projects.languageCore)
 }

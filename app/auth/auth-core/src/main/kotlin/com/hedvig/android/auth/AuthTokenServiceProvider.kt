@@ -1,7 +1,7 @@
 package com.hedvig.android.auth
 
+import com.hedvig.android.core.demomode.ProdOrDemoProvider
 import com.hedvig.android.feature.demomode.DemoManager
-import com.hedvig.android.feature.demomode.ProdOrDemoProvider
 
 class AuthTokenServiceProvider(
   demoManager: DemoManager,

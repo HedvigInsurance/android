@@ -38,7 +38,7 @@ dependencies {
   implementation(projects.coreUi)
   implementation(projects.dataForever)
   implementation(projects.dataSettingsDatastorePublic)
-  implementation(projects.featureDemoMode)
+  implementation(projects.coreDemoMode)
   implementation(projects.hanalyticsCore)
   implementation(projects.hanalyticsFeatureFlagsPublic)
   implementation(projects.languageCore)

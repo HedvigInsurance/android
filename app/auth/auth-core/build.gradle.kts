@@ -19,9 +19,8 @@ dependencies {
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDatastorePublic)
-  implementation(projects.featureDemoMode)
   implementation(projects.testClock)
-
+  implementation(projects.coreDemoMode)
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.okhttp.mockWebServer)
