@@ -1,5 +1,6 @@
 package com.hedvig.android.market
 
+import androidx.annotation.StringRes
 import giraffe.type.Locale
 
 enum class Language {
@@ -11,14 +12,16 @@ enum class Language {
   EN_DK,
   ;
 
-  fun getLabel() = when (this) {
-    SV_SE -> hedvig.resources.R.string.swedish
-    EN_SE -> hedvig.resources.R.string.english_swedish
-    NB_NO -> hedvig.resources.R.string.norwegian
-    EN_NO -> hedvig.resources.R.string.english_norwegian
-    DA_DK -> hedvig.resources.R.string.danish
-    EN_DK -> hedvig.resources.R.string.english_danish
-  }
+  val label: Int
+    @StringRes
+    get() = when (this) {
+      SV_SE -> hedvig.resources.R.string.swedish
+      EN_SE -> hedvig.resources.R.string.english_swedish
+      NB_NO -> hedvig.resources.R.string.norwegian
+      EN_NO -> hedvig.resources.R.string.english_norwegian
+      DA_DK -> hedvig.resources.R.string.danish
+      EN_DK -> hedvig.resources.R.string.english_danish
+    }
 
   override fun toString() = when (this) {
     SV_SE -> SETTING_SV_SE
@@ -68,14 +71,6 @@ enum class Language {
       SETTING_DA_DK -> DA_DK
       SETTING_EN_DK -> EN_DK
       else -> throw RuntimeException("Invalid language value: $value")
-    }
-
-    fun getAvailableLanguages(market: Market): List<Language> {
-      return when (market) {
-        Market.SE -> listOf(SV_SE, EN_SE)
-        Market.NO -> listOf(NB_NO, EN_NO)
-        Market.DK -> listOf(DA_DK, EN_DK)
-      }
     }
   }
 }
