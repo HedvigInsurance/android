@@ -17,5 +17,7 @@ dependencies {
   implementation(projects.apolloGiraffePublic)
   implementation(projects.authCore)
   implementation(projects.authEventCore)
+  implementation(projects.coreCommonPublic)
+  implementation(projects.featureDemoMode)
   implementation(projects.notificationCore)
 }

@@ -7,7 +7,7 @@ import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.auth.AuthStatus
-import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.auth.AuthTokenServiceProvider
 import com.hedvig.android.core.common.android.ProgressPercentage
 import com.hedvig.android.core.common.android.QuoteCartId
 import com.hedvig.android.core.common.android.asMap
@@ -27,6 +27,8 @@ import giraffe.EmbarkStoryQuery
 import giraffe.fragment.ApiFragment
 import giraffe.fragment.MessageFragment
 import giraffe.type.EmbarkExternalRedirectLocation
+import java.util.Stack
+import kotlin.math.max
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,8 +37,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.Stack
-import kotlin.math.max
 
 const val QUOTE_CART_EMBARK_STORE_ID_KEY = "quoteCartId"
 
@@ -45,12 +45,12 @@ abstract class EmbarkViewModel(
   private val graphQLQueryUseCase: GraphQLQueryUseCase,
   private val hAnalytics: HAnalytics,
   val storyName: String,
-  authTokenService: AuthTokenService,
+  authTokenServiceProvider: AuthTokenServiceProvider,
 ) : ViewModel() {
   private val _passageState = MutableLiveData<PassageState>()
   private val passageState: LiveData<PassageState> = _passageState
 
-  private val loginStatus: StateFlow<AuthStatus?> = authTokenService.authStatus
+  private val loginStatus: StateFlow<AuthStatus?> = authTokenServiceProvider.provide().authStatus
 
   val viewState: LiveData<ViewState> = combine(passageState.asFlow(), loginStatus) { passageState, loginStatus ->
     ViewState(
@@ -510,7 +510,7 @@ abstract class EmbarkViewModel(
 
 class EmbarkViewModelImpl(
   private val embarkRepository: EmbarkRepository,
-  authTokenService: AuthTokenService,
+  authTokenService: AuthTokenServiceProvider,
   graphQLQueryUseCase: GraphQLQueryUseCase,
   valueStore: ValueStore,
   hAnalytics: HAnalytics,

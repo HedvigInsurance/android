@@ -17,6 +17,8 @@ import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.data.toContractType
+import com.hedvig.android.feature.insurances.di.GetCrossSellsUseCaseProvider
+import com.hedvig.android.feature.insurances.di.GetInsuranceContractsUseCaseProvider
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -78,9 +80,9 @@ internal data class InsuranceUiState(
 }
 
 internal class InsurancePresenter(
-  private val getInsuranceContractsUseCase: GetInsuranceContractsUseCase,
-  private val getCrossSellsUseCase: GetCrossSellsUseCase,
-  private val crossSellCardNotificationBadgeService: CrossSellCardNotificationBadgeService,
+    private val getInsuranceContractsUseCaseProvider: GetInsuranceContractsUseCaseProvider,
+    private val getCrossSellsUseCaseProvider: GetCrossSellsUseCaseProvider,
+    private val crossSellCardNotificationBadgeService: CrossSellCardNotificationBadgeService,
 ) : MoleculePresenter<InsuranceScreenEvent, InsuranceUiState> {
   @Composable
   override fun MoleculePresenterScope<InsuranceScreenEvent>.present(
@@ -116,8 +118,8 @@ internal class InsurancePresenter(
         isRetrying = isRetryingIteration
       }
       loadInsuranceData(
-        getInsuranceContractsUseCase,
-        getCrossSellsUseCase,
+        getInsuranceContractsUseCaseProvider.provide(),
+        getCrossSellsUseCaseProvider.provide(),
       ).fold(
         ifLeft = {
           Snapshot.withMutableSnapshot {
@@ -143,7 +145,7 @@ internal class InsurancePresenter(
       crossSells = insuranceData.crossSells,
       showNotificationBadge = showNotificationBadge,
       quantityOfCancelledInsurances = insuranceData.quantityOfCancelledInsurances,
-      hasError = didFailToLoad == true && isLoading == false && isRetrying == false,
+      hasError = didFailToLoad && !isLoading && !isRetrying,
       isLoading = isLoading,
       isRetrying = isRetrying,
     )

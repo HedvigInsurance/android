@@ -6,7 +6,7 @@ import com.hedvig.android.apollo.OperationResult
 import java.math.BigDecimal
 import org.javamoney.moneta.Money
 
-internal class ProfileDemoRepository : ProfileRepository {
+internal class ProfileRepositoryDemo : ProfileRepository {
   private val demoMember = Member(
     id = "test",
     firstName = "Google",

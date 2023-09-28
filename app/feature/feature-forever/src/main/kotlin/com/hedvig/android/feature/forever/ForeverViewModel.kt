@@ -10,9 +10,9 @@ import arrow.core.raise.either
 import arrow.fx.coroutines.parZip
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.data.forever.ForeverRepository
 import com.hedvig.android.data.forever.ForeverRepositoryImpl
-import com.hedvig.android.feature.forever.data.GetReferralsInformationUseCase
+import com.hedvig.android.data.forever.di.ForeverRepositoryProvider
+import com.hedvig.android.feature.forever.di.GetReferralsInformationUseCaseProvider
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -21,19 +21,19 @@ import giraffe.ReferralsQuery
 import giraffe.fragment.ReferralFragment
 
 internal class ForeverViewModel(
-  private val foreverRepository: ForeverRepository,
-  private val getReferralTermsUseCase: GetReferralsInformationUseCase,
+  foreverRepositoryProvider: ForeverRepositoryProvider,
+  getReferralTermsUseCaseProvider: GetReferralsInformationUseCaseProvider,
 ) : MoleculeViewModel<ForeverEvent, ForeverUiState>(
   ForeverUiState.Loading,
   ForeverPresenter(
-    foreverRepository = foreverRepository,
-    getReferralsInformationUseCase = getReferralTermsUseCase,
+    foreverRepositoryProvider = foreverRepositoryProvider,
+    getReferralsInformationUseCaseProvider = getReferralTermsUseCaseProvider,
   ),
 )
 
 internal class ForeverPresenter(
-  private val foreverRepository: ForeverRepository,
-  private val getReferralsInformationUseCase: GetReferralsInformationUseCase,
+  private val foreverRepositoryProvider: ForeverRepositoryProvider,
+  private val getReferralsInformationUseCaseProvider: GetReferralsInformationUseCaseProvider,
 ) : MoleculePresenter<ForeverEvent, ForeverUiState> {
   @Composable
   override fun MoleculePresenterScope<ForeverEvent>.present(lastState: ForeverUiState): ForeverUiState {
@@ -60,8 +60,8 @@ internal class ForeverPresenter(
       foreverDataErrorMessage = null
       either {
         parZip(
-          { foreverRepository.getReferralsData().bind() },
-          { getReferralsInformationUseCase.invoke().bind() },
+          { foreverRepositoryProvider.provide().getReferralsData().bind() },
+          { getReferralsInformationUseCaseProvider.provide().invoke().bind() },
         ) { referralsData, terms ->
           ForeverUiState.ForeverData(
             referralsData = referralsData,
@@ -76,9 +76,8 @@ internal class ForeverPresenter(
     }
 
     LaunchedEffect(referralCodeToSubmit) {
-      val codeToSubmit = referralCodeToSubmit
-      if (codeToSubmit == null) return@LaunchedEffect
-      foreverRepository.updateCode(codeToSubmit).fold(
+      val codeToSubmit = referralCodeToSubmit ?: return@LaunchedEffect
+      foreverRepositoryProvider.provide().updateCode(codeToSubmit).fold(
         ifLeft = {
           referralCodeToSubmit = null
           referralCodeToSubmitErrorMessage = it

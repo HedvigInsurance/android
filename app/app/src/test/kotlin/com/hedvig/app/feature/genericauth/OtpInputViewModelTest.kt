@@ -7,12 +7,14 @@ import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.AuthTokenServiceImpl
+import com.hedvig.android.auth.AuthTokenServiceProvider
 import com.hedvig.android.auth.FakeAuthRepository
 import com.hedvig.android.auth.event.AuthEventBroadcaster
 import com.hedvig.android.auth.storage.AuthTokenStorage
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.test.MainCoroutineRule
 import com.hedvig.android.core.datastore.TestPreferencesDataStore
+import com.hedvig.android.feature.demomode.DemoManager
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.app.feature.genericauth.otpinput.OtpInputViewModel
 import com.hedvig.authlib.AccessToken
@@ -23,6 +25,7 @@ import com.hedvig.authlib.RefreshToken
 import com.hedvig.authlib.ResendOtpResult
 import com.hedvig.authlib.SubmitOtpResult
 import io.mockk.mockk
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
@@ -30,7 +33,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import kotlin.coroutines.EmptyCoroutineContext
 
 class OtpInputViewModelTest {
 
@@ -202,7 +204,12 @@ class OtpInputViewModelTest {
       verifyUrl = "verifytest",
       resendUrl = "resendtest",
       credential = "test@email.com",
-      authTokenService = testAuthTokenService(authRepository, authTokenStorage),
+      authTokenServiceProvider =
+      AuthTokenServiceProvider(
+        DemoManager(),
+        testAuthTokenService(authRepository, authTokenStorage),
+        testAuthTokenService(authRepository, authTokenStorage),
+      ),
       authRepository = authRepository,
       uploadMarketAndLanguagePreferencesUseCase = mockk(relaxed = true),
     )

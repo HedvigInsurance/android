@@ -29,8 +29,6 @@ import com.hedvig.android.core.designsystem.theme.hedvig_off_white
 import com.hedvig.android.market.Market
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.util.loadDemoModules
-import com.hedvig.app.util.loadProductionModules
 
 @Composable
 fun MarketPickedScreen(
@@ -80,7 +78,6 @@ fun MarketPickedScreen(
         Text(text = stringResource(hedvig.resources.R.string.MARKETING_SCREEN_LOGIN))
       }
       HedvigTextButton(text = "Demo mode", onClick = {
-        loadDemoModules()
         val loggedInActivity = LoggedInActivity.newInstance(context, withoutHistory = true)
         context.startActivity(loggedInActivity)
       })

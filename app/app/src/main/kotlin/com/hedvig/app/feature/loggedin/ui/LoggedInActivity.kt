@@ -58,7 +58,7 @@ import com.hedvig.android.app.ui.HedvigBottomBar
 import com.hedvig.android.app.ui.HedvigNavRail
 import com.hedvig.android.app.ui.rememberHedvigAppState
 import com.hedvig.android.auth.AuthStatus
-import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.auth.AuthTokenServiceProvider
 import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.designsystem.material3.motion.MotionTokens
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -93,7 +93,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class LoggedInActivity : AppCompatActivity() {
   private val reviewDialogViewModel: ReviewDialogViewModel by viewModel()
 
-  private val authTokenService: AuthTokenService by inject()
+  private val authTokenServiceProvider: AuthTokenServiceProvider by inject()
   private val tabNotificationBadgeService: TabNotificationBadgeService by inject()
   private val marketManager: MarketManager by inject()
   private val imageLoader: ImageLoader by inject()
@@ -148,13 +148,13 @@ class LoggedInActivity : AppCompatActivity() {
       }
       launch {
         lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
-          authTokenService.authStatus.first { it != null }
+          authTokenServiceProvider.provide().authStatus.first { it != null }
           showSplash.update { false }
         }
       }
       launch {
         lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-          authTokenService.authStatus.first { it is AuthStatus.LoggedIn }
+          authTokenServiceProvider.provide().authStatus.first { it is AuthStatus.LoggedIn }
           reviewDialogViewModel.shouldOpenReviewDialog.collect { shouldOpenReviewDialog ->
             if (shouldOpenReviewDialog) {
               showReviewWithDelay()
@@ -164,14 +164,14 @@ class LoggedInActivity : AppCompatActivity() {
       }
       if (intent.getBooleanExtra(SHOW_RATING_DIALOG, false)) {
         launch {
-          authTokenService.authStatus.first { it is AuthStatus.LoggedIn }
+          authTokenServiceProvider.provide().authStatus.first { it is AuthStatus.LoggedIn }
           showReviewWithDelay()
         }
       }
       if (uri != null) {
         launch {
           lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            authTokenService.authStatus.first { it is AuthStatus.LoggedIn }
+            authTokenServiceProvider.provide().authStatus.first { it is AuthStatus.LoggedIn }
             val pathSegments = uri.pathSegments
             val dynamicLink: DynamicLink = when {
               pathSegments.contains("direct-debit") -> DynamicLink.DirectDebit
@@ -208,7 +208,7 @@ class LoggedInActivity : AppCompatActivity() {
         }
       }
       lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-        authTokenService.authStatus
+        authTokenServiceProvider.provide().authStatus
           .onEach { authStatus ->
             logcat {
               buildString {

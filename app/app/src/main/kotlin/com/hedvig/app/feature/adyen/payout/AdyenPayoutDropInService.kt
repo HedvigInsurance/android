@@ -4,22 +4,22 @@ import com.adyen.checkout.components.ActionComponentData
 import com.adyen.checkout.components.PaymentComponentState
 import com.adyen.checkout.dropin.service.DropInService
 import com.adyen.checkout.dropin.service.DropInServiceResult
-import com.hedvig.android.payment.PaymentRepository
+import com.hedvig.android.payment.di.PaymentRepositoryProvider
 import com.hedvig.app.feature.adyen.ConnectPayoutUseCase
 import com.hedvig.app.feature.adyen.SubmitAdditionalPaymentDetailsUseCase
 import com.hedvig.app.feature.adyen.payin.toDropInServiceResult
 import giraffe.type.PayoutMethodStatus
 import giraffe.type.TokenizationResultType
+import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import org.koin.android.ext.android.inject
-import kotlin.coroutines.CoroutineContext
 
 class AdyenPayoutDropInService : DropInService(), CoroutineScope {
-  private val paymentRepository: PaymentRepository by inject()
+  private val paymentRepositoryProvider: PaymentRepositoryProvider by inject()
   private val submitAdditionalPaymentDetailsUseCase: SubmitAdditionalPaymentDetailsUseCase by inject()
   private val connectPayoutUseCase: ConnectPayoutUseCase by inject()
 
@@ -36,7 +36,7 @@ class AdyenPayoutDropInService : DropInService(), CoroutineScope {
           ifRight = {
             it.tokenizationResultType.toPayoutMethodStatusOrNull()
               ?.let { payoutMethodStatus ->
-                runCatching { paymentRepository.writeActivePayoutMethodStatus(payoutMethodStatus) }
+                runCatching { paymentRepositoryProvider.provide().writeActivePayoutMethodStatus(payoutMethodStatus) }
               }
             sendResult(DropInServiceResult.Finished(it.code))
           },
@@ -55,7 +55,7 @@ class AdyenPayoutDropInService : DropInService(), CoroutineScope {
           ifLeft = { sendResult(it) },
           ifRight = {
             it.tokenizationResultType.toPayoutMethodStatusOrNull()?.let { payoutMethodStatus ->
-              runCatching { paymentRepository.writeActivePayoutMethodStatus(payoutMethodStatus) }
+              runCatching { paymentRepositoryProvider.provide().writeActivePayoutMethodStatus(payoutMethodStatus) }
             }
             sendResult(DropInServiceResult.Finished(it.code))
           },

@@ -208,6 +208,7 @@ dependencies {
   implementation(projects.datadog)
   implementation(projects.featureChangeaddress)
   implementation(projects.featureClaimTriaging)
+  implementation(projects.featureDemoMode)
   implementation(projects.featureForever)
   implementation(projects.featureHome)
   implementation(projects.featureInsurances)

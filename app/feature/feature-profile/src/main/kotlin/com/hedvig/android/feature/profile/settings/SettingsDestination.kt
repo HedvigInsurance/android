@@ -34,17 +34,12 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.dialog.SingleSelectDialog
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
-import com.hedvig.android.feature.profile.di.profileDemoRepositoryModule
-import com.hedvig.android.feature.profile.di.profileModule
-import com.hedvig.android.feature.profile.di.profileRepositoryModule
 import com.hedvig.android.market.Language
 import com.hedvig.android.memberreminders.ui.ReminderCardEnableNotifications
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
 import com.hedvig.android.theme.Theme
 import hedvig.resources.R
-import org.koin.core.context.loadKoinModules
-import org.koin.core.context.unloadKoinModules
 
 @Composable
 internal fun SettingsDestination(

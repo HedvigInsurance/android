@@ -51,6 +51,7 @@ dependencies {
   implementation(projects.dataTravelCertificatePublic)
   implementation(projects.hanalyticsCore)
   implementation(projects.hanalyticsFeatureFlagsPublic)
+  implementation(projects.featureDemoMode)
   implementation(projects.languageCore)
   implementation(projects.marketCore)
   implementation(projects.memberRemindersPublic)

@@ -19,6 +19,7 @@ dependencies {
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDatastorePublic)
+  implementation(projects.featureDemoMode)
   implementation(projects.testClock)
 
   testImplementation(libs.assertK)

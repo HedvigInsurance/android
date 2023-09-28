@@ -2,9 +2,9 @@ package com.hedvig.android.auth.di
 
 import com.hedvig.android.auth.AccessTokenProvider
 import com.hedvig.android.auth.AndroidAccessTokenProvider
-import com.hedvig.android.auth.AuthTokenDemoServiceImpl
-import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.auth.AuthTokenServiceDemo
 import com.hedvig.android.auth.AuthTokenServiceImpl
+import com.hedvig.android.auth.AuthTokenServiceProvider
 import com.hedvig.android.auth.event.AuthEventBroadcaster
 import com.hedvig.android.auth.event.AuthEventListener
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
@@ -19,7 +19,8 @@ import org.koin.dsl.module
 val authModule = module {
   single<AccessTokenProvider> { AndroidAccessTokenProvider(get()) }
   single<AuthTokenRefreshingInterceptor> { AuthTokenRefreshingInterceptor(get()) }
-  single<AuthTokenService> { AuthTokenServiceImpl(get(), get(), get(), get<ApplicationScope>()) }
+  single<AuthTokenServiceImpl> { AuthTokenServiceImpl(get(), get(), get(), get<ApplicationScope>()) }
+  single<AuthTokenServiceDemo> { AuthTokenServiceDemo() }
   single<AuthTokenStorage> { AuthTokenStorage(get()) }
   single<AuthEventBroadcaster> {
     AuthEventBroadcaster(
@@ -30,12 +31,11 @@ val authModule = module {
   }
   single<MigrateTokenInterceptor> { MigrateTokenInterceptor(get(), get()) }
   single<SharedPreferencesAuthenticationTokenService> { SharedPreferencesAuthenticationTokenService(get()) }
-}
-
-val authTokenServiceModule = module {
-  single<AuthTokenService> { AuthTokenServiceImpl(get(), get(), get(), get<ApplicationScope>()) }
-}
-
-val authTokenDemoServiceModule = module {
-  single<AuthTokenService> { AuthTokenDemoServiceImpl() }
+  single<AuthTokenServiceProvider> {
+    AuthTokenServiceProvider(
+      demoManager = get(),
+      prodImpl = get<AuthTokenServiceImpl>(),
+      demoImpl = get<AuthTokenServiceDemo>(),
+    )
+  }
 }

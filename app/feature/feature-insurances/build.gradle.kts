@@ -43,6 +43,7 @@ dependencies {
   implementation(projects.navigationCore)
   implementation(projects.notificationBadgeDataPublic)
   implementation(projects.pullrefresh)
+  implementation(projects.featureDemoMode)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)

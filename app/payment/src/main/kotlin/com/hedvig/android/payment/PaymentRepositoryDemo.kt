@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.javamoney.moneta.Money
 
-class PaymentDemoRepositoryImpl : PaymentRepository {
+class PaymentRepositoryDemo : PaymentRepository {
   override fun payment(): Flow<ApolloResponse<PaymentQuery.Data>> {
     return flowOf(
       ApolloResponse.Builder(

@@ -6,7 +6,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.work.WorkerParameters
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.giraffe.di.giraffeClient
-import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.event.AuthEventListener
 import com.hedvig.android.notification.firebase.DatastoreFCMTokenStorage
 import com.hedvig.android.notification.firebase.FCMTokenAuthEventListener
@@ -36,7 +35,7 @@ val firebaseNotificationModule = module {
       params = get<WorkerParameters>(),
       apolloClient = get<ApolloClient>(giraffeClient),
       fcmTokenStorage = get<FCMTokenStorage>(),
-      authTokenService = get<AuthTokenService>(),
+      authTokenServiceProvider = get(),
     )
   }
 }

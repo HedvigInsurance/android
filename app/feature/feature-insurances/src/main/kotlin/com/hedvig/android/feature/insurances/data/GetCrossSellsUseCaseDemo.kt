@@ -5,7 +5,7 @@ import arrow.core.raise.either
 import com.hedvig.android.core.common.ErrorMessage
 import octopus.CrossSalesQuery
 
-internal class GetCrossSellsDemoUseCaseImpl : GetCrossSellsUseCase {
+internal class GetCrossSellsUseCaseDemo : GetCrossSellsUseCase {
   override suspend fun invoke(): Either<ErrorMessage, List<CrossSalesQuery.Data.CurrentMember.CrossSell>> {
     return either {
       listOf()

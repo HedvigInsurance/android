@@ -8,7 +8,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
-internal class GetHomeDataUseDemoCaseImpl : GetHomeDataUseCase {
+internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
   override fun invoke(
     forceNetworkFetch: Boolean,
   ): Flow<Either<ErrorMessage, HomeData>> = flowOf(

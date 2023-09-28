@@ -7,5 +7,7 @@ plugins {
 dependencies {
   implementation(libs.koin.android)
   implementation(projects.authCore)
+  implementation(projects.coreCommonPublic)
+  implementation(projects.featureDemoMode)
   implementation(projects.navigationActivity)
 }

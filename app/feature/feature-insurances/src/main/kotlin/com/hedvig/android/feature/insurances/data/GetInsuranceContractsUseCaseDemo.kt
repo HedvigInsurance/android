@@ -5,7 +5,7 @@ import arrow.core.raise.either
 import com.hedvig.android.core.common.ErrorMessage
 import giraffe.type.TypeOfContract
 
-internal class GetInsuranceContractsDemoUseCaseImpl : GetInsuranceContractsUseCase {
+internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
   override suspend fun invoke(): Either<ErrorMessage, List<InsuranceContract>> {
     return either {
       listOf(

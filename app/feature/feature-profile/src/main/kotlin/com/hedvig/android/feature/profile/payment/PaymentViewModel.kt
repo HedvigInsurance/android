@@ -4,22 +4,22 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.apollo.format
 import com.hedvig.android.data.forever.CampaignCode
-import com.hedvig.android.data.forever.ForeverRepository
+import com.hedvig.android.data.forever.di.ForeverRepositoryProvider
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.payment.PaymentData
-import com.hedvig.android.payment.PaymentRepository
+import com.hedvig.android.payment.di.PaymentRepositoryProvider
 import giraffe.type.PayoutMethodStatus
 import giraffe.type.TypeOfContract
+import java.time.LocalDate
+import java.util.Locale
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.util.Locale
 
 internal class PaymentViewModel(
-  private val referralsRepository: ForeverRepository,
-  private val paymentRepository: PaymentRepository,
+  private val referralsRepositoryProvider: ForeverRepositoryProvider,
+  private val paymentRepositoryProvider: PaymentRepositoryProvider,
   val languageService: LanguageService,
 ) : ViewModel() {
 
@@ -70,7 +70,7 @@ internal class PaymentViewModel(
   private fun loadPaymentData() {
     viewModelScope.launch {
       _uiState.update { it.copy(isLoading = true) }
-      paymentRepository.getPaymentData().fold(
+      paymentRepositoryProvider.provide().getPaymentData().fold(
         ifLeft = { error -> _uiState.update { it.copy(errorMessage = error.message, isLoading = false) } },
         ifRight = { paymentData -> _uiState.value = paymentData.toUiState(languageService.getLocale()) },
       )
@@ -84,7 +84,7 @@ internal class PaymentViewModel(
   fun onDiscountCodeAdded() {
     viewModelScope.launch {
       val code = _uiState.value.discountCode ?: return@launch
-      referralsRepository.redeemReferralCode(code)
+      referralsRepositoryProvider.provide().redeemReferralCode(code)
         .fold(
           ifLeft = { error -> _uiState.update { it.copy(discountError = error.message) } },
           ifRight = { data -> loadPaymentData() },

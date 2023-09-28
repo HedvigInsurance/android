@@ -49,7 +49,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.hedvig.android.auth.AuthStatus
-import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.auth.AuthTokenServiceProvider
 import com.hedvig.android.core.common.android.parcelableExtra
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
@@ -69,7 +69,7 @@ import org.koin.core.parameter.parametersOf
 
 class SimpleSignAuthenticationActivity : AppCompatActivity() {
   private val viewModel: SimpleSignAuthenticationViewModel by viewModel { parametersOf(data) }
-  private val authTokenService: AuthTokenService by inject()
+  private val authTokenServiceProvider: AuthTokenServiceProvider by inject()
 
   private val data by lazy {
     intent.parcelableExtra<SimpleSignAuthenticationData>(DATA)
@@ -121,7 +121,7 @@ class SimpleSignAuthenticationActivity : AppCompatActivity() {
     }
     lifecycleScope.launch {
       lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
-        authTokenService.authStatus.collect { authStatus ->
+        authTokenServiceProvider.provide().authStatus.collect { authStatus ->
           if (authStatus != null && authStatus is AuthStatus.LoggedIn) {
             goToLoggedIn()
           }

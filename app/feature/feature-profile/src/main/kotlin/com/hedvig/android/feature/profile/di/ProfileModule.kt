@@ -7,8 +7,7 @@ import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.profile.aboutapp.AboutAppViewModel
-import com.hedvig.android.feature.profile.data.ProfileDemoRepository
-import com.hedvig.android.feature.profile.data.ProfileRepository
+import com.hedvig.android.feature.profile.data.ProfileRepositoryDemo
 import com.hedvig.android.feature.profile.data.ProfileRepositoryImpl
 import com.hedvig.android.feature.profile.eurobonus.EurobonusViewModel
 import com.hedvig.android.feature.profile.myinfo.MyInfoViewModel
@@ -49,6 +48,23 @@ val profileModule = module {
     )
   }
 
+  single<ProfileRepositoryImpl> {
+    ProfileRepositoryImpl(
+      giraffeApolloClient = get<ApolloClient>(giraffeClient),
+      octopusApolloClient = get<ApolloClient>(octopusClient),
+    )
+  }
+  single<ProfileRepositoryDemo> {
+    ProfileRepositoryDemo()
+  }
+  single<ProfileRepositoryProvider> {
+    ProfileRepositoryProvider(
+      demoManager = get(),
+      prodImpl = get<ProfileRepositoryImpl>(),
+      demoImpl = get<ProfileRepositoryDemo>(),
+    )
+  }
+
   viewModel<SettingsViewModel> {
     SettingsViewModel(
       hAnalytics = get<HAnalytics>(),
@@ -68,17 +84,3 @@ val profileModule = module {
   viewModel<PaymentHistoryViewModel> { PaymentHistoryViewModel(get(), get()) }
 }
 
-val profileRepositoryModule = module {
-  single<ProfileRepository> {
-    ProfileRepositoryImpl(
-      giraffeApolloClient = get<ApolloClient>(giraffeClient),
-      octopusApolloClient = get<ApolloClient>(octopusClient),
-    )
-  }
-}
-
-val profileDemoRepositoryModule = module {
-  single<ProfileRepository> {
-    ProfileDemoRepository()
-  }
-}

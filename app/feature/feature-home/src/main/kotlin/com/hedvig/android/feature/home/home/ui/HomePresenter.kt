@@ -11,7 +11,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimsData
 import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
-import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
+import com.hedvig.android.feature.home.di.GetHomeDataUseCaseProvider
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.datetime.LocalDate
 
 internal class HomePresenter(
-  private val getHomeDataUseCase: GetHomeDataUseCase,
+  private val getHomeDataUseCaseProvider: GetHomeDataUseCaseProvider,
   private val featureManager: FeatureManager,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
   @Composable
@@ -49,7 +49,7 @@ internal class HomePresenter(
         isReloading = true
         hasError = false
       }
-      getHomeDataUseCase.invoke(forceNetworkFetch).collectLatest { homeResult ->
+      getHomeDataUseCaseProvider.provide().invoke(forceNetworkFetch).collectLatest { homeResult ->
         homeResult.fold(
           ifLeft = {
             Snapshot.withMutableSnapshot {

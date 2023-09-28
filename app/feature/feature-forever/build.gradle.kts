@@ -40,6 +40,7 @@ dependencies {
   implementation(projects.coreUi)
   implementation(projects.coreUiData)
   implementation(projects.dataForever)
+  implementation(projects.featureDemoMode)
   implementation(projects.languageCore)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)

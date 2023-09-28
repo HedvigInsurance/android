@@ -6,7 +6,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import giraffe.RedeemReferralCodeMutation
 import giraffe.ReferralsQuery
 
-class ForeverDemoRepositoryImpl : ForeverRepository {
+class ForeverRepositoryDemo : ForeverRepository {
   override suspend fun getReferralsData(): Either<ErrorMessage, ReferralsQuery.Data> = either {
     ReferralsQuery.Data()
   }

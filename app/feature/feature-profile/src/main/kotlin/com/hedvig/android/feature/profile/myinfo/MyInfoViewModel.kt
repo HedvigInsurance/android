@@ -6,7 +6,7 @@ import arrow.core.Either
 import com.hedvig.android.core.common.android.validation.ValidationResult
 import com.hedvig.android.core.common.android.validation.validateEmail
 import com.hedvig.android.core.ui.ValidatedInput
-import com.hedvig.android.feature.profile.data.ProfileRepository
+import com.hedvig.android.feature.profile.di.ProfileRepositoryProvider
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import hedvig.resources.R
@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 
 internal class MyInfoViewModel(
   hAnalytics: HAnalytics,
-  private val profileRepository: ProfileRepository,
+  private val profileRepositoryProvider: ProfileRepositoryProvider,
 ) : ViewModel() {
   private val _uiState = MutableStateFlow(MyInfoUiState())
   val uiState: StateFlow<MyInfoUiState> = _uiState
@@ -26,7 +26,7 @@ internal class MyInfoViewModel(
     hAnalytics.screenView(AppScreen.CONTACT_INFO)
 
     viewModelScope.launch {
-      profileRepository.profile().fold(
+      profileRepositoryProvider.provide().profile().fold(
         ifLeft = {
           _uiState.update {
             it.copy(
@@ -56,8 +56,8 @@ internal class MyInfoViewModel(
       viewModelScope.launch {
         _uiState.update { it.copy(isSubmitting = true) }
         Either.Companion.zipOrAccumulate(
-          profileRepository.updatePhoneNumber(_uiState.value.member?.phoneNumber?.input ?: ""),
-          profileRepository.updateEmail(_uiState.value.member?.email?.input ?: ""),
+          profileRepositoryProvider.provide().updatePhoneNumber(_uiState.value.member?.phoneNumber?.input ?: ""),
+          profileRepositoryProvider.provide().updateEmail(_uiState.value.member?.email?.input ?: ""),
         ) { memberWithPhone, memberWithEmail ->
           memberWithPhone.copy(email = memberWithEmail.email)
         }.fold(

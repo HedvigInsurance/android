@@ -7,6 +7,7 @@ import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.AuthTokenServiceImpl
+import com.hedvig.android.auth.AuthTokenServiceProvider
 import com.hedvig.android.auth.FakeAuthRepository
 import com.hedvig.android.auth.event.AuthEventBroadcaster
 import com.hedvig.android.auth.event.AuthEventListener
@@ -15,6 +16,7 @@ import com.hedvig.android.auth.storage.AuthTokenStorage
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.test.MainCoroutineRule
 import com.hedvig.android.core.datastore.TestPreferencesDataStore
+import com.hedvig.android.feature.demomode.DemoManager
 import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager
 import com.hedvig.android.hanalytics.test.FakeHAnalytics
 import com.hedvig.android.logger.TestLogcatLoggingRule
@@ -29,6 +31,7 @@ import com.hedvig.authlib.RefreshToken
 import com.hedvig.authlib.StatusUrl
 import com.hedvig.hanalytics.LoginMethod
 import io.mockk.mockk
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -37,7 +40,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import kotlin.coroutines.EmptyCoroutineContext
 
 class BankIdLoginViewModelTest {
   @get:Rule
@@ -188,7 +190,11 @@ class BankIdLoginViewModelTest {
       FakeHAnalytics(),
       FakeFeatureManager(loginMethod = { LoginMethod.BANK_ID_SWEDEN }),
       mockk<UploadMarketAndLanguagePreferencesUseCase>(relaxed = true),
-      authTokenService,
+      AuthTokenServiceProvider(
+        DemoManager(),
+        authTokenService,
+        authTokenService,
+      ),
       authRepository,
     )
   }

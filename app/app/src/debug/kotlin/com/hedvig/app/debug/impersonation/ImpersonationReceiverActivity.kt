@@ -16,13 +16,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.auth.AuthTokenServiceProvider
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult
 import com.hedvig.authlib.AuthorizationCodeGrant
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,7 +39,6 @@ import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
-import kotlin.time.Duration.Companion.milliseconds
 
 class ImpersonationReceiverActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -96,7 +96,7 @@ class ImpersonationReceiverActivity : AppCompatActivity() {
 
 class ImpersonationReceiverViewModel(
   exchangeToken: String,
-  authTokenService: AuthTokenService,
+  authTokenService: AuthTokenServiceProvider,
   authRepository: AuthRepository,
   featureManager: FeatureManager,
 ) : ViewModel() {
@@ -119,7 +119,7 @@ class ImpersonationReceiverViewModel(
       when (val result = authRepository.exchange(AuthorizationCodeGrant(exchangeToken))) {
         is AuthTokenResult.Error -> _state.update { ViewState.Error(result.message) }
         is AuthTokenResult.Success -> {
-          authTokenService.loginWithTokens(result.accessToken, result.refreshToken)
+          authTokenService.provide().loginWithTokens(result.accessToken, result.refreshToken)
           featureManager.invalidateExperiments()
           _state.update { ViewState.Success }
           delay(500.milliseconds)

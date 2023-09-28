@@ -2,7 +2,7 @@ package com.hedvig.app.authenticate
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.auth.AuthTokenServiceProvider
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -14,6 +14,7 @@ import com.hedvig.authlib.AuthTokenResult
 import com.hedvig.authlib.LoginMethod
 import com.hedvig.authlib.LoginStatusResult
 import com.hedvig.hanalytics.HAnalytics
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -26,13 +27,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.seconds
 
 class BankIdLoginViewModel(
   private val hAnalytics: HAnalytics,
   private val featureManager: FeatureManager,
   private val uploadMarketAndLanguagePreferencesUseCase: UploadMarketAndLanguagePreferencesUseCase,
-  private val authTokenService: AuthTokenService,
+  private val authTokenServiceProvider: AuthTokenServiceProvider,
   private val authRepository: AuthRepository,
 ) : ViewModel() {
 
@@ -131,7 +131,7 @@ class BankIdLoginViewModel(
   }
 
   private suspend fun login(authTokenResult: AuthTokenResult.Success) {
-    authTokenService.loginWithTokens(
+    authTokenServiceProvider.provide().loginWithTokens(
       authTokenResult.accessToken,
       authTokenResult.refreshToken,
     )

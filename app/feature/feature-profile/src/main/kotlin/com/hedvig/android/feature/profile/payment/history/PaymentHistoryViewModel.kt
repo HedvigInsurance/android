@@ -5,16 +5,16 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.apollo.format
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.payment.ChargeHistory
-import com.hedvig.android.payment.PaymentRepository
+import com.hedvig.android.payment.di.PaymentRepositoryProvider
+import java.time.LocalDate
+import java.util.Locale
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.util.Locale
 
 internal class PaymentHistoryViewModel(
-  private val paymentRepository: PaymentRepository,
+  private val paymentRepositoryProvider: PaymentRepositoryProvider,
   private val languageService: LanguageService,
 ) : ViewModel() {
 
@@ -39,7 +39,7 @@ internal class PaymentHistoryViewModel(
   private fun loadPaymentHistory() {
     viewModelScope.launch {
       _uiState.update { it.copy(isLoading = true) }
-      paymentRepository.getChargeHistory().fold(
+      paymentRepositoryProvider.provide().getChargeHistory().fold(
         ifLeft = { _uiState.update { it.copy(errorMessage = it.errorMessage) } },
         ifRight = { _uiState.value = it.toUiState(languageService.getLocale()) },
       )

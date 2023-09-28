@@ -16,12 +16,6 @@ import giraffe.UpdateReferralCampaignCodeMutation
 @JvmInline
 value class CampaignCode(val code: String)
 
-interface ForeverRepository {
-  suspend fun getReferralsData(): Either<ErrorMessage, ReferralsQuery.Data>
-  suspend fun updateCode(newCode: String): Either<ForeverRepositoryImpl.ReferralError, String>
-  suspend fun redeemReferralCode(campaignCode: CampaignCode): Either<ErrorMessage, RedeemReferralCodeMutation.Data?>
-}
-
 class ForeverRepositoryImpl(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,
