@@ -3,7 +3,6 @@ package com.hedvig.app.authenticate
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.auth.AuthTokenService
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.Market
@@ -30,7 +29,6 @@ import kotlin.time.Duration.Companion.seconds
 
 class BankIdLoginViewModel(
   private val hAnalytics: HAnalytics,
-  private val featureManager: FeatureManager,
   private val uploadMarketAndLanguagePreferencesUseCase: UploadMarketAndLanguagePreferencesUseCase,
   private val authTokenService: AuthTokenService,
   private val authRepository: AuthRepository,
@@ -135,7 +133,6 @@ class BankIdLoginViewModel(
       authTokenResult.accessToken,
       authTokenResult.refreshToken,
     )
-    featureManager.invalidateExperiments()
     uploadMarketAndLanguagePreferencesUseCase.invoke()
     hAnalytics.loggedIn()
     logcat(LogPriority.INFO) { "Logged in!" }

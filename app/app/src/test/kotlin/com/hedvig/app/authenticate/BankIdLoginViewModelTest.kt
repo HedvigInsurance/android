@@ -15,7 +15,6 @@ import com.hedvig.android.auth.storage.AuthTokenStorage
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.test.MainCoroutineRule
 import com.hedvig.android.core.datastore.TestPreferencesDataStore
-import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager
 import com.hedvig.android.hanalytics.test.FakeHAnalytics
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
@@ -27,7 +26,6 @@ import com.hedvig.authlib.AuthorizationCodeGrant
 import com.hedvig.authlib.LoginStatusResult
 import com.hedvig.authlib.RefreshToken
 import com.hedvig.authlib.StatusUrl
-import com.hedvig.hanalytics.LoginMethod
 import io.mockk.mockk
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -186,7 +184,6 @@ class BankIdLoginViewModelTest {
     @Suppress("RemoveExplicitTypeArguments")
     return BankIdLoginViewModel(
       FakeHAnalytics(),
-      FakeFeatureManager(loginMethod = { LoginMethod.BANK_ID_SWEDEN }),
       mockk<UploadMarketAndLanguagePreferencesUseCase>(relaxed = true),
       authTokenService,
       authRepository,

@@ -279,10 +279,10 @@ fun makeUserAgent(locale: Locale): String = buildString {
 private val viewModelModule = module {
   viewModel { ChatViewModel(get(), get(), get(), get()) }
   viewModel { (quoteCartId: QuoteCartId?) -> RedeemCodeViewModel(quoteCartId, get(), get()) }
-  viewModel { BankIdLoginViewModel(get(), get(), get(), get(), get()) }
+  viewModel { BankIdLoginViewModel(get(), get(), get(), get()) }
   viewModel { DatePickerViewModel() }
   viewModel { params ->
-    SimpleSignAuthenticationViewModel(params.get(), get(), get(), get(), get(), get())
+    SimpleSignAuthenticationViewModel(params.get(), get(), get(), get(), get())
   }
   viewModel { (data: MultiActionParams) -> MultiActionViewModel(data) }
   viewModel { (componentState: MultiActionItem.Component?, multiActionParams: MultiActionParams) ->
@@ -490,7 +490,7 @@ private val clockModule = module {
 private val useCaseModule = module {
   single { StartCheckoutUseCase(get<ApolloClient>(giraffeClient), get(), get()) }
   single<LogoutUseCase> {
-    LogoutUseCaseImpl(get<ApolloClient>(giraffeClient), get(), get(), get(), get(), get(), get())
+    LogoutUseCaseImpl(get<ApolloClient>(giraffeClient), get(), get(), get(), get(), get())
   }
   single { GraphQLQueryUseCase(get()) }
   single<GetInsuranceProvidersUseCase> {
