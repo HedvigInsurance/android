@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.Density
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
@@ -78,7 +79,7 @@ internal fun HedvigNavHost(
   val context = LocalContext.current
   val density = LocalDensity.current
   val coroutineScope = rememberCoroutineScope()
-  val navigator: Navigator = rememberNavigator(hedvigAppState)
+  val navigator: Navigator = rememberNavigator(hedvigAppState.navController)
 
   fun startMovingFlow() {
     coroutineScope.launch {
@@ -278,8 +279,8 @@ private fun NavGraphBuilder.nestedHomeGraphs(
 }
 
 @Composable
-private fun rememberNavigator(hedvigAppState: HedvigAppState): Navigator {
-  return remember(hedvigAppState) {
+private fun rememberNavigator(navController: NavController): Navigator {
+  return remember(navController) {
     object : Navigator {
       override fun NavBackStackEntry.navigate(
         destination: Destination,
@@ -296,15 +297,15 @@ private fun rememberNavigator(hedvigAppState: HedvigAppState): Navigator {
         navOptions: NavOptions?,
         navigatorExtras: androidx.navigation.Navigator.Extras?,
       ) {
-        hedvigAppState.navController.navigate(destination, navOptions, navigatorExtras)
+        navController.navigate(destination, navOptions, navigatorExtras)
       }
 
       override fun navigateUp() {
-        hedvigAppState.navController.navigateUp()
+        navController.navigateUp()
       }
 
       override fun popBackStack() {
-        hedvigAppState.navController.popBackStack()
+        navController.popBackStack()
       }
     }
   }
