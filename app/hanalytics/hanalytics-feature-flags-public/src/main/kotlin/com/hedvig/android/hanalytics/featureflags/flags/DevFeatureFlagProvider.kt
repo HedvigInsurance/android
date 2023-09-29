@@ -16,7 +16,6 @@ internal class DevFeatureFlagProvider(
       Feature.DISABLE_CHAT -> false
       Feature.DISABLE_DARK_MODE -> true
       Feature.EXTERNAL_DATA_COLLECTION -> marketManager.market == Market.SE
-      Feature.FRANCE_MARKET -> true
       Feature.MOVING_FLOW -> true
       Feature.PAYMENT_SCREEN -> !isQasaMember
       Feature.QUOTE_CART -> false

@@ -17,6 +17,7 @@ import giraffe.InsuranceQuery
 import giraffe.fragment.ContractStatusFragment
 import giraffe.type.TypeOfContract
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 
 internal class GetContractDetailsUseCase(
@@ -39,7 +40,15 @@ internal class GetContractDetailsUseCase(
           contract
         },
         {
-          getContractCoverageUseCase.invoke(contractId).mapLeft { ContractDetailError.NetworkError }.bind()
+          getContractCoverageUseCase.invoke(contractId).fold(
+            ifLeft = {
+              ContractCoverage(
+                contractPerils = persistentListOf(),
+                insurableLimits = persistentListOf(),
+              )
+            },
+            ifRight = { it },
+          )
         },
         {
           featureManager.isFeatureEnabled(Feature.TERMINATION_FLOW)

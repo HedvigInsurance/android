@@ -1,5 +1,6 @@
 package com.hedvig.android.market
 
+import androidx.annotation.StringRes
 import giraffe.type.Locale
 
 enum class Language {
@@ -9,20 +10,18 @@ enum class Language {
   EN_NO,
   DA_DK,
   EN_DK,
-  FR_FR,
-  EN_FR,
   ;
 
-  fun getLabel() = when (this) {
-    SV_SE -> hedvig.resources.R.string.swedish
-    EN_SE -> hedvig.resources.R.string.english_swedish
-    NB_NO -> hedvig.resources.R.string.norwegian
-    EN_NO -> hedvig.resources.R.string.english_norwegian
-    DA_DK -> hedvig.resources.R.string.danish
-    EN_DK -> hedvig.resources.R.string.english_danish
-    FR_FR -> hedvig.resources.R.string.french
-    EN_FR -> hedvig.resources.R.string.english_french
-  }
+  val label: Int
+    @StringRes
+    get() = when (this) {
+      SV_SE -> hedvig.resources.R.string.swedish
+      EN_SE -> hedvig.resources.R.string.english_swedish
+      NB_NO -> hedvig.resources.R.string.norwegian
+      EN_NO -> hedvig.resources.R.string.english_norwegian
+      DA_DK -> hedvig.resources.R.string.danish
+      EN_DK -> hedvig.resources.R.string.english_danish
+    }
 
   override fun toString() = when (this) {
     SV_SE -> SETTING_SV_SE
@@ -31,8 +30,6 @@ enum class Language {
     EN_NO -> SETTING_EN_NO
     DA_DK -> SETTING_DA_DK
     EN_DK -> SETTING_EN_DK
-    FR_FR -> SETTING_FR_FR
-    EN_FR -> SETTING_EN_FR
   }
 
   fun toLocale() = when (this) {
@@ -42,8 +39,6 @@ enum class Language {
     EN_NO -> Locale.en_NO
     DA_DK -> Locale.da_DK
     EN_DK -> Locale.en_DK
-    // Default to `en_SE` while FR-locales are not available
-    else -> Locale.en_SE
   }
 
   fun webPath() = when (this) {
@@ -53,20 +48,15 @@ enum class Language {
     EN_NO -> "no-en"
     DA_DK -> "dk"
     EN_DK -> "dk-en"
-    FR_FR -> "fr"
-    EN_FR -> "fr-en"
   }
 
   companion object {
-    const val SETTING_SYSTEM_DEFAULT = "system_default"
     const val SETTING_SV_SE = "sv-SE"
     const val SETTING_EN_SE = "en-SE"
     const val SETTING_NB_NO = "nb-NO"
     const val SETTING_EN_NO = "en-NO"
     const val SETTING_DA_DK = "da-DK"
     const val SETTING_EN_DK = "en-DK"
-    const val SETTING_FR_FR = "fr-FR"
-    const val SETTING_EN_FR = "en-FR"
 
     /**
      * Parses the language tag, in BCP-47 format, to [Language]
@@ -80,18 +70,7 @@ enum class Language {
       SETTING_EN_NO -> EN_NO
       SETTING_DA_DK -> DA_DK
       SETTING_EN_DK -> EN_DK
-      SETTING_FR_FR -> FR_FR
-      SETTING_EN_FR -> EN_FR
       else -> throw RuntimeException("Invalid language value: $value")
-    }
-
-    fun getAvailableLanguages(market: Market): List<Language> {
-      return when (market) {
-        Market.SE -> listOf(SV_SE, EN_SE)
-        Market.NO -> listOf(NB_NO, EN_NO)
-        Market.DK -> listOf(DA_DK, EN_DK)
-        Market.FR -> listOf(FR_FR, EN_FR)
-      }
     }
   }
 }

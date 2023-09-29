@@ -11,4 +11,5 @@ dependencies {
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloGiraffePublic)
   implementation(projects.apolloOctopusPublic)
+  implementation(projects.coreResources)
 }
