@@ -5,101 +5,60 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.remember
 import androidx.core.view.WindowCompat
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.ImageLoader
+import androidx.lifecycle.Lifecycle
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
+import androidx.navigation.NavOptions
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
 import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.language.LanguageService
-import com.hedvig.android.logger.LogPriority
-import com.hedvig.android.logger.logcat
-import com.hedvig.android.market.Language
+import com.hedvig.android.feature.login.navigation.loginGraph
 import com.hedvig.android.market.Market
-import com.hedvig.android.market.createOnboardingUri
-import com.hedvig.app.authenticate.BankIdLoginDialog
-import com.hedvig.app.feature.marketing.data.MarketingBackground
-import com.hedvig.app.feature.marketing.marketpicked.MarketPickedScreen
-import com.hedvig.app.feature.marketing.pickmarket.PickMarketScreen
-import com.hedvig.app.feature.marketing.ui.BackgroundImage
+import com.hedvig.android.navigation.activity.ActivityNavigator
+import com.hedvig.android.navigation.core.AppDestination
+import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationActivity
-import com.hedvig.app.util.extensions.openWebBrowser
-import com.hedvig.hanalytics.LoginMethod
-import org.koin.android.ext.android.get
+import com.kiwi.navigationcompose.typed.Destination
+import com.kiwi.navigationcompose.typed.createRoutePattern
+import com.kiwi.navigationcompose.typed.navigate
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class MarketingActivity : AppCompatActivity() {
-  private val languageService: LanguageService by inject()
   private val hedvigBuildConstants: HedvigBuildConstants by inject()
+  private val activityNavigator: ActivityNavigator by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     WindowCompat.setDecorFitsSystemWindows(window, false)
-    val viewModel = getViewModel<MarketingViewModel>()
-    val imageLoader: ImageLoader = get()
     setContent {
-      HedvigTheme(darkTheme = true) { // Force dark theme as the background is dark
-        val marketingBackground by viewModel.marketingBackground.collectAsStateWithLifecycle()
-        val state by viewModel.state.collectAsStateWithLifecycle()
-        MarketingScreen(
-          marketingBackground = marketingBackground,
-          state = state,
-          imageLoader = imageLoader,
-          submitMarketAndLanguage = viewModel::submitMarketAndLanguage,
-          setMarket = viewModel::setMarket,
-          setLanguage = viewModel::setLanguage,
-          onFlagClick = viewModel::onFlagClick,
-          onClickSignUp = { market ->
-            viewModel.onClickSignUp()
-            openOnboarding(market)
-          },
-          onClickLogIn = { market ->
-            viewModel.onClickLogIn()
-            logcat(LogPriority.INFO) { "Start login with market:$market" }
-            onClickLogin(state, market)
-          },
-        )
+      HedvigTheme {
+        val navController = rememberNavController()
+        val navigator = rememberNavigator(navController)
+        NavHost(
+          navController = navController,
+          startDestination = createRoutePattern<AppDestination.Login>(),
+          route = "marketing-root",
+        ) {
+          loginGraph(
+            navigator = navigator,
+            appVersionName = hedvigBuildConstants.appVersionName,
+            urlBaseWeb = hedvigBuildConstants.urlBaseWeb,
+            openWebsite = { activityNavigator.openWebsite(this@MarketingActivity, it) },
+            startLoggedInActivity = { activityNavigator.navigateToLoggedInScreen(this@MarketingActivity, true) },
+            startDKLogin = {
+              startActivity(SimpleSignAuthenticationActivity.newInstance(this@MarketingActivity, Market.DK))
+            },
+            startNOLogin = {
+              startActivity(SimpleSignAuthenticationActivity.newInstance(this@MarketingActivity, Market.NO))
+            },
+          )
+        }
       }
     }
-  }
-
-  private fun openOnboarding(market: Market) {
-    val baseUrl = hedvigBuildConstants.urlBaseWeb.substringAfter("//")
-    val uri = market.createOnboardingUri(baseUrl, languageService.getLanguage())
-    openWebBrowser(uri)
-  }
-
-  private fun onClickLogin(
-    state: MarketingViewState,
-    market: Market,
-  ) = when (state.loginMethod) {
-    LoginMethod.BANK_ID_SWEDEN -> BankIdLoginDialog().show(
-      supportFragmentManager,
-      BankIdLoginDialog.TAG,
-    )
-
-    LoginMethod.NEM_ID, LoginMethod.BANK_ID_NORWAY -> {
-      startActivity(
-        SimpleSignAuthenticationActivity.newInstance(
-          this@MarketingActivity,
-          market,
-        ),
-      )
-    }
-
-    LoginMethod.OTP -> {
-      // Not implemented
-    }
-
-    null -> {}
   }
 
   companion object {
@@ -112,45 +71,34 @@ class MarketingActivity : AppCompatActivity() {
 }
 
 @Composable
-private fun MarketingScreen(
-  marketingBackground: MarketingBackground?,
-  state: MarketingViewState,
-  imageLoader: ImageLoader,
-  submitMarketAndLanguage: () -> Unit,
-  setMarket: (Market) -> Unit,
-  setLanguage: (Language) -> Unit,
-  onFlagClick: () -> Unit,
-  onClickSignUp: (market: Market) -> Unit,
-  onClickLogIn: (market: Market) -> Unit,
-) {
-  Box(Modifier.fillMaxSize()) {
-    BackgroundImage(marketingBackground, imageLoader)
-    val selectedMarket = state.selectedMarket
-    Crossfade(
-      targetState = selectedMarket,
-      label = "selectedMarket",
-    ) { market ->
-      if (market == null) {
-        PickMarketScreen(
-          onSubmit = submitMarketAndLanguage,
-          onSelectMarket = setMarket,
-          onSelectLanguage = setLanguage,
-          selectedMarket = state.market,
-          selectedLanguage = state.language,
-          markets = state.availableMarkets,
-          enabled = state.canSetMarketAndLanguage(),
-        )
-      } else {
-        MarketPickedScreen(
-          onClickMarket = onFlagClick,
-          onClickSignUp = { onClickSignUp(market) },
-          onClickLogIn = { onClickLogIn(market) },
-          market = market,
-        )
+private fun rememberNavigator(navController: NavController): Navigator {
+  return remember(navController) {
+    object : Navigator {
+      override fun NavBackStackEntry.navigate(
+        destination: Destination,
+        navOptions: NavOptions?,
+        navigatorExtras: androidx.navigation.Navigator.Extras?,
+      ) {
+        if (lifecycle.currentState == Lifecycle.State.RESUMED) {
+          navigateUnsafe(destination, navOptions, navigatorExtras)
+        }
       }
-    }
-    if (state.isLoading) {
-      CircularProgressIndicator(Modifier.align(Alignment.Center))
+
+      override fun navigateUnsafe(
+        destination: Destination,
+        navOptions: NavOptions?,
+        navigatorExtras: androidx.navigation.Navigator.Extras?,
+      ) {
+        navController.navigate(destination, navOptions, navigatorExtras)
+      }
+
+      override fun navigateUp() {
+        navController.navigateUp()
+      }
+
+      override fun popBackStack() {
+        navController.popBackStack()
+      }
     }
   }
 }
