@@ -211,6 +211,7 @@ dependencies {
   implementation(projects.featureForever)
   implementation(projects.featureHome)
   implementation(projects.featureInsurances)
+  implementation(projects.featureLogin)
   implementation(projects.featureOdyssey)
   implementation(projects.featureProfile)
   implementation(projects.featureTerminateInsurance)
