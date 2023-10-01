@@ -1,16 +1,16 @@
 package com.hedvig.android.hanalytics.featureflags.flags
 
 import com.hedvig.android.auth.event.AuthEventListener
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.hanalytics.featureflags.ClearHAnalyticsExperimentsCacheUseCase
 
 internal class FeatureFlagAuthEventListener(
-  private val featureManager: FeatureManager,
+  private val clearHAnalyticsExperimentsCacheUseCase: ClearHAnalyticsExperimentsCacheUseCase,
 ) : AuthEventListener {
   override suspend fun loggedIn(accessToken: String) {
-    featureManager.invalidateExperiments()
+    clearHAnalyticsExperimentsCacheUseCase.invoke()
   }
 
   override suspend fun loggedOut() {
-    featureManager.invalidateExperiments()
+    clearHAnalyticsExperimentsCacheUseCase.invoke()
   }
 }

@@ -36,6 +36,6 @@ val featureManagerModule = module {
     }
   }
   single<FeatureFlagAuthEventListener> {
-    FeatureFlagAuthEventListener(get<FeatureManager>())
+    FeatureFlagAuthEventListener(get<ClearHAnalyticsExperimentsCacheUseCase>())
   } bind AuthEventListener::class
 }

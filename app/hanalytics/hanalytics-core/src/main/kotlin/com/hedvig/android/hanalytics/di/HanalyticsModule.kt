@@ -7,7 +7,6 @@ import com.hedvig.android.hanalytics.HAnalyticsSink
 import com.hedvig.android.hanalytics.SendHAnalyticsEventUseCase
 import com.hedvig.android.hanalytics.SendHAnalyticsEventUseCaseImpl
 import com.hedvig.android.hanalytics.sink.LoggingHAnalyticsSink
-import com.hedvig.android.hanalytics.sink.NetworkHAnalyticsSink
 import com.hedvig.hanalytics.HAnalytics
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -27,10 +26,8 @@ val hAnalyticsModule = module {
   }
   single<HAnalyticsExperimentManager> {
     HAnalyticsExperimentManagerImpl(
-      sendHAnalyticsEventUseCase = get(),
       hAnalyticsService = get(),
     )
   }
-  single<NetworkHAnalyticsSink> { NetworkHAnalyticsSink(get(), get()) } bind HAnalyticsSink::class
   single<LoggingHAnalyticsSink> { LoggingHAnalyticsSink() } bind HAnalyticsSink::class
 }

@@ -1,17 +1,15 @@
 package com.hedvig.android.hanalytics
 
-import com.hedvig.hanalytics.HAnalyticsEvent
 import com.hedvig.hanalytics.HAnalyticsExperiment
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-internal interface HAnalyticsExperimentManager {
+interface HAnalyticsExperimentManager {
   suspend fun getExperiment(name: String): HAnalyticsExperiment
   suspend fun invalidateExperiments()
 }
 
 internal class HAnalyticsExperimentManagerImpl(
-  private val sendHAnalyticsEventUseCase: SendHAnalyticsEventUseCase,
   private val hAnalyticsService: HAnalyticsService,
 ) : HAnalyticsExperimentManager {
   private val mutex = Mutex()
@@ -39,18 +37,8 @@ internal class HAnalyticsExperimentManagerImpl(
   }
 
   private suspend fun loadExperimentsFromServer() {
-    val experimentsList = hAnalyticsService.getExperiments()
-    sendExperimentsLoadedEvent(experimentsList)
-    if (experimentsList == null) return
+    val experimentsList = hAnalyticsService.getExperiments() ?: return
     experimentsData.clear()
     experimentsData.putAll(experimentsList.map { it.name to it.variant })
-  }
-
-  private fun sendExperimentsLoadedEvent(experimentsList: List<Experiment>?) {
-    val experimentsLoadedEvent = HAnalyticsEvent(
-      "experiments_loaded",
-      mapOf("experiments" to experimentsList),
-    )
-    sendHAnalyticsEventUseCase.send(experimentsLoadedEvent)
   }
 }
