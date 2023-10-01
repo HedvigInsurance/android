@@ -20,7 +20,8 @@ import com.hedvig.android.auth.android.AuthenticatedObserver
 import com.hedvig.android.core.common.android.hide
 import com.hedvig.android.core.common.android.remove
 import com.hedvig.android.core.common.android.whenApiVersion
-import com.hedvig.android.market.MarketManager
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityEmbarkBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
@@ -52,12 +53,10 @@ import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.viewBinding
-import com.hedvig.app.util.navigation.openAuth
 import giraffe.EmbarkStoryQuery
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.time.Duration.Companion.milliseconds
@@ -76,7 +75,6 @@ class EmbarkActivity : AppCompatActivity(R.layout.activity_embark) {
 
   private val viewModel: EmbarkViewModel by viewModel { parametersOf(storyName) }
   private val binding by viewBinding(ActivityEmbarkBinding::bind)
-  private val marketManager: MarketManager by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -165,7 +163,7 @@ class EmbarkActivity : AppCompatActivity(R.layout.activity_embark) {
 
   private fun handleMenuItem(menuItem: MenuItem) = when (menuItem.itemId) {
     R.id.login -> {
-      marketManager.market.value.openAuth(this@EmbarkActivity, supportFragmentManager)
+      logcat(LogPriority.ASSERT) { "Should not be trying to login through embark anymore" }
       true
     }
 
