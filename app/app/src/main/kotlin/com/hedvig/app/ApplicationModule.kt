@@ -42,6 +42,7 @@ import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
 import com.hedvig.android.feature.forever.di.foreverModule
 import com.hedvig.android.feature.home.di.homeModule
 import com.hedvig.android.feature.insurances.di.insurancesModule
+import com.hedvig.android.feature.login.di.loginModule
 import com.hedvig.android.feature.odyssey.di.odysseyModule
 import com.hedvig.android.feature.profile.di.profileModule
 import com.hedvig.android.feature.terminateinsurance.di.terminateInsuranceModule
@@ -52,7 +53,6 @@ import com.hedvig.android.hanalytics.featureflags.di.featureManagerModule
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.language.di.languageModule
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.market.MarketManager
 import com.hedvig.android.market.di.marketManagerModule
 import com.hedvig.android.memberreminders.di.memberRemindersModule
 import com.hedvig.android.navigation.activity.ActivityNavigator
@@ -61,7 +61,6 @@ import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.firebase.di.firebaseNotificationModule
 import com.hedvig.android.payment.di.paymentModule
-import com.hedvig.app.authenticate.BankIdLoginViewModel
 import com.hedvig.app.authenticate.LogoutUseCaseImpl
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.addressautocompletion.data.GetDanishAddressAutoCompletionUseCase
@@ -114,9 +113,7 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
 import com.hedvig.app.feature.loggedin.ui.ReviewDialogViewModel
 import com.hedvig.app.feature.marketing.MarketingActivity
-import com.hedvig.app.feature.marketing.MarketingViewModel
 import com.hedvig.app.feature.marketing.data.GetInitialMarketPickerValuesUseCase
-import com.hedvig.app.feature.marketing.data.GetMarketingBackgroundUseCase
 import com.hedvig.app.feature.marketing.data.UpdateApplicationLanguageUseCase
 import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.feature.offer.OfferRepository
@@ -279,7 +276,6 @@ fun makeUserAgent(locale: Locale): String = buildString {
 private val viewModelModule = module {
   viewModel { ChatViewModel(get(), get(), get(), get()) }
   viewModel { (quoteCartId: QuoteCartId?) -> RedeemCodeViewModel(quoteCartId, get(), get()) }
-  viewModel { BankIdLoginViewModel(get(), get(), get(), get()) }
   viewModel { DatePickerViewModel() }
   viewModel { params ->
     SimpleSignAuthenticationViewModel(params.get(), get(), get(), get(), get())
@@ -319,7 +315,6 @@ private val viewModelModule = module {
     )
   }
   viewModel { TooltipViewModel(get()) }
-  viewModel { MarketingViewModel(get<MarketManager>(), get(), get(), get(), get(), get()) }
   viewModel<ReviewDialogViewModel> { ReviewDialogViewModel(get()) }
 }
 
@@ -510,7 +505,6 @@ private val useCaseModule = module {
       languageService = get(),
     )
   }
-  single { GetMarketingBackgroundUseCase(get<ApolloClient>(giraffeClient), get()) }
   single {
     UpdateApplicationLanguageUseCase(
       marketManager = get(),
@@ -648,6 +642,7 @@ val applicationModule = module {
       homeModule,
       insurancesModule,
       languageModule,
+      loginModule,
       marketManagerModule,
       memberRemindersModule,
       networkModule,
