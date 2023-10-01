@@ -22,8 +22,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.android.core.common.android.SHARED_PREFERENCE_NAME
-import com.hedvig.android.logger.LogPriority
-import com.hedvig.android.logger.logcat
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import kotlinx.coroutines.delay
@@ -221,15 +219,4 @@ fun Context.startChat() {
     )
 
   ActivityCompat.startActivity(this, intent, options.toBundle())
-}
-
-fun Context.openWebBrowser(uri: Uri) {
-  val browserIntent = Intent(Intent.ACTION_VIEW, uri)
-
-  if (browserIntent.resolveActivity(packageManager) != null) {
-    startActivity(browserIntent)
-  } else {
-    logcat(LogPriority.ERROR) { "Tried to launch $uri but the phone has nothing to support such an intent." }
-    makeToast(hedvig.resources.R.string.general_unknown_error)
-  }
 }
