@@ -25,7 +25,6 @@ import com.hedvig.android.auth.AccessTokenProvider
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.auth.di.authModule
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
-import com.hedvig.android.auth.interceptor.MigrateTokenInterceptor
 import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.android.QuoteCartId
 import com.hedvig.android.core.common.di.coreCommonModule
@@ -181,7 +180,6 @@ private val networkModule = module {
     val languageService = get<LanguageService>()
     val builder: OkHttpClient.Builder = OkHttpClient.Builder()
       .addDatadogConfiguration()
-      .addInterceptor(get<MigrateTokenInterceptor>())
       .addInterceptor(get<AuthTokenRefreshingInterceptor>())
       .addInterceptor { chain ->
         chain.proceed(
@@ -556,7 +554,7 @@ private val coilModule = module {
         get<OkHttpClient.Builder>()
           .apply {
             interceptors().removeAll {
-              it is MigrateTokenInterceptor || it is AuthTokenRefreshingInterceptor
+              it is AuthTokenRefreshingInterceptor
             }
           }
           .build(),
