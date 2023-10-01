@@ -184,7 +184,6 @@ dependencies {
   implementation(libs.reactiveX.kotlin)
   implementation(libs.shimmer)
   implementation(libs.timber)
-  implementation(libs.zXing)
   implementation(projects.apolloCore)
   implementation(projects.apolloDi)
   implementation(projects.apolloGiraffePublic)

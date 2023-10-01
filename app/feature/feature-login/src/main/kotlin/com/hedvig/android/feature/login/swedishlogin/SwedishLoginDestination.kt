@@ -41,7 +41,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.common.BitMatrix
 import com.google.zxing.qrcode.QRCodeWriter
-import com.google.zxing.qrcode.encoder.QRCode
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
@@ -168,6 +167,43 @@ private fun SwedishLoginScreen(
       }
     }
   }
+}
+
+@Composable
+internal fun QRCode(
+  autoStartToken: SwedishLoginUiState.HandlingBankId.AutoStartToken,
+  modifier: Modifier = Modifier,
+) {
+  var intSize: IntSize? by remember { mutableStateOf(null) }
+  val painter by produceState<Painter>(ColorPainter(Color.Transparent), intSize, autoStartToken) {
+    val size = intSize
+    if (size == null) {
+      value = ColorPainter(Color.Transparent)
+      return@produceState
+    }
+    val bitmapPainter: BitmapPainter = withContext(Dispatchers.Default) {
+      val bitMatrix: BitMatrix = QRCodeWriter().encode(
+        /* contents = */ autoStartToken.autoStartUrl,
+        /* format = */ BarcodeFormat.QR_CODE,
+        /* width = */ size.width,
+        /* height = */ size.height,
+      )
+      val bitmap = Bitmap.createBitmap(size.width, size.height, Bitmap.Config.RGB_565)
+      for (x in 0 until size.width) {
+        for (y in 0 until size.height) {
+          val color = if (bitMatrix.get(x, y)) android.graphics.Color.BLACK else android.graphics.Color.WHITE
+          bitmap.setPixel(x, y, color)
+        }
+      }
+      BitmapPainter(bitmap.asImageBitmap())
+    }
+    value = bitmapPainter
+  }
+  Image(
+    painter,
+    null,
+    modifier.onSizeChanged { intSize = it },
+  )
 }
 
 @Composable
