@@ -18,6 +18,7 @@ import com.hedvig.android.auth.token.LocalAccessToken
 import com.hedvig.android.auth.token.LocalRefreshToken
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.datastore.TestPreferencesDataStore
+import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
 import com.hedvig.authlib.AccessToken
@@ -28,6 +29,8 @@ import com.hedvig.authlib.AuthorizationCodeGrant
 import com.hedvig.authlib.LoginStatusResult
 import com.hedvig.authlib.RefreshToken
 import com.hedvig.authlib.StatusUrl
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
@@ -192,6 +195,10 @@ class SwedishLoginPresenterTest {
     return SwedishLoginPresenter(
       authTokenService,
       authRepository,
+      object : DemoManager {
+        override suspend fun isDemoMode(): Flow<Boolean> = flowOf(false)
+        override suspend fun setDemoMode(demoMode: Boolean) {}
+      },
     )
   }
 

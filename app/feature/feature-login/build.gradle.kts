@@ -24,6 +24,7 @@ dependencies {
   implementation(projects.authCore)
   implementation(projects.authTest)
   implementation(projects.coreCommonPublic)
+  implementation(projects.coreDemoMode)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreIcons)
   implementation(projects.coreResources)

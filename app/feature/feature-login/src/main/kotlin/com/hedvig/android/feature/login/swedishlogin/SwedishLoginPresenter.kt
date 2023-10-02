@@ -12,6 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.Snapshot
 import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.Market
@@ -25,10 +26,12 @@ import com.hedvig.authlib.LoginStatusResult
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 internal class SwedishLoginPresenter(
   private val authTokenService: AuthTokenService,
   private val authRepository: AuthRepository,
+  private val demoManager: DemoManager,
 ) : MoleculePresenter<SwedishLoginEvent, SwedishLoginUiState> {
   @Composable
   override fun MoleculePresenterScope<SwedishLoginEvent>.present(lastState: SwedishLoginUiState): SwedishLoginUiState {
@@ -99,6 +102,7 @@ internal class SwedishLoginPresenter(
         }
         SwedishLoginEvent.DidOpenBankIDApp -> allowOpeningBankId = false
         SwedishLoginEvent.DidNavigateToLoginScreen -> navigateToLoginScreen = false
+        SwedishLoginEvent.StartDemoMode -> launch { demoManager.setDemoMode(true) }
       }
     }
 
@@ -129,6 +133,7 @@ internal sealed interface SwedishLoginEvent {
   object Retry : SwedishLoginEvent
   object DidOpenBankIDApp : SwedishLoginEvent
   object DidNavigateToLoginScreen : SwedishLoginEvent
+  object StartDemoMode : SwedishLoginEvent
 }
 
 internal sealed interface SwedishLoginUiState {

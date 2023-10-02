@@ -6,6 +6,9 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.awaitLongPressOrCancellation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -31,6 +34,9 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.input.pointer.PointerInputChange
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -45,6 +51,7 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedButt
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.core.ui.dialog.HedvigAlertDialog
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -68,9 +75,8 @@ internal fun SwedishLoginDestination(
       swedishLoginViewModel.emit(SwedishLoginEvent.DidNavigateToLoginScreen)
       startLoggedInActivity()
     },
-    didOpenBankId = {
-      swedishLoginViewModel.emit(SwedishLoginEvent.DidOpenBankIDApp)
-    },
+    enterDemoMode = { swedishLoginViewModel.emit(SwedishLoginEvent.StartDemoMode) },
+    didOpenBankId = { swedishLoginViewModel.emit(SwedishLoginEvent.DidOpenBankIDApp) },
     retry = { swedishLoginViewModel.emit(SwedishLoginEvent.Retry) },
   )
 }
@@ -81,6 +87,7 @@ private fun SwedishLoginScreen(
   navigateUp: () -> Unit,
   loginWithEmail: () -> Unit,
   startLoggedInActivity: () -> Unit,
+  enterDemoMode: () -> Unit,
   didOpenBankId: () -> Unit,
   retry: () -> Unit,
 ) {
@@ -91,8 +98,8 @@ private fun SwedishLoginScreen(
     when (uiState) {
       is SwedishLoginUiState.StartLoginAttemptFailed -> {
         Box(
-          Modifier.weight(1f).fillMaxWidth(),
-          Alignment.Center,
+          contentAlignment = Alignment.Center,
+          modifier = Modifier.weight(1f).fillMaxWidth(),
         ) {
           HedvigErrorSection(retry = retry, subTitle = null, withDefaultVerticalSpacing = false)
         }
@@ -128,13 +135,34 @@ private fun SwedishLoginScreen(
           bankIdState.tryOpenBankId()
         }
 
+        var showStartDemoDialog by remember { mutableStateOf(false) }
+        if (showStartDemoDialog) {
+          HedvigAlertDialog(
+            title = null,
+            text = "${stringResource(R.string.DEMO_MODE_START)}?",
+            onDismissRequest = { showStartDemoDialog = false },
+            onConfirmClick = enterDemoMode,
+          )
+        }
+
         Spacer(Modifier.height(16.dp))
         Spacer(Modifier.weight(1f))
         Column(
           horizontalAlignment = Alignment.CenterHorizontally,
           modifier = Modifier.padding(horizontal = 16.dp),
         ) {
-          QRCode(uiState.autoStartToken, Modifier.size(180.dp))
+          QRCode(
+            autoStartToken = uiState.autoStartToken,
+            modifier = Modifier.size(180.dp).layoutId("qr_code").pointerInput(Unit) {
+              awaitEachGesture {
+                val down = awaitFirstDown(requireUnconsumed = false)
+                val longPress: PointerInputChange? = awaitLongPressOrCancellation(down.id)
+                if (longPress != null) {
+                  showStartDemoDialog = true
+                }
+              }
+            },
+          )
           Spacer(Modifier.height(32.dp))
           Text(
             text = stringResource(R.string.AUTHENTICATION_BANKID_LOGIN_TITLE),

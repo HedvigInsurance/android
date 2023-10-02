@@ -9,12 +9,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
+import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.feature.login.navigation.loginGraph
 import com.hedvig.android.market.Market
@@ -25,15 +28,25 @@ import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationActivity
 import com.kiwi.navigationcompose.typed.Destination
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
 class MarketingActivity : AppCompatActivity() {
   private val hedvigBuildConstants: HedvigBuildConstants by inject()
   private val activityNavigator: ActivityNavigator by inject()
+  private val demoManager: DemoManager by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     WindowCompat.setDecorFitsSystemWindows(window, false)
+    lifecycleScope.launch {
+      lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+        demoManager.isDemoMode().first { it == true }
+        activityNavigator.navigateToLoggedInScreen(this@MarketingActivity, false)
+        finish()
+      }
+    }
     setContent {
       HedvigTheme {
         val navController = rememberNavController()
