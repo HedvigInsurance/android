@@ -81,6 +81,8 @@ internal data class ChangeAddressUiState(
       squareMeters = squareMeters.copy(
         errorMessageRes = if (!squareMeters.isPresent || squareMeters.input?.isBlank() == true) {
           hedvig.resources.R.string.CHANGE_ADDRESS_LIVING_SPACE_ERROR
+        } else if (squareMeters.isPresent && !isSquareMetersWithinBounds(squareMeters.input!!.toIntOrNull())) {
+          hedvig.resources.R.string.CHANGE_ADDRESS_LIVING_SPACE_OVER_LIMIT_ERROR
         } else {
           null
         },
@@ -95,34 +97,8 @@ internal data class ChangeAddressUiState(
       numberInsured = numberInsured.copy(
         errorMessageRes = if (!numberInsured.isPresent) {
           hedvig.resources.R.string.CHANGE_ADDRESS_CO_INSURED_ERROR
-        } else {
-          null
-        },
-      ),
-      housingType = housingType.copy(
-        errorMessageRes = if (!housingType.isPresent) {
-          hedvig.resources.R.string.CHANGE_ADDRESS_HOUSING_TYPE_ERROR
-        } else {
-          null
-        },
-      ),
-      yearOfConstruction = yearOfConstruction.copy(
-        errorMessageRes = if (housingType.input == HousingType.VILLA && !yearOfConstruction.isPresent) {
-          hedvig.resources.R.string.CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR
-        } else {
-          null
-        },
-      ),
-      ancillaryArea = ancillaryArea.copy(
-        errorMessageRes = if (housingType.input == HousingType.VILLA && !ancillaryArea.isPresent) {
-          hedvig.resources.R.string.CHANGE_ADDRESS_ANCILLARY_AREA_ERROR
-        } else {
-          null
-        },
-      ),
-      numberOfBathrooms = numberOfBathrooms.copy(
-        errorMessageRes = if (housingType.input == HousingType.VILLA && !numberOfBathrooms.isPresent) {
-          hedvig.resources.R.string.CHANGE_ADDRESS_BATHROOMS_ERROR
+        } else if (numberInsured.isPresent && !isNumberCoInsuredWithinBounds(numberInsured.input!!.toIntOrNull())) {
+          hedvig.resources.R.string.CHANGE_ADDRESS_CO_INSURED_MAX_ERROR_ALTERNATIVE
         } else {
           null
         },
@@ -160,7 +136,17 @@ internal data class ChangeAddressUiState(
     if (squareMeters == null) {
       false
     } else {
-      squareMeters < maxSquareMeters
+      squareMeters <= maxSquareMeters
+    }
+  } else {
+    true
+  }
+
+  private fun isNumberCoInsuredWithinBounds(numberCoInsured: Int?) = if (maxNumberCoInsured != null) {
+    if (numberCoInsured == null) {
+      false
+    } else {
+      numberCoInsured <= maxNumberCoInsured
     }
   } else {
     true
