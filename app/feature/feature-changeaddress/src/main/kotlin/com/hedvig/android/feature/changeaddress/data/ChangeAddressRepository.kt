@@ -112,7 +112,8 @@ private fun MoveIntentRequestMutation.Data.MoveIntentRequest.MoveIntent.toMoveQu
       postalCode = quote.address.postalCode,
       street = quote.address.street,
     ),
-    numberCoInsured = quote.numberCoInsured,
+//    numberCoInsured = quote.numberCoInsured,
+    numberCoInsured = quote.numberCoInsured ?: 0, // todo https://hedviginsurance.slack.com/archives/C03HT2JRDPG/p1696263992552259
     premium = UiMoney(
       amount = quote.premium.amount,
       currencyCode = quote.premium.currencyCode,
@@ -128,8 +129,8 @@ private fun MoveIntentRequestMutation.Data.MoveIntentRequest.MoveIntent.Quote.Pr
     typeOfContract = this.typeOfContract,
     partner = this.partner,
     product = Product(
-      displayNameFull = this.product.displayNameFull,
-      pillowImageUrl = this.product.pillowImage.src,
+      displayNameFull = "", // this.product.displayNameFull, todo https://hedviginsurance.slack.com/archives/C03HT2JRDPG/p1696263992552259
+      pillowImageUrl = "", // this.product.pillowImage.src, todo https://hedviginsurance.slack.com/archives/C03HT2JRDPG/p1696263992552259
     ),
     perils = this.perils.map { peril ->
       Peril(
