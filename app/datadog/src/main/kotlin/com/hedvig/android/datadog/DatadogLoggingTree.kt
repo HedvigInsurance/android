@@ -2,10 +2,17 @@ package com.hedvig.android.datadog
 
 import timber.log.Timber
 
-internal class DatadogLoggingTree : Timber.Tree() {
+internal class DatadogLoggingTree(
+  isDebug: Boolean,
+) : Timber.Tree() {
   private val datadogLogger = com.datadog.android.log.Logger.Builder()
     .setNetworkInfoEnabled(true)
     .setDatadogLogsMinPriority(android.util.Log.DEBUG)
+    .apply {
+      if (isDebug) {
+        setLogcatLogsEnabled(true)
+      }
+    }
     .build()
 
   override fun isLoggable(tag: String?, priority: Int): Boolean {

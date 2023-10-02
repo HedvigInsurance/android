@@ -73,7 +73,7 @@ abstract class DatadogInitializer : Initializer<Unit>, KoinComponent {
       GlobalRum.addAttribute(DEVICE_ID_KEY, deviceId)
     }
 
-    Timber.plant(DatadogLoggingTree())
+    Timber.plant(DatadogLoggingTree(hedvigBuildConstants.isDebug))
   }
 }
 
