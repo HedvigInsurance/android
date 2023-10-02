@@ -31,10 +31,6 @@ enum class Market {
     NO -> Language.EN_NO
     DK -> Language.EN_DK
   }
-
-  companion object {
-    const val MARKET_SHARED_PREF = "MARKET_SHARED_PREF"
-  }
 }
 
 fun Market.createOnboardingUri(baseUrl: String, language: Language): Uri {

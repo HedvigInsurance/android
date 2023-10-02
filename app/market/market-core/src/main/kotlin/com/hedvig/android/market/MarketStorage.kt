@@ -23,7 +23,7 @@ internal class MarketStorage(
       }
       // Remove sharedPrefs code when we no longer need to migrate old users, and just fallback to SE instead
       val sharedPrefsStoredMarket = sharedPreferences
-        .getString(Market.MARKET_SHARED_PREF, null)
+        .getString(MARKET_SHARED_PREF, null)
         ?.let { Market.valueOf(it) }
       if (sharedPrefsStoredMarket == null) {
         return@map Market.SE // Fallback to SE in case there was nothing in the datastore
@@ -32,7 +32,7 @@ internal class MarketStorage(
         it[marketPreferencesKey] = sharedPrefsStoredMarket.name
       }
       sharedPreferences.edit()
-        .remove(Market.MARKET_SHARED_PREF)
+        .remove(MARKET_SHARED_PREF)
         .apply()
       sharedPrefsStoredMarket
     }
@@ -44,6 +44,7 @@ internal class MarketStorage(
   }
 
   companion object {
-    val marketPreferencesKey = stringPreferencesKey("com.hedvig.android.market.Market")
+    private const val MARKET_SHARED_PREF = "MARKET_SHARED_PREF"
+    private val marketPreferencesKey = stringPreferencesKey("com.hedvig.android.market.Market")
   }
 }
