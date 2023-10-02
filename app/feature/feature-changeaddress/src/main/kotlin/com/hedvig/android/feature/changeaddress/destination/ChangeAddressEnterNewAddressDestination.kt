@@ -166,7 +166,7 @@ private fun ChangeAddressEnterNewScreen(
         label = stringResource(id = R.string.CHANGE_ADDRESS_STUDENT_LABEL),
         checked = uiState.isStudent.input,
         onCheckedChange = onIsStudentSelected,
-        onClick = { onIsStudentSelected(!uiState.isStudent.input) }
+        onClick = { onIsStudentSelected(!uiState.isStudent.input) },
       )
     }
     Spacer(modifier = Modifier.height(16.dp))

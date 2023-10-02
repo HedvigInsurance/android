@@ -49,7 +49,7 @@ data class MoveQuote(
           perils = emptyList(),
           insurableLimits = emptyList(),
           documents = emptyList(),
-        )
+        ),
       )
     }
   }

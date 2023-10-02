@@ -29,7 +29,7 @@ fun InputTextField(
     } else {
       null
     },
-    trailingIcon =  if (trailingText != null) {
+    trailingIcon = if (trailingText != null) {
       { Text(trailingText) }
     } else {
       null

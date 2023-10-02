@@ -41,7 +41,6 @@ internal fun ExtraBuildingBottomSheet(
   onSave: (ExtraBuilding) -> Unit,
   sheetState: SheetState,
 ) {
-
   var sizeInput by rememberSaveable { mutableStateOf(extraBuilding?.size?.toString()) }
   var hasWaterConnected by rememberSaveable { mutableStateOf(extraBuilding?.hasWaterConnected ?: false) }
   var selectedType by rememberSaveable { mutableStateOf(extraBuilding?.type) }
@@ -93,7 +92,7 @@ internal fun ExtraBuildingBottomSheet(
         label = stringResource(id = R.string.CHANGE_ADDRESS_EXTRA_BUILDINGS_WATER_INPUT_LABEL),
         checked = hasWaterConnected,
         onCheckedChange = { hasWaterConnected = it },
-        onClick = { hasWaterConnected = !hasWaterConnected }
+        onClick = { hasWaterConnected = !hasWaterConnected },
       )
       Spacer(Modifier.height(16.dp))
       HedvigContainedButton(

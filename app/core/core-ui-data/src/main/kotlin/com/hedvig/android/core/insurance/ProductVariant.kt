@@ -50,7 +50,6 @@ data class InsurableLimit(
     TRAVEL_DELAYED_LUGGAGE,
     TRAVEL_CANCELLATION,
     UNKNOWN,
-    ;
   }
 }
 
@@ -78,5 +77,3 @@ data class Document(
     }
   }
 }
-
-

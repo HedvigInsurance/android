@@ -98,8 +98,8 @@ sealed interface QuoteInput {
                 type = it.type.toMoveExtraBuildingType(),
                 hasWaterConnected = it.hasWaterConnected,
               )
-            }
-          )
+            },
+          ),
         ),
       ),
     )
