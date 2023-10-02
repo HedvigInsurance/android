@@ -112,8 +112,6 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
 import com.hedvig.app.feature.loggedin.ui.ReviewDialogViewModel
 import com.hedvig.app.feature.marketing.MarketingActivity
-import com.hedvig.app.feature.marketing.data.GetInitialMarketPickerValuesUseCase
-import com.hedvig.app.feature.marketing.data.UpdateApplicationLanguageUseCase
 import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferViewModel
@@ -503,13 +501,6 @@ private val useCaseModule = module {
       languageService = get(),
     )
   }
-  single {
-    UpdateApplicationLanguageUseCase(
-      marketManager = get(),
-      languageService = get(),
-    )
-  }
-  single { GetInitialMarketPickerValuesUseCase(get(), get()) }
   single<EditCheckoutUseCase> {
     EditCheckoutUseCase(
       languageService = get(),
