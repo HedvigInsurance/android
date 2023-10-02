@@ -5,11 +5,7 @@ import com.hedvig.android.core.demomode.ProdOrDemoProvider
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 
 internal class GetCrossSellsUseCaseProvider(
-  demoManager: DemoManager,
-  demoImpl: GetCrossSellsUseCase,
-  prodImpl: GetCrossSellsUseCase,
-) : ProdOrDemoProvider<GetCrossSellsUseCase>(
-  demoManager,
-  demoImpl,
-  prodImpl,
-)
+  override val demoManager: DemoManager,
+  override val demoImpl: GetCrossSellsUseCase,
+  override val prodImpl: GetCrossSellsUseCase,
+) : ProdOrDemoProvider<GetCrossSellsUseCase>

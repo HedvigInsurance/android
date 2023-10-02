@@ -26,7 +26,9 @@ import com.hedvig.authlib.ResendOtpResult
 import com.hedvig.authlib.SubmitOtpResult
 import io.mockk.mockk
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -206,7 +208,13 @@ class OtpInputViewModelTest {
       credential = "test@email.com",
       authTokenServiceProvider =
       AuthTokenServiceProvider(
-        DemoManager(),
+        object : DemoManager {
+          override suspend fun isDemoMode(): Flow<Boolean> {
+            return flowOf(false)
+          }
+
+          override suspend fun setDemoMode(demoMode: Boolean) {}
+        },
         testAuthTokenService(authRepository, authTokenStorage),
         testAuthTokenService(authRepository, authTokenStorage),
       ),

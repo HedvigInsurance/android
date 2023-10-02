@@ -5,11 +5,7 @@ import com.hedvig.android.core.demomode.ProdOrDemoProvider
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 
 internal class GetInsuranceContractsUseCaseProvider(
-  demoManager: DemoManager,
-  demoImpl: GetInsuranceContractsUseCase,
-  prodImpl: GetInsuranceContractsUseCase,
-) : ProdOrDemoProvider<GetInsuranceContractsUseCase>(
-  demoManager,
-  demoImpl,
-  prodImpl,
-)
+  override val demoManager: DemoManager,
+  override val demoImpl: GetInsuranceContractsUseCase,
+  override val prodImpl: GetInsuranceContractsUseCase,
+) : ProdOrDemoProvider<GetInsuranceContractsUseCase>

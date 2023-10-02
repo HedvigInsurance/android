@@ -1,13 +1,15 @@
 package com.hedvig.android.core.demomode
 
-abstract class ProdOrDemoProvider<T>(
-  private val demoManager: DemoManager,
-  private val demoImpl: T,
-  private val prodImpl: T,
-) : Provider<T> {
+import kotlinx.coroutines.flow.first
+
+interface ProdOrDemoProvider<T> : Provider<T> {
+
+  val demoManager: DemoManager
+  val demoImpl: T
+  val prodImpl: T
 
   override suspend fun provide(): T {
-    return if (demoManager.isDemoMode()) {
+    return if (demoManager.isDemoMode().first()) {
       demoImpl
     } else {
       prodImpl

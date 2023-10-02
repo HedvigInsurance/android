@@ -4,11 +4,11 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 interface DemoManager {
-  suspend fun isDemoMode(): Boolean
+  suspend fun isDemoMode(): Flow<Boolean>
   suspend fun setDemoMode(demoMode: Boolean)
 }
 
@@ -16,10 +16,10 @@ class DataStoreDemoManager(
   private val dataStore: DataStore<Preferences>,
 ) : DemoManager {
 
-  override suspend fun isDemoMode(): Boolean {
+  override suspend fun isDemoMode(): Flow<Boolean> {
     return dataStore.data.map {
       it[demoModeKey] ?: false
-    }.first()
+    }
   }
 
   override suspend fun setDemoMode(demoMode: Boolean) {
@@ -29,6 +29,6 @@ class DataStoreDemoManager(
   }
 
   companion object {
-    private val demoModeKey = booleanPreferencesKey("demo-mode")
+    private val demoModeKey = booleanPreferencesKey("com.hedvig.android.core.demomode.demo-mode")
   }
 }

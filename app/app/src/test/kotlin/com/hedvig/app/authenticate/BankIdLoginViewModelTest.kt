@@ -32,7 +32,9 @@ import com.hedvig.authlib.StatusUrl
 import com.hedvig.hanalytics.LoginMethod
 import io.mockk.mockk
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
@@ -191,7 +193,15 @@ class BankIdLoginViewModelTest {
       FakeFeatureManager(loginMethod = { LoginMethod.BANK_ID_SWEDEN }),
       mockk<UploadMarketAndLanguagePreferencesUseCase>(relaxed = true),
       AuthTokenServiceProvider(
-        DemoManager(),
+        object : DemoManager {
+          override suspend fun isDemoMode(): Flow<Boolean> {
+            return flowOf(false)
+          }
+
+          override suspend fun setDemoMode(demoMode: Boolean) {
+
+          }
+        },
         authTokenService,
         authTokenService,
       ),
