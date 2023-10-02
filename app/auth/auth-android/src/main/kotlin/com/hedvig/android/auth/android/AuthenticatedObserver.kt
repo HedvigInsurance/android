@@ -4,7 +4,8 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.auth.AuthStatus
-import com.hedvig.android.auth.AuthTokenServiceProvider
+import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.activity.ActivityNavigator
 import kotlinx.coroutines.Job
@@ -16,14 +17,15 @@ import org.koin.java.KoinJavaComponent.inject
 
 class AuthenticatedObserver : DefaultLifecycleObserver {
 
-  private val authTokenServiceProvider: AuthTokenServiceProvider by inject(AuthTokenServiceProvider::class.java)
+  private val authTokenService: AuthTokenService by inject(AuthTokenService::class.java)
+  private val demoManager: DemoManager by inject(DemoManager::class.java)
   private val activityNavigator: ActivityNavigator by inject(ActivityNavigator::class.java)
 
   private var authObservingJob: Job? = null
 
   override fun onResume(owner: LifecycleOwner) {
     authObservingJob = owner.lifecycleScope.launch {
-      authTokenServiceProvider.provide().authStatus
+      authTokenService.authStatus
         .onEach { authStatus ->
           logcat {
             buildString {
@@ -40,6 +42,7 @@ class AuthenticatedObserver : DefaultLifecycleObserver {
         }
         .filterIsInstance<AuthStatus.LoggedOut>()
         .first()
+      demoManager.isDemoMode().first { it == false }
       activityNavigator.navigateToMarketingActivity()
     }
   }

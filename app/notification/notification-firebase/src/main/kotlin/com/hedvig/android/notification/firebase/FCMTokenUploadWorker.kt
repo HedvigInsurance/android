@@ -7,7 +7,7 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.auth.AuthStatus
-import com.hedvig.android.auth.AuthTokenServiceProvider
+import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.logger.logcat
 import giraffe.NotificationRegisterDeviceMutation
 import kotlinx.coroutines.flow.first
@@ -23,7 +23,7 @@ internal class FCMTokenUploadWorker(
   params: WorkerParameters,
   private val apolloClient: ApolloClient,
   private val fcmTokenStorage: FCMTokenStorage,
-  private val authTokenServiceProvider: AuthTokenServiceProvider,
+  private val authTokenService: AuthTokenService,
 ) : CoroutineWorker(context, params) {
   override suspend fun doWork(): Result {
     val storedToken = fcmTokenStorage.getToken().first()
@@ -31,7 +31,7 @@ internal class FCMTokenUploadWorker(
       logcat { "stored token was null, no longer need to report something to backend" }
       return Result.success()
     }
-    val authStatus = authTokenServiceProvider.provide().authStatus.value
+    val authStatus = authTokenService.authStatus.value
     if (authStatus !is AuthStatus.LoggedIn) {
       logcat { "We're not logged in, we shouldn't upload a token to the backend" }
       return Result.success()

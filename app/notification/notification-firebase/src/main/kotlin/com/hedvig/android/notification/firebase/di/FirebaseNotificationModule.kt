@@ -35,7 +35,7 @@ val firebaseNotificationModule = module {
       params = get<WorkerParameters>(),
       apolloClient = get<ApolloClient>(giraffeClient),
       fcmTokenStorage = get<FCMTokenStorage>(),
-      authTokenServiceProvider = get(),
+      authTokenService = get(),
     )
   }
 }

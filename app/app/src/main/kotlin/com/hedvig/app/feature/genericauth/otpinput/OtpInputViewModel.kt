@@ -2,7 +2,7 @@ package com.hedvig.app.feature.genericauth.otpinput
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.auth.AuthTokenServiceProvider
+import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult
@@ -20,7 +20,7 @@ class OtpInputViewModel(
   private val verifyUrl: String,
   private val resendUrl: String,
   credential: String,
-  private val authTokenServiceProvider: AuthTokenServiceProvider,
+  private val authTokenService: AuthTokenService,
   private val authRepository: AuthRepository,
   private val uploadMarketAndLanguagePreferencesUseCase: UploadMarketAndLanguagePreferencesUseCase,
 ) : ViewModel() {
@@ -66,7 +66,7 @@ class OtpInputViewModel(
     when (val authCodeResult = authRepository.exchange(otpResult.loginAuthorizationCode)) {
       is AuthTokenResult.Error -> setErrorState(authCodeResult.message)
       is AuthTokenResult.Success -> {
-        authTokenServiceProvider.provide().loginWithTokens(
+        authTokenService.loginWithTokens(
           authCodeResult.accessToken,
           authCodeResult.refreshToken,
         )

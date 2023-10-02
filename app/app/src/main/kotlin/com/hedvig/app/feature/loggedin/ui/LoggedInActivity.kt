@@ -51,6 +51,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import arrow.fx.coroutines.raceN
 import coil.ImageLoader
 import com.hedvig.android.app.navigation.HedvigNavHost
 import com.hedvig.android.app.ui.HedvigAppState
@@ -58,8 +59,9 @@ import com.hedvig.android.app.ui.HedvigBottomBar
 import com.hedvig.android.app.ui.HedvigNavRail
 import com.hedvig.android.app.ui.rememberHedvigAppState
 import com.hedvig.android.auth.AuthStatus
-import com.hedvig.android.auth.AuthTokenServiceProvider
+import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
+import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.designsystem.material3.motion.MotionTokens
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
@@ -94,7 +96,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class LoggedInActivity : AppCompatActivity() {
   private val reviewDialogViewModel: ReviewDialogViewModel by viewModel()
 
-  private val authTokenServiceProvider: AuthTokenServiceProvider by inject()
+  private val authTokenService: AuthTokenService by inject()
+  private val demoManager: DemoManager by inject()
   private val tabNotificationBadgeService: TabNotificationBadgeService by inject()
   private val marketManager: MarketManager by inject()
   private val imageLoader: ImageLoader by inject()
@@ -149,13 +152,16 @@ class LoggedInActivity : AppCompatActivity() {
       }
       launch {
         lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
-          authTokenServiceProvider.provide().authStatus.first { it != null }
+          raceN(
+            { authTokenService.authStatus.first { it != null } },
+            { demoManager.isDemoMode().first { it == true } },
+          )
           showSplash.update { false }
         }
       }
       launch {
         lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-          authTokenServiceProvider.provide().authStatus.first { it is AuthStatus.LoggedIn }
+          authTokenService.authStatus.first { it is AuthStatus.LoggedIn }
           reviewDialogViewModel.shouldOpenReviewDialog.collect { shouldOpenReviewDialog ->
             if (shouldOpenReviewDialog) {
               showReviewWithDelay()
@@ -165,14 +171,14 @@ class LoggedInActivity : AppCompatActivity() {
       }
       if (intent.getBooleanExtra(SHOW_RATING_DIALOG, false)) {
         launch {
-          authTokenServiceProvider.provide().authStatus.first { it is AuthStatus.LoggedIn }
+          authTokenService.authStatus.first { it is AuthStatus.LoggedIn }
           showReviewWithDelay()
         }
       }
       if (uri != null) {
         launch {
           lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            authTokenServiceProvider.provide().authStatus.first { it is AuthStatus.LoggedIn }
+            authTokenService.authStatus.first { it is AuthStatus.LoggedIn }
             val pathSegments = uri.pathSegments
             val dynamicLink: DynamicLink = when {
               pathSegments.contains("direct-debit") -> DynamicLink.DirectDebit
@@ -201,7 +207,7 @@ class LoggedInActivity : AppCompatActivity() {
         }
       }
       lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-        authTokenServiceProvider.provide().authStatus
+        authTokenService.authStatus
           .onEach { authStatus ->
             logcat {
               buildString {
@@ -218,6 +224,9 @@ class LoggedInActivity : AppCompatActivity() {
           }
           .filterIsInstance<AuthStatus.LoggedOut>()
           .first()
+        // Wait for demo mode to evaluate to false to know that we must leave the activity
+        demoManager.isDemoMode().first { it == false }
+        // Wait for dark theme to evaluate before deciding to leave the activity
         darkThemeEvaluated.first { it == true }
         activityNavigator.navigateToMarketingActivity()
         finish()
