@@ -22,6 +22,8 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -105,20 +107,22 @@ private fun MarketingScreen(
         sheetState = sheetState,
         windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
       ) {
-        PreferencesSheetContent(
-          chosenMarket = uiState.market,
-          chosenLanguage = uiState.language,
-          appVersionName = appVersionName,
-          selectMarket = selectMarket,
-          selectLanguage = selectLanguage,
-          dismissSheet = {
-            coroutineScope.launch {
-              sheetState.hide()
-            }.invokeOnCompletion {
-              showPreferencesSheet = false
-            }
-          },
-        )
+        Column(Modifier.verticalScroll(rememberScrollState())) {
+          PreferencesSheetContent(
+            chosenMarket = uiState.market,
+            chosenLanguage = uiState.language,
+            appVersionName = appVersionName,
+            selectMarket = selectMarket,
+            selectLanguage = selectLanguage,
+            dismissSheet = {
+              coroutineScope.launch {
+                sheetState.hide()
+              }.invokeOnCompletion {
+                showPreferencesSheet = false
+              }
+            },
+          )
+        }
       }
     }
 
@@ -132,12 +136,14 @@ private fun MarketingScreen(
             val buttonsSize = sizes[1]
             val buttonsTopYPosition = totalSize - buttonsSize
             outPositions[1] = buttonsTopYPosition
+
+            val minSpaceBetween = 16.dp.roundToPx()
             val logoTypePreferredTopYPosition = middlePoint - (logoTypeSize / 2)
-            val logoTypeCanBeCentered = logoTypePreferredTopYPosition + logoTypeSize <= buttonsTopYPosition
+            val logoTypeCanBeCentered = logoTypePreferredTopYPosition + logoTypeSize <= buttonsTopYPosition - minSpaceBetween
             if (logoTypeCanBeCentered) {
               outPositions[0] = logoTypePreferredTopYPosition
             } else {
-              val logoTypeYPositionJustAboveButtons = buttonsTopYPosition - logoTypeSize
+              val logoTypeYPositionJustAboveButtons = buttonsTopYPosition - logoTypeSize - minSpaceBetween
               outPositions[0] = max(0, logoTypeYPositionJustAboveButtons)
             }
           }
