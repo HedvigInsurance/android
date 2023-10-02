@@ -8,10 +8,12 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.language.Language
 import com.hedvig.android.language.LanguageService
-import com.hedvig.android.market.Language
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
+import com.hedvig.android.market.SetMarketUseCase
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.coroutines.launch
@@ -19,6 +21,7 @@ import kotlinx.coroutines.launch
 internal class MarketingPresenter(
   private val marketManager: MarketManager,
   private val languageService: LanguageService,
+  private val setMarketUseCase: SetMarketUseCase,
 ) : MoleculePresenter<MarketingEvent, MarketingUiState> {
   @Composable
   override fun MoleculePresenterScope<MarketingEvent>.present(lastState: MarketingUiState): MarketingUiState {
@@ -38,7 +41,10 @@ internal class MarketingPresenter(
           fetchLanguageCounter++
         }
         is MarketingEvent.SelectMarket -> {
-          launch { marketManager.setMarket(event.market) }
+          launch {
+            setMarketUseCase.setMarket(event.market)
+            fetchLanguageCounter++
+          }
         }
       }
     }
@@ -47,7 +53,7 @@ internal class MarketingPresenter(
     if (languageValue == null) {
       return MarketingUiState.Loading
     }
-    return MarketingUiState.Success(market, languageValue)
+    return MarketingUiState.Success(market, languageValue).also { logcat { "MarketingPresenter emitting:$it" } }
   }
 }
 

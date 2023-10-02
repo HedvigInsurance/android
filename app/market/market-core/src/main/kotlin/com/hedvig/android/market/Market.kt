@@ -25,12 +25,6 @@ enum class Market {
       Market.NO -> listOf(Language.NB_NO, Language.EN_NO)
       Market.DK -> listOf(Language.DA_DK, Language.EN_DK)
     }
-
-  fun defaultLanguage() = when (this) {
-    SE -> Language.EN_SE
-    NO -> Language.EN_NO
-    DK -> Language.EN_DK
-  }
 }
 
 fun Market.createOnboardingUri(baseUrl: String, language: Language): Uri {

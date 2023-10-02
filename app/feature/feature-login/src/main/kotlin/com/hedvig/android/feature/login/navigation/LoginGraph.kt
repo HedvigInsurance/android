@@ -8,7 +8,8 @@ import com.hedvig.android.feature.login.marketing.MarketingDestination
 import com.hedvig.android.feature.login.marketing.MarketingViewModel
 import com.hedvig.android.feature.login.swedishlogin.SwedishLoginDestination
 import com.hedvig.android.feature.login.swedishlogin.SwedishLoginViewModel
-import com.hedvig.android.market.Language
+import com.hedvig.android.language.Language
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.createOnboardingUri
 import com.hedvig.android.navigation.core.AppDestination
@@ -42,6 +43,7 @@ fun NavGraphBuilder.loginGraph(
           openWebsite(uri)
         },
         navigateToLoginScreen = { market ->
+          logcat { "Navigating to login screen for market market:$market" }
           with(navigator) {
             when (market) {
               Market.SE -> backStackEntry.navigate(LoginDestination.SwedishLogin)
