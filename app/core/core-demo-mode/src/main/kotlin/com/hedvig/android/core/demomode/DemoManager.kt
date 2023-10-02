@@ -12,7 +12,7 @@ interface DemoManager {
   suspend fun setDemoMode(demoMode: Boolean)
 }
 
-class DataStoreDemoManager(
+internal class DataStoreDemoManager(
   private val dataStore: DataStore<Preferences>,
 ) : DemoManager {
 

@@ -6,8 +6,6 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.os.Build
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import androidx.work.WorkerParameters
 import coil.ImageLoader
 import coil.decode.GifDecoder
@@ -32,8 +30,7 @@ import com.hedvig.android.core.common.android.QuoteCartId
 import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
-import com.hedvig.android.core.demomode.DataStoreDemoManager
-import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.core.demomode.di.demoModule
 import com.hedvig.android.data.forever.di.foreverDataModule
 import com.hedvig.android.data.settings.datastore.di.settingsDatastoreModule
 import com.hedvig.android.data.travelcertificate.di.claimFlowDataModule
@@ -598,12 +595,6 @@ private val workManagerModule = module {
   }
 }
 
-private val demoManagerModule = module {
-  single<DemoManager> {
-    DataStoreDemoManager(get<DataStore<Preferences>>())
-  }
-}
-
 val applicationModule = module {
   includes(
     listOf(
@@ -628,7 +619,7 @@ val applicationModule = module {
       datadogModule,
       datastoreAndroidModule,
       deepLinkModule,
-      demoManagerModule,
+      demoModule,
       embarkModule,
       externalInsuranceModule,
       featureManagerModule,
