@@ -2,6 +2,7 @@ package com.hedvig.android.market
 
 import android.net.Uri
 import androidx.annotation.StringRes
+import com.hedvig.android.language.Language
 import giraffe.type.Locale
 
 enum class Market {

@@ -63,7 +63,7 @@ import com.hedvig.android.core.icons.hedvig.flag.FlagUk
 import com.hedvig.android.core.icons.hedvig.logo.HedvigLogotype
 import com.hedvig.android.core.ui.SelectIndicationCircle
 import com.hedvig.android.feature.login.marketing.ui.LoginBackgroundImage
-import com.hedvig.android.market.Language
+import com.hedvig.android.language.Language
 import com.hedvig.android.market.Market
 import hedvig.resources.R
 import kotlinx.coroutines.launch

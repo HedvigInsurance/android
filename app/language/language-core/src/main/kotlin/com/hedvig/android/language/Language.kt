@@ -1,4 +1,4 @@
-package com.hedvig.android.market
+package com.hedvig.android.language
 
 import androidx.annotation.StringRes
 import giraffe.type.Locale

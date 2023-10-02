@@ -1,7 +1,7 @@
 package com.hedvig.android.language.test
 
+import com.hedvig.android.language.Language
 import com.hedvig.android.language.LanguageService
-import com.hedvig.android.market.Language
 import java.util.Locale
 
 @Suppress("unused")

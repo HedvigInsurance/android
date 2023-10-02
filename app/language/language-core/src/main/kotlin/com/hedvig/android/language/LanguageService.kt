@@ -3,7 +3,6 @@ package com.hedvig.android.language
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
-import com.hedvig.android.market.Language
 import java.util.Locale
 
 interface LanguageService {

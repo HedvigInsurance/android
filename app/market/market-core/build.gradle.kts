@@ -5,6 +5,8 @@ plugins {
 }
 
 dependencies {
+  api(projects.languageCore)
+
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.androidx.other.preference)
