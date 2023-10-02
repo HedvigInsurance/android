@@ -48,7 +48,10 @@ class MarketingActivity : AppCompatActivity() {
             appVersionName = hedvigBuildConstants.appVersionName,
             urlBaseWeb = hedvigBuildConstants.urlBaseWeb,
             openWebsite = { activityNavigator.openWebsite(this@MarketingActivity, it) },
-            startLoggedInActivity = { activityNavigator.navigateToLoggedInScreen(this@MarketingActivity, true) },
+            startLoggedInActivity = {
+              activityNavigator.navigateToLoggedInScreen(this@MarketingActivity, false)
+              finish()
+            },
             startDKLogin = {
               startActivity(SimpleSignAuthenticationActivity.newInstance(this@MarketingActivity, Market.DK))
             },
