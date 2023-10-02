@@ -76,7 +76,12 @@ internal fun ChangeAddressEnterNewVillaAddressDestination(
     onAncillaryAreaChanged = viewModel::onAncillaryAreaChanged,
     onNumberOfBathroomsChanged = viewModel::onNumberOfBathroomsChanged,
     onIsSubletSelected = viewModel::onIsSubletChanged,
-    onSaveNewAddress = viewModel::onSubmitNewAddress,
+    onSaveNewAddress = {
+      val isInputValid = viewModel.validateHouseInput()
+      if (isInputValid) {
+        viewModel.onSubmitNewAddress()
+      }
+    },
     onExtraBuildingClicked = {
       showExtraBuildingsBottomSheet = true
     },
@@ -158,7 +163,7 @@ private fun ChangeAddressEnterNewVillaAddressScreen(
       label = stringResource(id = R.string.CHANGE_ADDRESS_SUBLET_LABEL),
       checked = uiState.isSublet.input,
       onCheckedChange = onIsSubletSelected,
-      onClick = { onIsSubletSelected(!uiState.isSublet.input) }
+      onClick = { onIsSubletSelected(!uiState.isSublet.input) },
     )
     Spacer(modifier = Modifier.height(8.dp))
     ExtraBuildingContainer(

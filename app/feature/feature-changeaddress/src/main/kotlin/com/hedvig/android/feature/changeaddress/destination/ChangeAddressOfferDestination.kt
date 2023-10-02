@@ -264,7 +264,7 @@ private fun QuoteDetailsAndPdfs(
     HedvigInfoCard(
       contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
     ) {
-      Text(quote.productVariant.product.displayNameFull)
+      Text(quote.productVariant.displayName)
     }
     Spacer(Modifier.height(32.dp))
     InsurableLimits(quote)
@@ -289,6 +289,7 @@ private fun ColumnScope.InsurableLimits(quote: MoveQuote) {
           Text(highlight.limit, fontSize = 18.sp)
         }
       },
+      spaceBetween = 18.dp,
     )
     if (index != quote.productVariant.insurableLimits.lastIndex) {
       Spacer(Modifier.height(16.dp))
@@ -305,7 +306,7 @@ private fun Documents(
 ) {
   quote.productVariant.documents.mapIndexed { index, document ->
     HedvigCard(
-      onClick = { openUrl(document.url) }
+      onClick = { openUrl(document.url) },
     ) {
       Row(
         verticalAlignment = Alignment.CenterVertically,
