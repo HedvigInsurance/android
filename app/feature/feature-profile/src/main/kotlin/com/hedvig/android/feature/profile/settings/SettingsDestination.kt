@@ -34,7 +34,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.dialog.SingleSelectDialog
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
-import com.hedvig.android.market.Language
+import com.hedvig.android.language.Language
 import com.hedvig.android.memberreminders.ui.ReminderCardEnableNotifications
 import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
@@ -175,7 +175,7 @@ internal fun LanguageWithDialog(
       title = stringResource(R.string.language_picker_modal_title),
       optionsList = languageOptions,
       onSelected = selectLanguage,
-      getDisplayText = { context.getString(it.getLabel()) },
+      getDisplayText = { context.getString(it.label) },
       getIsSelected = { selectedLanguage == it },
       getId = { it.name },
       onDismissRequest = { showLanguagePickerDialog = false },
@@ -185,7 +185,7 @@ internal fun LanguageWithDialog(
   HedvigBigCard(
     onClick = { showLanguagePickerDialog = true },
     hintText = stringResource(id = R.string.language_picker_modal_title),
-    inputText = context.getString(selectedLanguage.getLabel()),
+    inputText = context.getString(selectedLanguage.label),
     enabled = enabled,
     modifier = modifier,
   )

@@ -13,7 +13,6 @@ internal class HAnalyticsFeatureFlagProvider(
     Feature.DISABLE_CHAT -> hAnalytics.disableChat()
     Feature.DISABLE_DARK_MODE -> hAnalytics.disableDarkMode()
     Feature.EXTERNAL_DATA_COLLECTION -> hAnalytics.allowExternalDataCollection()
-    Feature.FRANCE_MARKET -> hAnalytics.frenchMarket()
     Feature.MOVING_FLOW -> hAnalytics.movingFlow()
     Feature.PAYMENT_SCREEN -> hAnalytics.paymentScreen()
     Feature.QUOTE_CART -> hAnalytics.useQuoteCart()

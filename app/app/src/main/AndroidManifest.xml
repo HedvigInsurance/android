@@ -124,6 +124,7 @@
         <activity
             android:name=".feature.marketing.MarketingActivity"
             android:theme="@style/Hedvig.Theme.Marketing"
+            android:configChanges="locale|layoutDirection"
             android:windowSoftInputMode="adjustResize" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"

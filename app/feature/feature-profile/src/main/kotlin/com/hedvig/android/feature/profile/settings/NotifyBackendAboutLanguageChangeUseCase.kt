@@ -3,7 +3,7 @@ package com.hedvig.android.feature.profile.settings
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.market.Language
+import com.hedvig.android.language.Language
 import giraffe.UpdateLanguageMutation
 
 internal interface NotifyBackendAboutLanguageChangeUseCase {

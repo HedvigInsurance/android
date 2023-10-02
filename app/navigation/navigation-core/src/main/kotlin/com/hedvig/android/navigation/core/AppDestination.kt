@@ -19,6 +19,9 @@ sealed interface AppDestination : Destination {
   }
 
   @Serializable
+  object Login : AppDestination
+
+  @Serializable
   object ChangeAddress : AppDestination
 
   @Serializable

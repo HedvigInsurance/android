@@ -10,8 +10,8 @@ import androidx.compose.runtime.setValue
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
+import com.hedvig.android.language.Language
 import com.hedvig.android.language.LanguageService
-import com.hedvig.android.market.Language
 import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope

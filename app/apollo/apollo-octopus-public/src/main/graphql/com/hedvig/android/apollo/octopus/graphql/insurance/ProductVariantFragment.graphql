@@ -1,0 +1,25 @@
+fragment ProductVariantFragment on ProductVariant {
+  displayName
+  typeOfContract
+  partner
+  perils {
+    id
+    title
+    description
+    info
+    covered
+    exceptions
+    colorCode
+  }
+  insurableLimits {
+    label
+    limit
+    description
+    type
+  }
+  documents {
+    displayName
+    url
+    type
+  }
+}

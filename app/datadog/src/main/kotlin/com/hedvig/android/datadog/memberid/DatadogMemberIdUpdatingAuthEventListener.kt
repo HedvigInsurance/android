@@ -13,7 +13,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
-class DatadogMemberIdUpdatingAuthEventListener : AuthEventListener {
+internal class DatadogMemberIdUpdatingAuthEventListener : AuthEventListener {
   override suspend fun loggedOut() {
     logcat(LogPriority.INFO) { "Removing from global RUM attribute:$MEMBER_ID_TRACKING_KEY" }
     Datadog.addUserExtraInfo(mapOf(MEMBER_ID_TRACKING_KEY to null))

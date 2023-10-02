@@ -15,7 +15,6 @@ enum class Feature(
     "When this flag is on, dark mode is not allowed in the app at all. This also removes the ability to change the theme in the settings completely",
   ),
   EXTERNAL_DATA_COLLECTION("Enables external data collection for offers, from eg. Insurely"),
-  FRANCE_MARKET("Used to select french market in app"),
   MOVING_FLOW("Lets a user change their address and get a new offer"),
   PAYMENT_SCREEN("Controls whether the payment screen should be accessible from the profile tab"),
   QUOTE_CART("Use new APIs for onboarding"),

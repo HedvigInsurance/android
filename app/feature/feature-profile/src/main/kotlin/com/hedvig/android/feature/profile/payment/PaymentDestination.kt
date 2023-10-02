@@ -78,7 +78,7 @@ internal fun PaymentDestination(
   onPaymentHistoryClicked: () -> Unit,
   onChangeBankAccount: () -> Unit,
   onConnectPayoutMethod: () -> Unit,
-  market: Market?,
+  market: Market,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   PaymentScreen(
@@ -106,7 +106,7 @@ private fun PaymentScreen(
   onPaymentHistoryClicked: () -> Unit,
   onConnectPayoutMethod: () -> Unit,
   onRetry: () -> Unit,
-  market: Market?,
+  market: Market,
 ) {
   HedvigScaffold(
     topAppBarText = stringResource(R.string.PROFILE_PAYMENT_TITLE),
@@ -181,7 +181,7 @@ private fun PaymentScreen(
             modifier = Modifier.padding(horizontal = 16.dp),
           )
           Spacer(Modifier.height(16.dp))
-          if (market != null && (market == Market.DK || market == Market.NO)) {
+          if (market == Market.DK || market == Market.NO) {
             Spacer(Modifier.height(32.dp))
             PayoutDetails(uiState)
             Divider(Modifier.padding(horizontal = 16.dp))

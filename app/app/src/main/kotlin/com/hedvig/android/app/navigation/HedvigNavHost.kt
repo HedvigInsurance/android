@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.Density
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
@@ -39,7 +40,7 @@ import com.hedvig.android.feature.travelcertificate.navigation.generateTravelCer
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.language.LanguageService
-import com.hedvig.android.market.MarketManager
+import com.hedvig.android.market.Market
 import com.hedvig.android.navigation.activity.ActivityNavigator
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
@@ -66,7 +67,7 @@ internal fun HedvigNavHost(
   activityNavigator: ActivityNavigator,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   imageLoader: ImageLoader,
-  marketManager: MarketManager,
+  market: Market,
   featureManager: FeatureManager,
   hAnalytics: HAnalytics,
   fragmentManager: FragmentManager,
@@ -76,25 +77,23 @@ internal fun HedvigNavHost(
 ) {
   LocalConfiguration.current
   val context = LocalContext.current
-  val resources = context.resources
   val density = LocalDensity.current
   val coroutineScope = rememberCoroutineScope()
-  val navigator: Navigator = rememberNavigator(hedvigAppState)
+  val navigator: Navigator = rememberNavigator(hedvigAppState.navController)
 
   fun startMovingFlow() {
     coroutineScope.launch {
-//      if (featureManager.isFeatureEnabled(Feature.NEW_MOVING_FLOW)) { // todo use again as soon as MOVING_FLOW works
-//        hedvigAppState.navController.navigate(AppDestination.ChangeAddress)
-//      } else {
-      context.startActivity(
-        LegacyChangeAddressActivity.newInstance(context),
-      )
-//      }
+      if (featureManager.isFeatureEnabled(Feature.NEW_MOVING_FLOW)) {
+        hedvigAppState.navController.navigate(AppDestination.ChangeAddress)
+      } else {
+        context.startActivity(
+          LegacyChangeAddressActivity.newInstance(context),
+        )
+      }
     }
   }
 
   fun navigateToPayinScreen() {
-    val market = marketManager.market ?: return@navigateToPayinScreen
     coroutineScope.launch {
       context.startActivity(
         connectPayinIntent(
@@ -132,6 +131,7 @@ internal fun HedvigNavHost(
           navigator = navigator,
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           activityNavigator = activityNavigator,
+          imageLoader = imageLoader,
         )
       },
       navigator = navigator,
@@ -205,14 +205,13 @@ internal fun HedvigNavHost(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       hedvigBuildConstants = hedvigBuildConstants,
       navigateToPayoutScreen = navigateToPayoutScreen@{
-        val market = marketManager.market ?: return@navigateToPayoutScreen
         val intent = AdyenConnectPayoutActivity.newInstance(context, AdyenCurrency.fromMarket(market))
         context.startActivity(intent)
       },
       navigateToPayinScreen = ::navigateToPayinScreen,
       openAppSettings = { activityNavigator.openAppSettings(context) },
       openUrl = ::openUrl,
-      market = marketManager.market,
+      market = market,
     )
   }
 }
@@ -224,11 +223,13 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   navigator: Navigator,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   activityNavigator: ActivityNavigator,
+  imageLoader: ImageLoader,
 ) {
   changeAddressGraph(
-    density = density,
     navController = hedvigAppState.navController,
     openChat = { activityNavigator.navigateToChat(context) },
+    openUrl = { activityNavigator.openWebsite(context, Uri.parse(it)) },
+    imageLoader = imageLoader,
   )
   generateTravelCertificateGraph(
     density = density,
@@ -278,8 +279,8 @@ private fun NavGraphBuilder.nestedHomeGraphs(
 }
 
 @Composable
-private fun rememberNavigator(hedvigAppState: HedvigAppState): Navigator {
-  return remember(hedvigAppState) {
+private fun rememberNavigator(navController: NavController): Navigator {
+  return remember(navController) {
     object : Navigator {
       override fun NavBackStackEntry.navigate(
         destination: Destination,
@@ -296,15 +297,15 @@ private fun rememberNavigator(hedvigAppState: HedvigAppState): Navigator {
         navOptions: NavOptions?,
         navigatorExtras: androidx.navigation.Navigator.Extras?,
       ) {
-        hedvigAppState.navController.navigate(destination, navOptions, navigatorExtras)
+        navController.navigate(destination, navOptions, navigatorExtras)
       }
 
       override fun navigateUp() {
-        hedvigAppState.navController.navigateUp()
+        navController.navigateUp()
       }
 
       override fun popBackStack() {
-        hedvigAppState.navController.popBackStack()
+        navController.popBackStack()
       }
     }
   }

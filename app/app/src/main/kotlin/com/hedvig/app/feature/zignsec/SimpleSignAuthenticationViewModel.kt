@@ -6,8 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.auth.AuthTokenServiceProvider
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.Market
@@ -28,10 +27,9 @@ import kotlinx.coroutines.launch
 class SimpleSignAuthenticationViewModel(
   private val data: SimpleSignAuthenticationData,
   private val hAnalytics: HAnalytics,
-  private val featureManager: FeatureManager,
   private val uploadMarketAndLanguagePreferencesUseCase: UploadMarketAndLanguagePreferencesUseCase,
   private val authRepository: AuthRepository,
-  private val authTokenServiceProvider: AuthTokenServiceProvider,
+  private val authTokenService: AuthTokenService,
 ) : ViewModel() {
   private val _input = MutableLiveData("")
   val input: LiveData<String> = _input
@@ -136,8 +134,7 @@ class SimpleSignAuthenticationViewModel(
       is AuthTokenResult.Success -> {
         logcat { "Login exchange success:$result" }
         hAnalytics.loggedIn()
-        featureManager.invalidateExperiments()
-        authTokenServiceProvider.provide().loginWithTokens(result.accessToken, result.refreshToken)
+        authTokenService.loginWithTokens(result.accessToken, result.refreshToken)
         uploadMarketAndLanguagePreferencesUseCase.invoke()
       }
     }

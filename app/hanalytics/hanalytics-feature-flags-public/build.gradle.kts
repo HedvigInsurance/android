@@ -5,7 +5,9 @@ plugins {
 }
 
 dependencies {
+  implementation(libs.coroutines.core)
   implementation(libs.koin.core)
+  implementation(projects.authEventCore)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.hanalyticsCore)

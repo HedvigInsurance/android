@@ -17,14 +17,14 @@ internal class CreateQuoteCartUseCase(
   private val marketManager: MarketManager,
 ) {
 
-  private fun mutation() = CreateOnboardingQuoteCartMutation(
-    languageService.getGraphQLLocale().rawValue,
-    marketManager.market?.toGraphQLMarket() ?: Market.SWEDEN,
-  )
-
   suspend fun invoke(): Either<ErrorMessage, QuoteCartId> {
     return apolloClient
-      .mutation(mutation())
+      .mutation(
+        CreateOnboardingQuoteCartMutation(
+          languageService.getGraphQLLocale().rawValue,
+          marketManager.market.value.toGraphQLMarket(),
+        ),
+      )
       .safeExecute()
       .toEither(::ErrorMessage)
       .map { QuoteCartId(it.onboardingQuoteCart_create.id) }
@@ -34,6 +34,5 @@ internal class CreateQuoteCartUseCase(
     com.hedvig.android.market.Market.SE -> Market.SWEDEN
     com.hedvig.android.market.Market.NO -> Market.NORWAY
     com.hedvig.android.market.Market.DK -> Market.DENMARK
-    com.hedvig.android.market.Market.FR -> Market.UNKNOWN__
   }
 }
