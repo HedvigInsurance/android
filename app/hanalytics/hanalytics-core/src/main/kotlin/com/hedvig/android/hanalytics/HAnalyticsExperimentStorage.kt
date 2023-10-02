@@ -1,5 +1,6 @@
 package com.hedvig.android.hanalytics
 
+import com.hedvig.android.logger.logcat
 import com.hedvig.hanalytics.HAnalyticsExperiment
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -33,12 +34,12 @@ internal class HAnalyticsExperimentStorageImpl : HAnalyticsExperimentStorage {
     mutex.withLock {
       experimentsData.clear()
       experimentsData.putAll(experiments.map { it.name to it.variant })
-    }
+    }.also { logcat { "HAnalyticsExperimentStorage:updateExperiments:$experiments" } }
   }
 
   override suspend fun invalidateExperiments() {
     mutex.withLock {
       experimentsData.clear()
-    }
+    }.also { logcat { "HAnalyticsExperimentStorage:invalidateExperiments" } }
   }
 }

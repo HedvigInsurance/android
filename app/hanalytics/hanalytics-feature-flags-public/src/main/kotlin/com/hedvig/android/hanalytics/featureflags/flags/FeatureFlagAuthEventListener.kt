@@ -8,12 +8,12 @@ internal class FeatureFlagAuthEventListener(
   private val clearHAnalyticsExperimentsCacheUseCase: ClearHAnalyticsExperimentsCacheUseCase,
 ) : AuthEventListener {
   override suspend fun loggedIn(accessToken: String) {
-    logcat { "loggedIn -> clearing loaded experiments" }
+    logcat { "FeatureFlagAuthEventListener:loggedIn => clearing loaded experiments" }
     clearHAnalyticsExperimentsCacheUseCase.invoke()
   }
 
   override suspend fun loggedOut() {
-    logcat { "loggedOut -> clearing loaded experiments" }
+    logcat { "FeatureFlagAuthEventListener:loggedOut => clearing loaded experiments" }
     clearHAnalyticsExperimentsCacheUseCase.invoke()
   }
 }
