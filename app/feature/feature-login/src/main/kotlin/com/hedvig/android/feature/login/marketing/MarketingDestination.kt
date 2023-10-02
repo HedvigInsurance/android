@@ -1,7 +1,5 @@
 package com.hedvig.android.feature.login.marketing
 
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
@@ -50,7 +49,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.core.designsystem.animation.animateContentHeight
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
@@ -232,7 +230,6 @@ private fun ColumnScope.PreferencesSheetContent(
     beyondBoundsPageCount = 1,
     pageSpacing = 32.dp,
     key = { it },
-    modifier = Modifier.animateContentHeight(spring(stiffness = Spring.StiffnessLow)),
   ) { pageIndex ->
     if (pageIndex == 0) {
       Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -259,15 +256,20 @@ private fun ColumnScope.PreferencesSheetContent(
     }
   }
   Spacer(Modifier.height(8.dp))
-  HedvigTextButton(text = stringResource(R.string.general_cancel_button), onClick = dismissSheet)
-  Spacer(Modifier.height(8.dp))
+  HedvigContainedButton(
+    text = stringResource(R.string.general_done_button),
+    onClick = dismissSheet,
+    modifier = Modifier.padding(horizontal = 16.dp),
+  )
+  Spacer(Modifier.height(16.dp))
   Text(
-    text = appVersionName,
-    style = MaterialTheme.typography.bodySmall,
+    text = "${stringResource(R.string.PROFILE_ABOUT_APP_VERSION)}: $appVersionName",
+    style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
     textAlign = TextAlign.Center,
     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
   )
   Spacer(Modifier.height(16.dp))
+  Spacer(Modifier.windowInsetsBottomHeight(BottomSheetDefaults.windowInsets))
 }
 
 @Composable
@@ -275,9 +277,6 @@ private fun PreferencesPagerSelector(pagerState: PagerState) {
   val couroutineScope = rememberCoroutineScope()
   TabRow(
     selectedTabIndex = pagerState.currentPage,
-    containerColor = MaterialTheme.colorScheme.background,
-    contentColor = MaterialTheme.colorScheme.onBackground,
-    modifier = Modifier.fillMaxWidth(),
   ) {
     Tab(
       selected = pagerState.currentPage == 0,
@@ -290,7 +289,7 @@ private fun PreferencesPagerSelector(pagerState: PagerState) {
       selected = pagerState.currentPage == 1,
       onClick = { couroutineScope.launch { pagerState.animateScrollToPage(1) } },
       text = {
-        Text(text = stringResource(R.string.market_picker_modal_title), style = MaterialTheme.typography.bodyMedium)
+        Text(text = stringResource(R.string.language_picker_modal_title), style = MaterialTheme.typography.bodyMedium)
       },
     )
   }
@@ -355,7 +354,7 @@ private fun PreviewMarketingScreen() {
 @Composable
 private fun PreviewPreferencesSheetContent() {
   HedvigTheme {
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(color = MaterialTheme.colorScheme.surface) {
       Column {
         PreferencesSheetContent(Market.SE, Language.EN_SE, "12.0.0", {}, {}, {})
       }
