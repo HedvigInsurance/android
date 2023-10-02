@@ -11,13 +11,6 @@ enum class Market {
   DK,
   ;
 
-  val flag: Int
-    get() = when (this) {
-      SE -> hedvig.resources.R.drawable.ic_flag_se
-      NO -> hedvig.resources.R.drawable.ic_flag_no
-      DK -> hedvig.resources.R.drawable.ic_flag_dk
-    }
-
   val label: Int
     @StringRes
     get() = when (this) {
