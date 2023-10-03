@@ -19,6 +19,9 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.test.isRight
 import com.hedvig.android.feature.insurances.insurancedetail.coverage.ContractCoverage
 import com.hedvig.android.feature.insurances.insurancedetail.coverage.GetContractCoverageUseCase
+import com.hedvig.android.feature.insurances.insurancedetail.data.ContractDetailError
+import com.hedvig.android.feature.insurances.insurancedetail.data.ContractDetails
+import com.hedvig.android.feature.insurances.insurancedetail.data.GetContractDetailsUseCaseImpl
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager
 import com.hedvig.android.language.test.FakeLanguageService
@@ -57,10 +60,10 @@ class GetContractDetailsUseCaseTest {
     val (statusBuilder, isTerminationAllowed) = contractStatusToTerminationAvailability
     val getContractCoverageUseCase = object : GetContractCoverageUseCase {
       override suspend fun invoke(contractId: String): Either<ErrorMessage, ContractCoverage> {
-        return ContractCoverage(persistentListOf(), persistentListOf()).right()
+        return ContractCoverage(persistentListOf(), persistentListOf(), persistentListOf()).right()
       }
     }
-    val getContractDetailsUseCase = GetContractDetailsUseCase(
+    val getContractDetailsUseCase = GetContractDetailsUseCaseImpl(
       apolloClient,
       getContractCoverageUseCase,
       FakeLanguageService(),
