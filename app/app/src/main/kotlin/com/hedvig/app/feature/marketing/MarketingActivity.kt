@@ -28,6 +28,7 @@ import com.hedvig.android.market.Market
 import com.hedvig.android.navigation.activity.ActivityNavigator
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.Navigator
+import com.hedvig.app.feature.genericauth.GenericAuthActivity
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationActivity
 import com.kiwi.navigationcompose.typed.Destination
 import com.kiwi.navigationcompose.typed.createRoutePattern
@@ -76,6 +77,9 @@ class MarketingActivity : AppCompatActivity() {
             },
             startNOLogin = {
               startActivity(SimpleSignAuthenticationActivity.newInstance(this@MarketingActivity, Market.NO))
+            },
+            startOtpLogin = {
+              startActivity(GenericAuthActivity.newInstance(this@MarketingActivity))
             },
           )
         }

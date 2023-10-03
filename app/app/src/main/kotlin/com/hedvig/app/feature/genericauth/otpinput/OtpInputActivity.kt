@@ -5,15 +5,20 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.openEmail
+import hedvig.resources.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.viewmodel.ext.android.getViewModel
@@ -53,19 +58,24 @@ class OtpInputActivity : AppCompatActivity() {
       }
       HedvigTheme {
         val viewState by viewModel.viewState.collectAsStateWithLifecycle()
-        OtpInputScreen(
-          onInputChanged = viewModel::setInput,
-          onOpenExternalApp = { openEmail(getString(hedvig.resources.R.string.login_bottom_sheet_view_code)) },
-          onSubmitCode = viewModel::submitCode,
-          onResendCode = viewModel::resendCode,
-          onBackPressed = { onBackPressedDispatcher.onBackPressed() },
-          inputValue = viewState.input,
-          credential = viewState.credential,
-          networkErrorMessage = viewState.networkErrorMessage,
-          loadingResend = viewState.loadingResend,
-          loadingCode = viewState.loadingCode,
-          snackbarHostState = snackbarHostState,
-        )
+        Surface(
+          color = MaterialTheme.colorScheme.background,
+          modifier = Modifier.fillMaxSize(),
+        ) {
+          OtpInputScreen(
+            onInputChanged = viewModel::setInput,
+            onOpenExternalApp = { openEmail(getString(R.string.login_bottom_sheet_view_code)) },
+            onSubmitCode = viewModel::submitCode,
+            onResendCode = viewModel::resendCode,
+            onBackPressed = { onBackPressedDispatcher.onBackPressed() },
+            inputValue = viewState.input,
+            credential = viewState.credential,
+            networkErrorMessage = viewState.networkErrorMessage,
+            loadingResend = viewState.loadingResend,
+            loadingCode = viewState.loadingCode,
+            snackbarHostState = snackbarHostState,
+          )
+        }
       }
     }
   }

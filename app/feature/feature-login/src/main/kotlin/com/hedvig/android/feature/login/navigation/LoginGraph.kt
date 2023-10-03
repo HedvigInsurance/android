@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.login.navigation
 
 import android.net.Uri
-import androidx.compose.material3.Text
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.feature.login.marketing.MarketingDestination
@@ -9,6 +8,7 @@ import com.hedvig.android.feature.login.marketing.MarketingViewModel
 import com.hedvig.android.feature.login.swedishlogin.SwedishLoginDestination
 import com.hedvig.android.feature.login.swedishlogin.SwedishLoginViewModel
 import com.hedvig.android.language.Language
+import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.createOnboardingUri
@@ -27,6 +27,7 @@ fun NavGraphBuilder.loginGraph(
   startLoggedInActivity: () -> Unit,
   startDKLogin: () -> Unit,
   startNOLogin: () -> Unit,
+  startOtpLogin: () -> Unit,
 ) {
   navigation<AppDestination.Login>(
     startDestination = createRoutePattern<LoginDestination.Marketing>(),
@@ -59,12 +60,12 @@ fun NavGraphBuilder.loginGraph(
       SwedishLoginDestination(
         swedishLoginViewModel = swedishLoginViewModel,
         navigateUp = navigator::navigateUp,
-        navigateToEmailLogin = { with(navigator) { backStackEntry.navigate(LoginDestination.OtpLogin) } },
+        navigateToEmailLogin = {
+          logcat(LogPriority.INFO) { "Login with OTP clicked" }
+          startOtpLogin()
+        },
         startLoggedInActivity = startLoggedInActivity,
       )
-    }
-    composable<LoginDestination.OtpLogin>() {
-      Text("TODO")
     }
   }
 }

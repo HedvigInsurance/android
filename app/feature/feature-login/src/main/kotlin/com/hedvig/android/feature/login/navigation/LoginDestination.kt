@@ -9,7 +9,4 @@ internal sealed interface LoginDestination : Destination {
 
   @Serializable
   object SwedishLogin : LoginDestination
-
-  @Serializable
-  object OtpLogin : LoginDestination
 }
