@@ -1,18 +1,12 @@
-package com.hedvig.android.core.insurance
+package com.hedvig.android.core.ui.insurance
 
 data class ProductVariant(
   val displayName: String,
-  val typeOfContract: String,
+  val contractType: ContractType,
   val partner: String?,
-  val product: Product,
   val perils: List<Peril>,
   val insurableLimits: List<InsurableLimit>,
   val documents: List<Document>,
-)
-
-data class Product(
-  val displayNameFull: String,
-  val pillowImageUrl: String,
 )
 
 data class Peril(

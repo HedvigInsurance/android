@@ -34,7 +34,11 @@ fun ChangeAddressSwitch(
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier.padding(horizontal = 16.dp),
     ) {
-      Text(text = label, color = MaterialTheme.colorScheme.onSurfaceVariant)
+      Text(
+        text = label,
+        style = MaterialTheme.typography.headlineSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+      )
       Spacer(modifier = Modifier.weight(1f))
       Switch(
         checked = checked,

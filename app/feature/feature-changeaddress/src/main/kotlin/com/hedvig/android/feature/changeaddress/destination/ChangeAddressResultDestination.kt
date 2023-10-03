@@ -24,7 +24,7 @@ internal fun ChangeAddressResultDestination(
   ) {
     HedvigSuccessSection(
       title = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_SUCCESS_TITLE),
-      subTitle = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_SUCCESS_TITLE, movingDate.toString()),
+      subTitle = stringResource(id = hedvig.resources.R.string.CHANGE_ADDRESS_SUCCESS_SUBTITLE, movingDate.toString()),
       modifier = Modifier.align(Alignment.Center),
     )
     HedvigTextButton(

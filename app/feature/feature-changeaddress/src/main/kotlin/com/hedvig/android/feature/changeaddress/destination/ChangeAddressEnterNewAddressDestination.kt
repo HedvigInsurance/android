@@ -62,10 +62,13 @@ internal fun ChangeAddressEnterNewDestination(
     onMoveDateSelected = viewModel::onMoveDateSelected,
     onIsStudentSelected = viewModel::onIsStudentChanged,
     onSaveNewAddress = {
-      if (uiState.housingType.input == HousingType.VILLA) {
-        onContinue()
-      } else {
-        viewModel.onSubmitNewAddress()
+      val isInputValid = viewModel.validateAddressInput()
+      if (isInputValid) {
+        if (uiState.housingType.input == HousingType.VILLA) {
+          onContinue()
+        } else {
+          viewModel.onSubmitNewAddress()
+        }
       }
     },
   )
@@ -140,7 +143,7 @@ private fun ChangeAddressEnterNewScreen(
     )
     Spacer(modifier = Modifier.height(8.dp))
     InputTextField(
-      value = uiState.numberCoInsured,
+      value = uiState.numberInsured,
       onValueChange = onCoInsuredChanged,
       label = stringResource(id = R.string.CHANGE_ADDRESS_CO_INSURED_LABEL),
       modifier = Modifier.padding(horizontal = 16.dp),
@@ -160,13 +163,13 @@ private fun ChangeAddressEnterNewScreen(
         modifier = Modifier.padding(horizontal = 16.dp),
       )
     }
-    if (uiState.housingType.input != HousingType.VILLA) {
+    if (uiState.isEligibleForStudent) {
       Spacer(modifier = Modifier.height(8.dp))
       ChangeAddressSwitch(
         label = stringResource(id = R.string.CHANGE_ADDRESS_STUDENT_LABEL),
-        checked = uiState.isStudent.input,
+        checked = uiState.isStudent,
         onCheckedChange = onIsStudentSelected,
-        onClick = { onIsStudentSelected(!uiState.isStudent.input) },
+        onClick = { onIsStudentSelected(!uiState.isStudent) },
       )
     }
     Spacer(modifier = Modifier.height(16.dp))
