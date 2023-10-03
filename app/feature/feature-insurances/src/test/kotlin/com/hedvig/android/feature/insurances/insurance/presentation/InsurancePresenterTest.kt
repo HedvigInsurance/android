@@ -10,6 +10,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.InsuranceContract
@@ -80,8 +81,8 @@ internal class InsurancePresenterTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
     val presenter = InsurancePresenter(
-      getInsuranceContractsUseCase,
-      getCrossSellsUseCase,
+      Provider { getInsuranceContractsUseCase },
+      Provider { getCrossSellsUseCase },
       FakeCrossSellCardNotificationBadgeService(),
     )
     presenter.test(InsuranceUiState.initialState) {
@@ -113,8 +114,8 @@ internal class InsurancePresenterTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
     val presenter = InsurancePresenter(
-      getInsuranceContractsUseCase,
-      getCrossSellsUseCase,
+      Provider { getInsuranceContractsUseCase },
+      Provider { getCrossSellsUseCase },
       FakeCrossSellCardNotificationBadgeService(),
     )
     presenter.test(InsuranceUiState.initialState) {
@@ -136,8 +137,8 @@ internal class InsurancePresenterTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
     val presenter = InsurancePresenter(
-      getInsuranceContractsUseCase,
-      getCrossSellsUseCase,
+      Provider { getInsuranceContractsUseCase },
+      Provider { getCrossSellsUseCase },
       FakeCrossSellCardNotificationBadgeService(),
     )
     presenter.test(InsuranceUiState.initialState) {
@@ -159,8 +160,8 @@ internal class InsurancePresenterTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
     val presenter = InsurancePresenter(
-      getInsuranceContractsUseCase,
-      getCrossSellsUseCase,
+      Provider { getInsuranceContractsUseCase },
+      Provider { getCrossSellsUseCase },
       FakeCrossSellCardNotificationBadgeService(),
     )
     presenter.test(InsuranceUiState.initialState) {
@@ -200,8 +201,8 @@ internal class InsurancePresenterTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
     val presenter = InsurancePresenter(
-      getInsuranceContractsUseCase,
-      getCrossSellsUseCase,
+      Provider { getInsuranceContractsUseCase },
+      Provider { getCrossSellsUseCase },
       FakeCrossSellCardNotificationBadgeService(),
     )
     val allContracts = validContracts + terminatedContracts
@@ -227,8 +228,8 @@ internal class InsurancePresenterTest {
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
     val crossSellCardNotificationBadgeService = FakeCrossSellCardNotificationBadgeService()
     val presenter = InsurancePresenter(
-      getInsuranceContractsUseCase,
-      getCrossSellsUseCase,
+      Provider { getInsuranceContractsUseCase },
+      Provider { getCrossSellsUseCase },
       crossSellCardNotificationBadgeService,
     )
     presenter.test(InsuranceUiState.initialState) {
@@ -252,8 +253,8 @@ internal class InsurancePresenterTest {
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
     val crossSellCardNotificationBadgeService = FakeCrossSellCardNotificationBadgeService()
     val presenter = InsurancePresenter(
-      getInsuranceContractsUseCase,
-      getCrossSellsUseCase,
+      Provider { getInsuranceContractsUseCase },
+      Provider { getCrossSellsUseCase },
       crossSellCardNotificationBadgeService,
     )
     val initialState = InsuranceUiState(
