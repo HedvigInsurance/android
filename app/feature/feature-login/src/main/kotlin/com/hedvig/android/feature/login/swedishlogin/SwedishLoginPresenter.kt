@@ -130,10 +130,10 @@ internal class SwedishLoginPresenter(
 }
 
 internal sealed interface SwedishLoginEvent {
-  object Retry : SwedishLoginEvent
-  object DidOpenBankIDApp : SwedishLoginEvent
-  object DidNavigateToLoginScreen : SwedishLoginEvent
-  object StartDemoMode : SwedishLoginEvent
+  data object Retry : SwedishLoginEvent
+  data object DidOpenBankIDApp : SwedishLoginEvent
+  data object DidNavigateToLoginScreen : SwedishLoginEvent
+  data object StartDemoMode : SwedishLoginEvent
 }
 
 internal sealed interface SwedishLoginUiState {
