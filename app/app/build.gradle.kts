@@ -204,7 +204,7 @@ dependencies {
   implementation(projects.dataForever)
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.dataTravelCertificatePublic)
-  implementation(projects.datadog)
+  implementation(projects.datadogCore)
   implementation(projects.featureChangeaddress)
   implementation(projects.featureClaimTriaging)
   implementation(projects.coreDemoMode)
