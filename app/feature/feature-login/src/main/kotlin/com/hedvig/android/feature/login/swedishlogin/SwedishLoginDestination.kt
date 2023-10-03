@@ -95,13 +95,36 @@ private fun SwedishLoginScreen(
     navigateUp = navigateUp,
     topAppBarText = stringResource(R.string.SETTINGS_LOGIN_ROW),
   ) {
+    var showStartDemoDialog by remember { mutableStateOf(false) }
+    if (showStartDemoDialog) {
+      HedvigAlertDialog(
+        title = null,
+        text = "${stringResource(R.string.DEMO_MODE_START)}?",
+        onDismissRequest = { showStartDemoDialog = false },
+        onConfirmClick = enterDemoMode,
+      )
+    }
+    val demoModeModifier = remember(uiState) {
+      Modifier.testTag("qr_code").pointerInput(Unit) {
+        awaitEachGesture {
+          val down = awaitFirstDown(requireUnconsumed = false)
+          val longPress: PointerInputChange? = awaitLongPressOrCancellation(down.id)
+          if (longPress != null) {
+            showStartDemoDialog = true
+          }
+        }
+      }
+    }
     when (uiState) {
       is SwedishLoginUiState.StartLoginAttemptFailed -> {
         Box(
           contentAlignment = Alignment.Center,
           modifier = Modifier.weight(1f).fillMaxWidth(),
         ) {
-          HedvigErrorSection(retry = retry, subTitle = null, withDefaultVerticalSpacing = false)
+          Column {
+            Box(Modifier.size(48.dp).then(demoModeModifier))
+            HedvigErrorSection(retry = retry, subTitle = null, withDefaultVerticalSpacing = false)
+          }
         }
       }
       is SwedishLoginUiState.BankIdError -> {
@@ -109,12 +132,15 @@ private fun SwedishLoginScreen(
           Modifier.weight(1f).fillMaxWidth(),
           Alignment.Center,
         ) {
-          HedvigErrorSection(
-            title = stringResource(R.string.general_error),
-            subTitle = uiState.message,
-            retry = retry,
-            withDefaultVerticalSpacing = false,
-          )
+          Column {
+            Box(Modifier.size(48.dp).then(demoModeModifier))
+            HedvigErrorSection(
+              title = stringResource(R.string.general_error),
+              subTitle = uiState.message,
+              retry = retry,
+              withDefaultVerticalSpacing = false,
+            )
+          }
         }
       }
       SwedishLoginUiState.Loading -> {
@@ -134,17 +160,6 @@ private fun SwedishLoginScreen(
           didOpenBankId()
           bankIdState.tryOpenBankId()
         }
-
-        var showStartDemoDialog by remember { mutableStateOf(false) }
-        if (showStartDemoDialog) {
-          HedvigAlertDialog(
-            title = null,
-            text = "${stringResource(R.string.DEMO_MODE_START)}?",
-            onDismissRequest = { showStartDemoDialog = false },
-            onConfirmClick = enterDemoMode,
-          )
-        }
-
         Spacer(Modifier.height(16.dp))
         Spacer(Modifier.weight(1f))
         Column(
@@ -153,15 +168,7 @@ private fun SwedishLoginScreen(
         ) {
           QRCode(
             autoStartToken = uiState.autoStartToken,
-            modifier = Modifier.size(180.dp).testTag("qr_code").pointerInput(Unit) {
-              awaitEachGesture {
-                val down = awaitFirstDown(requireUnconsumed = false)
-                val longPress: PointerInputChange? = awaitLongPressOrCancellation(down.id)
-                if (longPress != null) {
-                  showStartDemoDialog = true
-                }
-              }
-            },
+            modifier = Modifier.size(180.dp).then(demoModeModifier),
           )
           Spacer(Modifier.height(32.dp))
           Text(
