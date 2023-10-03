@@ -102,6 +102,7 @@ internal class GetContractDetailsUseCaseImpl(
             null
           },
           cancelInsuranceData = cancelInsuranceData,
+          allowChangeAddress = true,
           allowEditCoInsured = contract.typeOfContract.canChangeCoInsured(),
           insurableLimits = contractCoverage.insurableLimits,
           perils = contractCoverage.contractPerils,
@@ -122,6 +123,7 @@ internal data class ContractDetails(
   val overviewItems: ImmutableList<Pair<String, String>>,
   val upcomingChanges: UpcomingChanges?,
   val cancelInsuranceData: CancelInsuranceData?,
+  val allowChangeAddress: Boolean,
   val allowEditCoInsured: Boolean,
   val insurableLimits: ImmutableList<ContractCoverage.InsurableLimit>,
   val perils: ImmutableList<ContractCoverage.Peril>,

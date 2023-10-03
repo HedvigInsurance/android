@@ -50,6 +50,7 @@ import kotlinx.coroutines.launch
 @Composable
 internal fun YourInfoTab(
   coverageItems: ImmutableList<Pair<String, String>>,
+  allowChangeAddress: Boolean,
   allowEditCoInsured: Boolean,
   upcomingChanges: ContractDetails.UpcomingChanges?,
   onEditCoInsuredClick: () -> Unit,
@@ -73,6 +74,7 @@ internal fun YourInfoTab(
       windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
     ) {
       EditInsuranceBottomSheetContent(
+        allowChangeAddress = allowChangeAddress,
         allowEditCoInsured = allowEditCoInsured,
         onEditCoInsuredClick = {
           coroutineScope.launch {
@@ -162,16 +164,18 @@ internal fun YourInfoTab(
       Spacer(Modifier.height(8.dp))
     }
     CoverageRows(coverageItems, Modifier.padding(horizontal = 16.dp))
-    Spacer(Modifier.height(16.dp))
-    HedvigContainedButton(
-      text = stringResource(R.string.CONTRACT_EDIT_INFO_LABEL),
-      onClick = { showEditYourInfoBottomSheet = true },
-      colors = ButtonDefaults.buttonColors(
-        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        contentColor = MaterialTheme.colorScheme.onSurface,
-      ),
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
+    if (allowChangeAddress || allowEditCoInsured) {
+      Spacer(Modifier.height(16.dp))
+      HedvigContainedButton(
+        text = stringResource(R.string.CONTRACT_EDIT_INFO_LABEL),
+        onClick = { showEditYourInfoBottomSheet = true },
+        colors = ButtonDefaults.buttonColors(
+          containerColor = MaterialTheme.colorScheme.surfaceVariant,
+          contentColor = MaterialTheme.colorScheme.onSurface,
+        ),
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+    }
     if (cancelInsuranceData != null) {
       Spacer(Modifier.height(8.dp))
       HedvigTextButton(
@@ -238,6 +242,7 @@ private fun PreviewYourInfoTab() {
           "Size" to "56 m2",
           "Co-insured".repeat(4) to "You +1".repeat(5),
         ),
+        allowChangeAddress = true,
         allowEditCoInsured = true,
         upcomingChanges = ContractDetails.UpcomingChanges(
           "Your insurance will update on 2023.08.17",

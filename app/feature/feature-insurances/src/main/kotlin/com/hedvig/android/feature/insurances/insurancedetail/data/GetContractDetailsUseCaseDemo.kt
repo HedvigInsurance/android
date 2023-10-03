@@ -25,6 +25,7 @@ internal class GetContractDetailsUseCaseDemo : GetContractDetailsUseCase {
         ),
         upcomingChanges = null,
         cancelInsuranceData = null,
+        allowChangeAddress = false,
         allowEditCoInsured = false,
         insurableLimits = persistentListOf(
           ContractCoverage.InsurableLimit(
@@ -53,7 +54,7 @@ internal class GetContractDetailsUseCaseDemo : GetContractDetailsUseCase {
             0xFF4040FF,
           ),
         ),
-        documents = persistentListOf(ContractDetails.Document.TermsAndConditions("")),
+        documents = persistentListOf(ContractDetails.Document.TermsAndConditions("", "Insurance Certificate")),
       )
     }
   }

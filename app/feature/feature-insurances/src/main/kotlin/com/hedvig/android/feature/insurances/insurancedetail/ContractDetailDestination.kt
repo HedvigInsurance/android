@@ -159,6 +159,7 @@ private fun ContractDetailScreen(
                   0 -> {
                     YourInfoTab(
                       coverageItems = state.contractDetails.overviewItems,
+                      allowChangeAddress = state.contractDetails.allowChangeAddress,
                       allowEditCoInsured = state.contractDetails.allowEditCoInsured,
                       onEditCoInsuredClick = onEditCoInsuredClick,
                       onChangeAddressClick = onChangeAddressClick,
@@ -249,6 +250,7 @@ private fun PreviewContractDetailScreen() {
             ),
             overviewItems = persistentListOf(),
             cancelInsuranceData = ContractDetails.CancelInsuranceData("", ""),
+            allowChangeAddress = true,
             allowEditCoInsured = true,
             insurableLimits = persistentListOf(),
             perils = persistentListOf(),
