@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -51,19 +52,14 @@ internal fun DocumentsTab(
     for ((index, document) in documents.withIndex()) {
       DocumentCard(
         onClick = { onDocumentClicked(document.url.toUri()) },
-        title = stringResource(
-          when (document) {
-            is ContractDetails.Document.InsuranceCertificate -> R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE
-            is ContractDetails.Document.TermsAndConditions ->
-              R.string.insurance_details_view_documents_full_terms_subtitle
-          },
-        ),
-        subtitle = stringResource(
-          when (document) {
-            is ContractDetails.Document.InsuranceCertificate -> R.string.MY_DOCUMENTS_INSURANCE_TERMS
-            is ContractDetails.Document.TermsAndConditions -> R.string.MY_DOCUMENTS_INSURANCE_TERMS_SUBTITLE
-          },
-        ),
+        title = when (document) {
+          is ContractDetails.Document.InsuranceCertificate -> stringResource(R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE)
+          is ContractDetails.Document.TermsAndConditions -> document.displayName
+        },
+        subtitle = when (document) {
+          is ContractDetails.Document.InsuranceCertificate -> null
+          is ContractDetails.Document.TermsAndConditions -> null
+        },
       )
       if (index != documents.lastIndex) {
         Spacer(Modifier.height(4.dp))
@@ -86,7 +82,7 @@ private fun DocumentCard(
       containerColor = MaterialTheme.colorScheme.surfaceVariant,
       contentColor = MaterialTheme.colorScheme.onSurface,
     ),
-    modifier = Modifier.padding(horizontal = 16.dp),
+    modifier = Modifier.padding(horizontal = 16.dp).heightIn(min = 72.dp),
   ) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
@@ -108,10 +104,12 @@ private fun DocumentCard(
             }
           },
         )
-        Text(
-          text = subtitle ?: "",
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        if (!subtitle.isNullOrBlank()) {
+          Text(
+            text = subtitle,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+          )
+        }
       }
       Spacer(Modifier.width(8.dp))
       Icon(
@@ -130,7 +128,7 @@ private fun PreviewDocumentsScreen() {
     Surface(color = MaterialTheme.colorScheme.background) {
       DocumentsTab(
         documents = persistentListOf(
-          ContractDetails.Document.TermsAndConditions(""),
+          ContractDetails.Document.TermsAndConditions("", "test"),
           ContractDetails.Document.InsuranceCertificate(""),
         ),
         onDocumentClicked = {},
