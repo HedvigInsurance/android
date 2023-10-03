@@ -7,6 +7,6 @@ import giraffe.ReferralTermsQuery
 
 class GetReferralsInformationUseCaseDemo : GetReferralsInformationUseCase {
   override suspend fun invoke(): Either<ErrorMessage, ReferralTermsQuery.ReferralTerms> = either {
-    ReferralTermsQuery.ReferralTerms("test")
+    raise(ErrorMessage("Demo"))
   }
 }

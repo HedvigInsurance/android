@@ -6,10 +6,8 @@ import com.hedvig.android.datadog.core.attributestracking.DatadogAttributesManag
 import com.hedvig.android.initializable.Initializable
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.launch
 
-@OptIn(InternalCoroutinesApi::class)
 class DatadogDemoModeTracking(
   private val applicationScope: ApplicationScope,
   private val demoManager: DemoManager,

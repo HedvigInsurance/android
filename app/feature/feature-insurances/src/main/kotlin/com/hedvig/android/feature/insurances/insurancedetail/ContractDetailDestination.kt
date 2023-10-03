@@ -52,6 +52,7 @@ import com.hedvig.android.core.ui.insurance.toDrawableRes
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.feature.insurances.insurancedetail.coverage.CoverageTab
+import com.hedvig.android.feature.insurances.insurancedetail.data.ContractDetails
 import com.hedvig.android.feature.insurances.insurancedetail.documents.DocumentsTab
 import com.hedvig.android.feature.insurances.insurancedetail.yourinfo.YourInfoTab
 import hedvig.resources.R
@@ -158,6 +159,7 @@ private fun ContractDetailScreen(
                   0 -> {
                     YourInfoTab(
                       coverageItems = state.contractDetails.overviewItems,
+                      allowChangeAddress = state.contractDetails.allowChangeAddress,
                       allowEditCoInsured = state.contractDetails.allowEditCoInsured,
                       onEditCoInsuredClick = onEditCoInsuredClick,
                       onChangeAddressClick = onChangeAddressClick,
@@ -248,6 +250,7 @@ private fun PreviewContractDetailScreen() {
             ),
             overviewItems = persistentListOf(),
             cancelInsuranceData = ContractDetails.CancelInsuranceData("", ""),
+            allowChangeAddress = true,
             allowEditCoInsured = true,
             insurableLimits = persistentListOf(),
             perils = persistentListOf(),

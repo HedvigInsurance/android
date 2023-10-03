@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.insurances.insurancedetail
+package com.hedvig.android.feature.insurances.insurancedetail.data
 
 import arrow.core.Either
 import arrow.core.raise.either
@@ -20,13 +20,17 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 
-internal class GetContractDetailsUseCase(
+internal interface GetContractDetailsUseCase {
+  suspend fun invoke(contractId: String): Either<ContractDetailError, ContractDetails>
+}
+
+internal class GetContractDetailsUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val getContractCoverageUseCase: GetContractCoverageUseCase,
   private val languageService: LanguageService,
   private val featureManager: FeatureManager,
-) {
-  suspend fun invoke(contractId: String): Either<ContractDetailError, ContractDetails> {
+) : GetContractDetailsUseCase {
+  override suspend fun invoke(contractId: String): Either<ContractDetailError, ContractDetails> {
     return either {
       parZip(
         {
@@ -98,6 +102,7 @@ internal class GetContractDetailsUseCase(
             null
           },
           cancelInsuranceData = cancelInsuranceData,
+          allowChangeAddress = true,
           allowEditCoInsured = contract.typeOfContract.canChangeCoInsured(),
           insurableLimits = contractCoverage.insurableLimits,
           perils = contractCoverage.contractPerils,
@@ -118,6 +123,7 @@ internal data class ContractDetails(
   val overviewItems: ImmutableList<Pair<String, String>>,
   val upcomingChanges: UpcomingChanges?,
   val cancelInsuranceData: CancelInsuranceData?,
+  val allowChangeAddress: Boolean,
   val allowEditCoInsured: Boolean,
   val insurableLimits: ImmutableList<ContractCoverage.InsurableLimit>,
   val perils: ImmutableList<ContractCoverage.Peril>,

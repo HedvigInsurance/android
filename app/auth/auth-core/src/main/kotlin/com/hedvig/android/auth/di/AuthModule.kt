@@ -8,12 +8,16 @@ import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.AuthTokenServiceImpl
 import com.hedvig.android.auth.event.AuthEventBroadcaster
 import com.hedvig.android.auth.event.AuthEventListener
+import com.hedvig.android.auth.event.AuthEventStorage
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.auth.storage.AuthTokenStorage
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.di.ioDispatcherQualifier
+import com.hedvig.android.initializable.Initializable
 import com.hedvig.authlib.AuthRepository
+import org.koin.dsl.bind
 import org.koin.dsl.module
+import kotlin.coroutines.CoroutineContext
 
 @Suppress("RemoveExplicitTypeArguments")
 val authModule = module {
@@ -23,16 +27,18 @@ val authModule = module {
     AuthTokenServiceImpl(
       get<AuthTokenStorage>(),
       get<AuthRepository>(),
-      get<AuthEventBroadcaster>(),
+      get<AuthEventStorage>(),
       get<ApplicationScope>(),
     )
   }
   single<AuthTokenStorage> { AuthTokenStorage(get<DataStore<Preferences>>()) }
+  single<AuthEventStorage> { AuthEventStorage() }
   single<AuthEventBroadcaster> {
     AuthEventBroadcaster(
+      authEventStorage = get<AuthEventStorage>(),
       authEventListeners = getAll<AuthEventListener>().toSet(),
-      applicationScope = get(),
-      coroutineContext = get(ioDispatcherQualifier),
+      applicationScope = get<ApplicationScope>(),
+      coroutineContext = get<CoroutineContext>(ioDispatcherQualifier),
     )
-  }
+  } bind Initializable::class
 }

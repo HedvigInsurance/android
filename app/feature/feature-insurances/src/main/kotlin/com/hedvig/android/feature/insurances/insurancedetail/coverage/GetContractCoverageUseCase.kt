@@ -8,7 +8,7 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.feature.insurances.insurancedetail.ContractDetails
+import com.hedvig.android.feature.insurances.insurancedetail.data.ContractDetails
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import octopus.ContractCoverageQuery

@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.core.common.RetryChannel
+import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
@@ -24,7 +25,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -37,6 +40,7 @@ class ChatViewModel(
   private val chatClosedTracker: ChatEventStore,
   private val hAnalytics: HAnalytics,
   private val featureManager: FeatureManager,
+  private val demoManager: DemoManager,
 ) : ViewModel() {
 
   private val retryChannel = RetryChannel()
@@ -44,16 +48,27 @@ class ChatViewModel(
   private val _messages = MutableStateFlow<ChatMessagesQuery.Data?>(null)
   val messages = _messages.asStateFlow()
 
-  /**
-   * [null] implies that it's still not evaluated. In those situations, not showing the chat at all is preferred.
-   */
-  val isChatDisabled: StateFlow<Boolean?> = flow {
-    emit(featureManager.isFeatureEnabled(Feature.DISABLE_CHAT))
-  }.stateIn(
-    viewModelScope,
-    SharingStarted.WhileSubscribed(5.seconds),
-    null,
-  )
+  val chatEnabledStatus: StateFlow<ChatEnabledStatus> = flow {
+    val isInDemoMode = demoManager.isDemoMode().first()
+    if (isInDemoMode) {
+      emit(ChatEnabledStatus.Disabled.IsInDemoMode)
+      return@flow
+    }
+    val chatIsDisabledByFeatureFlag = featureManager.isFeatureEnabled(Feature.DISABLE_CHAT)
+    if (chatIsDisabledByFeatureFlag) {
+      emit(ChatEnabledStatus.Disabled.FromFeatureFlag)
+      return@flow
+    }
+    emit(ChatEnabledStatus.Enabled)
+  }
+    .onEach {
+      logcat { "chatEnabledStatus:$it" }
+    }
+    .stateIn(
+      viewModelScope,
+      SharingStarted.WhileSubscribed(5.seconds),
+      ChatEnabledStatus.Uninitialized,
+    )
 
   init {
     hAnalytics.screenView(AppScreen.CHAT)
@@ -76,6 +91,8 @@ class ChatViewModel(
       logcat(LogPriority.VERBOSE) { "Chat: fetchChatMessages finished" }
     }
     viewModelScope.launch {
+      // Wait with loading the messages until we know the chat should be functioning
+      chatEnabledStatus.first { it is ChatEnabledStatus.Enabled }
       logcat(LogPriority.VERBOSE) { "Chat: subscribeToChatMessages starting" }
       retryChannel
         .flatMapLatest {
@@ -252,4 +269,13 @@ sealed class ChatEvent {
 
   // An event to inform the UI that the current input field can be cleared. Used after a message was successfully sent
   object ClearTextFieldInput : ChatEvent()
+}
+
+sealed interface ChatEnabledStatus {
+  data object Uninitialized : ChatEnabledStatus
+  data object Enabled : ChatEnabledStatus
+  sealed interface Disabled : ChatEnabledStatus {
+    data object FromFeatureFlag : Disabled
+    data object IsInDemoMode : Disabled
+  }
 }

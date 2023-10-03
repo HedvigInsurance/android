@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.insurances.insurancedetail.yourinfo
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,7 +16,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -34,13 +35,14 @@ import hedvig.resources.R
 
 @Composable
 internal fun EditInsuranceBottomSheetContent(
+  allowChangeAddress: Boolean,
   allowEditCoInsured: Boolean,
   onEditCoInsuredClick: () -> Unit,
   onChangeAddressClick: () -> Unit,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  var selectedItemIndex by rememberSaveable { mutableStateOf(-1) }
+  var selectedItemIndex by rememberSaveable { mutableIntStateOf(-1) }
   Column(
     modifier = modifier,
   ) {
@@ -53,30 +55,35 @@ internal fun EditInsuranceBottomSheetContent(
         .padding(horizontal = 24.dp),
     )
     Spacer(modifier = Modifier.height(32.dp))
-    SelectableItem(
-      text = stringResource(R.string.insurance_details_change_address_button),
-      isSelected = selectedItemIndex == 0,
-      onClick = {
-        selectedItemIndex = if (selectedItemIndex == 0) {
-          -1
-        } else {
-          0
-        }
-      },
-    )
-    if (allowEditCoInsured) {
-      Spacer(modifier = Modifier.height(4.dp))
-      SelectableItem(
-        text = stringResource(R.string.CONTRACT_EDIT_COINSURED),
-        isSelected = selectedItemIndex == 1,
-        onClick = {
-          selectedItemIndex = if (selectedItemIndex == 1) {
-            -1
-          } else {
-            1
-          }
-        },
-      )
+    Column(
+      verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+      if (allowChangeAddress) {
+        SelectableItem(
+          text = stringResource(R.string.insurance_details_change_address_button),
+          isSelected = selectedItemIndex == 0,
+          onClick = {
+            selectedItemIndex = if (selectedItemIndex == 0) {
+              -1
+            } else {
+              0
+            }
+          },
+        )
+      }
+      if (allowEditCoInsured) {
+        SelectableItem(
+          text = stringResource(R.string.CONTRACT_EDIT_COINSURED),
+          isSelected = selectedItemIndex == 1,
+          onClick = {
+            selectedItemIndex = if (selectedItemIndex == 1) {
+              -1
+            } else {
+              1
+            }
+          },
+        )
+      }
     }
     Spacer(modifier = Modifier.height(16.dp))
     AnimatedVisibility(visible = selectedItemIndex == 1) {
@@ -138,6 +145,7 @@ private fun PreviewEditInsuranceBottomSheetContent() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       EditInsuranceBottomSheetContent(
+        allowChangeAddress = true,
         allowEditCoInsured = true,
         onEditCoInsuredClick = {},
         onChangeAddressClick = {},

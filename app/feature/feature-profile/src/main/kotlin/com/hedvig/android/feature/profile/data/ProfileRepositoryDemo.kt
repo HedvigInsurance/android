@@ -7,13 +7,17 @@ import org.javamoney.moneta.Money
 import java.math.BigDecimal
 
 internal class ProfileRepositoryDemo : ProfileRepository {
-  private val demoMember = Member(
-    id = "test",
-    firstName = "Google",
-    lastName = "Tester",
-    phoneNumber = null,
-    email = "google@gmail.com",
-  )
+  private var email = "google@gmail.com"
+  private var phoneNumber = "072102103"
+
+  private val demoMember: Member
+    get() = Member(
+      id = "test",
+      firstName = "Google",
+      lastName = "Tester",
+      phoneNumber = phoneNumber,
+      email = email,
+    )
 
   override suspend fun profile(): Either<OperationResult.Error, ProfileData> = either {
     ProfileData(
@@ -29,10 +33,12 @@ internal class ProfileRepositoryDemo : ProfileRepository {
   }
 
   override suspend fun updateEmail(input: String): Either<OperationResult.Error, Member> = either {
+    email = input
     demoMember
   }
 
   override suspend fun updatePhoneNumber(input: String): Either<OperationResult.Error, Member> = either {
+    phoneNumber = input
     demoMember
   }
 }

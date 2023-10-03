@@ -19,6 +19,8 @@ import com.apollographql.apollo3.interceptor.ApolloInterceptor
 import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.hedvig.android.apollo.NetworkCacheManager
+import com.hedvig.android.apollo.auth.listeners.di.apolloAuthListenersModule
+import com.hedvig.android.apollo.auth.listeners.subscription.ReopenSubscriptionException
 import com.hedvig.android.apollo.di.apolloClientModule
 import com.hedvig.android.apollo.giraffe.di.giraffeClient
 import com.hedvig.android.app.di.appModule
@@ -146,7 +148,6 @@ import com.hedvig.app.service.push.senders.ReferralsNotificationSender
 import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.NetworkCacheManagerImpl
-import com.hedvig.app.util.apollo.ReopenSubscriptionException
 import com.hedvig.app.util.apollo.SunsettingInterceptor
 import com.hedvig.app.util.extensions.startChat
 import com.hedvig.authlib.AuthEnvironment
@@ -275,7 +276,7 @@ fun makeUserAgent(locale: Locale): String = buildString {
 }
 
 private val viewModelModule = module {
-  viewModel { ChatViewModel(get(), get(), get(), get()) }
+  viewModel { ChatViewModel(get(), get(), get(), get(), get()) }
   viewModel { (quoteCartId: QuoteCartId?) -> RedeemCodeViewModel(quoteCartId, get(), get()) }
   viewModel { DatePickerViewModel() }
   viewModel { params ->
@@ -491,7 +492,7 @@ private val clockModule = module {
 private val useCaseModule = module {
   single { StartCheckoutUseCase(get<ApolloClient>(giraffeClient), get(), get()) }
   single<LogoutUseCase> {
-    LogoutUseCaseImpl(get<ApolloClient>(giraffeClient), get(), get(), get(), get(), get(), get())
+    LogoutUseCaseImpl(get(), get(), get(), get(), get(), get())
   }
   single { GraphQLQueryUseCase(get()) }
   single<GetInsuranceProvidersUseCase> {
@@ -610,6 +611,7 @@ val applicationModule = module {
     listOf(
       activityNavigatorModule,
       adyenModule,
+      apolloAuthListenersModule,
       apolloClientModule,
       appModule,
       authModule,
