@@ -2,6 +2,7 @@ query ContractCoverage($contractId: UUID!) {
   contract(id: $contractId) {
     id
     currentAgreement {
+      certificateUrl
       productVariant {
         ...ProductVariantFragment
       }

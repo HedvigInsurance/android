@@ -116,27 +116,33 @@ internal data class ContractCoverage(
             when (document.type) {
               InsuranceDocumentType.TERMS_AND_CONDITIONS -> ContractDetails.Document.TermsAndConditions(
                 url = document.url,
-                displayName = document.displayName
+                displayName = document.displayName,
               )
+
               InsuranceDocumentType.PRE_SALE_INFO_EU_STANDARD -> ContractDetails.Document.TermsAndConditions(
                 url = document.url,
-                displayName = document.displayName
+                displayName = document.displayName,
               )
+
               InsuranceDocumentType.PRE_SALE_INFO -> ContractDetails.Document.TermsAndConditions(
                 url = document.url,
-                displayName = document.displayName
+                displayName = document.displayName,
               )
+
               InsuranceDocumentType.GENERAL_TERMS -> ContractDetails.Document.TermsAndConditions(
                 url = document.url,
-                displayName = document.displayName
+                displayName = document.displayName,
               )
+
               InsuranceDocumentType.PRIVACY_POLICY -> ContractDetails.Document.TermsAndConditions(
                 url = document.url,
-                displayName = document.displayName
+                displayName = document.displayName,
               )
+
               InsuranceDocumentType.UNKNOWN__ -> throw IllegalArgumentException("Unknown contract type")
             }
           }
+          .plus(ContractDetails.Document.InsuranceCertificate(contract.currentAgreement.certificateUrl))
           .toPersistentList(),
       )
     }
