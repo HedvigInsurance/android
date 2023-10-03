@@ -11,7 +11,7 @@ internal class ForeverRepositoryDemo : ForeverRepository {
     ReferralsQuery.Data()
   }
 
-  override suspend fun updateCode(newCode: String): Either<ForeverRepositoryImpl.ReferralError, String> = either {
+  override suspend fun updateCode(newCode: String): Either<ForeverRepository.ReferralError, String> = either {
     newCode
   }
 

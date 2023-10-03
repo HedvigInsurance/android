@@ -3,6 +3,7 @@ package com.hedvig.android.feature.forever
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -12,7 +13,6 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.forever.ForeverRepository
-import com.hedvig.android.data.forever.ForeverRepositoryImpl
 import com.hedvig.android.feature.forever.data.GetReferralsInformationUseCase
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -39,12 +39,12 @@ internal class ForeverPresenter(
   @Composable
   override fun MoleculePresenterScope<ForeverEvent>.present(lastState: ForeverUiState): ForeverUiState {
     var isLoadingForeverData by remember { mutableStateOf(lastState.isLoadingForeverData) }
-    var foreverDataLoadIteration by remember { mutableStateOf(0) }
+    var foreverDataLoadIteration by remember { mutableIntStateOf(0) }
     var foreverDataErrorMessage by remember { mutableStateOf(lastState.foreverDataErrorMessage) }
     var foreverData by remember { mutableStateOf(lastState.foreverData) }
 
     var referralCodeToSubmit by remember { mutableStateOf<String?>(null) }
-    var referralCodeToSubmitErrorMessage by remember { mutableStateOf<ForeverRepositoryImpl.ReferralError?>(null) }
+    var referralCodeToSubmitErrorMessage by remember { mutableStateOf<ForeverRepository.ReferralError?>(null) }
     var showReferralCodeToSubmitSuccess by remember { mutableStateOf<Boolean>(false) }
 
     CollectEvents { event ->
@@ -114,7 +114,7 @@ internal data class ForeverUiState(
   val isLoadingForeverData: Boolean,
   val foreverDataErrorMessage: ErrorMessage?,
   val referralCodeLoading: Boolean,
-  val referralCodeErrorMessage: ForeverRepositoryImpl.ReferralError?,
+  val referralCodeErrorMessage: ForeverRepository.ReferralError?,
   val showReferralCodeSuccessfullyChangedMessage: Boolean,
 ) {
 

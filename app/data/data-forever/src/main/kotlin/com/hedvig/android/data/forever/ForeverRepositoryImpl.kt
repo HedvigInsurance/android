@@ -8,6 +8,7 @@ import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.data.forever.ForeverRepository.ReferralError
 import com.hedvig.android.language.LanguageService
 import giraffe.RedeemReferralCodeMutation
 import giraffe.ReferralsQuery
@@ -82,25 +83,4 @@ internal class ForeverRepositoryImpl(
   }
 
   private fun toReferralError(message: String?) = ReferralError.GeneralError(message)
-
-  sealed interface ReferralError {
-    data class GeneralError(
-      val message: String?,
-    ) : ReferralError
-
-    data class CodeTooLong(
-      val maxCharacters: Int,
-    ) : ReferralError
-
-    data class CodeTooShort(
-      val minCharacters: Int,
-    ) : ReferralError
-
-    data class MaxUpdates(
-      val maxUpdates: Int,
-    ) : ReferralError
-
-    data object CodeIsEmpty : ReferralError
-    data object CodeExists : ReferralError
-  }
 }
