@@ -45,6 +45,7 @@ internal class GetContractDetailsUseCase(
               ContractCoverage(
                 contractPerils = persistentListOf(),
                 insurableLimits = persistentListOf(),
+                documents = persistentListOf(),
               )
             },
             ifRight = { it },
@@ -100,12 +101,7 @@ internal class GetContractDetailsUseCase(
           allowEditCoInsured = contract.typeOfContract.canChangeCoInsured(),
           insurableLimits = contractCoverage.insurableLimits,
           perils = contractCoverage.contractPerils,
-          documents = listOfNotNull(
-            contract.currentAgreement?.asAgreementCore?.certificateUrl?.let { certificateUrl ->
-              ContractDetails.Document.InsuranceCertificate(certificateUrl)
-            },
-            ContractDetails.Document.TermsAndConditions(contract.termsAndConditions.url),
-          ).toPersistentList(),
+          documents = contractCoverage.documents,
         )
       }
     }
@@ -145,7 +141,10 @@ internal data class ContractDetails(
     val url: String
 
     data class InsuranceCertificate(override val url: String) : Document
-    data class TermsAndConditions(override val url: String) : Document
+    data class TermsAndConditions(
+      override val url: String,
+      val displayName: String,
+    ) : Document
   }
 
   data class UpcomingChanges(
