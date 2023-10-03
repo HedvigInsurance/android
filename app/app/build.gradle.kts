@@ -184,6 +184,7 @@ dependencies {
   implementation(libs.reactiveX.kotlin)
   implementation(libs.shimmer)
   implementation(libs.timber)
+  implementation(projects.apolloAuthListeners)
   implementation(projects.apolloCore)
   implementation(projects.apolloDi)
   implementation(projects.apolloGiraffePublic)

@@ -1,9 +1,11 @@
-package com.hedvig.app.util.apollo
+package com.hedvig.android.apollo.auth.listeners.subscription
 
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.network.ws.closeConnection
 
-object ReopenSubscriptionException : Exception("ReopenSubscriptionException")
+object ReopenSubscriptionException : Exception("ReopenSubscriptionException") {
+  private fun readResolve(): Any = ReopenSubscriptionException
+}
 
 /**
  * The name "reconnect" depends on the apolloClient being configured to re-open the subscription when specifically
@@ -19,6 +21,6 @@ object ReopenSubscriptionException : Exception("ReopenSubscriptionException")
  * }
  * ```
  */
-fun ApolloClient.reconnectSubscriptions() {
+internal fun ApolloClient.reconnectSubscriptions() {
   subscriptionNetworkTransport.closeConnection(ReopenSubscriptionException)
 }
