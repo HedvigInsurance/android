@@ -83,7 +83,7 @@ internal data class ContractCoverage(
   companion object {
     fun fromContract(contract: ContractCoverageQuery.Data.Contract): ContractCoverage {
       return ContractCoverage(
-        contractPerils = contract.variant.perils
+        contractPerils = contract.currentAgreement.productVariant.perils
           .map { peril ->
             Peril(
               id = peril.id,
@@ -99,7 +99,7 @@ internal data class ContractCoverage(
             )
           }
           .toPersistentList(),
-        insurableLimits = contract.variant.insurableLimits
+        insurableLimits = contract.currentAgreement.productVariant.insurableLimits
           .map { insurableLimit ->
             InsurableLimit(
               label = insurableLimit.label,
