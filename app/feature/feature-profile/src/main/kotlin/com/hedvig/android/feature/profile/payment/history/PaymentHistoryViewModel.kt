@@ -3,18 +3,19 @@ package com.hedvig.android.feature.profile.payment.history
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.apollo.format
+import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.payment.ChargeHistory
-import com.hedvig.android.payment.di.PaymentRepositoryProvider
-import java.time.LocalDate
-import java.util.Locale
+import com.hedvig.android.payment.PaymentRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.util.Locale
 
 internal class PaymentHistoryViewModel(
-  private val paymentRepositoryProvider: PaymentRepositoryProvider,
+  private val paymentRepositoryProvider: Provider<PaymentRepository>,
   private val languageService: LanguageService,
 ) : ViewModel() {
 

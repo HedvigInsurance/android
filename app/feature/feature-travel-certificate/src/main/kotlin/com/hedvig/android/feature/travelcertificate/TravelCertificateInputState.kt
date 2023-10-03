@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.travelcertificate
 
 import androidx.compose.material3.DatePickerState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.data.travelcertificate.TravelCertificateData
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUri
@@ -11,6 +12,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
 
+@ExperimentalMaterial3Api
 internal data class TravelCertificateInputState(
   val contractId: String? = null,
   val email: ValidatedInput<String?> = ValidatedInput(null),

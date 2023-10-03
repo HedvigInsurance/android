@@ -5,8 +5,9 @@ import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.hedvig.android.core.common.android.validation.ValidationResult
 import com.hedvig.android.core.common.android.validation.validateEmail
+import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.ui.ValidatedInput
-import com.hedvig.android.feature.profile.di.ProfileRepositoryProvider
+import com.hedvig.android.feature.profile.data.ProfileRepository
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import hedvig.resources.R
@@ -17,7 +18,7 @@ import kotlinx.coroutines.launch
 
 internal class MyInfoViewModel(
   hAnalytics: HAnalytics,
-  private val profileRepositoryProvider: ProfileRepositoryProvider,
+  private val profileRepositoryProvider: Provider<ProfileRepository>,
 ) : ViewModel() {
   private val _uiState = MutableStateFlow(MyInfoUiState())
   val uiState: StateFlow<MyInfoUiState> = _uiState

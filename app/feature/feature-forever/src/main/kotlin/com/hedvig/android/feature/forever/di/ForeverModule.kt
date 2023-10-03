@@ -2,6 +2,7 @@ package com.hedvig.android.feature.forever.di
 
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.giraffe.di.giraffeClient
+import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.data.forever.di.ForeverRepositoryProvider
 import com.hedvig.android.feature.forever.ForeverViewModel
 import com.hedvig.android.feature.forever.data.GetReferralsInformationUseCaseDemo
@@ -28,7 +29,7 @@ val foreverModule = module {
   }
   single {
     GetReferralsInformationUseCaseProvider(
-      demoManager = get(),
+      demoManager = get<DemoManager>(),
       prodImpl = get<GetReferralsInformationUseCaseImpl>(),
       demoImpl = get<GetReferralsInformationUseCaseDemo>(),
     )

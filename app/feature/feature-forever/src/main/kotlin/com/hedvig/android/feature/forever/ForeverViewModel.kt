@@ -9,10 +9,11 @@ import androidx.compose.runtime.setValue
 import arrow.core.raise.either
 import arrow.fx.coroutines.parZip
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.forever.ForeverRepository
 import com.hedvig.android.data.forever.ForeverRepositoryImpl
-import com.hedvig.android.data.forever.di.ForeverRepositoryProvider
-import com.hedvig.android.feature.forever.di.GetReferralsInformationUseCaseProvider
+import com.hedvig.android.feature.forever.data.GetReferralsInformationUseCase
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -21,8 +22,8 @@ import giraffe.ReferralsQuery
 import giraffe.fragment.ReferralFragment
 
 internal class ForeverViewModel(
-  foreverRepositoryProvider: ForeverRepositoryProvider,
-  getReferralTermsUseCaseProvider: GetReferralsInformationUseCaseProvider,
+  foreverRepositoryProvider: Provider<ForeverRepository>,
+  getReferralTermsUseCaseProvider: Provider<GetReferralsInformationUseCase>,
 ) : MoleculeViewModel<ForeverEvent, ForeverUiState>(
   ForeverUiState.Loading,
   ForeverPresenter(
@@ -32,8 +33,8 @@ internal class ForeverViewModel(
 )
 
 internal class ForeverPresenter(
-  private val foreverRepositoryProvider: ForeverRepositoryProvider,
-  private val getReferralsInformationUseCaseProvider: GetReferralsInformationUseCaseProvider,
+  private val foreverRepositoryProvider: Provider<ForeverRepository>,
+  private val getReferralsInformationUseCaseProvider: Provider<GetReferralsInformationUseCase>,
 ) : MoleculePresenter<ForeverEvent, ForeverUiState> {
   @Composable
   override fun MoleculePresenterScope<ForeverEvent>.present(lastState: ForeverUiState): ForeverUiState {

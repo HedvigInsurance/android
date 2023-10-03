@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -12,13 +13,12 @@ import arrow.core.Either
 import arrow.core.raise.either
 import arrow.fx.coroutines.parZip
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.ui.insurance.ContractType
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.data.toContractType
-import com.hedvig.android.feature.insurances.di.GetCrossSellsUseCaseProvider
-import com.hedvig.android.feature.insurances.di.GetInsuranceContractsUseCaseProvider
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -80,9 +80,9 @@ internal data class InsuranceUiState(
 }
 
 internal class InsurancePresenter(
-    private val getInsuranceContractsUseCaseProvider: GetInsuranceContractsUseCaseProvider,
-    private val getCrossSellsUseCaseProvider: GetCrossSellsUseCaseProvider,
-    private val crossSellCardNotificationBadgeService: CrossSellCardNotificationBadgeService,
+  private val getInsuranceContractsUseCaseProvider: Provider<GetInsuranceContractsUseCase>,
+  private val getCrossSellsUseCaseProvider: Provider<GetCrossSellsUseCase>,
+  private val crossSellCardNotificationBadgeService: CrossSellCardNotificationBadgeService,
 ) : MoleculePresenter<InsuranceScreenEvent, InsuranceUiState> {
   @Composable
   override fun MoleculePresenterScope<InsuranceScreenEvent>.present(
@@ -96,7 +96,7 @@ internal class InsurancePresenter(
     var isLoading by remember { mutableStateOf(lastState.isLoading) }
     var isRetrying by remember { mutableStateOf(false) }
     var didFailToLoad by remember { mutableStateOf(false) }
-    var loadIteration by remember { mutableStateOf(0) }
+    var loadIteration by remember { mutableIntStateOf(0) }
 
     val showNotificationBadge by crossSellCardNotificationBadgeService
       .showNotification()

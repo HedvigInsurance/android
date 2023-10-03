@@ -5,6 +5,8 @@ import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.giraffe.di.giraffeClient
 import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.auth.LogoutUseCase
+import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.data.forever.di.ForeverRepositoryProvider
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.profile.aboutapp.AboutAppViewModel
 import com.hedvig.android.feature.profile.data.ProfileRepositoryDemo
@@ -24,6 +26,7 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
+import com.hedvig.android.payment.di.PaymentRepositoryProvider
 import com.hedvig.hanalytics.HAnalytics
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -59,7 +62,7 @@ val profileModule = module {
   }
   single<ProfileRepositoryProvider> {
     ProfileRepositoryProvider(
-      demoManager = get(),
+      demoManager = get<DemoManager>(),
       prodImpl = get<ProfileRepositoryImpl>(),
       demoImpl = get<ProfileRepositoryDemo>(),
     )
@@ -77,10 +80,25 @@ val profileModule = module {
     )
   }
 
-  viewModel<MyInfoViewModel> { MyInfoViewModel(get(), get()) }
+  viewModel<MyInfoViewModel> {
+    MyInfoViewModel(
+      get<HAnalytics>(),
+      get<ProfileRepositoryProvider>(),
+    )
+  }
   viewModel<AboutAppViewModel> { AboutAppViewModel(get(), get<ApolloClient>(giraffeClient)) }
 
-  viewModel<PaymentViewModel> { PaymentViewModel(get(), get(), get()) }
-  viewModel<PaymentHistoryViewModel> { PaymentHistoryViewModel(get(), get()) }
+  viewModel<PaymentViewModel> {
+    PaymentViewModel(
+      get<ForeverRepositoryProvider>(),
+      get<PaymentRepositoryProvider>(),
+      get<LanguageService>(),
+    )
+  }
+  viewModel<PaymentHistoryViewModel> {
+    PaymentHistoryViewModel(
+      get<PaymentRepositoryProvider>(),
+      get<LanguageService>(),
+    )
+  }
 }
-

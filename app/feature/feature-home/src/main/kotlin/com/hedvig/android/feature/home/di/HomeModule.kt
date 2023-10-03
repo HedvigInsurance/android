@@ -2,6 +2,7 @@ package com.hedvig.android.feature.home.di
 
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.giraffe.di.giraffeClient
+import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.data.travelcertificate.GetTravelCertificateSpecificationsUseCase
 import com.hedvig.android.feature.home.claimdetail.data.GetClaimDetailUiStateFlowUseCase
 import com.hedvig.android.feature.home.claimdetail.data.GetClaimDetailUseCase
@@ -41,7 +42,7 @@ val homeModule = module {
   }
   single {
     GetHomeDataUseCaseProvider(
-      demoManager = get(),
+      demoManager = get<DemoManager>(),
       prodImpl = get<GetHomeDataUseCaseImpl>(),
       demoImpl = get<GetHomeDataUseCaseDemo>(),
     )

@@ -4,7 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.payment.di.PaymentRepositoryProvider
+import com.hedvig.android.core.demomode.Provider
+import com.hedvig.android.payment.PaymentRepository
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.util.LiveEvent
 import com.hedvig.hanalytics.AppScreen
@@ -13,7 +14,7 @@ import kotlinx.coroutines.launch
 
 class ConnectPaymentViewModel(
   private val payinStatusRepository: PayinStatusRepository,
-  private val paymentRepositoryProvider: PaymentRepositoryProvider,
+  private val paymentRepositoryProvider: Provider<PaymentRepository>,
   private val hAnalytics: HAnalytics,
 ) : ViewModel() {
   private val _navigationState = MutableLiveData<ConnectPaymentScreenState>()

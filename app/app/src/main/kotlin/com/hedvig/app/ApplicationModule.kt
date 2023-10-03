@@ -60,6 +60,7 @@ import com.hedvig.android.navigation.core.di.deepLinkModule
 import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.firebase.di.firebaseNotificationModule
+import com.hedvig.android.payment.di.PaymentRepositoryProvider
 import com.hedvig.android.payment.di.paymentModule
 import com.hedvig.app.authenticate.LogoutUseCaseImpl
 import com.hedvig.app.data.debit.PayinStatusRepository
@@ -150,6 +151,7 @@ import com.hedvig.authlib.AuthEnvironment
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.Callbacks
 import com.hedvig.authlib.NetworkAuthRepository
+import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -396,7 +398,13 @@ private val numberActionSetModule = module {
 }
 
 private val connectPaymentModule = module {
-  viewModel { ConnectPaymentViewModel(get(), get(), get()) }
+  viewModel {
+    ConnectPaymentViewModel(
+      get<PayinStatusRepository>(),
+      get<PaymentRepositoryProvider>(),
+      get<HAnalytics>(),
+    )
+  }
 }
 
 private val trustlyModule = module {

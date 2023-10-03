@@ -3,23 +3,24 @@ package com.hedvig.android.feature.profile.payment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.apollo.format
+import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.forever.CampaignCode
-import com.hedvig.android.data.forever.di.ForeverRepositoryProvider
+import com.hedvig.android.data.forever.ForeverRepository
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.payment.PaymentData
-import com.hedvig.android.payment.di.PaymentRepositoryProvider
+import com.hedvig.android.payment.PaymentRepository
 import giraffe.type.PayoutMethodStatus
 import giraffe.type.TypeOfContract
-import java.time.LocalDate
-import java.util.Locale
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.util.Locale
 
 internal class PaymentViewModel(
-  private val referralsRepositoryProvider: ForeverRepositoryProvider,
-  private val paymentRepositoryProvider: PaymentRepositoryProvider,
+  private val referralsRepositoryProvider: Provider<ForeverRepository>,
+  private val paymentRepositoryProvider: Provider<PaymentRepository>,
   val languageService: LanguageService,
 ) : ViewModel() {
 

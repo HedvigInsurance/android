@@ -19,9 +19,9 @@ import giraffe.ChargeHistoryQuery
 import giraffe.PaymentQuery
 import giraffe.type.PayoutMethodStatus
 import giraffe.type.TypeOfContract
+import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 import javax.money.MonetaryAmount
-import kotlinx.coroutines.flow.Flow
 
 class PaymentRepositoryImpl(
   private val apolloClient: ApolloClient,

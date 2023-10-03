@@ -2,6 +2,7 @@ package com.hedvig.android.data.forever.di
 
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.giraffe.di.giraffeClient
+import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.data.forever.ForeverRepositoryDemo
 import com.hedvig.android.data.forever.ForeverRepositoryImpl
 import com.hedvig.android.language.LanguageService
@@ -19,10 +20,9 @@ val foreverDataModule = module {
   }
   single {
     ForeverRepositoryProvider(
-      demoManager = get(),
+      demoManager = get<DemoManager>(),
       prodImpl = get<ForeverRepositoryImpl>(),
       demoImpl = get<ForeverRepositoryDemo>(),
     )
   }
 }
-
