@@ -120,7 +120,7 @@ private fun ChangeAddressEnterNewVillaAddressScreen(
   ) {
     Spacer(modifier = Modifier.height(48.dp))
     Text(
-      text = stringResource(id = R.string.CHANGE_ADDRESS_VILLA_INFO_TITLE),
+      text = stringResource(id = R.string.CHANGE_ADDRESS_INFORMATION_ABOUT_YOUR_HOUSE),
       style = MaterialTheme.typography.headlineMedium,
       textAlign = TextAlign.Center,
       modifier = Modifier
