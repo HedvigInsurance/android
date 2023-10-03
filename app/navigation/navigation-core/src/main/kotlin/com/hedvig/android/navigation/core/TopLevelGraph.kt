@@ -45,8 +45,8 @@ sealed interface TopLevelGraph : Destination {
     return when (this) {
       HOME -> "HOME"
       INSURANCE -> "INSURANCE"
-      PROFILE -> "REFERRALS"
-      FOREVER -> "PROFILE"
+      FOREVER -> "REFERRALS"
+      PROFILE -> "PROFILE"
     }
   }
 
@@ -55,8 +55,8 @@ sealed interface TopLevelGraph : Destination {
       return when (input) {
         "HOME" -> HOME
         "INSURANCE" -> INSURANCE
-        "REFERRALS" -> PROFILE
-        "PROFILE" -> FOREVER
+        "REFERRALS" -> FOREVER
+        "PROFILE" -> PROFILE
         else -> null
       }
     }
