@@ -3,6 +3,7 @@ package com.hedvig.app
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.hedvig.android.app.AppInitializers
 import com.hedvig.android.hanalytics.android.tracking.ApplicationLifecycleTracker
 import com.hedvig.android.language.LanguageService
 import com.hedvig.app.feature.tracking.ActivityChangeTracker
@@ -11,6 +12,7 @@ import org.koin.android.ext.android.inject
 open class HedvigApplication : Application() {
   private val applicationLifecycleTracker: ApplicationLifecycleTracker by inject()
   private val languageService: LanguageService by inject()
+  private val appInitializers: AppInitializers by inject()
 
   override fun onCreate() {
     super.onCreate()
@@ -18,5 +20,6 @@ open class HedvigApplication : Application() {
     registerActivityLifecycleCallbacks(ActivityChangeTracker())
     AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
     languageService.performOnLaunchLanguageCheck()
+    appInitializers.initialize()
   }
 }

@@ -609,6 +609,7 @@ val applicationModule = module {
       activityNavigatorModule,
       adyenModule,
       apolloClientModule,
+      appModule,
       authModule,
       authRepositoryModule,
       buildConstantsModule,
