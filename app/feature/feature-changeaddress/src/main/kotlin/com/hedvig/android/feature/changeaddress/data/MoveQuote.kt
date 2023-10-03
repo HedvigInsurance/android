@@ -47,8 +47,8 @@ data class MoveQuote(
           insurableLimits = listOf(
             InsurableLimit(
               label = "test",
-              description = "longlonglonglonglonglonglonglonglonglonglonglonglonglonglonglong",
-              limit = "longlonglonglonglonglonglonglonglonglonglonglonglonglonglonglong",
+              description = "long".repeat(10),
+              limit = "long".repeat(10),
               type = InsurableLimit.InsurableLimitType.BIKE,
             ),
           ),
