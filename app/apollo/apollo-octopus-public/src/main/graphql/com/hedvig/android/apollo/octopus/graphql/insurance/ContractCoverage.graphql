@@ -1,22 +1,10 @@
 query ContractCoverage($contractId: UUID!) {
   contract(id: $contractId) {
     id
-    variant {
-      displayName
-      perils {
-        id
-        title
-        description
-        colorCode
-        covered
-        # todo redesign: Info and exceptions not part of the redesign for now
-#        exceptions
-#        info
-      }
-      insurableLimits {
-        label
-        description
-        limit
+    currentAgreement {
+      certificateUrl
+      productVariant {
+        ...ProductVariantFragment
       }
     }
   }
