@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.insurances.insurancedetail
+package com.hedvig.android.feature.insurances.insurancedetail.data
 
 import arrow.core.Either
 import arrow.core.raise.either
@@ -20,13 +20,17 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 
-internal class GetContractDetailsUseCase(
+internal interface GetContractDetailsUseCase {
+  suspend fun invoke(contractId: String): Either<ContractDetailError, ContractDetails>
+}
+
+internal class GetContractDetailsUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val getContractCoverageUseCase: GetContractCoverageUseCase,
   private val languageService: LanguageService,
   private val featureManager: FeatureManager,
-) {
-  suspend fun invoke(contractId: String): Either<ContractDetailError, ContractDetails> {
+) : GetContractDetailsUseCase {
+  override suspend fun invoke(contractId: String): Either<ContractDetailError, ContractDetails> {
     return either {
       parZip(
         {

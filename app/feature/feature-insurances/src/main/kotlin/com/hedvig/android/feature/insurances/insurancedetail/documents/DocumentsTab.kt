@@ -35,7 +35,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
-import com.hedvig.android.feature.insurances.insurancedetail.ContractDetails
+import com.hedvig.android.feature.insurances.insurancedetail.data.ContractDetails
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf

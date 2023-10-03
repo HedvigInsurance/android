@@ -15,6 +15,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
@@ -39,12 +40,13 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
-import com.hedvig.android.feature.insurances.insurancedetail.ContractDetails
+import com.hedvig.android.feature.insurances.insurancedetail.data.ContractDetails
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 
+@ExperimentalMaterial3Api
 @Composable
 internal fun YourInfoTab(
   coverageItems: ImmutableList<Pair<String, String>>,

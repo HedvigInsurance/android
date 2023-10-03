@@ -13,7 +13,7 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
           id = "1",
           displayName = "Home Insurance",
           statusPills = listOf("Active"),
-          detailPills = listOf("Testway 10"),
+          detailPills = listOf("Road 10"),
           isTerminated = false,
           typeOfContract = TypeOfContract.SE_HOUSE,
         ),

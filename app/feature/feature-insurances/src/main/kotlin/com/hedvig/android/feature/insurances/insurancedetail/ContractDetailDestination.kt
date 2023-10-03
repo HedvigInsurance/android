@@ -52,6 +52,7 @@ import com.hedvig.android.core.ui.insurance.toDrawableRes
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.feature.insurances.insurancedetail.coverage.CoverageTab
+import com.hedvig.android.feature.insurances.insurancedetail.data.ContractDetails
 import com.hedvig.android.feature.insurances.insurancedetail.documents.DocumentsTab
 import com.hedvig.android.feature.insurances.insurancedetail.yourinfo.YourInfoTab
 import hedvig.resources.R
