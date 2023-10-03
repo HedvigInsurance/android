@@ -1,4 +1,4 @@
-package com.hedvig.android.datadog.memberid
+package com.hedvig.android.datadog.core.memberid
 
 /**
  * Key to be passed to [com.datadog.android.rum.GlobalRum.addAttribute] to track the member ID after we've logged into

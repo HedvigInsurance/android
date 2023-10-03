@@ -1,4 +1,4 @@
-package com.hedvig.android.datadog
+package com.hedvig.android.datadog.core
 
 import timber.log.Timber
 

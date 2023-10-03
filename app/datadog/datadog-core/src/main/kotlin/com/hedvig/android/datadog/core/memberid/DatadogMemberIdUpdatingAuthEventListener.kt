@@ -1,4 +1,4 @@
-package com.hedvig.android.datadog.memberid
+package com.hedvig.android.datadog.core.memberid
 
 import android.util.Base64
 import com.datadog.android.Datadog

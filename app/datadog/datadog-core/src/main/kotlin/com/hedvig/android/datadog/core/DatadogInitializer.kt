@@ -1,6 +1,7 @@
-package com.hedvig.android.datadog
+package com.hedvig.android.datadog.core
 
 import android.content.Context
+import android.util.Log
 import androidx.startup.Initializer
 import com.datadog.android.Datadog
 import com.datadog.android.DatadogSite
@@ -56,7 +57,7 @@ abstract class DatadogInitializer : Initializer<Unit>, KoinComponent {
       serviceName = "android",
     )
     if (hedvigBuildConstants.isDebug) {
-      Datadog.setVerbosity(android.util.Log.VERBOSE)
+      Datadog.setVerbosity(Log.VERBOSE)
     }
     Datadog.initialize(context, credentials, configuration, TrackingConsent.GRANTED)
     val didRegisterGlobalRum = GlobalRum.registerIfAbsent {

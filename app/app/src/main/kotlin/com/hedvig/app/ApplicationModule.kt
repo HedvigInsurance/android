@@ -35,8 +35,8 @@ import com.hedvig.android.data.forever.di.foreverDataModule
 import com.hedvig.android.data.settings.datastore.di.settingsDatastoreModule
 import com.hedvig.android.data.travelcertificate.di.claimFlowDataModule
 import com.hedvig.android.data.travelcertificate.di.travelCertificateDataModule
-import com.hedvig.android.datadog.addDatadogConfiguration
-import com.hedvig.android.datadog.di.datadogModule
+import com.hedvig.android.datadog.core.addDatadogConfiguration
+import com.hedvig.android.datadog.core.di.datadogModule
 import com.hedvig.android.feature.changeaddress.di.changeAddressModule
 import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
 import com.hedvig.android.feature.forever.di.foreverModule

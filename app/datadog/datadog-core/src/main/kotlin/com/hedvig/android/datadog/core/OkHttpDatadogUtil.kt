@@ -1,4 +1,4 @@
-package com.hedvig.android.datadog
+package com.hedvig.android.datadog.core
 
 import com.datadog.android.DatadogEventListener
 import com.datadog.android.DatadogInterceptor
