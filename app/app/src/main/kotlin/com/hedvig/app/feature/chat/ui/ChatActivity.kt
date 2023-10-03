@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.FileProvider
@@ -33,6 +32,7 @@ import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityChatBinding
 import com.hedvig.app.feature.chat.ChatInputType
+import com.hedvig.app.feature.chat.viewmodel.ChatEnabledStatus
 import com.hedvig.app.feature.chat.viewmodel.ChatEvent
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.util.extensions.calculateNonFullscreenHeightDiff
@@ -154,20 +154,25 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
 
     lifecycleScope.launch {
       repeatOnLifecycle(Lifecycle.State.STARTED) {
-        chatViewModel.isChatDisabled.collect { isChatDisabled ->
-          if (isChatDisabled == false) {
+        chatViewModel.chatEnabledStatus.collect { chatEnabledStatus ->
+          if (chatEnabledStatus is ChatEnabledStatus.Enabled) {
             binding.disabledChatView.isGone = true
           }
         }
       }
     }
     binding.disabledChatView.setContent {
-      val isChatDisabled by chatViewModel.isChatDisabled.collectAsStateWithLifecycle()
+      val chatEnabledStatus = chatViewModel.chatEnabledStatus.collectAsStateWithLifecycle().value
       HedvigTheme {
         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-          if (isChatDisabled == true) {
+          if (chatEnabledStatus is ChatEnabledStatus.Disabled) {
             HedvigErrorSection(
-              title = stringResource(hedvig.resources.R.string.CHAT_DISABLED_MESSAGE),
+              title = stringResource(
+                when (chatEnabledStatus) {
+                  ChatEnabledStatus.Disabled.FromFeatureFlag -> hedvig.resources.R.string.CHAT_DISABLED_MESSAGE
+                  ChatEnabledStatus.Disabled.IsInDemoMode -> hedvig.resources.R.string.FEATURE_DISABLED_BY_DEMO_MODE
+                },
+              ),
               subTitle = null,
               buttonText = stringResource(hedvig.resources.R.string.general_close_button),
               retry = { finish() },

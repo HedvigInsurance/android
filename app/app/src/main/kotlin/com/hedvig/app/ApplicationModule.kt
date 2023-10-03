@@ -275,7 +275,7 @@ fun makeUserAgent(locale: Locale): String = buildString {
 }
 
 private val viewModelModule = module {
-  viewModel { ChatViewModel(get(), get(), get(), get()) }
+  viewModel { ChatViewModel(get(), get(), get(), get(), get()) }
   viewModel { (quoteCartId: QuoteCartId?) -> RedeemCodeViewModel(quoteCartId, get(), get()) }
   viewModel { DatePickerViewModel() }
   viewModel { params ->
