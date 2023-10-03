@@ -26,6 +26,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -43,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
@@ -75,8 +77,8 @@ import com.hedvig.android.feature.home.claimstatus.ClaimStatusCards
 import com.hedvig.android.feature.home.claimstatus.claimprogress.ClaimProgressUiState
 import com.hedvig.android.feature.home.claimstatus.data.ClaimStatusCardUiState
 import com.hedvig.android.feature.home.claimstatus.data.PillUiState
-import com.hedvig.android.feature.home.data.HomeData
 import com.hedvig.android.feature.home.home.ChatTooltip
+import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.otherservices.OtherServicesBottomSheet
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
@@ -245,6 +247,7 @@ private suspend fun daysSinceLastTooltipShown(context: Context): Boolean {
 }
 
 @Suppress("UnusedReceiverParameter")
+@ExperimentalMaterial3Api
 @Composable
 private fun HomeScreenSuccess(
   uiState: HomeUiState.Success,
@@ -301,7 +304,8 @@ private fun HomeScreenSuccess(
           homeText = uiState.homeText,
           modifier = Modifier
             .padding(horizontal = 24.dp)
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+            .testTag("welcome_message"),
         )
       },
       claimStatusCards = {

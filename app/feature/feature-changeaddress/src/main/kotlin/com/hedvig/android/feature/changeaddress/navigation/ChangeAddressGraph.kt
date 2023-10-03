@@ -1,12 +1,8 @@
 package com.hedvig.android.feature.changeaddress.navigation
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.ui.unit.Density
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import com.kiwi.navigationcompose.typed.navigation
-import com.kiwi.navigationcompose.typed.composable
-import com.kiwi.navigationcompose.typed.createRoutePattern
 import coil.ImageLoader
 import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.feature.changeaddress.destination.ChangeAddressEnterNewDestination
@@ -16,7 +12,10 @@ import com.hedvig.android.feature.changeaddress.destination.ChangeAddressResultD
 import com.hedvig.android.feature.changeaddress.destination.ChangeAddressSelectHousingTypeDestination
 import com.hedvig.android.navigation.compose.typed.destinationScopedViewModel
 import com.hedvig.android.navigation.core.AppDestination
+import com.kiwi.navigationcompose.typed.composable
+import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
+import com.kiwi.navigationcompose.typed.navigation
 import com.kiwi.navigationcompose.typed.popBackStack
 import com.kiwi.navigationcompose.typed.popUpTo
 

@@ -29,7 +29,6 @@
     <dimen name="bottom_sheet_handle_width">32dp</dimen>
     <dimen name="bottom_sheet_handle_corner_radius">20dp</dimen>
     <dimen name="chat_image_size">240dp</dimen>
-    <dimen name="default_qr_code_size">150dp</dimen>
     <dimen name="pick_date_button_corner_radius">6dp</dimen>
     <dimen name="premium_box_campaign_header_height">30dp</dimen>
     <dimen name="connect_payment_result_icon_size">56dp</dimen>

@@ -117,7 +117,6 @@ private fun QuoteDetailsAndPrice(
   isExpanded: Boolean,
   quote: MoveQuote,
 ) {
-
   HorizontalItemsWithMaximumSpaceTaken(
     startSlot = {
       Row(verticalAlignment = Alignment.CenterVertically) {

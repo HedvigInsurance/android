@@ -36,7 +36,7 @@ fun NavGraphBuilder.profileGraph(
   navigateToPayinScreen: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
-  market: Market?,
+  market: Market,
 ) {
   navigation<TopLevelGraph.PROFILE>(
     startDestination = createRoutePattern<AppDestination.TopLevelDestination.Profile>(),

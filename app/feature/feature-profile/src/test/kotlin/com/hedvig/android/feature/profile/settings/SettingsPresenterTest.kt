@@ -7,8 +7,8 @@ import assertk.assertions.prop
 import com.hedvig.android.core.datastore.FakeSettingsDataStore
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager2
+import com.hedvig.android.language.Language
 import com.hedvig.android.language.test.FakeLanguageService
-import com.hedvig.android.market.Language
 import com.hedvig.android.memberreminders.test.TestEnableNotificationsReminderManager
 import com.hedvig.android.molecule.test.test
 import com.hedvig.android.theme.Theme

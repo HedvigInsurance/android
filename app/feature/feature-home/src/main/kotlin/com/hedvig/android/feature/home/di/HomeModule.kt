@@ -2,14 +2,15 @@ package com.hedvig.android.feature.home.di
 
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.giraffe.di.giraffeClient
+import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.data.travelcertificate.GetTravelCertificateSpecificationsUseCase
 import com.hedvig.android.feature.home.claimdetail.data.GetClaimDetailUiStateFlowUseCase
 import com.hedvig.android.feature.home.claimdetail.data.GetClaimDetailUseCase
 import com.hedvig.android.feature.home.claimdetail.ui.ClaimDetailViewModel
 import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimViewModel
 import com.hedvig.android.feature.home.claims.pledge.HonestyPledgeViewModel
-import com.hedvig.android.feature.home.data.GetHomeDataUseCase
-import com.hedvig.android.feature.home.data.GetHomeDataUseCaseImpl
+import com.hedvig.android.feature.home.home.data.GetHomeDataUseCaseDemo
+import com.hedvig.android.feature.home.home.data.GetHomeDataUseCaseImpl
 import com.hedvig.android.feature.home.home.ui.HomeViewModel
 import com.hedvig.android.feature.home.legacychangeaddress.CreateQuoteCartUseCase
 import com.hedvig.android.feature.home.legacychangeaddress.GetAddressChangeStoryIdUseCase
@@ -28,7 +29,7 @@ val homeModule = module {
   }
   single<GetClaimDetailUiStateFlowUseCase> { GetClaimDetailUiStateFlowUseCase(get()) }
   single<GetClaimDetailUseCase> { GetClaimDetailUseCase(get<ApolloClient>(giraffeClient), get()) }
-  single<GetHomeDataUseCase> {
+  single<GetHomeDataUseCaseImpl> {
     GetHomeDataUseCaseImpl(
       get<ApolloClient>(giraffeClient),
       get<LanguageService>(),
@@ -36,10 +37,25 @@ val homeModule = module {
       get<GetTravelCertificateSpecificationsUseCase>(),
     )
   }
+  single<GetHomeDataUseCaseDemo> {
+    GetHomeDataUseCaseDemo()
+  }
+  single {
+    GetHomeDataUseCaseProvider(
+      demoManager = get<DemoManager>(),
+      prodImpl = get<GetHomeDataUseCaseImpl>(),
+      demoImpl = get<GetHomeDataUseCaseDemo>(),
+    )
+  }
   single<GetUpcomingAgreementUseCase> { GetUpcomingAgreementUseCase(get<ApolloClient>(giraffeClient), get()) }
   viewModel<LegacyChangeAddressViewModel> { LegacyChangeAddressViewModel(get(), get(), get()) }
   viewModel<ClaimDetailViewModel> { (claimId: String) -> ClaimDetailViewModel(claimId, get(), get()) }
   viewModel<CommonClaimViewModel> { CommonClaimViewModel(get()) }
-  viewModel<HomeViewModel> { HomeViewModel(get<GetHomeDataUseCase>(), get<FeatureManager>()) }
+  viewModel<HomeViewModel> {
+    HomeViewModel(
+      get<GetHomeDataUseCaseProvider>(),
+      get<FeatureManager>(),
+    )
+  }
   viewModel<HonestyPledgeViewModel> { HonestyPledgeViewModel(get()) }
 }

@@ -6,8 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.auth.AuthStatus
-import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.common.android.ProgressPercentage
 import com.hedvig.android.core.common.android.QuoteCartId
 import com.hedvig.android.core.common.android.asMap
@@ -31,7 +29,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -45,17 +43,14 @@ abstract class EmbarkViewModel(
   private val graphQLQueryUseCase: GraphQLQueryUseCase,
   private val hAnalytics: HAnalytics,
   val storyName: String,
-  authTokenService: AuthTokenService,
 ) : ViewModel() {
   private val _passageState = MutableLiveData<PassageState>()
   private val passageState: LiveData<PassageState> = _passageState
 
-  private val loginStatus: StateFlow<AuthStatus?> = authTokenService.authStatus
-
-  val viewState: LiveData<ViewState> = combine(passageState.asFlow(), loginStatus) { passageState, loginStatus ->
+  val viewState: LiveData<ViewState> = passageState.asFlow().map { passageState ->
     ViewState(
       passageState,
-      loginStatus is AuthStatus.LoggedIn,
+      true,
     )
   }.asLiveData()
   protected val _events = Channel<Event>(Channel.UNLIMITED)
@@ -159,6 +154,7 @@ abstract class EmbarkViewModel(
           }
         }
       }
+
       location != null -> handleRedirectLocation(location)
       api != null -> callApi(api)
       else -> setupPassageAndEmitState(nextPassage)
@@ -230,6 +226,7 @@ abstract class EmbarkViewModel(
       is GraphQLQueryResult.Error -> viewModelScope.launch {
         navigateToPassage(result.passageName)
       }
+
       is GraphQLQueryResult.ValuesFromResponse -> {
         result.arrayValues.forEach {
           valueStore.put(it.first, it.second)
@@ -291,6 +288,7 @@ abstract class EmbarkViewModel(
         .eventKeys
         .filterNotNull()
         .associateWith { valueStore.get(it) }
+
     else -> emptyMap()
   }.let { data ->
     track.customData?.let { data + it.asMap() } ?: data
@@ -510,7 +508,6 @@ abstract class EmbarkViewModel(
 
 class EmbarkViewModelImpl(
   private val embarkRepository: EmbarkRepository,
-  authTokenService: AuthTokenService,
   graphQLQueryUseCase: GraphQLQueryUseCase,
   valueStore: ValueStore,
   hAnalytics: HAnalytics,
@@ -520,7 +517,6 @@ class EmbarkViewModelImpl(
   graphQLQueryUseCase,
   hAnalytics,
   storyName,
-  authTokenService,
 ) {
 
   init {

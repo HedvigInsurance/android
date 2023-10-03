@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -37,6 +38,7 @@ import com.hedvig.android.feature.changeaddress.ui.extrabuildings.ExtraBuildingB
 import com.hedvig.android.feature.changeaddress.ui.extrabuildings.ExtraBuildingContainer
 import hedvig.resources.R
 
+@ExperimentalMaterial3Api
 @Composable
 internal fun ChangeAddressEnterNewVillaAddressDestination(
   viewModel: ChangeAddressViewModel,

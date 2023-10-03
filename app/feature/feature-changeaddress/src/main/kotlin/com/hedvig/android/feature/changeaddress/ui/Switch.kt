@@ -22,7 +22,7 @@ fun ChangeAddressSwitch(
   checked: Boolean,
   onClick: () -> Unit,
   onCheckedChange: (Boolean) -> Unit,
-  ) {
+) {
   HedvigCard(
     modifier = Modifier
       .fillMaxWidth()

@@ -51,6 +51,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import arrow.fx.coroutines.raceN
 import coil.ImageLoader
 import com.hedvig.android.app.navigation.HedvigNavHost
 import com.hedvig.android.app.ui.HedvigAppState
@@ -60,6 +61,7 @@ import com.hedvig.android.app.ui.rememberHedvigAppState
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
+import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.designsystem.material3.motion.MotionTokens
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
@@ -68,6 +70,7 @@ import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.activity.ActivityNavigator
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
@@ -94,6 +97,7 @@ class LoggedInActivity : AppCompatActivity() {
   private val reviewDialogViewModel: ReviewDialogViewModel by viewModel()
 
   private val authTokenService: AuthTokenService by inject()
+  private val demoManager: DemoManager by inject()
   private val tabNotificationBadgeService: TabNotificationBadgeService by inject()
   private val marketManager: MarketManager by inject()
   private val imageLoader: ImageLoader by inject()
@@ -148,7 +152,10 @@ class LoggedInActivity : AppCompatActivity() {
       }
       launch {
         lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
-          authTokenService.authStatus.first { it != null }
+          raceN(
+            { authTokenService.authStatus.first { it != null } },
+            { demoManager.isDemoMode().first { it == true } },
+          )
           showSplash.update { false }
         }
       }
@@ -184,23 +191,15 @@ class LoggedInActivity : AppCompatActivity() {
             }
             if (dynamicLink is DynamicLink.DirectDebit) {
               hAnalytics.deepLinkOpened(dynamicLink.type)
-              val market = marketManager.market
-              if (market == null) {
-                logcat(LogPriority.ERROR) {
-                  "Tried to open DirectDebit deep link, but market was null. Aborting and continuing to normal flow"
-                }
-              } else {
-                lifecycleScope.launch {
-                  this@LoggedInActivity.startActivity(
-                    connectPayinIntent(
-                      this@LoggedInActivity,
-                      featureManager.getPaymentType(),
-                      market,
-                      false,
-                    ),
-                  )
-                }
-              }
+              val market = marketManager.market.first()
+              this@LoggedInActivity.startActivity(
+                connectPayinIntent(
+                  this@LoggedInActivity,
+                  featureManager.getPaymentType(),
+                  market,
+                  false,
+                ),
+              )
             } else {
               logcat { "Deep link $dynamicLink did not open some specific activity" }
             }
@@ -225,6 +224,9 @@ class LoggedInActivity : AppCompatActivity() {
           }
           .filterIsInstance<AuthStatus.LoggedOut>()
           .first()
+        // Wait for demo mode to evaluate to false to know that we must leave the activity
+        demoManager.isDemoMode().first { it == false }
+        // Wait for dark theme to evaluate before deciding to leave the activity
         darkThemeEvaluated.first { it == true }
         activityNavigator.navigateToMarketingActivity()
         finish()
@@ -232,6 +234,7 @@ class LoggedInActivity : AppCompatActivity() {
     }
 
     setContent {
+      val market by marketManager.market.collectAsStateWithLifecycle()
       HedvigTheme {
         val windowSizeClass = calculateWindowSizeClass(this)
         HedvigApp(
@@ -252,7 +255,7 @@ class LoggedInActivity : AppCompatActivity() {
             intent.removeExtra(INITIAL_TAB)
           },
           shouldShowRequestPermissionRationale = ::shouldShowRequestPermissionRationale,
-          marketManager = marketManager,
+          market = market,
           imageLoader = imageLoader,
           featureManager = featureManager,
           hAnalytics = hAnalytics,
@@ -301,7 +304,7 @@ private fun HedvigApp(
   getInitialTab: () -> TopLevelGraph?,
   clearInitialTab: () -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
-  marketManager: MarketManager,
+  market: Market,
   imageLoader: ImageLoader,
   featureManager: FeatureManager,
   hAnalytics: HAnalytics,
@@ -342,7 +345,7 @@ private fun HedvigApp(
           activityNavigator = activityNavigator,
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           imageLoader = imageLoader,
-          marketManager = marketManager,
+          market = market,
           featureManager = featureManager,
           hAnalytics = hAnalytics,
           fragmentManager = fragmentManager,

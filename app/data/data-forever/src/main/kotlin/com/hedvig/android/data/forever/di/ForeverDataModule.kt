@@ -2,10 +2,27 @@ package com.hedvig.android.data.forever.di
 
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.giraffe.di.giraffeClient
-import com.hedvig.android.data.forever.ForeverRepository
+import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.data.forever.ForeverRepositoryDemo
+import com.hedvig.android.data.forever.ForeverRepositoryImpl
 import com.hedvig.android.language.LanguageService
 import org.koin.dsl.module
 
 val foreverDataModule = module {
-  single<ForeverRepository> { ForeverRepository(get<ApolloClient>(giraffeClient), get<LanguageService>()) }
+  single<ForeverRepositoryImpl> {
+    ForeverRepositoryImpl(
+      apolloClient = get<ApolloClient>(giraffeClient),
+      languageService = get<LanguageService>(),
+    )
+  }
+  single<ForeverRepositoryDemo> {
+    ForeverRepositoryDemo()
+  }
+  single {
+    ForeverRepositoryProvider(
+      demoManager = get<DemoManager>(),
+      prodImpl = get<ForeverRepositoryImpl>(),
+      demoImpl = get<ForeverRepositoryDemo>(),
+    )
+  }
 }

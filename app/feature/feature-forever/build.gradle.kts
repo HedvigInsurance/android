@@ -41,6 +41,7 @@ dependencies {
   implementation(projects.coreUiData)
   implementation(projects.dataForever)
   implementation(projects.languageCore)
+  implementation(projects.coreDemoMode)
   implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
   implementation(projects.navigationComposeTyped)

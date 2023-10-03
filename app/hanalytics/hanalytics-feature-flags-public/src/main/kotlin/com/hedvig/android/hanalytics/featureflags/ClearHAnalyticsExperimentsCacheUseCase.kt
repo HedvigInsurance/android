@@ -1,11 +1,11 @@
 package com.hedvig.android.hanalytics.featureflags
 
-import com.hedvig.hanalytics.HAnalytics
+import com.hedvig.android.hanalytics.HAnalyticsExperimentClearUseCase
 
 internal class ClearHAnalyticsExperimentsCacheUseCase(
-  private val hAnalytics: HAnalytics,
+  private val hAnalyticsExperimentClearUseCase: HAnalyticsExperimentClearUseCase,
 ) {
   suspend operator fun invoke() {
-    hAnalytics.invalidateExperiments()
+    hAnalyticsExperimentClearUseCase.invoke()
   }
 }
