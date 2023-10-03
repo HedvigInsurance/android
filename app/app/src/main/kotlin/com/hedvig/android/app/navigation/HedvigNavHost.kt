@@ -29,7 +29,6 @@ import com.hedvig.android.feature.claimtriaging.claimTriagingDestinations
 import com.hedvig.android.feature.forever.navigation.foreverGraph
 import com.hedvig.android.feature.home.claims.pledge.HonestyPledgeBottomSheet
 import com.hedvig.android.feature.home.home.navigation.homeGraph
-import com.hedvig.android.feature.home.legacychangeaddress.LegacyChangeAddressActivity
 import com.hedvig.android.feature.insurances.insurance.insuranceGraph
 import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
@@ -83,13 +82,7 @@ internal fun HedvigNavHost(
 
   fun startMovingFlow() {
     coroutineScope.launch {
-      if (featureManager.isFeatureEnabled(Feature.NEW_MOVING_FLOW)) {
-        hedvigAppState.navController.navigate(AppDestination.ChangeAddress)
-      } else {
-        context.startActivity(
-          LegacyChangeAddressActivity.newInstance(context),
-        )
-      }
+      hedvigAppState.navController.navigate(AppDestination.ChangeAddress)
     }
   }
 
