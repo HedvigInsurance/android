@@ -5,8 +5,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import com.hedvig.android.core.common.test.MainCoroutineRule
-import com.hedvig.android.market.Market
-import com.hedvig.android.market.MarketManager
+import com.hedvig.android.market.test.FakeMarketManager
 import com.hedvig.authlib.AuthAttemptResult
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult
@@ -76,11 +75,7 @@ class GenericAuthViewModelTest {
         TODO("Not yet implemented")
       }
     },
-    marketManager = object : MarketManager {
-      override val enabledMarkets: List<Market>
-        get() = listOf(Market.SE)
-      override var market: Market? = Market.SE
-    },
+    marketManager = FakeMarketManager(),
   )
 
   @Test
