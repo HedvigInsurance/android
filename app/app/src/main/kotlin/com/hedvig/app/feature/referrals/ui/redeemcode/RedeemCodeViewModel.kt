@@ -14,9 +14,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class RedeemCodeViewModel(
-    private val quoteCartId: QuoteCartId?,
-    private val referralsRepository: ForeverRepositoryImpl,
-    private val editCampaignUseCase: EditCampaignUseCase,
+  private val quoteCartId: QuoteCartId?,
+  private val referralsRepository: ForeverRepositoryImpl,
+  private val editCampaignUseCase: EditCampaignUseCase,
 ) : ViewModel() {
 
   data class ViewState(

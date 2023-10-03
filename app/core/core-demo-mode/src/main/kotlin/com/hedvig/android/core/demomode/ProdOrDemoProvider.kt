@@ -16,4 +16,3 @@ interface ProdOrDemoProvider<T> : Provider<T> {
     }
   }
 }
-

@@ -1,14 +1,12 @@
 package com.hedvig.android.notification.badge.data.crosssell.card
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 
-
-internal class CrossSellCardNotificationBadgeDemoServiceImpl(
-) : CrossSellCardNotificationBadgeService {
+internal class CrossSellCardNotificationBadgeDemoServiceImpl() : CrossSellCardNotificationBadgeService {
 
   override fun showNotification(): Flow<Boolean> {
-    return flow { false }
+    return flowOf(false)
   }
 
   override suspend fun markAsSeen() {}

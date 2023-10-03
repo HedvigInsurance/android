@@ -31,10 +31,10 @@ import java.util.UUID
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun ClaimStatusCards(
-    goToDetailScreen: ((claimId: String) -> Unit)?,
-    claimStatusCardsData: HomeData.ClaimStatusCardsData,
-    contentPadding: PaddingValues,
-    modifier: Modifier = Modifier,
+  goToDetailScreen: ((claimId: String) -> Unit)?,
+  claimStatusCardsData: HomeData.ClaimStatusCardsData,
+  contentPadding: PaddingValues,
+  modifier: Modifier = Modifier,
 ) {
   val claimStatusCardsUiState = claimStatusCardsData.claimStatusCardsUiState
   val pagerState = rememberPagerState(pageCount = { claimStatusCardsUiState.size })

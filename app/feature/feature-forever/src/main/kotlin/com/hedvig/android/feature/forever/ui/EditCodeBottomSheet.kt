@@ -38,14 +38,14 @@ import kotlinx.coroutines.flow.filter
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun EditCodeBottomSheet(
-    sheetState: SheetState,
-    code: TextFieldValue,
-    referralCodeUpdateError: ForeverRepositoryImpl.ReferralError?,
-    showedReferralCodeSubmissionError: () -> Unit,
-    onCodeChanged: (TextFieldValue) -> Unit,
-    onDismiss: () -> Unit,
-    onSubmitCode: () -> Unit,
-    isLoading: Boolean,
+  sheetState: SheetState,
+  code: TextFieldValue,
+  referralCodeUpdateError: ForeverRepositoryImpl.ReferralError?,
+  showedReferralCodeSubmissionError: () -> Unit,
+  onCodeChanged: (TextFieldValue) -> Unit,
+  onDismiss: () -> Unit,
+  onSubmitCode: () -> Unit,
+  isLoading: Boolean,
 ) {
   // No idea why material3.ModalBottomSheet does not read the latest values here, but this fixes it
   // https://issuetracker.google.com/issues/300280211

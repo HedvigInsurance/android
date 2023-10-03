@@ -17,7 +17,6 @@ class KoinInitializer : Initializer<KoinApplication> {
     androidContext(context.applicationContext)
     workManagerFactory()
     modules(applicationModule)
-
   }
 
   override fun dependencies(): List<Class<out Initializer<*>>> {
