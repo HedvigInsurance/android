@@ -62,11 +62,11 @@ internal class ForeverPresenter(
       either {
         parZip(
           { foreverRepositoryProvider.provide().getReferralsData().bind() },
-          { getReferralsInformationUseCaseProvider.provide().invoke().bind() },
+          { getReferralsInformationUseCaseProvider.provide().invoke() },
         ) { referralsData, terms ->
           ForeverUiState.ForeverData(
             referralsData = referralsData,
-            referralTerms = terms,
+            referralTerms = terms.getOrNull(),
           )
         }
       }.fold(

@@ -17,14 +17,6 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
           isTerminated = false,
           typeOfContract = TypeOfContract.SE_HOUSE,
         ),
-        InsuranceContract(
-          id = "2",
-          displayName = "Pet Insurance",
-          statusPills = listOf("Active"),
-          detailPills = listOf("Douglas"),
-          isTerminated = false,
-          typeOfContract = TypeOfContract.SE_DOG_PREMIUM,
-        ),
       )
     }
   }
