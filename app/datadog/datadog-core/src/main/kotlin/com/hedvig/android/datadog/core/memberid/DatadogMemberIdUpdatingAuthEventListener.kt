@@ -1,9 +1,8 @@
 package com.hedvig.android.datadog.core.memberid
 
 import android.util.Base64
-import com.datadog.android.Datadog
-import com.datadog.android.rum.GlobalRum
 import com.hedvig.android.auth.event.AuthEventListener
+import com.hedvig.android.datadog.core.attributestracking.DatadogAttributesManager
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import kotlinx.serialization.SerializationException
@@ -13,23 +12,22 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
-internal class DatadogMemberIdUpdatingAuthEventListener : AuthEventListener {
+internal class DatadogMemberIdUpdatingAuthEventListener(
+  private val datadogAttributesManager: DatadogAttributesManager,
+) : AuthEventListener {
   override suspend fun loggedOut() {
     logcat(LogPriority.INFO) { "Removing from global RUM attribute:$MEMBER_ID_TRACKING_KEY" }
-    Datadog.addUserExtraInfo(mapOf(MEMBER_ID_TRACKING_KEY to null))
-    GlobalRum.removeAttribute(MEMBER_ID_TRACKING_KEY)
+    datadogAttributesManager.deleteAttribute(MEMBER_ID_TRACKING_KEY)
   }
 
   override suspend fun loggedIn(accessToken: String) {
     val memberId = extractMemberIdFromAccessToken(accessToken) ?: run {
       logcat(LogPriority.ERROR) { "Failed to extract member ID from accessToken:$accessToken" }
-      Datadog.addUserExtraInfo(mapOf(MEMBER_ID_TRACKING_KEY to "unknown"))
-      GlobalRum.addAttribute(MEMBER_ID_TRACKING_KEY, "unknown")
+      datadogAttributesManager.storeAttribute(MEMBER_ID_TRACKING_KEY, "unknown")
       return
     }
     logcat(LogPriority.INFO) { "Appending to global RUM attribute:$MEMBER_ID_TRACKING_KEY = $memberId" }
-    Datadog.addUserExtraInfo(mapOf(MEMBER_ID_TRACKING_KEY to memberId))
-    GlobalRum.addAttribute(MEMBER_ID_TRACKING_KEY, memberId)
+    datadogAttributesManager.storeAttribute(MEMBER_ID_TRACKING_KEY, memberId)
   }
 
   /**

@@ -15,6 +15,7 @@ import com.datadog.android.tracing.AndroidTracer
 import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.datastore.DeviceIdDataStore
+import com.hedvig.android.datadog.core.attributestracking.DatadogAttributesManager
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import io.opentracing.util.GlobalTracer
@@ -30,6 +31,7 @@ abstract class DatadogInitializer : Initializer<Unit>, KoinComponent {
   private val hedvigBuildConstants by inject<HedvigBuildConstants>()
   private val deviceIdDataStore by inject<DeviceIdDataStore>()
   private val applicationScope by inject<ApplicationScope>()
+  private val datadogAttributesManager by inject<DatadogAttributesManager>()
 
   override fun create(context: Context) {
     val clientToken = "pub185bcba7ed324e83d068b80e25a81359"
@@ -70,8 +72,7 @@ abstract class DatadogInitializer : Initializer<Unit>, KoinComponent {
     logcat(LogPriority.VERBOSE) { "Datadog Global Tracer registering succeeded: $didRegisterGlobalTracer" }
     applicationScope.launch {
       val deviceId = deviceIdDataStore.observeDeviceId().first()
-      Datadog.addUserExtraInfo(mapOf(DEVICE_ID_KEY to deviceId))
-      GlobalRum.addAttribute(DEVICE_ID_KEY, deviceId)
+      datadogAttributesManager.storeAttribute(DEVICE_ID_KEY, deviceId)
     }
 
     Timber.plant(DatadogLoggingTree(hedvigBuildConstants.isDebug))
