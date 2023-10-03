@@ -4,6 +4,11 @@ mutation MoveIntentCreate {
       id
       minMovingDate
       maxMovingDate
+      isApartmentAvailableforStudent
+      maxApartmentNumberCoInsured
+      maxHouseNumberCoInsured
+      maxApartmentSquareMeters
+      maxHouseSquareMeters
       suggestedNumberCoInsured
       extraBuildingTypes
       currentHomeAddresses {

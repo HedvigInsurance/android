@@ -2,12 +2,6 @@ fragment ProductVariantFragment on ProductVariant {
   displayName
   typeOfContract
   partner
-  product {
-    displayNameFull
-    pillowImage {
-      src
-    }
-  }
   perils {
     id
     title
