@@ -1,3 +1,4 @@
+
 package com.hedvig.android.feature.profile.tab
 
 import androidx.compose.animation.AnimatedVisibility
@@ -39,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -180,7 +182,7 @@ private fun ProfileScreen(
         onClick = {
           showLogoutDialog = true
         },
-        modifier = Modifier.padding(horizontal = 16.dp),
+        modifier = Modifier.padding(horizontal = 16.dp).testTag("logout"),
       )
       Spacer(Modifier.height(16.dp))
       Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))

@@ -7,6 +7,10 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -37,6 +41,7 @@ class MarketingActivity : AppCompatActivity() {
   private val activityNavigator: ActivityNavigator by inject()
   private val demoManager: DemoManager by inject()
 
+  @OptIn(ExperimentalComposeUiApi::class)
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -55,6 +60,7 @@ class MarketingActivity : AppCompatActivity() {
           navController = navController,
           startDestination = createRoutePattern<AppDestination.Login>(),
           route = "marketing-root",
+          modifier = Modifier.semantics { testTagsAsResourceId = true },
         ) {
           loginGraph(
             navigator = navigator,

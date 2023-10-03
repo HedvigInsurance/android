@@ -36,9 +36,9 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
@@ -153,7 +153,7 @@ private fun SwedishLoginScreen(
         ) {
           QRCode(
             autoStartToken = uiState.autoStartToken,
-            modifier = Modifier.size(180.dp).layoutId("qr_code").pointerInput(Unit) {
+            modifier = Modifier.size(180.dp).testTag("qr_code").pointerInput(Unit) {
               awaitEachGesture {
                 val down = awaitFirstDown(requireUnconsumed = false)
                 val longPress: PointerInputChange? = awaitLongPressOrCancellation(down.id)

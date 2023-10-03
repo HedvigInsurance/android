@@ -1,0 +1,20 @@
+appId: com.hedvig.dev.app
+---
+- launchApp:
+    clearState: true
+- tapOn:
+    id: login_button
+- longPressOn:
+    id: qr_code
+- tapOn:
+    id: positive_button
+- assertVisible:
+    id: welcome_message
+- tapOn:
+    id: PROFILE
+- tapOn:
+    id: logout
+- tapOn:
+    id: positive_button
+- assertVisible:
+    id: login_button
