@@ -70,7 +70,7 @@ class ActivityNavigator(
     if (browserIntent.resolveActivity(context.packageManager) != null) {
       context.startActivity(browserIntent)
     } else {
-      logcat(LogPriority.ERROR) { "Tried to launch $uri but the phone has nothing to support such an intent." }
+      logcat(LogPriority.WARN) { "Tried to launch $uri but the phone has nothing to support such an intent." }
     }
   }
 }
