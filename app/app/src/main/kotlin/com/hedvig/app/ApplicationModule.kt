@@ -21,6 +21,7 @@ import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.di.apolloClientModule
 import com.hedvig.android.apollo.giraffe.di.giraffeClient
+import com.hedvig.android.app.di.appModule
 import com.hedvig.android.auth.AccessTokenProvider
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.auth.di.authModule
@@ -37,6 +38,7 @@ import com.hedvig.android.data.travelcertificate.di.claimFlowDataModule
 import com.hedvig.android.data.travelcertificate.di.travelCertificateDataModule
 import com.hedvig.android.datadog.core.addDatadogConfiguration
 import com.hedvig.android.datadog.core.di.datadogModule
+import com.hedvig.android.datadog.demo.tracking.di.datadogDemoTrackingModule
 import com.hedvig.android.feature.changeaddress.di.changeAddressModule
 import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
 import com.hedvig.android.feature.forever.di.foreverModule
@@ -625,6 +627,7 @@ val applicationModule = module {
       connectPaymentModule,
       coreCommonModule,
       dataStoreModule,
+      datadogDemoTrackingModule,
       datadogModule,
       datastoreAndroidModule,
       deepLinkModule,
