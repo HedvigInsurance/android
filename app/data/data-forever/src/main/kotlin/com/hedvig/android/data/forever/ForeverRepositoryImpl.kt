@@ -16,7 +16,7 @@ import giraffe.UpdateReferralCampaignCodeMutation
 @JvmInline
 value class CampaignCode(val code: String)
 
-class ForeverRepositoryImpl(
+internal class ForeverRepositoryImpl(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,
 ) : ForeverRepository {

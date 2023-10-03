@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.core.common.android.QuoteCartId
 import com.hedvig.android.data.forever.CampaignCode
-import com.hedvig.android.data.forever.ForeverRepositoryImpl
+import com.hedvig.android.data.forever.ForeverRepository
 import com.hedvig.app.feature.offer.usecase.EditCampaignUseCase
 import giraffe.RedeemReferralCodeMutation
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 
 class RedeemCodeViewModel(
   private val quoteCartId: QuoteCartId?,
-  private val referralsRepository: ForeverRepositoryImpl,
+  private val referralsRepository: ForeverRepository,
   private val editCampaignUseCase: EditCampaignUseCase,
 ) : ViewModel() {
 
