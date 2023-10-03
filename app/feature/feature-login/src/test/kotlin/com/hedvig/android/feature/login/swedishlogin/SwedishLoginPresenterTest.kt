@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.login.swedishlogin
 
+import app.cash.turbine.awaitItem
+import app.cash.turbine.expectNoEvents
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
@@ -9,14 +11,12 @@ import assertk.assertions.prop
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.AuthTokenServiceImpl
 import com.hedvig.android.auth.FakeAuthRepository
-import com.hedvig.android.auth.event.AuthEventBroadcaster
-import com.hedvig.android.auth.event.AuthEventListener
-import com.hedvig.android.auth.event.FakeAuthEventListener
+import com.hedvig.android.auth.event.AuthEvent
+import com.hedvig.android.auth.event.AuthEventStorage
 import com.hedvig.android.auth.storage.AuthTokenStorage
 import com.hedvig.android.auth.token.AuthTokens
 import com.hedvig.android.auth.token.LocalAccessToken
 import com.hedvig.android.auth.token.LocalRefreshToken
-import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.datastore.TestPreferencesDataStore
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.logger.TestLogcatLoggingRule
@@ -36,7 +36,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import kotlin.coroutines.EmptyCoroutineContext
 
 class SwedishLoginPresenterTest {
   @get:Rule
@@ -165,8 +164,7 @@ class SwedishLoginPresenterTest {
 
   @Test
   fun `login status result succeeding, sends a loggedIn event`() = runTest {
-    val authEventListeners = List(2) { FakeAuthEventListener() }.toSet()
-    val authEventBroadcaster = testAuthEventBroadcaster(authEventListeners)
+    val authEventBroadcaster = AuthEventStorage()
     val authTokenService = testAuthTokenService(authEventBroadcaster)
     val authRepository = FakeAuthRepository()
     val presenter: SwedishLoginPresenter = testSwedishLoginPresenter(authRepository, authTokenService)
@@ -177,12 +175,9 @@ class SwedishLoginPresenterTest {
       )
       authRepository.loginStatusResponse.add(LoginStatusResult.Completed(AuthorizationCodeGrant("grant")))
       authRepository.exchangeResponse.add(AuthTokenResult.Success(AccessToken("123", 90), RefreshToken("456", 90)))
-      for (authEventListener in authEventListeners) {
-        val accessToken = authEventListener.loggedInEvent.awaitItem()
-        assertThat(accessToken).isEqualTo("123")
-        authEventListener.loggedInEvent.expectNoEvents()
-        authEventListener.loggedOutEvent.expectNoEvents()
-      }
+      val accessToken = (authEventBroadcaster.authEvents.awaitItem() as AuthEvent.LoggedIn).accessToken
+      assertThat(accessToken).isEqualTo("123")
+      authEventBroadcaster.authEvents.expectNoEvents()
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -202,18 +197,8 @@ class SwedishLoginPresenterTest {
     )
   }
 
-  private fun TestScope.testAuthEventBroadcaster(
-    authEventListeners: Set<AuthEventListener> = emptySet(),
-  ): AuthEventBroadcaster {
-    return AuthEventBroadcaster(
-      authEventListeners,
-      ApplicationScope(backgroundScope),
-      EmptyCoroutineContext,
-    )
-  }
-
   private fun TestScope.testAuthTokenService(
-    authEventBroadcaster: AuthEventBroadcaster = testAuthEventBroadcaster(),
+    authEventStorage: AuthEventStorage = AuthEventStorage(),
   ): AuthTokenService {
     return AuthTokenServiceImpl(
       AuthTokenStorage(
@@ -223,7 +208,7 @@ class SwedishLoginPresenterTest {
         ),
       ),
       FakeAuthRepository(),
-      authEventBroadcaster,
+      authEventStorage,
       backgroundScope,
     )
   }
