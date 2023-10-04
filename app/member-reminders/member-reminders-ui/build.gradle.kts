@@ -6,6 +6,8 @@ plugins {
 }
 
 dependencies {
+  api(projects.memberRemindersPublic)
+
   implementation(libs.accompanist.permissions)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.immutable.collections)
@@ -13,6 +15,5 @@ dependencies {
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
-  implementation(projects.memberRemindersPublic)
   implementation(projects.notificationPermission)
 }

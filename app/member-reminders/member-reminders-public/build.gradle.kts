@@ -8,6 +8,8 @@ plugins {
 dependencies {
   apolloMetadata(projects.apolloGiraffePublic)
 
+  api(libs.kotlinx.datetime)
+
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.apollo.api)
@@ -16,7 +18,6 @@ dependencies {
   implementation(libs.arrow.fx)
   implementation(libs.coroutines.core)
   implementation(libs.koin.core)
-  implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.immutable.collections)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
