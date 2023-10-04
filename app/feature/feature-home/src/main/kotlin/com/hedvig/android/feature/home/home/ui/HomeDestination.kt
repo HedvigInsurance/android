@@ -314,8 +314,10 @@ private fun HomeScreenSuccess(
           ClaimStatusCards(
             goToDetailScreen = onClaimDetailCardClicked,
             claimStatusCardsData = uiState.claimStatusCardsData,
-            contentPadding = PaddingValues(horizontal = 16.dp) +
-              WindowInsets.safeDrawing.exclude(consumedWindowInsets).only(WindowInsetsSides.Horizontal).asPaddingValues(),
+            contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
+              .exclude(consumedWindowInsets)
+              .only(WindowInsetsSides.Horizontal)
+              .asPaddingValues(),
             modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets = it },
           )
         }
