@@ -9,7 +9,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 
 internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
-  override suspend fun invoke(): Either<ErrorMessage, List<InsuranceContract>> {
+  override suspend fun invoke(forceNetworkFetch: Boolean): Either<ErrorMessage, List<InsuranceContract>> {
     return either {
       listOf(
         InsuranceContract(

@@ -97,8 +97,9 @@ internal class InsurancePresenter(
         isRetrying = isRetryingIteration
       }
       loadInsuranceData(
-        getInsuranceContractsUseCaseProvider.provide(),
-        getCrossSellsUseCaseProvider.provide(),
+        getInsuranceContractsUseCase = getInsuranceContractsUseCaseProvider.provide(),
+        getCrossSellsUseCase = getCrossSellsUseCaseProvider.provide(),
+        forceNetworkFetch = isRetryingIteration,
       ).fold(
         ifLeft = {
           Snapshot.withMutableSnapshot {
@@ -134,10 +135,11 @@ internal class InsurancePresenter(
 private suspend fun loadInsuranceData(
   getInsuranceContractsUseCase: GetInsuranceContractsUseCase,
   getCrossSellsUseCase: GetCrossSellsUseCase,
+  forceNetworkFetch: Boolean,
 ): Either<ErrorMessage, InsuranceData> {
   return either {
     parZip(
-      { getInsuranceContractsUseCase.invoke().bind() },
+      { getInsuranceContractsUseCase.invoke(forceNetworkFetch).bind() },
       { getCrossSellsUseCase.invoke().bind() },
     ) {
         contracts: List<InsuranceContract>,

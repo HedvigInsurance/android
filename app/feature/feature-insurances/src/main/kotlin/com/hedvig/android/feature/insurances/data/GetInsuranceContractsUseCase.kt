@@ -13,17 +13,17 @@ import octopus.InsuranceContractsQuery
 import octopus.fragment.ContractFragment
 
 internal interface GetInsuranceContractsUseCase {
-  suspend fun invoke(): Either<ErrorMessage, List<InsuranceContract>>
+  suspend fun invoke(forceNetworkFetch: Boolean): Either<ErrorMessage, List<InsuranceContract>>
 }
 
 internal class GetInsuranceContractsUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetInsuranceContractsUseCase {
-  override suspend fun invoke(): Either<ErrorMessage, List<InsuranceContract>> {
+  override suspend fun invoke(forceNetworkFetch: Boolean): Either<ErrorMessage, List<InsuranceContract>> {
     return either {
       val insuranceQueryData = apolloClient
         .query(InsuranceContractsQuery())
-        .fetchPolicy(FetchPolicy.NetworkFirst)
+        .fetchPolicy(if (forceNetworkFetch) FetchPolicy.NetworkOnly else FetchPolicy.CacheFirst)
         .safeExecute()
         .toEither(::ErrorMessage)
         .bind()

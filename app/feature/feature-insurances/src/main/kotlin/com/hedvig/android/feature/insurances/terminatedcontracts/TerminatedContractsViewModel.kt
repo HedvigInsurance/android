@@ -28,7 +28,7 @@ internal class TerminatedContractsViewModel(
     emit(TerminatedContractsUiState.Loading)
     either {
       val terminatedContracts = getInsuranceContractsUseCase
-        .invoke()
+        .invoke(forceNetworkFetch = false)
         .bind()
         .filter(InsuranceContract::isTerminated)
       ensure(terminatedContracts.isNotEmpty()) {

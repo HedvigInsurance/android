@@ -23,7 +23,7 @@ internal class ContractDetailViewModel(
     val uiState = either {
       getInsuranceContractsUseCase
         .provide()
-        .invoke()
+        .invoke(forceNetworkFetch = false)
         .bind()
         .first { it.id == contractId }
     }.fold(
