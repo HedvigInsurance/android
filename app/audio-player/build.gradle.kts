@@ -15,6 +15,7 @@ dependencies {
   implementation(libs.androidx.lifecycle.runtime)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreDesignSystem)
+  implementation(projects.coreIcons)
   implementation(projects.coreResources)
 
   testImplementation(libs.assertK)
