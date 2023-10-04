@@ -39,12 +39,17 @@ import com.hedvig.android.core.designsystem.material3.squircleLargeTop
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
+import com.hedvig.android.core.ui.insurance.ContractType
+import com.hedvig.android.core.ui.insurance.ProductVariant
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
-import com.hedvig.android.feature.insurances.insurancedetail.data.ContractDetails
+
+import com.hedvig.android.feature.insurances.data.Agreement
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 
 @ExperimentalMaterial3Api
 @Composable
@@ -52,12 +57,12 @@ internal fun YourInfoTab(
   coverageItems: ImmutableList<Pair<String, String>>,
   allowChangeAddress: Boolean,
   allowEditCoInsured: Boolean,
-  upcomingChanges: ContractDetails.UpcomingChanges?,
+  upcomingChangesAgreement: Agreement?,
   onEditCoInsuredClick: () -> Unit,
   onChangeAddressClick: () -> Unit,
   openChat: () -> Unit,
-  cancelInsuranceData: ContractDetails.CancelInsuranceData?,
-  onCancelInsuranceClick: (ContractDetails.CancelInsuranceData) -> Unit,
+  onCancelInsuranceClick: () -> Unit,
+  isTerminated: Boolean,
   modifier: Modifier = Modifier,
 ) {
   val coroutineScope = rememberCoroutineScope()
@@ -108,7 +113,7 @@ internal fun YourInfoTab(
   }
 
   var showUpcomingChangesBottomSheet by rememberSaveable { mutableStateOf(false) }
-  if (showUpcomingChangesBottomSheet && upcomingChanges != null) {
+  if (showUpcomingChangesBottomSheet && upcomingChangesAgreement != null) {
     val sheetState = rememberModalBottomSheetState(true)
     ModalBottomSheet(
       onDismissRequest = {
@@ -120,8 +125,10 @@ internal fun YourInfoTab(
       windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
     ) {
       UpcomingChangesBottomSheetContent(
-        infoText = upcomingChanges.title,
-        sections = upcomingChanges.sections,
+        infoText = "", // TODO
+        sections = upcomingChangesAgreement.displayItems
+          .map { it.title to it.value }
+          .toImmutableList(),
         onOpenChat = openChat,
         onDismiss = {
           coroutineScope.launch {
@@ -142,14 +149,14 @@ internal fun YourInfoTab(
 
   Column(modifier) {
     Spacer(Modifier.height(16.dp))
-    if (upcomingChanges != null) {
+    if (upcomingChangesAgreement != null) {
       VectorInfoCard(
-        text = upcomingChanges.title,
+        text = "", // TODO
         modifier = Modifier
           .fillMaxWidth()
           .padding(horizontal = 16.dp),
       ) {
-        if (upcomingChanges.sections.isNotEmpty()) {
+        if (upcomingChangesAgreement.displayItems.isNotEmpty()) {
           HedvigContainedSmallButton(
             text = stringResource(id = R.string.insurances_tab_view_details),
             onClick = { showUpcomingChangesBottomSheet = true },
@@ -164,8 +171,8 @@ internal fun YourInfoTab(
       Spacer(Modifier.height(8.dp))
     }
     CoverageRows(coverageItems, Modifier.padding(horizontal = 16.dp))
-    if (allowChangeAddress || allowEditCoInsured) {
-      Spacer(Modifier.height(16.dp))
+    Spacer(Modifier.height(16.dp))
+    if (!isTerminated) {
       HedvigContainedButton(
         text = stringResource(R.string.CONTRACT_EDIT_INFO_LABEL),
         onClick = { showEditYourInfoBottomSheet = true },
@@ -175,20 +182,18 @@ internal fun YourInfoTab(
         ),
         modifier = Modifier.padding(horizontal = 16.dp),
       )
-    }
-    if (cancelInsuranceData != null) {
       Spacer(Modifier.height(8.dp))
       HedvigTextButton(
         text = stringResource(R.string.TERMINATION_BUTTON),
-        onClick = { onCancelInsuranceClick(cancelInsuranceData) },
+        onClick = { onCancelInsuranceClick() },
         colors = ButtonDefaults.textButtonColors(
           contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         ),
         modifier = Modifier.padding(horizontal = 16.dp),
       )
     }
-    Spacer(Modifier.height(16.dp))
   }
+  Spacer(Modifier.height(16.dp))
 }
 
 @Composable
@@ -244,15 +249,29 @@ private fun PreviewYourInfoTab() {
         ),
         allowChangeAddress = true,
         allowEditCoInsured = true,
-        upcomingChanges = ContractDetails.UpcomingChanges(
-          "Your insurance will update on 2023.08.17",
-          persistentListOf("1" to "2"),
-        ),
         onEditCoInsuredClick = {},
         onChangeAddressClick = {},
         openChat = {},
-        cancelInsuranceData = ContractDetails.CancelInsuranceData("123", "123"),
         onCancelInsuranceClick = {},
+        upcomingChangesAgreement = Agreement(
+          activeFrom = LocalDate.fromEpochDays(200),
+          activeTo = LocalDate.fromEpochDays(300),
+          displayItems = listOf(
+            Agreement.DisplayItem(
+              title = "test title",
+              value = "test value",
+            ),
+          ).toImmutableList(),
+          productVariant = ProductVariant(
+            displayName = "Variant",
+            contractType = ContractType.RENTAL,
+            partner = null,
+            perils = persistentListOf(),
+            insurableLimits = persistentListOf(),
+            documents = persistentListOf(),
+          ),
+        ),
+        isTerminated = false,
       )
     }
   }
