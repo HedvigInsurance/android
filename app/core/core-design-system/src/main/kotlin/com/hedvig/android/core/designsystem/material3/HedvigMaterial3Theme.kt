@@ -7,35 +7,10 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import com.hedvig.android.core.designsystem.theme.dark_background
-import com.hedvig.android.core.designsystem.theme.dark_error
-import com.hedvig.android.core.designsystem.theme.dark_onBackground
-import com.hedvig.android.core.designsystem.theme.dark_onError
-import com.hedvig.android.core.designsystem.theme.dark_onPrimary
-import com.hedvig.android.core.designsystem.theme.dark_onSecondary
-import com.hedvig.android.core.designsystem.theme.dark_onSurface
-import com.hedvig.android.core.designsystem.theme.dark_onSurfaceVariant
-import com.hedvig.android.core.designsystem.theme.dark_outlineVariant
-import com.hedvig.android.core.designsystem.theme.dark_primary
-import com.hedvig.android.core.designsystem.theme.dark_primaryVariant
-import com.hedvig.android.core.designsystem.theme.dark_scrim
-import com.hedvig.android.core.designsystem.theme.dark_secondary
-import com.hedvig.android.core.designsystem.theme.dark_surface
-import com.hedvig.android.core.designsystem.theme.dark_surfaceVariant
-import com.hedvig.android.core.designsystem.theme.light_background
-import com.hedvig.android.core.designsystem.theme.light_error
-import com.hedvig.android.core.designsystem.theme.light_onBackground
-import com.hedvig.android.core.designsystem.theme.light_onError
-import com.hedvig.android.core.designsystem.theme.light_onPrimary
-import com.hedvig.android.core.designsystem.theme.light_onSecondary
-import com.hedvig.android.core.designsystem.theme.light_onSurface
-import com.hedvig.android.core.designsystem.theme.light_onSurfaceVariant
-import com.hedvig.android.core.designsystem.theme.light_outlineVariant
-import com.hedvig.android.core.designsystem.theme.light_primary
-import com.hedvig.android.core.designsystem.theme.light_primaryVariant
-import com.hedvig.android.core.designsystem.theme.light_secondary
-import com.hedvig.android.core.designsystem.theme.light_surface
-import com.hedvig.android.core.designsystem.theme.light_surfaceVariant
+import androidx.compose.ui.graphics.Color
+import com.hedvig.android.core.designsystem.newtheme.hedvigTonalPalette
+import com.hedvig.android.core.designsystem.theme.lavender_300
+import com.hedvig.android.core.designsystem.theme.lavender_400
 
 @Composable
 internal fun HedvigMaterial3Theme(
@@ -61,77 +36,77 @@ internal fun HedvigMaterial3Theme(
 }
 
 internal val LightColorScheme = lightColorScheme(
-  primary = light_primary,
-  onPrimary = light_onPrimary,
-  inversePrimary = light_primaryVariant,
-  primaryContainer = light_surface,
-  onPrimaryContainer = light_onSurface,
+  primary = hedvigTonalPalette.greyscale1000,
+  onPrimary = hedvigTonalPalette.greyscale0,
+  inversePrimary = hedvigTonalPalette.greyscale800,
+  primaryContainer = hedvigTonalPalette.greyscale50,
+  onPrimaryContainer = hedvigTonalPalette.greyscale1000,
 
-  secondary = light_primaryVariant,
-  secondaryContainer = light_surface,
-  onSecondaryContainer = light_onSurface,
-  onSecondary = light_onPrimary,
+  secondary = hedvigTonalPalette.greyscale800,
+  secondaryContainer = hedvigTonalPalette.greyscale50,
+  onSecondaryContainer = hedvigTonalPalette.greyscale1000,
+  onSecondary = hedvigTonalPalette.greyscale0,
 
-  tertiary = light_secondary,
-  onTertiary = light_onSecondary,
-  tertiaryContainer = light_surface,
-  onTertiaryContainer = light_onSurface,
+  tertiary = lavender_300,
+  onTertiary = hedvigTonalPalette.greyscale1000,
+  tertiaryContainer = hedvigTonalPalette.greyscale50,
+  onTertiaryContainer = hedvigTonalPalette.greyscale1000,
 
-  background = light_background,
-  onBackground = light_onBackground,
+  background = hedvigTonalPalette.greyscale0,
+  onBackground = hedvigTonalPalette.greyscale1000,
 
-  surface = light_surface,
-  onSurface = light_onSurface,
-  surfaceVariant = light_surfaceVariant,
-  onSurfaceVariant = light_onSurfaceVariant,
-  surfaceTint = light_surface, // no tint, as m2 also did not tint elevated surfaces
-  inverseSurface = light_onSurface,
-  inverseOnSurface = light_surface,
+  surface = hedvigTonalPalette.greyscale50,
+  onSurface = hedvigTonalPalette.greyscale1000,
+  surfaceVariant = hedvigTonalPalette.greyscale100,
+  onSurfaceVariant = hedvigTonalPalette.greyscale700,
+  surfaceTint = hedvigTonalPalette.greyscale50, // no tint, as m2 also did not tint elevated surfaces
+  inverseSurface = hedvigTonalPalette.greyscale1000,
+  inverseOnSurface = hedvigTonalPalette.greyscale50,
 
-  error = light_error,
-  onError = light_onError,
-  errorContainer = light_surface,
-  onErrorContainer = light_onSurface,
+  error = Color(0xFFDD2727),
+  onError = hedvigTonalPalette.greyscale0,
+  errorContainer = hedvigTonalPalette.greyscale50,
+  onErrorContainer = hedvigTonalPalette.greyscale1000,
 
 //  outline = no equivalent,
-  outlineVariant = light_outlineVariant,
+  outlineVariant = hedvigTonalPalette.greyscale300,
 //  scrim = default is ok,
 )
 
 private val DarkColorScheme = darkColorScheme(
-  primary = dark_primary,
-  onPrimary = dark_onPrimary,
-  inversePrimary = dark_primaryVariant,
-  primaryContainer = dark_surface,
-  onPrimaryContainer = dark_onSurface,
+  primary = hedvigTonalPalette.greyscale0,
+  onPrimary = hedvigTonalPalette.greyscale1000,
+  inversePrimary = hedvigTonalPalette.greyscale50,
+  primaryContainer = hedvigTonalPalette.greyscale900,
+  onPrimaryContainer = hedvigTonalPalette.greyscale0,
 
-  secondary = dark_primaryVariant,
-  onSecondary = dark_onPrimary,
-  secondaryContainer = dark_surface,
-  onSecondaryContainer = dark_onSurface,
+  secondary = hedvigTonalPalette.greyscale50,
+  onSecondary = hedvigTonalPalette.greyscale1000,
+  secondaryContainer = hedvigTonalPalette.greyscale900,
+  onSecondaryContainer = hedvigTonalPalette.greyscale0,
 
-  tertiary = dark_secondary,
-  onTertiary = dark_onSecondary,
-  tertiaryContainer = dark_surface,
-  onTertiaryContainer = dark_onSurface,
+  tertiary = lavender_400,
+  onTertiary = hedvigTonalPalette.greyscale1000,
+  tertiaryContainer = hedvigTonalPalette.greyscale900,
+  onTertiaryContainer = hedvigTonalPalette.greyscale0,
 
-  background = dark_background,
-  onBackground = dark_onBackground,
+  background = hedvigTonalPalette.greyscale1000,
+  onBackground = hedvigTonalPalette.greyscale0,
 
-  surface = dark_surface,
-  onSurface = dark_onSurface,
-  surfaceVariant = dark_surfaceVariant,
-  onSurfaceVariant = dark_onSurfaceVariant,
-  surfaceTint = dark_surface, // no tint, as m2 also did not tint elevated surfaces
-  inverseSurface = dark_onSurface,
-  inverseOnSurface = dark_surface,
+  surface = hedvigTonalPalette.greyscale900,
+  onSurface = hedvigTonalPalette.greyscale0,
+  surfaceVariant = hedvigTonalPalette.greyscale700,
+  onSurfaceVariant = hedvigTonalPalette.greyscale400,
+  surfaceTint = hedvigTonalPalette.greyscale900, // no tint, as m2 also did not tint elevated surfaces
+  inverseSurface = hedvigTonalPalette.greyscale0,
+  inverseOnSurface = hedvigTonalPalette.greyscale900,
 
-  error = dark_error,
-  onError = dark_onError,
-  errorContainer = dark_surface,
-  onErrorContainer = dark_onSurface,
+  error = Color(0xFFE24646),
+  onError = hedvigTonalPalette.greyscale0,
+  errorContainer = hedvigTonalPalette.greyscale900,
+  onErrorContainer = hedvigTonalPalette.greyscale0,
 
 //  outline = no equivalent,
-  outlineVariant = dark_outlineVariant,
-  scrim = dark_scrim,
+  outlineVariant = hedvigTonalPalette.greyscale700,
+  scrim = hedvigTonalPalette.greyscale0,
 )
