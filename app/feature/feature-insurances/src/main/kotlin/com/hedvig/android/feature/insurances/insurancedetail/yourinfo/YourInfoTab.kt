@@ -125,7 +125,10 @@ internal fun YourInfoTab(
       windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
     ) {
       UpcomingChangesBottomSheetContent(
-        infoText = "", // TODO
+        infoText = stringResource(
+          id = R.string.insurances_tab_your_insurance_will_be_updated,
+          upcomingChangesAgreement.activeFrom,
+        ),
         sections = upcomingChangesAgreement.displayItems
           .map { it.title to it.value }
           .toImmutableList(),
@@ -151,7 +154,10 @@ internal fun YourInfoTab(
     Spacer(Modifier.height(16.dp))
     if (upcomingChangesAgreement != null) {
       VectorInfoCard(
-        text = "", // TODO
+        text = stringResource(
+          id = R.string.insurances_tab_your_insurance_will_be_updated,
+          upcomingChangesAgreement.activeFrom,
+        ),
         modifier = Modifier
           .fillMaxWidth()
           .padding(horizontal = 16.dp),
@@ -173,16 +179,18 @@ internal fun YourInfoTab(
     CoverageRows(coverageItems, Modifier.padding(horizontal = 16.dp))
     Spacer(Modifier.height(16.dp))
     if (!isTerminated) {
-      HedvigContainedButton(
-        text = stringResource(R.string.CONTRACT_EDIT_INFO_LABEL),
-        onClick = { showEditYourInfoBottomSheet = true },
-        colors = ButtonDefaults.buttonColors(
-          containerColor = MaterialTheme.colorScheme.surfaceVariant,
-          contentColor = MaterialTheme.colorScheme.onSurface,
-        ),
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
-      Spacer(Modifier.height(8.dp))
+      if (allowChangeAddress || allowEditCoInsured) {
+        HedvigContainedButton(
+          text = stringResource(R.string.CONTRACT_EDIT_INFO_LABEL),
+          onClick = { showEditYourInfoBottomSheet = true },
+          colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+          ),
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+        Spacer(Modifier.height(8.dp))
+      }
       HedvigTextButton(
         text = stringResource(R.string.TERMINATION_BUTTON),
         onClick = { onCancelInsuranceClick() },
@@ -191,9 +199,9 @@ internal fun YourInfoTab(
         ),
         modifier = Modifier.padding(horizontal = 16.dp),
       )
+      Spacer(Modifier.height(16.dp))
     }
   }
-  Spacer(Modifier.height(16.dp))
 }
 
 @Composable

@@ -3,10 +3,8 @@ package com.hedvig.android.feature.insurances.di
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.core.demomode.DemoManager
-import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCaseDemo
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCaseImpl
-import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCaseDemo
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCaseImpl
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
@@ -26,15 +24,27 @@ val insurancesModule = module {
     )
   }
   viewModel<TerminatedContractsViewModel> {
-    TerminatedContractsViewModel(get<GetInsuranceContractsUseCase>())
+    TerminatedContractsViewModel(get<GetInsuranceContractsUseCaseProvider>())
   }
   viewModel<ContractDetailViewModel> { (contractId: String) ->
     ContractDetailViewModel(contractId, get<GetInsuranceContractsUseCaseProvider>())
   }
 
+  provideGetContractsUseCase()
+  provideGetCrossSellsUseCase()
+}
+
+private fun Module.provideGetContractsUseCase() {
+  single<GetInsuranceContractsUseCaseImpl> {
+    GetInsuranceContractsUseCaseImpl(
+      get<ApolloClient>(octopusClient),
+    )
+  }
+
   single<GetInsuranceContractsUseCaseDemo> {
     GetInsuranceContractsUseCaseDemo()
   }
+
   single {
     GetInsuranceContractsUseCaseProvider(
       demoManager = get<DemoManager>(),
@@ -42,7 +52,9 @@ val insurancesModule = module {
       demoImpl = get<GetInsuranceContractsUseCaseDemo>(),
     )
   }
+}
 
+private fun Module.provideGetCrossSellsUseCase() {
   single<GetCrossSellsUseCaseImpl> {
     GetCrossSellsUseCaseImpl(get<ApolloClient>(octopusClient))
   }
@@ -50,31 +62,12 @@ val insurancesModule = module {
   single<GetCrossSellsUseCaseDemo> {
     GetCrossSellsUseCaseDemo()
   }
+
   single {
     GetCrossSellsUseCaseProvider(
       demoManager = get<DemoManager>(),
       prodImpl = get<GetCrossSellsUseCaseImpl>(),
       demoImpl = get<GetCrossSellsUseCaseDemo>(),
     )
-  }
-  provideGetContractDetailsUseCase()
-}
-
-private fun Module.provideGetContractDetailsUseCase() {
-  single<GetInsuranceContractsUseCaseImpl> {
-    GetInsuranceContractsUseCaseImpl(
-      get<ApolloClient>(octopusClient),
-    )
-  }
-  viewModel<ContractDetailViewModel> { (insuranceContractId: String) ->
-    ContractDetailViewModel(insuranceContractId, get<GetInsuranceContractsUseCaseProvider>())
-  }
-  single<GetInsuranceContractsUseCase> {
-    GetInsuranceContractsUseCaseImpl(
-      get<ApolloClient>(octopusClient),
-    )
-  }
-  single<GetCrossSellsUseCase> {
-    GetCrossSellsUseCaseImpl(get<ApolloClient>(octopusClient))
   }
 }

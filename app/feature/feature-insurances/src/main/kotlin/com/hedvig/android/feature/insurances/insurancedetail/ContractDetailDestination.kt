@@ -48,15 +48,17 @@ import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.card.InsuranceCard
 import com.hedvig.android.core.ui.insurance.ContractType
 import com.hedvig.android.core.ui.insurance.ProductVariant
+import com.hedvig.android.core.ui.insurance.canChangeCoInsured
 import com.hedvig.android.core.ui.plus
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.feature.insurances.data.Agreement
+import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.data.InsuranceContract
-import com.hedvig.android.feature.insurances.data.createChips
-import com.hedvig.android.feature.insurances.data.createPainter
 import com.hedvig.android.feature.insurances.insurancedetail.coverage.CoverageTab
 import com.hedvig.android.feature.insurances.insurancedetail.documents.DocumentsTab
 import com.hedvig.android.feature.insurances.insurancedetail.yourinfo.YourInfoTab
+import com.hedvig.android.feature.insurances.ui.createChips
+import com.hedvig.android.feature.insurances.ui.createPainter
 import hedvig.resources.R
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -68,7 +70,7 @@ internal fun ContractDetailDestination(
   viewModel: ContractDetailViewModel,
   onEditCoInsuredClick: () -> Unit,
   onChangeAddressClick: () -> Unit,
-  onCancelInsuranceClick: (String, String) -> Unit,
+  onCancelInsuranceClick: (cancelInsuranceData: CancelInsuranceData) -> Unit,
   openWebsite: (Uri) -> Unit,
   openChat: () -> Unit,
   navigateUp: () -> Unit,
@@ -96,13 +98,11 @@ private fun ContractDetailScreen(
   retry: () -> Unit,
   onEditCoInsuredClick: () -> Unit,
   onChangeAddressClick: () -> Unit,
-  onCancelInsuranceClick: (String, String) -> Unit,
+  onCancelInsuranceClick: (cancelInsuranceData: CancelInsuranceData) -> Unit,
   openWebsite: (Uri) -> Unit,
   navigateUp: () -> Unit,
   openChat: () -> Unit,
 ) {
-  val context = LocalContext.current
-
   Column(Modifier.fillMaxSize()) {
     TopAppBarWithBack(
       title = stringResource(R.string.insurance_details_view_title),
@@ -140,7 +140,7 @@ private fun ContractDetailScreen(
             ) {
               val contract = state.insuranceContract
               InsuranceCard(
-                chips = contract.createChips(context),
+                chips = contract.createChips(),
                 topText = contract.currentAgreement.productVariant.displayName,
                 bottomText = contract.exposureDisplayName,
                 imageLoader = imageLoader,
@@ -166,15 +166,17 @@ private fun ContractDetailScreen(
                       coverageItems = state.insuranceContract.currentAgreement.displayItems
                         .map { it.title to it.value }
                         .toImmutableList(),
-                      allowEditCoInsured = true, // TODO
-                      allowChangeAddress = true, // TODO
+                      allowEditCoInsured = state.insuranceContract.currentAgreement.productVariant.contractType.canChangeCoInsured(),
+                      allowChangeAddress = state.insuranceContract.supportsAddressChange,
                       onEditCoInsuredClick = onEditCoInsuredClick,
                       onChangeAddressClick = onChangeAddressClick,
                       openChat = openChat,
                       onCancelInsuranceClick = {
                         onCancelInsuranceClick(
-                          state.insuranceContract.id,
-                          state.insuranceContract.currentAgreement.productVariant.displayName,
+                          CancelInsuranceData(
+                            state.insuranceContract.id,
+                            state.insuranceContract.currentAgreement.productVariant.displayName,
+                          ),
                         )
                       },
                       upcomingChangesAgreement = state.insuranceContract.upcomingAgreement,
@@ -277,7 +279,7 @@ private fun PreviewContractDetailScreen() {
         retry = {},
         onEditCoInsuredClick = {},
         onChangeAddressClick = {},
-        onCancelInsuranceClick = { _, _ ->
+        onCancelInsuranceClick = {
 
         },
         openWebsite = {},

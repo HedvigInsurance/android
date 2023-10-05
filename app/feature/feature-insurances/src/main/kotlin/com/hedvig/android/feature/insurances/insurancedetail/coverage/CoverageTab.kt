@@ -151,7 +151,7 @@ private fun ColumnScope.PerilSection(
   }
 }
 
-val String.color
+private val String.color
   get() = Color(android.graphics.Color.parseColor(this))
 
 @Composable
@@ -316,7 +316,6 @@ private fun PreviewPerilSection() {
 }
 
 private val previewPerils: PersistentList<Peril> = List(4) { index ->
-  val hexValue = listOf(0xFFC45D4F, 0xFF125D4F, 0xFFC4FF4F, 0xFFC45D00)[index]
   Peril(
     id = index.toString(),
     title = "Eldsvåda",

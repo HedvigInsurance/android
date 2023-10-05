@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -30,7 +29,7 @@ import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.feature.insurances.data.Agreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract
-import com.hedvig.android.feature.insurances.data.createChips
+import com.hedvig.android.feature.insurances.ui.createChips
 import hedvig.resources.R
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
@@ -60,7 +59,6 @@ private fun TerminatedContractsScreen(
   retry: () -> Unit,
   imageLoader: ImageLoader,
 ) {
-  val context = LocalContext.current
   HedvigScaffold(
     navigateUp = navigateUp,
     topAppBarText = stringResource(R.string.insurances_tab_cancelled_insurances_title),
@@ -82,7 +80,7 @@ private fun TerminatedContractsScreen(
       is TerminatedContractsUiState.Success -> {
         for ((index, contract) in uiState.insuranceContracts.withIndex()) {
           InsuranceCard(
-            chips = contract.createChips(context),
+            chips = contract.createChips(),
             topText = contract.currentAgreement.productVariant.displayName,
             bottomText = contract.exposureDisplayName,
             imageLoader = imageLoader,

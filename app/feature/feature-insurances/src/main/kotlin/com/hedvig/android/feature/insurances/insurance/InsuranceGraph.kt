@@ -6,6 +6,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
+import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailDestination
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailViewModel
@@ -63,12 +64,12 @@ fun NavGraphBuilder.insuranceGraph(
         viewModel = viewModel,
         onEditCoInsuredClick = openChat,
         onChangeAddressClick = { startMovingFlow() },
-        onCancelInsuranceClick = { insuranceId: String, insuranceDisplayName: String ->
+        onCancelInsuranceClick = { cancelInsuranceData: CancelInsuranceData ->
           // open termination flow
           startTerminationFlow(
             backStackEntry,
-            insuranceId,
-            insuranceDisplayName,
+            cancelInsuranceData.contractId,
+            cancelInsuranceData.contractDisplayName,
           )
         },
         openWebsite = openWebsite,

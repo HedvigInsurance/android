@@ -40,3 +40,16 @@ fun ContractType.toPillow(): Int = when (this) {
   ContractType.TRAVEL -> R.drawable.ic_pillow_homeowner
   ContractType.UNKNOWN -> R.drawable.ic_pillow_homeowner
 }
+
+fun ContractType.canChangeCoInsured() = when (this) {
+  ContractType.HOMEOWNER,
+  ContractType.RENTAL,
+  ContractType.ACCIDENT,
+  ContractType.HOUSE,
+  ContractType.STUDENT,
+  ContractType.TRAVEL -> true
+  ContractType.CAR,
+  ContractType.CAT,
+  ContractType.DOG,
+  ContractType.UNKNOWN -> false
+}

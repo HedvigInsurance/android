@@ -45,7 +45,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -72,12 +71,12 @@ import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.feature.insurances.data.Agreement
 import com.hedvig.android.feature.insurances.data.CrossSell
 import com.hedvig.android.feature.insurances.data.InsuranceContract
-import com.hedvig.android.feature.insurances.data.createChips
-import com.hedvig.android.feature.insurances.data.createPainter
 import com.hedvig.android.feature.insurances.data.iconRes
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceScreenEvent
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceUiState
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
+import com.hedvig.android.feature.insurances.ui.createChips
+import com.hedvig.android.feature.insurances.ui.createPainter
 import com.hedvig.android.pullrefresh.PullRefreshDefaults
 import com.hedvig.android.pullrefresh.PullRefreshIndicator
 import com.hedvig.android.pullrefresh.pullRefresh
@@ -217,11 +216,10 @@ private fun ColumnScope.InsuranceScreenContent(
   navigateToCancelledInsurances: () -> Unit,
   quantityOfCancelledInsurances: Int,
 ) {
-  val context = LocalContext.current
   for ((index, contract) in contracts.withIndex()) {
     InsuranceCard(
       backgroundImageUrl = null,
-      chips = contract.createChips(context),
+      chips = contract.createChips(),
       topText = contract.currentAgreement.productVariant.displayName,
       bottomText = contract.exposureDisplayName,
       imageLoader = imageLoader,
