@@ -3,8 +3,6 @@ package com.hedvig.android.core.designsystem.newtheme
 import androidx.compose.ui.graphics.Color
 
 internal val hedvigTonalPalette: HedvigTonalPalette = HedvigTonalPaletteImpl(
-  greyscale0 = Color(0xFFFFFFFF),
-  greyscale10 = Color(0xFFFEFDF0),
   greyscale25 = Color(0xFFFAFAFA),
   greyscale50 = Color(0xFFF5F5F5),
   greyscale100 = Color(0xFFF0F0F0),
@@ -111,8 +109,6 @@ internal val hedvigTonalPalette: HedvigTonalPalette = HedvigTonalPaletteImpl(
 )
 
 private class HedvigTonalPaletteImpl(
-  override val greyscale0: Color,
-  override val greyscale10: Color,
   override val greyscale25: Color,
   override val greyscale50: Color,
   override val greyscale100: Color,

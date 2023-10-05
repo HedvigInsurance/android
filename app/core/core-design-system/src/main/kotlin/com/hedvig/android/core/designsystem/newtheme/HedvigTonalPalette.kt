@@ -3,8 +3,6 @@ package com.hedvig.android.core.designsystem.newtheme
 import androidx.compose.ui.graphics.Color
 
 internal interface HedvigTonalPalette {
-  val greyscale0: Color
-  val greyscale10: Color
   val greyscale25: Color
   val greyscale50: Color
   val greyscale100: Color
