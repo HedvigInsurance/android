@@ -52,8 +52,8 @@ internal class ForeverPresenter(
       isLoadingForeverData = true
       foreverDataErrorMessage = null
       either {
-          val referralsData = foreverRepositoryProvider.provide().getReferralsData().bind()
-          ForeverData(referralsData = referralsData)
+        val referralsData = foreverRepositoryProvider.provide().getReferralsData().bind()
+        ForeverData(referralsData = referralsData)
       }.fold(
         ifLeft = { foreverDataErrorMessage = it },
         ifRight = { foreverData = it },
