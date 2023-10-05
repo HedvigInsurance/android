@@ -209,6 +209,7 @@ dependencies {
   implementation(projects.datadogCore)
   implementation(projects.datadogDemoTracking)
   implementation(projects.featureChangeaddress)
+  implementation(projects.featureChat)
   implementation(projects.featureClaimTriaging)
   implementation(projects.featureForever)
   implementation(projects.featureHome)
