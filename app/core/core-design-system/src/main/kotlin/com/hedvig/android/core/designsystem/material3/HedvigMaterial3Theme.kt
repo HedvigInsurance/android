@@ -61,9 +61,9 @@ internal fun lightColorScheme(hedvigTonalPalette: HedvigTonalPalette) = lightCol
   background = hedvigTonalPalette.greyscale25,
   onBackground = hedvigTonalPalette.greyscale1000,
 
-  surface = hedvigTonalPalette.greyscale50,
+  surface = hedvigTonalPalette.greyscale100,
   onSurface = hedvigTonalPalette.greyscale1000,
-  surfaceVariant = hedvigTonalPalette.greyscale100,
+  surfaceVariant = hedvigTonalPalette.greyscale200,
   onSurfaceVariant = hedvigTonalPalette.greyscale700,
   surfaceTint = hedvigTonalPalette.greyscale50, // no tint, as m2 also did not tint elevated surfaces
   inverseSurface = hedvigTonalPalette.greyscale1000,

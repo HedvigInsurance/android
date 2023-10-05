@@ -106,6 +106,7 @@ private fun MarketingScreen(
       ModalBottomSheet(
         onDismissRequest = { showPreferencesSheet = false },
         sheetState = sheetState,
+        containerColor = MaterialTheme.colorScheme.background,
         windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
       ) {
         Column(Modifier.verticalScroll(rememberScrollState())) {
@@ -286,6 +287,7 @@ private fun PreferencesPagerSelector(pagerState: PagerState) {
   val couroutineScope = rememberCoroutineScope()
   TabRow(
     selectedTabIndex = pagerState.currentPage,
+    containerColor = MaterialTheme.colorScheme.background,
   ) {
     Tab(
       selected = pagerState.currentPage == 0,
