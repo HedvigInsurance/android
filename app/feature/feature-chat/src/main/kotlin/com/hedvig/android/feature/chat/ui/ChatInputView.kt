@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.chat.ui
+package com.hedvig.android.feature.chat.ui
 
 import android.content.Context
 import android.util.AttributeSet
@@ -6,32 +6,31 @@ import android.view.LayoutInflater
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.content.ContextCompat
+import androidx.core.view.children
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.core.common.android.remove
 import com.hedvig.android.core.common.android.show
-import com.hedvig.app.R
-import com.hedvig.app.databinding.ChatInputViewBinding
-import com.hedvig.app.feature.chat.Audio
-import com.hedvig.app.feature.chat.ChatInputType
-import com.hedvig.app.feature.chat.NullInput
-import com.hedvig.app.feature.chat.ParagraphInput
-import com.hedvig.app.feature.chat.SingleSelect
-import com.hedvig.app.feature.chat.SingleSelectChoiceType
-import com.hedvig.app.feature.chat.TextInput
-import com.hedvig.app.util.extensions.avdSetLooping
-import com.hedvig.app.util.extensions.avdStart
-import com.hedvig.app.util.extensions.avdStop
-import com.hedvig.app.util.extensions.children
-import com.hedvig.app.util.extensions.compatColor
-import com.hedvig.app.util.extensions.view.dismissKeyboard
-import com.hedvig.app.util.extensions.view.fadeIn
-import com.hedvig.app.util.extensions.view.fadeOut
-import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.viewBinding
+import com.hedvig.android.feature.chat.Audio
+import com.hedvig.android.feature.chat.ChatInputType
+import com.hedvig.android.feature.chat.NullInput
+import com.hedvig.android.feature.chat.ParagraphInput
+import com.hedvig.android.feature.chat.R
+import com.hedvig.android.feature.chat.SingleSelect
+import com.hedvig.android.feature.chat.TextInput
+import com.hedvig.android.feature.chat.databinding.ChatInputViewBinding
+import com.hedvig.android.feature.chat.legacy.avdSetLooping
+import com.hedvig.android.feature.chat.legacy.avdStart
+import com.hedvig.android.feature.chat.legacy.avdStop
+import com.hedvig.android.feature.chat.legacy.dismissKeyboard
+import com.hedvig.android.feature.chat.legacy.fadeIn
+import com.hedvig.android.feature.chat.legacy.fadeOut
+import com.hedvig.android.feature.chat.legacy.setHapticClickListener
+import com.hedvig.android.feature.chat.legacy.viewBinding
 
-class ChatInputView : FrameLayout {
+internal class ChatInputView : FrameLayout {
   private val binding by viewBinding(ChatInputViewBinding::bind)
 
   constructor(context: Context) : super(context)
@@ -205,7 +204,9 @@ class ChatInputView : FrameLayout {
     singleSelectButton.text = label
     singleSelectButton.setHapticClickListener {
       singleSelectButton.isSelected = true
-      singleSelectButton.setTextColor(context.compatColor(R.color.white))
+      singleSelectButton.setTextColor(
+        ContextCompat.getColor(context, android.R.color.white),
+      )
       disableSingleButtons()
       when (type) {
         SingleSelectChoiceType.UNDEFINED, // TODO: Let's talk about this one

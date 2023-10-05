@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.chat.ui
+package com.hedvig.android.feature.chat.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,12 +9,12 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.android.core.common.android.remove
 import com.hedvig.android.core.common.android.show
 import com.hedvig.android.feature.chat.ChatViewModel
+import com.hedvig.android.feature.chat.R
+import com.hedvig.android.feature.chat.databinding.SendGifDialogBinding
+import com.hedvig.android.feature.chat.legacy.makeKeyboardAware
+import com.hedvig.android.feature.chat.legacy.onChange
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.app.R
-import com.hedvig.app.databinding.SendGifDialogBinding
-import com.hedvig.app.util.extensions.makeKeyboardAware
-import com.hedvig.app.util.extensions.onChange
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
@@ -24,7 +24,7 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import java.util.concurrent.TimeUnit
 
-class GifPickerBottomSheet : BottomSheetDialogFragment() {
+internal class GifPickerBottomSheet : BottomSheetDialogFragment() {
   private val viewModel: ChatViewModel by activityViewModel()
   private val binding by viewBinding(SendGifDialogBinding::bind)
   private val imageLoader: ImageLoader by inject()

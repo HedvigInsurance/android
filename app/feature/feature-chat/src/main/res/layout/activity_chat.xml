@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
     android:background="?colorSurface"
-    tools:context=".feature.chat.ui.ChatActivity">
+    tools:context="com.hedvig.android.feature.chat.ui.ChatActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/messages"
@@ -63,7 +63,7 @@
 
     </FrameLayout>
 
-    <com.hedvig.app.feature.chat.ui.ChatInputView
+    <com.hedvig.android.feature.chat.ui.ChatInputView
         android:id="@+id/input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.chat
+package com.hedvig.android.feature.chat.ui
 
 enum class SingleSelectChoiceType {
   LINK,

@@ -1,11 +1,16 @@
-package com.hedvig.app.ui.coil
+package com.hedvig.android.feature.chat.legacy
 
 import android.widget.ImageView
 import coil.ImageLoader
 import coil.request.Disposable
 import coil.request.ImageRequest
+import coil.util.CoilUtils
 
-fun ImageView.load(
+internal fun ImageView.dispose() {
+  CoilUtils.dispose(this)
+}
+
+internal fun ImageView.load(
   data: Any?,
   imageLoader: ImageLoader,
   builder: ImageRequest.Builder.() -> Unit = {},

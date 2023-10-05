@@ -7,7 +7,7 @@ import androidx.lifecycle.Observer
 
 // to be deleted asap when Chat gets reworked. Copied over from :app so we don't expose this everywhere in a common
 // module
-class LiveEvent<T> : MediatorLiveData<T>() {
+internal class LiveEvent<T> : MediatorLiveData<T>() {
   private val observers = HashSet<ObserverWrapper<in T>>()
 
   @MainThread

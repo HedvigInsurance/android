@@ -31,7 +31,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
-class ChatViewModel(
+internal class ChatViewModel(
   private val chatRepository: ChatRepository,
   private val chatClosedTracker: ChatEventStore,
   private val featureManager: FeatureManager,

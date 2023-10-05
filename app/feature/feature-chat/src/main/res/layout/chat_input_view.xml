@@ -57,7 +57,7 @@
 
         </FrameLayout>
 
-        <com.hedvig.app.feature.chat.ui.ChatTextInput
+        <com.hedvig.android.feature.chat.ui.ChatTextInput
             android:id="@+id/inputText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

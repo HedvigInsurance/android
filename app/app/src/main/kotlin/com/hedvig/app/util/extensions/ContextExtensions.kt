@@ -9,29 +9,22 @@ import android.net.Uri
 import android.util.TypedValue
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
-import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
-import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.hedvig.android.core.common.android.SHARED_PREFERENCE_NAME
-import com.hedvig.app.R
-import com.hedvig.app.feature.chat.ui.ChatActivity
+import com.hedvig.android.feature.chat.ui.ChatActivity
 import kotlinx.coroutines.delay
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
 const val SHARED_PREFERENCE_ASKED_FOR_PERMISSION_PREFIX_KEY =
   "shared_preference_asked_for_permission_prefix"
-
-fun Context.compatColor(@ColorRes color: Int) = ContextCompat.getColor(this, color)
 
 @ColorInt
 fun Context.colorAttr(
@@ -84,9 +77,6 @@ suspend fun Context.showKeyboardWithDelay(inputView: View?, delayDuration: Durat
     showKeyboard(inputView)
   }
 }
-
-private fun Context.getSharedPreferences() =
-  this.getSharedPreferences(SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE)
 
 /**
  * Note: This extension will not accept an Application Context
@@ -149,23 +139,7 @@ fun Context.showErrorDialog(message: String, positiveAction: () -> Unit) {
     .show()
 }
 
-fun Context.makeToast(
-  @StringRes text: Int,
-  length: Int = Toast.LENGTH_LONG,
-) = makeToast(resources.getString(text), length)
-
-fun Context.makeToast(
-  text: String,
-  length: Int = Toast.LENGTH_LONG,
-) = Toast.makeText(this, text, length).show()
-
 fun Context.openUri(uri: Uri) = startActivity(Intent(Intent.ACTION_VIEW, uri))
-
-fun Context.getStoredBoolean(key: String): Boolean =
-  getSharedPreferences().getBoolean(key, false)
-
-fun Context.storeBoolean(key: String, value: Boolean): Boolean =
-  getSharedPreferences().edit().putBoolean(key, value).commit()
 
 fun Context.hasPermissions(vararg permissions: String): Boolean {
   for (permission in permissions) {
@@ -214,8 +188,8 @@ fun Context.startChat() {
   val options =
     ActivityOptionsCompat.makeCustomAnimation(
       this,
-      R.anim.chat_slide_up_in,
-      R.anim.stay_in_place,
+      com.hedvig.android.feature.chat.R.anim.chat_slide_up_in,
+      com.hedvig.android.feature.chat.R.anim.stay_in_place,
     )
 
   ActivityCompat.startActivity(this, intent, options.toBundle())

@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.chat.ui
+package com.hedvig.android.feature.chat.ui
 
 import android.content.Context
 import android.os.Bundle
@@ -48,7 +48,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.ChevronUp
 
-class ChatTextInput : AbstractComposeView {
+internal class ChatTextInput : AbstractComposeView {
   constructor(context: Context) : super(context)
   constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
   constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(

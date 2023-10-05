@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.chat.ui
+package com.hedvig.android.feature.chat.ui
 
 import android.app.Activity
 import android.content.Intent
@@ -12,13 +12,13 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.android.core.common.android.remove
 import com.hedvig.android.core.common.android.show
 import com.hedvig.android.feature.chat.ChatViewModel
-import com.hedvig.app.R
-import com.hedvig.app.databinding.FileUploadDialogBinding
-import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.android.feature.chat.R
+import com.hedvig.android.feature.chat.databinding.FileUploadDialogBinding
+import com.hedvig.android.feature.chat.legacy.setHapticClickListener
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
-class ChatFileUploadBottomSheet : BottomSheetDialogFragment() {
+internal class ChatFileUploadBottomSheet : BottomSheetDialogFragment() {
   private val chatViewModel: ChatViewModel by activityViewModel()
   private val binding by viewBinding(FileUploadDialogBinding::bind)
 

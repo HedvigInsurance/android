@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.chat.ui
+package com.hedvig.android.feature.chat.ui
 
 import android.net.Uri
 import android.view.LayoutInflater
@@ -8,15 +8,15 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import com.hedvig.android.core.common.android.GenericDiffUtilItemCallback
-import com.hedvig.app.R
-import com.hedvig.app.databinding.GifItemBinding
-import com.hedvig.app.ui.coil.dispose
-import com.hedvig.app.ui.coil.load
-import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.viewBinding
+import com.hedvig.android.feature.chat.R
+import com.hedvig.android.feature.chat.databinding.GifItemBinding
+import com.hedvig.android.feature.chat.legacy.dispose
+import com.hedvig.android.feature.chat.legacy.load
+import com.hedvig.android.feature.chat.legacy.setHapticClickListener
+import com.hedvig.android.feature.chat.legacy.viewBinding
 import giraffe.GifQuery
 
-class GifAdapter(
+internal class GifAdapter(
   private val imageLoader: ImageLoader,
   private val sendGif: (String) -> Unit,
 ) : ListAdapter<GifQuery.Gif, GifAdapter.GifViewHolder>(GenericDiffUtilItemCallback()) {

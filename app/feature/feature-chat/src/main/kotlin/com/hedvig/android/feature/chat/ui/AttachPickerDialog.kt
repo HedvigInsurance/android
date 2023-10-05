@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.chat.ui
+package com.hedvig.android.feature.chat.ui
 
 import android.annotation.SuppressLint
 import android.app.Dialog
@@ -10,13 +10,12 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils.loadAnimation
-import com.hedvig.android.core.common.android.remove
-import com.hedvig.android.core.common.android.whenApiVersion
-import com.hedvig.app.R
-import com.hedvig.app.databinding.AttachPickerDialogBinding
-import com.hedvig.app.util.extensions.view.fadeIn
+import com.hedvig.android.feature.chat.R
+import com.hedvig.android.feature.chat.databinding.AttachPickerDialogBinding
+import com.hedvig.android.feature.chat.legacy.fadeIn
+import com.hedvig.android.feature.chat.legacy.remove
 
-class AttachPickerDialog(context: Context) : Dialog(context, R.style.TransparentDialog) {
+internal class AttachPickerDialog(context: Context) : Dialog(context, R.style.TransparentDialog) {
 
   private lateinit var binding: AttachPickerDialogBinding
 
@@ -113,7 +112,7 @@ class AttachPickerDialog(context: Context) : Dialog(context, R.style.Transparent
         WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
         WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
 
-      whenApiVersion(Build.VERSION_CODES.P) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         layoutInDisplayCutoutMode =
           WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
       }

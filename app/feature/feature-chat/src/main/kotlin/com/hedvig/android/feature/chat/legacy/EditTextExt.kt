@@ -1,10 +1,10 @@
-package com.hedvig.app.util.extensions
+package com.hedvig.android.feature.chat.legacy
 
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
 
-fun EditText.onChange(callback: (String) -> Unit): TextWatcher {
+internal fun EditText.onChange(callback: (String) -> Unit): TextWatcher {
   val watcher = object : TextWatcher {
     override fun afterTextChanged(s: Editable?) {
       callback(s.toString())

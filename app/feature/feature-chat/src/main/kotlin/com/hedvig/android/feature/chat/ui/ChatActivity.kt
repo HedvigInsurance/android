@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.chat.ui
+package com.hedvig.android.feature.chat.ui
 
 import android.app.AlertDialog
 import android.net.Uri
@@ -12,6 +12,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.FileProvider
+import androidx.core.view.WindowCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -21,27 +22,25 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.auth.android.AuthenticatedObserver
-import com.hedvig.android.core.common.android.show
+import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.feature.chat.ChatEnabledStatus
 import com.hedvig.android.feature.chat.ChatEvent
+import com.hedvig.android.feature.chat.ChatInputType
 import com.hedvig.android.feature.chat.ChatViewModel
+import com.hedvig.android.feature.chat.R
+import com.hedvig.android.feature.chat.databinding.ActivityChatBinding
+import com.hedvig.android.feature.chat.legacy.applyStatusBarInsets
+import com.hedvig.android.feature.chat.legacy.calculateNonFullscreenHeightDiff
+import com.hedvig.android.feature.chat.legacy.composeContactSupportEmail
+import com.hedvig.android.feature.chat.legacy.show
+import com.hedvig.android.feature.chat.legacy.showAlert
+import com.hedvig.android.feature.chat.legacy.storeBoolean
+import com.hedvig.android.feature.chat.legacy.viewBinding
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.app.BuildConfig
-import com.hedvig.app.R
-import com.hedvig.app.databinding.ActivityChatBinding
-import com.hedvig.app.feature.chat.ChatInputType
-import com.hedvig.app.util.extensions.calculateNonFullscreenHeightDiff
-import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
-import com.hedvig.app.util.extensions.composeContactSupportEmail
-import com.hedvig.app.util.extensions.showAlert
-import com.hedvig.app.util.extensions.storeBoolean
-import com.hedvig.app.util.extensions.view.applyStatusBarInsets
-import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.applyInsetter
 import giraffe.ChatMessagesQuery
 import kotlinx.coroutines.flow.launchIn
@@ -56,7 +55,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
   private val binding by viewBinding(ActivityChatBinding::bind)
 
   private val imageLoader: ImageLoader by inject()
-  private val logoutUseCase: LogoutUseCase by inject()
+  private val hedvigBuildConstants: HedvigBuildConstants by inject()
 
   private var keyboardHeight = 0
   private var systemNavHeight = 0
@@ -87,6 +86,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    WindowCompat.setDecorFitsSystemWindows(window, false)
     if (savedInstanceState != null) {
       currentPhotoPath = savedInstanceState.getString("photo")
     }
@@ -135,7 +135,6 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
       .launchIn(lifecycleScope)
 
     binding.apply {
-      window.compatSetDecorFitsSystemWindows(false)
       toolbar.applyStatusBarInsets()
       messages.applyStatusBarInsets()
       input.applyInsetter {
@@ -214,7 +213,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
         handleSingleSelectLink(
           value = value,
           onLinkHandleFailure = {
-            logoutUseCase.invoke()
+            logcat(LogPriority.ERROR) { "onLinkHandleFailure" }
           },
         )
       },
@@ -308,8 +307,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
         startTakePicture()
       },
       showUploadBottomSheetCallback = {
-        ChatFileUploadBottomSheet
-          .newInstance()
+        ChatFileUploadBottomSheet.newInstance()
           .show(
             supportFragmentManager,
             ChatFileUploadBottomSheet.TAG,
@@ -335,8 +333,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
   }
 
   private fun openGifPicker() {
-    GifPickerBottomSheet
-      .newInstance(isKeyboardShown)
+    GifPickerBottomSheet.newInstance(isKeyboardShown)
       .show(
         supportFragmentManager,
         GifPickerBottomSheet.TAG,
@@ -362,7 +359,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
 
     val newPhotoUri: Uri = FileProvider.getUriForFile(
       this,
-      "${BuildConfig.APPLICATION_ID}.provider",
+      "${hedvigBuildConstants.appId}.provider",
       newPhotoFile,
     )
     takePictureLauncher.launch(newPhotoUri)

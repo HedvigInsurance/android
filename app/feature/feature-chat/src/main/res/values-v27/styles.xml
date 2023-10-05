@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="TransparentDialog" parent="TransparentDialog.V27" />
+
+    <style name="TransparentDialog.V27" parent="TransparentDialog.V23">
+        <item name="android:windowLightNavigationBar">?isLightTheme</item>
+    </style>
+</resources>

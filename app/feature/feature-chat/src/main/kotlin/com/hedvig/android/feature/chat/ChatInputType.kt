@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.chat
+package com.hedvig.android.feature.chat
 
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat

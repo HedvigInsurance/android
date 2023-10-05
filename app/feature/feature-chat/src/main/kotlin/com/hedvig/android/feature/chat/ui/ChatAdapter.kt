@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.chat.ui
+package com.hedvig.android.feature.chat.ui
 
 import android.net.Uri
 import android.view.LayoutInflater
@@ -9,23 +9,23 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import com.hedvig.android.core.common.android.remove
 import com.hedvig.android.core.common.android.show
+import com.hedvig.android.feature.chat.R
+import com.hedvig.android.feature.chat.databinding.ChatMessageFileUploadBinding
+import com.hedvig.android.feature.chat.databinding.ChatMessageHedvigBinding
+import com.hedvig.android.feature.chat.databinding.ChatMessageUserBinding
+import com.hedvig.android.feature.chat.databinding.ChatMessageUserGiphyBinding
+import com.hedvig.android.feature.chat.databinding.ChatMessageUserImageBinding
+import com.hedvig.android.feature.chat.legacy.dispose
+import com.hedvig.android.feature.chat.legacy.load
+import com.hedvig.android.feature.chat.legacy.openUri
+import com.hedvig.android.feature.chat.legacy.setHapticClickListener
+import com.hedvig.android.feature.chat.legacy.viewBinding
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.app.R
-import com.hedvig.app.databinding.ChatMessageFileUploadBinding
-import com.hedvig.app.databinding.ChatMessageHedvigBinding
-import com.hedvig.app.databinding.ChatMessageUserBinding
-import com.hedvig.app.databinding.ChatMessageUserGiphyBinding
-import com.hedvig.app.databinding.ChatMessageUserImageBinding
-import com.hedvig.app.ui.coil.dispose
-import com.hedvig.app.ui.coil.load
-import com.hedvig.app.util.extensions.openUri
-import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.viewBinding
 import giraffe.ChatMessagesQuery
 import giraffe.fragment.ChatMessageFragment
 
-class ChatAdapter(
+internal class ChatAdapter(
   private val imageLoader: ImageLoader,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 

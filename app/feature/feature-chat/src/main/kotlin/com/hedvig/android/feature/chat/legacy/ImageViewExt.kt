@@ -1,4 +1,4 @@
-package com.hedvig.app.util.extensions
+package com.hedvig.android.feature.chat.legacy
 
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Animatable2

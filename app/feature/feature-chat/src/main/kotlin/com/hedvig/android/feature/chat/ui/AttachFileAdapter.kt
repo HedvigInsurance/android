@@ -1,15 +1,15 @@
-package com.hedvig.app.feature.chat.ui
+package com.hedvig.android.feature.chat.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.recyclerview.widget.RecyclerView
-import com.hedvig.android.core.common.android.remove
-import com.hedvig.android.core.common.android.show
-import com.hedvig.app.databinding.CameraAndMiscItemBinding
-import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.android.feature.chat.databinding.CameraAndMiscItemBinding
+import com.hedvig.android.feature.chat.legacy.remove
+import com.hedvig.android.feature.chat.legacy.setHapticClickListener
+import com.hedvig.android.feature.chat.legacy.show
 
-class AttachFileAdapter(
+internal class AttachFileAdapter(
   private val takePhoto: () -> Unit,
   private val showUploadFileDialog: () -> Unit,
 ) : RecyclerView.Adapter<AttachFileAdapter.CameraAndMiscViewHolder>() {
