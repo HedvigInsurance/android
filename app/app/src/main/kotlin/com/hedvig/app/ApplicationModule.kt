@@ -42,6 +42,7 @@ import com.hedvig.android.datadog.core.addDatadogConfiguration
 import com.hedvig.android.datadog.core.di.datadogModule
 import com.hedvig.android.datadog.demo.tracking.di.datadogDemoTrackingModule
 import com.hedvig.android.feature.changeaddress.di.changeAddressModule
+import com.hedvig.android.feature.chat.di.chatModule
 import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
 import com.hedvig.android.feature.forever.di.foreverModule
 import com.hedvig.android.feature.home.di.homeModule
@@ -78,8 +79,6 @@ import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModel
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModelImpl
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutViewModel
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutViewModelImpl
-import com.hedvig.app.feature.chat.data.ChatEventDataStore
-import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.chat.service.ChatNotificationSender
@@ -573,10 +572,6 @@ private val coilModule = module {
   }
 }
 
-private val chatEventModule = module {
-  single<ChatEventStore> { ChatEventDataStore(get()) }
-}
-
 private val graphQLQueryModule = module {
   single<GraphQLQueryHandler> { GraphQLQueryHandler(get(), get(), get<HedvigBuildConstants>()) }
 }
@@ -620,7 +615,7 @@ val applicationModule = module {
       cacheManagerModule,
       changeAddressModule,
       changeDateBottomSheetModule,
-      chatEventModule,
+      chatModule,
       checkoutModule,
       claimFlowDataModule,
       claimTriagingModule,

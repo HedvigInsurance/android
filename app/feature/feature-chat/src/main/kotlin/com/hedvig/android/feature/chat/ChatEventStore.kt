@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.chat.data
+package com.hedvig.android.feature.chat
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -16,7 +16,7 @@ interface ChatEventStore {
   fun observeChatClosedCounter(): Flow<Int>
 }
 
-class ChatEventDataStore(
+internal class ChatEventDataStore(
   private val dataStore: DataStore<Preferences>,
 ) : ChatEventStore {
 
