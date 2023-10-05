@@ -23,7 +23,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.BaselineShift
@@ -36,14 +35,13 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.small.hedvig.ArrowNorthEast
-import com.hedvig.android.feature.insurances.insurancedetail.data.ContractDetails
-import hedvig.resources.R
+import com.hedvig.android.core.ui.insurance.Document
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun DocumentsTab(
-  documents: ImmutableList<ContractDetails.Document>,
+  documents: ImmutableList<Document>,
   onDocumentClicked: (Uri) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -52,14 +50,8 @@ internal fun DocumentsTab(
     for ((index, document) in documents.withIndex()) {
       DocumentCard(
         onClick = { onDocumentClicked(document.url.toUri()) },
-        title = when (document) {
-          is ContractDetails.Document.InsuranceCertificate -> stringResource(R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE)
-          is ContractDetails.Document.TermsAndConditions -> document.displayName
-        },
-        subtitle = when (document) {
-          is ContractDetails.Document.InsuranceCertificate -> null
-          is ContractDetails.Document.TermsAndConditions -> null
-        },
+        title = document.displayName,
+        subtitle = null,
       )
       if (index != documents.lastIndex) {
         Spacer(Modifier.height(4.dp))
@@ -82,7 +74,9 @@ private fun DocumentCard(
       containerColor = MaterialTheme.colorScheme.surfaceVariant,
       contentColor = MaterialTheme.colorScheme.onSurface,
     ),
-    modifier = Modifier.padding(horizontal = 16.dp).heightIn(min = 72.dp),
+    modifier = Modifier
+      .padding(horizontal = 16.dp)
+      .heightIn(min = 72.dp),
   ) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
@@ -128,8 +122,8 @@ private fun PreviewDocumentsScreen() {
     Surface(color = MaterialTheme.colorScheme.background) {
       DocumentsTab(
         documents = persistentListOf(
-          ContractDetails.Document.TermsAndConditions("", "test"),
-          ContractDetails.Document.InsuranceCertificate(""),
+          Document("", "test", Document.InsuranceDocumentType.GENERAL_TERMS),
+          Document("", "", Document.InsuranceDocumentType.PRE_SALE_INFO),
         ),
         onDocumentClicked = {},
       )

@@ -14,11 +14,10 @@ import arrow.core.raise.either
 import arrow.fx.coroutines.parZip
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.Provider
-import com.hedvig.android.core.ui.insurance.ContractType
+import com.hedvig.android.feature.insurances.data.CrossSell
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.InsuranceContract
-import com.hedvig.android.feature.insurances.data.toContractType
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -26,6 +25,7 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeService
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.launch
 import octopus.CrossSalesQuery
@@ -37,7 +37,7 @@ internal sealed interface InsuranceScreenEvent {
 }
 
 internal data class InsuranceUiState(
-  val insuranceCards: ImmutableList<InsuranceCard>,
+  val contracts: ImmutableList<InsuranceContract>,
   val crossSells: ImmutableList<CrossSell>,
   val showNotificationBadge: Boolean,
   val quantityOfCancelledInsurances: Int,
@@ -45,30 +45,9 @@ internal data class InsuranceUiState(
   val isLoading: Boolean,
   val isRetrying: Boolean,
 ) {
-  data class InsuranceCard(
-    val contractId: String,
-    val backgroundImageUrl: String?,
-    val chips: ImmutableList<String>,
-    val title: String,
-    val subtitle: String,
-    val contractType: ContractType,
-  )
-
-  data class CrossSell(
-    val id: String,
-    val title: String,
-    val subtitle: String,
-    val storeUrl: String,
-    val type: CrossSellType,
-  ) {
-    enum class CrossSellType {
-      PET, HOME, ACCIDENT, CAR, UNKNOWN
-    }
-  }
-
   companion object {
     val initialState = InsuranceUiState(
-      insuranceCards = persistentListOf(),
+      contracts = persistentListOf(),
       crossSells = persistentListOf(),
       showNotificationBadge = false,
       quantityOfCancelledInsurances = 0,
@@ -118,8 +97,9 @@ internal class InsurancePresenter(
         isRetrying = isRetryingIteration
       }
       loadInsuranceData(
-        getInsuranceContractsUseCaseProvider.provide(),
-        getCrossSellsUseCaseProvider.provide(),
+        getInsuranceContractsUseCase = getInsuranceContractsUseCaseProvider.provide(),
+        getCrossSellsUseCase = getCrossSellsUseCaseProvider.provide(),
+        forceNetworkFetch = isRetryingIteration,
       ).fold(
         ifLeft = {
           Snapshot.withMutableSnapshot {
@@ -141,7 +121,7 @@ internal class InsurancePresenter(
     }
 
     return InsuranceUiState(
-      insuranceCards = insuranceData.insuranceCards,
+      contracts = insuranceData.contracts,
       crossSells = insuranceData.crossSells,
       showNotificationBadge = showNotificationBadge,
       quantityOfCancelledInsurances = insuranceData.quantityOfCancelledInsurances,
@@ -155,10 +135,11 @@ internal class InsurancePresenter(
 private suspend fun loadInsuranceData(
   getInsuranceContractsUseCase: GetInsuranceContractsUseCase,
   getCrossSellsUseCase: GetCrossSellsUseCase,
+  forceNetworkFetch: Boolean,
 ): Either<ErrorMessage, InsuranceData> {
   return either {
     parZip(
-      { getInsuranceContractsUseCase.invoke().bind() },
+      { getInsuranceContractsUseCase.invoke(forceNetworkFetch).bind() },
       { getCrossSellsUseCase.invoke().bind() },
     ) {
         contracts: List<InsuranceContract>,
@@ -166,34 +147,24 @@ private suspend fun loadInsuranceData(
       ->
       val insuranceCards = contracts
         .filterNot(InsuranceContract::isTerminated)
-        .map { contract ->
-          InsuranceUiState.InsuranceCard(
-            contractId = contract.id,
-            backgroundImageUrl = null, // Fill when we get image from backend
-            chips = contract.statusPills.toPersistentList(),
-            title = contract.displayName,
-            subtitle = contract.detailPills.joinToString(" ∙ "),
-            contractType = contract.typeOfContract.toContractType(),
-          )
-        }.toPersistentList()
+        .toImmutableList()
       val crossSells = crossSellsData.map { crossSell ->
-        InsuranceUiState.CrossSell(
+        CrossSell(
           id = crossSell.id,
           title = crossSell.title,
           subtitle = crossSell.description,
           storeUrl = crossSell.storeUrl,
           type = when (crossSell.type) {
-            CrossSellType.CAR -> InsuranceUiState.CrossSell.CrossSellType.CAR
-            CrossSellType.HOME -> InsuranceUiState.CrossSell.CrossSellType.HOME
-            CrossSellType.ACCIDENT -> InsuranceUiState.CrossSell.CrossSellType.ACCIDENT
-            CrossSellType.PET -> InsuranceUiState.CrossSell.CrossSellType.PET
-            CrossSellType.UNKNOWN__ -> InsuranceUiState.CrossSell.CrossSellType.UNKNOWN
-            null -> InsuranceUiState.CrossSell.CrossSellType.UNKNOWN
+            CrossSellType.CAR -> CrossSell.CrossSellType.CAR
+            CrossSellType.HOME -> CrossSell.CrossSellType.HOME
+            CrossSellType.ACCIDENT -> CrossSell.CrossSellType.ACCIDENT
+            CrossSellType.PET -> CrossSell.CrossSellType.PET
+            CrossSellType.UNKNOWN__ -> CrossSell.CrossSellType.UNKNOWN
           },
         )
       }.toPersistentList()
       InsuranceData(
-        insuranceCards = insuranceCards,
+        contracts = insuranceCards,
         crossSells = crossSells,
         quantityOfCancelledInsurances = contracts.count(InsuranceContract::isTerminated),
       )
@@ -206,21 +177,21 @@ private suspend fun loadInsuranceData(
 }
 
 private data class InsuranceData(
-  val insuranceCards: ImmutableList<InsuranceUiState.InsuranceCard>,
-  val crossSells: ImmutableList<InsuranceUiState.CrossSell>,
+  val contracts: ImmutableList<InsuranceContract>,
+  val crossSells: ImmutableList<CrossSell>,
   val quantityOfCancelledInsurances: Int,
 ) {
   companion object {
     fun fromUiState(uiState: InsuranceUiState): InsuranceData {
       return InsuranceData(
-        insuranceCards = uiState.insuranceCards,
+        contracts = uiState.contracts,
         crossSells = uiState.crossSells,
         quantityOfCancelledInsurances = uiState.quantityOfCancelledInsurances,
       )
     }
 
     val Empty: InsuranceData = InsuranceData(
-      insuranceCards = persistentListOf(),
+      contracts = persistentListOf(),
       crossSells = persistentListOf(),
       quantityOfCancelledInsurances = 0,
     )

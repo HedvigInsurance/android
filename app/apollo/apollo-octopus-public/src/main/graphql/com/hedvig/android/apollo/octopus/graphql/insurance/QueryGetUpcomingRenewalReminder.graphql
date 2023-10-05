@@ -1,0 +1,15 @@
+query GetUpcomingRenewalReminder {
+  currentMember {
+    activeContracts {
+      currentAgreement {
+        productVariant {
+          displayName
+        }
+      }
+      upcomingRenewal {
+        renewalDate
+        draftCertificateUrl
+      }
+    }
+  }
+}
