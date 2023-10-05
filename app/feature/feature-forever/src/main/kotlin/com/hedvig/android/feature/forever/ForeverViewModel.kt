@@ -8,33 +8,25 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import arrow.core.raise.either
-import arrow.fx.coroutines.parZip
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.Provider
-import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.forever.ForeverRepository
-import com.hedvig.android.feature.forever.data.GetReferralsInformationUseCase
+import com.hedvig.android.feature.forever.data.ForeverData
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
-import giraffe.ReferralTermsQuery
-import giraffe.ReferralsQuery
-import giraffe.fragment.ReferralFragment
 
 internal class ForeverViewModel(
   foreverRepositoryProvider: Provider<ForeverRepository>,
-  getReferralTermsUseCaseProvider: Provider<GetReferralsInformationUseCase>,
 ) : MoleculeViewModel<ForeverEvent, ForeverUiState>(
   ForeverUiState.Loading,
   ForeverPresenter(
     foreverRepositoryProvider = foreverRepositoryProvider,
-    getReferralsInformationUseCaseProvider = getReferralTermsUseCaseProvider,
   ),
 )
 
 internal class ForeverPresenter(
   private val foreverRepositoryProvider: Provider<ForeverRepository>,
-  private val getReferralsInformationUseCaseProvider: Provider<GetReferralsInformationUseCase>,
 ) : MoleculePresenter<ForeverEvent, ForeverUiState> {
   @Composable
   override fun MoleculePresenterScope<ForeverEvent>.present(lastState: ForeverUiState): ForeverUiState {
@@ -60,15 +52,8 @@ internal class ForeverPresenter(
       isLoadingForeverData = true
       foreverDataErrorMessage = null
       either {
-        parZip(
-          { foreverRepositoryProvider.provide().getReferralsData().bind() },
-          { getReferralsInformationUseCaseProvider.provide().invoke() },
-        ) { referralsData, terms ->
-          ForeverUiState.ForeverData(
-            referralsData = referralsData,
-            referralTerms = terms.getOrNull(),
-          )
-        }
+          val referralsData = foreverRepositoryProvider.provide().getReferralsData().bind()
+          ForeverData(referralsData = referralsData)
       }.fold(
         ifLeft = { foreverDataErrorMessage = it },
         ifRight = { foreverData = it },
@@ -118,98 +103,6 @@ internal data class ForeverUiState(
   val showReferralCodeSuccessfullyChangedMessage: Boolean,
 ) {
 
-  data class ForeverData(
-    val campaignCode: String?,
-    val incentive: UiMoney?,
-    val grossPriceAmount: UiMoney?,
-    val referralUrl: String?,
-    val potentialDiscountAmount: UiMoney?,
-    val currentDiscountAmount: UiMoney?,
-    val currentNetAmount: UiMoney?,
-    val referrals: List<Referral>,
-  ) {
-    constructor(
-      referralsData: ReferralsQuery.Data,
-      referralTerms: ReferralTermsQuery.ReferralTerms?,
-    ) : this(
-      campaignCode = referralsData.referralInformation.campaign.code,
-      incentive = referralsData
-        .referralInformation
-        .campaign
-        .incentive
-        ?.asMonthlyCostDeduction
-        ?.amount
-        ?.fragments
-        ?.monetaryAmountFragment
-        .let(UiMoney::fromMonetaryAmountFragment),
-      grossPriceAmount = referralsData
-        .referralInformation
-        .costReducedIndefiniteDiscount
-        ?.fragments
-        ?.costFragment
-        ?.monthlyGross
-        ?.fragments
-        ?.monetaryAmountFragment
-        .let(UiMoney::fromMonetaryAmountFragment),
-      referralUrl = referralTerms?.url,
-      potentialDiscountAmount = referralsData
-        .referralInformation
-        .campaign
-        .incentive
-        ?.asMonthlyCostDeduction
-        ?.amount
-        ?.fragments
-        ?.monetaryAmountFragment
-        .let(UiMoney::fromMonetaryAmountFragment),
-      currentDiscountAmount = referralsData
-        .referralInformation
-        .costReducedIndefiniteDiscount
-        ?.fragments
-        ?.costFragment
-        ?.monthlyDiscount
-        ?.fragments
-        ?.monetaryAmountFragment
-        .let(UiMoney::fromMonetaryAmountFragment),
-      currentNetAmount = referralsData
-        .referralInformation
-        .costReducedIndefiniteDiscount
-        ?.fragments
-        ?.costFragment
-        ?.monthlyNet
-        ?.fragments
-        ?.monetaryAmountFragment
-        .let(UiMoney::fromMonetaryAmountFragment),
-      referrals = referralsData.referralInformation.invitations.map {
-        Referral(
-          name = it.fragments.referralFragment.name,
-          state = when {
-            it.fragments.referralFragment.asInProgressReferral != null -> ReferralState.IN_PROGRESS
-            it.fragments.referralFragment.asActiveReferral != null -> ReferralState.ACTIVE
-            it.fragments.referralFragment.asTerminatedReferral != null -> ReferralState.TERMINATED
-            else -> ReferralState.UNKNOWN
-          },
-          discount = it.fragments
-            .referralFragment
-            .asActiveReferral
-            ?.discount
-            ?.fragments
-            ?.monetaryAmountFragment
-            .let(UiMoney::fromMonetaryAmountFragment),
-        )
-      },
-    )
-  }
-
-  data class Referral(
-    val name: String?,
-    val state: ReferralState,
-    val discount: UiMoney?,
-  )
-
-  enum class ReferralState {
-    ACTIVE, IN_PROGRESS, TERMINATED, UNKNOWN
-  }
-
   companion object {
     val Loading: ForeverUiState = ForeverUiState(
       foreverData = null,
@@ -221,11 +114,3 @@ internal data class ForeverUiState(
     )
   }
 }
-
-private val ReferralFragment.name: String?
-  get() {
-    asActiveReferral?.name?.let { return it }
-    asInProgressReferral?.name?.let { return it }
-    asTerminatedReferral?.name?.let { return it }
-    return null
-  }
