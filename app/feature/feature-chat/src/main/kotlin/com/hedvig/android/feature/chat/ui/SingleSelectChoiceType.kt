@@ -1,6 +1,6 @@
 package com.hedvig.android.feature.chat.ui
 
-enum class SingleSelectChoiceType {
+internal enum class SingleSelectChoiceType {
   LINK,
   SELECTION,
   UNDEFINED,

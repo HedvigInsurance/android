@@ -6,7 +6,7 @@ import giraffe.ChatMessagesQuery
 import giraffe.fragment.ChatMessageFragment
 import giraffe.type.KeyboardType
 
-sealed class ChatInputType {
+internal sealed class ChatInputType {
   companion object {
     fun from(message: ChatMessagesQuery.Message): ChatInputType {
       val body = message.fragments.chatMessageFragment.body
@@ -43,13 +43,13 @@ sealed class ChatInputType {
   }
 }
 
-data class TextInput(
+internal data class TextInput(
   val keyboardType: KeyboardType? = null,
   val hint: String? = null,
   val richTextSupport: Boolean = false,
 ) : ChatInputType()
 
-data class SingleSelect(val options: List<ChatMessageFragment.Choice>) : ChatInputType()
-object Audio : ChatInputType()
-object ParagraphInput : ChatInputType()
-object NullInput : ChatInputType()
+internal data class SingleSelect(val options: List<ChatMessageFragment.Choice>) : ChatInputType()
+internal object Audio : ChatInputType()
+internal object ParagraphInput : ChatInputType()
+internal object NullInput : ChatInputType()
