@@ -97,12 +97,12 @@ internal fun ExtraBuildingBottomSheet(
         text = stringResource(id = R.string.general_save_button),
         onClick = {
           if (isInputValid(sizeInput, selectedType)) {
-            val extraBuilding = ExtraBuilding(
+            val newExtraBuilding = ExtraBuilding(
               size = sizeInput?.toInt() ?: 0,
               type = selectedType ?: ExtraBuildingType.CARPORT,
               hasWaterConnected = hasWaterConnected,
             )
-            onSave(extraBuilding)
+            onSave(newExtraBuilding)
           } else {
             if (sizeInput == null) {
               sizeErrorText = R.string.CHANGE_ADDRESS_LIVING_SPACE_ERROR

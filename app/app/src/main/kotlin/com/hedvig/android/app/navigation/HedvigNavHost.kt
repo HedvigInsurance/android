@@ -29,6 +29,7 @@ import com.hedvig.android.feature.claimtriaging.claimTriagingDestinations
 import com.hedvig.android.feature.forever.navigation.foreverGraph
 import com.hedvig.android.feature.home.claims.pledge.HonestyPledgeBottomSheet
 import com.hedvig.android.feature.home.home.navigation.homeGraph
+import com.hedvig.android.feature.home.legacychangeaddress.LegacyChangeAddressActivity
 import com.hedvig.android.feature.insurances.insurance.insuranceGraph
 import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
@@ -82,7 +83,13 @@ internal fun HedvigNavHost(
 
   fun startMovingFlow() {
     coroutineScope.launch {
-      hedvigAppState.navController.navigate(AppDestination.ChangeAddress)
+      if (featureManager.isFeatureEnabled(Feature.NEW_MOVING_FLOW)) {
+        hedvigAppState.navController.navigate(AppDestination.ChangeAddress)
+      } else {
+        context.startActivity(
+          LegacyChangeAddressActivity.newInstance(context),
+        )
+      }
     }
   }
 
@@ -124,7 +131,6 @@ internal fun HedvigNavHost(
           navigator = navigator,
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           activityNavigator = activityNavigator,
-          imageLoader = imageLoader,
         )
       },
       navigator = navigator,
@@ -216,13 +222,11 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   navigator: Navigator,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   activityNavigator: ActivityNavigator,
-  imageLoader: ImageLoader,
 ) {
   changeAddressGraph(
     navController = hedvigAppState.navController,
     openChat = { activityNavigator.navigateToChat(context) },
     openUrl = { activityNavigator.openWebsite(context, Uri.parse(it)) },
-    imageLoader = imageLoader,
   )
   generateTravelCertificateGraph(
     density = density,
