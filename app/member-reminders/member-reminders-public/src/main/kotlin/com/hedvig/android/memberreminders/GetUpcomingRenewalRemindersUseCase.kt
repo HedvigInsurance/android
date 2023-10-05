@@ -9,13 +9,12 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
-import giraffe.GetUpcomingRenewalReminderQuery
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
-import kotlinx.datetime.toKotlinLocalDate
+import octopus.GetUpcomingRenewalReminderQuery
 
 internal interface GetUpcomingRenewalRemindersUseCase {
   suspend fun invoke(): Either<UpcomingRenewalReminderError, NonEmptyList<UpcomingRenewal>>
@@ -32,13 +31,14 @@ internal class GetUpcomingRenewalRemindersUseCaseImpl(
         .toEither(::ErrorMessage)
         .mapLeft(UpcomingRenewalReminderError::NetworkError)
         .bind()
-        .contracts
+        .currentMember
+        .activeContracts
+
       val upcomingRenewals: NonEmptyList<UpcomingRenewal>? = contracts
-        .mapNotNull { contract ->
-          if (contract.upcomingRenewal == null) return@mapNotNull null
+        .map { contract ->
           UpcomingRenewal(
-            contract.displayName,
-            contract.upcomingRenewal.renewalDate.toKotlinLocalDate(),
+            contract.currentAgreement.productVariant.displayName,
+            contract.upcomingRenewal.renewalDate,
             contract.upcomingRenewal.draftCertificateUrl,
           )
         }
@@ -65,5 +65,5 @@ sealed interface UpcomingRenewalReminderError {
 data class UpcomingRenewal(
   val contractDisplayName: String,
   val renewalDate: LocalDate,
-  val draftCertificateUrl: String,
+  val draftCertificateUrl: String?,
 )

@@ -213,11 +213,13 @@ private fun ReminderCardUpcomingRenewals(
     text = stringResource(R.string.DASHBOARD_RENEWAL_PROMPTER_BODY, daysUntilRenewal),
     modifier = modifier,
   ) {
-    InfoCardTextButton(
-      onClick = { openUrl(upcomingRenewal.draftCertificateUrl) },
-      text = stringResource(R.string.travel_certificate_download),
-      modifier = Modifier.fillMaxWidth(),
-    )
+    upcomingRenewal.draftCertificateUrl?.let {
+      InfoCardTextButton(
+        onClick = { openUrl(it) },
+        text = stringResource(R.string.travel_certificate_download),
+        modifier = Modifier.fillMaxWidth(),
+      )
+    }
   }
 }
 
