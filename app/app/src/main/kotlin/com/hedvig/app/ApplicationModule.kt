@@ -139,7 +139,6 @@ import com.hedvig.app.feature.trustly.TrustlyRepository
 import com.hedvig.app.feature.trustly.TrustlyViewModel
 import com.hedvig.app.feature.trustly.TrustlyViewModelImpl
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
-import com.hedvig.app.service.FileService
 import com.hedvig.app.service.push.senders.CrossSellNotificationSender
 import com.hedvig.app.service.push.senders.GenericNotificationSender
 import com.hedvig.app.service.push.senders.PaymentNotificationSender
@@ -460,10 +459,6 @@ private val externalInsuranceModule = module {
   viewModel { ExternalInsurerViewModel(get(), get()) }
 }
 
-private val serviceModule = module {
-  single<FileService> { FileService(get()) }
-}
-
 private val repositoriesModule = module {
   single { ChatRepository(get<ApolloClient>(giraffeClient), get(), get()) }
   single { PayinStatusRepository(get<ApolloClient>(giraffeClient)) }
@@ -654,7 +649,6 @@ val applicationModule = module {
       paymentModule,
       profileModule,
       repositoriesModule,
-      serviceModule,
       settingsDatastoreModule,
       sharedPreferencesModule,
       terminateInsuranceModule,

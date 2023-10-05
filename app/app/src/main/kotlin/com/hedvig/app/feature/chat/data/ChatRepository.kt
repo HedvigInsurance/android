@@ -19,9 +19,9 @@ import com.apollographql.apollo3.cache.normalized.watch
 import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
+import com.hedvig.android.feature.chat.FileService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.app.service.FileService
 import com.hedvig.app.util.extensions.into
 import giraffe.ChatMessageIdQuery
 import giraffe.ChatMessageSubscription

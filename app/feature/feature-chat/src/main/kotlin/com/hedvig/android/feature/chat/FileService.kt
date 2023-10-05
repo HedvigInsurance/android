@@ -1,4 +1,4 @@
-package com.hedvig.app.service
+package com.hedvig.android.feature.chat
 
 import android.content.ContentResolver
 import android.content.Context
@@ -7,7 +7,8 @@ import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
 import java.util.Locale
 
-class FileService(
+// Won't need to be public anymore after GraphQLQueryHandler is deleted when embark + Offer screen are gone
+/* internal */ class FileService(
   private val context: Context,
 ) {
   fun getFileName(uri: Uri): String? {
