@@ -19,4 +19,3 @@ fun CrossSell.CrossSellType.iconRes(): Int = when (this) {
   CrossSell.CrossSellType.CAR -> com.hedvig.android.core.ui.R.drawable.ic_pillow_car
   CrossSell.CrossSellType.UNKNOWN -> com.hedvig.android.core.ui.R.drawable.ic_pillow_home
 }
-

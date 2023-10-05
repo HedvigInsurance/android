@@ -81,7 +81,6 @@ data class InsurableLimit(
       },
     )
   }
-
 }
 
 data class Document(

@@ -10,7 +10,6 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.ui.insurance.ContractType
 import com.hedvig.android.core.ui.insurance.ProductVariant
 import com.hedvig.android.feature.insurances.data.Agreement
@@ -148,8 +147,8 @@ internal class InsurancePresenterTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
     val presenter = InsurancePresenter(
-      Provider { getInsuranceContractsUseCase },
-      Provider { getCrossSellsUseCase },
+      { getInsuranceContractsUseCase },
+      { getCrossSellsUseCase },
       FakeCrossSellCardNotificationBadgeService(),
     )
     presenter.test(InsuranceUiState.initialState) {
@@ -181,8 +180,8 @@ internal class InsurancePresenterTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
     val presenter = InsurancePresenter(
-      Provider { getInsuranceContractsUseCase },
-      Provider { getCrossSellsUseCase },
+      { getInsuranceContractsUseCase },
+      { getCrossSellsUseCase },
       FakeCrossSellCardNotificationBadgeService(),
     )
     presenter.test(InsuranceUiState.initialState) {
@@ -204,8 +203,8 @@ internal class InsurancePresenterTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
     val presenter = InsurancePresenter(
-      Provider { getInsuranceContractsUseCase },
-      Provider { getCrossSellsUseCase },
+      { getInsuranceContractsUseCase },
+      { getCrossSellsUseCase },
       FakeCrossSellCardNotificationBadgeService(),
     )
     presenter.test(InsuranceUiState.initialState) {
@@ -227,8 +226,8 @@ internal class InsurancePresenterTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
     val presenter = InsurancePresenter(
-      Provider { getInsuranceContractsUseCase },
-      Provider { getCrossSellsUseCase },
+      { getInsuranceContractsUseCase },
+      { getCrossSellsUseCase },
       FakeCrossSellCardNotificationBadgeService(),
     )
     presenter.test(InsuranceUiState.initialState) {
@@ -268,8 +267,8 @@ internal class InsurancePresenterTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
     val presenter = InsurancePresenter(
-      Provider { getInsuranceContractsUseCase },
-      Provider { getCrossSellsUseCase },
+      { getInsuranceContractsUseCase },
+      { getCrossSellsUseCase },
       FakeCrossSellCardNotificationBadgeService(),
     )
     val allContracts = validContracts + terminatedContracts
@@ -295,8 +294,8 @@ internal class InsurancePresenterTest {
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
     val crossSellCardNotificationBadgeService = FakeCrossSellCardNotificationBadgeService()
     val presenter = InsurancePresenter(
-      Provider { getInsuranceContractsUseCase },
-      Provider { getCrossSellsUseCase },
+      { getInsuranceContractsUseCase },
+      { getCrossSellsUseCase },
       crossSellCardNotificationBadgeService,
     )
     presenter.test(InsuranceUiState.initialState) {
@@ -320,8 +319,8 @@ internal class InsurancePresenterTest {
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
     val crossSellCardNotificationBadgeService = FakeCrossSellCardNotificationBadgeService()
     val presenter = InsurancePresenter(
-      Provider { getInsuranceContractsUseCase },
-      Provider { getCrossSellsUseCase },
+      { getInsuranceContractsUseCase },
+      { getCrossSellsUseCase },
       crossSellCardNotificationBadgeService,
     )
     val initialState = InsuranceUiState(
@@ -351,7 +350,7 @@ internal class InsurancePresenterTest {
     val errorMessages = Turbine<ErrorMessage>()
     val contracts = Turbine<List<InsuranceContract>>()
 
-    override suspend fun invoke(): Either<ErrorMessage, List<InsuranceContract>> {
+    override suspend fun invoke(forceNetworkFetch: Boolean): Either<ErrorMessage, List<InsuranceContract>> {
       return raceN(
         { errorMessages.awaitItem() },
         { contracts.awaitItem() },

@@ -16,7 +16,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 
 @Composable
-fun InsuranceContract.createChips(): ImmutableList<String> {
+internal fun InsuranceContract.createChips(): ImmutableList<String> {
   val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
   return listOfNotNull(
     terminationDate?.let { terminationDate ->
@@ -42,7 +42,7 @@ fun InsuranceContract.createChips(): ImmutableList<String> {
 }
 
 @Composable
-fun InsuranceContract.createPainter(): Painter {
+internal fun InsuranceContract.createPainter(): Painter {
   return if (isTerminated) {
     ColorPainter(Color.Black.copy(alpha = 0.7f))
   } else {

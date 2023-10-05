@@ -10,19 +10,20 @@ import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.annotations.ApolloExperimental
 import com.apollographql.apollo3.testing.enqueueTestNetworkError
 import com.apollographql.apollo3.testing.enqueueTestResponse
-import com.hedvig.android.apollo.giraffe.test.GiraffeFakeResolver
+import com.hedvig.android.apollo.octopus.test.OctopusFakeResolver
 import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.core.common.test.isLeft
 import com.hedvig.android.core.common.test.isRight
 import com.hedvig.android.test.clock.TestClock
-import giraffe.GetUpcomingRenewalReminderQuery
-import giraffe.type.buildContract
-import giraffe.type.buildUpcomingRenewal
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toJavaLocalDate
-import kotlinx.datetime.toKotlinLocalDate
 import kotlinx.datetime.toLocalDateTime
+import octopus.GetUpcomingRenewalReminderQuery
+import octopus.type.buildAgreement
+import octopus.type.buildContract
+import octopus.type.buildContractRenewal
+import octopus.type.buildMember
+import octopus.type.buildProductVariant
 import org.junit.Rule
 import org.junit.Test
 import kotlin.time.Duration
@@ -43,26 +44,32 @@ class GetUpcomingRenewalRemindersUseCaseTest {
       apolloClient,
       clock,
     )
-    val upcomingRenewalLocalDate = clock.now().plus(1.days).toLocalDateTime(TimeZone.UTC).date.toJavaLocalDate()
+    val upcomingRenewalLocalDate = clock.now().plus(1.days).toLocalDateTime(TimeZone.UTC).date
     apolloClient.enqueueTestResponse(
       GetUpcomingRenewalReminderQuery(),
-      GetUpcomingRenewalReminderQuery.Data(GiraffeFakeResolver) {
-        contracts = listOf(
-          buildContract {
-            displayName = "display name"
-            upcomingRenewal = buildUpcomingRenewal {
-              renewalDate = upcomingRenewalLocalDate
-              draftCertificateUrl = "draftUrl"
-            }
-          },
-        )
+      GetUpcomingRenewalReminderQuery.Data(OctopusFakeResolver) {
+        currentMember = buildMember {
+          activeContracts = listOf(
+            buildContract {
+              currentAgreement = buildAgreement {
+                productVariant = buildProductVariant {
+                  displayName = "display name"
+                }
+              }
+              upcomingRenewal = buildContractRenewal {
+                renewalDate = upcomingRenewalLocalDate
+                draftCertificateUrl = "draftUrl"
+              }
+            },
+          )
+        }
       },
     )
 
     val result = getUpcomingRenewalRemindersUseCase.invoke()
 
     assertThat(result).isRight().containsExactly(
-      UpcomingRenewal("display name", upcomingRenewalLocalDate.toKotlinLocalDate(), "draftUrl"),
+      UpcomingRenewal("display name", upcomingRenewalLocalDate, "draftUrl"),
     )
   }
 
@@ -75,13 +82,19 @@ class GetUpcomingRenewalRemindersUseCaseTest {
     )
     apolloClient.enqueueTestResponse(
       GetUpcomingRenewalReminderQuery(),
-      GetUpcomingRenewalReminderQuery.Data(GiraffeFakeResolver) {
-        contracts = List(30) { index ->
-          buildContract {
-            displayName = "#$index"
-            upcomingRenewal = buildUpcomingRenewal {
-              renewalDate = clock.now().plus((index + 1).days).toLocalDateTime(TimeZone.UTC).date.toJavaLocalDate()
-              draftCertificateUrl = "url#$index"
+      GetUpcomingRenewalReminderQuery.Data(OctopusFakeResolver) {
+        currentMember = buildMember {
+          activeContracts = List(30) { index ->
+            buildContract {
+              currentAgreement = buildAgreement {
+                productVariant = buildProductVariant {
+                  displayName = "#$index"
+                }
+              }
+              upcomingRenewal = buildContractRenewal {
+                renewalDate = clock.now().plus((index + 1).days).toLocalDateTime(TimeZone.UTC).date
+                draftCertificateUrl = "url#$index"
+              }
             }
           }
         }
@@ -108,19 +121,25 @@ class GetUpcomingRenewalRemindersUseCaseTest {
       apolloClient,
       clock,
     )
-    val upcomingRenewalLocalDate = clock.now().minus(1.days).toLocalDateTime(TimeZone.UTC).date.toJavaLocalDate()
+    val upcomingRenewalLocalDate = clock.now().minus(1.days).toLocalDateTime(TimeZone.UTC).date
     apolloClient.enqueueTestResponse(
       GetUpcomingRenewalReminderQuery(),
-      GetUpcomingRenewalReminderQuery.Data(GiraffeFakeResolver) {
-        contracts = listOf(
-          buildContract {
-            displayName = "display name"
-            upcomingRenewal = buildUpcomingRenewal {
-              renewalDate = upcomingRenewalLocalDate
-              draftCertificateUrl = "draftUrl"
+      GetUpcomingRenewalReminderQuery.Data(OctopusFakeResolver) {
+        currentMember = buildMember {
+          activeContracts = List(30) {
+            buildContract {
+              currentAgreement = buildAgreement {
+                productVariant = buildProductVariant {
+                  displayName = "display name"
+                }
+              }
+              upcomingRenewal = buildContractRenewal {
+                renewalDate = upcomingRenewalLocalDate
+                draftCertificateUrl = "draftUrl"
+              }
             }
-          },
-        )
+          }
+        }
       },
     )
 
@@ -138,13 +157,19 @@ class GetUpcomingRenewalRemindersUseCaseTest {
     )
     apolloClient.enqueueTestResponse(
       GetUpcomingRenewalReminderQuery(),
-      GetUpcomingRenewalReminderQuery.Data(GiraffeFakeResolver) {
-        contracts = List(10) { index ->
-          buildContract {
-            displayName = "#$index"
-            upcomingRenewal = buildUpcomingRenewal {
-              renewalDate = clock.now().minus(index.days).toLocalDateTime(TimeZone.UTC).date.toJavaLocalDate()
-              draftCertificateUrl = "url#$index"
+      GetUpcomingRenewalReminderQuery.Data(OctopusFakeResolver) {
+        currentMember = buildMember {
+          activeContracts = List(10) { index ->
+            buildContract {
+              currentAgreement = buildAgreement {
+                productVariant = buildProductVariant {
+                  displayName = "#$index"
+                }
+              }
+              upcomingRenewal = buildContractRenewal {
+                renewalDate = clock.now().minus(index.days).toLocalDateTime(TimeZone.UTC).date
+                draftCertificateUrl = "url#$index"
+              }
             }
           }
         }
@@ -172,13 +197,19 @@ class GetUpcomingRenewalRemindersUseCaseTest {
     )
     apolloClient.enqueueTestResponse(
       GetUpcomingRenewalReminderQuery(),
-      GetUpcomingRenewalReminderQuery.Data(GiraffeFakeResolver) {
-        contracts = List(5) { index ->
-          buildContract {
-            displayName = "#$index"
-            upcomingRenewal = buildUpcomingRenewal {
-              renewalDate = (clock.now() + renewalOffsets[index]!!).toLocalDateTime(TimeZone.UTC).date.toJavaLocalDate()
-              draftCertificateUrl = "url#$index"
+      GetUpcomingRenewalReminderQuery.Data(OctopusFakeResolver) {
+        currentMember = buildMember {
+          activeContracts = List(5) { index ->
+            buildContract {
+              currentAgreement = buildAgreement {
+                productVariant = buildProductVariant {
+                  displayName = "#$index"
+                }
+              }
+              upcomingRenewal = buildContractRenewal {
+                renewalDate = (clock.now() + renewalOffsets[index]!!).toLocalDateTime(TimeZone.UTC).date
+                draftCertificateUrl = "url#$index"
+              }
             }
           }
         }

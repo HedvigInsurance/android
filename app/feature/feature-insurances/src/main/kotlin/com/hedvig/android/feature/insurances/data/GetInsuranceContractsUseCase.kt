@@ -73,4 +73,3 @@ private fun ContractFragment.toContract(isTerminated: Boolean = false): Insuranc
     isTerminated = isTerminated,
   )
 }
-

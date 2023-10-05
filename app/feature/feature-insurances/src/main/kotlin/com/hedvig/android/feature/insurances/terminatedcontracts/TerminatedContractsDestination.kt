@@ -151,7 +151,7 @@ private class PreviewTerminatedContractsUiStateProvider() :
             renewalDate = LocalDate.fromEpochDays(500),
             supportsAddressChange = false,
             isTerminated = true,
-          )
+          ),
         ),
       ),
     ),

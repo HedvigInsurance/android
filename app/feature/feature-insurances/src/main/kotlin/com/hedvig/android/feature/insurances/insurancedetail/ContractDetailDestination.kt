@@ -280,7 +280,6 @@ private fun PreviewContractDetailScreen() {
         onEditCoInsuredClick = {},
         onChangeAddressClick = {},
         onCancelInsuranceClick = {
-
         },
         openWebsite = {},
         navigateUp = {},

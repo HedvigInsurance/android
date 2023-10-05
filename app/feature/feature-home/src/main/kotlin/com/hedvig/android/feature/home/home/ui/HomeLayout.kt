@@ -42,14 +42,14 @@ import kotlin.math.max
 @Composable
 internal fun HomeLayout(
   fullScreenSize: IntSize,
-  welcomeMessage: @Composable @UiComposable () -> Unit,
-  claimStatusCards: @Composable @UiComposable () -> Unit,
-  veryImportantMessages: @Composable @UiComposable () -> Unit,
-  memberReminderCards: @Composable @UiComposable () -> Unit,
-  startClaimButton: @Composable @UiComposable () -> Unit,
-  otherServicesButton: @Composable @UiComposable () -> Unit,
-  topSpacer: @Composable @UiComposable () -> Unit,
-  bottomSpacer: @Composable @UiComposable () -> Unit,
+  welcomeMessage: @Composable @UiComposable  () -> Unit,
+  claimStatusCards: @Composable @UiComposable  () -> Unit,
+  veryImportantMessages: @Composable @UiComposable  () -> Unit,
+  memberReminderCards: @Composable @UiComposable  () -> Unit,
+  startClaimButton: @Composable @UiComposable  () -> Unit,
+  otherServicesButton: @Composable @UiComposable  () -> Unit,
+  topSpacer: @Composable @UiComposable  () -> Unit,
+  bottomSpacer: @Composable @UiComposable  () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Layout(
@@ -271,9 +271,9 @@ private fun PreviewHomeLayout(
   maxWidth: Int,
   maxHeight: Int,
   modifier: Modifier = Modifier,
-  claimStatusCards: @Composable @UiComposable () -> Unit = {},
-  veryImportantMessages: @Composable @UiComposable () -> Unit = {},
-  memberReminderCards: @Composable @UiComposable () -> Unit = {},
+  claimStatusCards: @Composable @UiComposable  () -> Unit = {},
+  veryImportantMessages: @Composable @UiComposable  () -> Unit = {},
+  memberReminderCards: @Composable @UiComposable  () -> Unit = {},
 ) {
   HomeLayout(
     fullScreenSize = IntSize(maxWidth, maxHeight),

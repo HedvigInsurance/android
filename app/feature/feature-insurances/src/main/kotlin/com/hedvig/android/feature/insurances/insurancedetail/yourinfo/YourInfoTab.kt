@@ -42,7 +42,6 @@ import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.insurance.ContractType
 import com.hedvig.android.core.ui.insurance.ProductVariant
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
-
 import com.hedvig.android.feature.insurances.data.Agreement
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList

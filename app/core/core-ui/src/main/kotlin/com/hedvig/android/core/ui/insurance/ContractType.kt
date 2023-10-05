@@ -47,9 +47,11 @@ fun ContractType.canChangeCoInsured() = when (this) {
   ContractType.ACCIDENT,
   ContractType.HOUSE,
   ContractType.STUDENT,
-  ContractType.TRAVEL -> true
+  ContractType.TRAVEL,
+  -> true
   ContractType.CAR,
   ContractType.CAT,
   ContractType.DOG,
-  ContractType.UNKNOWN -> false
+  ContractType.UNKNOWN,
+  -> false
 }
