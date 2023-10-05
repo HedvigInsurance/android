@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -12,6 +13,7 @@ import arrow.core.Either
 import arrow.core.raise.either
 import arrow.fx.coroutines.parZip
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.ui.insurance.ContractType
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
@@ -78,8 +80,8 @@ internal data class InsuranceUiState(
 }
 
 internal class InsurancePresenter(
-  private val getInsuranceContractsUseCase: GetInsuranceContractsUseCase,
-  private val getCrossSellsUseCase: GetCrossSellsUseCase,
+  private val getInsuranceContractsUseCaseProvider: Provider<GetInsuranceContractsUseCase>,
+  private val getCrossSellsUseCaseProvider: Provider<GetCrossSellsUseCase>,
   private val crossSellCardNotificationBadgeService: CrossSellCardNotificationBadgeService,
 ) : MoleculePresenter<InsuranceScreenEvent, InsuranceUiState> {
   @Composable
@@ -94,7 +96,7 @@ internal class InsurancePresenter(
     var isLoading by remember { mutableStateOf(lastState.isLoading) }
     var isRetrying by remember { mutableStateOf(false) }
     var didFailToLoad by remember { mutableStateOf(false) }
-    var loadIteration by remember { mutableStateOf(0) }
+    var loadIteration by remember { mutableIntStateOf(0) }
 
     val showNotificationBadge by crossSellCardNotificationBadgeService
       .showNotification()
@@ -116,8 +118,8 @@ internal class InsurancePresenter(
         isRetrying = isRetryingIteration
       }
       loadInsuranceData(
-        getInsuranceContractsUseCase,
-        getCrossSellsUseCase,
+        getInsuranceContractsUseCaseProvider.provide(),
+        getCrossSellsUseCaseProvider.provide(),
       ).fold(
         ifLeft = {
           Snapshot.withMutableSnapshot {
@@ -143,7 +145,7 @@ internal class InsurancePresenter(
       crossSells = insuranceData.crossSells,
       showNotificationBadge = showNotificationBadge,
       quantityOfCancelledInsurances = insuranceData.quantityOfCancelledInsurances,
-      hasError = didFailToLoad == true && isLoading == false && isRetrying == false,
+      hasError = didFailToLoad && !isLoading && !isRetrying,
       isLoading = isLoading,
       isRetrying = isRetrying,
     )

@@ -52,7 +52,7 @@ class GenericAuthViewModel(
     _viewState.update { it.copy(loading = true) }
     val startLoginResult = authRepository.startLoginAttempt(
       loginMethod = LoginMethod.OTP,
-      market = marketManager.market?.name ?: "",
+      market = marketManager.market.value.name,
       personalNumber = null,
       email = email.value,
     )

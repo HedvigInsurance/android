@@ -1,7 +1,7 @@
 package com.hedvig.android.feature.changeaddress.data
 
-import java.util.UUID
 import octopus.type.MoveExtraBuildingType
+import java.util.UUID
 
 data class ExtraBuilding(
   val id: String = UUID.randomUUID().toString(),
@@ -26,7 +26,6 @@ enum class ExtraBuildingType {
   BOATHOUSE,
   OTHER,
   UNKNOWN,
-  ;
 }
 
 fun ExtraBuildingType.stringRes(): Int = when (this) {

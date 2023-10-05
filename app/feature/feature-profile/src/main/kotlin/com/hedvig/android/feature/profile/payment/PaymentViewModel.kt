@@ -3,6 +3,7 @@ package com.hedvig.android.feature.profile.payment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.apollo.format
+import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.forever.CampaignCode
 import com.hedvig.android.data.forever.ForeverRepository
 import com.hedvig.android.language.LanguageService
@@ -18,8 +19,8 @@ import java.time.LocalDate
 import java.util.Locale
 
 internal class PaymentViewModel(
-  private val referralsRepository: ForeverRepository,
-  private val paymentRepository: PaymentRepository,
+  private val referralsRepositoryProvider: Provider<ForeverRepository>,
+  private val paymentRepositoryProvider: Provider<PaymentRepository>,
   val languageService: LanguageService,
 ) : ViewModel() {
 
@@ -70,7 +71,7 @@ internal class PaymentViewModel(
   private fun loadPaymentData() {
     viewModelScope.launch {
       _uiState.update { it.copy(isLoading = true) }
-      paymentRepository.getPaymentData().fold(
+      paymentRepositoryProvider.provide().getPaymentData().fold(
         ifLeft = { error -> _uiState.update { it.copy(errorMessage = error.message, isLoading = false) } },
         ifRight = { paymentData -> _uiState.value = paymentData.toUiState(languageService.getLocale()) },
       )
@@ -84,7 +85,7 @@ internal class PaymentViewModel(
   fun onDiscountCodeAdded() {
     viewModelScope.launch {
       val code = _uiState.value.discountCode ?: return@launch
-      referralsRepository.redeemReferralCode(code)
+      referralsRepositoryProvider.provide().redeemReferralCode(code)
         .fold(
           ifLeft = { error -> _uiState.update { it.copy(discountError = error.message) } },
           ifRight = { data -> loadPaymentData() },

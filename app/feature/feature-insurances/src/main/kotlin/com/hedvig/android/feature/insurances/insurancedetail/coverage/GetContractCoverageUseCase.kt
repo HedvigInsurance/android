@@ -8,9 +8,11 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.feature.insurances.insurancedetail.data.ContractDetails
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import octopus.ContractCoverageQuery
+import octopus.type.InsuranceDocumentType
 
 internal interface GetContractCoverageUseCase {
   suspend fun invoke(contractId: String): Either<ErrorMessage, ContractCoverage>
@@ -38,6 +40,7 @@ internal class GetContractCoverageUseCaseImpl(
 internal data class ContractCoverage(
   val contractPerils: ImmutableList<Peril>,
   val insurableLimits: ImmutableList<InsurableLimit>,
+  val documents: ImmutableList<ContractDetails.Document>,
 ) {
   internal data class InsurableLimit(
     val label: String,
@@ -50,7 +53,7 @@ internal data class ContractCoverage(
           if (it == null) {
             emptyList()
           } else {
-            listOf<String>(
+            listOf(
               it.label,
               it.limit,
               it.description,
@@ -83,7 +86,7 @@ internal data class ContractCoverage(
   companion object {
     fun fromContract(contract: ContractCoverageQuery.Data.Contract): ContractCoverage {
       return ContractCoverage(
-        contractPerils = contract.variant.perils
+        contractPerils = contract.currentAgreement.productVariant.perils
           .map { peril ->
             Peril(
               id = peril.id,
@@ -99,7 +102,7 @@ internal data class ContractCoverage(
             )
           }
           .toPersistentList(),
-        insurableLimits = contract.variant.insurableLimits
+        insurableLimits = contract.currentAgreement.productVariant.insurableLimits
           .map { insurableLimit ->
             InsurableLimit(
               label = insurableLimit.label,
@@ -107,6 +110,39 @@ internal data class ContractCoverage(
               description = insurableLimit.description.trim(),
             )
           }
+          .toPersistentList(),
+        documents = contract.currentAgreement.productVariant.documents
+          .map { document ->
+            when (document.type) {
+              InsuranceDocumentType.TERMS_AND_CONDITIONS -> ContractDetails.Document.TermsAndConditions(
+                url = document.url,
+                displayName = document.displayName,
+              )
+
+              InsuranceDocumentType.PRE_SALE_INFO_EU_STANDARD -> ContractDetails.Document.TermsAndConditions(
+                url = document.url,
+                displayName = document.displayName,
+              )
+
+              InsuranceDocumentType.PRE_SALE_INFO -> ContractDetails.Document.TermsAndConditions(
+                url = document.url,
+                displayName = document.displayName,
+              )
+
+              InsuranceDocumentType.GENERAL_TERMS -> ContractDetails.Document.TermsAndConditions(
+                url = document.url,
+                displayName = document.displayName,
+              )
+
+              InsuranceDocumentType.PRIVACY_POLICY -> ContractDetails.Document.TermsAndConditions(
+                url = document.url,
+                displayName = document.displayName,
+              )
+
+              InsuranceDocumentType.UNKNOWN__ -> throw IllegalArgumentException("Unknown contract type")
+            }
+          }
+          .plus(ContractDetails.Document.InsuranceCertificate(contract.currentAgreement.certificateUrl))
           .toPersistentList(),
       )
     }

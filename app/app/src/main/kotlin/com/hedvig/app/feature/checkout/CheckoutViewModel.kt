@@ -94,7 +94,7 @@ class CheckoutViewModel(
     bundleName = bundle.name,
     netAmount = bundle.cost.netMonthlyCost,
     grossAmount = bundle.cost.grossMonthlyCost,
-    market = marketManager.market,
+    market = marketManager.market.value,
     email = bundle.quotes.firstNotNullOfOrNull(QuoteBundle.Quote::email),
   )
 

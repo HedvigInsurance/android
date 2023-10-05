@@ -3,12 +3,14 @@ package com.hedvig.android.feature.forever
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import arrow.core.raise.either
 import arrow.fx.coroutines.parZip
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.forever.ForeverRepository
 import com.hedvig.android.feature.forever.data.GetReferralsInformationUseCase
@@ -20,24 +22,24 @@ import giraffe.ReferralsQuery
 import giraffe.fragment.ReferralFragment
 
 internal class ForeverViewModel(
-  private val foreverRepository: ForeverRepository,
-  private val getReferralTermsUseCase: GetReferralsInformationUseCase,
+  foreverRepositoryProvider: Provider<ForeverRepository>,
+  getReferralTermsUseCaseProvider: Provider<GetReferralsInformationUseCase>,
 ) : MoleculeViewModel<ForeverEvent, ForeverUiState>(
   ForeverUiState.Loading,
   ForeverPresenter(
-    foreverRepository = foreverRepository,
-    getReferralsInformationUseCase = getReferralTermsUseCase,
+    foreverRepositoryProvider = foreverRepositoryProvider,
+    getReferralsInformationUseCaseProvider = getReferralTermsUseCaseProvider,
   ),
 )
 
 internal class ForeverPresenter(
-  private val foreverRepository: ForeverRepository,
-  private val getReferralsInformationUseCase: GetReferralsInformationUseCase,
+  private val foreverRepositoryProvider: Provider<ForeverRepository>,
+  private val getReferralsInformationUseCaseProvider: Provider<GetReferralsInformationUseCase>,
 ) : MoleculePresenter<ForeverEvent, ForeverUiState> {
   @Composable
   override fun MoleculePresenterScope<ForeverEvent>.present(lastState: ForeverUiState): ForeverUiState {
     var isLoadingForeverData by remember { mutableStateOf(lastState.isLoadingForeverData) }
-    var foreverDataLoadIteration by remember { mutableStateOf(0) }
+    var foreverDataLoadIteration by remember { mutableIntStateOf(0) }
     var foreverDataErrorMessage by remember { mutableStateOf(lastState.foreverDataErrorMessage) }
     var foreverData by remember { mutableStateOf(lastState.foreverData) }
 
@@ -59,12 +61,12 @@ internal class ForeverPresenter(
       foreverDataErrorMessage = null
       either {
         parZip(
-          { foreverRepository.getReferralsData().bind() },
-          { getReferralsInformationUseCase.invoke().bind() },
+          { foreverRepositoryProvider.provide().getReferralsData().bind() },
+          { getReferralsInformationUseCaseProvider.provide().invoke() },
         ) { referralsData, terms ->
           ForeverUiState.ForeverData(
             referralsData = referralsData,
-            referralTerms = terms,
+            referralTerms = terms.getOrNull(),
           )
         }
       }.fold(
@@ -75,9 +77,8 @@ internal class ForeverPresenter(
     }
 
     LaunchedEffect(referralCodeToSubmit) {
-      val codeToSubmit = referralCodeToSubmit
-      if (codeToSubmit == null) return@LaunchedEffect
-      foreverRepository.updateCode(codeToSubmit).fold(
+      val codeToSubmit = referralCodeToSubmit ?: return@LaunchedEffect
+      foreverRepositoryProvider.provide().updateCode(codeToSubmit).fold(
         ifLeft = {
           referralCodeToSubmit = null
           referralCodeToSubmitErrorMessage = it

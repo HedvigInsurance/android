@@ -24,10 +24,13 @@ internal data class ChangeAddressUiState(
   val ancillaryArea: ValidatedInput<String?> = ValidatedInput(null),
   val numberOfBathrooms: ValidatedInput<String?> = ValidatedInput(null),
   val movingDate: ValidatedInput<LocalDate?> = ValidatedInput(null),
-  val numberCoInsured: ValidatedInput<String?> = ValidatedInput(null),
+  val numberInsured: ValidatedInput<String?> = ValidatedInput(null),
   val housingType: ValidatedInput<HousingType?> = ValidatedInput(null),
-  val isStudent: ValidatedInput<Boolean> = ValidatedInput(false),
   val isSublet: ValidatedInput<Boolean> = ValidatedInput(false),
+  val isStudent: Boolean = false,
+  val isEligibleForStudent: Boolean = false,
+  val maxNumberCoInsured: Int? = null,
+  val maxSquareMeters: Int? = null,
   val extraBuildingTypes: List<ExtraBuildingType> = emptyList(),
   val extraBuildings: List<ExtraBuilding> = listOf(),
   val datePickerUiState: DatePickerUiState? = null,
@@ -41,17 +44,25 @@ internal data class ChangeAddressUiState(
   val isHousingTypeValid: Boolean
     get() = housingType.input != null
 
-  val isInputValid: Boolean
+  val isAddressInputValid: Boolean
     get() {
       return street.errorMessageRes == null &&
         postalCode.errorMessageRes == null &&
         squareMeters.errorMessageRes == null &&
+        isSquareMetersWithinBounds(squareMeters.input?.toIntOrNull()) &&
         movingDate.errorMessageRes == null &&
-        numberCoInsured.errorMessageRes == null &&
+        numberInsured.errorMessageRes == null &&
         housingType.errorMessageRes == null
     }
 
-  fun validateInput(): ChangeAddressUiState {
+  val isHouseInputValid: Boolean
+    get() {
+      return yearOfConstruction.errorMessageRes == null &&
+        ancillaryArea.errorMessageRes == null &&
+        numberOfBathrooms.errorMessageRes == null
+    }
+
+  fun validateAddressInput(): ChangeAddressUiState {
     return copy(
       street = street.copy(
         errorMessageRes = if (!street.isPresent || street.input?.isBlank() == true) {
@@ -70,6 +81,8 @@ internal data class ChangeAddressUiState(
       squareMeters = squareMeters.copy(
         errorMessageRes = if (!squareMeters.isPresent || squareMeters.input?.isBlank() == true) {
           hedvig.resources.R.string.CHANGE_ADDRESS_LIVING_SPACE_ERROR
+        } else if (squareMeters.isPresent && !isSquareMetersWithinBounds(squareMeters.input!!.toIntOrNull())) {
+          hedvig.resources.R.string.CHANGE_ADDRESS_LIVING_SPACE_OVER_LIMIT_ERROR
         } else {
           null
         },
@@ -81,42 +94,62 @@ internal data class ChangeAddressUiState(
           null
         },
       ),
-      numberCoInsured = numberCoInsured.copy(
-        errorMessageRes = if (!numberCoInsured.isPresent) {
+      numberInsured = numberInsured.copy(
+        errorMessageRes = if (!numberInsured.isPresent) {
           hedvig.resources.R.string.CHANGE_ADDRESS_CO_INSURED_ERROR
+        } else if (numberInsured.isPresent && !isNumberCoInsuredWithinBounds(numberInsured.input!!.toIntOrNull())) {
+          hedvig.resources.R.string.CHANGE_ADDRESS_CO_INSURED_MAX_ERROR_ALTERNATIVE
         } else {
           null
         },
       ),
-      housingType = housingType.copy(
-        errorMessageRes = if (!housingType.isPresent) {
-          hedvig.resources.R.string.CHANGE_ADDRESS_HOUSING_TYPE_ERROR
-        } else {
-          null
-        },
-      ),
+    )
+  }
+
+  fun validateHouseInput(): ChangeAddressUiState {
+    return copy(
       yearOfConstruction = yearOfConstruction.copy(
-        errorMessageRes = if (housingType.input == HousingType.VILLA && !yearOfConstruction.isPresent) {
+        errorMessageRes = if (!yearOfConstruction.isPresent) {
           hedvig.resources.R.string.CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR
         } else {
           null
         },
       ),
       ancillaryArea = ancillaryArea.copy(
-        errorMessageRes = if (housingType.input == HousingType.VILLA && !ancillaryArea.isPresent) {
+        errorMessageRes = if (!ancillaryArea.isPresent) {
           hedvig.resources.R.string.CHANGE_ADDRESS_ANCILLARY_AREA_ERROR
         } else {
           null
         },
       ),
       numberOfBathrooms = numberOfBathrooms.copy(
-        errorMessageRes = if (housingType.input == HousingType.VILLA && !numberOfBathrooms.isPresent) {
+        errorMessageRes = if (!numberOfBathrooms.isPresent) {
           hedvig.resources.R.string.CHANGE_ADDRESS_BATHROOMS_ERROR
         } else {
           null
         },
       ),
     )
+  }
+
+  private fun isSquareMetersWithinBounds(squareMeters: Int?) = if (maxSquareMeters != null) {
+    if (squareMeters == null) {
+      false
+    } else {
+      squareMeters <= maxSquareMeters
+    }
+  } else {
+    true
+  }
+
+  private fun isNumberCoInsuredWithinBounds(numberCoInsured: Int?) = if (maxNumberCoInsured != null) {
+    if (numberCoInsured == null) {
+      false
+    } else {
+      numberCoInsured <= maxNumberCoInsured
+    }
+  } else {
+    true
   }
 }
 

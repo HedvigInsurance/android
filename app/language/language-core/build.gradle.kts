@@ -6,10 +6,10 @@ plugins {
 
 dependencies {
   api(projects.apolloGiraffePublic)
-  api(projects.marketCore)
 
   implementation(libs.androidx.other.appCompat)
   implementation(libs.androidx.other.preference)
   implementation(libs.koin.core)
   implementation(projects.coreCommonPublic)
+  implementation(projects.coreResources)
 }

@@ -1,6 +1,6 @@
 package com.hedvig.android.auth
 
-import com.hedvig.android.auth.event.AuthEventBroadcaster
+import com.hedvig.android.auth.event.AuthEventStorage
 import com.hedvig.android.auth.storage.AuthTokenStorage
 import com.hedvig.android.auth.token.AuthTokens
 import com.hedvig.android.auth.token.LocalRefreshToken
@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.stateIn
 class AuthTokenServiceImpl(
   private val authTokenStorage: AuthTokenStorage,
   private val authRepository: AuthRepository,
-  private val authEventBroadcaster: AuthEventBroadcaster,
+  private val authEventStorage: AuthEventStorage,
   coroutineScope: CoroutineScope,
 ) : AuthTokenService {
 
@@ -58,12 +58,12 @@ class AuthTokenServiceImpl(
 
   override suspend fun loginWithTokens(accessToken: AccessToken, refreshToken: RefreshToken) {
     authTokenStorage.updateTokens(accessToken, refreshToken)
-    authEventBroadcaster.loggedIn(accessToken.token)
+    authEventStorage.loggedIn(accessToken.token)
   }
 
   override suspend fun logoutAndInvalidateTokens() {
     authTokenStorage.clearTokens()
-    authEventBroadcaster.loggedOut()
+    authEventStorage.loggedOut()
   }
 
   private suspend fun getRefreshToken(): LocalRefreshToken? {

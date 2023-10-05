@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.chat.ui
 
+import android.app.AlertDialog
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -8,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.FileProvider
@@ -32,12 +32,12 @@ import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityChatBinding
 import com.hedvig.app.feature.chat.ChatInputType
+import com.hedvig.app.feature.chat.viewmodel.ChatEnabledStatus
 import com.hedvig.app.feature.chat.viewmodel.ChatEvent
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.util.extensions.calculateNonFullscreenHeightDiff
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.composeContactSupportEmail
-import com.hedvig.app.util.extensions.handleSingleSelectLink
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
@@ -154,20 +154,25 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
 
     lifecycleScope.launch {
       repeatOnLifecycle(Lifecycle.State.STARTED) {
-        chatViewModel.isChatDisabled.collect { isChatDisabled ->
-          if (isChatDisabled == false) {
+        chatViewModel.chatEnabledStatus.collect { chatEnabledStatus ->
+          if (chatEnabledStatus is ChatEnabledStatus.Enabled) {
             binding.disabledChatView.isGone = true
           }
         }
       }
     }
     binding.disabledChatView.setContent {
-      val isChatDisabled by chatViewModel.isChatDisabled.collectAsStateWithLifecycle()
+      val chatEnabledStatus = chatViewModel.chatEnabledStatus.collectAsStateWithLifecycle().value
       HedvigTheme {
         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-          if (isChatDisabled == true) {
+          if (chatEnabledStatus is ChatEnabledStatus.Disabled) {
             HedvigErrorSection(
-              title = stringResource(hedvig.resources.R.string.CHAT_DISABLED_MESSAGE),
+              title = stringResource(
+                when (chatEnabledStatus) {
+                  ChatEnabledStatus.Disabled.FromFeatureFlag -> hedvig.resources.R.string.CHAT_DISABLED_MESSAGE
+                  ChatEnabledStatus.Disabled.IsInDemoMode -> hedvig.resources.R.string.FEATURE_DISABLED_BY_DEMO_MODE
+                },
+              ),
               subTitle = null,
               buttonText = stringResource(hedvig.resources.R.string.general_close_button),
               retry = { finish() },
@@ -365,5 +370,39 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
 
   companion object {
     const val ACTIVITY_IS_IN_FOREGROUND = "chat_activity_is_in_foreground"
+  }
+}
+
+private fun AppCompatActivity.handleSingleSelectLink(
+  value: String,
+  onLinkHandleFailure: () -> Unit,
+) = when (value) {
+  "message.forslag.dashboard" -> {
+    logcat(LogPriority.ERROR) { "Can't handle going to the offer page without a QuoteCartId from link: `$value`" }
+    AlertDialog.Builder(this)
+      .setTitle(com.adyen.checkout.dropin.R.string.error_dialog_title)
+      .setMessage(getString(hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE))
+      .setPositiveButton(com.adyen.checkout.dropin.R.string.error_dialog_button) { _, _ ->
+        // no-op. Action handled by `setOnDismissListener`
+      }
+      .setOnDismissListener {
+        onLinkHandleFailure()
+      }
+      .create()
+      .show()
+  }
+  "message.bankid.start", "message.bankid.autostart.respond", "message.bankid.autostart.respond.two" -> {
+    logcat(LogPriority.ERROR) { "This used to open bankID, but we should never use the chat logged out anyway" }
+    finish()
+  }
+  // bot-service is weird. it sends this when the user gets the option to go to `Hem`.
+  // We simply dismiss the activity for now in this case
+  "hedvig.com",
+  "claim.done", "callme.phone.dashboard",
+  -> {
+    finish()
+  }
+  else -> {
+    logcat(LogPriority.ERROR) { "Can't handle the link $value" }
   }
 }

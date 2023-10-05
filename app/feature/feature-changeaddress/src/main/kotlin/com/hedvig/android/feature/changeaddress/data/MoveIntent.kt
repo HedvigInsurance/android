@@ -11,6 +11,11 @@ data class MoveIntent(
   val id: MoveIntentId,
   val currentHomeAddresses: List<Address>,
   val movingDateRange: ClosedRange<LocalDate>,
-  val numberCoInsured: Int,
+  val suggestedNumberInsured: Int,
+  val isApartmentAvailableforStudent: Boolean?,
+  val maxApartmentNumberCoInsured: Int?,
+  val maxHouseNumberCoInsured: Int?,
+  val maxApartmentSquareMeters: Int?,
+  val maxHouseSquareMeters: Int?,
   val extraBuildingTypes: List<ExtraBuildingType>,
 )

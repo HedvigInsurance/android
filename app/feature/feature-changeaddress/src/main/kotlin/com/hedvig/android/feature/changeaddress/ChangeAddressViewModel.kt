@@ -38,7 +38,7 @@ internal class ChangeAddressViewModel(
   }
 
   fun onCoInsuredChanged(coInsured: String) {
-    _uiState.update { it.copy(numberCoInsured = ValidatedInput(coInsured)) }
+    _uiState.update { it.copy(numberInsured = ValidatedInput(coInsured)) }
   }
 
   fun onYearOfConstructionChanged(yearOfConstruction: String) {
@@ -58,7 +58,7 @@ internal class ChangeAddressViewModel(
   }
 
   fun onIsStudentChanged(isStudent: Boolean) {
-    _uiState.update { it.copy(isStudent = ValidatedInput(isStudent)) }
+    _uiState.update { it.copy(isStudent = isStudent) }
   }
 
   fun onIsSubletChanged(isSublet: Boolean) {
@@ -69,6 +69,16 @@ internal class ChangeAddressViewModel(
     _uiState.update { it.copy(quotes = emptyList()) }
   }
 
+  fun validateAddressInput(): Boolean {
+    _uiState.update { it.validateAddressInput() }
+    return _uiState.value.isAddressInputValid
+  }
+
+  fun validateHouseInput(): Boolean {
+    _uiState.update { it.validateHouseInput() }
+    return _uiState.value.isHouseInputValid
+  }
+
   fun onSubmitNewAddress() {
     if (uiState.value.moveIntentId == null) {
       _uiState.update {
@@ -76,30 +86,27 @@ internal class ChangeAddressViewModel(
       }
     }
 
-    _uiState.update { it.validateInput() }
-    if (_uiState.value.isInputValid) {
-      val input = _uiState.value.toQuoteInput()
-      _uiState.update { it.copy(isLoading = true) }
-      viewModelScope.launch {
-        changeAddressRepository.createQuotes(input).fold(
-          ifLeft = { error ->
-            _uiState.update {
-              it.copy(
-                isLoading = false,
-                errorMessage = error.message,
-              )
-            }
-          },
-          ifRight = { quotes ->
-            _uiState.update {
-              it.copy(
-                isLoading = false,
-                quotes = quotes,
-              )
-            }
-          },
-        )
-      }
+    val input = _uiState.value.toQuoteInput()
+    _uiState.update { it.copy(isLoading = true) }
+    viewModelScope.launch {
+      changeAddressRepository.createQuotes(input).fold(
+        ifLeft = { error ->
+          _uiState.update {
+            it.copy(
+              isLoading = false,
+              errorMessage = error.message,
+            )
+          }
+        },
+        ifRight = { quotes ->
+          _uiState.update {
+            it.copy(
+              isLoading = false,
+              quotes = quotes,
+            )
+          }
+        },
+      )
     }
   }
 
@@ -179,9 +186,26 @@ internal class ChangeAddressViewModel(
           _uiState.update {
             it.copy(
               moveIntentId = moveIntent.id,
-              numberCoInsured = ValidatedInput(moveIntent.numberCoInsured.toString()),
+              numberInsured = ValidatedInput(moveIntent.suggestedNumberInsured.toString()),
               moveFromAddressId = moveIntent.currentHomeAddresses.firstOrNull()?.id,
               extraBuildingTypes = moveIntent.extraBuildingTypes,
+              isEligibleForStudent = (moveIntent.isApartmentAvailableforStudent == true && uiState.value.housingType.input != HousingType.VILLA),
+              maxSquareMeters = when (uiState.value.housingType.input) {
+                HousingType.APARTMENT_RENT,
+                HousingType.APARTMENT_OWN,
+                -> moveIntent.maxApartmentSquareMeters
+
+                HousingType.VILLA -> moveIntent.maxHouseSquareMeters
+                null -> null
+              },
+              maxNumberCoInsured = when (uiState.value.housingType.input) {
+                HousingType.APARTMENT_RENT,
+                HousingType.APARTMENT_OWN,
+                -> moveIntent.maxApartmentNumberCoInsured
+
+                HousingType.VILLA -> moveIntent.maxHouseNumberCoInsured
+                null -> null
+              },
               isLoading = false,
               datePickerUiState = DatePickerUiState(
                 initiallySelectedDate = null,
@@ -223,10 +247,10 @@ private fun ChangeAddressUiState.toQuoteInput() = when (housingType.input) {
     ),
     moveFromAddressId = moveFromAddressId!!,
     movingDate = movingDate.input!!,
-    numberCoInsured = numberCoInsured.input!!.toInt(),
+    numberCoInsured = numberInsured.input!!.toInt() - 1,
     squareMeters = squareMeters.input!!.toInt(),
     apartmentOwnerType = housingType.input!!,
-    isStudent = isStudent.input,
+    isStudent = isStudent,
   )
 
   HousingType.VILLA -> QuoteInput.VillaInput(
@@ -237,14 +261,14 @@ private fun ChangeAddressUiState.toQuoteInput() = when (housingType.input) {
     ),
     moveFromAddressId = moveFromAddressId!!,
     movingDate = movingDate.input!!,
-    numberCoInsured = numberCoInsured.input!!.toInt(),
+    numberCoInsured = numberInsured.input!!.toInt() - 1,
     squareMeters = squareMeters.input!!.toInt(),
     apartmentOwnerType = housingType.input!!,
     yearOfConstruction = yearOfConstruction.input!!.toInt(),
     ancillaryArea = ancillaryArea.input!!.toInt(),
     numberOfBathrooms = numberOfBathrooms.input!!.toInt(),
     extraBuildings = extraBuildings,
-    isStudent = isStudent.input,
+    isStudent = isStudent,
     isSubleted = isSublet.input,
   )
 

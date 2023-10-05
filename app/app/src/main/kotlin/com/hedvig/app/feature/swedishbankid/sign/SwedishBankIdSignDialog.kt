@@ -74,12 +74,11 @@ class SwedishBankIdSignDialog : DialogFragment() {
               viewModel.bankIdStarted()
             }
           } else if (state is BankIdSignViewState.StartDirectDebit) {
-            val market = marketManager.market ?: return@collect
             startActivity(
               connectPayinIntent(
                 requireContext(),
                 state.payinType,
-                market,
+                marketManager.market.value,
                 true,
               ),
             )

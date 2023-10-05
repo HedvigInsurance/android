@@ -18,7 +18,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult
@@ -88,7 +87,7 @@ class ImpersonationReceiverActivity : AppCompatActivity() {
   companion object {
     val module = module {
       viewModel { params ->
-        ImpersonationReceiverViewModel(params.get(), get(), get(), get())
+        ImpersonationReceiverViewModel(params.get(), get(), get())
       }
     }
   }
@@ -98,7 +97,6 @@ class ImpersonationReceiverViewModel(
   exchangeToken: String,
   authTokenService: AuthTokenService,
   authRepository: AuthRepository,
-  featureManager: FeatureManager,
 ) : ViewModel() {
   sealed class ViewState {
     object Loading : ViewState()
@@ -120,7 +118,6 @@ class ImpersonationReceiverViewModel(
         is AuthTokenResult.Error -> _state.update { ViewState.Error(result.message) }
         is AuthTokenResult.Success -> {
           authTokenService.loginWithTokens(result.accessToken, result.refreshToken)
-          featureManager.invalidateExperiments()
           _state.update { ViewState.Success }
           delay(500.milliseconds)
           _events.send(GoToLoggedInActivityEvent)

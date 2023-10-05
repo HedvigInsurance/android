@@ -19,29 +19,34 @@ import com.apollographql.apollo3.interceptor.ApolloInterceptor
 import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.hedvig.android.apollo.NetworkCacheManager
+import com.hedvig.android.apollo.auth.listeners.di.apolloAuthListenersModule
+import com.hedvig.android.apollo.auth.listeners.subscription.ReopenSubscriptionException
 import com.hedvig.android.apollo.di.apolloClientModule
 import com.hedvig.android.apollo.giraffe.di.giraffeClient
+import com.hedvig.android.app.di.appModule
 import com.hedvig.android.auth.AccessTokenProvider
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.auth.di.authModule
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
-import com.hedvig.android.auth.interceptor.MigrateTokenInterceptor
 import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.android.QuoteCartId
 import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
+import com.hedvig.android.core.demomode.di.demoModule
 import com.hedvig.android.data.forever.di.foreverDataModule
 import com.hedvig.android.data.settings.datastore.di.settingsDatastoreModule
 import com.hedvig.android.data.travelcertificate.di.claimFlowDataModule
 import com.hedvig.android.data.travelcertificate.di.travelCertificateDataModule
-import com.hedvig.android.datadog.addDatadogConfiguration
-import com.hedvig.android.datadog.di.datadogModule
+import com.hedvig.android.datadog.core.addDatadogConfiguration
+import com.hedvig.android.datadog.core.di.datadogModule
+import com.hedvig.android.datadog.demo.tracking.di.datadogDemoTrackingModule
 import com.hedvig.android.feature.changeaddress.di.changeAddressModule
 import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
 import com.hedvig.android.feature.forever.di.foreverModule
 import com.hedvig.android.feature.home.di.homeModule
 import com.hedvig.android.feature.insurances.di.insurancesModule
+import com.hedvig.android.feature.login.di.loginModule
 import com.hedvig.android.feature.odyssey.di.odysseyModule
 import com.hedvig.android.feature.profile.di.profileModule
 import com.hedvig.android.feature.terminateinsurance.di.terminateInsuranceModule
@@ -52,7 +57,6 @@ import com.hedvig.android.hanalytics.featureflags.di.featureManagerModule
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.language.di.languageModule
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.market.MarketManager
 import com.hedvig.android.market.di.marketManagerModule
 import com.hedvig.android.memberreminders.di.memberRemindersModule
 import com.hedvig.android.navigation.activity.ActivityNavigator
@@ -60,8 +64,8 @@ import com.hedvig.android.navigation.core.di.deepLinkModule
 import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.firebase.di.firebaseNotificationModule
+import com.hedvig.android.payment.di.PaymentRepositoryProvider
 import com.hedvig.android.payment.di.paymentModule
-import com.hedvig.app.authenticate.BankIdLoginViewModel
 import com.hedvig.app.authenticate.LogoutUseCaseImpl
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.addressautocompletion.data.GetDanishAddressAutoCompletionUseCase
@@ -114,10 +118,6 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
 import com.hedvig.app.feature.loggedin.ui.ReviewDialogViewModel
 import com.hedvig.app.feature.marketing.MarketingActivity
-import com.hedvig.app.feature.marketing.MarketingViewModel
-import com.hedvig.app.feature.marketing.data.GetInitialMarketPickerValuesUseCase
-import com.hedvig.app.feature.marketing.data.GetMarketingBackgroundUseCase
-import com.hedvig.app.feature.marketing.data.UpdateApplicationLanguageUseCase
 import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferViewModel
@@ -148,13 +148,13 @@ import com.hedvig.app.service.push.senders.ReferralsNotificationSender
 import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.NetworkCacheManagerImpl
-import com.hedvig.app.util.apollo.ReopenSubscriptionException
 import com.hedvig.app.util.apollo.SunsettingInterceptor
 import com.hedvig.app.util.extensions.startChat
 import com.hedvig.authlib.AuthEnvironment
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.Callbacks
 import com.hedvig.authlib.NetworkAuthRepository
+import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -184,7 +184,6 @@ private val networkModule = module {
     val languageService = get<LanguageService>()
     val builder: OkHttpClient.Builder = OkHttpClient.Builder()
       .addDatadogConfiguration()
-      .addInterceptor(get<MigrateTokenInterceptor>())
       .addInterceptor(get<AuthTokenRefreshingInterceptor>())
       .addInterceptor { chain ->
         chain.proceed(
@@ -277,12 +276,11 @@ fun makeUserAgent(locale: Locale): String = buildString {
 }
 
 private val viewModelModule = module {
-  viewModel { ChatViewModel(get(), get(), get(), get()) }
+  viewModel { ChatViewModel(get(), get(), get(), get(), get()) }
   viewModel { (quoteCartId: QuoteCartId?) -> RedeemCodeViewModel(quoteCartId, get(), get()) }
-  viewModel { BankIdLoginViewModel(get(), get(), get(), get(), get()) }
   viewModel { DatePickerViewModel() }
   viewModel { params ->
-    SimpleSignAuthenticationViewModel(params.get(), get(), get(), get(), get(), get())
+    SimpleSignAuthenticationViewModel(params.get(), get(), get(), get(), get())
   }
   viewModel { (data: MultiActionParams) -> MultiActionViewModel(data) }
   viewModel { (componentState: MultiActionItem.Component?, multiActionParams: MultiActionParams) ->
@@ -319,7 +317,6 @@ private val viewModelModule = module {
     )
   }
   viewModel { TooltipViewModel(get()) }
-  viewModel { MarketingViewModel(get<MarketManager>().market, get(), get(), get(), get(), get()) }
   viewModel<ReviewDialogViewModel> { ReviewDialogViewModel(get()) }
 }
 
@@ -358,7 +355,6 @@ private val embarkModule = module {
   viewModel<EmbarkViewModel> { (storyName: String) ->
     EmbarkViewModelImpl(
       embarkRepository = get(),
-      authTokenService = get(),
       graphQLQueryUseCase = get(),
       valueStore = get(),
       hAnalytics = get(),
@@ -405,7 +401,13 @@ private val numberActionSetModule = module {
 }
 
 private val connectPaymentModule = module {
-  viewModel { ConnectPaymentViewModel(get(), get(), get()) }
+  viewModel {
+    ConnectPaymentViewModel(
+      get<PayinStatusRepository>(),
+      get<PaymentRepositoryProvider>(),
+      get<HAnalytics>(),
+    )
+  }
 }
 
 private val trustlyModule = module {
@@ -490,7 +492,7 @@ private val clockModule = module {
 private val useCaseModule = module {
   single { StartCheckoutUseCase(get<ApolloClient>(giraffeClient), get(), get()) }
   single<LogoutUseCase> {
-    LogoutUseCaseImpl(get(), get<ApolloClient>(giraffeClient), get(), get(), get(), get(), get(), get())
+    LogoutUseCaseImpl(get(), get(), get(), get(), get(), get())
   }
   single { GraphQLQueryUseCase(get()) }
   single<GetInsuranceProvidersUseCase> {
@@ -510,14 +512,6 @@ private val useCaseModule = module {
       languageService = get(),
     )
   }
-  single { GetMarketingBackgroundUseCase(get<ApolloClient>(giraffeClient), get()) }
-  single {
-    UpdateApplicationLanguageUseCase(
-      marketManager = get(),
-      languageService = get(),
-    )
-  }
-  single { GetInitialMarketPickerValuesUseCase(get<ApolloClient>(giraffeClient), get(), get()) }
   single<EditCheckoutUseCase> {
     EditCheckoutUseCase(
       languageService = get(),
@@ -562,7 +556,7 @@ private val coilModule = module {
         get<OkHttpClient.Builder>()
           .apply {
             interceptors().removeAll {
-              it is MigrateTokenInterceptor || it is AuthTokenRefreshingInterceptor
+              it is AuthTokenRefreshingInterceptor
             }
           }
           .build(),
@@ -617,7 +611,9 @@ val applicationModule = module {
     listOf(
       activityNavigatorModule,
       adyenModule,
+      apolloAuthListenersModule,
       apolloClientModule,
+      appModule,
       authModule,
       authRepositoryModule,
       buildConstantsModule,
@@ -633,9 +629,11 @@ val applicationModule = module {
       connectPaymentModule,
       coreCommonModule,
       dataStoreModule,
+      datadogDemoTrackingModule,
       datadogModule,
       datastoreAndroidModule,
       deepLinkModule,
+      demoModule,
       embarkModule,
       externalInsuranceModule,
       featureManagerModule,
@@ -648,6 +646,7 @@ val applicationModule = module {
       homeModule,
       insurancesModule,
       languageModule,
+      loginModule,
       marketManagerModule,
       memberRemindersModule,
       networkModule,

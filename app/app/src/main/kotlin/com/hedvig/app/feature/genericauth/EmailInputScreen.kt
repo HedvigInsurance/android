@@ -28,7 +28,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
@@ -68,7 +68,7 @@ fun EmailInputScreen(
       EmailTextField(emailInput, onInputChanged, onSubmitEmail, error, loading, onClear)
       Spacer(Modifier.weight(1f))
       Spacer(Modifier.height(16.dp))
-      LargeContainedTextButton(
+      HedvigContainedButton(
         text = stringResource(hedvig.resources.R.string.login_continue_button),
         onClick = onSubmitEmail,
       )

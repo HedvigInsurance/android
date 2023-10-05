@@ -15,6 +15,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
@@ -39,15 +40,17 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
-import com.hedvig.android.feature.insurances.insurancedetail.ContractDetails
+import com.hedvig.android.feature.insurances.insurancedetail.data.ContractDetails
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 
+@ExperimentalMaterial3Api
 @Composable
 internal fun YourInfoTab(
   coverageItems: ImmutableList<Pair<String, String>>,
+  allowChangeAddress: Boolean,
   allowEditCoInsured: Boolean,
   upcomingChanges: ContractDetails.UpcomingChanges?,
   onEditCoInsuredClick: () -> Unit,
@@ -71,6 +74,7 @@ internal fun YourInfoTab(
       windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
     ) {
       EditInsuranceBottomSheetContent(
+        allowChangeAddress = allowChangeAddress,
         allowEditCoInsured = allowEditCoInsured,
         onEditCoInsuredClick = {
           coroutineScope.launch {
@@ -160,16 +164,18 @@ internal fun YourInfoTab(
       Spacer(Modifier.height(8.dp))
     }
     CoverageRows(coverageItems, Modifier.padding(horizontal = 16.dp))
-    Spacer(Modifier.height(16.dp))
-    HedvigContainedButton(
-      text = stringResource(R.string.CONTRACT_EDIT_INFO_LABEL),
-      onClick = { showEditYourInfoBottomSheet = true },
-      colors = ButtonDefaults.buttonColors(
-        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        contentColor = MaterialTheme.colorScheme.onSurface,
-      ),
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
+    if (allowChangeAddress || allowEditCoInsured) {
+      Spacer(Modifier.height(16.dp))
+      HedvigContainedButton(
+        text = stringResource(R.string.CONTRACT_EDIT_INFO_LABEL),
+        onClick = { showEditYourInfoBottomSheet = true },
+        colors = ButtonDefaults.buttonColors(
+          containerColor = MaterialTheme.colorScheme.surfaceVariant,
+          contentColor = MaterialTheme.colorScheme.onSurface,
+        ),
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+    }
     if (cancelInsuranceData != null) {
       Spacer(Modifier.height(8.dp))
       HedvigTextButton(
@@ -236,6 +242,7 @@ private fun PreviewYourInfoTab() {
           "Size" to "56 m2",
           "Co-insured".repeat(4) to "You +1".repeat(5),
         ),
+        allowChangeAddress = true,
         allowEditCoInsured = true,
         upcomingChanges = ContractDetails.UpcomingChanges(
           "Your insurance will update on 2023.08.17",

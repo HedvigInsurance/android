@@ -11,9 +11,10 @@ import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.home.claimstatus.data.ClaimStatusCardUiState
-import com.hedvig.android.feature.home.data.GetHomeDataUseCase
-import com.hedvig.android.feature.home.data.HomeData
+import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
+import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager2
 import com.hedvig.android.memberreminders.MemberReminder
@@ -30,7 +31,7 @@ internal class HomePresenterTest {
   @Test
   fun `asking to refresh successfully asks for a fetch from the network`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
-    val homePresenter = HomePresenter(getHomeDataUseCase, FakeFeatureManager2())
+    val homePresenter = HomePresenter(Provider { getHomeDataUseCase }, FakeFeatureManager2())
 
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -51,7 +52,7 @@ internal class HomePresenterTest {
   @Test
   fun `getting a failed response and retrying, should result in a successful state`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
-    val homePresenter = HomePresenter(getHomeDataUseCase, FakeFeatureManager2())
+    val homePresenter = HomePresenter(Provider { getHomeDataUseCase }, FakeFeatureManager2())
 
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -70,7 +71,7 @@ internal class HomePresenterTest {
   @Test
   fun `a successful response, properly propagates the info to the UI State`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
-    val homePresenter = HomePresenter(getHomeDataUseCase, FakeFeatureManager2())
+    val homePresenter = HomePresenter(Provider { getHomeDataUseCase }, FakeFeatureManager2())
 
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -128,7 +129,7 @@ internal class HomePresenterTest {
   @Test
   fun `the notification member reminder must not show for the home presenter`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
-    val homePresenter = HomePresenter(getHomeDataUseCase, FakeFeatureManager2())
+    val homePresenter = HomePresenter(Provider { getHomeDataUseCase }, FakeFeatureManager2())
 
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -170,7 +171,7 @@ internal class HomePresenterTest {
   @Test
   fun `receiving a failed state and then a successful one propagates the success without having to retry`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
-    val homePresenter = HomePresenter(getHomeDataUseCase, FakeFeatureManager2())
+    val homePresenter = HomePresenter(Provider { getHomeDataUseCase }, FakeFeatureManager2())
 
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -187,7 +188,7 @@ internal class HomePresenterTest {
   fun `when the disable chat feature flag is true, the chat icon should remain hidden`() = runTest {
     val featureManager = FakeFeatureManager2()
     val homePresenter = HomePresenter(
-      TestGetHomeDataUseCase(),
+      Provider { TestGetHomeDataUseCase() },
       featureManager,
     )
 
@@ -214,7 +215,7 @@ internal class HomePresenterTest {
   fun `when the disable chat feature flag is false, the chat icon should now show`() = runTest {
     val featureManager = FakeFeatureManager2()
     val homePresenter = HomePresenter(
-      TestGetHomeDataUseCase(),
+      Provider { TestGetHomeDataUseCase() },
       featureManager,
     )
 

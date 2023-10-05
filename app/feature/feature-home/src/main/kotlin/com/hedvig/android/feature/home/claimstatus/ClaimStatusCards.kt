@@ -25,7 +25,7 @@ import com.hedvig.android.feature.home.claimdetail.ui.previewList
 import com.hedvig.android.feature.home.claimstatus.claimprogress.ClaimProgressUiState
 import com.hedvig.android.feature.home.claimstatus.data.ClaimStatusCardUiState
 import com.hedvig.android.feature.home.claimstatus.data.PillUiState
-import com.hedvig.android.feature.home.data.HomeData
+import com.hedvig.android.feature.home.home.data.HomeData
 import java.util.UUID
 
 @OptIn(ExperimentalFoundationApi::class)

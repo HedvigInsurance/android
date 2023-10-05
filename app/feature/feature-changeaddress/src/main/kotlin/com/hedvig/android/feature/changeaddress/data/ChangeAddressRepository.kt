@@ -6,11 +6,11 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.insurance.Document
-import com.hedvig.android.core.insurance.InsurableLimit
-import com.hedvig.android.core.insurance.Peril
-import com.hedvig.android.core.insurance.Product
-import com.hedvig.android.core.insurance.ProductVariant
+import com.hedvig.android.core.ui.insurance.Document
+import com.hedvig.android.core.ui.insurance.InsurableLimit
+import com.hedvig.android.core.ui.insurance.Peril
+import com.hedvig.android.core.ui.insurance.ProductVariant
+import com.hedvig.android.core.ui.insurance.toContractType
 import com.hedvig.android.core.uidata.UiMoney
 import octopus.MoveIntentCommitMutation
 import octopus.MoveIntentCreateMutation
@@ -98,7 +98,12 @@ private fun MoveIntentCreateMutation.Data.MoveIntentCreate.MoveIntent.toMoveInte
     )
   },
   movingDateRange = minMovingDate..maxMovingDate,
-  numberCoInsured = suggestedNumberCoInsured,
+  suggestedNumberInsured = suggestedNumberCoInsured.plus(1), // numberInsured = numberCoInsured + member,
+  isApartmentAvailableforStudent = isApartmentAvailableforStudent,
+  maxApartmentSquareMeters = maxApartmentSquareMeters,
+  maxHouseSquareMeters = maxHouseSquareMeters,
+  maxApartmentNumberCoInsured = maxApartmentNumberCoInsured,
+  maxHouseNumberCoInsured = maxHouseNumberCoInsured,
   extraBuildingTypes = extraBuildingTypes.map { it.toExtraBuildingType() },
 )
 
@@ -112,7 +117,7 @@ private fun MoveIntentRequestMutation.Data.MoveIntentRequest.MoveIntent.toMoveQu
       postalCode = quote.address.postalCode,
       street = quote.address.street,
     ),
-    numberCoInsured = quote.numberCoInsured,
+    numberInsured = quote.numberCoInsured?.plus(1) ?: 1, // numberInsured = numberCoInsured + member
     premium = UiMoney(
       amount = quote.premium.amount,
       currencyCode = quote.premium.currencyCode,
@@ -125,12 +130,8 @@ private fun MoveIntentRequestMutation.Data.MoveIntentRequest.MoveIntent.toMoveQu
 private fun MoveIntentRequestMutation.Data.MoveIntentRequest.MoveIntent.Quote.ProductVariant.toProductVariant() =
   ProductVariant(
     displayName = this.displayName,
-    typeOfContract = this.typeOfContract,
+    contractType = this.typeOfContract.toContractType(),
     partner = this.partner,
-    product = Product(
-      displayNameFull = this.product.displayNameFull,
-      pillowImageUrl = this.product.pillowImage.src,
-    ),
     perils = this.perils.map { peril ->
       Peril(
         id = peril.id,

@@ -7,11 +7,9 @@ import com.hedvig.android.core.common.android.plus
 import com.hedvig.android.core.common.await
 import com.hedvig.android.core.datastore.DeviceIdDataStore
 import com.hedvig.hanalytics.HAnalytics
-import com.hedvig.hanalytics.HAnalyticsEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -33,25 +31,6 @@ internal class AndroidHAnalyticsService(
 
   private val sessionId = UUID.randomUUID()
 
-  override suspend fun sendEvent(event: HAnalyticsEvent) {
-    val requestJsonObject = contextProperties() + jsonObjectOf(
-      "event" to event.name,
-      "properties" to event.properties,
-      "graphql" to event.graphql,
-    )
-    val eventRequest = Request.Builder()
-      .url("$hAnalyticsBaseUrl/event")
-      .header("Content-Type", "application/json")
-      .post(requestJsonObject.toString().toRequestBody())
-      .build()
-    withContext(Dispatchers.IO) {
-      try {
-        okHttpClient.newCall(eventRequest).execute()
-      } catch (ignored: IOException) {
-      }
-    }
-  }
-
   override suspend fun getExperiments(): List<Experiment>? {
     val requestJsonObject = contextProperties() + jsonObjectOf(
       "appName" to "android",
@@ -70,23 +49,6 @@ internal class AndroidHAnalyticsService(
         Json.decodeFromString<List<Experiment>>(responseString)
       } catch (ignored: IOException) {
         null
-      }
-    }
-  }
-
-  override suspend fun identify() {
-    val requestJsonObject = jsonObjectOf("trackingId" to deviceId())
-
-    val request = Request.Builder()
-      .url("$hAnalyticsBaseUrl/identify")
-      .header("Content-Type", "application/json")
-      .post(requestJsonObject.toString().toRequestBody())
-      .build()
-
-    withContext(Dispatchers.IO) {
-      try {
-        okHttpClient.newCall(request).await()
-      } catch (ignored: IOException) {
       }
     }
   }

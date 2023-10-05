@@ -35,23 +35,23 @@ fun DiscountPieChart(
   incentiveColor: Color = MaterialTheme.colorScheme.typeContainer,
 ) {
   val transition = rememberInfiniteTransition(label = "transition")
+  val targetForeverIncentiveValue = calculateAngleDegrees(totalPrice, incentive)
   val foreverIncentiveSweep by transition.animateFloat(
     initialValue = 0f,
-    targetValue = calculateAngleDegrees(totalPrice, incentive),
+    targetValue = targetForeverIncentiveValue,
     animationSpec = InfiniteRepeatableSpec(
       animation = keyframes {
         durationMillis = 4100
         0f at 0
         0f at 1800 with FastOutSlowInEasing
-        30f at 2300
-        30f at 3600 with FastOutSlowInEasing
+        targetForeverIncentiveValue at 2300
+        targetForeverIncentiveValue at 3600 with FastOutSlowInEasing
         0f at 4100
       },
       repeatMode = RepeatMode.Restart,
     ),
-    label = "animation",
+    label = "incentive sweep animation",
   )
-
   Canvas(
     modifier = modifier.size(215.dp),
     onDraw = {

@@ -27,7 +27,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.0.1"
+    versionName = "12.1.0"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -184,7 +184,7 @@ dependencies {
   implementation(libs.reactiveX.kotlin)
   implementation(libs.shimmer)
   implementation(libs.timber)
-  implementation(libs.zXing)
+  implementation(projects.apolloAuthListeners)
   implementation(projects.apolloCore)
   implementation(projects.apolloDi)
   implementation(projects.apolloGiraffePublic)
@@ -196,6 +196,7 @@ dependencies {
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDatastorePublic)
+  implementation(projects.coreDemoMode)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
@@ -205,12 +206,14 @@ dependencies {
   implementation(projects.dataForever)
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.dataTravelCertificatePublic)
-  implementation(projects.datadog)
+  implementation(projects.datadogCore)
+  implementation(projects.datadogDemoTracking)
   implementation(projects.featureChangeaddress)
   implementation(projects.featureClaimTriaging)
   implementation(projects.featureForever)
   implementation(projects.featureHome)
   implementation(projects.featureInsurances)
+  implementation(projects.featureLogin)
   implementation(projects.featureOdyssey)
   implementation(projects.featureProfile)
   implementation(projects.featureTerminateInsurance)
@@ -218,6 +221,7 @@ dependencies {
   implementation(projects.hanalyticsAndroid)
   implementation(projects.hanalyticsCore)
   implementation(projects.hanalyticsFeatureFlagsPublic)
+  implementation(projects.initializable)
   implementation(projects.languageCore)
   implementation(projects.loggingAndroid)
   implementation(projects.loggingPublic)

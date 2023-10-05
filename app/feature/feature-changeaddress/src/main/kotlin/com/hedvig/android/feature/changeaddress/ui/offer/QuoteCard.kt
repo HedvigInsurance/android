@@ -6,6 +6,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -31,10 +32,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.ImageLoader
-import coil.compose.AsyncImage
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.insurance.toPillow
 import com.hedvig.android.core.ui.preview.PreviewImageLoader
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.feature.changeaddress.data.MoveQuote
@@ -79,10 +80,9 @@ internal fun QuoteCard(
 @Composable
 private fun PillAndBasicInfo(quote: MoveQuote, movingDate: String?, imageLoader: ImageLoader) {
   Row(verticalAlignment = Alignment.CenterVertically) {
-    AsyncImage(
-      model = quote.productVariant.product.pillowImageUrl,
+    Image(
+      painter = painterResource(id = quote.productVariant.contractType.toPillow()),
       contentDescription = "pillow",
-      imageLoader = imageLoader,
       modifier = Modifier.size(48.dp),
     )
     Spacer(modifier = Modifier.width(16.dp))
@@ -117,7 +117,6 @@ private fun QuoteDetailsAndPrice(
   isExpanded: Boolean,
   quote: MoveQuote,
 ) {
-
   HorizontalItemsWithMaximumSpaceTaken(
     startSlot = {
       Row(verticalAlignment = Alignment.CenterVertically) {
@@ -176,11 +175,13 @@ private fun ExpandedInformation(
       endSlot = { Text(quote.address.postalCode, textAlign = TextAlign.End) },
       spaceBetween = 4.dp,
     )
-    HorizontalItemsWithMaximumSpaceTaken(
-      startSlot = { Text(stringResource(id = R.string.CHANGE_ADDRESS_CO_INSURED_LABEL)) },
-      endSlot = { Text(quote.numberCoInsured.toString(), textAlign = TextAlign.End) },
-      spaceBetween = 4.dp,
-    )
+    quote.numberInsured?.let {
+      HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = { Text(stringResource(id = R.string.CHANGE_ADDRESS_CO_INSURED_LABEL)) },
+        endSlot = { Text(quote.numberInsured.toString(), textAlign = TextAlign.End) },
+        spaceBetween = 4.dp,
+      )
+    }
   }
 }
 

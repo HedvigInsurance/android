@@ -1,7 +1,6 @@
 package com.hedvig.app.util.extensions
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.LabeledIntent
@@ -20,7 +19,6 @@ import androidx.core.view.WindowInsetsCompat
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.app.authenticate.BankIdLoginDialog
 import com.hedvig.app.util.extensions.view.setupToolbar
 
 val Activity.screenWidth: Int
@@ -133,39 +131,6 @@ private fun List<ResolveInfo>.toLabeledIntentArray(packageManager: PackageManage
   val intent = packageManager.getLaunchIntentForPackage(packageName)
   LabeledIntent(intent, packageName, it.loadLabel(packageManager), it.icon)
 }.toTypedArray()
-
-fun AppCompatActivity.handleSingleSelectLink(
-  value: String,
-  onLinkHandleFailure: () -> Unit,
-) = when (value) {
-  "message.forslag.dashboard" -> {
-    logcat(LogPriority.ERROR) { "Can't handle going to the offer page without a QuoteCartId from link: `$value`" }
-    AlertDialog.Builder(this)
-      .setTitle(com.adyen.checkout.dropin.R.string.error_dialog_title)
-      .setMessage(getString(hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE))
-      .setPositiveButton(com.adyen.checkout.dropin.R.string.error_dialog_button) { _, _ ->
-        // no-op. Action handled by `setOnDismissListener`
-      }
-      .setOnDismissListener {
-        onLinkHandleFailure()
-      }
-      .create()
-      .show()
-  }
-  "message.bankid.start", "message.bankid.autostart.respond", "message.bankid.autostart.respond.two" -> {
-    BankIdLoginDialog().show(supportFragmentManager, BankIdLoginDialog.TAG)
-  }
-  // bot-service is weird. it sends this when the user gets the option to go to `Hem`.
-  // We simply dismiss the activity for now in this case
-  "hedvig.com",
-  "claim.done", "callme.phone.dashboard",
-  -> {
-    finish()
-  }
-  else -> {
-    logcat(LogPriority.ERROR) { "Can't handle the link $value" }
-  }
-}
 
 fun Activity.showReviewDialog() {
   val manager = ReviewManagerFactory.create(this)

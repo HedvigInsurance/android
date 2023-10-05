@@ -3,6 +3,7 @@ package com.hedvig.android.feature.profile.payment.history
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.apollo.format
+import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.payment.ChargeHistory
 import com.hedvig.android.payment.PaymentRepository
@@ -14,7 +15,7 @@ import java.time.LocalDate
 import java.util.Locale
 
 internal class PaymentHistoryViewModel(
-  private val paymentRepository: PaymentRepository,
+  private val paymentRepositoryProvider: Provider<PaymentRepository>,
   private val languageService: LanguageService,
 ) : ViewModel() {
 
@@ -39,7 +40,7 @@ internal class PaymentHistoryViewModel(
   private fun loadPaymentHistory() {
     viewModelScope.launch {
       _uiState.update { it.copy(isLoading = true) }
-      paymentRepository.getChargeHistory().fold(
+      paymentRepositoryProvider.provide().getChargeHistory().fold(
         ifLeft = { _uiState.update { it.copy(errorMessage = it.errorMessage) } },
         ifRight = { _uiState.value = it.toUiState(languageService.getLocale()) },
       )

@@ -1,7 +1,8 @@
 package com.hedvig.android.feature.changeaddress.data
 
-import com.hedvig.android.core.insurance.Product
-import com.hedvig.android.core.insurance.ProductVariant
+import com.hedvig.android.core.ui.insurance.ContractType
+import com.hedvig.android.core.ui.insurance.InsurableLimit
+import com.hedvig.android.core.ui.insurance.ProductVariant
 import com.hedvig.android.core.uidata.UiMoney
 import kotlinx.datetime.LocalDate
 import octopus.type.CurrencyCode
@@ -11,7 +12,7 @@ data class MoveQuote(
   val insuranceName: String,
   val moveIntentId: MoveIntentId,
   val address: Address,
-  val numberCoInsured: Int,
+  val numberInsured: Int?,
   val premium: UiMoney,
   val startDate: LocalDate,
   val productVariant: ProductVariant,
@@ -34,22 +35,25 @@ data class MoveQuote(
           postalCode = "124$index",
           street = "Froedingsvaegen $index",
         ),
-        numberCoInsured = index,
+        numberInsured = index,
         premium = UiMoney(99.0 * index, CurrencyCode.SEK),
         startDate = LocalDate(2023, 5, 13),
         isExpanded = index == 1,
         productVariant = ProductVariant(
           displayName = "Test",
-          typeOfContract = "testTpe",
+          contractType = ContractType.RENTAL,
           partner = "test",
-          product = Product(
-            displayNameFull = "Test",
-            pillowImageUrl = "",
-          ),
           perils = emptyList(),
-          insurableLimits = emptyList(),
+          insurableLimits = listOf(
+            InsurableLimit(
+              label = "test",
+              description = "long".repeat(10),
+              limit = "long".repeat(10),
+              type = InsurableLimit.InsurableLimitType.BIKE,
+            ),
+          ),
           documents = emptyList(),
-        )
+        ),
       )
     }
   }

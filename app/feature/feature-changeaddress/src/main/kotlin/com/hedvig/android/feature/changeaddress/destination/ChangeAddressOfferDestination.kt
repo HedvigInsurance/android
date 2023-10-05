@@ -28,7 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -164,7 +164,7 @@ private fun ChangeAddressOfferScreen(
     )
     Spacer(Modifier.height(8.dp))
     val coroutineScope = rememberCoroutineScope()
-    var whatsIncludedButtonPositionY by remember { mutableStateOf(0f) }
+    var whatsIncludedButtonPositionY by remember { mutableFloatStateOf(0f) }
     HedvigTextButton(
       text = stringResource(id = R.string.CHANGE_ADDRESS_INCLUDED),
       onClick = {
@@ -195,11 +195,26 @@ private fun ChangeAddressOfferScreen(
     }
     Faqs(
       faqItems = listOf(
-        stringResource(id = R.string.CHANGE_ADDRESS_FAQ_DATE_TITLE) to stringResource(id = R.string.CHANGE_ADDRESS_FAQ_DATE_LABEL),
-        stringResource(id = R.string.CHANGE_ADDRESS_FAQ_PRICE_TITLE) to stringResource(id = R.string.CHANGE_ADDRESS_FAQ_PRICE_LABEL),
-        stringResource(id = R.string.CHANGE_ADDRESS_FAQ_RENTBRF_TITLE) to stringResource(id = R.string.CHANGE_ADDRESS_FAQ_RENTBRF_LABEL),
-        stringResource(id = R.string.CHANGE_ADDRESS_FAQ_STORAGE_TITLE) to stringResource(id = R.string.CHANGE_ADDRESS_FAQ_STORAGE_LABEL),
-        stringResource(id = R.string.CHANGE_ADDRESS_FAQ_STUDENT_TITLE) to stringResource(id = R.string.CHANGE_ADDRESS_FAQ_STUDENT_LABEL),
+        Pair(
+          stringResource(id = R.string.CHANGE_ADDRESS_FAQ_DATE_TITLE),
+          stringResource(id = R.string.CHANGE_ADDRESS_FAQ_DATE_LABEL),
+        ),
+        Pair(
+          stringResource(id = R.string.CHANGE_ADDRESS_FAQ_PRICE_TITLE),
+          stringResource(id = R.string.CHANGE_ADDRESS_FAQ_PRICE_LABEL),
+        ),
+        Pair(
+          stringResource(id = R.string.CHANGE_ADDRESS_FAQ_RENTBRF_TITLE),
+          stringResource(id = R.string.CHANGE_ADDRESS_FAQ_RENTBRF_LABEL),
+        ),
+        Pair(
+          stringResource(id = R.string.CHANGE_ADDRESS_FAQ_STORAGE_TITLE),
+          stringResource(id = R.string.CHANGE_ADDRESS_FAQ_STORAGE_LABEL),
+        ),
+        Pair(
+          stringResource(id = R.string.CHANGE_ADDRESS_FAQ_STUDENT_TITLE),
+          stringResource(id = R.string.CHANGE_ADDRESS_FAQ_STUDENT_LABEL),
+        ),
       ),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
@@ -264,7 +279,7 @@ private fun QuoteDetailsAndPdfs(
     HedvigInfoCard(
       contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
     ) {
-      Text(quote.productVariant.product.displayNameFull)
+      Text(quote.productVariant.displayName)
     }
     Spacer(Modifier.height(32.dp))
     InsurableLimits(quote)
@@ -289,6 +304,7 @@ private fun ColumnScope.InsurableLimits(quote: MoveQuote) {
           Text(highlight.limit, fontSize = 18.sp)
         }
       },
+      spaceBetween = 18.dp,
     )
     if (index != quote.productVariant.insurableLimits.lastIndex) {
       Spacer(Modifier.height(16.dp))
@@ -305,7 +321,7 @@ private fun Documents(
 ) {
   quote.productVariant.documents.mapIndexed { index, document ->
     HedvigCard(
-      onClick = { openUrl(document.url) }
+      onClick = { openUrl(document.url) },
     ) {
       Row(
         verticalAlignment = Alignment.CenterVertically,

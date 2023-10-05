@@ -5,9 +5,13 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -37,15 +41,20 @@ class GenericAuthActivity : AppCompatActivity() {
       }
 
       HedvigTheme {
-        EmailInputScreen(
-          onUpClick = ::finish,
-          onInputChanged = viewModel::setInput,
-          onSubmitEmail = viewModel::submitEmail,
-          onClear = viewModel::clear,
-          emailInput = viewState.emailInput,
-          error = viewState.error?.let { errorMessage(it) },
-          loading = viewState.loading,
-        )
+        Surface(
+          color = MaterialTheme.colorScheme.background,
+          modifier = Modifier.fillMaxSize(),
+        ) {
+          EmailInputScreen(
+            onUpClick = ::finish,
+            onInputChanged = viewModel::setInput,
+            onSubmitEmail = viewModel::submitEmail,
+            onClear = viewModel::clear,
+            emailInput = viewState.emailInput,
+            error = viewState.error?.let { errorMessage(it) },
+            loading = viewState.loading,
+          )
+        }
       }
     }
   }

@@ -8,9 +8,8 @@ import com.hedvig.android.auth.AndroidAccessTokenProvider
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.AuthTokenServiceImpl
 import com.hedvig.android.auth.FakeAuthRepository
-import com.hedvig.android.auth.event.AuthEventBroadcaster
+import com.hedvig.android.auth.event.AuthEventStorage
 import com.hedvig.android.auth.storage.AuthTokenStorage
-import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.datastore.TestPreferencesDataStore
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.test.clock.TestClock
@@ -31,7 +30,6 @@ import okhttp3.mockwebserver.RecordedRequest
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
@@ -222,7 +220,7 @@ class AuthTokenRefreshingInterceptorTest {
     return AuthTokenServiceImpl(
       authTokenStorage,
       fakeAuthRepository,
-      AuthEventBroadcaster(emptySet(), ApplicationScope(backgroundScope), EmptyCoroutineContext),
+      AuthEventStorage(),
       backgroundScope,
     )
   }
