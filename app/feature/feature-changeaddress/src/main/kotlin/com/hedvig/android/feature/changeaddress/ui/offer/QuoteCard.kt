@@ -25,18 +25,15 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.ImageLoader
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.insurance.toPillow
-import com.hedvig.android.core.ui.preview.PreviewImageLoader
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.feature.changeaddress.data.MoveQuote
 import hedvig.resources.R
@@ -47,7 +44,6 @@ internal fun QuoteCard(
   quote: MoveQuote,
   onExpandClicked: () -> Unit,
   isExpanded: Boolean,
-  imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
 ) {
   HedvigCard(
@@ -55,7 +51,7 @@ internal fun QuoteCard(
     modifier = modifier,
   ) {
     Column(Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp)) {
-      PillAndBasicInfo(quote, movingDate, imageLoader)
+      PillAndBasicInfo(quote, movingDate)
       Spacer(Modifier.height(16.dp))
       Divider()
       Spacer(Modifier.height(16.dp))
@@ -78,7 +74,7 @@ internal fun QuoteCard(
 }
 
 @Composable
-private fun PillAndBasicInfo(quote: MoveQuote, movingDate: String?, imageLoader: ImageLoader) {
+private fun PillAndBasicInfo(quote: MoveQuote, movingDate: String?) {
   Row(verticalAlignment = Alignment.CenterVertically) {
     Image(
       painter = painterResource(id = quote.productVariant.contractType.toPillow()),
@@ -196,7 +192,6 @@ fun PreviewQuoteCard() {
         onExpandClicked = {},
         isExpanded = true,
         modifier = Modifier.padding(16.dp),
-        imageLoader = PreviewImageLoader(LocalContext.current),
       )
     }
   }

@@ -131,7 +131,6 @@ internal fun HedvigNavHost(
           navigator = navigator,
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           activityNavigator = activityNavigator,
-          imageLoader = imageLoader,
         )
       },
       navigator = navigator,
@@ -223,13 +222,11 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   navigator: Navigator,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   activityNavigator: ActivityNavigator,
-  imageLoader: ImageLoader,
 ) {
   changeAddressGraph(
     navController = hedvigAppState.navController,
     openChat = { activityNavigator.navigateToChat(context) },
     openUrl = { activityNavigator.openWebsite(context, Uri.parse(it)) },
-    imageLoader = imageLoader,
   )
   generateTravelCertificateGraph(
     density = density,

@@ -7,11 +7,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
-import com.hedvig.android.core.ui.ValidatedInput
 
 @Composable
 fun InputTextField(
-  value: ValidatedInput<String?>,
+  value: String?,
+  errorMessageRes: Int?,
   onValueChange: (String) -> Unit,
   label: String,
   modifier: Modifier = Modifier,
@@ -20,9 +20,14 @@ fun InputTextField(
   trailingText: String? = null,
 ) {
   HedvigTextField(
-    value = value.input ?: "",
+    value = value ?: "",
     onValueChange = { onValueChange(it) },
-    errorText = value.errorMessageRes?.let { stringResource(it) },
+    errorText = if (shouldShowErrorLabel(value, errorMessageRes)) {
+      errorMessageRes?.let { stringResource(it) }
+    } else {
+      null
+    },
+    isError = errorMessageRes != null,
     label = { Text(label) },
     placeholder = if (placeholder != null) {
       { Text(placeholder) }
@@ -39,3 +44,6 @@ fun InputTextField(
     modifier = modifier.fillMaxWidth(),
   )
 }
+
+private fun shouldShowErrorLabel(value: String?, errorMessageRes: Int?) =
+  value?.isNotBlank() == true && errorMessageRes != null
