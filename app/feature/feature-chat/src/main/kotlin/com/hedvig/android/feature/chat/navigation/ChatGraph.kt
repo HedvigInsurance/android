@@ -1,4 +1,4 @@
-package com.hedvig.android.chat.navigation
+package com.hedvig.android.feature.chat.navigation
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.navigation.NavGraphBuilder
