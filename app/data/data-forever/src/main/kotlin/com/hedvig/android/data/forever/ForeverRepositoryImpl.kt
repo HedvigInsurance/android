@@ -34,7 +34,7 @@ internal class ForeverRepositoryImpl(
     val result = apolloClientOctopus
       .mutation(MemberReferralInformationCodeUpdateMutation(newCode))
       .safeExecute()
-      .toEither { message, _ -> toReferralError(message) }
+      .toEither { message, _ -> ReferralError(message) }
       .bind()
 
     val error = result.memberReferralInformationCodeUpdate.userError
@@ -43,9 +43,9 @@ internal class ForeverRepositoryImpl(
     if (referralInformation != null) {
       referralInformation.code
     } else if (error != null) {
-      raise(ReferralError.GeneralError(error.message))
+      raise(ReferralError(error.message))
     } else {
-      raise(ReferralError.GeneralError("Unknown error"))
+      raise(ReferralError(null))
     }
   }
 
@@ -58,6 +58,4 @@ internal class ForeverRepositoryImpl(
       .safeExecute()
       .toEither(::ErrorMessage)
   }
-
-  private fun toReferralError(message: String?) = ReferralError.GeneralError(message)
 }

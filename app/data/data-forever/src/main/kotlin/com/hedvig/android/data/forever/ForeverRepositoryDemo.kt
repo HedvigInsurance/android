@@ -18,17 +18,17 @@ internal class ForeverRepositoryDemo : ForeverRepository {
         insuranceCost = ReferralsQuery.Data.CurrentMember.InsuranceCost(
           monthlyGross = ReferralsQuery.Data.CurrentMember.InsuranceCost.MonthlyGross(
             __typename = "",
-            amount = 220.0,
+            amount = 60.0,
             currencyCode = CurrencyCode.SEK,
           ),
           ReferralsQuery.Data.CurrentMember.InsuranceCost.MonthlyNet(
             __typename = "",
-            amount = 150.0,
+            amount = 40.0,
             currencyCode = CurrencyCode.SEK,
           ),
           ReferralsQuery.Data.CurrentMember.InsuranceCost.MonthlyDiscount(
             __typename = "",
-            amount = 70.0,
+            amount = 20.0,
             currencyCode = CurrencyCode.SEK,
           ),
         ),
@@ -46,7 +46,7 @@ internal class ForeverRepositoryDemo : ForeverRepository {
           ),
           referrals = listOf(
             ReferralsQuery.Data.CurrentMember.ReferralInformation.Referral(
-              name = "Stylianos",
+              name = "Adam",
               status = MemberReferralStatus.ACTIVE,
               activeDiscount = ReferralsQuery.Data.CurrentMember.ReferralInformation.Referral.ActiveDiscount(
                 __typename = "",
@@ -55,17 +55,8 @@ internal class ForeverRepositoryDemo : ForeverRepository {
               ),
             ),
             ReferralsQuery.Data.CurrentMember.ReferralInformation.Referral(
-              name = "Sladan",
+              name = "Claire",
               status = MemberReferralStatus.PENDING,
-              activeDiscount = ReferralsQuery.Data.CurrentMember.ReferralInformation.Referral.ActiveDiscount(
-                __typename = "",
-                amount = 10.0,
-                currencyCode = CurrencyCode.SEK,
-              ),
-            ),
-            ReferralsQuery.Data.CurrentMember.ReferralInformation.Referral(
-              name = "Julia",
-              status = MemberReferralStatus.ACTIVE,
               activeDiscount = ReferralsQuery.Data.CurrentMember.ReferralInformation.Referral.ActiveDiscount(
                 __typename = "",
                 amount = 10.0,
