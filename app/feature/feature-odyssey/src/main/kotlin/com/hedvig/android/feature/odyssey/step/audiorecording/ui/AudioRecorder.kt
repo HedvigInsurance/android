@@ -14,7 +14,7 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.with
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -53,7 +53,6 @@ import com.hedvig.android.core.common.android.ProgressPercentage
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.LargeTextButton
 import com.hedvig.android.core.designsystem.material3.motion.MotionTokens
-import com.hedvig.android.core.designsystem.newtheme.red_600
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.ScreenOnFlag
@@ -132,7 +131,7 @@ internal fun AudioRecorder(
               if (isRecording) 18.dp else 32.dp
             }
             val color by isRecordingTransition.animateColor(label = "colorAnimation") { isRecording ->
-              if (isRecording) Color.Black else red_600
+              if (isRecording) Color.Black else MaterialTheme.colorScheme.error
             }
             val cornerRadius by isRecordingTransition.animateDp(label = "cornerRadiusAnimation") { isRecording ->
               if (isRecording) 2.dp else 16.dp
@@ -166,7 +165,7 @@ internal fun AudioRecorder(
               slideOutVertically(animationSpec) +
                 fadeOut(animationSpecFade) +
                 scaleOut(animationSpecFloat, targetScale = scale)
-            enterTransition with exitTransition
+            enterTransition togetherWith exitTransition
           },
           contentAlignment = Alignment.Center,
           modifier = Modifier.fillMaxWidth(),
