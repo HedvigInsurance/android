@@ -7,11 +7,11 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.core.common.RetryChannel
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.feature.chat.ChatEventStore
+import com.hedvig.android.feature.chat.ChatRepository
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.util.LiveEvent
 import giraffe.ChatMessagesQuery
 import giraffe.GifQuery

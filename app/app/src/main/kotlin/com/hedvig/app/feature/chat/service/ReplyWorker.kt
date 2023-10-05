@@ -6,9 +6,9 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import arrow.core.Either
 import com.hedvig.android.core.common.android.whenApiVersion
+import com.hedvig.android.feature.chat.ChatRepository
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.app.feature.chat.data.ChatRepository
 
 class ReplyWorker(
   private val context: Context,

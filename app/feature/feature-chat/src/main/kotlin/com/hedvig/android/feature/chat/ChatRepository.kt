@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.chat.data
+package com.hedvig.android.feature.chat
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -19,10 +19,8 @@ import com.apollographql.apollo3.cache.normalized.watch
 import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
-import com.hedvig.android.feature.chat.FileService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.app.util.extensions.into
 import giraffe.ChatMessageIdQuery
 import giraffe.ChatMessageSubscription
 import giraffe.ChatMessagesQuery
@@ -107,7 +105,14 @@ class ChatRepository(
         ?: "${UUID.randomUUID()}.${fileService.getFileExtension(uri.toString())}",
     ) // I hate this but it seems there's no other way
     return withContext(Dispatchers.IO) {
-      context.contentResolver.openInputStream(uri)?.into(file)
+      val openInputStream = context.contentResolver.openInputStream(uri)
+      if (openInputStream != null) {
+        openInputStream.use { inputStream ->
+          file.outputStream().use { outputStream ->
+            inputStream.copyTo(outputStream)
+          }
+        }
+      }
       return@withContext uploadFile(file, mimeType).onLeft { error ->
         logcat(LogPriority.ERROR, error.throwable) {
           "Chat: uploadFileFromProvider (image/file chosen) failed. Message:${error.message}"
