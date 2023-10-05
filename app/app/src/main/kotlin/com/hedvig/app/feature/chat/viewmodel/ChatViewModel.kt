@@ -13,8 +13,6 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.util.LiveEvent
-import com.hedvig.hanalytics.AppScreen
-import com.hedvig.hanalytics.HAnalytics
 import giraffe.ChatMessagesQuery
 import giraffe.GifQuery
 import giraffe.UploadFileMutation
@@ -38,7 +36,6 @@ import kotlin.time.Duration.Companion.seconds
 class ChatViewModel(
   private val chatRepository: ChatRepository,
   private val chatClosedTracker: ChatEventStore,
-  private val hAnalytics: HAnalytics,
   private val featureManager: FeatureManager,
   private val demoManager: DemoManager,
 ) : ViewModel() {
@@ -71,7 +68,6 @@ class ChatViewModel(
     )
 
   init {
-    hAnalytics.screenView(AppScreen.CHAT)
     viewModelScope.launch {
       logcat(LogPriority.VERBOSE) { "Chat: fetchChatMessages starting" }
       retryChannel
@@ -130,7 +126,6 @@ class ChatViewModel(
   }
 
   fun uploadTakenPicture(uri: Uri) {
-    hAnalytics.chatRichMessageSent()
     viewModelScope.launch {
       uploadFileInner(uri)
       takePictureUploadFinished.postValue(Unit)
@@ -153,7 +148,6 @@ class ChatViewModel(
   }
 
   fun uploadFileFromProvider(uri: Uri) {
-    hAnalytics.chatRichMessageSent()
     isUploading.value = true
     viewModelScope.launch {
       val response = chatRepository.uploadFileFromProvider(uri)
@@ -173,12 +167,10 @@ class ChatViewModel(
   }
 
   fun respondWithGif(url: String) {
-    hAnalytics.chatRichMessageSent()
     respondToLastMessage(url)
   }
 
   fun respondWithTextMessage(message: String) {
-    hAnalytics.chatTextMessageSent()
     respondToLastMessage(message)
   }
 
