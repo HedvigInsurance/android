@@ -83,7 +83,6 @@ import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutViewModelImpl
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.chat.service.ChatNotificationSender
 import com.hedvig.app.feature.chat.service.ReplyWorker
-import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.feature.checkout.CheckoutViewModel
 import com.hedvig.app.feature.checkout.EditCheckoutUseCase
 import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
@@ -274,7 +273,6 @@ fun makeUserAgent(locale: Locale): String = buildString {
 }
 
 private val viewModelModule = module {
-  viewModel { ChatViewModel(get(), get(), get(), get()) }
   viewModel { (quoteCartId: QuoteCartId?) -> RedeemCodeViewModel(quoteCartId, get(), get()) }
   viewModel { DatePickerViewModel() }
   viewModel { params ->
@@ -460,7 +458,6 @@ private val externalInsuranceModule = module {
 }
 
 private val repositoriesModule = module {
-  single { ChatRepository(get<ApolloClient>(giraffeClient), get(), get()) }
   single { PayinStatusRepository(get<ApolloClient>(giraffeClient)) }
   single { UserRepository(get<ApolloClient>(giraffeClient)) }
   single { AdyenRepository(get<ApolloClient>(giraffeClient), get()) }

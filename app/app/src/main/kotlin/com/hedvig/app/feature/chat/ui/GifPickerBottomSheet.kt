@@ -8,11 +8,11 @@ import coil.ImageLoader
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.android.core.common.android.remove
 import com.hedvig.android.core.common.android.show
+import com.hedvig.android.feature.chat.ChatViewModel
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.app.R
 import com.hedvig.app.databinding.SendGifDialogBinding
-import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.util.extensions.makeKeyboardAware
 import com.hedvig.app.util.extensions.onChange
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
