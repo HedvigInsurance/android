@@ -10,10 +10,11 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import com.hedvig.android.core.designsystem.component.tokens.HedvigColorSchemeKeyTokens
+import com.hedvig.android.core.designsystem.newtheme.hedvigTonalPalette
 
 @SuppressLint("ComposeCompositionLocalUsage")
 internal val LocalHedvigMaterial3ColorScheme = staticCompositionLocalOf<HedvigMaterial3ColorScheme> {
-  lightHedvigColorScheme(LightColorScheme)
+  lightHedvigColorScheme(hedvigTonalPalette, lightColorScheme(hedvigTonalPalette))
 }
 
 class HedvigMaterial3ColorScheme(

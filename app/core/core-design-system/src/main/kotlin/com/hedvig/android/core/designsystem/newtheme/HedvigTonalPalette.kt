@@ -2,23 +2,6 @@ package com.hedvig.android.core.designsystem.newtheme
 
 import androidx.compose.ui.graphics.Color
 
-internal val hedvigTonalPalette: HedvigTonalPalette = HedvigTonalPaletteImpl(
-  // The neutral tonal range from the generated dynamic color palette.
-  greyscale0 = greyscale_0,
-  greyscale10 = greyscale_10,
-  greyscale50 = greyscale_50,
-  greyscale100 = greyscale_100,
-  greyscale200 = greyscale_200,
-  greyscale300 = greyscale_300,
-  greyscale400 = greyscale_400,
-  greyscale500 = greyscale_500,
-  greyscale600 = greyscale_600,
-  greyscale700 = greyscale_700,
-  greyscale800 = greyscale_800,
-  greyscale900 = greyscale_900,
-  greyscale1000 = greyscale_1000,
-)
-
 internal interface HedvigTonalPalette {
   val greyscale0: Color
   val greyscale10: Color
@@ -33,62 +16,151 @@ internal interface HedvigTonalPalette {
   val greyscale800: Color
   val greyscale900: Color
   val greyscale1000: Color
-}
 
-private class HedvigTonalPaletteImpl(
-  override val greyscale0: Color,
-  override val greyscale10: Color,
-  override val greyscale50: Color,
-  override val greyscale100: Color,
-  override val greyscale200: Color,
-  override val greyscale300: Color,
-  override val greyscale400: Color,
-  override val greyscale500: Color,
-  override val greyscale600: Color,
-  override val greyscale700: Color,
-  override val greyscale800: Color,
-  override val greyscale900: Color,
-  override val greyscale1000: Color,
-) : HedvigTonalPalette {
+  val green50: Color
+  val green100: Color
+  val green200: Color
+  val green300: Color
+  val green400: Color
+  val green500: Color
+  val green600: Color
+  val green700: Color
+  val green800: Color
+  val green900: Color
+
+  val yellow50: Color
+  val yellow100: Color
+  val yellow200: Color
+  val yellow300: Color
+  val yellow400: Color
+  val yellow500: Color
+  val yellow600: Color
+  val yellow700: Color
+  val yellow800: Color
+  val yellow900: Color
+
+  val amber50: Color
+  val amber100: Color
+  val amber200: Color
+  val amber300: Color
+  val amber400: Color
+  val amber500: Color
+  val amber600: Color
+  val amber700: Color
+  val amber800: Color
+  val amber900: Color
+
+  val red50: Color
+  val red100: Color
+  val red200: Color
+  val red300: Color
+  val red400: Color
+  val red500: Color
+  val red600: Color
+  val red700: Color
+  val red800: Color
+  val red900: Color
+
+  val pink50: Color
+  val pink100: Color
+  val pink200: Color
+  val pink300: Color
+  val pink400: Color
+  val pink500: Color
+  val pink600: Color
+  val pink700: Color
+  val pink800: Color
+  val pink900: Color
+
+  val purple50: Color
+  val purple100: Color
+  val purple200: Color
+  val purple300: Color
+  val purple400: Color
+  val purple500: Color
+  val purple600: Color
+  val purple700: Color
+  val purple800: Color
+  val purple900: Color
+
+  val blue50: Color
+  val blue100: Color
+  val blue200: Color
+  val blue300: Color
+  val blue400: Color
+  val blue500: Color
+  val blue600: Color
+  val blue700: Color
+  val blue800: Color
+  val blue900: Color
+
+  val teal50: Color
+  val teal100: Color
+  val teal200: Color
+  val teal300: Color
+  val teal400: Color
+  val teal500: Color
+  val teal600: Color
+  val teal700: Color
+  val teal800: Color
+  val teal900: Color
+
+  val lavender300: Color
+  val lavender400: Color
+
   // The neutral tonal range from the generated dynamic color palette.
   // Ordered from the lightest shade [neutral100] to the darkest shade [neutral0].
   // Kept for reference if we need to know the `neutralX` notation of those
   @Suppress("unused")
-  private val neutral100: Color = greyscale0
+  val neutral100: Color
+    get() = greyscale0
 
   @Suppress("unused")
-  private val neutral99: Color = greyscale10
+  val neutral99: Color
+    get() = greyscale10
 
   @Suppress("unused")
-  private val neutral95: Color = greyscale50
+  val neutral95: Color
+    get() = greyscale50
 
   @Suppress("unused")
-  private val neutral90: Color = greyscale100
+  val neutral90: Color
+    get() = greyscale100
 
   @Suppress("unused")
-  private val neutral80: Color = greyscale200
+  val neutral80: Color
+    get() = greyscale200
 
   @Suppress("unused")
-  private val neutral70: Color = greyscale300
+  val neutral70: Color
+    get() = greyscale300
 
   @Suppress("unused")
-  private val neutral60: Color = greyscale400
+  val neutral60: Color
+    get() = greyscale400
 
   @Suppress("unused")
-  private val neutral50: Color = greyscale500
+  val neutral50: Color
+    get() = greyscale500
 
   @Suppress("unused")
-  private val neutral40: Color = greyscale600
+  val neutral40: Color
+    get() = greyscale600
 
   @Suppress("unused")
-  private val neutral30: Color = greyscale700
+  val neutral30: Color
+    @Suppress("unused")
+    get() = greyscale700
 
   @Suppress("unused")
-  private val neutral20: Color = greyscale800
+  val neutral20: Color
+    get() = greyscale800
 
   @Suppress("unused")
-  private val neutral10: Color = greyscale900
+  val neutral10: Color
+    get() = greyscale900
 
   @Suppress("unused")
-  private val neutral0: Color = greyscale1000
+  val neutral0: Color
+    get() = greyscale1000
 }
