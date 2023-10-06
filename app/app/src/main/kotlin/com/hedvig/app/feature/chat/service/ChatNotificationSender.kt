@@ -15,7 +15,7 @@ import androidx.core.graphics.drawable.IconCompat
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.core.common.android.notification.setupNotificationChannel
 import com.hedvig.android.feature.chat.legacy.getStoredBoolean
-import com.hedvig.android.feature.chat.ui.ChatActivity
+import com.hedvig.android.feature.chat.ui.ChatFragment
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.notification.core.NotificationSender
@@ -36,7 +36,7 @@ class ChatNotificationSender(
   }
 
   override fun sendNotification(type: String, remoteMessage: RemoteMessage) {
-    if (context.getStoredBoolean(ChatActivity.ACTIVITY_IS_IN_FOREGROUND)) {
+    if (context.getStoredBoolean(ChatFragment.ACTIVITY_IS_IN_FOREGROUND)) {
       logcat(LogPriority.INFO) { "ChatNotificationSender ignoring notification since chat is open" }
       return
     }
@@ -95,7 +95,8 @@ class ChatNotificationSender(
     style: NotificationCompat.MessagingStyle,
     alertOnlyOnce: Boolean = false,
   ) {
-    val chatIntent = Intent(context, ChatActivity::class.java)
+    // TODO change into a deep link into the chat instead
+    val chatIntent = Intent(context, ChatFragment::class.java)
 
     val flags = getMutablePendingIntentFlags()
 

@@ -18,7 +18,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.hedvig.android.feature.chat.ui.ChatActivity
+import com.hedvig.android.feature.chat.ui.ChatFragment
 import kotlinx.coroutines.delay
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -183,7 +183,7 @@ fun Context.tryOpenUri(uri: Uri) {
 }
 
 fun Context.startChat() {
-  val intent = Intent(this, ChatActivity::class.java)
+  val intent = Intent(this, ChatFragment::class.java)
 
   val options =
     ActivityOptionsCompat.makeCustomAnimation(

@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
     android:background="?colorSurface"
-    tools:context="com.hedvig.android.feature.chat.ui.ChatActivity">
+    tools:context="com.hedvig.android.feature.chat.ui.ChatFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/messages"

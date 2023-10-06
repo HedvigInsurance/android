@@ -31,7 +31,7 @@ import com.hedvig.android.feature.chat.ChatEvent
 import com.hedvig.android.feature.chat.ChatInputType
 import com.hedvig.android.feature.chat.ChatViewModel
 import com.hedvig.android.feature.chat.R
-import com.hedvig.android.feature.chat.databinding.ActivityChatBinding
+import com.hedvig.android.feature.chat.databinding.FragmentChatBinding
 import com.hedvig.android.feature.chat.legacy.applyStatusBarInsets
 import com.hedvig.android.feature.chat.legacy.calculateNonFullscreenHeightDiff
 import com.hedvig.android.feature.chat.legacy.composeContactSupportEmail
@@ -50,9 +50,9 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 
-class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
+class ChatFragment : AppCompatActivity(R.layout.fragment_chat) {
   private val chatViewModel: ChatViewModel by viewModel()
-  private val binding by viewBinding(ActivityChatBinding::bind)
+  private val binding by viewBinding(FragmentChatBinding::bind)
 
   private val imageLoader: ImageLoader by inject()
   private val hedvigBuildConstants: HedvigBuildConstants by inject()

@@ -20,6 +20,7 @@ fun NavGraphBuilder.chatGraph(
     ),
     enterTransition = { slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Up) },
     exitTransition = { slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down) },
-  ) {
+  ) { backstackEntry ->
+
   }
 }
