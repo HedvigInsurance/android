@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.chat.data
+package com.hedvig.android.feature.chat
 
 import arrow.core.Either
 import arrow.core.raise.either
@@ -9,6 +9,9 @@ import com.apollographql.apollo3.api.toUpload
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.feature.chat.data.ChatMessage
+import com.hedvig.android.feature.chat.data.ChatMessageResult
+import com.hedvig.android.feature.chat.data.ChatMessagesResult
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import java.io.File
@@ -30,7 +33,7 @@ interface ChatRepositoryNew {
   suspend fun sendMessage(text: String): Either<ErrorMessage, ChatMessageResult>
 }
 
-class ChatRepositoryNewImpl(
+internal class ChatRepositoryNewImpl(
   private val apolloClientOctopus: ApolloClient,
 ) : ChatRepositoryNew {
   override suspend fun fetchChatMessages(until: Instant?) = either {
