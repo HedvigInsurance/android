@@ -17,10 +17,16 @@ import octopus.type.ChatMessageFileInput
 import octopus.type.ChatMessageSender
 import octopus.type.ChatMessageTextInput
 
-class ChatRepositoryNew(
+interface ChatRepositoryNew {
+  suspend fun fetchChatMessages(until: Instant? = null): Either<ErrorMessage, ChatMessagesResult>
+  suspend fun sendFile(uploadUrl: String): Either<ErrorMessage, ChatMessageResult>
+  suspend fun sendMessage(text: String): Either<ErrorMessage, ChatMessageResult>
+}
+
+class ChatRepositoryNewImpl(
   private val apolloClientOctopus: ApolloClient,
 ) {
-  suspend fun fetchChatMessagesOctopus(until: Instant? = null): Either<ErrorMessage, ChatMessagesResult> = either {
+  suspend fun fetchChatMessages(until: Instant? = null) = either {
     val result = apolloClientOctopus.query(ChatMessagesQuery(until))
       .safeExecute()
       .toEither(::ErrorMessage)
@@ -33,7 +39,7 @@ class ChatRepositoryNew(
     )
   }
 
-  suspend fun sendFile(uploadUrl: String) = either<ErrorMessage, ChatMessageResult> {
+  suspend fun sendFile(uploadUrl: String) = either {
     val result = apolloClientOctopus.mutation(ChatSendFileMutation(ChatMessageFileInput(uploadUrl)))
       .safeExecute()
       .toEither(::ErrorMessage)
@@ -55,7 +61,7 @@ class ChatRepositoryNew(
     }
   }
 
-  suspend fun sendMessage(text: String) = either<ErrorMessage, ChatMessageResult> {
+  suspend fun sendMessage(text: String) = either {
     val result = apolloClientOctopus.mutation(ChatSendMessageMutation(ChatMessageTextInput(text)))
       .safeExecute()
       .toEither(::ErrorMessage)
@@ -111,6 +117,4 @@ private fun MessageFragment.toMessage() = when (this) {
     logcat(LogPriority.WARN) { "Got unknown message type, can not map message" }
     null
   }
-
 }
-
