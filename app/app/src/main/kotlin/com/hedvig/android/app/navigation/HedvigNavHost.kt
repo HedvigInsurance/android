@@ -24,6 +24,7 @@ import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.toClaimFlowDestination
 import com.hedvig.android.feature.changeaddress.navigation.changeAddressGraph
+import com.hedvig.android.feature.chat.navigation.chatGraph
 import com.hedvig.android.feature.claimtriaging.ClaimTriagingDestination
 import com.hedvig.android.feature.claimtriaging.claimTriagingDestinations
 import com.hedvig.android.feature.forever.navigation.foreverGraph
@@ -212,6 +213,10 @@ internal fun HedvigNavHost(
       openAppSettings = { activityNavigator.openAppSettings(context) },
       openUrl = ::openUrl,
       market = market,
+    )
+    chatGraph(
+      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+      navigator = navigator,
     )
   }
 }
