@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.chat.data
+package com.hedvig.android.feature.chat.data
 
 import kotlinx.datetime.Instant
 

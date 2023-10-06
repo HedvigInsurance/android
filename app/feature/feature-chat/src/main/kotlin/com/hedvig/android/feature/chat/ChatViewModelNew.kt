@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.chat.viewmodel
+package com.hedvig.android.feature.chat
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -9,13 +9,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.core.demomode.Provider
+import com.hedvig.android.feature.chat.data.ChatMessage
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
-import com.hedvig.app.feature.chat.data.ChatEventStore
-import com.hedvig.app.feature.chat.data.ChatMessage
-import com.hedvig.app.feature.chat.data.ChatRepositoryNew
+import java.io.File
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
@@ -65,14 +64,14 @@ internal class ChatPresenter(
 
     var fetchId by remember { mutableIntStateOf(0) }
     var fetchUntil by remember { mutableStateOf<Instant?>(null) }
-    var fileUrlInputState by remember { mutableStateOf<String?>(null) }
+    var fileState by remember { mutableStateOf<File?>(null) }
     var messageInputState by remember { mutableStateOf<String?>(null) }
 
     CollectEvents { event ->
       when (event) {
         is ChatEventNew.FetchMessages -> fetchUntil = event.until
         ChatEventNew.PollMessages -> fetchId++
-        is ChatEventNew.SendFileMessage -> fileUrlInputState = event.url
+        is ChatEventNew.SendFileMessage -> fileState = event.file
         is ChatEventNew.SendTextMessage -> messageInputState = event.message
         is ChatEventNew.DismissError -> errorMessage = null
       }
@@ -98,11 +97,11 @@ internal class ChatPresenter(
         )
     }
 
-    LaunchedEffect(fileUrlInputState) {
-      val fileUrl = fileUrlInputState ?: return@LaunchedEffect
+    LaunchedEffect(fileState) {
+      val file = fileState ?: return@LaunchedEffect
       isSendingMessage = true
       chatRepository.provide()
-        .sendFile(fileUrl)
+        .sendFile(file, "")
         .fold(
           ifLeft = {
             errorMessage = it.message
@@ -145,14 +144,10 @@ internal class ChatPresenter(
 
 internal sealed interface ChatEventNew {
   data class FetchMessages(val until: Instant? = null) : ChatEventNew
-
   data object PollMessages : ChatEventNew
-
   data object DismissError : ChatEventNew
-
   data class SendTextMessage(val message: String) : ChatEventNew
-
-  data class SendFileMessage(val url: String) : ChatEventNew
+  data class SendFileMessage(val file: File) : ChatEventNew
 }
 
 internal data class ChatUiState(
