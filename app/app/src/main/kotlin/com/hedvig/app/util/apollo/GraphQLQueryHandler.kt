@@ -5,7 +5,7 @@ import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.safeGraphqlCall
 import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.android.jsonObjectOfNotNull
-import com.hedvig.app.service.FileService
+import com.hedvig.android.feature.chat.FileService
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody

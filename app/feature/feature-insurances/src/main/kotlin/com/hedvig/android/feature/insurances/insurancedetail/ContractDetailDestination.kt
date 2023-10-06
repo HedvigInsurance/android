@@ -166,7 +166,8 @@ private fun ContractDetailScreen(
                       coverageItems = state.insuranceContract.currentAgreement.displayItems
                         .map { it.title to it.value }
                         .toImmutableList(),
-                      allowEditCoInsured = state.insuranceContract.currentAgreement.productVariant.contractType.canChangeCoInsured(),
+                      allowEditCoInsured = state.insuranceContract.currentAgreement.productVariant.contractType
+                        .canChangeCoInsured(),
                       allowChangeAddress = state.insuranceContract.supportsAddressChange,
                       onEditCoInsuredClick = onEditCoInsuredClick,
                       onChangeAddressClick = onChangeAddressClick,

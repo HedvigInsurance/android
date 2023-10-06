@@ -189,7 +189,8 @@ internal class ChangeAddressViewModel(
               numberInsured = ValidatedInput(moveIntent.suggestedNumberInsured.toString()),
               moveFromAddressId = moveIntent.currentHomeAddresses.firstOrNull()?.id,
               extraBuildingTypes = moveIntent.extraBuildingTypes,
-              isEligibleForStudent = (moveIntent.isApartmentAvailableforStudent == true && uiState.value.housingType.input != HousingType.VILLA),
+              isEligibleForStudent = moveIntent.isApartmentAvailableforStudent == true &&
+                uiState.value.housingType.input != HousingType.VILLA,
               maxSquareMeters = when (uiState.value.housingType.input) {
                 HousingType.APARTMENT_RENT,
                 HousingType.APARTMENT_OWN,

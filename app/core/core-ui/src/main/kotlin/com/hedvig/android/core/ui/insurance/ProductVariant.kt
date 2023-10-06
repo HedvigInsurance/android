@@ -142,7 +142,8 @@ fun ProductVariantFragment.toProductVariant() = ProductVariant(
         InsurableLimitType.PERMANENT_INJURY -> InsurableLimit.InsurableLimitType.PERMANENT_INJURY
         InsurableLimitType.TREATMENT -> InsurableLimit.InsurableLimitType.TREATMENT
         InsurableLimitType.DENTAL_TREATMENT -> InsurableLimit.InsurableLimitType.DENTAL_TREATMENT
-        InsurableLimitType.TRAVEL_ILLNESS_INJURY_TRANSPORTATION_HOME -> InsurableLimit.InsurableLimitType.TRAVEL_ILLNESS_INJURY_TRANSPORTATION_HOME
+        InsurableLimitType.TRAVEL_ILLNESS_INJURY_TRANSPORTATION_HOME ->
+          InsurableLimit.InsurableLimitType.TRAVEL_ILLNESS_INJURY_TRANSPORTATION_HOME
         InsurableLimitType.TRAVEL_DELAYED_ON_TRIP -> InsurableLimit.InsurableLimitType.TRAVEL_DELAYED_ON_TRIP
         InsurableLimitType.TRAVEL_DELAYED_LUGGAGE -> InsurableLimit.InsurableLimitType.TRAVEL_DELAYED_LUGGAGE
         InsurableLimitType.TRAVEL_CANCELLATION -> InsurableLimit.InsurableLimitType.TRAVEL_CANCELLATION

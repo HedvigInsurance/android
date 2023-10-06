@@ -2,8 +2,8 @@ package com.hedvig.app.feature.loggedin.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.feature.chat.ChatEventStore
 import com.hedvig.android.logger.logcat
-import com.hedvig.app.feature.chat.data.ChatEventStore
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter

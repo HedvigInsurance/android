@@ -14,14 +14,14 @@ import androidx.core.content.getSystemService
 import androidx.core.graphics.drawable.IconCompat
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.core.common.android.notification.setupNotificationChannel
+import com.hedvig.android.feature.chat.legacy.getStoredBoolean
+import com.hedvig.android.feature.chat.ui.ChatActivity
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
-import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.getMutablePendingIntentFlags
-import com.hedvig.app.util.extensions.getStoredBoolean
 
 class ChatNotificationSender(
   private val context: Context,

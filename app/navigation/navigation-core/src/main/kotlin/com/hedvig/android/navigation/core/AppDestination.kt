@@ -22,6 +22,9 @@ sealed interface AppDestination : Destination {
   object Login : AppDestination
 
   @Serializable
+  object Chat : AppDestination
+
+  @Serializable
   object ChangeAddress : AppDestination
 
   @Serializable

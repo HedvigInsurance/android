@@ -33,7 +33,7 @@
         android:theme="@style/Hedvig.Theme">
         <activity android:name=".feature.embark.ui.MoreOptionsActivity" />
         <activity
-            android:name=".feature.chat.ui.ChatActivity"
+            android:name="com.hedvig.android.feature.chat.ui.ChatActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
