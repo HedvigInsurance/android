@@ -1,0 +1,13 @@
+mutation ChatSendFile($chatMessageFileInput: ChatMessageFileInput!) {
+  chatSendFile(input: $chatMessageFileInput) {
+    message {
+      ...MessageFragment
+    }
+    status {
+      message
+    }
+    error {
+      message
+    }
+  }
+}

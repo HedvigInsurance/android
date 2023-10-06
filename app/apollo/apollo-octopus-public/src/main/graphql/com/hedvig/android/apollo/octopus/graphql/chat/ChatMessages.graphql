@@ -1,0 +1,9 @@
+query ChatMessages($until: Instant) {
+  chat(until: $until) {
+    hasNext
+    nextUntil
+    messages {
+      ...MessageFragment
+    }
+  }
+}
