@@ -209,6 +209,8 @@ dependencies {
   implementation(projects.dataTravelCertificatePublic)
   implementation(projects.datadogCore)
   implementation(projects.datadogDemoTracking)
+  implementation(projects.moleculeAndroid)
+  implementation(projects.moleculePublic)
   implementation(projects.featureChangeaddress)
   implementation(projects.featureChat)
   implementation(projects.featureClaimTriaging)
