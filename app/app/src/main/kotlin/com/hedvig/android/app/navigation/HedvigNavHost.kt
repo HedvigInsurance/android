@@ -24,6 +24,7 @@ import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.toClaimFlowDestination
 import com.hedvig.android.feature.changeaddress.navigation.changeAddressGraph
+import com.hedvig.android.feature.chat.navigation.chatGraph
 import com.hedvig.android.feature.claimtriaging.ClaimTriagingDestination
 import com.hedvig.android.feature.claimtriaging.claimTriagingDestinations
 import com.hedvig.android.feature.forever.navigation.foreverGraph
@@ -51,7 +52,6 @@ import com.hedvig.app.feature.adyen.AdyenCurrency
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutActivity
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.payment.connectPayinIntent
-import com.hedvig.app.util.extensions.startChat
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import com.kiwi.navigationcompose.typed.Destination
@@ -135,7 +135,9 @@ internal fun HedvigNavHost(
       },
       navigator = navigator,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-      onStartChat = { context.startChat() },
+      onStartChat = { backStackEntry ->
+        with(navigator) { backStackEntry.navigate(AppDestination.Chat) }
+      },
       onStartClaim = { backStackEntry ->
         coroutineScope.launch {
           hAnalytics.beginClaim(AppScreen.HOME)
@@ -211,6 +213,11 @@ internal fun HedvigNavHost(
       openAppSettings = { activityNavigator.openAppSettings(context) },
       openUrl = ::openUrl,
       market = market,
+    )
+    chatGraph(
+      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+      languageService = languageService,
+      hedvigBuildConstants = hedvigBuildConstants,
     )
   }
 }

@@ -8,7 +8,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.chat.data.ChatMessage
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.molecule.android.MoleculeViewModel
@@ -24,7 +23,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 
 internal class ChatViewModelNew(
-  chatRepository: Provider<ChatRepositoryNew>,
+  chatRepository: ChatRepositoryNew,
   chatClosedTracker: ChatEventStore,
   featureManager: FeatureManager,
 ) : MoleculeViewModel<ChatEventNew, ChatUiState>(
@@ -47,7 +46,7 @@ internal class ChatViewModelNew(
 }
 
 internal class ChatPresenter(
-  private val chatRepository: Provider<ChatRepositoryNew>,
+  private val chatRepository: ChatRepositoryNew,
   private val chatClosedTracker: ChatEventStore,
   private val featureManager: FeatureManager,
 ) : MoleculePresenter<ChatEventNew, ChatUiState> {
@@ -79,7 +78,7 @@ internal class ChatPresenter(
 
     LaunchedEffect(fetchId, fetchUntil) {
       isLoadingNewMessages = fetchUntil != null
-      chatRepository.provide()
+      chatRepository
         .fetchChatMessages(fetchUntil)
         .fold(
           ifLeft = {
@@ -100,7 +99,7 @@ internal class ChatPresenter(
     LaunchedEffect(fileState) {
       val file = fileState ?: return@LaunchedEffect
       isSendingMessage = true
-      chatRepository.provide()
+      chatRepository
         .sendFile(file, "")
         .fold(
           ifLeft = {
@@ -117,7 +116,7 @@ internal class ChatPresenter(
     LaunchedEffect(messageInputState) {
       val message = messageInputState ?: return@LaunchedEffect
       isSendingMessage = true
-      chatRepository.provide()
+      chatRepository
         .sendMessage(message)
         .fold(
           ifLeft = {

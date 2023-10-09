@@ -6,6 +6,8 @@ import arrow.core.raise.ensure
 import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.toUpload
+import com.apollographql.apollo3.cache.normalized.FetchPolicy
+import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
@@ -38,12 +40,13 @@ internal class ChatRepositoryNewImpl(
 ) : ChatRepositoryNew {
   override suspend fun fetchChatMessages(until: Instant?) = either {
     val result = apolloClientOctopus.query(ChatMessagesQuery(until))
+      .fetchPolicy(FetchPolicy.NetworkOnly)
       .safeExecute()
       .toEither(::ErrorMessage)
       .bind()
 
     ChatMessagesResult(
-      messages = result.chat.messages.mapNotNull { it.toMessage() },
+      messages = result.chat.messages.mapNotNull { it.toMessage() }.reversed(),
       nextUntil = result.chat.nextUntil,
       hasNext = result.chat.hasNext,
     )
