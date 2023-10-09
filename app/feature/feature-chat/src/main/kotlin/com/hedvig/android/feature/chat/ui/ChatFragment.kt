@@ -95,6 +95,12 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
     lifecycle.addObserver(AuthenticatedObserver())
 
     keyboardHeightListener = ViewTreeObserver.OnGlobalLayoutListener {
+      val binding = try {
+        binding
+      } catch (_: IllegalStateException) {
+        // Ignore case when the fragment was already gone. This entire logic should be replaces by insets eventually
+        return@OnGlobalLayoutListener
+      }
       val heightDiff = binding.chatRoot.calculateNonFullscreenHeightDiff()
       if (heightDiff > isKeyboardBreakPoint) {
         if (systemNavHeight > 0) systemNavHeight -= navHeightDiff
@@ -210,11 +216,11 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
   private var navigateUp: (() -> Unit)? = null
 
   override fun onDestroyView() {
-    super.onDestroyView()
     chatViewModel.onChatClosed()
+    navigateUp = null
     binding.chatRoot.viewTreeObserver.removeOnGlobalLayoutListener(keyboardHeightListener)
     keyboardHeightListener = null
-    navigateUp = null
+    super.onDestroyView()
   }
 
   fun setNavigateUp(onNavigateUp: () -> Unit) {
