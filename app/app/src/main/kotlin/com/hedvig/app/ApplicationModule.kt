@@ -229,7 +229,7 @@ private val networkModule = module {
           return@webSocketReopenWhen true
         }
         if (reconnectAttempt < 5) {
-          delay(2.0.pow(reconnectAttempt.toDouble()).toLong()) // Retry after 1 - 2 - 4 - 8 - 16 seconds
+          delay(2.0.pow(reconnectAttempt.toDouble()).toLong()) // Retry after 1 - 2 - 4 - 9 - 16 seconds
           return@webSocketReopenWhen true
         }
         false

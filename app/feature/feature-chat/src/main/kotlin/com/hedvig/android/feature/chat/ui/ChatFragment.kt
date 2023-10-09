@@ -264,10 +264,10 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
   private fun initializeToolbarButtons() {
     binding.close.setOnClickListener {
       if (navigateUp != null) {
-        logcat { "Stelios navigateUp " }
+        logcat { "Chat: navigateUp " }
         navigateUp!!.invoke()
       } else {
-        logcat { "Stelios navigateUp not hooked up correctly" }
+        logcat { "Chat: navigateUp not hooked up correctly" }
         requireActivity().onBackPressedDispatcher.onBackPressed()
       }
     }

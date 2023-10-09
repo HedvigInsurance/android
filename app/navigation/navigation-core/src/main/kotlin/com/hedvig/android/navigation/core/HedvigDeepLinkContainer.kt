@@ -11,9 +11,12 @@ interface HedvigDeepLinkContainer {
 
 internal class HedvigDeepLinkContainerImpl(
   isProduction: Boolean,
+  isDev: Boolean,
 ) : HedvigDeepLinkContainer {
   private val baseFirebaseLink = if (isProduction) {
     "https://hedvig.page.link"
+  } else if (isDev) {
+    "https://hedvigdevelop.page.link"
   } else {
     "https://hedvigtest.page.link"
   }
