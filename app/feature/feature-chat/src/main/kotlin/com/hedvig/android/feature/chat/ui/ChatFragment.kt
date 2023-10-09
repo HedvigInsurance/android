@@ -190,10 +190,10 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
     super.onPause()
   }
 
-  var navigateUp: (() -> Unit)? = null
+  private var navigateUp: (() -> Unit)? = null
 
-  override fun onDestroy() {
-    super.onDestroy()
+  override fun onDestroyView() {
+    super.onDestroyView()
     chatViewModel.onChatClosed()
     navigateUp = null
   }

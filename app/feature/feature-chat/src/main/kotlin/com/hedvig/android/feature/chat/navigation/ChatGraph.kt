@@ -1,10 +1,14 @@
 package com.hedvig.android.feature.chat.navigation
 
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
-import com.hedvig.android.feature.chat.databinding.FragmentChatBinding
+import com.hedvig.android.feature.chat.databinding.FragmentChatContainerViewBinding
 import com.hedvig.android.feature.chat.ui.ChatFragment
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
@@ -21,10 +25,13 @@ fun NavGraphBuilder.chatGraph(
     ),
     enterTransition = { slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Up) },
     exitTransition = { slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down) },
-  ) { backstackEntry ->
-    AndroidViewBinding(FragmentChatBinding::inflate) {
-      val myFragment = this.chatRoot.getFragment<ChatFragment>()
-      myFragment.setNavigateUp { navigator.navigateUp() }
+  ) {
+    AndroidViewBinding(
+      factory = FragmentChatContainerViewBinding::inflate,
+      modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
+    ) {
+      val chatFragment = chatFragmentContainerView.getFragment<ChatFragment>()
+      chatFragment.setNavigateUp { navigator.navigateUp() }
     }
   }
 }
