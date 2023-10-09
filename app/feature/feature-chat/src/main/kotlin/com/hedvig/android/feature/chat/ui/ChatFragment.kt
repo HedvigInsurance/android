@@ -4,6 +4,8 @@ import android.app.AlertDialog
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.view.View
+import android.view.ViewTreeObserver
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -78,17 +80,33 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
     }
   }
 
+  private var keyboardHeightListener: (ViewTreeObserver.OnGlobalLayoutListener)? = null
+
   override fun onSaveInstanceState(outState: Bundle) {
     super.onSaveInstanceState(outState)
     outState.putString("photo", currentPhotoPath)
   }
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
     if (savedInstanceState != null) {
       currentPhotoPath = savedInstanceState.getString("photo")
     }
     lifecycle.addObserver(AuthenticatedObserver())
+
+    keyboardHeightListener = ViewTreeObserver.OnGlobalLayoutListener {
+      val heightDiff = binding.chatRoot.calculateNonFullscreenHeightDiff()
+      if (heightDiff > isKeyboardBreakPoint) {
+        if (systemNavHeight > 0) systemNavHeight -= navHeightDiff
+        keyboardHeight = heightDiff - systemNavHeight
+        isKeyboardShown = true
+        scrollToBottom(true)
+      } else {
+        systemNavHeight = heightDiff
+        isKeyboardShown = false
+      }
+    }
+    binding.chatRoot.viewTreeObserver.addOnGlobalLayoutListener(keyboardHeightListener)
 
     keyboardHeight = resources.getDimensionPixelSize(R.dimen.default_attach_file_height)
     isKeyboardBreakPoint =
@@ -146,11 +164,10 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
     initializeToolbarButtons()
     initializeMessages()
     initializeInput()
-    initializeKeyboardVisibilityHandler()
     observeData()
 
     lifecycleScope.launch {
-      repeatOnLifecycle(Lifecycle.State.STARTED) {
+      viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
         chatViewModel.chatEnabledStatus.collect { chatEnabledStatus ->
           if (chatEnabledStatus is ChatEnabledStatus.Enabled) {
             binding.disabledChatView.isGone = true
@@ -195,6 +212,8 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
   override fun onDestroyView() {
     super.onDestroyView()
     chatViewModel.onChatClosed()
+    binding.chatRoot.viewTreeObserver.removeOnGlobalLayoutListener(keyboardHeightListener)
+    keyboardHeightListener = null
     navigateUp = null
   }
 
@@ -256,21 +275,6 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
     binding.close.show()
   }
 
-  private fun initializeKeyboardVisibilityHandler() {
-    binding.chatRoot.viewTreeObserver.addOnGlobalLayoutListener {
-      val heightDiff = binding.chatRoot.calculateNonFullscreenHeightDiff()
-      if (heightDiff > isKeyboardBreakPoint) {
-        if (systemNavHeight > 0) systemNavHeight -= navHeightDiff
-        this.keyboardHeight = heightDiff - systemNavHeight
-        isKeyboardShown = true
-        scrollToBottom(true)
-      } else {
-        systemNavHeight = heightDiff
-        isKeyboardShown = false
-      }
-    }
-  }
-
   private fun observeData() {
     lifecycleScope.launch {
       repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -280,7 +284,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         }
       }
     }
-    chatViewModel.takePictureUploadFinished.observe(this) {
+    chatViewModel.takePictureUploadFinished.observe(viewLifecycleOwner) {
       attachPickerDialog?.uploadingTakenPicture(false)
       currentPhotoPath?.let { File(it).delete() }
       currentPhotoPath = null
