@@ -69,6 +69,7 @@ import com.hedvig.android.feature.changeaddress.ui.offer.QuoteCard
 import hedvig.resources.R
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -77,7 +78,7 @@ internal fun ChangeAddressOfferDestination(
   viewModel: ChangeAddressViewModel,
   openChat: () -> Unit,
   close: () -> Unit,
-  onChangeAddressResult: (String?) -> Unit,
+  onChangeAddressResult: (LocalDate?) -> Unit,
   openUrl: (String) -> Unit,
 ) {
   val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -85,7 +86,7 @@ internal fun ChangeAddressOfferDestination(
 
   LaunchedEffect(moveResult) {
     if (moveResult != null) {
-      onChangeAddressResult(uiState.movingDate.input?.toString())
+      onChangeAddressResult(uiState.movingDate.input)
     }
   }
   ChangeAddressOfferScreen(
@@ -129,7 +130,7 @@ private fun ChangeAddressOfferScreen(
     Spacer(Modifier.height(8.dp))
     for (quote in uiState.quotes) {
       QuoteCard(
-        movingDate = uiState.movingDate.input?.toString(),
+        movingDate = quote.startDate,
         quote = quote,
         onExpandClicked = { onExpandQuote(quote) },
         isExpanded = quote.isExpanded,
@@ -178,7 +179,7 @@ private fun ChangeAddressOfferScreen(
     )
     Spacer(Modifier.height(80.dp))
 
-    for (quote in uiState.quotes) {
+    for (quote in uiState.quotes.distinctBy { it.productVariant.contractType }) {
       QuoteDetailsAndPdfs(
         quote = quote,
         openUrl = openUrl,

@@ -30,10 +30,13 @@ import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicke
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
 import com.hedvig.android.core.designsystem.material3.warningContainer
 import com.hedvig.android.core.ui.ValidatedInput
+import com.hedvig.android.core.ui.getLocale
+import com.hedvig.android.core.ui.hedvigDateTimeFormatter
 import hedvig.resources.R
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
 
 @Composable
@@ -120,7 +123,9 @@ internal fun MovingDateButton(
           )
           Spacer(modifier = Modifier.height(4.dp))
           Text(
-            text = movingDate.input?.toString()
+            text = movingDate.input
+              ?.toJavaLocalDate()
+              ?.format(hedvigDateTimeFormatter(getLocale()))
               ?: stringResource(R.string.CHANGE_ADDRESS_SELECT_MOVING_DATE_LABEL),
             style = MaterialTheme.typography.headlineSmall,
           )
