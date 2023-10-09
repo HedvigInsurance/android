@@ -19,10 +19,6 @@
 
     <style name="Hedvig.Theme.Marketing" parent="Hedvig.Theme.Marketing.V23" />
 
-    <style name="Hedvig.Theme.Chat">
-        <item name="android:navigationBarColor">@color/color_background_95</item>
-    </style>
-
     <style name="ToolbarIcon">
         <item name="android:layout_height">@dimen/chat_top_bar_button_size</item>
         <item name="android:layout_width">@dimen/chat_top_bar_button_size</item>
