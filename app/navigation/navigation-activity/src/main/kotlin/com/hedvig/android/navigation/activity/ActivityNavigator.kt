@@ -14,7 +14,6 @@ class ActivityNavigator(
   private val application: Application,
   private val loggedOutActivityClass: Class<*>,
   private val buildConfigApplicationId: String,
-  private val navigateToChat: Context.() -> Unit,
   private val navigateToEmbark: Context.(storyName: String, storyTitle: String) -> Unit,
   private val navigateToLoggedInActivity: Context.(clearBackstack: Boolean) -> Unit,
 ) {
@@ -25,10 +24,6 @@ class ActivityNavigator(
         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK),
     )
-  }
-
-  fun navigateToChat(context: Context) {
-    context.navigateToChat()
   }
 
   @Suppress("DEPRECATION")

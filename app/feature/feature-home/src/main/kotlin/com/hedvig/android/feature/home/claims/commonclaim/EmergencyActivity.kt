@@ -16,13 +16,13 @@ import com.hedvig.android.core.common.android.remove
 import com.hedvig.android.core.common.android.setupToolbarScrollListener
 import com.hedvig.android.feature.home.R
 import com.hedvig.android.feature.home.databinding.ActivityEmergencyBinding
-import com.hedvig.android.navigation.activity.ActivityNavigator
+import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import dev.chrisbanes.insetter.applyInsetter
 import org.koin.android.ext.android.inject
 
 class EmergencyActivity : AppCompatActivity(R.layout.activity_emergency) {
 
-  private val activityNavigator: ActivityNavigator by inject()
+  private val hedvigDeepLinkContainer: HedvigDeepLinkContainer by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -54,7 +54,7 @@ class EmergencyActivity : AppCompatActivity(R.layout.activity_emergency) {
     }
 
     binding.thirdEmergencyButton.setOnClickListener {
-      activityNavigator.navigateToChat(this@EmergencyActivity)
+      startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(hedvigDeepLinkContainer.chat)))
     }
   }
 

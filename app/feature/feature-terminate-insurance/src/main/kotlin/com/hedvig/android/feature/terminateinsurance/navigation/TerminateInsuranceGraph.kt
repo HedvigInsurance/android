@@ -44,7 +44,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
   windowSizeClass: WindowSizeClass,
   navigator: Navigator,
   navController: NavController,
-  openChat: () -> Unit,
+  openChat: (NavBackStackEntry) -> Unit,
   openPlayStore: () -> Unit,
 ) {
   composable<TerminateInsuranceDestination.TerminationSuccess> {
@@ -56,11 +56,11 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       navigateBack = navigator::popBackStack,
     )
   }
-  composable<TerminateInsuranceDestination.TerminationFailure> {
+  composable<TerminateInsuranceDestination.TerminationFailure> { backStackEntry ->
     TerminationFailureDestination(
       windowSizeClass = windowSizeClass,
       errorMessage = ErrorMessage(this.message),
-      openChat = openChat,
+      openChat = { openChat(backStackEntry) },
       navigateUp = navigator::navigateUp,
       navigateBack = navigator::popBackStack,
     )

@@ -15,10 +15,8 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityOptionsCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.hedvig.android.feature.chat.ui.ChatFragment
 import kotlinx.coroutines.delay
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -180,17 +178,4 @@ fun Context.tryOpenUri(uri: Uri) {
   } else {
     showError()
   }
-}
-
-fun Context.startChat() {
-  val intent = Intent(this, ChatFragment::class.java)
-
-  val options =
-    ActivityOptionsCompat.makeCustomAnimation(
-      this,
-      com.hedvig.android.feature.chat.R.anim.chat_slide_up_in,
-      com.hedvig.android.feature.chat.R.anim.stay_in_place,
-    )
-
-  ActivityCompat.startActivity(this, intent, options.toBundle())
 }

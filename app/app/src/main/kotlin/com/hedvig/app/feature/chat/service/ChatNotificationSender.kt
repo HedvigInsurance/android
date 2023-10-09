@@ -4,6 +4,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
@@ -18,6 +19,7 @@ import com.hedvig.android.feature.chat.legacy.getStoredBoolean
 import com.hedvig.android.feature.chat.ui.ChatFragment
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
 import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
@@ -25,6 +27,7 @@ import com.hedvig.app.service.push.getMutablePendingIntentFlags
 
 class ChatNotificationSender(
   private val context: Context,
+  private val hedvigDeepLinkContainer: HedvigDeepLinkContainer,
 ) : NotificationSender {
   override fun createChannel() {
     setupNotificationChannel(
@@ -95,8 +98,7 @@ class ChatNotificationSender(
     style: NotificationCompat.MessagingStyle,
     alertOnlyOnce: Boolean = false,
   ) {
-    // TODO change into a deep link into the chat instead
-    val chatIntent = Intent(context, ChatFragment::class.java)
+    val chatIntent = Intent(Intent.ACTION_VIEW, Uri.parse(hedvigDeepLinkContainer.chat))
 
     val flags = getMutablePendingIntentFlags()
 
