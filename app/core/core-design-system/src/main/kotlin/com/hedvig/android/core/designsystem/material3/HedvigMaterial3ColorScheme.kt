@@ -25,18 +25,21 @@ class HedvigMaterial3ColorScheme(
   val onWarningElement: Color,
   val warningContainer: Color,
   val onWarningContainer: Color,
+  val warningHighlight: Color,
 
   // Type refers to "typing" aka when the member is typing something in a text-field. Naming has room for improvement.
   val typeElement: Color,
   val onTypeElement: Color,
   val typeContainer: Color,
   val onTypeContainer: Color,
+  val typeHighlight: Color,
 
   // Information related content. Like information cards and so on.
   val infoElement: Color,
   val onInfoElement: Color,
   val infoContainer: Color,
   val onInfoContainer: Color,
+  val infoHighlight: Color,
 )
 
 val ColorScheme.containedButtonContainer: Color
@@ -69,6 +72,11 @@ val ColorScheme.onWarningContainer: Color
   @ReadOnlyComposable
   @Composable
   get() = LocalHedvigMaterial3ColorScheme.current.onWarningContainer
+
+val ColorScheme.warningHighlight: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.warningHighlight
 // endregion
 
 // region typing colors
@@ -91,6 +99,11 @@ val ColorScheme.onTypeContainer: Color
   @ReadOnlyComposable
   @Composable
   get() = LocalHedvigMaterial3ColorScheme.current.onTypeContainer
+
+val ColorScheme.typeHighlight: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.typeHighlight
 // endregion
 
 // region info colors
@@ -113,6 +126,11 @@ val ColorScheme.onInfoContainer: Color
   @ReadOnlyComposable
   @Composable
   get() = LocalHedvigMaterial3ColorScheme.current.onInfoContainer
+
+val ColorScheme.infoHighlight: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.infoHighlight
 // endregion
 
 /**
