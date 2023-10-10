@@ -23,7 +23,7 @@ kotlinter = "3.12.0"
 ktor = "2.3.1"
 license = "0.9.3"
 molecule = "1.2.1"
-squareSortDependencies = "0.3"
+squareSortDependencies = "0.4"
 
 # Other versions sorted alphabetically
 accompanist = "0.32.0"
