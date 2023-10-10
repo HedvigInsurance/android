@@ -21,14 +21,14 @@ import kotlinx.coroutines.flow.stateIn
 import kotlin.time.Duration.Companion.seconds
 
 internal class TerminatedContractsViewModel(
-  private val getInsuranceContractsUseCase: Provider<GetInsuranceContractsUseCase>,
+  private val getInsuranceContractsUseCaseProvider: Provider<GetInsuranceContractsUseCase>,
 ) : ViewModel() {
   private val retryChannel = RetryChannel()
 
   val uiState: StateFlow<TerminatedContractsUiState> = flow {
     emit(TerminatedContractsUiState.Loading)
     either {
-      val terminatedContracts = getInsuranceContractsUseCase
+      val terminatedContracts = getInsuranceContractsUseCaseProvider
         .provide()
         .invoke(forceNetworkFetch = false)
         .bind()
