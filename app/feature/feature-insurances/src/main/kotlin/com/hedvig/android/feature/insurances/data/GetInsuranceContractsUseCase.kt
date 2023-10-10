@@ -55,6 +55,7 @@ private fun ContractFragment.toContract(isTerminated: Boolean = false): Insuranc
         )
       },
       productVariant = currentAgreement.productVariant.toProductVariant(),
+      certificateUrl = currentAgreement.certificateUrl
     ),
     upcomingAgreement = upcomingChangedAgreement?.let {
       Agreement(
@@ -67,6 +68,7 @@ private fun ContractFragment.toContract(isTerminated: Boolean = false): Insuranc
           )
         },
         productVariant = it.productVariant.toProductVariant(),
+        certificateUrl = it.certificateUrl,
       )
     },
     supportsAddressChange = true,

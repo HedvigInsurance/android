@@ -30,6 +30,7 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
               insurableLimits = persistentListOf(),
               documents = persistentListOf(),
             ),
+            certificateUrl = null,
           ),
           upcomingAgreement = null,
           renewalDate = LocalDate.fromEpochDays(500),
