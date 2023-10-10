@@ -27,7 +27,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.1.0"
+    versionName = "12.1.1"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -188,6 +188,7 @@ dependencies {
   implementation(projects.apolloCore)
   implementation(projects.apolloDi)
   implementation(projects.apolloGiraffePublic)
+  implementation(projects.apolloOctopusPublic)
   implementation(projects.audioPlayer)
   implementation(projects.authAndroid)
   implementation(projects.authCore)

@@ -55,18 +55,20 @@ private fun ContractFragment.toContract(isTerminated: Boolean = false): Insuranc
         )
       },
       productVariant = currentAgreement.productVariant.toProductVariant(),
+      certificateUrl = currentAgreement.certificateUrl,
     ),
     upcomingAgreement = upcomingChangedAgreement?.let {
       Agreement(
         activeFrom = it.activeFrom,
         activeTo = it.activeTo,
-        displayItems = currentAgreement.displayItems.map {
+        displayItems = it.displayItems.map {
           Agreement.DisplayItem(
             it.displayTitle,
             it.displayValue,
           )
         },
         productVariant = it.productVariant.toProductVariant(),
+        certificateUrl = it.certificateUrl,
       )
     },
     supportsAddressChange = true,

@@ -405,6 +405,7 @@ private fun PreviewInsuranceScreen() {
                   insurableLimits = persistentListOf(),
                   documents = persistentListOf(),
                 ),
+                certificateUrl = null,
               ),
               upcomingAgreement = null,
               renewalDate = LocalDate.fromEpochDays(500),

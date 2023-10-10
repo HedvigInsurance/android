@@ -120,7 +120,7 @@ private fun PreviewTerminatedContractsScreen(
   }
 }
 
-private class PreviewTerminatedContractsUiStateProvider() :
+private class PreviewTerminatedContractsUiStateProvider :
   CollectionPreviewParameterProvider<TerminatedContractsUiState>(
     listOf(
       TerminatedContractsUiState.Loading,
@@ -146,6 +146,7 @@ private class PreviewTerminatedContractsUiStateProvider() :
                 insurableLimits = persistentListOf(),
                 documents = persistentListOf(),
               ),
+              certificateUrl = null,
             ),
             upcomingAgreement = null,
             renewalDate = LocalDate.fromEpochDays(500),

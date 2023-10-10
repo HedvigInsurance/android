@@ -111,24 +111,5 @@ internal fun EditCodeBottomSheet(
 
 @Composable
 private fun ForeverRepository.ReferralError.toErrorMessage(): String {
-  return when (this) {
-    ForeverRepository.ReferralError.CodeExists -> {
-      stringResource(R.string.referrals_change_code_sheet_error_claimed_code)
-    }
-    is ForeverRepository.ReferralError.CodeTooLong -> {
-      stringResource(R.string.referrals_change_code_sheet_error_max_length)
-    }
-    is ForeverRepository.ReferralError.CodeIsEmpty -> {
-      stringResource(R.string.referrals_change_code_sheet_error_empty_code)
-    }
-    is ForeverRepository.ReferralError.CodeTooShort -> {
-      stringResource(R.string.referrals_change_code_sheet_general_error)
-    }
-    is ForeverRepository.ReferralError.GeneralError -> {
-      stringResource(R.string.referrals_change_code_sheet_general_error)
-    }
-    is ForeverRepository.ReferralError.MaxUpdates -> {
-      stringResource(R.string.referrals_change_code_sheet_error_change_limit_reached, this.maxUpdates)
-    }
-  }
+  return message ?: stringResource(R.string.referrals_change_code_sheet_general_error)
 }

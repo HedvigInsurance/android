@@ -132,7 +132,8 @@ private fun ChangeAddressEnterNewVillaAddressScreen(
     Spacer(modifier = Modifier.height(32.dp))
     Spacer(modifier = Modifier.weight(1f))
     InputTextField(
-      value = uiState.yearOfConstruction,
+      value = uiState.yearOfConstruction.input,
+      errorMessageRes = uiState.yearOfConstruction.errorMessageRes,
       onValueChange = onYearOfConstructionChanged,
       label = stringResource(id = R.string.CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL),
       modifier = Modifier.padding(horizontal = 16.dp),
@@ -142,7 +143,8 @@ private fun ChangeAddressEnterNewVillaAddressScreen(
     )
     Spacer(modifier = Modifier.height(8.dp))
     InputTextField(
-      value = uiState.ancillaryArea,
+      value = uiState.ancillaryArea.input,
+      errorMessageRes = uiState.ancillaryArea.errorMessageRes,
       onValueChange = onAncillaryAreaChanged,
       label = stringResource(id = R.string.CHANGE_ADDRESS_ANCILLARY_AREA_LABEL),
       modifier = Modifier.padding(horizontal = 16.dp),
@@ -152,7 +154,8 @@ private fun ChangeAddressEnterNewVillaAddressScreen(
     )
     Spacer(modifier = Modifier.height(8.dp))
     InputTextField(
-      value = uiState.numberOfBathrooms,
+      value = uiState.numberOfBathrooms.input,
+      errorMessageRes = uiState.numberOfBathrooms.errorMessageRes,
       onValueChange = onNumberOfBathroomsChanged,
       label = stringResource(id = R.string.CHANGE_ADDRESS_BATHROOMS_LABEL),
       modifier = Modifier.padding(horizontal = 16.dp),

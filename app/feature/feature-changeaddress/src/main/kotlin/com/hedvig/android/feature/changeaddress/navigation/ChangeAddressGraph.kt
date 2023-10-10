@@ -4,7 +4,6 @@ import androidx.activity.compose.BackHandler
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import coil.ImageLoader
 import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
 import com.hedvig.android.feature.changeaddress.destination.ChangeAddressEnterNewDestination
 import com.hedvig.android.feature.changeaddress.destination.ChangeAddressEnterNewVillaAddressDestination
@@ -24,7 +23,6 @@ fun NavGraphBuilder.changeAddressGraph(
   navController: NavController,
   openChat: (NavBackStackEntry) -> Unit,
   openUrl: (String) -> Unit,
-  imageLoader: ImageLoader,
 ) {
   navigation<AppDestination.ChangeAddress>(
     startDestination = createRoutePattern<ChangeAddressDestination.SelectHousingType>(),
@@ -98,7 +96,6 @@ fun NavGraphBuilder.changeAddressGraph(
           }
         },
         openUrl = openUrl,
-        imageLoader = imageLoader,
       )
     }
   }

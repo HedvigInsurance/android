@@ -1,6 +1,7 @@
 package com.hedvig.android.core.ui.insurance
 
 import androidx.compose.runtime.saveable.listSaver
+import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import octopus.fragment.ProductVariantFragment
@@ -94,15 +95,17 @@ data class Document(
     PRE_SALE_INFO,
     GENERAL_TERMS,
     PRIVACY_POLICY,
+    CERTIFICATE,
     UNKNOWN__,
     ;
 
     fun getStringRes() = when (this) {
-      TERMS_AND_CONDITIONS -> hedvig.resources.R.string.MY_DOCUMENTS_INSURANCE_TERMS
-      PRE_SALE_INFO_EU_STANDARD -> hedvig.resources.R.string.MY_DOUMENTS_INSURANCE_PREPURCHASE
-      PRE_SALE_INFO -> hedvig.resources.R.string.MY_DOUMENTS_INSURANCE_PREPURCHASE
-      GENERAL_TERMS -> hedvig.resources.R.string.MY_DOCUMENTS_GENERAL_TERMS
-      PRIVACY_POLICY -> hedvig.resources.R.string.MY_DOCUMENTS_PRIVACY_POLICY
+      TERMS_AND_CONDITIONS -> R.string.MY_DOCUMENTS_INSURANCE_TERMS
+      PRE_SALE_INFO_EU_STANDARD -> R.string.MY_DOUMENTS_INSURANCE_PREPURCHASE
+      PRE_SALE_INFO -> R.string.MY_DOUMENTS_INSURANCE_PREPURCHASE
+      GENERAL_TERMS -> R.string.MY_DOCUMENTS_GENERAL_TERMS
+      PRIVACY_POLICY -> R.string.MY_DOCUMENTS_PRIVACY_POLICY
+      CERTIFICATE -> R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE
       UNKNOWN__ -> null
     }
   }

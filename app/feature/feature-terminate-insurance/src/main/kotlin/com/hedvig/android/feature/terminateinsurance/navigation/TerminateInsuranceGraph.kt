@@ -86,7 +86,6 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         navigateToNextStep = { terminationStep ->
           viewModel.handledNextStepNavigation()
           navigator.navigateToTerminateFlowDestination(
-            backStackEntry = backStackEntry,
             destination = terminationStep.toTerminateInsuranceDestination(),
           )
         },
@@ -107,7 +106,6 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         navigateToNextStep = { terminationStep ->
           viewModel.handledNextStepNavigation()
           navigator.navigateToTerminateFlowDestination(
-            backStackEntry = backStackEntry,
             destination = terminationStep.toTerminateInsuranceDestination(),
           )
         },
@@ -136,7 +134,6 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         navigateToNextStep = { terminationStep ->
           viewModel.handledNextStepNavigation()
           navigator.navigateToTerminateFlowDestination(
-            backStackEntry = backStackEntry,
             destination = terminationStep.toTerminateInsuranceDestination(),
           )
         },
@@ -168,10 +165,7 @@ private fun getTerminateInsuranceDataFromParentBackstack(
 /**
  * If we're going to a terminal destination, pop the termination flow backstack completely before going there.
  */
-private fun <T : TerminateInsuranceDestination> Navigator.navigateToTerminateFlowDestination(
-  backStackEntry: NavBackStackEntry,
-  destination: T,
-) {
+private fun <T : TerminateInsuranceDestination> Navigator.navigateToTerminateFlowDestination(destination: T) {
   val navOptions = navOptions {
     when {
       destination is TerminateInsuranceDestination.TerminationSuccess ||
@@ -184,7 +178,7 @@ private fun <T : TerminateInsuranceDestination> Navigator.navigateToTerminateFlo
       else -> {}
     }
   }
-  backStackEntry.navigate(destination, navOptions)
+  navigateUnsafe(destination, navOptions)
 }
 
 private fun finishTerminationFlow(navController: NavController) {

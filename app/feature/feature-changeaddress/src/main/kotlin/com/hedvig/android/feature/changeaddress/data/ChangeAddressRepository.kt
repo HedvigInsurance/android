@@ -104,7 +104,7 @@ private fun MoveIntentCreateMutation.Data.MoveIntentCreate.MoveIntent.toMoveInte
 private fun MoveIntentRequestMutation.Data.MoveIntentRequest.MoveIntent.toMoveQuotes() = quotes.map { quote ->
   MoveQuote(
     id = id,
-    insuranceName = quote.productVariant.displayName,
+    insuranceName = quote.exposureName ?: quote.productVariant.displayName,
     moveIntentId = MoveIntentId(id),
     address = Address(
       id = AddressId(quote.address.id),
@@ -117,6 +117,9 @@ private fun MoveIntentRequestMutation.Data.MoveIntentRequest.MoveIntent.toMoveQu
       currencyCode = quote.premium.currencyCode,
     ),
     startDate = quote.startDate,
+    ancillaryArea = quote.ancilliaryArea,
+    yearOfConstruction = quote.yearOfConstruction,
+    squareMeters = quote.squareMeters,
     productVariant = quote.productVariant.toProductVariant(),
   )
 }
