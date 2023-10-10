@@ -6,7 +6,6 @@ import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCaseDemo
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCaseImpl
-import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCaseDemo
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCaseImpl
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
@@ -33,7 +32,7 @@ val insurancesModule = module {
     )
   }
   viewModel<TerminatedContractsViewModel> {
-    TerminatedContractsViewModel(get<GetInsuranceContractsUseCase>())
+    TerminatedContractsViewModel(get<GetInsuranceContractsUseCaseProvider>())
   }
   viewModel<ContractDetailViewModel> { (contractId: String) ->
     ContractDetailViewModel(contractId, get<GetContractDetailsUseCaseProvider>())

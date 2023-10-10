@@ -6,6 +6,7 @@ import arrow.core.raise.either
 import arrow.core.raise.ensure
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.RetryChannel
+import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.logger.LogPriority
@@ -20,14 +21,15 @@ import kotlinx.coroutines.flow.stateIn
 import kotlin.time.Duration.Companion.seconds
 
 internal class TerminatedContractsViewModel(
-  private val getInsuranceContractsUseCase: GetInsuranceContractsUseCase,
+  private val getInsuranceContractsUseCaseProvider: Provider<GetInsuranceContractsUseCase>,
 ) : ViewModel() {
   private val retryChannel = RetryChannel()
 
   val uiState: StateFlow<TerminatedContractsUiState> = flow {
     emit(TerminatedContractsUiState.Loading)
     either {
-      val terminatedContracts = getInsuranceContractsUseCase
+      val terminatedContracts = getInsuranceContractsUseCaseProvider
+        .provide()
         .invoke()
         .bind()
         .filter(InsuranceContract::isTerminated)
