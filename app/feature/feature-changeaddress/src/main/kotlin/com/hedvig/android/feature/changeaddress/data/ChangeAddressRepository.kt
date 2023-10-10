@@ -106,20 +106,25 @@ private fun MoveIntentRequestMutation.Data.MoveIntentRequest.MoveIntent.toMoveQu
     id = id,
     insuranceName = quote.exposureName ?: quote.productVariant.displayName,
     moveIntentId = MoveIntentId(id),
-    address = Address(
-      id = AddressId(quote.address.id),
-      postalCode = quote.address.postalCode,
-      street = quote.address.street,
-    ),
-    numberInsured = quote.numberCoInsured?.plus(1) ?: 1, // numberInsured = numberCoInsured + member
+//    address = Address(
+//      id = AddressId(quote.address.id),
+//      postalCode = quote.address.postalCode,
+//      street = quote.address.street,
+//    ),
+    address = Address(AddressId("1"), postalCode = "", street = ""),
+//    numberInsured = quote.numberCoInsured?.plus(1) ?: 1, // numberInsured = numberCoInsured + member
+    numberInsured = 0,
     premium = UiMoney(
       amount = quote.premium.amount,
       currencyCode = quote.premium.currencyCode,
     ),
     startDate = quote.startDate,
-    ancillaryArea = quote.ancilliaryArea,
-    yearOfConstruction = quote.yearOfConstruction,
-    squareMeters = quote.squareMeters,
+//    ancillaryArea = quote.ancilliaryArea,
+    ancillaryArea = null,
+//    yearOfConstruction = quote.yearOfConstruction,
+    yearOfConstruction = null,
+//    squareMeters = quote.squareMeters,
+    squareMeters = null,
     productVariant = quote.productVariant.toProductVariant(),
   )
 }
