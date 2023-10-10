@@ -135,7 +135,7 @@ internal fun darkHedvigColorScheme(
   onTypeElement = hedvigTonalPalette.greyscale25,
   typeContainer = hedvigTonalPalette.green300,
   onTypeContainer = hedvigTonalPalette.green900,
-  typeHighlight = hedvigTonalPalette.green500,
+  typeHighlight = hedvigTonalPalette.greyscale800,
 
   infoElement = hedvigTonalPalette.blue700,
   onInfoElement = hedvigTonalPalette.greyscale1000,
