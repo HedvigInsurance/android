@@ -1,7 +1,6 @@
 package com.hedvig.android.core.designsystem.material3
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -19,12 +18,10 @@ internal fun HedvigMaterial3Theme(
   val hedvigTonalPalette = hedvigTonalPalette
   val (colorScheme, hedvigColorTheme) = when {
     darkTheme -> {
-      val darkColorScheme = darkColorScheme(hedvigTonalPalette)
-      darkColorScheme to darkHedvigColorScheme(hedvigTonalPalette, darkColorScheme)
+      darkColorScheme(hedvigTonalPalette) to darkHedvigColorScheme(hedvigTonalPalette)
     }
     else -> {
-      val lightColorScheme = lightColorScheme(hedvigTonalPalette)
-      lightColorScheme to lightHedvigColorScheme(hedvigTonalPalette, lightColorScheme)
+      lightColorScheme(hedvigTonalPalette) to lightHedvigColorScheme(hedvigTonalPalette)
     }
   }
   MaterialTheme(
@@ -119,10 +116,9 @@ private fun darkColorScheme(hedvigTonalPalette: HedvigTonalPalette) = darkColorS
 
 internal fun darkHedvigColorScheme(
   hedvigTonalPalette: HedvigTonalPalette,
-  colorScheme: ColorScheme,
 ) = HedvigMaterial3ColorScheme(
-  containedButtonContainer = colorScheme.tertiary,
-  onContainedButtonContainer = colorScheme.onTertiary,
+  containedButtonContainer = hedvigTonalPalette.greyscale25,
+  onContainedButtonContainer = hedvigTonalPalette.greyscale1000,
 
   // In the comments are the light mode colors, showing the equivalent and how it was chosen
   warningElement = hedvigTonalPalette.amber700,
@@ -146,10 +142,9 @@ internal fun darkHedvigColorScheme(
 
 internal fun lightHedvigColorScheme(
   hedvigTonalPalette: HedvigTonalPalette,
-  colorScheme: ColorScheme,
 ) = HedvigMaterial3ColorScheme(
-  containedButtonContainer = colorScheme.primary,
-  onContainedButtonContainer = colorScheme.onPrimary,
+  containedButtonContainer = hedvigTonalPalette.greyscale25,
+  onContainedButtonContainer = hedvigTonalPalette.greyscale1000,
 
   warningElement = hedvigTonalPalette.amber600,
   onWarningElement = hedvigTonalPalette.greyscale1000,

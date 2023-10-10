@@ -58,6 +58,8 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmal
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.core.designsystem.material3.containedButtonContainer
+import com.hedvig.android.core.designsystem.material3.onContainedButtonContainer
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
 import com.hedvig.android.core.designsystem.material3.warningContainer
 import com.hedvig.android.core.designsystem.material3.warningElement
@@ -397,8 +399,8 @@ private fun VeryImportantMessageCard(
       text = stringResource(R.string.important_message_read_more),
       onClick = { openUrl(veryImportantMessage.link) },
       colors = ButtonDefaults.buttonColors(
-        containerColor = MaterialTheme.colorScheme.background,
-        contentColor = MaterialTheme.colorScheme.onBackground,
+        containerColor = MaterialTheme.colorScheme.containedButtonContainer,
+        contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
       ),
       textStyle = MaterialTheme.typography.bodyMedium,
       modifier = Modifier.fillMaxWidth(),

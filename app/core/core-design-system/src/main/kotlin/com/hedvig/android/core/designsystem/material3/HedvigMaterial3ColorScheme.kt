@@ -14,7 +14,7 @@ import com.hedvig.android.core.designsystem.newtheme.hedvigTonalPalette
 
 @SuppressLint("ComposeCompositionLocalUsage")
 internal val LocalHedvigMaterial3ColorScheme = staticCompositionLocalOf<HedvigMaterial3ColorScheme> {
-  lightHedvigColorScheme(hedvigTonalPalette, lightColorScheme(hedvigTonalPalette))
+  lightHedvigColorScheme(hedvigTonalPalette)
 }
 
 class HedvigMaterial3ColorScheme(

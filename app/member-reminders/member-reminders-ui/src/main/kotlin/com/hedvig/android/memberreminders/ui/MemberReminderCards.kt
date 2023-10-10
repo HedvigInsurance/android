@@ -24,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
+import com.hedvig.android.core.designsystem.material3.containedButtonContainer
+import com.hedvig.android.core.designsystem.material3.onContainedButtonContainer
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
 import com.hedvig.android.core.designsystem.material3.warningContainer
 import com.hedvig.android.core.designsystem.material3.warningElement
@@ -233,8 +235,8 @@ private fun InfoCardTextButton(
     text = text,
     onClick = onClick,
     colors = ButtonDefaults.buttonColors(
-      containerColor = MaterialTheme.colorScheme.background,
-      contentColor = MaterialTheme.colorScheme.onBackground,
+      containerColor = MaterialTheme.colorScheme.containedButtonContainer,
+      contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
     ),
     textStyle = MaterialTheme.typography.bodyMedium,
     modifier = modifier,
