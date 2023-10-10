@@ -27,7 +27,7 @@ squareSortDependencies = "0.4"
 
 # Other versions sorted alphabetically
 accompanist = "0.32.0"
-adyen = "4.12.1"
+adyen = "4.13.3"
 androidx-annotation = "1.7.0"
 androidx-arch-testing = "2.2.0"
 androidx-composeBom = "2023.10.00"
