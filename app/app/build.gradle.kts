@@ -93,6 +93,12 @@ android {
     }
   }
 
+  signingConfigs {
+    named("debug") {
+      storeFile = file("../../debug.keystore").also { println("Stelios file : ${it.absolutePath}") }
+    }
+  }
+
   configurations.all {
     resolutionStrategy.force(
       "org.hamcrest:hamcrest-core:2.2",
