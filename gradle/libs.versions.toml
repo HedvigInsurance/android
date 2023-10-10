@@ -5,11 +5,11 @@ targetSdkVersion = "33"
 minSdkVersion = "23"
 
 # lint versions
-lintApi = "31.1.1"
-lintGradlePlugin = "8.1.1"
+lintApi = "31.1.2"
+lintGradlePlugin = "8.1.2"
 
 # gradlePlugin versions
-androidGradlePlugin = "8.1.1"
+androidGradlePlugin = "8.1.2"
 androidRemoveUnusedResourcesPlugin = "1.4.1"
 apollo = "3.8.2"
 cacheFix = "2.7.2"
@@ -17,12 +17,12 @@ crashlytics = "2.9.9"
 datadogPlugin = "1.11.0"
 doctor = "0.8.1"
 easylauncher = "6.2.0"
-googleServices = "4.3.15"
-kotlin = "1.9.0"
+googleServices = "4.4.0"
+kotlin = "1.9.10"
 kotlinter = "3.12.0"
 ktor = "2.3.1"
 license = "0.9.3"
-molecule = "1.2.0"
+molecule = "1.2.1"
 squareSortDependencies = "0.3"
 
 # Other versions sorted alphabetically
@@ -30,13 +30,13 @@ accompanist = "0.32.0"
 adyen = "4.12.1"
 androidx-annotation = "1.7.0"
 androidx-arch-testing = "2.2.0"
-androidx-composeBom = "2023.09.00"
-androidx-composeCompiler = "1.5.1"
+androidx-composeBom = "2023.10.00"
+androidx-composeCompiler = "1.5.3"
 androidx-datastore = "1.0.0"
 androidx-espresso = "3.5.1"
 androidx-lifecycle = "2.6.2"
-androidx-navigation = "2.7.2"
-androidx-other-activityCompose = "1.7.2"
+androidx-navigation = "2.7.4"
+androidx-other-activityCompose = "1.8.0"
 androidx-other-appCompat = "1.6.1"
 androidx-other-browser = "1.6.0"
 androidx-other-constraintLayout = "2.1.4"
@@ -74,19 +74,17 @@ jsonTest = "20230618"
 junit = "4.13.2"
 kaspresso = "1.5.3"
 kiwi-navigationCompose = "0.7.0"
-koinAndroid = "3.4.1"
-koinCompose = "3.4.5"
-koinCore = "3.4.1"
+koinBom = "3.5.1"
 kotlinx-serialization = "1.5.1"
-kotlinxDatetime = "0.4.0"
+kotlinxDatetime = "0.4.1"
 kotlinxImmutableCollections = "0.3.5"
 leakCanary = "2.12"
 markwon = "4.6.2"
-materialComponents = "1.9.0"
+materialComponents = "1.10.0"
 mockk = "1.13.5"
 moneta = "1.4.2"
 okhttp = "4.11.0"
-okio = "3.4.0"
+okio = "3.6.0"
 playReview = "2.0.1"
 reactiveX-Android = "2.1.1"
 reactiveX-Kotlin = "2.4.0"
@@ -188,7 +186,7 @@ coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", ve
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 datadog-sdk = { module = "com.datadoghq:dd-sdk-android", version.ref = "datadog" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics-ktx" }
-firebase-bom = "com.google.firebase:firebase-bom:32.2.3"
+firebase-bom = "com.google.firebase:firebase-bom:32.3.1"
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics-ktx" }
 firebase-dynamicLinks = { module = "com.google.firebase:firebase-dynamic-links" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
@@ -202,11 +200,12 @@ jsonTest = { module = "org.json:json", version.ref = "jsonTest" }
 junit = { module = "junit:junit", version.ref = "junit" }
 kaspresso = { module = "com.kaspersky.android-components:kaspresso", version.ref = "kaspresso" }
 kiwi-navigationCompose = { module = "com.kiwi.navigation-compose.typed:core", version.ref = "kiwi-navigationCompose" }
-koin-android = { module = "io.insert-koin:koin-android", version.ref = "koinAndroid" }
-koin-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koinCompose" }
-koin-core = { module = "io.insert-koin:koin-core", version.ref = "koinCore" }
-koin-test = { module = "io.insert-koin:koin-test", version.ref = "koinCore" }
-koin-workManager = { module = "io.insert-koin:koin-androidx-workmanager", version.ref = "koinCore" }
+koin-android = { module = "io.insert-koin:koin-android" }
+koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koinBom"  }
+koin-compose = { module = "io.insert-koin:koin-androidx-compose" }
+koin-core = { module = "io.insert-koin:koin-core" }
+koin-test = { module = "io.insert-koin:koin-test" }
+koin-workManager = { module = "io.insert-koin:koin-androidx-workmanager" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlinx-immutable-collections = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxImmutableCollections" }
