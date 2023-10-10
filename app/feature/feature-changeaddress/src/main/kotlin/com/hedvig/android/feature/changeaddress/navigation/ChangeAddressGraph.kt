@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.changeaddress.navigation
 
 import androidx.activity.compose.BackHandler
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
@@ -20,7 +21,7 @@ import com.kiwi.navigationcompose.typed.popUpTo
 
 fun NavGraphBuilder.changeAddressGraph(
   navController: NavController,
-  openChat: () -> Unit,
+  openChat: (NavBackStackEntry) -> Unit,
   openUrl: (String) -> Unit,
 ) {
   navigation<AppDestination.ChangeAddress>(
@@ -71,10 +72,10 @@ fun NavGraphBuilder.changeAddressGraph(
       )
     }
 
-    composable<ChangeAddressDestination.OfferDestination> { navBackStackEntry ->
+    composable<ChangeAddressDestination.OfferDestination> { backStackEntry ->
       val viewModel: ChangeAddressViewModel = destinationScopedViewModel<AppDestination.ChangeAddress, _>(
         navController = navController,
-        backStackEntry = navBackStackEntry,
+        backStackEntry = backStackEntry,
       )
       BackHandler {
         viewModel.onQuotesCleared()
@@ -82,7 +83,7 @@ fun NavGraphBuilder.changeAddressGraph(
       }
       ChangeAddressOfferDestination(
         viewModel = viewModel,
-        openChat = openChat,
+        openChat = { openChat(backStackEntry) },
         close = {
           viewModel.onQuotesCleared()
           navController.popBackStack<AppDestination.ChangeAddress>(inclusive = true)

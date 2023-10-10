@@ -4,16 +4,17 @@ import android.app.AlertDialog
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.view.View
+import android.view.ViewTreeObserver
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.FileProvider
-import androidx.core.view.WindowCompat
 import androidx.core.view.isGone
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
@@ -31,16 +32,16 @@ import com.hedvig.android.feature.chat.ChatEvent
 import com.hedvig.android.feature.chat.ChatInputType
 import com.hedvig.android.feature.chat.ChatViewModel
 import com.hedvig.android.feature.chat.R
-import com.hedvig.android.feature.chat.databinding.ActivityChatBinding
+import com.hedvig.android.feature.chat.databinding.FragmentChatBinding
 import com.hedvig.android.feature.chat.legacy.applyStatusBarInsets
 import com.hedvig.android.feature.chat.legacy.calculateNonFullscreenHeightDiff
 import com.hedvig.android.feature.chat.legacy.composeContactSupportEmail
 import com.hedvig.android.feature.chat.legacy.show
 import com.hedvig.android.feature.chat.legacy.showAlert
 import com.hedvig.android.feature.chat.legacy.storeBoolean
-import com.hedvig.android.feature.chat.legacy.viewBinding
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import dev.chrisbanes.insetter.applyInsetter
 import giraffe.ChatMessagesQuery
 import kotlinx.coroutines.flow.launchIn
@@ -50,9 +51,9 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 
-class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
+class ChatFragment : Fragment(R.layout.fragment_chat) {
   private val chatViewModel: ChatViewModel by viewModel()
-  private val binding by viewBinding(ActivityChatBinding::bind)
+  private val binding by viewBinding(FragmentChatBinding::bind)
 
   private val imageLoader: ImageLoader by inject()
   private val hedvigBuildConstants: HedvigBuildConstants by inject()
@@ -79,18 +80,39 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
     }
   }
 
+  private var keyboardHeightListener: (ViewTreeObserver.OnGlobalLayoutListener)? = null
+
   override fun onSaveInstanceState(outState: Bundle) {
     super.onSaveInstanceState(outState)
     outState.putString("photo", currentPhotoPath)
   }
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    WindowCompat.setDecorFitsSystemWindows(window, false)
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
     if (savedInstanceState != null) {
       currentPhotoPath = savedInstanceState.getString("photo")
     }
     lifecycle.addObserver(AuthenticatedObserver())
+
+    keyboardHeightListener = ViewTreeObserver.OnGlobalLayoutListener {
+      val binding = try {
+        binding
+      } catch (_: IllegalStateException) {
+        // Ignore case when the fragment was already gone. This entire logic should be replaces by insets eventually
+        return@OnGlobalLayoutListener
+      }
+      val heightDiff = binding.chatRoot.calculateNonFullscreenHeightDiff()
+      if (heightDiff > isKeyboardBreakPoint) {
+        if (systemNavHeight > 0) systemNavHeight -= navHeightDiff
+        keyboardHeight = heightDiff - systemNavHeight
+        isKeyboardShown = true
+        scrollToBottom(true)
+      } else {
+        systemNavHeight = heightDiff
+        isKeyboardShown = false
+      }
+    }
+    binding.chatRoot.viewTreeObserver.addOnGlobalLayoutListener(keyboardHeightListener)
 
     keyboardHeight = resources.getDimensionPixelSize(R.dimen.default_attach_file_height)
     isKeyboardBreakPoint =
@@ -101,17 +123,17 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
       .flowWithLifecycle(lifecycle)
       .onEach { event ->
         when (event) {
-          is ChatEvent.Error -> showAlert(
+          is ChatEvent.Error -> requireContext().showAlert(
             title = hedvig.resources.R.string.something_went_wrong,
             message = hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE,
             positiveAction = {
-              composeContactSupportEmail()
+              requireContext().composeContactSupportEmail()
             },
             positiveLabel = hedvig.resources.R.string.GENERAL_EMAIL_US,
             negativeLabel = hedvig.resources.R.string.general_cancel_button,
           )
           is ChatEvent.RetryableNonDismissibleNetworkError -> {
-            MaterialAlertDialogBuilder(this).apply {
+            MaterialAlertDialogBuilder(requireContext()).apply {
               setTitle(resources.getString(hedvig.resources.R.string.NETWORK_ERROR_ALERT_TITLE))
               setPositiveButton(
                 resources.getString(hedvig.resources.R.string.NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION),
@@ -121,7 +143,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
               setNegativeButton(
                 resources.getString(android.R.string.cancel),
               ) { _, _ ->
-                finish()
+                requireActivity().onBackPressedDispatcher.onBackPressed()
               }
               setMessage(hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE)
               setCancelable(false)
@@ -148,11 +170,10 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
     initializeToolbarButtons()
     initializeMessages()
     initializeInput()
-    initializeKeyboardVisibilityHandler()
     observeData()
 
     lifecycleScope.launch {
-      repeatOnLifecycle(Lifecycle.State.STARTED) {
+      viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
         chatViewModel.chatEnabledStatus.collect { chatEnabledStatus ->
           if (chatEnabledStatus is ChatEnabledStatus.Enabled) {
             binding.disabledChatView.isGone = true
@@ -174,7 +195,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
               ),
               subTitle = null,
               buttonText = stringResource(hedvig.resources.R.string.general_close_button),
-              retry = { finish() },
+              retry = { requireActivity().onBackPressedDispatcher.onBackPressed() },
             )
           }
         }
@@ -184,18 +205,26 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
 
   override fun onResume() {
     super.onResume()
-    storeBoolean(ACTIVITY_IS_IN_FOREGROUND, true)
+    requireContext().storeBoolean(ACTIVITY_IS_IN_FOREGROUND, true)
   }
 
   override fun onPause() {
-    storeBoolean(ACTIVITY_IS_IN_FOREGROUND, false)
+    requireContext().storeBoolean(ACTIVITY_IS_IN_FOREGROUND, false)
     super.onPause()
   }
 
-  override fun finish() {
-    super.finish()
+  private var navigateUp: (() -> Unit)? = null
+
+  override fun onDestroyView() {
     chatViewModel.onChatClosed()
-    overridePendingTransition(R.anim.stay_in_place, R.anim.chat_slide_down_out)
+    navigateUp = null
+    binding.chatRoot.viewTreeObserver.removeOnGlobalLayoutListener(keyboardHeightListener)
+    keyboardHeightListener = null
+    super.onDestroyView()
+  }
+
+  fun setNavigateUp(onNavigateUp: () -> Unit) {
+    navigateUp = onNavigateUp
   }
 
   private fun initializeInput() {
@@ -240,25 +269,16 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
 
   private fun initializeToolbarButtons() {
     binding.close.setOnClickListener {
-      onBackPressedDispatcher.onBackPressed()
+      if (navigateUp != null) {
+        logcat { "Chat: navigateUp " }
+        navigateUp!!.invoke()
+      } else {
+        logcat { "Chat: navigateUp not hooked up correctly" }
+        requireActivity().onBackPressedDispatcher.onBackPressed()
+      }
     }
     binding.close.contentDescription = getString(hedvig.resources.R.string.CHAT_CLOSE_DESCRIPTION)
     binding.close.show()
-  }
-
-  private fun initializeKeyboardVisibilityHandler() {
-    binding.chatRoot.viewTreeObserver.addOnGlobalLayoutListener {
-      val heightDiff = binding.chatRoot.calculateNonFullscreenHeightDiff()
-      if (heightDiff > isKeyboardBreakPoint) {
-        if (systemNavHeight > 0) systemNavHeight -= navHeightDiff
-        this.keyboardHeight = heightDiff - systemNavHeight
-        isKeyboardShown = true
-        scrollToBottom(true)
-      } else {
-        systemNavHeight = heightDiff
-        isKeyboardShown = false
-      }
-    }
   }
 
   private fun observeData() {
@@ -270,7 +290,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
         }
       }
     }
-    chatViewModel.takePictureUploadFinished.observe(this) {
+    chatViewModel.takePictureUploadFinished.observe(viewLifecycleOwner) {
       attachPickerDialog?.uploadingTakenPicture(false)
       currentPhotoPath?.let { File(it).delete() }
       currentPhotoPath = null
@@ -301,7 +321,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
   }
 
   private fun openAttachPicker() {
-    val attachPickerDialog = AttachPickerDialog(this)
+    val attachPickerDialog = AttachPickerDialog(requireContext())
     attachPickerDialog.initialize(
       takePhotoCallback = {
         startTakePicture()
@@ -309,14 +329,14 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
       showUploadBottomSheetCallback = {
         ChatFileUploadBottomSheet.newInstance()
           .show(
-            supportFragmentManager,
+            parentFragmentManager,
             ChatFileUploadBottomSheet.TAG,
           )
       },
       dismissCallback = { motionEvent ->
         motionEvent?.let {
           preventOpenAttachFile = true
-          this.dispatchTouchEvent(motionEvent)
+          requireActivity().dispatchTouchEvent(motionEvent)
         }
 
         binding.input.rotateFileUploadIcon(false)
@@ -335,18 +355,18 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
   private fun openGifPicker() {
     GifPickerBottomSheet.newInstance(isKeyboardShown)
       .show(
-        supportFragmentManager,
+        parentFragmentManager,
         GifPickerBottomSheet.TAG,
       )
   }
 
   private fun startTakePicture() {
-    val externalPhotosDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES) ?: run {
+    val externalPhotosDir = requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES) ?: run {
       logcat(LogPriority.ERROR) { "Could not getExternalFilesDir(Environment.DIRECTORY_PICTURES)" }
-      showAlert(
+      requireContext().showAlert(
         title = hedvig.resources.R.string.something_went_wrong,
         positiveLabel = hedvig.resources.R.string.GENERAL_EMAIL_US,
-        positiveAction = { composeContactSupportEmail() },
+        positiveAction = { requireContext().composeContactSupportEmail() },
       )
       return
     }
@@ -358,7 +378,7 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
     }
 
     val newPhotoUri: Uri = FileProvider.getUriForFile(
-      this,
+      requireContext(),
       "${hedvigBuildConstants.appId}.provider",
       newPhotoFile,
     )
@@ -370,13 +390,13 @@ class ChatActivity : AppCompatActivity(R.layout.activity_chat) {
   }
 }
 
-private fun AppCompatActivity.handleSingleSelectLink(
+private fun Fragment.handleSingleSelectLink(
   value: String,
   onLinkHandleFailure: () -> Unit,
 ) = when (value) {
   "message.forslag.dashboard" -> {
     logcat(LogPriority.ERROR) { "Can't handle going to the offer page without a QuoteCartId from link: `$value`" }
-    AlertDialog.Builder(this)
+    AlertDialog.Builder(requireContext())
       .setTitle(com.adyen.checkout.dropin.R.string.error_dialog_title)
       .setMessage(getString(hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE))
       .setPositiveButton(com.adyen.checkout.dropin.R.string.error_dialog_button) { _, _ ->
@@ -390,14 +410,14 @@ private fun AppCompatActivity.handleSingleSelectLink(
   }
   "message.bankid.start", "message.bankid.autostart.respond", "message.bankid.autostart.respond.two" -> {
     logcat(LogPriority.ERROR) { "This used to open bankID, but we should never use the chat logged out anyway" }
-    finish()
+    requireActivity().onBackPressedDispatcher.onBackPressed()
   }
   // bot-service is weird. it sends this when the user gets the option to go to `Hem`.
   // We simply dismiss the activity for now in this case
   "hedvig.com",
   "claim.done", "callme.phone.dashboard",
   -> {
-    finish()
+    requireActivity().onBackPressedDispatcher.onBackPressed()
   }
   else -> {
     logcat(LogPriority.ERROR) { "Can't handle the link $value" }

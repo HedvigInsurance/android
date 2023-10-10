@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.loggedin
 
-import com.hedvig.android.feature.chat.ui.ChatActivity
+import com.hedvig.android.feature.chat.ui.ChatFragment
 import com.hedvig.app.R
 import io.github.kakaocup.kakao.bottomnav.KBottomNavigationView
 import io.github.kakaocup.kakao.common.views.KView
@@ -14,6 +14,6 @@ class LoggedInScreen : Screen<LoggedInScreen>() {
   val openChat = KView { withId(R.id.chat) }
 
   val chat = KIntent {
-    hasComponent(ChatActivity::class.java.name)
+    hasComponent(ChatFragment::class.java.name)
   }
 }

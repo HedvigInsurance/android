@@ -2,6 +2,7 @@ package com.hedvig.android.feature.home.legacychangeaddress
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.transition.TransitionManager
 import android.view.ViewGroup
@@ -17,6 +18,7 @@ import com.hedvig.android.core.ui.databinding.ListTextItemBinding
 import com.hedvig.android.feature.home.R
 import com.hedvig.android.feature.home.databinding.LegacyChangeAddressActivityBinding
 import com.hedvig.android.navigation.activity.ActivityNavigator
+import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import dev.chrisbanes.insetter.applyInsetter
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -27,6 +29,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class LegacyChangeAddressActivity : AppCompatActivity(R.layout.legacy_change_address_activity) {
 
   private val activityNavigator: ActivityNavigator by inject()
+  private val hedvigDeepLinkContainer: HedvigDeepLinkContainer by inject()
   private val viewModel: LegacyChangeAddressViewModel by viewModel()
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,7 +83,7 @@ class LegacyChangeAddressActivity : AppCompatActivity(R.layout.legacy_change_add
         subtitleText = getString(hedvig.resources.R.string.moving_intro_manual_handling_description),
         buttonText = getString(hedvig.resources.R.string.moving_intro_manual_handling_button_text),
         buttonIcon = hedvig.resources.R.drawable.ic_chat_white,
-        onContinue = { activityNavigator.navigateToChat(this) },
+        onContinue = { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(hedvigDeepLinkContainer.chat))) },
       )
       is ViewState.ChangeAddressInProgress -> setUpcomingChangeContent(
         binding = binding,
@@ -88,7 +91,7 @@ class LegacyChangeAddressActivity : AppCompatActivity(R.layout.legacy_change_add
         subtitleText = getString(hedvig.resources.R.string.moving_intro_existing_move_description),
         buttonText = getString(hedvig.resources.R.string.moving_intro_manual_handling_button_text),
         buttonIcon = hedvig.resources.R.drawable.ic_chat_white,
-        onContinue = { activityNavigator.navigateToChat(this) },
+        onContinue = { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(hedvigDeepLinkContainer.chat))) },
         viewState.upcomingAgreementResult,
       )
       is ViewState.UpcomingAgreementError -> setContent(

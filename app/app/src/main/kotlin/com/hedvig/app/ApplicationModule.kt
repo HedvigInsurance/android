@@ -62,6 +62,7 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.di.marketManagerModule
 import com.hedvig.android.memberreminders.di.memberRemindersModule
 import com.hedvig.android.navigation.activity.ActivityNavigator
+import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.di.deepLinkModule
 import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.android.notification.core.NotificationSender
@@ -146,7 +147,6 @@ import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.NetworkCacheManagerImpl
 import com.hedvig.app.util.apollo.SunsettingInterceptor
-import com.hedvig.app.util.extensions.startChat
 import com.hedvig.authlib.AuthEnvironment
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.Callbacks
@@ -229,7 +229,7 @@ private val networkModule = module {
           return@webSocketReopenWhen true
         }
         if (reconnectAttempt < 5) {
-          delay(2.0.pow(reconnectAttempt.toDouble()).toLong()) // Retry after 1 - 2 - 4 - 8 - 16 seconds
+          delay(2.0.pow(reconnectAttempt.toDouble()).toLong()) // Retry after 1 - 2 - 4 - 9 - 16 seconds
           return@webSocketReopenWhen true
         }
         false
@@ -373,7 +373,6 @@ private val activityNavigatorModule = module {
       application = get(),
       loggedOutActivityClass = MarketingActivity::class.java,
       buildConfigApplicationId = BuildConfig.APPLICATION_ID,
-      navigateToChat = { startChat() },
       navigateToEmbark = { storyName: String, storyTitle: String ->
         startActivity(
           EmbarkActivity.newInstance(
@@ -470,7 +469,7 @@ private val repositoriesModule = module {
 private val notificationModule = module {
   single { PaymentNotificationSender(get(), get(), get(), get()) } bind NotificationSender::class
   single { CrossSellNotificationSender(get(), get()) } bind NotificationSender::class
-  single { ChatNotificationSender(get()) } bind NotificationSender::class
+  single { ChatNotificationSender(get(), get<HedvigDeepLinkContainer>()) } bind NotificationSender::class
   single { ReferralsNotificationSender(get()) } bind NotificationSender::class
   single { GenericNotificationSender(get()) } bind NotificationSender::class
 }

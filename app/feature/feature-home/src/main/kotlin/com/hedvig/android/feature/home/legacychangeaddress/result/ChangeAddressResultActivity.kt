@@ -2,6 +2,7 @@ package com.hedvig.android.feature.home.legacychangeaddress.result
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.ViewGroup
@@ -13,6 +14,7 @@ import com.hedvig.android.core.common.android.parcelableExtra
 import com.hedvig.android.feature.home.R
 import com.hedvig.android.feature.home.databinding.ChangeAddressResultActivityBinding
 import com.hedvig.android.navigation.activity.ActivityNavigator
+import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import kotlinx.parcelize.Parcelize
 import org.koin.android.ext.android.inject
 import java.time.LocalDate
@@ -22,6 +24,7 @@ import java.time.format.FormatStyle
 class ChangeAddressResultActivity : AppCompatActivity(R.layout.change_address_result_activity) {
 
   private val activityNavigator: ActivityNavigator by inject()
+  private val hedvigDeepLinkContainer: HedvigDeepLinkContainer by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -63,7 +66,7 @@ class ChangeAddressResultActivity : AppCompatActivity(R.layout.change_address_re
           continueButton.setText(hedvig.resources.R.string.moving_uw_failure_button_text)
           continueButton.setIconResource(hedvig.resources.R.drawable.ic_chat_white)
           continueButton.setOnClickListener {
-            activityNavigator.navigateToChat(this@ChangeAddressResultActivity)
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(hedvigDeepLinkContainer.chat)))
           }
         }
       }

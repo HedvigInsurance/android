@@ -2,6 +2,7 @@ package com.hedvig.app.feature.offer.ui
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.transition.TransitionManager
 import android.view.animation.AnimationUtils
@@ -27,6 +28,7 @@ import com.hedvig.android.core.common.android.show
 import com.hedvig.android.feature.home.legacychangeaddress.result.ChangeAddressResultActivity
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
+import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityOfferBinding
 import com.hedvig.app.feature.adyen.PaymentTokenId
@@ -54,7 +56,6 @@ import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.showErrorDialog
-import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.toArrayList
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
@@ -84,6 +85,7 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
   private val imageLoader: ImageLoader by inject()
   private val marketManager: MarketManager by inject()
   private val languageService: LanguageService by inject()
+  private val hedvigDeepLinkContainer: HedvigDeepLinkContainer by inject()
   private var hasStartedRecyclerAnimation: Boolean = false
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -344,7 +346,7 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
   }
 
   private fun openChat() {
-    startChat()
+    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(hedvigDeepLinkContainer.chat)))
   }
 
   private fun scheduleEnterAnimation() {
