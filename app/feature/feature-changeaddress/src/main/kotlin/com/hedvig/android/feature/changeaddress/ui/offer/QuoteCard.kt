@@ -33,14 +33,18 @@ import androidx.compose.ui.unit.sp
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.getLocale
+import com.hedvig.android.core.ui.hedvigDateTimeFormatter
 import com.hedvig.android.core.ui.insurance.toPillow
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.feature.changeaddress.data.MoveQuote
 import hedvig.resources.R
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toJavaLocalDate
 
 @Composable
 internal fun QuoteCard(
-  movingDate: String?,
+  movingDate: LocalDate,
   quote: MoveQuote,
   onExpandClicked: () -> Unit,
   isExpanded: Boolean,
@@ -74,7 +78,7 @@ internal fun QuoteCard(
 }
 
 @Composable
-private fun PillAndBasicInfo(quote: MoveQuote, movingDate: String?) {
+private fun PillAndBasicInfo(quote: MoveQuote, movingDate: LocalDate) {
   Row(verticalAlignment = Alignment.CenterVertically) {
     Image(
       painter = painterResource(id = quote.productVariant.contractType.toPillow()),
@@ -91,7 +95,10 @@ private fun PillAndBasicInfo(quote: MoveQuote, movingDate: String?) {
       CompositionLocalProvider(LocalContentColor.provides(MaterialTheme.colorScheme.onSurfaceVariant)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
           Text(
-            text = stringResource(id = R.string.CHANGE_ADDRESS_ACTIVATION_DATE, movingDate.toString()),
+            text = stringResource(
+              id = R.string.CHANGE_ADDRESS_ACTIVATION_DATE,
+              movingDate.toJavaLocalDate().format(hedvigDateTimeFormatter(getLocale())),
+            ),
             fontSize = 18.sp,
           )
           Spacer(modifier = Modifier.width(4.dp))
@@ -171,10 +178,45 @@ private fun ExpandedInformation(
       endSlot = { Text(quote.address.postalCode, textAlign = TextAlign.End) },
       spaceBetween = 4.dp,
     )
+    quote.squareMeters?.let {
+      HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = { Text(stringResource(id = R.string.CHANGE_ADDRESS_NEW_LIVING_SPACE_LABEL)) },
+        endSlot = {
+          Text(
+            it.toString() + " " + stringResource(id = R.string.CHANGE_ADDRESS_SIZE_SUFFIX),
+            textAlign = TextAlign.End,
+          )
+        },
+        spaceBetween = 4.dp,
+      )
+    }
+    quote.ancillaryArea?.let {
+      HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = { Text(stringResource(id = R.string.CHANGE_ADDRESS_ANCILLARY_AREA_LABEL)) },
+        endSlot = { Text(it.toString(), textAlign = TextAlign.End) },
+        spaceBetween = 4.dp,
+      )
+    }
+    quote.yearOfConstruction?.let {
+      HorizontalItemsWithMaximumSpaceTaken(
+        startSlot = { Text(stringResource(id = R.string.CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL)) },
+        endSlot = { Text(it.toString(), textAlign = TextAlign.End) },
+        spaceBetween = 4.dp,
+      )
+    }
     quote.numberInsured?.let {
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = { Text(stringResource(id = R.string.CHANGE_ADDRESS_CO_INSURED_LABEL)) },
-        endSlot = { Text(quote.numberInsured.toString(), textAlign = TextAlign.End) },
+        endSlot = {
+          Text(
+            if (it == 1) {
+              stringResource(id = R.string.CHANGE_ADDRESS_ONE_PERSON)
+            } else {
+              stringResource(id = R.string.CHANGE_ADDRESS_TOTAL_PERSONS, it)
+            },
+            textAlign = TextAlign.End,
+          )
+        },
         spaceBetween = 4.dp,
       )
     }
@@ -187,7 +229,7 @@ fun PreviewQuoteCard() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       QuoteCard(
-        movingDate = "2021-01-02",
+        movingDate = LocalDate.fromEpochDays(3000),
         quote = MoveQuote.PreviewData(),
         onExpandClicked = {},
         isExpanded = true,

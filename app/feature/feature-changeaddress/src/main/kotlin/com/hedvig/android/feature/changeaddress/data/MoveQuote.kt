@@ -16,6 +16,9 @@ data class MoveQuote(
   val numberInsured: Int?,
   val premium: UiMoney,
   val startDate: LocalDate,
+  val ancillaryArea: Int?,
+  val yearOfConstruction: Int?,
+  val squareMeters: Int?,
   val productVariant: ProductVariant,
   val isExpanded: Boolean = false,
 ) {
@@ -55,6 +58,9 @@ data class MoveQuote(
           ),
           documents = persistentListOf(),
         ),
+        ancillaryArea = 10,
+        yearOfConstruction = 1991,
+        squareMeters = 30,
       )
     }
   }

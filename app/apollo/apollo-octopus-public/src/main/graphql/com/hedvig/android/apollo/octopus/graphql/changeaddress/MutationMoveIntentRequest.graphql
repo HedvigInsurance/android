@@ -14,6 +14,10 @@ mutation MoveIntentRequest($intentId: ID!, $input: MoveIntentRequestInput!) {
           postalCode
         }
         numberCoInsured
+        yearOfConstruction
+        ancilliaryArea
+        squareMeters
+        exposureName
         productVariant {
           ...ProductVariantFragment
         }
