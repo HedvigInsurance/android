@@ -21,6 +21,7 @@ data class Agreement(
   val activeTo: LocalDate,
   val displayItems: List<DisplayItem>,
   val productVariant: ProductVariant,
+  val certificateUrl: String?,
 ) {
   data class DisplayItem(
     val title: String,

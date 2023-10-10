@@ -277,6 +277,7 @@ private fun PreviewYourInfoTab() {
             insurableLimits = persistentListOf(),
             documents = persistentListOf(),
           ),
+          certificateUrl = null,
         ),
         isTerminated = false,
       )

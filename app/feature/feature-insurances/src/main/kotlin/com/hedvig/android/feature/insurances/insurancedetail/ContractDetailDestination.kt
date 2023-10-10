@@ -47,6 +47,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.card.InsuranceCard
 import com.hedvig.android.core.ui.insurance.ContractType
+import com.hedvig.android.core.ui.insurance.Document
 import com.hedvig.android.core.ui.insurance.ProductVariant
 import com.hedvig.android.core.ui.insurance.canChangeCoInsured
 import com.hedvig.android.core.ui.plus
@@ -194,7 +195,7 @@ private fun ContractDetailScreen(
 
                   2 -> {
                     DocumentsTab(
-                      documents = state.insuranceContract.currentAgreement.productVariant.documents,
+                      documents = state.insuranceContract.getAllDocuments(),
                       onDocumentClicked = openWebsite,
                     )
                   }
@@ -209,6 +210,19 @@ private fun ContractDetailScreen(
     }
   }
 }
+
+@Composable
+private fun InsuranceContract.getAllDocuments() = buildList {
+  addAll(currentAgreement.productVariant.documents)
+  if (currentAgreement.certificateUrl != null) {
+    val certificate = Document(
+      stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE),
+      url = currentAgreement.certificateUrl,
+      type = Document.InsuranceDocumentType.PRE_SALE_INFO_EU_STANDARD,
+    )
+    add(certificate)
+  }
+}.toImmutableList()
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -269,7 +283,9 @@ private fun PreviewContractDetailScreen() {
                 insurableLimits = persistentListOf(),
                 documents = persistentListOf(),
               ),
+              certificateUrl = null,
             ),
+
             upcomingAgreement = null,
             renewalDate = LocalDate.fromEpochDays(500),
             supportsAddressChange = false,
