@@ -131,6 +131,7 @@ internal fun HedvigNavHost(
           navigator = navigator,
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           activityNavigator = activityNavigator,
+          imageLoader = imageLoader,
         )
       },
       navigator = navigator,
@@ -238,6 +239,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   navigator: Navigator,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   activityNavigator: ActivityNavigator,
+  imageLoader: ImageLoader,
 ) {
   changeAddressGraph(
     navController = hedvigAppState.navController,
@@ -281,6 +283,11 @@ private fun NavGraphBuilder.nestedHomeGraphs(
         },
       )
     },
+    openUrl = { activityNavigator.openWebsite(context, Uri.parse(it)) },
+    openChat = {
+      activityNavigator.navigateToChat(context)
+    },
+    imageLoader = imageLoader,
   )
   terminalClaimFlowStepDestinations(
     navigator = navigator,

@@ -125,7 +125,7 @@ internal fun YourInfoTab(
     ) {
       UpcomingChangesBottomSheetContent(
         infoText = stringResource(
-          id = R.string.insurances_tab_your_insurance_will_be_updated,
+          id = R.string.insurances_tab_your_insurance_will_be_updated_with_info,
           upcomingChangesAgreement.activeFrom,
         ),
         sections = upcomingChangesAgreement.displayItems

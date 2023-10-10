@@ -16,8 +16,10 @@ import com.hedvig.android.data.claimtriaging.EntryPointId
 import com.hedvig.android.data.claimtriaging.EntryPointOptionId
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import java.io.File
 import kotlinx.datetime.LocalDate
 import octopus.FlowClaimAudioRecordingNextMutation
+import octopus.FlowClaimConfirmEmergencyMutation
 import octopus.FlowClaimContractNextMutation
 import octopus.FlowClaimDateOfOccurrenceNextMutation
 import octopus.FlowClaimDateOfOccurrencePlusLocationNextMutation
@@ -34,7 +36,6 @@ import octopus.type.FlowClaimSummaryInput
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import java.io.File
 
 interface ClaimFlowRepository {
   suspend fun startClaimFlow(
@@ -77,6 +78,8 @@ interface ClaimFlowRepository {
     purchaseDate: LocalDate?,
     purchasePrice: Double?,
   ): Either<ErrorMessage, ClaimFlowStep>
+
+  suspend fun submitUrgentEmergency(isUrgentEmergency: Boolean): Either<ErrorMessage, ClaimFlowStep>
 }
 
 internal class ClaimFlowRepositoryImpl(
@@ -244,7 +247,6 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimSingleItemCheckoutNext
       claimFlowContextStorage.saveContext(result.context)
-      Unit
     }
   }
 
@@ -278,6 +280,22 @@ internal class ClaimFlowRepositoryImpl(
         .toEither(::ErrorMessage)
         .bind()
         .flowClaimSummaryNext
+      claimFlowContextStorage.saveContext(result.context)
+      result.currentStep.toClaimFlowStep(FlowId(result.id))
+    }
+  }
+
+  override suspend fun submitUrgentEmergency(isUrgentEmergency: Boolean): Either<ErrorMessage, ClaimFlowStep> {
+    return either {
+      val result = apolloClient
+        .mutation(
+          FlowClaimConfirmEmergencyMutation(isUrgentEmergency = isUrgentEmergency, claimFlowContextStorage.getContext()),
+        )
+        .safeExecute()
+        .toEither(::ErrorMessage)
+        .bind()
+        .flowClaimConfirmEmergencyNext
+
       claimFlowContextStorage.saveContext(result.context)
       result.currentStep.toClaimFlowStep(FlowId(result.id))
     }

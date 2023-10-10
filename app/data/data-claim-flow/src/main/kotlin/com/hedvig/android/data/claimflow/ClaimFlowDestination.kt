@@ -70,6 +70,28 @@ sealed interface ClaimFlowDestination : Destination {
   ) : ClaimFlowDestination
 
   @Serializable
+  data class DeflectGlassDamage(
+    val partners: List<DeflectPartner>,
+  ) : ClaimFlowDestination
+
+  @Serializable
+  data class ConfirmEmergency(
+    val text: String,
+    val confirmEmergency: Boolean?,
+    val options: List<EmergencyOption>,
+  ) : ClaimFlowDestination
+
+  @Serializable
+  data class DeflectEmergency(
+    val partners: List<DeflectPartner>,
+  ) : ClaimFlowDestination
+
+  @Serializable
+  data class DeflectPests(
+    val partners: List<DeflectPartner>,
+  ) : ClaimFlowDestination
+
+  @Serializable
   data class Summary(
     val claimTypeTitle: String,
     val selectedLocation: String?,
@@ -213,3 +235,14 @@ data class AudioContent(
    */
   val audioUrl: AudioUrl,
 )
+
+@Serializable
+data class DeflectPartner(
+  val id: String,
+  val imageUrl: String,
+  val phoneNumber: String?,
+  val url: String?,
+)
+
+@Serializable
+data class EmergencyOption(val displayName: String, val value: Boolean)

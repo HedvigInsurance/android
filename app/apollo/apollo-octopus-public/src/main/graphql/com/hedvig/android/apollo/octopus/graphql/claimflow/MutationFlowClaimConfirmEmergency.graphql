@@ -1,0 +1,7 @@
+mutation FlowClaimConfirmEmergency($isUrgentEmergency: Boolean!, $context: FlowContext!) {
+  flowClaimConfirmEmergencyNext(input: { confirmEmergency: $isUrgentEmergency }, context: $context) {
+    id
+    context
+    ...ClaimFlowStepFragment
+  }
+}

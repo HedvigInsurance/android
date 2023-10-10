@@ -12,6 +12,10 @@ fragment ClaimFlowStepFragment on Flow {
     ...FlowClaimFailedStepFragment
     ...FlowClaimSuccessStepFragment
     ...FlowClaimContractSelectStepFragment
+    ...FlowClaimDeflectGlassDamageStepFragment
+    ...FlowClaimConfirmEmergencyStepFragment
+    ...FlowClaimDeflectEmergencyStepFragment
+    ...FlowClaimDeflectPestsStepFragment
   }
 }
 
@@ -128,4 +132,42 @@ fragment FlowClaimContractSelectStepFragment on FlowClaimContractSelectStep {
     id
     displayName
   }
+}
+
+fragment FlowClaimDeflectGlassDamageStepFragment on FlowClaimDeflectGlassDamageStep {
+  id
+  partners {
+    ...FlowClaimDeflectPartnerFragment
+  }
+}
+
+fragment FlowClaimConfirmEmergencyStepFragment on FlowClaimConfirmEmergencyStep {
+  id
+  text
+  confirmEmergency
+  options {
+    displayName
+    displayValue: value
+  }
+}
+
+fragment FlowClaimDeflectEmergencyStepFragment on FlowClaimDeflectEmergencyStep {
+  id
+  partners {
+    ...FlowClaimDeflectPartnerFragment
+  }
+}
+
+fragment FlowClaimDeflectPestsStepFragment on FlowClaimDeflectPestsStep {
+  id
+  partners {
+    ...FlowClaimDeflectPartnerFragment
+  }
+}
+
+fragment FlowClaimDeflectPartnerFragment on FlowClaimDeflectPartner {
+  id
+  imageUrl
+  url
+  phoneNumber
 }

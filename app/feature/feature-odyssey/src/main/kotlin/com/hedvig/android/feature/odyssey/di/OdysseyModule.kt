@@ -8,6 +8,7 @@ import com.hedvig.android.data.claimflow.model.FlowId
 import com.hedvig.android.feature.odyssey.step.audiorecording.AudioRecordingViewModel
 import com.hedvig.android.feature.odyssey.step.dateofoccurrence.DateOfOccurrenceViewModel
 import com.hedvig.android.feature.odyssey.step.dateofoccurrencepluslocation.DateOfOccurrencePlusLocationViewModel
+import com.hedvig.android.feature.odyssey.step.informdeflect.ConfirmEmergencyViewModel
 import com.hedvig.android.feature.odyssey.step.location.LocationViewModel
 import com.hedvig.android.feature.odyssey.step.phonenumber.PhoneNumberViewModel
 import com.hedvig.android.feature.odyssey.step.selectcontract.SelectContractViewModel
@@ -60,5 +61,8 @@ val odysseyModule = module {
   }
   viewModel<SelectContractViewModel> { (selectContract: ClaimFlowDestination.SelectContract) ->
     SelectContractViewModel(selectContract, get<ClaimFlowRepository>())
+  }
+  viewModel<ConfirmEmergencyViewModel> { (confirmEmergency: ClaimFlowDestination.ConfirmEmergency) ->
+    ConfirmEmergencyViewModel(confirmEmergency, get<ClaimFlowRepository>())
   }
 }
