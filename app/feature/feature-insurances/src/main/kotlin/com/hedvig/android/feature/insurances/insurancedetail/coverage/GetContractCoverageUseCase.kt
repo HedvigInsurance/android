@@ -142,7 +142,14 @@ internal data class ContractCoverage(
               InsuranceDocumentType.UNKNOWN__ -> throw IllegalArgumentException("Unknown contract type")
             }
           }
-          .plus(ContractDetails.Document.InsuranceCertificate(contract.currentAgreement.certificateUrl))
+          .run {
+            val certificateUrl = contract.currentAgreement.certificateUrl
+            if (certificateUrl != null) {
+              plus(ContractDetails.Document.InsuranceCertificate(certificateUrl))
+            } else {
+              this
+            }
+          }
           .toPersistentList(),
       )
     }
