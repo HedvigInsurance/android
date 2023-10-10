@@ -6,13 +6,17 @@ interface HedvigDeepLinkContainer {
   val forever: String // The forever/referrals destination, showing the existing discount and the unique code
   val profile: String // The profile screen, which acts as a gateway to several app settings
   val eurobonus: String // The destination allowing to edit your current Eurobonus (SAS) number
+  val chat: String // Hedvig Chat
 }
 
 internal class HedvigDeepLinkContainerImpl(
   isProduction: Boolean,
+  isDev: Boolean,
 ) : HedvigDeepLinkContainer {
   private val baseFirebaseLink = if (isProduction) {
     "https://hedvig.page.link"
+  } else if (isDev) {
+    "https://hedvigdevelop.page.link"
   } else {
     "https://hedvigtest.page.link"
   }
@@ -23,4 +27,5 @@ internal class HedvigDeepLinkContainerImpl(
   override val forever: String = "$baseFirebaseLink/forever"
   override val profile: String = "$baseFirebaseLink/profile"
   override val eurobonus: String = "$baseFirebaseLink/eurobonus"
+  override val chat: String = "$baseFirebaseLink/chat"
 }

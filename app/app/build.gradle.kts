@@ -27,7 +27,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.1.0"
+    versionName = "12.1.2"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -90,6 +90,12 @@ android {
     }
     named("staging") {
       manifest.srcFile("src/debug/AndroidManifest.xml")
+    }
+  }
+
+  signingConfigs {
+    named("debug") {
+      storeFile = file("../../debug.keystore").also { println("Stelios file : ${it.absolutePath}") }
     }
   }
 
@@ -188,6 +194,7 @@ dependencies {
   implementation(projects.apolloCore)
   implementation(projects.apolloDi)
   implementation(projects.apolloGiraffePublic)
+  implementation(projects.apolloOctopusPublic)
   implementation(projects.audioPlayer)
   implementation(projects.authAndroid)
   implementation(projects.authCore)
@@ -209,6 +216,7 @@ dependencies {
   implementation(projects.datadogCore)
   implementation(projects.datadogDemoTracking)
   implementation(projects.featureChangeaddress)
+  implementation(projects.featureChat)
   implementation(projects.featureClaimTriaging)
   implementation(projects.featureForever)
   implementation(projects.featureHome)

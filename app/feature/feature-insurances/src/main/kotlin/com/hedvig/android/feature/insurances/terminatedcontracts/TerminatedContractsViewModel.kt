@@ -6,12 +6,13 @@ import arrow.core.raise.either
 import arrow.core.raise.ensure
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.RetryChannel
+import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toPersistentList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
@@ -20,15 +21,16 @@ import kotlinx.coroutines.flow.stateIn
 import kotlin.time.Duration.Companion.seconds
 
 internal class TerminatedContractsViewModel(
-  private val getInsuranceContractsUseCase: GetInsuranceContractsUseCase,
+  private val getInsuranceContractsUseCaseProvider: Provider<GetInsuranceContractsUseCase>,
 ) : ViewModel() {
   private val retryChannel = RetryChannel()
 
   val uiState: StateFlow<TerminatedContractsUiState> = flow {
     emit(TerminatedContractsUiState.Loading)
     either {
-      val terminatedContracts = getInsuranceContractsUseCase
-        .invoke()
+      val terminatedContracts = getInsuranceContractsUseCaseProvider
+        .provide()
+        .invoke(forceNetworkFetch = false)
         .bind()
         .filter(InsuranceContract::isTerminated)
       ensure(terminatedContracts.isNotEmpty()) {
@@ -38,16 +40,7 @@ internal class TerminatedContractsViewModel(
         logcat(LogPriority.ERROR) { "Terminated insurances screen got 0 terminated insurances" }
         TerminatedContractsUiState.NoTerminatedInsurances
       } else {
-        TerminatedContractsUiState.Success(
-          terminatedContracts.map { contract ->
-            TerminatedContractsUiState.Success.InsuranceCard(
-              contractId = contract.id,
-              chips = contract.statusPills.toPersistentList(),
-              title = contract.displayName,
-              subtitle = contract.detailPills.joinToString(" ∙ "),
-            )
-          }.toPersistentList(),
-        )
+        TerminatedContractsUiState.Success(terminatedContracts.toImmutableList())
       }
     }.fold(
       ifLeft = { errorMessage ->
@@ -74,17 +67,10 @@ internal class TerminatedContractsViewModel(
 
 internal sealed interface TerminatedContractsUiState {
   data class Success(
-    val terminatedInsuranceCards: ImmutableList<InsuranceCard>,
-  ) : TerminatedContractsUiState {
-    data class InsuranceCard(
-      val contractId: String,
-      val chips: ImmutableList<String>,
-      val title: String,
-      val subtitle: String,
-    )
-  }
+    val insuranceContracts: ImmutableList<InsuranceContract>,
+  ) : TerminatedContractsUiState
 
-  object NoTerminatedInsurances : TerminatedContractsUiState
-  object Loading : TerminatedContractsUiState
-  object Error : TerminatedContractsUiState
+  data object NoTerminatedInsurances : TerminatedContractsUiState
+  data object Loading : TerminatedContractsUiState
+  data object Error : TerminatedContractsUiState
 }

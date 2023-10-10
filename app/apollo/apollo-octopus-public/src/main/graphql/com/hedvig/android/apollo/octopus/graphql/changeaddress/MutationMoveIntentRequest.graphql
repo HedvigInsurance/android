@@ -8,12 +8,7 @@ mutation MoveIntentRequest($intentId: ID!, $input: MoveIntentRequestInput!) {
           currencyCode
         }
         startDate
-        address {
-          id
-          street
-          postalCode
-        }
-        numberCoInsured
+        exposureName
         productVariant {
           ...ProductVariantFragment
         }

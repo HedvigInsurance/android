@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerState
@@ -31,12 +29,14 @@ import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
 import com.hedvig.android.core.designsystem.material3.warningContainer
-import com.hedvig.android.core.designsystem.material3.warningElement
 import com.hedvig.android.core.ui.ValidatedInput
+import com.hedvig.android.core.ui.getLocale
+import com.hedvig.android.core.ui.hedvigDateTimeFormatter
 import hedvig.resources.R
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
 
 @Composable
@@ -102,7 +102,7 @@ internal fun MovingDateButton(
         containerColor = if (dateHasError) {
           MaterialTheme.colorScheme.warningContainer
         } else {
-          MaterialTheme.colorScheme.surfaceVariant
+          MaterialTheme.colorScheme.surface
         },
         contentColor = if (dateHasError) {
           MaterialTheme.colorScheme.onWarningContainer
@@ -123,7 +123,9 @@ internal fun MovingDateButton(
           )
           Spacer(modifier = Modifier.height(4.dp))
           Text(
-            text = movingDate.input?.toString()
+            text = movingDate.input
+              ?.toJavaLocalDate()
+              ?.format(hedvigDateTimeFormatter(getLocale()))
               ?: stringResource(R.string.CHANGE_ADDRESS_SELECT_MOVING_DATE_LABEL),
             style = MaterialTheme.typography.headlineSmall,
           )
@@ -135,29 +137,6 @@ internal fun MovingDateButton(
           ),
           contentDescription = null,
           modifier = Modifier.size(16.dp),
-        )
-      }
-    }
-    if (errorTextResId != null) {
-      Row(
-        verticalAlignment = Alignment.CenterVertically,
-        // Emulate the same design that the supporting text of the TextField has
-        modifier = Modifier.padding(
-          start = 4.dp,
-          top = 4.dp,
-          end = 4.dp,
-        ),
-      ) {
-        Icon(
-          imageVector = Icons.Rounded.Warning,
-          contentDescription = null,
-          modifier = Modifier.size(16.dp),
-          tint = MaterialTheme.colorScheme.warningElement,
-        )
-        Spacer(Modifier.width(6.dp))
-        Text(
-          text = stringResource(errorTextResId),
-          style = MaterialTheme.typography.bodySmall,
         )
       }
     }

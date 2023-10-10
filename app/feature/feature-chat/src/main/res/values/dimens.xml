@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="camera_and_misc_button_width">120dp</dimen>
+    <dimen name="camera_and_misc_button_background_stroke_width">1dp</dimen>
+    <dimen name="default_attach_file_height">280dp</dimen>
+    <dimen name="is_keyboard_brake_point_height">120dp</dimen>
+    <dimen name="nav_height_div">2dp</dimen>
+
+</resources>

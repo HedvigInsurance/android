@@ -29,13 +29,14 @@ import com.hedvig.android.core.designsystem.material3.warningElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.feature.forever.ForeverUiState
+import com.hedvig.android.feature.forever.data.Referral
+import com.hedvig.android.feature.forever.data.ReferralState
 import hedvig.resources.R
 import octopus.type.CurrencyCode
 
 @Composable
 internal fun ReferralList(
-  referrals: List<ForeverUiState.Referral>,
+  referrals: List<Referral>,
   grossPriceAmount: UiMoney?,
   currentNetAmount: UiMoney?,
   modifier: Modifier = Modifier,
@@ -72,7 +73,7 @@ internal fun ReferralList(
 @Suppress("UnusedReceiverParameter")
 @Composable
 private fun ColumnScope.ReferralRow(
-  referral: ForeverUiState.Referral,
+  referral: Referral,
   modifier: Modifier = Modifier,
 ) {
   Row(
@@ -93,25 +94,25 @@ private fun ColumnScope.ReferralRow(
       Text(referral.name ?: "-")
     }
     when (referral.state) {
-      ForeverUiState.ReferralState.ACTIVE -> {
+      ReferralState.ACTIVE -> {
         Text(referral.discount?.toString()?.let { "-$it" } ?: "-")
       }
 
-      ForeverUiState.ReferralState.IN_PROGRESS -> {
+      ReferralState.IN_PROGRESS -> {
         Text(
           text = stringResource(id = R.string.REFERRAL_PENDING_STATUS_LABEL),
           color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
       }
 
-      ForeverUiState.ReferralState.TERMINATED -> {
+      ReferralState.TERMINATED -> {
         Text(
           text = stringResource(id = R.string.REFERRAL_TERMINATED_STATUS_LABEL),
           color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
       }
 
-      ForeverUiState.ReferralState.UNKNOWN -> {
+      ReferralState.UNKNOWN -> {
         Text(
           text = stringResource(id = R.string.REFERRAL_TERMINATED_STATUS_LABEL),
           color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -123,11 +124,11 @@ private fun ColumnScope.ReferralRow(
 }
 
 @Composable
-private fun ForeverUiState.ReferralState.toColor(): Color = when (this) {
-  ForeverUiState.ReferralState.ACTIVE -> MaterialTheme.colorScheme.typeElement
-  ForeverUiState.ReferralState.IN_PROGRESS -> MaterialTheme.colorScheme.warningElement
-  ForeverUiState.ReferralState.TERMINATED -> MaterialTheme.colorScheme.error
-  ForeverUiState.ReferralState.UNKNOWN -> MaterialTheme.colorScheme.error
+private fun ReferralState.toColor(): Color = when (this) {
+  ReferralState.ACTIVE -> MaterialTheme.colorScheme.typeElement
+  ReferralState.IN_PROGRESS -> MaterialTheme.colorScheme.warningElement
+  ReferralState.TERMINATED -> MaterialTheme.colorScheme.error
+  ReferralState.UNKNOWN -> MaterialTheme.colorScheme.error
 }
 
 @Composable
@@ -139,19 +140,19 @@ private fun PreviewReferralList() {
         grossPriceAmount = UiMoney(138.0, CurrencyCode.SEK),
         currentNetAmount = UiMoney(118.0, CurrencyCode.SEK),
         referrals = listOf(
-          ForeverUiState.Referral(
+          Referral(
             name = "Ermir",
-            state = ForeverUiState.ReferralState.ACTIVE,
+            state = ReferralState.ACTIVE,
             discount = UiMoney(10.0, CurrencyCode.SEK),
           ),
-          ForeverUiState.Referral(
+          Referral(
             name = "Genc",
-            state = ForeverUiState.ReferralState.IN_PROGRESS,
+            state = ReferralState.IN_PROGRESS,
             discount = null,
           ),
-          ForeverUiState.Referral(
+          Referral(
             name = "Ermir",
-            state = ForeverUiState.ReferralState.TERMINATED,
+            state = ReferralState.TERMINATED,
             discount = UiMoney(10.0, CurrencyCode.SEK),
           ),
         ),

@@ -23,10 +23,16 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.card.InsuranceCard
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
+import com.hedvig.android.core.ui.insurance.ContractType
+import com.hedvig.android.core.ui.insurance.ProductVariant
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
+import com.hedvig.android.feature.insurances.data.Agreement
+import com.hedvig.android.feature.insurances.data.InsuranceContract
+import com.hedvig.android.feature.insurances.ui.createChips
 import hedvig.resources.R
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun TerminatedContractsDestination(
@@ -72,21 +78,21 @@ private fun TerminatedContractsScreen(
         )
       }
       is TerminatedContractsUiState.Success -> {
-        for ((index, insuranceCard) in uiState.terminatedInsuranceCards.withIndex()) {
+        for ((index, contract) in uiState.insuranceContracts.withIndex()) {
           InsuranceCard(
-            chips = insuranceCard.chips,
-            topText = insuranceCard.title,
-            bottomText = insuranceCard.subtitle,
+            chips = contract.createChips(),
+            topText = contract.currentAgreement.productVariant.displayName,
+            bottomText = contract.exposureDisplayName,
             imageLoader = imageLoader,
             shape = MaterialTheme.shapes.squircleMedium,
             modifier = Modifier
               .padding(horizontal = 16.dp)
               .clip(MaterialTheme.shapes.squircleMedium)
               .clickable {
-                onContractClick(insuranceCard.contractId)
+                onContractClick(contract.id)
               },
           )
-          if (index != uiState.terminatedInsuranceCards.lastIndex) {
+          if (index != uiState.insuranceContracts.lastIndex) {
             Spacer(Modifier.height(8.dp))
           }
         }
@@ -114,7 +120,7 @@ private fun PreviewTerminatedContractsScreen(
   }
 }
 
-private class PreviewTerminatedContractsUiStateProvider() :
+private class PreviewTerminatedContractsUiStateProvider :
   CollectionPreviewParameterProvider<TerminatedContractsUiState>(
     listOf(
       TerminatedContractsUiState.Loading,
@@ -122,17 +128,30 @@ private class PreviewTerminatedContractsUiStateProvider() :
       TerminatedContractsUiState.Error,
       TerminatedContractsUiState.Success(
         persistentListOf(
-          TerminatedContractsUiState.Success.InsuranceCard(
-            "0",
-            persistentListOf("Terminates 10.03.2024"),
-            "Home Insurance",
-            "Bellmansgatan 19A ∙ You +1",
-          ),
-          TerminatedContractsUiState.Success.InsuranceCard(
+          InsuranceContract(
             "1",
-            persistentListOf("Terminates 11.03.2024"),
-            "Car Insurance",
-            "ABH 234",
+            "Test123",
+            exposureDisplayName = "Test exposure",
+            inceptionDate = LocalDate.fromEpochDays(200),
+            terminationDate = LocalDate.fromEpochDays(400),
+            currentAgreement = Agreement(
+              activeFrom = LocalDate.fromEpochDays(240),
+              activeTo = LocalDate.fromEpochDays(340),
+              displayItems = persistentListOf(),
+              productVariant = ProductVariant(
+                displayName = "Variant",
+                contractType = ContractType.RENTAL,
+                partner = null,
+                perils = persistentListOf(),
+                insurableLimits = persistentListOf(),
+                documents = persistentListOf(),
+              ),
+              certificateUrl = null,
+            ),
+            upcomingAgreement = null,
+            renewalDate = LocalDate.fromEpochDays(500),
+            supportsAddressChange = false,
+            isTerminated = true,
           ),
         ),
       ),

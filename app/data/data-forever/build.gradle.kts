@@ -10,6 +10,7 @@ dependencies {
   implementation(libs.koin.core)
   implementation(projects.apolloCore)
   implementation(projects.apolloGiraffePublic)
+  implementation(projects.apolloOctopusPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)
   implementation(projects.languageCore)

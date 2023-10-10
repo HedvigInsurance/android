@@ -11,7 +11,7 @@ internal sealed interface InsurancesDestination : Destination {
   ) : InsurancesDestination
 
   @Serializable
-  object TerminatedInsurances : InsurancesDestination
+  data object TerminatedInsurances : InsurancesDestination
 }
 
 val insurancesBottomNavPermittedDestinations: List<String> = listOf(

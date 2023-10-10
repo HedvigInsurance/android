@@ -7,7 +7,7 @@ jobs:
   execute:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Copy CI gradle.properties
       run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
@@ -16,7 +16,7 @@ jobs:
       run: ./scripts/ci-github-packages-properties.sh
 
     - name: Setup JDK 17
-      uses: actions/setup-java@v3.11.0
+      uses: actions/setup-java@v3.13.0
       with:
         java-version: '17'
         distribution: 'zulu'

@@ -28,6 +28,7 @@ import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.feature.changeaddress.ChangeAddressUiState
 import com.hedvig.android.feature.changeaddress.ChangeAddressViewModel
+import com.hedvig.android.feature.changeaddress.DatePickerUiState
 import com.hedvig.android.feature.changeaddress.data.HousingType
 import com.hedvig.android.feature.changeaddress.ui.ChangeAddressSwitch
 import com.hedvig.android.feature.changeaddress.ui.InputTextField
@@ -116,14 +117,16 @@ private fun ChangeAddressEnterNewScreen(
     Spacer(modifier = Modifier.height(32.dp))
     Spacer(modifier = Modifier.weight(1f))
     InputTextField(
-      value = uiState.street,
+      value = uiState.street.input,
+      errorMessageRes = uiState.street.errorMessageRes,
       onValueChange = onStreetChanged,
       label = stringResource(id = R.string.CHANGE_ADDRESS_NEW_ADDRESS_LABEL),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(modifier = Modifier.height(8.dp))
     InputTextField(
-      value = uiState.postalCode,
+      value = uiState.postalCode.input,
+      errorMessageRes = uiState.postalCode.errorMessageRes,
       onValueChange = onPostalCodeChanged,
       label = stringResource(id = R.string.CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL),
       modifier = Modifier.padding(horizontal = 16.dp),
@@ -133,7 +136,8 @@ private fun ChangeAddressEnterNewScreen(
     )
     Spacer(modifier = Modifier.height(8.dp))
     InputTextField(
-      value = uiState.squareMeters,
+      value = uiState.squareMeters.input,
+      errorMessageRes = uiState.squareMeters.errorMessageRes,
       onValueChange = onSquareMetersChanged,
       label = stringResource(id = R.string.CHANGE_ADDRESS_NEW_LIVING_SPACE_LABEL),
       modifier = Modifier.padding(horizontal = 16.dp),
@@ -143,7 +147,8 @@ private fun ChangeAddressEnterNewScreen(
     )
     Spacer(modifier = Modifier.height(8.dp))
     InputTextField(
-      value = uiState.numberInsured,
+      value = uiState.numberInsured.input,
+      errorMessageRes = uiState.numberInsured.errorMessageRes,
       onValueChange = onCoInsuredChanged,
       label = stringResource(id = R.string.CHANGE_ADDRESS_CO_INSURED_LABEL),
       modifier = Modifier.padding(horizontal = 16.dp),
@@ -194,7 +199,7 @@ private fun PreviewChangeAddressEnterNewScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       ChangeAddressEnterNewScreen(
-        ChangeAddressUiState(),
+        ChangeAddressUiState(datePickerUiState = DatePickerUiState(null)),
         {}, {}, {}, {}, {}, {}, {}, {}, {},
       )
     }

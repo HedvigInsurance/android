@@ -226,21 +226,21 @@ fun NavGraphBuilder.claimFlowGraph(
 fun NavGraphBuilder.terminalClaimFlowStepDestinations(
   navigator: Navigator,
   openPlayStore: () -> Unit,
-  openChat: () -> Unit,
+  openChat: (NavBackStackEntry) -> Unit,
 ) {
-  composable<ClaimFlowDestination.SingleItemPayout> {
+  composable<ClaimFlowDestination.SingleItemPayout> { backStackEntry ->
     val singleItemPayout = this
     val viewModel: SingleItemPayoutViewModel = koinViewModel { parametersOf(singleItemPayout) }
     SingleItemPayoutDestination(
       viewModel = viewModel,
       onDoneAfterPayout = navigator::popBackStack,
-      openChat = openChat,
+      openChat = { openChat(backStackEntry) },
       closePayoutScreen = navigator::popBackStack,
     )
   }
-  composable<ClaimFlowDestination.ClaimSuccess> {
+  composable<ClaimFlowDestination.ClaimSuccess> { backStackEntry ->
     ClaimSuccessDestination(
-      openChat = openChat,
+      openChat = { openChat(backStackEntry) },
       closeSuccessScreen = navigator::popBackStack,
     )
   }
@@ -250,9 +250,9 @@ fun NavGraphBuilder.terminalClaimFlowStepDestinations(
       closeUnknownScreenDestination = navigator::popBackStack,
     )
   }
-  composable<ClaimFlowDestination.Failure> {
+  composable<ClaimFlowDestination.Failure> { backStackEntry ->
     UnknownErrorDestination(
-      openChat = openChat,
+      openChat = { openChat(backStackEntry) },
       closeFailureScreenDestination = navigator::popBackStack,
     )
   }

@@ -38,6 +38,9 @@ internal fun Project.configureKotlinAndroid(
   }
 
   dependencies {
+    val koinBom = libs.koin.bom
+    add("implementation", platform(koinBom))
+
     add("coreLibraryDesugaring", libs.coreLibraryDesugaring.get())
     add("lintChecks", project(":hedvig-lint"))
     if (this@configureKotlinAndroid.name != "logging-public") {

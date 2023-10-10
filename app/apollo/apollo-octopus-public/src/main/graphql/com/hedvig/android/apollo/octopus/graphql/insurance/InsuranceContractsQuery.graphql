@@ -1,0 +1,45 @@
+query InsuranceContracts {
+  currentMember {
+    terminatedContracts {
+      ...ContractFragment
+    }
+
+    activeContracts {
+      ...ContractFragment
+    }
+  }
+}
+
+fragment ContractFragment on Contract {
+  id
+  masterInceptionDate
+  terminationDate
+  exposureDisplayName
+  supportsAddressChange
+  upcomingRenewal {
+    renewalDate
+  }
+  currentAgreement {
+    ...AgreementFragment
+  }
+  upcomingChangedAgreement {
+    ...AgreementFragment
+  }
+}
+
+fragment AgreementFragment on Agreement {
+  activeFrom
+  activeTo
+  certificateUrl
+  displayItems {
+    ...AgreementDisplayItemFragment
+  }
+  productVariant {
+    ...ProductVariantFragment
+  }
+}
+
+fragment AgreementDisplayItemFragment on AgreementDisplayItem {
+  displayTitle
+  displayValue
+}

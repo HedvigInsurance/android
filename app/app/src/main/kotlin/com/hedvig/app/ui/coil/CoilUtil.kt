@@ -4,11 +4,6 @@ import android.widget.ImageView
 import coil.ImageLoader
 import coil.request.Disposable
 import coil.request.ImageRequest
-import coil.util.CoilUtils
-
-fun ImageView.dispose() {
-  CoilUtils.dispose(this)
-}
 
 fun ImageView.load(
   data: Any?,

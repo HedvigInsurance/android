@@ -66,11 +66,17 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.card.InsuranceCard
 import com.hedvig.android.core.ui.insurance.ContractType
-import com.hedvig.android.core.ui.insurance.toDrawableRes
+import com.hedvig.android.core.ui.insurance.ProductVariant
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
+import com.hedvig.android.feature.insurances.data.Agreement
+import com.hedvig.android.feature.insurances.data.CrossSell
+import com.hedvig.android.feature.insurances.data.InsuranceContract
+import com.hedvig.android.feature.insurances.data.iconRes
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceScreenEvent
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceUiState
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
+import com.hedvig.android.feature.insurances.ui.createChips
+import com.hedvig.android.feature.insurances.ui.createPainter
 import com.hedvig.android.pullrefresh.PullRefreshDefaults
 import com.hedvig.android.pullrefresh.PullRefreshIndicator
 import com.hedvig.android.pullrefresh.pullRefresh
@@ -78,6 +84,7 @@ import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun InsuranceDestination(
@@ -172,7 +179,7 @@ private fun InsuranceScreen(
             } else {
               InsuranceScreenContent(
                 imageLoader = imageLoader,
-                insuranceCards = uiState.insuranceCards,
+                contracts = uiState.contracts,
                 crossSells = uiState.crossSells,
                 showNotificationBadge = uiState.showNotificationBadge,
                 onInsuranceCardClick = onInsuranceCardClick,
@@ -201,33 +208,31 @@ private fun InsuranceScreen(
 @Composable
 private fun ColumnScope.InsuranceScreenContent(
   imageLoader: ImageLoader,
-  insuranceCards: ImmutableList<InsuranceUiState.InsuranceCard>,
-  crossSells: ImmutableList<InsuranceUiState.CrossSell>,
+  contracts: ImmutableList<InsuranceContract>,
+  crossSells: ImmutableList<CrossSell>,
   showNotificationBadge: Boolean,
   onInsuranceCardClick: (contractId: String) -> Unit,
   onCrossSellClick: (Uri) -> Unit,
   navigateToCancelledInsurances: () -> Unit,
   quantityOfCancelledInsurances: Int,
 ) {
-  for ((index, insuranceCard) in insuranceCards.withIndex()) {
+  for ((index, contract) in contracts.withIndex()) {
     InsuranceCard(
-      backgroundImageUrl = insuranceCard.backgroundImageUrl,
-      chips = insuranceCard.chips,
-      topText = insuranceCard.title,
-      bottomText = insuranceCard.subtitle,
+      backgroundImageUrl = null,
+      chips = contract.createChips(),
+      topText = contract.currentAgreement.productVariant.displayName,
+      bottomText = contract.exposureDisplayName,
       imageLoader = imageLoader,
       modifier = Modifier
         .padding(horizontal = 16.dp)
         .clip(MaterialTheme.shapes.squircleMedium)
-        .clickable() {
-          onInsuranceCardClick(insuranceCard.contractId)
+        .clickable {
+          onInsuranceCardClick(contract.id)
         },
       shape = MaterialTheme.shapes.squircleMedium,
-      fallbackPainter = insuranceCard.contractType.toDrawableRes().let { drawableRes ->
-        painterResource(id = drawableRes)
-      },
+      fallbackPainter = contract.createPainter(),
     )
-    if (index != insuranceCards.lastIndex) {
+    if (index != contracts.lastIndex) {
       Spacer(Modifier.height(8.dp))
     }
   }
@@ -268,7 +273,7 @@ private fun ColumnScope.InsuranceScreenContent(
 
 @Composable
 private fun CrossSellItem(
-  crossSell: InsuranceUiState.CrossSell,
+  crossSell: CrossSell,
   onCrossSellClick: (Uri) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -311,14 +316,6 @@ private fun CrossSellItem(
       ),
     )
   }
-}
-
-private fun InsuranceUiState.CrossSell.CrossSellType.iconRes(): Int = when (this) {
-  InsuranceUiState.CrossSell.CrossSellType.PET -> com.hedvig.android.core.ui.R.drawable.ic_pillow_pet
-  InsuranceUiState.CrossSell.CrossSellType.HOME -> com.hedvig.android.core.ui.R.drawable.ic_pillow_home
-  InsuranceUiState.CrossSell.CrossSellType.ACCIDENT -> com.hedvig.android.core.ui.R.drawable.ic_pillow_accident
-  InsuranceUiState.CrossSell.CrossSellType.CAR -> com.hedvig.android.core.ui.R.drawable.ic_pillow_car
-  InsuranceUiState.CrossSell.CrossSellType.UNKNOWN -> com.hedvig.android.core.ui.R.drawable.ic_pillow_home
 }
 
 @Composable
@@ -389,23 +386,40 @@ private fun PreviewInsuranceScreen() {
     Surface(color = MaterialTheme.colorScheme.background) {
       InsuranceScreen(
         InsuranceUiState(
-          insuranceCards = persistentListOf(
-            InsuranceUiState.InsuranceCard(
-              "",
-              null,
-              persistentListOf("Chip"),
-              "Title",
-              "For you + 1",
-              ContractType.HOMEOWNER,
+          contracts = persistentListOf(
+            InsuranceContract(
+              "1",
+              "Test123",
+              exposureDisplayName = "Test exposure",
+              inceptionDate = LocalDate.fromEpochDays(200),
+              terminationDate = LocalDate.fromEpochDays(400),
+              currentAgreement = Agreement(
+                activeFrom = LocalDate.fromEpochDays(240),
+                activeTo = LocalDate.fromEpochDays(340),
+                displayItems = persistentListOf(),
+                productVariant = ProductVariant(
+                  displayName = "Variant",
+                  contractType = ContractType.RENTAL,
+                  partner = null,
+                  perils = persistentListOf(),
+                  insurableLimits = persistentListOf(),
+                  documents = persistentListOf(),
+                ),
+                certificateUrl = null,
+              ),
+              upcomingAgreement = null,
+              renewalDate = LocalDate.fromEpochDays(500),
+              supportsAddressChange = false,
+              isTerminated = false,
             ),
           ),
           crossSells = persistentListOf(
-            InsuranceUiState.CrossSell(
+            CrossSell(
               id = "1",
               title = "Pet".repeat(5),
               subtitle = "Unlimited FirstVet calls".repeat(2),
               storeUrl = "",
-              type = InsuranceUiState.CrossSell.CrossSellType.HOME,
+              type = CrossSell.CrossSellType.HOME,
             ),
           ),
           showNotificationBadge = false,

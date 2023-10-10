@@ -2,6 +2,7 @@ package com.hedvig.android.feature.home.claimdetail
 
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.feature.home.claimdetail.ui.ClaimDetailScreen
 import com.hedvig.android.feature.home.claimdetail.ui.ClaimDetailViewModel
@@ -12,9 +13,9 @@ import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.claimDetailGraph(
   navigateUp: () -> Unit,
-  navigateToChat: () -> Unit,
+  navigateToChat: (NavBackStackEntry) -> Unit,
 ) {
-  composable<HomeDestinations.ClaimDetailDestination> {
+  composable<HomeDestinations.ClaimDetailDestination> { backStackEntry ->
     val viewModel: ClaimDetailViewModel = koinViewModel { parametersOf(claimId) }
     val viewState by viewModel.viewState.collectAsStateWithLifecycle()
     ClaimDetailScreen(
@@ -23,7 +24,7 @@ fun NavGraphBuilder.claimDetailGraph(
       onUpClick = navigateUp,
       onChatClick = {
         viewModel.onChatClick()
-        navigateToChat()
+        navigateToChat(backStackEntry)
       },
       onPlayClick = viewModel::onPlayClick,
     )

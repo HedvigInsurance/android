@@ -24,13 +24,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.material3.squircleLargeTop
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.feature.changeaddress.data.ExtraBuilding
 import com.hedvig.android.feature.changeaddress.data.ExtraBuildingType
 import com.hedvig.android.feature.changeaddress.ui.ChangeAddressSwitch
+import com.hedvig.android.feature.changeaddress.ui.InputTextField
 import hedvig.resources.R
 
 @Composable
@@ -73,16 +73,14 @@ internal fun ExtraBuildingBottomSheet(
         modifier = Modifier.padding(horizontal = 16.dp),
       )
       Spacer(Modifier.height(8.dp))
-      HedvigTextField(
-        value = sizeInput ?: "",
-        label = {
-          Text(stringResource(id = R.string.CHANGE_ADDRESS_EXTRA_BUILDING_SIZE_LABEL))
-        },
+      InputTextField(
+        value = sizeInput,
+        errorMessageRes = sizeErrorText,
+        label = stringResource(id = R.string.CHANGE_ADDRESS_EXTRA_BUILDING_SIZE_LABEL),
         onValueChange = {
           sizeErrorText = null
           sizeInput = it
         },
-        errorText = sizeErrorText?.let { stringResource(id = it) },
         modifier = Modifier
           .padding(horizontal = 16.dp)
           .fillMaxWidth(),
@@ -99,12 +97,12 @@ internal fun ExtraBuildingBottomSheet(
         text = stringResource(id = R.string.general_save_button),
         onClick = {
           if (isInputValid(sizeInput, selectedType)) {
-            val extraBuilding = ExtraBuilding(
+            val newExtraBuilding = ExtraBuilding(
               size = sizeInput?.toInt() ?: 0,
               type = selectedType ?: ExtraBuildingType.CARPORT,
               hasWaterConnected = hasWaterConnected,
             )
-            onSave(extraBuilding)
+            onSave(newExtraBuilding)
           } else {
             if (sizeInput == null) {
               sizeErrorText = R.string.CHANGE_ADDRESS_LIVING_SPACE_ERROR
