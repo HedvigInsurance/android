@@ -10,7 +10,7 @@ lintGradlePlugin = "8.1.2"
 
 # gradlePlugin versions
 androidGradlePlugin = "8.1.2"
-androidRemoveUnusedResourcesPlugin = "1.4.1"
+androidRemoveUnusedResourcesPlugin = "2.1.0"
 apollo = "3.8.2"
 cacheFix = "2.7.2"
 crashlytics = "2.9.9"
