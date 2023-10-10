@@ -9,7 +9,7 @@ lintApi = "31.1.1"
 lintGradlePlugin = "8.1.1"
 
 # gradlePlugin versions
-androidGradlePlugin = "8.1.1"
+androidGradlePlugin = "8.1.2"
 androidRemoveUnusedResourcesPlugin = "1.4.1"
 apollo = "3.8.2"
 cacheFix = "2.7.2"
