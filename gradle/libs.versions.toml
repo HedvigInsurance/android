@@ -96,7 +96,7 @@ slimber = "2.0.0"
 testParameterInjector = "1.12"
 timber = "5.0.1"
 turbine = "1.0.0"
-zXing = "3.5.1"
+zXing = "3.5.2"
 zoomable = "1.5.1"
 
 [libraries]
