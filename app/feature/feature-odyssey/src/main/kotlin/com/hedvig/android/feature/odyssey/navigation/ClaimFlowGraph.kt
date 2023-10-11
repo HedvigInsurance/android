@@ -55,7 +55,7 @@ fun NavGraphBuilder.claimFlowGraph(
   navigateToTriaging: (NavBackStackEntry?) -> Unit,
   openAppSettings: () -> Unit,
   closeClaimFlow: () -> Unit,
-  openChat: () -> Unit,
+  openChat: (NavBackStackEntry) -> Unit,
   openUrl: (String) -> Unit,
   imageLoader: ImageLoader,
   nestedGraphs: NavGraphBuilder.() -> Unit,
@@ -238,10 +238,12 @@ fun NavGraphBuilder.claimFlowGraph(
         closeClaimFlow = closeClaimFlow,
       )
     }
-    composable<ClaimFlowDestination.DeflectGlassDamage> {
+    composable<ClaimFlowDestination.DeflectGlassDamage> { navBackStackEntry ->
       DeflectGlassDamageDestination(
         parameter = this,
-        openChat = openChat,
+        openChat = {
+          openChat(navBackStackEntry)
+        },
         windowSizeClass = windowSizeClass,
         navigateUp = navigator::navigateUp,
         openUrl = openUrl,
@@ -249,20 +251,24 @@ fun NavGraphBuilder.claimFlowGraph(
         imageLoader = imageLoader,
       )
     }
-    composable<ClaimFlowDestination.DeflectEmergency> {
+    composable<ClaimFlowDestination.DeflectEmergency> { navBackStackEntry ->
       DeflectEmergencyDestination(
         parameter = this,
-        openChat = openChat,
+        openChat = {
+          openChat(navBackStackEntry)
+        },
         navigateUp = navigator::navigateUp,
         windowSizeClass = windowSizeClass,
         closeClaimFlow = closeClaimFlow,
         imageLoader = imageLoader,
       )
     }
-    composable<ClaimFlowDestination.DeflectPests> {
+    composable<ClaimFlowDestination.DeflectPests> { navBackStackEntry ->
       DeflectPestsDestination(
         parameter = this,
-        openChat = openChat,
+        openChat = {
+          openChat(navBackStackEntry)
+        },
         navigateUp = navigator::navigateUp,
         openUrl = openUrl,
         windowSizeClass = windowSizeClass,

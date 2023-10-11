@@ -284,8 +284,10 @@ private fun NavGraphBuilder.nestedHomeGraphs(
       )
     },
     openUrl = { activityNavigator.openWebsite(context, Uri.parse(it)) },
-    openChat = {
-      activityNavigator.navigateToChat(context)
+    openChat = { backStackEntry ->
+      with(navigator) {
+        backStackEntry.navigate(AppDestination.Chat)
+      }
     },
     imageLoader = imageLoader,
   )

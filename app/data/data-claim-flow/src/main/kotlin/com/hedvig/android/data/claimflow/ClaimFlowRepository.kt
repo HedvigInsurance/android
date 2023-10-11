@@ -16,7 +16,6 @@ import com.hedvig.android.data.claimtriaging.EntryPointId
 import com.hedvig.android.data.claimtriaging.EntryPointOptionId
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import java.io.File
 import kotlinx.datetime.LocalDate
 import octopus.FlowClaimAudioRecordingNextMutation
 import octopus.FlowClaimConfirmEmergencyMutation
@@ -36,6 +35,7 @@ import octopus.type.FlowClaimSummaryInput
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
 
 interface ClaimFlowRepository {
   suspend fun startClaimFlow(
