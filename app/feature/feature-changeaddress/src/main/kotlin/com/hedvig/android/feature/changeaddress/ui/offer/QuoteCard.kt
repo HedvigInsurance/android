@@ -168,55 +168,10 @@ private fun ExpandedInformation(
   quote: MoveQuote,
 ) {
   Column {
-    HorizontalItemsWithMaximumSpaceTaken(
-      startSlot = { Text(stringResource(id = R.string.CHANGE_ADDRESS_NEW_ADDRESS_LABEL)) },
-      endSlot = { Text(quote.address.street, textAlign = TextAlign.End) },
-      spaceBetween = 4.dp,
-    )
-    HorizontalItemsWithMaximumSpaceTaken(
-      startSlot = { Text(stringResource(id = R.string.CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL)) },
-      endSlot = { Text(quote.address.postalCode, textAlign = TextAlign.End) },
-      spaceBetween = 4.dp,
-    )
-    quote.squareMeters?.let {
+    quote.displayItems.forEach {
       HorizontalItemsWithMaximumSpaceTaken(
-        startSlot = { Text(stringResource(id = R.string.CHANGE_ADDRESS_NEW_LIVING_SPACE_LABEL)) },
-        endSlot = {
-          Text(
-            it.toString() + " " + stringResource(id = R.string.CHANGE_ADDRESS_SIZE_SUFFIX),
-            textAlign = TextAlign.End,
-          )
-        },
-        spaceBetween = 4.dp,
-      )
-    }
-    quote.ancillaryArea?.let {
-      HorizontalItemsWithMaximumSpaceTaken(
-        startSlot = { Text(stringResource(id = R.string.CHANGE_ADDRESS_ANCILLARY_AREA_LABEL)) },
-        endSlot = { Text(it.toString(), textAlign = TextAlign.End) },
-        spaceBetween = 4.dp,
-      )
-    }
-    quote.yearOfConstruction?.let {
-      HorizontalItemsWithMaximumSpaceTaken(
-        startSlot = { Text(stringResource(id = R.string.CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL)) },
-        endSlot = { Text(it.toString(), textAlign = TextAlign.End) },
-        spaceBetween = 4.dp,
-      )
-    }
-    quote.numberInsured?.let {
-      HorizontalItemsWithMaximumSpaceTaken(
-        startSlot = { Text(stringResource(id = R.string.CHANGE_ADDRESS_CO_INSURED_LABEL)) },
-        endSlot = {
-          Text(
-            if (it == 1) {
-              stringResource(id = R.string.CHANGE_ADDRESS_ONE_PERSON)
-            } else {
-              stringResource(id = R.string.CHANGE_ADDRESS_TOTAL_PERSONS, it)
-            },
-            textAlign = TextAlign.End,
-          )
-        },
+        startSlot = { Text(it.first) },
+        endSlot = { Text(it.second, textAlign = TextAlign.End) },
         spaceBetween = 4.dp,
       )
     }
