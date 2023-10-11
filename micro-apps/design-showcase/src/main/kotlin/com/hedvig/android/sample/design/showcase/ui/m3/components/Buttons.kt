@@ -34,9 +34,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.LargeOutlinedButton
-import com.hedvig.android.core.designsystem.component.button.LargeTextButton
 
 @Composable
 internal fun M3Buttons() {
@@ -48,17 +47,14 @@ internal fun M3Buttons() {
       style = MaterialTheme.typography.headlineSmall,
     )
     Spacer(Modifier.size(16.dp))
-    LargeContainedButton({}, Modifier.padding(horizontal = 8.dp)) {
-      Text("Hedvig LargeTextButton")
+    HedvigContainedButton({}, Modifier.padding(horizontal = 8.dp)) {
+      Text("HedvigContainedButton")
     }
     Spacer(Modifier.size(16.dp))
     LargeOutlinedButton({}, Modifier.padding(horizontal = 8.dp)) {
       Text("Hedvig LargeTextButton")
     }
     Spacer(Modifier.size(16.dp))
-    LargeTextButton({}, Modifier.padding(horizontal = 8.dp)) {
-      Text("Hedvig LargeTextButton")
-    }
 
     Spacer(Modifier.size(16.dp))
     Button(

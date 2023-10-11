@@ -38,13 +38,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.datepicker.HedvigDatePicker
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.material3.onInfoElement
 import com.hedvig.android.core.designsystem.material3.onWarningContainer
-import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.material3.warningElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -137,10 +135,9 @@ internal fun GenerateTravelCertificateInput(
       )
       Spacer(modifier = Modifier.height(8.dp))
 
-      LargeContainedButton(
+      HedvigContainedButton(
         onClick = { onIncludeMemberClicked(!uiState.includeMember) },
         modifier = Modifier.padding(horizontal = 16.dp),
-        shape = MaterialTheme.shapes.squircleMedium,
         colors = ButtonDefaults.buttonColors(
           containerColor = MaterialTheme.colorScheme.surfaceVariant,
           contentColor = MaterialTheme.colorScheme.onSurface,
@@ -166,10 +163,9 @@ internal fun GenerateTravelCertificateInput(
       uiState.coInsured.input.map { coInsured ->
         Spacer(modifier = Modifier.height(8.dp))
 
-        LargeContainedButton(
+        HedvigContainedButton(
           onClick = { onCoInsuredClicked(coInsured) },
           modifier = Modifier.padding(horizontal = 16.dp),
-          shape = MaterialTheme.shapes.squircleMedium,
           colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
             contentColor = MaterialTheme.colorScheme.onSurface,

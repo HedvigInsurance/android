@@ -42,14 +42,14 @@ import kotlin.math.max
 @Composable
 internal fun HomeLayout(
   fullScreenSize: IntSize,
-  welcomeMessage: @Composable @UiComposable  () -> Unit, // ktlint-disable no-multi-spaces
-  claimStatusCards: @Composable @UiComposable  () -> Unit, // ktlint-disable no-multi-spaces
-  veryImportantMessages: @Composable @UiComposable  () -> Unit, // ktlint-disable no-multi-spaces
-  memberReminderCards: @Composable @UiComposable  () -> Unit, // ktlint-disable no-multi-spaces
-  startClaimButton: @Composable @UiComposable  () -> Unit, // ktlint-disable no-multi-spaces
-  otherServicesButton: @Composable @UiComposable  () -> Unit, // ktlint-disable no-multi-spaces
-  topSpacer: @Composable @UiComposable  () -> Unit, // ktlint-disable no-multi-spaces
-  bottomSpacer: @Composable @UiComposable  () -> Unit, // ktlint-disable no-multi-spaces
+  welcomeMessage: @Composable @UiComposable   () -> Unit, // ktlint-disable no-multi-spaces
+  claimStatusCards: @Composable @UiComposable   () -> Unit, // ktlint-disable no-multi-spaces
+  veryImportantMessages: @Composable @UiComposable   () -> Unit, // ktlint-disable no-multi-spaces
+  memberReminderCards: @Composable @UiComposable   () -> Unit, // ktlint-disable no-multi-spaces
+  startClaimButton: @Composable @UiComposable   () -> Unit, // ktlint-disable no-multi-spaces
+  otherServicesButton: @Composable @UiComposable   () -> Unit, // ktlint-disable no-multi-spaces
+  topSpacer: @Composable @UiComposable   () -> Unit, // ktlint-disable no-multi-spaces
+  bottomSpacer: @Composable @UiComposable   () -> Unit, // ktlint-disable no-multi-spaces
   modifier: Modifier = Modifier,
 ) {
   Layout(
@@ -278,9 +278,9 @@ private fun PreviewHomeLayout(
   maxWidth: Int,
   maxHeight: Int,
   modifier: Modifier = Modifier,
-  claimStatusCards: @Composable @UiComposable  () -> Unit = {}, // ktlint-disable no-multi-spaces
-  veryImportantMessages: @Composable @UiComposable  () -> Unit = {}, // ktlint-disable no-multi-spaces
-  memberReminderCards: @Composable @UiComposable  () -> Unit = {}, // ktlint-disable no-multi-spaces
+  claimStatusCards: @Composable @UiComposable   () -> Unit = {}, // ktlint-disable no-multi-spaces
+  veryImportantMessages: @Composable @UiComposable   () -> Unit = {}, // ktlint-disable no-multi-spaces
+  memberReminderCards: @Composable @UiComposable   () -> Unit = {}, // ktlint-disable no-multi-spaces
 ) {
   HomeLayout(
     fullScreenSize = IntSize(maxWidth, maxHeight),

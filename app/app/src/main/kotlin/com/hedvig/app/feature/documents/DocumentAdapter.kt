@@ -17,7 +17,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.core.common.android.GenericDiffUtilItemCallback
-import com.hedvig.android.core.designsystem.component.button.LargeTextButton
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DocumentBinding
@@ -97,7 +97,7 @@ class DocumentAdapter(
       require(cancelInsurance is DocumentItems.CancelInsuranceButton)
       composeView.setContent {
         HedvigTheme {
-          LargeTextButton(
+          HedvigContainedButton(
             onClick = {
               openCancelInsuranceScreen?.let { it(cancelInsurance.insuranceId, cancelInsurance.insuranceDisplayName) }
             },

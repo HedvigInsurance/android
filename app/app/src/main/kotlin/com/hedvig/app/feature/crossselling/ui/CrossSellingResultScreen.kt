@@ -23,8 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
-import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.LargeOutlinedTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -156,7 +155,7 @@ private fun ButtonsSection(
   ) {
     when (crossSellingResult) {
       is CrossSellingResult.Error -> {
-        LargeContainedButton(
+        HedvigContainedButton(
           onClick = openChat,
         ) {
           Icon(
@@ -172,7 +171,7 @@ private fun ButtonsSection(
         )
       }
       is CrossSellingResult.Success -> {
-        LargeContainedTextButton(
+        HedvigContainedButton(
           onClick = closeResultScreen,
           text = stringResource(hedvig.resources.R.string.purchase_confirmation_accident_insurance_done_button),
         )

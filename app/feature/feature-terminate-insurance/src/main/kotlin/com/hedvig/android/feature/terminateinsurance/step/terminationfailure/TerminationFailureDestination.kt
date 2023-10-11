@@ -13,7 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.LargeOutlinedTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -60,7 +60,7 @@ private fun TerminationFailureScreen(
         onClick = openChat,
       )
       Spacer(Modifier.height(16.dp))
-      LargeContainedTextButton(
+      HedvigContainedButton(
         text = stringResource(R.string.general_done_button),
         onClick = navigateBack,
       )
