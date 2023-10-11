@@ -52,7 +52,7 @@ internal fun M3Buttons() {
     }
     Spacer(Modifier.size(16.dp))
     LargeOutlinedButton({}, Modifier.padding(horizontal = 8.dp)) {
-      Text("Hedvig LargeTextButton")
+      Text("Hedvig LargeOutlinedButton")
     }
     Spacer(Modifier.size(16.dp))
 

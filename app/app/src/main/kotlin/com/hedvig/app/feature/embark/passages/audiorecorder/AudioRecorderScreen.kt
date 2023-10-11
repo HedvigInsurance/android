@@ -28,7 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.LargeTextButton
+import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.ScreenOnFlag
@@ -206,14 +206,13 @@ fun Playback(
     ) {
       Text(stringResource(hedvig.resources.R.string.EMBARK_SUBMIT_CLAIM))
     }
-    LargeTextButton(
+    HedvigTextButton(
+      text = stringResource(hedvig.resources.R.string.EMBARK_RECORD_AGAIN),
       onClick = redo,
       modifier = Modifier
         .padding(top = 8.dp)
         .testTag("recordClaimAgain"),
-    ) {
-      Text(stringResource(hedvig.resources.R.string.EMBARK_RECORD_AGAIN))
-    }
+    )
   }
 }
 

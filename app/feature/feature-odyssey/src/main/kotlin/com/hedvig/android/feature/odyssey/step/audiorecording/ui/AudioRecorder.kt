@@ -51,7 +51,7 @@ import com.hedvig.android.audio.player.state.PlayableAudioSource
 import com.hedvig.android.audio.player.state.rememberAudioPlayer
 import com.hedvig.android.core.common.android.ProgressPercentage
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.LargeTextButton
+import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.material3.motion.MotionTokens
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
@@ -60,6 +60,7 @@ import com.hedvig.android.core.ui.audiorecording.RecordingAmplitudeIndicator
 import com.hedvig.android.data.claimflow.AudioContent
 import com.hedvig.android.data.claimflow.model.AudioUrl
 import com.hedvig.android.feature.odyssey.step.audiorecording.AudioRecordingUiState
+import hedvig.resources.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.datetime.Clock
@@ -219,13 +220,12 @@ private fun Playback(
       modifier = Modifier.padding(top = 16.dp),
     )
 
-    LargeTextButton(
+    HedvigTextButton(
+      text = stringResource(R.string.EMBARK_RECORD_AGAIN),
       onClick = redo,
       enabled = uiState.canSubmit,
       modifier = Modifier.padding(top = 8.dp),
-    ) {
-      Text(stringResource(hedvig.resources.R.string.EMBARK_RECORD_AGAIN))
-    }
+    )
   }
 }
 
@@ -269,12 +269,11 @@ private fun PrerecordedPlayback(
     ) {
       Column {
         Spacer(Modifier.height(8.dp))
-        LargeTextButton(
+        HedvigTextButton(
+          text = stringResource(hedvig.resources.R.string.EMBARK_RECORD_AGAIN),
           onClick = redo,
           enabled = uiState.canSubmit,
-        ) {
-          Text(stringResource(hedvig.resources.R.string.EMBARK_RECORD_AGAIN))
-        }
+        )
       }
     }
   }
