@@ -14,7 +14,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.LargeOutlinedTextButton
+import com.hedvig.android.core.designsystem.component.button.HedvigOutlinedTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.preview.calculateForPreview
@@ -55,7 +55,7 @@ private fun TerminationFailureScreen(
     navigateUp = navigateUp,
   ) {
     Column {
-      LargeOutlinedTextButton(
+      HedvigOutlinedTextButton(
         text = stringResource(id = R.string.open_chat),
         onClick = openChat,
       )

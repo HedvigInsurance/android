@@ -11,7 +11,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.LargeOutlinedTextButton
+import com.hedvig.android.core.designsystem.component.button.HedvigOutlinedTextButton
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationInfoScreen
 import hedvig.resources.R
 
@@ -46,7 +46,7 @@ private fun UnknownScreenScreen(
     navigateUp = navigateUp,
   ) {
     Column {
-      LargeOutlinedTextButton(
+      HedvigOutlinedTextButton(
         text = stringResource(R.string.EMBARK_UPDATE_APP_BUTTON),
         onClick = openPlayStore,
       )

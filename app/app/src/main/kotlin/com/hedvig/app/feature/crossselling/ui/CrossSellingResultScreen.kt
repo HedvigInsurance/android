@@ -24,7 +24,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.LargeOutlinedTextButton
+import com.hedvig.android.core.designsystem.component.button.HedvigOutlinedTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
@@ -165,7 +165,7 @@ private fun ButtonsSection(
           Spacer(Modifier.width(8.dp))
           Text(stringResource(hedvig.resources.R.string.purchase_confirmation_error_open_chat_button))
         }
-        LargeOutlinedTextButton(
+        HedvigOutlinedTextButton(
           onClick = closeResultScreen,
           text = stringResource(hedvig.resources.R.string.purchase_confirmation_error_close_button),
         )

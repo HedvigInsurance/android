@@ -35,7 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.LargeOutlinedButton
+import com.hedvig.android.core.designsystem.component.button.HedvigOutlinedButton
 
 @Composable
 internal fun M3Buttons() {
@@ -51,7 +51,7 @@ internal fun M3Buttons() {
       Text("HedvigContainedButton")
     }
     Spacer(Modifier.size(16.dp))
-    LargeOutlinedButton({}, Modifier.padding(horizontal = 8.dp)) {
+    HedvigOutlinedButton({}, Modifier.padding(horizontal = 8.dp)) {
       Text("Hedvig LargeOutlinedButton")
     }
     Spacer(Modifier.size(16.dp))
