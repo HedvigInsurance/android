@@ -39,7 +39,7 @@ jobs:
       run: ./gradlew :app:lintDebug -Prur.lint.onlyUnusedResources
 
     - name: Remove unused resources
-      run: ./gradlew :app:removeUnusedResources -Prur.lintVariant="debug"
+      run: ./gradlew :app:removeUnusedResourcesDebug
 
     - name: Generate Token
       id: generate_token
