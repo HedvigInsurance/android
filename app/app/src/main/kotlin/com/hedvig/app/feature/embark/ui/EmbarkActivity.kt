@@ -3,6 +3,7 @@ package com.hedvig.app.feature.embark.ui
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
@@ -22,6 +23,7 @@ import com.hedvig.android.core.common.android.remove
 import com.hedvig.android.core.common.android.whenApiVersion
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityEmbarkBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
@@ -50,13 +52,13 @@ import com.hedvig.app.feature.embark.passages.textaction.TextActionFragment
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
-import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.viewBinding
 import giraffe.EmbarkStoryQuery
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.time.Duration.Companion.milliseconds
@@ -75,6 +77,7 @@ class EmbarkActivity : AppCompatActivity(R.layout.activity_embark) {
 
   private val viewModel: EmbarkViewModel by viewModel { parametersOf(storyName) }
   private val binding by viewBinding(ActivityEmbarkBinding::bind)
+  private val hedvigDeepLinkContainer: HedvigDeepLinkContainer by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -124,7 +127,9 @@ class EmbarkActivity : AppCompatActivity(R.layout.activity_embark) {
         .flowWithLifecycle(lifecycle)
         .onEach { event ->
           when (event) {
-            EmbarkViewModel.Event.Chat -> startChat()
+            EmbarkViewModel.Event.Chat -> {
+              startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(hedvigDeepLinkContainer.chat)))
+            }
             is EmbarkViewModel.Event.Offer -> {
               startActivity(
                 OfferActivity.newInstance(

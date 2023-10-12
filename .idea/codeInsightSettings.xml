@@ -12,10 +12,10 @@
       <name>android.widget.GridLayout.Alignment</name>
       <name>androidx.constraintlayout.helper.widget.Flow</name>
       <name>androidx.constraintlayout.solver.widgets.Flow</name>
+      <name>androidx.navigation.compose.composable</name>
+      <name>androidx.navigation.compose.navigation</name>
       <name>com.google.errorprone.annotations.Modifier</name>
       <name>com.google.firebase.crashlytics.internal.model.ImmutableList</name>
-      <name>com.kiwi.navigationcompose.typed.composable</name>
-      <name>com.kiwi.navigationcompose.typed.navigation</name>
       <name>java.lang.reflect.Modifier</name>
       <name>java.nio.file.WatchEvent.Modifier</name>
       <name>java.time.format.TextStyle</name>

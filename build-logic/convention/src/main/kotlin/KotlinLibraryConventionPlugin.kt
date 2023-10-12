@@ -22,6 +22,9 @@ class KotlinLibraryConventionPlugin : Plugin<Project> {
       }
 
       dependencies {
+        val koinBom = libs.koin.bom
+        add("implementation", platform(koinBom))
+
         add("lintChecks", project(":hedvig-lint"))
         if (target.name != "logging-public") {
           add("implementation", project(":logging-public"))

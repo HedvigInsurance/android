@@ -4,6 +4,7 @@ import com.hedvig.android.core.ui.insurance.ContractType
 import com.hedvig.android.core.ui.insurance.InsurableLimit
 import com.hedvig.android.core.ui.insurance.ProductVariant
 import com.hedvig.android.core.uidata.UiMoney
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 import octopus.type.CurrencyCode
 
@@ -15,6 +16,9 @@ data class MoveQuote(
   val numberInsured: Int?,
   val premium: UiMoney,
   val startDate: LocalDate,
+  val ancillaryArea: Int?,
+  val yearOfConstruction: Int?,
+  val squareMeters: Int?,
   val productVariant: ProductVariant,
   val isExpanded: Boolean = false,
 ) {
@@ -43,8 +47,8 @@ data class MoveQuote(
           displayName = "Test",
           contractType = ContractType.RENTAL,
           partner = "test",
-          perils = emptyList(),
-          insurableLimits = listOf(
+          perils = persistentListOf(),
+          insurableLimits = persistentListOf(
             InsurableLimit(
               label = "test",
               description = "long".repeat(10),
@@ -52,8 +56,11 @@ data class MoveQuote(
               type = InsurableLimit.InsurableLimitType.BIKE,
             ),
           ),
-          documents = emptyList(),
+          documents = persistentListOf(),
         ),
+        ancillaryArea = 10,
+        yearOfConstruction = 1991,
+        squareMeters = 30,
       )
     }
   }

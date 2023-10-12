@@ -21,8 +21,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
-import com.hedvig.android.core.designsystem.component.button.LargeOutlinedTextButton
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
+import com.hedvig.android.core.designsystem.component.button.HedvigOutlinedTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.preview.calculateForPreview
@@ -77,13 +77,13 @@ private fun InsuranceDeletionScreen(
       navigateUp = navigateBack,
     ) {
       Column {
-        LargeOutlinedTextButton(
+        HedvigOutlinedTextButton(
           text = stringResource(R.string.general_cancel_button),
           onClick = navigateBack,
           enabled = uiState.canSubmit,
         )
         Spacer(Modifier.height(16.dp))
-        LargeContainedTextButton(
+        HedvigContainedButton(
           text = stringResource(R.string.general_continue_button),
           onClick = { confirmDeletion() },
           enabled = uiState.canSubmit,

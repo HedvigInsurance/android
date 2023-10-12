@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.common.android.ThemedIconUrls
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
+import com.hedvig.android.core.designsystem.material3.onWarningContainer
 import com.hedvig.android.core.designsystem.material3.squircleLargeTop
 import com.hedvig.android.core.designsystem.material3.warningContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -130,6 +131,7 @@ private fun OtherServicesBottomSheetContent(
           onClick = { onEmergencyClaimClicked(emergencyData) },
           cardColors = CardDefaults.outlinedCardColors(
             containerColor = MaterialTheme.colorScheme.warningContainer,
+            contentColor = MaterialTheme.colorScheme.onWarningContainer,
           ),
         )
       }
@@ -148,10 +150,7 @@ private fun OtherServicesBottomSheetContent(
 private fun ClickableOption(
   text: String,
   onClick: () -> Unit,
-  cardColors: CardColors = CardDefaults.outlinedCardColors(
-    containerColor = MaterialTheme.colorScheme.surfaceVariant,
-    contentColor = MaterialTheme.colorScheme.onSurface,
-  ),
+  cardColors: CardColors = CardDefaults.outlinedCardColors(),
 ) {
   HedvigCard(
     onClick = onClick,

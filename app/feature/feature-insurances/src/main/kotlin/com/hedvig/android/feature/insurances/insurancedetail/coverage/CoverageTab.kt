@@ -50,6 +50,8 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
 import com.hedvig.android.core.ui.card.ExpandablePlusCard
+import com.hedvig.android.core.ui.insurance.InsurableLimit
+import com.hedvig.android.core.ui.insurance.Peril
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentList
@@ -60,16 +62,15 @@ import kotlinx.coroutines.launch
 @ExperimentalMaterial3Api
 @Composable
 internal fun CoverageTab(
-  insurableLimits: ImmutableList<ContractCoverage.InsurableLimit>,
-  perils: ImmutableList<ContractCoverage.Peril>,
+  insurableLimits: ImmutableList<InsurableLimit>,
+  perils: ImmutableList<Peril>,
   modifier: Modifier = Modifier,
 ) {
   val coroutineScope = rememberCoroutineScope()
   val sheetState = rememberModalBottomSheetState(true)
-  var selectedInsurableLimit by rememberSaveable(stateSaver = ContractCoverage.InsurableLimit.Saver) {
-    mutableStateOf<ContractCoverage.InsurableLimit?>(null)
-  }
+  var selectedInsurableLimit by rememberSaveable(stateSaver = InsurableLimit.Saver) { mutableStateOf(null) }
   val selectedInsurableLimitValue = selectedInsurableLimit
+
   if (selectedInsurableLimitValue != null) {
     ModalBottomSheet(
       onDismissRequest = { selectedInsurableLimit = null },
@@ -109,7 +110,7 @@ internal fun CoverageTab(
     Spacer(Modifier.height(16.dp))
     InsurableLimitSection(
       insurableLimits = insurableLimits,
-      onInsurableLimitClick = { insurableLimit: ContractCoverage.InsurableLimit ->
+      onInsurableLimitClick = { insurableLimit: InsurableLimit ->
         selectedInsurableLimit = insurableLimit
       },
     )
@@ -125,7 +126,7 @@ internal fun CoverageTab(
 @Suppress("UnusedReceiverParameter")
 @Composable
 private fun ColumnScope.PerilSection(
-  perilItems: ImmutableList<ContractCoverage.Peril>,
+  perilItems: ImmutableList<Peril>,
 ) {
   var expandedItemIndex by rememberSaveable { mutableStateOf(-1) }
   for ((index, perilItem) in perilItems.withIndex()) {
@@ -138,10 +139,10 @@ private fun ColumnScope.PerilSection(
           expandedItemIndex = index
         }
       },
-      color = perilItem.colorHexValue?.let { Color(it) },
+      color = perilItem.colorCode?.color,
       title = perilItem.title,
       expandedTitle = perilItem.description,
-      expandedDescriptionList = perilItem.covered,
+      expandedDescriptionList = perilItem.covered.toPersistentList(),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     if (index != perilItems.lastIndex) {
@@ -149,6 +150,9 @@ private fun ColumnScope.PerilSection(
     }
   }
 }
+
+private val String.color
+  get() = Color(android.graphics.Color.parseColor(this))
 
 @Composable
 private fun ExpandableCoverageCard(
@@ -219,8 +223,8 @@ private fun ExpandableCoverageCard(
 @Suppress("UnusedReceiverParameter")
 @Composable
 private fun ColumnScope.InsurableLimitSection(
-  insurableLimits: ImmutableList<ContractCoverage.InsurableLimit>,
-  onInsurableLimitClick: (ContractCoverage.InsurableLimit) -> Unit,
+  insurableLimits: ImmutableList<InsurableLimit>,
+  onInsurableLimitClick: (InsurableLimit) -> Unit,
 ) {
   insurableLimits.mapIndexed { index, insurableLimitItem ->
     HorizontalItemsWithMaximumSpaceTaken(
@@ -311,19 +315,20 @@ private fun PreviewPerilSection() {
   }
 }
 
-private val previewPerils: PersistentList<ContractCoverage.Peril> = List(4) { index ->
-  val hexValue = listOf(0xFFC45D4F, 0xFF125D4F, 0xFFC4FF4F, 0xFFC45D00)[index]
-  ContractCoverage.Peril(
+private val previewPerils: PersistentList<Peril> = List(4) { index ->
+  Peril(
     id = index.toString(),
     title = "Eldsvåda",
     description = "description$index",
     covered = persistentListOf("Covered#$index"),
-    colorHexValue = hexValue,
+    colorCode = "0xFFC45D4F",
+    info = "test",
+    exceptions = listOf(),
   )
 }.toPersistentList()
 
-private val previewInsurableLimits: PersistentList<ContractCoverage.InsurableLimit> = persistentListOf(
-  ContractCoverage.InsurableLimit("Insured amount".repeat(2), "1 000 000 kr", ""),
-  ContractCoverage.InsurableLimit("Deductible", "1 500 kr", ""),
-  ContractCoverage.InsurableLimit("Travel insurance", "45 days", ""),
+private val previewInsurableLimits: PersistentList<InsurableLimit> = persistentListOf(
+  InsurableLimit("Insured amount".repeat(2), "1 000 000 kr", "", InsurableLimit.InsurableLimitType.GOODS_FAMILY),
+  InsurableLimit("Deductible", "1 500 kr", "", InsurableLimit.InsurableLimitType.DEDUCTIBLE),
+  InsurableLimit("Travel insurance", "45 days", "", InsurableLimit.InsurableLimitType.BIKE),
 )

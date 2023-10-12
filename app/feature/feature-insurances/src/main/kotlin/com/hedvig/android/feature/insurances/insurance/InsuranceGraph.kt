@@ -6,10 +6,10 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
 import coil.ImageLoader
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
+import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailDestination
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailViewModel
-import com.hedvig.android.feature.insurances.insurancedetail.data.ContractDetails
 import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsDestination
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsViewModel
@@ -27,7 +27,7 @@ fun NavGraphBuilder.insuranceGraph(
   nestedGraphs: NavGraphBuilder.() -> Unit,
   navigator: Navigator,
   openWebsite: (Uri) -> Unit,
-  openChat: () -> Unit,
+  openChat: (NavBackStackEntry) -> Unit,
   startMovingFlow: () -> Unit,
   startTerminationFlow: (backStackEntry: NavBackStackEntry, insuranceId: String, insuranceDisplayName: String) -> Unit,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
@@ -62,18 +62,18 @@ fun NavGraphBuilder.insuranceGraph(
       val viewModel: ContractDetailViewModel = koinViewModel { parametersOf(contractDetail.contractId) }
       ContractDetailDestination(
         viewModel = viewModel,
-        onEditCoInsuredClick = openChat,
+        onEditCoInsuredClick = { openChat(backStackEntry) },
         onChangeAddressClick = { startMovingFlow() },
-        onCancelInsuranceClick = { cancelInsuranceData: ContractDetails.CancelInsuranceData ->
+        onCancelInsuranceClick = { cancelInsuranceData: CancelInsuranceData ->
           // open termination flow
           startTerminationFlow(
             backStackEntry,
-            cancelInsuranceData.insuranceId,
-            cancelInsuranceData.insuranceDisplayName,
+            cancelInsuranceData.contractId,
+            cancelInsuranceData.contractDisplayName,
           )
         },
         openWebsite = openWebsite,
-        openChat = openChat,
+        openChat = { openChat(backStackEntry) },
         navigateUp = navigator::navigateUp,
         imageLoader = imageLoader,
       )

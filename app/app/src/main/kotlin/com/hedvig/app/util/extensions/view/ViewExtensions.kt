@@ -1,6 +1,5 @@
 package com.hedvig.app.util.extensions.view
 
-import android.app.Activity
 import android.graphics.Rect
 import android.os.Build
 import android.view.HapticFeedbackConstants
@@ -9,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowInsets
 import android.view.WindowInsetsAnimation
-import android.view.inputmethod.InputMethodManager
 import androidx.annotation.Dimension
 import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresApi
@@ -17,8 +15,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.RecyclerView
-import com.hedvig.android.core.common.android.remove
-import com.hedvig.android.core.common.android.show
 import com.hedvig.app.util.ControlFocusInsetsAnimationCallback
 import com.hedvig.app.util.RootViewDeferringInsetsCallback
 import com.hedvig.app.util.TranslateDeferringInsetsAnimationCallback
@@ -82,11 +78,6 @@ fun View.updateMargin(
   )
 
   layoutParams = lp
-}
-
-fun View.setScaleXY(scale: Float) {
-  scaleX = scale
-  scaleY = scale
 }
 
 fun Toolbar.setupToolbar(
@@ -178,33 +169,6 @@ fun RecyclerView.setupToolbarScrollListener(toolbar: Toolbar) {
     },
   )
 }
-
-fun View.fadeIn(endAction: (() -> Unit)? = null) {
-  alpha = 0f
-  show()
-  val animation = animate().setDuration(225).alpha(1f)
-  endAction?.let { animation.withEndAction(it) }
-  animation.start()
-}
-
-fun View.fadeOut(endAction: (() -> Unit)? = null, removeOnEnd: Boolean = true) {
-  alpha = 1f
-  show()
-  val animation = animate().setDuration(225).alpha(0f)
-  animation.withEndAction {
-    if (removeOnEnd) {
-      this.remove()
-    }
-    endAction?.invoke()
-  }
-  animation.start()
-}
-
-fun View.dismissKeyboard() =
-  (context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(
-    windowToken,
-    0,
-  )
 
 fun View.hapticClicks(): Flow<Unit> = callbackFlow<Unit> {
   setOnClickListener {

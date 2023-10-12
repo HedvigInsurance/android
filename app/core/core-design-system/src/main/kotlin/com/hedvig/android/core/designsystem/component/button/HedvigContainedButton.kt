@@ -100,7 +100,7 @@ fun HedvigContainedButton(
 }
 
 @Composable
-private fun HedvigContainedButton(
+fun HedvigContainedButton(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   colors: ButtonColors = ButtonDefaults.buttonColors(

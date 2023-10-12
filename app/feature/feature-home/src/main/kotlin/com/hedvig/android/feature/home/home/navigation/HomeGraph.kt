@@ -23,7 +23,7 @@ fun NavGraphBuilder.homeGraph(
   nestedGraphs: NavGraphBuilder.() -> Unit,
   navigator: Navigator,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-  onStartChat: () -> Unit,
+  onStartChat: (NavBackStackEntry) -> Unit,
   onStartClaim: (NavBackStackEntry) -> Unit,
   startMovingFlow: () -> Unit,
   onGenerateTravelCertificateClicked: () -> Unit,
@@ -46,7 +46,7 @@ fun NavGraphBuilder.homeGraph(
       val viewModel: HomeViewModel = koinViewModel()
       HomeDestination(
         viewModel = viewModel,
-        onStartChat = onStartChat,
+        onStartChat = { onStartChat(backStackEntry) },
         onClaimDetailCardClicked = { claimId: String ->
           with(navigator) { backStackEntry.navigate(HomeDestinations.ClaimDetailDestination(claimId)) }
         },
@@ -63,7 +63,9 @@ fun NavGraphBuilder.homeGraph(
     }
     claimDetailGraph(
       navigateUp = navigator::navigateUp,
-      navigateToChat = onStartChat,
+      navigateToChat = { backStackEntry ->
+        onStartChat(backStackEntry)
+      },
     )
     commonClaimGraph(
       imageLoader = imageLoader,

@@ -35,6 +35,8 @@ apollo {
     generateOptionalOperationVariables.set(false)
 
     mapScalar("Date", "kotlinx.datetime.LocalDate", "com.apollographql.apollo3.adapter.KotlinxLocalDateAdapter")
+    mapScalar("Instant", "kotlinx.datetime.Instant", "com.apollographql.apollo3.adapter.KotlinxInstantAdapter")
+    mapScalarToUpload("Upload")
     mapScalarToKotlinString("UUID")
     mapScalarToKotlinString("Url")
     mapScalarToKotlinString("FlowContext")

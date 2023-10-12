@@ -1,0 +1,15 @@
+fragment MessageFragment on ChatMessage {
+  ... on ChatMessageFile {
+    id
+    sender
+    sentAt
+    signedUrl
+    mimeType
+  }
+  ... on ChatMessageText {
+    id
+    sender
+    sentAt
+    text
+  }
+}

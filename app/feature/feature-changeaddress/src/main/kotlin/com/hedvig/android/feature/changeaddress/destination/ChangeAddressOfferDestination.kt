@@ -36,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -48,7 +47,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.ImageLoader
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
@@ -59,7 +57,6 @@ import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarActionType
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
-import com.hedvig.android.core.ui.preview.PreviewImageLoader
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiMoney
@@ -72,6 +69,7 @@ import com.hedvig.android.feature.changeaddress.ui.offer.QuoteCard
 import hedvig.resources.R
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -80,16 +78,15 @@ internal fun ChangeAddressOfferDestination(
   viewModel: ChangeAddressViewModel,
   openChat: () -> Unit,
   close: () -> Unit,
-  onChangeAddressResult: (String?) -> Unit,
+  onChangeAddressResult: (LocalDate?) -> Unit,
   openUrl: (String) -> Unit,
-  imageLoader: ImageLoader,
 ) {
   val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
   val moveResult = uiState.successfulMoveResult
 
   LaunchedEffect(moveResult) {
     if (moveResult != null) {
-      onChangeAddressResult(uiState.movingDate.input?.toString())
+      onChangeAddressResult(uiState.movingDate.input)
     }
   }
   ChangeAddressOfferScreen(
@@ -100,7 +97,6 @@ internal fun ChangeAddressOfferDestination(
     onExpandQuote = viewModel::onExpandQuote,
     onConfirmMove = viewModel::onConfirmMove,
     openUrl = openUrl,
-    imageLoader = imageLoader,
   )
 }
 
@@ -113,7 +109,6 @@ private fun ChangeAddressOfferScreen(
   onExpandQuote: (MoveQuote) -> Unit,
   onConfirmMove: (MoveIntentId) -> Unit,
   openUrl: (String) -> Unit,
-  imageLoader: ImageLoader,
 ) {
   val moveIntentId = uiState.moveIntentId ?: throw IllegalArgumentException("No moveIntentId found!")
 
@@ -135,11 +130,10 @@ private fun ChangeAddressOfferScreen(
     Spacer(Modifier.height(8.dp))
     for (quote in uiState.quotes) {
       QuoteCard(
-        movingDate = uiState.movingDate.input?.toString(),
+        movingDate = quote.startDate,
         quote = quote,
         onExpandClicked = { onExpandQuote(quote) },
         isExpanded = quote.isExpanded,
-        imageLoader = imageLoader,
         modifier = Modifier.padding(horizontal = 16.dp),
       )
       Spacer(Modifier.height(16.dp))
@@ -185,7 +179,7 @@ private fun ChangeAddressOfferScreen(
     )
     Spacer(Modifier.height(80.dp))
 
-    for (quote in uiState.quotes) {
+    for (quote in uiState.quotes.distinctBy { it.productVariant.contractType }) {
       QuoteDetailsAndPdfs(
         quote = quote,
         openUrl = openUrl,
@@ -195,25 +189,20 @@ private fun ChangeAddressOfferScreen(
     }
     Faqs(
       faqItems = listOf(
-        Pair(
-          stringResource(id = R.string.CHANGE_ADDRESS_FAQ_DATE_TITLE),
-          stringResource(id = R.string.CHANGE_ADDRESS_FAQ_DATE_LABEL),
+        stringResource(id = R.string.CHANGE_ADDRESS_FAQ_DATE_TITLE) to stringResource(
+          id = R.string.CHANGE_ADDRESS_FAQ_DATE_LABEL,
         ),
-        Pair(
-          stringResource(id = R.string.CHANGE_ADDRESS_FAQ_PRICE_TITLE),
-          stringResource(id = R.string.CHANGE_ADDRESS_FAQ_PRICE_LABEL),
+        stringResource(id = R.string.CHANGE_ADDRESS_FAQ_PRICE_TITLE) to stringResource(
+          id = R.string.CHANGE_ADDRESS_FAQ_PRICE_LABEL,
         ),
-        Pair(
-          stringResource(id = R.string.CHANGE_ADDRESS_FAQ_RENTBRF_TITLE),
-          stringResource(id = R.string.CHANGE_ADDRESS_FAQ_RENTBRF_LABEL),
+        stringResource(id = R.string.CHANGE_ADDRESS_FAQ_RENTBRF_TITLE) to stringResource(
+          id = R.string.CHANGE_ADDRESS_FAQ_RENTBRF_LABEL,
         ),
-        Pair(
-          stringResource(id = R.string.CHANGE_ADDRESS_FAQ_STORAGE_TITLE),
-          stringResource(id = R.string.CHANGE_ADDRESS_FAQ_STORAGE_LABEL),
+        stringResource(id = R.string.CHANGE_ADDRESS_FAQ_STORAGE_TITLE) to stringResource(
+          id = R.string.CHANGE_ADDRESS_FAQ_STORAGE_LABEL,
         ),
-        Pair(
-          stringResource(id = R.string.CHANGE_ADDRESS_FAQ_STUDENT_TITLE),
-          stringResource(id = R.string.CHANGE_ADDRESS_FAQ_STUDENT_LABEL),
+        stringResource(id = R.string.CHANGE_ADDRESS_FAQ_STUDENT_TITLE) to stringResource(
+          id = R.string.CHANGE_ADDRESS_FAQ_STUDENT_LABEL,
         ),
       ),
       modifier = Modifier.padding(horizontal = 16.dp),
@@ -389,7 +378,6 @@ private fun PreviewChangeAddressOfferScreen() {
         {},
         {},
         {},
-        imageLoader = PreviewImageLoader(LocalContext.current),
       )
     }
   }

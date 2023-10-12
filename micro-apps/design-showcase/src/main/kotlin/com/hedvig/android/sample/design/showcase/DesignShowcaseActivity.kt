@@ -11,12 +11,14 @@ import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import com.hedvig.android.core.designsystem.theme.ConfigureTransparentSystemBars
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.logger.AndroidLogcatLogger
 import com.hedvig.android.sample.design.showcase.ui.MaterialComponents
 
 class DesignShowcaseActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     WindowCompat.setDecorFitsSystemWindows(window, false)
+    AndroidLogcatLogger.install()
     setContent {
       HedvigTheme {
         ConfigureTransparentSystemBars()

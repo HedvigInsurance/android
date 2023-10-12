@@ -33,15 +33,8 @@
         android:theme="@style/Hedvig.Theme">
         <activity android:name=".feature.embark.ui.MoreOptionsActivity" />
         <activity
-            android:name=".feature.chat.ui.ChatActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme.Chat"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name=".feature.loggedin.ui.LoggedInActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|layoutDirection"
             android:exported="true"
             android:theme="@style/Hedvig.Theme.Splash"
             android:windowSoftInputMode="adjustResize">
@@ -123,9 +116,10 @@
         <activity android:name=".feature.tracking.NotificationOpenedTrackingActivity" />
         <activity
             android:name=".feature.marketing.MarketingActivity"
-            android:theme="@style/Hedvig.Theme.Marketing"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|locale|layoutDirection"
+            android:theme="@style/Hedvig.Theme.Marketing"
             android:windowSoftInputMode="adjustResize" />
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_hedvig_h" />

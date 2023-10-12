@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.insurances.di
 
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.apollo.giraffe.di.giraffeClient
 import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCaseDemo
@@ -10,14 +9,7 @@ import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCaseDe
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCaseImpl
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailViewModel
-import com.hedvig.android.feature.insurances.insurancedetail.coverage.GetContractCoverageUseCase
-import com.hedvig.android.feature.insurances.insurancedetail.coverage.GetContractCoverageUseCaseImpl
-import com.hedvig.android.feature.insurances.insurancedetail.data.GetContractDetailsUseCaseDemo
-import com.hedvig.android.feature.insurances.insurancedetail.data.GetContractDetailsUseCaseImpl
-import com.hedvig.android.feature.insurances.insurancedetail.data.GetContractDetailsUseCaseProvider
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsViewModel
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.android.language.LanguageService
 import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeService
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
@@ -35,23 +27,24 @@ val insurancesModule = module {
     TerminatedContractsViewModel(get<GetInsuranceContractsUseCaseProvider>())
   }
   viewModel<ContractDetailViewModel> { (contractId: String) ->
-    ContractDetailViewModel(contractId, get<GetContractDetailsUseCaseProvider>())
+    ContractDetailViewModel(contractId, get<GetInsuranceContractsUseCaseProvider>())
   }
 
-  single<GetContractCoverageUseCase> {
-    GetContractCoverageUseCaseImpl(get<ApolloClient>(octopusClient))
-  }
-  single<GetContractDetailsUseCaseImpl> {
-    GetContractDetailsUseCaseImpl(
-      get<ApolloClient>(giraffeClient),
-      get<GetContractCoverageUseCase>(),
-      get<LanguageService>(),
-      get<FeatureManager>(),
+  provideGetContractsUseCase()
+  provideGetCrossSellsUseCase()
+}
+
+private fun Module.provideGetContractsUseCase() {
+  single<GetInsuranceContractsUseCaseImpl> {
+    GetInsuranceContractsUseCaseImpl(
+      get<ApolloClient>(octopusClient),
     )
   }
+
   single<GetInsuranceContractsUseCaseDemo> {
     GetInsuranceContractsUseCaseDemo()
   }
+
   single {
     GetInsuranceContractsUseCaseProvider(
       demoManager = get<DemoManager>(),
@@ -59,7 +52,9 @@ val insurancesModule = module {
       demoImpl = get<GetInsuranceContractsUseCaseDemo>(),
     )
   }
+}
 
+private fun Module.provideGetCrossSellsUseCase() {
   single<GetCrossSellsUseCaseImpl> {
     GetCrossSellsUseCaseImpl(get<ApolloClient>(octopusClient))
   }
@@ -67,31 +62,12 @@ val insurancesModule = module {
   single<GetCrossSellsUseCaseDemo> {
     GetCrossSellsUseCaseDemo()
   }
+
   single {
     GetCrossSellsUseCaseProvider(
       demoManager = get<DemoManager>(),
       prodImpl = get<GetCrossSellsUseCaseImpl>(),
       demoImpl = get<GetCrossSellsUseCaseDemo>(),
-    )
-  }
-  provideGetContractDetailsUseCase()
-}
-
-private fun Module.provideGetContractDetailsUseCase() {
-  single<GetContractDetailsUseCaseDemo> {
-    GetContractDetailsUseCaseDemo()
-  }
-  single<GetInsuranceContractsUseCaseImpl> {
-    GetInsuranceContractsUseCaseImpl(
-      get<ApolloClient>(giraffeClient),
-      get<LanguageService>(),
-    )
-  }
-  single<GetContractDetailsUseCaseProvider> {
-    GetContractDetailsUseCaseProvider(
-      demoManager = get<DemoManager>(),
-      demoImpl = get<GetContractDetailsUseCaseDemo>(),
-      prodImpl = get<GetContractDetailsUseCaseImpl>(),
     )
   }
 }

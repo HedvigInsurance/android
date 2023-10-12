@@ -3,7 +3,6 @@ package com.hedvig.android.sample.design.showcase.ui
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -12,8 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -24,17 +21,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.sample.design.showcase.ui.colorscheme.HedvigColorScheme
-import com.hedvig.android.sample.design.showcase.ui.hedviguikit.HTextField
 import com.hedvig.android.sample.design.showcase.ui.hedviguikit.HedvigIcons
 import com.hedvig.android.sample.design.showcase.ui.hedviguikit.HedvigShapes
-import com.hedvig.android.sample.design.showcase.ui.hedviguikit.InfoCard
-import com.hedvig.android.sample.design.showcase.ui.hedviguikit.WarningCard
 import com.hedvig.android.sample.design.showcase.ui.m3.components.M3Buttons
 import com.hedvig.android.sample.design.showcase.ui.m3.components.M3Cards
 import com.hedvig.android.sample.design.showcase.ui.m3.components.M3Checkbox
@@ -59,7 +51,7 @@ internal fun MaterialComponents(windowSizeClass: WindowSizeClass) {
 private fun ThemeSelection() {
   var showM3: Boolean by rememberSaveable { mutableStateOf(false) }
   var showColorSchemes: Boolean by rememberSaveable { mutableStateOf(false) }
-  var showHedvigUiKit: Boolean by rememberSaveable { mutableStateOf(false) }
+  var showHedvigUiKit: Boolean by rememberSaveable { mutableStateOf(true) }
   var showIcons: Boolean by rememberSaveable { mutableStateOf(false) }
   var showShapes: Boolean by rememberSaveable { mutableStateOf(false) }
   when {
@@ -152,20 +144,6 @@ private fun LazyListScope.LightAndDarkItem(content: @Composable () -> Unit) {
           }
         }
       }
-    }
-  }
-}
-
-@Composable
-private fun HedvigUiKit() {
-  Box(
-    modifier = Modifier.fillMaxSize().clearFocusOnTap(),
-    contentAlignment = BiasAlignment(0f, -0.2f),
-  ) {
-    Column(Modifier.verticalScroll(rememberScrollState())) {
-      HTextField()
-      InfoCard()
-      WarningCard()
     }
   }
 }

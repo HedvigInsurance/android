@@ -39,8 +39,8 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
+import com.hedvig.android.core.designsystem.component.button.HedvigOutlinedButton
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
-import com.hedvig.android.core.designsystem.component.button.LargeOutlinedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.uidata.UiMoney
@@ -140,7 +140,7 @@ private fun BoxScope.ErrorContent(
       horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
       item {
-        LargeOutlinedButton(
+        HedvigOutlinedButton(
           onClick = openChat,
           enabled = allowInteraction,
         ) {
@@ -148,7 +148,7 @@ private fun BoxScope.ErrorContent(
         }
       }
       item {
-        LargeOutlinedButton(
+        HedvigOutlinedButton(
           onClick = exitFlow,
           enabled = allowInteraction,
         ) {

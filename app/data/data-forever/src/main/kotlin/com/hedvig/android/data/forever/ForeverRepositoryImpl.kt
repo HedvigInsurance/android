@@ -11,76 +11,51 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.forever.ForeverRepository.ReferralError
 import com.hedvig.android.language.LanguageService
 import giraffe.RedeemReferralCodeMutation
-import giraffe.ReferralsQuery
-import giraffe.UpdateReferralCampaignCodeMutation
+import octopus.MemberReferralInformationCodeUpdateMutation
+import octopus.ReferralsQuery
 
 @JvmInline
 value class CampaignCode(val code: String)
 
 internal class ForeverRepositoryImpl(
-  private val apolloClient: ApolloClient,
+  private val apolloClientOctopus: ApolloClient,
+  private val apolloClientGiraffe: ApolloClient,
   private val languageService: LanguageService,
 ) : ForeverRepository {
   private val referralsQuery = ReferralsQuery()
 
-  override suspend fun getReferralsData(): Either<ErrorMessage, ReferralsQuery.Data> = apolloClient
-    .query(referralsQuery) // TODO include terms in this query and remove referralsTermsUseCase
+  override suspend fun getReferralsData(): Either<ErrorMessage, ReferralsQuery.Data> = apolloClientOctopus
+    .query(referralsQuery)
     .fetchPolicy(FetchPolicy.NetworkOnly)
     .safeExecute()
     .toEither(::ErrorMessage)
 
   override suspend fun updateCode(newCode: String): Either<ReferralError, String> = either {
-    val result = apolloClient
-      .mutation(UpdateReferralCampaignCodeMutation(newCode))
+    val result = apolloClientOctopus
+      .mutation(MemberReferralInformationCodeUpdateMutation(newCode))
       .safeExecute()
-      .toEither { message, _ ->
-        toReferralError(message)
-      }
+      .toEither { message, _ -> ReferralError(message) }
       .bind()
 
-    when {
-      result.updateReferralCampaignCode.asSuccessfullyUpdatedCode != null -> {
-        result.updateReferralCampaignCode.asSuccessfullyUpdatedCode!!.code
-      }
+    val error = result.memberReferralInformationCodeUpdate.userError
+    val referralInformation = result.memberReferralInformationCodeUpdate.referralInformation
 
-      result.updateReferralCampaignCode.asCodeTooLong != null -> {
-        raise(ReferralError.CodeTooLong(result.updateReferralCampaignCode.asCodeTooLong!!.maxCharacters))
-      }
-
-      result.updateReferralCampaignCode.asCodeTooShort != null -> {
-        if (result.updateReferralCampaignCode.asCodeTooShort!!.minCharacters <= 1) {
-          raise(ReferralError.CodeIsEmpty)
-        } else {
-          raise(ReferralError.CodeTooShort(result.updateReferralCampaignCode.asCodeTooShort!!.minCharacters))
-        }
-      }
-
-      result.updateReferralCampaignCode.asCodeAlreadyTaken != null -> {
-        raise(ReferralError.CodeExists)
-      }
-
-      result.updateReferralCampaignCode.asExceededMaximumUpdates != null -> {
-        raise(
-          ReferralError.MaxUpdates(
-            result.updateReferralCampaignCode.asExceededMaximumUpdates!!.maximumNumberOfUpdates,
-          ),
-        )
-      }
-
-      else -> {
-        raise(ReferralError.GeneralError("Unknown error"))
-      }
+    if (referralInformation != null) {
+      referralInformation.code
+    } else if (error != null) {
+      raise(ReferralError(error.message))
+    } else {
+      raise(ReferralError(null))
     }
   }
 
+  // TODO Move to payments module
   override suspend fun redeemReferralCode(
     campaignCode: CampaignCode,
   ): Either<ErrorMessage, RedeemReferralCodeMutation.Data?> {
-    return apolloClient
+    return apolloClientGiraffe
       .mutation(RedeemReferralCodeMutation(campaignCode.code, languageService.getGraphQLLocale()))
       .safeExecute()
       .toEither(::ErrorMessage)
   }
-
-  private fun toReferralError(message: String?) = ReferralError.GeneralError(message)
 }

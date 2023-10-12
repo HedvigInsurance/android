@@ -4,8 +4,8 @@ import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.feature.chat.ChatEventStore
 import com.hedvig.android.logger.logcat
-import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.launch

@@ -85,14 +85,4 @@
     <attr name="textColorLargeButton" format="reference" />
     <attr name="colorPlaceholder" format="reference" />
     <attr name="colorWarning" format="reference" />
-
-    <style name="Hedvig.Theme.Widgets.Chat.Hedvig" parent="Hedvig.Theme">
-        <item name="colorSurface">@color/colorChatHedvigBackground</item>
-    </style>
-
-    <style name="Hedvig.Theme.Widgets.Chat.User" parent="Hedvig.Theme">
-        <item name="colorSurface">@color/colorChatUserBackground</item>
-    </style>
-
-
 </resources>

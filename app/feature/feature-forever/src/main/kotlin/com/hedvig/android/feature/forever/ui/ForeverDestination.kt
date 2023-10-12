@@ -76,6 +76,9 @@ import com.hedvig.android.feature.forever.ForeverEvent
 import com.hedvig.android.feature.forever.ForeverUiState
 import com.hedvig.android.feature.forever.ForeverViewModel
 import com.hedvig.android.feature.forever.copyToClipboard
+import com.hedvig.android.feature.forever.data.ForeverData
+import com.hedvig.android.feature.forever.data.Referral
+import com.hedvig.android.feature.forever.data.ReferralState
 import com.hedvig.android.feature.forever.showShareSheet
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.pullrefresh.PullRefreshDefaults
@@ -290,7 +293,7 @@ internal fun ForeverContent(
           text = stringResource(R.string.TAB_REFERRALS_TITLE),
           style = MaterialTheme.typography.titleLarge,
         )
-        if (uiState.foreverData?.incentive != null && uiState.foreverData.referralUrl != null) {
+        if (uiState.foreverData?.incentive != null) {
           IconButton(
             onClick = { showReferralExplanationBottomSheet = true },
             modifier = Modifier.size(40.dp),
@@ -305,15 +308,15 @@ internal fun ForeverContent(
       }
       Spacer(Modifier.height(16.dp))
       Text(
-        text = uiState.foreverData?.currentDiscountAmount?.toString()?.let { "-$it" } ?: "-",
+        text = uiState.foreverData?.currentDiscount?.toString()?.let { "-$it" } ?: "-",
         textAlign = TextAlign.Center,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier.fillMaxWidth(),
       )
       Spacer(Modifier.height(16.dp))
       DiscountPieChart(
-        totalPrice = uiState.foreverData?.grossPriceAmount?.amount?.toFloat() ?: 0f,
-        totalExistingDiscount = uiState.foreverData?.currentDiscountAmount?.amount?.toFloat() ?: 0f,
+        totalPrice = uiState.foreverData?.currentGrossCost?.amount?.toFloat() ?: 0f,
+        totalExistingDiscount = uiState.foreverData?.currentDiscount?.amount?.toFloat() ?: 0f,
         incentive = uiState.foreverData?.incentive?.amount?.toFloat() ?: 0f,
         modifier = Modifier
           .padding(horizontal = 16.dp)
@@ -348,7 +351,7 @@ internal fun ForeverContent(
         Text(
           text = stringResource(
             id = R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-            uiState.foreverData?.currentNetAmount?.toString() ?: "-",
+            uiState.foreverData?.currentNetCost?.toString() ?: "-",
           ),
           textAlign = TextAlign.Center,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -393,8 +396,8 @@ internal fun ForeverContent(
         Spacer(Modifier.height(16.dp))
         ReferralList(
           referrals = uiState.foreverData.referrals,
-          grossPriceAmount = uiState.foreverData.grossPriceAmount,
-          currentNetAmount = uiState.foreverData.currentNetAmount,
+          grossPriceAmount = uiState.foreverData.currentGrossCost,
+          currentNetAmount = uiState.foreverData.currentNetCost,
           modifier = Modifier.padding(horizontal = 16.dp),
         )
       }
@@ -412,7 +415,6 @@ internal fun ForeverContent(
   }
 }
 
-@Suppress("UnusedReceiverParameter")
 @Composable
 internal fun ReferralCodeCard(
   campaignCode: String,
@@ -483,19 +485,18 @@ private class ForeverUiStateProvider : CollectionPreviewParameterProvider<Foreve
       showReferralCodeSuccessfullyChangedMessage = false,
     ),
     ForeverUiState(
-      foreverData = ForeverUiState.ForeverData(
+      foreverData = ForeverData(
         referrals = listOf(
-          ForeverUiState.Referral("Name#1", ForeverUiState.ReferralState.ACTIVE, null),
-          ForeverUiState.Referral("Name#2", ForeverUiState.ReferralState.IN_PROGRESS, null),
-          ForeverUiState.Referral("Name#3", ForeverUiState.ReferralState.TERMINATED, null),
+          Referral("Name#1", ReferralState.ACTIVE, null),
+          Referral("Name#2", ReferralState.IN_PROGRESS, null),
+          Referral("Name#3", ReferralState.TERMINATED, null),
         ),
         campaignCode = null,
         incentive = null,
-        grossPriceAmount = null,
-        referralUrl = null,
-        potentialDiscountAmount = null,
-        currentDiscountAmount = null,
-        currentNetAmount = null,
+        currentNetCost = null,
+        currentDiscount = null,
+        currentGrossCost = null,
+        currentDiscountAmountExcludingReferrals = null,
       ),
       isLoadingForeverData = false,
       foreverDataErrorMessage = null,
