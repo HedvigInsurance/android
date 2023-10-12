@@ -103,27 +103,29 @@ private fun MarketingScreen(
     val sheetState = rememberModalBottomSheetState(true)
     val coroutineScope = rememberCoroutineScope()
     if (showPreferencesSheet && uiState is MarketingUiState.Success) {
-      ModalBottomSheet(
-        onDismissRequest = { showPreferencesSheet = false },
-        sheetState = sheetState,
-        containerColor = MaterialTheme.colorScheme.background,
-        windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
-      ) {
-        Column(Modifier.verticalScroll(rememberScrollState())) {
-          PreferencesSheetContent(
-            chosenMarket = uiState.market,
-            chosenLanguage = uiState.language,
-            appVersionName = appVersionName,
-            selectMarket = selectMarket,
-            selectLanguage = selectLanguage,
-            dismissSheet = {
-              coroutineScope.launch {
-                sheetState.hide()
-              }.invokeOnCompletion {
-                showPreferencesSheet = false
-              }
-            },
-          )
+      HedvigTheme() {
+        ModalBottomSheet(
+          onDismissRequest = { showPreferencesSheet = false },
+          sheetState = sheetState,
+          containerColor = MaterialTheme.colorScheme.background,
+          windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
+        ) {
+          Column(Modifier.verticalScroll(rememberScrollState())) {
+            PreferencesSheetContent(
+              chosenMarket = uiState.market,
+              chosenLanguage = uiState.language,
+              appVersionName = appVersionName,
+              selectMarket = selectMarket,
+              selectLanguage = selectLanguage,
+              dismissSheet = {
+                coroutineScope.launch {
+                  sheetState.hide()
+                }.invokeOnCompletion {
+                  showPreferencesSheet = false
+                }
+              },
+            )
+          }
         }
       }
     }
