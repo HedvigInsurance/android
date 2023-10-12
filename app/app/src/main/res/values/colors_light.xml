@@ -25,9 +25,6 @@
     <item name="textColorLink" type="color">@color/lavender_600</item>
     <item name="textColorLargeButton" type="color">@color/colorPrimary</item>
 
-    <item name="colorChatUserBackground" type="color">#FFE0F0F9</item>
-    <item name="colorChatHedvigBackground" type="color">#FFF0F0F0</item>
-
     <item name="colorInfoCardSurface" type="color">@color/lavender_200</item>
 
     <item name="colorTooltip" type="color">@color/lavender_300</item>

@@ -14,7 +14,7 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.with
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -51,9 +51,8 @@ import com.hedvig.android.audio.player.state.PlayableAudioSource
 import com.hedvig.android.audio.player.state.rememberAudioPlayer
 import com.hedvig.android.core.common.android.ProgressPercentage
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
-import com.hedvig.android.core.designsystem.component.button.LargeTextButton
+import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.material3.motion.MotionTokens
-import com.hedvig.android.core.designsystem.newtheme.red_600
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.ScreenOnFlag
@@ -61,6 +60,7 @@ import com.hedvig.android.core.ui.audiorecording.RecordingAmplitudeIndicator
 import com.hedvig.android.data.claimflow.AudioContent
 import com.hedvig.android.data.claimflow.model.AudioUrl
 import com.hedvig.android.feature.odyssey.step.audiorecording.AudioRecordingUiState
+import hedvig.resources.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.datetime.Clock
@@ -132,7 +132,7 @@ internal fun AudioRecorder(
               if (isRecording) 18.dp else 32.dp
             }
             val color by isRecordingTransition.animateColor(label = "colorAnimation") { isRecording ->
-              if (isRecording) Color.Black else red_600
+              if (isRecording) Color.Black else MaterialTheme.colorScheme.error
             }
             val cornerRadius by isRecordingTransition.animateDp(label = "cornerRadiusAnimation") { isRecording ->
               if (isRecording) 2.dp else 16.dp
@@ -166,7 +166,7 @@ internal fun AudioRecorder(
               slideOutVertically(animationSpec) +
                 fadeOut(animationSpecFade) +
                 scaleOut(animationSpecFloat, targetScale = scale)
-            enterTransition with exitTransition
+            enterTransition togetherWith exitTransition
           },
           contentAlignment = Alignment.Center,
           modifier = Modifier.fillMaxWidth(),
@@ -220,13 +220,12 @@ private fun Playback(
       modifier = Modifier.padding(top = 16.dp),
     )
 
-    LargeTextButton(
+    HedvigTextButton(
+      text = stringResource(R.string.EMBARK_RECORD_AGAIN),
       onClick = redo,
       enabled = uiState.canSubmit,
       modifier = Modifier.padding(top = 8.dp),
-    ) {
-      Text(stringResource(hedvig.resources.R.string.EMBARK_RECORD_AGAIN))
-    }
+    )
   }
 }
 
@@ -270,12 +269,11 @@ private fun PrerecordedPlayback(
     ) {
       Column {
         Spacer(Modifier.height(8.dp))
-        LargeTextButton(
+        HedvigTextButton(
+          text = stringResource(hedvig.resources.R.string.EMBARK_RECORD_AGAIN),
           onClick = redo,
           enabled = uiState.canSubmit,
-        ) {
-          Text(stringResource(hedvig.resources.R.string.EMBARK_RECORD_AGAIN))
-        }
+        )
       }
     }
   }

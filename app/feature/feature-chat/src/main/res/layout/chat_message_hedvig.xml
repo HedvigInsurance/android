@@ -2,8 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:theme="@style/Hedvig.Theme.Widgets.Chat.Hedvig">
+    android:layout_height="wrap_content">
 
     <FrameLayout
         android:layout_width="0dp"
@@ -24,7 +23,8 @@
             android:paddingEnd="16dp"
             android:paddingBottom="8dp"
             android:textAppearance="?textAppearanceBody1"
-            android:textColor="?colorPrimary"
+            android:textColor="@color/onChatSurfaceFromHedvig"
+            android:textColorLink="@color/onChatSurfaceFromHedvig"
             tools:text="Hej! Jag heter Hedvig 👋\nhttps://www.hedvig.com" />
 
     </FrameLayout>
