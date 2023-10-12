@@ -35,7 +35,7 @@
             android:paddingBottom="8dp"
             android:textAppearance="?textAppearanceBody1"
             android:textColor="@color/onChatSurfaceFromMember"
-            android:textColorLink="?colorPrimary"
+            android:textColorLink="@color/onChatSurfaceFromMember"
             app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toTopOf="@id/statusMessage"
             app:layout_constraintEnd_toEndOf="parent"
