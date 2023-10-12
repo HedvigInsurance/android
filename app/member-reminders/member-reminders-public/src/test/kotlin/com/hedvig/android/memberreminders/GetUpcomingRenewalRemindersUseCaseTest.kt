@@ -21,7 +21,6 @@ import kotlinx.datetime.toLocalDateTime
 import octopus.GetUpcomingRenewalReminderQuery
 import octopus.type.buildAgreement
 import octopus.type.buildContract
-import octopus.type.buildContractRenewal
 import octopus.type.buildMember
 import octopus.type.buildProductVariant
 import org.junit.Rule
@@ -56,9 +55,9 @@ class GetUpcomingRenewalRemindersUseCaseTest {
                   displayName = "display name"
                 }
               }
-              upcomingRenewal = buildContractRenewal {
-                renewalDate = upcomingRenewalLocalDate
-                draftCertificateUrl = "draftUrl"
+              upcomingChangedAgreement = buildAgreement {
+                activeFrom = upcomingRenewalLocalDate
+                certificateUrl = "draftUrl"
               }
             },
           )
@@ -91,9 +90,9 @@ class GetUpcomingRenewalRemindersUseCaseTest {
                   displayName = "#$index"
                 }
               }
-              upcomingRenewal = buildContractRenewal {
-                renewalDate = clock.now().plus((index + 1).days).toLocalDateTime(TimeZone.UTC).date
-                draftCertificateUrl = "url#$index"
+              upcomingChangedAgreement = buildAgreement {
+                activeFrom = clock.now().plus((index + 1).days).toLocalDateTime(TimeZone.UTC).date
+                certificateUrl = "url#$index"
               }
             }
           }
@@ -133,9 +132,9 @@ class GetUpcomingRenewalRemindersUseCaseTest {
                   displayName = "display name"
                 }
               }
-              upcomingRenewal = buildContractRenewal {
-                renewalDate = upcomingRenewalLocalDate
-                draftCertificateUrl = "draftUrl"
+              upcomingChangedAgreement = buildAgreement {
+                activeFrom = upcomingRenewalLocalDate
+                certificateUrl = "draftUrl"
               }
             }
           }
@@ -166,9 +165,9 @@ class GetUpcomingRenewalRemindersUseCaseTest {
                   displayName = "#$index"
                 }
               }
-              upcomingRenewal = buildContractRenewal {
-                renewalDate = clock.now().minus(index.days).toLocalDateTime(TimeZone.UTC).date
-                draftCertificateUrl = "url#$index"
+              upcomingChangedAgreement = buildAgreement {
+                activeFrom = clock.now().minus(index.days).toLocalDateTime(TimeZone.UTC).date
+                certificateUrl = "url#$index"
               }
             }
           }
@@ -206,9 +205,9 @@ class GetUpcomingRenewalRemindersUseCaseTest {
                   displayName = "#$index"
                 }
               }
-              upcomingRenewal = buildContractRenewal {
-                renewalDate = (clock.now() + renewalOffsets[index]!!).toLocalDateTime(TimeZone.UTC).date
-                draftCertificateUrl = "url#$index"
+              upcomingChangedAgreement = buildAgreement {
+                activeFrom = (clock.now() + renewalOffsets[index]!!).toLocalDateTime(TimeZone.UTC).date
+                certificateUrl = "url#$index"
               }
             }
           }
