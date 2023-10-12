@@ -4,6 +4,8 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.navigation.NavGraphBuilder
@@ -26,12 +28,16 @@ fun NavGraphBuilder.chatGraph(
     enterTransition = { slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Up) },
     exitTransition = { slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Down) },
   ) {
-    AndroidViewBinding(
-      factory = FragmentChatContainerViewBinding::inflate,
-      modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
+    Surface(
+      color = MaterialTheme.colorScheme.background,
     ) {
-      val chatFragment = chatFragmentContainerView.getFragment<ChatFragment>()
-      chatFragment.setNavigateUp { navigator.navigateUp() }
+      AndroidViewBinding(
+        factory = FragmentChatContainerViewBinding::inflate,
+        modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
+      ) {
+        val chatFragment = chatFragmentContainerView.getFragment<ChatFragment>()
+        chatFragment.setNavigateUp { navigator.navigateUp() }
+      }
     }
   }
 }

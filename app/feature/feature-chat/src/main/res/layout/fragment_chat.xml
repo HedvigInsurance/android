@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="?colorSurface"
     tools:context="com.hedvig.android.feature.chat.ui.ChatFragment">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -26,7 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/background_square"
-        android:backgroundTint="?colorSurface"
+        android:backgroundTint="@color/chatBackground"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingVertical="5dp"
