@@ -6,9 +6,9 @@ query GetUpcomingRenewalReminder {
           displayName
         }
       }
-      upcomingRenewal {
-        renewalDate
-        draftCertificateUrl
+      upcomingChangedAgreement {
+        activeFrom
+        certificateUrl
       }
     }
   }

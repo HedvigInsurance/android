@@ -47,4 +47,4 @@ The [android-remove-unused-resources-plugin](https://github.com/irgaly/android-r
 plugin is used to achieve this. This will run on CI using [this task](./.github/workflows/unused-resources.yml), but to run locally one can also just do
 `./gradlew :app:lintDebug -Prur.lint.onlyUnusedResources`
 And then
-`./gradlew :app:removeUnusedResources -Prur.lintVariant="debug"`
+`./gradlew :app:removeUnusedResourcesDebug`

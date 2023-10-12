@@ -1,3 +1,3 @@
 mutation MemberDeviceRegister($token: String!) {
-  memberDeviceRegister(input: {type: "ANDROID", token: $token})
+  memberDeviceRegister(input: {platform: ANDROID, token: $token})
 }
