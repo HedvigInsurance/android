@@ -58,6 +58,7 @@ import com.kiwi.navigationcompose.typed.Destination
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
 import com.kiwi.navigationcompose.typed.popBackStack
+import com.kiwi.navigationcompose.typed.popUpTo
 import kotlinx.coroutines.launch
 
 @Composable
@@ -289,9 +290,10 @@ private fun NavGraphBuilder.nestedHomeGraphs(
       activityNavigator.tryOpenPlayStore(context)
     },
     openChat = { backStackEntry ->
-      navigator.popBackStack()
       with(navigator) {
-        backStackEntry.navigate(AppDestination.Chat)
+        backStackEntry.navigate(destination = AppDestination.Chat) {
+          popUpTo<AppDestination.TopLevelDestination.Home>()
+        }
       }
     },
   )
