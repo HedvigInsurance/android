@@ -101,8 +101,8 @@ private fun darkColorScheme(hedvigTonalPalette: HedvigTonalPalette) = darkColorS
   surfaceVariant = hedvigTonalPalette.greyscale700,
   onSurfaceVariant = hedvigTonalPalette.greyscale400,
   surfaceTint = hedvigTonalPalette.greyscale900, // no tint, as m2 also did not tint elevated surfaces
-  inverseSurface = hedvigTonalPalette.greyscale25,
-  inverseOnSurface = hedvigTonalPalette.greyscale900,
+  inverseSurface = hedvigTonalPalette.greyscale100,
+  inverseOnSurface = hedvigTonalPalette.greyscale1000,
 
   error = hedvigTonalPalette.red600,
   onError = hedvigTonalPalette.greyscale25,

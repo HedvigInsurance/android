@@ -28,10 +28,6 @@
     <item name="textColorLink" type="color">@color/colorSecondary</item>
     <item name="textColorLargeButton" type="color">@color/colorOnPrimary</item>
 
-    <item name="colorChatUserBackground" type="color">#FF30577E</item>
-    <item name="colorChatHedvigBackground" type="color">#FF505050</item>
-
-
     <item name="colorInfoCardSurface" type="color">@color/lavender_900</item>
 
     <item name="colorTooltip" type="color">@color/hedvig_dark_gray</item>
