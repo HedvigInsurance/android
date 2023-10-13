@@ -6,6 +6,9 @@ plugins {
 }
 
 dependencies {
+  implementation(libs.androidx.navigation.common)
+  implementation(libs.androidx.navigation.compose)
+  implementation(libs.androidx.navigation.runtime)
   implementation(libs.kiwi.navigationCompose)
   implementation(projects.navigationCore)
 }

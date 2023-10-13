@@ -59,6 +59,10 @@ sealed interface AppDestination : Destination {
 
   @Serializable
   object PaymentHistory : AppDestination
-//  @Serializable
-//  object LegacyClaimsTriaging : AppDestination
+
+  @Serializable
+  object ConnectPaymentTrustly : AppDestination
+
+  @Serializable
+  object ConnectPaymentAdyen : AppDestination
 }
