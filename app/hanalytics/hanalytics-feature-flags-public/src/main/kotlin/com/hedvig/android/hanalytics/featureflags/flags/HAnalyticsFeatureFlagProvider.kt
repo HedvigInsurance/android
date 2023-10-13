@@ -11,7 +11,6 @@ internal class HAnalyticsFeatureFlagProvider(
     Feature.CONNECT_PAYIN_REMINDER -> hAnalytics.connectPaymentReminder()
     Feature.CONNECT_PAYMENT_POST_ONBOARDING -> hAnalytics.postOnboardingShowPaymentStep()
     Feature.DISABLE_CHAT -> hAnalytics.disableChat()
-    Feature.DISABLE_DARK_MODE -> hAnalytics.disableDarkMode()
     Feature.EXTERNAL_DATA_COLLECTION -> hAnalytics.allowExternalDataCollection()
     Feature.MOVING_FLOW -> hAnalytics.movingFlow()
     Feature.PAYMENT_SCREEN -> hAnalytics.paymentScreen()

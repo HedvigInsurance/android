@@ -3,10 +3,7 @@ package com.hedvig.android.feature.profile.settings
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
-import assertk.assertions.prop
 import com.hedvig.android.core.datastore.FakeSettingsDataStore
-import com.hedvig.android.hanalytics.featureflags.flags.Feature
-import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager2
 import com.hedvig.android.language.Language
 import com.hedvig.android.language.test.FakeLanguageService
 import com.hedvig.android.memberreminders.test.TestEnableNotificationsReminderManager
@@ -17,23 +14,19 @@ import org.junit.Test
 
 class SettingsPresenterTest {
   @Test
-  fun `content stays loading as long as notificationReminder and allowingSelectingTheme are uninitialized`() =
+  fun `content stays loading as long as notificationReminder are uninitialized`() =
     runTest {
       val enableNotificationsReminderManager = TestEnableNotificationsReminderManager()
-      val featureManager = FakeFeatureManager2()
       val settingsPresenter = SettingsPresenter(
         NoopNotifyBackendAboutLanguageChangeUseCase(),
         FakeLanguageService(),
         FakeSettingsDataStore(),
         enableNotificationsReminderManager,
-        featureManager,
       )
 
       settingsPresenter.test(SettingsUiState.Loading(Language.entries.first(), Language.entries)) {
         assertThat(awaitItem()).isInstanceOf<SettingsUiState.Loading>()
         enableNotificationsReminderManager.showNotification.add(false)
-        awaitUnchanged()
-        featureManager.featureTurbine.add(Feature.DISABLE_DARK_MODE to true)
         assertThat(awaitItem()).isInstanceOf<SettingsUiState.Loaded>()
       }
     }
@@ -46,7 +39,6 @@ class SettingsPresenterTest {
       FakeLanguageService(),
       FakeSettingsDataStore(),
       enableNotificationsReminderManager,
-      FakeFeatureManager2(),
     )
 
     settingsPresenter.test(
@@ -54,7 +46,6 @@ class SettingsPresenterTest {
         Language.EN_SE,
         listOf(Language.EN_SE, Language.SV_SE),
         Theme.SYSTEM_DEFAULT,
-        showNotificationReminder = false,
         false,
       ),
     ) {
@@ -72,7 +63,6 @@ class SettingsPresenterTest {
       FakeLanguageService(),
       FakeSettingsDataStore(),
       enableNotificationsReminderManager,
-      FakeFeatureManager2(),
     )
 
     settingsPresenter.test(
@@ -80,7 +70,6 @@ class SettingsPresenterTest {
         Language.EN_SE,
         listOf(Language.EN_SE, Language.SV_SE),
         Theme.SYSTEM_DEFAULT,
-        showNotificationReminder = false,
         false,
       ),
     ) {
@@ -98,7 +87,6 @@ class SettingsPresenterTest {
       FakeLanguageService(),
       FakeSettingsDataStore(),
       enableNotificationsReminderManager,
-      FakeFeatureManager2(),
     )
 
     settingsPresenter.test(
@@ -106,7 +94,6 @@ class SettingsPresenterTest {
         Language.entries.first(),
         Language.entries,
         Theme.entries.first(),
-        false,
         false,
       ),
     ) {
@@ -126,7 +113,6 @@ class SettingsPresenterTest {
       FakeLanguageService(),
       settingsDataStore,
       enableNotificationsReminderManager,
-      FakeFeatureManager2(),
     )
 
     settingsPresenter.test(
@@ -135,74 +121,12 @@ class SettingsPresenterTest {
         languageOptions = Language.entries,
         selectedTheme = Theme.LIGHT,
         showNotificationReminder = false,
-        allowSelectingTheme = false,
       ),
     ) {
       assertThat(awaitItem().selectedTheme).isEqualTo(Theme.LIGHT)
       sendEvent(SettingsEvent.ChangeTheme(Theme.DARK))
       assertThat(awaitItem().selectedTheme).isEqualTo(Theme.DARK)
       sendEvent(SettingsEvent.ChangeTheme(Theme.DARK))
-    }
-  }
-
-  @Test
-  fun `when the disableDarkMode feature is on, allowing selecting a theme stays off`() = runTest {
-    val featureManager = FakeFeatureManager2()
-    val settingsPresenter = SettingsPresenter(
-      NoopNotifyBackendAboutLanguageChangeUseCase(),
-      FakeLanguageService(),
-      FakeSettingsDataStore(),
-      TestEnableNotificationsReminderManager(),
-      featureManager,
-    )
-
-    settingsPresenter.test(
-      initialState = SettingsUiState.Loaded(
-        selectedLanguage = Language.entries.first(),
-        languageOptions = Language.entries.toList(),
-        selectedTheme = Theme.SYSTEM_DEFAULT,
-        showNotificationReminder = false,
-        allowSelectingTheme = false,
-      ),
-    ) {
-      assertThat(awaitItem())
-        .isInstanceOf<SettingsUiState.Loaded>()
-        .prop(SettingsUiState.Loaded::allowSelectingTheme)
-        .isEqualTo(false)
-      featureManager.featureTurbine.add(Feature.DISABLE_DARK_MODE to true)
-    }
-  }
-
-  @Test
-  fun `when the disableDarkMode feature is off, allowing selecting a theme is allowed`() = runTest {
-    val featureManager = FakeFeatureManager2()
-    val settingsPresenter = SettingsPresenter(
-      NoopNotifyBackendAboutLanguageChangeUseCase(),
-      FakeLanguageService(),
-      FakeSettingsDataStore(),
-      TestEnableNotificationsReminderManager(),
-      featureManager,
-    )
-
-    settingsPresenter.test(
-      initialState = SettingsUiState.Loaded(
-        selectedLanguage = Language.entries.first(),
-        languageOptions = Language.entries.toList(),
-        selectedTheme = Theme.SYSTEM_DEFAULT,
-        showNotificationReminder = false,
-        allowSelectingTheme = false,
-      ),
-    ) {
-      assertThat(awaitItem())
-        .isInstanceOf<SettingsUiState.Loaded>()
-        .prop(SettingsUiState.Loaded::allowSelectingTheme)
-        .isEqualTo(false)
-      expectNoEvents()
-      featureManager.featureTurbine.add(Feature.DISABLE_DARK_MODE to false)
-      assertThat(awaitItem())
-        .isInstanceOf<SettingsUiState.Loaded>()
-        .prop(SettingsUiState.Loaded::allowSelectingTheme)
-        .isEqualTo(true)
     }
   }
 }

@@ -67,10 +67,8 @@ private fun SettingsScreen(
   onLanguageSelected: (Language) -> Unit,
   onThemeSelected: (Theme) -> Unit,
 ) {
-  LaunchedEffect(uiState.allowSelectingTheme, uiState.selectedTheme) {
-    if (uiState.allowSelectingTheme == true) { // Remove this check when dark-mode support is back
-      uiState.selectedTheme?.apply()
-    }
+  LaunchedEffect(uiState.selectedTheme) {
+    uiState.selectedTheme?.apply()
   }
   val context = LocalContext.current
   HedvigScaffold(
@@ -91,15 +89,13 @@ private fun SettingsScreen(
           enabled = true,
           modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
         )
-        if (uiState.allowSelectingTheme) {
-          Spacer(Modifier.height(4.dp))
-          ThemeWithDialog(
-            selectedTheme = uiState.selectedTheme,
-            selectTheme = onThemeSelected,
-            enabled = true,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-          )
-        }
+        Spacer(Modifier.height(4.dp))
+        ThemeWithDialog(
+          selectedTheme = uiState.selectedTheme,
+          selectTheme = onThemeSelected,
+          enabled = true,
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        )
         Spacer(Modifier.height(4.dp))
         val notificationPermissionState = rememberNotificationPermissionState()
         NotificationPermissionDialog(
@@ -148,7 +144,6 @@ fun PreviewSettingsScreen() {
           languageOptions = listOf(Language.SV_SE, Language.EN_SE),
           selectedTheme = Theme.SYSTEM_DEFAULT,
           showNotificationReminder = true,
-          allowSelectingTheme = true,
         ),
         navigateUp = {},
         openAppSettings = {},
