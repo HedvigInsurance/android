@@ -1,5 +1,5 @@
 package com.hedvig.android.hanalytics.featureflags.flags
 
-interface FeatureFlagProvider {
+internal interface FeatureFlagProvider {
   suspend fun isFeatureEnabled(feature: Feature): Boolean
 }
