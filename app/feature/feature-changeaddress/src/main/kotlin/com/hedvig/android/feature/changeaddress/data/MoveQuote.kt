@@ -4,6 +4,7 @@ import com.hedvig.android.core.ui.insurance.ContractType
 import com.hedvig.android.core.ui.insurance.InsurableLimit
 import com.hedvig.android.core.ui.insurance.ProductVariant
 import com.hedvig.android.core.uidata.UiMoney
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 import octopus.type.CurrencyCode
@@ -12,16 +13,13 @@ data class MoveQuote(
   val id: String,
   val insuranceName: String,
   val moveIntentId: MoveIntentId,
-  val address: Address,
-  val numberInsured: Int?,
   val premium: UiMoney,
   val startDate: LocalDate,
-  val ancillaryArea: Int?,
-  val yearOfConstruction: Int?,
-  val squareMeters: Int?,
   val productVariant: ProductVariant,
   val isExpanded: Boolean = false,
+  val displayItems: ImmutableList<Pair<String, String>>,
 ) {
+
   companion object {
     fun PreviewData(index: Int = 0): MoveQuote {
       @Suppress("NAME_SHADOWING")
@@ -30,16 +28,6 @@ data class MoveQuote(
         id = index.toString(),
         insuranceName = "Insurance #$index",
         moveIntentId = MoveIntentId(""),
-        address = Address(
-          id = AddressId(""),
-          apartmentNumber = "1$index",
-          bbrId = null,
-          city = null,
-          floor = null,
-          postalCode = "124$index",
-          street = "Froedingsvaegen $index",
-        ),
-        numberInsured = index,
         premium = UiMoney(99.0 * index, CurrencyCode.SEK),
         startDate = LocalDate(2023, 5, 13),
         isExpanded = index == 1,
@@ -58,9 +46,7 @@ data class MoveQuote(
           ),
           documents = persistentListOf(),
         ),
-        ancillaryArea = 10,
-        yearOfConstruction = 1991,
-        squareMeters = 30,
+        displayItems = persistentListOf(),
       )
     }
   }

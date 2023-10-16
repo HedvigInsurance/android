@@ -9,9 +9,9 @@ import assertk.assertions.prop
 import com.hedvig.android.core.common.android.QuoteCartId
 import com.hedvig.android.core.common.test.MainCoroutineRule
 import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager
+import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager2
 import com.hedvig.app.feature.offer.model.Checkout
 import com.hedvig.app.feature.offer.usecase.FakeObserveQuoteCartCheckoutUseCase
-import com.hedvig.hanalytics.PaymentType
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
@@ -27,7 +27,7 @@ class SwedishBankIdSignViewModelTest {
     val viewModel = SwedishBankIdSignViewModel(
       QuoteCartId(""),
       fakeObserveQuoteCartCheckoutUseCase,
-      FakeFeatureManager(paymentType = { enumValues<PaymentType>().random() }),
+      FakeFeatureManager2(),
     )
 
     viewModel.viewState.test {
@@ -56,7 +56,7 @@ class SwedishBankIdSignViewModelTest {
     val viewModel = SwedishBankIdSignViewModel(
       QuoteCartId(""),
       fakeObserveQuoteCartCheckoutUseCase,
-      FakeFeatureManager(paymentType = { enumValues<PaymentType>().random() }),
+      FakeFeatureManager2(),
     )
 
     viewModel.viewState.test {
@@ -86,7 +86,7 @@ class SwedishBankIdSignViewModelTest {
     val viewModel = SwedishBankIdSignViewModel(
       QuoteCartId(""),
       fakeObserveQuoteCartCheckoutUseCase,
-      FakeFeatureManager(paymentType = { enumValues<PaymentType>().random() }),
+      FakeFeatureManager2(),
     )
 
     viewModel.viewState.test {

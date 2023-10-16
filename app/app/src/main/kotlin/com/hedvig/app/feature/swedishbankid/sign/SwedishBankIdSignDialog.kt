@@ -77,7 +77,6 @@ class SwedishBankIdSignDialog : DialogFragment() {
             startActivity(
               connectPayinIntent(
                 requireContext(),
-                state.payinType,
                 marketManager.market.value,
                 true,
               ),

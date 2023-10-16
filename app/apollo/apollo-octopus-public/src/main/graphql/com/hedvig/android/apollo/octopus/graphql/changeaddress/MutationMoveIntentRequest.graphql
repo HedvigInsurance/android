@@ -7,6 +7,10 @@ mutation MoveIntentRequest($intentId: ID!, $input: MoveIntentRequestInput!) {
           amount
           currencyCode
         }
+        displayItems {
+          displayValue
+          displayTitle
+        }
         startDate
         exposureName
         productVariant {

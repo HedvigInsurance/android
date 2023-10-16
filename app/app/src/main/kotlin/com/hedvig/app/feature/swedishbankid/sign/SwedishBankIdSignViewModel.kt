@@ -7,7 +7,6 @@ import com.hedvig.android.core.common.android.QuoteCartId
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.app.feature.offer.model.Checkout
 import com.hedvig.app.feature.offer.usecase.ObserveQuoteCartCheckoutUseCase
-import com.hedvig.hanalytics.PaymentType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -39,7 +38,7 @@ class SwedishBankIdSignViewModel(
       }
       viewState is BankIdSignViewState.BankIdSuccess -> {
         featureManager.invalidateExperiments()
-        _viewState.value = BankIdSignViewState.StartDirectDebit(featureManager.getPaymentType())
+        _viewState.value = BankIdSignViewState.StartDirectDebit
       }
     }
   }
@@ -74,7 +73,7 @@ sealed interface BankIdSignViewState {
   object Cancelled : BankIdSignViewState
   data class Error(val message: String? = null) : BankIdSignViewState
   object BankIdSuccess : BankIdSignViewState
-  data class StartDirectDebit(val payinType: PaymentType) : BankIdSignViewState
+  object StartDirectDebit : BankIdSignViewState
   object Success : BankIdSignViewState
 
   val shouldQueryForSignStatus: Boolean
