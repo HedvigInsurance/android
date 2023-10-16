@@ -339,3 +339,15 @@ private fun rememberNavigator(navController: NavController): Navigator {
     }
   }
 }
+
+private fun navigateToConnectPayment(
+  navigator: Navigator,
+  market: Market,
+) {
+  when (market) {
+    Market.SE -> navigator.navigateUnsafe(AppDestination.ConnectPaymentTrustly)
+    Market.NO,
+    Market.DK,
+    -> navigator.navigateUnsafe(AppDestination.ConnectPaymentAdyen)
+  }
+}
