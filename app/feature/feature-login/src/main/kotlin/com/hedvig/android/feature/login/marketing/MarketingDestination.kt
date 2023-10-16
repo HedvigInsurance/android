@@ -358,7 +358,7 @@ private fun Language.flag(): ImageVector {
 private fun PreviewMarketingScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      MarketingScreen(MarketingUiState.Success(Market.SE, Language.EN_SE), "12.0.0", {}, {}, {}, {})
+      MarketingScreen(MarketingUiState.Success(Market.SE, Language.EN_SE), "X.Y.Z", {}, {}, {}, {})
     }
   }
 }
@@ -369,7 +369,7 @@ private fun PreviewPreferencesSheetContent() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.surface) {
       Column {
-        PreferencesSheetContent(Market.SE, Language.EN_SE, "12.0.0", {}, {}, {})
+        PreferencesSheetContent(Market.SE, Language.EN_SE, "X.Y.Z", {}, {}, {})
       }
     }
   }
