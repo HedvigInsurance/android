@@ -46,7 +46,7 @@ data class MoveQuote(
           ),
           documents = persistentListOf(),
         ),
-        displayItems = persistentListOf()
+        displayItems = persistentListOf(),
       )
     }
   }

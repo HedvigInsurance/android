@@ -179,7 +179,6 @@ class LoggedInActivity : AppCompatActivity() {
               this@LoggedInActivity.startActivity(
                 connectPayinIntent(
                   this@LoggedInActivity,
-                  featureManager.getPaymentType(),
                   market,
                   false,
                 ),

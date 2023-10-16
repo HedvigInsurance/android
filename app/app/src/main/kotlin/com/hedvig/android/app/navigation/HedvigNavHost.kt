@@ -99,7 +99,6 @@ internal fun HedvigNavHost(
       context.startActivity(
         connectPayinIntent(
           context,
-          featureManager.getPaymentType(),
           market,
           false,
         ),

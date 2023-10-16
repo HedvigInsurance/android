@@ -8,7 +8,6 @@ import androidx.core.app.TaskStackBuilder
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.android.notification.setupNotificationChannel
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.MarketManager
@@ -24,7 +23,6 @@ import kotlinx.coroutines.launch
 class PaymentNotificationSender(
   private val context: Context,
   private val marketManager: MarketManager,
-  private val featureManager: FeatureManager,
   private val applicationScope: ApplicationScope,
 ) : NotificationSender {
   override fun createChannel() {
@@ -66,16 +64,13 @@ class PaymentNotificationSender(
             addNextIntentWithParentStack(
               connectPayinIntent(
                 context,
-                featureManager.getPaymentType(),
                 market,
                 false,
               ),
             )
           } catch (error: IllegalArgumentException) {
-            val paymentType = featureManager.getPaymentType()
             logcat(LogPriority.ERROR) {
-              "Illegal market and payment type, could not create payin intent. " +
-                "Market: $market, PaymentType: $paymentType"
+              "Illegal market and payment type, could not create payin intent. Market: $market"
             }
           }
 

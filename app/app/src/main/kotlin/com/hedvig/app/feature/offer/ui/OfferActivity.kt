@@ -289,7 +289,6 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
         startActivity(
           connectPayinIntent(
             this,
-            event.payinType,
             market,
             true,
           ),

@@ -30,6 +30,7 @@ dependencies {
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
+  implementation(projects.coreDemoMode)
   implementation(projects.coreDesignSystem)
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
@@ -43,7 +44,7 @@ dependencies {
   implementation(projects.navigationCore)
   implementation(projects.notificationBadgeDataPublic)
   implementation(projects.pullrefresh)
-  implementation(projects.coreDemoMode)
+
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
