@@ -76,7 +76,6 @@ val profileModule = module {
       languageService = get<LanguageService>(),
       settingsDataStore = get<SettingsDataStore>(),
       enableNotificationsReminderManager = get<EnableNotificationsReminderManager>(),
-      featureManager = get<FeatureManager>(),
     )
   }
 

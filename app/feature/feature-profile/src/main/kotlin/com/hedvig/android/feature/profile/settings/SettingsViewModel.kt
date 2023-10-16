@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.profile.settings
 
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
-import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.language.Language
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.Market
@@ -18,7 +17,6 @@ internal class SettingsViewModel(
   languageService: LanguageService,
   settingsDataStore: SettingsDataStore,
   enableNotificationsReminderManager: EnableNotificationsReminderManager,
-  featureManager: FeatureManager,
 ) : MoleculeViewModel<SettingsEvent, SettingsUiState>(
   SettingsUiState.Loading(
     selectedLanguage = languageService.getLanguage(),
@@ -33,7 +31,6 @@ internal class SettingsViewModel(
     languageService = languageService,
     settingsDataStore = settingsDataStore,
     enableNotificationsReminderManager = enableNotificationsReminderManager,
-    featureManager = featureManager,
   ),
 ) {
   init {

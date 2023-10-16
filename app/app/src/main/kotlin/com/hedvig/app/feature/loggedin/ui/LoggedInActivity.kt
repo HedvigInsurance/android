@@ -82,7 +82,6 @@ import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
 import com.hedvig.app.service.DynamicLink
 import com.hedvig.app.util.extensions.showReviewDialog
 import com.hedvig.hanalytics.HAnalytics
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterIsInstance
@@ -113,12 +112,9 @@ class LoggedInActivity : AppCompatActivity() {
   // Shows the splash screen as long as the auth status is still undetermined, that's the only condition.
   private val showSplash = MutableStateFlow(true)
 
-  // Before this is done, we should not navigate away or stop showing the splash screen
-  private val darkThemeEvaluated = MutableStateFlow(false)
-
   override fun onCreate(savedInstanceState: Bundle?) {
     installSplashScreen().apply {
-      setKeepOnScreenCondition { showSplash.value == true || darkThemeEvaluated.value == false }
+      setKeepOnScreenCondition { showSplash.value == true }
       setOnExitAnimationListener {
         logcat(LogPriority.INFO) { "Splash screen will be removed" }
         it.remove()
@@ -130,25 +126,13 @@ class LoggedInActivity : AppCompatActivity() {
     val intent: Intent = intent
     val uri: Uri? = intent.data
     lifecycleScope.launch {
-      val theme = async { settingsDataStore.observeTheme().first() }
       if (featureManager.isFeatureEnabled(Feature.UPDATE_NECESSARY)) {
         applicationContext.startActivity(ForceUpgradeActivity.newInstance(applicationContext))
         finish()
         return@launch
       }
       launch {
-        val disableDarkModeFlag = featureManager.isFeatureEnabled(Feature.DISABLE_DARK_MODE)
-        if (disableDarkModeFlag) {
-          logcat { "Disabling dark mode feature flag evaluated to true" }
-          AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-          logcat { "Successfully disabled dark mode" }
-          theme.cancel()
-        } else {
-          logcat { "Dark mode feature flag evaluated to false." }
-          theme.await()?.apply()
-        }
-      }.invokeOnCompletion {
-        darkThemeEvaluated.update { true }
+        settingsDataStore.observeTheme().first()?.apply()
       }
       launch {
         lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
@@ -226,8 +210,6 @@ class LoggedInActivity : AppCompatActivity() {
           .first()
         // Wait for demo mode to evaluate to false to know that we must leave the activity
         demoManager.isDemoMode().first { it == false }
-        // Wait for dark theme to evaluate before deciding to leave the activity
-        darkThemeEvaluated.first { it == true }
         activityNavigator.navigateToMarketingActivity()
         finish()
       }
