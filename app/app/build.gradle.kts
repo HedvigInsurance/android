@@ -220,6 +220,8 @@ dependencies {
   implementation(projects.featureChangeaddress)
   implementation(projects.featureChat)
   implementation(projects.featureClaimTriaging)
+  implementation(projects.featureConnectPaymentAdyen)
+  implementation(projects.featureConnectPaymentTrustly)
   implementation(projects.featureForever)
   implementation(projects.featureHome)
   implementation(projects.featureInsurances)

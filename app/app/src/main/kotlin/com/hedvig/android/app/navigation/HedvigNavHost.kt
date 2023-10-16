@@ -27,6 +27,8 @@ import com.hedvig.android.feature.changeaddress.navigation.changeAddressGraph
 import com.hedvig.android.feature.chat.navigation.chatGraph
 import com.hedvig.android.feature.claimtriaging.ClaimTriagingDestination
 import com.hedvig.android.feature.claimtriaging.claimTriagingDestinations
+import com.hedvig.android.feature.connect.payment.adyen.connectAdyenPaymentGraph
+import com.hedvig.android.feature.connect.payment.connectTrustlyPaymentGraph
 import com.hedvig.android.feature.forever.navigation.foreverGraph
 import com.hedvig.android.feature.home.claims.pledge.HonestyPledgeBottomSheet
 import com.hedvig.android.feature.home.home.navigation.homeGraph
@@ -229,6 +231,8 @@ internal fun HedvigNavHost(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       navigator = navigator,
     )
+    connectAdyenPaymentGraph()
+    connectTrustlyPaymentGraph()
   }
 }
 
