@@ -2,7 +2,6 @@ package com.hedvig.app.feature.loggedin.ui
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -51,6 +50,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavController
 import arrow.fx.coroutines.raceN
 import coil.ImageLoader
 import com.hedvig.android.app.navigation.HedvigNavHost
@@ -73,15 +73,15 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.activity.ActivityNavigator
+import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.hedvig.android.theme.Theme
-import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
-import com.hedvig.app.service.DynamicLink
 import com.hedvig.app.util.extensions.showReviewDialog
 import com.hedvig.hanalytics.HAnalytics
+import com.kiwi.navigationcompose.typed.navigate
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterIsInstance
@@ -124,7 +124,6 @@ class LoggedInActivity : AppCompatActivity() {
     WindowCompat.setDecorFitsSystemWindows(window, false)
 
     val intent: Intent = intent
-    val uri: Uri? = intent.data
     lifecycleScope.launch {
       if (featureManager.isFeatureEnabled(Feature.UPDATE_NECESSARY)) {
         applicationContext.startActivity(ForceUpgradeActivity.newInstance(applicationContext))
@@ -157,36 +156,6 @@ class LoggedInActivity : AppCompatActivity() {
         launch {
           authTokenService.authStatus.first { it is AuthStatus.LoggedIn }
           showReviewWithDelay()
-        }
-      }
-      if (uri != null) {
-        launch {
-          lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            authTokenService.authStatus.first { it is AuthStatus.LoggedIn }
-            val pathSegments = uri.pathSegments
-            val dynamicLink: DynamicLink = when {
-              pathSegments.contains("direct-debit") -> DynamicLink.DirectDebit
-              pathSegments.contains("connect-payment") -> DynamicLink.DirectDebit
-              pathSegments.isEmpty() -> DynamicLink.None
-              else -> DynamicLink.Unknown
-            }
-            logcat(LogPriority.INFO) {
-              "Deep link was found:$dynamicLink, with segments: ${pathSegments.joinToString(",")}"
-            }
-            if (dynamicLink is DynamicLink.DirectDebit) {
-              hAnalytics.deepLinkOpened(dynamicLink.type)
-              val market = marketManager.market.first()
-              this@LoggedInActivity.startActivity(
-                connectPayinIntent(
-                  this@LoggedInActivity,
-                  market,
-                  false,
-                ),
-              )
-            } else {
-              logcat { "Deep link $dynamicLink did not open some specific activity" }
-            }
-          }
         }
       }
       lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -324,6 +293,7 @@ private fun HedvigApp(
           hedvigAppState = hedvigAppState,
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,
           activityNavigator = activityNavigator,
+          navigateToConnectPayment = { navigateToConnectPayment(hedvigAppState.navController, market) },
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           imageLoader = imageLoader,
           market = market,
@@ -420,5 +390,17 @@ private fun Theme.apply() = when (this) {
     } else {
       AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY)
     }
+  }
+}
+
+private fun navigateToConnectPayment(
+  navController: NavController,
+  market: Market,
+) {
+  when (market) {
+    Market.SE -> navController.navigate(AppDestination.ConnectPaymentTrustly)
+    Market.NO,
+    Market.DK,
+    -> navController.navigate(AppDestination.ConnectPaymentAdyen)
   }
 }
