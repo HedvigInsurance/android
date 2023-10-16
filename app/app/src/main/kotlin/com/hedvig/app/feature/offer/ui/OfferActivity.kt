@@ -287,7 +287,7 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
       PostSignScreen.CONNECT_PAYIN -> {
         val market = marketManager.market.value
         startActivity(
-          connectPayinIntent(
+          connectPayinIntent( // todo delete along with entire offer screen
             this,
             market,
             true,

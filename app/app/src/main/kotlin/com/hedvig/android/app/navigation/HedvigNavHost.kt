@@ -2,7 +2,10 @@ package com.hedvig.android.app.navigation
 
 import android.content.Context
 import android.net.Uri
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -17,9 +20,12 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
+import androidx.navigation.navDeepLink
+import androidx.navigation.navOptions
 import coil.ImageLoader
 import com.hedvig.android.app.ui.HedvigAppState
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.toClaimFlowDestination
@@ -53,10 +59,10 @@ import com.hedvig.app.BuildConfig
 import com.hedvig.app.feature.adyen.AdyenCurrency
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutActivity
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
-import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import com.kiwi.navigationcompose.typed.Destination
+import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
 import com.kiwi.navigationcompose.typed.popBackStack
@@ -68,6 +74,7 @@ internal fun HedvigNavHost(
   hedvigAppState: HedvigAppState,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   activityNavigator: ActivityNavigator,
+  navigateToConnectPayment: () -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   imageLoader: ImageLoader,
   market: Market,
@@ -93,18 +100,6 @@ internal fun HedvigNavHost(
           LegacyChangeAddressActivity.newInstance(context),
         )
       }
-    }
-  }
-
-  fun navigateToPayinScreen() {
-    coroutineScope.launch {
-      context.startActivity(
-        connectPayinIntent(
-          context,
-          market,
-          false,
-        ),
-      )
     }
   }
 
@@ -170,7 +165,7 @@ internal fun HedvigNavHost(
       onGenerateTravelCertificateClicked = {
         hedvigAppState.navController.navigate(AppDestination.GenerateTravelCertificate)
       },
-      navigateToPayinScreen = ::navigateToPayinScreen,
+      navigateToPayinScreen = navigateToConnectPayment,
       openAppSettings = { activityNavigator.openAppSettings(context) },
       openUrl = ::openUrl,
       imageLoader = imageLoader,
@@ -222,7 +217,7 @@ internal fun HedvigNavHost(
         val intent = AdyenConnectPayoutActivity.newInstance(context, AdyenCurrency.fromMarket(market))
         context.startActivity(intent)
       },
-      navigateToPayinScreen = ::navigateToPayinScreen,
+      navigateToPayinScreen = navigateToConnectPayment,
       openAppSettings = { activityNavigator.openAppSettings(context) },
       openUrl = ::openUrl,
       market = market,
@@ -372,17 +367,5 @@ private fun rememberNavigator(navController: NavController): Navigator {
         navController.popBackStack()
       }
     }
-  }
-}
-
-private fun navigateToConnectPayment(
-  navigator: Navigator,
-  market: Market,
-) {
-  when (market) {
-    Market.SE -> navigator.navigateUnsafe(AppDestination.ConnectPaymentTrustly)
-    Market.NO,
-    Market.DK,
-    -> navigator.navigateUnsafe(AppDestination.ConnectPaymentAdyen)
   }
 }

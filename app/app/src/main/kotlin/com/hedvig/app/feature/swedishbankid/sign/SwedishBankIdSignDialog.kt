@@ -75,7 +75,7 @@ class SwedishBankIdSignDialog : DialogFragment() {
             }
           } else if (state is BankIdSignViewState.StartDirectDebit) {
             startActivity(
-              connectPayinIntent(
+              connectPayinIntent( // todo delete along with entire offer screen
                 requireContext(),
                 marketManager.market.value,
                 true,

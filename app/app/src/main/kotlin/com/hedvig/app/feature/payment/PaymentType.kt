@@ -6,6 +6,7 @@ import com.hedvig.app.feature.adyen.AdyenCurrency
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinActivity
 import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
 
+@Deprecated("Replace with navigating to AppDestination.ConnectPaymentTrustly|AppDestination.ConnectPaymentAdyen")
 fun connectPayinIntent(
   context: Context,
   market: Market,
