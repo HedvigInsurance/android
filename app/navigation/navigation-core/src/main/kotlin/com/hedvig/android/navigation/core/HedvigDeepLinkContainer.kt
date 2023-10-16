@@ -7,6 +7,8 @@ interface HedvigDeepLinkContainer {
   val profile: String // The profile screen, which acts as a gateway to several app settings
   val eurobonus: String // The destination allowing to edit your current Eurobonus (SAS) number
   val chat: String // Hedvig Chat
+  val connectPayment: String // Screen where the member can connect their payment method to Hedvig to pay for insurance
+  val directDebit: String // Same as connectPayment but to support an old link to it
 }
 
 internal class HedvigDeepLinkContainerImpl(
@@ -28,4 +30,6 @@ internal class HedvigDeepLinkContainerImpl(
   override val profile: String = "$baseFirebaseLink/profile"
   override val eurobonus: String = "$baseFirebaseLink/eurobonus"
   override val chat: String = "$baseFirebaseLink/chat"
+  override val connectPayment: String = "$baseFirebaseLink/connect-payment"
+  override val directDebit: String = "$baseFirebaseLink/direct-debit"
 }

@@ -231,8 +231,11 @@ internal fun HedvigNavHost(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       navigator = navigator,
     )
-    connectAdyenPaymentGraph()
-    connectTrustlyPaymentGraph()
+    connectPaymentGraph(
+      navigator = navigator,
+      market = market,
+      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+    )
   }
 }
 
@@ -305,6 +308,38 @@ private fun NavGraphBuilder.nestedHomeGraphs(
       }
     },
   )
+}
+
+private fun NavGraphBuilder.connectPaymentGraph(
+  navigator: Navigator,
+  market: Market,
+  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
+) {
+  composable<AppDestination.ConnectPaymentGeneric>(
+    deepLinks = listOf(
+      navDeepLink { uriPattern = hedvigDeepLinkContainer.connectPayment },
+      navDeepLink { uriPattern = hedvigDeepLinkContainer.directDebit },
+    ),
+    enterTransition = { EnterTransition.None },
+    exitTransition = { ExitTransition.None },
+  ) {
+    LaunchedEffect(Unit) {
+      val navOptions = navOptions {
+        popUpTo<AppDestination.ConnectPaymentGeneric> {
+          inclusive = true
+        }
+      }
+      when (market) {
+        Market.SE -> navigator.navigateUnsafe(AppDestination.ConnectPaymentTrustly, navOptions)
+        Market.NO,
+        Market.DK,
+        -> navigator.navigateUnsafe(AppDestination.ConnectPaymentAdyen, navOptions)
+      }
+    }
+    HedvigFullScreenCenterAlignedProgress()
+  }
+  connectAdyenPaymentGraph()
+  connectTrustlyPaymentGraph()
 }
 
 @Composable
