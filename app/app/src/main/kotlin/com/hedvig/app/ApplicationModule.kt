@@ -180,7 +180,7 @@ private val networkModule = module {
   factory<OkHttpClient.Builder> {
     val languageService = get<LanguageService>()
     val builder: OkHttpClient.Builder = OkHttpClient.Builder()
-      .addDatadogConfiguration()
+      .addDatadogConfiguration(get<HedvigBuildConstants>())
       .addInterceptor(get<AuthTokenRefreshingInterceptor>())
       .addInterceptor { chain ->
         chain.proceed(
