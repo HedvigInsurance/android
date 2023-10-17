@@ -45,6 +45,7 @@ import com.hedvig.android.feature.changeaddress.di.changeAddressModule
 import com.hedvig.android.feature.chat.ChatRepository
 import com.hedvig.android.feature.chat.di.chatModule
 import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
+import com.hedvig.android.feature.connect.payment.trustly.di.connectPaymentTrustlyModule
 import com.hedvig.android.feature.forever.di.foreverModule
 import com.hedvig.android.feature.home.di.homeModule
 import com.hedvig.android.feature.insurances.di.insurancesModule
@@ -585,6 +586,7 @@ val applicationModule = module {
       clockModule,
       coilModule,
       connectPaymentModule,
+      connectPaymentTrustlyModule,
       coreCommonModule,
       dataStoreModule,
       datadogDemoTrackingModule,
