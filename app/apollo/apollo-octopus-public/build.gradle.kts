@@ -29,6 +29,7 @@ apollo {
     packageName.set("octopus")
     codegenModels.set(com.apollographql.apollo3.compiler.MODELS_RESPONSE_BASED)
 
+    generateApolloMetadata.set(true)
     generateDataBuilders.set(true)
 
     // https://www.apollographql.com/docs/android/advanced/operation-variables/#make-nullable-variables-non-optional
