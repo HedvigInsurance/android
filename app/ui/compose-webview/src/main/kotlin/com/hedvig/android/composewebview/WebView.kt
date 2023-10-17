@@ -630,7 +630,7 @@ fun rememberSaveableWebViewState(): WebViewState {
   }
 }
 
-val WebStateSaver: Saver<WebViewState, Any> = run {
+private val WebStateSaver: Saver<WebViewState, Any> = run {
   val pageTitleKey = "pagetitle"
   val lastLoadedUrlKey = "lastloaded"
   val stateBundle = "bundle"
