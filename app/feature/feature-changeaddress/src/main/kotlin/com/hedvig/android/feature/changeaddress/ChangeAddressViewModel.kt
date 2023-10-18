@@ -166,7 +166,7 @@ internal class ChangeAddressViewModel(
   }
 
   fun onHousingTypeErrorDialogDismissed() {
-    _uiState.update { it.copy(housingType = ValidatedInput(it.housingType.input)) }
+    _uiState.update { it.copy(housingType = it.housingType.copy(errorMessageRes = null)) }
   }
 
   fun onHousingTypeSubmitted() {
