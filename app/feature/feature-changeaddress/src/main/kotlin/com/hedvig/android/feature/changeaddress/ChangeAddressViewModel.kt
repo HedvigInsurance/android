@@ -65,10 +65,6 @@ internal class ChangeAddressViewModel(
     _uiState.update { it.copy(isSublet = ValidatedInput(isSublet)) }
   }
 
-  fun onQuotesCleared() {
-    _uiState.update { it.copy(quotes = emptyList()) }
-  }
-
   fun validateAddressInput(): Boolean {
     _uiState.update { it.validateAddressInput() }
     return _uiState.value.isAddressInputValid
@@ -77,6 +73,26 @@ internal class ChangeAddressViewModel(
   fun validateHouseInput(): Boolean {
     _uiState.update { it.validateHouseInput() }
     return _uiState.value.isHouseInputValid
+  }
+
+  /**
+   * After we've received the MoveIntentId, `startMovingFlowAfterHavingReceivedMoveIntentId` is used to trigger the
+   * navigation to the next question. When this function is called, it means the navigation event has been handled.
+   */
+  fun onNavigatedToFirstStepAfterHavingReceivedMoveIntentId() {
+    _uiState.update {
+      it.copy(navigateToFirstStepAfterHavingReceivedMoveIntentId = false)
+    }
+  }
+
+  /**
+   * After we've received the offer quotes, `navigateToOfferScreenAfterHavingReceivedQuotes` is used to trigger the
+   * navigation to the offer page. When this function is called, it means the navigation event has been handled.
+   */
+  fun onNavigatedToOfferScreenAfterHavingReceivedQuotes() {
+    _uiState.update {
+      it.copy(navigateToOfferScreenAfterHavingReceivedQuotes = false)
+    }
   }
 
   fun onSubmitNewAddress() {
@@ -102,6 +118,7 @@ internal class ChangeAddressViewModel(
           _uiState.update {
             it.copy(
               isLoading = false,
+              navigateToOfferScreenAfterHavingReceivedQuotes = true,
               quotes = quotes,
             )
           }
@@ -185,6 +202,7 @@ internal class ChangeAddressViewModel(
           _uiState.update {
             it.copy(
               moveIntentId = moveIntent.id,
+              navigateToFirstStepAfterHavingReceivedMoveIntentId = true,
               numberInsured = ValidatedInput(moveIntent.suggestedNumberInsured.toString()),
               moveFromAddressId = moveIntent.currentHomeAddresses.firstOrNull()?.id,
               extraBuildingTypes = moveIntent.extraBuildingTypes,

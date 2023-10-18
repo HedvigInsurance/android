@@ -39,22 +39,23 @@ import kotlinx.datetime.LocalDate
 @Composable
 internal fun ChangeAddressEnterNewAddressDestination(
   viewModel: ChangeAddressViewModel,
-  onContinue: () -> Unit,
-  close: () -> Unit,
-  onQuotesReceived: () -> Unit,
+  onNavigateToVillaInformationDestination: () -> Unit,
+  navigateUp: () -> Unit,
+  onNavigateToOfferDestination: () -> Unit,
 ) {
   val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-  val quotes = uiState.quotes
-  LaunchedEffect(quotes) {
-    if (quotes.isNotEmpty()) {
-      onQuotesReceived()
+  val navigateToOfferScreenAfterHavingReceivedQuotes = uiState.navigateToOfferScreenAfterHavingReceivedQuotes
+  LaunchedEffect(navigateToOfferScreenAfterHavingReceivedQuotes) {
+    if (navigateToOfferScreenAfterHavingReceivedQuotes) {
+      viewModel.onNavigatedToOfferScreenAfterHavingReceivedQuotes()
+      onNavigateToOfferDestination()
     }
   }
 
-  ChangeAddressEnterNewScreen(
+  ChangeAddressEnterNewAddressScreen(
     uiState = uiState,
-    close = close,
+    navigateUp = navigateUp,
     onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
     onStreetChanged = viewModel::onStreetChanged,
     onPostalCodeChanged = viewModel::onPostalCodeChanged,
@@ -66,7 +67,7 @@ internal fun ChangeAddressEnterNewAddressDestination(
       val isInputValid = viewModel.validateAddressInput()
       if (isInputValid) {
         if (uiState.housingType.input == HousingType.VILLA) {
-          onContinue()
+          onNavigateToVillaInformationDestination()
         } else {
           viewModel.onSubmitNewAddress()
         }
@@ -78,7 +79,7 @@ internal fun ChangeAddressEnterNewAddressDestination(
 @Composable
 private fun ChangeAddressEnterNewAddressScreen(
   uiState: ChangeAddressUiState,
-  close: () -> Unit,
+  navigateUp: () -> Unit,
   onErrorDialogDismissed: () -> Unit,
   onStreetChanged: (String) -> Unit,
   onPostalCodeChanged: (String) -> Unit,
@@ -101,7 +102,7 @@ private fun ChangeAddressEnterNewAddressScreen(
   }
 
   HedvigScaffold(
-    navigateUp = close,
+    navigateUp = navigateUp,
     modifier = Modifier.clearFocusOnTap(),
     topAppBarActionType = TopAppBarActionType.CLOSE,
   ) {

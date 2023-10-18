@@ -54,7 +54,6 @@ import com.hedvig.android.core.designsystem.component.card.HedvigInfoCard
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.ValidatedInput
-import com.hedvig.android.core.ui.appbar.m3.TopAppBarActionType
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
@@ -77,7 +76,7 @@ import kotlinx.datetime.toLocalDateTime
 internal fun ChangeAddressOfferDestination(
   viewModel: ChangeAddressViewModel,
   openChat: () -> Unit,
-  close: () -> Unit,
+  navigateUp: () -> Unit,
   onChangeAddressResult: (LocalDate?) -> Unit,
   openUrl: (String) -> Unit,
 ) {
@@ -92,7 +91,7 @@ internal fun ChangeAddressOfferDestination(
   ChangeAddressOfferScreen(
     uiState = uiState,
     openChat = openChat,
-    close = close,
+    navigateUp = navigateUp,
     onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
     onExpandQuote = viewModel::onExpandQuote,
     onConfirmMove = viewModel::onConfirmMove,
@@ -104,7 +103,7 @@ internal fun ChangeAddressOfferDestination(
 private fun ChangeAddressOfferScreen(
   uiState: ChangeAddressUiState,
   openChat: () -> Unit,
-  close: () -> Unit,
+  navigateUp: () -> Unit,
   onErrorDialogDismissed: () -> Unit,
   onExpandQuote: (MoveQuote) -> Unit,
   onConfirmMove: (MoveIntentId) -> Unit,
@@ -122,9 +121,8 @@ private fun ChangeAddressOfferScreen(
   val scrollState = rememberScrollState()
   HedvigScaffold(
     topAppBarText = stringResource(id = R.string.CHANGE_ADDRESS_SUMMARY_TITLE),
-    navigateUp = close,
+    navigateUp = navigateUp,
     topAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
-    topAppBarActionType = TopAppBarActionType.CLOSE,
     scrollState = scrollState,
   ) {
     Spacer(Modifier.height(8.dp))

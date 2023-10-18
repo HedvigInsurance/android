@@ -39,8 +39,9 @@ internal fun ChangeAddressSelectHousingTypeDestination(
 ) {
   val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-  LaunchedEffect(uiState.moveIntentId) {
-    if (uiState.moveIntentId != null) {
+  LaunchedEffect(uiState.navigateToFirstStepAfterHavingReceivedMoveIntentId) {
+    if (uiState.navigateToFirstStepAfterHavingReceivedMoveIntentId) {
+      viewModel.onNavigatedToFirstStepAfterHavingReceivedMoveIntentId()
       navigateToEnterNewAddressDestination()
     }
   }

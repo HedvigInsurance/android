@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -42,14 +41,15 @@ import hedvig.resources.R
 internal fun ChangeAddressEnterVillaInformationDestination(
   viewModel: ChangeAddressViewModel,
   navigateUp: () -> Unit,
-  onQuotesReceived: () -> Unit,
+  onNavigateToOfferDestination: () -> Unit,
 ) {
   val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-  val quotes = uiState.quotes
-  LaunchedEffect(quotes) {
-    if (quotes.isNotEmpty()) {
-      onQuotesReceived()
+  val navigateToOfferScreenAfterHavingReceivedQuotes = uiState.navigateToOfferScreenAfterHavingReceivedQuotes
+  LaunchedEffect(navigateToOfferScreenAfterHavingReceivedQuotes) {
+    if (navigateToOfferScreenAfterHavingReceivedQuotes) {
+      viewModel.onNavigatedToOfferScreenAfterHavingReceivedQuotes()
+      onNavigateToOfferDestination()
     }
   }
 
@@ -83,9 +83,6 @@ internal fun ChangeAddressEnterVillaInformationDestination(
         viewModel.onSubmitNewAddress()
       }
     },
-    onExtraBuildingClicked = {
-      showExtraBuildingsBottomSheet = true
-    },
     onAddExtraBuildingClicked = {
       showExtraBuildingsBottomSheet = true
     },
@@ -103,7 +100,6 @@ private fun ChangeAddressEnterVillaInformationScreen(
   onNumberOfBathroomsChanged: (String) -> Unit,
   onIsSubletSelected: (Boolean) -> Unit,
   onSaveNewAddress: () -> Unit,
-  onExtraBuildingClicked: (ExtraBuilding) -> Unit,
   onAddExtraBuildingClicked: () -> Unit,
   onRemoveExtraBuildingClicked: (ExtraBuilding) -> Unit,
 ) {
@@ -172,7 +168,6 @@ private fun ChangeAddressEnterVillaInformationScreen(
     Spacer(modifier = Modifier.height(8.dp))
     ExtraBuildingContainer(
       extraBuildings = uiState.extraBuildings,
-      onExtraBuildingItemClicked = onExtraBuildingClicked,
       onAddExtraBuildingClicked = onAddExtraBuildingClicked,
       onRemoveExtraBuildingClicked = onRemoveExtraBuildingClicked,
       modifier = Modifier
@@ -202,7 +197,6 @@ private fun PreviewChangeAddressEnterVillaInformationScreen() {
     Surface(color = MaterialTheme.colorScheme.background) {
       ChangeAddressEnterVillaInformationScreen(
         ChangeAddressUiState(),
-        {},
         {},
         {},
         {},
