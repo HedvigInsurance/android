@@ -19,13 +19,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -51,6 +49,7 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedButt
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.card.HedvigInfoCard
+import com.hedvig.android.core.designsystem.material3.squircleExtraSmall
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.ValidatedInput
@@ -265,6 +264,7 @@ private fun QuoteDetailsAndPdfs(
   Column(modifier) {
     HedvigInfoCard(
       contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+      shape = MaterialTheme.shapes.squircleExtraSmall,
     ) {
       Text(
         text = quote.productVariant.displayName,
@@ -316,6 +316,9 @@ private fun Documents(
   openUrl: (String) -> Unit,
 ) {
   quote.productVariant.documents.mapIndexed { index, document ->
+    if (index > 0) {
+      Spacer(Modifier.height(8.dp))
+    }
     HedvigCard(
       onClick = { openUrl(document.url) },
     ) {
@@ -352,9 +355,6 @@ private fun Documents(
           modifier = Modifier.size(16.dp),
         )
       }
-    }
-    if (index != quote.productVariant.documents.lastIndex) {
-      Spacer(Modifier.height(8.dp))
     }
   }
 }

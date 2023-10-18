@@ -14,12 +14,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -134,17 +132,12 @@ internal fun <T> OptionChipsFlowRow(
                 onClick = { onItemClick(item) },
               ),
           )
-          CompositionLocalProvider(LocalContentColor provides contentColor) {
-            Text(
-              text = itemDisplayName(item),
-              style = MaterialTheme.typography.bodyLarge.copy(
-                fontSize = 18.sp,
-              ),
-              maxLines = 1,
-              modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-            )
-          }
+          Text(
+            text = itemDisplayName(item),
             style = MaterialTheme.typography.bodyLarge.copy(color = contentColor),
+            maxLines = 1,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+          )
         }
       }
     }
