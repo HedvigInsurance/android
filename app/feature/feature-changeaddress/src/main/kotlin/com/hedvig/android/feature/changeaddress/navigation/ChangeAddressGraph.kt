@@ -57,12 +57,12 @@ fun NavGraphBuilder.changeAddressGraph(
       )
     }
 
-    composable<ChangeAddressDestination.EnterNewVillaAddress> { navBackStackEntry ->
+    composable<ChangeAddressDestination.EnterVillaInformation> { navBackStackEntry ->
       val viewModel: ChangeAddressViewModel = destinationScopedViewModel<AppDestination.ChangeAddress, _>(
         navController = navController,
         backStackEntry = navBackStackEntry,
       )
-      ChangeAddressEnterNewVillaAddressDestination(
+      ChangeAddressEnterVillaInformationDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
         onQuotesReceived = {
@@ -71,7 +71,7 @@ fun NavGraphBuilder.changeAddressGraph(
       )
     }
 
-    composable<ChangeAddressDestination.OfferDestination> { backStackEntry ->
+    composable<ChangeAddressDestination.Offer> { backStackEntry ->
       val viewModel: ChangeAddressViewModel = destinationScopedViewModel<AppDestination.ChangeAddress, _>(
         navController = navController,
         backStackEntry = backStackEntry,

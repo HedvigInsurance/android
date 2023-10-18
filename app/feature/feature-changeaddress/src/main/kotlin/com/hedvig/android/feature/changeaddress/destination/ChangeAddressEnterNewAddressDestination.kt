@@ -37,7 +37,7 @@ import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 
 @Composable
-internal fun ChangeAddressEnterNewDestination(
+internal fun ChangeAddressEnterNewAddressDestination(
   viewModel: ChangeAddressViewModel,
   onContinue: () -> Unit,
   close: () -> Unit,
@@ -76,7 +76,7 @@ internal fun ChangeAddressEnterNewDestination(
 }
 
 @Composable
-private fun ChangeAddressEnterNewScreen(
+private fun ChangeAddressEnterNewAddressScreen(
   uiState: ChangeAddressUiState,
   close: () -> Unit,
   onErrorDialogDismissed: () -> Unit,
@@ -195,10 +195,10 @@ private fun ChangeAddressEnterNewScreen(
 
 @HedvigPreview
 @Composable
-private fun PreviewChangeAddressEnterNewScreen() {
+private fun PreviewChangeAddressEnterNewAddressScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      ChangeAddressEnterNewScreen(
+      ChangeAddressEnterNewAddressScreen(
         ChangeAddressUiState(datePickerUiState = DatePickerUiState(null)),
         {}, {}, {}, {}, {}, {}, {}, {}, {},
       )

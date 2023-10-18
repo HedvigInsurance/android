@@ -38,9 +38,8 @@ import com.hedvig.android.feature.changeaddress.ui.extrabuildings.ExtraBuildingB
 import com.hedvig.android.feature.changeaddress.ui.extrabuildings.ExtraBuildingContainer
 import hedvig.resources.R
 
-@ExperimentalMaterial3Api
 @Composable
-internal fun ChangeAddressEnterNewVillaAddressDestination(
+internal fun ChangeAddressEnterVillaInformationDestination(
   viewModel: ChangeAddressViewModel,
   navigateUp: () -> Unit,
   onQuotesReceived: () -> Unit,
@@ -70,7 +69,7 @@ internal fun ChangeAddressEnterNewVillaAddressDestination(
     )
   }
 
-  ChangeAddressEnterNewVillaAddressScreen(
+  ChangeAddressEnterVillaInformationScreen(
     uiState = uiState,
     navigateUp = navigateUp,
     onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
@@ -95,7 +94,7 @@ internal fun ChangeAddressEnterNewVillaAddressDestination(
 }
 
 @Composable
-private fun ChangeAddressEnterNewVillaAddressScreen(
+private fun ChangeAddressEnterVillaInformationScreen(
   uiState: ChangeAddressUiState,
   navigateUp: () -> Unit,
   onErrorDialogDismissed: () -> Unit,
@@ -198,10 +197,10 @@ private fun ChangeAddressEnterNewVillaAddressScreen(
 
 @HedvigPreview
 @Composable
-private fun PreviewChangeAddressEnterNewVillaAddressDestination() {
+private fun PreviewChangeAddressEnterVillaInformationScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      ChangeAddressEnterNewVillaAddressScreen(
+      ChangeAddressEnterVillaInformationScreen(
         ChangeAddressUiState(),
         {},
         {},
