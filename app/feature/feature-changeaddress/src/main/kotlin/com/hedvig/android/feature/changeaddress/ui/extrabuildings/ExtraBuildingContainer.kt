@@ -1,40 +1,46 @@
 package com.hedvig.android.feature.changeaddress.ui.extrabuildings
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.foundation.Image
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedSmallButton
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
+import com.hedvig.android.core.designsystem.material3.onTypeContainer
 import com.hedvig.android.core.designsystem.material3.typeContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.X
 import com.hedvig.android.feature.changeaddress.data.ExtraBuilding
 import com.hedvig.android.feature.changeaddress.data.ExtraBuildingType
 import com.hedvig.android.feature.changeaddress.data.stringRes
 import hedvig.resources.R
 
 @Composable
-fun ExtraBuildingContainer(
+internal fun ExtraBuildingContainer(
   extraBuildings: List<ExtraBuilding>,
   onAddExtraBuildingClicked: () -> Unit,
-  onExtraBuildingItemClicked: (ExtraBuilding) -> Unit,
   onRemoveExtraBuildingClicked: (ExtraBuilding) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -46,12 +52,22 @@ fun ExtraBuildingContainer(
         style = MaterialTheme.typography.bodyMedium,
         modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp),
       )
-      AnimatedContent(targetState = extraBuildings, label = "extraBuildings") {
-        Column {
-          it.forEach { extraBuilding ->
+      Column {
+        extraBuildings.forEach { extraBuilding: ExtraBuilding ->
+          val visibleState = remember {
+            MutableTransitionState(false).apply {
+              targetState = true
+            }
+          }
+          AnimatedVisibility(
+            visibleState = visibleState,
+            enter = fadeIn() + expandVertically(expandFrom = Alignment.CenterVertically),
+            exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.CenterVertically),
+            label = "extraBuilding",
+          ) {
             Row(
               modifier = Modifier
-                // .clickable { onExtraBuildingItemClicked(extraBuilding) } // TODO
+//                .clickable { onExtraBuildingItemClicked(extraBuilding) } // TODO
                 .padding(horizontal = 16.dp, vertical = 8.dp),
               verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -62,18 +78,18 @@ fun ExtraBuildingContainer(
                 )
                 Text(
                   text = stringResource(id = R.string.CHANGE_ADDRESS_EXTRA_BUILDINGS_SIZE_LABEL, extraBuilding.size),
-                  color = MaterialTheme.colorScheme.secondary,
+                  color = MaterialTheme.colorScheme.onSurfaceVariant,
                   style = MaterialTheme.typography.bodyMedium,
                 )
                 if (extraBuilding.hasWaterConnected) {
                   Text(
                     text = stringResource(id = R.string.CHANGE_ADDRESS_EXTRA_BUILDINGS_WATER_LABEL),
-                    color = MaterialTheme.colorScheme.secondary,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     style = MaterialTheme.typography.bodyMedium,
                   )
                 }
               }
-              Spacer(modifier = Modifier.height(16.dp))
+              Spacer(modifier = Modifier.width(16.dp))
               Spacer(modifier = Modifier.weight(1f))
               IconButton(onClick = { onRemoveExtraBuildingClicked(extraBuilding) }) {
                 Icon(
@@ -91,7 +107,7 @@ fun ExtraBuildingContainer(
         onClick = onAddExtraBuildingClicked,
         colors = ButtonDefaults.buttonColors(
           containerColor = MaterialTheme.colorScheme.typeContainer,
-          contentColor = LocalContentColor.current,
+          contentColor = MaterialTheme.colorScheme.onTypeContainer,
         ),
         modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp),
       )
@@ -101,7 +117,7 @@ fun ExtraBuildingContainer(
 
 @HedvigPreview
 @Composable
-fun PreviewExtraBuildingContainer() {
+private fun PreviewExtraBuildingContainer() {
   HedvigTheme {
     Surface {
       ExtraBuildingContainer(
@@ -117,7 +133,6 @@ fun PreviewExtraBuildingContainer() {
             hasWaterConnected = true,
           ),
         ),
-        onExtraBuildingItemClicked = {},
         onAddExtraBuildingClicked = {},
         onRemoveExtraBuildingClicked = {},
       )
