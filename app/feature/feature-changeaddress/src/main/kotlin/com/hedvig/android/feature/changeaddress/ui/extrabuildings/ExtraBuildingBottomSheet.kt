@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -98,7 +99,7 @@ internal fun ExtraBuildingBottomSheet(
         onClick = {
           if (isInputValid(sizeInput, selectedType)) {
             val newExtraBuilding = ExtraBuilding(
-              size = sizeInput?.toInt() ?: 0,
+              size = sizeInput?.toIntOrNull() ?: 0,
               type = selectedType ?: ExtraBuildingType.CARPORT,
               hasWaterConnected = hasWaterConnected,
             )
