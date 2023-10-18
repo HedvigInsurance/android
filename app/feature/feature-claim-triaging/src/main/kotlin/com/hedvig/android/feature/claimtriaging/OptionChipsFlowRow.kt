@@ -30,7 +30,6 @@ import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import arrow.core.identity
 import com.hedvig.android.core.designsystem.material3.motion.MotionTokens
 import com.hedvig.android.core.designsystem.material3.onTypeContainer
@@ -145,6 +144,7 @@ internal fun <T> OptionChipsFlowRow(
               modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             )
           }
+            style = MaterialTheme.typography.bodyLarge.copy(color = contentColor),
         }
       }
     }

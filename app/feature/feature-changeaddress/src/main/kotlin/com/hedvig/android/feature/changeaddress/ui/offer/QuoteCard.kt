@@ -89,8 +89,7 @@ private fun PillAndBasicInfo(quote: MoveQuote, movingDate: LocalDate) {
     Column {
       Text(
         text = quote.insuranceName,
-        style = MaterialTheme.typography.titleMedium,
-        fontSize = 18.sp,
+        style = MaterialTheme.typography.bodyLarge,
       )
       CompositionLocalProvider(LocalContentColor.provides(MaterialTheme.colorScheme.onSurfaceVariant)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -99,7 +98,7 @@ private fun PillAndBasicInfo(quote: MoveQuote, movingDate: LocalDate) {
               id = R.string.CHANGE_ADDRESS_ACTIVATION_DATE,
               movingDate.toJavaLocalDate().format(hedvigDateTimeFormatter(getLocale())),
             ),
-            fontSize = 18.sp,
+            style = MaterialTheme.typography.bodyLarge,
           )
           Spacer(modifier = Modifier.width(4.dp))
           Icon(
@@ -125,8 +124,7 @@ private fun QuoteDetailsAndPrice(
       Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
           text = stringResource(id = R.string.CHANGE_ADDRESS_DETAILS_LABEL),
-          style = MaterialTheme.typography.titleMedium,
-          fontSize = 18.sp,
+          style = MaterialTheme.typography.bodyLarge,
         )
         Spacer(Modifier.width(8.dp))
         val angle = animateFloatAsState(
@@ -155,8 +153,7 @@ private fun QuoteDetailsAndPrice(
           id = R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL,
           quote.premium.toString(),
         ),
-        style = MaterialTheme.typography.titleMedium,
-        fontSize = 18.sp,
+        style = MaterialTheme.typography.bodyLarge,
         textAlign = TextAlign.End,
       )
     },

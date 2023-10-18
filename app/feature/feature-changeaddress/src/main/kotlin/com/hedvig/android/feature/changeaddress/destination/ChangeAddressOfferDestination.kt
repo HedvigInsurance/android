@@ -208,7 +208,7 @@ private fun ChangeAddressOfferScreen(
     Spacer(Modifier.height(64.dp))
     Text(
       text = stringResource(id = R.string.CHANGE_ADDRESS_NO_FIND),
-      fontSize = 18.sp,
+      style = MaterialTheme.typography.bodyLarge,
       textAlign = TextAlign.Center,
       modifier = Modifier
         .fillMaxWidth()
@@ -225,7 +225,7 @@ private fun ChangeAddressOfferScreen(
     ) {
       Text(
         text = stringResource(R.string.open_chat),
-        fontSize = 18.sp,
+        style = MaterialTheme.typography.bodyLarge,
       )
     }
     Spacer(Modifier.height(16.dp))
@@ -241,14 +241,14 @@ private fun QuotesPriceSum(
     startSlot = {
       Text(
         text = stringResource(id = R.string.CHANGE_ADDRESS_TOTAL),
-        fontSize = 18.sp,
+        style = MaterialTheme.typography.bodyLarge,
       )
     },
     endSlot = {
       val summedPrice = quotes.map(MoveQuote::premium).reduce(UiMoney::plus)
       Text(
         text = stringResource(R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL, summedPrice.toString()),
-        fontSize = 18.sp,
+        style = MaterialTheme.typography.bodyLarge,
         textAlign = TextAlign.End,
       )
     },
@@ -266,7 +266,10 @@ private fun QuoteDetailsAndPdfs(
     HedvigInfoCard(
       contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
     ) {
-      Text(quote.productVariant.displayName)
+      Text(
+        text = quote.productVariant.displayName,
+        style = MaterialTheme.typography.bodyMedium,
+      )
     }
     Spacer(Modifier.height(32.dp))
     InsurableLimits(quote)
@@ -281,14 +284,20 @@ private fun ColumnScope.InsurableLimits(quote: MoveQuote) {
   quote.productVariant.insurableLimits.mapIndexed { index, highlight ->
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
-        Text(highlight.label, fontSize = 18.sp)
+        Text(
+          text = highlight.label,
+          style = MaterialTheme.typography.bodyLarge,
+        )
       },
       endSlot = {
         Row(
           verticalAlignment = Alignment.CenterVertically,
           horizontalArrangement = Arrangement.End,
         ) {
-          Text(highlight.limit, fontSize = 18.sp)
+          Text(
+            text = highlight.limit,
+            style = MaterialTheme.typography.bodyLarge,
+          )
         }
       },
       spaceBetween = 18.dp,
@@ -329,11 +338,12 @@ private fun Documents(
                 append(" PDF")
               }
             },
-            fontSize = 18.sp,
+            style = MaterialTheme.typography.bodyLarge,
           )
-          CompositionLocalProvider(LocalContentColor.provides(MaterialTheme.colorScheme.onSurfaceVariant)) {
-            Text(document.displayName, fontSize = 18.sp)
-          }
+          Text(
+            text = document.displayName,
+            style = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
+          )
         }
         Spacer(Modifier.width(8.dp))
         Icon(
