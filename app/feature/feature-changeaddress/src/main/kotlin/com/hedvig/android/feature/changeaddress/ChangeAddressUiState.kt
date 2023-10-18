@@ -132,24 +132,24 @@ internal data class ChangeAddressUiState(
     )
   }
 
-  private fun isSquareMetersWithinBounds(squareMeters: Int?) = if (maxSquareMeters != null) {
-    if (squareMeters == null) {
-      false
-    } else {
-      squareMeters <= maxSquareMeters
+  private fun isSquareMetersWithinBounds(squareMeters: Int?): Boolean {
+    if (maxSquareMeters == null) {
+      return true
     }
-  } else {
-    true
+    if (squareMeters == null) {
+      return false
+    }
+    return squareMeters <= maxSquareMeters
   }
 
-  private fun isNumberCoInsuredWithinBounds(numberCoInsured: Int?) = if (maxNumberCoInsured != null) {
-    if (numberCoInsured == null) {
-      false
-    } else {
-      numberCoInsured <= maxNumberCoInsured
+  private fun isNumberCoInsuredWithinBounds(numberCoInsured: Int?): Boolean {
+    if (maxNumberCoInsured == null) {
+      return true
     }
-  } else {
-    true
+    if (numberCoInsured == null) {
+      return false
+    }
+    return numberCoInsured <= maxNumberCoInsured
   }
 }
 
