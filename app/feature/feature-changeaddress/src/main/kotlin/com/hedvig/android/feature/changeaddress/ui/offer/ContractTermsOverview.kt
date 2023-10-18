@@ -1,3 +1,4 @@
+
 package com.hedvig.android.feature.changeaddress.ui.offer
 
 import androidx.compose.foundation.background
@@ -26,7 +27,7 @@ import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 
 @Composable
-internal fun ContractTermsOverView(
+private fun ContractTermsOverview(
   contractDisplayName: String,
   contractTerms: ContractTerms,
 ) {
@@ -141,26 +142,26 @@ internal fun ContractTermsOverView(
   }
 }
 
-data class ContractTerms(
+private data class ContractTerms(
   val insurableLimits: List<InsurableLimit>,
   val perils: List<Peril>,
   val documents: List<Document>,
 )
 
-data class InsurableLimit(
+private data class InsurableLimit(
   val label: String,
   val description: String,
   val limit: String,
 )
 
-data class Peril(
+private data class Peril(
   val title: String,
   val description: String,
   val iconUrl: String,
   val isExpanded: Boolean = false,
 )
 
-data class Document(
+private data class Document(
   val title: String,
   val description: String,
   val documentUrl: String,
@@ -168,10 +169,10 @@ data class Document(
 
 @Preview
 @Composable
-fun PreviewContractTermsOverView() {
+private fun PreviewContractTermsOverview() {
   HedvigTheme {
     Surface {
-      ContractTermsOverView(
+      ContractTermsOverview(
         contractDisplayName = "Hemförsäkring",
         contractTerms = ContractTerms(
           insurableLimits = listOf(

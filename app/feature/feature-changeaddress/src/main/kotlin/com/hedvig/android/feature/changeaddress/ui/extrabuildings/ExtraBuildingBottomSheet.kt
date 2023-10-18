@@ -132,7 +132,7 @@ private fun isInputValid(sizeInput: String?, selectedType: ExtraBuildingType?): 
 
 @HedvigPreview
 @Composable
-internal fun PreviewExtraBuildingBottomSheet() {
+private fun PreviewExtraBuildingBottomSheet() {
   HedvigTheme {
     Surface {
       ExtraBuildingBottomSheet(

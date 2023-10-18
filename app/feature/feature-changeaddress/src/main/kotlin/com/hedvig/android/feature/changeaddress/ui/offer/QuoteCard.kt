@@ -177,7 +177,7 @@ private fun ExpandedInformation(
 
 @HedvigPreview
 @Composable
-fun PreviewQuoteCard() {
+private fun PreviewQuoteCard() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       QuoteCard(

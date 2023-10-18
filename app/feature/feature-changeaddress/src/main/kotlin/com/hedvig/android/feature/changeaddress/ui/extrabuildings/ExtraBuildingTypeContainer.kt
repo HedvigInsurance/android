@@ -65,7 +65,7 @@ internal fun ExtraBuildingTypeContainer(
 
 @HedvigPreview
 @Composable
-fun PreviewExtraBuildingTypeContainer() {
+private fun PreviewExtraBuildingTypeContainer() {
   HedvigTheme {
     Surface {
       ExtraBuildingTypeContainer(

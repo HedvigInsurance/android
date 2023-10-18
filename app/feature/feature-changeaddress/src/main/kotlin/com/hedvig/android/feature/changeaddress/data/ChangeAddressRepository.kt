@@ -9,6 +9,7 @@ import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.ui.insurance.toProductVariant
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.logger.logcat
 import kotlinx.collections.immutable.toImmutableList
 import octopus.MoveIntentCommitMutation
 import octopus.MoveIntentCreateMutation
@@ -26,6 +27,7 @@ internal class NetworkChangeAddressRepository(
   private val apolloClient: ApolloClient,
 ) : ChangeAddressRepository {
   override suspend fun createMoveIntent(): Either<ErrorMessage, MoveIntent> {
+    logcat { "Moving Flow: createMoveIntent" }
     return either {
       val result = apolloClient
         .mutation(MoveIntentCreateMutation())
@@ -47,6 +49,7 @@ internal class NetworkChangeAddressRepository(
   }
 
   override suspend fun createQuotes(input: QuoteInput): Either<ErrorMessage, List<MoveQuote>> {
+    logcat { "Moving Flow: createQuotes with input:$input" }
     return either {
       val result = apolloClient
         .mutation(input.toMoveIntentRequestMutation())
@@ -69,6 +72,7 @@ internal class NetworkChangeAddressRepository(
   }
 
   override suspend fun commitMove(id: MoveIntentId): Either<ErrorMessage, SuccessfulMove> {
+    logcat { "Moving Flow: commitMove with id:$id" }
     return either {
       val result = apolloClient
         .mutation(MoveIntentCommitMutation(id.id))
