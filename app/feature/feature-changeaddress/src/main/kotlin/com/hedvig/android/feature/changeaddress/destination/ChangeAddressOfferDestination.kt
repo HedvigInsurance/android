@@ -34,7 +34,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -171,7 +171,7 @@ private fun ChangeAddressOfferScreen(
       },
       modifier = Modifier
         .padding(horizontal = 16.dp)
-        .onGloballyPositioned { layoutCoordinates ->
+        .onPlaced { layoutCoordinates ->
           // Find the Y position where this button ends, to scroll right below it on click.
           whatsIncludedButtonPositionY =
             layoutCoordinates.positionInParent().y + layoutCoordinates.size.height
