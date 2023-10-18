@@ -21,6 +21,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
@@ -82,6 +83,9 @@ internal fun ExtraBuildingBottomSheet(
           sizeErrorText = null
           sizeInput = it
         },
+        keyboardOptions = KeyboardOptions(
+          keyboardType = KeyboardType.Number,
+        ),
         modifier = Modifier
           .padding(horizontal = 16.dp)
           .fillMaxWidth(),
