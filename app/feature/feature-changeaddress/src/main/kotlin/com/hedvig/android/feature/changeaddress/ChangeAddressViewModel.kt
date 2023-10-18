@@ -111,12 +111,11 @@ internal class ChangeAddressViewModel(
   }
 
   fun onExpandQuote(moveQuote: MoveQuote) {
-    _uiState.update {
-      it.copy(
-        quotes = it.quotes.replace(
-          newValue = moveQuote.copy(isExpanded = !moveQuote.isExpanded),
-          block = { it == moveQuote },
-        ),
+    _uiState.update { uiState: ChangeAddressUiState ->
+      uiState.copy(
+        quotes = uiState.quotes.map { quote: MoveQuote ->
+          if (quote == moveQuote) moveQuote.copy(isExpanded = !moveQuote.isExpanded) else quote
+        },
       )
     }
   }
@@ -229,10 +228,12 @@ internal class ChangeAddressViewModel(
   fun addExtraBuilding(extraBuilding: ExtraBuilding) {
     _uiState.update {
       val extraBuildings = it.extraBuildings.toMutableList()
-      extraBuildings.find { it.id == extraBuilding.id }?.let {
-        extraBuildings.replace(extraBuilding) { it.id == extraBuilding.id }
-      } ?: extraBuildings.add(extraBuilding)
-      it.copy(extraBuildings = extraBuildings)
+      val existingBuildingWithSameId = extraBuildings.find { it.id == extraBuilding.id }
+      if (existingBuildingWithSameId != null) {
+        extraBuildings.remove(existingBuildingWithSameId)
+      }
+      extraBuildings.add(extraBuilding)
+      it.copy(extraBuildings = extraBuildings.toList())
     }
   }
 }
@@ -274,10 +275,4 @@ private fun ChangeAddressUiState.toQuoteInput() = when (housingType.input) {
   )
 
   null -> throw IllegalArgumentException("No housing type found when creating input")
-}
-
-fun <T> List<T>.replace(newValue: T, block: (T) -> Boolean): List<T> {
-  return map {
-    if (block(it)) newValue else it
-  }
 }
