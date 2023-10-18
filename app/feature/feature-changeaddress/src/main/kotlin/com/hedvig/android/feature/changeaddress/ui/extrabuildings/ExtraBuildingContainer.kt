@@ -76,11 +76,9 @@ fun ExtraBuildingContainer(
               Spacer(modifier = Modifier.height(16.dp))
               Spacer(modifier = Modifier.weight(1f))
               IconButton(onClick = { onRemoveExtraBuildingClicked(extraBuilding) }) {
-                Image(
-                  imageVector = Icons.Filled.Clear,
-                  contentDescription = stringResource(
-                    R.string.login_text_input_email_address_icon_description_clear_all,
-                  ),
+                Icon(
+                  imageVector = Icons.Hedvig.X,
+                  contentDescription = null,
                 )
               }
             }
