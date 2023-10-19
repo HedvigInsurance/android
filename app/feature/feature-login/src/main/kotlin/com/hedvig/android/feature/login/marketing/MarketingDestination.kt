@@ -105,9 +105,9 @@ private fun MarketingScreen(
     if (showPreferencesSheet && uiState is MarketingUiState.Success) {
       HedvigTheme() {
         ModalBottomSheet(
+          containerColor = MaterialTheme.colorScheme.background,
           onDismissRequest = { showPreferencesSheet = false },
           sheetState = sheetState,
-          containerColor = MaterialTheme.colorScheme.background,
           windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Top),
         ) {
           Column(Modifier.verticalScroll(rememberScrollState())) {

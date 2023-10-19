@@ -55,8 +55,8 @@ internal fun OtherServicesBottomSheet(
   sheetState: SheetState,
 ) {
   ModalBottomSheet(
-    onDismissRequest = dismissBottomSheet,
     containerColor = MaterialTheme.colorScheme.background,
+    onDismissRequest = dismissBottomSheet,
     shape = MaterialTheme.shapes.squircleLargeTop,
     sheetState = sheetState,
     tonalElevation = 0.dp,
