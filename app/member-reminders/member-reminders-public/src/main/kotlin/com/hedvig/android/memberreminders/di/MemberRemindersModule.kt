@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.giraffe.di.giraffeClient
+import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
@@ -25,7 +26,7 @@ val memberRemindersModule = module {
     GetConnectPaymentReminderUseCaseImpl(get<ApolloClient>(giraffeClient), get<FeatureManager>())
   }
   single<GetUpcomingRenewalRemindersUseCase> {
-    GetUpcomingRenewalRemindersUseCaseImpl(get<ApolloClient>(giraffeClient), get<Clock>())
+    GetUpcomingRenewalRemindersUseCaseImpl(get<ApolloClient>(octopusClient), get<Clock>())
   }
   single<GetMemberRemindersUseCase> {
     GetMemberRemindersUseCaseImpl(
