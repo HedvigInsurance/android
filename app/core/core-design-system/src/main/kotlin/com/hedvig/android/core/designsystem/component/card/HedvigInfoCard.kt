@@ -24,7 +24,7 @@ fun HedvigInfoCard(
     contentColor = MaterialTheme.colorScheme.onInfoContainer,
   ),
   shape: Shape = MaterialTheme.shapes.squircleMedium,
-  content: @Composable() (RowScope.() -> Unit),
+  content: @Composable RowScope.() -> Unit,
 ) {
   HedvigCard(
     shape = shape,
