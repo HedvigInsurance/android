@@ -69,7 +69,7 @@ class PaymentNotificationSender(
               ),
             )
           } catch (error: IllegalArgumentException) {
-            logcat(LogPriority.ERROR) {
+            logcat(LogPriority.ERROR, error) {
               "Illegal market and payment type, could not create payin intent. Market: $market"
             }
           }

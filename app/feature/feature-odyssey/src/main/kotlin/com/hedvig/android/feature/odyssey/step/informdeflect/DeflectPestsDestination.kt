@@ -87,10 +87,11 @@ private fun DeflectPestsScreen(
         Spacer(Modifier.height(8.dp))
       }
       HedvigCard(
-        colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-        modifier = Modifier
-          .padding(horizontal = 16.dp)
-          .fillMaxWidth(),
+        colors = CardDefaults.outlinedCardColors(
+          containerColor = MaterialTheme.colorScheme.surfaceVariant,
+          contentColor = MaterialTheme.colorScheme.onSurface,
+        ),
+        modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
       ) {
         Column(Modifier.padding(16.dp)) {
           AsyncImage(

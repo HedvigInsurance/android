@@ -2,9 +2,14 @@ package com.hedvig.android.feature.odyssey.step.informdeflect
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -87,7 +92,10 @@ private fun DeflectGlassDamageScreen(
         Spacer(Modifier.height(8.dp))
       }
       HedvigCard(
-        colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        colors = CardDefaults.outlinedCardColors(
+          containerColor = MaterialTheme.colorScheme.surfaceVariant,
+          contentColor = MaterialTheme.colorScheme.onSurface,
+        ),
         modifier = Modifier
           .padding(horizontal = 16.dp)
           .fillMaxWidth(),
@@ -163,6 +171,7 @@ private fun DeflectGlassDamageScreen(
       modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth().wrapContentWidth(Alignment.CenterHorizontally),
     )
     Spacer(Modifier.height(16.dp))
+    Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
   }
 }
 
