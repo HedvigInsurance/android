@@ -24,15 +24,13 @@ internal class GetTravelCertificateSpecificationsUseCaseImpl(
   private val featureManager: FeatureManager,
 ) : GetTravelCertificateSpecificationsUseCase {
 
-  private val query = TravelCertificateSpecificationsQuery()
-
   override suspend fun invoke(): Either<TravelCertificateError, TravelCertificateData> {
     return either {
       ensure(featureManager.isFeatureEnabled(Feature.TRAVEL_CERTIFICATE)) {
         TravelCertificateError.NotEligible
       }
       val member = apolloClient
-        .query(query)
+        .query(TravelCertificateSpecificationsQuery())
         .safeExecute()
         .toEither(::ErrorMessage)
         .mapLeft(TravelCertificateError::Error)
