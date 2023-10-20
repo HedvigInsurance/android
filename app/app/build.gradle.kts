@@ -17,7 +17,6 @@ plugins {
 
 android {
   namespace = "com.hedvig.app"
-  println("Stelios[org.gradle.caching]:${findProperty("org.gradle.caching")}")
 
   buildFeatures {
     buildConfig = true
