@@ -95,7 +95,7 @@ android {
 
   signingConfigs {
     named("debug") {
-      storeFile = file("../../debug.keystore").also { println("Stelios file : ${it.absolutePath}") }
+      storeFile = file("../../debug.keystore")
     }
   }
 

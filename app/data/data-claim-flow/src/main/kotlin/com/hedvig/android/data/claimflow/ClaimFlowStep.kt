@@ -6,6 +6,7 @@ import octopus.fragment.AudioContentFragment
 import octopus.fragment.CheckoutMethodFragment
 import octopus.fragment.ClaimFlowStepFragment
 import octopus.fragment.FlowClaimContractSelectStepFragment
+import octopus.fragment.FlowClaimDeflectPartnerFragment
 import octopus.fragment.FlowClaimLocationStepFragment
 import octopus.fragment.FlowClaimSingleItemStepFragment
 import octopus.fragment.MoneyFragment
@@ -93,6 +94,28 @@ sealed interface ClaimFlowStep {
     val selectedItemProblems: List<String>?,
   ) : ClaimFlowStep
 
+  data class ClaimDeflectGlassDamageStep(
+    override val flowId: FlowId,
+    val partners: List<FlowClaimDeflectPartnerFragment>,
+  ) : ClaimFlowStep
+
+  data class ClaimConfirmEmergencyStep(
+    override val flowId: FlowId,
+    val text: String,
+    val confirmEmergency: Boolean?,
+    val options: List<ClaimFlowStepFragment.FlowClaimConfirmEmergencyStepCurrentStep.Option>,
+  ) : ClaimFlowStep
+
+  data class ClaimDeflectEmergencyStep(
+    override val flowId: FlowId,
+    val partners: List<FlowClaimDeflectPartnerFragment>,
+  ) : ClaimFlowStep
+
+  data class ClaimDeflectPestsStep(
+    override val flowId: FlowId,
+    val partners: List<FlowClaimDeflectPartnerFragment>,
+  ) : ClaimFlowStep
+
   data class ClaimFailedStep(override val flowId: FlowId) : ClaimFlowStep
   data class ClaimSuccessStep(override val flowId: FlowId) : ClaimFlowStep
 
@@ -174,6 +197,24 @@ internal fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(flowId: FlowId): 
     is ClaimFlowStepFragment.FlowClaimContractSelectStepCurrentStep -> ClaimFlowStep.ClaimSelectContractStep(
       flowId,
       options,
+    )
+    is ClaimFlowStepFragment.FlowClaimDeflectGlassDamageStepCurrentStep -> ClaimFlowStep.ClaimDeflectGlassDamageStep(
+      flowId,
+      partners,
+    )
+    is ClaimFlowStepFragment.FlowClaimConfirmEmergencyStepCurrentStep -> ClaimFlowStep.ClaimConfirmEmergencyStep(
+      flowId,
+      text,
+      confirmEmergency,
+      options,
+    )
+    is ClaimFlowStepFragment.FlowClaimDeflectEmergencyStepCurrentStep -> ClaimFlowStep.ClaimDeflectEmergencyStep(
+      flowId,
+      partners,
+    )
+    is ClaimFlowStepFragment.FlowClaimDeflectPestsStepCurrentStep -> ClaimFlowStep.ClaimDeflectPestsStep(
+      flowId,
+      partners,
     )
     else -> ClaimFlowStep.UnknownStep(flowId)
   }

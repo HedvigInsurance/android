@@ -6,7 +6,9 @@ import com.hedvig.android.data.claimflow.model.AudioUrl
 import octopus.fragment.AudioContentFragment
 import octopus.fragment.AutomaticAutogiroPayoutFragment
 import octopus.fragment.CheckoutMethodFragment
+import octopus.fragment.ClaimFlowStepFragment
 import octopus.fragment.FlowClaimContractSelectStepFragment
+import octopus.fragment.FlowClaimDeflectPartnerFragment
 import octopus.fragment.FlowClaimLocationStepFragment
 import octopus.fragment.FlowClaimSingleItemStepFragment
 
@@ -15,15 +17,18 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
     is ClaimFlowStep.ClaimAudioRecordingStep -> {
       ClaimFlowDestination.AudioRecording(flowId, questions, audioContent?.toAudioContent())
     }
+
     is ClaimFlowStep.ClaimDateOfOccurrenceStep -> {
       ClaimFlowDestination.DateOfOccurrence(dateOfOccurrence, maxDate)
     }
+
     is ClaimFlowStep.ClaimLocationStep -> {
       ClaimFlowDestination.Location(
         selectedLocation = location,
         locationOptions = options.map { it.toLocationOption() },
       )
     }
+
     is ClaimFlowStep.ClaimDateOfOccurrencePlusLocationStep -> {
       ClaimFlowDestination.DateOfOccurrencePlusLocation(
         dateOfOccurrence = dateOfOccurrence,
@@ -32,6 +37,7 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
         locationOptions = options.map { it.toLocationOption() },
       )
     }
+
     is ClaimFlowStep.ClaimPhoneNumberStep -> ClaimFlowDestination.PhoneNumber(phoneNumber)
     is ClaimFlowStep.ClaimSingleItemStep -> {
       ClaimFlowDestination.SingleItem(
@@ -46,6 +52,7 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
         selectedItemProblems = selectedItemProblems,
       )
     }
+
     is ClaimFlowStep.ClaimSummaryStep -> {
       ClaimFlowDestination.Summary(
         claimTypeTitle = claimTypeTitle,
@@ -64,6 +71,7 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
         selectedItemProblems = selectedItemProblems,
       )
     }
+
     is ClaimFlowStep.ClaimResolutionSingleItemStep -> {
       ClaimFlowDestination.SingleItemCheckout(
         UiMoney.fromMoneyFragment(price),
@@ -73,11 +81,30 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
         availableCheckoutMethods.map(CheckoutMethodFragment::toCheckoutMethod).filterIsInstance<CheckoutMethod.Known>(),
       )
     }
+
     is ClaimFlowStep.ClaimSuccessStep -> ClaimFlowDestination.ClaimSuccess
     is ClaimFlowStep.ClaimFailedStep -> ClaimFlowDestination.Failure
     is ClaimFlowStep.UnknownStep -> ClaimFlowDestination.UpdateApp
     is ClaimFlowStep.ClaimSelectContractStep -> ClaimFlowDestination.SelectContract(
       options = options.map { it.toLocalOptions() },
+    )
+
+    is ClaimFlowStep.ClaimDeflectGlassDamageStep -> ClaimFlowDestination.DeflectGlassDamage(
+      partners.map { it.toLocalPartner() },
+    )
+
+    is ClaimFlowStep.ClaimConfirmEmergencyStep -> ClaimFlowDestination.ConfirmEmergency(
+      text,
+      confirmEmergency,
+      options.map { it.toLocalOption() },
+    )
+
+    is ClaimFlowStep.ClaimDeflectEmergencyStep -> ClaimFlowDestination.DeflectEmergency(
+      partners.map { it.toLocalPartner() },
+    )
+
+    is ClaimFlowStep.ClaimDeflectPestsStep -> ClaimFlowDestination.DeflectPests(
+      partners.map { it.toLocalPartner() },
     )
   }
 }
@@ -107,10 +134,27 @@ private fun CheckoutMethodFragment.toCheckoutMethod(): CheckoutMethod {
     is AutomaticAutogiroPayoutFragment -> {
       CheckoutMethod.Known.AutomaticAutogiro(id, displayName, UiMoney.fromMoneyFragment(amount))
     }
+
     else -> CheckoutMethod.Unknown
   }
 }
 
 private fun AudioContentFragment.toAudioContent(): AudioContent {
   return AudioContent(AudioUrl(signedUrl), AudioUrl(audioUrl))
+}
+
+private fun FlowClaimDeflectPartnerFragment.toLocalPartner(): DeflectPartner {
+  return DeflectPartner(
+    id = id,
+    imageUrl = imageUrl,
+    phoneNumber = phoneNumber,
+    url = url,
+  )
+}
+
+private fun ClaimFlowStepFragment.FlowClaimConfirmEmergencyStepCurrentStep.Option.toLocalOption(): EmergencyOption {
+  return EmergencyOption(
+    displayName = displayName,
+    value = displayValue,
+  )
 }
