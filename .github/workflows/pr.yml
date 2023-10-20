@@ -3,7 +3,7 @@ name: PR
 on: pull_request
 jobs:
   unit_test:
-    runs-on: ubuntu-latest-32vcpu
+    runs-on: ubuntu-latest-64vcpu
     steps:
       - uses: actions/checkout@v4
       - name: Copy CI gradle.properties
@@ -37,7 +37,7 @@ jobs:
           paths: "app/build/test-results/testDebugUnitTest/**/TEST-*.xml"
         if: always()
   lint:
-    runs-on: ubuntu-latest-32vcpu
+    runs-on: ubuntu-latest-64vcpu
     steps:
       - uses: actions/checkout@v4
       - name: Copy CI gradle.properties
@@ -70,7 +70,7 @@ jobs:
           report-path: app/build/reports/lint-results-debug.xml
         continue-on-error: true
   ktlint:
-    runs-on: ubuntu-latest-32vcpu
+    runs-on: ubuntu-latest-64vcpu
     steps:
       - uses: actions/checkout@v4
       - name: Copy CI gradle.properties
@@ -106,7 +106,7 @@ jobs:
         with:
           report-path: build/reports/ktlint/*.xml
   build:
-    runs-on: ubuntu-latest-32vcpu
+    runs-on: ubuntu-latest-64vcpu
     steps:
       - name: Checkout
         uses: actions/checkout@v4
