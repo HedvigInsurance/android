@@ -24,6 +24,7 @@ jobs:
           # Only write to the cache for builds on the 'develop' branch
           cache-read-only: ${{ github.ref != 'refs/heads/develop' }}
           gradle-home-cache-cleanup: true
+          cache-disabled: true
       - name: Prebuild
         run: ./scripts/ci-prebuild.sh
         env:
