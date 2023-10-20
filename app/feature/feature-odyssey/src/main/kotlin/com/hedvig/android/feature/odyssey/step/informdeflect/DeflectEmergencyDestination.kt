@@ -4,11 +4,15 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -22,8 +26,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat.startActivity
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
@@ -88,7 +90,10 @@ private fun DeflectEmergencyScreen(
         Spacer(Modifier.height(8.dp))
       }
       HedvigCard(
-        colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        colors = CardDefaults.outlinedCardColors(
+          containerColor = MaterialTheme.colorScheme.surfaceVariant,
+          contentColor = MaterialTheme.colorScheme.onSurface,
+        ),
         modifier = Modifier
           .padding(horizontal = 16.dp)
           .fillMaxWidth(),
@@ -126,33 +131,25 @@ private fun DeflectEmergencyScreen(
               text = stringResource(R.string.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_CALL_LABEL, phoneNumber),
               onClick = {
                 try {
-                  val intent = Intent(Intent.ACTION_DIAL)
-                  intent.data = Uri.parse(phoneNumber)
-                  startActivity(context, intent, null)
+                  context.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phoneNumber")))
                 } catch (exception: Throwable) {
-                  logcat(LogPriority.ERROR) { "Could not open dial activity in deflect emergency destination" }
+                  logcat(LogPriority.ERROR, exception) {
+                    "Could not open dial activity in deflect emergency destination"
+                  }
                 }
               },
               modifier = Modifier.padding(horizontal = 16.dp),
-              colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.onPrimary,
-                contentColor = MaterialTheme.colorScheme.primary,
-                disabledContainerColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.12f),
-                disabledContentColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.38f),
-              ),
             )
           }
           Spacer(Modifier.height(16.dp))
           Text(
             text = stringResource(R.string.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_FOOTNOTE),
-            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
             textAlign = TextAlign.Center,
-            fontSize = 12.sp,
+            style = MaterialTheme.typography.bodySmall,
             modifier = Modifier
               .fillMaxWidth()
               .padding(horizontal = 16.dp),
           )
-          Spacer(Modifier.height(24.dp))
         }
       }
     }
@@ -190,6 +187,7 @@ private fun DeflectEmergencyScreen(
       modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth().wrapContentWidth(Alignment.CenterHorizontally),
     )
     Spacer(Modifier.height(16.dp))
+    Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)))
   }
 }
 
