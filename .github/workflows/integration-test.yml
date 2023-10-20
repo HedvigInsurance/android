@@ -4,6 +4,10 @@ name: Integration Tests
 on:
   workflow_dispatch:
 
+concurrency:
+  group: ref-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   integration_test:
     runs-on: macos-latest

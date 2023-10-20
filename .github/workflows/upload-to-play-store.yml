@@ -4,6 +4,11 @@ on:
     branches:
       - release/**
       - hotfix/**
+
+concurrency:
+  group: ref-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build_release:
     runs-on: ubuntu-latest

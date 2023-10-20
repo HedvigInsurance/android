@@ -1,6 +1,11 @@
 name: PR
 
 on: pull_request
+
+concurrency:
+  group: ref-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   unit_test:
     runs-on: ubuntu-latest-64vcpu
