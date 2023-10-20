@@ -38,7 +38,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.Chip
+import com.hedvig.android.core.ui.HedvigChip
 import com.hedvig.android.core.ui.preview.calculateForPreview
 import com.hedvig.android.core.ui.text.WarningTextWithIcon
 import com.hedvig.android.data.claimflow.ClaimFlowStep
@@ -136,7 +136,7 @@ private fun ConfirmEmergencyScreen(
               ),
             )
           }
-          Chip(
+          HedvigChip(
             item = item,
             itemDisplayName = EmergencyOption::displayName,
             isSelected = item == uiState.selectedOption,

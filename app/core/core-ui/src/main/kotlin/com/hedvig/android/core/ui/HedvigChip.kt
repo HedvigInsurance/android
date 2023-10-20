@@ -34,7 +34,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterIsInstance
 
 @Composable
-fun <T> Chip(
+fun <T> HedvigChip(
   item: T,
   itemDisplayName: (T) -> String,
   isSelected: Boolean,
