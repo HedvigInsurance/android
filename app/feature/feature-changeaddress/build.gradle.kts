@@ -28,6 +28,7 @@ dependencies {
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDesignSystem)
+  implementation(projects.coreIcons)
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.coreUiData)

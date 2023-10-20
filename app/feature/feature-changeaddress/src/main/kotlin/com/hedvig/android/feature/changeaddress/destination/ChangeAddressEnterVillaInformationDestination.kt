@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -38,19 +37,19 @@ import com.hedvig.android.feature.changeaddress.ui.extrabuildings.ExtraBuildingB
 import com.hedvig.android.feature.changeaddress.ui.extrabuildings.ExtraBuildingContainer
 import hedvig.resources.R
 
-@ExperimentalMaterial3Api
 @Composable
-internal fun ChangeAddressEnterNewVillaAddressDestination(
+internal fun ChangeAddressEnterVillaInformationDestination(
   viewModel: ChangeAddressViewModel,
   navigateUp: () -> Unit,
-  onQuotesReceived: () -> Unit,
+  onNavigateToOfferDestination: () -> Unit,
 ) {
   val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-  val quotes = uiState.quotes
-  LaunchedEffect(quotes) {
-    if (quotes.isNotEmpty()) {
-      onQuotesReceived()
+  val navigateToOfferScreenAfterHavingReceivedQuotes = uiState.navigateToOfferScreenAfterHavingReceivedQuotes
+  LaunchedEffect(navigateToOfferScreenAfterHavingReceivedQuotes) {
+    if (navigateToOfferScreenAfterHavingReceivedQuotes) {
+      viewModel.onNavigatedToOfferScreenAfterHavingReceivedQuotes()
+      onNavigateToOfferDestination()
     }
   }
 
@@ -70,7 +69,7 @@ internal fun ChangeAddressEnterNewVillaAddressDestination(
     )
   }
 
-  ChangeAddressEnterNewVillaAddressScreen(
+  ChangeAddressEnterVillaInformationScreen(
     uiState = uiState,
     navigateUp = navigateUp,
     onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
@@ -84,9 +83,6 @@ internal fun ChangeAddressEnterNewVillaAddressDestination(
         viewModel.onSubmitNewAddress()
       }
     },
-    onExtraBuildingClicked = {
-      showExtraBuildingsBottomSheet = true
-    },
     onAddExtraBuildingClicked = {
       showExtraBuildingsBottomSheet = true
     },
@@ -95,7 +91,7 @@ internal fun ChangeAddressEnterNewVillaAddressDestination(
 }
 
 @Composable
-private fun ChangeAddressEnterNewVillaAddressScreen(
+private fun ChangeAddressEnterVillaInformationScreen(
   uiState: ChangeAddressUiState,
   navigateUp: () -> Unit,
   onErrorDialogDismissed: () -> Unit,
@@ -104,7 +100,6 @@ private fun ChangeAddressEnterNewVillaAddressScreen(
   onNumberOfBathroomsChanged: (String) -> Unit,
   onIsSubletSelected: (Boolean) -> Unit,
   onSaveNewAddress: () -> Unit,
-  onExtraBuildingClicked: (ExtraBuilding) -> Unit,
   onAddExtraBuildingClicked: () -> Unit,
   onRemoveExtraBuildingClicked: (ExtraBuilding) -> Unit,
 ) {
@@ -173,7 +168,6 @@ private fun ChangeAddressEnterNewVillaAddressScreen(
     Spacer(modifier = Modifier.height(8.dp))
     ExtraBuildingContainer(
       extraBuildings = uiState.extraBuildings,
-      onExtraBuildingItemClicked = onExtraBuildingClicked,
       onAddExtraBuildingClicked = onAddExtraBuildingClicked,
       onRemoveExtraBuildingClicked = onRemoveExtraBuildingClicked,
       modifier = Modifier
@@ -198,12 +192,11 @@ private fun ChangeAddressEnterNewVillaAddressScreen(
 
 @HedvigPreview
 @Composable
-private fun PreviewChangeAddressEnterNewVillaAddressDestination() {
+private fun PreviewChangeAddressEnterVillaInformationScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      ChangeAddressEnterNewVillaAddressScreen(
+      ChangeAddressEnterVillaInformationScreen(
         ChangeAddressUiState(),
-        {},
         {},
         {},
         {},

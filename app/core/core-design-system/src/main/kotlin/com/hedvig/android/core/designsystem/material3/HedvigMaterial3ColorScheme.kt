@@ -10,25 +10,11 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import com.hedvig.android.core.designsystem.component.tokens.HedvigColorSchemeKeyTokens
-import com.hedvig.android.core.designsystem.newtheme.amber_100
-import com.hedvig.android.core.designsystem.newtheme.amber_400
-import com.hedvig.android.core.designsystem.newtheme.amber_600
-import com.hedvig.android.core.designsystem.newtheme.amber_800
-import com.hedvig.android.core.designsystem.newtheme.blue_100
-import com.hedvig.android.core.designsystem.newtheme.blue_400
-import com.hedvig.android.core.designsystem.newtheme.blue_600
-import com.hedvig.android.core.designsystem.newtheme.blue_800
-import com.hedvig.android.core.designsystem.newtheme.blue_900
-import com.hedvig.android.core.designsystem.newtheme.green_100
-import com.hedvig.android.core.designsystem.newtheme.green_400
-import com.hedvig.android.core.designsystem.newtheme.green_600
-import com.hedvig.android.core.designsystem.newtheme.green_800
-import com.hedvig.android.core.designsystem.newtheme.greyscale_0
-import com.hedvig.android.core.designsystem.newtheme.greyscale_1000
+import com.hedvig.android.core.designsystem.newtheme.hedvigTonalPalette
 
 @SuppressLint("ComposeCompositionLocalUsage")
 internal val LocalHedvigMaterial3ColorScheme = staticCompositionLocalOf<HedvigMaterial3ColorScheme> {
-  lightHedvigColorScheme(LightColorScheme)
+  lightHedvigColorScheme(hedvigTonalPalette)
 }
 
 class HedvigMaterial3ColorScheme(
@@ -39,63 +25,21 @@ class HedvigMaterial3ColorScheme(
   val onWarningElement: Color,
   val warningContainer: Color,
   val onWarningContainer: Color,
+  val warningHighlight: Color,
 
   // Type refers to "typing" aka when the member is typing something in a text-field. Naming has room for improvement.
   val typeElement: Color,
   val onTypeElement: Color,
   val typeContainer: Color,
   val onTypeContainer: Color,
+  val typeHighlight: Color,
 
   // Information related content. Like information cards and so on.
   val infoElement: Color,
   val onInfoElement: Color,
   val infoContainer: Color,
   val onInfoContainer: Color,
-)
-
-internal fun darkHedvigColorScheme(
-  colorScheme: ColorScheme,
-) = HedvigMaterial3ColorScheme(
-  containedButtonContainer = colorScheme.tertiary,
-  onContainedButtonContainer = colorScheme.onTertiary,
-
-  // In the comments are the light mode colors, showing the equivalent and how it was chosen
-  warningElement = amber_400, // amber_600,
-  onWarningElement = greyscale_0, // greyscale_1000,
-  warningContainer = amber_800, // amber_100,
-  onWarningContainer = amber_100, // amber_800,
-
-  typeElement = green_400, // green_600,
-  onTypeElement = greyscale_0, // greyscale_1000,
-  typeContainer = green_800, // green_100,
-  onTypeContainer = green_100, // green_800,
-
-  infoElement = blue_400, // blue_600,
-  onInfoElement = greyscale_1000, // greyscale_1000,
-  infoContainer = blue_800, // blue_100,
-  onInfoContainer = blue_100, // blue_900,
-)
-
-internal fun lightHedvigColorScheme(
-  colorScheme: ColorScheme,
-) = HedvigMaterial3ColorScheme(
-  containedButtonContainer = colorScheme.primary,
-  onContainedButtonContainer = colorScheme.onPrimary,
-
-  warningElement = amber_600,
-  onWarningElement = greyscale_1000,
-  warningContainer = amber_100,
-  onWarningContainer = amber_800,
-
-  typeElement = green_600,
-  onTypeElement = greyscale_1000,
-  typeContainer = green_100,
-  onTypeContainer = green_800,
-
-  infoElement = blue_600,
-  onInfoElement = greyscale_1000,
-  infoContainer = blue_100,
-  onInfoContainer = blue_900,
+  val infoHighlight: Color,
 )
 
 val ColorScheme.containedButtonContainer: Color
@@ -128,6 +72,11 @@ val ColorScheme.onWarningContainer: Color
   @ReadOnlyComposable
   @Composable
   get() = LocalHedvigMaterial3ColorScheme.current.onWarningContainer
+
+val ColorScheme.warningHighlight: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.warningHighlight
 // endregion
 
 // region typing colors
@@ -150,6 +99,11 @@ val ColorScheme.onTypeContainer: Color
   @ReadOnlyComposable
   @Composable
   get() = LocalHedvigMaterial3ColorScheme.current.onTypeContainer
+
+val ColorScheme.typeHighlight: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.typeHighlight
 // endregion
 
 // region info colors
@@ -172,6 +126,11 @@ val ColorScheme.onInfoContainer: Color
   @ReadOnlyComposable
   @Composable
   get() = LocalHedvigMaterial3ColorScheme.current.onInfoContainer
+
+val ColorScheme.infoHighlight: Color
+  @ReadOnlyComposable
+  @Composable
+  get() = LocalHedvigMaterial3ColorScheme.current.infoHighlight
 // endregion
 
 /**
@@ -213,11 +172,13 @@ internal fun HedvigMaterial3ColorScheme.fromToken(value: HedvigColorSchemeKeyTok
 
     HedvigColorSchemeKeyTokens.WarningContainer -> warningContainer
     HedvigColorSchemeKeyTokens.OnWarningContainer -> onWarningContainer
+    HedvigColorSchemeKeyTokens.WarningHighlight -> warningHighlight
 
     HedvigColorSchemeKeyTokens.TypeElement -> typeElement
     HedvigColorSchemeKeyTokens.OnTypeElement -> onTypeElement
     HedvigColorSchemeKeyTokens.TypeContainer -> typeContainer
     HedvigColorSchemeKeyTokens.OnTypeContainer -> onTypeContainer
+    HedvigColorSchemeKeyTokens.TypeHighlight -> typeHighlight
   }
 }
 

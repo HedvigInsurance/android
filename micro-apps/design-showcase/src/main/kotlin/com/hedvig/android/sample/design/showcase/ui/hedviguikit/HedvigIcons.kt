@@ -23,6 +23,8 @@ import com.hedvig.android.core.icons.hedvig.compose.notificationCircleWithSubtra
 import com.hedvig.android.core.icons.hedvig.flag.FlagDenmark
 import com.hedvig.android.core.icons.hedvig.flag.FlagNorway
 import com.hedvig.android.core.icons.hedvig.flag.FlagSweden
+import com.hedvig.android.core.icons.hedvig.flag.FlagUk
+import com.hedvig.android.core.icons.hedvig.logo.HedvigLogotype
 import com.hedvig.android.core.icons.hedvig.nav.hedvig.Forever
 import com.hedvig.android.core.icons.hedvig.nav.hedvig.ForeverFilled
 import com.hedvig.android.core.icons.hedvig.nav.hedvig.Home
@@ -133,6 +135,7 @@ private val HedvigIcons.AllHedvigIcons: List<List<ImageVector>>
         FlagDenmark,
         FlagNorway,
         FlagSweden,
+        FlagUk,
       ),
       listOf(
         ColoredCircleWithCampaign,
@@ -218,6 +221,10 @@ private val HedvigIcons.AllHedvigIcons: List<List<ImageVector>>
         Plus,
         Sound,
         SquircleWithCheckmark,
+      ),
+      // logotype
+      listOf(
+        HedvigLogotype,
       ),
     )
     return __AllHedvigIcons!!

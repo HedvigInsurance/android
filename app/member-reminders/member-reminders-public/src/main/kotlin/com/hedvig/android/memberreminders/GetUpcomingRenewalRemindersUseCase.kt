@@ -35,11 +35,12 @@ internal class GetUpcomingRenewalRemindersUseCaseImpl(
         .activeContracts
 
       val upcomingRenewals: NonEmptyList<UpcomingRenewal>? = contracts
-        .map { contract ->
+        .mapNotNull { contract ->
+          val upcomingChangedAgreement = contract.upcomingChangedAgreement ?: return@mapNotNull null
           UpcomingRenewal(
             contract.currentAgreement.productVariant.displayName,
-            contract.upcomingRenewal.renewalDate,
-            contract.upcomingRenewal.draftCertificateUrl,
+            upcomingChangedAgreement.activeFrom,
+            upcomingChangedAgreement.certificateUrl,
           )
         }
         .filter { upcomingRenewal ->

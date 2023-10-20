@@ -14,7 +14,6 @@ internal class DevFeatureFlagProvider(
       Feature.CONNECT_PAYIN_REMINDER -> !isQasaMember
       Feature.CONNECT_PAYMENT_POST_ONBOARDING -> marketManager.market.value == Market.SE
       Feature.DISABLE_CHAT -> false
-      Feature.DISABLE_DARK_MODE -> true
       Feature.EXTERNAL_DATA_COLLECTION -> marketManager.market.value == Market.SE
       Feature.MOVING_FLOW -> true
       Feature.PAYMENT_SCREEN -> !isQasaMember

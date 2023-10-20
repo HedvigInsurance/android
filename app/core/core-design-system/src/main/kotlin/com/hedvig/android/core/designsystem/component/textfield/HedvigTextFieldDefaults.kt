@@ -123,7 +123,7 @@ object HedvigTextFieldDefaults {
     shape: Shape,
     focusedIndicatorLineThickness: Dp = FocusedBorderThickness,
     unfocusedIndicatorLineThickness: Dp = UnfocusedBorderThickness,
-  ) = composed(
+  ) = this.composed(
     inspectorInfo = debugInspectorInfo {
       name = "indicatorLine"
       properties["enabled"] = enabled
@@ -247,9 +247,9 @@ object HedvigTextFieldDefaults {
     focusedContainerColor: Color = HedvigTextFieldTokens.ContainerColor.toColor(),
     unfocusedContainerColor: Color = HedvigTextFieldTokens.ContainerColor.toColor(),
     disabledContainerColor: Color = HedvigTextFieldTokens.ContainerColor.toColor(),
-    errorContainerColor: Color = HedvigTextFieldTokens.ErrorTypeContainerColor.toColor(),
-    typingContainerColor: Color = HedvigTextFieldTokens.TypeContainerColor.toColor(),
-    errorTypingContainerColor: Color = HedvigTextFieldTokens.ErrorTypeContainerColor.toColor(),
+    errorContainerColor: Color = HedvigTextFieldTokens.ErrorTypeHighlightColor.toColor(),
+    typingHighlightColor: Color = HedvigTextFieldTokens.TypeHighlightColor.toColor(),
+    errorTypingHighlightColor: Color = HedvigTextFieldTokens.ErrorTypeHighlightColor.toColor(),
     cursorColor: Color = HedvigTextFieldTokens.CaretColor.toColor(),
     errorCursorColor: Color = HedvigTextFieldTokens.ErrorFocusCaretColor.toColor(),
     selectionColors: TextSelectionColors = LocalTextSelectionColors.current,
@@ -303,8 +303,8 @@ object HedvigTextFieldDefaults {
       unfocusedContainerColor = unfocusedContainerColor,
       disabledContainerColor = disabledContainerColor,
       errorContainerColor = errorContainerColor,
-      typingContainerColor = typingContainerColor,
-      errorTypingContainerColor = errorTypingContainerColor,
+      typingHighlightColor = typingHighlightColor,
+      errorTypingHighlightColor = errorTypingHighlightColor,
       cursorColor = cursorColor,
       errorCursorColor = errorCursorColor,
       textSelectionColors = selectionColors,
@@ -473,8 +473,8 @@ class HedvigTextFieldColors internal constructor(
   private val unfocusedContainerColor: Color,
   private val disabledContainerColor: Color,
   private val errorContainerColor: Color,
-  private val typingContainerColor: Color, // The pulsating color that the container will temporarily have on new text.
-  private val errorTypingContainerColor: Color, // The pulsating color when there's an error too
+  private val typingHighlightColor: Color, // The pulsating color that the container will temporarily have on new text.
+  private val errorTypingHighlightColor: Color, // The pulsating color when there's an error too
   private val cursorColor: Color,
   private val errorCursorColor: Color,
   private val textSelectionColors: TextSelectionColors,
@@ -622,8 +622,8 @@ class HedvigTextFieldColors internal constructor(
     val focused by interactionSource.collectIsFocusedAsState()
 
     val targetValue = when {
-      gotFreshValue && isError -> errorTypingContainerColor
-      gotFreshValue -> typingContainerColor
+      gotFreshValue && isError -> errorTypingHighlightColor
+      gotFreshValue -> typingHighlightColor
       !enabled -> disabledContainerColor
       isError -> errorContainerColor
       focused -> focusedContainerColor
@@ -808,8 +808,8 @@ class HedvigTextFieldColors internal constructor(
     if (unfocusedContainerColor != other.unfocusedContainerColor) return false
     if (disabledContainerColor != other.disabledContainerColor) return false
     if (errorContainerColor != other.errorContainerColor) return false
-    if (typingContainerColor != other.typingContainerColor) return false
-    if (errorTypingContainerColor != other.errorTypingContainerColor) return false
+    if (typingHighlightColor != other.typingHighlightColor) return false
+    if (errorTypingHighlightColor != other.errorTypingHighlightColor) return false
     if (cursorColor != other.cursorColor) return false
     if (errorCursorColor != other.errorCursorColor) return false
     if (textSelectionColors != other.textSelectionColors) return false
@@ -858,8 +858,8 @@ class HedvigTextFieldColors internal constructor(
     result = 31 * result + unfocusedContainerColor.hashCode()
     result = 31 * result + disabledContainerColor.hashCode()
     result = 31 * result + errorContainerColor.hashCode()
-    result = 31 * result + typingContainerColor.hashCode()
-    result = 31 * result + errorTypingContainerColor.hashCode()
+    result = 31 * result + typingHighlightColor.hashCode()
+    result = 31 * result + errorTypingHighlightColor.hashCode()
     result = 31 * result + cursorColor.hashCode()
     result = 31 * result + errorCursorColor.hashCode()
     result = 31 * result + textSelectionColors.hashCode()

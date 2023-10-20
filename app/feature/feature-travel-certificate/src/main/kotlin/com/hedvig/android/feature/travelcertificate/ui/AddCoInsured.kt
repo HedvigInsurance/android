@@ -17,9 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.button.LargeContainedButton
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
-import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.clearFocusOnTap
@@ -109,7 +108,8 @@ internal fun AddCoInsured(
       Spacer(modifier = Modifier.height(8.dp))
     }
 
-    LargeContainedButton(
+    HedvigContainedButton(
+      text = stringResource(R.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
       onClick = {
         if (name.isBlank()) {
           hasNameError = true
@@ -136,11 +136,8 @@ internal fun AddCoInsured(
           }
         }
       },
-      shape = MaterialTheme.shapes.squircleMedium,
       modifier = Modifier.padding(horizontal = 16.dp),
-    ) {
-      Text(stringResource(R.string.SAVE_AND_CONTINUE_BUTTON_LABEL))
-    }
+    )
     Spacer(Modifier.height(32.dp))
   }
 }
@@ -153,8 +150,8 @@ private fun PreviewAddCoInsured() {
       AddCoInsured(
         coInsured = null,
         navigateUp = {},
-        onEditCoInsured = { coInsured -> },
-        onAddCoInsured = { coInsured -> },
+        onEditCoInsured = {},
+        onAddCoInsured = {},
         onRemoveCoInsured = {},
       )
     }

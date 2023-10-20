@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="8dp"
-    android:orientation="horizontal"
-    android:theme="@style/Hedvig.Theme.Widgets.Chat.User">
+    android:orientation="horizontal">
 
     <View
         android:layout_width="0dp"
@@ -28,15 +27,15 @@
             android:layout_gravity="end"
             android:layout_marginEnd="16dp"
             android:autoLink="web"
-            android:background="@drawable/chat_message_hedvig"
+            android:background="@drawable/chat_message_member"
             android:linksClickable="true"
             android:paddingStart="16dp"
             android:paddingTop="8dp"
             android:paddingEnd="16dp"
             android:paddingBottom="8dp"
             android:textAppearance="?textAppearanceBody1"
-            android:textColor="?colorPrimary"
-            android:textColorLink="?colorPrimary"
+            android:textColor="@color/onChatSurfaceFromMember"
+            android:textColorLink="@color/onChatSurfaceFromMember"
             app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toTopOf="@id/statusMessage"
             app:layout_constraintEnd_toEndOf="parent"

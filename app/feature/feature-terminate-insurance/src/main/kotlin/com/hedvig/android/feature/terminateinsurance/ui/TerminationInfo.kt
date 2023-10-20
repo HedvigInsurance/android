@@ -32,11 +32,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.core.designsystem.component.button.LargeContainedTextButton
+import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigMultiScreenPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarWithBack
 import com.hedvig.android.core.ui.preview.calculateForPreview
+import hedvig.resources.R
 
 /**
  * Skeleton for any kind of summary screen about success and failure
@@ -123,8 +124,8 @@ private fun PreviewTerminationInfoScreen() {
         icon = Icons.Outlined.CheckCircle,
         navigateUp = {},
       ) {
-        LargeContainedTextButton(
-          text = stringResource(hedvig.resources.R.string.general_done_button),
+        HedvigContainedButton(
+          text = stringResource(R.string.general_done_button),
           onClick = { },
         )
       }

@@ -27,7 +27,6 @@ import com.hedvig.app.feature.offer.usecase.ObserveOfferStateUseCase
 import com.hedvig.app.feature.offer.usecase.OfferState
 import com.hedvig.app.feature.offer.usecase.StartCheckoutUseCase
 import com.hedvig.app.feature.perils.PerilItem
-import com.hedvig.hanalytics.PaymentType
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -63,7 +62,6 @@ abstract class OfferViewModel : ViewModel() {
       val startDate: LocalDate?,
       val postSignScreen: PostSignScreen,
       val bundleDisplayName: String,
-      val payinType: PaymentType,
     ) : Event()
 
     object StartSwedishBankIdSign : Event()
@@ -249,7 +247,6 @@ class OfferViewModelImpl(
                 startDate = (it.bundle.inception.startDate as? OfferStartDate.AtDate)?.date,
                 postSignScreen = it.bundle.viewConfiguration.postSignScreen,
                 bundleDisplayName = it.bundle.name,
-                payinType = featureManager.getPaymentType(),
               )
               _events.send(event)
             }

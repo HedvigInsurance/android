@@ -51,7 +51,8 @@ class ChatRepositoryNewImpl(
     contentType: String,
   ) = either {
     val fileUpload = file.toUpload(contentType)
-    val input = ChatMessageFileInput(fileUpload)
+//    val input = ChatMessageFileInput(fileUpload) // todo here upload file directly through HTTP instead
+    val input = ChatMessageFileInput("")
     val mutation = ChatSendFileMutation(input)
 
     val result = apolloClientOctopus.mutation(mutation)

@@ -15,10 +15,7 @@ fragment ContractFragment on Contract {
   masterInceptionDate
   terminationDate
   exposureDisplayName
-  supportsAddressChange
-  upcomingRenewal {
-    renewalDate
-  }
+  supportsMoving
   currentAgreement {
     ...AgreementFragment
   }

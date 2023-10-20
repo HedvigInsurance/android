@@ -30,7 +30,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -60,6 +59,7 @@ import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
+import com.hedvig.android.core.designsystem.material3.onTypeContainer
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.material3.typeContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
@@ -312,7 +312,7 @@ private fun CrossSellItem(
       },
       colors = ButtonDefaults.buttonColors(
         containerColor = MaterialTheme.colorScheme.typeContainer,
-        contentColor = LocalContentColor.current,
+        contentColor = MaterialTheme.colorScheme.onTypeContainer,
       ),
     )
   }
@@ -362,10 +362,7 @@ private fun TerminatedContractsButton(
 ) {
   HedvigCard(
     onClick = onClick,
-    colors = CardDefaults.outlinedCardColors(
-      containerColor = MaterialTheme.colorScheme.surfaceVariant,
-      contentColor = MaterialTheme.colorScheme.onSurface,
-    ),
+    colors = CardDefaults.outlinedCardColors(),
     modifier = modifier,
   ) {
     Row(

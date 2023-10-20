@@ -1,6 +1,8 @@
 package com.hedvig.android.language
 
 import androidx.annotation.StringRes
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import giraffe.type.Locale
 
 enum class Language {
@@ -70,7 +72,7 @@ enum class Language {
       SETTING_EN_NO -> EN_NO
       SETTING_DA_DK -> DA_DK
       SETTING_EN_DK -> EN_DK
-      else -> throw RuntimeException("Invalid language value: $value")
+      else -> EN_SE.also { logcat(LogPriority.WARN) { "Defaulting to EN_SE for language tag: $value" } }
     }
   }
 }

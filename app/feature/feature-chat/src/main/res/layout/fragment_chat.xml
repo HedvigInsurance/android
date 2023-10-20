@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="?colorSurface"
     tools:context="com.hedvig.android.feature.chat.ui.ChatFragment">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -14,6 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:clipToPadding="false"
+        android:paddingTop="48dp"
+        android:paddingBottom="8dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toTopOf="@id/input"
         app:layout_constraintTop_toTopOf="parent"
@@ -26,7 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/background_square"
-        android:backgroundTint="?colorSurface"
+        android:backgroundTint="@color/chatBackground"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingVertical="5dp"

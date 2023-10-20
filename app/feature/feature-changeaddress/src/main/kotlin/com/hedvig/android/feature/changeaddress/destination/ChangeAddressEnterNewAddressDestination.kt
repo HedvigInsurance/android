@@ -37,24 +37,25 @@ import hedvig.resources.R
 import kotlinx.datetime.LocalDate
 
 @Composable
-internal fun ChangeAddressEnterNewDestination(
+internal fun ChangeAddressEnterNewAddressDestination(
   viewModel: ChangeAddressViewModel,
-  onContinue: () -> Unit,
-  close: () -> Unit,
-  onQuotesReceived: () -> Unit,
+  onNavigateToVillaInformationDestination: () -> Unit,
+  navigateUp: () -> Unit,
+  onNavigateToOfferDestination: () -> Unit,
 ) {
   val uiState: ChangeAddressUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-  val quotes = uiState.quotes
-  LaunchedEffect(quotes) {
-    if (quotes.isNotEmpty()) {
-      onQuotesReceived()
+  val navigateToOfferScreenAfterHavingReceivedQuotes = uiState.navigateToOfferScreenAfterHavingReceivedQuotes
+  LaunchedEffect(navigateToOfferScreenAfterHavingReceivedQuotes) {
+    if (navigateToOfferScreenAfterHavingReceivedQuotes) {
+      viewModel.onNavigatedToOfferScreenAfterHavingReceivedQuotes()
+      onNavigateToOfferDestination()
     }
   }
 
-  ChangeAddressEnterNewScreen(
+  ChangeAddressEnterNewAddressScreen(
     uiState = uiState,
-    close = close,
+    navigateUp = navigateUp,
     onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
     onStreetChanged = viewModel::onStreetChanged,
     onPostalCodeChanged = viewModel::onPostalCodeChanged,
@@ -66,7 +67,7 @@ internal fun ChangeAddressEnterNewDestination(
       val isInputValid = viewModel.validateAddressInput()
       if (isInputValid) {
         if (uiState.housingType.input == HousingType.VILLA) {
-          onContinue()
+          onNavigateToVillaInformationDestination()
         } else {
           viewModel.onSubmitNewAddress()
         }
@@ -76,9 +77,9 @@ internal fun ChangeAddressEnterNewDestination(
 }
 
 @Composable
-private fun ChangeAddressEnterNewScreen(
+private fun ChangeAddressEnterNewAddressScreen(
   uiState: ChangeAddressUiState,
-  close: () -> Unit,
+  navigateUp: () -> Unit,
   onErrorDialogDismissed: () -> Unit,
   onStreetChanged: (String) -> Unit,
   onPostalCodeChanged: (String) -> Unit,
@@ -101,7 +102,7 @@ private fun ChangeAddressEnterNewScreen(
   }
 
   HedvigScaffold(
-    navigateUp = close,
+    navigateUp = navigateUp,
     modifier = Modifier.clearFocusOnTap(),
     topAppBarActionType = TopAppBarActionType.CLOSE,
   ) {
@@ -195,10 +196,10 @@ private fun ChangeAddressEnterNewScreen(
 
 @HedvigPreview
 @Composable
-private fun PreviewChangeAddressEnterNewScreen() {
+private fun PreviewChangeAddressEnterNewAddressScreen() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
-      ChangeAddressEnterNewScreen(
+      ChangeAddressEnterNewAddressScreen(
         ChangeAddressUiState(datePickerUiState = DatePickerUiState(null)),
         {}, {}, {}, {}, {}, {}, {}, {}, {},
       )

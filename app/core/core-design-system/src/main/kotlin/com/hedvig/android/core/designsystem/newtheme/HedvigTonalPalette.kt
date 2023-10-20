@@ -2,37 +2,52 @@ package com.hedvig.android.core.designsystem.newtheme
 
 import androidx.compose.ui.graphics.Color
 
-internal val hedvigTonalPalette: HedvigTonalPalette = HedvigTonalPalette(
-  // The neutral tonal range from the generated dynamic color palette.
-  neutral100 = greyscale_0,
-  neutral99 = greyscale_10,
-  neutral95 = greyscale_50,
-  neutral90 = greyscale_100,
-  neutral80 = greyscale_200,
-  neutral70 = greyscale_300,
-  neutral60 = greyscale_400,
-  neutral50 = greyscale_500,
-  neutral40 = greyscale_600,
-  neutral30 = greyscale_700,
-  neutral20 = greyscale_800,
-  neutral10 = greyscale_900,
-  neutral0 = greyscale_1000,
-)
+internal interface HedvigTonalPalette {
+  val greyscale25: Color
+  val greyscale50: Color
+  val greyscale100: Color
+  val greyscale200: Color
+  val greyscale300: Color
+  val greyscale400: Color
+  val greyscale500: Color
+  val greyscale600: Color
+  val greyscale700: Color
+  val greyscale800: Color
+  val greyscale900: Color
+  val greyscale1000: Color
 
-internal class HedvigTonalPalette(
-  // The neutral tonal range from the generated dynamic color palette.
-  // Ordered from the lightest shade [neutral100] to the darkest shade [neutral0].
-  val neutral100: Color,
-  val neutral99: Color,
-  val neutral95: Color,
-  val neutral90: Color,
-  val neutral80: Color,
-  val neutral70: Color,
-  val neutral60: Color,
-  val neutral50: Color,
-  val neutral40: Color,
-  val neutral30: Color,
-  val neutral20: Color,
-  val neutral10: Color,
-  val neutral0: Color,
-)
+  val green100: Color
+  val green300: Color
+  val green500: Color
+  val green600: Color
+  val green700: Color
+  val green800: Color
+  val green900: Color
+
+  val amber100: Color
+  val amber300: Color
+  val amber500: Color
+  val amber600: Color
+  val amber700: Color
+  val amber800: Color
+  val amber900: Color
+
+  val red100: Color
+  val red300: Color
+  val red500: Color
+  val red600: Color
+  val red700: Color
+  val red800: Color
+  val red900: Color
+
+  val blue100: Color
+  val blue300: Color
+  val blue500: Color
+  val blue600: Color
+  val blue700: Color
+  val blue800: Color
+  val blue900: Color
+
+  val lavender300: Color
+  val lavender400: Color
+}

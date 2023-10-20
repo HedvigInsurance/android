@@ -14,13 +14,13 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 
 @Composable
-fun LargeOutlinedTextButton(
+fun HedvigOutlinedTextButton(
   text: String,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
 ) {
-  LargeOutlinedButton(
+  HedvigOutlinedButton(
     modifier = modifier,
     content = {
       Text(text = text)
@@ -31,7 +31,7 @@ fun LargeOutlinedTextButton(
 }
 
 @Composable
-fun LargeOutlinedButton(
+fun HedvigOutlinedButton(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
@@ -52,8 +52,8 @@ fun LargeOutlinedButton(
 
 @HedvigPreview
 @Composable
-private fun PreviewLargeOutlinedButton() {
+private fun PreviewHedvigOutlinedTextButton() {
   HedvigTheme {
-    LargeOutlinedTextButton(text = "Outlined Button (Large)", onClick = {})
+    HedvigOutlinedTextButton(text = "Outlined Button (Large)", onClick = {})
   }
 }

@@ -42,14 +42,14 @@ import kotlin.math.max
 @Composable
 internal fun HomeLayout(
   fullScreenSize: IntSize,
-  welcomeMessage: @Composable @UiComposable  () -> Unit,
-  claimStatusCards: @Composable @UiComposable  () -> Unit,
-  veryImportantMessages: @Composable @UiComposable  () -> Unit,
-  memberReminderCards: @Composable @UiComposable  () -> Unit,
-  startClaimButton: @Composable @UiComposable  () -> Unit,
-  otherServicesButton: @Composable @UiComposable  () -> Unit,
-  topSpacer: @Composable @UiComposable  () -> Unit,
-  bottomSpacer: @Composable @UiComposable  () -> Unit,
+  welcomeMessage: @Composable @UiComposable () -> Unit, // ktlint-disable no-multi-spaces
+  claimStatusCards: @Composable @UiComposable () -> Unit, // ktlint-disable no-multi-spaces
+  veryImportantMessages: @Composable @UiComposable () -> Unit, // ktlint-disable no-multi-spaces
+  memberReminderCards: @Composable @UiComposable () -> Unit, // ktlint-disable no-multi-spaces
+  startClaimButton: @Composable @UiComposable () -> Unit, // ktlint-disable no-multi-spaces
+  otherServicesButton: @Composable @UiComposable () -> Unit, // ktlint-disable no-multi-spaces
+  topSpacer: @Composable @UiComposable () -> Unit, // ktlint-disable no-multi-spaces
+  bottomSpacer: @Composable @UiComposable () -> Unit, // ktlint-disable no-multi-spaces
   modifier: Modifier = Modifier,
 ) {
   Layout(
@@ -93,12 +93,19 @@ internal fun HomeLayout(
 
     val bottomAttachedPlaceables = buildList {
       add(FixedSizePlaceable(0, 16.dp.roundToPx()))
-      if (veryImportantMessagesPlaceable.height > 0) {
+      val doPlaceVeryImportantMessages = veryImportantMessagesPlaceable.height > 0
+      val doPlaceMemberReminderCards = memberReminderCardsPlaceable.height > 0
+
+      if (doPlaceVeryImportantMessages) {
         add(veryImportantMessagesPlaceable)
+      }
+      if (doPlaceVeryImportantMessages && doPlaceMemberReminderCards) {
         add(FixedSizePlaceable(0, 8.dp.roundToPx()))
       }
-      if (memberReminderCardsPlaceable.height > 0) {
+      if (doPlaceMemberReminderCards) {
         add(memberReminderCardsPlaceable)
+      }
+      if (doPlaceVeryImportantMessages || doPlaceMemberReminderCards) {
         add(FixedSizePlaceable(0, 16.dp.roundToPx()))
       }
       add(startClaimButtonPlaceable)
@@ -271,9 +278,9 @@ private fun PreviewHomeLayout(
   maxWidth: Int,
   maxHeight: Int,
   modifier: Modifier = Modifier,
-  claimStatusCards: @Composable @UiComposable  () -> Unit = {},
-  veryImportantMessages: @Composable @UiComposable  () -> Unit = {},
-  memberReminderCards: @Composable @UiComposable  () -> Unit = {},
+  claimStatusCards: @Composable @UiComposable () -> Unit = {}, // ktlint-disable no-multi-spaces
+  veryImportantMessages: @Composable @UiComposable () -> Unit = {}, // ktlint-disable no-multi-spaces
+  memberReminderCards: @Composable @UiComposable () -> Unit = {}, // ktlint-disable no-multi-spaces
 ) {
   HomeLayout(
     fullScreenSize = IntSize(maxWidth, maxHeight),

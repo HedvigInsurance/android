@@ -180,7 +180,7 @@ private val networkModule = module {
   factory<OkHttpClient.Builder> {
     val languageService = get<LanguageService>()
     val builder: OkHttpClient.Builder = OkHttpClient.Builder()
-      .addDatadogConfiguration()
+      .addDatadogConfiguration(get<HedvigBuildConstants>())
       .addInterceptor(get<AuthTokenRefreshingInterceptor>())
       .addInterceptor { chain ->
         chain.proceed(
@@ -467,7 +467,7 @@ private val repositoriesModule = module {
 }
 
 private val notificationModule = module {
-  single { PaymentNotificationSender(get(), get(), get(), get()) } bind NotificationSender::class
+  single { PaymentNotificationSender(get(), get(), get()) } bind NotificationSender::class
   single { CrossSellNotificationSender(get(), get()) } bind NotificationSender::class
   single { ChatNotificationSender(get(), get<HedvigDeepLinkContainer>()) } bind NotificationSender::class
   single { ReferralsNotificationSender(get()) } bind NotificationSender::class
