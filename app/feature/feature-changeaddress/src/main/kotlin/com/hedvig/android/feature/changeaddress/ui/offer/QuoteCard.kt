@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
@@ -29,10 +30,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.hedvigDateTimeFormatter
 import com.hedvig.android.core.ui.insurance.toPillow
@@ -82,15 +84,14 @@ private fun PillAndBasicInfo(quote: MoveQuote, movingDate: LocalDate) {
   Row(verticalAlignment = Alignment.CenterVertically) {
     Image(
       painter = painterResource(id = quote.productVariant.contractType.toPillow()),
-      contentDescription = "pillow",
+      contentDescription = null,
       modifier = Modifier.size(48.dp),
     )
     Spacer(modifier = Modifier.width(16.dp))
     Column {
       Text(
         text = quote.insuranceName,
-        style = MaterialTheme.typography.titleMedium,
-        fontSize = 18.sp,
+        style = MaterialTheme.typography.bodyLarge,
       )
       CompositionLocalProvider(LocalContentColor.provides(MaterialTheme.colorScheme.onSurfaceVariant)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -99,15 +100,13 @@ private fun PillAndBasicInfo(quote: MoveQuote, movingDate: LocalDate) {
               id = R.string.CHANGE_ADDRESS_ACTIVATION_DATE,
               movingDate.toJavaLocalDate().format(hedvigDateTimeFormatter(getLocale())),
             ),
-            fontSize = 18.sp,
+            style = MaterialTheme.typography.bodyLarge,
           )
           Spacer(modifier = Modifier.width(4.dp))
           Icon(
-            painter = painterResource(id = com.hedvig.android.core.design.system.R.drawable.ic_info),
+            imageVector = Icons.Hedvig.InfoFilled,
             contentDescription = null,
-            modifier = Modifier
-              .size(16.dp)
-              .padding(1.dp),
+            modifier = Modifier.size(16.dp),
           )
         }
       }
@@ -125,8 +124,7 @@ private fun QuoteDetailsAndPrice(
       Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
           text = stringResource(id = R.string.CHANGE_ADDRESS_DETAILS_LABEL),
-          style = MaterialTheme.typography.titleMedium,
-          fontSize = 18.sp,
+          style = MaterialTheme.typography.bodyLarge,
         )
         Spacer(Modifier.width(8.dp))
         val angle = animateFloatAsState(
@@ -140,7 +138,7 @@ private fun QuoteDetailsAndPrice(
         Icon(
           painter = painterResource(com.hedvig.android.core.design.system.R.drawable.ic_drop_down_indicator),
           contentDescription = null,
-          tint = MaterialTheme.colorScheme.outlineVariant,
+          tint = MaterialTheme.colorScheme.onSurfaceVariant,
           modifier = Modifier
             .size(16.dp)
             .graphicsLayer {
@@ -155,8 +153,7 @@ private fun QuoteDetailsAndPrice(
           id = R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL,
           quote.premium.toString(),
         ),
-        style = MaterialTheme.typography.titleMedium,
-        fontSize = 18.sp,
+        style = MaterialTheme.typography.bodyLarge,
         textAlign = TextAlign.End,
       )
     },
@@ -180,7 +177,7 @@ private fun ExpandedInformation(
 
 @HedvigPreview
 @Composable
-fun PreviewQuoteCard() {
+private fun PreviewQuoteCard() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       QuoteCard(

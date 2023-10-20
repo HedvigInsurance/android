@@ -65,10 +65,6 @@ internal class ChangeAddressViewModel(
     _uiState.update { it.copy(isSublet = ValidatedInput(isSublet)) }
   }
 
-  fun onQuotesCleared() {
-    _uiState.update { it.copy(quotes = emptyList()) }
-  }
-
   fun validateAddressInput(): Boolean {
     _uiState.update { it.validateAddressInput() }
     return _uiState.value.isAddressInputValid
@@ -77,6 +73,26 @@ internal class ChangeAddressViewModel(
   fun validateHouseInput(): Boolean {
     _uiState.update { it.validateHouseInput() }
     return _uiState.value.isHouseInputValid
+  }
+
+  /**
+   * After we've received the MoveIntentId, `startMovingFlowAfterHavingReceivedMoveIntentId` is used to trigger the
+   * navigation to the next question. When this function is called, it means the navigation event has been handled.
+   */
+  fun onNavigatedToFirstStepAfterHavingReceivedMoveIntentId() {
+    _uiState.update {
+      it.copy(navigateToFirstStepAfterHavingReceivedMoveIntentId = false)
+    }
+  }
+
+  /**
+   * After we've received the offer quotes, `navigateToOfferScreenAfterHavingReceivedQuotes` is used to trigger the
+   * navigation to the offer page. When this function is called, it means the navigation event has been handled.
+   */
+  fun onNavigatedToOfferScreenAfterHavingReceivedQuotes() {
+    _uiState.update {
+      it.copy(navigateToOfferScreenAfterHavingReceivedQuotes = false)
+    }
   }
 
   fun onSubmitNewAddress() {
@@ -102,6 +118,7 @@ internal class ChangeAddressViewModel(
           _uiState.update {
             it.copy(
               isLoading = false,
+              navigateToOfferScreenAfterHavingReceivedQuotes = true,
               quotes = quotes,
             )
           }
@@ -111,12 +128,11 @@ internal class ChangeAddressViewModel(
   }
 
   fun onExpandQuote(moveQuote: MoveQuote) {
-    _uiState.update {
-      it.copy(
-        quotes = it.quotes.replace(
-          newValue = moveQuote.copy(isExpanded = !moveQuote.isExpanded),
-          block = { it == moveQuote },
-        ),
+    _uiState.update { uiState: ChangeAddressUiState ->
+      uiState.copy(
+        quotes = uiState.quotes.map { quote: MoveQuote ->
+          if (quote == moveQuote) moveQuote.copy(isExpanded = !moveQuote.isExpanded) else quote
+        },
       )
     }
   }
@@ -167,7 +183,7 @@ internal class ChangeAddressViewModel(
   }
 
   fun onHousingTypeErrorDialogDismissed() {
-    _uiState.update { it.copy(housingType = ValidatedInput(it.housingType.input)) }
+    _uiState.update { it.copy(housingType = it.housingType.copy(errorMessageRes = null)) }
   }
 
   fun onHousingTypeSubmitted() {
@@ -186,6 +202,7 @@ internal class ChangeAddressViewModel(
           _uiState.update {
             it.copy(
               moveIntentId = moveIntent.id,
+              navigateToFirstStepAfterHavingReceivedMoveIntentId = true,
               numberInsured = ValidatedInput(moveIntent.suggestedNumberInsured.toString()),
               moveFromAddressId = moveIntent.currentHomeAddresses.firstOrNull()?.id,
               extraBuildingTypes = moveIntent.extraBuildingTypes,
@@ -229,10 +246,12 @@ internal class ChangeAddressViewModel(
   fun addExtraBuilding(extraBuilding: ExtraBuilding) {
     _uiState.update {
       val extraBuildings = it.extraBuildings.toMutableList()
-      extraBuildings.find { it.id == extraBuilding.id }?.let {
-        extraBuildings.replace(extraBuilding) { it.id == extraBuilding.id }
-      } ?: extraBuildings.add(extraBuilding)
-      it.copy(extraBuildings = extraBuildings)
+      val existingBuildingWithSameId = extraBuildings.find { it.id == extraBuilding.id }
+      if (existingBuildingWithSameId != null) {
+        extraBuildings.remove(existingBuildingWithSameId)
+      }
+      extraBuildings.add(extraBuilding)
+      it.copy(extraBuildings = extraBuildings.toList())
     }
   }
 }
@@ -274,10 +293,4 @@ private fun ChangeAddressUiState.toQuoteInput() = when (housingType.input) {
   )
 
   null -> throw IllegalArgumentException("No housing type found when creating input")
-}
-
-fun <T> List<T>.replace(newValue: T, block: (T) -> Boolean): List<T> {
-  return map {
-    if (block(it)) newValue else it
-  }
 }

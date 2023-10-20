@@ -9,7 +9,7 @@ import androidx.compose.ui.res.stringResource
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 
 @Composable
-fun InputTextField(
+internal fun InputTextField(
   value: String?,
   errorMessageRes: Int?,
   onValueChange: (String) -> Unit,

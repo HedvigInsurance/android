@@ -46,7 +46,7 @@ internal fun ChangeAddressResultDestination(
 
 @HedvigPreview
 @Composable
-internal fun PreviewChangeAddressResultDestination() {
+private fun PreviewChangeAddressResultDestination() {
   HedvigTheme {
     Surface {
       ChangeAddressResultDestination(movingDate = LocalDate.fromEpochDays(3000)) {}

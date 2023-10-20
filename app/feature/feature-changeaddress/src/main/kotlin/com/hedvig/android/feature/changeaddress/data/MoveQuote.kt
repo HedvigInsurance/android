@@ -9,7 +9,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 import octopus.type.CurrencyCode
 
-data class MoveQuote(
+internal data class MoveQuote(
   val id: String,
   val insuranceName: String,
   val moveIntentId: MoveIntentId,
