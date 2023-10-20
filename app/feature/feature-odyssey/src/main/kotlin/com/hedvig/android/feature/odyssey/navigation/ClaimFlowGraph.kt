@@ -240,7 +240,7 @@ fun NavGraphBuilder.claimFlowGraph(
     }
     composable<ClaimFlowDestination.DeflectGlassDamage> { navBackStackEntry ->
       DeflectGlassDamageDestination(
-        parameter = this,
+        deflectGlassDamage = this,
         openChat = {
           openChat(navBackStackEntry)
         },
@@ -253,7 +253,7 @@ fun NavGraphBuilder.claimFlowGraph(
     }
     composable<ClaimFlowDestination.DeflectEmergency> { navBackStackEntry ->
       DeflectEmergencyDestination(
-        parameter = this,
+        deflectEmergency = this,
         openChat = {
           openChat(navBackStackEntry)
         },

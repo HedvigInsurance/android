@@ -9,6 +9,7 @@ import com.hedvig.android.data.claimflow.ItemBrand.Unknown.displayName
 import com.hedvig.android.data.claimflow.ItemModel.Unknown.displayName
 import com.hedvig.android.data.claimflow.model.AudioUrl
 import com.hedvig.android.data.claimflow.model.FlowId
+import com.hedvig.android.navigation.compose.typed.SerializableImmutableList
 import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
@@ -71,7 +72,7 @@ sealed interface ClaimFlowDestination : Destination {
 
   @Serializable
   data class DeflectGlassDamage(
-    val partners: List<DeflectPartner>,
+    val partners: SerializableImmutableList<DeflectPartner>,
   ) : ClaimFlowDestination
 
   @Serializable
@@ -83,12 +84,12 @@ sealed interface ClaimFlowDestination : Destination {
 
   @Serializable
   data class DeflectEmergency(
-    val partners: List<DeflectPartner>,
+    val partners: SerializableImmutableList<DeflectPartner>,
   ) : ClaimFlowDestination
 
   @Serializable
   data class DeflectPests(
-    val partners: List<DeflectPartner>,
+    val partners: SerializableImmutableList<DeflectPartner>,
   ) : ClaimFlowDestination
 
   @Serializable

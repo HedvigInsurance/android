@@ -32,10 +32,33 @@ import com.hedvig.android.feature.odyssey.ui.ClaimFlowScaffold
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import hedvig.resources.R
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun DeflectPestsDestination(
   deflectPests: ClaimFlowDestination.DeflectPests,
+  openChat: () -> Unit,
+  closeClaimFlow: () -> Unit,
+  windowSizeClass: WindowSizeClass,
+  navigateUp: () -> Unit,
+  imageLoader: ImageLoader,
+  openUrl: (String) -> Unit,
+) {
+  DeflectPestsScreen(
+    partners = deflectPests.partners,
+    openChat = openChat,
+    closeClaimFlow = closeClaimFlow,
+    windowSizeClass = windowSizeClass,
+    navigateUp = navigateUp,
+    imageLoader = imageLoader,
+    openUrl = openUrl,
+  )
+}
+
+@Composable
+private fun DeflectPestsScreen(
+  partners: ImmutableList<DeflectPartner>,
   openChat: () -> Unit,
   closeClaimFlow: () -> Unit,
   windowSizeClass: WindowSizeClass,
@@ -59,7 +82,7 @@ internal fun DeflectPestsDestination(
       modifier = Modifier.padding(horizontal = 20.dp),
     )
     Spacer(Modifier.height(16.dp))
-    deflectPests.partners.forEachIndexed { index, partner ->
+    partners.forEachIndexed { index, partner ->
       if (index > 0) {
         Spacer(Modifier.height(8.dp))
       }
@@ -96,7 +119,7 @@ internal fun DeflectPestsDestination(
               } else {
                 logcat(LogPriority.ERROR) {
                   """
-                  |Partner URL was null! Deflect partner:[$this]. 
+                  |Partner URL was null for DeflectPestsDestination! Deflect partner:[$this]. 
                   |This is problematic because the UI offers no real help to the member, the CTA button does nothing.
                   """.trimMargin()
                 }
@@ -145,16 +168,14 @@ internal fun DeflectPestsDestination(
 
 @HedvigPreview
 @Composable
-private fun DeflectPestsDestinationPreview() {
-  DeflectPestsDestination(
-    deflectPests = ClaimFlowDestination.DeflectPests(
-      partners = listOf(
-        DeflectPartner(
-          id = "1",
-          imageUrl = "test",
-          phoneNumber = "1234",
-          url = "test",
-        ),
+private fun DeflectPestsScreenPreview() {
+  DeflectPestsScreen(
+    partners = persistentListOf(
+      DeflectPartner(
+        id = "1",
+        imageUrl = "test",
+        phoneNumber = "1234",
+        url = "test",
       ),
     ),
     openChat = {},

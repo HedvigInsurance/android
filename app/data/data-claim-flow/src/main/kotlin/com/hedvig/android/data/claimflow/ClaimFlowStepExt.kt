@@ -3,6 +3,7 @@ package com.hedvig.android.data.claimflow
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.core.uidata.UiNullableMoney
 import com.hedvig.android.data.claimflow.model.AudioUrl
+import kotlinx.collections.immutable.toPersistentList
 import octopus.fragment.AudioContentFragment
 import octopus.fragment.AutomaticAutogiroPayoutFragment
 import octopus.fragment.CheckoutMethodFragment
@@ -90,7 +91,7 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
     )
 
     is ClaimFlowStep.ClaimDeflectGlassDamageStep -> ClaimFlowDestination.DeflectGlassDamage(
-      partners.map { it.toLocalPartner() },
+      partners.map { it.toLocalPartner() }.toPersistentList(),
     )
 
     is ClaimFlowStep.ClaimConfirmEmergencyStep -> ClaimFlowDestination.ConfirmEmergency(
@@ -100,11 +101,11 @@ fun ClaimFlowStep.toClaimFlowDestination(): ClaimFlowDestination {
     )
 
     is ClaimFlowStep.ClaimDeflectEmergencyStep -> ClaimFlowDestination.DeflectEmergency(
-      partners.map { it.toLocalPartner() },
+      partners.map { it.toLocalPartner() }.toPersistentList(),
     )
 
     is ClaimFlowStep.ClaimDeflectPestsStep -> ClaimFlowDestination.DeflectPests(
-      partners.map { it.toLocalPartner() },
+      partners.map { it.toLocalPartner() }.toPersistentList(),
     )
   }
 }

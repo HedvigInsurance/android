@@ -29,7 +29,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
@@ -114,7 +113,7 @@ private fun ConfirmEmergencyScreen(
       }
     }
     FlowRow(
-      horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
+      horizontalArrangement = Arrangement.spacedBy(8.dp),
       maxItemsInEachRow = 2,
       modifier = Modifier
         .padding(horizontal = 16.dp)
