@@ -265,7 +265,7 @@ fun NavGraphBuilder.claimFlowGraph(
     }
     composable<ClaimFlowDestination.DeflectPests> { navBackStackEntry ->
       DeflectPestsDestination(
-        parameter = this,
+        deflectPests = this,
         openChat = {
           openChat(navBackStackEntry)
         },
