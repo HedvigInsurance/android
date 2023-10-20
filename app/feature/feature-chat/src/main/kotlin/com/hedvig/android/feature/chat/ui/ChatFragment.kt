@@ -143,7 +143,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
               setNegativeButton(
                 resources.getString(android.R.string.cancel),
               ) { _, _ ->
-                requireActivity().onBackPressedDispatcher.onBackPressed()
+                this@ChatFragment.activity?.onBackPressedDispatcher?.onBackPressed()
               }
               setMessage(hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE)
               setCancelable(false)
