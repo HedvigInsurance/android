@@ -21,7 +21,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import com.hedvig.android.core.ui.appbar.m3.TopAppBarActionType
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.dialog.ErrorDialog
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
@@ -104,7 +103,6 @@ private fun ChangeAddressEnterNewAddressScreen(
   HedvigScaffold(
     navigateUp = navigateUp,
     modifier = Modifier.clearFocusOnTap(),
-    topAppBarActionType = TopAppBarActionType.CLOSE,
   ) {
     Spacer(modifier = Modifier.height(48.dp))
     Text(
