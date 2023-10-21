@@ -52,7 +52,7 @@ fun NavGraphBuilder.claimFlowGraph(
   windowSizeClass: WindowSizeClass,
   navigator: Navigator,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
-  navigateToTriaging: (NavBackStackEntry?) -> Unit,
+  navigateToTriaging: () -> Unit,
   openAppSettings: () -> Unit,
   closeClaimFlow: () -> Unit,
   openChat: (NavBackStackEntry) -> Unit,
@@ -74,7 +74,7 @@ fun NavGraphBuilder.claimFlowGraph(
           with(navigator) { backStackEntry.navigate(ClaimFlowDestination.NotificationPermission) }
         },
         pledgeAccepted = {
-          navigateToTriaging(backStackEntry)
+          navigateToTriaging()
         },
         navigateUp = navigator::navigateUp,
         closeClaimFlow = closeClaimFlow,
@@ -84,9 +84,7 @@ fun NavGraphBuilder.claimFlowGraph(
       NotificationPermissionDestination(
         windowSizeClass = windowSizeClass,
         onNotificationPermissionDecided = {
-          // We need to navigate without checking lifecycle, since we want to navigate after accepting the permission.
-          // That dialog showing means that the app is not Resumed and would otherwise make us not navigate.
-          navigateToTriaging(null)
+          navigateToTriaging()
         },
         openAppSettings = openAppSettings,
         navigateUp = navigator::navigateUp,

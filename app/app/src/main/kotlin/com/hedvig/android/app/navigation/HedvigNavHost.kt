@@ -259,12 +259,8 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     windowSizeClass = hedvigAppState.windowSizeClass,
     navigator = navigator,
     shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-    navigateToTriaging = { backStackEntry ->
-      if (backStackEntry != null) {
-        with(navigator) { backStackEntry.navigate(ClaimTriagingDestination.ClaimGroups) }
-      } else {
-        navigator.navigateUnsafe(ClaimTriagingDestination.ClaimGroups)
-      }
+    navigateToTriaging = {
+      navigator.navigateUnsafe(ClaimTriagingDestination.ClaimGroups)
     },
     openAppSettings = {
       activityNavigator.openAppSettings(context)
