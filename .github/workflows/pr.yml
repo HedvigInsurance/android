@@ -1,9 +1,14 @@
 name: PR
 
 on: pull_request
+
+concurrency:
+  group: ref-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   unit_test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-64vcpu
     steps:
       - uses: actions/checkout@v4
       - name: Copy CI gradle.properties
@@ -22,7 +27,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           # Only write to the cache for builds on the 'develop' branch
-          cache-read-only: ${{ github.ref != 'refs/heads/develop' }}
+          cache-read-only: false
           gradle-home-cache-cleanup: true
       - name: Prebuild
         run: ./scripts/ci-prebuild.sh
@@ -37,7 +42,7 @@ jobs:
           paths: "app/build/test-results/testDebugUnitTest/**/TEST-*.xml"
         if: always()
   lint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-64vcpu
     steps:
       - uses: actions/checkout@v4
       - name: Copy CI gradle.properties
@@ -56,7 +61,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           # Only write to the cache for builds on the 'develop' branch
-          cache-read-only: ${{ github.ref != 'refs/heads/develop' }}
+          cache-read-only: false
           gradle-home-cache-cleanup: true
       - name: Prebuild
         run: ./scripts/ci-prebuild.sh
@@ -70,7 +75,7 @@ jobs:
           report-path: app/build/reports/lint-results-debug.xml
         continue-on-error: true
   ktlint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-64vcpu
     steps:
       - uses: actions/checkout@v4
       - name: Copy CI gradle.properties
@@ -89,7 +94,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           # Only write to the cache for builds on the 'develop' branch
-          cache-read-only: ${{ github.ref != 'refs/heads/develop' }}
+          cache-read-only: false
           gradle-home-cache-cleanup: true
       - name: Prebuild
         run: ./scripts/ci-prebuild.sh
@@ -106,7 +111,7 @@ jobs:
         with:
           report-path: build/reports/ktlint/*.xml
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-64vcpu
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -126,7 +131,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           # Only write to the cache for builds on the 'develop' branch
-          cache-read-only: ${{ github.ref != 'refs/heads/develop' }}
+          cache-read-only: false
           gradle-home-cache-cleanup: true
       - run: echo VERSION_CODE=$(expr 4700 + ${{ github.run_number }} + ${{ github.run_attempt }} - 1) >> $GITHUB_ENV
       - uses: chkfung/android-version-actions@v1.2

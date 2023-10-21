@@ -135,7 +135,7 @@ private fun ClaimEntryPointsScreen(
         itemDisplayName = EntryPoint::displayName,
         selectedItem = uiState.selectedEntryPoint,
         onItemClick = { entryPoint -> onSelectEntryPoint(entryPoint) },
-        modifier = Modifier.padding(horizontal = 16.dp),
+        modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
       )
       Spacer(Modifier.height(8.dp))
       HedvigContainedButton(

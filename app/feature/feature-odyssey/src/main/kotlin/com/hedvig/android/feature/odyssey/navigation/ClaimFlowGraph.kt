@@ -4,6 +4,7 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navOptions
+import coil.ImageLoader
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.data.claimflow.ClaimFlowStep
@@ -15,6 +16,11 @@ import com.hedvig.android.feature.odyssey.step.dateofoccurrence.DateOfOccurrence
 import com.hedvig.android.feature.odyssey.step.dateofoccurrencepluslocation.DateOfOccurrencePlusLocationDestination
 import com.hedvig.android.feature.odyssey.step.dateofoccurrencepluslocation.DateOfOccurrencePlusLocationViewModel
 import com.hedvig.android.feature.odyssey.step.honestypledge.HonestyPledgeDestination
+import com.hedvig.android.feature.odyssey.step.informdeflect.ConfirmEmergencyDestination
+import com.hedvig.android.feature.odyssey.step.informdeflect.ConfirmEmergencyViewModel
+import com.hedvig.android.feature.odyssey.step.informdeflect.DeflectEmergencyDestination
+import com.hedvig.android.feature.odyssey.step.informdeflect.DeflectGlassDamageDestination
+import com.hedvig.android.feature.odyssey.step.informdeflect.DeflectPestsDestination
 import com.hedvig.android.feature.odyssey.step.location.LocationDestination
 import com.hedvig.android.feature.odyssey.step.location.LocationViewModel
 import com.hedvig.android.feature.odyssey.step.notificationpermission.NotificationPermissionDestination
@@ -49,6 +55,9 @@ fun NavGraphBuilder.claimFlowGraph(
   navigateToTriaging: (NavBackStackEntry?) -> Unit,
   openAppSettings: () -> Unit,
   closeClaimFlow: () -> Unit,
+  openChat: (NavBackStackEntry) -> Unit,
+  openUrl: (String) -> Unit,
+  imageLoader: ImageLoader,
   nestedGraphs: NavGraphBuilder.() -> Unit,
 ) {
   navigation<AppDestination.ClaimsFlow>(
@@ -216,6 +225,57 @@ fun NavGraphBuilder.claimFlowGraph(
         closeClaimFlow = closeClaimFlow,
       )
     }
+    composable<ClaimFlowDestination.ConfirmEmergency> { backStackEntry ->
+      val viewModel: ConfirmEmergencyViewModel = koinViewModel { parametersOf(this) }
+      ConfirmEmergencyDestination(
+        viewModel = viewModel,
+        navigateToNextStep = { claimFlowStep ->
+          viewModel.handledNextStepNavigation()
+          navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
+        },
+        windowSizeClass = windowSizeClass,
+        navigateUp = navigator::navigateUp,
+        closeClaimFlow = closeClaimFlow,
+      )
+    }
+    composable<ClaimFlowDestination.DeflectGlassDamage> { navBackStackEntry ->
+      DeflectGlassDamageDestination(
+        deflectGlassDamage = this,
+        openChat = {
+          openChat(navBackStackEntry)
+        },
+        windowSizeClass = windowSizeClass,
+        navigateUp = navigator::navigateUp,
+        openUrl = openUrl,
+        closeClaimFlow = closeClaimFlow,
+        imageLoader = imageLoader,
+      )
+    }
+    composable<ClaimFlowDestination.DeflectEmergency> { navBackStackEntry ->
+      DeflectEmergencyDestination(
+        deflectEmergency = this,
+        openChat = {
+          openChat(navBackStackEntry)
+        },
+        navigateUp = navigator::navigateUp,
+        windowSizeClass = windowSizeClass,
+        closeClaimFlow = closeClaimFlow,
+        imageLoader = imageLoader,
+      )
+    }
+    composable<ClaimFlowDestination.DeflectPests> { navBackStackEntry ->
+      DeflectPestsDestination(
+        deflectPests = this,
+        openChat = {
+          openChat(navBackStackEntry)
+        },
+        navigateUp = navigator::navigateUp,
+        openUrl = openUrl,
+        windowSizeClass = windowSizeClass,
+        closeClaimFlow = closeClaimFlow,
+        imageLoader = imageLoader,
+      )
+    }
   }
 }
 
@@ -266,15 +326,17 @@ fun <T : ClaimFlowDestination> Navigator.navigateToClaimFlowDestination(
   destination: T,
 ) {
   val navOptions = navOptions {
-    when {
-      destination is ClaimFlowDestination.ClaimSuccess ||
-        destination is ClaimFlowDestination.UpdateApp ||
-        destination is ClaimFlowDestination.Failure ||
-        destination is ClaimFlowDestination.SingleItemPayout -> {
+    when (destination) {
+      is ClaimFlowDestination.ClaimSuccess,
+      is ClaimFlowDestination.UpdateApp,
+      is ClaimFlowDestination.Failure,
+      is ClaimFlowDestination.SingleItemPayout,
+      -> {
         popUpTo<AppDestination.ClaimsFlow> {
           inclusive = true
         }
       }
+
       else -> {}
     }
   }

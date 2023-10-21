@@ -27,7 +27,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.2.1"
+    versionName = "12.2.2"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -95,7 +95,7 @@ android {
 
   signingConfigs {
     named("debug") {
-      storeFile = file("../../debug.keystore").also { println("Stelios file : ${it.absolutePath}") }
+      storeFile = file("../../debug.keystore")
     }
   }
 

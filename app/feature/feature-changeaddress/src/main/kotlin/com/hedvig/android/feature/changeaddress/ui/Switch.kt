@@ -17,7 +17,7 @@ import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.material3.squircleMedium
 
 @Composable
-fun ChangeAddressSwitch(
+internal fun ChangeAddressSwitch(
   label: String,
   checked: Boolean,
   onClick: () -> Unit,

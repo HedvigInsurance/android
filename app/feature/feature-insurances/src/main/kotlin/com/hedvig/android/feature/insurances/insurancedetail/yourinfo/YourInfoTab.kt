@@ -69,6 +69,7 @@ internal fun YourInfoTab(
   if (showEditYourInfoBottomSheet) {
     val sheetState = rememberModalBottomSheetState(true)
     ModalBottomSheet(
+      containerColor = MaterialTheme.colorScheme.background,
       onDismissRequest = {
         showEditYourInfoBottomSheet = false
       },
@@ -115,6 +116,7 @@ internal fun YourInfoTab(
   if (showUpcomingChangesBottomSheet && upcomingChangesAgreement != null) {
     val sheetState = rememberModalBottomSheetState(true)
     ModalBottomSheet(
+      containerColor = MaterialTheme.colorScheme.background,
       onDismissRequest = {
         showUpcomingChangesBottomSheet = false
       },
@@ -125,7 +127,7 @@ internal fun YourInfoTab(
     ) {
       UpcomingChangesBottomSheetContent(
         infoText = stringResource(
-          id = R.string.insurances_tab_your_insurance_will_be_updated,
+          id = R.string.insurances_tab_your_insurance_will_be_updated_with_info,
           upcomingChangesAgreement.activeFrom,
         ),
         sections = upcomingChangesAgreement.displayItems
@@ -182,10 +184,6 @@ internal fun YourInfoTab(
         HedvigContainedButton(
           text = stringResource(R.string.CONTRACT_EDIT_INFO_LABEL),
           onClick = { showEditYourInfoBottomSheet = true },
-          colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            contentColor = MaterialTheme.colorScheme.onSurface,
-          ),
           modifier = Modifier.padding(horizontal = 16.dp),
         )
         Spacer(Modifier.height(8.dp))

@@ -9,6 +9,7 @@ import com.hedvig.android.data.claimflow.ItemBrand.Unknown.displayName
 import com.hedvig.android.data.claimflow.ItemModel.Unknown.displayName
 import com.hedvig.android.data.claimflow.model.AudioUrl
 import com.hedvig.android.data.claimflow.model.FlowId
+import com.hedvig.android.navigation.compose.typed.SerializableImmutableList
 import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
@@ -67,6 +68,28 @@ sealed interface ClaimFlowDestination : Destination {
     val selectedItemModel: String?,
     val availableItemProblems: List<ItemProblem>?,
     val selectedItemProblems: List<String>?,
+  ) : ClaimFlowDestination
+
+  @Serializable
+  data class DeflectGlassDamage(
+    val partners: SerializableImmutableList<DeflectPartner>,
+  ) : ClaimFlowDestination
+
+  @Serializable
+  data class ConfirmEmergency(
+    val text: String,
+    val confirmEmergency: Boolean?,
+    val options: List<EmergencyOption>,
+  ) : ClaimFlowDestination
+
+  @Serializable
+  data class DeflectEmergency(
+    val partners: SerializableImmutableList<DeflectPartner>,
+  ) : ClaimFlowDestination
+
+  @Serializable
+  data class DeflectPests(
+    val partners: SerializableImmutableList<DeflectPartner>,
   ) : ClaimFlowDestination
 
   @Serializable
@@ -213,3 +236,14 @@ data class AudioContent(
    */
   val audioUrl: AudioUrl,
 )
+
+@Serializable
+data class DeflectPartner(
+  val id: String,
+  val imageUrl: String,
+  val phoneNumber: String?,
+  val url: String?,
+)
+
+@Serializable
+data class EmergencyOption(val displayName: String, val value: Boolean)

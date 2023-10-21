@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -25,9 +26,9 @@ fun SelectIndicationCircle(selected: Boolean, modifier: Modifier = Modifier) {
       .clip(CircleShape)
       .then(
         if (selected) {
-          Modifier.background(MaterialTheme.colorScheme.primary)
+          Modifier.background(LocalContentColor.current)
         } else {
-          Modifier.border(2.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape)
+          Modifier.border(2.dp, MaterialTheme.colorScheme.onSurfaceVariant, CircleShape)
         },
       ),
   )

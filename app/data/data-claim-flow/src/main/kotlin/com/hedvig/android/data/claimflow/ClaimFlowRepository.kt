@@ -18,6 +18,7 @@ import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import kotlinx.datetime.LocalDate
 import octopus.FlowClaimAudioRecordingNextMutation
+import octopus.FlowClaimConfirmEmergencyMutation
 import octopus.FlowClaimContractNextMutation
 import octopus.FlowClaimDateOfOccurrenceNextMutation
 import octopus.FlowClaimDateOfOccurrencePlusLocationNextMutation
@@ -77,6 +78,8 @@ interface ClaimFlowRepository {
     purchaseDate: LocalDate?,
     purchasePrice: Double?,
   ): Either<ErrorMessage, ClaimFlowStep>
+
+  suspend fun submitUrgentEmergency(isUrgentEmergency: Boolean): Either<ErrorMessage, ClaimFlowStep>
 }
 
 internal class ClaimFlowRepositoryImpl(
@@ -244,7 +247,6 @@ internal class ClaimFlowRepositoryImpl(
         .bind()
         .flowClaimSingleItemCheckoutNext
       claimFlowContextStorage.saveContext(result.context)
-      Unit
     }
   }
 
@@ -278,6 +280,22 @@ internal class ClaimFlowRepositoryImpl(
         .toEither(::ErrorMessage)
         .bind()
         .flowClaimSummaryNext
+      claimFlowContextStorage.saveContext(result.context)
+      result.currentStep.toClaimFlowStep(FlowId(result.id))
+    }
+  }
+
+  override suspend fun submitUrgentEmergency(isUrgentEmergency: Boolean): Either<ErrorMessage, ClaimFlowStep> {
+    return either {
+      val result = apolloClient
+        .mutation(
+          FlowClaimConfirmEmergencyMutation(isUrgentEmergency = isUrgentEmergency, claimFlowContextStorage.getContext()),
+        )
+        .safeExecute()
+        .toEither(::ErrorMessage)
+        .bind()
+        .flowClaimConfirmEmergencyNext
+
       claimFlowContextStorage.saveContext(result.context)
       result.currentStep.toClaimFlowStep(FlowId(result.id))
     }

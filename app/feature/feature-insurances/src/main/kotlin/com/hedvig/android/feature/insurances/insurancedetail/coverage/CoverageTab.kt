@@ -73,6 +73,7 @@ internal fun CoverageTab(
 
   if (selectedInsurableLimitValue != null) {
     ModalBottomSheet(
+      containerColor = MaterialTheme.colorScheme.background,
       onDismissRequest = { selectedInsurableLimit = null },
       shape = MaterialTheme.shapes.squircleLargeTop,
       sheetState = sheetState,

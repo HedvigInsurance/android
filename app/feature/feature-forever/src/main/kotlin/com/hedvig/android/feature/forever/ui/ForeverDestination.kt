@@ -329,7 +329,6 @@ internal fun ForeverContent(
           text = stringResource(
             id = R.string.referrals_empty_body,
             uiState.foreverData.incentive.toString(),
-            UiMoney(0.0, uiState.foreverData.incentive.currencyCode).toString(),
           ),
           style = MaterialTheme.typography.bodyLarge.copy(
             textAlign = TextAlign.Center,

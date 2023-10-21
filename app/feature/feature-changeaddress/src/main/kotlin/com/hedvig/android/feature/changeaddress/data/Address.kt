@@ -4,10 +4,10 @@ import kotlinx.serialization.Serializable
 
 @JvmInline
 @Serializable
-value class AddressId(val id: String)
+internal value class AddressId(val id: String)
 
 @Serializable
-data class Address(
+internal data class Address(
   val id: AddressId,
   val apartmentNumber: String? = null,
   val bbrId: String? = null,

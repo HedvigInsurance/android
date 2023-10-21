@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -95,6 +94,7 @@ internal fun EditInsuranceBottomSheetContent(
     Spacer(modifier = Modifier.height(16.dp))
     HedvigContainedButton(
       text = stringResource(id = R.string.general_continue_button),
+      enabled = selectedItemIndex > -1,
       onClick = {
         if (selectedItemIndex == 0) {
           onChangeAddressClick()
@@ -114,13 +114,7 @@ internal fun EditInsuranceBottomSheetContent(
 
 @Composable
 private fun SelectableItem(text: String, isSelected: Boolean, onClick: () -> Unit) {
-  HedvigCard(
-    onClick = onClick,
-    colors = CardDefaults.outlinedCardColors(
-      containerColor = MaterialTheme.colorScheme.surfaceVariant,
-      contentColor = MaterialTheme.colorScheme.onSurface,
-    ),
-  ) {
+  HedvigCard(onClick = onClick) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier
