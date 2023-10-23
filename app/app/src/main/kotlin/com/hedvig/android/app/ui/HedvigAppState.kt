@@ -15,7 +15,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
-import com.datadog.android.rum.GlobalRum
+import com.datadog.android.rum.GlobalRumMonitor
 import com.hedvig.android.feature.insurances.navigation.insurancesBottomNavPermittedDestinations
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
@@ -170,7 +170,7 @@ private fun NavigationTrackingSideEffect(navController: NavController) {
           }
         }
       }
-      GlobalRum.get().startView(
+      GlobalRumMonitor.get().startView(
         key = destination,
         name = destination.route ?: "Unknown route",
       )

@@ -1,7 +1,7 @@
 package com.hedvig.android.datadog.core.attributestracking
 
 import com.datadog.android.Datadog
-import com.datadog.android.rum.GlobalRum
+import com.datadog.android.rum.GlobalRumMonitor
 
 interface DatadogAttributesManager {
   fun storeAttribute(key: String, value: Any?)
@@ -9,13 +9,16 @@ interface DatadogAttributesManager {
 }
 
 internal class DatadogAttributesManagerImpl : DatadogAttributesManager {
+
   override fun storeAttribute(key: String, value: Any?) {
-    Datadog.addUserExtraInfo(mapOf(key to value))
-    GlobalRum.addAttribute(key, value)
+    val sdkCore = Datadog.getInstance()
+    sdkCore.addUserProperties(mapOf(key to value))
+    GlobalRumMonitor.get(sdkCore).addAttribute(key, value)
   }
 
   override fun deleteAttribute(key: String) {
-    Datadog.addUserExtraInfo(mapOf(key to null))
-    GlobalRum.removeAttribute(key)
+    val sdkCore = Datadog.getInstance()
+    sdkCore.addUserProperties(mapOf(key to null))
+    GlobalRumMonitor.get(sdkCore).removeAttribute(key)
   }
 }
