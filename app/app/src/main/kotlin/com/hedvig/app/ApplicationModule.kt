@@ -181,7 +181,6 @@ private val networkModule = module {
     val languageService = get<LanguageService>()
     val builder: OkHttpClient.Builder = OkHttpClient.Builder()
       .addDatadogConfiguration(get<HedvigBuildConstants>())
-      .addInterceptor(get<AuthTokenRefreshingInterceptor>())
       .addInterceptor { chain ->
         chain.proceed(
           chain
@@ -215,7 +214,10 @@ private val networkModule = module {
     builder
   }
   single<OkHttpClient> {
-    val okHttpBuilder = get<OkHttpClient.Builder>()
+    // Add auth interceptor only on the OkHttpClient itself which is used by GraphQL
+    // The OkHttpClient.Builder configuration is shared with the client provided with the Coil ImageLoader and the Ktor
+    // client which targets the auth-service, both of which do not want to get this automatic token refreshing behavior
+    val okHttpBuilder = get<OkHttpClient.Builder>().addInterceptor(get<AuthTokenRefreshingInterceptor>())
     okHttpBuilder.build()
   }
   single<SunsettingInterceptor> { SunsettingInterceptor(get()) } bind ApolloInterceptor::class
@@ -539,18 +541,7 @@ private val datastoreAndroidModule = module {
 private val coilModule = module {
   single<ImageLoader> {
     ImageLoader.Builder(get())
-      .okHttpClient(
-        // For the OkHttp client used by Coil, we want to re-use the same configuration, but we do not want the token
-        // related interceptors to be used, since those images are not behind authentication, and actually fail when
-        // requested with an authorization token.
-        get<OkHttpClient.Builder>()
-          .apply {
-            interceptors().removeAll {
-              it is AuthTokenRefreshingInterceptor
-            }
-          }
-          .build(),
-      )
+      .okHttpClient(get<OkHttpClient.Builder>().build())
       .components {
         add(SvgDecoder.Factory())
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
