@@ -11,7 +11,7 @@ fun OkHttpClient.Builder.addDatadogConfiguration(
   hedvigBuildConstants: HedvigBuildConstants,
 ): OkHttpClient.Builder {
   val tracedHosts = listOf(
-    hedvigBuildConstants.urlGiraffeGraphql.removePrefix("https://"),
+    hedvigBuildConstants.urlGiraffeGraphql.removePrefix("https://").removeSuffix("/graphql"),
     hedvigBuildConstants.urlGraphqlOctopus.removePrefix("https://"),
   )
   return this

@@ -52,7 +52,7 @@ abstract class DatadogInitializer : Initializer<Unit>, KoinComponent {
       .useSite(DatadogSite.EU1)
       .setFirstPartyHosts(
         listOf(
-          hedvigBuildConstants.urlGiraffeGraphql.removePrefix("https://"),
+          hedvigBuildConstants.urlGiraffeGraphql.removePrefix("https://").removeSuffix("/graphql"),
           hedvigBuildConstants.urlGraphqlOctopus.removePrefix("https://"),
         ),
       )
