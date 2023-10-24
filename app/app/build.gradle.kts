@@ -42,6 +42,7 @@ android {
       excludes += "README.txt"
       excludes += "META-INF/LGPL2.1"
       excludes += "META-INF/AL2.0"
+      excludes += "META-INF/versions/9/previous-compilation-data.bin" // https://github.com/Kotlin/kotlinx-datetime/issues/304
     }
   }
 
