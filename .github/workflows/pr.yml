@@ -2,9 +2,9 @@ name: PR
 
 on: pull_request
 
-concurrency:
-  group: ref-${{ github.ref }}
-  cancel-in-progress: true
+#concurrency:
+#  group: ref-${{ github.ref }}
+#  cancel-in-progress: true
 
 jobs:
   unit_test:
@@ -27,7 +27,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           # Only write to the cache for builds on the 'develop' branch
-          cache-read-only: false
+          cache-read-only: true
           gradle-home-cache-cleanup: true
       - name: Prebuild
         run: ./scripts/ci-prebuild.sh
@@ -61,7 +61,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           # Only write to the cache for builds on the 'develop' branch
-          cache-read-only: false
+          cache-read-only: true
           gradle-home-cache-cleanup: true
       - name: Prebuild
         run: ./scripts/ci-prebuild.sh
@@ -94,7 +94,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           # Only write to the cache for builds on the 'develop' branch
-          cache-read-only: false
+          cache-read-only: true
           gradle-home-cache-cleanup: true
       - name: Prebuild
         run: ./scripts/ci-prebuild.sh
@@ -131,7 +131,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           # Only write to the cache for builds on the 'develop' branch
-          cache-read-only: false
+          cache-read-only: true
           gradle-home-cache-cleanup: true
       - run: echo VERSION_CODE=$(expr 4700 + ${{ github.run_number }} + ${{ github.run_attempt }} - 1) >> $GITHUB_ENV
       - uses: chkfung/android-version-actions@v1.2
