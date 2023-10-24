@@ -8,27 +8,23 @@ plugins {
 dependencies {
   api(libs.hedvig.authlib)
   api(libs.kotlinx.datetime)
-
+  implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.datastore.preferencesCore)
+  implementation(libs.coroutines.core)
   implementation(libs.koin.core)
-  implementation(libs.kotlinx.serialization.json)
-  // do not remove ktor, authlib has an old ktor version which somehow crashes. Remove when we bump authlib.
   implementation(libs.ktor)
   implementation(libs.okhttp.core)
   implementation(projects.authEventCore)
-  implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
-  implementation(projects.coreDatastorePublic)
-  implementation(projects.coreDemoMode)
   implementation(projects.initializable)
   implementation(projects.testClock)
 
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
+  testImplementation(libs.junit)
   testImplementation(libs.okhttp.mockWebServer)
   testImplementation(libs.turbine)
   testImplementation(projects.authTest)
-  testImplementation(projects.coreCommonTest)
   testImplementation(projects.coreDatastoreTest)
   testImplementation(projects.loggingTest)
 }

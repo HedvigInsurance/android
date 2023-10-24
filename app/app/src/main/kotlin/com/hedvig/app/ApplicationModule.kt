@@ -150,7 +150,7 @@ import com.hedvig.app.util.apollo.SunsettingInterceptor
 import com.hedvig.authlib.AuthEnvironment
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.Callbacks
-import com.hedvig.authlib.NetworkAuthRepository
+import com.hedvig.authlib.OkHttpNetworkAuthRepository
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
@@ -560,7 +560,7 @@ private val graphQLQueryModule = module {
 
 private val authRepositoryModule = module {
   single<AuthRepository> {
-    NetworkAuthRepository(
+    OkHttpNetworkAuthRepository(
       environment = if (get<HedvigBuildConstants>().isProduction) {
         AuthEnvironment.PRODUCTION
       } else {
@@ -568,6 +568,7 @@ private val authRepositoryModule = module {
       },
       additionalHttpHeaders = mapOf(),
       callbacks = Callbacks("https://hedvig.com?q=success", "https://hedvig.com?q=failure)"), // Not used
+      okHttpClientBuilder = get<OkHttpClient.Builder>(),
     )
   }
 }
