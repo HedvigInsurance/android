@@ -3,32 +3,27 @@ package com.hedvig.app.feature.genericauth
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
-import com.hedvig.android.auth.AuthTokenService
-import com.hedvig.android.auth.AuthTokenServiceImpl
-import com.hedvig.android.auth.FakeAuthRepository
-import com.hedvig.android.auth.event.AuthEventStorage
-import com.hedvig.android.auth.storage.AuthTokenStorage
+import assertk.assertions.prop
+import com.hedvig.android.auth.event.AuthEvent
+import com.hedvig.android.auth.test.FakeAuthRepository
+import com.hedvig.android.auth.test.TestAuthTokenService
 import com.hedvig.android.core.common.test.MainCoroutineRule
-import com.hedvig.android.core.datastore.TestPreferencesDataStore
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.app.feature.genericauth.otpinput.OtpInputViewModel
 import com.hedvig.authlib.AccessToken
-import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult
 import com.hedvig.authlib.AuthorizationCodeGrant
 import com.hedvig.authlib.RefreshToken
 import com.hedvig.authlib.ResendOtpResult
 import com.hedvig.authlib.SubmitOtpResult
 import io.mockk.mockk
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.TemporaryFolder
 
 class OtpInputViewModelTest {
 
@@ -36,15 +31,12 @@ class OtpInputViewModelTest {
   val mainCoroutineRule = MainCoroutineRule()
 
   @get:Rule
-  val testFolder = TemporaryFolder()
-
-  @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
 
   @Test
   fun testNetworkError() = runTest {
     val authRepository = FakeAuthRepository()
-    val viewModel = testViewModel(authRepository)
+    val viewModel = testViewModel(authRepository, TestAuthTokenService())
 
     viewModel.submitCode("123456")
     runCurrent()
@@ -60,7 +52,7 @@ class OtpInputViewModelTest {
   @Test
   fun testDismissNetworkError() = runTest {
     val authRepository = FakeAuthRepository()
-    val viewModel = testViewModel(authRepository)
+    val viewModel = testViewModel(authRepository, TestAuthTokenService())
     val errorMessage = "Error"
 
     viewModel.submitCode("123456")
@@ -78,7 +70,7 @@ class OtpInputViewModelTest {
   @Test
   fun testOtpError() = runTest {
     val authRepository = FakeAuthRepository()
-    val viewModel = testViewModel(authRepository)
+    val viewModel = testViewModel(authRepository, TestAuthTokenService())
 
     viewModel.submitCode("123456")
     runCurrent()
@@ -93,12 +85,9 @@ class OtpInputViewModelTest {
   @Test
   fun testOtpSuccess() = runTest {
     val authRepository = FakeAuthRepository()
-    val authTokenStorage = testAuthTokenStorage()
-    val viewModel = testViewModel(authRepository, authTokenStorage)
+    val authTokenService = TestAuthTokenService()
+    val viewModel = testViewModel(authRepository, authTokenService)
 
-    authTokenStorage.getTokens().first().also { authTokens ->
-      assertThat(authTokens).isNull()
-    }
     viewModel.events.test {
       viewModel.submitCode("123456")
       runCurrent()
@@ -110,11 +99,10 @@ class OtpInputViewModelTest {
       runCurrent()
 
       assertThat(viewModel.viewState.value.loadingCode).isEqualTo(false)
-      authTokenStorage.getTokens().first().also { authTokens ->
-        assertThat(authTokens).isNotNull()
-        val (resultAccessToken, resultRefreshToken) = authTokens!!
-        assertThat(resultAccessToken.token).isEqualTo(accessToken.token)
-        assertThat(resultRefreshToken.token).isEqualTo(refreshToken.token)
+      val authEvent = authTokenService.authEventTurbine.awaitItem()
+      assertThat(authEvent).isInstanceOf<AuthEvent.LoggedIn>().run {
+        prop(AuthEvent.LoggedIn::accessToken).isEqualTo(accessToken.token)
+        prop(AuthEvent.LoggedIn::refreshToken).isEqualTo(refreshToken.token)
       }
       val event = awaitItem()
       assertThat(event).isEqualTo(OtpInputViewModel.Event.Success(accessToken.token))
@@ -124,7 +112,7 @@ class OtpInputViewModelTest {
   @Test
   fun testResendError() = runTest {
     val authRepository = FakeAuthRepository()
-    val viewModel = testViewModel(authRepository)
+    val viewModel = testViewModel(authRepository, TestAuthTokenService())
     val errorMessage = "Error"
 
     viewModel.resendCode()
@@ -140,7 +128,7 @@ class OtpInputViewModelTest {
   @Test
   fun testResend() = runTest {
     val authRepository = FakeAuthRepository()
-    val viewModel = testViewModel(authRepository)
+    val viewModel = testViewModel(authRepository, TestAuthTokenService())
 
     viewModel.events.test {
       viewModel.resendCode()
@@ -159,7 +147,7 @@ class OtpInputViewModelTest {
   @Test
   fun testSetInput() = runTest {
     val authRepository = FakeAuthRepository()
-    val viewModel = testViewModel(authRepository)
+    val viewModel = testViewModel(authRepository, TestAuthTokenService())
     viewModel.setInput("1")
     assertThat(viewModel.viewState.value.loadingCode).isEqualTo(false)
     assertThat(viewModel.viewState.value.loadingResend).isEqualTo(false)
@@ -175,7 +163,7 @@ class OtpInputViewModelTest {
   @Test
   fun `updating the input after getting an error should clear the error`() = runTest {
     val authRepository = FakeAuthRepository()
-    val viewModel = testViewModel(authRepository)
+    val viewModel = testViewModel(authRepository, TestAuthTokenService())
 
     viewModel.submitCode("111111")
     runCurrent()
@@ -192,38 +180,17 @@ class OtpInputViewModelTest {
     assertThat(viewModel.viewState.value.networkErrorMessage).isNull()
   }
 
-  private fun TestScope.testViewModel(
+  private fun testViewModel(
     authRepository: FakeAuthRepository,
-    authTokenStorage: AuthTokenStorage = testAuthTokenStorage(),
+    authTokenService: TestAuthTokenService,
   ): OtpInputViewModel {
     return OtpInputViewModel(
       verifyUrl = "verifytest",
       resendUrl = "resendtest",
       credential = "test@email.com",
-      authTokenService = testAuthTokenService(authRepository, authTokenStorage),
+      authTokenService = authTokenService,
       authRepository = authRepository,
       uploadMarketAndLanguagePreferencesUseCase = mockk(relaxed = true),
-    )
-  }
-
-  private fun TestScope.testAuthTokenStorage(): AuthTokenStorage {
-    return AuthTokenStorage(
-      dataStore = TestPreferencesDataStore(
-        datastoreTestFileDirectory = testFolder.newFolder("datastoreTempFolder"),
-        coroutineScope = backgroundScope,
-      ),
-    )
-  }
-
-  private fun TestScope.testAuthTokenService(
-    authRepository: AuthRepository,
-    authTokenStorage: AuthTokenStorage,
-  ): AuthTokenService {
-    return AuthTokenServiceImpl(
-      authTokenStorage = authTokenStorage,
-      authRepository = authRepository,
-      authEventStorage = AuthEventStorage(),
-      coroutineScope = backgroundScope,
     )
   }
 

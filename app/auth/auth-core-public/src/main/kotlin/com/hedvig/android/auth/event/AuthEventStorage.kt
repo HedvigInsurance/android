@@ -5,8 +5,8 @@ import kotlinx.coroutines.channels.Channel
 class AuthEventStorage() {
   val authEvents = Channel<AuthEvent>(Channel.UNLIMITED)
 
-  fun loggedIn(accessToken: String) {
-    authEvents.trySend(AuthEvent.LoggedIn(accessToken))
+  fun loggedIn(accessToken: String, refreshToken: String) {
+    authEvents.trySend(AuthEvent.LoggedIn(accessToken, refreshToken))
   }
 
   fun loggedOut() {
