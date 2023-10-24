@@ -1,7 +1,7 @@
 package com.hedvig.android.hanalytics.featureflags.di
 
 import com.hedvig.android.auth.event.AuthEventListener
-import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.hanalytics.featureflags.ClearHAnalyticsExperimentsCacheUseCase
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.FeatureManagerImpl

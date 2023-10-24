@@ -4,7 +4,7 @@ import com.datadog.android.core.sampling.RateBasedSampler
 import com.datadog.android.okhttp.DatadogEventListener
 import com.datadog.android.okhttp.DatadogInterceptor
 import com.datadog.android.okhttp.trace.TracingInterceptor
-import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import okhttp3.OkHttpClient
 
 fun OkHttpClient.Builder.addDatadogConfiguration(

@@ -28,7 +28,7 @@ import com.hedvig.android.auth.AccessTokenProvider
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.auth.di.authModule
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
-import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.android.QuoteCartId
 import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.common.di.datastoreFileQualifier

@@ -60,7 +60,7 @@ import com.hedvig.android.app.ui.HedvigNavRail
 import com.hedvig.android.app.ui.rememberHedvigAppState
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
-import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.designsystem.material3.motion.MotionTokens
 import com.hedvig.android.core.designsystem.theme.HedvigTheme

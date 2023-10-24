@@ -3,7 +3,7 @@ package com.hedvig.android.memberreminders
 import assertk.assertThat
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
-import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.datastore.TestPreferencesDataStore
 import com.hedvig.android.test.clock.TestClock
 import kotlinx.coroutines.flow.first

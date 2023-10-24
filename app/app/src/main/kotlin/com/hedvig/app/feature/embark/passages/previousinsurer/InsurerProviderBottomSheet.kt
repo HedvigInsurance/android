@@ -5,7 +5,7 @@ import android.view.View
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import coil.ImageLoader
-import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.android.parcelableArrayList
 import com.hedvig.app.ui.view.ExpandableBottomSheet
 import org.koin.android.ext.android.inject

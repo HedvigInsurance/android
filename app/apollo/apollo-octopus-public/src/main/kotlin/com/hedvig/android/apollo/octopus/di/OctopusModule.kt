@@ -1,7 +1,7 @@
 package com.hedvig.android.apollo.octopus.di
 
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import org.koin.dsl.module
 
 @Suppress("RemoveExplicitTypeArguments")

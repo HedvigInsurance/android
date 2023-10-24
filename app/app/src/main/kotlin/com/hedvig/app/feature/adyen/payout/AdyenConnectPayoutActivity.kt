@@ -10,7 +10,7 @@ import com.adyen.checkout.dropin.DropIn
 import com.adyen.checkout.dropin.DropInConfiguration
 import com.adyen.checkout.dropin.DropInResult
 import com.hedvig.android.auth.android.AuthenticatedObserver
-import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.android.serializableExtra
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority

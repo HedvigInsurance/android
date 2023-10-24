@@ -1,4 +1,4 @@
-package com.hedvig.android.code.buildoconstants
+package com.hedvig.android.core.buildconstants
 
 interface HedvigBuildConstants {
   /**

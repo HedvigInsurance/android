@@ -19,7 +19,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import coil.ImageLoader
 import com.hedvig.android.app.ui.HedvigAppState
-import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.toClaimFlowDestination

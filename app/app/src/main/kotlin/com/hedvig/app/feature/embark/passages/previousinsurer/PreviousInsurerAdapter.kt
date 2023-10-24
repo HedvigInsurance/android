@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
-import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.android.GenericDiffUtilItemCallback
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ExpandableBottomSheetTitleBinding

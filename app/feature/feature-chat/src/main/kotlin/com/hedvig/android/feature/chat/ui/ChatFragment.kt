@@ -24,7 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.android.auth.android.AuthenticatedObserver
-import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.designsystem.component.error.HedvigErrorSection
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.feature.chat.ChatEnabledStatus

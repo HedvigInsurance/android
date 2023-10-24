@@ -5,7 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.giraffe.di.giraffeClient
 import com.hedvig.android.apollo.octopus.di.octopusClient
-import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
 import com.hedvig.android.memberreminders.EnableNotificationsReminderManagerImpl

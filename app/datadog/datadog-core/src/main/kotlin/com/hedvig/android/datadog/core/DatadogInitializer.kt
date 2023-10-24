@@ -16,7 +16,7 @@ import com.datadog.android.rum.tracking.ActivityViewTrackingStrategy
 import com.datadog.android.trace.AndroidTracer
 import com.datadog.android.trace.Trace
 import com.datadog.android.trace.TraceConfiguration
-import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.datastore.DeviceIdDataStore
 import com.hedvig.android.datadog.core.attributestracking.DatadogAttributesManager
