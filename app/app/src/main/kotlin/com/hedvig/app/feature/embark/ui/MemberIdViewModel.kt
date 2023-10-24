@@ -23,7 +23,7 @@ abstract class MemberIdViewModel : ViewModel() {
 }
 
 class MemberIdViewModelImpl(
-  private val memberIdRepository: GetMemberIdUseCase,
+  private val getMemberIdUseCase: GetMemberIdUseCase,
 ) : MemberIdViewModel() {
 
   init {
@@ -32,7 +32,7 @@ class MemberIdViewModelImpl(
 
   override fun load() {
     viewModelScope.launch {
-      val state = when (val result = memberIdRepository.memberId()) {
+      val state = when (val result = getMemberIdUseCase.memberId()) {
         is GetMemberIdUseCase.MemberIdResult.Error -> State.Error
         is GetMemberIdUseCase.MemberIdResult.Success -> {
           State.Success(result.id)
