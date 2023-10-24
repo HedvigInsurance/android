@@ -41,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -49,6 +50,7 @@ import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.PublicApiChangeClass
 import com.hedvig.android.core.icons.hedvig.normal.ContactInformation
 import com.hedvig.android.core.icons.hedvig.normal.Eurobonus
 import com.hedvig.android.core.icons.hedvig.normal.Info
@@ -77,6 +79,10 @@ internal fun ProfileDestination(
   viewModel: ProfileViewModel,
 ) {
   val uiState by viewModel.data.collectAsStateWithLifecycle()
+  Icon(
+    painterResource(com.hedvig.android.core.icons.R.drawable.ic_info_abi),
+    PublicApiChangeClass().helloCi().string,
+  )
   ProfileScreen(
     uiState = uiState,
     reload = viewModel::reload,

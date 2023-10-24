@@ -32,6 +32,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
@@ -42,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -64,6 +66,7 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.designsystem.material3.motion.MotionTokens
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.icons.PublicApiChangeClass
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
@@ -217,6 +220,10 @@ class LoggedInActivity : AppCompatActivity() {
 
     setContent {
       val market by marketManager.market.collectAsStateWithLifecycle()
+      Icon(
+        painterResource(com.hedvig.android.core.icons.R.drawable.ic_info_abi),
+        PublicApiChangeClass().helloCi().string + PubAppClass().hello(),
+      )
       HedvigTheme {
         val windowSizeClass = calculateWindowSizeClass(this)
         HedvigApp(
@@ -426,4 +433,10 @@ private fun Theme.apply() = when (this) {
 
 fun iAmAPublicMethodInAppModule(input: String): Int {
   return 1
+}
+
+class PubAppClass {
+  fun hello(): Int {
+    return 1
+  }
 }
