@@ -13,7 +13,7 @@ class DatadogDemoModeTracking(
   private val demoManager: DemoManager,
   private val datadogAttributesManager: DatadogAttributesManager,
 ) : Initializable {
-  override fun intialize() {
+  override fun initialize() {
     applicationScope.launch {
       demoManager.isDemoMode().collect { isDemoMode ->
         logcat(LogPriority.INFO) { "Demo mode changed to:$isDemoMode" }

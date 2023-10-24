@@ -62,13 +62,13 @@ coil = "2.4.0"
 concatAdapterExtension = "1.2.1"
 coreLibraryDesugaring = "2.0.3"
 coroutines = "1.7.3"
-datadog = "1.19.3"
+datadog = "2.2.0"
 dependencyAnalysis = "1.25.0"
 firebaseCrashlyticsBuildtools = "2.9.9"
 flexbox = "3.0.0"
 fragmentViewBindingDelegate = "1.0.2"
 hAnalytics = "v0.307.0"
-hedvigAuthlib = "1.2"
+hedvigAuthlib = "1.3.3"
 insetter = "0.6.1"
 jsonTest = "20231013"
 junit = "4.13.2"
@@ -184,7 +184,11 @@ coreLibraryDesugaring = { module = "com.android.tools:desugar_jdk_libs", version
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
-datadog-sdk = { module = "com.datadoghq:dd-sdk-android", version.ref = "datadog" }
+datadog-sdk-core = { module = "com.datadoghq:dd-sdk-android-core", version.ref = "datadog" }
+datadog-sdk-logs = { module = "com.datadoghq:dd-sdk-android-logs", version.ref = "datadog" }
+datadog-sdk-okhttp = { module = "com.datadoghq:dd-sdk-android-okhttp", version.ref = "datadog" }
+datadog-sdk-rum = { module = "com.datadoghq:dd-sdk-android-rum", version.ref = "datadog" }
+datadog-sdk-trace = { module = "com.datadoghq:dd-sdk-android-trace", version.ref = "datadog" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics-ktx" }
 firebase-bom = "com.google.firebase:firebase-bom:32.4.0"
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics-ktx" }

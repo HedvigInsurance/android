@@ -27,7 +27,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "12.2.2"
+    versionName = "12.2.3"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -42,6 +42,7 @@ android {
       excludes += "README.txt"
       excludes += "META-INF/LGPL2.1"
       excludes += "META-INF/AL2.0"
+      excludes += "META-INF/versions/9/previous-compilation-data.bin" // https://github.com/Kotlin/kotlinx-datetime/issues/304
     }
   }
 
@@ -163,7 +164,8 @@ dependencies {
   implementation(libs.concatAdapterExtension)
   implementation(libs.coroutines.android)
   implementation(libs.coroutines.core)
-  implementation(libs.datadog.sdk)
+  implementation(libs.datadog.sdk.core)
+  implementation(libs.datadog.sdk.rum)
   implementation(libs.firebase.analytics)
   implementation(libs.firebase.crashlytics)
   implementation(libs.firebase.dynamicLinks)

@@ -16,7 +16,7 @@ internal class AuthEventBroadcaster(
   private val applicationScope: ApplicationScope,
   private val coroutineContext: CoroutineContext,
 ) : Initializable {
-  override fun intialize() {
+  override fun initialize() {
     applicationScope.launch(coroutineContext) {
       authEventStorage
         .authEvents
