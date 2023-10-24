@@ -54,6 +54,7 @@ import com.hedvig.android.core.designsystem.material3.typeElement
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.PublicApiChangeClass
 import com.hedvig.android.core.icons.hedvig.normal.Payments
 import com.hedvig.android.core.icons.hedvig.normal.Waiting
 import com.hedvig.android.core.ui.clearFocusOnTap
@@ -81,6 +82,10 @@ internal fun PaymentDestination(
   market: Market,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  Icon(
+    painterResource(com.hedvig.android.core.icons.R.drawable.ic_info_abi),
+    PublicApiChangeClass().helloCi().string,
+  )
   PaymentScreen(
     uiState = uiState,
     locale = viewModel.languageService.getLocale(),
