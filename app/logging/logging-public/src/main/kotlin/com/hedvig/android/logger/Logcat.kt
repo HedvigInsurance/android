@@ -9,7 +9,12 @@ inline fun logcat(
   throwable: Throwable? = null,
   noinline message: () -> String,
 ) {
+  publicFunctionInLeafJvmModule()
   with(LogcatLogger.logger) {
     log(priority, throwable, message)
   }
+}
+
+fun publicFunctionInLeafJvmModule() {
+  println("publicFunctionInLeafJvmModule + ${1 + 2}")
 }

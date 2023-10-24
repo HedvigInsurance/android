@@ -1,5 +1,7 @@
 package com.hedvig.android.logger
 
+import com.hedvig.android.logger.LogcatLogger.NoLog.publicFunctionInInterface
+
 /**
  * Logger that [logcat] delegates to. Call [install] to install a new logger, the default is a
  * no-op logger. Calling [uninstall] falls back to the default no-op logger.
@@ -49,6 +51,7 @@ interface LogcatLogger {
      */
     fun uninstall() {
       synchronized(this) {
+        publicFunctionInInterface()
         installedThrowable = null
         logger = NoLog
       }
@@ -64,5 +67,9 @@ interface LogcatLogger {
       throwable: Throwable?,
       message: () -> String,
     ) = error("Should never receive any log")
+  }
+
+  fun publicFunctionInInterface() {
+    println("publicFunctionInInterface + ${1 + 2}")
   }
 }
