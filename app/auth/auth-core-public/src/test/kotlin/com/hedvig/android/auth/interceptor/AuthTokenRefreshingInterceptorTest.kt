@@ -7,7 +7,7 @@ import com.hedvig.android.auth.AccessTokenProvider
 import com.hedvig.android.auth.AndroidAccessTokenProvider
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.AuthTokenServiceImpl
-import com.hedvig.android.auth.FakeAuthRepository
+import com.hedvig.android.auth.test.FakeAuthRepository
 import com.hedvig.android.auth.event.AuthEventStorage
 import com.hedvig.android.auth.storage.AuthTokenStorage
 import com.hedvig.android.core.datastore.TestPreferencesDataStore

@@ -27,7 +27,7 @@ dependencies {
   implementation(projects.apolloCore)
   implementation(projects.apolloGiraffePublic)
   implementation(projects.apolloOctopusPublic)
-  implementation(projects.authCore)
+  implementation(projects.authCorePublic)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)

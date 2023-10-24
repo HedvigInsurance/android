@@ -1,4 +1,4 @@
-package com.hedvig.android.auth
+package com.hedvig.android.auth.test
 
 import app.cash.turbine.Turbine
 import com.hedvig.authlib.AuthAttemptResult

@@ -147,10 +147,6 @@ import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.NetworkCacheManagerImpl
 import com.hedvig.app.util.apollo.SunsettingInterceptor
-import com.hedvig.authlib.AuthEnvironment
-import com.hedvig.authlib.AuthRepository
-import com.hedvig.authlib.Callbacks
-import com.hedvig.authlib.OkHttpNetworkAuthRepository
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
@@ -558,21 +554,6 @@ private val graphQLQueryModule = module {
   single<GraphQLQueryHandler> { GraphQLQueryHandler(get(), get(), get<HedvigBuildConstants>()) }
 }
 
-private val authRepositoryModule = module {
-  single<AuthRepository> {
-    OkHttpNetworkAuthRepository(
-      environment = if (get<HedvigBuildConstants>().isProduction) {
-        AuthEnvironment.PRODUCTION
-      } else {
-        AuthEnvironment.STAGING
-      },
-      additionalHttpHeaders = mapOf(),
-      callbacks = Callbacks("https://hedvig.com?q=success", "https://hedvig.com?q=failure)"), // Not used
-      okHttpClientBuilder = get<OkHttpClient.Builder>(),
-    )
-  }
-}
-
 private val workManagerModule = module {
   worker<ReplyWorker>(named<ReplyWorker>()) {
     ReplyWorker(
@@ -593,7 +574,6 @@ val applicationModule = module {
       apolloClientModule,
       appModule,
       authModule,
-      authRepositoryModule,
       buildConstantsModule,
       cacheManagerModule,
       changeAddressModule,

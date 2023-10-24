@@ -11,10 +11,15 @@ import com.hedvig.android.auth.event.AuthEventListener
 import com.hedvig.android.auth.event.AuthEventStorage
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.auth.storage.AuthTokenStorage
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.di.ioDispatcherQualifier
 import com.hedvig.android.initializable.Initializable
+import com.hedvig.authlib.AuthEnvironment
 import com.hedvig.authlib.AuthRepository
+import com.hedvig.authlib.Callbacks
+import com.hedvig.authlib.OkHttpNetworkAuthRepository
+import okhttp3.OkHttpClient
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import kotlin.coroutines.CoroutineContext
@@ -41,4 +46,17 @@ val authModule = module {
       coroutineContext = get<CoroutineContext>(ioDispatcherQualifier),
     )
   } bind Initializable::class
+
+  single<AuthRepository> {
+    OkHttpNetworkAuthRepository(
+      environment = if (get<HedvigBuildConstants>().isProduction) {
+        AuthEnvironment.PRODUCTION
+      } else {
+        AuthEnvironment.STAGING
+      },
+      additionalHttpHeaders = mapOf(),
+      callbacks = Callbacks("https://hedvig.com?q=success", "https://hedvig.com?q=failure)"), // Not used
+      okHttpClientBuilder = get<OkHttpClient.Builder>(),
+    )
+  }
 }

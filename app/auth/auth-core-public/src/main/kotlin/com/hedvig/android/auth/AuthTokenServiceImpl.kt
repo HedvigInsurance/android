@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 
-class AuthTokenServiceImpl(
+internal class AuthTokenServiceImpl(
   private val authTokenStorage: AuthTokenStorage,
   private val authRepository: AuthRepository,
   private val authEventStorage: AuthEventStorage,

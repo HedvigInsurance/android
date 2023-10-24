@@ -15,6 +15,7 @@ dependencies {
   implementation(libs.ktor)
   implementation(libs.okhttp.core)
   implementation(projects.authEventCore)
+  implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.initializable)
   implementation(projects.testClock)
@@ -24,7 +25,7 @@ dependencies {
   testImplementation(libs.junit)
   testImplementation(libs.okhttp.mockWebServer)
   testImplementation(libs.turbine)
-  testImplementation(projects.authTest)
+  testImplementation(projects.authCoreTest)
   testImplementation(projects.coreDatastoreTest)
   testImplementation(projects.loggingTest)
 }
