@@ -123,6 +123,7 @@ class LoggedInActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     WindowCompat.setDecorFitsSystemWindows(window, false)
 
+    iAmAPublicMethodInAppModule("input")
     val intent: Intent = intent
     val uri: Uri? = intent.data
     lifecycleScope.launch {
@@ -421,4 +422,8 @@ private fun Theme.apply() = when (this) {
       AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY)
     }
   }
+}
+
+fun iAmAPublicMethodInAppModule(input: String): Int {
+  return 1
 }
