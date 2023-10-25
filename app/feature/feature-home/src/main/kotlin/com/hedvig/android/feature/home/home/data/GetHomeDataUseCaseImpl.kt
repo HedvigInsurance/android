@@ -49,7 +49,6 @@ internal class GetHomeDataUseCaseImpl(
     ) { homeQueryDataResult, memberReminders, travelCertificateData ->
       either {
         val homeQueryData = homeQueryDataResult.bind()
-        val memberName = homeQueryData.member.firstName
         val contractStatus = homeQueryData.toContractStatus()
         val veryImportantMessages = homeQueryData.importantMessages.mapNotNull {
           HomeData.VeryImportantMessage(
@@ -61,7 +60,6 @@ internal class GetHomeDataUseCaseImpl(
           CommonClaimsData.from(commonClaim, homeQueryData.isEligibleToCreateClaim)
         }
         HomeData(
-          memberName = memberName,
           contractStatus = contractStatus,
           claimStatusCardsData = homeQueryData.claimStatusCards(),
           veryImportantMessages = veryImportantMessages.toPersistentList(),
@@ -135,7 +133,6 @@ private fun HomeQuery.Data.claimStatusCards(): HomeData.ClaimStatusCardsData? {
 }
 
 internal data class HomeData(
-  val memberName: String?,
   val contractStatus: ContractStatus,
   val claimStatusCardsData: ClaimStatusCardsData?,
   val veryImportantMessages: ImmutableList<VeryImportantMessage>,

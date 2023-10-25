@@ -414,40 +414,17 @@ private fun WelcomeMessage(
   modifier: Modifier = Modifier,
 ) {
   val formatter = remember { DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG) }
-  val firstName = homeText.name
   val headlineText = when (homeText) {
-    is HomeText.Active -> if (firstName != null) {
-      stringResource(R.string.home_tab_welcome_title, firstName)
-    } else {
-      stringResource(R.string.home_tab_welcome_title_without_name)
-    }
-    is HomeText.ActiveInFuture -> if (firstName != null) {
-      stringResource(
-        R.string.home_tab_active_in_future_welcome_title,
-        firstName,
-        formatter.format(homeText.inception.toJavaLocalDate()),
-      )
-    } else {
+    is HomeText.Active -> stringResource(R.string.home_tab_welcome_title_without_name)
+    is HomeText.ActiveInFuture -> {
       stringResource(
         R.string.home_tab_active_in_future_welcome_title_without_name,
         formatter.format(homeText.inception.toJavaLocalDate()),
       )
     }
-    is HomeText.Pending -> if (firstName != null) {
-      stringResource(R.string.home_tab_pending_unknown_title, firstName)
-    } else {
-      stringResource(R.string.home_tab_pending_unknown_title_without_name)
-    }
-    is HomeText.Switching -> if (firstName != null) {
-      stringResource(R.string.home_tab_pending_switchable_welcome_title, firstName)
-    } else {
-      stringResource(R.string.home_tab_pending_switchable_welcome_title_without_name)
-    }
-    is HomeText.Terminated -> if (firstName != null) {
-      stringResource(R.string.home_tab_terminated_welcome_title, firstName)
-    } else {
-      stringResource(R.string.home_tab_terminated_welcome_title_without_name)
-    }
+    is HomeText.Pending -> stringResource(R.string.home_tab_pending_unknown_title_without_name)
+    is HomeText.Switching -> stringResource(R.string.home_tab_pending_switchable_welcome_title_without_name)
+    is HomeText.Terminated -> stringResource(R.string.home_tab_terminated_welcome_title_without_name)
   }
   Text(
     text = headlineText,
@@ -475,7 +452,7 @@ private fun PreviewHomeScreen() {
       HomeScreen(
         uiState = HomeUiState.Success(
           isReloading = false,
-          homeText = HomeText.Active("John"),
+          homeText = HomeText.Active,
           claimStatusCardsData = HomeData.ClaimStatusCardsData(
             nonEmptyListOf(
               ClaimStatusCardUiState(
