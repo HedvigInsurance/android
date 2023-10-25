@@ -7,6 +7,7 @@ import com.hedvig.android.feature.connect.payment.trustly.StartTrustlySessionUse
 import com.hedvig.android.feature.connect.payment.trustly.TrustlyViewModel
 import com.hedvig.android.feature.connect.payment.trustly.data.TrustlyCallback
 import com.hedvig.android.feature.connect.payment.trustly.data.TrustlyCallbackImpl
+import com.hedvig.android.market.Market
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -15,5 +16,11 @@ val connectPaymentTrustlyModule = module {
   single<StartTrustlySessionUseCase> {
     StartTrustlySessionUseCase(get<ApolloClient>(octopusClient), get<TrustlyCallback>())
   }
-  viewModel<TrustlyViewModel> { TrustlyViewModel(get<TrustlyCallback>(), get<StartTrustlySessionUseCase>()) }
+  viewModel<TrustlyViewModel> { (market: Market) ->
+    TrustlyViewModel(
+      market = market,
+      trustlyCallback = get<TrustlyCallback>(),
+      startTrustlySessionUseCase = get<StartTrustlySessionUseCase>(),
+    )
+  }
 }

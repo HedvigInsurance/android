@@ -10,9 +10,14 @@ import android.webkit.WebView
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -89,7 +94,7 @@ private fun TrustlyScreen(
         HedvigErrorSection(
           retry = retryConnectingCard,
           title = stringResource(R.string.something_went_wrong),
-          subTitle = stringResource(R.string.pay_in_confirmation_direct_debit_headline),
+          subTitle = null,
         )
       }
       TrustlyUiState.SucceededInConnectingCard -> {
@@ -98,8 +103,8 @@ private fun TrustlyScreen(
           verticalArrangement = Arrangement.Center,
         ) {
           HedvigSuccessSection(
-            title = stringResource(R.string.something_went_wrong),
-            subTitle = stringResource(R.string.pay_in_confirmation_direct_debit_headline),
+            title = stringResource(R.string.pay_in_confirmation_direct_debit_headline),
+            subTitle = null,
             withDefaultVerticalSpacing = false,
           )
           Spacer(Modifier.height(24.dp))
@@ -189,15 +194,16 @@ private fun TrustlyBrowser(
     WebView(
       state = webViewState,
       navigator = webViewNavigator,
-      modifier = Modifier
-        .weight(1f)
-        .fillMaxWidth(),
       onCreated = { webView ->
         webView.settings.javaScriptEnabled = true
         webView.settings.javaScriptCanOpenWindowsAutomatically = true
         webView.settings.setSupportMultipleWindows(true)
       },
       client = webViewClient,
+      modifier = Modifier
+        .weight(1f)
+        .fillMaxWidth()
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal)),
     )
   }
 }

@@ -11,8 +11,8 @@ import com.hedvig.android.logger.logcat
 import octopus.InitiateTrustlyConnectPaymentSessionMutation
 
 internal class StartTrustlySessionUseCase(
-  val apolloClient: ApolloClient,
-  val trustlyCallback: TrustlyCallback,
+  private val apolloClient: ApolloClient,
+  private val trustlyCallback: TrustlyCallback,
 ) {
   suspend fun invoke(): Either<ErrorMessage, TrustlyInitiateProcessUrl> {
     return either {
@@ -33,4 +33,4 @@ internal class StartTrustlySessionUseCase(
 }
 
 @JvmInline
-value class TrustlyInitiateProcessUrl(val url: String)
+internal value class TrustlyInitiateProcessUrl(val url: String)
