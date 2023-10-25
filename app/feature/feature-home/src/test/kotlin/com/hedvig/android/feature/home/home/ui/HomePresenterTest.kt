@@ -78,7 +78,6 @@ internal class HomePresenterTest {
 
       getHomeDataUseCase.responseTurbine.add(
         HomeData(
-          memberName = "member's name",
           contractStatus = HomeData.ContractStatus.Active,
           claimStatusCardsData = HomeData.ClaimStatusCardsData(
             nonEmptyListOf(
@@ -102,7 +101,7 @@ internal class HomePresenterTest {
       assertThat(awaitItem()).isEqualTo(
         HomeUiState.Success(
           isReloading = false,
-          homeText = HomeText.Active("member's name"),
+          homeText = HomeText.Active,
           claimStatusCardsData = HomeData.ClaimStatusCardsData(
             nonEmptyListOf(
               ClaimStatusCardUiState(
@@ -136,7 +135,6 @@ internal class HomePresenterTest {
 
       getHomeDataUseCase.responseTurbine.add(
         HomeData(
-          memberName = null,
           contractStatus = HomeData.ContractStatus.Active,
           claimStatusCardsData = null,
           memberReminders = MemberReminders(
@@ -152,7 +150,7 @@ internal class HomePresenterTest {
       assertThat(awaitItem()).isEqualTo(
         HomeUiState.Success(
           isReloading = false,
-          homeText = HomeText.Active(null),
+          homeText = HomeText.Active,
           claimStatusCardsData = null,
           veryImportantMessages = persistentListOf(),
           memberReminders = MemberReminders(
@@ -195,7 +193,7 @@ internal class HomePresenterTest {
     homePresenter.test(
       HomeUiState.Success(
         isReloading = true,
-        HomeText.Active(""),
+        HomeText.Active,
         null,
         persistentListOf(),
         MemberReminders(),
@@ -222,7 +220,7 @@ internal class HomePresenterTest {
     homePresenter.test(
       HomeUiState.Success(
         isReloading = true,
-        HomeText.Active(""),
+        HomeText.Active,
         null,
         persistentListOf(),
         MemberReminders(),
@@ -249,7 +247,6 @@ internal class HomePresenterTest {
   }
 
   private val someIrrelevantHomeDataInstance: HomeData = HomeData(
-    memberName = "name",
     contractStatus = HomeData.ContractStatus.Active,
     claimStatusCardsData = null,
     veryImportantMessages = persistentListOf(),

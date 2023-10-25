@@ -57,7 +57,6 @@ import giraffe.type.buildDeletedStatus
 import giraffe.type.buildEmergency
 import giraffe.type.buildImportantMessage
 import giraffe.type.buildInsuranceProvider
-import giraffe.type.buildMember
 import giraffe.type.buildOtherCommonClaimLayouts
 import giraffe.type.buildOtherContractStatus
 import giraffe.type.buildPendingStatus
@@ -120,9 +119,6 @@ internal class GetHomeUseCaseTest {
     apolloClient.enqueueTestResponse(
       HomeQuery(Locale.en_SE, ""),
       HomeQuery.Data(GiraffeFakeResolver) {
-        member = buildMember {
-          firstName = "member name"
-        }
         contracts = listOf(
           buildContract {
             status = buildActiveStatus { }
@@ -171,7 +167,6 @@ internal class GetHomeUseCaseTest {
     val rightResult = assertThat(result).isNotNull().isRight()
     assertAll {
       rightResult.apply {
-        prop(HomeData::memberName).isNotNull().isEqualTo("member name")
         prop(HomeData::contractStatus).isEqualTo(HomeData.ContractStatus.Active)
         prop(HomeData::claimStatusCardsData)
           .isNotNull()

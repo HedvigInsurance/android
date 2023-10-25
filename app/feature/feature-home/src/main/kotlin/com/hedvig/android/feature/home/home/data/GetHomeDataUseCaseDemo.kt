@@ -14,7 +14,6 @@ internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
   ): Flow<Either<ErrorMessage, HomeData>> = flowOf(
     either {
       HomeData(
-        memberName = "Sam",
         contractStatus = HomeData.ContractStatus.Active,
         claimStatusCardsData = null,
         veryImportantMessages = persistentListOf(),
