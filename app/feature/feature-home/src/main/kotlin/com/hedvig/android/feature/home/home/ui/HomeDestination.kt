@@ -291,8 +291,8 @@ private fun HomeScreenSuccess(
     )
   }
 
-  var fullScreenSize: IntSize by remember { mutableStateOf(IntSize(0, 0)) }
-  Column(
+  var fullScreenSize: IntSize? by remember { mutableStateOf(null) }
+  Box(
     modifier = modifier
       .fillMaxSize()
       .onSizeChanged { fullScreenSize = it }
@@ -300,82 +300,87 @@ private fun HomeScreenSuccess(
       .verticalScroll(rememberScrollState()),
   ) {
     NotificationPermissionDialog(notificationPermissionState, openAppSettings)
-    HomeLayout(
-      welcomeMessage = {
-        WelcomeMessage(
-          homeText = uiState.homeText,
-          modifier = Modifier
-            .padding(horizontal = 24.dp)
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-            .testTag("welcome_message"),
-        )
-      },
-      claimStatusCards = {
-        if (uiState.claimStatusCardsData != null) {
-          var consumedWindowInsets by remember { mutableStateOf(WindowInsets(0.dp)) }
-          ClaimStatusCards(
-            goToDetailScreen = onClaimDetailCardClicked,
-            claimStatusCardsData = uiState.claimStatusCardsData,
-            contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
-              .exclude(consumedWindowInsets)
-              .only(WindowInsetsSides.Horizontal)
-              .asPaddingValues(),
-            modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets = it },
+    val fullScreenSizeValue = fullScreenSize
+    if (fullScreenSizeValue != null) {
+      HomeLayout(
+        fullScreenSize = fullScreenSizeValue,
+        welcomeMessage = {
+          WelcomeMessage(
+            homeText = uiState.homeText,
+            modifier = Modifier
+              .padding(horizontal = 24.dp)
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+              .testTag("welcome_message"),
           )
-        }
-      },
-      veryImportantMessages = {
-        Column(
-          verticalArrangement = Arrangement.spacedBy(8.dp),
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-        ) {
-          for (veryImportantMessage in uiState.veryImportantMessages) {
-            VeryImportantMessageCard(openUrl, veryImportantMessage)
+        },
+        claimStatusCards = {
+          if (uiState.claimStatusCardsData != null) {
+            var consumedWindowInsets by remember { mutableStateOf(WindowInsets(0.dp)) }
+            ClaimStatusCards(
+              goToDetailScreen = onClaimDetailCardClicked,
+              claimStatusCardsData = uiState.claimStatusCardsData,
+              contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
+                .exclude(consumedWindowInsets)
+                .only(WindowInsetsSides.Horizontal)
+                .asPaddingValues(),
+              modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets = it },
+            )
           }
-        }
-      },
-      memberReminderCards = {
-        val memberReminders =
-          uiState.memberReminders.onlyApplicableReminders(notificationPermissionState.status.isGranted)
-        MemberReminderCards(
-          memberReminders = memberReminders,
-          navigateToConnectPayment = navigateToConnectPayment,
-          openUrl = openUrl,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-        )
-      },
-      startClaimButton = {
-        HedvigContainedButton(
-          text = stringResource(R.string.home_tab_claim_button_text),
-          onClick = onStartClaimClicked,
-          modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-        )
-      },
-      otherServicesButton = {
-        HedvigTextButton(
-          text = stringResource(R.string.home_tab_other_services),
-          onClick = { showEditYourInfoBottomSheet = true },
-          modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-        )
-      },
-      topSpacer = {
-        Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top)).height(toolbarHeight))
-      },
-      bottomSpacer = {
-        Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)).height(16.dp))
-      },
-      fullScreenSize = fullScreenSize,
-    )
+        },
+        veryImportantMessages = {
+          Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp)
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+          ) {
+            for (veryImportantMessage in uiState.veryImportantMessages) {
+              VeryImportantMessageCard(openUrl, veryImportantMessage)
+            }
+          }
+        },
+        memberReminderCards = {
+          val memberReminders =
+            uiState.memberReminders.onlyApplicableReminders(notificationPermissionState.status.isGranted)
+          MemberReminderCards(
+            memberReminders = memberReminders,
+            navigateToConnectPayment = navigateToConnectPayment,
+            openUrl = openUrl,
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp)
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+          )
+        },
+        startClaimButton = {
+          HedvigContainedButton(
+            text = stringResource(R.string.home_tab_claim_button_text),
+            onClick = onStartClaimClicked,
+            modifier = Modifier
+              .padding(horizontal = 16.dp)
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+          )
+        },
+        otherServicesButton = {
+          HedvigTextButton(
+            text = stringResource(R.string.home_tab_other_services),
+            onClick = { showEditYourInfoBottomSheet = true },
+            modifier = Modifier
+              .padding(horizontal = 16.dp)
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+          )
+        },
+        topSpacer = {
+          Spacer(
+            Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top)).height(toolbarHeight),
+          )
+        },
+        bottomSpacer = {
+          Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)).height(16.dp))
+        },
+      )
+    }
   }
 }
 
