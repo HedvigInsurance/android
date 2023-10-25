@@ -2,7 +2,7 @@ package com.hedvig.android.feature.connect.payment.trustly.di
 
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.octopus.di.octopusClient
-import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.feature.connect.payment.trustly.StartTrustlySessionUseCase
 import com.hedvig.android.feature.connect.payment.trustly.TrustlyViewModel
 import com.hedvig.android.feature.connect.payment.trustly.data.TrustlyCallback

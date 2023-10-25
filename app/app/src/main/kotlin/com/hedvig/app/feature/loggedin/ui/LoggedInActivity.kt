@@ -398,7 +398,7 @@ private fun navigateToConnectPayment(
   market: Market,
 ) {
   when (market) {
-    Market.SE -> navController.navigate(AppDestination.ConnectPaymentTrustly)
+    Market.SE -> navController.navigate(AppDestination.ConnectPayment)
     Market.NO,
     Market.DK,
     -> navController.navigate(AppDestination.ConnectPaymentAdyen)

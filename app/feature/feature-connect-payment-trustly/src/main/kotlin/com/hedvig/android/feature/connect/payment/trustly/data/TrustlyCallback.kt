@@ -1,6 +1,6 @@
 package com.hedvig.android.feature.connect.payment.trustly.data
 
-import com.hedvig.android.code.buildoconstants.HedvigBuildConstants
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 
 /**
  * Trustly asks for two urls to redirect to when they are done processing the payment connection.

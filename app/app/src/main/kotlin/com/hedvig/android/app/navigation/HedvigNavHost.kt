@@ -2,10 +2,7 @@ package com.hedvig.android.app.navigation
 
 import android.content.Context
 import android.net.Uri
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -20,12 +17,10 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
-import androidx.navigation.navDeepLink
 import androidx.navigation.navOptions
 import coil.ImageLoader
 import com.hedvig.android.app.ui.HedvigAppState
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
-import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.core.designsystem.material3.motion.MotionDefaults
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.toClaimFlowDestination
@@ -34,7 +29,7 @@ import com.hedvig.android.feature.chat.navigation.chatGraph
 import com.hedvig.android.feature.claimtriaging.ClaimTriagingDestination
 import com.hedvig.android.feature.claimtriaging.claimTriagingDestinations
 import com.hedvig.android.feature.connect.payment.adyen.connectAdyenPaymentGraph
-import com.hedvig.android.feature.connect.payment.connectTrustlyPaymentGraph
+import com.hedvig.android.feature.connect.payment.connectPaymentGraph
 import com.hedvig.android.feature.forever.navigation.foreverGraph
 import com.hedvig.android.feature.home.claims.pledge.HonestyPledgeBottomSheet
 import com.hedvig.android.feature.home.home.navigation.homeGraph
@@ -62,7 +57,6 @@ import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import com.kiwi.navigationcompose.typed.Destination
-import com.kiwi.navigationcompose.typed.composable
 import com.kiwi.navigationcompose.typed.createRoutePattern
 import com.kiwi.navigationcompose.typed.navigate
 import com.kiwi.navigationcompose.typed.popBackStack
@@ -230,7 +224,18 @@ internal fun HedvigNavHost(
       navigator = navigator,
       market = market,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+      navigateToAdyenConnectPayment = {
+        navigator.navigateUnsafe(
+          AppDestination.ConnectPaymentAdyen,
+          navOptions {
+            popUpTo(createRoutePattern<AppDestination.ConnectPayment>()) {
+              inclusive = true
+            }
+          },
+        )
+      },
     )
+    connectAdyenPaymentGraph()
   }
 }
 
@@ -303,38 +308,6 @@ private fun NavGraphBuilder.nestedHomeGraphs(
       }
     },
   )
-}
-
-private fun NavGraphBuilder.connectPaymentGraph(
-  navigator: Navigator,
-  market: Market,
-  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-) {
-  composable<AppDestination.ConnectPaymentGeneric>(
-    deepLinks = listOf(
-      navDeepLink { uriPattern = hedvigDeepLinkContainer.connectPayment },
-      navDeepLink { uriPattern = hedvigDeepLinkContainer.directDebit },
-    ),
-    enterTransition = { EnterTransition.None },
-    exitTransition = { ExitTransition.None },
-  ) {
-    LaunchedEffect(Unit) {
-      val navOptions = navOptions {
-        popUpTo<AppDestination.ConnectPaymentGeneric> {
-          inclusive = true
-        }
-      }
-      when (market) {
-        Market.SE -> navigator.navigateUnsafe(AppDestination.ConnectPaymentTrustly, navOptions)
-        Market.NO,
-        Market.DK,
-        -> navigator.navigateUnsafe(AppDestination.ConnectPaymentAdyen, navOptions)
-      }
-    }
-    HedvigFullScreenCenterAlignedProgress()
-  }
-  connectAdyenPaymentGraph()
-  connectTrustlyPaymentGraph()
 }
 
 @Composable
