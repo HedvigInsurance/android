@@ -26,11 +26,8 @@ fun NavGraphBuilder.connectPaymentGraph(
     ),
   ) {
     LaunchedEffect(Unit) {
-      when (market) {
-        Market.SE -> {}
-        Market.NO,
-        Market.DK,
-        -> navigateToAdyenConnectPayment()
+      if (market != Market.SE) {
+        navigateToAdyenConnectPayment()
       }
     }
     val viewModel: TrustlyViewModel = koinViewModel { parametersOf(market) }
