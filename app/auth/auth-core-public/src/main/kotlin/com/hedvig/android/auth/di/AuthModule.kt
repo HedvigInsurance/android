@@ -19,6 +19,8 @@ import com.hedvig.authlib.AuthEnvironment
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.Callbacks
 import com.hedvig.authlib.OkHttpNetworkAuthRepository
+import com.hedvig.authlib.connectpayment.OkHttpNetworkPaymentRepository
+import com.hedvig.authlib.connectpayment.PaymentRepository
 import okhttp3.OkHttpClient
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -54,9 +56,20 @@ val authModule = module {
       } else {
         AuthEnvironment.STAGING
       },
-      additionalHttpHeadersProvider = { mapOf() },
+      additionalHttpHeadersProvider = { emptyMap() },
       callbacks = Callbacks("https://hedvig.com?q=success", "https://hedvig.com?q=failure)"), // Not used
       okHttpClientBuilder = get<OkHttpClient.Builder>(),
+    )
+  }
+  single<PaymentRepository> {
+    OkHttpNetworkPaymentRepository(
+      environment = if (get<HedvigBuildConstants>().isProduction) {
+        AuthEnvironment.PRODUCTION
+      } else {
+        AuthEnvironment.STAGING
+      },
+      additionalHttpHeadersProvider = { emptyMap() },
+      okHttpClientBuilder = get<OkHttpClient.Builder>().addInterceptor(get<AuthTokenRefreshingInterceptor>()),
     )
   }
 }

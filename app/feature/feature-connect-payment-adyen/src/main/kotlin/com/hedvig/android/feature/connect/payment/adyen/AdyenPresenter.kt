@@ -63,6 +63,19 @@ internal class AdyenPresenter(
       }
     }
 
+    if (succeededInConnectingCard) {
+      return AdyenUiState.SucceededInConnectingCard
+    }
+    if (connectingCardFailed) {
+      return AdyenUiState.FailedToConnectCard
+    }
+    if (getPaymentLinkError != null) {
+      return AdyenUiState.FailedToGetPaymentLink
+    }
+    val browsingValue = browsing
+    if (browsingValue != null) {
+      return browsingValue
+    }
     return AdyenUiState.Loading
   }
 }
@@ -80,5 +93,6 @@ internal interface AdyenUiState {
   ) : AdyenUiState
 
   data object FailedToConnectCard : AdyenUiState
+  data object FailedToGetPaymentLink : AdyenUiState
   data object SucceededInConnectingCard : AdyenUiState
 }

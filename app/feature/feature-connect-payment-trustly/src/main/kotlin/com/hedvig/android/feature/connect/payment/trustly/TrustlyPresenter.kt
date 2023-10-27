@@ -66,6 +66,7 @@ internal class TrustlyPresenter(
         }
       }
     }
+
     if (succeededInConnectingCard) {
       return TrustlyUiState.SucceededInConnectingCard
     }
@@ -73,7 +74,7 @@ internal class TrustlyPresenter(
       return TrustlyUiState.FailedToConnectCard
     }
     if (startSessionError != null) {
-      return TrustlyUiState.FailedToConnectCard
+      return TrustlyUiState.FailedToStartSession
     }
     val browsingValue = browsing
     if (browsingValue != null) {
@@ -89,7 +90,7 @@ internal sealed interface TrustlyEvent {
   data object RetryConnectingCard : TrustlyEvent
 }
 
-internal interface TrustlyUiState {
+internal sealed interface TrustlyUiState {
   data object Loading : TrustlyUiState
 
   data class Browsing(
@@ -98,5 +99,6 @@ internal interface TrustlyUiState {
   ) : TrustlyUiState
 
   data object FailedToConnectCard : TrustlyUiState
+  data object FailedToStartSession : TrustlyUiState
   data object SucceededInConnectingCard : TrustlyUiState
 }

@@ -235,7 +235,7 @@ internal fun HedvigNavHost(
         )
       },
     )
-    connectAdyenPaymentGraph()
+    connectAdyenPaymentGraph(navigator)
   }
 }
 

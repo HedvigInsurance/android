@@ -45,6 +45,7 @@ import com.hedvig.android.feature.changeaddress.di.changeAddressModule
 import com.hedvig.android.feature.chat.ChatRepository
 import com.hedvig.android.feature.chat.di.chatModule
 import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
+import com.hedvig.android.feature.connect.payment.adyen.di.adyenFeatureModule
 import com.hedvig.android.feature.connect.payment.trustly.di.connectPaymentTrustlyModule
 import com.hedvig.android.feature.forever.di.foreverModule
 import com.hedvig.android.feature.home.di.homeModule
@@ -211,9 +212,9 @@ private val networkModule = module {
     builder
   }
   single<OkHttpClient> {
-    // Add auth interceptor only on the OkHttpClient itself which is used by GraphQL
-    // The OkHttpClient.Builder configuration is shared with the client provided with the Coil ImageLoader and the Ktor
-    // client which targets the auth-service, both of which do not want to get this automatic token refreshing behavior
+    // Add auth interceptor on the OkHttpClient itself which is used by GraphQL
+    // The OkHttpClient.Builder configuration does not need to get this automatic token refreshing behavior because
+    // there are callers which do not need it, or would even stop working if they did, like the coil implementation
     val okHttpBuilder = get<OkHttpClient.Builder>().addInterceptor(get<AuthTokenRefreshingInterceptor>())
     okHttpBuilder.build()
   }
@@ -394,7 +395,7 @@ private val numberActionSetModule = module {
   viewModel { (data: NumberActionParams) -> NumberActionViewModel(data) }
 }
 
-private val connectPaymentModule = module {
+private val connectPaymentModule = module { // todo delete along with the entire legacy connect-payment feat
   viewModel {
     ConnectPaymentViewModel(
       get<PayinStatusRepository>(),
@@ -570,6 +571,7 @@ val applicationModule = module {
   includes(
     listOf(
       activityNavigatorModule,
+      adyenFeatureModule,
       adyenModule,
       apolloAuthListenersModule,
       apolloClientModule,

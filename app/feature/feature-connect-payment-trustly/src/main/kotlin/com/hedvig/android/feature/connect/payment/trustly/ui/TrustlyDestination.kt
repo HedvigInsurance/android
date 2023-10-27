@@ -8,6 +8,7 @@ import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -94,6 +95,13 @@ private fun TrustlyScreen(
         HedvigErrorSection(
           retry = retryConnectingCard,
           title = stringResource(R.string.something_went_wrong),
+          subTitle = stringResource(R.string.pay_in_error_body),
+        )
+      }
+      TrustlyUiState.FailedToStartSession -> {
+        HedvigErrorSection(
+          retry = retryConnectingCard,
+          title = stringResource(R.string.something_went_wrong),
           subTitle = null,
         )
       }
@@ -133,7 +141,7 @@ private fun TrustlyBrowser(
     object : AccompanistWebViewClient() {
       override fun onPageStarted(view: WebView, url: String?, favicon: Bitmap?) {
         super.onPageStarted(view, url, favicon)
-        logcat { "Webview loading url:$url" }
+        logcat { "Trustly Webview loading url:$url" }
 
         if (url?.startsWith("bankid") == true) {
           logcat(LogPriority.ERROR) { "Url did in fact try to open bankid" }
@@ -184,26 +192,30 @@ private fun TrustlyBrowser(
         }
       },
     )
-    val loadingState = webViewState.loadingState
-    if (loadingState is LoadingState.Loading) {
-      LinearProgressIndicator(
-        progress = loadingState.progress,
-        modifier = Modifier.fillMaxWidth(),
-      )
-    }
-    WebView(
-      state = webViewState,
-      navigator = webViewNavigator,
-      onCreated = { webView ->
-        webView.settings.javaScriptEnabled = true
-        webView.settings.javaScriptCanOpenWindowsAutomatically = true
-        webView.settings.setSupportMultipleWindows(true)
-      },
-      client = webViewClient,
-      modifier = Modifier
+    Box(
+      Modifier
         .weight(1f)
         .fillMaxWidth()
         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal)),
-    )
+    ) {
+      val loadingState = webViewState.loadingState
+      if (loadingState is LoadingState.Loading) {
+        LinearProgressIndicator(
+          progress = loadingState.progress,
+          modifier = Modifier.fillMaxWidth(),
+        )
+      }
+      WebView(
+        state = webViewState,
+        navigator = webViewNavigator,
+        onCreated = { webView ->
+          webView.settings.javaScriptEnabled = true
+          webView.settings.javaScriptCanOpenWindowsAutomatically = true
+          webView.settings.setSupportMultipleWindows(true)
+        },
+        client = webViewClient,
+        modifier = Modifier.matchParentSize(),
+      )
+    }
   }
 }

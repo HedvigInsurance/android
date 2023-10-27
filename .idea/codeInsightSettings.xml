@@ -16,6 +16,7 @@
       <name>androidx.navigation.compose.navigation</name>
       <name>com.google.errorprone.annotations.Modifier</name>
       <name>com.google.firebase.crashlytics.internal.model.ImmutableList</name>
+      <name>java.lang.LinkageError</name>
       <name>java.lang.reflect.Modifier</name>
       <name>java.nio.file.WatchEvent.Modifier</name>
       <name>java.time.format.TextStyle</name>

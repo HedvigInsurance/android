@@ -5,7 +5,7 @@ import com.hedvig.android.molecule.android.MoleculeViewModel
 
 internal class AdyenViewModel(
   getAdyenPaymentUrlUseCase: GetAdyenPaymentUrlUseCase,
-): MoleculeViewModel<AdyenEvent, AdyenUiState>(
+) : MoleculeViewModel<AdyenEvent, AdyenUiState>(
   AdyenUiState.Loading,
   AdyenPresenter(getAdyenPaymentUrlUseCase),
 )
