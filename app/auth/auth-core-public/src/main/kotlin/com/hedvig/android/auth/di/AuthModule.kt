@@ -54,7 +54,7 @@ val authModule = module {
       } else {
         AuthEnvironment.STAGING
       },
-      additionalHttpHeaders = mapOf(),
+      additionalHttpHeadersProvider = { mapOf() },
       callbacks = Callbacks("https://hedvig.com?q=success", "https://hedvig.com?q=failure)"), // Not used
       okHttpClientBuilder = get<OkHttpClient.Builder>(),
     )

@@ -7,6 +7,7 @@ import com.hedvig.authlib.AuthTokenResult
 import com.hedvig.authlib.Grant
 import com.hedvig.authlib.LoginMethod
 import com.hedvig.authlib.LoginStatusResult
+import com.hedvig.authlib.MemberAuthorizationCodeResult
 import com.hedvig.authlib.ResendOtpResult
 import com.hedvig.authlib.RevokeResult
 import com.hedvig.authlib.StatusUrl
@@ -56,6 +57,10 @@ class FakeAuthRepository : AuthRepository {
   }
 
   override suspend fun revoke(token: String): RevokeResult {
+    error("Not implemented")
+  }
+
+  override suspend fun getMemberAuthorizationCode(webLocale: String): MemberAuthorizationCodeResult {
     error("Not implemented")
   }
 }
