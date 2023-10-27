@@ -2,10 +2,7 @@ package com.hedvig.app.feature.payment
 
 import android.view.View
 import com.hedvig.app.R
-import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinActivity
-import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutActivity
 import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeBottomSheet
-import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
 import com.kaspersky.kaspresso.screens.KScreen
 import io.github.kakaocup.kakao.intent.KIntent
 import io.github.kakaocup.kakao.recycler.KRecyclerItem

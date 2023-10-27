@@ -69,26 +69,16 @@ import com.hedvig.android.navigation.core.di.deepLinkModule
 import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.firebase.di.firebaseNotificationModule
-import com.hedvig.android.payment.di.PaymentRepositoryProvider
 import com.hedvig.android.payment.di.paymentModule
 import com.hedvig.app.authenticate.LogoutUseCaseImpl
-import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.addressautocompletion.data.GetDanishAddressAutoCompletionUseCase
 import com.hedvig.app.feature.addressautocompletion.data.GetFinalDanishAddressSelectionUseCase
 import com.hedvig.app.feature.addressautocompletion.ui.AddressAutoCompleteViewModel
-import com.hedvig.app.feature.adyen.AdyenRepository
-import com.hedvig.app.feature.adyen.ConnectPaymentUseCase
-import com.hedvig.app.feature.adyen.ConnectPayoutUseCase
-import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModel
-import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModelImpl
-import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutViewModel
-import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutViewModelImpl
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.chat.service.ChatNotificationSender
 import com.hedvig.app.feature.chat.service.ReplyWorker
 import com.hedvig.app.feature.checkout.CheckoutViewModel
 import com.hedvig.app.feature.checkout.EditCheckoutUseCase
-import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.embark.EmbarkRepository
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.EmbarkViewModelImpl
@@ -137,9 +127,6 @@ import com.hedvig.app.feature.offer.usecase.ObserveQuoteCartCheckoutUseCaseImpl
 import com.hedvig.app.feature.offer.usecase.StartCheckoutUseCase
 import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeViewModel
 import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignViewModel
-import com.hedvig.app.feature.trustly.TrustlyRepository
-import com.hedvig.app.feature.trustly.TrustlyViewModel
-import com.hedvig.app.feature.trustly.TrustlyViewModelImpl
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
 import com.hedvig.app.service.push.senders.CrossSellNotificationSender
 import com.hedvig.app.service.push.senders.GenericNotificationSender
@@ -149,7 +136,6 @@ import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.NetworkCacheManagerImpl
 import com.hedvig.app.util.apollo.SunsettingInterceptor
-import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -342,11 +328,6 @@ private val offerModule = module {
   single<SelectedVariantStore> { SelectedVariantStore() }
 }
 
-private val adyenModule = module {
-  viewModel<AdyenConnectPayinViewModel> { AdyenConnectPayinViewModelImpl(get(), get()) }
-  viewModel<AdyenConnectPayoutViewModel> { AdyenConnectPayoutViewModelImpl(get()) }
-}
-
 private val embarkModule = module {
   viewModel<EmbarkViewModel> { (storyName: String) ->
     EmbarkViewModelImpl(
@@ -393,20 +374,6 @@ private val activityNavigatorModule = module {
 
 private val numberActionSetModule = module {
   viewModel { (data: NumberActionParams) -> NumberActionViewModel(data) }
-}
-
-private val connectPaymentModule = module { // todo delete along with the entire legacy connect-payment feat
-  viewModel {
-    ConnectPaymentViewModel(
-      get<PayinStatusRepository>(),
-      get<PaymentRepositoryProvider>(),
-      get<HAnalytics>(),
-    )
-  }
-}
-
-private val trustlyModule = module {
-  viewModel<TrustlyViewModel> { TrustlyViewModelImpl(get(), get()) }
 }
 
 private val changeDateBottomSheetModule = module {
@@ -457,12 +424,9 @@ private val externalInsuranceModule = module {
 }
 
 private val repositoriesModule = module {
-  single { PayinStatusRepository(get<ApolloClient>(giraffeClient)) }
   single { UserRepository(get<ApolloClient>(giraffeClient)) }
-  single { AdyenRepository(get<ApolloClient>(giraffeClient), get()) }
   single { EmbarkRepository(get<ApolloClient>(giraffeClient), get()) }
   single { LoggedInRepository(get<ApolloClient>(giraffeClient), get()) }
-  single { TrustlyRepository(get<ApolloClient>(giraffeClient)) }
   single { GetMemberIdUseCase(get<ApolloClient>(giraffeClient)) }
 }
 
@@ -511,8 +475,6 @@ private val useCaseModule = module {
   single<QuoteCartEditStartDateUseCase> { QuoteCartEditStartDateUseCase(get<ApolloClient>(giraffeClient), get()) }
   single<EditCampaignUseCase> { EditCampaignUseCase(get<ApolloClient>(giraffeClient), get()) }
   single<AddPaymentTokenUseCase> { AddPaymentTokenUseCase(get<ApolloClient>(giraffeClient)) }
-  single<ConnectPaymentUseCase> { ConnectPaymentUseCase(get(), get(), get()) }
-  single<ConnectPayoutUseCase> { ConnectPayoutUseCase(get(giraffeClient), get()) }
   single<ObserveOfferStateUseCase> { ObserveOfferStateUseCase(get(), get()) }
 }
 
@@ -572,7 +534,6 @@ val applicationModule = module {
     listOf(
       activityNavigatorModule,
       adyenFeatureModule,
-      adyenModule,
       apolloAuthListenersModule,
       apolloClientModule,
       appModule,
@@ -587,7 +548,6 @@ val applicationModule = module {
       claimTriagingModule,
       clockModule,
       coilModule,
-      connectPaymentModule,
       connectPaymentTrustlyModule,
       coreCommonModule,
       dataStoreModule,
@@ -627,7 +587,6 @@ val applicationModule = module {
       textActionSetModule,
       travelCertificateDataModule,
       travelCertificateModule,
-      trustlyModule,
       useCaseModule,
       valueStoreModule,
       viewModelModule,

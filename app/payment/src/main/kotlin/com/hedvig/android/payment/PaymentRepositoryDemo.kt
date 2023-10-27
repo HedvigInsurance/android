@@ -2,13 +2,7 @@ package com.hedvig.android.payment
 
 import arrow.core.Either
 import arrow.core.raise.either
-import com.apollographql.apollo3.api.ApolloResponse
 import com.hedvig.android.apollo.OperationResult
-import giraffe.PaymentQuery
-import giraffe.type.Locale
-import giraffe.type.PayoutMethodStatus
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
@@ -16,31 +10,9 @@ import kotlinx.datetime.toLocalDateTime
 import org.javamoney.moneta.Money
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.util.UUID
 import kotlin.time.Duration.Companion.days
 
 class PaymentRepositoryDemo : PaymentRepository {
-  override fun payment(): Flow<ApolloResponse<PaymentQuery.Data>> {
-    return flowOf(
-      ApolloResponse.Builder(
-        PaymentQuery(Locale.en_SE),
-        UUID.randomUUID(),
-        PaymentQuery.Data(),
-      ).build(),
-    )
-  }
-
-  override suspend fun refresh(): ApolloResponse<PaymentQuery.Data> {
-    return ApolloResponse.Builder(
-      PaymentQuery(Locale.en_SE),
-      UUID.randomUUID(),
-      PaymentQuery.Data(),
-    ).build()
-  }
-
-  override suspend fun writeActivePayoutMethodStatus(status: PayoutMethodStatus) {
-  }
-
   override suspend fun getChargeHistory(): Either<OperationResult.Error, ChargeHistory> = either {
     ChargeHistory(
       List(5) { index ->

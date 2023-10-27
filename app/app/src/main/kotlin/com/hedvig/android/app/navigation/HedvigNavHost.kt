@@ -51,8 +51,6 @@ import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.app.BuildConfig
-import com.hedvig.app.feature.adyen.AdyenCurrency
-import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutActivity
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
@@ -207,14 +205,9 @@ internal fun HedvigNavHost(
       navigator = navigator,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       hedvigBuildConstants = hedvigBuildConstants,
-      navigateToPayoutScreen = navigateToPayoutScreen@{
-        val intent = AdyenConnectPayoutActivity.newInstance(context, AdyenCurrency.fromMarket(market))
-        context.startActivity(intent)
-      },
-      navigateToPayinScreen = navigateToConnectPayment,
+      navigateToConnectPayment = navigateToConnectPayment,
       openAppSettings = { activityNavigator.openAppSettings(context) },
       openUrl = ::openUrl,
-      market = market,
     )
     chatGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,

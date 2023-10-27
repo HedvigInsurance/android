@@ -31,8 +31,6 @@ import com.hedvig.android.market.MarketManager
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityOfferBinding
-import com.hedvig.app.feature.adyen.PaymentTokenId
-import com.hedvig.app.feature.adyen.payin.startAdyenPayment
 import com.hedvig.app.feature.checkout.CheckoutActivity
 import com.hedvig.app.feature.crossselling.ui.CrossSellingResult
 import com.hedvig.app.feature.crossselling.ui.CrossSellingResultActivity
@@ -360,7 +358,7 @@ class OfferActivity : AppCompatActivity(R.layout.activity_offer) {
       CheckoutMethod.SWEDISH_BANK_ID -> viewModel.onSwedishBankIdSign()
       CheckoutMethod.SIMPLE_SIGN -> {
         if (paymentMethods != null) {
-          startAdyenPayment(languageService.getLocale(), paymentMethods)
+          error("Adyen is no longer supported. Should never reach the OfferActivity")
         } else {
           viewModel.onOpenCheckout()
         }

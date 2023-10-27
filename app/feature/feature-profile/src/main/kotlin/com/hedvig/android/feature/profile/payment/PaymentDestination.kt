@@ -62,7 +62,6 @@ import com.hedvig.android.core.ui.insurance.toContractType
 import com.hedvig.android.core.ui.insurance.toPillow
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import com.hedvig.android.data.forever.CampaignCode
-import com.hedvig.android.market.Market
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.placeholder.fade
 import com.hedvig.android.placeholder.placeholder
@@ -77,8 +76,6 @@ internal fun PaymentDestination(
   onBackPressed: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
   onChangeBankAccount: () -> Unit,
-  onConnectPayoutMethod: () -> Unit,
-  market: Market,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   PaymentScreen(
@@ -89,8 +86,6 @@ internal fun PaymentDestination(
     onAddDiscountCode = viewModel::onDiscountCodeAdded,
     onDiscountCodeChanged = viewModel::onDiscountCodeChanged,
     onPaymentHistoryClicked = onPaymentHistoryClicked,
-    onConnectPayoutMethod = onConnectPayoutMethod,
-    market = market,
     onRetry = viewModel::retry,
   )
 }
@@ -104,9 +99,7 @@ private fun PaymentScreen(
   onAddDiscountCode: () -> Unit,
   onDiscountCodeChanged: (CampaignCode) -> Unit,
   onPaymentHistoryClicked: () -> Unit,
-  onConnectPayoutMethod: () -> Unit,
   onRetry: () -> Unit,
-  market: Market,
 ) {
   HedvigScaffold(
     topAppBarText = stringResource(R.string.PROFILE_PAYMENT_TITLE),
@@ -181,18 +174,6 @@ private fun PaymentScreen(
             modifier = Modifier.padding(horizontal = 16.dp),
           )
           Spacer(Modifier.height(16.dp))
-          if (market == Market.DK || market == Market.NO) {
-            Spacer(Modifier.height(32.dp))
-            PayoutDetails(uiState)
-            Divider(Modifier.padding(horizontal = 16.dp))
-            Text(
-              text = stringResource(R.string.payment_screen_pay_out_change_payout_button),
-              modifier = Modifier
-                .fillMaxWidth()
-                .clickable { onConnectPayoutMethod() }
-                .padding(16.dp),
-            )
-          }
         }
       }
     }
@@ -402,39 +383,6 @@ private fun ColumnScope.PaymentDetails(uiState: PaymentViewModel.PaymentUiState)
   }
 }
 
-@Suppress("UnusedReceiverParameter")
-@Composable
-private fun ColumnScope.PayoutDetails(uiState: PaymentViewModel.PaymentUiState) {
-  Text(
-    text = stringResource(id = R.string.payment_screen_payout_section_title),
-    modifier = Modifier.padding(horizontal = 16.dp),
-  )
-  Spacer(Modifier.height(16.dp))
-  Divider(modifier = Modifier.padding(horizontal = 16.dp))
-  Row(
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(16.dp),
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    Image(
-      imageVector = Icons.Hedvig.Payments,
-      contentDescription = null,
-      modifier = Modifier.size(24.dp),
-    )
-    Spacer(Modifier.width(16.dp))
-    val payoutText = when (uiState.payoutStatus) {
-      PaymentViewModel.PaymentUiState.PayoutStatus.ACTIVE -> stringResource(R.string.payment_screen_pay_connected_label)
-      PaymentViewModel.PaymentUiState.PayoutStatus.PENDING -> stringResource(R.string.PAYMENTS_DIRECT_DEBIT_PENDING)
-      PaymentViewModel.PaymentUiState.PayoutStatus.NEEDS_SETUP ->
-        stringResource(R.string.PAYMENTS_DIRECT_DEBIT_NEEDS_SETUP)
-
-      null -> stringResource(R.string.PAYMENTS_DIRECT_DEBIT_NEEDS_SETUP)
-    }
-    Text(payoutText)
-  }
-}
-
 @Composable
 fun PaymentHistory(
   onClick: () -> Unit,
@@ -495,8 +443,6 @@ private fun PreviewPaymentScreen() {
         onAddDiscountCode = {},
         onDiscountCodeChanged = {},
         onPaymentHistoryClicked = {},
-        onConnectPayoutMethod = {},
-        market = Market.NO,
         onRetry = {},
       )
     }

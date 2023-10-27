@@ -397,9 +397,9 @@ private fun Fragment.handleSingleSelectLink(
   "message.forslag.dashboard" -> {
     logcat(LogPriority.ERROR) { "Can't handle going to the offer page without a QuoteCartId from link: `$value`" }
     AlertDialog.Builder(requireContext())
-      .setTitle(com.adyen.checkout.dropin.R.string.error_dialog_title)
+      .setTitle(hedvig.resources.R.string.general_error)
       .setMessage(getString(hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE))
-      .setPositiveButton(com.adyen.checkout.dropin.R.string.error_dialog_button) { _, _ ->
+      .setPositiveButton(android.R.string.ok) { _, _ ->
         // no-op. Action handled by `setOnDismissListener`
       }
       .setOnDismissListener {

@@ -8,7 +8,6 @@ plugins {
 dependencies {
   api(libs.apollo.api)
 
-  implementation(libs.adyen)
   implementation(libs.apollo.adapters)
   implementation(libs.apollo.runtime)
   implementation(libs.koin.core)
@@ -53,11 +52,6 @@ apollo {
       "LocalDate",
       "java.time.LocalDate",
       "com.hedvig.android.apollo.giraffe.typeadapter.PromiscuousLocalDateAdapter",
-    )
-    mapScalar(
-      "PaymentMethodsResponse",
-      "com.adyen.checkout.components.model.PaymentMethodsApiResponse",
-      "com.hedvig.android.apollo.giraffe.typeadapter.PaymentMethodsApiResponseAdapter",
     )
 
     sealedClassesForEnumsMatching.set(

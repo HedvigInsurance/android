@@ -42,7 +42,6 @@ jobs:
         env:
           LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
-          ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_TEST_CLIENT_KEY }}
       - name: Run license release report
         run: ./gradlew licenseReleaseReport --no-configuration-cache --continue
         continue-on-error: true

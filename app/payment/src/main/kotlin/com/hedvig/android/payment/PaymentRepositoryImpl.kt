@@ -3,11 +3,8 @@ package com.hedvig.android.payment
 import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.cache.normalized.FetchPolicy
-import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
-import com.apollographql.apollo3.cache.normalized.watch
 import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
@@ -19,43 +16,17 @@ import giraffe.ChargeHistoryQuery
 import giraffe.PaymentQuery
 import giraffe.type.PayoutMethodStatus
 import giraffe.type.TypeOfContract
-import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 import javax.money.MonetaryAmount
 
 class PaymentRepositoryImpl(
   private val apolloClient: ApolloClient,
-  languageService: LanguageService,
+  private val languageService: LanguageService,
 ) : PaymentRepository {
-  private val paymentQuery = PaymentQuery(languageService.getGraphQLLocale())
-  private val chargeHistoryQuery = ChargeHistoryQuery()
-  override fun payment(): Flow<ApolloResponse<PaymentQuery.Data>> = apolloClient
-    .query(paymentQuery)
-    .watch()
-
-  override suspend fun refresh(): ApolloResponse<PaymentQuery.Data> = apolloClient
-    .query(paymentQuery)
-    .fetchPolicy(FetchPolicy.NetworkOnly)
-    .execute()
-
-  override suspend fun writeActivePayoutMethodStatus(status: PayoutMethodStatus) {
-    val cachedData = apolloClient
-      .apolloStore
-      .readOperation(paymentQuery)
-
-    apolloClient
-      .apolloStore
-      .writeOperation(
-        paymentQuery,
-        cachedData.copy(
-          activePayoutMethods = PaymentQuery.ActivePayoutMethods(status = status),
-        ),
-      )
-  }
 
   override suspend fun getChargeHistory(): Either<OperationResult.Error, ChargeHistory> = either {
     apolloClient
-      .query(chargeHistoryQuery)
+      .query(ChargeHistoryQuery())
       .safeExecute()
       .toEither()
       .map {
@@ -73,7 +44,7 @@ class PaymentRepositoryImpl(
 
   override suspend fun getPaymentData(): Either<OperationResult.Error, PaymentData> = either {
     apolloClient
-      .query(paymentQuery)
+      .query(PaymentQuery(languageService.getGraphQLLocale()))
       .fetchPolicy(FetchPolicy.NetworkOnly)
       .safeExecute()
       .toEither()

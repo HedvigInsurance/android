@@ -5,6 +5,5 @@ plugins {
 }
 
 dependencies {
-  implementation(libs.adyen)
   implementation(projects.apolloGiraffePublic)
 }

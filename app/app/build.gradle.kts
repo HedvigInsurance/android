@@ -114,7 +114,6 @@ dependencies {
   implementation(libs.accompanist.insetsUi)
   implementation(libs.accompanist.pagerIndicators)
   implementation(libs.accompanist.systemUiController)
-  implementation(libs.adyen)
   implementation(libs.androidx.compose.animation)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material)
