@@ -14,6 +14,8 @@ import com.hedvig.android.data.travelcertificate.GetTravelCertificateSpecificati
 import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimsData
 import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
 import com.hedvig.android.feature.home.claimstatus.data.ClaimStatusCardUiState
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -33,6 +35,7 @@ internal class GetHomeDataUseCaseImpl(
   private val languageService: LanguageService,
   private val getMemberRemindersUseCase: GetMemberRemindersUseCase,
   private val getTravelCertificateSpecificationsUseCase: GetTravelCertificateSpecificationsUseCase,
+  private val featureManager: FeatureManager,
 ) : GetHomeDataUseCase {
   override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, HomeData>> {
     return combine(
@@ -46,7 +49,8 @@ internal class GetHomeDataUseCaseImpl(
         .safeFlow(::ErrorMessage),
       getMemberRemindersUseCase.invoke(),
       flow { emit(getTravelCertificateSpecificationsUseCase.invoke().getOrNull()) },
-    ) { homeQueryDataResult, memberReminders, travelCertificateData ->
+      flow { emit(featureManager.isFeatureEnabled(Feature.NEW_MOVING_FLOW)) },
+    ) { homeQueryDataResult, memberReminders, travelCertificateData, isNewMovingFlowEnabled ->
       either {
         val homeQueryData = homeQueryDataResult.bind()
         val contractStatus = homeQueryData.toContractStatus()
@@ -64,7 +68,7 @@ internal class GetHomeDataUseCaseImpl(
           claimStatusCardsData = homeQueryData.claimStatusCards(),
           veryImportantMessages = veryImportantMessages.toPersistentList(),
           memberReminders = memberReminders,
-          allowAddressChange = contractStatus is HomeData.ContractStatus.Active,
+          allowAddressChange = contractStatus is HomeData.ContractStatus.Active && isNewMovingFlowEnabled,
           allowGeneratingTravelCertificate = travelCertificateData != null,
           emergencyData = EmergencyData.from(homeQueryData),
           commonClaimsData = commonClaimsData.toPersistentList(),

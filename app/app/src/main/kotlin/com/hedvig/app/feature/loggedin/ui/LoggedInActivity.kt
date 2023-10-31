@@ -45,7 +45,6 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -53,6 +52,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import arrow.fx.coroutines.raceN
 import coil.ImageLoader
+import com.google.android.play.core.review.ReviewManagerFactory
 import com.hedvig.android.app.navigation.HedvigNavHost
 import com.hedvig.android.app.ui.HedvigAppState
 import com.hedvig.android.app.ui.HedvigBottomBar
@@ -79,7 +79,6 @@ import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
 import com.hedvig.android.theme.Theme
 import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
-import com.hedvig.app.util.extensions.showReviewDialog
 import com.hedvig.hanalytics.HAnalytics
 import com.kiwi.navigationcompose.typed.navigate
 import kotlinx.coroutines.delay
@@ -207,9 +206,7 @@ class LoggedInActivity : AppCompatActivity() {
           shouldShowRequestPermissionRationale = ::shouldShowRequestPermissionRationale,
           market = market,
           imageLoader = imageLoader,
-          featureManager = featureManager,
           hAnalytics = hAnalytics,
-          fragmentManager = supportFragmentManager,
           languageService = languageService,
           hedvigBuildConstants = hedvigBuildConstants,
         )
@@ -219,7 +216,14 @@ class LoggedInActivity : AppCompatActivity() {
 
   private suspend fun showReviewWithDelay() {
     delay(REVIEW_DIALOG_DELAY_MILLIS)
-    showReviewDialog()
+    val manager = ReviewManagerFactory.create(this)
+    val request = manager.requestReviewFlow()
+    request.addOnCompleteListener { task ->
+      if (task.isSuccessful) {
+        val reviewInfo = task.result
+        manager.launchReviewFlow(this, reviewInfo)
+      }
+    }
   }
 
   companion object {
@@ -256,9 +260,7 @@ private fun HedvigApp(
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   market: Market,
   imageLoader: ImageLoader,
-  featureManager: FeatureManager,
   hAnalytics: HAnalytics,
-  fragmentManager: FragmentManager,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
 ) {
@@ -297,9 +299,7 @@ private fun HedvigApp(
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           imageLoader = imageLoader,
           market = market,
-          featureManager = featureManager,
           hAnalytics = hAnalytics,
-          fragmentManager = fragmentManager,
           languageService = languageService,
           hedvigBuildConstants = hedvigBuildConstants,
           modifier = Modifier

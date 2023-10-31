@@ -84,6 +84,7 @@ internal fun YourInfoTab(
         onEditCoInsuredClick = {
           coroutineScope.launch {
             sheetState.hide()
+          }.invokeOnCompletion {
             showEditYourInfoBottomSheet = false
             onEditCoInsuredClick()
           }
@@ -91,6 +92,7 @@ internal fun YourInfoTab(
         onChangeAddressClick = {
           coroutineScope.launch {
             sheetState.hide()
+          }.invokeOnCompletion {
             showEditYourInfoBottomSheet = false
             onChangeAddressClick()
           }
@@ -98,6 +100,7 @@ internal fun YourInfoTab(
         onDismiss = {
           coroutineScope.launch {
             sheetState.hide()
+          }.invokeOnCompletion {
             showEditYourInfoBottomSheet = false
           }
         },

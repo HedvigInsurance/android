@@ -19,9 +19,7 @@ internal class HAnalyticsFeatureFlagProvider(
     Feature.SHOW_BUSINESS_MODEL -> hAnalytics.showCharity()
     Feature.TERMINATION_FLOW -> hAnalytics.terminationFlow()
     Feature.UPDATE_NECESSARY -> hAnalytics.updateNecessary()
-    Feature.USE_NATIVE_CLAIMS_FLOW -> hAnalytics.claimsFlow()
     Feature.NEW_MOVING_FLOW -> hAnalytics.movingFlowClient()
-    Feature.CLAIMS_TRIAGING -> hAnalytics.claimsTriaging()
     Feature.TRAVEL_CERTIFICATE -> hAnalytics.travelInsurance()
   }
 }

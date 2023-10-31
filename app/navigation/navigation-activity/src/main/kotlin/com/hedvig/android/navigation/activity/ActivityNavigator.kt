@@ -14,7 +14,6 @@ class ActivityNavigator(
   private val application: Application,
   private val loggedOutActivityClass: Class<*>,
   private val buildConfigApplicationId: String,
-  private val navigateToEmbark: Context.(storyName: String, storyTitle: String) -> Unit,
   private val navigateToLoggedInActivity: Context.(clearBackstack: Boolean) -> Unit,
 ) {
   @SuppressLint("IntentWithNullActionLaunch")
@@ -37,14 +36,6 @@ class ActivityNavigator(
       return
     }
     context.startActivity(Intent(Intent(Settings.ACTION_SETTINGS)))
-  }
-
-  fun navigateToEmbark(
-    context: Context,
-    storyName: String,
-    storyTitle: String,
-  ) {
-    context.navigateToEmbark(storyName, storyTitle)
   }
 
   fun navigateToLoggedInScreen(

@@ -88,7 +88,7 @@ internal class PaymentViewModel(
       referralsRepositoryProvider.provide().redeemReferralCode(code)
         .fold(
           ifLeft = { error -> _uiState.update { it.copy(discountError = error.message) } },
-          ifRight = { data -> loadPaymentData() },
+          ifRight = { loadPaymentData() },
         )
     }
   }

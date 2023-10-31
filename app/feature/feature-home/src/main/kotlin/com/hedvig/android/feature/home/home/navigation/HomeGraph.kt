@@ -25,7 +25,7 @@ fun NavGraphBuilder.homeGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   onStartChat: (NavBackStackEntry) -> Unit,
   onStartClaim: (NavBackStackEntry) -> Unit,
-  startMovingFlow: () -> Unit,
+  startMovingFlow: (NavBackStackEntry) -> Unit,
   onGenerateTravelCertificateClicked: () -> Unit,
   navigateToPayinScreen: () -> Unit,
   openAppSettings: () -> Unit,
@@ -52,7 +52,7 @@ fun NavGraphBuilder.homeGraph(
         },
         navigateToConnectPayment = navigateToPayinScreen,
         onStartClaim = { onStartClaim(backStackEntry) },
-        onStartMovingFlow = startMovingFlow,
+        onStartMovingFlow = { startMovingFlow(backStackEntry) },
         onGenerateTravelCertificateClicked = onGenerateTravelCertificateClicked,
         onOpenCommonClaim = { commonClaimsData ->
           with(navigator) { backStackEntry.navigate(HomeDestinations.CommonClaimDestination(commonClaimsData)) }

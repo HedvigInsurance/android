@@ -3,15 +3,18 @@ package com.hedvig.app.service.push.senders
 import android.app.Notification
 import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.core.app.NotificationCompat
+import androidx.core.app.PendingIntentCompat
 import androidx.core.app.TaskStackBuilder
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.core.common.android.notification.setupNotificationChannel
+import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.DATA_MESSAGE_BODY
 import com.hedvig.app.service.push.DATA_MESSAGE_TITLE
 import com.hedvig.app.service.push.getImmutablePendingIntentFlags
@@ -19,6 +22,7 @@ import hedvig.resources.R
 
 class ReferralsNotificationSender(
   private val context: Context,
+  private val hedvigDeepLinkContainer: HedvigDeepLinkContainer,
 ) : NotificationSender {
   override fun createChannel() {
     setupNotificationChannel(
@@ -44,20 +48,14 @@ class ReferralsNotificationSender(
   }
 
   private fun sendReferralSuccessfulNotification(remoteMessage: RemoteMessage) {
-    val pendingIntent: PendingIntent? = TaskStackBuilder
-      .create(context)
-      .run {
-        addNextIntentWithParentStack(
-          LoggedInActivity.newInstance(
-            context,
-            initialTab = TopLevelGraph.FOREVER,
-          ),
-        )
-        addNextIntentWithParentStack(
-          NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_REFERRAL_SUCCESS),
-        )
-        getPendingIntent(0, getImmutablePendingIntentFlags())
-      }
+    val foreverIntent = Intent(Intent.ACTION_VIEW, Uri.parse(hedvigDeepLinkContainer.forever))
+    val pendingIntent = PendingIntentCompat.getBroadcast(
+      context,
+      0,
+      foreverIntent,
+      PendingIntent.FLAG_UPDATE_CURRENT,
+      false,
+    )
 
     val referralName = remoteMessage.data[DATA_MESSAGE_REFERRED_SUCCESS_NAME]
 
@@ -81,18 +79,13 @@ class ReferralsNotificationSender(
   private fun sendReferralCampaignNotification(remoteMessage: RemoteMessage) {
     val pendingIntent: PendingIntent? = TaskStackBuilder
       .create(context)
-      .run {
-        addNextIntentWithParentStack(
-          LoggedInActivity.newInstance(
-            context,
-            initialTab = TopLevelGraph.FOREVER,
-          ),
-        )
-        addNextIntentWithParentStack(
-          NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_REFERRALS_CAMPAIGN),
-        )
-        getPendingIntent(0, getImmutablePendingIntentFlags())
-      }
+      .addNextIntent(
+        LoggedInActivity.newInstance(
+          context,
+          initialTab = TopLevelGraph.FOREVER,
+        ),
+      )
+      .getPendingIntent(0, getImmutablePendingIntentFlags())
 
     val title = remoteMessage.data[DATA_MESSAGE_TITLE]
     val message = remoteMessage.data[DATA_MESSAGE_BODY]

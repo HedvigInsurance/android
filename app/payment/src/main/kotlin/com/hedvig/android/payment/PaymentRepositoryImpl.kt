@@ -10,8 +10,6 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.apollo.toMonetaryAmount
 import com.hedvig.android.language.LanguageService
-import com.hedvig.android.payment.model.Campaign
-import com.hedvig.android.payment.model.toIncentive
 import giraffe.ChargeHistoryQuery
 import giraffe.PaymentQuery
 import giraffe.type.PayoutMethodStatus
@@ -19,7 +17,7 @@ import giraffe.type.TypeOfContract
 import java.time.LocalDate
 import javax.money.MonetaryAmount
 
-class PaymentRepositoryImpl(
+internal class PaymentRepositoryImpl(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,
 ) : PaymentRepository {
@@ -43,67 +41,74 @@ class PaymentRepositoryImpl(
   }
 
   override suspend fun getPaymentData(): Either<OperationResult.Error, PaymentData> = either {
-    apolloClient
+    val data = apolloClient
       .query(PaymentQuery(languageService.getGraphQLLocale()))
       .fetchPolicy(FetchPolicy.NetworkOnly)
       .safeExecute()
       .toEither()
-      .map {
-        val costFragment = it.insuranceCost?.fragments?.costFragment
-        PaymentData(
-          nextCharge = it.chargeEstimation.subscription.fragments.monetaryAmountFragment.toMonetaryAmount(),
-          monthlyCost = costFragment?.monthlyNet?.fragments?.monetaryAmountFragment?.toMonetaryAmount(),
-          totalDiscount = costFragment?.monthlyDiscount?.fragments?.monetaryAmountFragment?.toMonetaryAmount(),
-          nextChargeDate = it.nextChargeDate,
-          contracts = it.contracts
-            .filter { it.status.fragments.contractStatusFragment.asActiveStatus != null }
-            .map {
-              Contract(
-                name = it.displayName,
-                typeOfContract = it.typeOfContract,
-              )
-            },
-          redeemedCampagins = it.redeemedCampaigns.map {
-            Campaign(
-              incentive = it.fragments.incentiveFragment.incentive.toIncentive(),
-              displayValue = it.fragments.incentiveFragment.displayValue,
-              code = it.code,
-            )
-          },
-          bankName = it.bankAccount?.fragments?.bankAccountFragment?.bankName,
-          bankDescriptor = it.bankAccount?.fragments?.bankAccountFragment?.descriptor,
-          paymentMethod = it.activePaymentMethodsV2
-            ?.fragments
-            ?.activePaymentMethodsFragment
-            ?.asStoredCardDetails
-            ?.let {
-              PaymentData.PaymentMethod.CardPaymentMethod(
-                brand = it.brand,
-                lastFourDigits = it.lastFourDigits,
-                expiryMonth = it.expiryMonth,
-                expiryYear = it.expiryYear,
-              )
-            } ?: it.activePaymentMethodsV2
-            ?.fragments
-            ?.activePaymentMethodsFragment
-            ?.asStoredThirdPartyDetails
-            ?.let {
-              PaymentData.PaymentMethod.ThirdPartyPaymentMethd(
-                name = it.name,
-                type = it.type,
-              )
-            },
-          payoutMethodStatus = it.activePayoutMethods?.status,
-          bankAccount = it.bankAccount?.let {
-            BankAccount(
-              name = it.fragments.bankAccountFragment.bankName,
-              accountNumber = it.fragments.bankAccountFragment.descriptor,
-            )
-          },
-        )
-      }
       .bind()
+
+    val costFragment = data.insuranceCost?.fragments?.costFragment
+    PaymentData(
+      nextCharge = data.chargeEstimation.subscription.fragments.monetaryAmountFragment.toMonetaryAmount(),
+      monthlyCost = costFragment?.monthlyNet?.fragments?.monetaryAmountFragment?.toMonetaryAmount(),
+      totalDiscount = costFragment?.monthlyDiscount?.fragments?.monetaryAmountFragment?.toMonetaryAmount(),
+      nextChargeDate = data.nextChargeDate,
+      contracts = data.contracts
+        .filter { it.status.fragments.contractStatusFragment.asActiveStatus != null }
+        .map {
+          PaymentData.Contract(
+            name = it.displayName,
+            typeOfContract = it.typeOfContract,
+          )
+        },
+      redeemedCampagins = data.redeemedCampaigns.map {
+        PaymentData.Campaign(
+          displayValue = it.fragments.incentiveFragment.displayValue,
+          code = it.code,
+        )
+      },
+      bankName = data.bankAccount?.fragments?.bankAccountFragment?.bankName,
+      bankDescriptor = data.bankAccount?.fragments?.bankAccountFragment?.descriptor,
+      paymentMethod = data.activePaymentMethodsV2
+        ?.fragments
+        ?.activePaymentMethodsFragment
+        ?.asStoredCardDetails
+        ?.let {
+          PaymentData.PaymentMethod.CardPaymentMethod(
+            brand = it.brand,
+            lastFourDigits = it.lastFourDigits,
+            expiryMonth = it.expiryMonth,
+            expiryYear = it.expiryYear,
+          )
+        } ?: data.activePaymentMethodsV2
+        ?.fragments
+        ?.activePaymentMethodsFragment
+        ?.asStoredThirdPartyDetails
+        ?.let {
+          PaymentData.PaymentMethod.ThirdPartyPaymentMethd(
+            name = it.name,
+            type = it.type,
+          )
+        },
+      payoutMethodStatus = data.activePayoutMethods?.status,
+      bankAccount = data.bankAccount?.let {
+        PaymentData.BankAccount(
+          name = it.fragments.bankAccountFragment.bankName,
+          accountNumber = it.fragments.bankAccountFragment.descriptor,
+        )
+      },
+    )
   }
+}
+
+data class ChargeHistory(
+  val charges: List<Charge>,
+) {
+  data class Charge(
+    val amount: MonetaryAmount,
+    val date: LocalDate,
+  )
 }
 
 data class PaymentData(
@@ -132,23 +137,19 @@ data class PaymentData(
       val type: String,
     ) : PaymentMethod
   }
-}
 
-data class Contract(
-  val name: String,
-  val typeOfContract: TypeOfContract,
-)
+  data class Contract(
+    val name: String,
+    val typeOfContract: TypeOfContract,
+  )
 
-data class BankAccount(
-  val name: String,
-  val accountNumber: String,
-)
+  data class BankAccount(
+    val name: String,
+    val accountNumber: String,
+  )
 
-data class ChargeHistory(
-  val charges: List<Charge>,
-) {
-  data class Charge(
-    val amount: MonetaryAmount,
-    val date: LocalDate,
+  data class Campaign(
+    val displayValue: String?,
+    val code: String,
   )
 }

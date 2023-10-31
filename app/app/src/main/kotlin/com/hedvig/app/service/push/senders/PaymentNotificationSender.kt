@@ -3,27 +3,24 @@ package com.hedvig.app.service.push.senders
 import android.app.Notification
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import androidx.core.app.NotificationCompat
 import androidx.core.app.TaskStackBuilder
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.android.notification.setupNotificationChannel
-import com.hedvig.android.logger.LogPriority
-import com.hedvig.android.logger.logcat
-import com.hedvig.android.market.MarketManager
+import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.payment.connectPayinIntent
-import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.getImmutablePendingIntentFlags
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class PaymentNotificationSender(
   private val context: Context,
-  private val marketManager: MarketManager,
   private val applicationScope: ApplicationScope,
+  private val hedvigDeepLinkContainer: HedvigDeepLinkContainer,
 ) : NotificationSender {
   override fun createChannel() {
     setupNotificationChannel(
@@ -50,35 +47,11 @@ class PaymentNotificationSender(
 
   private fun sendConnectDirectDebitNotification() {
     applicationScope.launch(Dispatchers.IO) {
-      val market = marketManager.market.value
+      val connectPaymentDeepLinkIntent = Intent(Intent.ACTION_VIEW, Uri.parse(hedvigDeepLinkContainer.connectPayment))
       val pendingIntent = TaskStackBuilder
         .create(context)
-        .run {
-          addNextIntentWithParentStack(
-            Intent(
-              context,
-              LoggedInActivity::class.java,
-            ),
-          )
-          try {
-            addNextIntentWithParentStack(
-              connectPayinIntent(
-                context,
-                market,
-                false,
-              ),
-            )
-          } catch (error: IllegalArgumentException) {
-            logcat(LogPriority.ERROR, error) {
-              "Illegal market and payment type, could not create payin intent. Market: $market"
-            }
-          }
-
-          addNextIntentWithParentStack(
-            NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT),
-          )
-          getPendingIntent(0, getImmutablePendingIntentFlags())
-        }
+        .addNextIntent(connectPaymentDeepLinkIntent)
+        .getPendingIntent(0, getImmutablePendingIntentFlags())
 
       val notification = NotificationCompat
         .Builder(
@@ -101,18 +74,13 @@ class PaymentNotificationSender(
   private fun sendPaymentFailedNotification() {
     val pendingIntent = TaskStackBuilder
       .create(context)
-      .run {
-        addNextIntentWithParentStack(
-          Intent(
-            context,
-            LoggedInActivity::class.java,
-          ),
-        )
-        addNextIntentWithParentStack(
-          NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_PAYMENT_FAILED),
-        )
-        getPendingIntent(0, getImmutablePendingIntentFlags())
-      }
+      .addNextIntent(
+        Intent(
+          context,
+          LoggedInActivity::class.java,
+        ),
+      )
+      .getPendingIntent(0, getImmutablePendingIntentFlags())
 
     val notification = NotificationCompat
       .Builder(

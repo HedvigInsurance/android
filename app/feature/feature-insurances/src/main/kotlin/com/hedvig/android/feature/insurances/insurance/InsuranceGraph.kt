@@ -28,7 +28,7 @@ fun NavGraphBuilder.insuranceGraph(
   navigator: Navigator,
   openWebsite: (Uri) -> Unit,
   openChat: (NavBackStackEntry) -> Unit,
-  startMovingFlow: () -> Unit,
+  startMovingFlow: (NavBackStackEntry) -> Unit,
   startTerminationFlow: (backStackEntry: NavBackStackEntry, insuranceId: String, insuranceDisplayName: String) -> Unit,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   imageLoader: ImageLoader,
@@ -63,7 +63,7 @@ fun NavGraphBuilder.insuranceGraph(
       ContractDetailDestination(
         viewModel = viewModel,
         onEditCoInsuredClick = { openChat(backStackEntry) },
-        onChangeAddressClick = { startMovingFlow() },
+        onChangeAddressClick = { startMovingFlow(backStackEntry) },
         onCancelInsuranceClick = { cancelInsuranceData: CancelInsuranceData ->
           // open termination flow
           startTerminationFlow(

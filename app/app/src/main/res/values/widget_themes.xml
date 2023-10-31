@@ -85,25 +85,8 @@
         <item name="android:textColorLink">?android:textColorSecondary</item>
     </style>
 
-
-
-
-
     <style name="ThemeOverlay.Hedvig.Dialog.Alert" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
         <item name="materialAlertDialogBodyTextStyle">?textAppearanceBody1</item>
-    </style>
-
-    <style name="ThemeOverlay.Hedvig.Toolbar.ErrorAction" parent="">
-        <item name="actionMenuTextColor">?colorError</item>
-    </style>
-
-    <style name="ThemeOverlay.Hedvig.LoggedInCardView" parent="Widget.MaterialComponents.CardView">
-        <item name="cardElevation">@dimen/logged_in_card_elevation</item>
-        <item name="cardBackgroundColor">?colorSurface</item>
-    </style>
-
-    <style name="ThemeOverlay.Hedvig.ReferralsContainer" parent="">
-        <item name="android:colorBackground">?colorSurface</item>
     </style>
 
     <style name="ThemeOverlay.Hedvig.Embark.Chat.Hedvig" parent="">
@@ -112,11 +95,6 @@
         <item name="android:paddingEnd">16dp</item>
         <item name="android:paddingTop">12dp</item>
         <item name="android:paddingBottom">12dp</item>
-    </style>
-
-    <style name="ThemeOverlay.Hedvig.Embark.Chat.Self" parent="">
-        <item name="android:textColorPrimary">@color/hedvig_black</item>
-        <item name="colorSurface">@color/separator_light</item>
     </style>
 
     <style name="ThemeOverlay.Hedvig.Card.Outlined.Unfilled" parent="">

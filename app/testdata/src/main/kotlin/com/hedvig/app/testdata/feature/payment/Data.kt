@@ -2,22 +2,15 @@ package com.hedvig.app.testdata.feature.payment
 
 import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.common.builders.CostBuilder
-import com.hedvig.app.util.months
-import giraffe.PayinStatusQuery
 import giraffe.PaymentQuery
 import giraffe.fragment.IncentiveFragment
 import giraffe.type.FreeMonths
 import giraffe.type.MonthlyCostDeduction
-import giraffe.type.PayinMethodStatus
 import giraffe.type.PayoutMethodStatus
 import giraffe.type.PercentageDiscountMonths
 import java.time.LocalDate
+import java.time.Period
 
-val PAYIN_STATUS_DATA_NEEDS_SETUP = PayinStatusQuery.Data(PayinMethodStatus.NEEDS_SETUP)
-val PAYIN_STATUS_DATA_ACTIVE = PayinStatusQuery.Data(PayinMethodStatus.ACTIVE)
-val PAYIN_STATUS_DATA_PENDING = PayinStatusQuery.Data(PayinMethodStatus.PENDING)
-
-val PAYMENT_DATA_NOT_CONNECTED = PaymentDataBuilder().build()
 val PAYMENT_DATA_FAILED_PAYMENTS = PaymentDataBuilder(failedCharges = 1).build()
 
 val PAYMENT_DATA_TRUSTLY_CONNECTED = PaymentDataBuilder(
@@ -29,7 +22,7 @@ val PAYMENT_DATA_ADYEN_CONNECTED = PaymentDataBuilder(
   payinConnected = true,
 ).build()
 val PAYMENT_DATA_FREE_MONTHS = PaymentDataBuilder(
-  freeUntil = LocalDate.now() + 3.months,
+  freeUntil = LocalDate.now() + Period.ofMonths(3),
   cost = CostBuilder(
     discountAmount = "139.00",
     netAmount = "0.00",
