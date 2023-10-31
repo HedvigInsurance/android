@@ -10,7 +10,6 @@ lintGradlePlugin = "8.1.2"
 
 # gradlePlugin versions
 androidGradlePlugin = "8.1.2"
-androidRemoveUnusedResourcesPlugin = "2.1.0"
 apollo = "3.8.2"
 cacheFix = "2.8.1"
 crashlytics = "2.9.9"
@@ -98,8 +97,8 @@ zoomable = "1.5.1"
 
 accompanist-insetsUi = { module = "com.google.accompanist:accompanist-insets-ui", version.ref = "accompanist" }
 accompanist-pagerIndicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanist" }
-accompanist-systemUiController = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
+accompanist-systemUiController = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 accompanist-webview = { module = "com.google.accompanist:accompanist-webview", version.ref = "accompanist" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 androidx-arch-testing = { module = "androidx.arch.core:core-testing", version.ref = "androidx-arch-testing" }
@@ -115,19 +114,19 @@ androidx-compose-materialIconsExtended = { module = "androidx.compose.material:m
 androidx-compose-runtime = { module = "androidx.compose.runtime:runtime" }
 androidx-compose-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata" }
 androidx-compose-uiCore = { module = "androidx.compose.ui:ui" }
-androidx-compose-uiUnit = { module = "androidx.compose.ui:ui-unit" }
 androidx-compose-uiTestManifest = { module = "androidx.compose.ui:ui-test-manifest" }
 androidx-compose-uiTooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-compose-uiToolingPreview = { module = "androidx.compose.ui:ui-tooling-preview" }
+androidx-compose-uiUnit = { module = "androidx.compose.ui:ui-unit" }
 androidx-compose-uiUtil = { module = "androidx.compose.ui:ui-util" }
 androidx-compose-uiViewBinding = { module = "androidx.compose.ui:ui-viewbinding" }
 androidx-datastore-core = { module = "androidx.datastore:datastore-core", version.ref = "androidx-datastore" }
 androidx-datastore-preferencesCore = { module = "androidx.datastore:datastore-preferences-core", version.ref = "androidx-datastore" }
 androidx-graphicsShapes = { module = "androidx.graphics:graphics-shapes", version.ref = "androidxGraphicsShapes" }
 androidx-lifecycle-common = { module = "androidx.lifecycle:lifecycle-common-java8", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-liveData = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewModel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodelCompose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
@@ -241,7 +240,6 @@ lintApi = { module = "com.android.tools.lint:lint-api", version.ref = "lintApi" 
 
 androidApplication = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 androidLibrary = { id = "com.android.library", version.ref = "androidGradlePlugin" }
-androidRemoveUnusedResourcesPlugin = { id = "io.github.irgaly.remove-unused-resources", version.ref = "androidRemoveUnusedResourcesPlugin" }
 apollo = { id = "com.apollographql.apollo3", version.ref = "apollo" }
 appIconBannerGenerator = { id = "com.starter.easylauncher", version.ref = "easylauncher" }
 cacheFix = { id = "org.gradle.android.cache-fix", version.ref = "cacheFix" }

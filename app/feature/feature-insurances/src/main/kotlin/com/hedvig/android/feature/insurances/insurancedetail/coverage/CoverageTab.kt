@@ -34,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -129,7 +130,7 @@ internal fun CoverageTab(
 private fun ColumnScope.PerilSection(
   perilItems: ImmutableList<Peril>,
 ) {
-  var expandedItemIndex by rememberSaveable { mutableStateOf(-1) }
+  var expandedItemIndex by rememberSaveable { mutableIntStateOf(-1) }
   for ((index, perilItem) in perilItems.withIndex()) {
     ExpandableCoverageCard(
       isExpanded = expandedItemIndex == index,
