@@ -31,7 +31,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Hedvig.Theme">
-        <activity android:name=".feature.embark.ui.MoreOptionsActivity" />
         <activity
             android:name=".feature.loggedin.ui.LoggedInActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|layoutDirection"
@@ -65,7 +64,6 @@
             android:name=".feature.zignsec.SimpleSignAuthenticationActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".feature.offer.quotedetail.QuoteDetailActivity" />
         <activity android:name=".feature.sunsetting.ForceUpgradeActivity" />
         <activity
             android:name=".feature.genericauth.GenericAuthActivity"
