@@ -49,7 +49,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
@@ -70,6 +69,7 @@ import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.Copy
+import com.hedvig.android.core.icons.hedvig.normal.Info
 import com.hedvig.android.core.ui.snackbar.HedvigSnackbar
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.forever.ForeverEvent
@@ -299,7 +299,7 @@ internal fun ForeverContent(
             modifier = Modifier.size(40.dp),
           ) {
             Icon(
-              painter = painterResource(R.drawable.ic_info_toolbar),
+              imageVector = Icons.Hedvig.Info,
               contentDescription = stringResource(R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
               modifier = Modifier.size(24.dp),
             )

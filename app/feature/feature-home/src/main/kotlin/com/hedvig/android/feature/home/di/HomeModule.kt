@@ -7,7 +7,6 @@ import com.hedvig.android.data.travelcertificate.GetTravelCertificateSpecificati
 import com.hedvig.android.feature.home.claimdetail.data.GetClaimDetailUiStateFlowUseCase
 import com.hedvig.android.feature.home.claimdetail.data.GetClaimDetailUseCase
 import com.hedvig.android.feature.home.claimdetail.ui.ClaimDetailViewModel
-import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimViewModel
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCaseDemo
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCaseImpl
 import com.hedvig.android.feature.home.home.ui.HomeViewModel
@@ -40,7 +39,6 @@ val homeModule = module {
     )
   }
   viewModel<ClaimDetailViewModel> { (claimId: String) -> ClaimDetailViewModel(claimId, get(), get()) }
-  viewModel<CommonClaimViewModel> { CommonClaimViewModel(get()) }
   viewModel<HomeViewModel> {
     HomeViewModel(
       get<GetHomeDataUseCaseProvider>(),

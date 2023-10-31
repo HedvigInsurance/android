@@ -34,6 +34,7 @@ import com.hedvig.android.core.designsystem.component.card.HedvigCard
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.icons.Hedvig
+import com.hedvig.android.core.icons.hedvig.normal.ChevronDown
 import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.hedvigDateTimeFormatter
@@ -136,7 +137,7 @@ private fun QuoteDetailsAndPrice(
           label = "",
         )
         Icon(
-          painter = painterResource(com.hedvig.android.core.design.system.R.drawable.ic_drop_down_indicator),
+          imageVector = Icons.Hedvig.ChevronDown,
           contentDescription = null,
           tint = MaterialTheme.colorScheme.onSurfaceVariant,
           modifier = Modifier
