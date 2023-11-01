@@ -2,7 +2,7 @@
 <resources>
     <string name="APP_NAME" translatable="false">Hedvig</string>
 
-    <string name="FIREBASE_LINK_DOMAIN" translatable="false">hedvig.page.link</string>
+    <string name="DEEP_LINK_DOMAIN_HOST" translatable="false">hedvig.page.link</string>
 
     <string name="GRAPHQL_URL" translatable="false">https://giraffe.hedvig.com/graphql</string>
     <string name="WS_GRAPHQL_URL" translatable="false">wss://giraffe.hedvig.com/subscriptions</string>

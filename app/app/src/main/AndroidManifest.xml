@@ -50,7 +50,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="@string/FIREBASE_LINK_DOMAIN"
+                    android:host="@string/DEEP_LINK_DOMAIN_HOST"
                     android:scheme="https" />
             </intent-filter>
         </activity>
