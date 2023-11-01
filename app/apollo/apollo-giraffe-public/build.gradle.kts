@@ -59,7 +59,6 @@ apollo {
         "AuthState",
         "ClaimStatus",
         "CrossSellType",
-        "EmbarkExternalRedirectLocation",
         "TypeOfContract",
       ),
     )
