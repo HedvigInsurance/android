@@ -253,6 +253,7 @@ private val buildConstantsModule = module {
       override val urlBaseWeb: String = context.getString(R.string.WEB_BASE_URL)
       override val urlHanalytics: String = context.getString(R.string.HANALYTICS_URL)
       override val urlOdyssey: String = context.getString(R.string.ODYSSEY_URL)
+      override val deepLinkHost: String = context.getString(R.string.DEEP_LINK_DOMAIN_HOST)
 
       override val appVersionName: String = BuildConfig.VERSION_NAME
       override val appVersionCode: String = BuildConfig.VERSION_CODE.toString()

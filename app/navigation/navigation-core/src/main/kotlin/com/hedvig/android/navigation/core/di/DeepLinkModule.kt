@@ -7,10 +7,6 @@ import org.koin.dsl.module
 
 val deepLinkModule = module {
   single<HedvigDeepLinkContainer> {
-    val hedvigBuildConstants = get<HedvigBuildConstants>()
-    HedvigDeepLinkContainerImpl(
-      isProduction = hedvigBuildConstants.isProduction,
-      isDev = !hedvigBuildConstants.isProduction && hedvigBuildConstants.isDebug,
-    )
+    HedvigDeepLinkContainerImpl(get<HedvigBuildConstants>())
   }
 }

@@ -1,5 +1,7 @@
 package com.hedvig.android.navigation.core
 
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+
 interface HedvigDeepLinkContainer {
   val home: String // Home destination, the start destination of the app
   val insurances: String // The insurances destination, which also shows cross sells
@@ -12,24 +14,17 @@ interface HedvigDeepLinkContainer {
 }
 
 internal class HedvigDeepLinkContainerImpl(
-  isProduction: Boolean,
-  isDev: Boolean,
+  hedvigBuildConstants: HedvigBuildConstants,
 ) : HedvigDeepLinkContainer {
-  private val baseFirebaseLink = if (isProduction) {
-    "https://hedvig.page.link"
-  } else if (isDev) {
-    "https://hedvigdevelop.page.link"
-  } else {
-    "https://hedvigtest.page.link"
-  }
+  private val baseDeepLinkDomain = "https://${hedvigBuildConstants.deepLinkHost}"
 
   // Home does not have some special text, acts as the fallback to all unknown deep links
-  override val home: String = baseFirebaseLink
-  override val insurances: String = "$baseFirebaseLink/insurances"
-  override val forever: String = "$baseFirebaseLink/forever"
-  override val profile: String = "$baseFirebaseLink/profile"
-  override val eurobonus: String = "$baseFirebaseLink/eurobonus"
-  override val chat: String = "$baseFirebaseLink/chat"
-  override val connectPayment: String = "$baseFirebaseLink/connect-payment"
-  override val directDebit: String = "$baseFirebaseLink/direct-debit"
+  override val home: String = baseDeepLinkDomain
+  override val insurances: String = "$baseDeepLinkDomain/insurances"
+  override val forever: String = "$baseDeepLinkDomain/forever"
+  override val profile: String = "$baseDeepLinkDomain/profile"
+  override val eurobonus: String = "$baseDeepLinkDomain/eurobonus"
+  override val chat: String = "$baseDeepLinkDomain/chat"
+  override val connectPayment: String = "$baseDeepLinkDomain/connect-payment"
+  override val directDebit: String = "$baseDeepLinkDomain/direct-debit"
 }
