@@ -1,4 +1,4 @@
-query EntrypointGroups {
+query EntryPointGroups {
   entrypointGroups(type: CLAIM) {
     id
     displayName
