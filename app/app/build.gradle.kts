@@ -5,7 +5,6 @@ plugins {
   id("hedvig.android.application.compose")
   id("hedvig.android.ktlint")
   id("kotlin-parcelize")
-  alias(libs.plugins.androidRemoveUnusedResourcesPlugin)
   alias(libs.plugins.appIconBannerGenerator) // Automatically adds the "DEBUG" banner on the debug app icon
   alias(libs.plugins.crashlytics)
   alias(libs.plugins.datadog)
@@ -32,8 +31,6 @@ android {
     vectorDrawables.useSupportLibrary = true
 
     resourceConfigurations.addAll(listOf("en", "en-rNO", "en-rSE", "en-rDK", "nb-rNO", "sv-rSE", "da-rDK"))
-
-    testInstrumentationRunner = "com.hedvig.app.TestRunner"
   }
 
   packaging {
@@ -114,7 +111,6 @@ dependencies {
   implementation(libs.accompanist.insetsUi)
   implementation(libs.accompanist.pagerIndicators)
   implementation(libs.accompanist.systemUiController)
-  implementation(libs.adyen)
   implementation(libs.androidx.compose.animation)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material)
@@ -220,6 +216,8 @@ dependencies {
   implementation(projects.featureChangeaddress)
   implementation(projects.featureChat)
   implementation(projects.featureClaimTriaging)
+  implementation(projects.featureConnectPaymentAdyen)
+  implementation(projects.featureConnectPaymentTrustly)
   implementation(projects.featureForever)
   implementation(projects.featureHome)
   implementation(projects.featureInsurances)
@@ -246,12 +244,9 @@ dependencies {
   implementation(projects.payment)
   implementation(projects.theme)
 
-  stagingImplementation(projects.testdata)
-
   debugImplementation(libs.androidx.compose.uiTestManifest)
   debugImplementation(libs.androidx.compose.uiTooling)
   debugImplementation(libs.leakCanary)
-  debugImplementation(projects.testdata)
 
   testImplementation(libs.androidx.arch.testing)
   testImplementation(libs.androidx.test.junit)
@@ -273,23 +268,6 @@ dependencies {
   testImplementation(projects.languageTest)
   testImplementation(projects.loggingTest)
   testImplementation(projects.marketTest)
-  testImplementation(projects.testdata)
-
-  androidTestImplementation(libs.androidx.compose.uiTestJunit)
-  androidTestImplementation(libs.androidx.espresso.contrib)
-  androidTestImplementation(libs.androidx.espresso.core)
-  androidTestImplementation(libs.androidx.espresso.intents)
-  androidTestImplementation(libs.androidx.test.junit)
-  androidTestImplementation(libs.androidx.test.rules)
-  androidTestImplementation(libs.androidx.test.runner)
-  androidTestImplementation(libs.apollo.idlingResource)
-  androidTestImplementation(libs.assertK)
-  androidTestImplementation(libs.kaspresso)
-  androidTestImplementation(libs.koin.test)
-  androidTestImplementation(libs.mockk.android)
-  androidTestImplementation(libs.okhttp.mockWebServer)
-  androidTestImplementation(projects.hanalyticsFeatureFlagsTest)
-  androidTestImplementation(projects.testdata)
 }
 
 fun DependencyHandlerScope.stagingImplementation(dependencyNotation: Any) {

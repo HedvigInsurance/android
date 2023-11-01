@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.genericauth
 
+import android.view.KeyEvent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -23,8 +24,12 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -32,7 +37,6 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedButt
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.appbar.TopAppBarWithBack
-import com.hedvig.app.util.compose.submitOnEnter
 
 @Composable
 fun EmailInputScreen(
@@ -135,6 +139,20 @@ private fun TrailingIcon(
           hedvig.resources.R.string.login_text_input_email_address_icon_description_clear_all,
         ),
       )
+    }
+  }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+private fun Modifier.submitOnEnter(action: () -> Unit) = composed {
+  val keyboardController = LocalSoftwareKeyboardController.current
+  onKeyEvent { keyEvent ->
+    if (keyEvent.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_ENTER) {
+      keyboardController?.hide()
+      action()
+      true
+    } else {
+      false
     }
   }
 }

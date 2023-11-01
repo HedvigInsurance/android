@@ -1,6 +1,7 @@
 package com.hedvig.android.notification.firebase
 
 import android.content.Context
+import android.os.Build
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.NetworkType
@@ -31,7 +32,11 @@ internal class FCMTokenManager(
       .await()
     WorkManager.getInstance(applicationContext).enqueue(
       OneTimeWorkRequestBuilder<FCMTokenUploadWorker>()
-        .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 30.seconds.toJavaDuration())
+        .apply {
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 30.seconds.toJavaDuration())
+          }
+        }
         .setConstraints(Constraints(requiredNetworkType = NetworkType.CONNECTED))
         .addTag(FIREBASE_PUSH_TOKEN_MUTATION_WORKER_TAG)
         .build(),

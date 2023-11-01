@@ -59,6 +59,10 @@ sealed interface AppDestination : Destination {
 
   @Serializable
   object PaymentHistory : AppDestination
-//  @Serializable
-//  object LegacyClaimsTriaging : AppDestination
+
+  @Serializable
+  object ConnectPayment : AppDestination // Handles connecting payment with Trustly. Auto-navigates to Adyen for NO/DK
+
+  @Serializable
+  object ConnectPaymentAdyen : AppDestination // To be deprecated as soon as Adyen support is dropped
 }

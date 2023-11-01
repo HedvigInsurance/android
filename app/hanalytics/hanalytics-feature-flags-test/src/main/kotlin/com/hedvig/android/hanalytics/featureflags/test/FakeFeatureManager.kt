@@ -38,6 +38,11 @@ class FakeFeatureManager(
 class FakeFeatureManager2(
   private val fixedMap: Map<Feature, Boolean> = emptyMap(),
 ) : FeatureManager {
+  /**
+   * Allow the feature manager to return [fixedReturnForAll] for all features
+   */
+  constructor(fixedReturnForAll: Boolean) : this(Feature.entries.associateWith { fixedReturnForAll })
+
   val featureTurbine = Turbine<Pair<Feature, Boolean>>(name = "FeatureTurbine")
 
   override suspend fun invalidateExperiments() {}

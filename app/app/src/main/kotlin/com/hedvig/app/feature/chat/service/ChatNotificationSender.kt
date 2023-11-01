@@ -22,7 +22,6 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
-import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.getMutablePendingIntentFlags
 
 class ChatNotificationSender(
@@ -104,13 +103,8 @@ class ChatNotificationSender(
 
     val pendingIntent: PendingIntent? = TaskStackBuilder
       .create(context)
-      .run {
-        addNextIntentWithParentStack(chatIntent)
-        addNextIntentWithParentStack(
-          NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_NEW_MESSAGE),
-        )
-        getPendingIntent(0, flags)
-      }
+      .addNextIntent(chatIntent)
+      .getPendingIntent(0, flags)
     val replyRemoteInput = RemoteInput.Builder(CHAT_REPLY_KEY)
       .setLabel(context.getString(hedvig.resources.R.string.notifications_chat_reply_action))
       .build()

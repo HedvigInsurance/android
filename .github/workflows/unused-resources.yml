@@ -33,7 +33,6 @@ jobs:
       env:
         LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
         LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
-        ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
 
     - name: Run android lint
       run: ./gradlew :app:lintDebug -Prur.lint.onlyUnusedResources

@@ -19,6 +19,7 @@ import com.apollographql.apollo3.cache.normalized.watch
 import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
+import com.hedvig.android.core.common.cast
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import giraffe.ChatMessageIdQuery
@@ -281,5 +282,3 @@ class ChatRepository(
     const val MESSAGES_QUERY_NAME = "messages"
   }
 }
-
-private inline fun <reified T> Any?.cast() = this as T

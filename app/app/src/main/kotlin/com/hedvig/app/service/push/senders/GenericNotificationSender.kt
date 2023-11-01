@@ -9,7 +9,6 @@ import com.hedvig.android.core.common.android.notification.setupNotificationChan
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.DATA_MESSAGE_BODY
 import com.hedvig.app.service.push.DATA_MESSAGE_TITLE
 import com.hedvig.app.service.push.getImmutablePendingIntentFlags
@@ -33,18 +32,8 @@ class GenericNotificationSender(
     val body = remoteMessage.data[DATA_MESSAGE_BODY]
     val pendingIntent = TaskStackBuilder
       .create(context)
-      .run {
-        addNextIntentWithParentStack(
-          Intent(
-            context,
-            LoggedInActivity::class.java,
-          ),
-        )
-        addNextIntentWithParentStack(
-          NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_GENERIC_COMMUNICATION),
-        )
-        getPendingIntent(0, getImmutablePendingIntentFlags())
-      }
+      .addNextIntent(Intent(context, LoggedInActivity::class.java))
+      .getPendingIntent(0, getImmutablePendingIntentFlags())
     val notification = NotificationCompat
       .Builder(
         context,

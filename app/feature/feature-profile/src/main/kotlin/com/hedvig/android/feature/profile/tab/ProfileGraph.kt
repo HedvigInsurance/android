@@ -17,7 +17,6 @@ import com.hedvig.android.feature.profile.payment.history.PaymentHistoryDestinat
 import com.hedvig.android.feature.profile.payment.history.PaymentHistoryViewModel
 import com.hedvig.android.feature.profile.settings.SettingsDestination
 import com.hedvig.android.feature.profile.settings.SettingsViewModel
-import com.hedvig.android.market.Market
 import com.hedvig.android.navigation.core.AppDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
@@ -32,11 +31,9 @@ fun NavGraphBuilder.profileGraph(
   navigator: Navigator,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   hedvigBuildConstants: HedvigBuildConstants,
-  navigateToPayoutScreen: () -> Unit,
-  navigateToPayinScreen: () -> Unit,
+  navigateToConnectPayment: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
-  market: Market,
 ) {
   navigation<TopLevelGraph.PROFILE>(
     startDestination = createRoutePattern<AppDestination.TopLevelDestination.Profile>(),
@@ -65,7 +62,7 @@ fun NavGraphBuilder.profileGraph(
         navigateToPayment = {
           with(navigator) { backStackEntry.navigate(AppDestination.PaymentInfo) }
         },
-        navigateToConnectPayment = navigateToPayinScreen,
+        navigateToConnectPayment = navigateToConnectPayment,
         openAppSettings = openAppSettings,
         openUrl = openUrl,
         viewModel = viewModel,
@@ -121,9 +118,7 @@ fun NavGraphBuilder.profileGraph(
         onPaymentHistoryClicked = {
           with(navigator) { backStackEntry.navigate(AppDestination.PaymentHistory) }
         },
-        onConnectPayoutMethod = navigateToPayoutScreen,
-        onChangeBankAccount = navigateToPayinScreen,
-        market = market,
+        onChangeBankAccount = navigateToConnectPayment,
       )
     }
     composable<AppDestination.PaymentHistory> {

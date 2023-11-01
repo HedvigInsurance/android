@@ -22,8 +22,6 @@ enum class Feature(
   UPDATE_NECESSARY(
     "Defines the lowest supported app version. Should prompt a user to update if it uses an outdated version.",
   ),
-  USE_NATIVE_CLAIMS_FLOW("Whether to use the native odyssey claims flow, with odyssey backend"),
   NEW_MOVING_FLOW("Moving flow from octopus. New design."),
-  CLAIMS_TRIAGING("Select claim group before starting claims flow."),
   TRAVEL_CERTIFICATE("Let member generate travel certificate in app."),
 }

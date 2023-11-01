@@ -38,6 +38,11 @@ interface HedvigBuildConstants {
   val urlOdyssey: String
 
   /**
+   * The base host used for all deep links.
+   */
+  val deepLinkHost: String
+
+  /**
    * e.g. 11.3.2
    */
   val appVersionName: String

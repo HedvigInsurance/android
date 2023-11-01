@@ -13,17 +13,17 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.app.feature.genericauth.otpinput.OtpInputActivity
-import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class GenericAuthActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    window.compatSetDecorFitsSystemWindows(false)
+    WindowCompat.setDecorFitsSystemWindows(window, false)
 
     val viewModel: GenericAuthViewModel = getViewModel()
     setContent {

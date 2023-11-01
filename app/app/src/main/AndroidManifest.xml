@@ -31,7 +31,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Hedvig.Theme">
-        <activity android:name=".feature.embark.ui.MoreOptionsActivity" />
         <activity
             android:name=".feature.loggedin.ui.LoggedInActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|layoutDirection"
@@ -51,7 +50,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="@string/FIREBASE_LINK_DOMAIN"
+                    android:host="@string/DEEP_LINK_DOMAIN_HOST"
                     android:scheme="https" />
             </intent-filter>
         </activity>
@@ -62,58 +61,17 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".feature.offer.ui.OfferActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:exported="true"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name="com.hedvig.app.feature.checkout.CheckoutActivity"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.crossselling.ui.CrossSellingResultActivity"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.adyen.payin.AdyenConnectPayinActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.trustly.TrustlyConnectPayinActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.embark.ui.EmbarkActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.adyen.payout.AdyenConnectPayoutActivity"
-            android:launchMode="singleTask" />
-        <activity
-            android:name="com.hedvig.android.feature.home.legacychangeaddress.LegacyChangeAddressActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name=".feature.zignsec.SimpleSignAuthenticationActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name="com.hedvig.android.feature.home.legacychangeaddress.result.ChangeAddressResultActivity" />
-        <activity android:name=".feature.offer.quotedetail.QuoteDetailActivity" />
         <activity android:name=".feature.sunsetting.ForceUpgradeActivity" />
         <activity
             android:name=".feature.genericauth.GenericAuthActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".feature.addressautocompletion.ui.AddressAutoCompleteActivity"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name=".feature.genericauth.otpinput.OtpInputActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".feature.tracking.NotificationOpenedTrackingActivity" />
         <activity
             android:name=".feature.marketing.MarketingActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|locale|layoutDirection"
@@ -151,9 +109,6 @@
         </service>
 
         <receiver android:name=".feature.chat.service.ChatMessageNotificationReceiver" />
-
-        <service android:name=".feature.adyen.payin.AdyenPayinDropInService" />
-        <service android:name=".feature.adyen.payout.AdyenPayoutDropInService" />
 
         <service
             android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"

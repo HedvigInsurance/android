@@ -9,6 +9,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -26,7 +27,7 @@ internal fun Faqs(
   faqItems: List<Pair<String, String>>,
   modifier: Modifier = Modifier,
 ) {
-  var expandedItemIndex by rememberSaveable { mutableStateOf(-1) }
+  var expandedItemIndex by rememberSaveable { mutableIntStateOf(-1) }
   Column(modifier) {
     Text(
       text = stringResource(id = R.string.CHANGE_ADDRESS_QA),

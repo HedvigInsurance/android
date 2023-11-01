@@ -12,7 +12,6 @@ android {
 }
 
 dependencies {
-  implementation(libs.adyen)
   implementation(libs.androidx.compose.uiViewBinding)
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.datastore.preferencesCore)

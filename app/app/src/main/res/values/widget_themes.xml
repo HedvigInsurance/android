@@ -34,29 +34,6 @@
         </item>
     </style>
 
-    <style name="Hedvig.Theme.TextInputLayout.OutlinedBox" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.Hedvig.TextInputLayout.OutlinedBox
-        </item>
-    </style>
-
-    <style name="ThemeOverlay.Hedvig.TextInputLayout.OutlinedBox" parent="">
-        <item name="editTextStyle">@style/Hedvig.Theme.TextInputEditText.OutlinedBox</item>
-    </style>
-
-    <style name="Hedvig.Theme.TextInputEditText.OutlinedBox" parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox">
-        <item name="android:textColor">?android:textColorSecondary</item>
-    </style>
-
-    <style name="Hedvig.Theme.TextInputLayout.FilledBox" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
-        <item name="materialThemeOverlay">
-            @style/ThemeOverlay.Hedvig.TextInputLayout.FilledBox
-        </item>
-        <item name="boxBackgroundColor">@android:color/transparent</item>
-        <item name="android:textColorHint">?android:textColorPrimary</item>
-        <item name="hintTextColor">?android:textColorPrimary</item>
-        <item name="helperTextTextColor">?android:textColorPrimary</item>
-    </style>
-
     <style name="ThemeOverlay.Hedvig.TextInputLayout.FilledBox" parent="">
         <item name="editTextStyle">@style/Hedvig.Theme.TextInputEditText.FilledBox</item>
     </style>
@@ -68,62 +45,9 @@
 
 
     <!-- Only used inside 1 place in referrals row. Can probably easily remove -->
-    <style name="ThemeOverlay.Hedvig.SurfaceOnSurface" parent="">
-        <item name="colorSurface">@color/colorSurfaceOnSurface</item>
-    </style>
-
-    <style name="ThemeOverlay.Hedvig.InfoCard" parent="">
-        <item name="colorSurface">@color/colorInfoCardSurface</item>
-    </style>
-
-    <style name="ThemeOverlay.Hedvig.WarningCard" parent="">
-        <item name="colorSurface">?colorWarning</item>
-        <item name="colorPrimary">@color/hedvig_black</item>
-        <item name="android:textColorPrimary">@color/text_color_primary_light</item>
-        <item name="android:textColorSecondary">@color/hedvig_black</item>
-        <item name="colorOnSurface">?colorPrimary</item>
-        <item name="android:textColorLink">?android:textColorSecondary</item>
-    </style>
-
-
-
-
 
     <style name="ThemeOverlay.Hedvig.Dialog.Alert" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
         <item name="materialAlertDialogBodyTextStyle">?textAppearanceBody1</item>
-    </style>
-
-    <style name="ThemeOverlay.Hedvig.Toolbar.ErrorAction" parent="">
-        <item name="actionMenuTextColor">?colorError</item>
-    </style>
-
-    <style name="ThemeOverlay.Hedvig.LoggedInCardView" parent="Widget.MaterialComponents.CardView">
-        <item name="cardElevation">@dimen/logged_in_card_elevation</item>
-        <item name="cardBackgroundColor">?colorSurface</item>
-    </style>
-
-    <style name="ThemeOverlay.Hedvig.ReferralsContainer" parent="">
-        <item name="android:colorBackground">?colorSurface</item>
-    </style>
-
-    <style name="ThemeOverlay.Hedvig.Embark.Chat.Hedvig" parent="">
-        <item name="android:background">@drawable/embark_chat_bubble_hedvig_background</item>
-        <item name="android:paddingStart">16dp</item>
-        <item name="android:paddingEnd">16dp</item>
-        <item name="android:paddingTop">12dp</item>
-        <item name="android:paddingBottom">12dp</item>
-    </style>
-
-    <style name="ThemeOverlay.Hedvig.Embark.Chat.Self" parent="">
-        <item name="android:textColorPrimary">@color/hedvig_black</item>
-        <item name="colorSurface">@color/separator_light</item>
-    </style>
-
-    <style name="ThemeOverlay.Hedvig.Card.Outlined.Unfilled" parent="">
-        <item name="cardElevation">0dp</item>
-        <item name="strokeColor">@color/color_divider</item>
-        <item name="strokeWidth">1dp</item>
-        <item name="colorSurface">?android:colorBackground</item>
     </style>
 
     <style name="Hedvig.DatePicker" parent="ThemeOverlay.MaterialComponents.MaterialCalendar">

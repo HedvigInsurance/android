@@ -34,7 +34,6 @@ jobs:
         env:
           LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
-          ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
       - name: Unit tests
         run: ./gradlew testDebugUnitTest
       - uses: test-summary/action@v2
@@ -68,7 +67,6 @@ jobs:
         env:
           LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
-          ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
       - run: ./gradlew lint
       - uses: yutailang0119/action-android-lint@v3.1.0
         with:
@@ -101,7 +99,6 @@ jobs:
         env:
           LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
-          ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
       - name: run ktlint from gradle
         continue-on-error: true
         run: ./gradlew ktlintCheck
@@ -143,7 +140,6 @@ jobs:
         env:
           LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
-          ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
       - name: Run license release report
         run: ./gradlew licenseReleaseReport --no-configuration-cache --continue
         continue-on-error: true

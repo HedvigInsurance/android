@@ -19,6 +19,8 @@ import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.annotations.ApolloExperimental
 import com.apollographql.apollo3.api.BuilderScope
 import com.apollographql.apollo3.testing.enqueueTestResponse
+import com.google.testing.junit.testparameterinjector.TestParameter
+import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.apollo.giraffe.test.GiraffeFakeResolver
 import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.core.common.test.isRight
@@ -31,6 +33,9 @@ import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
 import com.hedvig.android.feature.home.claimstatus.claimprogress.ClaimProgressUiState
 import com.hedvig.android.feature.home.claimstatus.data.ClaimStatusCardUiState
 import com.hedvig.android.feature.home.claimstatus.data.PillUiState
+import com.hedvig.android.hanalytics.featureflags.FeatureManager
+import com.hedvig.android.hanalytics.featureflags.flags.Feature
+import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager2
 import com.hedvig.android.language.test.FakeLanguageService
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.memberreminders.MemberReminder
@@ -70,8 +75,10 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 
 @OptIn(ApolloExperimental::class)
+@RunWith(TestParameterInjector::class)
 internal class GetHomeUseCaseTest {
 
   @get:Rule
@@ -91,6 +98,7 @@ internal class GetHomeUseCaseTest {
       FakeLanguageService(),
       getMemberRemindersUseCase,
       getTravelCertificateSpecificationsUseCase,
+      FakeFeatureManager2(true),
     )
 
     getMemberRemindersUseCase.memberReminders.add(
@@ -225,6 +233,7 @@ internal class GetHomeUseCaseTest {
       FakeLanguageService(),
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
       getTravelCertificateSpecificationsUseCase,
+      FakeFeatureManager2(true),
     )
 
     getTravelCertificateSpecificationsUseCase.turbine.add(TravelCertificateError.NotEligible.left())
@@ -250,6 +259,7 @@ internal class GetHomeUseCaseTest {
       FakeLanguageService(),
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
       getTravelCertificateSpecificationsUseCase,
+      FakeFeatureManager2(true),
     )
 
     getTravelCertificateSpecificationsUseCase.turbine.add(
@@ -288,6 +298,7 @@ internal class GetHomeUseCaseTest {
       TestGetTravelCertificateSpecificationsUseCase().apply {
         turbine.add(TravelCertificateError.NotEligible.left())
       },
+      FakeFeatureManager2(true),
     )
 
     testGetMemberRemindersUseCase.memberReminders.add(
@@ -327,6 +338,7 @@ internal class GetHomeUseCaseTest {
       TestGetTravelCertificateSpecificationsUseCase().apply {
         turbine.add(TravelCertificateError.NotEligible.left())
       },
+      FakeFeatureManager2(true),
     )
 
     testGetMemberRemindersUseCase.memberReminders.add(MemberReminders())
@@ -339,32 +351,38 @@ internal class GetHomeUseCaseTest {
       .isEqualTo(MemberReminders(null, null, null))
   }
 
-  @Test()
-  fun `when the contract is considered active, we allow address changes`() = runTest {
+  @Test
+  fun `when the contract is considered active, we allow address changes if the feature flag allows it`(
+    @TestParameter isMovingFlowFlagEnabled: Boolean,
+  ) = runTest {
     val activeStatusList = listOf<BuilderScope.() -> ContractStatusMap>(
       { buildActiveStatus { } },
       { buildTerminatedTodayStatus { } },
       { buildTerminatedInFutureStatus { } },
     )
     for (activeStatus in activeStatusList) {
-      val getHomeDataUseCase = testUseCaseWithoutRemindersAndNoTravelCertificate()
+      val featureManager = FakeFeatureManager2()
+      val getHomeDataUseCase = testUseCaseWithoutRemindersAndNoTravelCertificate(featureManager)
 
       apolloClient.enqueueTestResponse(
         HomeQuery(Locale.en_SE, ""),
         HomeQuery.Data(GiraffeFakeResolver) { contracts = listOf(buildContract { status = activeStatus() }) },
       )
+      featureManager.featureTurbine.add(Feature.NEW_MOVING_FLOW to isMovingFlowFlagEnabled)
       val result = getHomeDataUseCase.invoke(true).first()
 
       assertThat(result)
         .isNotNull()
         .isRight()
         .prop(HomeData::allowAddressChange)
-        .isTrue()
+        .isEqualTo(isMovingFlowFlagEnabled)
     }
   }
 
   @Test
-  fun `when the contract is considered incactive, we do not allow address changes`() = runTest {
+  fun `when the contract is considered inactive, we do not allow address changes regardless of feature flag status`(
+    @TestParameter isMovingFlowFlagEnabled: Boolean,
+  ) = runTest {
     val nonActiveStatusList = listOf<BuilderScope.() -> ContractStatusMap>(
       { buildActiveInFutureAndTerminatedInFutureStatus { } },
       { buildActiveInFutureStatus { } },
@@ -374,12 +392,14 @@ internal class GetHomeUseCaseTest {
       { buildOtherContractStatus("typename") { } },
     )
     for (nonActiveStatus in nonActiveStatusList) {
-      val getHomeDataUseCase = testUseCaseWithoutRemindersAndNoTravelCertificate()
+      val featureManager = FakeFeatureManager2()
+      val getHomeDataUseCase = testUseCaseWithoutRemindersAndNoTravelCertificate(featureManager)
 
       apolloClient.enqueueTestResponse(
         HomeQuery(Locale.en_SE, ""),
         HomeQuery.Data(GiraffeFakeResolver) { contracts = listOf(buildContract { status = nonActiveStatus() }) },
       )
+      featureManager.featureTurbine.add(Feature.NEW_MOVING_FLOW to isMovingFlowFlagEnabled)
       val result = getHomeDataUseCase.invoke(true).first()
 
       assertThat(result)
@@ -763,9 +783,11 @@ internal class GetHomeUseCaseTest {
       .isEqualTo(HomeData.ContractStatus.Active)
   }
 
-  // Used as a convenience to get a use case withithout any enqueued apollo responses, but some sane defaults for the
+  // Used as a convenience to get a use case without any enqueued apollo responses, but some sane defaults for the
   // other dependencies
-  private fun testUseCaseWithoutRemindersAndNoTravelCertificate(): GetHomeDataUseCase {
+  private fun testUseCaseWithoutRemindersAndNoTravelCertificate(
+    faetureManager: FeatureManager = FakeFeatureManager2(true),
+  ): GetHomeDataUseCase {
     return GetHomeDataUseCaseImpl(
       apolloClient,
       FakeLanguageService(),
@@ -773,6 +795,7 @@ internal class GetHomeUseCaseTest {
       TestGetTravelCertificateSpecificationsUseCase().apply {
         turbine.add(TravelCertificateError.NotEligible.left())
       },
+      faetureManager,
     )
   }
 }
