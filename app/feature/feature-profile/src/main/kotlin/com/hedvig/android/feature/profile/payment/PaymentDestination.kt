@@ -83,20 +83,20 @@ internal fun PaymentDestination(
     locale = viewModel.languageService.getLocale(),
     navigateUp = onBackPressed,
     onChangeBankAccount = onChangeBankAccount,
-    onAddDiscountCode = viewModel::onDiscountCodeAdded,
-    onDiscountCodeChanged = viewModel::onDiscountCodeChanged,
+    onAddDiscountCode = { viewModel.emit(PaymentEvent.SubmitNewDiscountCode(it)) },
+    onDiscountCodeChanged = { viewModel.emit(PaymentEvent.EditDiscountCode(it)) },
     onPaymentHistoryClicked = onPaymentHistoryClicked,
-    onRetry = viewModel::retry,
+    onRetry = { viewModel.emit(PaymentEvent.Retry) },
   )
 }
 
 @Composable
 private fun PaymentScreen(
-  uiState: PaymentViewModel.PaymentUiState,
+  uiState: PaymentUiState,
   locale: Locale,
   navigateUp: () -> Unit,
   onChangeBankAccount: () -> Unit,
-  onAddDiscountCode: () -> Unit,
+  onAddDiscountCode: (CampaignCode) -> Unit,
   onDiscountCodeChanged: (CampaignCode) -> Unit,
   onPaymentHistoryClicked: () -> Unit,
   onRetry: () -> Unit,
@@ -182,7 +182,7 @@ private fun PaymentScreen(
 
 @Composable
 private fun PaymentAmountCard(
-  uiState: PaymentViewModel.PaymentUiState,
+  uiState: PaymentUiState,
   modifier: Modifier = Modifier,
 ) {
   HedvigCard(modifier = modifier) {
@@ -205,7 +205,7 @@ private fun PaymentAmountCard(
 }
 
 @Composable
-private fun NextPayment(uiState: PaymentViewModel.PaymentUiState, locale: Locale) {
+private fun NextPayment(uiState: PaymentUiState, locale: Locale) {
   Row(
     modifier = Modifier
       .fillMaxWidth()
@@ -222,7 +222,7 @@ private fun NextPayment(uiState: PaymentViewModel.PaymentUiState, locale: Locale
 
 @Composable
 private fun InsuranceCosts(
-  uiState: PaymentViewModel.PaymentUiState,
+  uiState: PaymentUiState,
   locale: Locale,
 ) {
   uiState.insuranceCosts.forEach { insuranceCost ->
@@ -256,7 +256,7 @@ private fun InsuranceCosts(
 }
 
 @Composable
-private fun TotalDiscount(uiState: PaymentViewModel.PaymentUiState) {
+private fun TotalDiscount(uiState: PaymentUiState) {
   Row(
     modifier = Modifier
       .fillMaxWidth()
@@ -273,8 +273,8 @@ private fun TotalDiscount(uiState: PaymentViewModel.PaymentUiState) {
 
 @Composable
 private fun ColumnScope.AddDiscount(
-  uiState: PaymentViewModel.PaymentUiState,
-  onAddDiscountCode: () -> Unit,
+  uiState: PaymentUiState,
+  onAddDiscountCode: (CampaignCode) -> Unit,
   onDiscountCodeChanged: (CampaignCode) -> Unit,
 ) {
   var showDiscountInput by rememberSaveable { mutableStateOf(false) }
@@ -309,17 +309,22 @@ private fun ColumnScope.AddDiscount(
         onValueChange = { onDiscountCodeChanged(CampaignCode(it)) },
         errorText = uiState.discountError?.let { stringResource(id = R.string.general_error) },
         label = {
-          Text(stringResource(id = R.string.REFERRAL_ADDCOUPON_INPUTPLACEHOLDER))
+          Text(stringResource(R.string.REFERRAL_ADDCOUPON_INPUTPLACEHOLDER))
         },
         keyboardActions = KeyboardActions(
-          onDone = { onAddDiscountCode() },
+          onDone = {
+            if (uiState.discountCode != null) {
+              onAddDiscountCode(uiState.discountCode)
+            }
+          },
         ),
         modifier = Modifier.weight(1f),
       )
       Spacer(Modifier.width(8.dp))
       HedvigContainedSmallButton(
-        text = stringResource(id = R.string.PAYMENTS_ADD_CODE_BUTTON_LABEL),
-        onClick = onAddDiscountCode,
+        text = stringResource(R.string.PAYMENTS_ADD_CODE_BUTTON_LABEL),
+        onClick = { onAddDiscountCode(uiState.discountCode!!) },
+        enabled = uiState.discountCode != null,
         contentPadding = PaddingValues(horizontal = 32.dp, vertical = 16.dp),
         colors = ButtonDefaults.buttonColors(
           containerColor = MaterialTheme.colorScheme.typeContainer,
@@ -331,7 +336,7 @@ private fun ColumnScope.AddDiscount(
 }
 
 @Composable
-private fun TotalAmount(uiState: PaymentViewModel.PaymentUiState) {
+private fun TotalAmount(uiState: PaymentUiState) {
   Row(
     modifier = Modifier
       .fillMaxWidth()
@@ -351,7 +356,7 @@ private fun TotalAmount(uiState: PaymentViewModel.PaymentUiState) {
 
 @Suppress("UnusedReceiverParameter")
 @Composable
-private fun ColumnScope.PaymentDetails(uiState: PaymentViewModel.PaymentUiState) {
+private fun ColumnScope.PaymentDetails(uiState: PaymentUiState) {
   Text(
     text = stringResource(id = R.string.payment_details_navigation_bar_title),
     modifier = Modifier.padding(horizontal = 16.dp),
@@ -411,16 +416,16 @@ private fun PreviewPaymentScreen() {
   HedvigTheme {
     Surface {
       PaymentScreen(
-        uiState = PaymentViewModel.PaymentUiState(
+        uiState = PaymentUiState(
           nextChargeAmount = "300 kr",
           nextChargeDate = LocalDate.now(),
           insuranceCosts = listOf(
-            PaymentViewModel.PaymentUiState.InsuranceCost(
+            PaymentUiState.InsuranceCost(
               displayName = "Home Insurance",
               cost = "279kr/mån",
               typeOfContract = TypeOfContract.SE_HOUSE,
             ),
-            PaymentViewModel.PaymentUiState.InsuranceCost(
+            PaymentUiState.InsuranceCost(
               displayName = "Accident Insurance",
               cost = "359kr/mån",
               typeOfContract = TypeOfContract.SE_ACCIDENT,
@@ -428,10 +433,10 @@ private fun PreviewPaymentScreen() {
           ),
           totalDiscount = "-40kr/mån",
           activeDiscounts = listOf(
-            PaymentViewModel.PaymentUiState.Discount(code = "FREE", displayName = "Gratis i 6 mån"),
-            PaymentViewModel.PaymentUiState.Discount(code = "BANK", displayName = "-50kr/mån"),
+            PaymentUiState.Discount(code = "FREE", displayName = "Gratis i 6 mån"),
+            PaymentUiState.Discount(code = "BANK", displayName = "-50kr/mån"),
           ),
-          paymentMethod = PaymentViewModel.PaymentUiState.PaymentMethod(
+          paymentMethod = PaymentUiState.PaymentMethod(
             displayName = "Nordea",
             displayValue = "31489*****",
           ),

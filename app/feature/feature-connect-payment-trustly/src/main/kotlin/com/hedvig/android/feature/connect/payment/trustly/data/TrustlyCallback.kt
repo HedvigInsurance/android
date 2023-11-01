@@ -15,6 +15,6 @@ internal interface TrustlyCallback {
 internal class TrustlyCallbackImpl(
   hedvigBuildConstants: HedvigBuildConstants,
 ) : TrustlyCallback {
-  override val successUrl: String = "${hedvigBuildConstants.urlBaseWeb}/payment-success"
-  override val failureUrl: String = "${hedvigBuildConstants.urlBaseWeb}/payment-failure"
+  override val successUrl: String = "${hedvigBuildConstants.deepLinkHost}/payment-success"
+  override val failureUrl: String = "${hedvigBuildConstants.deepLinkHost}/payment-failure"
 }

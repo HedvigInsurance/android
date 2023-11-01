@@ -151,12 +151,16 @@ private fun TrustlyBrowser(
           return
         }
         if (url == uiState.trustlyCallback.successUrl) {
+          logcat { "Trustly Webview overrides success url:$url" }
           view.stopLoading()
+          webViewNavigator.stopLoading()
           connectingCardSucceeded()
           return
         }
         if (url == uiState.trustlyCallback.failureUrl) {
+          logcat { "Trustly Webview overrides fail url:$url" }
           view.stopLoading()
+          webViewNavigator.stopLoading()
           connectingCardFailed()
           return
         }
@@ -164,7 +168,7 @@ private fun TrustlyBrowser(
 
       override fun onPageFinished(view: WebView, url: String?) {
         super.onPageFinished(view, url)
-        logcat { "Webview finished loading url:$url" }
+        logcat { "Trustly Webview finished loading url:$url" }
       }
 
       override fun onReceivedError(view: WebView, request: WebResourceRequest?, error: WebResourceError?) {

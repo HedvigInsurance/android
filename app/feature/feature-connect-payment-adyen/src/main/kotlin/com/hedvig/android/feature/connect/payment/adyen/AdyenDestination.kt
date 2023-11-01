@@ -136,12 +136,16 @@ private fun AdyenBrowser(
         super.onPageStarted(view, url, favicon)
         logcat { "Adyen Webview loading url:$url" }
         if (url?.contains("success") == true) {
+          logcat { "Adyen Webview overrides success url:$url" }
           view.stopLoading()
+          webViewNavigator.stopLoading()
           connectingCardSucceeded()
           return
         }
         if (url?.contains("fail") == true) {
+          logcat { "Adyen Webview overrides fail url:$url" }
           view.stopLoading()
+          webViewNavigator.stopLoading()
           connectingCardFailed()
           return
         }
@@ -149,7 +153,7 @@ private fun AdyenBrowser(
 
       override fun onPageFinished(view: WebView, url: String?) {
         super.onPageFinished(view, url)
-        logcat { "Webview finished loading url:$url" }
+        logcat { "Adyen Webview finished loading url:$url" }
       }
 
       override fun onReceivedError(view: WebView, request: WebResourceRequest?, error: WebResourceError?) {
