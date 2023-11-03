@@ -71,14 +71,12 @@ import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.plus
-import com.hedvig.android.feature.home.claimdetail.ui.previewList
 import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimsData
 import com.hedvig.android.feature.home.claims.commonclaim.EmergencyActivity
 import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
-import com.hedvig.android.feature.home.claimstatus.ClaimStatusCards
-import com.hedvig.android.feature.home.claimstatus.claimprogress.ClaimProgressUiState
-import com.hedvig.android.feature.home.claimstatus.data.ClaimStatusCardUiState
-import com.hedvig.android.feature.home.claimstatus.data.PillUiState
+import com.hedvig.android.ui.claimstatus.ClaimStatusCards
+import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
+import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.android.feature.home.home.ChatTooltip
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.otherservices.OtherServicesBottomSheet
@@ -317,8 +315,8 @@ private fun HomeScreenSuccess(
           if (uiState.claimStatusCardsData != null) {
             var consumedWindowInsets by remember { mutableStateOf(WindowInsets(0.dp)) }
             ClaimStatusCards(
-              goToDetailScreen = onClaimDetailCardClicked,
-              claimStatusCardsData = uiState.claimStatusCardsData,
+              onClick = onClaimDetailCardClicked,
+              claimStatusCardsUiState = uiState.claimStatusCardsData,
               contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
                 .exclude(consumedWindowInsets)
                 .only(WindowInsetsSides.Horizontal)
@@ -462,10 +460,10 @@ private fun PreviewHomeScreen() {
             nonEmptyListOf(
               ClaimStatusCardUiState(
                 id = "id",
-                pillsUiState = PillUiState.previewList(),
+                pillTypes = PillUiState.previewList(),
                 title = "Insurance Case",
                 subtitle = "Home Insurance renter",
-                claimProgressItemsUiState = ClaimProgressUiState.previewList(),
+                claimProgressItemsUiState = ClaimProgressSegment.previewList(),
               ),
             ),
           ),

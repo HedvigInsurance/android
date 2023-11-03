@@ -13,7 +13,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.travelcertificate.GetTravelCertificateSpecificationsUseCase
 import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimsData
 import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
-import com.hedvig.android.feature.home.claimstatus.data.ClaimStatusCardUiState
+import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.language.LanguageService

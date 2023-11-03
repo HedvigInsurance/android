@@ -48,6 +48,7 @@ import com.hedvig.android.feature.changeaddress.di.changeAddressModule
 import com.hedvig.android.feature.chat.ChatEventStore
 import com.hedvig.android.feature.chat.ChatRepository
 import com.hedvig.android.feature.chat.di.chatModule
+import com.hedvig.android.feature.claim.details.di.claimDetailsModule
 import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
 import com.hedvig.android.feature.connect.payment.adyen.di.adyenFeatureModule
 import com.hedvig.android.feature.connect.payment.trustly.di.connectPaymentTrustlyModule
@@ -361,6 +362,7 @@ val applicationModule = module {
       cacheManagerModule,
       changeAddressModule,
       chatModule,
+      claimDetailsModule,
       claimFlowDataModule,
       claimTriagingModule,
       clockModule,

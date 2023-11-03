@@ -12,7 +12,7 @@ import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.Provider
-import com.hedvig.android.feature.home.claimstatus.data.ClaimStatusCardUiState
+import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
@@ -85,7 +85,7 @@ internal class HomePresenterTest {
                 id = "id",
                 title = "title",
                 subtitle = "subtitle",
-                pillsUiState = emptyList(),
+                pillTypes = emptyList(),
                 claimProgressItemsUiState = emptyList(),
               ),
             ),
@@ -108,7 +108,7 @@ internal class HomePresenterTest {
                 id = "id",
                 title = "title",
                 subtitle = "subtitle",
-                pillsUiState = emptyList(),
+                pillTypes = emptyList(),
                 claimProgressItemsUiState = emptyList(),
               ),
             ),

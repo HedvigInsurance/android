@@ -15,7 +15,6 @@ android {
 }
 
 dependencies {
-  implementation(libs.accompanist.pagerIndicators)
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3)
@@ -40,8 +39,10 @@ dependencies {
   implementation(libs.moneta)
   implementation(projects.apolloCore)
   implementation(projects.apolloGiraffePublic)
+  implementation(projects.apolloOctopusPublic)
   implementation(projects.audioPlayer)
   implementation(projects.authAndroid)
+  implementation(projects.claimStatus)
   implementation(projects.coreCommonAndroidPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)

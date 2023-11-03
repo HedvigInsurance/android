@@ -1,0 +1,6 @@
+fragment ClaimsFragment on Member {
+  id
+  claims {
+    ...ClaimFragment
+  }
+}

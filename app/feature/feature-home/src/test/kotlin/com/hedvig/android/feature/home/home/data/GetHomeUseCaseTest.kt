@@ -30,9 +30,9 @@ import com.hedvig.android.data.travelcertificate.TravelCertificateError
 import com.hedvig.android.feature.home.claims.commonclaim.BulletPoint
 import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimsData
 import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
-import com.hedvig.android.feature.home.claimstatus.claimprogress.ClaimProgressUiState
-import com.hedvig.android.feature.home.claimstatus.data.ClaimStatusCardUiState
-import com.hedvig.android.feature.home.claimstatus.data.PillUiState
+import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
+import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
+import com.hedvig.android.ui.claimstatus.PillUiState
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager2
@@ -558,12 +558,12 @@ internal class GetHomeUseCaseTest {
           title = "status title#1",
           subtitle = "status subtitle#1",
           claimProgressItemsUiState = listOf(
-            ClaimProgressUiState(
+            ClaimProgressSegment(
               text = "Ongoing",
-              type = ClaimProgressUiState.ClaimProgressType.CURRENTLY_ACTIVE,
+              type = ClaimProgressSegment.SegmentType.CURRENTLY_ACTIVE,
             ),
           ),
-          pillsUiState = listOf(
+          pillTypes = listOf(
             PillUiState(
               text = "pill",
               type = PillUiState.PillType.PAYMENT,
@@ -575,7 +575,7 @@ internal class GetHomeUseCaseTest {
           title = "status title#2",
           subtitle = "status subtitle#2",
           claimProgressItemsUiState = emptyList(),
-          pillsUiState = emptyList(),
+          pillTypes = emptyList(),
         ),
       )
   }
