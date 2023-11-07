@@ -8,20 +8,26 @@ import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.annotations.ApolloExperimental
 import com.apollographql.apollo3.testing.enqueueTestNetworkError
 import com.apollographql.apollo3.testing.enqueueTestResponse
-import com.hedvig.android.apollo.giraffe.test.GiraffeFakeResolver
+import com.google.testing.junit.testparameterinjector.TestParameter
+import com.google.testing.junit.testparameterinjector.TestParameterInjector
+import com.hedvig.android.apollo.octopus.test.OctopusFakeResolver
 import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.core.common.test.isLeft
 import com.hedvig.android.core.common.test.isRight
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager2
 import com.hedvig.android.logger.TestLogcatLoggingRule
-import giraffe.GetPayinMethodStatusQuery
-import giraffe.type.PayinMethodStatus
 import kotlinx.coroutines.test.runTest
+import octopus.GetPayinMethodStatusQuery
+import octopus.type.MemberPaymentConnectionStatus
+import octopus.type.buildMember
+import octopus.type.buildMemberPaymentInformation
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 
 @OptIn(ApolloExperimental::class)
+@RunWith(TestParameterInjector::class)
 class GetConnectPaymentReminderUseCaseTest {
 
   @get:Rule
@@ -33,57 +39,31 @@ class GetConnectPaymentReminderUseCaseTest {
     get() = testApolloClientRule.apolloClient
 
   @Test
-  fun `when payin method needs setup and the feature flag is on, show the reminder`() = runTest {
+  fun `when payin method needs setup, show the reminder if the feature flag allows it`(
+    @TestParameter featureFlagAllowsConnectPaymentReminder: Boolean,
+  ) = runTest {
     val getConnectPaymentReminderUseCase = GetConnectPaymentReminderUseCaseImpl(
       apolloClient,
-      FakeFeatureManager2(mapOf(Feature.CONNECT_PAYIN_REMINDER to true)),
+      FakeFeatureManager2(mapOf(Feature.CONNECT_PAYIN_REMINDER to featureFlagAllowsConnectPaymentReminder)),
     )
     apolloClient.enqueueTestResponse(
       GetPayinMethodStatusQuery(),
-      GetPayinMethodStatusQuery.Data(GiraffeFakeResolver) {
-        payinMethodStatus = PayinMethodStatus.NEEDS_SETUP
+      GetPayinMethodStatusQuery.Data(OctopusFakeResolver) {
+        currentMember = buildMember {
+          paymentInformation = buildMemberPaymentInformation {
+            status = MemberPaymentConnectionStatus.NEEDS_SETUP
+          }
+        }
       },
     )
 
     val result = getConnectPaymentReminderUseCase.invoke()
 
-    assertThat(result).isRight().isEqualTo(ShowConnectPaymentReminder)
-  }
-
-  @Test
-  fun `when payin method is pending and the feature flag is on, don't show the reminder`() = runTest {
-    val getConnectPaymentReminderUseCase = GetConnectPaymentReminderUseCaseImpl(
-      apolloClient,
-      FakeFeatureManager2(mapOf(Feature.CONNECT_PAYIN_REMINDER to true)),
-    )
-    apolloClient.enqueueTestResponse(
-      GetPayinMethodStatusQuery(),
-      GetPayinMethodStatusQuery.Data(GiraffeFakeResolver) {
-        payinMethodStatus = PayinMethodStatus.PENDING
-      },
-    )
-
-    val result = getConnectPaymentReminderUseCase.invoke()
-
-    assertThat(result).isLeft().isEqualTo(ConnectPaymentReminderError.AlreadySetup)
-  }
-
-  @Test
-  fun `with the feature flag off, don't get a 'ShowReminder' response`() = runTest {
-    val getConnectPaymentReminderUseCase = GetConnectPaymentReminderUseCaseImpl(
-      apolloClient,
-      FakeFeatureManager2(mapOf(Feature.CONNECT_PAYIN_REMINDER to false)),
-    )
-    apolloClient.enqueueTestResponse(
-      GetPayinMethodStatusQuery(),
-      GetPayinMethodStatusQuery.Data(GiraffeFakeResolver) {
-        payinMethodStatus = PayinMethodStatus.NEEDS_SETUP
-      },
-    )
-
-    val result = getConnectPaymentReminderUseCase.invoke()
-
-    assertThat(result).isLeft().isEqualTo(ConnectPaymentReminderError.FeatureFlagNotEnabled)
+    if (featureFlagAllowsConnectPaymentReminder) {
+      assertThat(result).isRight().isEqualTo(ShowConnectPaymentReminder)
+    } else {
+      assertThat(result).isLeft().isEqualTo(ConnectPaymentReminderError.FeatureFlagNotEnabled)
+    }
   }
 
   @Test
@@ -94,8 +74,12 @@ class GetConnectPaymentReminderUseCaseTest {
     )
     apolloClient.enqueueTestResponse(
       GetPayinMethodStatusQuery(),
-      GetPayinMethodStatusQuery.Data(GiraffeFakeResolver) {
-        payinMethodStatus = PayinMethodStatus.ACTIVE
+      GetPayinMethodStatusQuery.Data(OctopusFakeResolver) {
+        currentMember = buildMember {
+          paymentInformation = buildMemberPaymentInformation {
+            status = MemberPaymentConnectionStatus.ACTIVE
+          }
+        }
       },
     )
 

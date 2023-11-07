@@ -4,6 +4,9 @@
 # https://www.apollographql.com/docs/kotlin/v4/advanced/multi-modules/#auto-detection-of-used-types
 query Ignore {
   currentMember {
+    paymentInformation {
+      status
+    }
     claims {
       ...ClaimFragment
     }

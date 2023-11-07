@@ -6,7 +6,7 @@ plugins {
 }
 
 dependencies {
-  apolloMetadata(projects.apolloGiraffePublic)
+  apolloMetadata(projects.apolloOctopusPublic)
 
   api(libs.kotlinx.datetime)
 
@@ -22,7 +22,6 @@ dependencies {
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
   implementation(projects.apolloCore)
-  implementation(projects.apolloGiraffePublic)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
@@ -33,8 +32,8 @@ dependencies {
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
+  testImplementation(libs.testParameterInjector)
   testImplementation(libs.turbine)
-  testImplementation(projects.apolloGiraffeTest)
   testImplementation(projects.apolloOctopusTest)
   testImplementation(projects.apolloTest)
   testImplementation(projects.coreCommonTest)
@@ -46,8 +45,8 @@ dependencies {
 }
 
 apollo {
-  service("giraffe") {
-    packageName.set("giraffe")
+  service("octopus") {
+    packageName.set("octopus")
     generateDataBuilders.set(true)
   }
 }
