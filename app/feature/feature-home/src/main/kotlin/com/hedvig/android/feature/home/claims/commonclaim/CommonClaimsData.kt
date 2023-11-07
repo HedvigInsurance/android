@@ -2,10 +2,11 @@ package com.hedvig.android.feature.home.claims.commonclaim
 
 import android.os.Parcelable
 import com.hedvig.android.core.common.android.ThemedIconUrls
-import giraffe.HomeQuery
-import giraffe.type.HedvigColor
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
+import octopus.HomeQuery
+import octopus.HomeQuery.Data.CurrentMember.ActiveContract.CurrentAgreement.ProductVariant.CommonClaimDescription.Layout.Companion.asCommonClaimLayoutTitleAndBulletPoints
+import octopus.type.HedvigColor
 
 @Parcelize
 @Serializable
@@ -21,19 +22,19 @@ data class CommonClaimsData(
 ) : Parcelable {
   companion object {
     fun from(
-      data: HomeQuery.CommonClaim,
+      data: HomeQuery.Data.CurrentMember.ActiveContract.CurrentAgreement.ProductVariant.CommonClaimDescription,
       eligibleToClaim: Boolean,
     ): CommonClaimsData? {
-      val layout = data.layout.asTitleAndBulletPoints ?: return null
+      val layout = data.layout.asCommonClaimLayoutTitleAndBulletPoints() ?: return null
       return CommonClaimsData(
-        data.id,
-        ThemedIconUrls.from(data.icon.variants.fragments.iconVariantsFragment),
-        data.title,
-        layout.color,
-        layout.title,
-        layout.buttonTitle,
-        eligibleToClaim,
-        BulletPoint.from(layout.bulletPoints),
+        id = data.id,
+        iconUrls = ThemedIconUrls.from(data.icon),
+        title = data.title,
+        color = layout.color,
+        layoutTitle = layout.title,
+        buttonText = layout.buttonTitle,
+        eligibleToClaim = eligibleToClaim,
+        bulletPoints = BulletPoint.from(layout.bulletPoints),
       )
     }
   }

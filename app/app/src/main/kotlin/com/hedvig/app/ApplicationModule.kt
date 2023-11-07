@@ -104,7 +104,6 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import timber.log.Timber
 import java.io.File
-import java.time.Clock
 import java.util.Locale
 import kotlin.math.pow
 
@@ -277,8 +276,9 @@ private val notificationModule = module {
 }
 
 private val clockModule = module {
-  single<Clock> { Clock.systemDefaultZone() }
+  single<java.time.Clock> { java.time.Clock.systemDefaultZone() }
   single<kotlinx.datetime.Clock> { kotlinx.datetime.Clock.System }
+  single<kotlinx.datetime.TimeZone> { kotlinx.datetime.TimeZone.currentSystemDefault() }
 }
 
 private val useCaseModule = module {
