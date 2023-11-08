@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.profile.settings
 
+import com.hedvig.android.apollo.NetworkCacheManager
+import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBackendUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.language.Language
 import com.hedvig.android.language.LanguageService
@@ -7,16 +9,14 @@ import com.hedvig.android.market.Market
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
 import com.hedvig.android.molecule.android.MoleculeViewModel
-import com.hedvig.hanalytics.AppScreen
-import com.hedvig.hanalytics.HAnalytics
 
 internal class SettingsViewModel(
-  hAnalytics: HAnalytics,
-  notifyBackendAboutLanguageChangeUseCase: NotifyBackendAboutLanguageChangeUseCase,
   marketManager: MarketManager,
   languageService: LanguageService,
   settingsDataStore: SettingsDataStore,
   enableNotificationsReminderManager: EnableNotificationsReminderManager,
+  private val cacheManager: NetworkCacheManager,
+  private val uploadLanguagePreferenceToBackendUseCase: UploadLanguagePreferenceToBackendUseCase,
 ) : MoleculeViewModel<SettingsEvent, SettingsUiState>(
   SettingsUiState.Loading(
     selectedLanguage = languageService.getLanguage(),
@@ -27,13 +27,10 @@ internal class SettingsViewModel(
     },
   ),
   SettingsPresenter(
-    notifyBackendAboutLanguageChangeUseCase = notifyBackendAboutLanguageChangeUseCase,
     languageService = languageService,
     settingsDataStore = settingsDataStore,
     enableNotificationsReminderManager = enableNotificationsReminderManager,
+    cacheManager = cacheManager,
+    uploadLanguagePreferenceToBackendUseCase = uploadLanguagePreferenceToBackendUseCase,
   ),
-) {
-  init {
-    hAnalytics.screenView(AppScreen.APP_SETTINGS)
-  }
-}
+)

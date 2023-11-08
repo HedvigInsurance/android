@@ -232,6 +232,7 @@ dependencies {
   implementation(projects.hanalyticsFeatureFlagsPublic)
   implementation(projects.initializable)
   implementation(projects.languageCore)
+  implementation(projects.languageData)
   implementation(projects.loggingAndroid)
   implementation(projects.loggingPublic)
   implementation(projects.marketCore)

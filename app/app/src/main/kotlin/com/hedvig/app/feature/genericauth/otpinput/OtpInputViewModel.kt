@@ -3,7 +3,6 @@ package com.hedvig.app.feature.genericauth.otpinput
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.auth.AuthTokenService
-import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult
 import com.hedvig.authlib.ResendOtpResult.Error
@@ -22,7 +21,6 @@ class OtpInputViewModel(
   credential: String,
   private val authTokenService: AuthTokenService,
   private val authRepository: AuthRepository,
-  private val uploadMarketAndLanguagePreferencesUseCase: UploadMarketAndLanguagePreferencesUseCase,
 ) : ViewModel() {
   private val _viewState = MutableStateFlow(ViewState(credential = credential))
   val viewState = _viewState.asStateFlow()
@@ -74,7 +72,6 @@ class OtpInputViewModel(
         _viewState.update {
           it.copy(loadingCode = false)
         }
-        uploadMarketAndLanguagePreferencesUseCase.invoke()
       }
     }
   }
