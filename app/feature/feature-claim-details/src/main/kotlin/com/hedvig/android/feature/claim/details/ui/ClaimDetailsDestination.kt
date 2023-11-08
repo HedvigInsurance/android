@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.claim.details.ui
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,13 +15,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -129,8 +130,8 @@ private fun ClaimDetailScreen(
           stringResource(R.string.claim_status_detail_submitted_message),
           Modifier.padding(horizontal = 2.dp),
         )
-        Spacer(Modifier.height(2.dp))
-        HedvigCard {
+        Spacer(Modifier.height(8.dp))
+        HedvigCard(Modifier.fillMaxWidth()) {
           Text(
             uiState.submittedContent.text,
             Modifier.padding(16.dp),
@@ -183,7 +184,11 @@ internal fun ClaimInfoCard(
         }
         Spacer(Modifier.width(4.dp))
         IconButton(onClick = onChatClick) {
-          Icon(Icons.Hedvig.Chat, stringResource(R.string.claim_status_detail_chat_button_description))
+          Image(
+            imageVector = Icons.Hedvig.Chat,
+            contentDescription = stringResource(R.string.claim_status_detail_chat_button_description),
+            modifier = Modifier.size(32.dp),
+          )
         }
       }
     }
@@ -244,8 +249,20 @@ private fun PreviewClaimDetailScreen() {
           submittedContent = ClaimDetailUiState.Content.SubmittedContent.FreeText("Some free input text"),
           claimStatusCardUiState = ClaimStatusCardUiState(
             id = "id",
-            pillTypes = listOf(ClaimPillType.Closed.Paid, ClaimPillType.PaymentAmount(UiMoney(399.0, CurrencyCode.SEK))),
+            pillTypes = listOf(
+              ClaimPillType.Open,
+              ClaimPillType.Reopened,
+              ClaimPillType.Closed.Paid,
+              ClaimPillType.PaymentAmount(UiMoney(399.0, CurrencyCode.SEK)),
+              ClaimPillType.Closed.NotCompensated,
+              ClaimPillType.Closed.NotCovered,
+            ),
             claimProgressItemsUiState = listOf(
+              ClaimProgressSegment(ClaimProgressSegment.SegmentText.Submitted, ClaimProgressSegment.SegmentType.PAID),
+              ClaimProgressSegment(
+                ClaimProgressSegment.SegmentText.BeingHandled,
+                ClaimProgressSegment.SegmentType.PAID,
+              ),
               ClaimProgressSegment(ClaimProgressSegment.SegmentText.Closed, ClaimProgressSegment.SegmentType.PAID),
             ),
           ),

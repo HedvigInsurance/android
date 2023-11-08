@@ -15,6 +15,7 @@ dependencies {
   implementation(libs.androidx.other.recyclerView)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloGiraffePublic)
+  implementation(projects.apolloOctopusPublic)
   implementation(projects.coreResources)
 
   testImplementation(libs.assertK)

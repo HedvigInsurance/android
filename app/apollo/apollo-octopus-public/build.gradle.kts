@@ -6,10 +6,10 @@ plugins {
 }
 
 dependencies {
+  api(libs.apollo.adapters)
   api(libs.apollo.api)
   api(libs.kotlinx.datetime)
 
-  implementation(libs.apollo.adapters)
   implementation(libs.apollo.runtime)
   implementation(libs.koin.core)
   implementation(projects.coreBuildConstants)

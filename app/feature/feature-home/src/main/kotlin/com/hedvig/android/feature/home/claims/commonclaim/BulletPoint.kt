@@ -2,9 +2,9 @@ package com.hedvig.android.feature.home.claims.commonclaim
 
 import android.os.Parcelable
 import com.hedvig.android.core.common.android.ThemedIconUrls
-import giraffe.HomeQuery
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
+import octopus.HomeQuery.Data.CurrentMember.ActiveContract.CurrentAgreement.ProductVariant.CommonClaimDescription.CommonClaimLayoutTitleAndBulletPointsLayout
 
 @Serializable
 @Parcelize
@@ -15,11 +15,13 @@ data class BulletPoint(
 ) : Parcelable {
   companion object {
 
-    fun from(bulletPoints: List<HomeQuery.BulletPoint>) = bulletPoints.map { bp ->
+    fun from(
+      bulletPoints: List<CommonClaimLayoutTitleAndBulletPointsLayout.BulletPoint>,
+    ): List<BulletPoint> = bulletPoints.map { bulletPoint ->
       BulletPoint(
-        bp.title,
-        bp.description,
-        ThemedIconUrls.from(bp.icon.variants.fragments.iconVariantsFragment),
+        bulletPoint.title,
+        bulletPoint.description,
+        ThemedIconUrls.from(bulletPoint.icon),
       )
     }
   }
