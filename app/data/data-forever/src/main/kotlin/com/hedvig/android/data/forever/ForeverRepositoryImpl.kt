@@ -9,29 +9,25 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.forever.ForeverRepository.ReferralError
-import com.hedvig.android.language.LanguageService
-import giraffe.RedeemReferralCodeMutation
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
 import octopus.MemberReferralInformationCodeUpdateMutation
+import octopus.RedeemCampaignCodeMutation
 import octopus.ReferralsQuery
 
-@JvmInline
-value class CampaignCode(val code: String)
-
 internal class ForeverRepositoryImpl(
-  private val apolloClientOctopus: ApolloClient,
-  private val apolloClientGiraffe: ApolloClient,
-  private val languageService: LanguageService,
+  private val apolloClient: ApolloClient,
 ) : ForeverRepository {
   private val referralsQuery = ReferralsQuery()
 
-  override suspend fun getReferralsData(): Either<ErrorMessage, ReferralsQuery.Data> = apolloClientOctopus
+  override suspend fun getReferralsData(): Either<ErrorMessage, ReferralsQuery.Data> = apolloClient
     .query(referralsQuery)
     .fetchPolicy(FetchPolicy.NetworkOnly)
     .safeExecute()
     .toEither(::ErrorMessage)
 
   override suspend fun updateCode(newCode: String): Either<ReferralError, String> = either {
-    val result = apolloClientOctopus
+    val result = apolloClient
       .mutation(MemberReferralInformationCodeUpdateMutation(newCode))
       .safeExecute()
       .toEither { message, _ -> ReferralError(message) }
@@ -52,10 +48,18 @@ internal class ForeverRepositoryImpl(
   // TODO Move to payments module
   override suspend fun redeemReferralCode(
     campaignCode: CampaignCode,
-  ): Either<ErrorMessage, RedeemReferralCodeMutation.Data?> {
-    return apolloClientGiraffe
-      .mutation(RedeemReferralCodeMutation(campaignCode.code, languageService.getGraphQLLocale()))
+  ): Either<ErrorMessage, Unit> {
+    return apolloClient
+      .mutation(RedeemCampaignCodeMutation(campaignCode.code))
       .safeExecute()
       .toEither(::ErrorMessage)
+      .onLeft { logcat(LogPriority.WARN, it.throwable) { "redeemReferralCode failed. Message:${it.message}" } }
+      .onRight {
+        val userError = it.memberCampaignsRedeem.userError
+        if (userError != null) {
+          logcat(LogPriority.ERROR) { "redeemReferralCode failed. User error:${userError.message}" }
+        }
+      }
+      .map { Unit }
   }
 }
