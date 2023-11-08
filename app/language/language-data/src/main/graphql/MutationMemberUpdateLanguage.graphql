@@ -1,0 +1,11 @@
+mutation MemberUpdateLanguage($ietfLanguageTag: String!) {
+  memberUpdateLanguage(input: { ietfLanguageTag: $ietfLanguageTag}) {
+    member {
+      id
+      language
+    }
+    userError {
+      message
+    }
+  }
+}

@@ -1,0 +1,1 @@
+extend type Member @typePolicy(keyFields: "id")

@@ -21,6 +21,7 @@ import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.auth.listeners.di.apolloAuthListenersModule
+import com.hedvig.android.apollo.auth.listeners.di.languageAuthListenersModule
 import com.hedvig.android.apollo.auth.listeners.subscription.ReopenSubscriptionException
 import com.hedvig.android.apollo.di.apolloClientModule
 import com.hedvig.android.apollo.giraffe.di.giraffeClient
@@ -83,7 +84,6 @@ import com.hedvig.app.feature.genericauth.otpinput.OtpInputViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.ReviewDialogViewModel
 import com.hedvig.app.feature.marketing.MarketingActivity
-import com.hedvig.app.feature.marketing.data.UploadMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
 import com.hedvig.app.service.push.senders.CrossSellNotificationSender
 import com.hedvig.app.service.push.senders.GenericNotificationSender
@@ -211,7 +211,7 @@ fun makeUserAgent(locale: Locale): String = buildString {
 
 private val viewModelModule = module {
   viewModel<SimpleSignAuthenticationViewModel> { params ->
-    SimpleSignAuthenticationViewModel(params.get(), get(), get(), get(), get())
+    SimpleSignAuthenticationViewModel(params.get(), get(), get(), get())
   }
   viewModel<GenericAuthViewModel> { GenericAuthViewModel(get(), get()) }
   viewModel<OtpInputViewModel> { (verifyUrl: String, resendUrl: String, credential: String) ->
@@ -219,7 +219,6 @@ private val viewModelModule = module {
       verifyUrl,
       resendUrl,
       credential,
-      get(),
       get(),
       get(),
     )
@@ -288,12 +287,6 @@ private val useCaseModule = module {
       get<ChatEventStore>(),
       get<ApplicationScope>(),
       get<DemoManager>(),
-    )
-  }
-  single<UploadMarketAndLanguagePreferencesUseCase> {
-    UploadMarketAndLanguagePreferencesUseCase(
-      apolloClient = get<ApolloClient>(giraffeClient),
-      languageService = get(),
     )
   }
 }
@@ -384,6 +377,7 @@ val applicationModule = module {
       hAnalyticsModule,
       homeModule,
       insurancesModule,
+      languageAuthListenersModule,
       languageModule,
       loginModule,
       marketManagerModule,

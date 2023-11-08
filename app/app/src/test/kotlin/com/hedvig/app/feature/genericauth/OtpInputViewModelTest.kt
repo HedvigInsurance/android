@@ -19,7 +19,6 @@ import com.hedvig.authlib.AuthorizationCodeGrant
 import com.hedvig.authlib.RefreshToken
 import com.hedvig.authlib.ResendOtpResult
 import com.hedvig.authlib.SubmitOtpResult
-import io.mockk.mockk
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
@@ -190,7 +189,6 @@ class OtpInputViewModelTest {
       credential = "test@email.com",
       authTokenService = authTokenService,
       authRepository = authRepository,
-      uploadMarketAndLanguagePreferencesUseCase = mockk(relaxed = true),
     )
   }
 

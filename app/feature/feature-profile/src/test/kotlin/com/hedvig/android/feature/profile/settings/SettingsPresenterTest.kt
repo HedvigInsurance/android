@@ -3,6 +3,8 @@ package com.hedvig.android.feature.profile.settings
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
+import com.hedvig.android.apollo.NetworkCacheManager
+import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBackendUseCase
 import com.hedvig.android.core.datastore.FakeSettingsDataStore
 import com.hedvig.android.language.Language
 import com.hedvig.android.language.test.FakeLanguageService
@@ -18,10 +20,11 @@ class SettingsPresenterTest {
     runTest {
       val enableNotificationsReminderManager = TestEnableNotificationsReminderManager()
       val settingsPresenter = SettingsPresenter(
-        NoopNotifyBackendAboutLanguageChangeUseCase(),
         FakeLanguageService(),
         FakeSettingsDataStore(),
         enableNotificationsReminderManager,
+        NoopNetworkCacheManager(),
+        NoopUploadLanguagePreferenceToBackendUseCase(),
       )
 
       settingsPresenter.test(SettingsUiState.Loading(Language.entries.first(), Language.entries)) {
@@ -35,10 +38,11 @@ class SettingsPresenterTest {
   fun `when there's a notification reminder, show it`() = runTest {
     val enableNotificationsReminderManager = TestEnableNotificationsReminderManager()
     val settingsPresenter = SettingsPresenter(
-      NoopNotifyBackendAboutLanguageChangeUseCase(),
       FakeLanguageService(),
       FakeSettingsDataStore(),
       enableNotificationsReminderManager,
+      NoopNetworkCacheManager(),
+      NoopUploadLanguagePreferenceToBackendUseCase(),
     )
 
     settingsPresenter.test(
@@ -59,10 +63,11 @@ class SettingsPresenterTest {
   fun `when there's no notification reminder, keep not showing it`() = runTest {
     val enableNotificationsReminderManager = TestEnableNotificationsReminderManager()
     val settingsPresenter = SettingsPresenter(
-      NoopNotifyBackendAboutLanguageChangeUseCase(),
       FakeLanguageService(),
       FakeSettingsDataStore(),
       enableNotificationsReminderManager,
+      NoopNetworkCacheManager(),
+      NoopUploadLanguagePreferenceToBackendUseCase(),
     )
 
     settingsPresenter.test(
@@ -83,10 +88,11 @@ class SettingsPresenterTest {
   fun `snoozing the notification correctly reports that to the service`() = runTest {
     val enableNotificationsReminderManager = TestEnableNotificationsReminderManager()
     val settingsPresenter = SettingsPresenter(
-      NoopNotifyBackendAboutLanguageChangeUseCase(),
       FakeLanguageService(),
       FakeSettingsDataStore(),
       enableNotificationsReminderManager,
+      NoopNetworkCacheManager(),
+      NoopUploadLanguagePreferenceToBackendUseCase(),
     )
 
     settingsPresenter.test(
@@ -109,10 +115,11 @@ class SettingsPresenterTest {
     val settingsDataStore = FakeSettingsDataStore()
     val enableNotificationsReminderManager = TestEnableNotificationsReminderManager()
     val settingsPresenter = SettingsPresenter(
-      NoopNotifyBackendAboutLanguageChangeUseCase(),
       FakeLanguageService(),
       settingsDataStore,
       enableNotificationsReminderManager,
+      NoopNetworkCacheManager(),
+      NoopUploadLanguagePreferenceToBackendUseCase(),
     )
 
     settingsPresenter.test(
@@ -131,7 +138,10 @@ class SettingsPresenterTest {
   }
 }
 
-private class NoopNotifyBackendAboutLanguageChangeUseCase : NotifyBackendAboutLanguageChangeUseCase {
-  override suspend fun invoke(language: Language) {
-  }
+private class NoopNetworkCacheManager : NetworkCacheManager {
+  override fun clearCache() {}
+}
+
+private class NoopUploadLanguagePreferenceToBackendUseCase : UploadLanguagePreferenceToBackendUseCase {
+  override suspend fun invoke() {}
 }
