@@ -1,8 +1,7 @@
-package com.hedvig.android.data.forever.di
+package com.hedvig.android.data.forever
 
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.ProdOrDemoProvider
-import com.hedvig.android.data.forever.ForeverRepository
 
 class ForeverRepositoryProvider(
   override val demoManager: DemoManager,

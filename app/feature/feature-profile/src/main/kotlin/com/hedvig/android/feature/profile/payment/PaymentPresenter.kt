@@ -42,8 +42,8 @@ internal class PaymentPresenter(
     }
 
     LaunchedEffect(newDiscountCodeBeingSubmitted) {
-      val newCode = newDiscountCodeBeingSubmitted ?: return@LaunchedEffect
-      referralsRepositoryProvider.provide().redeemReferralCode(newCode).fold(
+      val newCampaignCode = newDiscountCodeBeingSubmitted ?: return@LaunchedEffect
+      referralsRepositoryProvider.provide().redeemReferralCode(newCampaignCode).fold(
         ifLeft = { error -> paymentUiState = paymentUiState.copy(discountError = error.message) },
         ifRight = { loadIteration++ },
       )

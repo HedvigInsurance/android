@@ -4,7 +4,6 @@ import arrow.core.Either
 import arrow.core.raise.either
 import arrow.core.right
 import com.hedvig.android.core.common.ErrorMessage
-import giraffe.RedeemReferralCodeMutation
 import octopus.ReferralsQuery
 import octopus.type.CurrencyCode
 import octopus.type.MemberReferralStatus
@@ -76,5 +75,5 @@ internal class ForeverRepositoryDemo : ForeverRepository {
 
   override suspend fun redeemReferralCode(
     campaignCode: CampaignCode,
-  ): Either<ErrorMessage, RedeemReferralCodeMutation.Data?> = either { null }
+  ): Either<ErrorMessage, Unit> = either { Unit }
 }
