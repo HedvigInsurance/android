@@ -1,0 +1,11 @@
+fragment ClaimFragment on Claim {
+  id
+  outcome
+  status
+  payoutAmount {
+    ...MoneyFragment
+  }
+  associatedTypeOfContract
+  audioUrl
+  memberFreeText
+}

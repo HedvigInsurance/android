@@ -48,6 +48,7 @@ import com.hedvig.android.feature.changeaddress.di.changeAddressModule
 import com.hedvig.android.feature.chat.ChatEventStore
 import com.hedvig.android.feature.chat.ChatRepository
 import com.hedvig.android.feature.chat.di.chatModule
+import com.hedvig.android.feature.claim.details.di.claimDetailsModule
 import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
 import com.hedvig.android.feature.connect.payment.adyen.di.adyenFeatureModule
 import com.hedvig.android.feature.connect.payment.trustly.di.connectPaymentTrustlyModule
@@ -103,7 +104,6 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import timber.log.Timber
 import java.io.File
-import java.time.Clock
 import java.util.Locale
 import kotlin.math.pow
 
@@ -276,8 +276,9 @@ private val notificationModule = module {
 }
 
 private val clockModule = module {
-  single<Clock> { Clock.systemDefaultZone() }
+  single<java.time.Clock> { java.time.Clock.systemDefaultZone() }
   single<kotlinx.datetime.Clock> { kotlinx.datetime.Clock.System }
+  single<kotlinx.datetime.TimeZone> { kotlinx.datetime.TimeZone.currentSystemDefault() }
 }
 
 private val useCaseModule = module {
@@ -361,6 +362,7 @@ val applicationModule = module {
       cacheManagerModule,
       changeAddressModule,
       chatModule,
+      claimDetailsModule,
       claimFlowDataModule,
       claimTriagingModule,
       clockModule,

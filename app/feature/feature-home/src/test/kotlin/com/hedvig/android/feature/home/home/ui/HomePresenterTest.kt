@@ -12,7 +12,6 @@ import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.Provider
-import com.hedvig.android.feature.home.claimstatus.data.ClaimStatusCardUiState
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
@@ -20,6 +19,7 @@ import com.hedvig.android.hanalytics.featureflags.test.FakeFeatureManager2
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.test.test
+import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -83,9 +83,7 @@ internal class HomePresenterTest {
             nonEmptyListOf(
               ClaimStatusCardUiState(
                 id = "id",
-                title = "title",
-                subtitle = "subtitle",
-                pillsUiState = emptyList(),
+                pillTypes = emptyList(),
                 claimProgressItemsUiState = emptyList(),
               ),
             ),
@@ -106,9 +104,7 @@ internal class HomePresenterTest {
             nonEmptyListOf(
               ClaimStatusCardUiState(
                 id = "id",
-                title = "title",
-                subtitle = "subtitle",
-                pillsUiState = emptyList(),
+                pillTypes = emptyList(),
                 claimProgressItemsUiState = emptyList(),
               ),
             ),

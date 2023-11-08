@@ -33,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
@@ -71,14 +72,9 @@ import com.hedvig.android.core.ui.appbar.m3.ToolbarChatIcon
 import com.hedvig.android.core.ui.appbar.m3.TopAppBarLayoutForActions
 import com.hedvig.android.core.ui.infocard.VectorInfoCard
 import com.hedvig.android.core.ui.plus
-import com.hedvig.android.feature.home.claimdetail.ui.previewList
 import com.hedvig.android.feature.home.claims.commonclaim.CommonClaimsData
 import com.hedvig.android.feature.home.claims.commonclaim.EmergencyActivity
 import com.hedvig.android.feature.home.claims.commonclaim.EmergencyData
-import com.hedvig.android.feature.home.claimstatus.ClaimStatusCards
-import com.hedvig.android.feature.home.claimstatus.claimprogress.ClaimProgressUiState
-import com.hedvig.android.feature.home.claimstatus.data.ClaimStatusCardUiState
-import com.hedvig.android.feature.home.claimstatus.data.PillUiState
 import com.hedvig.android.feature.home.home.ChatTooltip
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.otherservices.OtherServicesBottomSheet
@@ -94,6 +90,10 @@ import com.hedvig.android.pullrefresh.PullRefreshIndicator
 import com.hedvig.android.pullrefresh.PullRefreshState
 import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
+import com.hedvig.android.ui.claimstatus.ClaimStatusCards
+import com.hedvig.android.ui.claimstatus.model.ClaimPillType
+import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
+import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import hedvig.resources.R
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
@@ -317,8 +317,8 @@ private fun HomeScreenSuccess(
           if (uiState.claimStatusCardsData != null) {
             var consumedWindowInsets by remember { mutableStateOf(WindowInsets(0.dp)) }
             ClaimStatusCards(
-              goToDetailScreen = onClaimDetailCardClicked,
-              claimStatusCardsData = uiState.claimStatusCardsData,
+              onClick = onClaimDetailCardClicked,
+              claimStatusCardsUiState = uiState.claimStatusCardsData.claimStatusCardsUiState,
               contentPadding = PaddingValues(horizontal = 16.dp) + WindowInsets.safeDrawing
                 .exclude(consumedWindowInsets)
                 .only(WindowInsetsSides.Horizontal)
@@ -390,26 +390,28 @@ private fun VeryImportantMessageCard(
   veryImportantMessage: HomeData.VeryImportantMessage,
   modifier: Modifier = Modifier,
 ) {
-  VectorInfoCard(
-    text = veryImportantMessage.message,
-    icon = Icons.Hedvig.WarningFilled,
-    iconColor = MaterialTheme.colorScheme.warningElement,
-    colors = CardDefaults.outlinedCardColors(
-      containerColor = MaterialTheme.colorScheme.warningContainer,
-      contentColor = MaterialTheme.colorScheme.onWarningContainer,
-    ),
-    modifier = modifier,
-  ) {
-    HedvigContainedSmallButton(
-      text = stringResource(R.string.important_message_read_more),
-      onClick = { openUrl(veryImportantMessage.link) },
-      colors = ButtonDefaults.buttonColors(
-        containerColor = MaterialTheme.colorScheme.containedButtonContainer,
-        contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
+  key(veryImportantMessage.id) {
+    VectorInfoCard(
+      text = veryImportantMessage.message,
+      icon = Icons.Hedvig.WarningFilled,
+      iconColor = MaterialTheme.colorScheme.warningElement,
+      colors = CardDefaults.outlinedCardColors(
+        containerColor = MaterialTheme.colorScheme.warningContainer,
+        contentColor = MaterialTheme.colorScheme.onWarningContainer,
       ),
-      textStyle = MaterialTheme.typography.bodyMedium,
-      modifier = Modifier.fillMaxWidth(),
-    )
+      modifier = modifier,
+    ) {
+      HedvigContainedSmallButton(
+        text = stringResource(R.string.important_message_read_more),
+        onClick = { openUrl(veryImportantMessage.link) },
+        colors = ButtonDefaults.buttonColors(
+          containerColor = MaterialTheme.colorScheme.containedButtonContainer,
+          contentColor = MaterialTheme.colorScheme.onContainedButtonContainer,
+        ),
+        textStyle = MaterialTheme.typography.bodyMedium,
+        modifier = Modifier.fillMaxWidth(),
+      )
+    }
   }
 }
 
@@ -462,14 +464,14 @@ private fun PreviewHomeScreen() {
             nonEmptyListOf(
               ClaimStatusCardUiState(
                 id = "id",
-                pillsUiState = PillUiState.previewList(),
-                title = "Insurance Case",
-                subtitle = "Home Insurance renter",
-                claimProgressItemsUiState = ClaimProgressUiState.previewList(),
+                pillTypes = listOf(ClaimPillType.Open, ClaimPillType.Closed.NotCompensated),
+                claimProgressItemsUiState = listOf(
+                  ClaimProgressSegment(ClaimProgressSegment.SegmentText.Closed, ClaimProgressSegment.SegmentType.PAID),
+                ),
               ),
             ),
           ),
-          veryImportantMessages = persistentListOf(HomeData.VeryImportantMessage("Beware of the earthquake", "")),
+          veryImportantMessages = persistentListOf(HomeData.VeryImportantMessage("id", "Beware of the earthquake", "")),
           memberReminders = MemberReminders(
             connectPayment = MemberReminder.ConnectPayment,
           ),

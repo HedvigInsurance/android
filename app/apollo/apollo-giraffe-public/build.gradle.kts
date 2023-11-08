@@ -15,7 +15,7 @@ dependencies {
   implementation(projects.coreCommonPublic)
 }
 
-apollo {
+apollo { // Giraffe client
   generateSourcesDuringGradleSync.set(false)
   service("giraffe") {
     introspection {

@@ -24,6 +24,8 @@ import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.toClaimFlowDestination
 import com.hedvig.android.feature.changeaddress.navigation.changeAddressGraph
 import com.hedvig.android.feature.chat.navigation.chatGraph
+import com.hedvig.android.feature.claim.details.claimDetailsGraph
+import com.hedvig.android.feature.claim.details.navigation.ClaimDetailsDestination
 import com.hedvig.android.feature.claimtriaging.ClaimTriagingDestination
 import com.hedvig.android.feature.claimtriaging.claimTriagingDestinations
 import com.hedvig.android.feature.connect.payment.adyen.connectAdyenPaymentGraph
@@ -117,6 +119,9 @@ internal fun HedvigNavHost(
       onGenerateTravelCertificateClicked = {
         hedvigAppState.navController.navigate(AppDestination.GenerateTravelCertificate)
       },
+      navigateToClaimDetails = { backStackEntry, claimId ->
+        with(navigator) { backStackEntry.navigate(ClaimDetailsDestination(claimId)) }
+      },
       navigateToPayinScreen = navigateToConnectPayment,
       openAppSettings = { activityNavigator.openAppSettings(context) },
       openUrl = ::openUrl,
@@ -205,6 +210,14 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   activityNavigator: ActivityNavigator,
   imageLoader: ImageLoader,
 ) {
+  claimDetailsGraph(
+    navigateUp = navigator::navigateUp,
+    openChat = { backStackEntry ->
+      with(navigator) {
+        backStackEntry.navigate(AppDestination.Chat)
+      }
+    },
+  )
   changeAddressGraph(
     navController = hedvigAppState.navController,
     openChat = { backStackEntry ->

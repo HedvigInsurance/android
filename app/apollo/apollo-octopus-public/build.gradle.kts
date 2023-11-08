@@ -6,17 +6,17 @@ plugins {
 }
 
 dependencies {
+  api(libs.apollo.adapters)
   api(libs.apollo.api)
   api(libs.kotlinx.datetime)
 
-  implementation(libs.apollo.adapters)
   implementation(libs.apollo.runtime)
   implementation(libs.koin.core)
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
 }
 
-apollo {
+apollo { // Octopus client
   generateSourcesDuringGradleSync.set(false)
   service("octopus") {
     introspection {
@@ -36,6 +36,7 @@ apollo {
     generateOptionalOperationVariables.set(false)
 
     mapScalar("Date", "kotlinx.datetime.LocalDate", "com.apollographql.apollo3.adapter.KotlinxLocalDateAdapter")
+    mapScalar("DateTime", "kotlinx.datetime.LocalDate", "com.apollographql.apollo3.adapter.KotlinxLocalDateTimeAdapter")
     mapScalar("Instant", "kotlinx.datetime.Instant", "com.apollographql.apollo3.adapter.KotlinxInstantAdapter")
     mapScalarToUpload("Upload")
     mapScalarToKotlinString("UUID")
