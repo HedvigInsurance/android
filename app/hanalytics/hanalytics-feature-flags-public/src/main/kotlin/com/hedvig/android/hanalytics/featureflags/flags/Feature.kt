@@ -1,13 +1,16 @@
 package com.hedvig.android.hanalytics.featureflags.flags
 
 enum class Feature(
-  @Suppress("unused") val explanation: String, // Used to easier get a context of what it's for.
+  // Used to easier get a context of what it's for.
+  @Suppress("unused") val explanation: String,
 ) {
   COMMON_CLAIMS("Show common claims on the home tab"),
   CONNECT_PAYIN_REMINDER("Show a reminder to connect payin on the home tab"),
   CONNECT_PAYMENT_POST_ONBOARDING(
     "Connecting payment post onboarding. Having this OFF means that it must happen in the offer page",
   ),
+
+  @Suppress("ktlint:standard:max-line-length")
   DISABLE_CHAT(
     "This flag determines if the chat feature inside the app should be disabled. This does not disable the ability to navigate to the chat, only that in the chat feature itself, some information should be shown describing that the chat is currently unavailable and they should check back later.",
   ),

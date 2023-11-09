@@ -20,6 +20,7 @@ internal data class MoveQuote(
   val displayItems: ImmutableList<Pair<String, String>>,
 ) {
   companion object {
+    @Suppress("ktlint:standard:function-naming")
     fun PreviewData(index: Int = 0): MoveQuote {
       @Suppress("NAME_SHADOWING")
       val index = index + 1

@@ -62,7 +62,8 @@ private fun Pill(type: ClaimPillType) {
   val (color, contentColor) = when (type) {
     is ClaimPillType.Closed -> MaterialTheme.colorScheme.onSurface to MaterialTheme.colorScheme.surface
     ClaimPillType.Open -> MaterialTheme.colorScheme.outlineVariant to LocalContentColor.current
-    is ClaimPillType.PaymentAmount -> MaterialTheme.colorScheme.infoContainer to MaterialTheme.colorScheme.onInfoContainer
+    is ClaimPillType.PaymentAmount ->
+      MaterialTheme.colorScheme.infoContainer to MaterialTheme.colorScheme.onInfoContainer
     ClaimPillType.Reopened -> MaterialTheme.colorScheme.warningContainer to MaterialTheme.colorScheme.onWarningContainer
     ClaimPillType.Unknown -> MaterialTheme.colorScheme.outlineVariant to LocalContentColor.current
   }

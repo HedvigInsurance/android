@@ -17,6 +17,7 @@ internal fun HedvigMaterial3Theme(darkTheme: Boolean = isSystemInDarkTheme(), co
     darkTheme -> {
       darkColorScheme(hedvigTonalPalette) to darkHedvigColorScheme(hedvigTonalPalette)
     }
+
     else -> {
       lightColorScheme(hedvigTonalPalette) to lightHedvigColorScheme(hedvigTonalPalette)
     }
@@ -55,7 +56,8 @@ internal fun lightColorScheme(hedvigTonalPalette: HedvigTonalPalette) = lightCol
   onSurface = hedvigTonalPalette.greyscale1000,
   surfaceVariant = hedvigTonalPalette.greyscale200,
   onSurfaceVariant = hedvigTonalPalette.greyscale700,
-  surfaceTint = hedvigTonalPalette.greyscale50, // no tint, as m2 also did not tint elevated surfaces
+  // no tint, as m2 also did not tint elevated surfaces
+  surfaceTint = hedvigTonalPalette.greyscale50,
   inverseSurface = hedvigTonalPalette.greyscale1000,
   inverseOnSurface = hedvigTonalPalette.greyscale50,
   error = hedvigTonalPalette.red600,
@@ -87,7 +89,8 @@ private fun darkColorScheme(hedvigTonalPalette: HedvigTonalPalette) = darkColorS
   onSurface = hedvigTonalPalette.greyscale25,
   surfaceVariant = hedvigTonalPalette.greyscale700,
   onSurfaceVariant = hedvigTonalPalette.greyscale400,
-  surfaceTint = hedvigTonalPalette.greyscale900, // no tint, as m2 also did not tint elevated surfaces
+  // no tint, as m2 also did not tint elevated surfaces
+  surfaceTint = hedvigTonalPalette.greyscale900,
   inverseSurface = hedvigTonalPalette.greyscale100,
   inverseOnSurface = hedvigTonalPalette.greyscale1000,
   error = hedvigTonalPalette.red600,

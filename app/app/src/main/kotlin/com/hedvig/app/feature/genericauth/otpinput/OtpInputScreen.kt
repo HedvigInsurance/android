@@ -132,7 +132,8 @@ private fun OtpInputScreenContents(
     Spacer(Modifier.height(40.dp))
     SixDigitCodeInputField(inputValue, onInputChanged, keyboardController, onSubmitCode, otpErrorMessage)
     Spacer(
-      Modifier.height((20 - 6).dp), // 20 from design, 6 to account for TextButton extra space taken
+      // 20 from design, 6 to account for TextButton extra space taken
+      Modifier.height((20 - 6).dp),
     )
     ResendCodeItem(onResendCode, keyboardController, loadingResend, Modifier.align(Alignment.CenterHorizontally))
     Spacer(Modifier.weight(1f))

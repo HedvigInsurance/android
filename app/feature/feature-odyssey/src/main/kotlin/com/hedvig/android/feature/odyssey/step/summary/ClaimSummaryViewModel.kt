@@ -120,7 +120,8 @@ internal data class ClaimSummaryStatusUiState(
 }
 
 internal data class ClaimSummaryInfoUiState(
-  val claimTypeTitle: String?, // e.g "Broken Phone"
+  // e.g "Broken Phone"
+  val claimTypeTitle: String?,
   val dateOfIncident: LocalDate?,
   val locationOption: LocationOption?,
   val itemType: ItemType?,

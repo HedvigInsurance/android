@@ -80,6 +80,7 @@ private fun PreviewFaqItem() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       var isExpanded by remember { mutableStateOf(true) }
+      @Suppress("ktlint:standard:max-line-length")
       FaqItem(
         faqText = "ReseförsäkringReseförs äkring Rese försäkring Res eförsäkr inResefö rsäkrin ReseförsäkringReseförsäkringReseförsäkrin",
         onClick = { isExpanded = !isExpanded },

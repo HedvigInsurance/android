@@ -411,7 +411,8 @@ object HedvigTextFieldDefaults {
     singleLine: Boolean,
     visualTransformation: VisualTransformation,
     interactionSource: InteractionSource,
-    withNewDesign: Boolean = false, // Adapts the TextField to have the big card size and the bigger text size.
+    // Adapts the TextField to have the big card size and the bigger text size.
+    withNewDesign: Boolean = false,
     isError: Boolean = false,
     label: @Composable (() -> Unit)? = null,
     placeholder: @Composable (() -> Unit)? = null,
@@ -472,8 +473,10 @@ class HedvigTextFieldColors internal constructor(
   private val unfocusedContainerColor: Color,
   private val disabledContainerColor: Color,
   private val errorContainerColor: Color,
-  private val typingHighlightColor: Color, // The pulsating color that the container will temporarily have on new text.
-  private val errorTypingHighlightColor: Color, // The pulsating color when there's an error too
+  // The pulsating color that the container will temporarily have on new text.
+  private val typingHighlightColor: Color,
+  // The pulsating color when there's an error too
+  private val errorTypingHighlightColor: Color,
   private val cursorColor: Color,
   private val errorCursorColor: Color,
   private val textSelectionColors: TextSelectionColors,

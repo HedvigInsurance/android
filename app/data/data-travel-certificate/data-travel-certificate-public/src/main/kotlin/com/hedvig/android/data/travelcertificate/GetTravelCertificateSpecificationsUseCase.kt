@@ -57,6 +57,7 @@ internal class GetTravelCertificateSpecificationsUseCaseImpl(
   }
 }
 
+@Suppress("ktlint:standard:max-line-length")
 private fun TravelCertificateSpecificationsQuery.Data.CurrentMember.TravelCertificateSpecifications.ContractSpecification.toTravelCertificateSpecification(
   email: String,
 ) = TravelCertificateData.TravelCertificateSpecification(

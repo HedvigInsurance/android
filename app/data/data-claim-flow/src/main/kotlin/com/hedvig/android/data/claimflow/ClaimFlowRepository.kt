@@ -208,7 +208,8 @@ internal class ClaimFlowRepositoryImpl(
         .mutation(
           FlowClaimSingleItemNextMutation(
             FlowClaimSingleItemInput(
-              customName = Optional.absent(), // Will be used when entering a free form text is supported
+              // Will be used when entering a free form text is supported
+              customName = Optional.absent(),
               itemBrandInput = Optional.presentIfNotNull(itemBrandInput),
               itemModelInput = Optional.presentIfNotNull(itemModelInput),
               itemProblemIds = Optional.presentIfNotNull(itemProblemIds),

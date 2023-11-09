@@ -102,7 +102,8 @@ private fun MoveIntentCreateMutation.Data.MoveIntentCreate.MoveIntent.toMoveInte
     )
   },
   movingDateRange = minMovingDate..maxMovingDate,
-  suggestedNumberInsured = suggestedNumberCoInsured.plus(1), // numberInsured = numberCoInsured + member,
+  // numberInsured = numberCoInsured + member,
+  suggestedNumberInsured = suggestedNumberCoInsured.plus(1),
   isApartmentAvailableforStudent = isApartmentAvailableforStudent,
   maxApartmentSquareMeters = maxApartmentSquareMeters,
   maxHouseSquareMeters = maxHouseSquareMeters,
