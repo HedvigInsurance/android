@@ -2,10 +2,10 @@ package com.hedvig.android.feature.insurances.insurance.presentation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
@@ -27,8 +27,9 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import octopus.CrossSalesQuery
+import octopus.CrossSellsQuery
 import octopus.type.CrossSellType
 
 internal sealed interface InsuranceScreenEvent {
@@ -62,7 +63,7 @@ internal data class InsuranceUiState(
 internal class InsurancePresenter(
   private val getInsuranceContractsUseCaseProvider: Provider<GetInsuranceContractsUseCase>,
   private val getCrossSellsUseCaseProvider: Provider<GetCrossSellsUseCase>,
-  private val crossSellCardNotificationBadgeService: CrossSellCardNotificationBadgeService,
+  private val crossSellCardNotificationBadgeServiceProvider: Provider<CrossSellCardNotificationBadgeService>,
 ) : MoleculePresenter<InsuranceScreenEvent, InsuranceUiState> {
   @Composable
   override fun MoleculePresenterScope<InsuranceScreenEvent>.present(lastState: InsuranceUiState): InsuranceUiState {
@@ -76,15 +77,20 @@ internal class InsurancePresenter(
     var didFailToLoad by remember { mutableStateOf(false) }
     var loadIteration by remember { mutableIntStateOf(0) }
 
-    val showNotificationBadge by crossSellCardNotificationBadgeService
-      .showNotification()
-      .collectAsState(lastState.showNotificationBadge)
+    val showNotificationBadge by produceState(lastState.showNotificationBadge) {
+      crossSellCardNotificationBadgeServiceProvider
+        .provide()
+        .showNotification()
+        .collectLatest {
+          value = it
+        }
+    }
 
     CollectEvents { event ->
       when (event) {
         InsuranceScreenEvent.RetryLoading -> loadIteration++
         InsuranceScreenEvent.MarkCardCrossSellsAsSeen -> {
-          launch { crossSellCardNotificationBadgeService.markAsSeen() }
+          launch { crossSellCardNotificationBadgeServiceProvider.provide().markAsSeen() }
         }
       }
     }
@@ -142,7 +148,7 @@ private suspend fun loadInsuranceData(
       { getCrossSellsUseCase.invoke().bind() },
     ) {
         contracts: List<InsuranceContract>,
-        crossSellsData: List<CrossSalesQuery.Data.CurrentMember.CrossSell>,
+        crossSellsData: List<CrossSellsQuery.Data.CurrentMember.CrossSell>,
       ->
       val insuranceCards = contracts
         .filterNot(InsuranceContract::isTerminated)

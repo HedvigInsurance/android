@@ -11,7 +11,7 @@ import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceVie
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailViewModel
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsViewModel
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
-import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeService
+import com.hedvig.android.notification.badge.data.crosssell.CrossSellCardNotificationBadgeServiceProvider
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -21,7 +21,7 @@ val insurancesModule = module {
     InsuranceViewModel(
       get<GetInsuranceContractsUseCaseProvider>(),
       get<GetCrossSellsUseCaseProvider>(),
-      get<CrossSellCardNotificationBadgeService>(),
+      get<CrossSellCardNotificationBadgeServiceProvider>(),
     )
   }
   viewModel<TerminatedContractsViewModel> {

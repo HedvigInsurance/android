@@ -15,7 +15,7 @@ val foreverDataModule = module {
   single<ForeverRepositoryDemo> {
     ForeverRepositoryDemo()
   }
-  single {
+  single<ForeverRepositoryProvider> {
     ForeverRepositoryProvider(
       demoManager = get<DemoManager>(),
       prodImpl = get<ForeverRepositoryImpl>(),

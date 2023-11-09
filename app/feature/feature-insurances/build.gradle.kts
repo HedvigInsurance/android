@@ -2,6 +2,7 @@ plugins {
   id("hedvig.android.ktlint")
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
+  alias(libs.plugins.apollo)
   alias(libs.plugins.serialization)
   alias(libs.plugins.squareSortDependencies)
 }
@@ -11,6 +12,8 @@ android {
 }
 
 dependencies {
+  apolloMetadata(projects.apolloOctopusPublic)
+
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.apollo.normalizedCache)
@@ -57,4 +60,10 @@ dependencies {
   testImplementation(projects.loggingTest)
   testImplementation(projects.moleculeTest)
   testImplementation(projects.notificationBadgeDataFake)
+}
+
+apollo {
+  service("octopus") {
+    packageName.set("octopus")
+  }
 }

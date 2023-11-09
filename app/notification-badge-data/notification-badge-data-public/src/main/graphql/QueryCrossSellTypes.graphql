@@ -1,0 +1,8 @@
+query CrossSellTypes {
+  currentMember {
+    crossSells {
+      id
+      type
+    }
+  }
+}
