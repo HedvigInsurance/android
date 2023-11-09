@@ -9,29 +9,39 @@ import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.apollo.toMonetaryAmount
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.language.LanguageService
-import giraffe.ChargeHistoryQuery
 import giraffe.PaymentQuery
 import giraffe.type.PayoutMethodStatus
 import giraffe.type.TypeOfContract
-import java.time.LocalDate
 import javax.money.MonetaryAmount
+import kotlinx.datetime.LocalDate
+import octopus.PaymentHistoryQuery
+import octopus.type.MemberChargeHistoryEntryStatus
 
 internal class PaymentRepositoryImpl(
-  private val apolloClient: ApolloClient,
+  private val giraffeApolloClient: ApolloClient,
+  private val octopusApolloClient: ApolloClient,
   private val languageService: LanguageService,
 ) : PaymentRepository {
   override suspend fun getChargeHistory(): Either<OperationResult.Error, ChargeHistory> = either {
-    apolloClient
-      .query(ChargeHistoryQuery())
+    octopusApolloClient
+      .query(PaymentHistoryQuery())
       .safeExecute()
       .toEither()
-      .map {
+      .map { paymentData ->
+        val chargeHistory = paymentData.currentMember.chargeHistory
         ChargeHistory(
-          charges = it.chargeHistory.map {
+          charges = chargeHistory.map { chargeHistoryEntry ->
             ChargeHistory.Charge(
-              amount = it.amount.fragments.monetaryAmountFragment.toMonetaryAmount(),
-              date = it.date,
+              amount = UiMoney.fromMoneyFragment(chargeHistoryEntry.amount),
+              date = chargeHistoryEntry.date,
+              paymentStatus = when (chargeHistoryEntry.status) {
+                MemberChargeHistoryEntryStatus.PENDING -> ChargeHistory.Charge.PaymentStatus.PENDING
+                MemberChargeHistoryEntryStatus.FAILED -> ChargeHistory.Charge.PaymentStatus.FAILED
+                MemberChargeHistoryEntryStatus.SUCCESS -> ChargeHistory.Charge.PaymentStatus.SUCCESSFUL
+                else -> ChargeHistory.Charge.PaymentStatus.UNKNOWN
+              },
             )
           },
         )
@@ -40,7 +50,7 @@ internal class PaymentRepositoryImpl(
   }
 
   override suspend fun getPaymentData(): Either<OperationResult.Error, PaymentData> = either {
-    val data = apolloClient
+    val data = giraffeApolloClient
       .query(PaymentQuery(languageService.getGraphQLLocale()))
       .fetchPolicy(FetchPolicy.NetworkOnly)
       .safeExecute()
@@ -105,16 +115,24 @@ data class ChargeHistory(
   val charges: List<Charge>,
 ) {
   data class Charge(
-    val amount: MonetaryAmount,
+    val amount: UiMoney,
     val date: LocalDate,
-  )
+    val paymentStatus: PaymentStatus,
+  ) {
+    enum class PaymentStatus {
+      PENDING,
+      SUCCESSFUL,
+      FAILED,
+      UNKNOWN,
+    }
+  }
 }
 
 data class PaymentData(
   val nextCharge: MonetaryAmount,
   val monthlyCost: MonetaryAmount?,
   val totalDiscount: MonetaryAmount?,
-  val nextChargeDate: LocalDate?,
+  val nextChargeDate: java.time.LocalDate?,
   val redeemedCampagins: List<Campaign>,
   val bankName: String?,
   val bankDescriptor: String?,

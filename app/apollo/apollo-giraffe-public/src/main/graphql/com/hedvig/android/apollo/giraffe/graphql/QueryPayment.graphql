@@ -127,3 +127,8 @@ fragment CostFragment on InsuranceCost {
     ...MonetaryAmountFragment
   }
 }
+
+fragment MonetaryAmountFragment on MonetaryAmountV2 {
+  amount
+  currency
+}
