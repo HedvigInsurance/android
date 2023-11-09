@@ -1,8 +1,6 @@
 package com.hedvig.android.feature.profile.data
 
-import com.hedvig.android.market.Market
 import com.hedvig.android.payment.PaymentData
-import hedvig.resources.R
 import javax.money.MonetaryAmount
 
 internal data class ProfileData(
@@ -10,26 +8,7 @@ internal data class ProfileData(
   val chargeEstimation: ChargeEstimation,
   val directDebitStatus: DirectDebitStatus?,
   val activePaymentMethods: PaymentData.PaymentMethod?,
-) {
-  fun getPriceCaption(market: Market): Int = when (market) {
-    Market.SE -> when (directDebitStatus) {
-      DirectDebitStatus.ACTIVE -> R.string.Direct_Debit_Connected
-      DirectDebitStatus.NEEDS_SETUP,
-      DirectDebitStatus.PENDING,
-      DirectDebitStatus.UNKNOWN,
-      DirectDebitStatus.NONE,
-      null,
-      -> R.string.Direct_Debit_Not_Connected
-    }
-    Market.DK,
-    Market.NO,
-    -> when (activePaymentMethods) {
-      is PaymentData.PaymentMethod.CardPaymentMethod -> hedvig.resources.R.string.Card_Connected
-      is PaymentData.PaymentMethod.ThirdPartyPaymentMethd -> hedvig.resources.R.string.Third_Party_Connected
-      null -> hedvig.resources.R.string.Card_Not_Connected
-    }
-  }
-}
+)
 
 data class Member(
   val id: String,

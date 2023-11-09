@@ -90,7 +90,6 @@ import com.hedvig.app.service.push.senders.GenericNotificationSender
 import com.hedvig.app.service.push.senders.PaymentNotificationSender
 import com.hedvig.app.service.push.senders.ReferralsNotificationSender
 import com.hedvig.app.util.apollo.DeviceIdInterceptor
-import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.NetworkCacheManagerImpl
 import com.hedvig.app.util.apollo.SunsettingInterceptor
 import java.io.File
@@ -327,10 +326,6 @@ private val coilModule = module {
   }
 }
 
-private val graphQLQueryModule = module {
-  single<GraphQLQueryHandler> { GraphQLQueryHandler(get(), get(), get<HedvigBuildConstants>()) }
-}
-
 private val workManagerModule = module {
   worker<ReplyWorker>(named<ReplyWorker>()) {
     ReplyWorker(
@@ -372,7 +367,6 @@ val applicationModule = module {
       firebaseNotificationModule,
       foreverDataModule,
       foreverModule,
-      graphQLQueryModule,
       hAnalyticsAndroidModule,
       hAnalyticsModule,
       homeModule,
