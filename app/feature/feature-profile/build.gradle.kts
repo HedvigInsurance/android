@@ -2,6 +2,7 @@ plugins {
   id("hedvig.android.library")
   id("hedvig.android.library.compose")
   id("hedvig.android.ktlint")
+  alias(libs.plugins.apollo)
   alias(libs.plugins.squareSortDependencies)
 }
 
@@ -10,6 +11,8 @@ android {
 }
 
 dependencies {
+  apolloMetadata(projects.apolloOctopusPublic)
+
   implementation(libs.accompanist.permissions)
   implementation(libs.accompanist.webview)
   implementation(libs.androidx.compose.material3.windowSizeClass)
@@ -68,4 +71,10 @@ dependencies {
   testImplementation(projects.marketTest)
   testImplementation(projects.memberRemindersTest)
   testImplementation(projects.moleculeTest)
+}
+
+apollo {
+  service("octopus") {
+    packageName.set("octopus")
+  }
 }

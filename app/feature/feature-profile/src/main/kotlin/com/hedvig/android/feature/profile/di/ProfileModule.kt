@@ -77,7 +77,7 @@ val profileModule = module {
       get<ProfileRepositoryProvider>(),
     )
   }
-  viewModel<AboutAppViewModel> { AboutAppViewModel(get(), get<ApolloClient>(giraffeClient)) }
+  viewModel<AboutAppViewModel> { AboutAppViewModel(get(), get<ApolloClient>(octopusClient)) }
 
   viewModel<PaymentViewModel> {
     PaymentViewModel(
