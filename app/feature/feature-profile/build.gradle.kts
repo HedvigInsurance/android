@@ -28,7 +28,6 @@ dependencies {
   implementation(libs.kotlinx.immutable.collections)
   implementation(libs.moneta)
   implementation(projects.apolloCore)
-  implementation(projects.apolloGiraffePublic)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.authCorePublic)
   implementation(projects.coreBuildConstants)

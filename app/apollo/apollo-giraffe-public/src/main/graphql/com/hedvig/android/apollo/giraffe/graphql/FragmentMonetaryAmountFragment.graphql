@@ -1,0 +1,4 @@
+fragment MonetaryAmountFragment on MonetaryAmountV2 {
+  amount
+  currency
+}
