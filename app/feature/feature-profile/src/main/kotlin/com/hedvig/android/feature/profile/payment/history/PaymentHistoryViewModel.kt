@@ -1,57 +1,88 @@
 package com.hedvig.android.feature.profile.payment.history
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.hedvig.android.apollo.format
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.payment.ChargeHistory
 import com.hedvig.android.data.payment.PaymentRepository
-import com.hedvig.android.language.LanguageService
-import java.time.LocalDate
-import java.util.Locale
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import com.hedvig.android.molecule.android.MoleculeViewModel
+import com.hedvig.android.molecule.public.MoleculePresenter
+import com.hedvig.android.molecule.public.MoleculePresenterScope
 
 internal class PaymentHistoryViewModel(
   private val paymentRepositoryProvider: Provider<PaymentRepository>,
-  private val languageService: LanguageService,
-) : ViewModel() {
-  private val _uiState = MutableStateFlow(PaymentHistoryUiState())
-  val uiState: StateFlow<PaymentHistoryUiState> = _uiState
+) : MoleculeViewModel<PaymentHistoryEvent, PaymentHistoryUiState>(
+    PaymentHistoryUiState.Loading,
+    PaymentHistoryPresenter(paymentRepositoryProvider),
+  )
 
-  data class PaymentHistoryUiState(
-    val charges: List<Payment> = emptyList(),
-    val errorMessage: String? = null,
-    val isLoading: Boolean = false,
-  ) {
-    data class Payment(
-      val amount: String,
-      val date: LocalDate,
-    )
-  }
+internal sealed interface PaymentHistoryUiState {
+  data object Loading : PaymentHistoryUiState
 
-  init {
-    loadPaymentHistory()
-  }
+  data class Error(val errorMessage: String?) : PaymentHistoryUiState
 
-  private fun loadPaymentHistory() {
-    viewModelScope.launch {
-      _uiState.update { it.copy(isLoading = true) }
+  data object NoChargeHistory : PaymentHistoryUiState
+
+  data class Content(val chargeHistory: ChargeHistory, val isLoading: Boolean) : PaymentHistoryUiState
+}
+
+internal sealed interface PaymentHistoryEvent {
+  data object Retry : PaymentHistoryEvent
+}
+
+private class PaymentHistoryPresenter(
+  private val paymentRepositoryProvider: Provider<PaymentRepository>,
+) : MoleculePresenter<PaymentHistoryEvent, PaymentHistoryUiState> {
+  @Composable
+  override fun MoleculePresenterScope<PaymentHistoryEvent>.present(
+    lastState: PaymentHistoryUiState,
+  ): PaymentHistoryUiState {
+    var chargeHistory: ChargeHistory? by remember {
+      mutableStateOf((lastState as? PaymentHistoryUiState.Content)?.chargeHistory)
+    }
+    var isLoading: Boolean by remember {
+      val isLoadingWithContent = lastState is PaymentHistoryUiState.Content && lastState.isLoading
+      mutableStateOf(lastState is PaymentHistoryUiState.Loading || isLoadingWithContent)
+    }
+    var errorMessage: ErrorMessage? by remember { mutableStateOf(null) }
+    var loadIteration by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(loadIteration) {
+      isLoading = true
       paymentRepositoryProvider.provide().getChargeHistory().fold(
-        ifLeft = { _uiState.update { it.copy(errorMessage = it.errorMessage) } },
-        ifRight = { _uiState.value = it.toUiState(languageService.getLocale()) },
+        ifLeft = {
+          chargeHistory = null
+          errorMessage = it
+        },
+        ifRight = {
+          chargeHistory = it
+          errorMessage = null
+        },
+      )
+      isLoading = false
+    }
+
+    CollectEvents { event ->
+      when (event) {
+        is PaymentHistoryEvent.Retry -> loadIteration++
+      }
+    }
+
+    val chargeHistoryValue = chargeHistory
+    return when {
+      errorMessage != null -> PaymentHistoryUiState.Error(errorMessage?.message)
+      chargeHistoryValue == null -> PaymentHistoryUiState.Loading
+      chargeHistoryValue.charges.isEmpty() -> PaymentHistoryUiState.NoChargeHistory
+      else -> PaymentHistoryUiState.Content(
+        chargeHistory = chargeHistoryValue,
+        isLoading = isLoading,
       )
     }
   }
 }
-
-private fun ChargeHistory.toUiState(locale: Locale) = PaymentHistoryViewModel.PaymentHistoryUiState(
-  charges = charges.map {
-    PaymentHistoryViewModel.PaymentHistoryUiState.Payment(
-      amount = it.amount.format(locale),
-      date = it.date,
-    )
-  },
-)

@@ -84,7 +84,6 @@ val profileModule = module {
   viewModel<PaymentHistoryViewModel> {
     PaymentHistoryViewModel(
       get<PaymentRepositoryProvider>(),
-      get<LanguageService>(),
     )
   }
 }

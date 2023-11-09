@@ -9,6 +9,7 @@ import com.hedvig.android.apollo.OperationResult
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.apollo.toMonetaryAmount
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.language.LanguageService
 import giraffe.PaymentQuery
@@ -24,11 +25,11 @@ internal class PaymentRepositoryImpl(
   private val octopusApolloClient: ApolloClient,
   private val languageService: LanguageService,
 ) : PaymentRepository {
-  override suspend fun getChargeHistory(): Either<OperationResult.Error, ChargeHistory> = either {
+  override suspend fun getChargeHistory(): Either<ErrorMessage, ChargeHistory> = either {
     octopusApolloClient
       .query(PaymentHistoryQuery())
       .safeExecute()
-      .toEither()
+      .toEither(::ErrorMessage)
       .map { paymentData ->
         val chargeHistory = paymentData.currentMember.chargeHistory
         ChargeHistory(

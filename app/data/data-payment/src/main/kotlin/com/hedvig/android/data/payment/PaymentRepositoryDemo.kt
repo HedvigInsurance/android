@@ -3,6 +3,7 @@ package com.hedvig.android.data.payment
 import arrow.core.Either
 import arrow.core.raise.either
 import com.hedvig.android.apollo.OperationResult
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -14,7 +15,7 @@ import octopus.type.CurrencyCode
 import org.javamoney.moneta.Money
 
 class PaymentRepositoryDemo : PaymentRepository {
-  override suspend fun getChargeHistory(): Either<OperationResult.Error, ChargeHistory> = either {
+  override suspend fun getChargeHistory(): Either<ErrorMessage, ChargeHistory> = either {
     ChargeHistory(
       List(5) { index ->
         ChargeHistory.Charge(
