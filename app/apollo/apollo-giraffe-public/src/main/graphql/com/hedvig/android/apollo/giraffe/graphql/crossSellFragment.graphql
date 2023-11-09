@@ -1,3 +1,0 @@
-fragment CrossSellFragment on CrossSell {
-  contractType
-}

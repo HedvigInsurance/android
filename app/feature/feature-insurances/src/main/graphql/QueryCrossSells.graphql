@@ -1,4 +1,4 @@
-query CrossSales {
+query CrossSells {
   currentMember {
     id
     crossSells {

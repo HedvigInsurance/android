@@ -1,5 +1,5 @@
 query MemberId {
-  member {
+  currentMember {
     id
   }
 }

@@ -1,14 +1,15 @@
 package com.hedvig.android.notification.badge.data.di
 
 import com.apollographql.apollo3.ApolloClient
-import com.hedvig.android.apollo.giraffe.di.giraffeClient
+import com.hedvig.android.apollo.octopus.di.octopusClient
+import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.notification.badge.data.crosssell.CrossSellCardNotificationBadgeServiceProvider
 import com.hedvig.android.notification.badge.data.crosssell.CrossSellNotificationBadgeService
-import com.hedvig.android.notification.badge.data.crosssell.GetCrossSellsContractTypesUseCase
-import com.hedvig.android.notification.badge.data.crosssell.GetCrossSellsContractTypesUseCaseImpl
+import com.hedvig.android.notification.badge.data.crosssell.GetCrossSellIdentifiersUseCase
+import com.hedvig.android.notification.badge.data.crosssell.GetCrossSellIdentifiersUseCaseImpl
 import com.hedvig.android.notification.badge.data.crosssell.bottomnav.CrossSellBottomNavNotificationBadgeService
-import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeDemoServiceImpl
-import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeService
 import com.hedvig.android.notification.badge.data.crosssell.card.CrossSellCardNotificationBadgeServiceImpl
+import com.hedvig.android.notification.badge.data.crosssell.card.DemoCrossSellCardNotificationBadgeService
 import com.hedvig.android.notification.badge.data.referrals.ReferralsNotificationBadgeService
 import com.hedvig.android.notification.badge.data.storage.DatastoreNotificationBadgeStorage
 import com.hedvig.android.notification.badge.data.storage.NotificationBadgeStorage
@@ -18,16 +19,25 @@ import org.koin.dsl.module
 @Suppress("RemoveExplicitTypeArguments")
 val notificationBadgeModule = module {
   single<CrossSellBottomNavNotificationBadgeService> { CrossSellBottomNavNotificationBadgeService(get()) }
-  single<CrossSellCardNotificationBadgeService> { CrossSellCardNotificationBadgeServiceImpl(get()) }
   single<CrossSellNotificationBadgeService> { CrossSellNotificationBadgeService(get(), get()) }
-  single<GetCrossSellsContractTypesUseCase> {
-    GetCrossSellsContractTypesUseCaseImpl(get<ApolloClient>(giraffeClient), get())
+  single<GetCrossSellIdentifiersUseCase> {
+    GetCrossSellIdentifiersUseCaseImpl(get<ApolloClient>(octopusClient))
   }
   single<NotificationBadgeStorage> { DatastoreNotificationBadgeStorage(get()) }
   single<ReferralsNotificationBadgeService> { ReferralsNotificationBadgeService(get(), get()) }
   single<TabNotificationBadgeService> { TabNotificationBadgeService(get(), get()) }
-}
 
-val notificationDemoBadgeModule = module {
-  single<CrossSellCardNotificationBadgeService> { CrossSellCardNotificationBadgeDemoServiceImpl() }
+  single<CrossSellCardNotificationBadgeServiceProvider> {
+    CrossSellCardNotificationBadgeServiceProvider(
+      get<DemoManager>(),
+      get<CrossSellCardNotificationBadgeServiceImpl>(),
+      get<DemoCrossSellCardNotificationBadgeService>(),
+    )
+  }
+  single<CrossSellCardNotificationBadgeServiceImpl> {
+    CrossSellCardNotificationBadgeServiceImpl(get())
+  }
+  single<DemoCrossSellCardNotificationBadgeService> {
+    DemoCrossSellCardNotificationBadgeService()
+  }
 }

@@ -1,5 +1,0 @@
-fragment InsuranceTermFragment on InsuranceTerm {
-  type
-  displayName
-  url
-}
