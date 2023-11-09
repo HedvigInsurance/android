@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.chat
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import arrow.core.Either
@@ -93,7 +92,6 @@ class ChatRepository(
     ),
   ).execute()
 
-  @SuppressLint("Recycle")
   suspend fun uploadFileFromProvider(uri: Uri): Either<OperationResult.Error, UploadFileMutation.Data> {
     val mimeType = fileService.getMimeType(uri)
     val file = File(
