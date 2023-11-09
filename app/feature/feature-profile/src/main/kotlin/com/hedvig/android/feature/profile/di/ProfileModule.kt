@@ -3,7 +3,6 @@ package com.hedvig.android.feature.profile.di
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBackendUseCase
-import com.hedvig.android.apollo.giraffe.di.giraffeClient
 import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.demomode.DemoManager
@@ -26,7 +25,6 @@ import com.hedvig.android.market.MarketManager
 import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
 import com.hedvig.android.payment.di.PaymentRepositoryProvider
-import com.hedvig.hanalytics.HAnalytics
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -45,8 +43,8 @@ val profileModule = module {
 
   single<ProfileRepositoryImpl> {
     ProfileRepositoryImpl(
-      giraffeApolloClient = get<ApolloClient>(giraffeClient),
-      octopusApolloClient = get<ApolloClient>(octopusClient),
+      apolloClient = get<ApolloClient>(octopusClient),
+      networkCacheManager = get<NetworkCacheManager>(),
     )
   }
   single<ProfileRepositoryDemo> {
@@ -72,10 +70,7 @@ val profileModule = module {
   }
 
   viewModel<MyInfoViewModel> {
-    MyInfoViewModel(
-      get<HAnalytics>(),
-      get<ProfileRepositoryProvider>(),
-    )
+    MyInfoViewModel(get<ProfileRepositoryProvider>())
   }
   viewModel<AboutAppViewModel> { AboutAppViewModel(get(), get<ApolloClient>(octopusClient)) }
 

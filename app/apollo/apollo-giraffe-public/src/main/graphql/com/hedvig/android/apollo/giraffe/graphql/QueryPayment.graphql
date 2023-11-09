@@ -41,3 +41,89 @@ query Payment($locale: Locale!) {
     ...CostFragment
   }
 }
+
+fragment ContractStatusFragment on ContractStatus {
+  ... on PendingStatus {
+    pendingSince
+  }
+  ... on ActiveInFutureStatus {
+    futureInception
+  }
+  ... on ActiveStatus {
+    pastInception
+    upcomingAgreementChange {
+      newAgreement {
+        ... on SwedishApartmentAgreement {
+          activeFrom
+        }
+      }
+    }
+  }
+  ... on ActiveInFutureAndTerminatedInFutureStatus {
+    futureInception
+    futureTermination
+  }
+  ... on TerminatedInFutureStatus {
+    futureTermination
+  }
+  ... on TerminatedTodayStatus {
+    today
+  }
+  ... on TerminatedStatus {
+    termination
+  }
+  ... on DeletedStatus {
+    isDeleted
+  }
+}
+
+fragment BankAccountFragment on BankAccount {
+  bankName
+  descriptor
+}
+
+fragment ActivePaymentMethodsFragment on ActivePaymentMethodsV2Response {
+  ... on StoredCardDetails {
+    brand
+    lastFourDigits
+    expiryMonth
+    expiryYear
+  }
+  ... on StoredThirdPartyDetails {
+    name
+    type
+  }
+}
+
+fragment IncentiveFragment on Campaign {
+  incentive {
+    ... on FreeMonths {
+      quantity
+    }
+    ... on MonthlyCostDeduction {
+      amount {
+        amount
+      }
+    }
+    ... on PercentageDiscountMonths {
+      percentageDiscount
+      pdmQuantity: quantity
+    }
+    ... on NoDiscount {
+      __typename
+    }
+  }
+  displayValue(locale: $locale)
+}
+
+fragment CostFragment on InsuranceCost {
+  monthlyDiscount {
+    ...MonetaryAmountFragment
+  }
+  monthlyNet {
+    ...MonetaryAmountFragment
+  }
+  monthlyGross {
+    ...MonetaryAmountFragment
+  }
+}

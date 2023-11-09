@@ -1,4 +1,0 @@
-fragment BankAccountFragment on BankAccount {
-  bankName
-  descriptor
-}

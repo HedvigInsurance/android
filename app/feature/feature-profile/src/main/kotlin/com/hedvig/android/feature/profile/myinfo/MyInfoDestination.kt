@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +33,7 @@ import com.hedvig.android.core.designsystem.component.progress.HedvigFullScreenC
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
+import com.hedvig.android.core.ui.ValidatedInput
 import com.hedvig.android.core.ui.clearFocusOnTap
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import hedvig.resources.R
@@ -162,10 +164,13 @@ private fun MyInfoScreen(
 @Composable
 private fun PreviewMyInfoScreen() {
   HedvigTheme {
-    Surface {
+    Surface(color = MaterialTheme.colorScheme.background) {
       MyInfoScreen(
         uiState = MyInfoUiState(
-          errorMessage = "Something went wrong",
+          member = MyInfoMember(
+            ValidatedInput("email@email.com"),
+            ValidatedInput("072102103"),
+          ),
           isLoading = false,
         ),
         updateEmailAndPhoneNumber = {},
