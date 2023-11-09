@@ -5,5 +5,6 @@ import com.hedvig.android.apollo.OperationResult
 
 interface PaymentRepository {
   suspend fun getChargeHistory(): Either<OperationResult.Error, ChargeHistory>
+
   suspend fun getPaymentData(): Either<OperationResult.Error, PaymentData>
 }

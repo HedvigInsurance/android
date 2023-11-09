@@ -33,10 +33,7 @@ internal fun TerminationStartDestination(
 }
 
 @Composable
-private fun TerminationStartScreen(
-  uiState: TerminationFlowUiState,
-  retryLoad: () -> Unit,
-) {
+private fun TerminationStartScreen(uiState: TerminationFlowUiState, retryLoad: () -> Unit) {
   Box(Modifier.fillMaxSize(), Alignment.Center) {
     when (uiState) {
       TerminationFlowUiState.Error -> HedvigErrorSection(retry = retryLoad)

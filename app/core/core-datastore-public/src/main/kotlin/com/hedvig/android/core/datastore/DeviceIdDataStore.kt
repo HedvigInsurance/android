@@ -4,13 +4,13 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import java.util.UUID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import java.util.UUID
 
 interface DeviceIdDataStore {
   fun observeDeviceId(): Flow<String>
@@ -20,7 +20,6 @@ internal class DeviceIdDataStoreImpl(
   private val dataStore: DataStore<Preferences>,
   coroutineScope: CoroutineScope,
 ) : DeviceIdDataStore {
-
   private val key = stringPreferencesKey("hedvig-device-id")
 
   init {

@@ -44,9 +44,9 @@ import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.EmergencyOption
 import com.hedvig.android.feature.odyssey.ui.ClaimFlowScaffold
 import hedvig.resources.R
-import kotlinx.coroutines.delay
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.delay
 
 @Composable
 internal fun ConfirmEmergencyDestination(

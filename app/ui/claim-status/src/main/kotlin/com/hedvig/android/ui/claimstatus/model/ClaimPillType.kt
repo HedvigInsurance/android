@@ -7,12 +7,18 @@ import octopus.type.ClaimStatus
 
 sealed interface ClaimPillType {
   data object Open : ClaimPillType
+
   data object Reopened : ClaimPillType
+
   data class PaymentAmount(val uiMoney: UiMoney) : ClaimPillType
+
   data object Unknown : ClaimPillType
+
   sealed interface Closed : ClaimPillType {
     data object NotCompensated : Closed
+
     data object NotCovered : Closed
+
     data object Paid : Closed
   }
 

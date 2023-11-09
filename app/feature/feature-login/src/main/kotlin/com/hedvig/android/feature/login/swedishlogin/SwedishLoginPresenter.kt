@@ -131,8 +131,11 @@ internal class SwedishLoginPresenter(
 
 internal sealed interface SwedishLoginEvent {
   data object Retry : SwedishLoginEvent
+
   data object DidOpenBankIDApp : SwedishLoginEvent
+
   data object DidNavigateToLoginScreen : SwedishLoginEvent
+
   data object StartDemoMode : SwedishLoginEvent
 }
 
@@ -143,7 +146,6 @@ internal sealed interface SwedishLoginUiState {
     val allowOpeningBankId: Boolean,
     val navigateToLoginScreen: Boolean,
   ) : SwedishLoginUiState {
-
     @JvmInline
     value class AutoStartToken(val token: String) {
       // Used to generate the QR code that BankID can read
@@ -157,6 +159,8 @@ internal sealed interface SwedishLoginUiState {
   }
 
   data object Loading : SwedishLoginUiState
+
   data class BankIdError(val message: String) : SwedishLoginUiState
+
   data object StartLoginAttemptFailed : SwedishLoginUiState
 }

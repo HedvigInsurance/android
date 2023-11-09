@@ -1,5 +1,6 @@
 package com.hedvig.android.core.common
 
+import kotlin.experimental.ExperimentalTypeInference
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -9,7 +10,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.transformLatest
-import kotlin.experimental.ExperimentalTypeInference
 
 /**
  * A class to use in the following use-case:
@@ -36,7 +36,6 @@ import kotlin.experimental.ExperimentalTypeInference
  */
 @OptIn(ExperimentalTypeInference::class)
 class RetryChannel {
-
   /**
    * For a retry, we only care for latest values we wouldn't want to keep track of how many retries we need
    * to do, therefore a conflated Channel is what we need.
@@ -74,7 +73,9 @@ class RetryChannel {
    * }
    * ```
    */
-  fun <R> transformLatest(@BuilderInference transform: suspend FlowCollector<R>.(value: Unit) -> Unit): Flow<R> {
+  fun <R> transformLatest(
+    @BuilderInference transform: suspend FlowCollector<R>.(value: Unit) -> Unit,
+  ): Flow<R> {
     return channel.transformLatest(transform)
   }
 
@@ -102,15 +103,21 @@ class RetryChannel {
    * }
    * ```
    */
-  fun <R> flatMapLatest(@BuilderInference transform: suspend (value: Unit) -> Flow<R>): Flow<R> {
+  fun <R> flatMapLatest(
+    @BuilderInference transform: suspend (value: Unit) -> Flow<R>,
+  ): Flow<R> {
     return channel.flatMapLatest(transform)
   }
 
-  fun <R> mapLatest(@BuilderInference transform: suspend (value: Unit) -> R): Flow<R> {
+  fun <R> mapLatest(
+    @BuilderInference transform: suspend (value: Unit) -> R,
+  ): Flow<R> {
     return channel.mapLatest(transform)
   }
 
-  suspend fun collectLatest(@BuilderInference action: suspend (value: Unit) -> Unit) {
+  suspend fun collectLatest(
+    @BuilderInference action: suspend (value: Unit) -> Unit,
+  ) {
     channel.collectLatest(action)
   }
 }

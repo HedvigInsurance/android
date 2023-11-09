@@ -73,7 +73,5 @@ internal class ForeverRepositoryDemo : ForeverRepository {
     return newCode.right()
   }
 
-  override suspend fun redeemReferralCode(
-    campaignCode: CampaignCode,
-  ): Either<ErrorMessage, Unit> = either { Unit }
+  override suspend fun redeemReferralCode(campaignCode: CampaignCode): Either<ErrorMessage, Unit> = either { Unit }
 }

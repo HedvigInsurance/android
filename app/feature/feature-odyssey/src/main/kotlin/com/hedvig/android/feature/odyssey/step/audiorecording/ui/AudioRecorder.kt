@@ -61,11 +61,11 @@ import com.hedvig.android.data.claimflow.AudioContent
 import com.hedvig.android.data.claimflow.model.AudioUrl
 import com.hedvig.android.feature.odyssey.step.audiorecording.AudioRecordingUiState
 import hedvig.resources.R
+import java.io.File
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import java.io.File
 
 @Composable
 internal fun AudioRecorder(
@@ -327,12 +327,18 @@ private fun PreviewPrerecordedPlayback() {
         modifier = Modifier,
         audioPlayer = object : AudioPlayer {
           override val audioPlayerState: StateFlow<AudioPlayerState> = MutableStateFlow(AudioPlayerState.Ready.done())
-          override fun initialize() = TODO("Not yet implemented")
-          override fun startPlayer() = TODO("Not yet implemented")
-          override fun pausePlayer() = TODO("Not yet implemented")
-          override fun retryLoadingAudio() = TODO("Not yet implemented")
-          override fun seekTo(progressPercentage: ProgressPercentage) = TODO("Not yet implemented")
-          override fun close() = TODO("Not yet implemented")
+
+          override fun initialize() = error("Not implemented")
+
+          override fun startPlayer() = error("Not implemented")
+
+          override fun pausePlayer() = error("Not implemented")
+
+          override fun retryLoadingAudio() = error("Not implemented")
+
+          override fun seekTo(progressPercentage: ProgressPercentage) = error("Not implemented")
+
+          override fun close() = error("Not implemented")
         },
       )
     }

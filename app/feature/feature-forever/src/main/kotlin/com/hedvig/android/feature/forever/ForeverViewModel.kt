@@ -19,11 +19,11 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 internal class ForeverViewModel(
   foreverRepositoryProvider: Provider<ForeverRepository>,
 ) : MoleculeViewModel<ForeverEvent, ForeverUiState>(
-  ForeverUiState.Loading,
-  ForeverPresenter(
-    foreverRepositoryProvider = foreverRepositoryProvider,
-  ),
-)
+    ForeverUiState.Loading,
+    ForeverPresenter(
+      foreverRepositoryProvider = foreverRepositoryProvider,
+    ),
+  )
 
 internal class ForeverPresenter(
   private val foreverRepositoryProvider: Provider<ForeverRepository>,
@@ -89,8 +89,11 @@ internal class ForeverPresenter(
 
 sealed interface ForeverEvent {
   data object ShowedReferralCodeSuccessfulChangeMessage : ForeverEvent
+
   data object ShowedReferralCodeSubmissionError : ForeverEvent
+
   data class SubmitNewReferralCode(val code: String) : ForeverEvent
+
   data object RetryLoadReferralData : ForeverEvent
 }
 
@@ -102,7 +105,6 @@ internal data class ForeverUiState(
   val referralCodeErrorMessage: ForeverRepository.ReferralError?,
   val showReferralCodeSuccessfullyChangedMessage: Boolean,
 ) {
-
   companion object {
     val Loading: ForeverUiState = ForeverUiState(
       foreverData = null,

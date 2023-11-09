@@ -93,6 +93,9 @@ import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.NetworkCacheManagerImpl
 import com.hedvig.app.util.apollo.SunsettingInterceptor
+import java.io.File
+import java.util.Locale
+import kotlin.math.pow
 import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -103,9 +106,6 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import timber.log.Timber
-import java.io.File
-import java.util.Locale
-import kotlin.math.pow
 
 private val networkModule = module {
   single { androidApplication() as HedvigApplication }

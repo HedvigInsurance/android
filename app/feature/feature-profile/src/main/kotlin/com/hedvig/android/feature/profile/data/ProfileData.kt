@@ -46,5 +46,9 @@ data class ChargeEstimation(
 )
 
 enum class DirectDebitStatus {
-  ACTIVE, PENDING, NEEDS_SETUP, NONE, UNKNOWN
+  ACTIVE,
+  PENDING,
+  NEEDS_SETUP,
+  NONE,
+  UNKNOWN,
 }

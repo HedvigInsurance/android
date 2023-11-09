@@ -171,10 +171,7 @@ fun ReminderCardEnableNotifications(
 }
 
 @Composable
-private fun ReminderCardConnectPayment(
-  navigateToConnectPayment: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
+private fun ReminderCardConnectPayment(navigateToConnectPayment: () -> Unit, modifier: Modifier = Modifier) {
   VectorWarningCard(
     text = stringResource(R.string.info_card_missing_payment_body),
     modifier = modifier,
@@ -214,11 +211,7 @@ private fun ReminderCardUpcomingRenewals(
 }
 
 @Composable
-private fun InfoCardTextButton(
-  onClick: () -> Unit,
-  text: String,
-  modifier: Modifier = Modifier,
-) {
+private fun InfoCardTextButton(onClick: () -> Unit, text: String, modifier: Modifier = Modifier) {
   HedvigContainedSmallButton(
     text = text,
     onClick = onClick,

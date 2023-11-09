@@ -51,7 +51,8 @@ fun TopAppBarWithClose(
 }
 
 private enum class TopAppBarActionType {
-  BACK, CLOSE
+  BACK,
+  CLOSE,
 }
 
 @Composable

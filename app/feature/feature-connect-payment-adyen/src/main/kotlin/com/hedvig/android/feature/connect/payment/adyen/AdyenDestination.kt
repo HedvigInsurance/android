@@ -44,11 +44,7 @@ import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 
 @Composable
-internal fun AdyenDestination(
-  viewModel: AdyenViewModel,
-  navigateUp: () -> Unit,
-  finishAdyenFlow: () -> Unit,
-) {
+internal fun AdyenDestination(viewModel: AdyenViewModel, navigateUp: () -> Unit, finishAdyenFlow: () -> Unit) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   AdyenScreen(
     uiState = uiState,

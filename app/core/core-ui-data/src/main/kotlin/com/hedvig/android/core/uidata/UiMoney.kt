@@ -2,12 +2,12 @@ package com.hedvig.android.core.uidata
 
 import androidx.compose.runtime.Immutable
 import giraffe.fragment.MonetaryAmountFragment
+import java.math.BigDecimal
+import java.text.DecimalFormat
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import octopus.fragment.MoneyFragment
 import octopus.type.CurrencyCode
-import java.math.BigDecimal
-import java.text.DecimalFormat
 
 @Immutable
 @Serializable

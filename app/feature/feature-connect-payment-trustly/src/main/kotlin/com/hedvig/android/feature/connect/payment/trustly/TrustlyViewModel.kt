@@ -9,10 +9,10 @@ internal class TrustlyViewModel(
   trustlyCallback: TrustlyCallback,
   startTrustlySessionUseCase: StartTrustlySessionUseCase,
 ) : MoleculeViewModel<TrustlyEvent, TrustlyUiState>(
-  TrustlyUiState.Loading,
-  TrustlyPresenter(
-    trustlyCallback,
-    startTrustlySessionUseCase,
-    market,
-  ),
-)
+    TrustlyUiState.Loading,
+    TrustlyPresenter(
+      trustlyCallback,
+      startTrustlySessionUseCase,
+      market,
+    ),
+  )

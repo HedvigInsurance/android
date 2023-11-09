@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 
 class TestGetMemberRemindersUseCase() : GetMemberRemindersUseCase {
   val memberReminders = Turbine<MemberReminders>()
+
   override fun invoke(): Flow<MemberReminders> {
     return memberReminders.asChannel().receiveAsFlow()
   }

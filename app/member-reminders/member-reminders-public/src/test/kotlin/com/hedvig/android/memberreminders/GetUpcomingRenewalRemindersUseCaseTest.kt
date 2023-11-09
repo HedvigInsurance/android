@@ -15,6 +15,8 @@ import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.core.common.test.isLeft
 import com.hedvig.android.core.common.test.isRight
 import com.hedvig.android.test.clock.TestClock
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -25,12 +27,9 @@ import octopus.type.buildMember
 import octopus.type.buildProductVariant
 import org.junit.Rule
 import org.junit.Test
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.days
 
 @OptIn(ApolloExperimental::class)
 class GetUpcomingRenewalRemindersUseCaseTest {
-
   @get:Rule
   val testApolloClientRule = TestApolloClientRule()
   val apolloClient: ApolloClient

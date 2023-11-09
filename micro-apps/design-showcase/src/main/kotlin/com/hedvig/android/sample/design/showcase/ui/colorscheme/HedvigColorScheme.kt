@@ -55,7 +55,7 @@ internal fun HedvigColorScheme() {
 
 @Composable
 private fun ColorItem(color: @Composable () -> Color, colorName: String) {
-  Row() {
+  Row {
     Box(Modifier.weight(1f)) {
       HedvigTheme(darkTheme = false) {
         Surface(Modifier.fillMaxSize().height(50.dp), color = color()) {

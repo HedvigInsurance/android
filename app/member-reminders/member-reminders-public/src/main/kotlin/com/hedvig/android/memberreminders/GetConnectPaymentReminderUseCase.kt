@@ -52,7 +52,9 @@ internal class GetConnectPaymentReminderUseCaseImpl(
 
 sealed interface ConnectPaymentReminderError {
   data object FeatureFlagNotEnabled : ConnectPaymentReminderError
+
   data object AlreadySetup : ConnectPaymentReminderError
+
   data class NetworkError(val errorMessage: ErrorMessage) : ConnectPaymentReminderError, ErrorMessage by errorMessage
 }
 

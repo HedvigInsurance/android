@@ -40,10 +40,7 @@ fun HedvigFullScreenCenterAlignedProgressDebounced(
 }
 
 @Composable
-fun HedvigFullScreenCenterAlignedProgress(
-  modifier: Modifier = Modifier,
-  show: Boolean = true,
-) {
+fun HedvigFullScreenCenterAlignedProgress(modifier: Modifier = Modifier, show: Boolean = true) {
   Box(modifier) {
     AnimatedVisibility(
       visible = show,

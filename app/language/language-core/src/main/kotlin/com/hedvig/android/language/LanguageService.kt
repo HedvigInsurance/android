@@ -8,9 +8,13 @@ import java.util.Locale
 interface LanguageService {
   @MainThread
   fun setLanguage(language: Language)
+
   fun getLanguage(): Language
+
   fun getLocale(): java.util.Locale
+
   fun getGraphQLLocale(): giraffe.type.Locale
+
   fun performOnLaunchLanguageCheck()
 }
 

@@ -87,6 +87,7 @@ fun HedvigCard(
 
 sealed interface HedvigCardElevation {
   object NoElevation : HedvigCardElevation
+
   class Elevated(val elevation: Dp = 0.dp) : HedvigCardElevation
 }
 

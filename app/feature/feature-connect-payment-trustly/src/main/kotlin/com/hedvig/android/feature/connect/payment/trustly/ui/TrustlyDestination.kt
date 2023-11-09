@@ -50,11 +50,7 @@ import com.hedvig.android.logger.logcat
 import hedvig.resources.R
 
 @Composable
-internal fun TrustlyDestination(
-  viewModel: TrustlyViewModel,
-  navigateUp: () -> Unit,
-  finishTrustlyFlow: () -> Unit,
-) {
+internal fun TrustlyDestination(viewModel: TrustlyViewModel, navigateUp: () -> Unit, finishTrustlyFlow: () -> Unit) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   TrustlyScreen(
     uiState = uiState,

@@ -50,6 +50,9 @@ internal data class TextInput(
 ) : ChatInputType()
 
 internal data class SingleSelect(val options: List<ChatMessageFragment.Choice>) : ChatInputType()
+
 internal object Audio : ChatInputType()
+
 internal object ParagraphInput : ChatInputType()
+
 internal object NullInput : ChatInputType()

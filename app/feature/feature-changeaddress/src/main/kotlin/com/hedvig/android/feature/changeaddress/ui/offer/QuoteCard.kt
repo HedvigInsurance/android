@@ -116,10 +116,7 @@ private fun PillAndBasicInfo(quote: MoveQuote, movingDate: LocalDate) {
 }
 
 @Composable
-private fun QuoteDetailsAndPrice(
-  isExpanded: Boolean,
-  quote: MoveQuote,
-) {
+private fun QuoteDetailsAndPrice(isExpanded: Boolean, quote: MoveQuote) {
   HorizontalItemsWithMaximumSpaceTaken(
     startSlot = {
       Row(verticalAlignment = Alignment.CenterVertically) {
@@ -162,9 +159,7 @@ private fun QuoteDetailsAndPrice(
 }
 
 @Composable
-private fun ExpandedInformation(
-  quote: MoveQuote,
-) {
+private fun ExpandedInformation(quote: MoveQuote) {
   Column {
     quote.displayItems.forEach {
       HorizontalItemsWithMaximumSpaceTaken(

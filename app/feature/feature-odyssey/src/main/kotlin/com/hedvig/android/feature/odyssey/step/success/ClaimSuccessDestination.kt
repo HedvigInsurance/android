@@ -32,10 +32,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import hedvig.resources.R
 
 @Composable
-internal fun ClaimSuccessDestination(
-  openChat: () -> Unit,
-  closeSuccessScreen: () -> Unit,
-) {
+internal fun ClaimSuccessDestination(openChat: () -> Unit, closeSuccessScreen: () -> Unit) {
   ClaimSuccessScreen(
     openChat = openChat,
     closeSuccessScreen = closeSuccessScreen,
@@ -43,10 +40,7 @@ internal fun ClaimSuccessDestination(
 }
 
 @Composable
-private fun ClaimSuccessScreen(
-  openChat: () -> Unit,
-  closeSuccessScreen: () -> Unit,
-) {
+private fun ClaimSuccessScreen(openChat: () -> Unit, closeSuccessScreen: () -> Unit) {
   HedvigTheme {
     Surface(
       color = MaterialTheme.colorScheme.background,

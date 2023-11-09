@@ -18,9 +18,9 @@ internal class ClaimDetailsViewModel(
   private val claimId: String,
   private val getClaimDetailUiStateUseCase: GetClaimDetailUiStateUseCase,
 ) : MoleculeViewModel<ClaimDetailsEvent, ClaimDetailUiState>(
-  ClaimDetailUiState.Loading,
-  ClaimDetailPresenter(claimId, getClaimDetailUiStateUseCase),
-)
+    ClaimDetailUiState.Loading,
+    ClaimDetailPresenter(claimId, getClaimDetailUiStateUseCase),
+  )
 
 private class ClaimDetailPresenter(
   private val claimId: String,
@@ -76,7 +76,9 @@ internal sealed interface ClaimDetailsEvent {
 
 internal sealed interface ClaimDetailUiState {
   data object Loading : ClaimDetailUiState
+
   data object Error : ClaimDetailUiState
+
   data class Content(
     val claimId: String,
     val submittedContent: SubmittedContent?,
@@ -86,6 +88,7 @@ internal sealed interface ClaimDetailUiState {
   ) : ClaimDetailUiState {
     sealed interface SubmittedContent {
       data class Audio(val signedAudioURL: SignedAudioUrl) : SubmittedContent
+
       data class FreeText(val text: String) : SubmittedContent
     }
 

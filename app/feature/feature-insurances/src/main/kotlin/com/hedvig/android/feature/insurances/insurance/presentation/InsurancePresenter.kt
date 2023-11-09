@@ -33,6 +33,7 @@ import octopus.type.CrossSellType
 
 internal sealed interface InsuranceScreenEvent {
   data object RetryLoading : InsuranceScreenEvent
+
   data object MarkCardCrossSellsAsSeen : InsuranceScreenEvent
 }
 
@@ -64,9 +65,7 @@ internal class InsurancePresenter(
   private val crossSellCardNotificationBadgeService: CrossSellCardNotificationBadgeService,
 ) : MoleculePresenter<InsuranceScreenEvent, InsuranceUiState> {
   @Composable
-  override fun MoleculePresenterScope<InsuranceScreenEvent>.present(
-    lastState: InsuranceUiState,
-  ): InsuranceUiState {
+  override fun MoleculePresenterScope<InsuranceScreenEvent>.present(lastState: InsuranceUiState): InsuranceUiState {
     var insuranceData by remember {
       mutableStateOf<InsuranceData>(
         InsuranceData.fromUiState(lastState),

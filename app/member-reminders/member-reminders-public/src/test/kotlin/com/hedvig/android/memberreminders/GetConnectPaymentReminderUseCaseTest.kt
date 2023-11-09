@@ -29,7 +29,6 @@ import org.junit.runner.RunWith
 @OptIn(ApolloExperimental::class)
 @RunWith(TestParameterInjector::class)
 class GetConnectPaymentReminderUseCaseTest {
-
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
 

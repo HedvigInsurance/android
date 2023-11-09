@@ -48,10 +48,7 @@ internal class GetInsuranceContractsUseCaseImpl(
   }
 }
 
-private fun ContractFragment.toContract(
-  isTerminated: Boolean,
-  supportsAddressChange: Boolean,
-): InsuranceContract {
+private fun ContractFragment.toContract(isTerminated: Boolean, supportsAddressChange: Boolean): InsuranceContract {
   return InsuranceContract(
     id = id,
     displayName = currentAgreement.productVariant.displayName,

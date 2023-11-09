@@ -20,9 +20,9 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
-import java.util.concurrent.TimeUnit
 
 internal class GifPickerBottomSheet : BottomSheetDialogFragment() {
   private val viewModel: ChatViewModel by activityViewModel()
@@ -31,11 +31,8 @@ internal class GifPickerBottomSheet : BottomSheetDialogFragment() {
 
   private val disposables = CompositeDisposable()
 
-  override fun onCreateView(
-    inflater: LayoutInflater,
-    container: ViewGroup?,
-    savedInstanceState: Bundle?,
-  ): View? = inflater.inflate(R.layout.send_gif_dialog, container, false)
+  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+    inflater.inflate(R.layout.send_gif_dialog, container, false)
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     binding.apply {

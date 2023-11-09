@@ -103,7 +103,7 @@ import com.hedvig.android.core.icons.hedvig.small.hedvig.SquircleWithCheckmark
 internal fun HedvigIcons() {
   Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).safeContentPadding()) {
     for ((index, iconsGroup) in Icons.Hedvig.AllHedvigIcons.withIndex()) {
-      FlowRow() {
+      FlowRow {
         for (icon in iconsGroup) {
           val modifier = Modifier
           if (index <= 1) { // #0 and #1 are the flags and colored icons which should not be tinted

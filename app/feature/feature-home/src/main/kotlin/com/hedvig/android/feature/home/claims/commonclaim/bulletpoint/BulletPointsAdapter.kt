@@ -28,7 +28,6 @@ import com.hedvig.android.feature.home.claims.commonclaim.BulletPoint
 class BulletPointsAdapter(
   private val imageLoader: ImageLoader,
 ) : ListAdapter<BulletPoint, BulletPointsAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
-
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(ComposeView(parent.context))
 
   override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
@@ -38,10 +37,7 @@ class BulletPointsAdapter(
   class ViewHolder(
     private val composeView: ComposeView,
   ) : RecyclerView.ViewHolder(composeView) {
-    fun bind(
-      item: BulletPoint,
-      imageLoader: ImageLoader,
-    ) {
+    fun bind(item: BulletPoint, imageLoader: ImageLoader) {
       composeView.setContent {
         HedvigTheme {
           HedvigCard(

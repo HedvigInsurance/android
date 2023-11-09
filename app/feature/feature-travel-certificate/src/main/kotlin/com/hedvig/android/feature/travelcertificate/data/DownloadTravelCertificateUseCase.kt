@@ -7,6 +7,9 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.await
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import java.io.File
+import java.io.IOException
+import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
@@ -17,9 +20,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okio.buffer
 import okio.sink
-import java.io.File
-import java.io.IOException
-import java.time.format.DateTimeFormatter
 
 private const val CERTIFICATE_NAME = "hedvigTravelCertificate_"
 private const val FILE_EXT = ".pdf"
@@ -27,7 +27,6 @@ private const val FILE_EXT = ".pdf"
 internal class DownloadTravelCertificateUseCase(
   private val context: Context,
 ) {
-
   suspend fun invoke(travelCertificateUri: TravelCertificateUrl): Either<ErrorMessage, TravelCertificateUri> =
     withContext(Dispatchers.IO) {
       either {

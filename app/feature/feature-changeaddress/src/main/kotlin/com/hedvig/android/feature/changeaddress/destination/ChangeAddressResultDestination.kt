@@ -19,10 +19,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 
 @Composable
-internal fun ChangeAddressResultDestination(
-  movingDate: LocalDate?,
-  popBackstack: () -> Unit,
-) {
+internal fun ChangeAddressResultDestination(movingDate: LocalDate?, popBackstack: () -> Unit) {
   Box(
     modifier = Modifier.fillMaxSize(),
   ) {

@@ -3,10 +3,10 @@ package com.hedvig.android.core.datastore
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
+import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.plus
-import java.io.File
 
 private const val testPreferencesDatastoreFileName = "hedvig_test_data_store_preferences"
 
@@ -34,11 +34,11 @@ class TestPreferencesDataStore(
   datastoreTestFileDirectory: File,
   coroutineScope: CoroutineScope,
 ) : DataStore<Preferences> by PreferenceDataStoreFactory.create(
-  // + Dispatchers.Unconfined is important so that the DataStore coroutines execute eagerly. This is important because
-  // when we test this with a runBlocking in play, we don't have control over when to do `runCurrent()`.
-  scope = coroutineScope + Dispatchers.Unconfined,
-  produceFile = {
-    val fileNameWithDatastoreExtension = "$testPreferencesDatastoreFileName$preferencesDatastoreFileExtension"
-    File(datastoreTestFileDirectory, "$preferencesDataStoreFileDirectory/$fileNameWithDatastoreExtension")
-  },
-)
+    // + Dispatchers.Unconfined is important so that the DataStore coroutines execute eagerly. This is important because
+    // when we test this with a runBlocking in play, we don't have control over when to do `runCurrent()`.
+    scope = coroutineScope + Dispatchers.Unconfined,
+    produceFile = {
+      val fileNameWithDatastoreExtension = "$testPreferencesDatastoreFileName$preferencesDatastoreFileExtension"
+      File(datastoreTestFileDirectory, "$preferencesDataStoreFileDirectory/$fileNameWithDatastoreExtension")
+    },
+  )

@@ -19,7 +19,6 @@ internal class DateOfOccurrencePlusLocationViewModel(
   private val dateOfOccurrencePlusLocation: ClaimFlowDestination.DateOfOccurrencePlusLocation,
   private val claimFlowRepository: ClaimFlowRepository,
 ) : ViewModel() {
-
   private val _uiState = MutableStateFlow(
     DateOfOccurrencePlusLocationUiState.fromInitialSelection(
       DatePickerUiState(

@@ -285,7 +285,6 @@ private fun PreviewContractDetailScreen() {
               ),
               certificateUrl = null,
             ),
-
             upcomingAgreement = null,
             renewalDate = LocalDate.fromEpochDays(500),
             supportsAddressChange = false,

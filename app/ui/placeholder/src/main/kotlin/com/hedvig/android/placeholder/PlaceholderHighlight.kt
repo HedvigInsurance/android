@@ -91,6 +91,7 @@ private data class Fade(
   private val brush = SolidColor(highlightColor)
 
   override fun brush(progress: Float, size: Size): Brush = brush
+
   override fun alpha(progress: Float): Float = progress
 }
 
@@ -99,10 +100,7 @@ private data class Shimmer(
   override val animationSpec: InfiniteRepeatableSpec<Float>,
   private val progressForMaxAlpha: Float = 0.6f,
 ) : PlaceholderHighlight {
-  override fun brush(
-    progress: Float,
-    size: Size,
-  ): Brush = Brush.radialGradient(
+  override fun brush(progress: Float, size: Size): Brush = Brush.radialGradient(
     colors = listOf(
       highlightColor.copy(alpha = 0f),
       highlightColor,

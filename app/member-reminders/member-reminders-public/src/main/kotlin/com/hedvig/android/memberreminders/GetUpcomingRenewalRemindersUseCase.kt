@@ -60,6 +60,7 @@ internal class GetUpcomingRenewalRemindersUseCaseImpl(
 
 sealed interface UpcomingRenewalReminderError {
   data object NoUpcomingRenewals : UpcomingRenewalReminderError
+
   data class NetworkError(val errorMessage: ErrorMessage) : UpcomingRenewalReminderError, ErrorMessage by errorMessage
 }
 

@@ -17,10 +17,7 @@ import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import com.kiwi.navigationcompose.typed.composable
 
-fun NavGraphBuilder.chatGraph(
-  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-  navigator: Navigator,
-) {
+fun NavGraphBuilder.chatGraph(hedvigDeepLinkContainer: HedvigDeepLinkContainer, navigator: Navigator) {
   composable<AppDestination.Chat>(
     deepLinks = listOf(
       navDeepLink { uriPattern = hedvigDeepLinkContainer.chat },

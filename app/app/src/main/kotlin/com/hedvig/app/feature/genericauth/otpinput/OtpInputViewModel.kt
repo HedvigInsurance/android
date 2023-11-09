@@ -38,6 +38,7 @@ class OtpInputViewModel(
 
   sealed class Event {
     data class Success(val authToken: String) : Event()
+
     object CodeResent : Event()
   }
 

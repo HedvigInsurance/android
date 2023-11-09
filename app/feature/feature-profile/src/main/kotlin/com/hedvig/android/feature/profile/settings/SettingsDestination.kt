@@ -42,11 +42,7 @@ import com.hedvig.android.theme.Theme
 import hedvig.resources.R
 
 @Composable
-internal fun SettingsDestination(
-  viewModel: SettingsViewModel,
-  openAppSettings: () -> Unit,
-  navigateUp: () -> Unit,
-) {
+internal fun SettingsDestination(viewModel: SettingsViewModel, openAppSettings: () -> Unit, navigateUp: () -> Unit) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   SettingsScreen(
     uiState = uiState,

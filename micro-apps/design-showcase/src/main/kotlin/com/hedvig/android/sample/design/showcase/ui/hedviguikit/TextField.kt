@@ -17,8 +17,14 @@ internal fun ColumnScope.HTextField() {
   var text by remember { mutableStateOf("Error!") }
   var isError by remember { mutableStateOf(false) }
   var isEnabled by remember { mutableStateOf(true) }
-  Row { Text("isError:$isError"); Checkbox(checked = isError, onCheckedChange = { isError = it }) }
-  Row { Text("isEnabled:$isEnabled"); Checkbox(checked = isEnabled, onCheckedChange = { isEnabled = it }) }
+  Row {
+    Text("isError:$isError")
+    Checkbox(checked = isError, onCheckedChange = { isError = it })
+  }
+  Row {
+    Text("isEnabled:$isEnabled")
+    Checkbox(checked = isEnabled, onCheckedChange = { isEnabled = it })
+  }
   HedvigTextField(
     value = text,
     onValueChange = { text = it },

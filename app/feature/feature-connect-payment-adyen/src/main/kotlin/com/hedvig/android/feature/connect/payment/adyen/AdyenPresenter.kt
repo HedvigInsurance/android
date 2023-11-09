@@ -82,17 +82,22 @@ internal class AdyenPresenter(
 
 internal sealed interface AdyenEvent {
   data object RetryLoadingPaymentLink : AdyenEvent
+
   data object ConnectingCardFailed : AdyenEvent
+
   data object ConnectingCardSucceeded : AdyenEvent
 }
 
 internal interface AdyenUiState {
   data object Loading : AdyenUiState
+
   data class Browsing(
     val adyenPaymentUrl: AdyenPaymentUrl,
   ) : AdyenUiState
 
   data object FailedToConnectCard : AdyenUiState
+
   data object FailedToGetPaymentLink : AdyenUiState
+
   data object SucceededInConnectingCard : AdyenUiState
 }

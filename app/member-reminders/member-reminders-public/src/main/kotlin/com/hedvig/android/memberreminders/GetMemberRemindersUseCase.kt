@@ -57,9 +57,7 @@ data class MemberReminders(
    *
    * If [alreadyHasNotificationPermission] is true, then the notification permission reminder should not be shown.
    */
-  fun onlyApplicableReminders(
-    alreadyHasNotificationPermission: Boolean,
-  ): ApplicableMemberReminders {
+  fun onlyApplicableReminders(alreadyHasNotificationPermission: Boolean): ApplicableMemberReminders {
     return ApplicableMemberReminders(
       connectPayment,
       upcomingRenewals,
@@ -79,6 +77,8 @@ data class ApplicableMemberReminders(
 
 sealed interface MemberReminder {
   object ConnectPayment : MemberReminder
+
   data class UpcomingRenewals(val upcomingRenewals: NonEmptyList<UpcomingRenewal>) : MemberReminder
+
   object EnableNotifications : MemberReminder
 }

@@ -255,6 +255,7 @@ class SimpleSignAuthenticationActivity : AppCompatActivity() {
 
   companion object {
     private const val DATA = "DATA"
+
     fun newInstance(context: Context, market: Market) =
       Intent(context, SimpleSignAuthenticationActivity::class.java).apply {
         putExtra(DATA, SimpleSignAuthenticationData(market))
@@ -341,5 +342,6 @@ private fun ContinueButton(
 }
 
 private enum class ZignSecMarket {
-  NO, DK
+  NO,
+  DK,
 }

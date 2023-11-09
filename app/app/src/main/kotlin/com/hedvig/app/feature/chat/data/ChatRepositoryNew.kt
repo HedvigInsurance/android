@@ -11,6 +11,7 @@ import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import java.io.File
 import kotlinx.datetime.Instant
 import octopus.ChatMessagesQuery
 import octopus.ChatSendFileMutation
@@ -19,14 +20,12 @@ import octopus.fragment.MessageFragment
 import octopus.type.ChatMessageFileInput
 import octopus.type.ChatMessageSender
 import octopus.type.ChatMessageTextInput
-import java.io.File
 
 interface ChatRepositoryNew {
   suspend fun fetchChatMessages(until: Instant? = null): Either<ErrorMessage, ChatMessagesResult>
-  suspend fun sendFile(
-    file: File,
-    contentType: String,
-  ): Either<ErrorMessage, ChatMessageResult>
+
+  suspend fun sendFile(file: File, contentType: String): Either<ErrorMessage, ChatMessageResult>
+
   suspend fun sendMessage(text: String): Either<ErrorMessage, ChatMessageResult>
 }
 
@@ -46,10 +45,7 @@ class ChatRepositoryNewImpl(
     )
   }
 
-  override suspend fun sendFile(
-    file: File,
-    contentType: String,
-  ) = either {
+  override suspend fun sendFile(file: File, contentType: String) = either {
     val fileUpload = file.toUpload(contentType)
 //    val input = ChatMessageFileInput(fileUpload) // todo here upload file directly through HTTP instead
     val input = ChatMessageFileInput("")

@@ -6,6 +6,8 @@ import com.hedvig.android.apollo.safeGraphqlCall
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.android.jsonObjectOfNotNull
 import com.hedvig.android.feature.chat.FileService
+import java.io.File
+import java.util.concurrent.TimeUnit
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -16,15 +18,12 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okio.Buffer
 import org.json.JSONObject
-import java.io.File
-import java.util.concurrent.TimeUnit
 
 class GraphQLQueryHandler(
   private val okHttpClient: OkHttpClient,
   private val fileService: FileService,
   private val hedvigBuildConstants: HedvigBuildConstants,
 ) {
-
   suspend fun graphQLQuery(
     query: String,
     variables: JSONObject? = null,

@@ -2,12 +2,12 @@ package com.hedvig.android.auth
 
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import java.util.UUID
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import java.util.UUID
-import kotlin.time.Duration.Companion.seconds
 
 internal class AndroidAccessTokenProvider(
   private val authTokenService: AuthTokenService,

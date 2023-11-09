@@ -31,7 +31,6 @@ import timber.log.Timber
 
 // Used in /app/src/main/AndroidManifest.xml
 abstract class DatadogInitializer : Initializer<Unit>, KoinComponent {
-
   private val hedvigBuildConstants by inject<HedvigBuildConstants>()
   private val deviceIdDataStore by inject<DeviceIdDataStore>()
   private val applicationScope by inject<ApplicationScope>()

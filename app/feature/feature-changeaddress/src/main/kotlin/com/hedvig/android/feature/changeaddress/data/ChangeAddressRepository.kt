@@ -17,7 +17,9 @@ import octopus.MoveIntentRequestMutation
 
 internal interface ChangeAddressRepository {
   suspend fun createMoveIntent(): Either<ErrorMessage, MoveIntent>
+
   suspend fun createQuotes(input: QuoteInput): Either<ErrorMessage, List<MoveQuote>>
+
   suspend fun commitMove(id: MoveIntentId): Either<ErrorMessage, SuccessfulMove>
 }
 

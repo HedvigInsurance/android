@@ -117,12 +117,7 @@ private fun EmailTextField(
 }
 
 @Composable
-private fun TrailingIcon(
-  error: String?,
-  loading: Boolean,
-  emailInput: String,
-  onClear: () -> Unit,
-) {
+private fun TrailingIcon(error: String?, loading: Boolean, emailInput: String, onClear: () -> Unit) {
   if (error != null) {
     Image(
       imageVector = Icons.Outlined.ErrorOutline,

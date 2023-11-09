@@ -181,10 +181,7 @@ private fun PaymentScreen(
 }
 
 @Composable
-private fun PaymentAmountCard(
-  uiState: PaymentUiState,
-  modifier: Modifier = Modifier,
-) {
+private fun PaymentAmountCard(uiState: PaymentUiState, modifier: Modifier = Modifier) {
   HedvigCard(modifier = modifier) {
     val nextChargeAmount = uiState.nextChargeAmount
     Box(contentAlignment = Alignment.Center) {
@@ -221,10 +218,7 @@ private fun NextPayment(uiState: PaymentUiState, locale: Locale) {
 }
 
 @Composable
-private fun InsuranceCosts(
-  uiState: PaymentUiState,
-  locale: Locale,
-) {
+private fun InsuranceCosts(uiState: PaymentUiState, locale: Locale) {
   uiState.insuranceCosts.forEach { insuranceCost ->
     Row(
       modifier = Modifier
@@ -389,10 +383,7 @@ private fun ColumnScope.PaymentDetails(uiState: PaymentUiState) {
 }
 
 @Composable
-fun PaymentHistory(
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
+fun PaymentHistory(onClick: () -> Unit, modifier: Modifier = Modifier) {
   Row(
     modifier = modifier
       .fillMaxWidth()

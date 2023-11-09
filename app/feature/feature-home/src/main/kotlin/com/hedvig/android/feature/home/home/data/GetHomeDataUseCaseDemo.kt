@@ -9,9 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
 internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
-  override fun invoke(
-    forceNetworkFetch: Boolean,
-  ): Flow<Either<ErrorMessage, HomeData>> = flowOf(
+  override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, HomeData>> = flowOf(
     HomeData(
       contractStatus = HomeData.ContractStatus.Active,
       claimStatusCardsData = null,

@@ -16,7 +16,6 @@ import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent.inject
 
 class AuthenticatedObserver : DefaultLifecycleObserver {
-
   private val authTokenService: AuthTokenService by inject(AuthTokenService::class.java)
   private val demoManager: DemoManager by inject(DemoManager::class.java)
   private val activityNavigator: ActivityNavigator by inject(ActivityNavigator::class.java)

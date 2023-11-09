@@ -272,11 +272,7 @@ private fun ColumnScope.InsuranceScreenContent(
 }
 
 @Composable
-private fun CrossSellItem(
-  crossSell: CrossSell,
-  onCrossSellClick: (Uri) -> Unit,
-  modifier: Modifier = Modifier,
-) {
+private fun CrossSellItem(crossSell: CrossSell, onCrossSellClick: (Uri) -> Unit, modifier: Modifier = Modifier) {
   Row(
     modifier = modifier.heightIn(64.dp),
     verticalAlignment = Alignment.CenterVertically,
@@ -319,11 +315,7 @@ private fun CrossSellItem(
 }
 
 @Composable
-private fun NotificationSubheading(
-  text: String,
-  showNotification: Boolean,
-  modifier: Modifier = Modifier,
-) {
+private fun NotificationSubheading(text: String, showNotification: Boolean, modifier: Modifier = Modifier) {
   Row(
     modifier = modifier.fillMaxWidth(),
     verticalAlignment = Alignment.CenterVertically,
@@ -355,11 +347,7 @@ private fun NotificationSubheading(
 }
 
 @Composable
-private fun TerminatedContractsButton(
-  text: String,
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
+private fun TerminatedContractsButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
   HedvigCard(
     onClick = onClick,
     colors = CardDefaults.outlinedCardColors(),

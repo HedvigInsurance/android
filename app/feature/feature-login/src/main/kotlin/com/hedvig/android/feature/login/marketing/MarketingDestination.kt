@@ -67,8 +67,8 @@ import com.hedvig.android.feature.login.marketing.ui.LoginBackgroundImage
 import com.hedvig.android.language.Language
 import com.hedvig.android.market.Market
 import hedvig.resources.R
-import kotlinx.coroutines.launch
 import kotlin.math.max
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun MarketingDestination(
@@ -103,7 +103,7 @@ private fun MarketingScreen(
     val sheetState = rememberModalBottomSheetState(true)
     val coroutineScope = rememberCoroutineScope()
     if (showPreferencesSheet && uiState is MarketingUiState.Success) {
-      HedvigTheme() {
+      HedvigTheme {
         ModalBottomSheet(
           containerColor = MaterialTheme.colorScheme.background,
           onDismissRequest = { showPreferencesSheet = false },

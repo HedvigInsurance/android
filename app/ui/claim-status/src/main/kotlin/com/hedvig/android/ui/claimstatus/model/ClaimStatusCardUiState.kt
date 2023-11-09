@@ -8,9 +8,7 @@ data class ClaimStatusCardUiState(
   val claimProgressItemsUiState: List<ClaimProgressSegment>,
 ) {
   companion object {
-    fun fromClaimStatusCardsQuery(
-      claim: ClaimFragment,
-    ): ClaimStatusCardUiState {
+    fun fromClaimStatusCardsQuery(claim: ClaimFragment): ClaimStatusCardUiState {
       return ClaimStatusCardUiState(
         id = claim.id,
         pillTypes = ClaimPillType.fromClaimFragment(claim),

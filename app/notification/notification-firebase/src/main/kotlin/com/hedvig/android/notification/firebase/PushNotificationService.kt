@@ -15,7 +15,6 @@ import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.android.inject
 
 class PushNotificationService : FirebaseMessagingService() {
-
   private val coroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
   private val notificationSenders by injectAll<NotificationSender>()

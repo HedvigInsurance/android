@@ -18,6 +18,7 @@ class TestAuthTokenService : AuthTokenService {
     get() = error("Not implemented")
 
   override suspend fun getTokens(): AuthTokens? = authTokensTurbine.awaitItem()
+
   override suspend fun refreshAndGetAccessToken(): AccessToken? {
     error("Not implemented")
   }

@@ -98,11 +98,7 @@ fun PullRefreshIndicator(
  * Modifier.size MUST be specified.
  */
 @Composable
-private fun CircularArrowIndicator(
-  state: PullRefreshState,
-  color: Color,
-  modifier: Modifier = Modifier,
-) {
+private fun CircularArrowIndicator(state: PullRefreshState, color: Color, modifier: Modifier = Modifier) {
   val path = remember { Path().apply { fillType = PathFillType.EvenOdd } }
 
   val targetAlpha by remember(state) {
@@ -172,13 +168,7 @@ private fun ArrowValues(progress: Float): ArrowValues {
   return ArrowValues(rotation, startAngle, endAngle, scale)
 }
 
-private fun DrawScope.drawArrow(
-  arrow: Path,
-  bounds: Rect,
-  color: Color,
-  alpha: Float,
-  values: ArrowValues,
-) {
+private fun DrawScope.drawArrow(arrow: Path, bounds: Rect, color: Color, alpha: Float, values: ArrowValues) {
   arrow.reset()
   arrow.moveTo(0f, 0f) // Move to left corner
   arrow.lineTo(x = ArrowWidth.toPx() * values.scale, y = 0f) // Line to right corner

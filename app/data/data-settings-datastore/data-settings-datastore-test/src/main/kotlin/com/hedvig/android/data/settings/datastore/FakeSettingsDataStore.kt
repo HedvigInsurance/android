@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 
 class FakeSettingsDataStore() : SettingsDataStore {
   val themeTurbine = Turbine<Theme>()
+
   override suspend fun setTheme(theme: Theme) {
     themeTurbine.add(theme)
   }

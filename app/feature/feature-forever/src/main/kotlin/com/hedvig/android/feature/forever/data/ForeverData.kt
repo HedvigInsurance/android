@@ -46,5 +46,8 @@ data class Referral(
 )
 
 enum class ReferralState {
-  ACTIVE, IN_PROGRESS, TERMINATED, UNKNOWN
+  ACTIVE,
+  IN_PROGRESS,
+  TERMINATED,
+  UNKNOWN,
 }

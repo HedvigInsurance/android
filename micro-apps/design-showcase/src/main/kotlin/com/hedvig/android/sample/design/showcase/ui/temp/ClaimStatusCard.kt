@@ -66,12 +66,7 @@ fun ClaimStatusCard(
 }
 
 @Composable
-internal fun TopInfo(
-  pillsUiState: List<PillUiState>,
-  title: String,
-  subtitle: String,
-  modifier: Modifier = Modifier,
-) {
+internal fun TopInfo(pillsUiState: List<PillUiState>, title: String, subtitle: String, modifier: Modifier = Modifier) {
   Column(modifier = modifier) {
     ClaimPillsAndForwardArrow(pillsUiState)
     Spacer(modifier = Modifier.height(16.dp))
@@ -85,10 +80,7 @@ internal fun TopInfo(
 }
 
 @Composable
-internal fun ClaimProgressRow(
-  claimProgressItemsUiState: List<ClaimProgressUiState>,
-  modifier: Modifier = Modifier,
-) {
+internal fun ClaimProgressRow(claimProgressItemsUiState: List<ClaimProgressUiState>, modifier: Modifier = Modifier) {
   Row(
     modifier = modifier,
     horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -104,11 +96,7 @@ internal fun ClaimProgressRow(
 }
 
 @Composable
-private fun ClaimProgress(
-  text: String,
-  type: ClaimProgressUiState.ClaimProgressType,
-  modifier: Modifier = Modifier,
-) {
+private fun ClaimProgress(text: String, type: ClaimProgressUiState.ClaimProgressType, modifier: Modifier = Modifier) {
   val color = when (type) {
     ClaimProgressUiState.ClaimProgressType.PAID -> MaterialTheme.colorScheme.infoElement
     ClaimProgressUiState.ClaimProgressType.REOPENED -> MaterialTheme.colorScheme.warningElement
@@ -179,10 +167,7 @@ private enum class ContentAlpha {
 }
 
 @Composable
-internal fun ClaimPillsAndForwardArrow(
-  pillsUiState: List<PillUiState>,
-  modifier: Modifier = Modifier,
-) {
+internal fun ClaimPillsAndForwardArrow(pillsUiState: List<PillUiState>, modifier: Modifier = Modifier) {
   Row(
     horizontalArrangement = Arrangement.spacedBy(8.dp),
     modifier = modifier.fillMaxWidth(),
@@ -197,10 +182,7 @@ internal fun ClaimPillsAndForwardArrow(
 }
 
 @Composable
-private fun ClaimPill(
-  text: String,
-  pillType: PillUiState.PillType,
-) {
+private fun ClaimPill(text: String, pillType: PillUiState.PillType) {
   when (pillType) {
     PillUiState.PillType.OPEN -> Pill(text, MaterialTheme.colorScheme.outlineVariant)
     PillUiState.PillType.CLOSED -> Pill(text, MaterialTheme.colorScheme.primary)
@@ -219,11 +201,7 @@ private fun ClaimPill(
 }
 
 @Composable
-internal fun Pill(
-  text: String,
-  color: Color,
-  contentColor: Color = contentColorFor(color),
-) {
+internal fun Pill(text: String, color: Color, contentColor: Color = contentColorFor(color)) {
   Surface(
     shape = MaterialTheme.shapes.squircleExtraSmall,
     color = color,
@@ -259,7 +237,6 @@ data class PillUiState(
   val text: String,
   val type: PillType,
 ) {
-
   enum class PillType {
     OPEN,
     CLOSED,

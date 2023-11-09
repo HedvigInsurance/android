@@ -21,10 +21,10 @@ import com.hedvig.authlib.Callbacks
 import com.hedvig.authlib.OkHttpNetworkAuthRepository
 import com.hedvig.authlib.connectpayment.OkHttpNetworkPaymentRepository
 import com.hedvig.authlib.connectpayment.PaymentRepository
+import kotlin.coroutines.CoroutineContext
 import okhttp3.OkHttpClient
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import kotlin.coroutines.CoroutineContext
 
 @Suppress("RemoveExplicitTypeArguments")
 val authModule = module {

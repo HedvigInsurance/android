@@ -8,7 +8,11 @@ data class CrossSell(
   val type: CrossSellType,
 ) {
   enum class CrossSellType {
-    PET, HOME, ACCIDENT, CAR, UNKNOWN
+    PET,
+    HOME,
+    ACCIDENT,
+    CAR,
+    UNKNOWN,
   }
 }
 

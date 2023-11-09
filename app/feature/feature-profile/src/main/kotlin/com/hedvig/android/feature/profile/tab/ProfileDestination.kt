@@ -240,12 +240,7 @@ private fun ColumnScope.ProfileItemRows(
 }
 
 @Composable
-private fun ProfileRow(
-  title: String,
-  icon: ImageVector,
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
+private fun ProfileRow(title: String, icon: ImageVector, onClick: () -> Unit, modifier: Modifier = Modifier) {
   Row(
     verticalAlignment = Alignment.CenterVertically,
     modifier = modifier

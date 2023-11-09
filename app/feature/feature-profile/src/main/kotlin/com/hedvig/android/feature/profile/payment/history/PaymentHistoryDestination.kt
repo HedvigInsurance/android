@@ -45,10 +45,7 @@ import java.time.LocalDate
 import java.util.Locale
 
 @Composable
-internal fun PaymentHistoryDestination(
-  viewModel: PaymentHistoryViewModel,
-  onBackPressed: () -> Unit,
-) {
+internal fun PaymentHistoryDestination(viewModel: PaymentHistoryViewModel, onBackPressed: () -> Unit) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
   PaymentHistoryScreen(

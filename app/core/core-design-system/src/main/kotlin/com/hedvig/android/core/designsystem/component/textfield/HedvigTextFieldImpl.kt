@@ -223,11 +223,7 @@ internal fun HedvigDecorationBox(
  * Set content color, typography and emphasis for [content] composable
  */
 @Composable
-internal fun Decoration(
-  contentColor: Color,
-  typography: TextStyle? = null,
-  content: @Composable () -> Unit,
-) {
+internal fun Decoration(contentColor: Color, typography: TextStyle? = null, content: @Composable () -> Unit) {
   val contentWithColor: @Composable () -> Unit = @Composable {
     CompositionLocalProvider(
       LocalContentColor provides contentColor,
@@ -238,6 +234,7 @@ internal fun Decoration(
 }
 
 internal fun widthOrZero(placeable: Placeable?) = placeable?.width ?: 0
+
 internal fun heightOrZero(placeable: Placeable?) = placeable?.height ?: 0
 
 private object TextFieldTransitionScope {

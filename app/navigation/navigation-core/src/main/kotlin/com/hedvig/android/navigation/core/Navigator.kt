@@ -14,10 +14,7 @@ interface Navigator {
     navigatorExtras: Navigator.Extras? = null,
   )
 
-  fun NavBackStackEntry.navigate(
-    destination: Destination,
-    builder: NavOptionsBuilder.() -> Unit,
-  ) {
+  fun NavBackStackEntry.navigate(destination: Destination, builder: NavOptionsBuilder.() -> Unit) {
     navigate(destination, navOptions(builder))
   }
 
@@ -32,5 +29,6 @@ interface Navigator {
   )
 
   fun navigateUp()
+
   fun popBackStack()
 }

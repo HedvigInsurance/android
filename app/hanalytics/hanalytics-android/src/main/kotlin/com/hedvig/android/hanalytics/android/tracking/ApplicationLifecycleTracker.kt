@@ -8,7 +8,6 @@ class ApplicationLifecycleTracker(
   private val hAnalytics: HAnalytics,
   private val isProduction: Boolean,
 ) : DefaultLifecycleObserver {
-
   override fun onCreate(owner: LifecycleOwner) {
     if (isProduction) {
       hAnalytics.appStarted()

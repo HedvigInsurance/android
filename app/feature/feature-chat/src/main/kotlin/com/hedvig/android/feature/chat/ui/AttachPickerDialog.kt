@@ -16,7 +16,6 @@ import com.hedvig.android.feature.chat.legacy.fadeIn
 import com.hedvig.android.feature.chat.legacy.remove
 
 internal class AttachPickerDialog(context: Context) : Dialog(context, R.style.TransparentDialog) {
-
   private lateinit var binding: AttachPickerDialogBinding
 
   var pickerHeight = 0
@@ -91,6 +90,7 @@ internal class AttachPickerDialog(context: Context) : Dialog(context, R.style.Tr
         }
 
         override fun onAnimationRepeat(animation: Animation?) = Unit
+
         override fun onAnimationStart(animation: Animation?) = Unit
       },
     )

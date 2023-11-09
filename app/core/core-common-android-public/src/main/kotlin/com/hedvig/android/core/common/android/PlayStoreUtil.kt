@@ -29,6 +29,6 @@ private fun Context.openPlayStore() {
     Intent.FLAG_ACTIVITY_NO_HISTORY
       or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
       or Intent.FLAG_ACTIVITY_NEW_DOCUMENT
-    )
+  )
   startActivity(intent)
 }

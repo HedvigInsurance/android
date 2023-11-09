@@ -116,8 +116,11 @@ internal fun HedvigUiKit() {
         openUrl = {},
         notificationPermissionState = object : NotificationPermissionState {
           override val showDialog = false
+
           override fun dismissDialog() {}
+
           override fun launchPermissionRequest() {}
+
           override val permission: String
             get() = ""
           override val status: PermissionStatus
@@ -244,9 +247,7 @@ internal fun HedvigUiKit() {
   }
 }
 
-private fun LazyListScope.lightAndDarkItem(
-  content: @Composable LazyItemScope.() -> Unit,
-) {
+private fun LazyListScope.lightAndDarkItem(content: @Composable LazyItemScope.() -> Unit) {
   item {
     LADCOntainer { content() }
   }

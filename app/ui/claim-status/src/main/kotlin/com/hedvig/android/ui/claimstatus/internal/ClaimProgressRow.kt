@@ -29,10 +29,7 @@ import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
 import hedvig.resources.R
 
 @Composable
-internal fun ClaimProgressRow(
-  claimProgressItemsUiState: List<ClaimProgressSegment>,
-  modifier: Modifier = Modifier,
-) {
+internal fun ClaimProgressRow(claimProgressItemsUiState: List<ClaimProgressSegment>, modifier: Modifier = Modifier) {
   Row(
     modifier = modifier,
     horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -86,12 +83,7 @@ private fun ClaimProgress(
 }
 
 @Composable
-private fun ClaimProgress(
-  text: String,
-  color: Color,
-  contentAlpha: ContentAlpha,
-  modifier: Modifier = Modifier,
-) {
+private fun ClaimProgress(text: String, color: Color, contentAlpha: ContentAlpha, modifier: Modifier = Modifier) {
   Column(modifier = modifier) {
     val progressColor = color.copy(alpha = contentAlpha.value)
     Box(

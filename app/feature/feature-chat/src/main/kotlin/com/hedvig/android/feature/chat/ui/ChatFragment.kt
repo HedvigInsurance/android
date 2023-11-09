@@ -44,12 +44,12 @@ import com.hedvig.android.logger.logcat
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import dev.chrisbanes.insetter.applyInsetter
 import giraffe.ChatMessagesQuery
+import java.io.File
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.io.File
 
 class ChatFragment : Fragment(R.layout.fragment_chat) {
   private val chatViewModel: ChatViewModel by viewModel()
@@ -390,10 +390,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
   }
 }
 
-private fun Fragment.handleSingleSelectLink(
-  value: String,
-  onLinkHandleFailure: () -> Unit,
-) = when (value) {
+private fun Fragment.handleSingleSelectLink(value: String, onLinkHandleFailure: () -> Unit) = when (value) {
   "message.forslag.dashboard" -> {
     logcat(LogPriority.ERROR) { "Can't handle going to the offer page without a QuoteCartId from link: `$value`" }
     AlertDialog.Builder(requireContext())

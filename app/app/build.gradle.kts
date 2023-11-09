@@ -260,7 +260,6 @@ dependencies {
   testImplementation(libs.koin.test)
   testImplementation(libs.mockk.jvm)
   testImplementation(libs.turbine)
-  testImplementation(projects.apolloGiraffeTest)
   testImplementation(projects.authCoreTest)
   testImplementation(projects.authEventFake)
   testImplementation(projects.coreCommonTest)

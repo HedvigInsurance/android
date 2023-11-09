@@ -19,7 +19,6 @@ internal data class MoveQuote(
   val isExpanded: Boolean = false,
   val displayItems: ImmutableList<Pair<String, String>>,
 ) {
-
   companion object {
     fun PreviewData(index: Int = 0): MoveQuote {
       @Suppress("NAME_SHADOWING")

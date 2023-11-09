@@ -24,7 +24,6 @@ internal class AuthTokenServiceImpl(
   private val authEventStorage: AuthEventStorage,
   coroutineScope: CoroutineScope,
 ) : AuthTokenService {
-
   override val authStatus: StateFlow<AuthStatus?> = authTokenStorage.getTokens()
     .mapLatest { authTokens ->
       val (accessToken, refreshToken) = authTokens ?: return@mapLatest AuthStatus.LoggedOut

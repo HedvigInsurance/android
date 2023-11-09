@@ -62,11 +62,7 @@ internal fun DocumentsTab(
 }
 
 @Composable
-private fun DocumentCard(
-  onClick: () -> Unit,
-  title: String?,
-  subtitle: String?,
-) {
+private fun DocumentCard(onClick: () -> Unit, title: String?, subtitle: String?) {
   HedvigCard(
     onClick = onClick,
     modifier = Modifier

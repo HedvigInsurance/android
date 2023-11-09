@@ -176,6 +176,7 @@ class SwedishLoginPresenterTest {
       authRepository,
       object : DemoManager {
         override suspend fun isDemoMode(): Flow<Boolean> = flowOf(false)
+
         override suspend fun setDemoMode(demoMode: Boolean) {}
       },
     )

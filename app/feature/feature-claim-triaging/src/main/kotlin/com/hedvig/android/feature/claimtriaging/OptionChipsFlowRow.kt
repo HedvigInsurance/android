@@ -21,11 +21,11 @@ import arrow.core.identity
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.HedvigChip
+import kotlin.random.Random
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
-import kotlin.random.Random
-import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable

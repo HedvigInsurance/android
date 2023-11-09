@@ -27,10 +27,7 @@ import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import hedvig.resources.R
 
 @Composable
-internal fun UnknownErrorDestination(
-  openChat: () -> Unit,
-  closeFailureScreenDestination: () -> Unit,
-) {
+internal fun UnknownErrorDestination(openChat: () -> Unit, closeFailureScreenDestination: () -> Unit) {
   UnknownErrorScreen(
     openChat = openChat,
     closeFailureScreenDestination = closeFailureScreenDestination,
@@ -38,10 +35,7 @@ internal fun UnknownErrorDestination(
 }
 
 @Composable
-private fun UnknownErrorScreen(
-  openChat: () -> Unit,
-  closeFailureScreenDestination: () -> Unit,
-) {
+private fun UnknownErrorScreen(openChat: () -> Unit, closeFailureScreenDestination: () -> Unit) {
   HedvigTheme {
     Surface(
       color = MaterialTheme.colorScheme.background,

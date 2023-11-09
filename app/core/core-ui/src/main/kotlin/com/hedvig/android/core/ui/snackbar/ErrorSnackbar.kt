@@ -16,10 +16,7 @@ fun ErrorSnackbar(hasError: Boolean, showedError: () -> Unit, modifier: Modifier
 }
 
 @Composable
-fun ErrorSnackbar(
-  errorSnackbarState: ErrorSnackbarState,
-  modifier: Modifier = Modifier,
-) {
+fun ErrorSnackbar(errorSnackbarState: ErrorSnackbarState, modifier: Modifier = Modifier) {
   HedvigSnackbar(
     snackbarText = stringResource(R.string.something_went_wrong),
     showSnackbar = errorSnackbarState.error,

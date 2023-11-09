@@ -38,6 +38,7 @@ import com.hedvig.android.memberreminders.UpcomingRenewal
 import com.hedvig.android.memberreminders.test.TestGetMemberRemindersUseCase
 import com.hedvig.android.test.clock.TestClock
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
+import kotlin.time.Duration.Companion.days
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
@@ -58,12 +59,10 @@ import octopus.type.buildProductVariant
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlin.time.Duration.Companion.days
 
 @OptIn(ApolloExperimental::class)
 @RunWith(TestParameterInjector::class)
 internal class GetHomeUseCaseTest {
-
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
 

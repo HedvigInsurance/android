@@ -14,15 +14,14 @@ data class BulletPoint(
   val iconUrls: ThemedIconUrls,
 ) : Parcelable {
   companion object {
-
-    fun from(
-      bulletPoints: List<CommonClaimLayoutTitleAndBulletPointsLayout.BulletPoint>,
-    ): List<BulletPoint> = bulletPoints.map { bulletPoint ->
-      BulletPoint(
-        bulletPoint.title,
-        bulletPoint.description,
-        ThemedIconUrls.from(bulletPoint.icon),
-      )
+    fun from(bulletPoints: List<CommonClaimLayoutTitleAndBulletPointsLayout.BulletPoint>): List<BulletPoint> {
+      return bulletPoints.map { bulletPoint ->
+        BulletPoint(
+          bulletPoint.title,
+          bulletPoint.description,
+          ThemedIconUrls.from(bulletPoint.icon),
+        )
+      }
     }
   }
 }

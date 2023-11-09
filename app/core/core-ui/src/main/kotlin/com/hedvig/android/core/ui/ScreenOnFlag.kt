@@ -29,7 +29,6 @@ private val View.keepScreenOnState: KeepScreenOnState
     ?: KeepScreenOnState(this).also { setTag(R.id.keep_screen_on_state, it) }
 
 private class KeepScreenOnState(private val view: View) {
-
   private var refCount = 0
     set(value) {
       val newValue = value.coerceAtLeast(0)

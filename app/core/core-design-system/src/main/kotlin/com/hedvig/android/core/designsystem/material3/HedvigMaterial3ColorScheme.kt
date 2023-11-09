@@ -20,20 +20,17 @@ internal val LocalHedvigMaterial3ColorScheme = staticCompositionLocalOf<HedvigMa
 class HedvigMaterial3ColorScheme(
   val containedButtonContainer: Color,
   val onContainedButtonContainer: Color,
-
   val warningElement: Color,
   val onWarningElement: Color,
   val warningContainer: Color,
   val onWarningContainer: Color,
   val warningHighlight: Color,
-
   // Type refers to "typing" aka when the member is typing something in a text-field. Naming has room for improvement.
   val typeElement: Color,
   val onTypeElement: Color,
   val typeContainer: Color,
   val onTypeContainer: Color,
   val typeHighlight: Color,
-
   // Information related content. Like information cards and so on.
   val infoElement: Color,
   val onInfoElement: Color,

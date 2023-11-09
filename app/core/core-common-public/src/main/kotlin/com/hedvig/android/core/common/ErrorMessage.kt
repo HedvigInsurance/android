@@ -5,10 +5,7 @@ interface ErrorMessage {
   abstract val throwable: Throwable?
 }
 
-fun ErrorMessage(
-  message: String? = null,
-  throwable: Throwable? = null,
-): ErrorMessage = object : ErrorMessage {
+fun ErrorMessage(message: String? = null, throwable: Throwable? = null): ErrorMessage = object : ErrorMessage {
   override val message = message
   override val throwable = throwable
 

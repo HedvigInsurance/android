@@ -3,8 +3,8 @@ package com.hedvig.android.feature.profile.data
 import arrow.core.Either
 import arrow.core.raise.either
 import com.hedvig.android.apollo.OperationResult
-import org.javamoney.moneta.Money
 import java.math.BigDecimal
+import org.javamoney.moneta.Money
 
 internal class ProfileRepositoryDemo : ProfileRepository {
   private var email = "google@gmail.com"

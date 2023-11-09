@@ -11,7 +11,9 @@ import octopus.type.MoveToApartmentInput
 import octopus.type.MoveToHouseInput
 
 internal enum class HousingType {
-  APARTMENT_RENT, APARTMENT_OWN, VILLA
+  APARTMENT_RENT,
+  APARTMENT_OWN,
+  VILLA,
 }
 
 internal fun HousingType.displayNameResource() = when (this) {
@@ -21,8 +23,8 @@ internal fun HousingType.displayNameResource() = when (this) {
 }
 
 internal sealed interface QuoteInput {
-
   fun toMoveIntentRequestMutation(): MoveIntentRequestMutation
+
   data class ApartmentInput(
     val moveIntentId: MoveIntentId,
     val moveFromAddressId: AddressId,

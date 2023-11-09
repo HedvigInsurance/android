@@ -11,11 +11,7 @@ import com.hedvig.android.audio.player.state.AudioPlayer
  * https://www.figma.com/file/e0lnWjMtp8x5Typlt5b33i/Claim-status-Android?node-id=1224%3A82&t=RgoySHgQiM6RyYNI-1
  */
 @Composable
-fun HedvigAudioPlayer(
-  audioPlayer: AudioPlayer,
-  modifier: Modifier = Modifier,
-  onPlayClick: () -> Unit = {},
-) {
+fun HedvigAudioPlayer(audioPlayer: AudioPlayer, modifier: Modifier = Modifier, onPlayClick: () -> Unit = {}) {
   val audioPlayerState by audioPlayer.audioPlayerState.collectAsStateWithLifecycle()
   FakeWaveAudioPlayerCard(
     audioPlayerState = audioPlayerState,

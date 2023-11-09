@@ -36,15 +36,11 @@ import com.hedvig.android.core.designsystem.material3.squircleMedium
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import hedvig.resources.R
-import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.delay
 
 @Composable
-internal fun ChatTooltip(
-  showTooltip: Boolean,
-  tooltipShown: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
+internal fun ChatTooltip(showTooltip: Boolean, tooltipShown: () -> Unit, modifier: Modifier = Modifier) {
   var transientShowTooltip by remember { mutableStateOf(false) }
   LaunchedEffect(showTooltip) {
     if (!showTooltip) return@LaunchedEffect
@@ -65,11 +61,7 @@ internal fun ChatTooltip(
 }
 
 @Composable
-private fun InnerChatTooltip(
-  show: Boolean,
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
+private fun InnerChatTooltip(show: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
   Box(
     modifier
       .size(width = 40.dp, height = 0.dp)

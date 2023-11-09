@@ -109,11 +109,7 @@ private fun DateOfOccurrencePlusLocationScreen(
 }
 
 @Composable
-private fun DateOfIncident(
-  uiState: DatePickerUiState,
-  canInteract: Boolean,
-  modifier: Modifier = Modifier,
-) {
+private fun DateOfIncident(uiState: DatePickerUiState, canInteract: Boolean, modifier: Modifier = Modifier) {
   DatePickerWithDialog(
     uiState = uiState,
     canInteract = canInteract,

@@ -229,11 +229,7 @@ open class AccompanistWebViewClient : WebViewClient() {
     navigator.canGoForward = view.canGoForward()
   }
 
-  override fun onReceivedError(
-    view: WebView,
-    request: WebResourceRequest?,
-    error: WebResourceError?,
-  ) {
+  override fun onReceivedError(view: WebView, request: WebResourceRequest?, error: WebResourceError?) {
     super.onReceivedError(view, request, error)
 
     if (error != null) {
@@ -406,8 +402,11 @@ class WebViewState(webContent: WebContent) {
 class WebViewNavigator(private val coroutineScope: CoroutineScope) {
   private sealed interface NavigationEvent {
     object Back : NavigationEvent
+
     object Forward : NavigationEvent
+
     object Reload : NavigationEvent
+
     object StopLoading : NavigationEvent
 
     data class LoadUrl(
@@ -519,10 +518,7 @@ class WebViewNavigator(private val coroutineScope: CoroutineScope) {
     }
   }
 
-  fun postUrl(
-    url: String,
-    postData: ByteArray,
-  ) {
+  fun postUrl(url: String, postData: ByteArray) {
     coroutineScope.launch {
       navigationEvents.emit(
         NavigationEvent.PostUrl(
@@ -567,9 +563,8 @@ class WebViewNavigator(private val coroutineScope: CoroutineScope) {
  * override.
  */
 @Composable
-fun rememberWebViewNavigator(
-  coroutineScope: CoroutineScope = rememberCoroutineScope(),
-): WebViewNavigator = remember(coroutineScope) { WebViewNavigator(coroutineScope) }
+fun rememberWebViewNavigator(coroutineScope: CoroutineScope = rememberCoroutineScope()): WebViewNavigator =
+  remember(coroutineScope) { WebViewNavigator(coroutineScope) }
 
 /**
  * A wrapper class to hold errors from the WebView.
@@ -594,10 +589,7 @@ data class WebViewError(
  *                              Note that these headers are used for all subsequent requests of the WebView.
  */
 @Composable
-fun rememberWebViewState(
-  url: String,
-  additionalHttpHeaders: Map<String, String> = emptyMap(),
-): WebViewState =
+fun rememberWebViewState(url: String, additionalHttpHeaders: Map<String, String> = emptyMap()): WebViewState =
 // Rather than using .apply {} here we will recreate the state, this prevents
   // a recomposition loop when the webview updates the url itself.
   remember {

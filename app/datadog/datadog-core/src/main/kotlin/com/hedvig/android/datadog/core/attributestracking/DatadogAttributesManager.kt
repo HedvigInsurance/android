@@ -5,11 +5,11 @@ import com.datadog.android.rum.GlobalRumMonitor
 
 interface DatadogAttributesManager {
   fun storeAttribute(key: String, value: Any?)
+
   fun deleteAttribute(key: String)
 }
 
 internal class DatadogAttributesManagerImpl : DatadogAttributesManager {
-
   override fun storeAttribute(key: String, value: Any?) {
     val sdkCore = Datadog.getInstance()
     sdkCore.addUserProperties(mapOf(key to value))
