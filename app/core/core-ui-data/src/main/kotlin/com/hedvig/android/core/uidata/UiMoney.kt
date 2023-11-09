@@ -1,7 +1,6 @@
 package com.hedvig.android.core.uidata
 
 import androidx.compose.runtime.Immutable
-import giraffe.fragment.MonetaryAmountFragment
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import kotlinx.serialization.Serializable
@@ -39,13 +38,6 @@ data class UiMoney(val amount: Double, val currencyCode: CurrencyCode) {
   companion object {
     fun fromMoneyFragment(fragment: MoneyFragment): UiMoney {
       return UiMoney(fragment.amount, fragment.currencyCode)
-    }
-
-    fun fromMonetaryAmountFragment(fragment: MonetaryAmountFragment?): UiMoney? {
-      val amount = fragment?.amount?.toDoubleOrNull() ?: return null
-      val currency = CurrencyCode.safeValueOf(fragment.currency)
-      if (currency == CurrencyCode.UNKNOWN__) return null
-      return UiMoney(amount, currency)
     }
   }
 }

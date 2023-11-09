@@ -32,24 +32,6 @@ fun TopAppBarWithBack(
   )
 }
 
-@Composable
-fun TopAppBarWithClose(
-  onClick: () -> Unit,
-  title: String,
-  modifier: Modifier = Modifier,
-  backgroundColor: Color = MaterialTheme.colorScheme.background,
-  contentPadding: PaddingValues = PaddingValues(0.dp),
-) {
-  TopAppBar(
-    onClick,
-    TopAppBarActionType.CLOSE,
-    modifier,
-    title,
-    backgroundColor,
-    contentPadding,
-  )
-}
-
 private enum class TopAppBarActionType {
   BACK,
   CLOSE,

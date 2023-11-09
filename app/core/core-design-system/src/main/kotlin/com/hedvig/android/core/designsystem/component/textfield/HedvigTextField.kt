@@ -74,7 +74,8 @@ fun HedvigTextField(
   errorText: String?,
   modifier: Modifier = Modifier,
   isError: Boolean = errorText != null,
-  withNewDesign: Boolean = false, // Adapts the TextField to have the big card size and the bigger text size.
+  // Adapts the TextField to have the big card size and the bigger text size.
+  withNewDesign: Boolean = false,
   enabled: Boolean = true,
   readOnly: Boolean = false,
   textStyle: TextStyle = LocalTextStyle.current,
@@ -129,7 +130,8 @@ fun HedvigTextField(
   value: String,
   onValueChange: (String) -> Unit,
   modifier: Modifier = Modifier,
-  withNewDesign: Boolean = false, // Adapts the TextField to have the big card size and the bigger text size.
+  // Adapts the TextField to have the big card size and the bigger text size.
+  withNewDesign: Boolean = false,
   enabled: Boolean = true,
   readOnly: Boolean = false,
   textStyle: TextStyle = LocalTextStyle.current,
@@ -212,7 +214,8 @@ fun HedvigTextField(
   value: TextFieldValue,
   onValueChange: (TextFieldValue) -> Unit,
   modifier: Modifier = Modifier,
-  withNewDesign: Boolean = false, // Adapts the TextField to have the big card size and the bigger text size.
+  // Adapts the TextField to have the big card size and the bigger text size.
+  withNewDesign: Boolean = false,
   enabled: Boolean = true,
   readOnly: Boolean = false,
   textStyle: TextStyle = LocalTextStyle.current,
@@ -296,7 +299,8 @@ fun HedvigTextField(
   onValueChange: (TextFieldValue) -> Unit,
   errorText: String?,
   modifier: Modifier = Modifier,
-  withNewDesign: Boolean = false, // Adapts the TextField to have the big card size and the bigger text size.
+  // Adapts the TextField to have the big card size and the bigger text size.
+  withNewDesign: Boolean = false,
   enabled: Boolean = true,
   readOnly: Boolean = false,
   textStyle: TextStyle = LocalTextStyle.current,
@@ -1005,5 +1009,4 @@ internal fun Modifier.drawBorderLine(indicatorBorder: BorderStroke, shape: Shape
 }
 
 /** Padding from text field top to label top, and from input field bottom to text field bottom */
-// @VisibleForTesting
 internal val TextFieldWithLabelVerticalPadding = 8.dp
