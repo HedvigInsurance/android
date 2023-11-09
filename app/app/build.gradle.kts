@@ -209,6 +209,7 @@ dependencies {
   implementation(projects.dataClaimFlow)
   implementation(projects.dataClaimTriaging)
   implementation(projects.dataForever)
+  implementation(projects.dataPayment)
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.dataTravelCertificatePublic)
   implementation(projects.datadogCore)
@@ -243,7 +244,6 @@ dependencies {
   implementation(projects.notificationBadgeDataPublic)
   implementation(projects.notificationCore)
   implementation(projects.notificationFirebase)
-  implementation(projects.payment)
   implementation(projects.theme)
 
   debugImplementation(libs.androidx.compose.uiTestManifest)

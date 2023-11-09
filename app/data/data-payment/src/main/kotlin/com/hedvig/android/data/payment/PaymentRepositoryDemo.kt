@@ -1,4 +1,4 @@
-package com.hedvig.android.payment
+package com.hedvig.android.data.payment
 
 import arrow.core.Either
 import arrow.core.raise.either

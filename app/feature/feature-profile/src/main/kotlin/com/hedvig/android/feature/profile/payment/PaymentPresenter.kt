@@ -11,11 +11,11 @@ import com.hedvig.android.apollo.format
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.forever.CampaignCode
 import com.hedvig.android.data.forever.ForeverRepository
+import com.hedvig.android.data.payment.PaymentData
+import com.hedvig.android.data.payment.PaymentRepository
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
-import com.hedvig.android.payment.PaymentData
-import com.hedvig.android.payment.PaymentRepository
 import giraffe.type.PayoutMethodStatus
 import giraffe.type.TypeOfContract
 import java.time.LocalDate

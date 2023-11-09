@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.apollo.format
 import com.hedvig.android.core.demomode.Provider
+import com.hedvig.android.data.payment.ChargeHistory
+import com.hedvig.android.data.payment.PaymentRepository
 import com.hedvig.android.language.LanguageService
-import com.hedvig.android.payment.ChargeHistory
-import com.hedvig.android.payment.PaymentRepository
 import java.time.LocalDate
 import java.util.Locale
 import kotlinx.coroutines.flow.MutableStateFlow
