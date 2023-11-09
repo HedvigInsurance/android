@@ -23,10 +23,7 @@ import com.hedvig.android.core.ui.card.ExpandablePlusCard
 import hedvig.resources.R
 
 @Composable
-internal fun Faqs(
-  faqItems: List<Pair<String, String>>,
-  modifier: Modifier = Modifier,
-) {
+internal fun Faqs(faqItems: List<Pair<String, String>>, modifier: Modifier = Modifier) {
   var expandedItemIndex by rememberSaveable { mutableIntStateOf(-1) }
   Column(modifier) {
     Text(
@@ -55,12 +52,7 @@ internal fun Faqs(
 }
 
 @Composable
-private fun FaqItem(
-  faqDisplayName: String,
-  faqText: String?,
-  onClick: () -> Unit,
-  isExpanded: Boolean,
-) {
+private fun FaqItem(faqDisplayName: String, faqText: String?, onClick: () -> Unit, isExpanded: Boolean) {
   ExpandablePlusCard(
     isExpanded = isExpanded,
     onClick = onClick,
@@ -88,6 +80,7 @@ private fun PreviewFaqItem() {
   HedvigTheme {
     Surface(color = MaterialTheme.colorScheme.background) {
       var isExpanded by remember { mutableStateOf(true) }
+      @Suppress("ktlint:standard:max-line-length")
       FaqItem(
         faqText = "ReseförsäkringReseförs äkring Rese försäkring Res eförsäkr inResefö rsäkrin ReseförsäkringReseförsäkringReseförsäkrin",
         onClick = { isExpanded = !isExpanded },

@@ -219,10 +219,7 @@ private fun statusParagraphText(
 }
 
 @Composable
-private fun ClaimDetailHedvigAudioPlayerItem(
-  signedAudioUrl: SignedAudioUrl,
-  modifier: Modifier = Modifier,
-) {
+private fun ClaimDetailHedvigAudioPlayerItem(signedAudioUrl: SignedAudioUrl, modifier: Modifier = Modifier) {
   Column(modifier) {
     val audioPlayer = rememberAudioPlayer(playableAudioSource = PlayableAudioSource.RemoteUrl(signedAudioUrl))
     HedvigAudioPlayer(audioPlayer = audioPlayer)

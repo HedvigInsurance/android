@@ -23,10 +23,7 @@ value class ProgressPercentage(
       return ProgressPercentage(float.coerceIn(0f, 1f))
     }
 
-    fun of(
-      current: Dp,
-      target: Dp,
-    ): ProgressPercentage {
+    fun of(current: Dp, target: Dp): ProgressPercentage {
       return ProgressPercentage(
         (current / target).coerceIn(0f, 1f),
       )

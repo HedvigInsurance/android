@@ -16,6 +16,8 @@ import com.hedvig.android.test.clock.TestClock
 import com.hedvig.authlib.AccessToken
 import com.hedvig.authlib.AuthTokenResult
 import com.hedvig.authlib.RefreshToken
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
@@ -30,11 +32,8 @@ import okhttp3.mockwebserver.RecordedRequest
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import kotlin.time.Duration.Companion.hours
-import kotlin.time.Duration.Companion.minutes
 
 class AuthTokenRefreshingInterceptorTest {
-
   @get:Rule
   val testFolder = TemporaryFolder()
 

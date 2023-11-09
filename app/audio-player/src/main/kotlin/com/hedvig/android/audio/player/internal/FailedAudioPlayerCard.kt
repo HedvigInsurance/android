@@ -30,10 +30,7 @@ import com.hedvig.android.core.icons.Hedvig
 import com.hedvig.android.core.icons.hedvig.normal.WarningFilled
 
 @Composable
-internal fun FailedAudioPlayerCard(
-  tryAgain: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
+internal fun FailedAudioPlayerCard(tryAgain: () -> Unit, modifier: Modifier = Modifier) {
   Column(modifier.clip(MaterialTheme.shapes.squircleMedium)) {
     Spacer(Modifier.height(20.dp))
     Row(

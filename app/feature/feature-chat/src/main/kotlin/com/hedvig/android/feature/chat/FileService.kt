@@ -7,8 +7,7 @@ import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
 import java.util.Locale
 
-// Won't need to be public anymore after GraphQLQueryHandler is deleted when embark + Offer screen are gone
-/* internal */ class FileService(
+class FileService(
   private val context: Context,
 ) {
   fun getFileName(uri: Uri): String? {

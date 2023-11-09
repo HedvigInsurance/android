@@ -5,6 +5,7 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.the
 import org.gradle.kotlin.dsl.withType
 import org.jmailen.gradle.kotlinter.KotlinterExtension
+import org.jmailen.gradle.kotlinter.support.ReporterType
 
 class KtlintConventionPlugin : Plugin<Project> {
   override fun apply(target: Project) {
@@ -16,7 +17,7 @@ class KtlintConventionPlugin : Plugin<Project> {
 
       extensions.configure<KotlinterExtension> {
         ignoreFailures = false
-        reporters = arrayOf("checkstyle")
+        reporters = arrayOf(ReporterType.checkstyle.name)
       }
 
       tasks.withType<org.jmailen.gradle.kotlinter.tasks.LintTask>().configureEach {

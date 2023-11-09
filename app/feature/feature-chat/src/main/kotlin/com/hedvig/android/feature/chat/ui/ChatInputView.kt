@@ -190,11 +190,7 @@ internal class ChatInputView : FrameLayout {
     }
   }
 
-  private fun inflateSingleSelectButton(
-    label: String,
-    value: String,
-    type: SingleSelectChoiceType,
-  ) {
+  private fun inflateSingleSelectButton(label: String, value: String, type: SingleSelectChoiceType) {
     val singleSelectButton =
       layoutInflater.inflate(
         R.layout.chat_single_select_button,

@@ -17,11 +17,7 @@ import com.hedvig.android.core.designsystem.material3.squircleLargeTop
 import hedvig.resources.R
 
 @Composable
-internal fun ForeverExplanationBottomSheet(
-  discount: String,
-  onDismiss: () -> Unit,
-  sheetState: SheetState,
-) {
+internal fun ForeverExplanationBottomSheet(discount: String, onDismiss: () -> Unit, sheetState: SheetState) {
   ModalBottomSheet(
     containerColor = MaterialTheme.colorScheme.background,
     onDismissRequest = {

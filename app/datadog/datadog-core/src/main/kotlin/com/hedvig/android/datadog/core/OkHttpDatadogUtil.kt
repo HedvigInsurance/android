@@ -7,9 +7,7 @@ import com.datadog.android.okhttp.trace.TracingInterceptor
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import okhttp3.OkHttpClient
 
-fun OkHttpClient.Builder.addDatadogConfiguration(
-  hedvigBuildConstants: HedvigBuildConstants,
-): OkHttpClient.Builder {
+fun OkHttpClient.Builder.addDatadogConfiguration(hedvigBuildConstants: HedvigBuildConstants): OkHttpClient.Builder {
   val tracedHosts = listOf(
     hedvigBuildConstants.urlGiraffeGraphql.removePrefix("https://").removeSuffix("/graphql"),
     hedvigBuildConstants.urlGraphqlOctopus.removePrefix("https://"),

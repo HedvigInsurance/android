@@ -21,10 +21,10 @@ import com.hedvig.authlib.Callbacks
 import com.hedvig.authlib.OkHttpNetworkAuthRepository
 import com.hedvig.authlib.connectpayment.OkHttpNetworkPaymentRepository
 import com.hedvig.authlib.connectpayment.PaymentRepository
+import kotlin.coroutines.CoroutineContext
 import okhttp3.OkHttpClient
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import kotlin.coroutines.CoroutineContext
 
 @Suppress("RemoveExplicitTypeArguments")
 val authModule = module {
@@ -57,7 +57,7 @@ val authModule = module {
         AuthEnvironment.STAGING
       },
       additionalHttpHeadersProvider = { emptyMap() },
-      callbacks = Callbacks("https://hedvig.com?q=success", "https://hedvig.com?q=failure)"), // Not used
+      callbacks = Callbacks("https://hedvig.com?q=success", "https://hedvig.com?q=failure)"),
       okHttpClientBuilder = get<OkHttpClient.Builder>(),
     )
   }

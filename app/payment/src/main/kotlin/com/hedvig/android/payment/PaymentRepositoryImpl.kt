@@ -21,7 +21,6 @@ internal class PaymentRepositoryImpl(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,
 ) : PaymentRepository {
-
   override suspend fun getChargeHistory(): Either<OperationResult.Error, ChargeHistory> = either {
     apolloClient
       .query(ChargeHistoryQuery())

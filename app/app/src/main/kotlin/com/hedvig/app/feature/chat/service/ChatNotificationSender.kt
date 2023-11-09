@@ -88,9 +88,8 @@ class ChatNotificationSender(
 
   override fun handlesNotificationType(notificationType: String) = notificationType == NOTIFICATION_TYPE_NEW_MESSAGE
 
-  private fun defaultMessagingStyle(
-    message: NotificationCompat.MessagingStyle.Message,
-  ) = NotificationCompat.MessagingStyle(youPerson).addMessage(message)
+  private fun defaultMessagingStyle(message: NotificationCompat.MessagingStyle.Message) =
+    NotificationCompat.MessagingStyle(youPerson).addMessage(message)
 
   private fun sendChatNotificationInner(
     context: Context,
@@ -155,11 +154,7 @@ class ChatNotificationSender(
   }
 
   @RequiresApi(Build.VERSION_CODES.N)
-  fun addReplyToExistingChatNotification(
-    context: Context,
-    notificationId: Int,
-    replyText: CharSequence,
-  ) {
+  fun addReplyToExistingChatNotification(context: Context, notificationId: Int, replyText: CharSequence) {
     val notificationManager = context.getSystemService<NotificationManager>() ?: return
 
     val existingChatNotification = notificationManager

@@ -234,10 +234,7 @@ private fun ChangeAddressOfferScreen(
 }
 
 @Composable
-private fun QuotesPriceSum(
-  quotes: List<MoveQuote>,
-  modifier: Modifier = Modifier,
-) {
+private fun QuotesPriceSum(quotes: List<MoveQuote>, modifier: Modifier = Modifier) {
   HorizontalItemsWithMaximumSpaceTaken(
     startSlot = {
       Text(
@@ -258,11 +255,7 @@ private fun QuotesPriceSum(
 }
 
 @Composable
-private fun QuoteDetailsAndPdfs(
-  quote: MoveQuote,
-  openUrl: (String) -> Unit,
-  modifier: Modifier = Modifier,
-) {
+private fun QuoteDetailsAndPdfs(quote: MoveQuote, openUrl: (String) -> Unit, modifier: Modifier = Modifier) {
   Column(modifier) {
     HedvigInfoCard(
       contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
@@ -313,10 +306,7 @@ private fun ColumnScope.InsurableLimits(quote: MoveQuote) {
 }
 
 @Composable
-private fun Documents(
-  quote: MoveQuote,
-  openUrl: (String) -> Unit,
-) {
+private fun Documents(quote: MoveQuote, openUrl: (String) -> Unit) {
   quote.productVariant.documents.mapIndexed { index, document ->
     if (index > 0) {
       Spacer(Modifier.height(8.dp))

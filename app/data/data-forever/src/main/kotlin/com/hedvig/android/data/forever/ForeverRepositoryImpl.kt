@@ -46,9 +46,7 @@ internal class ForeverRepositoryImpl(
   }
 
   // TODO Move to payments module
-  override suspend fun redeemReferralCode(
-    campaignCode: CampaignCode,
-  ): Either<ErrorMessage, Unit> {
+  override suspend fun redeemReferralCode(campaignCode: CampaignCode): Either<ErrorMessage, Unit> {
     return apolloClient
       .mutation(RedeemCampaignCodeMutation(campaignCode.code))
       .safeExecute()

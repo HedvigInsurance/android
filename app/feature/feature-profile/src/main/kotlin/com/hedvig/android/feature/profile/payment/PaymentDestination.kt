@@ -37,7 +37,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -181,10 +181,7 @@ private fun PaymentScreen(
 }
 
 @Composable
-private fun PaymentAmountCard(
-  uiState: PaymentUiState,
-  modifier: Modifier = Modifier,
-) {
+private fun PaymentAmountCard(uiState: PaymentUiState, modifier: Modifier = Modifier) {
   HedvigCard(modifier = modifier) {
     val nextChargeAmount = uiState.nextChargeAmount
     Box(contentAlignment = Alignment.Center) {
@@ -194,11 +191,17 @@ private fun PaymentAmountCard(
         style = MaterialTheme.typography.displayMedium,
         modifier = Modifier.padding(vertical = 6.dp),
       )
+      // placeholder so that this layout always takes as much space as the text above. This does not get rendered
       Text(
-        text = "399,0 kr", // placeholder so that this layout always takes as much space as the text above
+        text = "399,0 kr",
         textAlign = TextAlign.Center,
         style = MaterialTheme.typography.displayMedium,
-        modifier = Modifier.padding(vertical = 6.dp).alpha(0f),
+        modifier = Modifier
+          .padding(vertical = 6.dp)
+          .layout { measurable, constraints ->
+            val placeable = measurable.measure(constraints)
+            layout(placeable.width, placeable.height) {}
+          },
       )
     }
   }
@@ -221,10 +224,7 @@ private fun NextPayment(uiState: PaymentUiState, locale: Locale) {
 }
 
 @Composable
-private fun InsuranceCosts(
-  uiState: PaymentUiState,
-  locale: Locale,
-) {
+private fun InsuranceCosts(uiState: PaymentUiState, locale: Locale) {
   uiState.insuranceCosts.forEach { insuranceCost ->
     Row(
       modifier = Modifier
@@ -389,10 +389,7 @@ private fun ColumnScope.PaymentDetails(uiState: PaymentUiState) {
 }
 
 @Composable
-fun PaymentHistory(
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
+fun PaymentHistory(onClick: () -> Unit, modifier: Modifier = Modifier) {
   Row(
     modifier = modifier
       .fillMaxWidth()

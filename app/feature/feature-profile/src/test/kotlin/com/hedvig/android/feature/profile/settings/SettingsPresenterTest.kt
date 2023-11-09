@@ -16,23 +16,22 @@ import org.junit.Test
 
 class SettingsPresenterTest {
   @Test
-  fun `content stays loading as long as notificationReminder are uninitialized`() =
-    runTest {
-      val enableNotificationsReminderManager = TestEnableNotificationsReminderManager()
-      val settingsPresenter = SettingsPresenter(
-        FakeLanguageService(),
-        FakeSettingsDataStore(),
-        enableNotificationsReminderManager,
-        NoopNetworkCacheManager(),
-        NoopUploadLanguagePreferenceToBackendUseCase(),
-      )
+  fun `content stays loading as long as notificationReminder are uninitialized`() = runTest {
+    val enableNotificationsReminderManager = TestEnableNotificationsReminderManager()
+    val settingsPresenter = SettingsPresenter(
+      FakeLanguageService(),
+      FakeSettingsDataStore(),
+      enableNotificationsReminderManager,
+      NoopNetworkCacheManager(),
+      NoopUploadLanguagePreferenceToBackendUseCase(),
+    )
 
-      settingsPresenter.test(SettingsUiState.Loading(Language.entries.first(), Language.entries)) {
-        assertThat(awaitItem()).isInstanceOf<SettingsUiState.Loading>()
-        enableNotificationsReminderManager.showNotification.add(false)
-        assertThat(awaitItem()).isInstanceOf<SettingsUiState.Loaded>()
-      }
+    settingsPresenter.test(SettingsUiState.Loading(Language.entries.first(), Language.entries)) {
+      assertThat(awaitItem()).isInstanceOf<SettingsUiState.Loading>()
+      enableNotificationsReminderManager.showNotification.add(false)
+      assertThat(awaitItem()).isInstanceOf<SettingsUiState.Loaded>()
     }
+  }
 
   @Test
   fun `when there's a notification reminder, show it`() = runTest {

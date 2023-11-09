@@ -415,10 +415,7 @@ internal fun ForeverContent(
 }
 
 @Composable
-internal fun ReferralCodeCard(
-  campaignCode: String,
-  modifier: Modifier = Modifier,
-) {
+internal fun ReferralCodeCard(campaignCode: String, modifier: Modifier = Modifier) {
   val context = LocalContext.current
   HedvigBigCard(
     onClick = {

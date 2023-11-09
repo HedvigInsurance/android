@@ -19,21 +19,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import java.util.Locale
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 
 @Composable
-internal fun SubmittedAndClosedColumns(
-  submittedAt: Instant,
-  closedAt: Instant?,
-  locale: Locale,
-) {
+internal fun SubmittedAndClosedColumns(submittedAt: Instant, closedAt: Instant?, locale: Locale) {
   val now by currentTimeAsState(updateInterval = 1.seconds)
   val submittedText by remember(submittedAt) {
     derivedStateOf { HedvigDateUtils.getRelativeTimeSpanString(submittedAt, now) }
@@ -62,11 +58,7 @@ internal fun SubmittedAndClosedColumns(
 }
 
 @Composable
-private fun SubmittedAndClosedColumn(
-  topText: String,
-  bottomText: String,
-  modifier: Modifier = Modifier,
-) {
+private fun SubmittedAndClosedColumn(topText: String, bottomText: String, modifier: Modifier = Modifier) {
   Column(
     verticalArrangement = Arrangement.spacedBy(4.dp),
     modifier = modifier,
@@ -83,10 +75,7 @@ private fun SubmittedAndClosedColumn(
 }
 
 @Composable
-private fun currentTimeAsState(
-  updateInterval: Duration = 1.seconds,
-  clock: Clock = Clock.System,
-): State<Instant> {
+private fun currentTimeAsState(updateInterval: Duration = 1.seconds, clock: Clock = Clock.System): State<Instant> {
   return produceState(initialValue = clock.now()) {
     while (isActive) {
       delay(updateInterval)
@@ -112,10 +101,7 @@ private object HedvigDateUtils {
    * configuration it *will* show the wrong locale compared to the rest of the screen, so we have to make sure those
    * two are the same.
    */
-  fun getRelativeTimeSpanString(
-    from: Instant,
-    to: Instant,
-  ): String {
+  fun getRelativeTimeSpanString(from: Instant, to: Instant): String {
     return DateUtils.getRelativeTimeSpanString(
       from.toEpochMilliseconds(),
       to.toEpochMilliseconds(),

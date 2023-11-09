@@ -10,6 +10,7 @@ import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.audio.player.SignedAudioUrl
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -21,15 +22,11 @@ import octopus.ClaimsQuery
 import octopus.fragment.ClaimFragment
 import octopus.type.ClaimOutcome
 import octopus.type.ClaimStatus
-import kotlin.time.Duration.Companion.seconds
 
 internal class GetClaimDetailUiStateUseCase(
   private val apolloClient: ApolloClient,
 ) {
-  operator fun invoke(
-    claimId: String,
-    forceNetworkFetch: Boolean,
-  ): Flow<Either<Error, ClaimDetailUiState.Content>> {
+  operator fun invoke(claimId: String, forceNetworkFetch: Boolean): Flow<Either<Error, ClaimDetailUiState.Content>> {
     return flow {
       while (currentCoroutineContext().isActive) {
         val queryFlow = queryFlow(forceNetworkFetch, claimId)
@@ -39,10 +36,7 @@ internal class GetClaimDetailUiStateUseCase(
     }
   }
 
-  private fun queryFlow(
-    forceNetworkFetch: Boolean,
-    claimId: String,
-  ): Flow<Either<Error, ClaimDetailUiState.Content>> {
+  private fun queryFlow(forceNetworkFetch: Boolean, claimId: String): Flow<Either<Error, ClaimDetailUiState.Content>> {
     return apolloClient
       .query(ClaimsQuery())
       .apply {
@@ -104,5 +98,6 @@ internal class GetClaimDetailUiStateUseCase(
 
 sealed interface Error {
   object NetworkError : Error
+
   object NoClaimFound : Error
 }

@@ -7,7 +7,9 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface AuthTokenService {
   val authStatus: StateFlow<AuthStatus?>
+
   suspend fun getTokens(): AuthTokens?
+
   suspend fun refreshAndGetAccessToken(): AccessToken?
 
   /**
@@ -19,5 +21,6 @@ interface AuthTokenService {
    * Effectively the function which logs the user *out* from the app.
    */
   suspend fun logoutAndInvalidateTokens()
+
   suspend fun migrateFromToken(token: String)
 }

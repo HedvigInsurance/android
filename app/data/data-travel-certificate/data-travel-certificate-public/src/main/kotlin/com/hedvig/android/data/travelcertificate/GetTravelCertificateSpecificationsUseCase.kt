@@ -22,7 +22,6 @@ internal class GetTravelCertificateSpecificationsUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
 ) : GetTravelCertificateSpecificationsUseCase {
-
   override suspend fun invoke(): Either<TravelCertificateError, TravelCertificateData> {
     return either {
       ensure(featureManager.isFeatureEnabled(Feature.TRAVEL_CERTIFICATE)) {
@@ -58,7 +57,7 @@ internal class GetTravelCertificateSpecificationsUseCaseImpl(
   }
 }
 
-// ktlint-disable max-line-length
+@Suppress("ktlint:standard:max-line-length")
 private fun TravelCertificateSpecificationsQuery.Data.CurrentMember.TravelCertificateSpecifications.ContractSpecification.toTravelCertificateSpecification(
   email: String,
 ) = TravelCertificateData.TravelCertificateSpecification(

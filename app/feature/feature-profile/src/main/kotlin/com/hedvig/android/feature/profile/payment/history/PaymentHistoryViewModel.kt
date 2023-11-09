@@ -7,18 +7,17 @@ import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.payment.ChargeHistory
 import com.hedvig.android.payment.PaymentRepository
+import java.time.LocalDate
+import java.util.Locale
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.util.Locale
 
 internal class PaymentHistoryViewModel(
   private val paymentRepositoryProvider: Provider<PaymentRepository>,
   private val languageService: LanguageService,
 ) : ViewModel() {
-
   private val _uiState = MutableStateFlow(PaymentHistoryUiState())
   val uiState: StateFlow<PaymentHistoryUiState> = _uiState
 

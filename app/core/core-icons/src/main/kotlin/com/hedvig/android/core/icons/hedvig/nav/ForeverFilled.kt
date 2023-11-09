@@ -21,7 +21,7 @@ public val HedvigIcons.ForeverFilled: ImageVector
       name = "Forever tab selected",
       defaultWidth = 25.0.dp,
       defaultHeight =
-      24.0.dp,
+        24.0.dp,
       viewportWidth = 25.0f,
       viewportHeight = 24.0f,
     ).apply {

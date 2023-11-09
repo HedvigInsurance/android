@@ -26,7 +26,6 @@ internal class PaymentPresenter(
   private val paymentRepositoryProvider: Provider<PaymentRepository>,
   private val languageService: LanguageService,
 ) : MoleculePresenter<PaymentEvent, PaymentUiState> {
-
   @Composable
   override fun MoleculePresenterScope<PaymentEvent>.present(lastState: PaymentUiState): PaymentUiState {
     var paymentUiState by remember { mutableStateOf(lastState) }
@@ -66,7 +65,9 @@ internal class PaymentPresenter(
 
 internal sealed interface PaymentEvent {
   data object Retry : PaymentEvent
+
   data class EditDiscountCode(val discountCode: CampaignCode) : PaymentEvent
+
   data class SubmitNewDiscountCode(val discountCode: CampaignCode) : PaymentEvent
 }
 

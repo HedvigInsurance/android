@@ -11,11 +11,11 @@ import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.authlib.AccessToken
 import com.hedvig.authlib.RefreshToken
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import kotlin.time.Duration.Companion.seconds
 
 class AuthTokenStorage(
   private val dataStore: DataStore<Preferences>,

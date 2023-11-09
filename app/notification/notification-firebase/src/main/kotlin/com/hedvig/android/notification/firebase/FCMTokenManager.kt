@@ -11,10 +11,10 @@ import androidx.work.await
 import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.tasks.await
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.tasks.await
 
 /**
  * A central place to handle firebase push tokens. Currently called both from the login auth event, and when a new

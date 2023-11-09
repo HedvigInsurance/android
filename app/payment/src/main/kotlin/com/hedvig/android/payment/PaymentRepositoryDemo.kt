@@ -3,14 +3,14 @@ package com.hedvig.android.payment
 import arrow.core.Either
 import arrow.core.raise.either
 import com.hedvig.android.apollo.OperationResult
+import java.math.BigDecimal
+import java.time.LocalDate
+import kotlin.time.Duration.Companion.days
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
 import org.javamoney.moneta.Money
-import java.math.BigDecimal
-import java.time.LocalDate
-import kotlin.time.Duration.Companion.days
 
 class PaymentRepositoryDemo : PaymentRepository {
   override suspend fun getChargeHistory(): Either<OperationResult.Error, ChargeHistory> = either {

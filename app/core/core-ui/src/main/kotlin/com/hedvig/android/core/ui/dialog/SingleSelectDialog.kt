@@ -49,7 +49,8 @@ fun <T> SingleSelectDialog(
   getIsSelected: ((T) -> Boolean)?,
   getId: (T) -> String,
   onDismissRequest: () -> Unit,
-  smallSelectionItems: Boolean = false, // True will not force the bigger min height that most of the design system has.
+  // True will not force the bigger min height that most of the design system has.
+  smallSelectionItems: Boolean = false,
 ) {
   Dialog(onDismissRequest = { onDismissRequest.invoke() }) {
     SelectionContent(

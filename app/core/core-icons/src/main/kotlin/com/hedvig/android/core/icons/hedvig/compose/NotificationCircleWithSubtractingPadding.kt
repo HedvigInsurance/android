@@ -13,9 +13,7 @@ import androidx.compose.ui.graphics.graphicsLayer
  * clearing the pixels there and making it transparent. It is attached to the top right of the available size.
  * https://www.figma.com/file/qUhLjrKl98PAzHov9ilaDH/Hedvig-UI-Kit?type=design&node-id=3813%3A19134&mode=design&t=V1DM52RqO3kDFMUq-1
  */
-fun Modifier.notificationCircleWithSubtractingPadding(
-  showNotification: Boolean = true,
-): Modifier {
+fun Modifier.notificationCircleWithSubtractingPadding(showNotification: Boolean = true): Modifier {
   return this
     .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
     .drawWithContent {

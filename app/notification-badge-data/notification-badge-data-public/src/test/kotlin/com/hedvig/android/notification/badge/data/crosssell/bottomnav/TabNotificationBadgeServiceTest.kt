@@ -20,7 +20,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class TabNotificationBadgeServiceTest {
-
   private fun tabNotificationBadgeService(
     notificationBadgeStorage: NotificationBadgeStorage,
     getCrossSellsContractTypesUseCase: GetCrossSellsContractTypesUseCase,

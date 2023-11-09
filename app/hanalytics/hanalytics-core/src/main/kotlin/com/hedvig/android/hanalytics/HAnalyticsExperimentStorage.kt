@@ -11,7 +11,9 @@ import kotlinx.coroutines.sync.withLock
  */
 internal interface HAnalyticsExperimentStorage {
   suspend fun getExperiment(name: String): HAnalyticsExperiment
+
   suspend fun updateExperiments(experiments: List<Experiment>)
+
   suspend fun invalidateExperiments()
 }
 

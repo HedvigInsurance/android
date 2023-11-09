@@ -6,7 +6,6 @@ import com.kiwi.navigationcompose.typed.Destination
 import kotlinx.serialization.Serializable
 
 internal sealed interface GenerateTravelCertificateDestination : Destination {
-
   @Serializable
   object TravelCertificateInformation : GenerateTravelCertificateDestination
 

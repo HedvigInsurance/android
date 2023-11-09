@@ -6,9 +6,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.content.getSystemService
 
-internal fun Context.copyToClipboard(
-  text: String,
-) {
+internal fun Context.copyToClipboard(text: String) {
   getSystemService<ClipboardManager>()?.setPrimaryClip(ClipData.newPlainText(null, text))
 }
 

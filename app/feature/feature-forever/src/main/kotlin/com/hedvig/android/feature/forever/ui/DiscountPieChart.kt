@@ -73,10 +73,7 @@ fun DiscountPieChart(
 }
 
 @FloatRange(0.0, 360.0)
-private fun calculateAngleDegrees(
-  totalPrice: Float,
-  totalDiscount: Float,
-): Float {
+private fun calculateAngleDegrees(totalPrice: Float, totalDiscount: Float): Float {
   return if (totalPrice == 0f) {
     0f
   } else {

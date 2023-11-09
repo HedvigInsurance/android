@@ -14,7 +14,6 @@ data class ThemedIconUrls(
   private val darkUrl: String,
   private val lightUrl: String,
 ) : Parcelable {
-
   val themedIcon: String
     @Composable
     get() = if (isSystemInDarkTheme()) {

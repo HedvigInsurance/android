@@ -7,6 +7,7 @@ import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.test.clock.TestClock
 import com.hedvig.authlib.AccessToken
 import com.hedvig.authlib.RefreshToken
+import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
@@ -15,7 +16,6 @@ import kotlinx.datetime.Clock
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import kotlin.time.Duration.Companion.minutes
 
 internal class AuthTokenStorageTest {
   @get:Rule

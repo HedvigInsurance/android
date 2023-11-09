@@ -6,7 +6,6 @@ internal class FeatureManagerImpl(
   private val featureFlagProvider: FeatureFlagProvider,
   private val clearHAnalyticsExperimentsCacheUseCase: ClearHAnalyticsExperimentsCacheUseCase,
 ) : FeatureManager, FeatureFlagProvider by featureFlagProvider {
-
   override suspend fun invalidateExperiments() {
     clearHAnalyticsExperimentsCacheUseCase.invoke()
   }

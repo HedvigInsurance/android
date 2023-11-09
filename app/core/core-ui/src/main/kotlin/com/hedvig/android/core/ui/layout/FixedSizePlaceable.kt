@@ -15,5 +15,6 @@ class FixedSizePlaceable(width: Int, height: Int) : Placeable() {
   }
 
   override fun get(alignmentLine: AlignmentLine): Int = AlignmentLine.Unspecified
+
   override fun placeAt(position: IntOffset, zIndex: Float, layerBlock: (GraphicsLayerScope.() -> Unit)?) = Unit
 }

@@ -27,7 +27,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 internal class HomePresenterTest {
-
   @Test
   fun `asking to refresh successfully asks for a fetch from the network`() = runTest {
     val getHomeDataUseCase = TestGetHomeDataUseCase()
@@ -236,6 +235,7 @@ internal class HomePresenterTest {
   private class TestGetHomeDataUseCase() : GetHomeDataUseCase {
     val forceNetworkFetchTurbine = Turbine<Boolean>()
     val responseTurbine = Turbine<Either<ErrorMessage, HomeData>>()
+
     override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ErrorMessage, HomeData>> {
       forceNetworkFetchTurbine.add(forceNetworkFetch)
       return responseTurbine.asChannel().receiveAsFlow()

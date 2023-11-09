@@ -18,6 +18,7 @@ internal class UploadLanguagePreferenceToBackendUseCaseImpl(
 ) : UploadLanguagePreferenceToBackendUseCase {
   override suspend fun invoke() {
     val ietfLanguageTag = languageService.getLanguage().toBcp47Format()
+    @Suppress("ktlint:standard:max-line-length")
     apolloClient
       .mutation(MemberUpdateLanguageMutation(ietfLanguageTag))
       .safeExecute()

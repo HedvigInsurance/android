@@ -1,18 +1,16 @@
 package com.hedvig.android.apollo
 
 import com.hedvig.android.core.common.await
+import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Call
 import org.json.JSONObject
-import java.io.IOException
 
 sealed interface OperationResult<out T> {
-
   data class Success<T>(val data: T) : OperationResult<T>
 
   sealed interface Error : OperationResult<Nothing> {
-
     val throwable: Throwable?
     val message: String?
 

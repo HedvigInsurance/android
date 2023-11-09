@@ -4,6 +4,7 @@ import com.hedvig.hanalytics.HAnalyticsEvent
 
 internal interface SendHAnalyticsEventUseCase {
   fun send(event: HAnalyticsEvent)
+
   fun identify()
 }
 

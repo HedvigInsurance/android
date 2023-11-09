@@ -28,7 +28,6 @@ import org.junit.Rule
 import org.junit.Test
 
 internal class InsurancePresenterTest {
-
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
 

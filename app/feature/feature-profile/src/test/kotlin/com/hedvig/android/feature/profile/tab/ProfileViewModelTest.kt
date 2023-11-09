@@ -19,14 +19,13 @@ import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.memberreminders.test.TestEnableNotificationsReminderManager
 import com.hedvig.android.memberreminders.test.TestGetMemberRemindersUseCase
+import kotlin.random.Random
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
-import kotlin.random.Random
 
 class ProfileViewModelTest {
-
   @get:Rule
   val mainCoroutineRule = MainCoroutineRule()
 

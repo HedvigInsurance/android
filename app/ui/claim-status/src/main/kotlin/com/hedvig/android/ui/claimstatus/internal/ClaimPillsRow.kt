@@ -32,10 +32,7 @@ import octopus.type.CurrencyCode
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-internal fun ClaimPillsRow(
-  pillTypes: List<ClaimPillType>,
-  modifier: Modifier = Modifier,
-) {
+internal fun ClaimPillsRow(pillTypes: List<ClaimPillType>, modifier: Modifier = Modifier) {
   FlowRow(
     horizontalArrangement = Arrangement.spacedBy(8.dp),
     verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -48,9 +45,7 @@ internal fun ClaimPillsRow(
 }
 
 @Composable
-private fun Pill(
-  type: ClaimPillType,
-) {
+private fun Pill(type: ClaimPillType) {
   val text = when (type) {
     is ClaimPillType.Closed -> {
       when (type) {
@@ -67,7 +62,8 @@ private fun Pill(
   val (color, contentColor) = when (type) {
     is ClaimPillType.Closed -> MaterialTheme.colorScheme.onSurface to MaterialTheme.colorScheme.surface
     ClaimPillType.Open -> MaterialTheme.colorScheme.outlineVariant to LocalContentColor.current
-    is ClaimPillType.PaymentAmount -> MaterialTheme.colorScheme.infoContainer to MaterialTheme.colorScheme.onInfoContainer
+    is ClaimPillType.PaymentAmount ->
+      MaterialTheme.colorScheme.infoContainer to MaterialTheme.colorScheme.onInfoContainer
     ClaimPillType.Reopened -> MaterialTheme.colorScheme.warningContainer to MaterialTheme.colorScheme.onWarningContainer
     ClaimPillType.Unknown -> MaterialTheme.colorScheme.outlineVariant to LocalContentColor.current
   }
@@ -75,11 +71,7 @@ private fun Pill(
 }
 
 @Composable
-internal fun Pill(
-  text: String,
-  color: Color,
-  contentColor: Color = contentColorFor(color),
-) {
+internal fun Pill(text: String, color: Color, contentColor: Color = contentColorFor(color)) {
   Surface(
     shape = MaterialTheme.shapes.squircleExtraSmall,
     color = color,

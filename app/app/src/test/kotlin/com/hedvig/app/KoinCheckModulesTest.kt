@@ -3,13 +3,13 @@ package com.hedvig.app
 import android.app.Application
 import android.content.Context
 import androidx.work.WorkerParameters
+import java.net.URI
 import kotlinx.coroutines.CoroutineScope
 import org.junit.Ignore
 import org.junit.Test
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.test.KoinTest
 import org.koin.test.verify.verify
-import java.net.URI
 
 class KoinCheckModulesTest : KoinTest {
   @OptIn(KoinExperimentalAPI::class)

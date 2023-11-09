@@ -88,7 +88,6 @@ public val HedvigIcons.BankId: ImageVector
         }
         path(
           fill = SolidColor(Color.Black),
-
           strokeLineWidth = 1f,
           strokeLineCap = StrokeCap.Butt,
           strokeLineJoin = StrokeJoin.Bevel,
@@ -122,7 +121,6 @@ public val HedvigIcons.BankId: ImageVector
         }
         path(
           fill = SolidColor(Color.Black),
-
           strokeLineWidth = 1f,
           strokeLineCap = StrokeCap.Butt,
           strokeLineJoin = StrokeJoin.Bevel,
@@ -154,7 +152,6 @@ public val HedvigIcons.BankId: ImageVector
         }
         path(
           fill = SolidColor(Color.Black),
-
           strokeLineWidth = 1f,
           strokeLineCap = StrokeCap.Butt,
           strokeLineJoin = StrokeJoin.Bevel,
@@ -178,7 +175,6 @@ public val HedvigIcons.BankId: ImageVector
         }
         path(
           fill = SolidColor(Color.Black),
-
           strokeLineWidth = 1f,
           strokeLineCap = StrokeCap.Butt,
           strokeLineJoin = StrokeJoin.Bevel,
@@ -202,7 +198,6 @@ public val HedvigIcons.BankId: ImageVector
         }
         path(
           fill = SolidColor(Color.Black),
-
           strokeLineWidth = 1f,
           strokeLineCap = StrokeCap.Butt,
           strokeLineJoin = StrokeJoin.Bevel,
@@ -218,7 +213,6 @@ public val HedvigIcons.BankId: ImageVector
         }
         path(
           fill = SolidColor(Color.Black),
-
           strokeLineWidth = 1f,
           strokeLineCap = StrokeCap.Butt,
           strokeLineJoin = StrokeJoin.Bevel,

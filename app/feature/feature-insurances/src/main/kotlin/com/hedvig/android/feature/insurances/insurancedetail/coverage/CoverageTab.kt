@@ -127,9 +127,7 @@ internal fun CoverageTab(
 
 @Suppress("UnusedReceiverParameter")
 @Composable
-private fun ColumnScope.PerilSection(
-  perilItems: ImmutableList<Peril>,
-) {
+private fun ColumnScope.PerilSection(perilItems: ImmutableList<Peril>) {
   var expandedItemIndex by rememberSaveable { mutableIntStateOf(-1) }
   for ((index, perilItem) in perilItems.withIndex()) {
     ExpandableCoverageCard(

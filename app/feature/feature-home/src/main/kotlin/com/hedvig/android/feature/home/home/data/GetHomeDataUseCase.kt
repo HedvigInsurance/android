@@ -68,12 +68,14 @@ internal class GetHomeDataUseCaseImpl(
         }
         val commonClaimsData: List<CommonClaimsData> =
           homeQueryData.currentMember.activeContracts.flatMap { activeContract ->
-            activeContract.currentAgreement.productVariant.commonClaimDescriptions.mapNotNull { commonClaimDescription ->
+            activeContract.currentAgreement.productVariant.commonClaimDescriptions.mapNotNull {
+                commonClaimDescription ->
               when (commonClaimDescription.layout) {
                 is CommonClaimDescription.CommonClaimLayoutEmergencyLayout -> null
                 is CommonClaimDescription.CommonClaimLayoutTitleAndBulletPointsLayout -> {
                   CommonClaimsData.from(commonClaimDescription, homeQueryData.currentMember.isEligibleToMakeClaim)
                 }
+
                 is CommonClaimDescription.OtherLayout -> {
                   logcat { "common claim descriptor with other layout" }
                   null
@@ -179,7 +181,6 @@ internal data class HomeData(
   val emergencyData: EmergencyData?,
   val commonClaimsData: ImmutableList<CommonClaimsData>,
 ) {
-
   @Immutable
   data class ClaimStatusCardsData(
     val claimStatusCardsUiState: NonEmptyList<ClaimStatusCardUiState>,
@@ -193,9 +194,13 @@ internal data class HomeData(
 
   sealed interface ContractStatus {
     data object Active : ContractStatus
+
     data object Terminated : ContractStatus
+
     data object Pending : ContractStatus
+
     data object Switching : ContractStatus
+
     data class ActiveInFuture(
       val futureInceptionDate: LocalDate,
     ) : ContractStatus

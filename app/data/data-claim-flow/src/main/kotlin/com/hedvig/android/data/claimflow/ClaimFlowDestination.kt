@@ -206,7 +206,6 @@ data class ItemProblem(
 
 @Serializable
 sealed interface CheckoutMethod {
-
   @Serializable
   sealed interface Known : CheckoutMethod {
     val id: String

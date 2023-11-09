@@ -120,6 +120,7 @@ internal sealed interface HomeUiState {
   ) : HomeUiState
 
   data class Error(val message: String?) : HomeUiState
+
   object Loading : HomeUiState
 }
 
@@ -174,8 +175,12 @@ private data class SuccessData(
 
 sealed interface HomeText {
   data object Active : HomeText
+
   data object Terminated : HomeText
+
   data class ActiveInFuture(val inception: LocalDate) : HomeText
+
   data object Pending : HomeText
+
   data object Switching : HomeText
 }

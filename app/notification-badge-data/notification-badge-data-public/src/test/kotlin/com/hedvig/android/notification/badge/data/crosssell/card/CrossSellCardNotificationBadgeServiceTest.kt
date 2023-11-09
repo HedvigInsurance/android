@@ -15,7 +15,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class CrossSellCardNotificationBadgeServiceTest {
-
   private fun crossSellCardNotificationBadgeService(
     notificationBadgeStorage: NotificationBadgeStorage,
     getCrossSellsContractTypesUseCase: GetCrossSellsContractTypesUseCase,

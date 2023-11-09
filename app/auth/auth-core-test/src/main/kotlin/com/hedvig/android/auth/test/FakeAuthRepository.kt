@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.consumeAsFlow
 
 class FakeAuthRepository : AuthRepository {
-
   val authAttemptResponse = Turbine<AuthAttemptResult>()
   val loginStatusResponse = Turbine<LoginStatusResult>()
   val resendOtpResponse = Turbine<ResendOtpResult>()

@@ -7,11 +7,7 @@ import com.hedvig.android.market.Market
   "Replace with navigating to AppDestination.ConnectPaymentTrustly|AppDestination.ConnectPaymentAdyen",
   level = DeprecationLevel.ERROR,
 )
-fun connectPayinIntent(
-  context: Context,
-  market: Market,
-  isPostSign: Boolean,
-) = when (market) {
+fun connectPayinIntent(context: Context, market: Market, isPostSign: Boolean) = when (market) {
   Market.SE -> {}
   Market.NO -> {}
   Market.DK -> {}

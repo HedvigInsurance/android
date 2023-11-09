@@ -1,13 +1,13 @@
 package com.hedvig.android.core.common
 
-import kotlinx.coroutines.suspendCancellableCoroutine
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.Response
 import java.io.IOException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.jvm.Throws
+import kotlinx.coroutines.suspendCancellableCoroutine
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.Response
 
 /**
  * Suspend extension that allows to await a [Response] from a [Call] in a suspending context coroutine.

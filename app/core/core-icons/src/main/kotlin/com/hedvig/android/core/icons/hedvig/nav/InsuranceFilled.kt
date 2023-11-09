@@ -20,8 +20,7 @@ public val HedvigIcons.InsuranceFilled: ImageVector
     _insuranceFilled = Builder(
       name = "Insurance tab selected",
       defaultWidth = 25.0.dp,
-      defaultHeight =
-      24.0.dp,
+      defaultHeight = 24.0.dp,
       viewportWidth = 25.0f,
       viewportHeight = 24.0f,
     ).apply {

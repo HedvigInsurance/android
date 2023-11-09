@@ -86,7 +86,9 @@ internal class TrustlyPresenter(
 
 internal sealed interface TrustlyEvent {
   data object ConnectingCardSucceeded : TrustlyEvent
+
   data object ConnectingCardFailed : TrustlyEvent
+
   data object RetryConnectingCard : TrustlyEvent
 }
 
@@ -99,6 +101,8 @@ internal sealed interface TrustlyUiState {
   ) : TrustlyUiState
 
   data object FailedToConnectCard : TrustlyUiState
+
   data object FailedToStartSession : TrustlyUiState
+
   data object SucceededInConnectingCard : TrustlyUiState
 }

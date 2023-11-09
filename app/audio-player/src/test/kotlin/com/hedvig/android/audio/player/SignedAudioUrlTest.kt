@@ -7,10 +7,10 @@ import assertk.assertions.isNull
 import org.junit.Test
 
 class SignedAudioUrlTest {
-
+  @Suppress("ktlint:standard:max-line-length")
   private val inputs = listOf(
-    "https://com-hedvig-upload.s3.eu-central-1.amazonaws.com/0fbab74f-5049-485c-8b30-ab21000b570a-claim_18294177-e50d-4430-b8d9-e3466e321c242600122472964195955.aac?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIZMW7F45HSE2X33Q%2F20220118%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20220118T102653Z&X-Amz-Expires=1800&X-Amz-Signature=6c647ca9a6419020836f2534e869ab9cff6b2aff555f48c4ffd0b3d51093a560&X-Amz-SignedHeaders=host", // ktlint-disable max-line-length
-    "https://com-hedvig-upload.s3.eu-central-1.amazonaws.com/0fbab74f-5049-485c-8b30-ab21000b570a-claim_18294177-e50d-4430-b8d9-e3466e321c242600122472964195955.aac?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIZMW7F45HSE2X33Q%2F20220118%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20220118T102654Z&X-Amz-Expires=1800&X-Amz-Signature=928f6ea645c6f73ec0a36aa2cf227953d55a1e4c6a5511521cae3da0a750a80f&X-Amz-SignedHeaders=host", // ktlint-disable max-line-length
+    """https://com-hedvig-upload.s3.eu-central-1.amazonaws.com/0fbab74f-5049-485c-8b30-ab21000b570a-claim_18294177-e50d-4430-b8d9-e3466e321c242600122472964195955.aac?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIZMW7F45HSE2X33Q%2F20220118%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20220118T102653Z&X-Amz-Expires=1800&X-Amz-Signature=6c647ca9a6419020836f2534e869ab9cff6b2aff555f48c4ffd0b3d51093a560&X-Amz-SignedHeaders=host""",
+    """https://com-hedvig-upload.s3.eu-central-1.amazonaws.com/0fbab74f-5049-485c-8b30-ab21000b570a-claim_18294177-e50d-4430-b8d9-e3466e321c242600122472964195955.aac?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIZMW7F45HSE2X33Q%2F20220118%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Date=20220118T102654Z&X-Amz-Expires=1800&X-Amz-Signature=928f6ea645c6f73ec0a36aa2cf227953d55a1e4c6a5511521cae3da0a750a80f&X-Amz-SignedHeaders=host""",
   )
 
   @Test

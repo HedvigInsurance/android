@@ -205,10 +205,7 @@ internal fun YourInfoTab(
 }
 
 @Composable
-internal fun CoverageRows(
-  coverageRowItems: ImmutableList<Pair<String, String>>,
-  modifier: Modifier = Modifier,
-) {
+internal fun CoverageRows(coverageRowItems: ImmutableList<Pair<String, String>>, modifier: Modifier = Modifier) {
   Column(modifier = modifier) {
     coverageRowItems.forEachIndexed { index, (firstText, secondText) ->
       HorizontalItemsWithMaximumSpaceTaken(

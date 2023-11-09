@@ -9,8 +9,8 @@ import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.datastore.DeviceIdDataStore
 import com.hedvig.android.core.datastore.DeviceIdDataStoreImpl
-import org.koin.dsl.module
 import java.io.File
+import org.koin.dsl.module
 
 private const val preferencesDatastoreFileName = "hedvig_data_store_preferences"
 

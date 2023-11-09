@@ -4,11 +4,11 @@ import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.initializable.Initializable
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
 
 internal class AuthEventBroadcaster(
   private val authEventStorage: AuthEventStorage,

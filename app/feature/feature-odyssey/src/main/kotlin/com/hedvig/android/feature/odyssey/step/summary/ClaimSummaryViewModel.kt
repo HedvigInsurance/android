@@ -13,6 +13,8 @@ import com.hedvig.android.data.claimflow.ItemModel
 import com.hedvig.android.data.claimflow.ItemProblem
 import com.hedvig.android.data.claimflow.LocationOption
 import hedvig.resources.R
+import java.util.Locale
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -25,14 +27,11 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 import octopus.type.FlowClaimItemBrandInput
 import octopus.type.FlowClaimItemModelInput
-import java.util.Locale
-import kotlin.time.Duration.Companion.seconds
 
 internal class ClaimSummaryViewModel(
   private val summary: ClaimFlowDestination.Summary,
   private val claimFlowRepository: ClaimFlowRepository,
 ) : ViewModel() {
-
   private val infoUiState: ClaimSummaryInfoUiState = ClaimSummaryInfoUiState.fromSummary(summary)
   private val statusUiState: MutableStateFlow<ClaimSummaryStatusUiState> = MutableStateFlow(ClaimSummaryStatusUiState())
 
@@ -121,7 +120,8 @@ internal data class ClaimSummaryStatusUiState(
 }
 
 internal data class ClaimSummaryInfoUiState(
-  val claimTypeTitle: String?, // e.g "Broken Phone"
+  // e.g "Broken Phone"
+  val claimTypeTitle: String?,
   val dateOfIncident: LocalDate?,
   val locationOption: LocationOption?,
   val itemType: ItemType?,
@@ -182,7 +182,6 @@ internal data class ClaimSummaryInfoUiState(
   }
 
   sealed interface ItemType {
-
     fun displayName(resources: Resources): String {
       return when (this) {
         is Brand -> itemBrand.displayName(resources)
@@ -191,6 +190,7 @@ internal data class ClaimSummaryInfoUiState(
     }
 
     data class Brand(val itemBrand: ItemBrand) : ItemType
+
     data class Model(val itemModel: ItemModel) : ItemType
 
     companion object {
@@ -211,9 +211,7 @@ internal data class ClaimSummaryInfoUiState(
   }
 
   companion object {
-    fun fromSummary(
-      summary: ClaimFlowDestination.Summary,
-    ): ClaimSummaryInfoUiState {
+    fun fromSummary(summary: ClaimFlowDestination.Summary): ClaimSummaryInfoUiState {
       return ClaimSummaryInfoUiState(
         claimTypeTitle = summary.claimTypeTitle,
         dateOfIncident = summary.dateOfOccurrence,

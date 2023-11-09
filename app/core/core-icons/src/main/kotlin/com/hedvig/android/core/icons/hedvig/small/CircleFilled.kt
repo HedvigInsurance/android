@@ -20,8 +20,7 @@ public val HedvigIcons.CircleFilled: ImageVector
     _circleFilled = Builder(
       name = "Circle filled",
       defaultWidth = 16.0.dp,
-      defaultHeight =
-      16.0.dp,
+      defaultHeight = 16.0.dp,
       viewportWidth = 16.0f,
       viewportHeight = 16.0f,
     ).apply {

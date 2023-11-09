@@ -31,9 +31,7 @@ data class ClaimProgressSegment(
   }
 
   companion object {
-    fun fromClaimFragment(
-      claim: ClaimFragment,
-    ): List<ClaimProgressSegment> = when (claim.status) {
+    fun fromClaimFragment(claim: ClaimFragment): List<ClaimProgressSegment> = when (claim.status) {
       ClaimStatus.CREATED -> buildSegments(CURRENTLY_ACTIVE, FUTURE_INACTIVE, FUTURE_INACTIVE)
       ClaimStatus.IN_PROGRESS -> buildSegments(PAST_INACTIVE, CURRENTLY_ACTIVE, FUTURE_INACTIVE)
       ClaimStatus.CLOSED -> {
@@ -52,11 +50,7 @@ data class ClaimProgressSegment(
       -> buildSegments(CURRENTLY_ACTIVE, FUTURE_INACTIVE, FUTURE_INACTIVE)
     }
 
-    private fun buildSegments(
-      type1: SegmentType,
-      type2: SegmentType,
-      type3: SegmentType,
-    ): List<ClaimProgressSegment> {
+    private fun buildSegments(type1: SegmentType, type2: SegmentType, type3: SegmentType): List<ClaimProgressSegment> {
       return listOf(
         ClaimProgressSegment(SegmentText.Submitted, type1),
         ClaimProgressSegment(SegmentText.BeingHandled, type2),

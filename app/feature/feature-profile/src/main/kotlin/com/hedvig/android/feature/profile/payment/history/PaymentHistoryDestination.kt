@@ -45,10 +45,7 @@ import java.time.LocalDate
 import java.util.Locale
 
 @Composable
-internal fun PaymentHistoryDestination(
-  viewModel: PaymentHistoryViewModel,
-  onBackPressed: () -> Unit,
-) {
+internal fun PaymentHistoryDestination(viewModel: PaymentHistoryViewModel, onBackPressed: () -> Unit) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
   PaymentHistoryScreen(
@@ -115,9 +112,11 @@ private fun PaymentHistoryScreen(
         } else {
           Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             HedvigErrorSection(
-              title = "No charge history", // todo string resource
+              // todo string resource
+              title = "No charge history",
               subTitle = null,
-              buttonText = "Go back", // todo string resource
+              // todo string resource
+              buttonText = "Go back",
               retry = { navigateUp() },
             )
           }

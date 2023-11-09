@@ -11,6 +11,6 @@ internal class PaymentViewModel(
   private val paymentRepositoryProvider: Provider<PaymentRepository>,
   val languageService: LanguageService,
 ) : MoleculeViewModel<PaymentEvent, PaymentUiState>(
-  PaymentUiState(isLoading = true),
-  PaymentPresenter(referralsRepositoryProvider, paymentRepositoryProvider, languageService),
-)
+    PaymentUiState(isLoading = true),
+    PaymentPresenter(referralsRepositoryProvider, paymentRepositoryProvider, languageService),
+  )

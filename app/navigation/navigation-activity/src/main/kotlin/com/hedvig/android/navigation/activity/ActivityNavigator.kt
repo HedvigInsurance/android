@@ -38,10 +38,7 @@ class ActivityNavigator(
     context.startActivity(Intent(Intent(Settings.ACTION_SETTINGS)))
   }
 
-  fun navigateToLoggedInScreen(
-    context: Context,
-    clearBackstack: Boolean = true,
-  ) {
+  fun navigateToLoggedInScreen(context: Context, clearBackstack: Boolean = true) {
     context.navigateToLoggedInActivity(clearBackstack)
   }
 

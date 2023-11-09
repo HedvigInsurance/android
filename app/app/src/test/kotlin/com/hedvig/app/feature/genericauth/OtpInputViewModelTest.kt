@@ -25,7 +25,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class OtpInputViewModelTest {
-
   @get:Rule
   val mainCoroutineRule = MainCoroutineRule()
 

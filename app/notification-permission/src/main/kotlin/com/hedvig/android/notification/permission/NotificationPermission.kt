@@ -60,9 +60,7 @@ private class NotificationPermissionStateImpl(
  */
 @SuppressLint("InlinedApi")
 @Composable
-fun rememberNotificationPermissionState(
-  onNotificationGranted: () -> Unit = {},
-): NotificationPermissionState {
+fun rememberNotificationPermissionState(onNotificationGranted: () -> Unit = {}): NotificationPermissionState {
   val context = LocalContext.current
   val permissionState = remember {
     MutablePermissionState(Manifest.permission.POST_NOTIFICATIONS, context, context.findActivity())
@@ -130,8 +128,11 @@ fun rememberPreviewNotificationPermissionState(
   isDialogShowing: Boolean = false,
 ): NotificationPermissionState = object : NotificationPermissionState {
   override val showDialog: Boolean = isDialogShowing
+
   override fun dismissDialog() {}
+
   override val permission: String = ""
   override val status: PermissionStatus = permissionStatus
+
   override fun launchPermissionRequest() {}
 }

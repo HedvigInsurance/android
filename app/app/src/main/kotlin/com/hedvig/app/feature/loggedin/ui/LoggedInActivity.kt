@@ -334,9 +334,7 @@ private fun HedvigApp(
  * fluid.
  */
 @OptIn(ExperimentalLayoutApi::class)
-private fun Modifier.animatedNavigationBarInsetsConsumption(
-  hedvigAppState: HedvigAppState,
-) = composed {
+private fun Modifier.animatedNavigationBarInsetsConsumption(hedvigAppState: HedvigAppState) = composed {
   val density = LocalDensity.current
   val insetsToConsume = if (hedvigAppState.shouldShowBottomBar) {
     WindowInsets.systemBars.only(WindowInsetsSides.Bottom).asPaddingValues(density)
@@ -393,10 +391,7 @@ private fun Theme.apply() = when (this) {
   }
 }
 
-private fun navigateToConnectPayment(
-  navController: NavController,
-  market: Market,
-) {
+private fun navigateToConnectPayment(navController: NavController, market: Market) {
   when (market) {
     Market.SE -> navController.navigate(AppDestination.ConnectPayment)
     Market.NO,

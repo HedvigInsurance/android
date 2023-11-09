@@ -25,6 +25,7 @@ class PreviewImageLoader(private val context: Context) : ImageLoader {
   override val defaults: DefaultRequestOptions = DefaultRequestOptions()
   override val diskCache: DiskCache? = null
   override val memoryCache: MemoryCache? = null
+
   override fun enqueue(request: ImageRequest): Disposable {
     return object : Disposable {
       override val isDisposed: Boolean

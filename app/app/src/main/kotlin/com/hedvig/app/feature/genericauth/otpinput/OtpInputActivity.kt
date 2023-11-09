@@ -25,11 +25,11 @@ import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import hedvig.resources.R
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.core.parameter.parametersOf
-import kotlin.time.Duration.Companion.seconds
 
 class OtpInputActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -96,16 +96,12 @@ class OtpInputActivity : AppCompatActivity() {
     private const val RESEND_URL_EXTRA = "RESEND_URL_EXTRA"
     private const val CREDENTIAL_EXTRA = "CREDENTIAL_EXTRA"
 
-    fun newInstance(
-      context: Context,
-      verifyUrl: String,
-      resendUrl: String,
-      credential: String,
-    ) = Intent(context, OtpInputActivity::class.java).apply {
-      putExtra(VERIFY_URL_EXTRA, verifyUrl)
-      putExtra(RESEND_URL_EXTRA, resendUrl)
-      putExtra(CREDENTIAL_EXTRA, credential)
-    }
+    fun newInstance(context: Context, verifyUrl: String, resendUrl: String, credential: String) =
+      Intent(context, OtpInputActivity::class.java).apply {
+        putExtra(VERIFY_URL_EXTRA, verifyUrl)
+        putExtra(RESEND_URL_EXTRA, resendUrl)
+        putExtra(CREDENTIAL_EXTRA, credential)
+      }
   }
 }
 

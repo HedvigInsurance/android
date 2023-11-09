@@ -16,7 +16,6 @@ class GenericAuthViewModel(
   private val authRepository: AuthRepository,
   private val marketManager: MarketManager,
 ) : ViewModel() {
-
   private val _viewState = MutableStateFlow(GenericAuthViewState())
   val viewState = _viewState.asStateFlow()
 

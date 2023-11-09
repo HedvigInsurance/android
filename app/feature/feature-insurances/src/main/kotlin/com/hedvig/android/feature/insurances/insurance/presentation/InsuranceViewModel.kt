@@ -11,10 +11,10 @@ internal class InsuranceViewModel(
   getCrossSellsUseCaseProvider: Provider<GetCrossSellsUseCase>,
   crossSellCardNotificationBadgeService: CrossSellCardNotificationBadgeService,
 ) : MoleculeViewModel<InsuranceScreenEvent, InsuranceUiState>(
-  initialState = InsuranceUiState.initialState,
-  presenter = InsurancePresenter(
-    getInsuranceContractsUseCaseProvider = getInsuranceContractsUseCaseProvider,
-    getCrossSellsUseCaseProvider = getCrossSellsUseCaseProvider,
-    crossSellCardNotificationBadgeService = crossSellCardNotificationBadgeService,
-  ),
-)
+    initialState = InsuranceUiState.initialState,
+    presenter = InsurancePresenter(
+      getInsuranceContractsUseCaseProvider = getInsuranceContractsUseCaseProvider,
+      getCrossSellsUseCaseProvider = getCrossSellsUseCaseProvider,
+      crossSellCardNotificationBadgeService = crossSellCardNotificationBadgeService,
+    ),
+  )

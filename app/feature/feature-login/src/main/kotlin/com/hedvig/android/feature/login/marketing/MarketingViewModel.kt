@@ -10,6 +10,6 @@ internal class MarketingViewModel(
   languageService: LanguageService,
   setMarketUseCase: SetMarketUseCase,
 ) : MoleculeViewModel<MarketingEvent, MarketingUiState>(
-  MarketingUiState.Loading,
-  MarketingPresenter(marketManager, languageService, setMarketUseCase),
-)
+    MarketingUiState.Loading,
+    MarketingPresenter(marketManager, languageService, setMarketUseCase),
+  )

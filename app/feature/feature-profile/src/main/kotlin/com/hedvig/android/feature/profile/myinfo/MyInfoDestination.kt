@@ -37,10 +37,7 @@ import com.hedvig.android.core.ui.scaffold.HedvigScaffold
 import hedvig.resources.R
 
 @Composable
-internal fun MyInfoDestination(
-  viewModel: MyInfoViewModel,
-  navigateUp: () -> Unit,
-) {
+internal fun MyInfoDestination(viewModel: MyInfoViewModel, navigateUp: () -> Unit) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   MyInfoScreen(
     uiState = uiState,

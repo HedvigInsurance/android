@@ -12,6 +12,7 @@ internal class ForeverRepositoryDemo : ForeverRepository {
   private var code: String = "code"
 
   override suspend fun getReferralsData(): Either<ErrorMessage, ReferralsQuery.Data> = either {
+    @Suppress("ktlint:standard:max-line-length")
     ReferralsQuery.Data(
       currentMember = ReferralsQuery.Data.CurrentMember(
         insuranceCost = ReferralsQuery.Data.CurrentMember.InsuranceCost(
@@ -73,7 +74,5 @@ internal class ForeverRepositoryDemo : ForeverRepository {
     return newCode.right()
   }
 
-  override suspend fun redeemReferralCode(
-    campaignCode: CampaignCode,
-  ): Either<ErrorMessage, Unit> = either { Unit }
+  override suspend fun redeemReferralCode(campaignCode: CampaignCode): Either<ErrorMessage, Unit> = either { Unit }
 }

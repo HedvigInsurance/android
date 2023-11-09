@@ -14,7 +14,6 @@ internal class PhoneNumberViewModel(
   initialPhoneNumber: String?,
   private val claimFlowRepository: ClaimFlowRepository,
 ) : ViewModel() {
-
   private val _uiState = MutableStateFlow(PhoneNumberUiState(initialPhoneNumber ?: ""))
   val uiState: StateFlow<PhoneNumberUiState> = _uiState.asStateFlow()
 
@@ -66,6 +65,8 @@ internal data class PhoneNumberUiState(
   val canSubmit: Boolean = status == Status.IDLE && nextStep == null
 
   enum class Status {
-    IDLE, LOADING, ERROR,
+    IDLE,
+    LOADING,
+    ERROR,
   }
 }

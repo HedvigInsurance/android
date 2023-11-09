@@ -16,7 +16,6 @@ internal class ConfirmEmergencyViewModel(
   confirmEmergency: ClaimFlowDestination.ConfirmEmergency,
   private val claimFlowRepository: ClaimFlowRepository,
 ) : ViewModel() {
-
   private val _uiState = MutableStateFlow(
     ConfirmEmergencyUiState(
       title = confirmEmergency.text,

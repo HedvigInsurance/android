@@ -2,11 +2,11 @@ package com.hedvig.android.apollo
 
 import giraffe.fragment.MonetaryAmountFragment
 import giraffe.type.Locale
-import org.javamoney.moneta.Money
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.util.Currency
 import javax.money.MonetaryAmount
+import org.javamoney.moneta.Money
 
 @Suppress("unused")
 fun Locale.toLocaleString() = when (this) {
@@ -29,8 +29,7 @@ fun Locale.toWebLocaleTag() = when (this) {
   Locale.UNKNOWN__ -> "se-en"
 }
 
-fun MonetaryAmountFragment.toMonetaryAmount(): MonetaryAmount =
-  Money.of(amount.toBigDecimal(), currency)
+fun MonetaryAmountFragment.toMonetaryAmount(): MonetaryAmount = Money.of(amount.toBigDecimal(), currency)
 
 fun MonetaryAmount.format(locale: java.util.Locale, minimumDecimals: Int = 0): String =
   NumberFormat.getCurrencyInstance(locale).also {

@@ -95,13 +95,13 @@ import com.hedvig.android.ui.claimstatus.model.ClaimPillType
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import hedvig.resources.R
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.toJavaLocalDate
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 
 @Composable
 internal fun HomeDestination(
@@ -416,10 +416,7 @@ private fun VeryImportantMessageCard(
 }
 
 @Composable
-private fun WelcomeMessage(
-  homeText: HomeText,
-  modifier: Modifier = Modifier,
-) {
+private fun WelcomeMessage(homeText: HomeText, modifier: Modifier = Modifier) {
   val formatter = remember { DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG) }
   val headlineText = when (homeText) {
     is HomeText.Active -> stringResource(R.string.home_tab_welcome_title_without_name)
@@ -448,8 +445,7 @@ private fun Context.setLastEpochDayWhenChatTooltipWasShown(epochDay: Long) =
 private fun Context.getLastEpochDayWhenChatTooltipWasShown() =
   getSharedPreferences().getLong(SHARED_PREFERENCE_LAST_OPEN, 0)
 
-private fun Context.getSharedPreferences() =
-  this.getSharedPreferences(SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE)
+private fun Context.getSharedPreferences() = this.getSharedPreferences(SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE)
 
 @HedvigPreview
 @Composable

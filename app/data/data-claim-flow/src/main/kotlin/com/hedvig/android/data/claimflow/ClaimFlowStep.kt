@@ -117,6 +117,7 @@ sealed interface ClaimFlowStep {
   ) : ClaimFlowStep
 
   data class ClaimFailedStep(override val flowId: FlowId) : ClaimFlowStep
+
   data class ClaimSuccessStep(override val flowId: FlowId) : ClaimFlowStep
 
   /**

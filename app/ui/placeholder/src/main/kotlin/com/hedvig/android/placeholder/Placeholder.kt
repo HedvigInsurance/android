@@ -238,10 +238,7 @@ private fun DrawScope.drawPlaceholder(
   return outline
 }
 
-private inline fun DrawScope.withLayer(
-  paint: Paint,
-  drawBlock: DrawScope.() -> Unit,
-) = drawIntoCanvas { canvas ->
+private inline fun DrawScope.withLayer(paint: Paint, drawBlock: DrawScope.() -> Unit) = drawIntoCanvas { canvas ->
   canvas.saveLayer(size.toRect(), paint)
   drawBlock()
   canvas.restore()

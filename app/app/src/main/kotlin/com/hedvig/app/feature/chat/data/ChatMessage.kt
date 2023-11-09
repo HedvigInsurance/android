@@ -3,7 +3,6 @@ package com.hedvig.app.feature.chat.data
 import kotlinx.datetime.Instant
 
 sealed interface ChatMessage {
-
   val id: String
   val sender: Sender
   val sentAt: Instant
@@ -24,6 +23,7 @@ sealed interface ChatMessage {
   ) : ChatMessage
 
   enum class Sender {
-    HEDVIG, MEMBER;
+    HEDVIG,
+    MEMBER,
   }
 }
