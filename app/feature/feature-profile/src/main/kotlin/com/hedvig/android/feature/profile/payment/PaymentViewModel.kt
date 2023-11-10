@@ -2,9 +2,9 @@ package com.hedvig.android.feature.profile.payment
 
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.forever.ForeverRepository
+import com.hedvig.android.data.payment.PaymentRepository
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.molecule.android.MoleculeViewModel
-import com.hedvig.android.payment.PaymentRepository
 
 internal class PaymentViewModel(
   private val referralsRepositoryProvider: Provider<ForeverRepository>,

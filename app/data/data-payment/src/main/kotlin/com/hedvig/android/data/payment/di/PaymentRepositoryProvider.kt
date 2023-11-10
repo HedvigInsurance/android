@@ -1,8 +1,8 @@
-package com.hedvig.android.payment.di
+package com.hedvig.android.data.payment.di
 
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.ProdOrDemoProvider
-import com.hedvig.android.payment.PaymentRepository
+import com.hedvig.android.data.payment.PaymentRepository
 
 class PaymentRepositoryProvider(
   override val demoManager: DemoManager,

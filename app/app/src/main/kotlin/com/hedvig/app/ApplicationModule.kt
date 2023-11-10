@@ -39,6 +39,7 @@ import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.di.demoModule
 import com.hedvig.android.data.forever.di.foreverDataModule
+import com.hedvig.android.data.payment.di.paymentModule
 import com.hedvig.android.data.settings.datastore.di.settingsDatastoreModule
 import com.hedvig.android.data.travelcertificate.di.claimFlowDataModule
 import com.hedvig.android.data.travelcertificate.di.travelCertificateDataModule
@@ -75,7 +76,6 @@ import com.hedvig.android.navigation.core.di.deepLinkModule
 import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.firebase.di.firebaseNotificationModule
-import com.hedvig.android.payment.di.paymentModule
 import com.hedvig.app.authenticate.LogoutUseCaseImpl
 import com.hedvig.app.feature.chat.service.ChatNotificationSender
 import com.hedvig.app.feature.chat.service.ReplyWorker

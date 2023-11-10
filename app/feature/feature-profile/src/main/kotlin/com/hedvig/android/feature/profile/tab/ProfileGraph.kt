@@ -125,7 +125,8 @@ fun NavGraphBuilder.profileGraph(
       val viewModel: PaymentHistoryViewModel = koinViewModel()
       PaymentHistoryDestination(
         viewModel = viewModel,
-        onBackPressed = navigator::navigateUp,
+        onNavigateUp = navigator::navigateUp,
+        onNavigateBack = navigator::popBackStack,
       )
     }
     nestedGraphs()

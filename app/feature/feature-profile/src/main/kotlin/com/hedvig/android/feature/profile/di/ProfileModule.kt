@@ -7,6 +7,7 @@ import com.hedvig.android.apollo.octopus.di.octopusClient
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.data.forever.ForeverRepositoryProvider
+import com.hedvig.android.data.payment.di.PaymentRepositoryProvider
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.profile.aboutapp.AboutAppViewModel
 import com.hedvig.android.feature.profile.data.ProfileRepositoryDemo
@@ -24,7 +25,6 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.market.MarketManager
 import com.hedvig.android.memberreminders.EnableNotificationsReminderManager
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
-import com.hedvig.android.payment.di.PaymentRepositoryProvider
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -84,7 +84,6 @@ val profileModule = module {
   viewModel<PaymentHistoryViewModel> {
     PaymentHistoryViewModel(
       get<PaymentRepositoryProvider>(),
-      get<LanguageService>(),
     )
   }
 }
