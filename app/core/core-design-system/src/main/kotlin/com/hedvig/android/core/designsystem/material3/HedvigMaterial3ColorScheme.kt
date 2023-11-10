@@ -169,6 +169,8 @@ internal fun HedvigMaterial3ColorScheme.fromToken(value: HedvigColorSchemeKeyTok
 
     HedvigColorSchemeKeyTokens.WarningContainer -> warningContainer
     HedvigColorSchemeKeyTokens.OnWarningContainer -> onWarningContainer
+    HedvigColorSchemeKeyTokens.WarningElement -> warningElement
+    HedvigColorSchemeKeyTokens.OnWarningElement -> onWarningElement
     HedvigColorSchemeKeyTokens.WarningHighlight -> warningHighlight
 
     HedvigColorSchemeKeyTokens.TypeElement -> typeElement

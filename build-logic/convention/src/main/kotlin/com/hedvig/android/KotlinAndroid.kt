@@ -12,9 +12,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 /**
  * Configure base Kotlin with Android options
  */
-internal fun Project.configureKotlinAndroid(
-  commonExtension: AndroidCommonExtension,
-) {
+internal fun Project.configureKotlinAndroid(commonExtension: AndroidCommonExtension) {
   val libs = the<LibrariesForLibs>()
 
   commonExtension.apply {
@@ -75,9 +73,7 @@ private fun Project.configureAutomaticNamespace(commonExtension: AndroidCommonEx
   }
 }
 
-private fun KotlinJvmOptions.configureKotlinOptions(
-  project: Project,
-) {
+private fun KotlinJvmOptions.configureKotlinOptions(project: Project) {
   // Treat all Kotlin warnings as errors (disabled by default)
   allWarningsAsErrors = project.properties["warningsAsErrors"] as? Boolean ?: false
 
@@ -99,6 +95,7 @@ private fun KotlinJvmOptions.configureKotlinOptions(
     freeCompilerArgs = freeCompilerArgs + listOf(
       "-P",
       "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" +
+        // try that project.layout.buildDirectory.asFile.get() maybe works
         project.buildDir.absolutePath + "/compose_metrics",
     )
     freeCompilerArgs = freeCompilerArgs + listOf(

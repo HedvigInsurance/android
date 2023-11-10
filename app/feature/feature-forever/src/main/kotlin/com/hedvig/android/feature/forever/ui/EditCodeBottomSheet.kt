@@ -29,7 +29,7 @@ import com.hedvig.android.core.designsystem.component.button.HedvigContainedButt
 import com.hedvig.android.core.designsystem.component.button.HedvigTextButton
 import com.hedvig.android.core.designsystem.component.textfield.HedvigTextField
 import com.hedvig.android.core.designsystem.material3.squircleLargeTop
-import com.hedvig.android.data.forever.ForeverRepository
+import com.hedvig.android.feature.forever.data.ForeverRepository
 import hedvig.resources.R
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop

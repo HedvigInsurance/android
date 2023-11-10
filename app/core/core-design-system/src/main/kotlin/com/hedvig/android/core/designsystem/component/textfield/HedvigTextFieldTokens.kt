@@ -47,7 +47,7 @@ internal object HedvigTextFieldTokens {
   val ErrorInputColor = HedvigColorSchemeKeyTokens.OnWarningContainer
   val ErrorLabelColor = HedvigColorSchemeKeyTokens.OnWarningContainer
   val ErrorLeadingIconColor = HedvigColorSchemeKeyTokens.OnWarningContainer
-  val ErrorSupportingColor = HedvigColorSchemeKeyTokens.OnWarningContainer
+  val ErrorSupportingColor = HedvigColorSchemeKeyTokens.WarningElement
   val ErrorTrailingIconColor = HedvigColorSchemeKeyTokens.OnWarningContainer
   val FocusActiveIndicatorColor = HedvigColorSchemeKeyTokens.Primary
   val FocusActiveIndicatorHeight = 2.0.dp

@@ -38,8 +38,8 @@ import com.hedvig.android.core.icons.hedvig.normal.ChevronDown
 import com.hedvig.android.core.icons.hedvig.normal.InfoFilled
 import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.hedvigDateTimeFormatter
-import com.hedvig.android.core.ui.insurance.toPillow
 import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.data.contract.android.toPillow
 import com.hedvig.android.feature.changeaddress.data.MoveQuote
 import hedvig.resources.R
 import kotlinx.datetime.LocalDate

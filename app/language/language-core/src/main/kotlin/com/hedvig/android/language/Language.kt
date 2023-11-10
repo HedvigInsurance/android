@@ -3,7 +3,6 @@ package com.hedvig.android.language
 import androidx.annotation.StringRes
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import giraffe.type.Locale
 
 enum class Language {
   SV_SE,
@@ -42,15 +41,6 @@ enum class Language {
    */
   override fun toString(): String {
     return toBcp47Format()
-  }
-
-  fun toLocale(): giraffe.type.Locale = when (this) {
-    SV_SE -> Locale.sv_SE
-    EN_SE -> Locale.en_SE
-    NB_NO -> Locale.nb_NO
-    EN_NO -> Locale.en_NO
-    DA_DK -> Locale.da_DK
-    EN_DK -> Locale.en_DK
   }
 
   fun webPath() = when (this) {

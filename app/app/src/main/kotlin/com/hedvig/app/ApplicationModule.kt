@@ -38,8 +38,6 @@ import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.di.demoModule
-import com.hedvig.android.data.forever.di.foreverDataModule
-import com.hedvig.android.data.payment.di.paymentModule
 import com.hedvig.android.data.settings.datastore.di.settingsDatastoreModule
 import com.hedvig.android.data.travelcertificate.di.claimFlowDataModule
 import com.hedvig.android.data.travelcertificate.di.travelCertificateDataModule
@@ -59,6 +57,7 @@ import com.hedvig.android.feature.home.di.homeModule
 import com.hedvig.android.feature.insurances.di.insurancesModule
 import com.hedvig.android.feature.login.di.loginModule
 import com.hedvig.android.feature.odyssey.di.odysseyModule
+import com.hedvig.android.feature.payments.di.paymentsModule
 import com.hedvig.android.feature.profile.di.profileModule
 import com.hedvig.android.feature.terminateinsurance.di.terminateInsuranceModule
 import com.hedvig.android.feature.travelcertificate.di.travelCertificateModule
@@ -365,7 +364,6 @@ val applicationModule = module {
       demoModule,
       featureManagerModule,
       firebaseNotificationModule,
-      foreverDataModule,
       foreverModule,
       hAnalyticsAndroidModule,
       hAnalyticsModule,
@@ -380,7 +378,7 @@ val applicationModule = module {
       notificationBadgeModule,
       notificationModule,
       odysseyModule,
-      paymentModule,
+      paymentsModule,
       profileModule,
       settingsDatastoreModule,
       sharedPreferencesModule,

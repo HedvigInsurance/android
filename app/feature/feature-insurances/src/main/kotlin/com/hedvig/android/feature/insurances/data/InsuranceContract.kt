@@ -1,6 +1,6 @@
 package com.hedvig.android.feature.insurances.data
 
-import com.hedvig.android.core.ui.insurance.ProductVariant
+import com.hedvig.android.data.productvariant.ProductVariant
 import kotlinx.datetime.LocalDate
 
 data class InsuranceContract(
@@ -9,14 +9,14 @@ data class InsuranceContract(
   val exposureDisplayName: String,
   val inceptionDate: LocalDate,
   val terminationDate: LocalDate?,
-  val currentAgreement: Agreement,
-  val upcomingAgreement: Agreement?,
+  val currentInsuranceAgreement: InsuranceAgreement,
+  val upcomingInsuranceAgreement: InsuranceAgreement?,
   val renewalDate: LocalDate?,
   val supportsAddressChange: Boolean,
   val isTerminated: Boolean,
 )
 
-data class Agreement(
+data class InsuranceAgreement(
   val activeFrom: LocalDate,
   val activeTo: LocalDate,
   val displayItems: List<DisplayItem>,

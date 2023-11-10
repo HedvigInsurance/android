@@ -58,7 +58,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.apollo.toWebLocaleTag
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.designsystem.component.button.HedvigContainedButton
@@ -158,7 +157,7 @@ private fun ForeverScreen(
                   buildString {
                     append(hedvigBuildConstants.urlBaseWeb)
                     append("/")
-                    append(languageService.getGraphQLLocale().toWebLocaleTag())
+                    append(languageService.getLanguage().webPath())
                     append("/forever/")
                     append(Uri.encode(code))
                   },

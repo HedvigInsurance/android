@@ -36,6 +36,7 @@ import com.hedvig.android.feature.insurances.insurance.insuranceGraph
 import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
 import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
 import com.hedvig.android.feature.odyssey.navigation.terminalClaimFlowStepDestinations
+import com.hedvig.android.feature.payments.navigation.paymentsGraph
 import com.hedvig.android.feature.profile.tab.profileGraph
 import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceGraph
 import com.hedvig.android.feature.travelcertificate.navigation.generateTravelCertificateGraph
@@ -170,10 +171,19 @@ internal fun HedvigNavHost(
       hedvigBuildConstants = hedvigBuildConstants,
     )
     profileGraph(
-      nestedGraphs = {},
+      nestedGraphs = {
+        paymentsGraph(
+          navigator = navigator,
+          hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+          navigateToConnectPayment = navigateToConnectPayment,
+        )
+      },
       navigator = navigator,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       hedvigBuildConstants = hedvigBuildConstants,
+      navigateToPaymentInfo = { backStackEntry ->
+        with(navigator) { backStackEntry.navigate(AppDestination.PaymentInfo) }
+      },
       navigateToConnectPayment = navigateToConnectPayment,
       openAppSettings = { activityNavigator.openAppSettings(context) },
       openUrl = ::openUrl,

@@ -10,8 +10,8 @@ import androidx.compose.runtime.setValue
 import arrow.core.raise.either
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.Provider
-import com.hedvig.android.data.forever.ForeverRepository
 import com.hedvig.android.feature.forever.data.ForeverData
+import com.hedvig.android.feature.forever.data.ForeverRepository
 import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope

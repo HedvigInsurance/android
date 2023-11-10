@@ -13,8 +13,6 @@ interface LanguageService {
 
   fun getLocale(): java.util.Locale
 
-  fun getGraphQLLocale(): giraffe.type.Locale
-
   fun performOnLaunchLanguageCheck()
 }
 
@@ -38,18 +36,6 @@ class AndroidLanguageService() : LanguageService {
       return Locale("en", "SE")
     }
     return localeList[0]!!
-  }
-
-  override fun getGraphQLLocale(): giraffe.type.Locale {
-    return when (getLocale().toString()) {
-      "en_NO" -> giraffe.type.Locale.en_NO
-      "nb_NO" -> giraffe.type.Locale.nb_NO
-      "sv_SE" -> giraffe.type.Locale.sv_SE
-      "en_SE" -> giraffe.type.Locale.en_SE
-      "da_DK" -> giraffe.type.Locale.da_DK
-      "en_DK" -> giraffe.type.Locale.en_DK
-      else -> giraffe.type.Locale.en_SE
-    }
   }
 
   override fun performOnLaunchLanguageCheck() {

@@ -1,9 +1,9 @@
 package com.hedvig.android.feature.changeaddress.data
 
-import com.hedvig.android.core.ui.insurance.ContractType
-import com.hedvig.android.core.ui.insurance.InsurableLimit
-import com.hedvig.android.core.ui.insurance.ProductVariant
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ContractType
+import com.hedvig.android.data.productvariant.InsurableLimit
+import com.hedvig.android.data.productvariant.ProductVariant
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate

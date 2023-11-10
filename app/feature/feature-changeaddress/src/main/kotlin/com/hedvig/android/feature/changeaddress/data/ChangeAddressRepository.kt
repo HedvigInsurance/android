@@ -7,8 +7,8 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.ui.insurance.toProductVariant
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.productVariant.android.toProductVariant
 import com.hedvig.android.logger.logcat
 import kotlinx.collections.immutable.toImmutableList
 import octopus.MoveIntentCommitMutation

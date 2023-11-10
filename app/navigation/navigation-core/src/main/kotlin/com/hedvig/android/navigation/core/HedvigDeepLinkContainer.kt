@@ -11,6 +11,7 @@ interface HedvigDeepLinkContainer {
   val chat: String // Hedvig Chat
   val connectPayment: String // Screen where the member can connect their payment method to Hedvig to pay for insurance
   val directDebit: String // Same as connectPayment but to support an old link to it
+  val payments: String // The payments screen, showing the payments history and the upcoming payment information
 }
 
 internal class HedvigDeepLinkContainerImpl(
@@ -27,4 +28,5 @@ internal class HedvigDeepLinkContainerImpl(
   override val chat: String = "$baseDeepLinkDomain/chat"
   override val connectPayment: String = "$baseDeepLinkDomain/connect-payment"
   override val directDebit: String = "$baseDeepLinkDomain/direct-debit"
+  override val payments: String = "$baseDeepLinkDomain/payments"
 }
