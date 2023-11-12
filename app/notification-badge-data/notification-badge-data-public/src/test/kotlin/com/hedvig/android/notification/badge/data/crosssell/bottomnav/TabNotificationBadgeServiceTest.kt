@@ -15,7 +15,6 @@ import com.hedvig.android.notification.badge.data.storage.NotificationBadge
 import com.hedvig.android.notification.badge.data.storage.NotificationBadgeStorage
 import com.hedvig.android.notification.badge.data.tab.BottomNavTab
 import com.hedvig.android.notification.badge.data.tab.TabNotificationBadgeService
-import giraffe.type.TypeOfContract
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
@@ -165,6 +164,8 @@ class TabNotificationBadgeServiceTest {
   @Test
   fun `Storing old seen contract types shouldn't affect the shown badge`() = runTest {
     val seAccident = CrossSellIdentifier("SE_ACCIDENT")
+    val seApartmentBrf = CrossSellIdentifier("SE_APARTMENT_BRF")
+    val seHouse = CrossSellIdentifier("SE_HOUSE")
     val seCarFull = CrossSellIdentifier("SE_CAR_FULL")
     val seQasaShortTermRental = CrossSellIdentifier("SE_QASA_SHORT_TERM_RENTAL")
     val notificationBadgeService = FakeNotificationBadgeStorage(this).apply {
@@ -172,9 +173,9 @@ class TabNotificationBadgeServiceTest {
         NotificationBadge.BottomNav.CrossSellOnInsuranceScreen,
         setOf(
           seAccident.rawValue,
-          TypeOfContract.SE_APARTMENT_BRF.rawValue,
+          seApartmentBrf.rawValue,
           seCarFull.rawValue,
-          TypeOfContract.SE_HOUSE.rawValue,
+          seHouse.rawValue,
         ),
       )
     }
