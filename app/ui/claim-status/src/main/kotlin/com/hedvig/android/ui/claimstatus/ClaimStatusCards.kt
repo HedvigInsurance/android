@@ -32,24 +32,30 @@ fun ClaimStatusCards(
   contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
 ) {
-  val pagerState = rememberPagerState(pageCount = { claimStatusCardsUiState.size })
-  Column(modifier) {
-    HorizontalPager(
-      state = pagerState,
-      contentPadding = contentPadding,
-      beyondBoundsPageCount = 1,
-      pageSpacing = 8.dp,
-      key = { index -> claimStatusCardsUiState[index].id },
-      modifier = Modifier.fillMaxWidth().systemGestureExclusion(),
-    ) { page: Int ->
-      val claimStatusUiState = claimStatusCardsUiState[page]
-      ClaimStatusCard(
-        uiState = claimStatusUiState,
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth(),
-      )
-    }
-    if (claimStatusCardsUiState.size > 1) {
+  if (claimStatusCardsUiState.size == 1) {
+    ClaimStatusCard(
+      uiState = claimStatusCardsUiState.first(),
+      onClick = onClick,
+      modifier = modifier.padding(contentPadding),
+    )
+  } else {
+    val pagerState = rememberPagerState(pageCount = { claimStatusCardsUiState.size })
+    Column(modifier) {
+      HorizontalPager(
+        state = pagerState,
+        contentPadding = contentPadding,
+        beyondBoundsPageCount = 1,
+        pageSpacing = 8.dp,
+        key = { index -> claimStatusCardsUiState[index].id },
+        modifier = Modifier.fillMaxWidth().systemGestureExclusion(),
+      ) { page: Int ->
+        val claimStatusUiState = claimStatusCardsUiState[page]
+        ClaimStatusCard(
+          uiState = claimStatusUiState,
+          onClick = onClick,
+          modifier = Modifier.fillMaxWidth(),
+        )
+      }
       Spacer(Modifier.height(16.dp))
 
       HorizontalPagerIndicator(
