@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.profile.tab
 
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
@@ -11,10 +12,6 @@ import com.hedvig.android.feature.profile.eurobonus.EurobonusDestination
 import com.hedvig.android.feature.profile.eurobonus.EurobonusViewModel
 import com.hedvig.android.feature.profile.myinfo.MyInfoDestination
 import com.hedvig.android.feature.profile.myinfo.MyInfoViewModel
-import com.hedvig.android.feature.profile.payment.PaymentDestination
-import com.hedvig.android.feature.profile.payment.PaymentViewModel
-import com.hedvig.android.feature.profile.payment.history.PaymentHistoryDestination
-import com.hedvig.android.feature.profile.payment.history.PaymentHistoryViewModel
 import com.hedvig.android.feature.profile.settings.SettingsDestination
 import com.hedvig.android.feature.profile.settings.SettingsViewModel
 import com.hedvig.android.navigation.core.AppDestination
@@ -31,6 +28,7 @@ fun NavGraphBuilder.profileGraph(
   navigator: Navigator,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   hedvigBuildConstants: HedvigBuildConstants,
+  navigateToPaymentInfo: (NavBackStackEntry) -> Unit,
   navigateToConnectPayment: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
@@ -60,7 +58,7 @@ fun NavGraphBuilder.profileGraph(
           with(navigator) { backStackEntry.navigate(AppDestination.Settings) }
         },
         navigateToPayment = {
-          with(navigator) { backStackEntry.navigate(AppDestination.PaymentInfo) }
+          navigateToPaymentInfo(backStackEntry)
         },
         navigateToConnectPayment = navigateToConnectPayment,
         openAppSettings = openAppSettings,
@@ -108,25 +106,6 @@ fun NavGraphBuilder.profileGraph(
         viewModel = viewModel,
         openAppSettings = openAppSettings,
         navigateUp = navigator::navigateUp,
-      )
-    }
-    composable<AppDestination.PaymentInfo> { backStackEntry ->
-      val viewModel: PaymentViewModel = koinViewModel()
-      PaymentDestination(
-        viewModel = viewModel,
-        onBackPressed = navigator::navigateUp,
-        onPaymentHistoryClicked = {
-          with(navigator) { backStackEntry.navigate(AppDestination.PaymentHistory) }
-        },
-        onChangeBankAccount = navigateToConnectPayment,
-      )
-    }
-    composable<AppDestination.PaymentHistory> {
-      val viewModel: PaymentHistoryViewModel = koinViewModel()
-      PaymentHistoryDestination(
-        viewModel = viewModel,
-        onNavigateUp = navigator::navigateUp,
-        onNavigateBack = navigator::popBackStack,
       )
     }
     nestedGraphs()

@@ -65,11 +65,11 @@ import com.hedvig.android.core.designsystem.material3.typeContainer
 import com.hedvig.android.core.designsystem.preview.HedvigPreview
 import com.hedvig.android.core.designsystem.theme.HedvigTheme
 import com.hedvig.android.core.ui.card.InsuranceCard
-import com.hedvig.android.core.ui.insurance.ContractType
-import com.hedvig.android.core.ui.insurance.ProductVariant
 import com.hedvig.android.core.ui.preview.rememberPreviewImageLoader
-import com.hedvig.android.feature.insurances.data.Agreement
+import com.hedvig.android.data.contract.ContractType
+import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.insurances.data.CrossSell
+import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import com.hedvig.android.feature.insurances.data.iconRes
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceScreenEvent
@@ -220,7 +220,7 @@ private fun ColumnScope.InsuranceScreenContent(
     InsuranceCard(
       backgroundImageUrl = null,
       chips = contract.createChips(),
-      topText = contract.currentAgreement.productVariant.displayName,
+      topText = contract.currentInsuranceAgreement.productVariant.displayName,
       bottomText = contract.exposureDisplayName,
       imageLoader = imageLoader,
       modifier = Modifier
@@ -378,7 +378,7 @@ private fun PreviewInsuranceScreen() {
               exposureDisplayName = "Test exposure",
               inceptionDate = LocalDate.fromEpochDays(200),
               terminationDate = LocalDate.fromEpochDays(400),
-              currentAgreement = Agreement(
+              currentInsuranceAgreement = InsuranceAgreement(
                 activeFrom = LocalDate.fromEpochDays(240),
                 activeTo = LocalDate.fromEpochDays(340),
                 displayItems = persistentListOf(),
@@ -392,7 +392,7 @@ private fun PreviewInsuranceScreen() {
                 ),
                 certificateUrl = null,
               ),
-              upcomingAgreement = null,
+              upcomingInsuranceAgreement = null,
               renewalDate = LocalDate.fromEpochDays(500),
               supportsAddressChange = false,
               isTerminated = false,

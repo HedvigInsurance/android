@@ -40,8 +40,6 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreUi)
   implementation(projects.coreUiData)
-  implementation(projects.dataForever)
-  implementation(projects.dataPayment)
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.hanalyticsCore)
   implementation(projects.hanalyticsFeatureFlagsPublic)

@@ -12,7 +12,5 @@ dependencies {
   api(libs.okhttp.core)
 
   implementation(libs.apollo.normalizedCache)
-  implementation(libs.moneta)
-  implementation(projects.apolloGiraffePublic)
   implementation(projects.coreCommonPublic)
 }

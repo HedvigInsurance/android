@@ -9,7 +9,7 @@ import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.toEither
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.ui.insurance.toProductVariant
+import com.hedvig.android.data.productVariant.android.toProductVariant
 import com.hedvig.android.hanalytics.featureflags.FeatureManager
 import com.hedvig.android.hanalytics.featureflags.flags.Feature
 import octopus.InsuranceContractsQuery
@@ -56,11 +56,11 @@ private fun ContractFragment.toContract(isTerminated: Boolean, supportsAddressCh
     inceptionDate = masterInceptionDate,
     renewalDate = upcomingChangedAgreement?.activeFrom,
     terminationDate = terminationDate,
-    currentAgreement = Agreement(
+    currentInsuranceAgreement = InsuranceAgreement(
       activeFrom = currentAgreement.activeFrom,
       activeTo = currentAgreement.activeTo,
       displayItems = currentAgreement.displayItems.map {
-        Agreement.DisplayItem(
+        InsuranceAgreement.DisplayItem(
           it.displayTitle,
           it.displayValue,
         )
@@ -68,12 +68,12 @@ private fun ContractFragment.toContract(isTerminated: Boolean, supportsAddressCh
       productVariant = currentAgreement.productVariant.toProductVariant(),
       certificateUrl = currentAgreement.certificateUrl,
     ),
-    upcomingAgreement = upcomingChangedAgreement?.let {
-      Agreement(
+    upcomingInsuranceAgreement = upcomingChangedAgreement?.let {
+      InsuranceAgreement(
         activeFrom = it.activeFrom,
         activeTo = it.activeTo,
         displayItems = it.displayItems.map {
-          Agreement.DisplayItem(
+          InsuranceAgreement.DisplayItem(
             it.displayTitle,
             it.displayValue,
           )

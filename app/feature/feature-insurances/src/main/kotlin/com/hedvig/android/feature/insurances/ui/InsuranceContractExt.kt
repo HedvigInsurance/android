@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import com.hedvig.android.core.ui.insurance.toDrawableRes
+import com.hedvig.android.data.contract.android.toDrawableRes
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import hedvig.resources.R
 import kotlinx.collections.immutable.ImmutableList
@@ -28,7 +28,7 @@ internal fun InsuranceContract.createChips(): ImmutableList<String> {
         stringResource(R.string.CONTRACT_STATUS_TO_BE_TERMINATED, terminationDate)
       }
     },
-    upcomingAgreement?.activeFrom?.let { activeFromDate ->
+    upcomingInsuranceAgreement?.activeFrom?.let { activeFromDate ->
       stringResource(R.string.DASHBOARD_INSURANCE_STATUS_ACTIVE_UPDATE_DATE, activeFromDate)
     },
     inceptionDate.let { inceptionDate ->
@@ -46,7 +46,7 @@ internal fun InsuranceContract.createPainter(): Painter {
   return if (isTerminated) {
     ColorPainter(Color.Black.copy(alpha = 0.7f))
   } else {
-    currentAgreement.productVariant.contractType
+    currentInsuranceAgreement.productVariant.contractType
       .toDrawableRes()
       .let { drawableRes -> painterResource(id = drawableRes) }
   }

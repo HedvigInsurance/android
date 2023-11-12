@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.insurances.data
 
+import com.hedvig.android.data.contract.android.R
+
 data class CrossSell(
   val id: String,
   val title: String,
@@ -17,9 +19,9 @@ data class CrossSell(
 }
 
 fun CrossSell.CrossSellType.iconRes(): Int = when (this) {
-  CrossSell.CrossSellType.PET -> com.hedvig.android.core.ui.R.drawable.ic_pillow_pet
-  CrossSell.CrossSellType.HOME -> com.hedvig.android.core.ui.R.drawable.ic_pillow_home
-  CrossSell.CrossSellType.ACCIDENT -> com.hedvig.android.core.ui.R.drawable.ic_pillow_accident
-  CrossSell.CrossSellType.CAR -> com.hedvig.android.core.ui.R.drawable.ic_pillow_car
-  CrossSell.CrossSellType.UNKNOWN -> com.hedvig.android.core.ui.R.drawable.ic_pillow_home
+  CrossSell.CrossSellType.PET -> R.drawable.ic_pillow_pet
+  CrossSell.CrossSellType.HOME -> R.drawable.ic_pillow_home
+  CrossSell.CrossSellType.ACCIDENT -> R.drawable.ic_pillow_accident
+  CrossSell.CrossSellType.CAR -> R.drawable.ic_pillow_car
+  CrossSell.CrossSellType.UNKNOWN -> R.drawable.ic_pillow_home
 }
