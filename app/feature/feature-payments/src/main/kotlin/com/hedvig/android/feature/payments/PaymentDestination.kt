@@ -66,6 +66,7 @@ import com.hedvig.android.core.ui.getLocale
 import com.hedvig.android.core.ui.hedvigSecondaryDateTimeFormatter
 import com.hedvig.android.core.ui.preview.DoubleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.ui.scaffold.HedvigScaffold
+import com.hedvig.android.core.ui.text.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.android.toPillow
@@ -251,18 +252,20 @@ private fun PaymentAmountCard(uiState: PaymentUiState, modifier: Modifier = Modi
 private fun NextPayment(upcomingCharge: PaymentUiState.Content.NextChargeStatus.UpcomingCharge) {
   val locale = getLocale()
   val dateTimeFormatter = remember(locale) { hedvigSecondaryDateTimeFormatter(locale) }
-  Row(
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(16.dp),
-    horizontalArrangement = Arrangement.SpaceBetween,
-  ) {
-    Text(stringResource(R.string.PAYMENTS_NEXT_PAYMENT_SECTION_TITLE))
-    Text(
-      text = dateTimeFormatter.format(upcomingCharge.nextChargeDate.toJavaLocalDate()),
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-  }
+  HorizontalItemsWithMaximumSpaceTaken(
+    startSlot = {
+      Text(stringResource(R.string.PAYMENTS_NEXT_PAYMENT_SECTION_TITLE))
+    },
+    endSlot = {
+      Text(
+        text = dateTimeFormatter.format(upcomingCharge.nextChargeDate.toJavaLocalDate()),
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        textAlign = TextAlign.End,
+      )
+    },
+    spaceBetween = 8.dp,
+    modifier = Modifier.fillMaxWidth().padding(16.dp),
+  )
 }
 
 @Suppress("UnusedReceiverParameter")
@@ -273,14 +276,13 @@ private fun ColumnScope.InsuranceCosts(insuranceCosts: ImmutableList<PaymentUiSt
       Divider(modifier = Modifier.padding(horizontal = 16.dp))
     }
     Row(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp),
-      horizontalArrangement = Arrangement.SpaceBetween,
+      modifier = Modifier.fillMaxWidth().padding(16.dp),
+      horizontalArrangement = Arrangement.spacedBy(8.dp),
       verticalAlignment = Alignment.CenterVertically,
     ) {
       Row(
         verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.weight(1f),
       ) {
         Image(
           painter = painterResource(insuranceCost.contractType.toPillow()),
@@ -419,14 +421,13 @@ private fun ColumnScope.PaymentDetails(paymentDetails: PaymentUiState.Content.Pa
   Spacer(Modifier.height(16.dp))
   Divider(modifier = Modifier.padding(horizontal = 16.dp))
   Row(
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(16.dp),
-    horizontalArrangement = Arrangement.SpaceBetween,
+    modifier = Modifier.fillMaxWidth().padding(16.dp),
+    horizontalArrangement = Arrangement.spacedBy(8.dp),
     verticalAlignment = Alignment.CenterVertically,
   ) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier.weight(1f),
     ) {
       Icon(
         imageVector = Icons.Hedvig.Payments,
